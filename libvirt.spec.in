@@ -903,7 +903,16 @@ fi
 %endif
 
 %changelog
+* Fri Sep 10 2010 Daniel Veillard <veillard@redhat.com> - 0.8.4-1
+- big improvements to UML driver
+- various improvements and bug fixes
+
 * Wed Aug  4 2010 Daniel Veillard <veillard@redhat.com> - 0.8.3-1
+- esx: Support vSphere 4.1
+- Qemu arbitrary monitor commands
+- Qemu Monitor API entry point
+- various improvements and bug fixes
+
 * Mon Jul  5 2010 Daniel Veillard <veillard@redhat.com> - 0.8.2-1
 - phyp: adding support for IVM
 - libvirt: introduce domainCreateWithFlags API

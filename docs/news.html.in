@@ -7,6 +7,151 @@
     <h1 >Releases</h1>
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+    <h3>0.8.4: Sep 10 2010</h3>
+    <ul>
+      <li> Features:
+      various improvements to UML driver (Soren Hansen)
+
+      </li>
+      <li> Documentation:
+      docs: fix lxc examples (Serge Hallyn),
+      docs: mention domain clock improvements (Eric Blake),
+      docs: fix an incorrect keyword in updated hooks page (Justin Clift),
+      docs: significant expansion of custom hook script information (Justin Clift)
+
+      </li>
+      <li> Portability
+      cygwin: build fix (Stefan Berger),
+      build: allow mingw VPATH build (Eric Blake),
+      Generate libvirt_qemu.def from libvirt_qemu.syms for MinGW builds (Matthias Bolte),
+      Only require XDR when building libvirtd or the remote driver (Matthias Bolte),
+      build-sys: fix build when daemon is disabled by not installing libvirtd.8 (Diego Elio Pettenò)
+
+      </li>
+      <li> Bug Fixes:
+      Fix block statistics with newer versions of Xen (Guido Günther),
+      Fix off-by-1 in QEMU boot arg array handling (Daniel P. Berrange),
+      bridge: Fix static-only DHCP configuration (Jiri Denemark),
+      qemu: qemuMonitorJSONEjectMedia(): Fix arguments' type (Luiz Capitulino),
+      qemu: qemuMonitorJSONMigrate(): Fix arguments' type (Luiz Capitulino),
+      test: Don't overwrite storage volume target path and key (Matthias Bolte),
+      build: Fix permissions of sysconfig files (Jiri Denemark),
+      virsh: remove driver check from attach-disk command (Ryan Harper),
+      phyp: Bad comparison when checking for existing domain name (Eduardo Otubo),
+      esx: Fix esxVI_BuildSelectSet's invalid argument check (Matthias Bolte),
+      spec: Fix undefined with_libnl (Jiri Denemark),
+      Fix handling of sparse NUMA topologies (Daniel P. Berrange),
+      qemu: Check for errors when converting PCI address to string (Jiri Denemark),
+      qemu: Fix JSON migrate_set_downtime command (Jiri Denemark),
+      uml: fix logic bug in checking reply length (Eric Blake),
+      xen: Fix scheduler setting problems (Daniel Veillard),
+      nodedev: Free the right pointers when getting WWNs fails (Jiri Denemark),
+      nodedev: Fix sysfs paths for vport operations (Dave Allan),
+      xen: Fix device count on detach (Daniel Berrange),
+      remote: Fix incorrect use of private data field (Daniel Berrange),
+      esx: Fix memory leak when looking up an non-existing domain by name (Matthias Bolte),
+      Fix up qemu domain save/managed save locking. (Chris Lalancette),
+      qemu: Release PCI slot when detaching disk and net devices (Jiri Denemark),
+      qemu: Re-reserve all PCI addresses on libvirtd restart (Jiri Denemark),
+      Close fd's of persistent tap devices (Soren Hansen),
+      Fix tunnelled migration with qemu running as qemu:qemu. (Chris Lalancette),
+      Fix valgrind complaints when using kill -SIGHUP on libvirtd (Stefan Berger),
+      bridge: Fix potential segfault when preparing dnsmasq arguments (Jiri Denemark),
+      Fix return value usage (Doug Goldstein),
+      nodeinfo: skip offline CPUs (Eric Blake),
+      Do not use boot=on on IDE device (Daniel Veillard)
+
+      </li>
+      <li> Improvements:
+      virsh: Option for overriding disk type in attach-disk (Jiri Denemark),
+      Explicitly pass uml_dir argument to user-mode-linux (Soren Hansen),
+      Fix dependancies for remote generated files (Daniel P. Berrange),
+      Ensure remote daemon unions are always non-zero length (Daniel P. Berrange),
+      Add nwfilter support to UML driver (Soren Hansen),
+      esx: Use SessionIsActive when available (Matthias Bolte),
+      esx: Fall back to path as key when QueryVirtualDiskUuid isn't available (Matthias Bolte),
+      mingw: match recent changes in spec file (Eric Blake),
+      Update of localization files (Daniel Veillard),
+      esx: Use the VirtualDisk UUID as storage volume key (Matthias Bolte),
+      esx: Add .vmdk storage volume creation (Matthias Bolte),
+      OpenVZ: add ethernet interface type support (Jean-Baptiste Rouault),
+      esx: Rework datastore path parsing and handling (Matthias Bolte),
+      esx: Fix generator for string return values (Matthias Bolte),
+      build: add some modules (Eric Blake),
+      Use global directory as UML's monitorDir for privileged connections (Soren Hansen),
+      maint: track moved file (Eric Blake),
+      Add tests for Xen's blktap2 implementation (Jim Fehlig),
+      Add blktap2 support to xend driver (Jim Fehlig),
+      esx: Map the .vmx annotation to the domain XML description (Matthias Bolte),
+      esx: Add read-only storage volume access (Matthias Bolte),
+      Move libvirt-guests init script and config to tools (Jiri Denemark),
+      Support virDomainAttachDevice and virDomainDetachDevice for disks in UML (Soren Hansen),
+      Log return value for virConnectGetCapabilities (Daniel P. Berrange),
+      Try harder to send RPC error message back to client (Daniel P. Berrange),
+      Add explicit warning messages when failing to serialize to XDR (Daniel P. Berrange),
+      Allow chardev of type 'file' for UML domains. (Soren Hansen),
+      esx: Improve object-by-type lookup performance (Matthias Bolte),
+      xen tests: Fix PV-VFB tests with RHEL-5 API (Jiri Denemark),
+      xen tests: Fix missing "type ioemu" with rhel5-api (Jiri Denemark),
+      nodeinfotest: Print libvirt error on failure (Jiri Denemark),
+      xenapi: support xenapi 5.6.0 headers (Eric Blake),
+      Add support for -enable-kqemu flag (Daniel P. Berrange),
+      esx: Use MD5 sum of mount path as storage pool UUID (Matthias Bolte),
+      esx: Make sure dumpxml outputs proper ID for active domains (Matthias Bolte),
+      Add actions to virDomainLifecycle enum (Jim Fehlig),
+      vbox: add location used in rpmfusion release (Eric Blake),
+      storage: add support for Vendor and Model in XML (Patrick Dignan),
+      qemu: Fix copy and paste error in warning message (Jiri Denemark),
+      nwfilter: extend nwfilter reload support (Stefan Berger),
+      esx: Explicitly disable unused floppy devices (Matthias Bolte),
+      phyp: Add rudimentary network driver (Eduardo Otubo),
+      Make umlConnectTapDevice ask brAddTap for a persistent tap device. (Soren Hansen),
+      Make sure all command line arguments get passed to UML (Soren Hansen),
+      nwfilter: Discard class D,E IP addresses when sniffing pkts (Stefan Berger),
+      nwfilter: serialize execution of scripts with ebtables cmds (Stefan Berger),
+      Move the tunnelled migration unix socket to /var/lib/libvirt/qemu (Chris Lalancette),
+      qemu: avoid calling the balloon info command if disabled (Daniel Veillard),
+      bridge: Add --dhcp-no-override option to dnsmasq (Jiri Denemark),
+      esx: Improve VMX file name parsing and formatting (Matthias Bolte),
+      esx: Split VMX code into a general and an ESX specific part (Matthias Bolte),
+      allow memballoon type of none to desactivate it (Daniel Veillard),
+      Add a detailed message when tap device add fails (Doug Goldstein),
+      qemu: Hack around asynchronous device_del (Jiri Denemark),
+      build-sys: only build the test programs during the check phase. (Diego Elio Pettenò),
+      Add "ubd" to the list of disk prefixes (Soren Hansen),
+      Extend virSocketParseAddr() to allow a NULL result pointer (Daniel Veillard),
+      bootloader_args is named bootargs in xen-xm (Philipp Hahn),
+      Fix return value usage (Doug Goldstein),
+      qemu: improve error if tun device is missing (Doug Goldstein),
+      build: rerun bootstrap if po/Makevars got nuked (Eric Blake)
+
+      </li>
+      <li> Cleanups:
+      Remove hack to get static binaries in DV environment (Daniel Veillard),
+      build: avoid uninitialized variable warning (Eric Blake),
+      vbox: factor a large function (Eric Blake),
+      lxc: avoid large stacks with veth creation (Eric Blake),
+      openvz: use virAsprintf to avoid large stacks (Eric Blake),
+      openvz: formatting cleanups (Eric Blake),
+      network: use virAsprintf when appropriate (Eric Blake),
+      Move hextobin as virHexToBin to util.c (Matthias Bolte),
+      Rename qemudShrinkDisks to virDomainDiskRemove and move to domain_conf.c (Soren Hansen),
+      xml2sexprtest: Remove graphics from unrelated tests (Jiri Denemark),
+      xenapi: Fix compile error in previous commit (Matthias Bolte),
+      qemu: Remove code duplication (Jiri Denemark),
+      vbox: factor a large function (Eric Blake),
+      xenapi: avoid sprintf (Eric Blake),
+      storage: avoid s[n]printf (Eric Blake),
+      maint: whitespace cleanups (Eric Blake),
+      build: delete dead comments (Eric Blake),
+      nwfilter: use consistent OOM reporting (Eric Blake),
+      build: fix compiler warning (Eric Blake),
+      build: fix AppArmor compilation (Jamie Strandboge),
+      Avoid unnecessary bootstrap runs in VPATH builds (Jiri Denemark),
+      maint: update an email address preference (Eric Blake),
+      phyp: refactor phypListDomainsGeneric to eliminate buffer overflow (Eduardo Otubo)
+      </li>
+    </ul>
     <h3>0.8.3: Aug  4 2010</h3>
     <ul>
       <li> Features:

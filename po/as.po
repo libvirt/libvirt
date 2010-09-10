@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2010-09-04 19:20+0200\n"
+"POT-Creation-Date: 2010-09-10 16:46+0200\n"
 "PO-Revision-Date: 2009-12-11 17:37+0530\n"
 "Last-Translator: Amitakhya Phukan <aphukan@fedoraproject.org>\n"
 "Language-Team: Assamese <>\n"
@@ -225,7 +225,7 @@ msgstr "qemud_server ৰ বাবে struct বিতৰণ কৰোঁতে 
 #: src/qemu/qemu_driver.c:1715 src/remote/remote_driver.c:1000
 #: src/remote/remote_driver.c:7999 src/remote/remote_driver.c:8175
 #: src/remote/remote_driver.c:8929 src/test/test_driver.c:514
-#: src/test/test_driver.c:758 src/xen/xen_driver.c:302
+#: src/test/test_driver.c:762 src/xen/xen_driver.c:302
 msgid "cannot initialize mutex"
 msgstr "mutex আৰম্ভ কৰোঁতে ব্যৰ্থ"
 
@@ -2236,13 +2236,13 @@ msgstr "'%s' নামৰ ঠিকনা ব্যৱহাৰ কৰিব ন
 
 # c-format
 #: src/conf/network_conf.c:318 src/conf/network_conf.c:446
-#: src/network/bridge_driver.c:1031
+#: src/network/bridge_driver.c:1051
 #, c-format
 msgid "cannot parse IP address '%s'"
 msgstr "IP ঠিকনা '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
 # c-format
-#: src/conf/network_conf.c:452 src/network/bridge_driver.c:1038
+#: src/conf/network_conf.c:452 src/network/bridge_driver.c:1058
 #, c-format
 msgid "cannot parse netmask '%s'"
 msgstr "netmask '%s' বিশ্লেষণ কৰিব নোৱাৰি"
@@ -2819,7 +2819,7 @@ msgstr "malformed group element"
 
 # c-format
 #: src/conf/storage_conf.c:620 src/storage/storage_driver.c:445
-#: src/test/test_driver.c:3734
+#: src/test/test_driver.c:3738
 #, c-format
 msgid "unknown storage pool type %s"
 msgstr "অজ্ঞাত ভঁৰাল পুলৰ ধৰণ %s"
@@ -3333,7 +3333,7 @@ msgstr ""
 
 # c-format
 #: src/esx/esx_driver.c:522 src/esx/esx_util.c:499 src/esx/esx_util.c:615
-#: src/esx/esx_vi.c:2046
+#: src/esx/esx_vi.c:2057
 #, fuzzy, c-format
 msgid "Could not parse UUID from string '%s'"
 msgstr "VPS ID %s ৰ বিশ্লেষণ কৰিব পৰা ন'গ'ল"
@@ -3342,18 +3342,18 @@ msgstr "VPS ID %s ৰ বিশ্লেষণ কৰিব পৰা ন'গ'�
 #: src/esx/esx_driver.c:2717 src/esx/esx_driver.c:3899
 #: src/esx/esx_storage_driver.c:119 src/esx/esx_storage_driver.c:620
 #: src/esx/esx_util.c:56 src/esx/esx_util.c:291 src/esx/esx_vi.c:290
-#: src/esx/esx_vi.c:754 src/esx/esx_vi.c:801 src/esx/esx_vi.c:841
-#: src/esx/esx_vi.c:1065 src/esx/esx_vi.c:1101 src/esx/esx_vi.c:1117
-#: src/esx/esx_vi.c:1140 src/esx/esx_vi.c:1180 src/esx/esx_vi.c:1209
-#: src/esx/esx_vi.c:1243 src/esx/esx_vi.c:1298 src/esx/esx_vi.c:1324
-#: src/esx/esx_vi.c:1370 src/esx/esx_vi.c:1398 src/esx/esx_vi.c:1633
-#: src/esx/esx_vi.c:1779 src/esx/esx_vi.c:1805 src/esx/esx_vi.c:1842
-#: src/esx/esx_vi.c:1879 src/esx/esx_vi.c:1986 src/esx/esx_vi.c:2146
-#: src/esx/esx_vi.c:2190 src/esx/esx_vi.c:2252 src/esx/esx_vi.c:2305
-#: src/esx/esx_vi.c:2439 src/esx/esx_vi.c:2507 src/esx/esx_vi.c:2594
-#: src/esx/esx_vi.c:2659 src/esx/esx_vi.c:2707 src/esx/esx_vi.c:2816
-#: src/esx/esx_vi.c:2872 src/esx/esx_vi.c:2968 src/esx/esx_vi.c:3161
-#: src/esx/esx_vi.c:3266 src/esx/esx_vi.c:3323 src/esx/esx_vi_methods.c:44
+#: src/esx/esx_vi.c:769 src/esx/esx_vi.c:816 src/esx/esx_vi.c:856
+#: src/esx/esx_vi.c:1080 src/esx/esx_vi.c:1116 src/esx/esx_vi.c:1132
+#: src/esx/esx_vi.c:1155 src/esx/esx_vi.c:1195 src/esx/esx_vi.c:1224
+#: src/esx/esx_vi.c:1258 src/esx/esx_vi.c:1313 src/esx/esx_vi.c:1339
+#: src/esx/esx_vi.c:1385 src/esx/esx_vi.c:1413 src/esx/esx_vi.c:1644
+#: src/esx/esx_vi.c:1790 src/esx/esx_vi.c:1816 src/esx/esx_vi.c:1853
+#: src/esx/esx_vi.c:1890 src/esx/esx_vi.c:1997 src/esx/esx_vi.c:2157
+#: src/esx/esx_vi.c:2201 src/esx/esx_vi.c:2263 src/esx/esx_vi.c:2316
+#: src/esx/esx_vi.c:2450 src/esx/esx_vi.c:2518 src/esx/esx_vi.c:2605
+#: src/esx/esx_vi.c:2670 src/esx/esx_vi.c:2718 src/esx/esx_vi.c:2827
+#: src/esx/esx_vi.c:2883 src/esx/esx_vi.c:2979 src/esx/esx_vi.c:3172
+#: src/esx/esx_vi.c:3277 src/esx/esx_vi.c:3339 src/esx/esx_vi_methods.c:44
 #: src/esx/esx_vi_methods.c:272 src/esx/esx_vi_types.c:102
 #: src/esx/esx_vi_types.c:193 src/esx/esx_vi_types.c:222
 #: src/esx/esx_vi_types.c:263 src/esx/esx_vi_types.c:313
@@ -3682,8 +3682,8 @@ msgstr "'%s'-ৰ বাবে ঊৰ্ধ্বতন HBA পাওয়া য�
 msgid "Datastore has unexpected type '%s'"
 msgstr "ইন্টাৰফেসৰ ধৰন '%s' সমৰ্থিত নহয়"
 
-#: src/esx/esx_storage_driver.c:520 src/esx/esx_storage_driver.c:957
-#: src/esx/esx_storage_driver.c:1215
+#: src/esx/esx_storage_driver.c:520 src/esx/esx_storage_driver.c:964
+#: src/esx/esx_storage_driver.c:1235
 #, fuzzy
 msgid "DatastoreInfo has unexpected type"
 msgstr "স্ট্ৰিম অপ্ৰত্যাশিতভাবে বন্ধ হৈছে"
@@ -3693,37 +3693,42 @@ msgstr "স্ট্ৰিম অপ্ৰত্যাশিতভাবে ব�
 msgid "Cannot deactivate storage pool autostart"
 msgstr "উৎসৰ যন্ত্ৰ উদ্ঘাটন কৰিব নোৱাৰি"
 
-#: src/esx/esx_storage_driver.c:970
+#: src/esx/esx_storage_driver.c:788
+msgid ""
+"QueryVirtualDiskUuid not avialable, cannot lookup storage volume by UUID"
+msgstr ""
+
+#: src/esx/esx_storage_driver.c:977
 #, fuzzy
 msgid "Creating non-file volumes is not supported"
 msgstr "qemu-img বিনা non-raw ইমেজেৰ নিৰ্মাণ সমৰ্থিত নহয়"
 
-#: src/esx/esx_storage_driver.c:979
+#: src/esx/esx_storage_driver.c:986
 #, c-format
 msgid "Volume name '%s' doesn't have expected format '<directory>/<file>'"
 msgstr ""
 
-#: src/esx/esx_storage_driver.c:986
+#: src/esx/esx_storage_driver.c:993
 #, c-format
 msgid "Volume name '%s' has unsupported suffix, expecting '.vmdk'"
 msgstr ""
 
-#: src/esx/esx_storage_driver.c:1044
+#: src/esx/esx_storage_driver.c:1051
 msgid "Unsupported capacity-to-allocation relation"
 msgstr ""
 
 # c-format
-#: src/esx/esx_storage_driver.c:1067
+#: src/esx/esx_storage_driver.c:1074
 #, fuzzy
 msgid "Could not create volume"
 msgstr "%s লৈ সংযোগ কৰিব পৰা ন'গ'ল"
 
-#: src/esx/esx_storage_driver.c:1082
+#: src/esx/esx_storage_driver.c:1101
 #, fuzzy, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "%d প্ৰকৃতিৰ নে'টৱৰ্ক সমৰ্থিত নহয়"
 
-#: src/esx/esx_storage_driver.c:1262
+#: src/esx/esx_storage_driver.c:1282
 #, fuzzy, c-format
 msgid "File '%s' has unknown type"
 msgstr "অজ্ঞাত ধৰণ"
@@ -3886,321 +3891,321 @@ msgstr ""
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%s'"
 msgstr ""
 
-#: src/esx/esx_vi.c:492
+#: src/esx/esx_vi.c:507
 #, fuzzy
 msgid "Could not retrieve datacenter list"
 msgstr "veth নাম সৃষ্টি কৰিব পৰা ন'গ'ল"
 
 # c-format
-#: src/esx/esx_vi.c:513
+#: src/esx/esx_vi.c:528
 #, fuzzy, c-format
 msgid "Could not find datacenter '%s'"
 msgstr "অজ্ঞাত ধৰণ '%s'"
 
-#: src/esx/esx_vi.c:541
+#: src/esx/esx_vi.c:556
 #, fuzzy
 msgid "Could not retrieve compute resource list"
 msgstr "নথিপত্ৰপ্ৰণালীৰ কাৰণে উৎসৰ পঞ্জিকা নিৰ্ধাৰণ কৰিব পৰা ন'গ'ল"
 
 # c-format
-#: src/esx/esx_vi.c:562
+#: src/esx/esx_vi.c:577
 #, fuzzy, c-format
 msgid "Could not find compute resource '%s'"
 msgstr "অজ্ঞাত ধৰণ '%s'"
 
-#: src/esx/esx_vi.c:577
+#: src/esx/esx_vi.c:592
 #, fuzzy
 msgid "Could not retrieve resource pool"
 msgstr "ডোমেইনেৰ বাবে cputime পড়তে ব্যৰ্থ"
 
-#: src/esx/esx_vi.c:586
+#: src/esx/esx_vi.c:601
 msgid "Path has to specify the host system"
 msgstr ""
 
-#: src/esx/esx_vi.c:602
+#: src/esx/esx_vi.c:617
 #, fuzzy
 msgid "Could not retrieve host system list"
 msgstr "নথিপত্ৰপ্ৰণালীৰ কাৰণে উৎসৰ পঞ্জিকা নিৰ্ধাৰণ কৰিব পৰা ন'গ'ল"
 
 # c-format
-#: src/esx/esx_vi.c:631
+#: src/esx/esx_vi.c:646
 #, fuzzy, c-format
 msgid "Could not find host system '%s'"
 msgstr "অজ্ঞাত ধৰণ '%s'"
 
-#: src/esx/esx_vi.c:678
+#: src/esx/esx_vi.c:693
 #, fuzzy
 msgid "Could not retrieve host system"
 msgstr "নথিপত্ৰপ্ৰণালীৰ কাৰণে উৎসৰ পঞ্জিকা নিৰ্ধাৰণ কৰিব পৰা ন'গ'ল"
 
-#: src/esx/esx_vi.c:702
+#: src/esx/esx_vi.c:717
 #, fuzzy
 msgid "Could not retrieve compute resource of host system"
 msgstr "নথিপত্ৰপ্ৰণালীৰ কাৰণে উৎসৰ পঞ্জিকা নিৰ্ধাৰণ কৰিব পৰা ন'গ'ল"
 
-#: src/esx/esx_vi.c:726
+#: src/esx/esx_vi.c:741
 #, fuzzy
 msgid "Could not retrieve datacenter of compute resource"
 msgstr "নথিপত্ৰপ্ৰণালীৰ কাৰণে উৎসৰ পঞ্জিকা নিৰ্ধাৰণ কৰিব পৰা ন'গ'ল"
 
-#: src/esx/esx_vi.c:773
+#: src/esx/esx_vi.c:788
 #, c-format
 msgid "HTTP response code %d for download from '%s'"
 msgstr ""
 
-#: src/esx/esx_vi.c:820
+#: src/esx/esx_vi.c:835
 #, c-format
 msgid "HTTP response code %d for upload to '%s'"
 msgstr ""
 
-#: src/esx/esx_vi.c:878
+#: src/esx/esx_vi.c:893
 #, c-format
 msgid "Response for call to '%s' could not be parsed"
 msgstr ""
 
-#: src/esx/esx_vi.c:885
+#: src/esx/esx_vi.c:900
 #, c-format
 msgid "Response for call to '%s' is an empty XML document"
 msgstr ""
 
-#: src/esx/esx_vi.c:894
+#: src/esx/esx_vi.c:909
 #, fuzzy
 msgid "Could not create XPath context"
 msgstr "veth নাম সৃষ্টি কৰিব পৰা ন'গ'ল"
 
-#: src/esx/esx_vi.c:909
+#: src/esx/esx_vi.c:924
 #, c-format
 msgid ""
 "HTTP response code %d for call to '%s'. Fault is unknown, XPath evaluation "
 "failed"
 msgstr ""
 
-#: src/esx/esx_vi.c:917
+#: src/esx/esx_vi.c:932
 #, c-format
 msgid ""
 "HTTP response code %d for call to '%s'. Fault is unknown, deserialization "
 "failed"
 msgstr ""
 
-#: src/esx/esx_vi.c:924
+#: src/esx/esx_vi.c:939
 #, c-format
 msgid "HTTP response code %d for call to '%s'. Fault: %s - %s"
 msgstr ""
 
-#: src/esx/esx_vi.c:946
+#: src/esx/esx_vi.c:961
 #, c-format
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr ""
 
-#: src/esx/esx_vi.c:958 src/esx/esx_vi.c:973
+#: src/esx/esx_vi.c:973 src/esx/esx_vi.c:988
 #, c-format
 msgid "Call to '%s' returned an empty result, expecting a non-empty result"
 msgstr ""
 
-#: src/esx/esx_vi.c:963 src/esx/esx_vi.c:984
+#: src/esx/esx_vi.c:978 src/esx/esx_vi.c:999
 #, c-format
 msgid "Call to '%s' returned a list, expecting exactly one item"
 msgstr ""
 
-#: src/esx/esx_vi.c:998
+#: src/esx/esx_vi.c:1013
 #, c-format
 msgid "Call to '%s' returned something, expecting an empty result"
 msgstr ""
 
-#: src/esx/esx_vi.c:1007
+#: src/esx/esx_vi.c:1022
 #, fuzzy
 msgid "Invalid argument (occurrence)"
 msgstr "অবৈধ তৰ্ক"
 
-#: src/esx/esx_vi.c:1013
+#: src/esx/esx_vi.c:1028
 #, c-format
 msgid "HTTP response code %d for call to '%s'"
 msgstr ""
 
-#: src/esx/esx_vi.c:1073 src/esx/esx_vi_types.c:803
+#: src/esx/esx_vi.c:1088 src/esx/esx_vi_types.c:803
 #, c-format
 msgid "Expecting type '%s' but found '%s'"
 msgstr ""
 
 # c-format
-#: src/esx/esx_vi.c:1087 src/esx/esx_vi.c:1159 src/esx/esx_vi_types.c:937
+#: src/esx/esx_vi.c:1102 src/esx/esx_vi.c:1174 src/esx/esx_vi_types.c:937
 #, fuzzy, c-format
 msgid "Unknown value '%s' for %s"
 msgstr "অজ্ঞাত '%d' ক্ষমতাৰ ধৰণ '%s' ৰ কাৰণে"
 
-#: src/esx/esx_vi.c:1253
+#: src/esx/esx_vi.c:1268
 #, c-format
 msgid "Expecting type to begin with 'ArrayOf' but found '%s'"
 msgstr ""
 
-#: src/esx/esx_vi.c:1262 src/esx/esx_vi.c:1335
+#: src/esx/esx_vi.c:1277 src/esx/esx_vi.c:1350
 #, c-format
 msgid "Wrong XML element type %d"
 msgstr ""
 
 # c-format
-#: src/esx/esx_vi.c:1550 src/esx/esx_vi_methods.c:165
+#: src/esx/esx_vi.c:1553 src/esx/esx_vi_methods.c:165
 #, fuzzy
 msgid "Invalid call"
 msgstr "গোপনীয় তথ্য বৈধ নহয়ধৰণ"
 
-#: src/esx/esx_vi.c:1602
+#: src/esx/esx_vi.c:1613
 msgid "Key of the current session differs from the key at last login"
 msgstr ""
 
-#: src/esx/esx_vi.c:1650 src/esx/esx_vi.c:1661 src/esx/esx_vi.c:1674
+#: src/esx/esx_vi.c:1661 src/esx/esx_vi.c:1672 src/esx/esx_vi.c:1685
 #, fuzzy, c-format
 msgid "Invalid lookup of '%s' from '%s'"
 msgstr "স্মৃতিশক্তিৰ অবৈধ মাপ %d"
 
-#: src/esx/esx_vi.c:1680
+#: src/esx/esx_vi.c:1691
 #, fuzzy, c-format
 msgid "Invalid lookup from '%s'"
 msgstr "'%s' সমষ্টি অনুসন্ধান কৰোঁতে ব্যৰ্থ"
 
-#: src/esx/esx_vi.c:1741
+#: src/esx/esx_vi.c:1752
 #, c-format
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr ""
 
-#: src/esx/esx_vi.c:1764
+#: src/esx/esx_vi.c:1775
 msgid "Missing 'runtime.powerState' property"
 msgstr ""
 
-#: src/esx/esx_vi.c:1825 src/esx/esx_vi.c:1861 src/esx/esx_vi.c:1897
+#: src/esx/esx_vi.c:1836 src/esx/esx_vi.c:1872 src/esx/esx_vi.c:1908
 #, fuzzy, c-format
 msgid "Missing '%s' property"
 msgstr "হেৰুৱা উৎপাদন"
 
-#: src/esx/esx_vi.c:1970
+#: src/esx/esx_vi.c:1981
 msgid "ObjectContent does not reference a virtual machine"
 msgstr ""
 
-#: src/esx/esx_vi.c:1978
+#: src/esx/esx_vi.c:1989
 #, fuzzy, c-format
 msgid "Could not parse positive integer from '%s'"
 msgstr "'%s'-ৰ প্ৰোফাইল মুছে ফেলতে ব্যৰ্থ"
 
-#: src/esx/esx_vi.c:2012
+#: src/esx/esx_vi.c:2023
 #, fuzzy
 msgid "Could not get name of virtual machine"
 msgstr "ভাৰ্চুয়াল CPU সংখ্যা পৰিবৰ্তন কৰক"
 
-#: src/esx/esx_vi.c:2040
+#: src/esx/esx_vi.c:2051
 #, fuzzy
 msgid "Could not get UUID of virtual machine"
 msgstr "ভাৰ্চুয়াল CPU সংখ্যা পৰিবৰ্তন কৰক"
 
 # c-format
-#: src/esx/esx_vi.c:2173
+#: src/esx/esx_vi.c:2184
 #, fuzzy, c-format
 msgid "Could not find snapshot with name '%s'"
 msgstr "অজ্ঞাত ধৰণ '%s'"
 
 # c-format
-#: src/esx/esx_vi.c:2208
+#: src/esx/esx_vi.c:2219
 #, fuzzy, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
 msgstr "'%s' নামৰ সৈতে মিল থকা কোনো ডোমেইন নাই"
 
 # c-format
 # c-format
-#: src/esx/esx_vi.c:2270
+#: src/esx/esx_vi.c:2281
 #, fuzzy, c-format
 msgid "Could not find domain with UUID '%s'"
 msgstr "'%s'-ৰ বাবে ঊৰ্ধ্বতন HBA পাওয়া যায়নি"
 
 # c-format
-#: src/esx/esx_vi.c:2344
+#: src/esx/esx_vi.c:2355
 #, fuzzy, c-format
 msgid "Could not find domain with name '%s'"
 msgstr "'%s' নামৰ সৈতে মিল থকা কোনো ডোমেইন নাই"
 
-#: src/esx/esx_vi.c:2397
+#: src/esx/esx_vi.c:2408
 msgid "Other tasks are pending for this domain"
 msgstr ""
 
 # c-format
 # c-format
-#: src/esx/esx_vi.c:2477
+#: src/esx/esx_vi.c:2488
 #, fuzzy, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "'%s'-ৰ বাবে ঊৰ্ধ্বতন HBA পাওয়া যায়নি"
 
 # c-format
 # c-format
-#: src/esx/esx_vi.c:2564
+#: src/esx/esx_vi.c:2575
 #, fuzzy, c-format
 msgid "Could not find datastore containing absolute path '%s'"
 msgstr "'%s'-ৰ বাবে ঊৰ্ধ্বতন HBA পাওয়া যায়নি"
 
 # c-format
-#: src/esx/esx_vi.c:2633
+#: src/esx/esx_vi.c:2644
 #, fuzzy
 msgid "Could not lookup datastore host mount"
 msgstr "অজ্ঞাত ধৰণ '%s'"
 
-#: src/esx/esx_vi.c:2909
+#: src/esx/esx_vi.c:2920
 msgid "Domain has no current snapshot"
 msgstr ""
 
-#: src/esx/esx_vi.c:2916
+#: src/esx/esx_vi.c:2927
 msgid "Could not lookup root snapshot list"
 msgstr ""
 
-#: src/esx/esx_vi.c:3003
+#: src/esx/esx_vi.c:3014
 #, c-format
 msgid "Datastore path '%s' doesn't reference a file"
 msgstr ""
 
 # c-format
-#: src/esx/esx_vi.c:3089 src/esx/esx_vi.c:3230
+#: src/esx/esx_vi.c:3100 src/esx/esx_vi.c:3241
 #, fuzzy, c-format
 msgid "Could not serach in datastore '%s'"
 msgstr "অজ্ঞাত ধৰণ '%s'"
 
 # c-format
-#: src/esx/esx_vi.c:3107
+#: src/esx/esx_vi.c:3118
 #, fuzzy, c-format
 msgid "No storage volume with key or path '%s'"
 msgstr "'%s' পথৰ সৈতে মিল থকা কোনো ভঁৰালৰ সমষ্টি নাই"
 
-#: src/esx/esx_vi.c:3359 src/esx/esx_vi.c:3393
+#: src/esx/esx_vi.c:3375 src/esx/esx_vi.c:3409
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%s', no "
 "possible answers"
 msgstr ""
 
-#: src/esx/esx_vi.c:3367
+#: src/esx/esx_vi.c:3383
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%s', "
 "possible answers are %s, but no default answer is specified"
 msgstr ""
 
-#: src/esx/esx_vi.c:3388
+#: src/esx/esx_vi.c:3404
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%s', "
 "possible answers are %s"
 msgstr ""
 
-#: src/esx/esx_vi.c:3491
+#: src/esx/esx_vi.c:3507
 msgid ""
 "Cancelable task is blocked by an unanswered question but cancelation failed"
 msgstr ""
 
-#: src/esx/esx_vi.c:3496
+#: src/esx/esx_vi.c:3512
 msgid "Non-cancelable task is blocked by an unanswered question"
 msgstr ""
 
-#: src/esx/esx_vi.c:3604
+#: src/esx/esx_vi.c:3620
 #, c-format
 msgid "HostCpuIdInfo register '%s' has an unexpected length"
 msgstr ""
 
-#: src/esx/esx_vi.c:3618
+#: src/esx/esx_vi.c:3634
 #, c-format
 msgid "HostCpuIdInfo register '%s' has an unexpected format"
 msgstr ""
@@ -4964,7 +4969,7 @@ msgstr "tty %s খুলতে ব্যৰ্থ"
 msgid "Failed to run clone container"
 msgstr "ধাৰণকাৰী ক্লোন কৰাৰ প্ৰণালী সঞ্চালন কৰিবলৈ ব্যৰ্থে ব্যৰ্থ: %s"
 
-#: src/lxc/lxc_conf.c:65 src/qemu/qemu_driver.c:1576 src/uml/uml_conf.c:78
+#: src/lxc/lxc_conf.c:65 src/qemu/qemu_driver.c:1576 src/uml/uml_conf.c:79
 #, fuzzy
 msgid "cannot get the host uuid"
 msgstr "দিনৰ বৰ্তমান সময় পোৱা হৈছে"
@@ -5305,7 +5310,7 @@ msgstr "ডোমেইন বৰ্তমানে সক্ৰিয়ন"
 # c-format
 # c-format
 #: src/lxc/lxc_driver.c:1741 src/qemu/qemu_driver.c:828
-#: src/uml/uml_driver.c:159
+#: src/uml/uml_driver.c:160
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr "VM '%s' autostart কৰিবলৈ ব্যৰ্থ: %s"
@@ -5357,15 +5362,15 @@ msgstr "autostart ডিৰেক্টৰি %s নিৰ্মাণ কৰি
 
 # c-format
 #: src/lxc/lxc_driver.c:2288 src/qemu/qemu_driver.c:9316
-#: src/uml/uml_driver.c:1994
+#: src/uml/uml_driver.c:2000
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%s' symlink ক '%s' লৈ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/lxc/lxc_driver.c:2295 src/network/bridge_driver.c:1789
+#: src/lxc/lxc_driver.c:2295 src/network/bridge_driver.c:1809
 #: src/qemu/qemu_driver.c:9323 src/storage/storage_driver.c:1029
-#: src/uml/uml_driver.c:2001
+#: src/uml/uml_driver.c:2007
 #, c-format
 msgid "Failed to delete symlink '%s'"
 msgstr "symlink '%s' আঁতৰাওঁতে ব্যৰ্থ"
@@ -5400,212 +5405,212 @@ msgid "Failed to set '%s' to '%s' (%d)"
 msgstr "%s ডোমেইন %s এ সংৰক্ষণ কৰোঁতে ব্যৰ্থ"
 
 #: src/network/bridge_driver.c:250 src/qemu/qemu_conf.c:1666
-#: src/uml/uml_conf.c:121
+#: src/uml/uml_conf.c:123
 msgid "cannot initialize bridge support"
 msgstr "ব্ৰিজ সমৰ্থন আৰম্ভ কৰোঁতে ব্যৰ্থ: %s"
 
-#: src/network/bridge_driver.c:564
+#: src/network/bridge_driver.c:584
 msgid "cannot start dhcp daemon without IP address for server"
 msgstr "সেৱকেৰ IP ঠিকনা নোহোৱাকে dhcp ডেমন আৰম্ভ কৰা সম্ভৱ নহয়"
 
 # c-format
-#: src/network/bridge_driver.c:570 src/network/bridge_driver.c:576
+#: src/network/bridge_driver.c:590 src/network/bridge_driver.c:596
 #, c-format
 msgid "cannot create directory %s"
 msgstr "পঞ্জিকা %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:628
+#: src/network/bridge_driver.c:648
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s'"
 msgstr "'%s'ৰ পৰা অনুবৰ্তন প্ৰক্ৰিয়াৰ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:639
+#: src/network/bridge_driver.c:659
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s'"
 msgstr "'%s' লৈ অনুবৰ্তন প্ৰক্ৰিয়াৰ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:673
+#: src/network/bridge_driver.c:693
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable masquerading to '%s'"
 msgstr ""
 "masquerading প্ৰক্ৰিয়া সক্ৰিয় কৰাৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/network/bridge_driver.c:684
+#: src/network/bridge_driver.c:704
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable UDP masquerading to '%s'"
 msgstr ""
 "masquerading প্ৰক্ৰিয়া সক্ৰিয় কৰাৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/network/bridge_driver.c:695
+#: src/network/bridge_driver.c:715
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable TCP masquerading to '%s'"
 msgstr ""
 "masquerading প্ৰক্ৰিয়া সক্ৰিয় কৰাৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/network/bridge_driver.c:736
+#: src/network/bridge_driver.c:756
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s'"
 msgstr "'%s'ৰ পৰা ৰাউটিং প্ৰক্ৰিয়াৰ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:747
+#: src/network/bridge_driver.c:767
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s'"
 msgstr "'%s' এ ৰাউটিং প্ৰক্ৰিয়াৰ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:772 src/network/bridge_driver.c:779
+#: src/network/bridge_driver.c:792 src/network/bridge_driver.c:799
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s'"
 msgstr "'%s'ৰ পৰা DHCP ৰ অনুৰোধ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:787 src/network/bridge_driver.c:794
+#: src/network/bridge_driver.c:807 src/network/bridge_driver.c:814
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s'"
 msgstr "'%s'ৰ পৰা DNS ৰ অনুৰোধ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:803
+#: src/network/bridge_driver.c:823
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow TFTP requests from '%s'"
 msgstr "'%s'ৰ পৰা DHCP ৰ অনুৰোধ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:813
+#: src/network/bridge_driver.c:833
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s'"
 msgstr ""
 "'%s'ৰ পৰা বাহিৰলৈ যোৱা সম্প্ৰচাৰ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:820
+#: src/network/bridge_driver.c:840
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s'"
 msgstr ""
 "'%s' ৰ প্ৰতি আগমনকৰোঁতা সম্প্ৰচাৰ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:828
+#: src/network/bridge_driver.c:848
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s'"
 msgstr ""
 "'%s' ৰ ক্ষেত্ৰত আন্তঃ ব্ৰিজ সম্প্ৰচাৰৰ অনুৰোধ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে "
 "ব্যৰ্থ"
 
-#: src/network/bridge_driver.c:935
+#: src/network/bridge_driver.c:955
 #, fuzzy
 msgid "Reloading iptables rules"
 msgstr "iptables ৰ নিয়মাৱলী পুনঃ তুলি লোৱা হৈছে\n"
 
 # c-format
 # c-format
-#: src/network/bridge_driver.c:978 src/network/bridge_driver.c:1002
+#: src/network/bridge_driver.c:998 src/network/bridge_driver.c:1022
 #, c-format
 msgid "cannot enable %s"
 msgstr "%s সক্ৰিয় কৰিবলৈ ব্যৰ্থ"
 
 # c-format
 # c-format
-#: src/network/bridge_driver.c:990
+#: src/network/bridge_driver.c:1010
 #, c-format
 msgid "cannot disable %s"
 msgstr "%s নিষ্ক্ৰিয় কৰিবলৈ ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:1105
+#: src/network/bridge_driver.c:1125
 #, fuzzy, c-format
 msgid "Network %s/%s is already in use by interface %s"
 msgstr "নে'টৱৰ্ক '%s' ইতিমধ্যে চলি আছে"
 
-#: src/network/bridge_driver.c:1127
+#: src/network/bridge_driver.c:1147
 msgid "network is already active"
 msgstr "নে'টৱৰ্ক বৰ্তমানে সক্ৰিয়"
 
 # c-format
-#: src/network/bridge_driver.c:1137
+#: src/network/bridge_driver.c:1157
 #, c-format
 msgid "cannot create bridge '%s'"
 msgstr "ব্ৰিজ '%s' নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:1154
+#: src/network/bridge_driver.c:1174
 #, c-format
 msgid "cannot set IP address on bridge '%s' to '%s'"
 msgstr "'%s' ব্ৰিজৰ IP ঠিকনা '%s' এ ধাৰ্য কৰা নাযায়"
 
 # c-format
-#: src/network/bridge_driver.c:1162
+#: src/network/bridge_driver.c:1182
 #, c-format
 msgid "cannot set netmask on bridge '%s' to '%s'"
 msgstr "'%s' ব্ৰিজৰ নেটমাস্ক '%s' লৈ নিৰ্ধাৰণ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:1169
+#: src/network/bridge_driver.c:1189
 #, c-format
 msgid "failed to bring the bridge '%s' up"
 msgstr "'%s' ব্ৰিজ আৰম্ভ কৰোঁতে ব্যৰ্থ"
 
-#: src/network/bridge_driver.c:1180
+#: src/network/bridge_driver.c:1200
 msgid "failed to enable IP forwarding"
 msgstr "IP আগবঢ়োৱা সক্ৰিয় কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:1232
+#: src/network/bridge_driver.c:1252
 #, fuzzy, c-format
 msgid "Shutting down network '%s'"
 msgstr "নে'টৱৰ্ক '%s' বন্ধ কৰা হৈছে\n"
 
-#: src/network/bridge_driver.c:1289 src/network/bridge_driver.c:1570
-#: src/network/bridge_driver.c:1616 src/network/bridge_driver.c:1639
-#: src/network/bridge_driver.c:1674 src/network/bridge_driver.c:1729
-#: src/network/bridge_driver.c:1754
+#: src/network/bridge_driver.c:1309 src/network/bridge_driver.c:1590
+#: src/network/bridge_driver.c:1636 src/network/bridge_driver.c:1659
+#: src/network/bridge_driver.c:1694 src/network/bridge_driver.c:1749
+#: src/network/bridge_driver.c:1774
 msgid "no network with matching uuid"
 msgstr "uuid ৰ সৈতে সুসংগত নে'টৱৰ্ক অনুপস্থিত"
 
 # c-format
-#: src/network/bridge_driver.c:1312
+#: src/network/bridge_driver.c:1332
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "'%s' নামৰ সৈতে সুসংগত নেটওয়াৰ্ক অনুপস্থিত"
 
-#: src/network/bridge_driver.c:1576
+#: src/network/bridge_driver.c:1596
 msgid "network is still active"
 msgstr "নে'টৱৰ্ক বৰ্তমানে সক্ৰিয়"
 
 # c-format
-#: src/network/bridge_driver.c:1645
+#: src/network/bridge_driver.c:1665
 msgid "network is not active"
 msgstr "নেটওয়াৰ্ক সক্ৰিয় নহয়"
 
-#: src/network/bridge_driver.c:1697
+#: src/network/bridge_driver.c:1717
 msgid "no network with matching id"
 msgstr "id ৰ সৈতে সুসংগত নে'টৱৰ্ক অনুপস্থিত"
 
-#: src/network/bridge_driver.c:1703 src/test/test_driver.c:3067
+#: src/network/bridge_driver.c:1723 src/test/test_driver.c:3071
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "নে'টৱৰ্ক '%s' ৰ এটা bridge নাম নাই ।"
 
-#: src/network/bridge_driver.c:1760
+#: src/network/bridge_driver.c:1780
 msgid "cannot set autostart for transient network"
 msgstr ""
 "স্বল্পকাল স্থায়ী নেটওয়াৰ্কেৰ বাবে স্বয়ংক্ৰিয় আৰম্ভেৰ ব্যবস্থা নিৰ্ধাৰণ কৰা সম্ভব নহয়"
 
 # c-format
-#: src/network/bridge_driver.c:1775
+#: src/network/bridge_driver.c:1795
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "autostart পঞ্জিকা '%s' নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/network/bridge_driver.c:1782 src/storage/storage_driver.c:1021
+#: src/network/bridge_driver.c:1802 src/storage/storage_driver.c:1021
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "'%s' symlink ক '%s' লৈ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
@@ -5621,14 +5626,14 @@ msgstr "%s ড্ৰাইভাৰ লিংক মীমাংসা কৰি
 #: src/node_device/node_device_driver.c:267
 #: src/node_device/node_device_driver.c:296
 #: src/node_device/node_device_driver.c:331
-#: src/node_device/node_device_driver.c:362 src/test/test_driver.c:4817
-#: src/test/test_driver.c:4843 src/test/test_driver.c:4879
-#: src/test/test_driver.c:4910
+#: src/node_device/node_device_driver.c:362 src/test/test_driver.c:4821
+#: src/test/test_driver.c:4847 src/test/test_driver.c:4883
+#: src/test/test_driver.c:4914
 #, c-format
 msgid "no node device with matching name '%s'"
 msgstr "'%s'-ৰ সমতূল্য নাম সহ কোনো নোড যন্ত্ৰ উপস্থিত নেই"
 
-#: src/node_device/node_device_driver.c:307 src/test/test_driver.c:4854
+#: src/node_device/node_device_driver.c:307 src/test/test_driver.c:4858
 msgid "no parent for this device"
 msgstr "এই যন্ত্ৰৰ পেৰেন্ট"
 
@@ -5853,7 +5858,7 @@ msgstr ""
 
 # c-format
 #: src/nodeinfo.c:88 src/nodeinfo.c:135 src/nodeinfo.c:327
-#: src/uml/uml_driver.c:2063 src/util/pci.c:1348 src/util/util.c:469
+#: src/uml/uml_driver.c:2069 src/util/pci.c:1348 src/util/util.c:469
 #, c-format
 msgid "cannot open %s"
 msgstr "%s খোলোঁতে ব্যৰ্থ"
@@ -6142,23 +6147,23 @@ msgstr "OpenNebula লৈ ভাৰ্চুৱেল যন্ত্ৰ প্�
 #: src/openvz/openvz_driver.c:557 src/openvz/openvz_driver.c:597
 #: src/openvz/openvz_driver.c:635 src/openvz/openvz_driver.c:1106
 #: src/openvz/openvz_driver.c:1150 src/openvz/openvz_driver.c:1182
-#: src/openvz/openvz_driver.c:1256 src/uml/uml_driver.c:1386
-#: src/uml/uml_driver.c:1509 src/uml/uml_driver.c:1549
-#: src/uml/uml_driver.c:1600 src/uml/uml_driver.c:1666
-#: src/uml/uml_driver.c:1938 src/uml/uml_driver.c:1964
-#: src/uml/uml_driver.c:2038 src/vbox/vbox_tmpl.c:4830
+#: src/openvz/openvz_driver.c:1256 src/uml/uml_driver.c:1392
+#: src/uml/uml_driver.c:1515 src/uml/uml_driver.c:1555
+#: src/uml/uml_driver.c:1606 src/uml/uml_driver.c:1672
+#: src/uml/uml_driver.c:1944 src/uml/uml_driver.c:1970
+#: src/uml/uml_driver.c:2044 src/vbox/vbox_tmpl.c:4830
 #: src/vbox/vbox_tmpl.c:5063
 msgid "no domain with matching uuid"
 msgstr "uuid ৰ সৈতে কোনো সুসংগত ডোমেইন নাই"
 
 #: src/opennebula/one_driver.c:291 src/qemu/qemu_driver.c:7249
-#: src/uml/uml_driver.c:1678
+#: src/uml/uml_driver.c:1684
 msgid "cannot undefine transient domain"
 msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভৱ নহয়"
 
 #: src/opennebula/one_driver.c:322 src/test/test_driver.c:524
-#: src/test/test_driver.c:1675 src/test/test_driver.c:2114
-#: src/test/test_driver.c:2614 src/test/test_driver.c:2669
+#: src/test/test_driver.c:1679 src/test/test_driver.c:2118
+#: src/test/test_driver.c:2618 src/test/test_driver.c:2673
 msgid "getting time of day"
 msgstr "দিনৰ বৰ্তমান সময় পোৱা হৈছে"
 
@@ -6198,8 +6203,8 @@ msgid "domain is not running"
 msgstr "ডোমেইন বৰ্তমানে সক্ৰিয় নহয়"
 
 #: src/opennebula/one_driver.c:591 src/opennebula/one_driver.c:624
-#: src/qemu/qemu_driver.c:4375 src/uml/uml_driver.c:1326
-#: src/uml/uml_driver.c:1356 src/vbox/vbox_tmpl.c:1034
+#: src/qemu/qemu_driver.c:4375 src/uml/uml_driver.c:1332
+#: src/uml/uml_driver.c:1362 src/vbox/vbox_tmpl.c:1034
 #: src/vbox/vbox_tmpl.c:1331 src/vbox/vbox_tmpl.c:1390
 #: src/vbox/vbox_tmpl.c:1448 src/vbox/vbox_tmpl.c:1505
 #: src/vbox/vbox_tmpl.c:1558 src/vbox/vbox_tmpl.c:1635
@@ -6417,7 +6422,7 @@ msgid "domain is not in shutoff state"
 msgstr "ডোমেইন বৰ্তমানে shutoff অৱস্থাত নাই"
 
 #: src/openvz/openvz_driver.c:1112 src/qemu/qemu_driver.c:7243
-#: src/uml/uml_driver.c:1672
+#: src/uml/uml_driver.c:1678
 msgid "cannot delete active domain"
 msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভৱ নহয়"
 
@@ -6783,25 +6788,25 @@ msgid "Network type %d is not supported"
 msgstr "%d প্ৰকৃতিৰ নে'টৱৰ্ক সমৰ্থিত নহয়"
 
 # c-format
-#: src/qemu/qemu_conf.c:1697 src/uml/uml_conf.c:146
+#: src/qemu/qemu_conf.c:1697 src/uml/uml_conf.c:148
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "tap সংযোগ মাধ্যম ব্ৰিজত যোগ কৰিবলৈ বিফল । %s এটা ব্ৰিজ যন্ত্ৰ নহয়"
 
-#: src/qemu/qemu_conf.c:1702 src/uml/uml_conf.c:150
+#: src/qemu/qemu_conf.c:1702 src/uml/uml_conf.c:152
 msgid ""
 "Failed to add tap interface to bridge. Your kernel is missing the 'tun' "
 "module or CONFIG_TUN, or you need to add the /dev/net/tun device node."
 msgstr ""
 
 # c-format
-#: src/qemu/qemu_conf.c:1708 src/uml/uml_conf.c:155
+#: src/qemu/qemu_conf.c:1708 src/uml/uml_conf.c:157
 #, c-format
 msgid "Failed to add tap interface to bridge '%s'"
 msgstr "'%s' ব্ৰিজে tap ইন্টাৰফেস যোগ কৰিবলৈ ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_conf.c:1712 src/uml/uml_conf.c:159
+#: src/qemu/qemu_conf.c:1712 src/uml/uml_conf.c:161
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s'"
 msgstr "tap ইন্টাৰফেস '%s'-কে '%s' ব্ৰিজে যোগ কৰিবলৈ ব্যৰ্থ"
@@ -6869,7 +6874,7 @@ msgid "driver serial '%s' contains unsafe characters"
 msgstr "ড্ৰাইভাৰেৰ ক্ৰমিক সংখ্যা '%s'-ৰ মধ্যে উপস্থিত কিছু অক্ষৰ নিৰাপদ নহয়"
 
 #: src/qemu/qemu_conf.c:2543 src/qemu/qemu_conf.c:2718
-#: src/qemu/qemu_conf.c:4348 src/uml/uml_conf.c:520
+#: src/qemu/qemu_conf.c:4348 src/uml/uml_conf.c:530
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "'%s' ধৰণৰ ডিস্ক সমৰ্থিত নহয়"
@@ -7325,13 +7330,13 @@ msgstr ""
 
 # c-format
 #: src/qemu/qemu_driver.c:753 src/qemu/qemu_driver.c:785
-#: src/uml/uml_driver.c:862
+#: src/uml/uml_driver.c:863
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "%s লগ নথিপত্ৰ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
 #: src/qemu/qemu_driver.c:759 src/qemu/qemu_driver.c:791
-#: src/uml/uml_driver.c:871
+#: src/uml/uml_driver.c:872
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM লগ নথিপত্ৰৰ close on exec ফ্লেগ %s নিৰ্ধাৰণ কৰোঁতে ব্যৰ্থ"
 
@@ -7358,7 +7363,7 @@ msgstr "VM '%s' autostart কৰিবলৈ ব্যৰ্থ: %s"
 #: src/qemu/qemu_driver.c:822 src/qemu/qemu_driver.c:830
 #: src/qemu/qemu_driver.c:3250 src/qemu/qemu_driver.c:3267
 #: src/qemu/qemu_driver.c:3285 src/secret/secret_driver.c:502
-#: src/uml/uml_driver.c:160 tools/virsh.c:396
+#: src/uml/uml_driver.c:161 tools/virsh.c:396
 msgid "unknown error"
 msgstr "অজ্ঞাত সমস্যা"
 
@@ -7660,7 +7665,7 @@ msgstr "%s ডোমেইনেৰ বাবে cgroup সন্ধান ক�
 msgid "unable to add domain %s task %d to cgroup"
 msgstr "ডোমেইন %s ও কৰ্ম %d-কে cgroup-এ যোগ কৰিবলৈ ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3660 src/uml/uml_driver.c:826
+#: src/qemu/qemu_driver.c:3660 src/uml/uml_driver.c:827
 msgid "VM is already active"
 msgstr "VM বৰ্তমানে সক্ৰিয়"
 
@@ -7669,7 +7674,7 @@ msgid "Unable to find an unused VNC port"
 msgstr "এটা অব্যৱহৃত VNC পোৰ্ট চিনাক্ত কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:3714 src/uml/uml_driver.c:848
+#: src/qemu/qemu_driver.c:3714 src/uml/uml_driver.c:849
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "লগ পঞ্জিকা %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
@@ -7757,9 +7762,9 @@ msgstr "%s খোলোঁতে ব্যৰ্থ"
 #: src/qemu/qemu_driver.c:12147 src/qemu/qemu_driver.c:12182
 #: src/qemu/qemu_driver.c:12210 src/qemu/qemu_driver.c:12245
 #: src/qemu/qemu_driver.c:12285 src/qemu/qemu_driver.c:12523
-#: src/qemu/qemu_driver.c:12578 src/uml/uml_driver.c:1414
-#: src/uml/uml_driver.c:1439 src/uml/uml_driver.c:1472
-#: src/uml/uml_driver.c:1763 src/uml/uml_driver.c:1877
+#: src/qemu/qemu_driver.c:12578 src/uml/uml_driver.c:1420
+#: src/uml/uml_driver.c:1445 src/uml/uml_driver.c:1478
+#: src/uml/uml_driver.c:1769 src/uml/uml_driver.c:1883
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "uuid '%s' ৰ সৈতে সুসংগত ডোমেইন অনুপস্থিত"
@@ -7770,11 +7775,11 @@ msgstr "uuid '%s' ৰ সৈতে সুসংগত ডোমেইন অন�
 msgid "no domain with matching name '%s'"
 msgstr "'%s' নামৰ সৈতে মিল থকা কোনো ডোমেইন নাই"
 
-#: src/qemu/qemu_driver.c:4898 src/uml/uml_driver.c:1484
+#: src/qemu/qemu_driver.c:4898 src/uml/uml_driver.c:1490
 msgid "cannot set memory higher than max memory"
 msgstr "সৰ্বাধিক স্মৃতিশক্তিতকৈ অধিক পৰিমাণৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
-#: src/qemu/qemu_driver.c:4915 src/uml/uml_driver.c:1478
+#: src/qemu/qemu_driver.c:4915 src/uml/uml_driver.c:1484
 msgid "cannot set memory of an active domain"
 msgstr "সক্ৰিয় ডোমেইনৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
@@ -7892,7 +7897,7 @@ msgid ""
 msgstr ""
 "ডোমেইনৰ বাবে নিৰ্ধাৰিত সৰ্বাধিক vcpu ৰ পৰা অনুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: %d > %d"
 
-#: src/qemu/qemu_driver.c:5987 src/test/test_driver.c:2192
+#: src/qemu/qemu_driver.c:5987 src/test/test_driver.c:2196
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনত vcpu pin কৰা সম্ভৱ নহয়"
 
@@ -8086,7 +8091,7 @@ msgstr "'%s' ৰ কাৰণে কোনো আঁতৰাব পৰা ম�
 
 # c-format
 #: src/qemu/qemu_driver.c:7388 src/qemu/qemu_driver.c:7598
-#: src/qemu/qemu_driver.c:7714 src/uml/uml_driver.c:1709
+#: src/qemu/qemu_driver.c:7714 src/uml/uml_driver.c:1715
 #, c-format
 msgid "target %s already exists"
 msgstr "লক্ষ্য %s ইতিমধ্যে আছে"
@@ -8107,7 +8112,7 @@ msgstr "অপ্ৰত্যাশিত ডিষ্ক প্ৰকৃতি 
 msgid "SCSI controller %d was missing its PCI address"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7727 src/uml/uml_driver.c:1716
+#: src/qemu/qemu_driver.c:7727 src/uml/uml_driver.c:1722
 msgid "disk source path is missing"
 msgstr "ডিস্কেৰ উৎসৰ পাথ অনুপস্থিত"
 
@@ -8148,11 +8153,11 @@ msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys-ৰ ধৰন '%s' সমৰ্থিত নহয়"
 
 #: src/qemu/qemu_driver.c:8247 src/qemu/qemu_driver.c:8491
-#: src/uml/uml_driver.c:1769
+#: src/uml/uml_driver.c:1775
 msgid "cannot attach device on inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনৰ সৈতে যন্ত্ৰ সংযুক্ত কৰা নাযাব"
 
-#: src/qemu/qemu_driver.c:8301 src/uml/uml_driver.c:1786
+#: src/qemu/qemu_driver.c:8301 src/uml/uml_driver.c:1792
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ডিষ্ক bus '%s' ক hotplug কৰিব নোৱাৰি ।"
@@ -8168,14 +8173,14 @@ msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "ডিষ্ক bus '%s' ক hotplug কৰিব নোৱাৰি ।"
 
 # c-format
-#: src/qemu/qemu_driver.c:8342 src/uml/uml_driver.c:1791
+#: src/qemu/qemu_driver.c:8342 src/uml/uml_driver.c:1797
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "যন্ত্ৰৰ ধৰণ '%s' সংযুক্ত কৰিব নোৱাৰি"
 
 #: src/qemu/qemu_driver.c:8370 src/qemu/qemu_driver.c:8472
-#: src/qemu/qemu_driver.c:9238 src/uml/uml_driver.c:1811
-#: src/uml/uml_driver.c:1919 src/vbox/vbox_tmpl.c:5001
+#: src/qemu/qemu_driver.c:9238 src/uml/uml_driver.c:1817
+#: src/uml/uml_driver.c:1925 src/vbox/vbox_tmpl.c:5001
 #: src/vbox/vbox_tmpl.c:5016 src/vbox/vbox_tmpl.c:5159
 #, fuzzy
 msgid "cannot modify the persistent configuration of a domain"
@@ -8217,7 +8222,7 @@ msgstr "ডিষ্ক যন্ত্ৰৰ ধৰণ '%s' ক hotplug কৰ�
 
 # c-format
 #: src/qemu/qemu_driver.c:8601 src/qemu/qemu_driver.c:8678
-#: src/uml/uml_driver.c:1836
+#: src/uml/uml_driver.c:1842
 #, c-format
 msgid "disk %s not found"
 msgstr "%s ডিষ্ক পোৱা ন'গ'ল"
@@ -8282,11 +8287,11 @@ msgstr "ডিস্ক %s বিচ্ছিন্ন কৰা সম্ভব
 msgid "device cannot be detached with this QEMU version"
 msgstr "ডিস্ক %s বিচ্ছিন্ন কৰা সম্ভব নহয় - যন্ত্ৰৰ PCI ঠিকনা উপস্থিত নেই"
 
-#: src/qemu/qemu_driver.c:9172 src/uml/uml_driver.c:1883
+#: src/qemu/qemu_driver.c:9172 src/uml/uml_driver.c:1889
 msgid "cannot detach device on inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনৰ সৈতে যন্ত্ৰ সংযুক্ত কৰা নাযাব"
 
-#: src/qemu/qemu_driver.c:9197 src/uml/uml_driver.c:1898
+#: src/qemu/qemu_driver.c:9197 src/uml/uml_driver.c:1904
 #, fuzzy
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ডিষ্ক যন্ত্ৰৰ ধৰণ '%s' ক hotplug কৰিব নোৱাৰি ।"
@@ -8296,18 +8301,18 @@ msgstr "ডিষ্ক যন্ত্ৰৰ ধৰণ '%s' ক hotplug কৰ�
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "ডিষ্ক bus '%s' ক hotplug কৰিব নোৱাৰি ।"
 
-#: src/qemu/qemu_driver.c:9215 src/uml/uml_driver.c:1902
+#: src/qemu/qemu_driver.c:9215 src/uml/uml_driver.c:1908
 #, fuzzy
 msgid "This type of device cannot be hot unplugged"
 msgstr "ডিষ্ক যন্ত্ৰৰ ধৰণ '%s' ক hotplug কৰিব নোৱাৰি ।"
 
-#: src/qemu/qemu_driver.c:9292 src/uml/uml_driver.c:1970
+#: src/qemu/qemu_driver.c:9292 src/uml/uml_driver.c:1976
 msgid "cannot set autostart for transient domain"
 msgstr "সক্ৰিয় ডোমেইনৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
 # c-format
 #: src/qemu/qemu_driver.c:9309 src/storage/storage_driver.c:1014
-#: src/uml/uml_driver.c:1987
+#: src/uml/uml_driver.c:1993
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "autostart পঞ্জিকা %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
@@ -8341,18 +8346,18 @@ msgstr "cpu শেয়াৰগুলি tunable ৰূপে প্ৰাপ্�
 msgid "Field cpu_shares too long for destination"
 msgstr "গন্তব্যেৰ ক্ষেত্ৰত cpu_shares ক্ষেত্ৰটি অত্যাধিক দীঘল"
 
-#: src/qemu/qemu_driver.c:9538 src/test/test_driver.c:2608
+#: src/qemu/qemu_driver.c:9538 src/test/test_driver.c:2612
 #, c-format
 msgid "invalid path: %s"
 msgstr "পথ বৈধ নহয়: %s"
 
-#: src/qemu/qemu_driver.c:9611 src/test/test_driver.c:2663
+#: src/qemu/qemu_driver.c:9611 src/test/test_driver.c:2667
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "পথ বৈধ নহয়, '%s' পৰিচিত সংযোগ মাধ্যম নহয়"
 
 #: src/qemu/qemu_driver.c:9697 src/qemu/qemu_driver.c:9864
-#: src/uml/uml_driver.c:2044
+#: src/uml/uml_driver.c:2050
 msgid "NULL or empty path"
 msgstr "NULL বা পথ ৰিক্ত"
 
@@ -8368,7 +8373,7 @@ msgstr "%s: খুলিবলৈ ব্যৰ্থ"
 msgid "%s: failed to seek or read"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
-#: src/qemu/qemu_driver.c:9734 src/uml/uml_driver.c:2081
+#: src/qemu/qemu_driver.c:9734 src/uml/uml_driver.c:2087
 msgid "invalid path"
 msgstr "অবৈধ পথ"
 
@@ -10899,7 +10904,7 @@ msgstr "পুল ধৰণ %d ৰ কাৰণে হেৰুৱা বেক�
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "নে'টৱৰ্ক '%s' autostart কৰোঁতে ব্যৰ্থ: %s\n"
 
-#: src/storage/storage_driver.c:455 src/test/test_driver.c:3766
+#: src/storage/storage_driver.c:455 src/test/test_driver.c:3770
 #, c-format
 msgid "pool type '%s' does not support source discovery"
 msgstr " '%s' ধৰনেৰ পুল দ্বাৰা উৎস অনুসন্ধানেৰ কৰ্ম সমৰ্থিত নহয়"
@@ -10958,7 +10963,7 @@ msgstr "ভঁৰালৰ পুল এতিয়াও সক্ৰিয়"
 msgid "pool does not support pool deletion"
 msgstr "পুলে আয়তন আঁতৰুৱাৰ সমৰ্থন নকৰে"
 
-#: src/storage/storage_driver.c:1002 src/test/test_driver.c:4125
+#: src/storage/storage_driver.c:1002 src/test/test_driver.c:4129
 msgid "pool has no config file"
 msgstr "পুলৰ কোনো বিন্যাস নথিপত্ৰ নাই"
 
@@ -10966,10 +10971,10 @@ msgstr "পুলৰ কোনো বিন্যাস নথিপত্ৰ �
 #: src/storage/storage_driver.c:1150 src/storage/storage_driver.c:1417
 #: src/storage/storage_driver.c:1706 src/storage/storage_driver.c:1766
 #: src/storage/storage_driver.c:1842 src/storage/storage_driver.c:1895
-#: src/storage/storage_driver.c:1942 src/test/test_driver.c:4247
-#: src/test/test_driver.c:4448 src/test/test_driver.c:4524
-#: src/test/test_driver.c:4602 src/test/test_driver.c:4647
-#: src/test/test_driver.c:4687
+#: src/storage/storage_driver.c:1942 src/test/test_driver.c:4251
+#: src/test/test_driver.c:4452 src/test/test_driver.c:4528
+#: src/test/test_driver.c:4606 src/test/test_driver.c:4651
+#: src/test/test_driver.c:4691
 #, c-format
 msgid "no storage vol with matching name '%s'"
 msgstr "'%s' নামৰ মিল থকা কোনো ভঁৰালৰ সমষ্টি নাই"
@@ -10982,8 +10987,8 @@ msgstr "এই চাবিৰ সৈতে মিল থকা ভঁৰাল�
 msgid "no storage vol with matching path"
 msgstr "এই পথৰ সৈতে মিল থকা কোনো ভঁৰালৰ সমষ্টি নাই"
 
-#: src/storage/storage_driver.c:1286 src/test/test_driver.c:4360
-#: src/test/test_driver.c:4441
+#: src/storage/storage_driver.c:1286 src/test/test_driver.c:4364
+#: src/test/test_driver.c:4445
 msgid "storage vol already exists"
 msgstr "ভঁৰালৰ সমষ্টি ইতিমধ্যে আছে"
 
@@ -11069,441 +11074,441 @@ msgid "resolving volume filename"
 msgstr "ভলিউমৰ ফাইলৰ নাম মীমাংসা কৰা হচ্ছে"
 
 # c-format
-#: src/test/test_driver.c:774
+#: src/test/test_driver.c:778
 #, c-format
 msgid "loading host definition file '%s'"
 msgstr "গৃহস্থৰ সংজ্ঞাৰ নথিপত্ৰ '%s' তুলি লোৱা হৈছে"
 
 # c-format
-#: src/test/test_driver.c:783
+#: src/test/test_driver.c:787
 #, c-format
 msgid "Invalid XML in file '%s'"
 msgstr "'%s' ফাইলৰ মধ্যে অবৈধ XML উপস্থিত ৰয়েছে"
 
-#: src/test/test_driver.c:792
+#: src/test/test_driver.c:796
 msgid "Root element is not 'node'"
 msgstr "Root স্বত্বা 'node' নহয়"
 
-#: src/test/test_driver.c:799
+#: src/test/test_driver.c:803
 msgid "creating xpath context"
 msgstr "xpath সন্দৰ্ভ নিৰ্মাণ"
 
-#: src/test/test_driver.c:807
+#: src/test/test_driver.c:811
 #, c-format
 msgid "Path %s too big for destination"
 msgstr "গন্তব্যেৰ ক্ষেত্ৰত %s পাথ অত্যাধিক বড়"
 
-#: src/test/test_driver.c:817
+#: src/test/test_driver.c:821
 msgid "node cpu numa nodes"
 msgstr "নোডৰ cpu ৰ numa নোড"
 
-#: src/test/test_driver.c:825
+#: src/test/test_driver.c:829
 msgid "node cpu sockets"
 msgstr "নোডৰ cpu ৰ ছকেট"
 
-#: src/test/test_driver.c:833
+#: src/test/test_driver.c:837
 msgid "node cpu cores"
 msgstr "নোডৰ cpu ৰ কোৰ"
 
-#: src/test/test_driver.c:841
+#: src/test/test_driver.c:845
 msgid "node cpu threads"
 msgstr "নোড cpu ৰ থ্ৰেড"
 
-#: src/test/test_driver.c:852
+#: src/test/test_driver.c:856
 msgid "node active cpu"
 msgstr "নোড সক্ৰিয় cpu"
 
-#: src/test/test_driver.c:859
+#: src/test/test_driver.c:863
 msgid "node cpu mhz"
 msgstr "নোডৰ cpu ৰ mhz মাত্ৰা"
 
-#: src/test/test_driver.c:867 src/xen/xm_internal.c:1073
+#: src/test/test_driver.c:871 src/xen/xm_internal.c:1073
 #, c-format
 msgid "Model %s too big for destination"
 msgstr "গন্তব্যেৰ ক্ষেত্ৰত %s মডেল অত্যাধিক বড়"
 
-#: src/test/test_driver.c:878
+#: src/test/test_driver.c:882
 msgid "node memory"
 msgstr "নোডৰ স্মৃতিশক্তি"
 
-#: src/test/test_driver.c:884
+#: src/test/test_driver.c:888
 msgid "node domain list"
 msgstr "নোডৰ ডোমেইন তালিকা"
 
-#: src/test/test_driver.c:895
+#: src/test/test_driver.c:899
 msgid "resolving domain filename"
 msgstr "ডোমেইন নথিপত্ৰৰ নাম সংসাধন কৰা হৈছে"
 
-#: src/test/test_driver.c:928
+#: src/test/test_driver.c:932
 msgid "node network list"
 msgstr "নোডৰ ডোমেইন তালিকা"
 
-#: src/test/test_driver.c:938
+#: src/test/test_driver.c:942
 msgid "resolving network filename"
 msgstr "নে'টৱৰ্ক নথিপত্ৰৰ নাম বিশ্লেষণ কৰা হৈছে"
 
-#: src/test/test_driver.c:964
+#: src/test/test_driver.c:968
 msgid "node interface list"
 msgstr "নোড ইন্টাৰফেসৰ তালিকা"
 
-#: src/test/test_driver.c:974
+#: src/test/test_driver.c:978
 msgid "resolving interface filename"
 msgstr "ইন্টাৰফেসৰ ফাইলৰ নাম মীমাংসা কৰা হচ্ছে"
 
-#: src/test/test_driver.c:1000
+#: src/test/test_driver.c:1004
 msgid "node pool list"
 msgstr "নোডৰ ডোমেইন তালিকা"
 
-#: src/test/test_driver.c:1012
+#: src/test/test_driver.c:1016
 msgid "resolving pool filename"
 msgstr "ডোমেইন নথিপত্ৰৰ নাম সংসাধন কৰা হৈছে"
 
-#: src/test/test_driver.c:1051
+#: src/test/test_driver.c:1055
 msgid "node device list"
 msgstr "নোডেৰ যন্ত্ৰৰ তালিকাকা"
 
-#: src/test/test_driver.c:1065
+#: src/test/test_driver.c:1069
 msgid "resolving device filename"
 msgstr "যন্ত্ৰ ফাইলৰ নাম মীমাংসা কৰা হচ্ছো কৰা হচ্ছে"
 
-#: src/test/test_driver.c:1133
+#: src/test/test_driver.c:1137
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: এটা পথ লিখক বা test:///default ব্যৱহাৰ কৰক"
 
 # c-format
-#: src/test/test_driver.c:1484
+#: src/test/test_driver.c:1488
 #, c-format
 msgid "domain '%s' not paused"
 msgstr "ডোমেইন '%s' ক স্থগিত কৰা হোৱা নাই"
 
 # c-format
-#: src/test/test_driver.c:1525 src/test/test_driver.c:1566
+#: src/test/test_driver.c:1529 src/test/test_driver.c:1570
 #, c-format
 msgid "domain '%s' not running"
 msgstr "ডোমেইন '%s' বৰ্তমানে চলা নাই"
 
 # c-format
-#: src/test/test_driver.c:1719
+#: src/test/test_driver.c:1723
 #, c-format
 msgid "saving domain '%s' failed to allocate space for metadata"
 msgstr "'%s' ডোমেইন ৰক্ষা কৰোঁতে metadata ৰ কাৰণে স্থান বিতৰণ কৰিবলৈ বিফল"
 
 # c-format
-#: src/test/test_driver.c:1726
+#: src/test/test_driver.c:1730
 #, c-format
 msgid "saving domain '%s' to '%s': open failed"
 msgstr "ডোমেইন '%s' ক '%s' লৈ ৰক্ষা কৰা হৈছে: open বিফল"
 
 # c-format
-#: src/test/test_driver.c:1733 src/test/test_driver.c:1739
-#: src/test/test_driver.c:1745 src/test/test_driver.c:1752
+#: src/test/test_driver.c:1737 src/test/test_driver.c:1743
+#: src/test/test_driver.c:1749 src/test/test_driver.c:1756
 #, c-format
 msgid "saving domain '%s' to '%s': write failed"
 msgstr "ডোমেইন '%s' ক '%s' লৈ ৰক্ষা কৰা হৈছে: write বিফল"
 
 # c-format
-#: src/test/test_driver.c:1804
+#: src/test/test_driver.c:1808
 #, c-format
 msgid "cannot read domain image '%s'"
 msgstr "ডোমেইনৰ প্ৰতিমূৰ্ত্তি '%s' পঢ়িবলৈ ব্যৰ্থ"
 
-#: src/test/test_driver.c:1810
+#: src/test/test_driver.c:1814
 #, c-format
 msgid "incomplete save header in '%s'"
 msgstr "'%s' ত অসম্পূৰ্ণ ৰক্ষাৰ হেডাৰ"
 
-#: src/test/test_driver.c:1816
+#: src/test/test_driver.c:1820
 msgid "mismatched header magic"
 msgstr "mismatched header magic"
 
 # c-format
-#: src/test/test_driver.c:1821
+#: src/test/test_driver.c:1825
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s' ত মেতাডাতাৰ দৈৰ্ঘ্য পঢ়োঁতে ব্যৰ্থ"
 
-#: src/test/test_driver.c:1827
+#: src/test/test_driver.c:1831
 msgid "length of metadata out of range"
 msgstr "মেটাডাতাৰ দৈৰ্ঘ্য সীমাৰ বাহিৰত"
 
 # c-format
-#: src/test/test_driver.c:1836
+#: src/test/test_driver.c:1840
 #, c-format
 msgid "incomplete metdata in '%s'"
 msgstr "'%s' ত মিটাডাটা অসম্পূৰ্ণ"
 
 # c-format
-#: src/test/test_driver.c:1899
+#: src/test/test_driver.c:1903
 #, c-format
 msgid "domain '%s' coredump: failed to open %s"
 msgstr "domain '%s' coredump: %s খুলিবলৈ ব্যৰ্থ"
 
-#: src/test/test_driver.c:1905
+#: src/test/test_driver.c:1909
 #, c-format
 msgid "domain '%s' coredump: failed to write header to %s"
 msgstr "domain '%s' coredump: %s লৈ হেডাৰ লিখিবলৈ ব্যৰ্থ"
 
 # c-format
-#: src/test/test_driver.c:1911
+#: src/test/test_driver.c:1915
 #, c-format
 msgid "domain '%s' coredump: write failed: %s"
 msgstr "domain '%s' coredump: লিখা বিফল: %s"
 
-#: src/test/test_driver.c:2056
+#: src/test/test_driver.c:2060
 msgid "cannot hotplug vcpus for an inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনেৰ মধ্যে vcpu হট-প্লাগ কৰা সম্ভব নহয়"
 
-#: src/test/test_driver.c:2106
+#: src/test/test_driver.c:2110
 msgid "cannot list vcpus for an inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনেৰ মধ্যে vcpu-ৰ তালিকা নিৰ্মাণ কৰা সম্ভব নহয়"
 
-#: src/test/test_driver.c:2198
+#: src/test/test_driver.c:2202
 msgid "requested vcpu is higher than allocated vcpus"
 msgstr ""
 "বৰাদ্দ কৰা vcpu-ৰ তুলনায় অনুৰোধ কৰা vcpu-ৰ সংখ্যা অধিকুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: "
 "%d > %d"
 
-#: src/test/test_driver.c:2336
+#: src/test/test_driver.c:2340
 msgid "Range exceeds available cells"
 msgstr "পোৱা কোষতকৈ সীমা অধিক"
 
 # c-format
-#: src/test/test_driver.c:2372
+#: src/test/test_driver.c:2376
 #, c-format
 msgid "Domain '%s' is already running"
 msgstr "ডোমেইন '%s' বৰ্তমানে চলমান"
 
 # c-format
-#: src/test/test_driver.c:2415
+#: src/test/test_driver.c:2419
 #, c-format
 msgid "Domain '%s' is still running"
 msgstr "ডোমেইন '%s' এতিয়াও চলি আছে"
 
 # c-format
-#: src/test/test_driver.c:2952
+#: src/test/test_driver.c:2956
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "নে'টৱৰ্ক '%s' এতিয়াও চলি আছে"
 
 # c-format
-#: src/test/test_driver.c:2985
+#: src/test/test_driver.c:2989
 #, c-format
 msgid "Network '%s' is already running"
 msgstr "নে'টৱৰ্ক '%s' ইতিমধ্যে চলি আছে"
 
 # c-format
-#: src/test/test_driver.c:3708 src/test/test_driver.c:3873
-#: src/test/test_driver.c:3906 src/test/test_driver.c:3974
+#: src/test/test_driver.c:3712 src/test/test_driver.c:3877
+#: src/test/test_driver.c:3910 src/test/test_driver.c:3978
 #, c-format
 msgid "storage pool '%s' is already active"
 msgstr "ভঁৰালৰ পুল '%s' ইতিমধ্যে সক্ৰিয়"
 
-#: src/test/test_driver.c:3794
+#: src/test/test_driver.c:3798
 msgid "storage pool already exists"
 msgstr "ভঁৰালৰ পুল ইতিমধ্যে আছে"
 
 # c-format
-#: src/test/test_driver.c:3935 src/test/test_driver.c:4006
-#: src/test/test_driver.c:4158 src/test/test_driver.c:4193
-#: src/test/test_driver.c:4239 src/test/test_driver.c:4350
-#: src/test/test_driver.c:4431 src/test/test_driver.c:4531
-#: src/test/test_driver.c:4609 src/test/test_driver.c:4654
-#: src/test/test_driver.c:4694
+#: src/test/test_driver.c:3939 src/test/test_driver.c:4010
+#: src/test/test_driver.c:4162 src/test/test_driver.c:4197
+#: src/test/test_driver.c:4243 src/test/test_driver.c:4354
+#: src/test/test_driver.c:4435 src/test/test_driver.c:4535
+#: src/test/test_driver.c:4613 src/test/test_driver.c:4658
+#: src/test/test_driver.c:4698
 #, c-format
 msgid "storage pool '%s' is not active"
 msgstr "ভঁৰালৰ পুল '%s' সক্ৰিয় নহয়"
 
 # c-format
-#: src/test/test_driver.c:4290
+#: src/test/test_driver.c:4294
 #, c-format
 msgid "no storage vol with matching key '%s'"
 msgstr "'%s' চাবিৰ সৈতে মিল থকা ভঁৰালৰ সমষ্টি নাই"
 
 # c-format
-#: src/test/test_driver.c:4324
+#: src/test/test_driver.c:4328
 #, c-format
 msgid "no storage vol with matching path '%s'"
 msgstr "'%s' পথৰ সৈতে মিল থকা কোনো ভঁৰালৰ সমষ্টি নাই"
 
-#: src/test/test_driver.c:4368 src/test/test_driver.c:4457
+#: src/test/test_driver.c:4372 src/test/test_driver.c:4461
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr "'%s' আয়তনৰ কাৰণে পুলত যথেষ্ট ৰিক্ত স্থান নাই"
 
-#: src/uml/uml_conf.c:200
+#: src/uml/uml_conf.c:210
 msgid "IP address not supported for ethernet inteface"
 msgstr "ইথাৰনেট ইন্টাৰফেসৰ বাবে IP ঠিকনা সমৰ্থিত নহয়"
 
-#: src/uml/uml_conf.c:205
+#: src/uml/uml_conf.c:215
 msgid "script execution not supported for ethernet inteface"
 msgstr "ইথাৰনেট ইন্টাৰফেসৰ বাবে স্ক্ৰিপ্ট সঞ্চালনা সমৰ্থিত নহয়"
 
-#: src/uml/uml_conf.c:212
+#: src/uml/uml_conf.c:222
 msgid "TCP server networking type not supported"
 msgstr "TCP সাৰ্ভাৰ প্ৰকৃতিৰ নেটওয়াৰ্ক সমৰ্থিত নহয়"
 
-#: src/uml/uml_conf.c:217
+#: src/uml/uml_conf.c:227
 msgid "TCP client networking type not supported"
 msgstr "TCP গ্ৰাহক প্ৰকৃতিৰ নেটওয়াৰ্ক সমৰ্থিত নহয়"
 
-#: src/uml/uml_conf.c:232
+#: src/uml/uml_conf.c:242
 #, c-format
 msgid "Network '%s' not found"
 msgstr "নে'টৱৰ্ক '%s' পোৱা নাযায়"
 
-#: src/uml/uml_conf.c:262
+#: src/uml/uml_conf.c:272
 msgid "internal networking type not supported"
 msgstr "অভ্যান্তৰীণ প্ৰকৃতিৰ নেটওয়াৰ্ক সমৰ্থিত নহয়"
 
-#: src/uml/uml_conf.c:267
+#: src/uml/uml_conf.c:277
 #, fuzzy
 msgid "direct networking type not supported"
 msgstr "TCP গ্ৰাহক প্ৰকৃতিৰ নেটওয়াৰ্ক সমৰ্থিত নহয়"
 
-#: src/uml/uml_conf.c:336
+#: src/uml/uml_conf.c:346
 msgid "only TCP listen is supported for chr device"
 msgstr "কেৰেক্টাৰ যন্ত্ৰৰ বাবে স্থান বিতৰণ কৰোঁতে ব্যৰ্থ"
 
-#: src/uml/uml_conf.c:354
+#: src/uml/uml_conf.c:364
 #, fuzzy, c-format
 msgid "failed to open chardev file: %s"
 msgstr "'%s' নথিপত্ৰ খোলোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/uml/uml_conf.c:375
+#: src/uml/uml_conf.c:385
 #, c-format
 msgid "unsupported chr device type %d"
 msgstr "অসমৰ্থিত chr যন্ত্ৰৰ ধৰণ %d"
 
-#: src/uml/uml_driver.c:122 src/util/util.c:491 src/util/util.c:520
+#: src/uml/uml_driver.c:123 src/util/util.c:491 src/util/util.c:520
 msgid "Failed to set close-on-exec file descriptor flag"
 msgstr "close-on-exec file descriptor flag ৰ মান নিৰ্ধাৰণ কৰোঁতে ব্যৰ্থ"
 
-#: src/uml/uml_driver.c:416
+#: src/uml/uml_driver.c:417
 msgid "cannot initialize inotify"
 msgstr "ব্ৰিজ সমৰ্থন আৰম্ভ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/uml/uml_driver.c:422
+#: src/uml/uml_driver.c:423
 #, c-format
 msgid "Failed to create monitor directory %s: %s"
 msgstr "%s পঞ্জিকা নিৰ্মাণ কৰোঁতে ব্যৰ্থ : %s"
 
-#: src/uml/uml_driver.c:454
+#: src/uml/uml_driver.c:455
 msgid "umlStartup: out of memory"
 msgstr "umlStartup: মেমৰি অবশিষ্ট নেই"
 
 # c-format
-#: src/uml/uml_driver.c:599
+#: src/uml/uml_driver.c:600
 #, c-format
 msgid "failed to read pid: %s"
 msgstr "পাইপ নিৰ্মাণ কৰোঁতে ব্যৰ্থ: %s"
 
-#: src/uml/uml_driver.c:621
+#: src/uml/uml_driver.c:622
 #, c-format
 msgid "Unix path %s too long for destination"
 msgstr "গন্তব্যেৰ ক্ষেত্ৰত Unix পাথ %s অত্যাধিক দীঘল"
 
-#: src/uml/uml_driver.c:651
+#: src/uml/uml_driver.c:652
 msgid "cannot open socket"
 msgstr "ছকেট খুলিব নোৱাৰি"
 
-#: src/uml/uml_driver.c:660
+#: src/uml/uml_driver.c:661
 msgid "cannot bind socket"
 msgstr "অধিবেশন বিচাৰি পোৱা ন'গ'ল"
 
-#: src/uml/uml_driver.c:715
+#: src/uml/uml_driver.c:716
 #, c-format
 msgid "cannot send too long command %s (%d bytes)"
 msgstr "বৰ দীঘল আদেশ পঠিয়াব নোৱাৰি %s (%d bytes)"
 
-#: src/uml/uml_driver.c:721
+#: src/uml/uml_driver.c:722
 #, c-format
 msgid "Command %s too long for destination"
 msgstr "গন্তব্যেৰ ক্ষেত্ৰত কমান্ড %s অত্যাধিক দীঘল"
 
 # c-format
-#: src/uml/uml_driver.c:728
+#: src/uml/uml_driver.c:729
 #, c-format
 msgid "cannot send command %s"
 msgstr "%s আদেশ পঠিয়াব নোৱাৰি"
 
 # c-format
-#: src/uml/uml_driver.c:741
+#: src/uml/uml_driver.c:742
 #, c-format
 msgid "cannot read reply %s"
 msgstr "%s উত্তৰ পঢ়িবলৈ ব্যৰ্থ"
 
 # c-format
-#: src/uml/uml_driver.c:747
+#: src/uml/uml_driver.c:748
 #, fuzzy, c-format
 msgid "incomplete reply %s"
 msgstr "'%s' ত মিটাডাটা অসম্পূৰ্ণ"
 
-#: src/uml/uml_driver.c:785
+#: src/uml/uml_driver.c:786
 msgid "Cleanup tap"
 msgstr ""
 
-#: src/uml/uml_driver.c:796
+#: src/uml/uml_driver.c:797
 #, c-format
 msgid "Cleanup '%s'"
 msgstr ""
 
-#: src/uml/uml_driver.c:799
+#: src/uml/uml_driver.c:800
 #, fuzzy, c-format
 msgid "Cleanup failed %d"
 msgstr "কাৰ্য্যকৰণ বিফল: %s"
 
-#: src/uml/uml_driver.c:803
+#: src/uml/uml_driver.c:804
 msgid "Cleanup tap done"
 msgstr ""
 
-#: src/uml/uml_driver.c:832
+#: src/uml/uml_driver.c:833
 msgid "no kernel specified"
 msgstr "কোনো কাৰ্ণেল নিৰ্ধাৰণ কৰা হোৱা নাই"
 
 # c-format
-#: src/uml/uml_driver.c:841
+#: src/uml/uml_driver.c:842
 #, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "UML কাৰ্ণেল %s বিচাৰিবলৈ ব্যৰ্থ"
 
 # c-format
-#: src/uml/uml_driver.c:1008
+#: src/uml/uml_driver.c:1014
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "অপ্ৰত্যাশিত UML URI পাথ '%s', uml:///system প্ৰচেষ্টা কৰুন"
 
 # c-format
-#: src/uml/uml_driver.c:1015
+#: src/uml/uml_driver.c:1021
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///session"
 msgstr "অপ্ৰত্যাশিত UML URI পাথ '%s', uml:///session প্ৰচেষ্টা কৰুন"
 
-#: src/uml/uml_driver.c:1024
+#: src/uml/uml_driver.c:1030
 msgid "uml state driver is not active"
 msgstr "uml state ড্ৰাইভাৰ সক্ৰিয় নহয়"
 
 # c-format
-#: src/uml/uml_driver.c:1240
+#: src/uml/uml_driver.c:1246
 #, c-format
 msgid "cannot parse version %s"
 msgstr "%s পঢ়োঁতে ব্যৰ্থ"
 
-#: src/uml/uml_driver.c:1333
+#: src/uml/uml_driver.c:1339
 msgid "shutdown operation failed"
 msgstr "বন্ধ কৰাৰ কাৰ্য্য বিফল"
 
-#: src/uml/uml_driver.c:1445
+#: src/uml/uml_driver.c:1451
 msgid "cannot set max memory lower than current memory"
 msgstr "বৰ্তমান স্মৃতিশক্তিৰ তূলনাত সৰ্বাধিক স্মৃতিশক্তিৰ পৰিমাণ কম হ'ব নোৱাৰে"
 
-#: src/uml/uml_driver.c:1520
+#: src/uml/uml_driver.c:1526
 msgid "cannot read cputime for domain"
 msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভৱ নহয়"
 
 # c-format
-#: src/uml/uml_driver.c:2074
+#: src/uml/uml_driver.c:2080
 #, c-format
 msgid "cannot read %s"
 msgstr "%s পঢ়োঁতে ব্যৰ্থ"
@@ -14472,8 +14477,8 @@ msgstr "বুট কৰাৰ সময় স্বয়ংক্ৰিয়হিচ
 #: tools/virsh.c:2567 tools/virsh.c:2686 tools/virsh.c:2938 tools/virsh.c:3032
 #: tools/virsh.c:7524 tools/virsh.c:7599 tools/virsh.c:7660 tools/virsh.c:7727
 #: tools/virsh.c:7794 tools/virsh.c:7861 tools/virsh.c:7978 tools/virsh.c:8111
-#: tools/virsh.c:8259 tools/virsh.c:8759 tools/virsh.c:8909 tools/virsh.c:9008
-#: tools/virsh.c:9065 tools/virsh.c:9182 tools/virsh.c:9239 tools/virsh.c:9291
+#: tools/virsh.c:8267 tools/virsh.c:8767 tools/virsh.c:8917 tools/virsh.c:9016
+#: tools/virsh.c:9073 tools/virsh.c:9190 tools/virsh.c:9247 tools/virsh.c:9299
 msgid "domain name, id or uuid"
 msgstr "ডোমেইনৰ নাম, id বা uuid"
 
@@ -14599,16 +14604,16 @@ msgstr "Id"
 
 #: tools/virsh.c:783 tools/virsh.c:3457 tools/virsh.c:3730 tools/virsh.c:4207
 #: tools/virsh.c:5191 tools/virsh.c:5211 tools/virsh.c:5280 tools/virsh.c:6461
-#: tools/virsh.c:6476 tools/virsh.c:6521 tools/virsh.c:9099
+#: tools/virsh.c:6476 tools/virsh.c:6521 tools/virsh.c:9107
 msgid "Name"
 msgstr "নাম"
 
 #: tools/virsh.c:783 tools/virsh.c:3457 tools/virsh.c:3730 tools/virsh.c:5191
-#: tools/virsh.c:5216 tools/virsh.c:5280 tools/virsh.c:9099
+#: tools/virsh.c:5216 tools/virsh.c:5280 tools/virsh.c:9107
 msgid "State"
 msgstr "অৱস্থা"
 
-#: tools/virsh.c:796 tools/virsh.c:818 tools/virsh.c:10403 tools/virsh.c:10419
+#: tools/virsh.c:796 tools/virsh.c:818 tools/virsh.c:10411 tools/virsh.c:10427
 msgid "no state"
 msgstr "কোনো অৱস্থা নহয়"
 
@@ -15726,7 +15731,7 @@ msgstr "এটা নে'টৱৰ্ক ধ্বংশ কৰক"
 msgid "Destroy a given network."
 msgstr "চিহ্নিত নে'টৱৰ্ক ধ্বংশ কৰা হ'ব ।"
 
-#: tools/virsh.c:3222 tools/virsh.c:3261 tools/virsh.c:8859
+#: tools/virsh.c:3222 tools/virsh.c:3261 tools/virsh.c:8867
 msgid "network name, id or uuid"
 msgstr "নে'টৱৰ্কৰ নাম, id বা uuid"
 
@@ -15767,7 +15772,7 @@ msgstr "ইন্টাৰফেসৰ নাম অথবা MAC ঠিকন�
 msgid "Interface %s XML configuration not changed.\n"
 msgstr "%s ইন্টাৰফেসৰ XML কনফিগাৰেশন পৰিবৰ্তন কৰা নহয় ।\n"
 
-#: tools/virsh.c:3357 tools/virsh.c:4299 tools/virsh.c:8818
+#: tools/virsh.c:3357 tools/virsh.c:4299 tools/virsh.c:8826
 msgid "ERROR: the XML configuration was changed by another user"
 msgstr "ERROR: XML বিন্যাসক অন্য "
 
@@ -16130,7 +16135,7 @@ msgstr "বুট কৰাৰ সময়ত এটা পুল নিজেই 
 #: tools/virsh.c:4864 tools/virsh.c:4903 tools/virsh.c:5481 tools/virsh.c:5827
 #: tools/virsh.c:6062 tools/virsh.c:6139 tools/virsh.c:6180 tools/virsh.c:6221
 #: tools/virsh.c:6272 tools/virsh.c:6313 tools/virsh.c:6679 tools/virsh.c:6712
-#: tools/virsh.c:8876
+#: tools/virsh.c:8884
 msgid "pool name or uuid"
 msgstr "পুল নাম বা uuid"
 
@@ -16440,8 +16445,8 @@ msgstr "নোড সংক্ৰান্ত তথ্য প্ৰাপ্ত
 msgid "building"
 msgstr "সৃষ্টি কৰা হৈছে"
 
-#: tools/virsh.c:5091 tools/virsh.c:5520 tools/virsh.c:10389
-#: tools/virsh.c:10415
+#: tools/virsh.c:5091 tools/virsh.c:5520 tools/virsh.c:10397
+#: tools/virsh.c:10423
 msgid "running"
 msgstr "চলমান"
 
@@ -16477,8 +16482,8 @@ msgstr "বিতৰণ কৰা:"
 msgid "Available"
 msgstr "পোৱা যাব:"
 
-#: tools/virsh.c:5311 tools/virsh.c:5399 tools/virsh.c:6549 tools/virsh.c:8551
-#: tools/virsh.c:8948 tools/virsh.c:10832 tools/virsh.c:10838
+#: tools/virsh.c:5311 tools/virsh.c:5399 tools/virsh.c:6549 tools/virsh.c:8559
+#: tools/virsh.c:8956 tools/virsh.c:10840 tools/virsh.c:10846
 msgid "Out of memory"
 msgstr " স্মৃতিৰ বাহিৰত"
 
@@ -16610,7 +16615,7 @@ msgid "Malformed size %s"
 msgstr "ভুল আকাৰ %s"
 
 # c-format
-#: tools/virsh.c:5768 tools/virsh.c:10068
+#: tools/virsh.c:5768 tools/virsh.c:10076
 #, c-format
 msgid "failed to get vol '%s'"
 msgstr "ডোমেইন '%s' প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
@@ -16914,7 +16919,7 @@ msgstr "base64-এনকোড কৰা গোপনীয় তথ্য"
 msgid "Invalid base64 data"
 msgstr "অবৈধ base64 তথ্য"
 
-#: tools/virsh.c:6863 tools/virsh.c:6922 tools/virsh.c:8061 tools/virsh.c:8334
+#: tools/virsh.c:6863 tools/virsh.c:6922 tools/virsh.c:8061 tools/virsh.c:8342
 msgid "Failed to allocate memory"
 msgstr "স্মৃতিশক্তি বিতৰণ কৰোঁতে ব্যৰ্থ"
 
@@ -17303,7 +17308,7 @@ msgstr "%s প্ৰকৃতিৰ কোনো সংযোগক্ষেত�
 msgid "No found interface whose MAC address is %s"
 msgstr "%s MAC ঠিকনা সহ কোনো সংযোগক্ষেত্ৰ পাৱ নাযায়"
 
-#: tools/virsh.c:8066 tools/virsh.c:8339
+#: tools/virsh.c:8066 tools/virsh.c:8347
 msgid "Failed to create XML"
 msgstr "XML নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
@@ -17328,7 +17333,7 @@ msgstr "নতুন ডিস্ক যন্ত্ৰ যোগ কৰক ।"
 msgid "source of disk device"
 msgstr "ডিস্ক যন্ত্ৰৰ উৎস"
 
-#: tools/virsh.c:8113 tools/virsh.c:8260
+#: tools/virsh.c:8113 tools/virsh.c:8268
 msgid "target of disk device"
 msgstr "ডিস্ক যন্ত্ৰৰ গন্তব্য"
 
@@ -17352,129 +17357,138 @@ msgstr "যন্ত্ৰৰ পৰা পঢ়া আৰু যন্ত্ৰ�
 msgid "persist disk attachment"
 msgstr ""
 
-#: tools/virsh.c:8155
+#: tools/virsh.c:8119
+msgid "type of source (block|file)"
+msgstr ""
+
+#: tools/virsh.c:8157
+#, fuzzy, c-format
+msgid "Unknown source type: '%s'"
+msgstr "অজ্ঞাত usb উৎসৰ ধৰণ '%s'"
+
+#: tools/virsh.c:8163
 #, fuzzy, c-format
 msgid "No support for %s in command 'attach-disk'"
 msgstr "'attach disk' আদেশ দ্বাৰা %s সমৰ্থিত নহয়"
 
 # c-format
-#: tools/virsh.c:8234
+#: tools/virsh.c:8242
 #, fuzzy
 msgid "Failed to attach disk"
 msgstr "%sৰ পৰা যন্ত্ৰ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:8237
+#: tools/virsh.c:8245
 msgid "Disk attached successfully\n"
 msgstr "ডিষ্ক সফলভাবে সংলগ্ন কৰা হ'ল\n"
 
-#: tools/virsh.c:8253
+#: tools/virsh.c:8261
 msgid "detach disk device"
 msgstr "ডিস্ক যন্ত্ৰ বিচ্ছিন্ন কৰক"
 
-#: tools/virsh.c:8254
+#: tools/virsh.c:8262
 msgid "Detach disk device."
 msgstr "ডিস্ক যন্ত্ৰ বিচ্ছিন্ন কৰক ।"
 
-#: tools/virsh.c:8261
+#: tools/virsh.c:8269
 msgid "persist disk detachment"
 msgstr ""
 
-#: tools/virsh.c:8297 tools/virsh.c:8302 tools/virsh.c:8309
+#: tools/virsh.c:8305 tools/virsh.c:8310 tools/virsh.c:8317
 msgid "Failed to get disk information"
 msgstr "ডিস্ক সংক্ৰান্ত তথ্য প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:8328
+#: tools/virsh.c:8336
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "%s গন্তব্যস্থল সহ কোনো ডিস্ক পাৱ নাযায়"
 
 # c-format
-#: tools/virsh.c:8355
+#: tools/virsh.c:8363
 #, fuzzy
 msgid "Failed to detach disk"
 msgstr "%sৰ পৰা যন্ত্ৰ বিচ্ছিন্ন কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:8358
+#: tools/virsh.c:8366
 msgid "Disk detached successfully\n"
 msgstr "ডিষ্ক সফলভাবে অসংলগ্ন কৰা হ'ল\n"
 
-#: tools/virsh.c:8378
+#: tools/virsh.c:8386
 msgid "compare host CPU with a CPU described by an XML file"
 msgstr ""
 
-#: tools/virsh.c:8379
+#: tools/virsh.c:8387
 msgid "compare CPU with host CPU"
 msgstr ""
 
-#: tools/virsh.c:8384
+#: tools/virsh.c:8392
 #, fuzzy
 msgid "file containing an XML CPU description"
 msgstr "XML ডোমেইনৰ বিবৰণসহ এটা নথিপত্ৰ"
 
-#: tools/virsh.c:8412
+#: tools/virsh.c:8420
 #, c-format
 msgid "CPU described in %s is incompatible with host CPU\n"
 msgstr ""
 
-#: tools/virsh.c:8418
+#: tools/virsh.c:8426
 #, c-format
 msgid "CPU described in %s is identical to host CPU\n"
 msgstr ""
 
-#: tools/virsh.c:8424
+#: tools/virsh.c:8432
 #, c-format
 msgid "Host CPU is a superset of CPU described in %s\n"
 msgstr ""
 
 # c-format
-#: tools/virsh.c:8431
+#: tools/virsh.c:8439
 #, fuzzy, c-format
 msgid "Failed to compare host CPU with %s"
 msgstr "'%s' সহযোগে tapfd বন্ধ কৰিবলৈ ব্যৰ্থ\n"
 
-#: tools/virsh.c:8442
+#: tools/virsh.c:8450
 msgid "compute baseline CPU"
 msgstr ""
 
-#: tools/virsh.c:8443
+#: tools/virsh.c:8451
 msgid "Compute baseline CPU for a set of given CPUs."
 msgstr ""
 
-#: tools/virsh.c:8448
+#: tools/virsh.c:8456
 #, fuzzy
 msgid "file containing XML CPU descriptions"
 msgstr "XML ডোমেইনৰ বিবৰণসহ এটা নথিপত্ৰ"
 
 # c-format
-#: tools/virsh.c:8487
+#: tools/virsh.c:8495
 #, fuzzy, c-format
 msgid "Failed to parse XML fragment %s"
 msgstr "'%s' ধৰণ বিশ্লষণ কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:8524
+#: tools/virsh.c:8532
 #, fuzzy, c-format
 msgid "No host CPU specified in '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো SCSI গৃহস্থ ID দিয়া হোৱা নাই"
 
 # c-format
-#: tools/virsh.c:8571
+#: tools/virsh.c:8579
 #, c-format
 msgid "mkstemp: failed to create temporary file: %s"
 msgstr "mkstemp: অস্থায়ী নথিপত্ৰ সৃষ্টি কৰিবলৈ বিফল: %s"
 
 # c-format
-#: tools/virsh.c:8578
+#: tools/virsh.c:8586
 #, c-format
 msgid "write: %s: failed to write to temporary file: %s"
 msgstr "%s: লগ নথিপত্ৰ লিখোঁতে ব্যৰ্থ: %s"
 
 # c-format
-#: tools/virsh.c:8586
+#: tools/virsh.c:8594
 #, c-format
 msgid "close: %s: failed to write or close temporary file: %s"
 msgstr "%s: লগ নথিপত্ৰ লিখোঁতে ব্যৰ্থ: %s"
 
-#: tools/virsh.c:8621
+#: tools/virsh.c:8629
 #, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
@@ -17483,212 +17497,212 @@ msgstr ""
 "%s: অস্থায়ী নথিপত্ৰত shell meta বা অন্য গ্ৰহণ কৰিব নোৱাৰা আখৰ আছে ($TMPDIR ভীল "
 "নেকি ?)"
 
-#: tools/virsh.c:8629
+#: tools/virsh.c:8637
 #, c-format
 msgid "virAsprintf: could not create editing command: %s"
 msgstr "virAsprintf: সম্পাদনৰ আদেশ সৃষ্টি কৰিব নোৱাৰি: %s"
 
 # c-format
-#: tools/virsh.c:8637
+#: tools/virsh.c:8645
 #, c-format
 msgid "%s: edit command failed: %s"
 msgstr "%s: সম্পাদনৰ আদেশ বিফল: %s"
 
-#: tools/virsh.c:8643
+#: tools/virsh.c:8651
 #, c-format
 msgid "%s: command exited with non-zero status"
 msgstr "%s: আদেশ শূণ্য নোহোৱা অৱস্থাৰে প্ৰস্থান কৰিলে"
 
 # c-format
-#: tools/virsh.c:8658
+#: tools/virsh.c:8666
 #, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: লগ নথিপত্ৰ লিখোঁতে ব্যৰ্থ: %s"
 
-#: tools/virsh.c:8671
+#: tools/virsh.c:8679
 msgid "change the current directory"
 msgstr "বৰ্তমান ডিৰেক্টৰি পৰিবৰ্তন কৰুন"
 
-#: tools/virsh.c:8672
+#: tools/virsh.c:8680
 msgid "Change the current directory."
 msgstr "বৰ্তমান ডিৰেক্টৰি পৰিবৰ্তন কৰুন"
 
-#: tools/virsh.c:8677
+#: tools/virsh.c:8685
 msgid "directory to switch to (default: home or else root)"
 msgstr "পৰিবৰ্তনেৰ বাবে চিহ্নিত ডিৰেক্টৰি (ডিফল্ট: home অথবা root)"
 
-#: tools/virsh.c:8688
+#: tools/virsh.c:8696
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: শুধুমাত্ৰ ইন্টাৰেক্টিভ মোডে ব্যবহাৰযোগ্য কমান্ড"
 
-#: tools/virsh.c:8701
+#: tools/virsh.c:8709
 #, c-format
 msgid "cd: %s: %s"
 msgstr "cd: %s: %s"
 
-#: tools/virsh.c:8715
+#: tools/virsh.c:8723
 msgid "print the current directory"
 msgstr "বৰ্তমান ডিৰেক্টৰি প্ৰিন্ট কৰুন"
 
-#: tools/virsh.c:8716
+#: tools/virsh.c:8724
 msgid "Print the current directory."
 msgstr "বৰ্তমান ডিৰেক্টৰি প্ৰিন্ট কৰুন ।"
 
 # c-format
-#: tools/virsh.c:8739
+#: tools/virsh.c:8747
 #, c-format
 msgid "pwd: cannot get current directory: %s"
 msgstr "pwd: বৰ্তমান ডিৰেক্টৰি প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ: %s"
 
 # c-format
-#: tools/virsh.c:8742
+#: tools/virsh.c:8750
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
-#: tools/virsh.c:8753
+#: tools/virsh.c:8761
 msgid "edit XML configuration for a domain"
 msgstr "এটা নিষ্ক্ৰিয় ডোমেইনৰ বিন্যাসৰ সংজ্ঞা আঁতৰাওক ।"
 
-#: tools/virsh.c:8754
+#: tools/virsh.c:8762
 msgid "Edit the XML configuration for a domain."
 msgstr "এটা নিষ্ক্ৰিয় ডোমেইনৰ বিন্যাসৰ সংজ্ঞা আঁতৰাওক ।"
 
-#: tools/virsh.c:8802
+#: tools/virsh.c:8810
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr "ডোমেইন %s XML বিন্যাস সলনি হোৱা নাই ।\n"
 
 # c-format
-#: tools/virsh.c:8828
+#: tools/virsh.c:8836
 #, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "ডোমেইন %s XML বিন্যাস সম্পাদন কৰা হ'ল ।\n"
 
-#: tools/virsh.c:8853
+#: tools/virsh.c:8861
 msgid "edit XML configuration for a network"
 msgstr "এটা নিষ্ক্ৰিয় নে'টৱৰ্কৰ বিন্যাসৰ সংজ্ঞা আঁতৰাওক ।"
 
-#: tools/virsh.c:8854
+#: tools/virsh.c:8862
 msgid "Edit the XML configuration for a network."
 msgstr "এটা নিষ্ক্ৰিয় নে'টৱৰ্কৰ বিন্যাসৰ সংজ্ঞা আঁতৰাওক ।"
 
-#: tools/virsh.c:8870
+#: tools/virsh.c:8878
 msgid "edit XML configuration for a storage pool"
 msgstr "বিনেস নিষ্ক্ৰিয় পুল."
 
-#: tools/virsh.c:8871
+#: tools/virsh.c:8879
 msgid "Edit the XML configuration for a storage pool."
 msgstr "বিনেস নিষ্ক্ৰিয় পুল."
 
-#: tools/virsh.c:8887
+#: tools/virsh.c:8895
 msgid "quit this interactive terminal"
 msgstr "বৰ্তমান ইন্টাৰেক্ভ টাৰ্মিনালৰ পৰা প্ৰস্থান কৰক"
 
-#: tools/virsh.c:8903
+#: tools/virsh.c:8911
 #, fuzzy
 msgid "Create a snapshot"
 msgstr "এটা পুল সৃষ্টি কৰক ।"
 
 # c-format
-#: tools/virsh.c:8904
+#: tools/virsh.c:8912
 #, fuzzy
 msgid "Snapshot create"
 msgstr "'%s' নিৰ্মাণ কৰিবলৈ ব্যৰ্থোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:8910
+#: tools/virsh.c:8918
 #, fuzzy
 msgid "domain snapshot XML"
 msgstr "ডোমেইনৰ অৱস্থা"
 
-#: tools/virsh.c:8972
+#: tools/virsh.c:8980
 msgid "Could not find 'name' element in domain snapshot XML"
 msgstr ""
 
-#: tools/virsh.c:8976
+#: tools/virsh.c:8984
 #, fuzzy, c-format
 msgid "Domain snapshot %s created"
 msgstr "%s ডোমেইন %sৰ পৰা নিৰ্মিত\n"
 
-#: tools/virsh.c:8978
+#: tools/virsh.c:8986
 #, c-format
 msgid " from '%s'"
 msgstr ""
 
-#: tools/virsh.c:9002 tools/virsh.c:9003
+#: tools/virsh.c:9010 tools/virsh.c:9011
 msgid "Get the current snapshot"
 msgstr ""
 
-#: tools/virsh.c:9059
+#: tools/virsh.c:9067
 #, fuzzy
 msgid "List snapshots for a domain"
 msgstr "কোনো ডোমেইনৰ বাবে যন্ত্ৰ ব্লকেৰ পৰিসংখ্যা প্ৰাপ্ত কৰক"
 
-#: tools/virsh.c:9060
+#: tools/virsh.c:9068
 msgid "Snapshot List"
 msgstr ""
 
-#: tools/virsh.c:9099
+#: tools/virsh.c:9107
 #, fuzzy
 msgid "Creation Time"
 msgstr "কাৰ্য্যকৰণ বিফল"
 
-#: tools/virsh.c:9176
+#: tools/virsh.c:9184
 msgid "Dump XML for a domain snapshot"
 msgstr ""
 
-#: tools/virsh.c:9177
+#: tools/virsh.c:9185
 msgid "Snapshot Dump XML"
 msgstr ""
 
-#: tools/virsh.c:9183 tools/virsh.c:9240 tools/virsh.c:9292
+#: tools/virsh.c:9191 tools/virsh.c:9248 tools/virsh.c:9300
 #, fuzzy
 msgid "snapshot name"
 msgstr "পুলৰ নাম"
 
-#: tools/virsh.c:9233
+#: tools/virsh.c:9241
 #, fuzzy
 msgid "Revert a domain to a snapshot"
 msgstr "ডোমেইন এটা পৃথক গৃহস্থে মাইগ্ৰেট কৰক"
 
-#: tools/virsh.c:9234
+#: tools/virsh.c:9242
 #, fuzzy
 msgid "Revert domain to snapshot"
 msgstr "ডোমেইন এটা পৃথক গৃহস্থে মাইগ্ৰেট কৰক"
 
-#: tools/virsh.c:9285
+#: tools/virsh.c:9293
 #, fuzzy
 msgid "Delete a domain snapshot"
 msgstr "বৰ্ত্তমানৰ এটা পুল গুচাওক ।"
 
-#: tools/virsh.c:9286
+#: tools/virsh.c:9294
 msgid "Snapshot Delete"
 msgstr ""
 
-#: tools/virsh.c:9293
+#: tools/virsh.c:9301
 msgid "delete snapshot and all children"
 msgstr ""
 
-#: tools/virsh.c:9572
+#: tools/virsh.c:9580
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "'%s' আদেশেৰ সৈতে <%s> বিকল্প প্ৰয়োগ কৰা আৱশ্যক"
 
-#: tools/virsh.c:9573
+#: tools/virsh.c:9581
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "আদেশ '%s' ৰ সৈতে   %s বিকল্প প্ৰয়োগ কৰা আৱশ্যক"
 
-#: tools/virsh.c:9600
+#: tools/virsh.c:9608
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "আদেশ '%s' বৰ্তমানে উপস্থিত নাই"
 
-#: tools/virsh.c:9607
+#: tools/virsh.c:9615
 msgid "  NAME\n"
 msgstr "  NAME\n"
 
-#: tools/virsh.c:9610
+#: tools/virsh.c:9618
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -17697,18 +17711,18 @@ msgstr ""
 "  SYNOPSIS\n"
 
 # c-format
-#: tools/virsh.c:9620
+#: tools/virsh.c:9628
 #, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <number>]"
 
 # c-format
-#: tools/virsh.c:9623
+#: tools/virsh.c:9631
 #, c-format
 msgid "[--%s <string>]"
 msgstr "[--%s <string>]"
 
-#: tools/virsh.c:9636
+#: tools/virsh.c:9644
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -17716,7 +17730,7 @@ msgstr ""
 "\n"
 "  DESCRIPTION\n"
 
-#: tools/virsh.c:9642
+#: tools/virsh.c:9650
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -17724,67 +17738,67 @@ msgstr ""
 "\n"
 "  OPTIONS\n"
 
-#: tools/virsh.c:9647
+#: tools/virsh.c:9655
 #, c-format
 msgid "--%s <number>"
 msgstr "  %s <number>"
 
-#: tools/virsh.c:9649
+#: tools/virsh.c:9657
 #, c-format
 msgid "--%s <string>"
 msgstr "  %s <string>"
 
 # c-format
-#: tools/virsh.c:9651
+#: tools/virsh.c:9659
 #, fuzzy, c-format
 msgid "[--%s] <string>"
 msgstr "[--%s <string>]"
 
-#: tools/virsh.c:9770
+#: tools/virsh.c:9778
 #, fuzzy, c-format
 msgid "Missing required option '%s'"
 msgstr "%s ত ৰূট যন্ত্ৰৰ তথ্য নাই"
 
-#: tools/virsh.c:9820
+#: tools/virsh.c:9828
 #, c-format
 msgid "internal error: virsh %s: no %s VSH_OT_DATA option"
 msgstr "ভিতৰুৱা ভুল: virsh %s: no %s VSH_OT_DATA option"
 
-#: tools/virsh.c:9867
+#: tools/virsh.c:9875
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "ডোমেইন '%s' প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:9905
+#: tools/virsh.c:9913
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "নে'টৱৰ্ক '%s' প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: tools/virsh.c:9944
+#: tools/virsh.c:9952
 #, fuzzy, c-format
 msgid "failed to get nwfilter '%s'"
 msgstr "ইন্টাৰফেস '%s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
 
 # c-format
-#: tools/virsh.c:9982
+#: tools/virsh.c:9990
 #, c-format
 msgid "failed to get interface '%s'"
 msgstr "ইন্টাৰফেস '%s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
 
 # c-format
-#: tools/virsh.c:10017
+#: tools/virsh.c:10025
 #, c-format
 msgid "failed to get pool '%s'"
 msgstr "পুল '%s' পাবলৈ বিফল"
 
 # c-format
-#: tools/virsh.c:10098
+#: tools/virsh.c:10106
 #, c-format
 msgid "failed to get secret '%s'"
 msgstr "গোপনীয় তথ্য '%s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থতে ব্যৰ্থ"
 
-#: tools/virsh.c:10144
+#: tools/virsh.c:10152
 #, c-format
 msgid ""
 "\n"
@@ -17795,128 +17809,128 @@ msgstr ""
 "(সময়: %.3f ms)\n"
 "\n"
 
-#: tools/virsh.c:10218
+#: tools/virsh.c:10226
 msgid "missing \""
 msgstr "অনুপস্থিত \""
 
-#: tools/virsh.c:10281
+#: tools/virsh.c:10289
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "অপ্ৰত্যাশিত টোকেন (আদেশেৰ নাম): '%s'"
 
-#: tools/virsh.c:10286
+#: tools/virsh.c:10294
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "অজ্ঞাত আদেশ: '%s'"
 
-#: tools/virsh.c:10293
+#: tools/virsh.c:10301
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "আদেশ '%s' ৰ দ্বাৰা   %s বিকল্প সমৰ্থিত হয় না"
 
-#: tools/virsh.c:10307
+#: tools/virsh.c:10315
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "প্ৰত্যাশিত সিন্টেক্স:   %s <%s>"
 
-#: tools/virsh.c:10310
+#: tools/virsh.c:10318
 msgid "number"
 msgstr "সংখ্যা"
 
-#: tools/virsh.c:10310
+#: tools/virsh.c:10318
 msgid "string"
 msgstr "পংক্তি"
 
-#: tools/virsh.c:10316
+#: tools/virsh.c:10324
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "অপ্ৰত্যাশিত তথ্য '%s'"
 
-#: tools/virsh.c:10338
+#: tools/virsh.c:10346
 msgid "OPTION"
 msgstr "OPTION"
 
-#: tools/virsh.c:10338
+#: tools/virsh.c:10346
 msgid "DATA"
 msgstr "DATA"
 
-#: tools/virsh.c:10391 tools/virsh.c:10413
+#: tools/virsh.c:10399 tools/virsh.c:10421
 msgid "idle"
 msgstr "কামবিহীন"
 
-#: tools/virsh.c:10393
+#: tools/virsh.c:10401
 msgid "paused"
 msgstr "স্থগিত"
 
-#: tools/virsh.c:10395
+#: tools/virsh.c:10403
 msgid "in shutdown"
 msgstr "shutdown অৱস্থায়"
 
-#: tools/virsh.c:10397
+#: tools/virsh.c:10405
 msgid "shut off"
 msgstr "বন্ধ"
 
-#: tools/virsh.c:10399
+#: tools/virsh.c:10407
 msgid "crashed"
 msgstr "বিপৰ্যস্ত"
 
-#: tools/virsh.c:10411
+#: tools/virsh.c:10419
 msgid "offline"
 msgstr "অফ লাইন"
 
-#: tools/virsh.c:10429
+#: tools/virsh.c:10437
 msgid "no valid connection"
 msgstr "বৈধ সংযোগ অনুপস্থিত"
 
-#: tools/virsh.c:10477
+#: tools/virsh.c:10485
 msgid "error: "
 msgstr "ভুল: "
 
-#: tools/virsh.c:10493 tools/virsh.c:10505 tools/virsh.c:10518
+#: tools/virsh.c:10501 tools/virsh.c:10513 tools/virsh.c:10526
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d বাইট বিতৰণ কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:10532
+#: tools/virsh.c:10540
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: %lu বাইট বিতৰণ কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:10565
+#: tools/virsh.c:10573
 msgid "failed to connect to the hypervisor"
 msgstr "হাইপাৰ ভাইসৰেৰ সৈতে সংযোগ কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:10594
+#: tools/virsh.c:10602
 msgid "failed to get the log file information"
 msgstr "লগ নথিপত্ৰৰ তথ্য প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:10599
+#: tools/virsh.c:10607
 msgid "the log path is not a file"
 msgstr "চিহ্নিত লগ পথ নথিপত্ৰ নহয়"
 
-#: tools/virsh.c:10607
+#: tools/virsh.c:10615
 msgid "failed to open the log file. check the log file path"
 msgstr "লগ নথিপত্ৰ খোলোঁতে ব্যৰ্থ । লগ নথিপত্ৰৰ পথ পৰীক্ষা কৰক"
 
-#: tools/virsh.c:10676
+#: tools/virsh.c:10684
 msgid "failed to write the log file"
 msgstr "লগ নথিপত্ৰত লিখোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:10691
+#: tools/virsh.c:10699
 #, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s: লগ নথিপত্ৰ লিখোঁতে ব্যৰ্থ: %s"
 
-#: tools/virsh.c:10856
+#: tools/virsh.c:10864
 #, fuzzy, c-format
 msgid "Failed to create '%s': %s"
 msgstr "'%s' নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:10919
+#: tools/virsh.c:10927
 msgid "failed to disconnect from the hypervisor"
 msgstr "হাইপাৰ ভাইসৰেৰ সৈতে সংযোগ বিচ্ছিন্ন কৰোঁতে ব্যৰ্থ"
 
-#: tools/virsh.c:10934
+#: tools/virsh.c:10942
 #, c-format
 msgid ""
 "\n"
@@ -17949,7 +17963,7 @@ msgstr ""
 "\n"
 "  আদেশ (নন ইন্টাৰেক্ভ ধৰণ):\n"
 
-#: tools/virsh.c:10951
+#: tools/virsh.c:10959
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -17959,21 +17973,21 @@ msgstr ""
 "  (আদেশ সংক্ৰান্ত বিবৰণ জানতে help <command> প্ৰয়োগ কৰক)\n"
 "\n"
 
-#: tools/virsh.c:11020
+#: tools/virsh.c:11028
 msgid "option -d takes a numeric argument"
 msgstr ""
 
-#: tools/virsh.c:11046
+#: tools/virsh.c:11054
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "অসমৰ্থিত বিকল্প ' %c' ।   help দেখুন ।"
 
-#: tools/virsh.c:11053
+#: tools/virsh.c:11061
 #, c-format
 msgid "extra argument '%s'. See --help."
 msgstr "অতিৰিক্ত তৰ্ক '%s' । --help চাওক ।"
 
-#: tools/virsh.c:11137
+#: tools/virsh.c:11145
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -17982,7 +17996,7 @@ msgstr ""
 "ভাৰ্চুয়ালাইজেশন ইন্টাৰেক্ভ টাৰ্মিনাল %s এ স্বাগতম ।\n"
 "\n"
 
-#: tools/virsh.c:11140
+#: tools/virsh.c:11148
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
