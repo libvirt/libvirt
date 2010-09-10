@@ -7874,8 +7874,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     char *mac, *target, *script, *type, *source;
     int typ, ret = FALSE;
-    char *buf = NULL, *tmp = NULL;
     unsigned int flags;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *xml;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -7903,51 +7904,39 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Make XML of interface */
-    tmp = vshMalloc(ctl, 1);
-    buf = vshMalloc(ctl, strlen(type) + 25);
-    sprintf(buf, "    <interface type='%s'>\n" , type);
+    virBufferVSprintf(&buf, "<interface type='%s'>\n", type);
 
-    tmp = vshRealloc(ctl, tmp, strlen(source) + 28);
-    if (typ == 1) {
-        sprintf(tmp, "      <source network='%s'/>\n", source);
-    } else if (typ == 2) {
-        sprintf(tmp, "      <source bridge='%s'/>\n", source);
-    }
-    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    strcat(buf, tmp);
+    if (typ == 1)
+        virBufferVSprintf(&buf, "  <source network='%s'/>\n", source);
+    else if (typ == 2)
+        virBufferVSprintf(&buf, "  <source bridge='%s'/>\n", source);
 
-    if (target != NULL) {
-        tmp = vshRealloc(ctl, tmp, strlen(target) + 24);
-        sprintf(tmp, "      <target dev='%s'/>\n", target);
-        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        strcat(buf, tmp);
-    }
+    if (target != NULL)
+        virBufferVSprintf(&buf, "  <target dev='%s'/>\n", target);
+    if (mac != NULL)
+        virBufferVSprintf(&buf, "  <mac address='%s'/>\n", mac);
+    if (script != NULL)
+        virBufferVSprintf(&buf, "  <script path='%s'/>\n", script);
 
-    if (mac != NULL) {
-        tmp = vshRealloc(ctl, tmp, strlen(mac) + 25);
-        sprintf(tmp, "      <mac address='%s'/>\n", mac);
-        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        strcat(buf, tmp);
+    virBufferAddLit(&buf, "</interface>\n");
+
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        return FALSE;
     }
 
-    if (script != NULL) {
-        tmp = vshRealloc(ctl, tmp, strlen(script) + 25);
-        sprintf(tmp, "      <script path='%s'/>\n", script);
-        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        strcat(buf, tmp);
-    }
-
-    buf = vshRealloc(ctl, buf, strlen(buf) + 19);
-    strcat(buf, "    </interface>\n");
+    xml = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "persistent")) {
         flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
         if (virDomainIsActive(dom) == 1)
             flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
-        ret = virDomainAttachDeviceFlags(dom, buf, flags);
+        ret = virDomainAttachDeviceFlags(dom, xml, flags);
     } else {
-        ret = virDomainAttachDevice(dom, buf);
+        ret = virDomainAttachDevice(dom, xml);
     }
+
+    VIR_FREE(xml);
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach interface"));
@@ -7960,8 +7949,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    VIR_FREE(buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -8126,9 +8114,10 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     char *source, *target, *driver, *subdriver, *type, *mode;
     int isFile = 0, ret = FALSE;
-    char *buf = NULL, *tmp = NULL;
     unsigned int flags;
     char *stype;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *xml;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -8167,76 +8156,44 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Make XML of disk */
-    tmp = vshMalloc(ctl, 1);
-    buf = vshMalloc(ctl, 23);
-    if (isFile) {
-        sprintf(buf, "    <disk type='file'");
-    } else {
-        sprintf(buf, "    <disk type='block'");
+    virBufferVSprintf(&buf, "<disk type='%s'",
+                      (isFile) ? "file" : "block");
+    if (type)
+        virBufferVSprintf(&buf, " device='%s'", type);
+    virBufferAddLit(&buf, ">\n");
+
+    virBufferVSprintf(&buf, "  <driver name='%s'",
+                      (driver) ? driver : "phy");
+    if (subdriver)
+        virBufferVSprintf(&buf, " type='%s'", subdriver);
+    virBufferAddLit(&buf, "/>\n");
+
+    virBufferVSprintf(&buf, "  <source %s='%s'/>\n",
+                      (isFile) ? "file" : "dev",
+                      source);
+    virBufferVSprintf(&buf, "  <target dev='%s'/>\n", target);
+    if (mode)
+        virBufferVSprintf(&buf, "  <%s/>\n", mode);
+
+    virBufferAddLit(&buf, "</disk>\n");
+
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        return FALSE;
     }
 
-    if (type) {
-        tmp = vshRealloc(ctl, tmp, strlen(type) + 13);
-        sprintf(tmp, " device='%s'>\n", type);
-    } else {
-        tmp = vshRealloc(ctl, tmp, 3);
-        sprintf(tmp, ">\n");
-    }
-    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    strcat(buf, tmp);
-
-    if (driver) {
-        tmp = vshRealloc(ctl, tmp, strlen(driver) + 22);
-        sprintf(tmp, "      <driver name='%s'", driver);
-    } else {
-        tmp = vshRealloc(ctl, tmp, 25);
-        sprintf(tmp, "      <driver name='phy'");
-    }
-    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    strcat(buf, tmp);
-
-    if (subdriver) {
-        tmp = vshRealloc(ctl, tmp, strlen(subdriver) + 12);
-        sprintf(tmp, " type='%s'/>\n", subdriver);
-    } else {
-        tmp = vshRealloc(ctl, tmp, 4);
-        sprintf(tmp, "/>\n");
-    }
-    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    strcat(buf, tmp);
-
-    tmp = vshRealloc(ctl, tmp, strlen(source) + 25);
-    if (isFile) {
-        sprintf(tmp, "      <source file='%s'/>\n", source);
-    } else {
-        sprintf(tmp, "      <source dev='%s'/>\n", source);
-    }
-    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    strcat(buf, tmp);
-
-    tmp = vshRealloc(ctl, tmp, strlen(target) + 24);
-    sprintf(tmp, "      <target dev='%s'/>\n", target);
-    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    strcat(buf, tmp);
-
-    if (mode != NULL) {
-        tmp = vshRealloc(ctl, tmp, strlen(mode) + 11);
-        sprintf(tmp, "      <%s/>\n", mode);
-        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        strcat(buf, tmp);
-    }
-
-    buf = vshRealloc(ctl, buf, strlen(buf) + 13);
-    strcat(buf, "    </disk>\n");
+    xml = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "persistent")) {
         flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
         if (virDomainIsActive(dom) == 1)
             flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
-        ret = virDomainAttachDeviceFlags(dom, buf, flags);
+        ret = virDomainAttachDeviceFlags(dom, xml, flags);
     } else {
-        ret = virDomainAttachDevice(dom, buf);
+        ret = virDomainAttachDevice(dom, xml);
     }
+
+    VIR_FREE(xml);
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach disk"));
@@ -8249,8 +8206,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    VIR_FREE(buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return ret;
 }
 
