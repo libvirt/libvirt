@@ -8116,6 +8116,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {"type",    VSH_OT_STRING, 0, N_("target device type")},
     {"mode",    VSH_OT_STRING, 0, N_("mode of device reading and writing")},
     {"persistent", VSH_OT_BOOL, 0, N_("persist disk attachment")},
+    {"sourcetype", VSH_OT_STRING, 0, N_("type of source (block|file)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -8127,6 +8128,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     int isFile = 0, ret = FALSE;
     char *buf = NULL, *tmp = NULL;
     unsigned int flags;
+    char *stype;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -8144,10 +8146,16 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     subdriver = vshCommandOptString(cmd, "subdriver", NULL);
     type = vshCommandOptString(cmd, "type", NULL);
     mode = vshCommandOptString(cmd, "mode", NULL);
+    stype = vshCommandOptString(cmd, "sourcetype", NULL);
 
-    if (driver) {
-        if (STREQ(driver, "file") || STREQ(driver, "tap"))
+    if (!stype) {
+        if (driver && (STREQ(driver, "file") || STREQ(driver, "tap")))
             isFile = 1;
+    } else if (STREQ(stype, "file")) {
+        isFile = 1;
+    } else if (STRNEQ(stype, "block")) {
+        vshError(ctl, _("Unknown source type: '%s'"), stype);
+        goto cleanup;
     }
 
     if (mode) {
