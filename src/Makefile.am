@@ -1029,14 +1029,14 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 libvirt.def: libvirt.syms
 	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
 	printf 'EXPORTS\n' > $@-tmp && \
-	sed -e '/^$$/d; /#/d; /:/d; /\}/d; /\*/d; /LIBVIRT_/d; s/[ \t]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
+	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d; s/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt.def
 
 libvirt_qemu.def: $(srcdir)/libvirt_qemu.syms
 	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
 	printf 'EXPORTS\n' > $@-tmp && \
-	sed -e '/^$$/d; /#/d; /:/d; /\}/d; /\*/d; /LIBVIRT_/d; s/[ \t]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
+	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d; s/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt_qemu.def
 
@@ -1177,8 +1177,12 @@ if WITH_NETWORK
 	$(INSTALL_DATA) $(srcdir)/network/default.xml \
 	  $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
 	test -z "$(UUID)" || \
-	  sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
-	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	  { sed -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
+	      $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml > \
+	      $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml.t && \
+	    cp $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml.t \
+	      $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml && \
+	    rm $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml.t; }
 	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
            ln -s ../default.xml \
 	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml

@@ -1,7 +1,7 @@
 #!/bin/sh
 # ensure that reading a file larger than BUFSIZ works
 
-# Copyright (C) 2008 Red Hat, Inc.
+# Copyright (C) 2008, 2010 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@ fi
 fail=0
 
 # Output a valid definition, to be used as input.
-$abs_top_builddir/tools/virsh -c test:///default dumpxml 1 > xml || fail=1
+$abs_top_builddir/tools/virsh -c test:///default dumpxml 1 > xml.t || fail=1
 
 # Change the VM name
-sed -i -e "s|<name>test</name>|<name>newtest</name>|g" xml
+sed -e "s|<name>test</name>|<name>newtest</name>|g" xml.t > xml
 
 for i in before after; do
   # The largest BUFSIZ I've seen is 128K.  This is slightly larger.
