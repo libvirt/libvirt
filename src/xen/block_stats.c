@@ -118,6 +118,18 @@ read_bd_stat (int device, int domid, const char *str)
     int64_t r;
 
     snprintf (path, sizeof path,
+              "/sys/bus/xen-backend/devices/vbd-%d-%d/statistics/%s",
+              domid, device, str);
+    r = read_stat (path);
+    if (r >= 0) return r;
+
+    snprintf (path, sizeof path,
+              "/sys/bus/xen-backend/devices/tap-%d-%d/statistics/%s",
+              domid, device, str);
+    r = read_stat (path);
+    if (r >= 0) return r;
+
+    snprintf (path, sizeof path,
               "/sys/devices/xen-backend/vbd-%d-%d/statistics/%s",
               domid, device, str);
     r = read_stat (path);
