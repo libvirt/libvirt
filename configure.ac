@@ -122,9 +122,6 @@ AM_CONDITIONAL([HAVE_GLIBC_RPCGEN],
 	        $ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
 
 dnl Miscellaneous external programs.
-AC_PATH_PROG([RM], [rm], [/bin/rm])
-AC_PATH_PROG([MV], [mv], [/bin/mv])
-AC_PATH_PROG([TAR], [tar], [/bin/tar])
 AC_PATH_PROG([XMLLINT], [xmllint], [/usr/bin/xmllint])
 AC_PATH_PROG([XMLCATALOG], [xmlcatalog], [/usr/bin/xmlcatalog])
 AC_PATH_PROG([XSLTPROC], [xsltproc], [/usr/bin/xsltproc])
