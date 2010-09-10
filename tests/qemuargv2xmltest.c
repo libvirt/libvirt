@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -35,7 +36,8 @@ static int blankProblemElements(char *data)
 }
 
 static int testCompareXMLToArgvFiles(const char *xml,
-                                     const char *cmdfile) {
+                                     const char *cmdfile,
+                                     bool expect_warning) {
     char xmlData[MAX_FILE];
     char cmdData[MAX_FILE];
     char *expectxml = &(xmlData[0]);
@@ -43,6 +45,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     char *cmd = &(cmdData[0]);
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
+    char *log;
 
     if (virtTestLoadFile(cmdfile, &cmd, MAX_FILE) < 0)
         goto fail;
@@ -51,6 +54,14 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (!(vmdef = qemuParseCommandLineString(driver.caps, cmd)))
         goto fail;
+
+    if ((log = virtTestLogContentAndReset()) == NULL)
+        goto fail;
+    if ((*log != '\0') != expect_warning) {
+        free(log);
+        goto fail;
+    }
+    free(log);
 
     if (!(actualxml = virDomainDefFormat(vmdef, 0)))
         goto fail;
@@ -87,7 +98,7 @@ static int testCompareXMLToArgvHelper(const void *data) {
              abs_srcdir, info->name);
     snprintf(args, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
              abs_srcdir, info->name);
-    return testCompareXMLToArgvFiles(xml, args);
+    return testCompareXMLToArgvFiles(xml, args, !!info->extraFlags);
 }
 
 
@@ -215,7 +226,7 @@ mymain(int argc, char **argv)
     DO_TEST_FULL("restore-v2", 0, "exec:cat");
     DO_TEST_FULL("migrate", 0, "tcp:10.0.0.1:5000");
 
-    DO_TEST("qemu-ns-no-env");
+    DO_TEST_FULL("qemu-ns-no-env", 1, NULL);
 
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);

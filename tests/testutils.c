@@ -1,7 +1,7 @@
 /*
  * testutils.c: basic test utils
  *
- * Copyright (C) 2005-2009 Red Hat, Inc.
+ * Copyright (C) 2005-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -31,6 +31,8 @@
 #include "util.h"
 #include "threads.h"
 #include "virterror_internal.h"
+#include "buf.h"
+#include "logging.h"
 
 #if TEST_OOM_TRACE
 # include <execinfo.h>
@@ -351,6 +353,45 @@ virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
 { }
 #endif
 
+struct virtTestLogData {
+    virBuffer buf;
+};
+
+static struct virtTestLogData testLog = { VIR_BUFFER_INITIALIZER };
+
+static int
+virtTestLogOutput(const char *category ATTRIBUTE_UNUSED,
+                  int priority ATTRIBUTE_UNUSED,
+                  const char *funcname ATTRIBUTE_UNUSED,
+                  long long lineno ATTRIBUTE_UNUSED,
+                  const char *str, int len, void *data)
+{
+    struct virtTestLogData *log = data;
+    virBufferAdd(&log->buf, str, len);
+    return len;
+}
+
+static void
+virtTestLogClose(void *data)
+{
+    struct virtTestLogData *log = data;
+
+    virBufferFreeAndReset(&log->buf);
+}
+
+/* Return a malloc'd string (possibly with strlen of 0) of all data
+ * logged since the last call to this function, or NULL on failure.  */
+char *
+virtTestLogContentAndReset(void)
+{
+    char *ret;
+
+    if (virBufferError(&testLog.buf))
+        return NULL;
+    ret = virBufferContentAndReset(&testLog.buf);
+    return ret ? ret : strdup("");
+}
+
 #if TEST_OOM_TRACE
 static void
 virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
@@ -425,6 +466,9 @@ int virtTestMain(int argc,
         virRandomInitialize(time(NULL) ^ getpid()))
         return 1;
 
+    if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
+                           0, 0, NULL, 0) < 0)
+        return 1;
 
 #if TEST_OOM
     if ((oomStr = getenv("VIR_TEST_OOM")) != NULL) {

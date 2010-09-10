@@ -1,7 +1,7 @@
 /*
  * utils.c: test utils
  *
- * Copyright (C) 2005, 2008-2009 Red Hat, Inc.
+ * Copyright (C) 2005, 2008-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -39,6 +39,8 @@ int virtTestDifference(FILE *stream,
 
 unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);
+
+char *virtTestLogContentAndReset(void);
 
 int virtTestMain(int argc,
                  char **argv,
