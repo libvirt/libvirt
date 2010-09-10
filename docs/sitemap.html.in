@@ -258,6 +258,10 @@
               </li>
             </ul>
           </li>
+          <li>
+            <a href="devguide.html">Development Guide</a>
+            <span>A guide and reference for developing with libvirt</span>
+          </li>
         </ul>
       </li>
       <li>

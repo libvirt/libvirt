@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <html>
   <body>
-    <h1 >Downloads</h1>
+    <h1>Downloads</h1>
 
     <h2>Official Releases</h2>
 
@@ -27,62 +27,108 @@
       <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.gz">libvirt.org HTTP server</a></li>
     </ul>
 
-      <h2>GIT source repository</h2>
-      <p> Libvirt code source is now maintained in a <a
-      href="http://git-scm.com/">git</a> repository available on
-      <a href="http://libvirt.org/git/">libvirt.org</a>:
+    <h2>GIT source repository</h2>
+
+    <p>
+      Libvirt code source is now maintained in a <a href="http://git-scm.com/">git</a>
+      repository available on <a href="http://libvirt.org/git/">libvirt.org</a>:
     </p>
-        <pre>
 
-      git clone git://libvirt.org/libvirt.git
-    </pre>
-        <p>
-      It can also be browsed at
+    <pre>
+      git clone git://libvirt.org/libvirt.git</pre>
+
+    <p>
+      It can also be browsed at:
     </p>
-        <pre>
 
-      <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">http://libvirt.org/git/?p=libvirt.git;a=summary</a>
-    </pre>
+    <pre>
+      <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">http://libvirt.org/git/?p=libvirt.git;a=summary</a></pre>
 
-    <h1>Installation</h1>
-    <h2>
-      <a name="Compilatio" id="Compilatio">Compilation</a>
-    </h2>
-        <p>As most UNIX libraries libvirt follows the "standard":</p>
-        <p>
-          <code>gunzip -c libvirt-xxx.tar.gz | tar xvf -</code>
-        </p>
-        <p>
-          <code>cd libvirt-xxxx</code>
-        </p>
-        <p>
-          <code>./configure --help</code>
-        </p>
-        <p>to see the options, then the compilation/installation proper</p>
-        <p>
-          <code>./configure [possible options]</code>
-        </p>
-        <p>
-          <code>make</code>
-        </p>
-        <p>
-          <code>make install</code>
-        </p>
-        <p>At that point you may have to rerun ldconfig or a similar utility to
-    update your list of installed shared libs.
-        </p>
+    <br />
 
-       <h2>Building from a source code checkout</h2>
-    <p> The libvirt build process uses GNU autotools, so after obtaining a
-    checkout it is necessary to generate the configure script and Makefile.in
-    templates using the <code>autogen.sh</code> command, passing the extra
-    arguments as for configure. As an example, to do a complete build and
-    install it into your home directory run:</p>
-        <pre>
+    <h1>libvirt Application Development Guide</h1>
 
-      ./autogen.sh --prefix=$HOME/usr
+    <p>
+      This is both a guide to developing with libvirt, and a useful
+      reference document.  It is a work in progress, contributed to by the
+      members of the libvirt team and being authored by a professional
+      author.
+    </p>
+
+    <p>
+      Contributors to this are <b>VERY</b> welcome, so if you'd like to
+      get your name in this and demonstrate your virtualisation prowess,
+      contributing solidly to the content here will do it. :)
+    </p>
+
+    <h2>Downloadable PDF</h2>
+
+    <p>
+      PDF download is available here:
+    </p>
+
+    <ul>
+      <li><a href="http://libvirt.org/guide/pdf/Application_Development_Guide.pdf">libvirt App Dev Guide</a> (PDF)</li>
+    </ul>
+
+    <h2>GIT source repository</h2>
+
+    <p>
+      The source is also in a git repository:
+    </p>
+
+    <pre>
+      git clone git://libvirt.org/libvirt-appdev-guide.git</pre>
+
+    <p>
+      Browsable at:
+    </p>
+
+    <pre>
+      <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary">http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary</a></pre>
+
+    <br />
+
+    <h1>libvirt Installation</h1>
+
+    <h2><a name="Compilatio" id="Compilatio">Compilation</a></h2>
+
+    <p>
+      libvirt uses the standard configure/make/install steps:
+    </p>
+
+    <pre>
+      gunzip -c libvirt-xxx.tar.gz | tar xvf -
+      cd libvirt-xxxx
+      ./configure --help</pre>
+
+    <p>
+      To see the options, then the compilation/installation proper:
+    </p>
+
+    <pre>
+      ./configure [possible options]
       make
-      make install
-    </pre>
+      make install</pre>
+
+    <p>
+      At that point you may have to rerun ldconfig or a similar utility to
+      update your list of installed shared libs.
+    </p>
+
+    <h2>Building from a source code checkout</h2>
+
+    <p>
+      The libvirt build process uses GNU autotools, so after obtaining a
+      checkout it is necessary to generate the configure script and Makefile.in
+      templates using the <code>autogen.sh</code> command, passing the extra
+      arguments as for configure. As an example, to do a complete build and
+      install it into your home directory run:
+    </p>
+
+    <pre>
+      ./autogen.sh --prefix=$HOME/usr --enable-compile-warnings=error
+      make
+      make install</pre>
   </body>
 </html>
