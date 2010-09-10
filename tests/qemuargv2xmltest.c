@@ -122,8 +122,8 @@ mymain(int argc, char **argv)
             ret = -1;                                                   \
     } while (0)
 
-# define DO_TEST(name, extraFlags)                       \
-        DO_TEST_FULL(name, extraFlags, NULL)
+# define DO_TEST(name)                                                  \
+        DO_TEST_FULL(name, 0, NULL)
 
     setenv("PATH", "/bin", 1);
     setenv("USER", "test", 1);
@@ -135,100 +135,87 @@ mymain(int argc, char **argv)
 
     /* Can't roundtrip vcpu  cpuset attribute */
     /*DO_TEST("minimal", QEMUD_CMD_FLAG_NAME);*/
-    DO_TEST("boot-cdrom", 0);
-    DO_TEST("boot-network", 0);
-    DO_TEST("boot-floppy", 0);
+    DO_TEST("boot-cdrom");
+    DO_TEST("boot-network");
+    DO_TEST("boot-floppy");
     /* Can't roundtrip xenner arch */
-    /*DO_TEST("bootloader", 0);*/
-    DO_TEST("clock-utc", 0);
-    DO_TEST("clock-localtime", 0);
-    DO_TEST("disk-cdrom", 0);
-    DO_TEST("disk-cdrom-empty", QEMUD_CMD_FLAG_DRIVE);
-    DO_TEST("disk-floppy", 0);
-    DO_TEST("disk-many", 0);
-    DO_TEST("disk-virtio", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT);
-    DO_TEST("disk-xenvbd", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT);
-    DO_TEST("disk-drive-boot-disk", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT);
-    DO_TEST("disk-drive-boot-cdrom", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT);
-    DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT);
+    /*DO_TEST("bootloader");*/
+    DO_TEST("clock-utc");
+    DO_TEST("clock-localtime");
+    DO_TEST("disk-cdrom");
+    DO_TEST("disk-cdrom-empty");
+    DO_TEST("disk-floppy");
+    DO_TEST("disk-many");
+    DO_TEST("disk-virtio");
+    DO_TEST("disk-xenvbd");
+    DO_TEST("disk-drive-boot-disk");
+    DO_TEST("disk-drive-boot-cdrom");
+    DO_TEST("disk-drive-fmt-qcow");
     /* Can't roundtrip  shareable+cache mode option */
-    /*DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE);*/
+    /*DO_TEST("disk-drive-shared");*/
     /* Can't roundtrip v1 writethrough option */
-    /*DO_TEST("disk-drive-cache-v1-wt", QEMUD_CMD_FLAG_DRIVE);*/
-    DO_TEST("disk-drive-cache-v1-wb", QEMUD_CMD_FLAG_DRIVE);
-    DO_TEST("disk-drive-cache-v1-none", QEMUD_CMD_FLAG_DRIVE);
-    DO_TEST("disk-drive-error-policy-stop", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_MONITOR_JSON |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT);
-    DO_TEST("disk-drive-error-policy-enospace", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_MONITOR_JSON |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT);
-    DO_TEST("disk-drive-cache-v2-wt", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2);
-    DO_TEST("disk-drive-cache-v2-wb", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2);
-    DO_TEST("disk-drive-cache-v2-none", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2);
-    DO_TEST("disk-usb", 0);
-    DO_TEST("graphics-vnc", 0);
+    /*DO_TEST("disk-drive-cache-v1-wt");*/
+    DO_TEST("disk-drive-cache-v1-wb");
+    DO_TEST("disk-drive-cache-v1-none");
+    DO_TEST("disk-drive-error-policy-stop");
+    DO_TEST("disk-drive-error-policy-enospace");
+    DO_TEST("disk-drive-cache-v2-wt");
+    DO_TEST("disk-drive-cache-v2-wb");
+    DO_TEST("disk-drive-cache-v2-none");
+    DO_TEST("disk-usb");
+    DO_TEST("graphics-vnc");
 
     driver.vncSASL = 1;
     driver.vncSASLdir = strdup("/root/.sasl2");
-    DO_TEST("graphics-vnc-sasl", 0);
+    DO_TEST("graphics-vnc-sasl");
     driver.vncTLS = 1;
     driver.vncTLSx509verify = 1;
     driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");
-    DO_TEST("graphics-vnc-tls", 0);
+    DO_TEST("graphics-vnc-tls");
     driver.vncSASL = driver.vncTLSx509verify = driver.vncTLS = 0;
     free(driver.vncSASLdir);
     free(driver.vncTLSx509certdir);
     driver.vncSASLdir = driver.vncTLSx509certdir = NULL;
 
-    DO_TEST("graphics-sdl", 0);
-    DO_TEST("graphics-sdl-fullscreen", 0);
-    DO_TEST("nographics-vga", QEMUD_CMD_FLAG_VGA);
-    DO_TEST("input-usbmouse", 0);
-    DO_TEST("input-usbtablet", 0);
+    DO_TEST("graphics-sdl");
+    DO_TEST("graphics-sdl-fullscreen");
+    DO_TEST("nographics-vga");
+    DO_TEST("input-usbmouse");
+    DO_TEST("input-usbtablet");
     /* Can't rountrip xenner arch */
-    /*DO_TEST("input-xen", 0);*/
-    DO_TEST("misc-acpi", 0);
-    DO_TEST("misc-no-reboot", 0);
-    DO_TEST("misc-uuid", QEMUD_CMD_FLAG_NAME |
-        QEMUD_CMD_FLAG_UUID | QEMUD_CMD_FLAG_DOMID);
-    DO_TEST("net-user", 0);
-    DO_TEST("net-virtio", 0);
-    DO_TEST("net-eth", 0);
-    DO_TEST("net-eth-ifname", 0);
+    /*DO_TEST("input-xen");*/
+    DO_TEST("misc-acpi");
+    DO_TEST("misc-no-reboot");
+    DO_TEST("misc-uuid");
+    DO_TEST("net-user");
+    DO_TEST("net-virtio");
+    DO_TEST("net-eth");
+    DO_TEST("net-eth-ifname");
 
-    DO_TEST("serial-vc", 0);
-    DO_TEST("serial-pty", 0);
-    DO_TEST("serial-dev", 0);
-    DO_TEST("serial-file", 0);
-    DO_TEST("serial-unix", 0);
-    DO_TEST("serial-tcp", 0);
-    DO_TEST("serial-udp", 0);
-    DO_TEST("serial-tcp-telnet", 0);
-    DO_TEST("serial-many", 0);
-    DO_TEST("parallel-tcp", 0);
-    DO_TEST("console-compat", 0);
-    DO_TEST("sound", 0);
-    DO_TEST("watchdog", 0);
+    DO_TEST("serial-vc");
+    DO_TEST("serial-pty");
+    DO_TEST("serial-dev");
+    DO_TEST("serial-file");
+    DO_TEST("serial-unix");
+    DO_TEST("serial-tcp");
+    DO_TEST("serial-udp");
+    DO_TEST("serial-tcp-telnet");
+    DO_TEST("serial-many");
+    DO_TEST("parallel-tcp");
+    DO_TEST("console-compat");
+    DO_TEST("sound");
+    DO_TEST("watchdog");
 
-    DO_TEST("hostdev-usb-address", 0);
+    DO_TEST("hostdev-usb-address");
 
-    DO_TEST("hostdev-pci-address", QEMUD_CMD_FLAG_PCIDEVICE);
+    DO_TEST("hostdev-pci-address");
 
-    DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio");
-    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "stdio");
-    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "exec:cat");
-    DO_TEST_FULL("migrate", QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP, "tcp:10.0.0.1:5000");
+    DO_TEST_FULL("restore-v1", 0, "stdio");
+    DO_TEST_FULL("restore-v2", 0, "stdio");
+    DO_TEST_FULL("restore-v2", 0, "exec:cat");
+    DO_TEST_FULL("migrate", 0, "tcp:10.0.0.1:5000");
 
-    DO_TEST("qemu-ns-no-env", 0);
+    DO_TEST("qemu-ns-no-env");
 
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
