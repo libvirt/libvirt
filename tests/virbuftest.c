@@ -70,7 +70,7 @@ mymain(int argc ATTRIBUTE_UNUSED,
     int ret = 0;
 
 
-# define DO_TEST(msg, cb, data)                                        \
+#define DO_TEST(msg, cb, data)                                         \
     do {                                                               \
         struct testInfo info = { data };                               \
         if (virtTestRun("Buf: " msg, 1, cb, &info) < 0)                 \
