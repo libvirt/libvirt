@@ -4,16 +4,16 @@
     <h1>libvirt Application Development Guide</h1>
 
     <p>
-      This is both a guide to developing with libvirt, and a useful
-      reference document.  It is a work in progress, contributed to by the
-      members of the libvirt team and being authored by a professional
-      author.
+      The guide is both a learning tool for developing with libvirt and an
+      API reference document. It is a work in progress, composed by a
+      professional author from contributions written by members of the
+      libvirt team.
     </p>
 
     <p>
-      Contributors to this are <b>VERY</b> welcome, so if you'd like to
-      get your name in this and demonstrate your virtualisation prowess,
-      contributing solidly to the content here will do it. :)
+      Contributions to the guide are <b>VERY</b> welcome. If you'd like to get
+      your name on this and demonstrate your virtualisation prowess, a solid
+      contribution to the content here will do it. :)
     </p>
 
     <h2>Browsable online</h2>
