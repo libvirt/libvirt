@@ -169,6 +169,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_EVENT:
             dom = "Events ";
             break;
+        case VIR_FROM_LOCKING:
+            dom = "Locking ";
+            break;
     }
     return(dom);
 }

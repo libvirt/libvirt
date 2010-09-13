@@ -596,6 +596,20 @@ virRegisterSecretDriver;
 virRegisterStorageDriver;
 
 
+# locking.h
+virLockManagerAcquire;
+virLockManagerAddResource;
+virLockManagerFree;
+virLockManagerInquire;
+virLockManagerNew;
+virLockManagerPluginNew;
+virLockManagerPluginRef;
+virLockManagerPluginUnref;
+virLockManagerPluginUsesState;
+virLockManagerPluginGetName;
+virLockManagerRelease;
+
+
 # logging.h
 virLogDefineFilter;
 virLogDefineOutput;

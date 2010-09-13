@@ -81,6 +81,7 @@ typedef enum {
     VIR_FROM_VMWARE = 39,	/* Error from VMware driver */
     VIR_FROM_EVENT = 40,       /* Error from event loop impl */
     VIR_FROM_LIBXL = 41,	/* Error from libxenlight driver */
+    VIR_FROM_LOCKING = 42,      /* Error from lock manager */
 } virErrorDomain;
 
 
