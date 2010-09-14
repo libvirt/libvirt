@@ -3460,7 +3460,9 @@ error:
 
 
 /* We asked for an SSF layer, so sanity check that we actually
- * got what we asked for */
+ * got what we asked for
+ * Returns 0 if ok, -1 on error, -2 if rejected
+ */
 static int
 remoteSASLCheckSSF (struct qemud_client *client,
                     remote_error *rerr) {
@@ -3487,7 +3489,7 @@ remoteSASLCheckSSF (struct qemud_client *client,
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        return -1;
+        return -2;
     }
 
     /* Only setup for read initially, because we're about to send an RPC
@@ -3502,6 +3504,9 @@ remoteSASLCheckSSF (struct qemud_client *client,
     return 0;
 }
 
+/*
+ * Returns 0 if ok, -1 on error, -2 if rejected
+ */
 static int
 remoteSASLCheckAccess (struct qemud_server *server,
                        struct qemud_client *client,
@@ -3553,7 +3558,7 @@ remoteSASLCheckAccess (struct qemud_server *server,
     remoteDispatchAuthError(rerr);
     sasl_dispose(&client->saslconn);
     client->saslconn = NULL;
-    return -1;
+    return -2;
 }
 
 
@@ -3625,12 +3630,14 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
     if (err == SASL_CONTINUE) {
         ret->complete = 0;
     } else {
-        if (remoteSASLCheckSSF(client, rerr) < 0)
-            goto error;
-
         /* Check username whitelist ACL */
-        if (remoteSASLCheckAccess(server, client, rerr) < 0)
-            goto error;
+        if ((err = remoteSASLCheckAccess(server, client, rerr)) < 0 ||
+            (err = remoteSASLCheckSSF(client, rerr)) < 0) {
+            if (err == -2)
+                goto authdeny;
+            else
+                goto authfail;
+        }
 
         REMOTE_DEBUG("Authentication successful %d", client->fd);
         ret->complete = 1;
@@ -3642,6 +3649,11 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
 
 authfail:
     remoteDispatchAuthError(rerr);
+    goto error;
+
+authdeny:
+    goto error;
+
 error:
     virMutexUnlock(&client->lock);
     return -1;
@@ -3714,12 +3726,14 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
     if (err == SASL_CONTINUE) {
         ret->complete = 0;
     } else {
-        if (remoteSASLCheckSSF(client, rerr) < 0)
-            goto error;
-
         /* Check username whitelist ACL */
-        if (remoteSASLCheckAccess(server, client, rerr) < 0)
-            goto error;
+        if ((err = remoteSASLCheckAccess(server, client, rerr)) < 0 ||
+            (err = remoteSASLCheckSSF(client, rerr)) < 0) {
+            if (err == -2)
+                goto authdeny;
+            else
+                goto authfail;
+        }
 
         REMOTE_DEBUG("Authentication successful %d", client->fd);
         ret->complete = 1;
@@ -3731,6 +3745,11 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
 
 authfail:
     remoteDispatchAuthError(rerr);
+    goto error;
+
+authdeny:
+    goto error;
+
 error:
     virMutexUnlock(&client->lock);
     return -1;
@@ -3792,12 +3811,15 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
                           void *args ATTRIBUTE_UNUSED,
                           remote_auth_polkit_ret *ret)
 {
-    pid_t callerPid;
-    uid_t callerUid;
+    pid_t callerPid = -1;
+    uid_t callerUid = -1;
     const char *action;
     int status = -1;
     char pidbuf[50];
+    char ident[100];
     int rv;
+
+    memset(ident, 0, sizeof ident);
 
     virMutexLock(&server->lock);
     virMutexLock(&client->lock);
@@ -3834,6 +3856,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
         goto authfail;
     }
 
+    rv = snprintf(ident, sizeof ident, "pid:%d,uid:%d", callerPid, callerUid);
+    if (rv < 0 || rv >= sizeof ident) {
+        VIR_ERROR(_("Caller identity was too large %d:%d"), callerPid, callerUid);
+        goto authfail;
+    }
+
     if (virRun(pkcheck, &status) < 0) {
         VIR_ERROR(_("Cannot invoke %s"), PKCHECK_PATH);
         goto authfail;
@@ -3841,7 +3869,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     if (status != 0) {
         VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %d"),
                   action, callerPid, callerUid, status);
-        goto authfail;
+        goto authdeny;
     }
     VIR_INFO(_("Policy allowed action %s from pid %d, uid %d"),
              action, callerPid, callerUid);
@@ -3852,6 +3880,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     return 0;
 
 authfail:
+    goto error;
+
+authdeny:
+    goto error;
+
+error:
     remoteDispatchAuthError(rerr);
     virMutexUnlock(&client->lock);
     return -1;
@@ -3875,6 +3909,9 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     PolKitResult pkresult;
     DBusError err;
     const char *action;
+    char ident[100];
+
+    memset(ident, 0, sizeof ident);
 
     virMutexLock(&server->lock);
     virMutexLock(&client->lock);
@@ -3892,6 +3929,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
 
     if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
         VIR_ERROR0(_("cannot get peer socket identity"));
+        goto authfail;
+    }
+
+    rv = snprintf(ident, sizeof ident, "pid:%d,uid:%d", callerPid, callerUid);
+    if (rv < 0 || rv >= sizeof ident) {
+        VIR_ERROR(_("Caller identity was too large %d:%d"), callerPid, callerUid);
         goto authfail;
     }
 
@@ -3951,7 +3994,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
         VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %s"),
                   action, callerPid, callerUid,
                   polkit_result_to_string_representation(pkresult));
-        goto authfail;
+        goto authdeny;
     }
     VIR_INFO(_("Policy allowed action %s from pid %d, uid %d, result %s"),
              action, callerPid, callerUid,
@@ -3963,6 +4006,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     return 0;
 
 authfail:
+    goto error;
+
+authdeny:
+    goto error;
+
+error:
     remoteDispatchAuthError(rerr);
     virMutexUnlock(&client->lock);
     return -1;
