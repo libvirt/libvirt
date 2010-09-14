@@ -3263,6 +3263,14 @@ static char *addrToString(remote_error *rerr,
     int err;
     struct sockaddr *sa = (struct sockaddr *)ss;
 
+    if (sa->sa_family == AF_UNIX) {
+        if (!(addr = strdup("127.0.0.1;0"))) {
+            virReportOOMError();
+            return NULL;
+        }
+        return addr;
+    }
+
     if ((err = getnameinfo(sa, salen,
                            host, sizeof(host),
                            port, sizeof(port),

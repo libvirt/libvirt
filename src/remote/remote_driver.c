@@ -6676,6 +6676,14 @@ static char *addrToString(struct sockaddr_storage *ss, socklen_t salen)
     int err;
     struct sockaddr *sa = (struct sockaddr *)ss;
 
+    if (sa->sa_family == AF_UNIX) {
+        if (!(addr = strdup("127.0.0.1;0"))) {
+            virReportOOMError();
+            return NULL;
+        }
+        return addr;
+    }
+
     if ((err = getnameinfo(sa, salen,
                            host, sizeof(host),
                            port, sizeof(port),
@@ -6977,12 +6985,12 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     }
 
     memset (&secprops, 0, sizeof secprops);
-    /* If we've got TLS, we don't care about SSF */
-    secprops.min_ssf = priv->uses_tls ? 0 : 56; /* Equiv to DES supported by all Kerberos */
-    secprops.max_ssf = priv->uses_tls ? 0 : 100000; /* Very strong ! AES == 256 */
+    /* If we've got a secure channel (TLS or UNIX sock), we don't care about SSF */
+    secprops.min_ssf = priv->is_secure ? 0 : 56; /* Equiv to DES supported by all Kerberos */
+    secprops.max_ssf = priv->is_secure ? 0 : 100000; /* Very strong ! AES == 256 */
     secprops.maxbufsize = 100000;
-    /* If we're not TLS, then forbid any anonymous or trivially crackable auth */
-    secprops.security_flags = priv->uses_tls ? 0 :
+    /* If we're not secure, then forbid any anonymous or trivially crackable auth */
+    secprops.security_flags = priv->is_secure ? 0 :
         SASL_SEC_NOANONYMOUS | SASL_SEC_NOPLAINTEXT;
 
     err = sasl_setprop(saslconn, SASL_SEC_PROPS, &secprops);
@@ -7164,8 +7172,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         }
     }
 
-    /* Check for suitable SSF if non-TLS */
-    if (!priv->uses_tls) {
+    /* Check for suitable SSF if not already secure (TLS or UNIX sock) */
+    if (!priv->is_secure) {
         err = sasl_getprop(saslconn, SASL_SSF, &val);
         if (err != SASL_OK) {
             remoteError(VIR_ERR_AUTH_FAILED,
