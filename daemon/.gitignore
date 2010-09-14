@@ -10,3 +10,4 @@ libvirtd.init
 libvirtd*.logrotate
 libvirtd.pod
 libvirtd.8
+probes.h

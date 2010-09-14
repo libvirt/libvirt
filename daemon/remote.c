@@ -3791,6 +3791,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
 authfail:
     remoteDispatchAuthError(rerr);
 error:
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     virMutexUnlock(&client->lock);
     return -1;
 }
@@ -3977,6 +3978,8 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
         }
 
         REMOTE_DEBUG("Authentication successful %d", client->fd);
+        PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
+              client->fd, REMOTE_AUTH_SASL, client->saslUsername);
         ret->complete = 1;
         client->auth = REMOTE_AUTH_NONE;
     }
@@ -3985,10 +3988,13 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
     return 0;
 
 authfail:
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     goto error;
 
 authdeny:
+    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
+          client->fd, REMOTE_AUTH_SASL, client->saslUsername);
     goto error;
 
 error:
@@ -4073,6 +4079,8 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
         }
 
         REMOTE_DEBUG("Authentication successful %d", client->fd);
+        PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
+              client->fd, REMOTE_AUTH_SASL, client->saslUsername);
         ret->complete = 1;
         client->auth = REMOTE_AUTH_NONE;
     }
@@ -4081,10 +4089,13 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
     return 0;
 
 authfail:
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     goto error;
 
 authdeny:
+    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
+          client->fd, REMOTE_AUTH_SASL, client->saslUsername);
     goto error;
 
 error:
@@ -4104,6 +4115,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
 {
     VIR_ERROR0(_("client tried unsupported SASL init request"));
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -4118,6 +4130,7 @@ remoteDispatchAuthSaslStart (struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
 {
     VIR_ERROR0(_("client tried unsupported SASL start request"));
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -4132,6 +4145,7 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
 {
     VIR_ERROR0(_("client tried unsupported SASL step request"));
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -4208,6 +4222,8 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
                   action, callerPid, callerUid, status);
         goto authdeny;
     }
+    PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
+          client->fd, REMOTE_AUTH_POLKIT, ident);
     VIR_INFO(_("Policy allowed action %s from pid %d, uid %d"),
              action, callerPid, callerUid);
     ret->complete = 1;
@@ -4217,9 +4233,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     return 0;
 
 authfail:
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_POLKIT);
     goto error;
 
 authdeny:
+    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
+          client->fd, REMOTE_AUTH_POLKIT, ident);
     goto error;
 
 error:
@@ -4333,6 +4352,8 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
                   polkit_result_to_string_representation(pkresult));
         goto authdeny;
     }
+    PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
+          client->fd, REMOTE_AUTH_POLKIT, ident);
     VIR_INFO(_("Policy allowed action %s from pid %d, uid %d, result %s"),
              action, callerPid, callerUid,
              polkit_result_to_string_representation(pkresult));
@@ -4343,9 +4364,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     return 0;
 
 authfail:
+    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_POLKIT);
     goto error;
 
 authdeny:
+    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
+          client->fd, REMOTE_AUTH_POLKIT, ident);
     goto error;
 
 error:

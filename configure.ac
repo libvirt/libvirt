@@ -1107,6 +1107,29 @@ fi
 AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "no"])
 
 
+dnl DTrace static probes
+AC_ARG_WITH([dtrace],
+  AC_HELP_STRING([--with-dtrace], [use dtrace for static probing @<:@default=check@:>@]),
+  [],
+  [with_dtrace=check])
+
+if test "$with_dtrace" != "no" ; then
+  AC_PATH_PROG([DTRACE], [dtrace], [], [/bin:/usr/bin])
+  if test -z "$DTRACE" ; then
+    if test "$with_dtrace" = "check"; then
+      with_dtrace=no
+    else
+      AC_MSG_ERROR([You must install the 'dtrace' binary to enable libvirt static probes])
+    fi
+  else
+    with_dtrace=yes
+  fi
+  if test "$with_dtrace" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_DTRACE], 1, [whether DTrace static probes are available])
+  fi
+fi
+AM_CONDITIONAL([WITH_DTRACE], [test "$with_dtrace" != "no"])
+
 
 dnl NUMA lib
 AC_ARG_WITH([numactl],
@@ -2230,6 +2253,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           examples/openauth/Makefile \
           examples/python/Makefile \
           examples/hellolibvirt/Makefile \
+          examples/systemtap/Makefile \
           examples/xml/nwfilter/Makefile)
 
 AC_MSG_NOTICE([])
@@ -2396,6 +2420,7 @@ AC_MSG_NOTICE([     Debug: $enable_debug])
 AC_MSG_NOTICE([  Warnings: $enable_compile_warnings])
 AC_MSG_NOTICE([  Readline: $lv_use_readline])
 AC_MSG_NOTICE([    Python: $with_python])
+AC_MSG_NOTICE([    DTrace: $with_dtrace])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Privileges])
 AC_MSG_NOTICE([])

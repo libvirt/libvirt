@@ -67,6 +67,7 @@
 %define with_macvtap       0%{!?_without_macvtap:0}
 %define with_libnl         0%{!?_without_libnl:0}
 %define with_audit         0%{!?_without_audit:0}
+%define with_dtrace        0%{!?_without_dtrace:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -168,6 +169,10 @@
 
 %if 0%{?fedora} >= 11 || 0%{?rhel} >= 5
 %define with_audit    0%{!?_without_audit:1}
+%endif
+
+%if 0%{?fedora} >= 13 || 0%{?rhel} >= 6
+%define with_dtrace 1
 %endif
 
 # Force QEMU to run as non-root
@@ -564,6 +569,10 @@ of recent versions of Linux (and other OSes).
 %define _without_audit --without-audit
 %endif
 
+%if ! %{with_dtrace}
+%define _without_dtrace --without-dtrace
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -596,6 +605,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_libpcap} \
            %{?_without_macvtap} \
            %{?_without_audit} \
+           %{?_without_dtrace} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \
@@ -607,7 +617,7 @@ gzip -9 ChangeLog
 rm -fr %{buildroot}
 
 %makeinstall
-for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth python xml/nwfilter
+for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth python xml/nwfilter systemtap
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
 done
@@ -763,6 +773,9 @@ fi
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
+%if %{with_dtrace}
+%{_datadir}/systemtap/tapsets/libvirtd.stp
+%endif
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
@@ -909,6 +922,7 @@ fi
 %doc examples/domsuspend
 %doc examples/openauth
 %doc examples/xml
+%doc examples/systemtap
 
 %if %{with_python}
 %files python

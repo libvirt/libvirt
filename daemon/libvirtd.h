@@ -49,6 +49,23 @@
 # include "logging.h"
 # include "threads.h"
 
+# if WITH_DTRACE
+#  ifndef LIBVIRTD_PROBES_H
+#   define LIBVIRTD_PROBES_H
+#   include "probes.h"
+#  endif /* LIBVIRTD_PROBES_H */
+#  define PROBE(NAME, FMT, ...)                              \
+    VIR_DEBUG_INT("trace." __FILE__ , __func__, __LINE__,    \
+                  #NAME ": " FMT, __VA_ARGS__);              \
+    if (LIBVIRTD_ ## NAME ## _ENABLED()) {                   \
+        LIBVIRTD_ ## NAME(__VA_ARGS__);                      \
+    }
+# else
+#  define PROBE(NAME, FMT, ...)                                 \
+    VIR_DEBUG_INT("trace." __FILE__, __func__, __LINE__,        \
+                  #NAME ": " FMT, __VA_ARGS__);
+# endif
+
 # ifdef __GNUC__
 #  ifdef HAVE_ANSIDECL_H
 #   include <ansidecl.h>

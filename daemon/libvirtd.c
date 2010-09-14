@@ -1240,12 +1240,15 @@ remoteCheckCertificate(struct qemud_client *client)
         }
     }
 
+    PROBE(CLIENT_TLS_ALLOW, "fd=%d, name=%s", client->fd, name);
     return 0;
 
 authdeny:
+    PROBE(CLIENT_TLS_DENY, "fd=%d, name=%s", client->fd, name);
     return -1;
 
 authfail:
+    PROBE(CLIENT_TLS_FAIL, "fd=%d", client->fd);
     return -1;
 }
 
@@ -1326,6 +1329,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
                   virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
+
+    PROBE(CLIENT_CONNECT, "fd=%d, readonly=%d", fd, sock->readonly);
 
     if (server->nclients >= max_clients) {
         VIR_ERROR(_("Too many active clients (%d), dropping connection"), max_clients);
@@ -1445,6 +1450,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
             if (qemudRegisterClientEvent (server, client) < 0)
                 goto error;
         } else {
+            PROBE(CLIENT_TLS_FAIL, "fd=%d", client->fd);
             VIR_ERROR(_("TLS handshake failed: %s"),
                       gnutls_strerror (ret));
             goto error;
@@ -1476,6 +1482,7 @@ error:
         VIR_FREE(client);
     }
     close (fd);
+    PROBE(CLIENT_DISCONNECT, "fd=%d", fd);
     return -1;
 }
 
@@ -1519,6 +1526,7 @@ void qemudDispatchClientFailure(struct qemud_client *client) {
         client->tlssession = NULL;
     }
     if (client->fd != -1) {
+        PROBE(CLIENT_DISCONNECT, "fd=%d", client->fd);
         close(client->fd);
         client->fd = -1;
     }
@@ -2079,6 +2087,7 @@ qemudDispatchClientHandshake(struct qemud_client *client) {
            direction has changed */
         qemudUpdateClientEvent (client);
     } else {
+        PROBE(CLIENT_TLS_FAIL, "fd=%d", client->fd);
         /* Fatal error in handshake */
         VIR_ERROR(_("TLS handshake failed: %s"),
                   gnutls_strerror (ret));
