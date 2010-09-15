@@ -8602,7 +8602,7 @@ editFile (vshControl *ctl, const char *filename)
         VIR_FREE(command);
         return -1;
     }
-    if (command_ret != WEXITSTATUS (0)) {
+    if (WEXITSTATUS(command_ret) != 0) {
         vshError(ctl,
                  _("%s: command exited with non-zero status"), command);
         VIR_FREE(command);
