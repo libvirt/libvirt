@@ -59,6 +59,7 @@ UTIL_SOURCES =							\
 		util/conf.c util/conf.h				\
 		util/cgroup.c util/cgroup.h			\
 		util/event.c util/event.h			\
+		util/files.c util/files.h			\
 		util/hash.c util/hash.h				\
 		util/hooks.c util/hooks.h			\
 		util/iptables.c util/iptables.h			\
@@ -82,8 +83,8 @@ UTIL_SOURCES =							\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
 		util/xml.c util/xml.h				\
-		util/virterror.c util/virterror_internal.h	\
-		util/files.c util/files.h
+		util/virtaudit.c util/virtaudit.h		\
+		util/virterror.c util/virterror_internal.h
 
 EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
 
@@ -426,8 +427,9 @@ libvirt_la_BUILT_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
-		$(AM_CFLAGS)
-libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) $(LIB_PTHREAD)
+		$(AM_CFLAGS) $(AUDIT_CFLAGS)
+libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
+		$(LIB_PTHREAD) $(AUDIT_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -1120,12 +1122,13 @@ libvirt_lxc_SOURCES =						\
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(LIB_PTHREAD) \
-		$(LIBNL_LIBS) ../gnulib/lib/libgnu.la
+		$(LIBNL_LIBS) $(AUDIT_LIBS) ../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
 		$(NUMACTL_CFLAGS)		\
 		$(CAPNG_CFLAGS)			\
 		$(YAJL_CFLAGS)			\
+		$(AUDIT_CFLAGS)			\
 		-I@top_srcdir@/src/conf		\
 		$(AM_CFLAGS)
 endif

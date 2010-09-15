@@ -73,6 +73,7 @@ typedef enum {
     VIR_FROM_NWFILTER,  /* Error from network filter driver */
     VIR_FROM_HOOK,      /* Error from Synchronous hooks */
     VIR_FROM_DOMAIN_SNAPSHOT, /* Error from domain snapshot */
+    VIR_FROM_AUDIT      /* Error from auditing subsystem */
 } virErrorDomain;
 
 

@@ -64,6 +64,7 @@
 #include "memory.h"
 #include "stream.h"
 #include "hooks.h"
+#include "virtaudit.h"
 #ifdef HAVE_AVAHI
 # include "mdns.h"
 #endif
@@ -187,6 +188,9 @@ static int max_requests = 20;
 /* Total number of 'in-process' RPC calls allowed by a single client*/
 static int max_client_requests = 5;
 
+static int audit_level = 1;
+static int audit_logging = 0;
+
 #define DH_BITS 1024
 
 static sig_atomic_t sig_errors = 0;
@@ -203,6 +207,7 @@ enum {
     VIR_DAEMON_ERR_NETWORK,
     VIR_DAEMON_ERR_CONFIG,
     VIR_DAEMON_ERR_HOOKS,
+    VIR_DAEMON_ERR_AUDIT,
 
     VIR_DAEMON_ERR_LAST
 };
@@ -217,7 +222,8 @@ VIR_ENUM_IMPL(virDaemonErr, VIR_DAEMON_ERR_LAST,
               "Unable to drop privileges",
               "Unable to initialize network sockets",
               "Unable to load configuration file",
-              "Unable to look for hook scripts")
+              "Unable to look for hook scripts",
+              "Unable to initialize audit system")
 
 static void sig_handler(int sig, siginfo_t * siginfo,
                         void* context ATTRIBUTE_UNUSED) {
@@ -2854,6 +2860,9 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_INT (conf, filename, max_requests);
     GET_CONF_INT (conf, filename, max_client_requests);
 
+    GET_CONF_INT (conf, filename, audit_level);
+    GET_CONF_INT (conf, filename, audit_logging);
+
     GET_CONF_STR (conf, filename, host_uuid);
     if (virSetHostUUIDStr(host_uuid)) {
         VIR_ERROR(_("invalid host UUID: %s"), host_uuid);
@@ -3193,6 +3202,16 @@ int main(int argc, char **argv) {
         ret = VIR_DAEMON_ERR_CONFIG;
         goto error;
     }
+
+    if (audit_level) {
+        if (virAuditOpen() < 0) {
+            if (audit_level > 1) {
+                ret = VIR_DAEMON_ERR_AUDIT;
+                goto error;
+            }
+        }
+    }
+    virAuditLog(audit_logging);
 
     /* setup the hooks if any */
     if (virHookInitialize() < 0) {

@@ -57,6 +57,7 @@ MinGW Windows libvirt virtualization library.
   --without-one \
   --without-phyp \
   --without-netcf \
+  --without-audit \
   --without-libvirtd
 make
 

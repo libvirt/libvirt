@@ -61,6 +61,9 @@ module Libvirtd =
                      | str_entry "log_filters"
                      | str_entry "log_outputs"
 
+   let auditing_entry = int_entry "audit_level"
+                      | bool_entry "audit_logging"
+
    (* Each enty in the config is one of the following three ... *)
    let entry = network_entry
              | sock_acl_entry
@@ -69,6 +72,7 @@ module Libvirtd =
              | authorization_entry
              | processing_entry
              | logging_entry
+             | auditing_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 

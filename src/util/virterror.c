@@ -187,6 +187,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_DOMAIN_SNAPSHOT:
             dom = "Domain Snapshot ";
             break;
+        case VIR_FROM_AUDIT:
+            dom = "Audit";
+            break;
     }
     return(dom);
 }

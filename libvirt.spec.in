@@ -66,6 +66,7 @@
 %define with_libpcap       0%{!?_without_libpcap:0}
 %define with_macvtap       0%{!?_without_macvtap:0}
 %define with_libnl         0%{!?_without_libnl:0}
+%define with_audit         0%{!?_without_audit:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -163,6 +164,10 @@
 
 %if %{with_macvtap}
 %define with_libnl 1
+%endif
+
+%if 0%{?fedora} >= 11 || 0%{?rhel} >= 5
+%define with_audit    0%{!?_without_audit:1}
 %endif
 
 # Force QEMU to run as non-root
@@ -370,6 +375,9 @@ BuildRequires: netcf-devel >= 0.1.4
 %if %{with_esx}
 BuildRequires: libcurl-devel
 %endif
+%if %{with_audit}
+BuildRequires: audit-libs-devel
+%endif
 
 # Fedora build root suckage
 BuildRequires: gawk
@@ -552,6 +560,10 @@ of recent versions of Linux (and other OSes).
 %define _without_macvtap --without-macvtap
 %endif
 
+%if ! %{with_audit}
+%define _without_audit --without-audit
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -583,6 +595,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_yajl} \
            %{?_without_libpcap} \
            %{?_without_macvtap} \
+           %{?_without_audit} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \

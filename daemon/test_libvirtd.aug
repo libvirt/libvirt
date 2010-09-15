@@ -268,6 +268,9 @@ log_outputs=\"4:stderr\"
 
 # Logging filters:
 log_filters=\"a\"
+
+# Auditing:
+audit_level = 2
 "
 
    test Libvirtd.lns get conf =
@@ -543,3 +546,6 @@ log_filters=\"a\"
 	{ "#empty" }
         { "#comment" = "Logging filters:" }
         { "log_filters" = "a" }
+	{ "#empty" }
+        { "#comment" = "Auditing:" }
+        { "audit_level" = "2" }
