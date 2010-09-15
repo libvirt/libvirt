@@ -1226,7 +1226,7 @@ remoteCheckCertificate (gnutls_session_t session)
         if (i == 0) {
             if (!remoteCheckDN (cert)) {
                 /* This is the most common error: make it informative. */
-                VIR_ERROR0(_("remoteCheckCertificate: client's Distinguished Name is not on the list of allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem -text' to view the Distinguished Name field in the client certificate, or run this daemon with --verbose option."));
+                VIR_ERROR0(_("remoteCheckCertificate: client's Distinguished Name is not on the list of allowed clients (tls_allowed_dn_list).  Use 'certtool -i --infile clientcert.pem' to view the Distinguished Name field in the client certificate, or run this daemon with --verbose option."));
                 gnutls_x509_crt_deinit (cert);
                 return -1;
             }
