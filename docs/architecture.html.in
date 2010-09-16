@@ -16,7 +16,7 @@ engines:</p>
       </li>
     </ul>
     <h3>
-      <a name="Xen" id="Xen">Libvirt Xen support</a>
+      <a name="Xen">Libvirt Xen support</a>
     </h3>
     <p>When running in a Xen environment, programs using libvirt have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
@@ -49,7 +49,7 @@ connect to initialize the library. It will then fork a libvirt_proxy
 program running as root and providing read_only access to the API, this is
 then only useful for reporting and monitoring.</p>
     <h3>
-      <a name="QEmu" id="QEmu">Libvirt QEmu and KVM support</a>
+      <a name="QEmu">Libvirt QEmu and KVM support</a>
     </h3>
     <p>The model for QEmu and KVM is completely similar, basically KVM is based
 on QEmu for the process controlling a new domain, only small details differs
@@ -63,7 +63,7 @@ domain, by specifying the architecture and machine type targeted.</p>
     <p>The code controlling the QEmu process is available in the
 <code>qemud/</code> directory.</p>
     <h3>
-      <a name="drivers" id="drivers">the driver based architecture</a>
+      <a name="drivers">the driver based architecture</a>
     </h3>
     <p>As the previous section explains, libvirt can communicate using different
 channels with the current hypervisor, and should also be able to use

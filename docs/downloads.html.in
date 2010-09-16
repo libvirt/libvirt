@@ -91,7 +91,7 @@
 
     <h1>libvirt Installation</h1>
 
-    <h2><a name="Compilatio" id="Compilatio">Compilation</a></h2>
+    <h2><a name="Compilatio">Compilation</a></h2>
 
     <p>
       libvirt uses the standard configure/make/install steps:

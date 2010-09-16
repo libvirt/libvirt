@@ -37,7 +37,7 @@ documents libvirt URIs.
       </li>
     </ul>
     <h3>
-      <a name="URI_libvirt" id="URI_libvirt">Specifying URIs to libvirt</a>
+      <a name="URI_libvirt">Specifying URIs to libvirt</a>
     </h3>
     <p>
 The URI is passed as the <code>name</code> parameter to <a href="html/libvirt-libvirt.html#virConnectOpen"><code>virConnectOpen</code></a> or <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly"><code>virConnectOpenReadOnly</code></a>.  For example:
@@ -46,7 +46,7 @@ The URI is passed as the <code>name</code> parameter to <a href="html/libvirt-li
 virConnectPtr conn = virConnectOpenReadOnly (<b>"test:///default"</b>);
 </pre>
     <h3>
-      <a name="URI_virsh" id="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
+      <a name="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
     </h3>
     <p>
 In virsh use the <code>-c</code> or <code>--connect</code> option:
@@ -77,7 +77,7 @@ In virt-install use the <code>--connect=</code><i>URI</i> option:
 virt-install <b>--connect=test:///default</b> <i>[other options]</i>
 </pre>
     <h3>
-      <a name="URI_xen" id="URI_xen">xen:/// URI</a>
+      <a name="URI_xen">xen:/// URI</a>
     </h3>
     <p>
       <i>This section describes a feature which is new in libvirt &gt;
@@ -88,7 +88,7 @@ To access a Xen hypervisor running on the local machine
 use the URI <code>xen:///</code>.
 </p>
     <h3>
-      <a name="URI_qemu" id="URI_qemu">qemu:///... QEMU and KVM URIs</a>
+      <a name="URI_qemu">qemu:///... QEMU and KVM URIs</a>
     </h3>
     <p>
 To use QEMU support in libvirt you must be running the
@@ -120,7 +120,7 @@ KVM guests in the <a href="format.html#KVM1">guest XML as described
 here</a>.
 </p>
     <h3>
-      <a name="URI_remote" id="URI_remote">Remote URIs</a>
+      <a name="URI_remote">Remote URIs</a>
     </h3>
     <p>
 Remote URIs are formed by taking ordinary local URIs and adding a
@@ -183,7 +183,7 @@ remote URI reference</a> and <a href="remote.html">full documentation
 for libvirt remote support</a>.
 </p>
     <h3>
-      <a name="URI_test" id="URI_test">test:///... Test URIs</a>
+      <a name="URI_test">test:///... Test URIs</a>
     </h3>
     <p>
 The test driver is a dummy hypervisor for test purposes.
@@ -197,10 +197,10 @@ a set of host definitions held in the named file.
 </li>
     </ul>
     <h3>
-      <a name="URI_legacy" id="URI_legacy">Other &amp; legacy URI formats</a>
+      <a name="URI_legacy">Other &amp; legacy URI formats</a>
     </h3>
     <h4>
-      <a name="URI_NULL" id="URI_NULL">NULL and empty string URIs</a>
+      <a name="URI_NULL">NULL and empty string URIs</a>
     </h4>
     <p>
 Libvirt allows you to pass a <code>NULL</code> pointer to
@@ -224,7 +224,7 @@ application wishes to connect specifically to a Xen hypervisor, then
 for future proofing it should choose a full <a href="#URI_xen"><code>xen:///</code> URI</a>.
 </p>
     <h4>
-      <a name="URI_file" id="URI_file">File paths (xend-unix-server)</a>
+      <a name="URI_file">File paths (xend-unix-server)</a>
     </h4>
     <p>
 If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
@@ -241,7 +241,7 @@ using a file URI such as:
 virsh -c ///var/run/xend/xend-socket
 </pre>
     <h4>
-      <a name="URI_http" id="URI_http">Legacy: <code>http://...</code> (xend-http-server)</a>
+      <a name="URI_http">Legacy: <code>http://...</code> (xend-http-server)</a>
     </h4>
     <p>
 If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
@@ -277,7 +277,7 @@ Notes:
  documentation as "unix server" or "http server".</li>
     </ol>
     <h4>
-      <a name="URI_legacy_xen" id="URI_legacy_xen">Legacy: <code>"xen"</code></a>
+      <a name="URI_legacy_xen">Legacy: <code>"xen"</code></a>
     </h4>
     <p>
 Another legacy URI is to specify name as the string
@@ -285,7 +285,7 @@ Another legacy URI is to specify name as the string
 hypervisor.  However you should prefer a full <a href="#URI_xen"><code>xen:///</code> URI</a> in all future code.
 </p>
     <h4>
-      <a name="URI_legacy_proxy" id="URI_legacy_proxy">Legacy: Xen proxy</a>
+      <a name="URI_legacy_proxy">Legacy: Xen proxy</a>
     </h4>
     <p>
 Libvirt continues to support connections to a separately running Xen

@@ -19,7 +19,7 @@
         <a href="#Remote">Daemon and remote access</a>
       </li>
     </ul>
-    <h2><a name="Objects" id="Objects">Objects exposed</a></h2>
+    <h2><a name="Objects">Objects exposed</a></h2>
     <p> As defined in the <a href="goals.html">goals section</a>, libvirt
     API need to expose all the resources needed to manage the virtualization
     support of recent operating systems. The first object manipulated though
@@ -85,7 +85,7 @@
       set of nodes.</li>
     </ul>
 
-    <h2><a name="Functions" id="Functions">Functions and naming
+    <h2><a name="Functions">Functions and naming
       conventions</a></h2>
     <p> The naming of the functions present in the library is usually
       made of a prefix describing the object associated to the function
@@ -120,13 +120,13 @@
     </ul>
     <p> For more in-depth details of the storage related APIs see
       <a href="storage.html">the storage management page</a>,
-    <h2><a name="Driver" id="Driver">The libvirt drivers</a></h2>
+    <h2><a name="Driver">The libvirt drivers</a></h2>
     <p></p>
     <p class="image">
       <img alt="The libvirt driver architecture"
            src="libvirt-driver-arch.png"/>
     </p>
-    <h2><a name="Remote" id="Remote">Daemon and remote access</a></h2>
+    <h2><a name="Remote">Daemon and remote access</a></h2>
     <p></p>
     <p class="image">
       <img alt="The libvirt daemon and remote architecture"

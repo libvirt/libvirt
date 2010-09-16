@@ -33,7 +33,7 @@ libvirt.
       </li>
     </ul>
 
-    <h2><a name="StorageBackendDir" id="StorageBackendDir">Directory pool</a></h2>
+    <h2><a name="StorageBackendDir">Directory pool</a></h2>
     <p>
       A pool with a type of <code>dir</code> provides the means to manage
       files within a directory. The files can be fully allocated raw files,
@@ -85,7 +85,7 @@ libvirt.
 
     </p>
 
-    <h2><a name="StorageBackendFS" id="StorageBackendFS">Filesystem pool</a></h2>
+    <h2><a name="StorageBackendFS">Filesystem pool</a></h2>
     <p>
       This is a variant of the directory pool. Instead of creating a
       directory on an existing mounted filesystem though, it expects
@@ -156,7 +156,7 @@ libvirt.
     </p>
 
 
-    <h2><a name="StorageBackendNetFS" id="StorageBackendNetFS">Network filesystem pool</a></h2>
+    <h2><a name="StorageBackendNetFS">Network filesystem pool</a></h2>
     <p>
       This is a variant of the filesystem pool. Instead of requiring
       a local block device as the source, it requires the name of a
@@ -196,7 +196,7 @@ libvirt.
     </p>
 
 
-    <h2><a name="StorageBackendLogical" id="StorageBackendLogical">Logical volume pools</a></h2>
+    <h2><a name="StorageBackendLogical">Logical volume pools</a></h2>
     <p>
       This provides a pool based on an LVM volume group. For a
       pre-defined LVM volume group, simply providing the group
@@ -231,7 +231,7 @@ libvirt.
     </p>
 
 
-    <h2><a name="StorageBackendDisk" id="StorageBackendDisk">Disk volume pools</a></h2>
+    <h2><a name="StorageBackendDisk">Disk volume pools</a></h2>
     <p>
       This provides a pool based on a physical disk. Volumes are created
       by adding partitions to the disk. Disk pools are have constraints
@@ -318,7 +318,7 @@ libvirt.
     </ul>
 
 
-    <h2><a name="StorageBackendISCSI" id="StorageBackendISCSI">iSCSI volume pools</a></h2>
+    <h2><a name="StorageBackendISCSI">iSCSI volume pools</a></h2>
     <p>
       This provides a pool based on an iSCSI target. Volumes must be
       pre-allocated on the iSCSI server, and cannot be created via
@@ -351,7 +351,7 @@ libvirt.
       The iSCSI volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendSCSI" id="StorageBackendSCSI">SCSI volume pools</a></h2>
+    <h2><a name="StorageBackendSCSI">SCSI volume pools</a></h2>
     <p>
       This provides a pool based on a SCSI HBA. Volumes are preexisting SCSI
       LUNs, and cannot be created via the libvirt APIs. Since /dev/XXX names
@@ -383,7 +383,7 @@ libvirt.
       The SCSI volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendMultipath" id="StorageBackendMultipath">Multipath pools</a></h2>
+    <h2><a name="StorageBackendMultipath">Multipath pools</a></h2>
     <p>
       This provides a pool that contains all the multipath devices on the
       host. Volume creating is not supported via the libvirt APIs.
