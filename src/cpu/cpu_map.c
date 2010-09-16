@@ -32,6 +32,8 @@
 
 #define CPUMAPFILE PKGDATADIR "/cpu_map.xml"
 
+static char *cpumap;
+
 VIR_ENUM_IMPL(cpuMapElement, CPU_MAP_ELEMENT_LAST,
     "vendor",
     "feature",
@@ -81,6 +83,7 @@ int cpuMapLoad(const char *arch,
     char *xpath = NULL;
     int ret = -1;
     int element;
+    const char *mapfile = (cpumap ? cpumap : CPUMAPFILE);
 
     if (arch == NULL) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
@@ -94,10 +97,10 @@ int cpuMapLoad(const char *arch,
         return -1;
     }
 
-    if ((xml = xmlParseFile(CPUMAPFILE)) == NULL) {
+    if ((xml = xmlParseFile(mapfile)) == NULL) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 _("cannot parse CPU map file: %s"),
-                CPUMAPFILE);
+                mapfile);
         goto cleanup;
     }
 
@@ -138,4 +141,18 @@ cleanup:
 no_memory:
     virReportOOMError();
     goto cleanup;
+}
+
+
+int
+cpuMapOverride(const char *path)
+{
+    char *map;
+
+    if (!(map = strdup(path)))
+        return -1;
+
+    VIR_FREE(cpumap);
+    cpumap = map;
+    return 0;
 }

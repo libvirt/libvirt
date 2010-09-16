@@ -105,6 +105,7 @@ cpuDecode;
 cpuEncode;
 cpuGuestData;
 cpuHasFeature;
+cpuMapOverride;
 cpuNodeData;
 cpuUpdate;
 
