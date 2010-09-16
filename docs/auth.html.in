@@ -65,29 +65,27 @@ auth, but does not require that the client application ultimately run as root.
 Default policy will still allow any application to connect to the RO socket.
 </p>
     <p>
-The default policy can be overridden by the administrator using the PolicyKit
-master configuration file in <code>/etc/PolicyKit/PolicyKit.conf</code>. The
-<code>PolicyKit.conf(5)</code> manual page provides details on the syntax
-available. The two libvirt daemon actions available are named <code>org.libvirt.unix.monitor</code>
-for the RO socket, and <code>org.libvirt.unix.manage</code> for the RW socket.
-</p>
+The default policy can be overridden by creating a new policy file in the
+local override directory <code>/etc/polkit-1/localauthority/50-local.d/</code>.
+Policy files should have a unique name ending with .pkla.  Using reverse DNS
+naming works well. Information on the options available can be found by
+reading the pklocalauthority man page. The two libvirt daemon actions
+available are named <code>org.libvirt.unix.manage</code> for full management
+access, and <code>org.libvirt.unix.monitor</code> for read-only access.
+    </p>
     <p>
-As an example, to allow a user <code>fred</code> full access to the RW socket,
-while requiring <code>joe</code> to authenticate with the admin password,
-would require adding the following snippet to <code>PolicyKit.conf</code>.
-</p>
-    <pre>
-  &lt;match action="org.libvirt.unix.manage"&gt;
-    &lt;match user="fred"&gt;
-      &lt;return result="yes"/&gt;
-    &lt;/match&gt;
-  &lt;/match&gt;
-  &lt;match action="org.libvirt.unix.manage"&gt;
-    &lt;match user="joe"&gt;
-      &lt;return result="auth_admin"/&gt;
-    &lt;/match&gt;
-  &lt;/match&gt;
-</pre>
+As an example, this gives the user <code>fred</code> full management access:
+    </p>
+<pre>[Allow fred libvirt management permissions]
+Identity=unix-user:fred
+Action=org.libvirt.unix.manage
+ResultAny=yes
+ResultInactive=yes
+ResultActive=yes</pre>
+    <p>
+Further examples of PolicyKit setup can be found on the
+<a href="http://wiki.libvirt.org/page/SSHPolicyKitSetup">wiki page</a>.
+    </p>
     <h3><a name="ACL_server_username">Username/password auth</a></h3>
     <p>
 The plain TCP socket of the libvirt daemon defaults to using SASL for authentication.
