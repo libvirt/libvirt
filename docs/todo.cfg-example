@@ -1,0 +1,26 @@
+bugzilla = {
+	 #username = ...some email addr...
+	 #password = ...some bz password...
+	 server = https://bugzilla.redhat.com
+}
+query = {
+      product = Virtualization Tools
+      alias = libvirtTodo
+}
+
+output = {
+       title = Todo list
+       blurb = <<EOF
+This is a summary of all the ideas submitted for future todo items in
+libvirt. Listing an idea here does not imply that it is committed to
+for inclusion in libvirt, just that someone thought it might be a
+useful feature. Discussion for final approval of features always takes
+place on the <a href="contact.html">development mailing list</a>.
+If you intend to work on one of the items here, it is recommended to
+add a comment to the corresponding bugzilla ticket to this effect.
+This will reduce the risk of duplicated effort between developers.
+It is also strongly recommended to mail the development mailing list
+with proposals for new APIs &amp; XML before fully implementing them, to
+allow for early design review.
+EOF
+}

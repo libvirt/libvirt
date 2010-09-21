@@ -5,3 +5,4 @@ apibuild.pyc
 *.html
 libvirt-api.xml
 libvirt-refs.xml
+todo.html.in

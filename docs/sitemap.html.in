@@ -275,6 +275,12 @@
       <li>
         <a href="bugs.html">Bug reports</a>
         <span>How and where to report bugs and request features</span>
+        <ul>
+          <li>
+            <a href="todo.html">Todo list</a>
+            <span>Main feature request list</span>
+          </li>
+        </ul>
       </li>
       <li>
         <a href="contact.html">Contact</a>

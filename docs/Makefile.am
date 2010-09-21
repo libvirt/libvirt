@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 SUBDIRS= schemas
 
+PERL = perl
+
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
 
@@ -53,7 +55,7 @@ gif = \
   architecture.gif \
   node.gif
 
-dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in))
+dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in
 dot_html = $(dot_html_in:%.html.in=%.html)
 
 patches = $(wildcard api_extension/*.patch)
@@ -96,6 +98,22 @@ ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
 	  $(XSLTPROC) --nonet $(top_srcdir)/docs/ChangeLog.xsl $< > $@ \
 	    || { rm $@ && exit 1; }; fi
+
+todo.html.in: todo.pl
+	if [ -f  todo.cfg ]; then \
+		echo "Generating $@"; \
+		$(PERL) $(srcdir)/$< > $@ \
+		|| { rm $@ && exit 1; }; \
+	else \
+		echo "Stubbing $@"; \
+		echo "<html><body><h1>Todo list</h1></body></html>" > $@ ; \
+	fi
+
+todo:
+	rm -f todo.html.in
+	$(MAKE) todo.html
+
+.PHONY: todo
 
 %.png: %.fig
 	convert -rotate 90 $< $@
@@ -153,7 +171,7 @@ clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html
 
 maintainer-clean-local: clean-local
-	rm -rf libvirt-api.xml libvirt-refs.xml
+	rm -rf libvirt-api.xml libvirt-refs.xml todo.html.in
 
 rebuild: api all
 
