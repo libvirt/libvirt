@@ -65,7 +65,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 /* Return the positive decimal contents of the given
  * CPU_SYS_PATH/cpu%u/FILE, or -1 on error.  If MISSING_OK and the
  * file could not be found, return 1 instead of an error; this is
- * because some machines cannot hot-unplug cpu0.  */
+ * because some machines cannot hot-unplug cpu0, or because
+ * hot-unplugging is disabled.  */
 static int
 get_cpu_value(unsigned int cpu, const char *file, bool missing_ok)
 {
@@ -113,7 +114,7 @@ cleanup:
 static int
 cpu_online(unsigned int cpu)
 {
-    return get_cpu_value(cpu, "online", cpu == 0);
+    return get_cpu_value(cpu, "online", true);
 }
 
 static unsigned long count_thread_siblings(unsigned int cpu)
