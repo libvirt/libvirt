@@ -379,9 +379,14 @@ virNWFilterPoolObjRemove(virNWFilterPoolObjListPtr pools,
     }
 }
 
+union data {
+    void *v;
+    char *c;
+    unsigned char *uc;
+    unsigned int ui;
+};
 
-
-typedef bool (*valueValidator)(enum attrDatatype datatype, void *valptr,
+typedef bool (*valueValidator)(enum attrDatatype datatype, union data *valptr,
                                virNWFilterRuleDefPtr nwf);
 typedef bool (*valueFormatter)(virBufferPtr buf,
                                virNWFilterRuleDefPtr nwf);
@@ -407,18 +412,18 @@ static const struct int_map macProtoMap[] = {
 
 
 static bool
-checkMacProtocolID(enum attrDatatype datatype, void *value,
+checkMacProtocolID(enum attrDatatype datatype, union data *value,
                    virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
 {
     int32_t res = -1;
 
     if (datatype == DATATYPE_STRING) {
-        if (intMapGetByString(macProtoMap, (char *)value, 1, &res) == 0)
+        if (intMapGetByString(macProtoMap, value->c, 1, &res) == 0)
             res = -1;
         datatype = DATATYPE_UINT16;
     } else if (datatype == DATATYPE_UINT16 ||
                datatype == DATATYPE_UINT16_HEX) {
-        res = (uint32_t)*(uint16_t *)value;
+        res = value->ui;
         if (res < 0x600)
             res = -1;
     }
@@ -485,10 +490,10 @@ checkValidMask(unsigned char *data, int len)
 
 static bool
 checkMACMask(enum attrDatatype datatype ATTRIBUTE_UNUSED,
-             void *macMask,
+             union data *macMask,
              virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
 {
-    return checkValidMask((unsigned char *)macMask, 6);
+    return checkValidMask(macMask->uc, 6);
 }
 
 
@@ -511,18 +516,18 @@ static const struct int_map arpOpcodeMap[] = {
 
 static bool
 arpOpcodeValidator(enum attrDatatype datatype,
-                   void *value,
+                   union data *value,
                    virNWFilterRuleDefPtr nwf)
 {
     int32_t res = -1;
 
     if (datatype == DATATYPE_STRING) {
-        if (intMapGetByString(arpOpcodeMap, (char *)value, 1, &res) == 0)
+        if (intMapGetByString(arpOpcodeMap, value->c, 1, &res) == 0)
             res = -1;
         datatype = DATATYPE_UINT16;
     } else if (datatype == DATATYPE_UINT16 ||
                datatype == DATATYPE_UINT16_HEX) {
-        res = (uint32_t)*(uint16_t *)value;
+        res = (uint32_t)value->ui;
     }
 
     if (res != -1) {
@@ -570,18 +575,18 @@ static const struct int_map ipProtoMap[] = {
 
 
 static bool checkIPProtocolID(enum attrDatatype datatype,
-                              void *value,
+                              union data *value,
                               virNWFilterRuleDefPtr nwf)
 {
     int32_t res = -1;
 
     if (datatype == DATATYPE_STRING) {
-        if (intMapGetByString(ipProtoMap, (char *)value, 1, &res) == 0)
+        if (intMapGetByString(ipProtoMap, value->c, 1, &res) == 0)
             res = -1;
         datatype = DATATYPE_UINT8_HEX;
     } else if (datatype == DATATYPE_UINT8 ||
                datatype == DATATYPE_UINT8_HEX) {
-        res = (uint32_t)*(uint16_t *)value;
+        res = (uint32_t)value->ui;
     }
 
     if (res != -1) {
@@ -615,10 +620,10 @@ formatIPProtocolID(virBufferPtr buf,
 
 
 static bool
-dscpValidator(enum attrDatatype datatype, void *val,
+dscpValidator(enum attrDatatype datatype, union data *val,
               virNWFilterRuleDefPtr nwf)
 {
-    uint8_t dscp = *(uint16_t *)val;
+    uint8_t dscp = val->ui;
     if (dscp > 63)
         return 0;
 
@@ -1150,7 +1155,8 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
     nwItemDesc *item;
     int int_val;
     unsigned int uint_val;
-    void *data_ptr = NULL, *storage_ptr;
+    void *storage_ptr;
+    union data data;
     valueValidator validator;
     char *match = virXMLPropString(node, "match");
     nwIPAddress ipaddr;
@@ -1206,7 +1212,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 if (uint_val <= 0xff) {
                                     *(uint8_t *)storage_ptr = uint_val;
                                     found = 1;
-                                    data_ptr = &uint_val;
+                                    data.ui = uint_val;
                                 } else
                                     rc = -1;
                             } else
@@ -1221,7 +1227,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 if (uint_val <= 0xffff) {
                                     *(uint16_t *)storage_ptr = uint_val;
                                     found = 1;
-                                    data_ptr = &uint_val;
+                                    data.ui = uint_val;
                                 } else
                                     rc = -1;
                             } else
@@ -1245,7 +1251,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                         *(uint8_t *)storage_ptr =
                                                (uint8_t)uint_val;
                                     found = 1;
-                                    data_ptr = &uint_val;
+                                    data.ui = uint_val;
                                 } else
                                     rc = -1;
                             } else {
@@ -1278,7 +1284,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                         (nwMACAddressPtr)storage_ptr)) {
                                 rc = -1;
                             }
-                            data_ptr = storage_ptr;
+                            data.v = storage_ptr;
                             found = 1;
                         break;
 
@@ -1299,7 +1305,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                         *(uint8_t *)storage_ptr =
                                                (uint8_t)uint_val;
                                     found = 1;
-                                    data_ptr = &uint_val;
+                                    data.ui = uint_val;
                                 } else
                                     rc = -1;
                             } else {
@@ -1322,7 +1328,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 rc = -1;
                                 break;
                             }
-                            data_ptr = prop;
+                            data.c = prop;
                             found = 1;
                         break;
 
@@ -1344,7 +1350,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                 *flags = NWFILTER_ENTRY_ITEM_FLAG_EXISTS | flags_set;
                 item->datatype = datatype >> 1;
                 if (validator) {
-                    if (!validator(datatype >> 1, data_ptr, nwf)) {
+                    if (!validator(datatype >> 1, &data, nwf)) {
                         rc = -1;
                         *flags = 0;
                     }
