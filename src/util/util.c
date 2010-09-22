@@ -43,9 +43,7 @@
 #endif
 #include <string.h>
 #include <signal.h>
-#if HAVE_TERMIOS_H
-# include <termios.h>
-#endif
+#include <termios.h>
 #include "c-ctype.h"
 
 #ifdef HAVE_PATHS_H
