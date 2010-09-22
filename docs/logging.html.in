@@ -4,33 +4,33 @@
     <h1 >Logging in the library and the daemon</h1>
     <p>Libvirt includes logging facilities starting from version 0.6.0,
        this complements the <a href="errors.html">error handling</a>
-       mechanism and APIs to allow tracing though the execution of the
+       mechanism and APIs to allow tracing through the execution of the
        library as well as in the libvirtd daemon.</p>
     <p>The logging functionalities in libvirt are based on 3 key concepts,
        similar to the one present in other generic logging facilities like
        log4j:</p>
     <ul>
       <li>log messages: they are information generated at runtime by
-          the libvirt code, it includes a priority level (DEBUG = 1,
+          the libvirt code. Each message includes a priority level (DEBUG = 1,
           INFO = 2, WARNING = 3, ERROR = 4), a category, function name and
           line number, indicating where it originated from, and finally
-          a formatted message, in addition the library adds a timestamp
+          a formatted message.  In addition the library adds a timestamp
           at the begining of the message</li>
-      <li>log filters: it's a set of patter and priorities allowing to acept
-          or reject a log message, if the message category matches a filter,
+      <li>log filters: a set of patterns and priorities to accept
+          or reject a log message.  If the message category matches a filter,
           the message priority is compared to the filter priority, if lower
           the message is discarded, if higher the message is output. If
           no filter matches, then a general priority level is applied to
-          all remaining messages. This allows to capture for example all
-          debug messages for the QEmu driver, but otherwise only allow
-          errors to show up from other parts</li>
-      <li>log outputs: once a message has gone though filtering a set of
+          all remaining messages. This allows, for example, capturing all
+          debug messages for the QEmu driver, but otherwise only allowing
+          errors to show up from other parts.</li>
+      <li>log outputs: once a message has gone through filtering a set of
           output defines where to send the message, they can also filter
           based on the priority, for example it may be useful to output
           all messages to a debugging file but only allow errors to be
-          logged though syslog.</li>
+          logged through syslog.</li>
     </ul>
-    <p>The library configuration of logging is though 3 environment variables
+    <p>The library configuration of logging is through 3 environment variables
     allowing to control the logging behaviour:</p>
     <ul>
       <li>LIBVIRT_DEBUG: it can take the four following values:
@@ -41,14 +41,14 @@
         <li>3 or "warn": log warnings and errors, that's the default value</li>
         <li>4 or "error": log only error messages</li>
       </ul></li>
-      <li>LIBVIRT_LOG_FILTERS: allow to define logging filters</li>
-      <li>LIBVIRT_LOG_OUTPUTS: allow to define logging outputs</li>
+      <li>LIBVIRT_LOG_FILTERS: defines logging filters</li>
+      <li>LIBVIRT_LOG_OUTPUTS: defines logging outputs</li>
     </ul>
     <p>Note that, for example, setting LIBVIRT_DEBUG= is the same as unset. If
        you specify an invalid value, it will be ignored with a warning. If you
        have an error in a filter or output string, some of the settings may be
        applied up to the point at which libvirt encountered the error.</p>
-    <p>Similary the daemon logging behaviour can be tuned using 3 config
+    <p>Similarly the daemon logging behaviour can be tuned using 3 config
     variables, stored in the configuration file:
     <ul>
       <li>log_level: accepts the following values:
@@ -58,8 +58,8 @@
         <li>2: informations, warnings and errors</li>
         <li>1: debug and everything</li>
       </ul></li>
-      <li>log_filters: allow to define logging filters</li>
-      <li>log_outputs: allow to define logging outputs</li>
+      <li>log_filters: defines logging filters</li>
+      <li>log_outputs: defines logging outputs</li>
     </ul>
     <p>When starting the libvirt daemon, any logging environment variable
        settings will override settings in the config file. Command line options
@@ -106,7 +106,7 @@
       <li>3: WARNING</li>
       <li>4: ERROR</li>
     </ul>
-    <p>Multiple output can be defined , they just need to be separated by
+    <p>Multiple output can be defined, they just need to be separated by
        spaces, e.g.: <code>"3:syslog:libvirtd 1:file:/tmp/libvirt.log"</code>
        will log all warnings and errors to syslog under the libvirtd ident
        but also log everything debugging and informations included in the
