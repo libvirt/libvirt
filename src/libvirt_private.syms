@@ -96,6 +96,7 @@ cpuEncode;
 cpuGuestData;
 cpuNodeData;
 cpuUpdate;
+cpuHasFeature;
 
 
 # cpu_conf.h

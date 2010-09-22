@@ -1211,6 +1211,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_NO_KVM_PIT;
     if (strstr(help, "-tdf"))
         flags |= QEMUD_CMD_FLAG_TDF;
+    if (strstr(help, "-enable-nesting"))
+        flags |= QEMUD_CMD_FLAG_NESTING;
     if (strstr(help, ",menu=on"))
         flags |= QEMUD_CMD_FLAG_BOOT_MENU;
     if (strstr(help, "-fsdev"))
@@ -3577,7 +3579,8 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
                    const char *emulator,
                    unsigned long long qemuCmdFlags,
                    const struct utsname *ut,
-                   char **opt)
+                   char **opt,
+                   bool *hasHwVirt)
 {
     const virCPUDefPtr host = driver->caps->host.cpu;
     virCPUDefPtr guest = NULL;
@@ -3587,6 +3590,8 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     int ret = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
+
+    *hasHwVirt = false;
 
     if (def->cpu && def->cpu->model) {
         if (qemudProbeCPUModels(emulator, qemuCmdFlags, ut->machine,
@@ -3603,6 +3608,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     if (ncpus > 0 && host) {
         virCPUCompareResult cmp;
         const char *preferred;
+        int hasSVM;
 
         cmp = cpuGuestData(host, def->cpu, &data);
         switch (cmp) {
@@ -3628,6 +3634,14 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         guest->type = VIR_CPU_TYPE_GUEST;
         if (cpuDecode(guest, data, cpus, ncpus, preferred) < 0)
             goto cleanup;
+
+        /* Only 'svm' requires --enable-nesting. The nested
+         * 'vmx' patches now simply hook off the CPU features
+         */
+        hasSVM = cpuHasFeature(guest->arch, data, "svm");
+        if (hasSVM < 0)
+            goto cleanup;
+        *hasHwVirt = hasSVM > 0 ? true : false;
 
         virBufferVSprintf(&buf, "%s", guest->model);
         for (i = 0; i < guest->nfeatures; i++) {
@@ -3755,6 +3769,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char *cpu;
     char *smp;
     int last_good_net = -1;
+    bool hasHwVirt = false;
 
     uname_normalize(&ut);
 
@@ -3948,13 +3963,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT(def->os.machine);
     }
 
-    if (qemuBuildCpuArgStr(driver, def, emulator, qemuCmdFlags, &ut, &cpu) < 0)
+    if (qemuBuildCpuArgStr(driver, def, emulator, qemuCmdFlags,
+                           &ut, &cpu, &hasHwVirt) < 0)
         goto error;
 
     if (cpu) {
         ADD_ARG_LIT("-cpu");
         ADD_ARG_LIT(cpu);
         VIR_FREE(cpu);
+
+        if ((qemuCmdFlags & QEMUD_CMD_FLAG_NESTING) &&
+            hasHwVirt)
+            ADD_ARG_LIT("-enable-nesting");
     }
 
     if (disableKQEMU)

@@ -82,6 +82,10 @@ typedef int
 (*cpuArchUpdate)    (virCPUDefPtr guest,
                      const virCPUDefPtr host);
 
+typedef int
+(*cpuArchHasFeature) (const union cpuData *data,
+                      const char *feature);
+
 
 struct cpuArchDriver {
     const char *name;
@@ -95,6 +99,7 @@ struct cpuArchDriver {
     cpuArchGuestData    guestData;
     cpuArchBaseline     baseline;
     cpuArchUpdate       update;
+    cpuArchHasFeature    hasFeature;
 };
 
 
@@ -150,5 +155,11 @@ cpuBaseline (virCPUDefPtr *cpus,
 extern int
 cpuUpdate   (virCPUDefPtr guest,
              const virCPUDefPtr host);
+
+extern int
+cpuHasFeature(const char *arch,
+              const union cpuData *data,
+              const char *feature);
+
 
 #endif /* __VIR_CPU_H__ */

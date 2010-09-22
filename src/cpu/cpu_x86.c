@@ -1754,6 +1754,35 @@ cleanup:
     return ret;
 }
 
+static int x86HasFeature(const union cpuData *data,
+                         const char *name)
+{
+    struct x86_map *map;
+    struct x86_feature *feature;
+    int ret = -1;
+    int i;
+
+    if (!(map = x86LoadMap()))
+        return -1;
+
+    if (!(feature = x86FeatureFind(map, name)))
+        goto cleanup;
+
+    for (i = 0 ; i < feature->ncpuid ; i++) {
+        struct cpuX86cpuid *cpuid;
+
+        cpuid = x86DataCpuid(data, feature->cpuid[i].function);
+        if (cpuid && x86cpuidMatchMasked(cpuid, feature->cpuid + i)) {
+            ret = 1;
+            goto cleanup;
+        }
+    }
+    ret = 0;
+
+cleanup:
+    x86MapFree(map);
+    return ret;
+}
 
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
@@ -1771,4 +1800,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .guestData  = x86GuestData,
     .baseline   = x86Baseline,
     .update     = x86Update,
+    .hasFeature = x86HasFeature,
 };

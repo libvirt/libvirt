@@ -424,3 +424,26 @@ cpuUpdate(virCPUDefPtr guest,
 
     return driver->update(guest, host);
 }
+
+int
+cpuHasFeature(const char *arch,
+              const union cpuData *data,
+              const char *feature)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, data=%p, feature=%s",
+              arch, data, feature);
+
+    if ((driver = cpuGetSubDriver(arch)) == NULL)
+        return -1;
+
+    if (driver->hasFeature == NULL) {
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
+                _("cannot check guest CPU data for %s architecture"),
+                          arch);
+        return -1;
+    }
+
+    return driver->hasFeature(data, feature);
+}
