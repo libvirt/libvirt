@@ -1,0 +1,34 @@
+<domain type='vmware'>
+  <name>vmtest.local</name>
+  <uuid>423e94a9-a1c7-b31d-7161-76c7586c830e</uuid>
+  <description>Centos 5.5 64bit Server</description>
+  <memory>2097152</memory>
+  <currentMemory>2097152</currentMemory>
+  <vcpu>2</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/vmtest-000001.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <source file='[4af0231d-1eff559a-6369-0024e84773b6] isos/CentOS-5.5-x86_64-bin-DVD-1of2.iso'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='lsilogic'/>
+    <controller type='ide' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:50:56:be:00:15'/>
+      <source bridge='VM-LAN'/>
+      <model type='e1000'/>
+    </interface>
+  </devices>
+</domain>

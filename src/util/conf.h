@@ -25,8 +25,8 @@ typedef enum {
 } virConfType;
 
 typedef enum {
-    VIR_CONF_FLAG_VMX_FORMAT = 1,  /* allow : and . in names for compatibility with
-                                      VMware VMX configuration file, but restrict
+    VIR_CONF_FLAG_VMX_FORMAT = 1,  /* allow ':', '.' and '-' in names for compatibility
+                                      with VMware VMX configuration file, but restrict
                                       allowed value types to string only */
 } virConfFlags;
 

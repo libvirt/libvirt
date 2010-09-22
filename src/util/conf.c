@@ -561,7 +561,7 @@ virConfParseName(virConfParserCtxtPtr ctxt)
     while ((ctxt->cur < ctxt->end) &&
            (c_isalnum(CUR) || (CUR == '_') ||
             ((ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) &&
-             ((CUR == ':') || (CUR == '.')))))
+             ((CUR == ':') || (CUR == '.') || (CUR == '-')))))
         NEXT;
     ret = strndup(base, ctxt->cur - base);
     if (ret == NULL) {
