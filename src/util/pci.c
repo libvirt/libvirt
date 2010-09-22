@@ -826,7 +826,7 @@ recheck:
             char ebuf[1024];
             VIR_WARN("failed to load pci-stub or pciback drivers: %s",
                      virStrerror(errno, ebuf, sizeof ebuf));
-            return 0;
+            return NULL;
         }
 
         goto recheck;
