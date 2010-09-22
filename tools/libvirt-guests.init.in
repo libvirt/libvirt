@@ -17,7 +17,7 @@
 #
 # libvirt-guests:   suspend/resume libvirt guests on shutdown/boot
 #
-# chkconfig: 345 98 02
+# chkconfig: 345 99 01
 # description:  This is a script for suspending active libvirt guests \
 #               on shutdown and resuming them on next boot \
 #               See http://libvirt.org
