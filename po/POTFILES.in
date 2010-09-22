@@ -26,6 +26,7 @@ src/esx/esx_vi.c
 src/esx/esx_vi_methods.c
 src/esx/esx_vi_types.c
 src/esx/esx_vmx.c
+src/fdstream.c
 src/interface/netcf_driver.c
 src/internal.h
 src/libvirt.c

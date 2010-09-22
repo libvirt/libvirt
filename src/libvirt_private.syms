@@ -335,6 +335,13 @@ virEventUpdateHandle;
 virEventUpdateTimeout;
 
 
+# fdstream.h
+virFDStreamOpen;
+virFDStreamConnectUNIX;
+virFDStreamOpenFile;
+virFDStreamCreateFile;
+
+
 # files.h
 virClose;
 

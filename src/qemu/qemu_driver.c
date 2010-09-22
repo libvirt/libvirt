@@ -83,6 +83,7 @@
 #include "storage_file.h"
 #include "virtaudit.h"
 #include "files.h"
+#include "fdstream.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -10823,278 +10824,6 @@ qemuDomainIsMigratable(virDomainDefPtr def)
     return true;
 }
 
-
-/* Tunnelled migration stream support */
-struct qemuStreamMigFile {
-    int fd;
-
-    int watch;
-    unsigned int cbRemoved;
-    unsigned int dispatching;
-    virStreamEventCallback cb;
-    void *opaque;
-    virFreeCallback ff;
-};
-
-static int qemuStreamMigRemoveCallback(virStreamPtr stream)
-{
-    struct qemud_driver *driver = stream->conn->privateData;
-    struct qemuStreamMigFile *qemust = stream->privateData;
-    int ret = -1;
-
-    if (!qemust) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("stream is not open"));
-        return -1;
-    }
-
-    qemuDriverLock(driver);
-    if (qemust->watch == 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("stream does not have a callback registered"));
-        goto cleanup;
-    }
-
-    virEventRemoveHandle(qemust->watch);
-    if (qemust->dispatching)
-        qemust->cbRemoved = 1;
-    else if (qemust->ff)
-        (qemust->ff)(qemust->opaque);
-
-    qemust->watch = 0;
-    qemust->ff = NULL;
-    qemust->cb = NULL;
-    qemust->opaque = NULL;
-
-    ret = 0;
-
-cleanup:
-    qemuDriverUnlock(driver);
-    return ret;
-}
-
-static int qemuStreamMigUpdateCallback(virStreamPtr stream, int events)
-{
-    struct qemud_driver *driver = stream->conn->privateData;
-    struct qemuStreamMigFile *qemust = stream->privateData;
-    int ret = -1;
-
-    if (!qemust) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("stream is not open"));
-        return -1;
-    }
-
-    qemuDriverLock(driver);
-    if (qemust->watch == 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("stream does not have a callback registered"));
-        goto cleanup;
-    }
-
-    virEventUpdateHandle(qemust->watch, events);
-
-    ret = 0;
-
-cleanup:
-    qemuDriverUnlock(driver);
-    return ret;
-}
-
-static void qemuStreamMigEvent(int watch ATTRIBUTE_UNUSED,
-                               int fd ATTRIBUTE_UNUSED,
-                               int events,
-                               void *opaque)
-{
-    virStreamPtr stream = opaque;
-    struct qemud_driver *driver = stream->conn->privateData;
-    struct qemuStreamMigFile *qemust = stream->privateData;
-    virStreamEventCallback cb;
-    void *cbopaque;
-    virFreeCallback ff;
-
-    qemuDriverLock(driver);
-    if (!qemust || !qemust->cb) {
-        qemuDriverUnlock(driver);
-        return;
-    }
-
-    cb = qemust->cb;
-    cbopaque = qemust->opaque;
-    ff = qemust->ff;
-    qemust->dispatching = 1;
-    qemuDriverUnlock(driver);
-
-    cb(stream, events, cbopaque);
-
-    qemuDriverLock(driver);
-    qemust->dispatching = 0;
-    if (qemust->cbRemoved && ff)
-        (ff)(cbopaque);
-    qemuDriverUnlock(driver);
-}
-
-static int
-qemuStreamMigAddCallback(virStreamPtr st,
-                         int events,
-                         virStreamEventCallback cb,
-                         void *opaque,
-                         virFreeCallback ff)
-{
-    struct qemud_driver *driver = st->conn->privateData;
-    struct qemuStreamMigFile *qemust = st->privateData;
-    int ret = -1;
-
-    if (!qemust) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("stream is not open"));
-        return -1;
-    }
-
-    qemuDriverLock(driver);
-    if (qemust->watch != 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("stream already has a callback registered"));
-        goto cleanup;
-    }
-
-    if ((qemust->watch = virEventAddHandle(qemust->fd,
-                                           events,
-                                           qemuStreamMigEvent,
-                                           st,
-                                           NULL)) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("cannot register file watch on stream"));
-        goto cleanup;
-    }
-
-    qemust->cbRemoved = 0;
-    qemust->cb = cb;
-    qemust->opaque = opaque;
-    qemust->ff = ff;
-    virStreamRef(st);
-
-    ret = 0;
-
-cleanup:
-    qemuDriverUnlock(driver);
-    return ret;
-}
-
-static void qemuStreamMigFree(struct qemuStreamMigFile *qemust)
-{
-    VIR_FORCE_CLOSE(qemust->fd);
-    VIR_FREE(qemust);
-}
-
-static struct qemuStreamMigFile *qemuStreamMigOpen(virStreamPtr st,
-                                                   const char *unixfile)
-{
-    struct qemuStreamMigFile *qemust = NULL;
-    struct sockaddr_un sa_qemu;
-    int i = 0;
-    int timeout = 3;
-    int ret;
-
-    if (VIR_ALLOC(qemust) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    qemust->fd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (qemust->fd < 0)
-        goto cleanup;
-
-    memset(&sa_qemu, 0, sizeof(sa_qemu));
-    sa_qemu.sun_family = AF_UNIX;
-    if (virStrcpy(sa_qemu.sun_path, unixfile, sizeof(sa_qemu.sun_path)) == NULL)
-        goto cleanup;
-
-    do {
-        ret = connect(qemust->fd, (struct sockaddr *)&sa_qemu, sizeof(sa_qemu));
-        if (ret == 0)
-            break;
-
-        if (errno == ENOENT || errno == ECONNREFUSED) {
-            /* ENOENT       : Socket may not have shown up yet
-             * ECONNREFUSED : Leftover socket hasn't been removed yet */
-            continue;
-        }
-
-        goto cleanup;
-    } while ((++i <= timeout*5) && (usleep(.2 * 1000000) <= 0));
-
-    if ((st->flags & VIR_STREAM_NONBLOCK) && virSetNonBlock(qemust->fd) < 0)
-        goto cleanup;
-
-    return qemust;
-
-cleanup:
-    qemuStreamMigFree(qemust);
-    return NULL;
-}
-
-static int
-qemuStreamMigClose(virStreamPtr st)
-{
-    struct qemud_driver *driver = st->conn->privateData;
-    struct qemuStreamMigFile *qemust = st->privateData;
-
-    if (!qemust)
-        return 0;
-
-    qemuDriverLock(driver);
-
-    qemuStreamMigFree(qemust);
-
-    st->privateData = NULL;
-
-    qemuDriverUnlock(driver);
-
-    return 0;
-}
-
-static int qemuStreamMigWrite(virStreamPtr st, const char *bytes, size_t nbytes)
-{
-    struct qemud_driver *driver = st->conn->privateData;
-    struct qemuStreamMigFile *qemust = st->privateData;
-    int ret;
-
-    if (!qemust) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("stream is not open"));
-        return -1;
-    }
-
-    qemuDriverLock(driver);
-
-retry:
-    ret = write(qemust->fd, bytes, nbytes);
-    if (ret < 0) {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            ret = -2;
-        } else if (errno == EINTR) {
-            goto retry;
-        } else {
-            ret = -1;
-            virReportSystemError(errno, "%s",
-                                 _("cannot write to stream"));
-        }
-    }
-
-    qemuDriverUnlock(driver);
-    return ret;
-}
-
-static virStreamDriver qemuStreamMigDrv = {
-    .streamSend = qemuStreamMigWrite,
-    .streamFinish = qemuStreamMigClose,
-    .streamAbort = qemuStreamMigClose,
-    .streamAddCallback = qemuStreamMigAddCallback,
-    .streamUpdateCallback = qemuStreamMigUpdateCallback,
-    .streamRemoveCallback = qemuStreamMigRemoveCallback
-};
-
 /* Prepare is the first step, and it runs on the destination host.
  *
  * This version starts an empty VM listening on a localhost TCP port, and
@@ -11117,7 +10846,6 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     int internalret;
     char *unixfile = NULL;
     unsigned long long qemuCmdFlags;
-    struct qemuStreamMigFile *qemust = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
 
@@ -11227,8 +10955,9 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto endjob;
     }
 
-    qemust = qemuStreamMigOpen(st, unixfile);
-    if (qemust == NULL) {
+    if (virFDStreamConnectUNIX(st,
+                               unixfile,
+                               false) < 0) {
         qemuDomainStartAudit(vm, "migrated", false);
         qemudShutdownVMDaemon(driver, vm, 0);
         if (!vm->persistent) {
@@ -11242,10 +10971,8 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto endjob;
     }
 
-    st->driver = &qemuStreamMigDrv;
-    st->privateData = qemust;
-
     qemuDomainStartAudit(vm, "migrated", true);
+
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_MIGRATED);

@@ -95,6 +95,7 @@ DRIVER_SOURCES =						\
 		driver.c driver.h				\
 		internal.h					\
 		datatypes.c datatypes.h				\
+		fdstream.c fdstream.h                 \
 		$(NODE_INFO_SOURCES)				\
 		libvirt.c libvirt_internal.h
 
