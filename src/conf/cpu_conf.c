@@ -147,12 +147,10 @@ virCPUDefParseXML(const xmlNodePtr node,
         char *match = virXMLPropString(node, "match");
 
         if (!match) {
-            if (virXPathBoolean("boolean(./model)", ctxt)) {
-                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Missing match attribute for CPU specification"));
-                goto error;
-            }
-            def->match = -1;
+            if (virXPathBoolean("boolean(./model)", ctxt))
+                def->match = VIR_CPU_MATCH_EXACT;
+            else
+                def->match = -1;
         } else {
             def->match = virCPUMatchTypeFromString(match);
             VIR_FREE(match);
@@ -251,7 +249,10 @@ virCPUDefParseXML(const xmlNodePtr node,
             char *strpolicy;
 
             strpolicy = virXMLPropString(nodes[i], "policy");
-            policy = virCPUFeaturePolicyTypeFromString(strpolicy);
+            if (strpolicy == NULL)
+                policy = VIR_CPU_FEATURE_REQUIRE;
+            else
+                policy = virCPUFeaturePolicyTypeFromString(strpolicy);
             VIR_FREE(strpolicy);
 
             if (policy < 0) {

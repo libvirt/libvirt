@@ -276,6 +276,9 @@
           <dd>The guest will not be created unless the host CPU does exactly
             match the specification.</dd>
         </dl>
+
+	<span class="since">Since 0.8.5</span> the <code>match</code>
+	attribute can be omitted and will default to <code>exact</code>.
       </dd>
 
       <dt><code>model</code></dt>
@@ -322,6 +325,9 @@
           <dd>Guest creation will fail if the feature is supported by host
             CPU.</dd>
         </dl>
+
+	<span class="since">Since 0.8.5</span> the <code>policy</code>
+	attribute can be omitted and will default to <code>require</code>.
       </dd>
     </dl>
 
