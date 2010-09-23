@@ -144,6 +144,7 @@ echo "Expected failures:" >$output
 testme "1" "invalid arg" "-z"
 testme "1" "invalid case" "-A"
 testme "1" "not enough args" "-c"
+testme "1" "not enough args" "-p"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" > "$test_xml"
 testme "1" "no -u with -c" "-c" "$test_xml"
@@ -160,17 +161,25 @@ testme "1" "old '-n' option" "-c -n foo -u $valid_uuid" "$test_xml"
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$bad_disk,g" > "$test_xml"
 testme "1" "bad disk" "-c -u $valid_uuid" "$test_xml"
 
-cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$bad_disk,g" | sed "s,</devices>,<disk type='file' device='disk'><source file='$disk2'/><target dev='hda' bus='ide'/></disk></devices>,g" > "$test_xml"
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$bad_disk,g" | sed "s,</devices>,<disk type='file' device='disk'><driver name='qemu' type='raw'/><source file='$disk2'/><target dev='hda' bus='ide'/></disk></devices>,g" > "$test_xml"
+
 testme "1" "bad disk2" "-c -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<devices>,g" > "$test_xml"
 testme "1" "malformed xml" "-c -u $valid_uuid" "$test_xml"
 
-cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,/boot/initrd,g" > "$test_xml"
-testme "1" "disk in /boot" "-r -u $valid_uuid" "$test_xml"
+initrd=`ls -1 /boot/initrd* | head -1`
+if [ -z "$initrd" ]; then
+    echo "Skipping /boot/initrd* tests. Could not find /boot/initrd*"
+else
+    cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$initrd,g" > "$test_xml"
+    testme "1" "disk in /boot without probing" "-p 0 -r -u $valid_uuid" "$test_xml"
+    testme "1" "disk in /boot with probing" "-p 1 -r -u $valid_uuid" "$test_xml"
 
-cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,/boot/initrd,g" > "$test_xml"
-testme "1" "-r with invalid -f" "-r -u $valid_uuid -f $bad_disk" "$test_xml"
+    cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,/boot/initrd,g" > "$test_xml"
+    testme "1" "-r with invalid -f with probing" "-p 1 -r -u $valid_uuid -f $bad_disk" "$test_xml"
+    testme "1" "-r with invalid -f without probing" "-p 0 -r -u $valid_uuid -f $bad_disk" "$test_xml"
+fi
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1</disk>,g" > "$test_xml"
 testme "1" "-c with malformed xml" "-c -u $valid_uuid" "$test_xml"
@@ -195,8 +204,8 @@ testme "0" "create (i686)" "-c -u $valid_uuid" "$test_xml"
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,arch='x86_64',arch='ppc',g" > "$test_xml"
 testme "0" "create (ppc)" "-c -u $valid_uuid" "$test_xml"
 
-cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</disk>,</disk><disk type='file' device='disk'><source file='$disk2'/><target dev='hdb' bus='ide'/></disk>,g" > "$test_xml"
-testme "0" "create multiple disks" "-c -u $valid_uuid -p 1" "$test_xml"
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</disk>,</disk><disk type='file' device='disk'><driver name='qemu' type='raw'/><source file='$disk2'/><target dev='hdb' bus='ide'/></disk>,g" > "$test_xml"
+testme "0" "create multiple disks" "-c -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###',${disk1}'/><readonly,g" > "$test_xml"
 testme "0" "create (readonly)" "-c -u $valid_uuid" "$test_xml"
