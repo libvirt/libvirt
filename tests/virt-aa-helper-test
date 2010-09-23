@@ -246,12 +246,25 @@ testme "0" "serial" "-r -u $valid_uuid" "$test_xml"
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<serial type='pty'><target port='0'/></serial></devices>,g" > "$test_xml"
 testme "0" "serial (pty)" "-r -u $valid_uuid" "$test_xml"
 
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<serial type='dev'><source path='/dev/ttyS0'/><target port='0'/></serial></devices>,g" > "$test_xml"
+testme "0" "serial (dev)" "-r -u $valid_uuid" "$test_xml"
+
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<console type='file'><source path='$tmpdir/console.log'/><target port='0'/></console></devices>,g" > "$test_xml"
 touch "$tmpdir/console.log"
 testme "0" "console" "-r -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<console type='pty'><target port='0'/></console></devices>,g" > "$test_xml"
 testme "0" "console (pty)" "-r -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<parallel type='pty'><source path='/dev/pts/0'/><target port='0'/></parallel></devices>,g" > "$test_xml"
+testme "0" "parallel (pty)" "-r -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<channel type='unix'><source mode='bind' path='$tmpdir/guestfwd'/><target type='guestfwd' address='10.0.2.1' port='4600'/></channel></devices>,g" > "$test_xml"
+touch "$tmpdir/guestfwd"
+testme "0" "channel (unix)" "-r -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<channel type='pty'><target type='virtio'/></channel></devices>,g" > "$test_xml"
+testme "0" "channel (pty)" "-r -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</os>,<kernel>$tmpdir/kernel</kernel></os>,g" > "$test_xml"
 touch "$tmpdir/kernel"
