@@ -863,7 +863,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
 
 /**
  * xend_wait_for_devices:
- * @xend: pointer to the Xem Daemon block
+ * @xend: pointer to the Xen Daemon block
  * @name: name for the domain
  *
  * Block the domain until all the virtual devices are ready. This operation
@@ -883,7 +883,7 @@ xend_wait_for_devices(virConnectPtr xend, const char *name)
 
 /**
  * xenDaemonListDomainsOld:
- * @xend: pointer to the Xem Daemon block
+ * @xend: pointer to the Xen Daemon block
  *
  * This method will return an array of names of currently running
  * domains.  The memory should be released will a call to free().
@@ -2797,7 +2797,7 @@ xenDaemonDomainSuspend(virDomainPtr domain)
 
 /**
  * xenDaemonDomainResume:
- * @xend: pointer to the Xem Daemon block
+ * @xend: pointer to the Xen Daemon block
  * @name: name for the domain
  *
  * Resume the domain after xenDaemonDomainSuspend() has been called
@@ -3024,7 +3024,7 @@ xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
 
 /**
  * xenDaemonDomainRestore:
- * @conn: pointer to the Xem Daemon block
+ * @conn: pointer to the Xen Daemon block
  * @filename: path for the output file
  *
  * This method will restore a domain saved to disk by xenDaemonDomainSave().
