@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #include "internal.h"
 
@@ -62,6 +63,13 @@
         "fi" CMD_SEPARATOR \
       : ""
 
+
+#define PROC_BRIDGE_NF_CALL_IPTABLES \
+        "/proc/sys/net/bridge/bridge-nf-call-iptables"
+#define PROC_BRIDGE_NF_CALL_IP6TABLES \
+        "/proc/sys/net/bridge/bridge-nf-call-ip6tables"
+
+#define BRIDGE_NF_CALL_ALERT_INTERVAL  10 /* seconds */
 
 static char *ebtables_cmd_path;
 static char *iptables_cmd_path;
@@ -2986,6 +2994,45 @@ ebiptablesRuleOrderSort(const void *a, const void *b)
 }
 
 
+static void
+iptablesCheckBridgeNFCallEnabled(bool isIPv6)
+{
+    static time_t lastReport, lastReportIPv6;
+    const char *pathname = NULL;
+    char buffer[1];
+    time_t now = time(NULL);
+
+    if (isIPv6 &&
+        (now - lastReportIPv6) > BRIDGE_NF_CALL_ALERT_INTERVAL ) {
+        pathname = PROC_BRIDGE_NF_CALL_IP6TABLES;
+    } else if (now - lastReport > BRIDGE_NF_CALL_ALERT_INTERVAL) {
+        pathname = PROC_BRIDGE_NF_CALL_IPTABLES;
+    }
+
+    if (pathname) {
+        int fd = open(pathname, O_RDONLY);
+        if (fd >= 0) {
+            if (read(fd, buffer, 1) == 1) {
+                if (buffer[0] == '0') {
+                    char msg[256];
+                    snprintf(msg, sizeof(msg),
+                             _("To enable ip%stables filtering for the VM do "
+                              "'echo 1 > %s'"),
+                             isIPv6 ? "6" : "",
+                             pathname);
+                    VIR_WARN0(msg);
+                    if (isIPv6)
+                        lastReportIPv6 = now;
+                    else
+                        lastReport = now;
+                }
+            }
+            close(fd);
+        }
+    }
+}
+
+
 static int
 ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
                         const char *ifname,
@@ -3099,6 +3146,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpiptchains;
+
+        iptablesCheckBridgeNFCallEnabled(false);
     }
 
     if (haveIp6tables) {
@@ -3129,6 +3178,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpip6tchains;
+
+        iptablesCheckBridgeNFCallEnabled(true);
     }
 
     if (chains_in != 0)
