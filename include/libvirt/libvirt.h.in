@@ -915,8 +915,23 @@ struct _virVcpuInfo {
 };
 typedef virVcpuInfo *virVcpuInfoPtr;
 
+/* Flags for controlling virtual CPU hot-plugging.  */
+typedef enum {
+    /* Must choose at least one of these two bits; SetVcpus can choose both */
+    VIR_DOMAIN_VCPU_LIVE    = (1 << 0), /* Affect active domain */
+    VIR_DOMAIN_VCPU_CONFIG  = (1 << 1), /* Affect next boot */
+
+    /* Additional flags to be bit-wise OR'd in */
+    VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count */
+} virDomainVcpuFlags;
+
 int                     virDomainSetVcpus       (virDomainPtr domain,
                                                  unsigned int nvcpus);
+int                     virDomainSetVcpusFlags  (virDomainPtr domain,
+                                                 unsigned int nvcpus,
+                                                 unsigned int flags);
+int                     virDomainGetVcpusFlags  (virDomainPtr domain,
+                                                 unsigned int flags);
 
 int                     virDomainPinVcpu        (virDomainPtr domain,
                                                  unsigned int vcpu,
