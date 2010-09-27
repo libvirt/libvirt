@@ -8267,6 +8267,8 @@ virDriver NAME(Driver) = {
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
     vboxDomainSetVcpus, /* domainSetVcpus */
+    NULL, /* domainSetVcpusFlags */
+    NULL, /* domainGetVcpusFlags */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     vboxDomainGetMaxVcpus, /* domainGetMaxVcpus */

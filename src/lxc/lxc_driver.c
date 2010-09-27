@@ -2768,6 +2768,8 @@ static virDriver lxcDriver = {
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
     NULL, /* domainSetVcpus */
+    NULL, /* domainSetVcpusFlags */
+    NULL, /* domainGetVcpusFlags */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* domainGetMaxVcpus */

@@ -1754,6 +1754,8 @@ static virDriver xenapiDriver = {
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
     xenapiDomainSetVcpus, /* domainSetVcpus */
+    NULL, /* domainSetVcpusFlags */
+    NULL, /* domainGetVcpusFlags */
     xenapiDomainPinVcpu, /* domainPinVcpu */
     xenapiDomainGetVcpus, /* domainGetVcpus */
     xenapiDomainGetMaxVcpus, /* domainGetMaxVcpus */

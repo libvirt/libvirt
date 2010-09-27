@@ -4160,6 +4160,8 @@ static virDriver esxDriver = {
     NULL,                            /* domainRestore */
     NULL,                            /* domainCoreDump */
     esxDomainSetVcpus,               /* domainSetVcpus */
+    NULL,                            /* domainSetVcpusFlags */
+    NULL,                            /* domainGetVcpusFlags */
     NULL,                            /* domainPinVcpu */
     NULL,                            /* domainGetVcpus */
     esxDomainGetMaxVcpus,            /* domainGetMaxVcpus */

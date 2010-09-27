@@ -12938,6 +12938,8 @@ static virDriver qemuDriver = {
     qemudDomainRestore, /* domainRestore */
     qemudDomainCoreDump, /* domainCoreDump */
     qemudDomainSetVcpus, /* domainSetVcpus */
+    NULL, /* domainSetVcpusFlags */
+    NULL, /* domainGetVcpusFlags */
     qemudDomainPinVcpu, /* domainPinVcpu */
     qemudDomainGetVcpus, /* domainGetVcpus */
     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */

@@ -3941,6 +3941,8 @@ static virDriver phypDriver = {
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */
     phypDomainSetCPU,           /* domainSetVcpus */
+    NULL,                       /* domainSetVcpusFlags */
+    NULL,                       /* domainGetVcpusFlags */
     NULL,                       /* domainPinVcpu */
     NULL,                       /* domainGetVcpus */
     phypGetLparCPUMAX,          /* domainGetMaxVcpus */

@@ -10468,6 +10468,8 @@ static virDriver remote_driver = {
     remoteDomainRestore, /* domainRestore */
     remoteDomainCoreDump, /* domainCoreDump */
     remoteDomainSetVcpus, /* domainSetVcpus */
+    NULL, /* domainSetVcpusFlags */
+    NULL, /* domainGetVcpusFlags */
     remoteDomainPinVcpu, /* domainPinVcpu */
     remoteDomainGetVcpus, /* domainGetVcpus */
     remoteDomainGetMaxVcpus, /* domainGetMaxVcpus */

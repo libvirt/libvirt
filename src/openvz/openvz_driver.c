@@ -1590,6 +1590,8 @@ static virDriver openvzDriver = {
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
     openvzDomainSetVcpus, /* domainSetVcpus */
+    NULL, /* domainSetVcpusFlags */
+    NULL, /* domainGetVcpusFlags */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */

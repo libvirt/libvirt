@@ -185,6 +185,13 @@ typedef int
         (*virDrvDomainSetVcpus)		(virDomainPtr domain,
                                          unsigned int nvcpus);
 typedef int
+        (*virDrvDomainSetVcpusFlags)	(virDomainPtr domain,
+                                         unsigned int nvcpus,
+                                         unsigned int flags);
+typedef int
+        (*virDrvDomainGetVcpusFlags)	(virDomainPtr domain,
+                                         unsigned int flags);
+typedef int
         (*virDrvDomainPinVcpu)		(virDomainPtr domain,
                                          unsigned int vcpu,
                                          unsigned char *cpumap,
@@ -520,6 +527,8 @@ struct _virDriver {
     virDrvDomainRestore		domainRestore;
     virDrvDomainCoreDump		domainCoreDump;
     virDrvDomainSetVcpus		domainSetVcpus;
+    virDrvDomainSetVcpusFlags		domainSetVcpusFlags;
+    virDrvDomainGetVcpusFlags		domainGetVcpusFlags;
     virDrvDomainPinVcpu		domainPinVcpu;
     virDrvDomainGetVcpus		domainGetVcpus;
     virDrvDomainGetMaxVcpus		domainGetMaxVcpus;

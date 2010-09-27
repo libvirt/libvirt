@@ -5260,6 +5260,8 @@ static virDriver testDriver = {
     testDomainRestore, /* domainRestore */
     testDomainCoreDump, /* domainCoreDump */
     testSetVcpus, /* domainSetVcpus */
+    NULL, /* domainSetVcpusFlags */
+    NULL, /* domainGetVcpusFlags */
     testDomainPinVcpu, /* domainPinVcpu */
     testDomainGetVcpus, /* domainGetVcpus */
     testDomainGetMaxVcpus, /* domainGetMaxVcpus */
