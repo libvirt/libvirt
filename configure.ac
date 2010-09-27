@@ -1360,15 +1360,6 @@ if test "$with_secrets" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 
-with_nwfilter=yes
-if test "$with_libvirtd" = "no"; then
-  with_nwfilter=no
-fi
-if test "$with_nwfilter" = "yes" ; then
-  AC_DEFINE([WITH_NWFILTER], 1, [whether local network filter management driver is available])
-fi
-AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
-
 
 AC_ARG_WITH([storage-fs],
   AC_HELP_STRING([--with-storage-fs], [with FileSystem backend for the storage driver @<:@default=check@:>@]),[],[with_storage_fs=check])
@@ -2038,6 +2029,16 @@ case "$host" in
     ;;
 esac
 AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
+
+
+with_nwfilter=yes
+if test "$with_libvirtd" = "no" || test "$with_linux" != "yes"; then
+  with_nwfilter=no
+fi
+if test "$with_nwfilter" = "yes" ; then
+  AC_DEFINE([WITH_NWFILTER], 1, [whether local network filter management driver is available])
+fi
+AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
 
 
 AC_ARG_WITH([qemu-user],
