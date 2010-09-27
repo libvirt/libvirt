@@ -306,6 +306,14 @@ static int remoteDispatchDomainGetVcpus(
     remote_error *err,
     remote_domain_get_vcpus_args *args,
     remote_domain_get_vcpus_ret *ret);
+static int remoteDispatchDomainGetVcpusFlags(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_get_vcpus_flags_args *args,
+    remote_domain_get_vcpus_flags_ret *ret);
 static int remoteDispatchDomainHasCurrentSnapshot(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -553,6 +561,14 @@ static int remoteDispatchDomainSetVcpus(
     remote_message_header *hdr,
     remote_error *err,
     remote_domain_set_vcpus_args *args,
+    void *ret);
+static int remoteDispatchDomainSetVcpusFlags(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_set_vcpus_flags_args *args,
     void *ret);
 static int remoteDispatchDomainShutdown(
     struct qemud_server *server,

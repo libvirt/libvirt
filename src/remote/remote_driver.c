@@ -2580,6 +2580,59 @@ done:
 }
 
 static int
+remoteDomainSetVcpusFlags (virDomainPtr domain, unsigned int nvcpus,
+                           unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_set_vcpus_flags_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.nvcpus = nvcpus;
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS,
+              (xdrproc_t) xdr_remote_domain_set_vcpus_flags_args,
+              (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainGetVcpusFlags (virDomainPtr domain, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_vcpus_flags_args args;
+    remote_domain_get_vcpus_flags_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS,
+              (xdrproc_t) xdr_remote_domain_get_vcpus_flags_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_vcpus_flags_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainPinVcpu (virDomainPtr domain,
                      unsigned int vcpu,
                      unsigned char *cpumap,
@@ -10468,8 +10521,8 @@ static virDriver remote_driver = {
     remoteDomainRestore, /* domainRestore */
     remoteDomainCoreDump, /* domainCoreDump */
     remoteDomainSetVcpus, /* domainSetVcpus */
-    NULL, /* domainSetVcpusFlags */
-    NULL, /* domainGetVcpusFlags */
+    remoteDomainSetVcpusFlags, /* domainSetVcpusFlags */
+    remoteDomainGetVcpusFlags, /* domainGetVcpusFlags */
     remoteDomainPinVcpu, /* domainPinVcpu */
     remoteDomainGetVcpus, /* domainGetVcpus */
     remoteDomainGetMaxVcpus, /* domainGetMaxVcpus */

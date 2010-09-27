@@ -997,3 +997,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_get_memory_parameters_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_get_memory_parameters_ret,
 },
+{   /* DomainSetVcpusFlags => 199 */
+    .fn = (dispatch_fn) remoteDispatchDomainSetVcpusFlags,
+    .args_filter = (xdrproc_t) xdr_remote_domain_set_vcpus_flags_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* DomainGetVcpusFlags => 200 */
+    .fn = (dispatch_fn) remoteDispatchDomainGetVcpusFlags,
+    .args_filter = (xdrproc_t) xdr_remote_domain_get_vcpus_flags_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_get_vcpus_flags_ret,
+},

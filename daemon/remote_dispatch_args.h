@@ -167,3 +167,5 @@
     remote_domain_create_with_flags_args val_remote_domain_create_with_flags_args;
     remote_domain_set_memory_parameters_args val_remote_domain_set_memory_parameters_args;
     remote_domain_get_memory_parameters_args val_remote_domain_get_memory_parameters_args;
+    remote_domain_set_vcpus_flags_args val_remote_domain_set_vcpus_flags_args;
+    remote_domain_get_vcpus_flags_args val_remote_domain_get_vcpus_flags_args;

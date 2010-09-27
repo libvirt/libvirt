@@ -136,3 +136,4 @@
     remote_domain_get_block_info_ret val_remote_domain_get_block_info_ret;
     remote_domain_create_with_flags_ret val_remote_domain_create_with_flags_ret;
     remote_domain_get_memory_parameters_ret val_remote_domain_get_memory_parameters_ret;
+    remote_domain_get_vcpus_flags_ret val_remote_domain_get_vcpus_flags_ret;

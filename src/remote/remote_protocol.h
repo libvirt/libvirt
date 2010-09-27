@@ -750,6 +750,24 @@ struct remote_domain_set_vcpus_args {
 };
 typedef struct remote_domain_set_vcpus_args remote_domain_set_vcpus_args;
 
+struct remote_domain_set_vcpus_flags_args {
+        remote_nonnull_domain dom;
+        u_int nvcpus;
+        u_int flags;
+};
+typedef struct remote_domain_set_vcpus_flags_args remote_domain_set_vcpus_flags_args;
+
+struct remote_domain_get_vcpus_flags_args {
+        remote_nonnull_domain dom;
+        u_int flags;
+};
+typedef struct remote_domain_get_vcpus_flags_args remote_domain_get_vcpus_flags_args;
+
+struct remote_domain_get_vcpus_flags_ret {
+        int num;
+};
+typedef struct remote_domain_get_vcpus_flags_ret remote_domain_get_vcpus_flags_ret;
+
 struct remote_domain_pin_vcpu_args {
         remote_nonnull_domain dom;
         int vcpu;
@@ -2281,6 +2299,8 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196,
         REMOTE_PROC_DOMAIN_SET_MEMORY_PARAMETERS = 197,
         REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198,
+        REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199,
+        REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2422,6 +2442,9 @@ extern  bool_t xdr_remote_domain_define_xml_args (XDR *, remote_domain_define_xm
 extern  bool_t xdr_remote_domain_define_xml_ret (XDR *, remote_domain_define_xml_ret*);
 extern  bool_t xdr_remote_domain_undefine_args (XDR *, remote_domain_undefine_args*);
 extern  bool_t xdr_remote_domain_set_vcpus_args (XDR *, remote_domain_set_vcpus_args*);
+extern  bool_t xdr_remote_domain_set_vcpus_flags_args (XDR *, remote_domain_set_vcpus_flags_args*);
+extern  bool_t xdr_remote_domain_get_vcpus_flags_args (XDR *, remote_domain_get_vcpus_flags_args*);
+extern  bool_t xdr_remote_domain_get_vcpus_flags_ret (XDR *, remote_domain_get_vcpus_flags_ret*);
 extern  bool_t xdr_remote_domain_pin_vcpu_args (XDR *, remote_domain_pin_vcpu_args*);
 extern  bool_t xdr_remote_domain_get_vcpus_args (XDR *, remote_domain_get_vcpus_args*);
 extern  bool_t xdr_remote_domain_get_vcpus_ret (XDR *, remote_domain_get_vcpus_ret*);
@@ -2762,6 +2785,9 @@ extern bool_t xdr_remote_domain_define_xml_args ();
 extern bool_t xdr_remote_domain_define_xml_ret ();
 extern bool_t xdr_remote_domain_undefine_args ();
 extern bool_t xdr_remote_domain_set_vcpus_args ();
+extern bool_t xdr_remote_domain_set_vcpus_flags_args ();
+extern bool_t xdr_remote_domain_get_vcpus_flags_args ();
+extern bool_t xdr_remote_domain_get_vcpus_flags_ret ();
 extern bool_t xdr_remote_domain_pin_vcpu_args ();
 extern bool_t xdr_remote_domain_get_vcpus_args ();
 extern bool_t xdr_remote_domain_get_vcpus_ret ();

@@ -461,6 +461,18 @@ struct remote_domain_set_vcpus_args {
 	remote_nonnull_domain      dom;
 	int                        nvcpus;
 };
+struct remote_domain_set_vcpus_flags_args {
+	remote_nonnull_domain      dom;
+	u_int                      nvcpus;
+	u_int                      flags;
+};
+struct remote_domain_get_vcpus_flags_args {
+	remote_nonnull_domain      dom;
+	u_int                      flags;
+};
+struct remote_domain_get_vcpus_flags_ret {
+	int                        num;
+};
 struct remote_domain_pin_vcpu_args {
 	remote_nonnull_domain      dom;
 	int                        vcpu;
