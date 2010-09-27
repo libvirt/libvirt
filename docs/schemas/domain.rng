@@ -337,6 +337,11 @@
               <ref name="cpuset"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="current">
+              <ref name="countCPU"/>
+            </attribute>
+          </optional>
           <ref name="countCPU"/>
         </element>
       </optional>
