@@ -1497,12 +1497,24 @@ phypGetLparCPU(virConnectPtr conn, const char *managed_system, int lpar_id)
 }
 
 static int
-phypGetLparCPUMAX(virDomainPtr dom)
+phypDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
     phyp_driverPtr phyp_driver = dom->conn->privateData;
     char *managed_system = phyp_driver->managed_system;
 
+    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+        PHYP_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
+
     return phypGetLparCPUGeneric(dom->conn, managed_system, dom->id, 1);
+}
+
+static int
+phypGetLparCPUMAX(virDomainPtr dom)
+{
+    return phypDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
+                                         VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
 static int
@@ -3831,7 +3843,8 @@ phypConnectGetCapabilities(virConnectPtr conn)
 }
 
 static int
-phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
+phypDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                        unsigned int flags)
 {
     ConnectionData *connection_data = dom->conn->networkPrivateData;
     phyp_driverPtr phyp_driver = dom->conn->privateData;
@@ -3845,6 +3858,11 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
     unsigned long ncpus = 0;
     unsigned int amount = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+        PHYP_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
 
     if ((ncpus = phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0)
         return 0;
@@ -3889,6 +3907,12 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
     VIR_FREE(ret);
     return 0;
 
+}
+
+static int
+phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
+{
+    return phypDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
 }
 
 static virDrvOpenStatus
@@ -3941,8 +3965,8 @@ static virDriver phypDriver = {
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */
     phypDomainSetCPU,           /* domainSetVcpus */
-    NULL,                       /* domainSetVcpusFlags */
-    NULL,                       /* domainGetVcpusFlags */
+    phypDomainSetVcpusFlags,    /* domainSetVcpusFlags */
+    phypDomainGetVcpusFlags,    /* domainGetVcpusFlags */
     NULL,                       /* domainPinVcpu */
     NULL,                       /* domainGetVcpus */
     phypGetLparCPUMAX,          /* domainGetMaxVcpus */

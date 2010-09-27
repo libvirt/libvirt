@@ -2029,16 +2029,36 @@ cleanup:
     return ret;
 }
 
-static int testDomainGetMaxVcpus(virDomainPtr domain)
+static int
+testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
+    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+        testError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
+
     return testGetMaxVCPUs(domain->conn, "test");
 }
 
-static int testSetVcpus(virDomainPtr domain,
-                        unsigned int nrCpus) {
+static int
+testDomainGetMaxVcpus(virDomainPtr domain)
+{
+    return testDomainGetVcpusFlags(domain, (VIR_DOMAIN_VCPU_LIVE |
+                                            VIR_DOMAIN_VCPU_MAXIMUM));
+}
+
+static int
+testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
+                        unsigned int flags)
+{
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom = NULL;
     int ret = -1, maxvcpus;
+
+    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+        testError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
 
     /* Do this first before locking */
     maxvcpus = testDomainGetMaxVcpus(domain);
@@ -2080,6 +2100,12 @@ cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
     return ret;
+}
+
+static int
+testSetVcpus(virDomainPtr domain, unsigned int nrCpus)
+{
+    return testDomainSetVcpusFlags(domain, nrCpus, VIR_DOMAIN_VCPU_LIVE);
 }
 
 static int testDomainGetVcpus(virDomainPtr domain,
@@ -5260,8 +5286,8 @@ static virDriver testDriver = {
     testDomainRestore, /* domainRestore */
     testDomainCoreDump, /* domainCoreDump */
     testSetVcpus, /* domainSetVcpus */
-    NULL, /* domainSetVcpusFlags */
-    NULL, /* domainGetVcpusFlags */
+    testDomainSetVcpusFlags, /* domainSetVcpusFlags */
+    testDomainGetVcpusFlags, /* domainGetVcpusFlags */
     testDomainPinVcpu, /* domainPinVcpu */
     testDomainGetVcpus, /* domainGetVcpus */
     testDomainGetMaxVcpus, /* domainGetMaxVcpus */

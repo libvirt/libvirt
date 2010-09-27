@@ -67,7 +67,6 @@
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
 static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type);
 static int openvzDomainGetMaxVcpus(virDomainPtr dom);
-static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus);
 static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
                                         unsigned int nvcpus);
 static int openvzDomainSetMemoryInternal(virDomainObjPtr vm,
@@ -1211,9 +1210,22 @@ static int openvzGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
     return -1;
 }
 
+static int
+openvzDomainGetVcpusFlags(virDomainPtr dom ATTRIBUTE_UNUSED,
+                          unsigned int flags)
+{
+    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+        openvzError(VIR_ERR_INVALID_ARG, _("unsupported flags (0x%x)"), flags);
+        return -1;
+    }
 
-static int openvzDomainGetMaxVcpus(virDomainPtr dom ATTRIBUTE_UNUSED) {
     return openvzGetMaxVCPUs(NULL, "openvz");
+}
+
+static int openvzDomainGetMaxVcpus(virDomainPtr dom)
+{
+    return openvzDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
+                                           VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
 static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
@@ -1241,11 +1253,17 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
     return 0;
 }
 
-static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                                     unsigned int flags)
 {
     virDomainObjPtr         vm;
     struct openvz_driver   *driver = dom->conn->privateData;
     int                     ret = -1;
+
+    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+        openvzError(VIR_ERR_INVALID_ARG, _("unsupported flags (0x%x)"), flags);
+        return -1;
+    }
 
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1270,6 +1288,12 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+{
+    return openvzDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
 }
 
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
@@ -1590,8 +1614,8 @@ static virDriver openvzDriver = {
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
     openvzDomainSetVcpus, /* domainSetVcpus */
-    NULL, /* domainSetVcpusFlags */
-    NULL, /* domainGetVcpusFlags */
+    openvzDomainSetVcpusFlags, /* domainSetVcpusFlags */
+    openvzDomainGetVcpusFlags, /* domainGetVcpusFlags */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */

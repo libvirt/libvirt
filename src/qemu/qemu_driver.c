@@ -5934,12 +5934,21 @@ unsupported:
 }
 
 
-static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
+static int
+qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                         unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char * type;
     int max;
     int ret = -1;
+
+    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+        qemuReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+                        flags);
+        return -1;
+    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -5992,6 +6001,12 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+{
+    return qemudDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
 }
 
 
@@ -6150,11 +6165,19 @@ cleanup:
 }
 
 
-static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
+static int
+qemudDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *type;
     int ret = -1;
+
+    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+        qemuReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+                        flags);
+        return -1;
+    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6181,6 +6204,13 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+qemudDomainGetMaxVcpus(virDomainPtr dom)
+{
+    return qemudDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
+                                          VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
 static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
@@ -12938,8 +12968,8 @@ static virDriver qemuDriver = {
     qemudDomainRestore, /* domainRestore */
     qemudDomainCoreDump, /* domainCoreDump */
     qemudDomainSetVcpus, /* domainSetVcpus */
-    NULL, /* domainSetVcpusFlags */
-    NULL, /* domainGetVcpusFlags */
+    qemudDomainSetVcpusFlags, /* domainSetVcpusFlags */
+    qemudDomainGetVcpusFlags, /* domainGetVcpusFlags */
     qemudDomainPinVcpu, /* domainPinVcpu */
     qemudDomainGetVcpus, /* domainGetVcpus */
     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */

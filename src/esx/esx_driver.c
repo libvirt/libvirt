@@ -2384,7 +2384,8 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
 
 static int
-esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
+esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
+                       unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -2393,6 +2394,11 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
+
+    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
 
     if (nvcpus < 1) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
@@ -2453,14 +2459,25 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 }
 
 
+static int
+esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
+{
+    return esxDomainSetVcpusFlags(domain, nvcpus, VIR_DOMAIN_VCPU_LIVE);
+}
+
 
 static int
-esxDomainGetMaxVcpus(virDomainPtr domain)
+esxDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
 
     if (priv->maxVcpus > 0) {
         return priv->maxVcpus;
@@ -2507,7 +2524,12 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
     return priv->maxVcpus;
 }
 
-
+static int
+esxDomainGetMaxVcpus(virDomainPtr domain)
+{
+    return esxDomainGetVcpusFlags(domain, (VIR_DOMAIN_VCPU_LIVE |
+                                           VIR_DOMAIN_VCPU_MAXIMUM));
+}
 
 static char *
 esxDomainDumpXML(virDomainPtr domain, int flags)
@@ -4160,8 +4182,8 @@ static virDriver esxDriver = {
     NULL,                            /* domainRestore */
     NULL,                            /* domainCoreDump */
     esxDomainSetVcpus,               /* domainSetVcpus */
-    NULL,                            /* domainSetVcpusFlags */
-    NULL,                            /* domainGetVcpusFlags */
+    esxDomainSetVcpusFlags,          /* domainSetVcpusFlags */
+    esxDomainGetVcpusFlags,          /* domainGetVcpusFlags */
     NULL,                            /* domainPinVcpu */
     NULL,                            /* domainGetVcpus */
     esxDomainGetMaxVcpus,            /* domainGetMaxVcpus */

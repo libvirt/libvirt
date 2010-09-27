@@ -1069,10 +1069,17 @@ xenUnifiedDomainCoreDump (virDomainPtr dom, const char *to, int flags)
 }
 
 static int
-xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
+xenUnifiedDomainSetVcpusFlags (virDomainPtr dom, unsigned int nvcpus,
+                               unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i;
+
+    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+        xenUnifiedError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+                        flags);
+        return -1;
+    }
 
     /* Try non-hypervisor methods first, then hypervisor direct method
      * as a last resort.
@@ -1090,6 +1097,12 @@ xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
         return 0;
 
     return -1;
+}
+
+static int
+xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
+{
+    return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
 }
 
 static int
@@ -1126,10 +1139,16 @@ xenUnifiedDomainGetVcpus (virDomainPtr dom,
 }
 
 static int
-xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
+xenUnifiedDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i, ret;
+
+    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+        xenUnifiedError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+                        flags);
+        return -1;
+    }
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] && drivers[i]->domainGetMaxVcpus) {
@@ -1138,6 +1157,13 @@ xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
         }
 
     return -1;
+}
+
+static int
+xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
+{
+    return xenUnifiedDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
+                                               VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
 static char *
@@ -1951,8 +1977,8 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainRestore, /* domainRestore */
     xenUnifiedDomainCoreDump, /* domainCoreDump */
     xenUnifiedDomainSetVcpus, /* domainSetVcpus */
-    NULL, /* domainSetVcpusFlags */
-    NULL, /* domainGetVcpusFlags */
+    xenUnifiedDomainSetVcpusFlags, /* domainSetVcpusFlags */
+    xenUnifiedDomainGetVcpusFlags, /* domainGetVcpusFlags */
     xenUnifiedDomainPinVcpu, /* domainPinVcpu */
     xenUnifiedDomainGetVcpus, /* domainGetVcpus */
     xenUnifiedDomainGetMaxVcpus, /* domainGetMaxVcpus */
