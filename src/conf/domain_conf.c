@@ -5270,7 +5270,7 @@ virDomainCpuNumberParse(const char **str, int maxcpu)
  *
  * Serialize the cpuset to a string
  *
- * Returns the new string NULL in case of error. The string need to be
+ * Returns the new string NULL in case of error. The string needs to be
  *         freed by the caller.
  */
 char *
@@ -5329,8 +5329,8 @@ virDomainCpuSetFormat(char *cpuset, int maxcpu)
  * @maxcpu: number of elements available in @cpuset
  *
  * Parse the cpu set, it will set the value for enabled CPUs in the @cpuset
- * to 1, and 0 otherwise. The syntax allows coma separated entries each
- * can be either a CPU number, ^N to unset that CPU or N-M for ranges.
+ * to 1, and 0 otherwise. The syntax allows comma separated entries; each
+ * can be either a CPU number, ^N to unset that CPU, or N-M for ranges.
  *
  * Returns the number of CPU found in that set, or -1 in case of error.
  *         @cpuset is modified accordingly to the value parsed.

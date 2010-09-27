@@ -302,7 +302,9 @@
       <optional>
         <element name="vcpu">
           <optional>
-            <attribute name="cpuset"/>
+            <attribute name="cpuset">
+              <ref name="cpuset"/>
+            </attribute>
           </optional>
           <ref name="countCPU"/>
         </element>
@@ -1783,6 +1785,11 @@
   <define name='positiveInteger'>
     <data type='positiveInteger'>
       <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+  <define name="cpuset">
+    <data type="string">
+      <param name="pattern">([0-9]+(-[0-9]+)?|\^[0-9]+)(,([0-9]+(-[0-9]+)?|\^[0-9]+))*</param>
     </data>
   </define>
   <define name="countCPU">
