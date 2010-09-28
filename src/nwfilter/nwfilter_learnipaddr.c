@@ -38,11 +38,6 @@
 #include <net/if_arp.h>
 #include <intprops.h>
 
-// Add Linux define missing from OSX
-#ifndef ETH_ALEN
-# define ETH_ALEN       6               /* Octets in one ethernet addr   */
-#endif
-
 #include "internal.h"
 
 #include "buf.h"
