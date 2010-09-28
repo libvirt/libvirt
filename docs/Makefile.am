@@ -88,7 +88,7 @@ api: libvirt-api.xml libvirt-refs.xml
 web: $(dot_html) html/index.html devhelp/index.html
 
 ChangeLog.xml: ../ChangeLog ChangeLog.awk
-	awk -f ChangeLog.awk < $< > $@
+	$(AWK) -f ChangeLog.awk < $< > $@
 
 ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 	@if [ -x $(XSLTPROC) ] ; then \
