@@ -6,43 +6,6 @@ test -z "$srcdir" && srcdir=.
 
 THEDIR=`pwd`
 cd "$srcdir"
-DIE=0
-
-(autopoint --version) < /dev/null > /dev/null 2>&1 || {
-        echo
-        echo "You must have autopoint installed to compile libvirt."
-        echo "Download the appropriate package for your distribution,"
-        echo "or see http://www.gnu.org/software/gettext"
-        DIE=1
-}
-
-(autoconf --version) < /dev/null > /dev/null 2>&1 || {
-	echo
-	echo "You must have autoconf installed to compile libvirt."
-	echo "Download the appropriate package for your distribution,"
-	echo "or see http://www.gnu.org/software/autoconf"
-	DIE=1
-}
-
-(libtool --version) < /dev/null > /dev/null 2>&1 || {
-	echo
-	echo "You must have libtool installed to compile libvirt."
-	echo "Download the appropriate package for your distribution,"
-	echo "or see http://www.gnu.org/software/libtool"
-	DIE=1
-}
-
-(automake --version) < /dev/null > /dev/null 2>&1 || {
-	echo
-	DIE=1
-	echo "You must have automake installed to compile libvirt."
-	echo "Download the appropriate package for your distribution,"
-	echo "or see http://www.gnu.org/software/automake"
-}
-
-if test "$DIE" -eq 1; then
-	exit 1
-fi
 
 test -f src/libvirt.c || {
 	echo "You must run this script in the top-level libvirt directory"
