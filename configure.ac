@@ -340,7 +340,7 @@ if test "x$with_vbox" = "xyes" || test "x$with_vbox" = "xcheck"; then
         /opt/VirtualBox/amd64/VBoxXPCOMC.so \
         /usr/local/lib/virtualbox/VBoxXPCOMC.so \
         /usr/local/lib/VirtualBox/VBoxXPCOMC.so \
-        /Application/VirtualBox.app/Contents/MacOS/VBoxXPCOMC.dylib \
+        /Applications/VirtualBox.app/Contents/MacOS/VBoxXPCOMC.dylib \
         ; do
         if test -f "$vbox"; then
             vbox_xpcomc_dir=`AS_DIRNAME(["$vbox"])`
