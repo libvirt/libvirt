@@ -1503,7 +1503,15 @@ if test "$with_storage_scsi" = "check"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
 
-if test "$with_storage_mpath" = "check"; then
+with_linux=no
+case "$host" in
+  *-*-linux*)
+    with_linux=yes
+    ;;
+esac
+AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
+
+if test "$with_storage_mpath" = "check" && test "$with_linux" = "yes"; then
    with_storage_mpath=yes
 
    AC_DEFINE_UNQUOTED([WITH_STORAGE_MPATH], 1,
@@ -2021,14 +2029,6 @@ then
   AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])
 fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
-
-with_linux=no
-case "$host" in
-  *-*-linux*)
-    with_linux=yes
-    ;;
-esac
-AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 
 
 with_nwfilter=yes
