@@ -203,6 +203,12 @@ VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "tcp",
               "unix")
 
+VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
+              "raw",
+              "telnet",
+              "telnets",
+              "tls")
+
 VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "sb16",
               "es1370",
@@ -2748,12 +2754,10 @@ virDomainChrDefParseXML(virCapsPtr caps,
             def->data.tcp.listen = 1;
         }
 
-        if (protocol == NULL ||
-            STREQ(protocol, "raw"))
+        if (protocol == NULL)
             def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW;
-        else if (STREQ(protocol, "telnet"))
-            def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
-        else {
+        else if ((def->data.tcp.protocol =
+                  virDomainChrTcpProtocolTypeFromString(protocol)) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unknown protocol '%s'"), protocol);
             goto error;
@@ -5848,9 +5852,7 @@ virDomainChrDefFormat(virBufferPtr buf,
                           def->data.tcp.host,
                           def->data.tcp.service);
         virBufferVSprintf(buf, "      <protocol type='%s'/>\n",
-                          def->data.tcp.protocol ==
-                          VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET
-                          ? "telnet" : "raw");
+                          virDomainChrTcpProtocolTypeToString(def->data.tcp.protocol));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:

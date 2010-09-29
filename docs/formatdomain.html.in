@@ -1469,7 +1469,9 @@ qemu-kvm -net nic,model=? /dev/null
   ...</pre>
 
     <p>
-      Alternatively you can use telnet instead of raw TCP.
+      Alternatively you can use <code>telnet</code> instead of <code>raw</code> TCP.
+      <span class="since">Since 0.8.5</span> you can also use <code>telnets</code>
+      (secure telnet) and <code>tls</code>.
     <p>
 
 <pre>

@@ -266,6 +266,8 @@ mymain(int argc, char **argv)
     DO_TEST("serial-pipe-server-vm", "serial-pipe", esxVI_ProductVersion_ESX35);
     DO_TEST("serial-pipe-client-app", "serial-pipe", esxVI_ProductVersion_ESX35);
     DO_TEST("serial-pipe-server-vm", "serial-pipe", esxVI_ProductVersion_ESX35);
+    DO_TEST("serial-network-server", "serial-network-server", esxVI_ProductVersion_ESX41);
+    DO_TEST("serial-network-client", "serial-network-client", esxVI_ProductVersion_ESX41);
 
     DO_TEST("parallel-file", "parallel-file", esxVI_ProductVersion_ESX35);
     DO_TEST("parallel-device", "parallel-device", esxVI_ProductVersion_ESX35);

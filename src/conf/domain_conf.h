@@ -357,6 +357,8 @@ enum virDomainChrType {
 enum virDomainChrTcpProtocol {
     VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW,
     VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET,
+    VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNETS, /* secure telnet */
+    VIR_DOMAIN_CHR_TCP_PROTOCOL_TLS,
 
     VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
 };
@@ -1172,6 +1174,7 @@ VIR_ENUM_DECL(virDomainChrDevice)
 VIR_ENUM_DECL(virDomainChrChannelTarget)
 VIR_ENUM_DECL(virDomainChrConsoleTarget)
 VIR_ENUM_DECL(virDomainChr)
+VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainWatchdogModel)

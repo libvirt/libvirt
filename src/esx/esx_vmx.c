@@ -379,6 +379,36 @@ def->serials[0]...
 ???                               <=>   serial0.yieldOnMsrRead = "true"         # defaults to "false", FIXME: not representable
 
 
+## serials: network, server (since vSphere 4.1) ################################
+
+->type = _CHR_TYPE_TCP            <=>   serial0.fileType = "network"
+
+->data.tcp.host = <host>          <=>   serial0.fileName = "<protocol>://<host>:<service>"
+->data.tcp.service = <service>                                                  # e.g. "telnet://0.0.0.0:42001"
+->data.tcp.protocol = <protocol>
+
+->data.tcp.listen = 1             <=>   serial0.network.endPoint = "server"     # defaults to "server"
+
+???                               <=>   serial0.vspc = "foobar"                 # defaults to <not present>, FIXME: not representable
+???                               <=>   serial0.tryNoRxLoss = "false"           # defaults to "false", FIXME: not representable
+???                               <=>   serial0.yieldOnMsrRead = "true"         # defaults to "false", FIXME: not representable
+
+
+## serials: network, client (since vSphere 4.1) ################################
+
+->type = _CHR_TYPE_TCP            <=>   serial0.fileType = "network"
+
+->data.tcp.host = <host>          <=>   serial0.fileName = "<protocol>://<host>:<service>"
+->data.tcp.service = <service>                                                  # e.g. "telnet://192.168.0.17:42001"
+->data.tcp.protocol = <protocol>
+
+->data.tcp.listen = 0             <=>   serial0.network.endPoint = "client"     # defaults to "server"
+
+???                               <=>   serial0.vspc = "foobar"                 # defaults to <not present>, FIXME: not representable
+???                               <=>   serial0.tryNoRxLoss = "false"           # defaults to "false", FIXME: not representable
+???                               <=>   serial0.yieldOnMsrRead = "true"         # defaults to "false", FIXME: not representable
+
+
 
 ################################################################################
 ## parallels ###################################################################
@@ -424,8 +454,11 @@ def->parallels[0]...
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
+#define ESX_BUILD_VMX_NAME_EXTRA(_suffix, _extra)                             \
+    snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."_extra, prefix);
+
 #define ESX_BUILD_VMX_NAME(_suffix)                                           \
-    snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."#_suffix, prefix);
+    ESX_BUILD_VMX_NAME_EXTRA(_suffix, #_suffix)
 
 /* directly map the virDomainControllerModel to esxVMX_SCSIControllerModel,
  * this is good enough for now because all virDomainControllerModel values
@@ -2113,6 +2146,11 @@ esxVMX_ParseSerial(esxVMX_Context *ctx, virConfPtr conf, int port,
     char fileName_name[48] = "";
     char *fileName = NULL;
 
+    char network_endPoint_name[48] = "";
+    char *network_endPoint = NULL;
+
+    xmlURIPtr parsedUri = NULL;
+
     if (def == NULL || *def != NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
@@ -2137,6 +2175,7 @@ esxVMX_ParseSerial(esxVMX_Context *ctx, virConfPtr conf, int port,
     ESX_BUILD_VMX_NAME(startConnected);
     ESX_BUILD_VMX_NAME(fileType);
     ESX_BUILD_VMX_NAME(fileName);
+    ESX_BUILD_VMX_NAME_EXTRA(network_endPoint, "network.endPoint");
 
     /* vmx:present */
     if (esxUtil_GetConfigBoolean(conf, present_name, &present, false,
@@ -2165,6 +2204,12 @@ esxVMX_ParseSerial(esxVMX_Context *ctx, virConfPtr conf, int port,
         goto cleanup;
     }
 
+    /* vmx:network.endPoint -> def:data.tcp.listen */
+    if (esxUtil_GetConfigString(conf, network_endPoint_name, &network_endPoint,
+                                true) < 0) {
+        goto cleanup;
+    }
+
     /* Setup virDomainChrDef */
     if (STRCASEEQ(fileType, "device")) {
         (*def)->target.port = port;
@@ -2190,10 +2235,72 @@ esxVMX_ParseSerial(esxVMX_Context *ctx, virConfPtr conf, int port,
         (*def)->data.file.path = fileName;
 
         fileName = NULL;
+    } else if (STRCASEEQ(fileType, "network")) {
+        (*def)->target.port = port;
+        (*def)->type = VIR_DOMAIN_CHR_TYPE_TCP;
+
+        parsedUri = xmlParseURI(fileName);
+
+        if (parsedUri == NULL) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (parsedUri->port == 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("VMX entry '%s' doesn't contain a port part"),
+                      fileName_name);
+            goto cleanup;
+        }
+
+        (*def)->data.tcp.host = strdup(parsedUri->server);
+
+        if ((*def)->data.tcp.host == NULL) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (virAsprintf(&(*def)->data.tcp.service, "%d", parsedUri->port) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* See vSphere API documentation about VirtualSerialPortURIBackingInfo */
+        if (parsedUri->scheme == NULL ||
+            STRCASEEQ(parsedUri->scheme, "tcp") ||
+            STRCASEEQ(parsedUri->scheme, "tcp4") ||
+            STRCASEEQ(parsedUri->scheme, "tcp6")) {
+            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW;
+        } else if (STRCASEEQ(parsedUri->scheme, "telnet")) {
+            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+        } else if (STRCASEEQ(parsedUri->scheme, "telnets")) {
+            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNETS;
+        } else if (STRCASEEQ(parsedUri->scheme, "ssl") ||
+                   STRCASEEQ(parsedUri->scheme, "tcp+ssl") ||
+                   STRCASEEQ(parsedUri->scheme, "tcp4+ssl") ||
+                   STRCASEEQ(parsedUri->scheme, "tcp6+ssl")) {
+            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TLS;
+        } else {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("VMX entry '%s' contains unsupported scheme '%s'"),
+                      fileName_name, parsedUri->scheme);
+            goto cleanup;
+        }
+
+        if (network_endPoint == NULL || STRCASEEQ(network_endPoint, "server")) {
+            (*def)->data.tcp.listen = 1;
+        } else if (STRCASEEQ(network_endPoint, "client")) {
+            (*def)->data.tcp.listen = 0;
+        } else {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("Expecting VMX entry '%s' to be 'server' or 'client' "
+                        "but found '%s'"), network_endPoint_name, network_endPoint);
+            goto cleanup;
+        }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Expecting VMX entry '%s' to be 'device', 'file' or 'pipe' "
-                    "but found '%s'"), fileType_name, fileType);
+                    "or 'network' but found '%s'"), fileType_name, fileType);
         goto cleanup;
     }
 
@@ -2207,6 +2314,8 @@ esxVMX_ParseSerial(esxVMX_Context *ctx, virConfPtr conf, int port,
 
     VIR_FREE(fileType);
     VIR_FREE(fileName);
+    VIR_FREE(network_endPoint);
+    xmlFreeURI(parsedUri);
 
     return result;
 
@@ -3069,18 +3178,12 @@ esxVMX_FormatSerial(esxVMX_Context *ctx, virDomainChrDefPtr def,
                     virBufferPtr buffer)
 {
     char *fileName = NULL;
+    const char *protocol;
 
     if (def->target.port < 0 || def->target.port > 3) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Serial port index %d out of [0..3] range"),
                   def->target.port);
-        return -1;
-    }
-
-    if (def->data.file.path == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Expecting domain XML attribute 'path' of entry "
-                    "'devices/serial/source' to be present"));
         return -1;
     }
 
@@ -3124,6 +3227,41 @@ esxVMX_FormatSerial(esxVMX_Context *ctx, virDomainChrDefPtr def,
                           def->target.port, def->data.file.path);
         break;
 
+      case VIR_DOMAIN_CHR_TYPE_TCP:
+        switch (def->data.tcp.protocol) {
+          case VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW:
+            protocol = "tcp";
+            break;
+
+          case VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET:
+            protocol = "telnet";
+            break;
+
+          case VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNETS:
+            protocol = "telnets";
+            break;
+
+          case VIR_DOMAIN_CHR_TCP_PROTOCOL_TLS:
+            protocol = "ssl";
+            break;
+
+          default:
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("Unsupported character device TCP protocol '%s'"),
+                      virDomainChrTcpProtocolTypeToString(def->data.tcp.protocol));
+            return -1;
+        }
+
+        virBufferVSprintf(buffer, "serial%d.fileType = \"network\"\n",
+                          def->target.port);
+        virBufferVSprintf(buffer, "serial%d.fileName = \"%s://%s:%s\"\n",
+                          def->target.port, protocol, def->data.tcp.host,
+                          def->data.tcp.service);
+        virBufferVSprintf(buffer, "serial%d.network.endPoint = \"%s\"\n",
+                          def->target.port,
+                          def->data.tcp.listen ? "server" : "client");
+        break;
+
       default:
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Unsupported character device type '%s'"),
@@ -3151,13 +3289,6 @@ esxVMX_FormatParallel(esxVMX_Context *ctx, virDomainChrDefPtr def,
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Parallel port index %d out of [0..2] range"),
                   def->target.port);
-        return -1;
-    }
-
-    if (def->data.file.path == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Expecting domain XML attribute 'path' of entry "
-                    "'devices/parallel/source' to be present"));
         return -1;
     }
 

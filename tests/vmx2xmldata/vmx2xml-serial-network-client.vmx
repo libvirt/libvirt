@@ -1,0 +1,6 @@
+config.version = "8"
+virtualHW.version = "4"
+serial0.present = "true"
+serial0.fileType = "network"
+serial0.fileName = "tcp://192.168.0.17:42001"
+serial0.network.endPoint = "client"
