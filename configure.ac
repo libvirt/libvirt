@@ -2083,10 +2083,21 @@ AC_ARG_WITH([virtualport],
   [with_virtualport=${withval}],
   [with_virtualport=check])
 
-if test "$with_virtualport" != "no"; then
+dnl Warn the user and error out if they requested virtualport support with configure
+dnl options, but the required macvtap support isn't available
+
+if test "$with_virtualport" = "yes"; then
     if test "$with_macvtap" = "no"; then
         AC_MSG_ERROR([--with-virtualport requires --with-macvtap])
     fi
+fi
+
+dnl virtualport checks
+
+if test "$with_macvtap" != "yes"; then
+    with_virtualport=no
+fi
+if test "$with_virtualport" != "no"; then
     AC_MSG_CHECKING([whether to compile with virtual port support])
     AC_TRY_COMPILE([ #include <sys/socket.h>
                      #include <linux/rtnetlink.h> ],
