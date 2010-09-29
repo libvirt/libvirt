@@ -385,6 +385,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("qemu-ns", 0);
 
+    DO_TEST("smp", QEMUD_CMD_FLAG_SMP_TOPOLOGY);
+
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
 

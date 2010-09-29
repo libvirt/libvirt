@@ -3714,6 +3714,8 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
     virBufferVSprintf(&buf, "%u", def->vcpus);
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_SMP_TOPOLOGY)) {
+        if (def->vcpus != def->maxvcpus)
+            virBufferVSprintf(&buf, ",maxcpus=%u", def->maxvcpus);
         /* sockets, cores, and threads are either all zero
          * or all non-zero, thus checking one of them is enough */
         if (def->cpu && def->cpu->sockets) {
@@ -3726,12 +3728,12 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
             virBufferVSprintf(&buf, ",cores=%u", 1);
             virBufferVSprintf(&buf, ",threads=%u", 1);
         }
-    }
-    if (def->vcpus != def->maxvcpus) {
+    } else if (def->vcpus != def->maxvcpus) {
         virBufferFreeAndReset(&buf);
+        /* FIXME - consider hot-unplugging cpus after boot for older qemu */
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("setting current vcpu count less than maximum is "
-                          "not supported yet"));
+                          "not supported with this QEMU binary"));
         return NULL;
     }
 
@@ -6153,6 +6155,7 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     unsigned int sockets = 0;
     unsigned int cores = 0;
     unsigned int threads = 0;
+    unsigned int maxcpus = 0;
     int i;
     int nkws;
     char **kws;
@@ -6180,12 +6183,14 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
                 cores = n;
             else if (STREQ(kws[i], "threads"))
                 threads = n;
+            else if (STREQ(kws[i], "maxcpus"))
+                maxcpus = n;
             else
                 goto syntax;
         }
     }
 
-    dom->maxvcpus = dom->vcpus;
+    dom->maxvcpus = maxcpus ? maxcpus : dom->vcpus;
 
     if (sockets && cores && threads) {
         virCPUDefPtr cpu;

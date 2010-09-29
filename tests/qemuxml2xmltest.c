@@ -180,6 +180,8 @@ mymain(int argc, char **argv)
     DO_TEST("encrypted-disk");
     DO_TEST("memtune");
 
+    DO_TEST("smp");
+
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");
     DO_TEST_DIFFERENT("channel-virtio-auto");

@@ -221,6 +221,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("hostdev-pci-address");
 
+    DO_TEST("smp");
+
     DO_TEST_FULL("restore-v1", 0, "stdio");
     DO_TEST_FULL("restore-v2", 0, "stdio");
     DO_TEST_FULL("restore-v2", 0, "exec:cat");
