@@ -2281,10 +2281,216 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "maxvcpus" command
+ */
+static const vshCmdInfo info_maxvcpus[] = {
+    {"help", N_("connection vcpu maximum")},
+    {"desc", N_("Show maximum number of virtual CPUs for guests on this connection.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_maxvcpus[] = {
+    {"type", VSH_OT_STRING, 0, N_("domain type")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
+{
+    char *type;
+    int vcpus;
+
+    type = vshCommandOptString(cmd, "type", NULL);
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return FALSE;
+
+    vcpus = virConnectGetMaxVcpus(ctl->conn, type);
+    if (vcpus < 0)
+        return FALSE;
+    vshPrint(ctl, "%d\n", vcpus);
+
+    return TRUE;
+}
+
+/*
+ * "vcpucount" command
+ */
+static const vshCmdInfo info_vcpucount[] = {
+    {"help", N_("domain vcpu counts")},
+    {"desc", N_("Returns the number of virtual CPUs used by the domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_vcpucount[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"maximum", VSH_OT_BOOL, 0, N_("get maximum cap on vcpus")},
+    {"current", VSH_OT_BOOL, 0, N_("get current vcpu usage")},
+    {"config", VSH_OT_BOOL, 0, N_("get value to be used on next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("get value from running domain")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int ret = TRUE;
+    int maximum = vshCommandOptBool(cmd, "maximum");
+    int current = vshCommandOptBool(cmd, "current");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    bool all = maximum + current + config + live == 0;
+    int count;
+
+    if (maximum && current) {
+        vshError(ctl, "%s",
+                 _("--maximum and --current cannot both be specified"));
+        return FALSE;
+    }
+    if (config && live) {
+        vshError(ctl, "%s",
+                 _("--config and --live cannot both be specified"));
+        return FALSE;
+    }
+    /* We want one of each pair of mutually exclusive options; that
+     * is, use of flags requires exactly two options.  */
+    if (maximum + current + config + live == 1) {
+        vshError(ctl,
+                 _("when using --%s, either --%s or --%s must be specified"),
+                 (maximum ? "maximum" : current ? "current"
+                  : config ? "config" : "live"),
+                 maximum + current ? "config" : "maximum",
+                 maximum + current ? "live" : "current");
+        return FALSE;
+    }
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    /* In all cases, try the new API first; if it fails because we are
+     * talking to an older client, try a fallback API before giving
+     * up.  */
+    if (all || (maximum && config)) {
+        count = virDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_MAXIMUM |
+                                             VIR_DOMAIN_VCPU_CONFIG));
+        if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
+                          || last_error->code == VIR_ERR_INVALID_ARG)) {
+            char *tmp;
+            char *xml = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
+            if (xml && (tmp = strstr(xml, "<vcpu"))) {
+                tmp = strchr(tmp, '>');
+                if (!tmp || virStrToLong_i(tmp + 1, &tmp, 10, &count) < 0)
+                    count = -1;
+            }
+            VIR_FREE(xml);
+        }
+
+        if (count < 0) {
+            virshReportError(ctl);
+            ret = FALSE;
+        } else if (all) {
+            vshPrint(ctl, "%-12s %-12s %3d\n", _("maximum"), _("config"),
+                     count);
+        } else {
+            vshPrint(ctl, "%d\n", count);
+        }
+        virFreeError(last_error);
+        last_error = NULL;
+    }
+
+    if (all || (maximum && live)) {
+        count = virDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_MAXIMUM |
+                                             VIR_DOMAIN_VCPU_LIVE));
+        if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
+                          || last_error->code == VIR_ERR_INVALID_ARG)) {
+            count = virDomainGetMaxVcpus(dom);
+        }
+
+        if (count < 0) {
+            virshReportError(ctl);
+            ret = FALSE;
+        } else if (all) {
+            vshPrint(ctl, "%-12s %-12s %3d\n", _("maximum"), _("live"),
+                     count);
+        } else {
+            vshPrint(ctl, "%d\n", count);
+        }
+        virFreeError(last_error);
+        last_error = NULL;
+    }
+
+    if (all || (current && config)) {
+        count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_VCPU_CONFIG);
+        if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
+                          || last_error->code == VIR_ERR_INVALID_ARG)) {
+            char *tmp, *end;
+            char *xml = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
+            if (xml && (tmp = strstr(xml, "<vcpu"))) {
+                end = strchr(tmp, '>');
+                if (end) {
+                    *end = '\0';
+                    tmp = strstr(tmp, "current=");
+                    if (!tmp)
+                        tmp = end + 1;
+                    else {
+                        tmp += strlen("current=");
+                        tmp += *tmp == '\'' || *tmp == '"';
+                    }
+                }
+                if (!tmp || virStrToLong_i(tmp, &tmp, 10, &count) < 0)
+                    count = -1;
+            }
+            VIR_FREE(xml);
+        }
+
+        if (count < 0) {
+            virshReportError(ctl);
+            ret = FALSE;
+        } else if (all) {
+            vshPrint(ctl, "%-12s %-12s %3d\n", _("current"), _("config"),
+                     count);
+        } else {
+            vshPrint(ctl, "%d\n", count);
+        }
+        virFreeError(last_error);
+        last_error = NULL;
+    }
+
+    if (all || (current && live)) {
+        count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_VCPU_LIVE);
+        if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
+                          || last_error->code == VIR_ERR_INVALID_ARG)) {
+            virDomainInfo info;
+            if (virDomainGetInfo(dom, &info) == 0)
+                count = info.nrVirtCpu;
+        }
+
+        if (count < 0) {
+            virshReportError(ctl);
+            ret = FALSE;
+        } else if (all) {
+            vshPrint(ctl, "%-12s %-12s %3d\n", _("current"), _("live"),
+                     count);
+        } else {
+            vshPrint(ctl, "%d\n", count);
+        }
+        virFreeError(last_error);
+        last_error = NULL;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "vcpuinfo" command
  */
 static const vshCmdInfo info_vcpuinfo[] = {
-    {"help", N_("domain vcpu information")},
+    {"help", N_("detailed domain vcpu information")},
     {"desc", N_("Returns basic information about the domain virtual CPUs.")},
     {NULL, NULL}
 };
@@ -2514,6 +2720,9 @@ static const vshCmdInfo info_setvcpus[] = {
 static const vshCmdOptDef opts_setvcpus[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"count", VSH_OT_DATA, VSH_OFLAG_REQ, N_("number of virtual CPUs")},
+    {"maximum", VSH_OT_BOOL, 0, N_("set maximum limit on next boot")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2522,8 +2731,13 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int count;
-    int maxcpu;
     int ret = TRUE;
+    int maximum = vshCommandOptBool(cmd, "maximum");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    int flags = ((maximum ? VIR_DOMAIN_VCPU_MAXIMUM : 0) |
+                 (config ? VIR_DOMAIN_VCPU_CONFIG : 0) |
+                 (live ? VIR_DOMAIN_VCPU_LIVE : 0));
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
@@ -2532,26 +2746,15 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     count = vshCommandOptInt(cmd, "count", &count);
-    if (count <= 0) {
-        vshError(ctl, "%s", _("Invalid number of virtual CPUs."));
-        virDomainFree(dom);
-        return FALSE;
-    }
 
-    maxcpu = virDomainGetMaxVcpus(dom);
-    if (maxcpu <= 0) {
-        virDomainFree(dom);
-        return FALSE;
-    }
-
-    if (count > maxcpu) {
-        vshError(ctl, "%s", _("Too many virtual CPUs."));
-        virDomainFree(dom);
-        return FALSE;
-    }
-
-    if (virDomainSetVcpus(dom, count) != 0) {
-        ret = FALSE;
+    if (!flags) {
+        if (virDomainSetVcpus(dom, count) != 0) {
+            ret = FALSE;
+        }
+    } else {
+        if (virDomainSetVcpusFlags(dom, count, flags) < 0) {
+            ret = FALSE;
+        }
     }
 
     virDomainFree(dom);
@@ -9642,6 +9845,7 @@ static const vshCmdDef commands[] = {
     {"freecell", cmdFreecell, opts_freecell, info_freecell},
     {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},
+    {"maxvcpus", cmdMaxvcpus, opts_maxvcpus, info_maxvcpus},
     {"migrate", cmdMigrate, opts_migrate, info_migrate},
     {"migrate-setmaxdowntime", cmdMigrateSetMaxDowntime, opts_migrate_setmaxdowntime, info_migrate_setmaxdowntime},
 
@@ -9748,6 +9952,7 @@ static const vshCmdDef commands[] = {
     {"vol-name", cmdVolName, opts_vol_name, info_vol_name},
     {"vol-key", cmdVolKey, opts_vol_key, info_vol_key},
 
+    {"vcpucount", cmdVcpucount, opts_vcpucount, info_vcpucount},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
     {"version", cmdVersion, NULL, info_version},
