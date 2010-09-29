@@ -3701,6 +3701,29 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
+    if (!def->memory) {
+        PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
+                _("Field \"<memory>\" on the domain XML file is missing or has "
+                    "invalid value."));
+        goto err;
+    }
+
+    if (!def->maxmem) {
+        PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
+                _("Field \"<currentMemory>\" on the domain XML file is missing or"
+                    " has invalid value."));
+        goto err;
+    }
+
+    if (def->ndisks > 0) {
+        if (!def->disks[0]->src) {
+            PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
+                    _("Field \"<src>\" under \"<disk>\" on the domain XML file is "
+                        "missing."));
+            goto err;
+        }
+    }
+
     virBufferAddLit(&buf, "mksyscfg");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
