@@ -2190,7 +2190,8 @@ xenDaemonParseSxpr(virConnectPtr conn,
         }
     }
 
-    def->vcpus = sexpr_int(root, "domain/vcpus");
+    def->maxvcpus = sexpr_int(root, "domain/vcpus");
+    def->vcpus = def->maxvcpus;
 
     tmp = sexpr_node(root, "domain/on_poweroff");
     if (tmp != NULL) {
@@ -5649,7 +5650,7 @@ xenDaemonFormatSxprInput(virDomainInputDefPtr input,
  *
  * Generate an SEXPR representing the domain configuration.
  *
- * Returns the 0 terminatedi S-Expr string or NULL in case of error.
+ * Returns the 0 terminated S-Expr string or NULL in case of error.
  *         the caller must free() the returned value.
  */
 char *
@@ -5666,7 +5667,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(name '%s')", def->name);
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
                       def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
-    virBufferVSprintf(&buf, "(vcpus %lu)", def->vcpus);
+    virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
 
     if (def->cpumask) {
         char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
@@ -5761,7 +5762,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
             else
                 virBufferVSprintf(&buf, "(kernel '%s')", def->os.loader);
 
-            virBufferVSprintf(&buf, "(vcpus %lu)", def->vcpus);
+            virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
 
             for (i = 0 ; i < def->os.nBootDevs ; i++) {
                 switch (def->os.bootDevs[i]) {

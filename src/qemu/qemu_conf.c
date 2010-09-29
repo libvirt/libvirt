@@ -3711,7 +3711,7 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferVSprintf(&buf, "%lu", def->vcpus);
+    virBufferVSprintf(&buf, "%u", def->vcpus);
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_SMP_TOPOLOGY)) {
         /* sockets, cores, and threads are either all zero
@@ -3722,10 +3722,17 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
             virBufferVSprintf(&buf, ",threads=%u", def->cpu->threads);
         }
         else {
-            virBufferVSprintf(&buf, ",sockets=%lu", def->vcpus);
+            virBufferVSprintf(&buf, ",sockets=%u", def->maxvcpus);
             virBufferVSprintf(&buf, ",cores=%u", 1);
             virBufferVSprintf(&buf, ",threads=%u", 1);
         }
+    }
+    if (def->vcpus != def->maxvcpus) {
+        virBufferFreeAndReset(&buf);
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("setting current vcpu count less than maximum is "
+                          "not supported yet"));
+        return NULL;
     }
 
     if (virBufferError(&buf)) {
@@ -6178,6 +6185,8 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
         }
     }
 
+    dom->maxvcpus = dom->vcpus;
+
     if (sockets && cores && threads) {
         virCPUDefPtr cpu;
 
@@ -6247,6 +6256,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
 
     def->id = -1;
     def->mem.cur_balloon = def->mem.max_balloon = 64 * 1024;
+    def->maxvcpus = 1;
     def->vcpus = 1;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
     def->features = (1 << VIR_DOMAIN_FEATURE_ACPI)

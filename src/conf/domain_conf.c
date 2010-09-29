@@ -4203,6 +4203,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     int i, n;
     long id = -1;
     virDomainDefPtr def;
+    unsigned long count;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -4287,8 +4288,37 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                       &def->mem.swap_hard_limit) < 0)
         def->mem.swap_hard_limit = 0;
 
-    if (virXPathULong("string(./vcpu[1])", ctxt, &def->vcpus) < 0)
-        def->vcpus = 1;
+    n = virXPathULong("string(./vcpu[1])", ctxt, &count);
+    if (n == -2) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("maximum vcpus must be an integer"));
+        goto error;
+    } else if (n < 0) {
+        def->maxvcpus = 1;
+    } else {
+        def->maxvcpus = count;
+        if (def->maxvcpus != count || count == 0) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("invalid maxvcpus %lu"), count);
+            goto error;
+        }
+    }
+
+    n = virXPathULong("string(./vcpu[1]/@current)", ctxt, &count);
+    if (n == -2) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("current vcpus must be an integer"));
+        goto error;
+    } else if (n < 0) {
+        def->vcpus = def->maxvcpus;
+    } else {
+        def->vcpus = count;
+        if (def->vcpus != count || count == 0 || def->maxvcpus < count) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("invalid current vcpus %lu"), count);
+            goto error;
+        }
+    }
 
     tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
     if (tmp) {
@@ -6462,17 +6492,18 @@ char *virDomainDefFormat(virDomainDefPtr def,
         if (def->cpumask[n] != 1)
             allones = 0;
 
-    if (allones) {
-        virBufferVSprintf(&buf, "  <vcpu>%lu</vcpu>\n", def->vcpus);
-    } else {
+    virBufferAddLit(&buf, "  <vcpu");
+    if (!allones) {
         char *cpumask = NULL;
         if ((cpumask =
              virDomainCpuSetFormat(def->cpumask, def->cpumasklen)) == NULL)
             goto cleanup;
-        virBufferVSprintf(&buf, "  <vcpu cpuset='%s'>%lu</vcpu>\n",
-                          cpumask, def->vcpus);
+        virBufferVSprintf(&buf, " cpuset='%s'", cpumask);
         VIR_FREE(cpumask);
     }
+    if (def->vcpus != def->maxvcpus)
+        virBufferVSprintf(&buf, " current='%u'", def->vcpus);
+    virBufferVSprintf(&buf, ">%u</vcpu>\n", def->maxvcpus);
 
     if (def->os.bootloader) {
         virBufferEscapeString(&buf, "  <bootloader>%s</bootloader>\n",

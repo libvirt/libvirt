@@ -3540,7 +3540,7 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
         goto err;
     }
 
-    if ((def.vcpus =
+    if ((def.maxvcpus = def.vcpus =
          phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0) {
         VIR_ERROR0(_("Unable to determine domain's CPU."));
         goto err;

@@ -885,7 +885,8 @@ struct _virDomainDef {
         unsigned long min_guarantee;
         unsigned long swap_hard_limit;
     } mem;
-    unsigned long vcpus;
+    unsigned short vcpus;
+    unsigned short maxvcpus;
     int cpumasklen;
     char *cpumask;
 

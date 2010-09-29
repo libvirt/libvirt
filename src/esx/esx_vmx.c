@@ -50,7 +50,7 @@ def->uuid = <value>               <=>   uuid.bios = "<value>"
 def->name = <value>               <=>   displayName = "<value>"
 def->mem.max_balloon = <value kilobyte>    <=>   memsize = "<value megabyte>"            # must be a multiple of 4, defaults to 32
 def->mem.cur_balloon = <value kilobyte>    <=>   sched.mem.max = "<value megabyte>"      # defaults to "unlimited" -> def->mem.cur_balloon = def->mem.max_balloon
-def->vcpus = <value>              <=>   numvcpus = "<value>"                    # must be 1 or a multiple of 2, defaults to 1
+def->maxvcpus = <value>           <=>   numvcpus = "<value>"                    # must be 1 or a multiple of 2, defaults to 1
 def->cpumask = <uint list>        <=>   sched.cpu.affinity = "<uint list>"
 
 
@@ -1075,7 +1075,7 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
         goto cleanup;
     }
 
-    def->vcpus = numvcpus;
+    def->maxvcpus = def->vcpus = numvcpus;
 
     /* vmx:sched.cpu.affinity -> def:cpumask */
     // VirtualMachine:config.cpuAffinity.affinitySet
@@ -2609,16 +2609,22 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                           (int)(def->mem.cur_balloon / 1024));
     }
 
-    /* def:vcpus -> vmx:numvcpus */
-    if (def->vcpus <= 0 || (def->vcpus % 2 != 0 && def->vcpus != 1)) {
+    /* def:maxvcpus -> vmx:numvcpus */
+    if (def->vcpus != def->maxvcpus) {
+        ESX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                  _("No support for domain XML entry 'vcpu' attribute "
+                    "'current'"));
+        goto cleanup;
+    }
+    if (def->maxvcpus <= 0 || (def->maxvcpus % 2 != 0 && def->maxvcpus != 1)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Expecting domain XML entry 'vcpu' to be an unsigned "
                     "integer (1 or a multiple of 2) but found %d"),
-                  (int)def->vcpus);
+                  def->maxvcpus);
         goto cleanup;
     }
 
-    virBufferVSprintf(&buffer, "numvcpus = \"%d\"\n", (int)def->vcpus);
+    virBufferVSprintf(&buffer, "numvcpus = \"%d\"\n", def->maxvcpus);
 
     /* def:cpumask -> vmx:sched.cpu.affinity */
     if (def->cpumasklen > 0) {
@@ -2632,11 +2638,11 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
             }
         }
 
-        if (sched_cpu_affinity_length < def->vcpus) {
+        if (sched_cpu_affinity_length < def->maxvcpus) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting domain XML attribute 'cpuset' of entry "
-                        "'vcpu' to contains at least %d CPU(s)"),
-                      (int)def->vcpus);
+                        "'vcpu' to contain at least %d CPU(s)"),
+                      def->maxvcpus);
             goto cleanup;
         }
 

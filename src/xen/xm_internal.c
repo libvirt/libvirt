@@ -678,6 +678,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     int i;
     const char *defaultArch, *defaultMachine;
     int vmlocaltime = 0;
+    unsigned long count;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -770,9 +771,11 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     def->mem.cur_balloon *= 1024;
     def->mem.max_balloon *= 1024;
 
-
-    if (xenXMConfigGetULong(conf, "vcpus", &def->vcpus, 1) < 0)
+    if (xenXMConfigGetULong(conf, "vcpus", &count, 1) < 0 ||
+        (unsigned short) count != count)
         goto cleanup;
+    def->maxvcpus = count;
+    def->vcpus = def->maxvcpus;
 
     if (xenXMConfigGetString(conf, "cpus", &str, NULL) < 0)
         goto cleanup;
@@ -1650,7 +1653,7 @@ int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    entry->def->vcpus = vcpus;
+    entry->def->maxvcpus = entry->def->vcpus = vcpus;
 
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
@@ -2241,7 +2244,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     if (xenXMConfigSetInt(conf, "memory", def->mem.cur_balloon / 1024) < 0)
         goto no_memory;
 
-    if (xenXMConfigSetInt(conf, "vcpus", def->vcpus) < 0)
+    if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
         goto no_memory;
 
     if ((def->cpumask != NULL) &&

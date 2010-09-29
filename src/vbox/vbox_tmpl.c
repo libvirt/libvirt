@@ -2028,7 +2028,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
             def->mem.max_balloon = memorySize * 1024;
 
             machine->vtbl->GetCPUCount(machine, &CPUCount);
-            def->vcpus = CPUCount;
+            def->maxvcpus = def->vcpus = CPUCount;
 
             /* Skip cpumasklen, cpumask, onReboot, onPoweroff, onCrash */
 
@@ -4598,11 +4598,15 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                   def->mem.cur_balloon, (unsigned)rc);
     }
 
-    rc = machine->vtbl->SetCPUCount(machine, def->vcpus);
+    if (def->vcpus != def->maxvcpus) {
+        vboxError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                    _("current vcpu count must equal maximum"));
+    }
+    rc = machine->vtbl->SetCPUCount(machine, def->maxvcpus);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not set the number of virtual CPUs to: %lu, rc=%08x"),
-                  def->vcpus, (unsigned)rc);
+                  _("could not set the number of virtual CPUs to: %u, rc=%08x"),
+                  def->maxvcpus, (unsigned)rc);
     }
 
 #if VBOX_API_VERSION < 3001

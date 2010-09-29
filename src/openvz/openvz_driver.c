@@ -925,8 +925,13 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     if (openvzDomainSetNetworkConfig(conn, vm->def) < 0)
         goto cleanup;
 
-    if (vm->def->vcpus > 0) {
-        if (openvzDomainSetVcpusInternal(vm, vm->def->vcpus) < 0) {
+    if (vm->def->vcpus != vm->def->maxvcpus) {
+        openvzError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                    _("current vcpu count must equal maximum"));
+        goto cleanup;
+    }
+    if (vm->def->maxvcpus > 0) {
+        if (openvzDomainSetVcpusInternal(vm, vm->def->maxvcpus) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could not set number of virtual cpu"));
              goto cleanup;
@@ -1019,8 +1024,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     vm->def->id = vm->pid;
     vm->state = VIR_DOMAIN_RUNNING;
 
-    if (vm->def->vcpus > 0) {
-        if (openvzDomainSetVcpusInternal(vm, vm->def->vcpus) < 0) {
+    if (vm->def->maxvcpus > 0) {
+        if (openvzDomainSetVcpusInternal(vm, vm->def->maxvcpus) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could not set number of virtual cpu"));
             goto cleanup;
@@ -1249,7 +1254,7 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
         return -1;
     }
 
-    vm->def->vcpus = nvcpus;
+    vm->def->maxvcpus = vm->def->vcpus = nvcpus;
     return 0;
 }
 

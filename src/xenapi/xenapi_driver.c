@@ -1335,7 +1335,7 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
     } else {
         defPtr->mem.cur_balloon = memory;
     }
-    defPtr->vcpus = xenapiDomainGetMaxVcpus(dom);
+    defPtr->maxvcpus = defPtr->vcpus = xenapiDomainGetMaxVcpus(dom);
     enum xen_on_normal_exit action;
     if (xen_vm_get_actions_after_shutdown(session, &action, vm)) {
         defPtr->onPoweroff = xenapiNormalExitEnum2virDomainLifecycle(action);

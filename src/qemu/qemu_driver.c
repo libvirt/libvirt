@@ -2425,8 +2425,9 @@ qemuDetectVcpuPIDs(struct qemud_driver *driver,
 
     if (ncpupids != vm->def->vcpus) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"),
-                        ncpupids, (int)vm->def->vcpus);
+                        _("got wrong number of vCPU pids from QEMU monitor. "
+                          "got %d, wanted %d"),
+                        ncpupids, vm->def->vcpus);
         VIR_FREE(cpupids);
         return -1;
     }
