@@ -2058,6 +2058,7 @@ AC_ARG_WITH([macvtap],
   [with_macvtap=${withval}],
   [with_macvtap=check])
 
+AC_MSG_CHECKING([whether to compile with macvtap support])
 if test "$with_macvtap" != "no" ; then
     AC_TRY_COMPILE([ #include <sys/socket.h>
                      #include <linux/rtnetlink.h> ],
@@ -2075,19 +2076,35 @@ if test "$with_macvtap" != "no" ; then
     AC_DEFINE_UNQUOTED([WITH_MACVTAP], $val, [whether macvtap support is enabled])
 fi
 AM_CONDITIONAL([WITH_MACVTAP], [test "$with_macvtap" = "yes"])
+AC_MSG_RESULT([$with_macvtap])
 
-AC_TRY_COMPILE([ #include <sys/socket.h>
-                 #include <linux/rtnetlink.h> ],
-                 [ int x = IFLA_PORT_MAX; ],
-                 [ with_virtualport=yes ],
-                 [ with_virtualport=no ])
-if test "$with_virtualport" = "yes"; then
-    val=1
-else
-    val=0
+AC_ARG_WITH([virtualport],
+  AC_HELP_STRING([--with-virtualport],[enable virtual port support @<:@default=check@:>@]),
+  [with_virtualport=${withval}],
+  [with_virtualport=check])
+
+if test "$with_virtualport" != "no"; then
+    if test "$with_macvtap" = "no"; then
+        AC_MSG_ERROR([--with-virtualport requires --with-macvtap])
+    fi
+    AC_MSG_CHECKING([whether to compile with virtual port support])
+    AC_TRY_COMPILE([ #include <sys/socket.h>
+                     #include <linux/rtnetlink.h> ],
+                     [ int x = IFLA_PORT_MAX; ],
+                     [ with_virtualport=yes ],
+                     [ if test "$with_virtualport" = "yes" ; then
+                         AC_MSG_ERROR([Installed linux headers don't show support for virtual port support.])
+                       fi
+                       with_virtualport=no ])
+    if test "$with_virtualport" = "yes"; then
+        val=1
+    else
+        val=0
+    fi
+    AC_DEFINE_UNQUOTED([WITH_VIRTUALPORT], $val,
+                       [whether vsi vepa support is enabled])
+    AC_MSG_RESULT([$with_virtualport])
 fi
-AC_DEFINE_UNQUOTED([WITH_VIRTUALPORT], $val,
-                   [whether vsi vepa support is enabled])
 AM_CONDITIONAL([WITH_VIRTUALPORT], [test "$with_virtualport" = "yes"])
 
 
@@ -2096,7 +2113,7 @@ dnl netlink library
 LIBNL_CFLAGS=""
 LIBNL_LIBS=""
 
-if test "$with_macvtap" = "yes" || test "$with_virtualport" = "yes"; then
+if test "$with_macvtap" = "yes"; then
     PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
     ], [
         AC_MSG_ERROR([libnl >= $LIBNL_REQUIRED is required for macvtap support])
