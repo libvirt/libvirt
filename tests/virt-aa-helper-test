@@ -179,6 +179,8 @@ else
     cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,/boot/initrd,g" > "$test_xml"
     testme "1" "-r with invalid -f with probing" "-p 1 -r -u $valid_uuid -f $bad_disk" "$test_xml"
     testme "1" "-r with invalid -f without probing" "-p 0 -r -u $valid_uuid -f $bad_disk" "$test_xml"
+    testme "1" "-r with invalid -F with probing" "-p 1 -r -u $valid_uuid -F $bad_disk" "$test_xml"
+    testme "1" "-r with invalid -F without probing" "-p 0 -r -u $valid_uuid -F $bad_disk" "$test_xml"
 fi
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1</disk>,g" > "$test_xml"
@@ -236,6 +238,12 @@ testme "0" "replace (adding disk)" "-r -u $valid_uuid -f $disk2" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" > "$test_xml"
 testme "0" "replace (adding non-existent disk)" "-r -u $valid_uuid -f $nonexistent" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" > "$test_xml"
+testme "0" "replace (appending disk)" "-r -u $valid_uuid -F $disk2" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" > "$test_xml"
+testme "0" "replace (appending non-existent disk)" "-r -u $valid_uuid -F $nonexistent" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<disk type='block' device='cdrom'><target dev='hdc' bus='ide'/><readonly/></disk></devices>,g" > "$test_xml"
 testme "0" "disk (empty cdrom)" "-r -u $valid_uuid" "$test_xml"
