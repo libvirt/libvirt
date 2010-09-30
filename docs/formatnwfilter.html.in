@@ -388,6 +388,11 @@
          <td>UINT16 (0x600-0xffff), STRING</td>
          <td>Layer 3 protocol ID</td>
        </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
+       </tr>
       </table>
     <p>
       Valid Strings for <code>protocolid</code> are: arp, rarp, ipv4, ipv6
@@ -465,6 +470,11 @@
          <td>arpdstipaddr</td>
          <td>IP_ADDR</td>
          <td>Destination IP address in ARP/RARP packet</td>
+       </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
        </tr>
       </table>
     <p>
@@ -551,6 +561,11 @@
          <td>UINT16</td>
          <td>End of range of valid destination ports; requires <code>protocol</code></td>
        </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
+       </tr>
       </table>
     <p>
       Valid strings for <code>protocol</code> are:
@@ -635,6 +650,11 @@
          <td>dstportend</td>
          <td>UINT16</td>
          <td>End of range of valid destination ports; requires <code>protocol</code></td>
+       </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
        </tr>
       </table>
     <p>
@@ -722,6 +742,11 @@
          <td>dstportend</td>
          <td>UINT16</td>
          <td>End of range of valid destination ports</td>
+       </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
        </tr>
       </table>
     <p>
@@ -813,6 +838,11 @@
          <td>UINT16</td>
          <td>ICMP code</td>
        </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
+       </tr>
       </table>
     <p>
       <br><br>
@@ -891,6 +921,11 @@
          <td>dstipto</td>
          <td>IP_ADDR</td>
          <td>End of range of destination IP address</td>
+       </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
        </tr>
       </table>
     <p>
@@ -978,6 +1013,11 @@
          <td>UINT16</td>
          <td>End of range of valid destination ports</td>
        </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
+       </tr>
       </table>
     <p>
       <br><br>
@@ -1054,6 +1094,11 @@
          <td>UINT16</td>
          <td>ICMPv6 code</td>
        </tr>
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
+       </tr>
       </table>
     <p>
       <br><br>
@@ -1118,7 +1163,11 @@
          <td>IPV6_ADDR</td>
          <td>End of range of destination IP address</td>
        </tr>
-
+       <tr>
+         <td>comment <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>text with max. 256 characters</td>
+       </tr>
       </table>
     <p>
       <br><br>
