@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -52,10 +53,10 @@
 
 
 #define CMD_SEPARATOR "\n"
-#define CMD_DEF_PRE  "cmd=\""
-#define CMD_DEF_POST "\""
+#define CMD_DEF_PRE  "cmd='"
+#define CMD_DEF_POST "'"
 #define CMD_DEF(X) CMD_DEF_PRE X CMD_DEF_POST
-#define CMD_EXEC   "res=`${cmd}`" CMD_SEPARATOR
+#define CMD_EXEC   "eval res=\\`\"${cmd}\"\\`" CMD_SEPARATOR
 #define CMD_STOPONERR(X) \
     X ? "if [ $? -ne 0 ]; then" \
         "  echo \"Failure to execute command '${cmd}'.\";" \
@@ -106,6 +107,7 @@ static const char *m_physdev_out_str = "-m physdev " PHYSDEV_OUT;
 #define MATCH_PHYSDEV_IN   m_physdev_in_str
 #define MATCH_PHYSDEV_OUT  m_physdev_out_str
 
+#define COMMENT_VARNAME "comment"
 
 static int ebtablesRemoveBasicRules(const char *ifname);
 static int ebiptablesDriverInit(void);
@@ -288,6 +290,26 @@ printDataTypeAsHex(virNWFilterHashTablePtr vars,
                    nwItemDescPtr item)
 {
     return _printDataType(vars, buf, bufsize, item, 1);
+}
+
+
+static void
+printCommentVar(virBufferPtr dest, const char *buf)
+{
+    size_t i, len = strlen(buf);
+
+    virBufferAddLit(dest, COMMENT_VARNAME "='");
+
+    if (len > IPTABLES_MAX_COMMENT_LENGTH)
+        len = IPTABLES_MAX_COMMENT_LENGTH;
+
+    for (i = 0; i < len; i++) {
+        if (buf[i] == '\'')
+            virBufferAddLit(dest, "'\\''");
+        else
+            virBufferAddChar(dest, buf[i]);
+    }
+    virBufferAddLit(dest,"'" CMD_SEPARATOR);
 }
 
 
@@ -846,7 +868,8 @@ iptablesHandleIpHdr(virBufferPtr buf,
                     virNWFilterHashTablePtr vars,
                     ipHdrDataDefPtr ipHdr,
                     int directionIn,
-                    bool *skipRule, bool *skipMatch)
+                    bool *skipRule, bool *skipMatch,
+                    virBufferPtr prefix)
 {
     char ipaddr[INET6_ADDRSTRLEN],
          number[20];
@@ -993,6 +1016,13 @@ iptablesHandleIpHdr(virBufferPtr buf,
         }
     }
 
+    if (HAS_ENTRY_ITEM(&ipHdr->dataComment)) {
+        printCommentVar(prefix, ipHdr->dataComment.u.string);
+
+        virBufferAddLit(buf,
+                        " -m comment --comment \"$" COMMENT_VARNAME "\"");
+    }
+
     return 0;
 
 err_exit:
@@ -1106,7 +1136,9 @@ _iptablesCreateRuleInstance(int directionIn,
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char number[20];
+    virBuffer prefix = VIR_BUFFER_INITIALIZER;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virBufferPtr final = NULL;
     const char *target;
     const char *iptables_cmd = (isIPv6) ? ip6tables_cmd_path
                                         : iptables_cmd_path;
@@ -1148,7 +1180,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.tcpHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
@@ -1193,7 +1226,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.udpHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
@@ -1225,7 +1259,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.udpliteHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
     break;
@@ -1252,7 +1287,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.espHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
     break;
@@ -1279,7 +1315,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.ahHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
     break;
@@ -1306,7 +1343,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.sctpHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
@@ -1341,7 +1379,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.icmpHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPType)) {
@@ -1400,7 +1439,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.igmpHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
     break;
@@ -1427,7 +1467,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                 vars,
                                 &rule->p.allHdrFilter.ipHdr,
                                 directionIn,
-                                &skipRule, &skipMatch))
+                                &skipRule, &skipMatch,
+                                &prefix))
             goto err_exit;
 
     break;
@@ -1439,6 +1480,7 @@ _iptablesCreateRuleInstance(int directionIn,
     if ((srcMacSkipped && bufUsed == virBufferUse(&buf)) ||
          skipRule) {
         virBufferFreeAndReset(&buf);
+        virBufferFreeAndReset(&prefix);
         return 0;
     }
 
@@ -1458,14 +1500,29 @@ _iptablesCreateRuleInstance(int directionIn,
                       CMD_EXEC,
                       target);
 
-    if (virBufferError(&buf)) {
+    if (virBufferError(&buf) || virBufferError(&prefix)) {
         virBufferFreeAndReset(&buf);
+        virBufferFreeAndReset(&prefix);
         virReportOOMError();
         return -1;
     }
 
+    if (virBufferUse(&prefix)) {
+        virBufferVSprintf(&prefix, "%s", virBufferContentAndReset(&buf));
+
+        final = &prefix;
+
+        if (virBufferError(&prefix)) {
+            virBufferFreeAndReset(&prefix);
+            virReportOOMError();
+            return -1;
+        }
+    } else
+        final = &buf;
+
+
     return ebiptablesAddRuleInst(res,
-                                 virBufferContentAndReset(&buf),
+                                 virBufferContentAndReset(final),
                                  nwfilter->chainsuffix,
                                  '\0',
                                  rule->priority,
