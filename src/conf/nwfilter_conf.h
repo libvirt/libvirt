@@ -73,6 +73,8 @@ enum virNWFilterEntryItemFlags {
 };
 
 
+# define MAX_COMMENT_LENGTH  256
+
 # define HAS_ENTRY_ITEM(data) \
   (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)
 
@@ -92,8 +94,9 @@ enum attrDatatype {
     DATATYPE_STRING           = (1 << 8),
     DATATYPE_IPV6ADDR         = (1 << 9),
     DATATYPE_IPV6MASK         = (1 << 10),
+    DATATYPE_STRINGCOPY       = (1 << 11),
 
-    DATATYPE_LAST             = (1 << 11),
+    DATATYPE_LAST             = (1 << 12),
 };
 
 
@@ -123,6 +126,7 @@ struct _nwItemDesc {
         uint8_t      u8;
         uint16_t     u16;
         char         protocolID[10];
+        char         *string;
     } u;
 };
 
@@ -142,6 +146,7 @@ typedef ethHdrFilterDef *ethHdrFilterDefPtr;
 struct _ethHdrFilterDef {
     ethHdrDataDef ethHdr;
     nwItemDesc dataProtocolID;
+    nwItemDesc dataComment;
 };
 
 
@@ -156,6 +161,7 @@ struct _arpHdrFilterDef {
     nwItemDesc dataARPSrcIPAddr;
     nwItemDesc dataARPDstMACAddr;
     nwItemDesc dataARPDstIPAddr;
+    nwItemDesc dataComment;
 };
 
 
@@ -174,6 +180,7 @@ struct _ipHdrDataDef {
     nwItemDesc dataDstIPTo;
     nwItemDesc dataDSCP;
     nwItemDesc dataConnlimitAbove;
+    nwItemDesc dataComment;
 };
 
 
@@ -376,6 +383,9 @@ struct _virNWFilterRuleDef {
 
     int nvars;
     char **vars;
+
+    int nstrings;
+    char **strings;
 };
 
 

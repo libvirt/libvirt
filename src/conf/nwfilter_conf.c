@@ -246,7 +246,11 @@ virNWFilterRuleDefFree(virNWFilterRuleDefPtr def) {
     for (i = 0; i < def->nvars; i++)
         VIR_FREE(def->vars[i]);
 
+    for (i = 0; i < def->nstrings; i++)
+        VIR_FREE(def->strings[i]);
+
     VIR_FREE(def->vars);
+    VIR_FREE(def->strings);
 
     VIR_FREE(def);
 }
@@ -350,6 +354,29 @@ virNWFilterRuleDefAddVar(virNWFilterRuleDefPtr nwf,
 }
 
 
+static char *
+virNWFilterRuleDefAddString(virNWFilterRuleDefPtr nwf,
+                            const char *string,
+                            size_t maxstrlen)
+{
+    if (VIR_REALLOC_N(nwf->strings, nwf->nstrings+1) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    nwf->strings[nwf->nstrings] = strndup(string, maxstrlen);
+
+    if (!nwf->strings[nwf->nstrings]) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    nwf->nstrings++;
+
+    return nwf->strings[nwf->nstrings-1];
+}
+
+
 void
 virNWFilterPoolObjRemove(virNWFilterPoolObjListPtr pools,
                          virNWFilterPoolObjPtr pool)
@@ -399,6 +426,7 @@ struct _virXMLAttr2Struct
     int dataIdx;		// offset of the hasXYZ boolean
     valueValidator validator;   // beyond-standard checkers
     valueFormatter formatter;   // beyond-standard formatter
+    size_t maxstrlen;
 };
 
 
@@ -655,6 +683,18 @@ dscpValidator(enum attrDatatype datatype, union data *val,
     }
 
 
+#define COMMENT_PROP(STRUCT) \
+    {\
+        .name = "comment",\
+        .datatype = DATATYPE_STRINGCOPY,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.dataComment),\
+        .maxstrlen = MAX_COMMENT_LENGTH,\
+    }
+
+#define COMMENT_PROP_IPHDR(STRUCT) \
+    COMMENT_PROP(STRUCT.ipHdr)
+
+
 static const virXMLAttr2Struct macAttributes[] = {
     COMMON_MAC_PROPS(ethHdrFilter),
     {
@@ -664,6 +704,7 @@ static const virXMLAttr2Struct macAttributes[] = {
         .validator= checkMacProtocolID,
         .formatter= macProtocolIDFormatter,
     },
+    COMMENT_PROP(ethHdrFilter),
     {
         .name = NULL,
     }
@@ -702,6 +743,7 @@ static const virXMLAttr2Struct arpAttributes[] = {
         .datatype = DATATYPE_IPADDR,
         .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataARPDstIPAddr),
     },
+    COMMENT_PROP(arpHdrFilter),
     {
         .name = NULL,
     }
@@ -762,6 +804,7 @@ static const virXMLAttr2Struct ipAttributes[] = {
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataDSCP),
         .validator = dscpValidator,
     },
+    COMMENT_PROP_IPHDR(ipHdrFilter),
     {
         .name = NULL,
     }
@@ -817,6 +860,7 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.portData.dataDstPortEnd),
     },
+    COMMENT_PROP_IPHDR(ipv6HdrFilter),
     {
         .name = NULL,
     }
@@ -914,6 +958,7 @@ static const virXMLAttr2Struct tcpAttributes[] = {
         .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.tcpHdrFilter.dataTCPOption),
     },
+    COMMENT_PROP_IPHDR(tcpHdrFilter),
     {
         .name = NULL,
     }
@@ -922,6 +967,7 @@ static const virXMLAttr2Struct tcpAttributes[] = {
 static const virXMLAttr2Struct udpAttributes[] = {
     COMMON_IP_PROPS(udpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     COMMON_PORT_PROPS(udpHdrFilter),
+    COMMENT_PROP_IPHDR(udpHdrFilter),
     {
         .name = NULL,
     }
@@ -929,6 +975,7 @@ static const virXMLAttr2Struct udpAttributes[] = {
 
 static const virXMLAttr2Struct udpliteAttributes[] = {
     COMMON_IP_PROPS(udpliteHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
+    COMMENT_PROP_IPHDR(udpliteHdrFilter),
     {
         .name = NULL,
     }
@@ -936,6 +983,7 @@ static const virXMLAttr2Struct udpliteAttributes[] = {
 
 static const virXMLAttr2Struct espAttributes[] = {
     COMMON_IP_PROPS(espHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
+    COMMENT_PROP_IPHDR(espHdrFilter),
     {
         .name = NULL,
     }
@@ -943,6 +991,7 @@ static const virXMLAttr2Struct espAttributes[] = {
 
 static const virXMLAttr2Struct ahAttributes[] = {
     COMMON_IP_PROPS(ahHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
+    COMMENT_PROP_IPHDR(ahHdrFilter),
     {
         .name = NULL,
     }
@@ -951,6 +1000,7 @@ static const virXMLAttr2Struct ahAttributes[] = {
 static const virXMLAttr2Struct sctpAttributes[] = {
     COMMON_IP_PROPS(sctpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     COMMON_PORT_PROPS(sctpHdrFilter),
+    COMMENT_PROP_IPHDR(sctpHdrFilter),
     {
         .name = NULL,
     }
@@ -969,6 +1019,7 @@ static const virXMLAttr2Struct icmpAttributes[] = {
         .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.icmpHdrFilter.dataICMPCode),
     },
+    COMMENT_PROP_IPHDR(icmpHdrFilter),
     {
         .name = NULL,
     }
@@ -977,6 +1028,7 @@ static const virXMLAttr2Struct icmpAttributes[] = {
 
 static const virXMLAttr2Struct allAttributes[] = {
     COMMON_IP_PROPS(allHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
+    COMMENT_PROP_IPHDR(allHdrFilter),
     {
         .name = NULL,
     }
@@ -985,6 +1037,7 @@ static const virXMLAttr2Struct allAttributes[] = {
 
 static const virXMLAttr2Struct igmpAttributes[] = {
     COMMON_IP_PROPS(igmpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
+    COMMENT_PROP_IPHDR(igmpHdrFilter),
     {
         .name = NULL,
     }
@@ -999,6 +1052,7 @@ static const virXMLAttr2Struct tcpipv6Attributes[] = {
         .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.tcpHdrFilter.dataTCPOption),
     },
+    COMMENT_PROP_IPHDR(tcpHdrFilter),
     {
         .name = NULL,
     }
@@ -1007,6 +1061,7 @@ static const virXMLAttr2Struct tcpipv6Attributes[] = {
 static const virXMLAttr2Struct udpipv6Attributes[] = {
     COMMON_IP_PROPS(udpHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
     COMMON_PORT_PROPS(udpHdrFilter),
+    COMMENT_PROP_IPHDR(udpHdrFilter),
     {
         .name = NULL,
     }
@@ -1015,6 +1070,7 @@ static const virXMLAttr2Struct udpipv6Attributes[] = {
 
 static const virXMLAttr2Struct udpliteipv6Attributes[] = {
     COMMON_IP_PROPS(udpliteHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    COMMENT_PROP_IPHDR(udpliteHdrFilter),
     {
         .name = NULL,
     }
@@ -1023,6 +1079,7 @@ static const virXMLAttr2Struct udpliteipv6Attributes[] = {
 
 static const virXMLAttr2Struct espipv6Attributes[] = {
     COMMON_IP_PROPS(espHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    COMMENT_PROP_IPHDR(espHdrFilter),
     {
         .name = NULL,
     }
@@ -1031,6 +1088,7 @@ static const virXMLAttr2Struct espipv6Attributes[] = {
 
 static const virXMLAttr2Struct ahipv6Attributes[] = {
     COMMON_IP_PROPS(ahHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    COMMENT_PROP_IPHDR(ahHdrFilter),
     {
         .name = NULL,
     }
@@ -1040,6 +1098,7 @@ static const virXMLAttr2Struct ahipv6Attributes[] = {
 static const virXMLAttr2Struct sctpipv6Attributes[] = {
     COMMON_IP_PROPS(sctpHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
     COMMON_PORT_PROPS(sctpHdrFilter),
+    COMMENT_PROP_IPHDR(sctpHdrFilter),
     {
         .name = NULL,
     }
@@ -1058,6 +1117,7 @@ static const virXMLAttr2Struct icmpv6Attributes[] = {
         .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.icmpHdrFilter.dataICMPCode),
     },
+    COMMENT_PROP_IPHDR(icmpHdrFilter),
     {
         .name = NULL,
     }
@@ -1066,6 +1126,7 @@ static const virXMLAttr2Struct icmpv6Attributes[] = {
 
 static const virXMLAttr2Struct allipv6Attributes[] = {
     COMMON_IP_PROPS(allHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    COMMENT_PROP_IPHDR(allHdrFilter),
     {
         .name = NULL,
     }
@@ -1329,6 +1390,17 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 break;
                             }
                             data.c = prop;
+                            found = 1;
+                        break;
+
+                        case DATATYPE_STRINGCOPY:
+                            if (!(item->u.string =
+                                  virNWFilterRuleDefAddString(nwf, prop,
+                                                       att[idx].maxstrlen))) {
+                                rc = -1;
+                                break;
+                            }
+                            data.c = item->u.string;
                             found = 1;
                         break;
 
@@ -2508,6 +2580,10 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                        virBufferVSprintf(buf, "%02x%s",
                                       ((nwMACAddressPtr)storage_ptr)->addr[j],
                                       (j < 5) ? ":" : "");
+               break;
+
+               case DATATYPE_STRINGCOPY:
+                   virBufferEscapeString(buf, "%s", item->u.string);
                break;
 
                case DATATYPE_STRING:
