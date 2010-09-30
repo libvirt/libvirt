@@ -124,6 +124,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("hex-data-test");
 
+    DO_TEST("comment-test");
+
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

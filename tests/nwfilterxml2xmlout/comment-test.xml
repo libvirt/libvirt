@@ -1,0 +1,30 @@
+<filter name='testcase' chain='root'>
+  <uuid>01a992d2-f8c8-7c27-f69b-ab0a9d377379</uuid>
+  <rule action='accept' direction='in' priority='500'>
+    <mac protocolid='0x1234' comment='mac rule'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <ip srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff' dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff' srcipaddr='10.1.2.3' srcipmask='32' dstipaddr='10.1.2.3' dstipmask='32' protocol='udp' srcportstart='0x123' srcportend='0x234' dstportstart='0x3456' dstportend='0x4567' dscp='0x32' comment='ip rule'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <ipv6 srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:fe' dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:80' srcipaddr='::10.1.2.3' srcipmask='22' dstipaddr='::10.1.2.3' dstipmask='113' protocol='tcp' srcportstart='0x111' srcportend='400' dstportstart='0x3333' dstportend='65535' comment='ipv6 rule'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <arp srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff' dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff' hwtype='0x12' protocoltype='0x56' opcode='Request' arpsrcmacaddr='01:02:03:04:05:06' arpdstmacaddr='0a:0b:0c:0d:0e:0f' comment='arp rule'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <udp srcmacaddr='01:02:03:04:05:06' dstipaddr='10.1.2.3' dstipmask='32' dscp='0x22' srcportstart='0x123' srcportend='400' dstportstart='0x234' dstportend='0x444' comment='udp rule'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <tcp-ipv6 srcmacaddr='01:02:03:04:05:06' srcipaddr='a:b:c::' srcipmask='128' srcportstart='0x20' srcportend='0x21' dstportstart='0x100' dstportend='0x1111' comment='tcp/ipv6 rule'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <udp-ipv6 comment='`ls`;${COLUMNS};$(ls);&quot;test&quot;;&amp;&apos;3   spaces&apos;'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <sctp-ipv6 comment='comment with lone &apos;, `, &quot;, `, \, $x, and two  spaces'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <ah-ipv6 comment='tmp=`mktemp`; echo ${RANDOM} &gt; ${tmp} ; cat &lt; ${tmp}; rm -f ${tmp}'/>
+  </rule>
+</filter>
