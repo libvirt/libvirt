@@ -3715,13 +3715,17 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
         goto err;
     }
 
-    if (def->ndisks > 0) {
-        if (!def->disks[0]->src) {
-            PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
-                    _("Field \"<src>\" under \"<disk>\" on the domain XML file is "
-                        "missing."));
-            goto err;
-        }
+    if (def->ndisks < 1) {
+        PHYP_ERROR(VIR_ERR_XML_ERROR, "%s",
+                   _("Domain XML must contain at least one \"<disk>\" element."));
+        goto err;
+    }
+
+    if (!def->disks[0]->src) {
+        PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
+                   _("Field \"<src>\" under \"<disk>\" on the domain XML file is "
+                     "missing."));
+        goto err;
     }
 
     virBufferAddLit(&buf, "mksyscfg");
