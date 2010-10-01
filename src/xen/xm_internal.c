@@ -2935,8 +2935,13 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
 
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
-    if (domain->id != -1 && !(flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG))
+
+    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) ||
+        (domain->id != -1 && (flags & VIR_DOMAIN_DEVICE_MODIFY_CURRENT))) {
+        xenXMError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("Xm driver only supports modifying persistent config"));
         return -1;
+    }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     xenUnifiedLock(priv);
@@ -3026,8 +3031,13 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
-    if (domain->id != -1 && !(flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG))
+
+    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) ||
+        (domain->id != -1 && (flags & VIR_DOMAIN_DEVICE_MODIFY_CURRENT))) {
+        xenXMError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("Xm driver only supports modifying persistent config"));
         return -1;
+    }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     xenUnifiedLock(priv);
