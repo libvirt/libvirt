@@ -3904,8 +3904,9 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
         /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
-        if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
-                      VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+        if (priv->xendConfigVersion >= 3 &&
+            (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                       VIR_DOMAIN_DEVICE_MODIFY_CONFIG))) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend only supports modifying both live and "
                            "persistent config"));
@@ -4043,8 +4044,9 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
         /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
-        if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
-                      VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+        if (priv->xendConfigVersion >= 3 &&
+            (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                       VIR_DOMAIN_DEVICE_MODIFY_CONFIG))) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend only supports modifying both live and "
                            "persistent config"));
@@ -4154,8 +4156,9 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
         /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
-        if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
-                      VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+        if (priv->xendConfigVersion >= 3 &&
+            (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                       VIR_DOMAIN_DEVICE_MODIFY_CONFIG))) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend only supports modifying both live and "
                            "persistent config"));
