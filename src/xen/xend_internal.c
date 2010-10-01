@@ -3878,17 +3878,17 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id < 0) {
+        /* Cannot modify live config if domain is inactive */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Cannot modify live config if domain is inactive"));
+            return -1;
+        }
         /* If xendConfigVersion < 3 only live config can be changed */
         if (priv->xendConfigVersion < 3) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
                            "persistent config"));
-            return -1;
-        }
-        /* Cannot modify live config if domain is inactive */
-        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
-            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
-                         _("Cannot modify live config if domain is inactive"));
             return -1;
         }
     } else {
@@ -4017,17 +4017,17 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id < 0) {
+        /* Cannot modify live config if domain is inactive */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Cannot modify live config if domain is inactive"));
+            return -1;
+        }
         /* If xendConfigVersion < 3 only live config can be changed */
         if (priv->xendConfigVersion < 3) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
                            "persistent config"));
-            return -1;
-        }
-        /* Cannot modify live config if domain is inactive */
-        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
-            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
-                         _("Cannot modify live config if domain is inactive"));
             return -1;
         }
     } else {
@@ -4128,17 +4128,17 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id < 0) {
+        /* Cannot modify live config if domain is inactive */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Cannot modify live config if domain is inactive"));
+            return -1;
+        }
         /* If xendConfigVersion < 3 only live config can be changed */
         if (priv->xendConfigVersion < 3) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
                            "persistent config"));
-            return -1;
-        }
-        /* Cannot modify live config if domain is inactive */
-        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
-            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
-                         _("Cannot modify live config if domain is inactive"));
             return -1;
         }
     } else {
