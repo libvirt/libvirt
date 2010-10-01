@@ -1437,10 +1437,16 @@ xenUnifiedDomainAttachDevice (virDomainPtr dom, const char *xml)
 {
     GET_PRIVATE(dom->conn);
     int i;
-    unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+    unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
 
-    if (dom->id >= 0)
-        flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    /*
+     * HACK: xend with xendConfigVersion >= 3 does not support changing live
+     * config without touching persistent config, we add the extra flag here
+     * to make this API work
+     */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET] &&
+        priv->xendConfigVersion >= 3)
+        flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] && drivers[i]->domainAttachDeviceFlags &&
@@ -1470,10 +1476,16 @@ xenUnifiedDomainDetachDevice (virDomainPtr dom, const char *xml)
 {
     GET_PRIVATE(dom->conn);
     int i;
-    unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+    unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
 
-    if (dom->id >= 0)
-        flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    /*
+     * HACK: xend with xendConfigVersion >= 3 does not support changing live
+     * config without touching persistent config, we add the extra flag here
+     * to make this API work
+     */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET] &&
+        priv->xendConfigVersion >= 3)
+        flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] && drivers[i]->domainDetachDeviceFlags &&
