@@ -1508,7 +1508,11 @@ _iptablesCreateRuleInstance(int directionIn,
     }
 
     if (virBufferUse(&prefix)) {
-        virBufferVSprintf(&prefix, "%s", virBufferContentAndReset(&buf));
+        char *s = virBufferContentAndReset(&buf);
+
+        virBufferAdd(&prefix, s, -1);
+
+        VIR_FREE(s);
 
         final = &prefix;
 
@@ -1531,11 +1535,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
 err_exit:
     virBufferFreeAndReset(&buf);
+    virBufferFreeAndReset(&prefix);
 
     return -1;
 
 exit_no_error:
     virBufferFreeAndReset(&buf);
+    virBufferFreeAndReset(&prefix);
 
     return 0;
 }
