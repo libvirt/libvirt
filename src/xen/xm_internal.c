@@ -2975,8 +2975,8 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     }
 
     default:
-        xenXMError(VIR_ERR_XML_ERROR,
-                   "%s", _("unknown device"));
+        xenXMError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                   _("Xm driver only supports adding disk or network devices"));
         goto cleanup;
     }
 
