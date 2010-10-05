@@ -49,7 +49,7 @@ if test "$t" = "$(cat $curr_status 2>/dev/null)" \
 else
     echo running bootstrap...
     ./bootstrap && bootstrap_hash > $curr_status \
-      || { echo "Failed to bootstrap gnulib, please investigate."; exit 1; }
+      || { echo "Failed to bootstrap, please investigate."; exit 1; }
 fi
 
 cd "$THEDIR"
