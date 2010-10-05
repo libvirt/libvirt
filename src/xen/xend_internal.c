@@ -44,6 +44,7 @@
 #include "xen_hypervisor.h"
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
 #include "memory.h"
+#include "count-one-bits.h"
 
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
@@ -2191,7 +2192,9 @@ xenDaemonParseSxpr(virConnectPtr conn,
     }
 
     def->maxvcpus = sexpr_int(root, "domain/vcpus");
-    def->vcpus = def->maxvcpus;
+    def->vcpus = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
+    if (!def->vcpus || def->maxvcpus < def->vcpus)
+        def->vcpus = def->maxvcpus;
 
     tmp = sexpr_node(root, "domain/on_poweroff");
     if (tmp != NULL) {
@@ -2433,7 +2436,7 @@ sexpr_to_xend_domain_info(virDomainPtr domain, const struct sexpr *root,
                           virDomainInfoPtr info)
 {
     const char *flags;
-
+    int vcpus;
 
     if ((root == NULL) || (info == NULL))
         return (-1);
@@ -2464,7 +2467,11 @@ sexpr_to_xend_domain_info(virDomainPtr domain, const struct sexpr *root,
             info->state = VIR_DOMAIN_NOSTATE;
     }
     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
-    info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
+    vcpus = sexpr_int(root, "domain/vcpus");
+    info->nrVirtCpu = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
+    if (!info->nrVirtCpu || vcpus < info->nrVirtCpu)
+        info->nrVirtCpu = vcpus;
+
     return (0);
 }
 
@@ -5668,6 +5675,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
                       def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
     virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
+    /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is 32.  */
+    if (def->vcpus < def->maxvcpus)
+        virBufferVSprintf(&buf, "(vcpu_avail %u)", (1U << def->vcpus) - 1);
 
     if (def->cpumask) {
         char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
@@ -5763,6 +5773,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
                 virBufferVSprintf(&buf, "(kernel '%s')", def->os.loader);
 
             virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
+            if (def->vcpus < def->maxvcpus)
+                virBufferVSprintf(&buf, "(vcpu_avail %u)",
+                                  (1U << def->vcpus) - 1);
 
             for (i = 0 ; i < def->os.nBootDevs ; i++) {
                 switch (def->os.bootDevs[i]) {

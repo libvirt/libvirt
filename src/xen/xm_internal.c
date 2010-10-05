@@ -46,6 +46,7 @@
 #include "util.h"
 #include "memory.h"
 #include "logging.h"
+#include "count-one-bits.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENXM
 
@@ -772,10 +773,12 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     def->mem.max_balloon *= 1024;
 
     if (xenXMConfigGetULong(conf, "vcpus", &count, 1) < 0 ||
-        (unsigned short) count != count)
+        MAX_VIRT_CPUS < count)
         goto cleanup;
     def->maxvcpus = count;
-    def->vcpus = def->maxvcpus;
+    if (xenXMConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
+        goto cleanup;
+    def->vcpus = MIN(count_one_bits(count), def->maxvcpus);
 
     if (xenXMConfigGetString(conf, "cpus", &str, NULL) < 0)
         goto cleanup;
@@ -2245,6 +2248,9 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         goto no_memory;
 
     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
+        goto no_memory;
+    if (def->vcpus < def->maxvcpus &&
+        xenXMConfigSetInt(conf, "vcpu_avail", (1U << def->vcpus) - 1) < 0)
         goto no_memory;
 
     if ((def->cpumask != NULL) &&
