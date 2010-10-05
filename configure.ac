@@ -182,22 +182,29 @@ if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
     sysconfdir='/etc'
 fi
 
-dnl lxc and qemu drivers require linux headers
-case "$host" in
-  *-*-linux*)
-    # match linux here so the *) case will match anything non-linux
-    ;;
-  *)
-    if test "x$with_lxc" != "xyes"
+dnl Make some notes about which OS we're compiling for, as the lxc and qemu
+dnl drivers require linux headers, while storage_mpath and nwfilter are also
+dnl linux specific.  The "network" and storage_fs drivers are known to not
+dnl work on MacOS X presently, so we also make a note if compiling for that
+
+with_linux=no with_osx=no
+case $host in
+  *-*-linux*) with_linux=yes ;;
+  *-*-darwin*) with_osx=yes ;;
+esac
+
+if test $with_linux = no; then
+    if test "x$with_lxc" != xyes
     then
         with_lxc=no
     fi
-    if test "x$with_qemu" != "xyes"
+    if test "x$with_qemu" != xyes
     then
         with_qemu=no
     fi
-    ;;
-esac
+fi
+
+AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH([xen],
@@ -1306,12 +1313,18 @@ fi
 AC_SUBST([READLINE_CFLAGS])
 AC_SUBST([VIRSH_LIBS])
 
+dnl check if the network driver should be compiled
 
 AC_ARG_WITH([network],
   AC_HELP_STRING([--with-network], [with virtual network driver @<:@default=yes@:>@]),[],[with_network=yes])
-if test "$with_libvirtd" = "no" ; then
+
+dnl there's no use compiling the network driver without the libvirt
+dnl daemon, nor compiling it for MacOS X, where it breaks the compile
+
+if test "$with_libvirtd" = "no" || test "$with_osx" = "yes"; then
   with_network=no
 fi
+
 if test "$with_network" = "yes" ; then
   AC_DEFINE_UNQUOTED([WITH_NETWORK], 1, [whether network driver is enabled])
 fi
@@ -1389,6 +1402,11 @@ if test "$with_storage_dir" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_DIR], [test "$with_storage_dir" = "yes"])
 
+dnl storage-fs does not work on MacOS X
+
+if test "$with_osx" = "yes"; then
+  with_storage_fs=no
+fi
 
 if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
   AC_PATH_PROG([MOUNT], [mount], [], [$PATH:/sbin:/usr/sbin])
@@ -1502,14 +1520,6 @@ if test "$with_storage_scsi" = "check"; then
      [whether SCSI backend for storage driver is enabled])
 fi
 AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
-
-with_linux=no
-case "$host" in
-  *-*-linux*)
-    with_linux=yes
-    ;;
-esac
-AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 
 if test "$with_storage_mpath" = "check" && test "$with_linux" = "yes"; then
    with_storage_mpath=yes
@@ -2030,6 +2040,8 @@ then
 fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
 
+dnl nwfilter should only be compiled for linux, and only if the
+dnl libvirt daemon is also being compiled
 
 with_nwfilter=yes
 if test "$with_libvirtd" = "no" || test "$with_linux" != "yes"; then
@@ -2039,7 +2051,6 @@ if test "$with_nwfilter" = "yes" ; then
   AC_DEFINE([WITH_NWFILTER], 1, [whether local network filter management driver is available])
 fi
 AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
-
 
 AC_ARG_WITH([qemu-user],
   AC_HELP_STRING([--with-qemu-user], [username to run QEMU system instance as @<:@default=root@:>@]),
