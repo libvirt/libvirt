@@ -45,6 +45,7 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
 unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain);
 int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus);
+int xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags);
 int xenXMDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
                        unsigned char *cpumap, int maplen);
 virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname);

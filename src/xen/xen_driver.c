@@ -1142,20 +1142,33 @@ static int
 xenUnifiedDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
-    int i, ret;
+    int ret;
 
-    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
-        xenUnifiedError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
-                        flags);
+    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
+                  VIR_DOMAIN_VCPU_CONFIG |
+                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+
+    /* Exactly one of LIVE or CONFIG must be set.  */
+    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
+        xenUnifiedError(VIR_ERR_INVALID_ARG,
+                        _("invalid flag combination: (0x%x)"), flags);
         return -1;
     }
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainGetMaxVcpus) {
-            ret = drivers[i]->domainGetMaxVcpus (dom);
-            if (ret != 0) return ret;
-        }
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        ret = xenDaemonDomainGetVcpusFlags(dom, flags);
+        if (ret != -2)
+            return ret;
+    }
+    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
+        ret = xenXMDomainGetVcpusFlags(dom, flags);
+        if (ret != -2)
+            return ret;
+    }
+    if (flags == (VIR_DOMAIN_VCPU_CONFIG | VIR_DOMAIN_VCPU_MAXIMUM))
+        return xenHypervisorGetVcpuMax(dom);
 
+    xenUnifiedError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 

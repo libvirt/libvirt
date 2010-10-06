@@ -3620,6 +3620,58 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
 }
 
 /**
+ * xenDaemonDomainGetVcpusFlags:
+ * @domain: pointer to domain object
+ * @flags: bitwise-ORd from virDomainVcpuFlags
+ *
+ * Extract information about virtual CPUs of domain according to flags.
+ *
+ * Returns the number of vcpus on success, -1 if an error message was
+ * issued, and -2 if the unified driver should keep trying.
+
+ */
+int
+xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+{
+    struct sexpr *root;
+    int ret;
+    xenUnifiedPrivatePtr priv;
+
+    if (domain == NULL || domain->conn == NULL || domain->name == NULL) {
+        virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
+    /* If xendConfigVersion is 2, then we can only report _LIVE (and
+     * xm_internal reports _CONFIG).  If it is 3, then _LIVE and
+     * _CONFIG are always in sync for a running system.  */
+    if (domain->id < 0 && priv->xendConfigVersion < 3)
+        return -2;
+    if (domain->id < 0 && (flags & VIR_DOMAIN_VCPU_LIVE)) {
+        virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("domain not active"));
+        return -1;
+    }
+
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL)
+        return -1;
+
+    ret = sexpr_int(root, "domain/vcpus");
+    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM)) {
+        int vcpus = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
+        if (vcpus)
+            ret = MIN(vcpus, ret);
+    }
+    if (!ret)
+        ret = -2;
+    sexpr_free(root);
+    return ret;
+}
+
+/**
  * virDomainGetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0
  * @info: pointer to an array of virVcpuInfo structures (OUT)

@@ -1671,6 +1671,53 @@ cleanup:
 }
 
 /**
+ * xenXMDomainGetVcpusFlags:
+ * @domain: pointer to domain object
+ * @flags: bitwise-ORd from virDomainVcpuFlags
+ *
+ * Extract information about virtual CPUs of domain according to flags.
+ *
+ * Returns the number of vcpus on success, -1 if an error message was
+ * issued, and -2 if the unified driver should keep trying.
+ */
+int
+xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+{
+    xenUnifiedPrivatePtr priv;
+    const char *filename;
+    xenXMConfCachePtr entry;
+    int ret = -2;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+
+    if (domain->id != -1)
+        return -2;
+    if (flags & VIR_DOMAIN_VCPU_LIVE) {
+        xenXMError(VIR_ERR_OPERATION_FAILED, "%s", _("domain not active"));
+        return -1;
+    }
+
+    priv = domain->conn->privateData;
+    xenUnifiedLock(priv);
+
+    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+        goto cleanup;
+
+    if (!(entry = virHashLookup(priv->configCache, filename)))
+        goto cleanup;
+
+    ret = ((flags & VIR_DOMAIN_VCPU_MAXIMUM) ? entry->def->maxvcpus
+           : entry->def->vcpus);
+
+cleanup:
+    xenUnifiedUnlock(priv);
+    return ret;
+}
+
+/**
  * xenXMDomainPinVcpu:
  * @domain: pointer to domain object
  * @vcpu: virtual CPU number (reserved)
