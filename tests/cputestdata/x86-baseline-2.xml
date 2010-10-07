@@ -1,0 +1,22 @@
+<cpuTest>
+<cpu>
+  <arch>x86_64</arch>
+  <model>core2duo</model>
+  <topology sockets='1' cores='2' threads='1'/>
+</cpu>
+<cpu>
+  <arch>x86_64</arch>
+  <model>pentiumpro</model>
+  <topology sockets='1' cores='2' threads='1'/>
+  <feature name='mtrr'/>
+  <feature name='clflush'/>
+  <feature name='mca'/>
+  <feature name='vme'/>
+  <feature name='pse36'/>
+  <feature name='pni'/>
+  <feature name='monitor'/>
+  <feature name='ssse3'/>
+  <feature name='lm'/>
+  <feature name='syscall'/>
+</cpu>
+</cpuTest>

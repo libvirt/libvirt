@@ -1,0 +1,4 @@
+<cpu match='exact'>
+  <arch>x86_64</arch>
+  <model>Nehalem</model>
+</cpu>

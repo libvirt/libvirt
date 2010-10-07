@@ -1,0 +1,3 @@
+<cpu match='minimum'>
+  <model>Penryn</model>
+</cpu>

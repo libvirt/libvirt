@@ -1,0 +1,20 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>Penryn</model>
+  <vendor>AMD</vendor>
+  <topology sockets='1' cores='4' threads='1'/>
+  <feature name='dca'/>
+  <feature name='xtpr'/>
+  <feature name='tm2'/>
+  <feature name='est'/>
+  <feature name='vmx'/>
+  <feature name='ds_cpl'/>
+  <feature name='monitor'/>
+  <feature name='pbe'/>
+  <feature name='tm'/>
+  <feature name='ht'/>
+  <feature name='ss'/>
+  <feature name='acpi'/>
+  <feature name='ds'/>
+  <feature name='vme'/>
+</cpu>

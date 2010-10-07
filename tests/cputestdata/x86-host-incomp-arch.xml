@@ -1,0 +1,6 @@
+<cpu>
+  <arch>ia64</arch>
+  <model>Penryn</model>
+  <vendor>Intel</vendor>
+  <topology sockets='1' cores='4' threads='1'/>
+</cpu>

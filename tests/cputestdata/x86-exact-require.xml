@@ -1,0 +1,4 @@
+<cpu match='exact'>
+  <model>Penryn</model>
+  <feature name='sse4.1' policy='require'/>
+</cpu>

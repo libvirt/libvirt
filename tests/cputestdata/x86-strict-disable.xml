@@ -1,0 +1,18 @@
+<cpu match='strict'>
+  <model>Penryn</model>
+  <feature name='dca' policy='require'/>
+  <feature name='xtpr' policy='require'/>
+  <feature name='tm2' policy='require'/>
+  <feature name='est' policy='require'/>
+  <feature name='vmx' policy='require'/>
+  <feature name='ds_cpl' policy='require'/>
+  <feature name='monitor' policy='disable'/>
+  <feature name='pbe' policy='require'/>
+  <feature name='tm' policy='require'/>
+  <feature name='ht' policy='require'/>
+  <feature name='ss' policy='disable'/>
+  <feature name='acpi' policy='require'/>
+  <feature name='ds' policy='require'/>
+  <feature name='vme' policy='require'/>
+  <feature name='3dnow' policy='disable'/>
+</cpu>

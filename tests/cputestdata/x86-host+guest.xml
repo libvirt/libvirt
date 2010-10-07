@@ -1,0 +1,17 @@
+<cpu match='exact'>
+  <model>Penryn</model>
+  <topology sockets='2' cores='4' threads='1'/>
+  <feature policy='require' name='dca'/>
+  <feature policy='require' name='xtpr'/>
+  <feature policy='disable' name='sse4.2'/>
+  <feature policy='disable' name='3dnow'/>
+  <feature policy='require' name='ssse3'/>
+  <feature policy='disable' name='vmx'/>
+  <feature policy='disable' name='ds_cpl'/>
+  <feature policy='disable' name='sse'/>
+  <feature policy='force' name='monitor'/>
+  <feature policy='force' name='pbe'/>
+  <feature policy='force' name='3dnowext'/>
+  <feature policy='force' name='svm'/>
+  <feature policy='forbid' name='popcnt'/>
+</cpu>

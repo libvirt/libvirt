@@ -1,0 +1,4 @@
+<cpu match='exact'>
+  <model>pentium3</model>
+  <vendor>AMD</vendor>
+</cpu>

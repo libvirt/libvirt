@@ -1,0 +1,5 @@
+<cpu match='exact'>
+  <model>Nehalem</model>
+  <feature name='popcnt' policy='disable'/>
+  <feature name='sse4.2' policy='disable'/>
+</cpu>

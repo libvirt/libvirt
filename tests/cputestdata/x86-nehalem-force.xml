@@ -1,0 +1,5 @@
+<cpu match='exact'>
+  <model>Penryn</model>
+  <feature name='popcnt' policy='force'/>
+  <feature name='sse4.2' policy='force'/>
+</cpu>

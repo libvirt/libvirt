@@ -69,7 +69,8 @@ EXTRA_DIST =		\
 	domainsnapshotschematest \
 	domainsnapshotxml2xmlout \
 	domainsnapshotxml2xmlin \
-	qemuhelpdata
+	qemuhelpdata \
+	cputestdata
 
 check_PROGRAMS = virshtest conftest sockettest \
         nodeinfotest qparamtest virbuftest
@@ -110,6 +111,8 @@ check_PROGRAMS += storagevolxml2xmltest storagepoolxml2xmltest
 check_PROGRAMS += nodedevxml2xmltest
 
 check_PROGRAMS += interfacexml2xmltest
+
+check_PROGRAMS += cputest
 
 test_scripts = \
 	capabilityschematest \
@@ -195,6 +198,8 @@ TESTS += storagevolxml2xmltest storagepoolxml2xmltest
 TESTS += nodedevxml2xmltest
 
 TESTS += interfacexml2xmltest
+
+TESTS += cputest
 
 path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/daemon$(PATH_SEPARATOR)$$abs_top_builddir/tools
 
@@ -325,6 +330,11 @@ interfacexml2xmltest_SOURCES = \
 	interfacexml2xmltest.c \
 	testutils.c testutils.h
 interfacexml2xmltest_LDADD = $(LDADDS)
+
+cputest_SOURCES = \
+	cputest.c \
+	testutils.c testutils.h
+cputest_LDADD = $(LDADDS)
 
 virshtest_SOURCES = \
 	virshtest.c \

@@ -1,0 +1,5 @@
+<cpu match='exact'>
+  <model>Opteron_G2</model>
+  <feature policy='disable' name='svm'/>
+  <feature policy='disable' name='rdtscp'/>
+</cpu>

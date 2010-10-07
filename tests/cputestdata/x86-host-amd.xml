@@ -1,0 +1,18 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>Opteron_G3</model>
+  <vendor>AMD</vendor>
+  <topology sockets='8' cores='1' threads='1'/>
+  <feature name='osvw'/>
+  <feature name='3dnowprefetch'/>
+  <feature name='cr8legacy'/>
+  <feature name='extapic'/>
+  <feature name='cmp_legacy'/>
+  <feature name='3dnow'/>
+  <feature name='3dnowext'/>
+  <feature name='pdpe1gb'/>
+  <feature name='fxsr_opt'/>
+  <feature name='mmxext'/>
+  <feature name='ht'/>
+  <feature name='vme'/>
+</cpu>
