@@ -429,6 +429,11 @@
           <ref name="uint16range"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="state">
+          <ref name="stateflags-type"/>
+        </attribute>
+      </optional>
     </interleave>
   </define>
 
@@ -859,5 +864,11 @@
 
   <define name='comment-type'>
     <data type="string"/>
+  </define>
+
+  <define name='stateflags-type'>
+    <data type="string">
+      <param name="pattern">((NEW|ESTABLISHED|RELATED|INVALID)(,(NEW|ESTABLISHED|RELATED|INVALID))*|NONE)</param>
+    </data>
   </define>
 </grammar>
