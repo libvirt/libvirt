@@ -1458,7 +1458,8 @@
      <li>prevents a VM's interface from MAC, IP and ARP spoofing</li>
      <li>opens only TCP ports 22 and 80 of a VM's interface</li>
      <li>allows the VM to send ping traffic from an interface
-        but no let the VM be pinged on the interface</li>
+        but not let the VM be pinged on the interface</li>
+     <li>allows the VM to do DNS lookups (UDP towards port 53)</li>
     </ul>
     <p>
      The requirement to prevent spoofing is fulfilled by the existing
@@ -1498,6 +1499,11 @@
        this includes ping traffic --&gt;
   &lt;rule action='accept' direction='out'&gt;
     &lt;icmp/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable outgoing DNS lookups using UDP --&gt;
+  &lt;rule action='accept' direction='out'&gt;
+    &lt;udp dstportstart='53'/&gt;
   &lt;/rule&gt;
 
   &lt;!-- drop all other traffic --&gt;
@@ -1546,6 +1552,178 @@
   &lt;/rule&gt;
 </pre>
 
+    <h3><a name="nwfwriteexample2nd">Second example custom filter</a></h3>
+    <p>
+     In this example we now want to build a similar filter as in the
+     example above, but extend the list of requirements with an
+     ftp server located inside the VM. Further, we will be using features
+     that have been added in <span class="since">version 0.8.5</span>.
+     The requirements for this filter are:
+    </p>
+    <ul>
+     <li>prevents a VM's interface from MAC, IP and ARP spoofing</li>
+     <li>opens only TCP ports 22 and 80 of a VM's interface</li>
+     <li>allows the VM to send ping traffic from an interface
+        but not let the VM be pinged on the interface</li>
+     <li>allows the VM to do DNS lookups (UDP towards port 53)</li>
+     <li>enable an ftp server (in active mode) to be run inside the VM
+    </ul>
+    <p>
+     The additional requirement of allowing an ftp server to be run inside
+     the VM maps into the requirement of allowing port 21 to be reachable
+     for ftp control traffic as well as enabling the VM to establish an
+     outgoing tcp connection originating from the VM's TCP port 20 back to
+     the ftp client (ftp active mode). There are several ways of how this
+     filter can be written and we present 2 solutions.
+     <br><br>
+     The 1st solution makes use of the <code>state</code> attribute of
+     the TCP protocol that gives us a hook into the connection tracking
+     framework of the Linux host. For the VM-initiated ftp data connection
+     (ftp active mode) we use the <code>RELATED</code> state that allows
+     us to detect that the VM-initiated ftp data connection is a consequence of
+     ( or 'has a relationship with' ) an existing ftp control connection,
+     thus we want to allow it to let packets
+     pass the firewall. The <code>RELATED</code> state, however, is only
+     valid for the very first packet of the outgoing TCP connection for the
+     ftp data path. Afterwards, the state to compare against is
+     <code>ESTABLISHED</code>, which then applies equally
+     to the incoming and outgoing direction. All this is related to the ftp
+     data traffic originating from TCP port 20 of the VM. This then leads to
+     the following solution
+     <span class="since">(since 0.8.5 (Qemu, KVM, UML))</span>:
+    </p>
+<pre>
+&lt;filter name='test-eth0'&gt;
+  &lt;!-- reference the clean traffic filter to prevent
+       MAC, IP and ARP spoofing. By not providing
+       and IP address parameter, libvirt will detect the
+       IP address the VM is using. --&gt;
+  &lt;filterref filter='clean-traffic'/&gt;
+
+  &lt;!-- enable TCP port 21 (ftp-control) to be reachable --&gt;
+  &lt;rule action='accept' direction='in'&gt;
+    &lt;tcp dstportstart='21'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable TCP port 20 for VM-initiated ftp data connection
+       related to an existing ftp control connection --&gt;
+  &lt;rule action='accept' direction='out'&gt;
+    &lt;tcp srcportstart='20' state='RELATED,ESTABLISHED'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- accept all packets from client on the ftp data connection --&gt;
+  &lt;rule action='accept' direction='in'&gt;
+    &lt;tcp dstportstart='20' state='ESTABLISHED'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable TCP ports 22 (ssh) and 80 (http) to be reachable --&gt;
+  &lt;rule action='accept' direction='in'&gt;
+    &lt;tcp dstportstart='22'/&gt;
+  &lt;/rule&gt;
+
+  &lt;rule action='accept' direction='in'&gt;
+    &lt;tcp dstportstart='80'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable general ICMP traffic to be initiated by the VM;
+       this includes ping traffic --&gt;
+  &lt;rule action='accept' direction='out'&gt;
+    &lt;icmp/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable outgoing DNS lookups using UDP --&gt;
+  &lt;rule action='accept' direction='out'&gt;
+    &lt;udp dstportstart='53'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- drop all other traffic --&gt;
+  &lt;rule action='drop' direction='inout'&gt;
+    &lt;all/&gt;
+  &lt;/rule&gt;
+
+&lt;/filter&gt;
+</pre>
+    <p>
+     Before trying out a filter using the <code>RELATED</code> state,
+     you have to make sure that the approriate connection tracking module
+     has been loaded into the host's kernel. Depending on the version of the
+     kernel, you must run either one of the following two commands before
+     the ftp connection with the VM is established.
+    </p>
+<pre>
+    modprobe nf_conntrack_ftp   # where available  or
+
+    modprobe ip_conntrack_ftp   # if above is not available
+</pre>
+    <p>
+     If other protocols than ftp are to be used in conjunction with the
+     <code>RELATED</code> state, their corresponding module must be loaded.
+     Modules exist at least for the protocols ftp, tftp, irc, sip,
+     sctp, and amanda.
+    </p>
+    <p>
+     The 2nd solution makes uses the state flags of connections more
+     than the previous solution did.
+     In this solution we take advantage of the fact that the
+     <code>NEW</code> state of a connection is valid when the very
+     first packet of a traffic flow is seen. Subsequently, if the very first
+     packet of a flow is accepted, the flow becomes a connection and enters
+     the <code>ESTABLISHED</code> state. This allows us to write a general
+     rule for allowing packets of <code>ESTABLISHED</code> connections to
+     reach the VM or be sent by the VM.
+     We write specific rules for the very first packets identified by the
+     <code>NEW</code> state and for which ports they are acceptable. All
+     packets for ports that are not explicitly accepted will be dropped and
+     therefore the connection will not go into the <code>ESTABLISHED</code>
+     state and any subsequent packets be dropped.
+    </p>
+
+<pre>
+&lt;filter name='test-eth0'&gt;
+  &lt;!-- reference the clean traffic filter to prevent
+       MAC, IP and ARP spoofing. By not providing
+       and IP address parameter, libvirt will detect the
+       IP address the VM is using. --&gt;
+  &lt;filterref filter='clean-traffic'/&gt;
+
+  &lt;!-- let the packets of all previously accepted connections reach the VM --&gt;
+  &lt;rule action='accept' direction='in'&gt;
+    &lt;all state='ESTABLISHED'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- let the packets of all previously accepted and related connections be sent from the VM --&gt;
+  &lt;rule action='accept' direction='out'&gt;
+    &lt;all state='ESTABLISHED,RELATED'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable traffic towards port 21 (ftp), 22 (ssh) and 80 (http) --&gt;
+  &lt;rule action='accept' direction='in'&gt;
+    &lt;tcp dstportstart='21' dstportend='22' state='NEW'/&gt;
+  &lt;/rule&gt;
+
+  &lt;rule action='accept' direction='in'&gt;
+    &lt;tcp dstportstart='80' state='NEW'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable general ICMP traffic to be initiated by the VM;
+       this includes ping traffic --&gt;
+  &lt;rule action='accept' direction='out'&gt;
+    &lt;icmp state='NEW'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- enable outgoing DNS lookups using UDP --&gt;
+  &lt;rule action='accept' direction='out'&gt;
+    &lt;udp dstportstart='53' state='NEW'/&gt;
+  &lt;/rule&gt;
+
+  &lt;!-- drop all other traffic --&gt;
+  &lt;rule action='drop' direction='inout'&gt;
+    &lt;all/&gt;
+  &lt;/rule&gt;
+
+&lt;/filter&gt;
+
+</pre>
 
     <h2><a name="nwflimits">Limitations</a></h2>
     <p>
