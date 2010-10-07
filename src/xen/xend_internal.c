@@ -3611,37 +3611,6 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
 }
 
 /**
- * xenDaemonDomainSetVcpus:
- * @domain: pointer to domain object
- * @nvcpus: the new number of virtual CPUs for this domain
- *
- * Dynamically change the number of virtual CPUs used by the domain.
- *
- * Returns 0 for success; -1 (with errno) on error
- */
-int
-xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
-{
-    char buf[VIR_UUID_BUFLEN];
-    xenUnifiedPrivatePtr priv;
-
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
-     || (vcpus < 1)) {
-        virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-
-    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
-        return(-1);
-
-    snprintf(buf, sizeof(buf), "%d", vcpus);
-    return(xend_op(domain->conn, domain->name, "op", "set_vcpus", "vcpus",
-                   buf, NULL));
-}
-
-/**
  * xenDaemonDomainPinCpu:
  * @domain: pointer to domain object
  * @vcpu: virtual CPU number
@@ -5213,10 +5182,8 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainSave,         /* domainSave */
     xenDaemonDomainRestore,      /* domainRestore */
     xenDaemonDomainCoreDump,     /* domainCoreDump */
-    xenDaemonDomainSetVcpus,     /* domainSetVcpus */
     xenDaemonDomainPinVcpu,      /* domainPinVcpu */
     xenDaemonDomainGetVcpus,     /* domainGetVcpus */
-    NULL,                        /* domainGetMaxVcpus */
     xenDaemonListDefinedDomains, /* listDefinedDomains */
     xenDaemonNumOfDefinedDomains,/* numOfDefinedDomains */
     xenDaemonDomainCreate,       /* domainCreate */

@@ -103,10 +103,8 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
-    xenXMDomainSetVcpus, /* domainSetVcpus */
     xenXMDomainPinVcpu, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
     xenXMListDefinedDomains, /* listDefinedDomains */
     xenXMNumOfDefinedDomains, /* numOfDefinedDomains */
     xenXMDomainCreate, /* domainCreate */
@@ -1623,47 +1621,6 @@ unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
         goto cleanup;
 
     ret = entry->def->mem.max_balloon;
-
-cleanup:
-    xenUnifiedUnlock(priv);
-    return ret;
-}
-
-/*
- * Set the VCPU count in config
- */
-int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
-    xenUnifiedPrivatePtr priv;
-    const char *filename;
-    xenXMConfCachePtr entry;
-    int ret = -1;
-
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
-    if (domain->id != -1)
-        return (-1);
-
-    priv = domain->conn->privateData;
-    xenUnifiedLock(priv);
-
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
-        goto cleanup;
-
-    if (!(entry = virHashLookup(priv->configCache, filename)))
-        goto cleanup;
-
-    entry->def->maxvcpus = entry->def->vcpus = vcpus;
-
-    /* If this fails, should we try to undo our changes to the
-     * in-memory representation of the config file. I say not!
-     */
-    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
-        goto cleanup;
-    ret = 0;
 
 cleanup:
     xenUnifiedUnlock(priv);

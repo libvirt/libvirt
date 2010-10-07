@@ -784,10 +784,8 @@ struct xenUnifiedDriver xenHypervisorDriver = {
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
-    xenHypervisorSetVcpus, /* domainSetVcpus */
     xenHypervisorPinVcpu, /* domainPinVcpu */
     xenHypervisorGetVcpus, /* domainGetVcpus */
-    xenHypervisorGetVcpuMax, /* domainGetMaxVcpus */
     NULL, /* listDefinedDomains */
     NULL, /* numOfDefinedDomains */
     NULL, /* domainCreate */
