@@ -1,0 +1,15 @@
+<filter name='testcase' chain='root'>
+  <uuid>01a992d2-f8c8-7c27-f69b-ab0a9d377379</uuid>
+  <rule action='accept' direction='in' priority='100'>
+    <tcp dstportstart='22'/>
+  </rule>
+  <rule action='accept' direction='in' priority='200'>
+    <icmp/>
+  </rule>
+  <rule action='accept' direction='in' priority='300'>
+    <all/>
+  </rule>
+  <rule action='drop' direction='inout' priority='1000'>
+    <all/>
+  </rule>
+</filter>
