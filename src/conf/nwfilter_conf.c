@@ -44,6 +44,7 @@
 #include "nwfilter_params.h"
 #include "nwfilter_conf.h"
 #include "domain_conf.h"
+#include "c-ctype.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -157,6 +158,7 @@ static const char srcportend_str[]   = "srcportend";
 static const char dstportstart_str[] = "dstportstart";
 static const char dstportend_str[]   = "dstportend";
 static const char dscp_str[]         = "dscp";
+static const char state_str[]        = "state";
 
 #define SRCMACADDR    srcmacaddr_str
 #define SRCMACMASK    srcmacmask_str
@@ -179,6 +181,7 @@ static const char dscp_str[]         = "dscp";
 #define DSTPORTSTART  dstportstart_str
 #define DSTPORTEND    dstportend_str
 #define DSCP          dscp_str
+#define STATE         state_str
 
 
 /**
@@ -414,9 +417,11 @@ union data {
 };
 
 typedef bool (*valueValidator)(enum attrDatatype datatype, union data *valptr,
-                               virNWFilterRuleDefPtr nwf);
+                               virNWFilterRuleDefPtr nwf,
+                               nwItemDesc *item);
 typedef bool (*valueFormatter)(virBufferPtr buf,
-                               virNWFilterRuleDefPtr nwf);
+                               virNWFilterRuleDefPtr nwf,
+                               nwItemDesc *item);
 
 typedef struct _virXMLAttr2Struct virXMLAttr2Struct;
 struct _virXMLAttr2Struct
@@ -441,7 +446,8 @@ static const struct int_map macProtoMap[] = {
 
 static bool
 checkMacProtocolID(enum attrDatatype datatype, union data *value,
-                   virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
+                   virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+                   nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     int32_t res = -1;
 
@@ -468,7 +474,8 @@ checkMacProtocolID(enum attrDatatype datatype, union data *value,
 
 static bool
 macProtocolIDFormatter(virBufferPtr buf,
-                       virNWFilterRuleDefPtr nwf)
+                       virNWFilterRuleDefPtr nwf,
+                       nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     const char *str = NULL;
     bool asHex = true;
@@ -519,7 +526,8 @@ checkValidMask(unsigned char *data, int len)
 static bool
 checkMACMask(enum attrDatatype datatype ATTRIBUTE_UNUSED,
              union data *macMask,
-             virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
+             virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+             nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     return checkValidMask(macMask->uc, 6);
 }
@@ -545,7 +553,8 @@ static const struct int_map arpOpcodeMap[] = {
 static bool
 arpOpcodeValidator(enum attrDatatype datatype,
                    union data *value,
-                   virNWFilterRuleDefPtr nwf)
+                   virNWFilterRuleDefPtr nwf,
+                   nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     int32_t res = -1;
 
@@ -569,7 +578,8 @@ arpOpcodeValidator(enum attrDatatype datatype,
 
 static bool
 arpOpcodeFormatter(virBufferPtr buf,
-                   virNWFilterRuleDefPtr nwf)
+                   virNWFilterRuleDefPtr nwf,
+                   nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     const char *str = NULL;
 
@@ -604,7 +614,8 @@ static const struct int_map ipProtoMap[] = {
 
 static bool checkIPProtocolID(enum attrDatatype datatype,
                               union data *value,
-                              virNWFilterRuleDefPtr nwf)
+                              virNWFilterRuleDefPtr nwf,
+                              nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     int32_t res = -1;
 
@@ -628,7 +639,8 @@ static bool checkIPProtocolID(enum attrDatatype datatype,
 
 static bool
 formatIPProtocolID(virBufferPtr buf,
-                   virNWFilterRuleDefPtr nwf)
+                   virNWFilterRuleDefPtr nwf,
+                   nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     const char *str = NULL;
     bool asHex = true;
@@ -649,7 +661,8 @@ formatIPProtocolID(virBufferPtr buf,
 
 static bool
 dscpValidator(enum attrDatatype datatype, union data *val,
-              virNWFilterRuleDefPtr nwf)
+              virNWFilterRuleDefPtr nwf,
+              nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     uint8_t dscp = val->ui;
     if (dscp > 63)
@@ -659,6 +672,128 @@ dscpValidator(enum attrDatatype datatype, union data *val,
 
     return 1;
 }
+
+
+static const struct int_map stateMatchMap[] = {
+    INTMAP_ENTRY(RULE_FLAG_STATE_NEW          , "NEW"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_ESTABLISHED  , "ESTABLISHED"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_RELATED      , "RELATED"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_INVALID      , "INVALID"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_NONE         , "NONE"),
+    INTMAP_ENTRY_LAST,
+};
+
+
+static int
+parseStringItems(const struct int_map *int_map,
+                 const char *input, int32_t *flags, char sep)
+{
+    int rc = 0;
+    unsigned int i, j;
+    bool found;
+
+    i = 0;
+    while (input[i]) {
+        found = false;
+        while (c_isspace(input[i]) || input[i] == sep)
+            i++;
+        if (!input[i])
+            break;
+        for (j = 0; int_map[j].val; j++) {
+            if (STRCASEEQLEN(&input[i], int_map[j].val,
+                             strlen(int_map[j].val))) {
+                *flags |= int_map[j].attr;
+                i += strlen(int_map[j].val);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            rc = 1;
+            break;
+        }
+    }
+    return rc;
+}
+
+
+static int
+printStringItems(virBufferPtr buf, const struct int_map *int_map,
+                 int32_t flags, const char *sep)
+{
+    unsigned int i, c = 0;
+    int32_t last_attr = 0;
+
+    for (i = 0; int_map[i].val; i++) {
+        if (last_attr != int_map[i].attr &&
+            flags & int_map[i].attr) {
+            if (c >= 1)
+                virBufferVSprintf(buf, "%s", sep);
+            virBufferVSprintf(buf, "%s", int_map[i].val);
+            c++;
+        }
+        last_attr = int_map[i].attr;
+    }
+
+    return 0;
+}
+
+
+static int
+parseStateMatch(const char *statematch, int32_t *flags)
+{
+    int rc = parseStringItems(stateMatchMap, statematch, flags, ',');
+
+    if ((*flags & RULE_FLAG_STATE_NONE))
+        *flags = RULE_FLAG_STATE_NONE;
+
+    return rc;
+}
+
+
+void
+virNWFilterPrintStateMatchFlags(virBufferPtr buf, const char *prefix,
+                                int32_t flags, bool disp_none)
+{
+    if (!disp_none && (flags & RULE_FLAG_STATE_NONE))
+        return;
+
+    virBufferVSprintf(buf, "%s", prefix);
+
+    printStringItems(buf, stateMatchMap, flags, ",");
+}
+
+
+static bool
+stateValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
+               virNWFilterRuleDefPtr nwf,
+               nwItemDesc *item)
+{
+    char *input = val->c;
+    int32_t flags = 0;
+
+    if (parseStateMatch(input, &flags))
+        return 0;
+
+    item->u.u16 = flags;
+    nwf->flags |= flags;
+
+    item->datatype = DATATYPE_UINT16;
+
+    return 1;
+}
+
+
+static bool
+stateFormatter(virBufferPtr buf,
+               virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+               nwItemDesc *item)
+{
+    virNWFilterPrintStateMatchFlags(buf, "", item->u.u16, true);
+
+    return true;
+}
+
 
 #define COMMON_MAC_PROPS(STRUCT) \
     {\
@@ -926,6 +1061,13 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .name = "connlimit-above",\
         .datatype = DATATYPE_UINT16,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataConnlimitAbove),\
+    },\
+    {\
+        .name = STATE,\
+        .datatype = DATATYPE_STRING,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataState),\
+        .validator = stateValidator,\
+        .formatter = stateFormatter,\
     }
 
 #define COMMON_PORT_PROPS(STRUCT) \
@@ -1422,7 +1564,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                 *flags = NWFILTER_ENTRY_ITEM_FLAG_EXISTS | flags_set;
                 item->datatype = datatype >> 1;
                 if (validator) {
-                    if (!validator(datatype >> 1, &data, nwf)) {
+                    if (!validator(datatype >> 1, &data, nwf, item)) {
                         rc = -1;
                         *flags = 0;
                     }
@@ -2533,7 +2675,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
             virBufferVSprintf(buf, " %s='",
                               att[i].name);
             if (att[i].formatter) {
-               if (!att[i].formatter(buf, def)) {
+               if (!att[i].formatter(buf, def, item)) {
                   virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                          _("formatter for %s %s reported error"),
                                          type,

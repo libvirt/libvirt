@@ -28,11 +28,14 @@
 
 # include <stdint.h>
 # include <stddef.h>
+# include <stdbool.h>
 
 # include "internal.h"
+
 # include "util.h"
 # include "hash.h"
 # include "xml.h"
+# include "buf.h"
 # include "network.h"
 
 /* XXX
@@ -179,6 +182,7 @@ struct _ipHdrDataDef {
     nwItemDesc dataDstIPFrom;
     nwItemDesc dataDstIPTo;
     nwItemDesc dataDSCP;
+    nwItemDesc dataState;
     nwItemDesc dataConnlimitAbove;
     nwItemDesc dataComment;
 };
@@ -353,9 +357,24 @@ enum virNWFilterEbtablesTableType {
 # define MAX_RULE_PRIORITY  1000
 
 enum virNWFilterRuleFlags {
-    RULE_FLAG_NO_STATEMATCH = (1 << 0),
+    RULE_FLAG_NO_STATEMATCH      = (1 << 0),
+    RULE_FLAG_STATE_NEW          = (1 << 1),
+    RULE_FLAG_STATE_ESTABLISHED  = (1 << 2),
+    RULE_FLAG_STATE_RELATED      = (1 << 3),
+    RULE_FLAG_STATE_INVALID      = (1 << 4),
+    RULE_FLAG_STATE_NONE         = (1 << 5),
 };
 
+
+# define IPTABLES_STATE_FLAGS \
+  (RULE_FLAG_STATE_NEW | \
+   RULE_FLAG_STATE_ESTABLISHED | \
+   RULE_FLAG_STATE_RELATED | \
+   RULE_FLAG_STATE_INVALID | \
+   RULE_FLAG_STATE_NONE)
+
+void virNWFilterPrintStateMatchFlags(virBufferPtr buf, const char *prefix,
+                                     int32_t flags, bool disp_none);
 
 typedef struct _virNWFilterRuleDef  virNWFilterRuleDef;
 typedef virNWFilterRuleDef *virNWFilterRuleDefPtr;
