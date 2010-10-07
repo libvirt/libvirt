@@ -748,6 +748,11 @@
          <td>STRING</td>
          <td>text with max. 256 characters</td>
        </tr>
+       <tr>
+         <td>state <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
+       </tr>
       </table>
     <p>
       <br><br>
@@ -843,6 +848,11 @@
          <td>STRING</td>
          <td>text with max. 256 characters</td>
        </tr>
+       <tr>
+         <td>state <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
+       </tr>
       </table>
     <p>
       <br><br>
@@ -926,6 +936,11 @@
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
+       </tr>
+       <tr>
+         <td>state <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
        </tr>
       </table>
     <p>
@@ -1018,6 +1033,11 @@
          <td>STRING</td>
          <td>text with max. 256 characters</td>
        </tr>
+       <tr>
+         <td>state <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
+       </tr>
       </table>
     <p>
       <br><br>
@@ -1099,6 +1119,11 @@
          <td>STRING</td>
          <td>text with max. 256 characters</td>
        </tr>
+       <tr>
+         <td>state <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
+       </tr>
       </table>
     <p>
       <br><br>
@@ -1167,6 +1192,11 @@
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
+       </tr>
+       <tr>
+         <td>state <span class="since">(Since 0.8.5)</span></td>
+         <td>STRING</td>
+         <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
        </tr>
       </table>
     <p>
