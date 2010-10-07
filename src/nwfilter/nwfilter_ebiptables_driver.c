@@ -1129,7 +1129,7 @@ _iptablesCreateRuleInstance(int directionIn,
                             const char *ifname,
                             virNWFilterHashTablePtr vars,
                             virNWFilterRuleInstPtr res,
-                            const char *match,
+                            const char *match, bool defMatch,
                             const char *accept_target,
                             bool isIPv6,
                             bool maySkipICMP)
@@ -1488,7 +1488,7 @@ _iptablesCreateRuleInstance(int directionIn,
         target = accept_target;
     else {
         target = "DROP";
-        skipMatch = true;
+        skipMatch = defMatch;
     }
 
     if (match && !skipMatch)
@@ -1548,6 +1548,149 @@ exit_no_error:
 
 
 static int
+printStateMatchFlags(int32_t flags, char **bufptr)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virNWFilterPrintStateMatchFlags(&buf,
+                                    "-m state --state ",
+                                    flags,
+                                    false);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return 1;
+    }
+    *bufptr = virBufferContentAndReset(&buf);
+    return 0;
+}
+
+static int
+iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
+                                    virNWFilterRuleDefPtr rule,
+                                    const char *ifname,
+                                    virNWFilterHashTablePtr vars,
+                                    virNWFilterRuleInstPtr res,
+                                    bool isIPv6)
+{
+    int rc;
+    int directionIn = 0, directionOut = 0;
+    char chainPrefix[2];
+    bool maySkipICMP, inout = false;
+    char *matchState = NULL;
+    bool create;
+
+    if ((rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN) ||
+        (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT)) {
+        directionIn = 1;
+        directionOut = inout = (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
+    } else
+        directionOut = 1;
+
+    chainPrefix[0] = 'F';
+
+    maySkipICMP = directionIn || inout;
+
+    create = true;
+    matchState = NULL;
+
+    if (directionIn && !inout) {
+        if ((rule->flags & IPTABLES_STATE_FLAGS))
+            create = false;
+    }
+
+    if (create && (rule->flags & IPTABLES_STATE_FLAGS)) {
+        if (printStateMatchFlags(rule->flags, &matchState))
+            return 1;
+    }
+
+    chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
+    if (create) {
+        rc = _iptablesCreateRuleInstance(directionIn,
+                                         chainPrefix,
+                                         nwfilter,
+                                         rule,
+                                         ifname,
+                                         vars,
+                                         res,
+                                         matchState, false,
+                                         "RETURN",
+                                         isIPv6,
+                                         maySkipICMP);
+
+        VIR_FREE(matchState);
+        if (rc)
+            return rc;
+    }
+
+    maySkipICMP = !directionIn || inout;
+    create = true;
+
+    if (!directionIn) {
+        if ((rule->flags & IPTABLES_STATE_FLAGS))
+            create = false;
+    }
+
+    if (create && (rule->flags & IPTABLES_STATE_FLAGS)) {
+        if (printStateMatchFlags(rule->flags, &matchState))
+            return 1;
+    }
+
+    chainPrefix[1] = CHAINPREFIX_HOST_OUT_TEMP;
+    if (create) {
+        rc = _iptablesCreateRuleInstance(!directionIn,
+                                         chainPrefix,
+                                         nwfilter,
+                                         rule,
+                                         ifname,
+                                         vars,
+                                         res,
+                                         matchState, false,
+                                         "ACCEPT",
+                                         isIPv6,
+                                         maySkipICMP);
+
+        VIR_FREE(matchState);
+
+        if (rc)
+            return rc;
+    }
+
+    maySkipICMP = directionIn;
+
+    create = true;
+
+    if (directionIn && !inout) {
+        if ((rule->flags & IPTABLES_STATE_FLAGS))
+            create = false;
+    } else {
+        if ((rule->flags & IPTABLES_STATE_FLAGS)) {
+            if (printStateMatchFlags(rule->flags, &matchState))
+                return 1;
+        }
+    }
+
+    if (create) {
+        chainPrefix[0] = 'H';
+        chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
+        rc = _iptablesCreateRuleInstance(directionIn,
+                                         chainPrefix,
+                                         nwfilter,
+                                         rule,
+                                         ifname,
+                                         vars,
+                                         res,
+                                         matchState, false,
+                                         "RETURN",
+                                         isIPv6,
+                                         maySkipICMP);
+        VIR_FREE(matchState);
+    }
+
+    return rc;
+}
+
+
+static int
 iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
@@ -1561,6 +1704,16 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
     int needState = 1;
     bool maySkipICMP, inout = false;
     const char *matchState;
+
+    if (!(rule->flags & RULE_FLAG_NO_STATEMATCH) &&
+         (rule->flags & IPTABLES_STATE_FLAGS)) {
+        return iptablesCreateRuleInstanceStateCtrl(nwfilter,
+                                                   rule,
+                                                   ifname,
+                                                   vars,
+                                                   res,
+                                                   isIPv6);
+    }
 
     if ((rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN) ||
         (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT)) {
@@ -1590,7 +1743,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      ifname,
                                      vars,
                                      res,
-                                     matchState,
+                                     matchState, true,
                                      "RETURN",
                                      isIPv6,
                                      maySkipICMP);
@@ -1612,7 +1765,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      ifname,
                                      vars,
                                      res,
-                                     matchState,
+                                     matchState, true,
                                      "ACCEPT",
                                      isIPv6,
                                      maySkipICMP);
@@ -1630,7 +1783,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      ifname,
                                      vars,
                                      res,
-                                     NULL,
+                                     NULL, true,
                                      "ACCEPT",
                                      isIPv6,
                                      maySkipICMP);
