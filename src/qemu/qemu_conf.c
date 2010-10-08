@@ -1519,8 +1519,11 @@ int qemudExtractVersion(struct qemud_driver *driver) {
     if ((binary = virCapabilitiesDefaultGuestEmulator(driver->caps,
                                                       "hvm",
                                                       ut.machine,
-                                                      "qemu")) == NULL)
+                                                      "qemu")) == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Cannot find suitable emulator for %s"), ut.machine);
         return -1;
+    }
 
     if (stat(binary, &sb) < 0) {
         virReportSystemError(errno,
