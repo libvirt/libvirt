@@ -655,7 +655,7 @@ iptablesSetupVirtInPost(const char *iptables_cmd,
 {
     const char *match = MATCH_PHYSDEV_IN;
     virBufferVSprintf(buf,
-                      "res=$(%s -L " VIRT_IN_POST_CHAIN
+                      "res=$(%s -n -L " VIRT_IN_POST_CHAIN
                       " | grep \"\\%s %s\")\n"
                       "if [ \"${res}\" == \"\" ]; then "
                         CMD_DEF("%s"
@@ -3662,7 +3662,7 @@ ebiptablesDriverInit(void)
     iptables_cmd_path = virFindFileInPath("iptables");
     if (iptables_cmd_path) {
         virBufferVSprintf(&buf,
-                          CMD_DEF("%s -L FORWARD") CMD_SEPARATOR
+                          CMD_DEF("%s -n -L FORWARD") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
                           iptables_cmd_path,
@@ -3675,7 +3675,7 @@ ebiptablesDriverInit(void)
     ip6tables_cmd_path = virFindFileInPath("ip6tables");
     if (ip6tables_cmd_path) {
         virBufferVSprintf(&buf,
-                          CMD_DEF("%s -L FORWARD") CMD_SEPARATOR
+                          CMD_DEF("%s -n -L FORWARD") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
                           ip6tables_cmd_path,
