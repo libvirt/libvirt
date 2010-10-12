@@ -10339,7 +10339,6 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
     int sz = 0;
     char *p = str;
     char *q = vshStrdup(ctl, str);
-    char *tkstr = NULL;
 
     *end = NULL;
     *res = q;
@@ -10373,7 +10372,6 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
             } else {
                 tk = VSH_TK_DATA;
             }
-            tkstr = p;          /* begin of token */
         }
 
         if (*p == '"') {
@@ -10389,8 +10387,6 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
         vshError(ctl, "%s", _("missing \""));
         return VSH_TK_ERROR;
     }
-    if (tkstr == NULL || *tkstr == '\0' || sz == 0)
-        return VSH_TK_END;
 
     *q = '\0';
     *end = p;
