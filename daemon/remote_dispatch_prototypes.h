@@ -258,6 +258,14 @@ static int remoteDispatchDomainGetMaxVcpus(
     remote_error *err,
     remote_domain_get_max_vcpus_args *args,
     remote_domain_get_max_vcpus_ret *ret);
+static int remoteDispatchDomainGetMemoryParameters(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_get_memory_parameters_args *args,
+    remote_domain_get_memory_parameters_ret *ret);
 static int remoteDispatchDomainGetOsType(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -521,6 +529,14 @@ static int remoteDispatchDomainSetMemory(
     remote_message_header *hdr,
     remote_error *err,
     remote_domain_set_memory_args *args,
+    void *ret);
+static int remoteDispatchDomainSetMemoryParameters(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_set_memory_parameters_args *args,
     void *ret);
 static int remoteDispatchDomainSetSchedulerParameters(
     struct qemud_server *server,

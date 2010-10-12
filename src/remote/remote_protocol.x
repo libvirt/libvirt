@@ -128,6 +128,9 @@ const REMOTE_NWFILTER_NAME_LIST_MAX = 1024;
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
 
+/* Upper limit on list of memory parameters. */
+const REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX = 16;
+
 /* Upper limit on number of NUMA cells */
 const REMOTE_NODE_MAX_CELLS = 1024;
 
@@ -313,6 +316,26 @@ struct remote_sched_param {
     remote_sched_param_value value;
 };
 
+union remote_memory_param_value switch (int type) {
+ case VIR_DOMAIN_MEMORY_FIELD_INT:
+     int i;
+ case VIR_DOMAIN_MEMORY_FIELD_UINT:
+     unsigned int ui;
+ case VIR_DOMAIN_MEMORY_FIELD_LLONG:
+     hyper l;
+ case VIR_DOMAIN_MEMORY_FIELD_ULLONG:
+     unsigned hyper ul;
+ case VIR_DOMAIN_MEMORY_FIELD_DOUBLE:
+     double d;
+ case VIR_DOMAIN_MEMORY_FIELD_BOOLEAN:
+     int b;
+};
+
+struct remote_memory_param {
+    remote_nonnull_string field;
+    remote_memory_param_value value;
+};
+
 /*----- Calls. -----*/
 
 /* For each call we may have a 'remote_CALL_args' and 'remote_CALL_ret'
@@ -420,6 +443,23 @@ struct remote_domain_get_scheduler_parameters_ret {
 struct remote_domain_set_scheduler_parameters_args {
     remote_nonnull_domain dom;
     remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+};
+
+struct remote_domain_set_memory_parameters_args {
+    remote_nonnull_domain dom;
+    remote_memory_param params<REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX>;
+    unsigned int flags;
+};
+
+struct remote_domain_get_memory_parameters_args {
+    remote_nonnull_domain dom;
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_domain_get_memory_parameters_ret {
+    remote_memory_param params<REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX>;
+    int nparams;
 };
 
 struct remote_domain_block_stats_args {
@@ -2020,7 +2060,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
     REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194,
     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195,
-    REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196
+    REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196,
+    REMOTE_PROC_DOMAIN_SET_MEMORY_PARAMETERS = 197,
+    REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

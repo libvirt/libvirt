@@ -987,3 +987,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_create_with_flags_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_create_with_flags_ret,
 },
+{   /* DomainSetMemoryParameters => 197 */
+    .fn = (dispatch_fn) remoteDispatchDomainSetMemoryParameters,
+    .args_filter = (xdrproc_t) xdr_remote_domain_set_memory_parameters_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* DomainGetMemoryParameters => 198 */
+    .fn = (dispatch_fn) remoteDispatchDomainGetMemoryParameters,
+    .args_filter = (xdrproc_t) xdr_remote_domain_get_memory_parameters_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_get_memory_parameters_ret,
+},
