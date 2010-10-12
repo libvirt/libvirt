@@ -10469,6 +10469,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
         vshCmdOpt *last = NULL;
         const vshCmdDef *cmd = NULL;
         vshCommandToken tk;
+        bool data_only = false;
         int data_ct = 0;
 
         first = NULL;
@@ -10491,8 +10492,10 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
                 VIR_FREE(tkdata);
-            } else if (*tkdata == '-' && *(tkdata + 1) == '-' && *(tkdata + 2)
-                       && c_isalnum(*(tkdata + 2))) {
+            } else if (data_only) {
+                goto get_data;
+            } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
+                       c_isalnum(tkdata[2])) {
                 char *optstr = strchr(tkdata + 2, '=');
                 if (optstr) {
                     *optstr = '\0'; /* convert the '=' to '\0' */
@@ -10532,7 +10535,12 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                         goto syntaxError;
                     }
                 }
+            } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
+                       tkdata[2] == '\0') {
+                data_only = true;
+                continue;
             } else {
+get_data:
                 if (!(opt = vshCmddefGetData(cmd, data_ct++))) {
                     vshError(ctl, _("unexpected data '%s'"), tkdata);
                     goto syntaxError;
