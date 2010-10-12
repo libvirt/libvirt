@@ -24,7 +24,7 @@ KVM, LXC, OpenVZ, VirtualBox, OpenNebula, and VMware ESX.
 
 The basic structure of most virsh usage is:
 
-  virsh <command> <domain-id> [ARG]...
+  virsh [OPTION]... <command> <domain-id> [ARG]...
 
 Where I<command> is one of the commands listed below, I<domain-id>
 is the numeric domain id, or the domain name (which will be internally
@@ -44,6 +44,49 @@ add another layer of shell escaping in creating the single shell argument.
 If no command is given in the command line, B<virsh> will then start a minimal
 interpreter waiting for your commands, and the B<quit> command will then exit
 the program.
+
+The B<virsh> program understands the following I<OPTIONS>.
+
+=over 4
+
+=item B<-h>, B<--help>
+
+Ignore all other arguments, and behave as if the B<help> command were
+given instead.
+
+=item B<-v>, B<--version>
+
+Ignore all other arguments, and behave as if the B<version> command were
+given instead.
+
+=item B<-c>, B<--connect> I<URI>
+
+Connect to the specified I<URI>, as if by the B<connect> command,
+instead of the default connection.
+
+=item B<-d>, B<--debug> I<LEVEL>
+
+Enable debug messages at integer I<LEVEL> and above.  I<LEVEL> can
+range from 0 (default) to 5.
+
+=item B<-l>, B<--log> I<FILE>
+
+Output logging details to I<FILE>.
+
+=item B<-q>, B<--quiet>
+
+Avoid extra informational messages.
+
+=item B<-r>, B<--readonly>
+
+Make the initial connection read-only, as if by the I<--readonly>
+option of the B<connect> command.
+
+=item B<-t>, B<--timing>
+
+Output elapsed time information for each command.
+
+=back
 
 =head1 NOTES
 
