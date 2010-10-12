@@ -3000,6 +3000,118 @@ error:
 }
 
 /**
+ * virDomainSetMemoryParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to memory parameter objects
+ * @nparams: number of memory parameter (this value should be same or
+ *          less than the number of parameters supported)
+ * @flags: currently unused, for future extension
+ *
+ * Change the memory tunables
+ * This function requires privileged access to the hypervisor.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainSetMemoryParameters(virDomainPtr domain,
+                             virMemoryParameterPtr params,
+                             int nparams, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, params=%p, nparams=%d, flags=%u", domain, params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if ((nparams <= 0) || (params == NULL)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainSetMemoryParameters) {
+        int ret;
+        ret = conn->driver->domainSetMemoryParameters (domain, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetMemoryParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to memory parameter object
+ *          (return value, allocated by the caller)
+ * @nparams: pointer to number of memory parameters
+ * @flags: currently unused, for future extension
+ *
+ * Get the memory parameters, the @params array will be filled with the values
+ * equal to the number of parameters suggested by @nparams
+ *
+ * As a special case, if @nparams is zero and @params is NULL, the API will
+ * set the number of parameters supported by the HV in @nparams and return
+ * SUCCESS.
+ *
+ * This function requires privileged access to the hypervisor. This function
+ * expects the caller to allocate the @param
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainGetMemoryParameters(virDomainPtr domain,
+                             virMemoryParameterPtr params,
+                             int *nparams, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, params=%p, nparams=%d, flags=%u", domain, params, (nparams)?*nparams:-1, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if ((nparams == NULL) || (*nparams < 0)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainGetMemoryParameters) {
+        int ret;
+        ret = conn->driver->domainGetMemoryParameters (domain, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainGetInfo:
  * @domain: a domain object
  * @info: pointer to a virDomainInfo structure allocated by the user

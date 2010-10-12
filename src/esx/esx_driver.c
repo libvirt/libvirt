@@ -4217,6 +4217,8 @@ static virDriver esxDriver = {
     esxDomainRevertToSnapshot,       /* domainRevertToSnapshot */
     esxDomainSnapshotDelete,         /* domainSnapshotDelete */
     NULL,                            /* qemuDomainMonitorCommand */
+    NULL,                            /* domainSetMemoryParameters */
+    NULL,                            /* domainGetMemoryParameters */
 };
 
 

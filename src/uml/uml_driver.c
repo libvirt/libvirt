@@ -2196,6 +2196,8 @@ static virDriver umlDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
+    NULL, /* domainSetMemoryParamters */
+    NULL, /* domainGetMemoryParamters */
 };
 
 static int
