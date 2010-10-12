@@ -10336,10 +10336,50 @@ typedef enum {
 typedef struct __vshCommandParser {
     vshCommandToken (*getNextArg)(vshControl *, struct __vshCommandParser *,
                                   char **);
+    /* vshCommandStringGetArg() */
     char *pos;
+    /* vshCommandArgvGetArg() */
+    char **arg_pos;
+    char **arg_end;
 } vshCommandParser;
 
 static int vshCommandParse(vshControl *ctl, vshCommandParser *parser);
+
+/* ---------------
+ * Command argv parsing
+ * ---------------
+ */
+
+static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+vshCommandArgvGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
+{
+    if (parser->arg_pos == parser->arg_end) {
+        *res = NULL;
+        return VSH_TK_END;
+    }
+
+    *res = vshStrdup(ctl, *parser->arg_pos);
+    parser->arg_pos++;
+    return VSH_TK_ARG;
+}
+
+static int vshCommandArgvParse(vshControl *ctl, int nargs, char **argv)
+{
+    vshCommandParser parser;
+
+    if (nargs <= 0)
+        return FALSE;
+
+    parser.arg_pos = argv;
+    parser.arg_end = argv + nargs;
+    parser.getNextArg = vshCommandArgvGetArg;
+    return vshCommandParse(ctl, &parser);
+}
+
+/* ---------------
+ * Command string parsing
+ * ---------------
+ */
 
 static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
@@ -11045,7 +11085,8 @@ static void
 vshUsage(void)
 {
     const vshCmdDef *cmd;
-    fprintf(stdout, _("\n%s [options] [commands]\n\n"
+    fprintf(stdout, _("\n%s [options]... [<command_string>]"
+                      "\n%s [options]... <command> [args...]\n\n"
                       "  options:\n"
                       "    -c | --connect <uri>    hypervisor connection URI\n"
                       "    -r | --readonly         connect readonly\n"
@@ -11055,7 +11096,7 @@ vshUsage(void)
                       "    -t | --timing           print timing information\n"
                       "    -l | --log <file>       output logging to file\n"
                       "    -v | --version          program version\n\n"
-                      "  commands (non interactive mode):\n"), progname);
+                      "  commands (non interactive mode):\n"), progname, progname);
 
     for (cmd = commands; cmd->name; cmd++)
         fprintf(stdout,
@@ -11175,26 +11216,13 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
 
     if (argc > end) {
         /* parse command */
-        char *cmdstr;
-        int sz = 0, ret;
-
         ctl->imode = FALSE;
-
-        for (i = end; i < argc; i++)
-            sz += strlen(argv[i]) + 1;  /* +1 is for blank space between items */
-
-        cmdstr = vshCalloc(ctl, sz + 1, 1);
-
-        for (i = end; i < argc; i++) {
-            strncat(cmdstr, argv[i], sz);
-            sz -= strlen(argv[i]);
-            strncat(cmdstr, " ", sz--);
+        if (argc - end == 1) {
+            vshDebug(ctl, 2, "commands: \"%s\"\n", argv[end]);
+            return vshCommandStringParse(ctl, argv[end]);
+        } else {
+            return vshCommandArgvParse(ctl, argc - end, argv + end);
         }
-        vshDebug(ctl, 2, "command: \"%s\"\n", cmdstr);
-        ret = vshCommandStringParse(ctl, cmdstr);
-
-        VIR_FREE(cmdstr);
-        return ret;
     }
     return TRUE;
 }

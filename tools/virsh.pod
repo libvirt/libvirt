@@ -4,7 +4,9 @@ virsh - management user interface
 
 =head1 SYNOPSIS
 
-virsh <subcommand> [args]
+B<virsh> [I<OPTION>]... [I<COMMAND_STRING>]
+
+B<virsh> [I<OPTION>]... I<COMMAND> [I<ARG>]...
 
 =head1 DESCRIPTION
 
@@ -22,20 +24,25 @@ KVM, LXC, OpenVZ, VirtualBox, OpenNebula, and VMware ESX.
 
 The basic structure of most virsh usage is:
 
-  virsh <command> <domain-id> [OPTIONS]
+  virsh <command> <domain-id> [ARG]...
 
 Where I<command> is one of the commands listed below, I<domain-id>
 is the numeric domain id, or the domain name (which will be internally
-translated to domain id), and I<OPTIONS> are command specific
+translated to domain id), and I<ARGS> are command specific
 options.  There are a few exceptions to this rule in the cases where
 the command in question acts on all domains, the entire machine,
 or directly on the xen hypervisor.  Those exceptions will be clear for
 each of those commands.
 
-The B<virsh> program can be used either to run one command at a time
-by giving the command as an argument on the command line, or as a shell
-if no command is given in the command line, it will then start a minimal
-interpreter waiting for your commands and the B<quit> command will then exit
+The B<virsh> program can be used either to run one I<COMMAND> by giving the
+command and its arguments on the shell command line, or a I<COMMAND_STRING>
+which is a single shell argument consisting of multiple I<COMMAND> actions
+and their arguments joined with whitespace, and separated by semicolons
+between commands.  Within I<COMMAND_STRING>, virsh understands the
+same single, double, and backslash escapes as the shell, although you must
+add another layer of shell escaping in creating the single shell argument.
+If no command is given in the command line, B<virsh> will then start a minimal
+interpreter waiting for your commands, and the B<quit> command will then exit
 the program.
 
 =head1 NOTES
