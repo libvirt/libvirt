@@ -10327,14 +10327,12 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
  */
 #define VSH_TK_ERROR    -1
 #define VSH_TK_NONE    0
-#define VSH_TK_OPTION    1
-#define VSH_TK_DATA    2
-#define VSH_TK_END    3
+#define VSH_TK_DATA    1
+#define VSH_TK_END    2
 
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
 {
-    int tk = VSH_TK_NONE;
     bool double_quote = false;
     int sz = 0;
     char *p = str;
@@ -10358,22 +10356,6 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
         if (!double_quote && (*p == ' ' || *p == '\t' || *p == ';'))
             break;
 
-        /* end of option name could be '=' */
-        if (tk == VSH_TK_OPTION && *p == '=') {
-            p++;                /* skip '=' */
-            break;
-        }
-
-        if (tk == VSH_TK_NONE) {
-            if (*p == '-' && *(p + 1) == '-' && *(p + 2)
-                && c_isalnum(*(p + 2))) {
-                tk = VSH_TK_OPTION;
-                p += 2;
-            } else {
-                tk = VSH_TK_DATA;
-            }
-        }
-
         if (*p == '"') {
             double_quote = !double_quote;
             p++;
@@ -10390,7 +10372,7 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
 
     *q = '\0';
     *end = p;
-    return tk;
+    return VSH_TK_DATA;
 }
 
 static int
@@ -10449,18 +10431,28 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
                 VIR_FREE(tkdata);
-            } else if (tk == VSH_TK_OPTION) {
-                if (!(opt = vshCmddefGetOption(cmd, tkdata))) {
+            } else if (*tkdata == '-' && *(tkdata + 1) == '-' && *(tkdata + 2)
+                       && c_isalnum(*(tkdata + 2))) {
+                char *optstr = strchr(tkdata + 2, '=');
+                if (optstr) {
+                    *optstr = '\0'; /* convert the '=' to '\0' */
+                    optstr = vshStrdup(ctl, optstr + 1);
+                }
+                if (!(opt = vshCmddefGetOption(cmd, tkdata + 2))) {
                     vshError(ctl,
                              _("command '%s' doesn't support option --%s"),
-                             cmd->name, tkdata);
+                             cmd->name, tkdata + 2);
+                    VIR_FREE(optstr);
                     goto syntaxError;
                 }
-                VIR_FREE(tkdata);   /* option name */
+                VIR_FREE(tkdata);
 
                 if (opt->type != VSH_OT_BOOL) {
                     /* option data */
-                    tk = vshCommandGetToken(ctl, str, &end, &tkdata);
+                    if (optstr)
+                        tkdata = optstr;
+                    else
+                        tk = vshCommandGetToken(ctl, str, &end, &tkdata);
                     str = end;
                     if (tk == VSH_TK_ERROR)
                         goto syntaxError;
@@ -10470,6 +10462,14 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                                  opt->name,
                                  opt->type ==
                                  VSH_OT_INT ? _("number") : _("string"));
+                        goto syntaxError;
+                    }
+                } else {
+                    tkdata = NULL;
+                    if (optstr) {
+                        vshError(ctl, _("invalid '=' after option --%s"),
+                                opt->name);
+                        VIR_FREE(optstr);
                         goto syntaxError;
                     }
                 }
@@ -10497,8 +10497,8 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                 vshDebug(ctl, 4, "%s: %s(%s): %s\n",
                          cmd->name,
                          opt->name,
-                         tk == VSH_TK_OPTION ? _("OPTION") : _("DATA"),
-                         arg->data);
+                         opt->type != VSH_OT_BOOL ? _("optdata") : _("bool"),
+                         opt->type != VSH_OT_BOOL ? arg->data : _("(none)"));
             }
             if (!str)
                 break;
