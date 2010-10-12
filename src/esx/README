@@ -86,3 +86,28 @@ It tries to cancel the blocked task, but this may not be possible, because
 there are task like the power-on task that is marked as non-cancelable. So the
 driver may leave blocked tasks behind if automatic question handling is
 disabled.
+
+
+
+Different escaping schemes used in different places
+===================================================
+
+A domain name in the vSphere API has [%/\] escaped as %XX (percent-encoding),
+where XX is the ASCII code of the escaped char in hex.
+
+A domainName entry in a VMX config file is percent-encoded and has [|"] escaped
+as |XX (pipe-encoding).
+
+A annotation entry in a VMX config file is pipe-encoded.
+
+A datastore item name has the special Windows path characters ["*<>:|?]
+replaced by underscores (_). The result is escaped using percent-encoding and
+base64-encoding. This isn't a bijective encoding. Therefore, escaped datastore
+item names cannot be unescaped completely.
+
+For base64-encoding sequences of chars that don't match [a-zA-Z0-9'(),. _-]
+are replaced by their base64 form (the padding is omitted). An encoded sequence
+begins with a plus (+), ends with a minus (-) and can contain a plus (+). The
+minus (-) is omitted if the string ends in a base64-encoded sequence. VMware
+uses the comma (,) instead of the slash (/) in the base64 alphabet to avoid
+conflicts with the slash as path separator.

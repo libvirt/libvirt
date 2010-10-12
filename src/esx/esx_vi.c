@@ -2014,6 +2014,12 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
                     goto failure;
                 }
 
+                if (esxUtil_UnescapeHexPercent(*name) < 0) {
+                    ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Domain name contains invalid escape sequence"));
+                    goto failure;
+                }
+
                 break;
             }
         }

@@ -227,6 +227,59 @@ testConvertDateTimeToCalendarTime(const void *data ATTRIBUTE_UNUSED)
 
 
 
+struct testDatastoreItem {
+    const char *string;
+    const char *escaped;
+};
+
+static struct testDatastoreItem datastoreItems[] = {
+    { "normal", "normal" },
+    { /* "Aä1ö2ü3ß4#5~6!7§8/9%Z" */
+      "A\303\2441\303\2662\303\2743\303\2374#5~6!7\302\2478/9%Z",
+      "A+w6Q-1+w7Y-2+w7w-3+w58-4+Iw-5+fg-6+IQ-7+wqc-8+JQ-2f9+JQ-25Z" },
+    { /* "Z~6!7§8/9%0#1\"2'3`4&A" */ "Z~6!7\302\2478/9%0#1\"2'3`4&A",
+      "Z+fg-6+IQ-7+wqc-8+JQ-2f9+JQ-250+Iw-1_2'3+YA-4+Jg-A" },
+    { /* "標準語" */ "\346\250\231\346\272\226\350\252\236", "+5qiZ5rqW6Kqe" },
+    { "!\"#$%&'()*+,-./0123456789:;<=>?",
+      "+IQ-_+IyQl-25+Jg-'()_+Kw-,-.+JQ-2f0123456789_+Ow-_+PQ-__" },
+    { "A Z[\\]^_B", "A Z+WyU-5c+XV4-_B" },
+    { "A`B@{|}~DEL", "A+YA-B+QHs-_+fX4-DEL" },
+    { /* "hÀÁÂÃÄÅH" */ "h\303\200\303\201\303\202\303\203\303\204\303\205H",
+      "h+w4DDgcOCw4PDhMOF-H" },
+    { /* "A쿀Z" */ "A\354\277\200Z", "A+7L+A-Z" },
+    { /* "!쿀A" */ "!\354\277\200A", "+Iey,gA-A" },
+    { "~~~", "+fn5+" },
+    { "~~~A", "+fn5+-A" },
+    { "K%U/H\\Z", "K+JQ-25U+JQ-2fH+JQ-5cZ" },
+    { "vvv<A\"B\"C>zzz", "vvv_A_B_C_zzz" },
+};
+
+static int
+testEscapeDatastoreItem(const void *data ATTRIBUTE_UNUSED)
+{
+    int i;
+    char *escaped = NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(datastoreItems); ++i) {
+        VIR_FREE(escaped);
+
+        escaped = esxUtil_EscapeDatastoreItem(datastoreItems[i].string);
+
+        if (escaped == NULL) {
+            return -1;
+        }
+
+        if (STRNEQ(datastoreItems[i].escaped, escaped)) {
+            VIR_FREE(escaped);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+
 static int
 mymain(int argc, char **argv)
 {
@@ -258,6 +311,7 @@ mymain(int argc, char **argv)
     DO_TEST(DiskNameToIndex);
     DO_TEST(ParseDatastorePath);
     DO_TEST(ConvertDateTimeToCalendarTime);
+    DO_TEST(EscapeDatastoreItem);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

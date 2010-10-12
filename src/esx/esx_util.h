@@ -71,4 +71,22 @@ int esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
 
 int esxUtil_ReformatUuid(const char *input, char *output);
 
+char *esxUtil_EscapeHex(const char *string, char escape, const char *special);
+
+# define esxUtil_EscapeHexPipe(_string) esxUtil_EscapeHex(_string, '|', "\"")
+
+# define esxUtil_EscapeHexPercent(_string) esxUtil_EscapeHex(_string, '%', "/\\")
+
+int esxUtil_UnescapeHex(char *string, char escape);
+
+# define esxUtil_UnescapeHexPipe(_string) esxUtil_UnescapeHex(_string, '|')
+
+# define esxUtil_UnescapeHexPercent(_string) esxUtil_UnescapeHex(_string, '%')
+
+char *esxUtil_EscapeBase64(const char *string);
+
+void esxUtil_ReplaceSpecialWindowsPathChars(char *string);
+
+char *esxUtil_EscapeDatastoreItem(const char *string);
+
 #endif /* __ESX_UTIL_H__ */

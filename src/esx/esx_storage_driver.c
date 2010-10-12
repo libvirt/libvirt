@@ -915,9 +915,13 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     virStoragePoolDef poolDef;
     virStorageVolDefPtr def = NULL;
     char *tmp;
-    char *datastorePath = NULL;
+    char *unescapedDatastorePath = NULL;
+    char *unescapedDirectoryName = NULL;
+    char *unescapedDirectoryAndFileName = NULL;
     char *directoryName = NULL;
+    char *fileName = NULL;
     char *datastorePathWithoutFileName = NULL;
+    char *datastorePath = NULL;
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_FileBackedVirtualDiskSpec *virtualDiskSpec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
@@ -995,15 +999,30 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
         goto cleanup;
     }
 
-    if (virAsprintf(&datastorePath, "[%s] %s", pool->name, def->name) < 0) {
+    if (virAsprintf(&unescapedDatastorePath, "[%s] %s", pool->name,
+                    def->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
     if (def->target.format == VIR_STORAGE_FILE_VMDK) {
-        /* Create directory, if it doesn't exist yet */
-        if (esxUtil_ParseDatastorePath(datastorePath, NULL, &directoryName,
-                                       NULL) < 0) {
+        /* Parse and escape datastore path */
+        if (esxUtil_ParseDatastorePath(unescapedDatastorePath, NULL,
+                                       &unescapedDirectoryName,
+                                       &unescapedDirectoryAndFileName) < 0) {
+            goto cleanup;
+        }
+
+        directoryName = esxUtil_EscapeDatastoreItem(unescapedDirectoryName);
+
+        if (directoryName == NULL) {
+            goto cleanup;
+        }
+
+        fileName = esxUtil_EscapeDatastoreItem(unescapedDirectoryAndFileName +
+                                               strlen(unescapedDirectoryName) + 1);
+
+        if (fileName == NULL) {
             goto cleanup;
         }
 
@@ -1013,6 +1032,13 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
             goto cleanup;
         }
 
+        if (virAsprintf(&datastorePath, "[%s] %s/%s", pool->name, directoryName,
+                        fileName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* Create directory, if it doesn't exist yet */
         if (esxVI_LookupFileInfoByDatastorePath
               (priv->primary, datastorePathWithoutFileName, true, &fileInfo,
                esxVI_Occurrence_OptionalItem) < 0) {
@@ -1115,9 +1141,13 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     esxVI_ObjectContent_Free(&datastore);
     esxVI_DatastoreInfo_Free(&datastoreInfo);
     virStorageVolDefFree(def);
-    VIR_FREE(datastorePath);
+    VIR_FREE(unescapedDatastorePath);
+    VIR_FREE(unescapedDirectoryName);
+    VIR_FREE(unescapedDirectoryAndFileName);
     VIR_FREE(directoryName);
+    VIR_FREE(fileName);
     VIR_FREE(datastorePathWithoutFileName);
+    VIR_FREE(datastorePath);
     esxVI_FileInfo_Free(&fileInfo);
     esxVI_FileBackedVirtualDiskSpec_Free(&virtualDiskSpec);
     esxVI_ManagedObjectReference_Free(&task);

@@ -2708,7 +2708,6 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int count = 0;
     int i;
@@ -2745,26 +2744,14 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
             continue;
         }
 
-        for (dynamicProperty = virtualMachine->propSet;
-             dynamicProperty != NULL;
-             dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "name")) {
-                if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                             esxVI_Type_String) < 0) {
-                    goto cleanup;
-                }
+        names[count] = NULL;
 
-                names[count] = strdup(dynamicProperty->val->string);
-
-                if (names[count] == NULL) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-
-                count++;
-                break;
-            }
+        if (esxVI_GetVirtualMachineIdentity(virtualMachine, NULL, &names[count],
+                                            NULL) < 0) {
+            goto cleanup;
         }
+
+        ++count;
 
         if (count >= maxnames) {
             break;
@@ -2864,14 +2851,18 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
     return result;
 }
 
+
+
 static int
 esxDomainCreate(virDomainPtr domain)
 {
     return esxDomainCreateWithFlags(domain, 0);
 }
 
+
+
 static virDomainPtr
-esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
+esxDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     esxPrivate *priv = conn->privateData;
     virDomainDefPtr def = NULL;
@@ -2883,6 +2874,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     esxVMX_Data data;
     char *datastoreName = NULL;
     char *directoryName = NULL;
+    char *escapedName = NULL;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *datastoreRelatedPath = NULL;
@@ -2907,6 +2899,13 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
 
     /* Check if an existing domain should be edited */
     if (esxVI_LookupVirtualMachineByUuid(priv->primary, def->uuid, NULL,
+                                         &virtualMachine,
+                                         esxVI_Occurrence_OptionalItem) < 0) {
+        goto cleanup;
+    }
+
+    if (virtualMachine == NULL &&
+        esxVI_LookupVirtualMachineByName(priv->primary, def->name, NULL,
                                          &virtualMachine,
                                          esxVI_Occurrence_OptionalItem) < 0) {
         goto cleanup;
@@ -2992,7 +2991,13 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
         virBufferAddChar(&buffer, '/');
     }
 
-    virBufferURIEncodeString(&buffer, def->name);
+    escapedName = esxUtil_EscapeDatastoreItem(def->name);
+
+    if (escapedName == NULL) {
+        goto cleanup;
+    }
+
+    virBufferURIEncodeString(&buffer, escapedName);
     virBufferAddLit(&buffer, ".vmx?dcPath=");
     virBufferURIEncodeString(&buffer, priv->primary->datacenter->name);
     virBufferAddLit(&buffer, "&dsName=");
@@ -3005,29 +3010,31 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
 
     url = virBufferContentAndReset(&buffer);
 
-    if (directoryName != NULL) {
-        if (virAsprintf(&datastoreRelatedPath, "[%s] %s/%s.vmx", datastoreName,
-                        directoryName, def->name) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        if (virAsprintf(&datastoreRelatedPath, "[%s] %s.vmx", datastoreName,
-                        def->name) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
-
     /* Check, if VMX file already exists */
     /* FIXME */
 
     /* Upload VMX file */
+    VIR_DEBUG("Uploading .vmx config, url='%s' vmx='%s'", url, vmx);
+
     if (esxVI_Context_UploadFile(priv->primary, url, vmx) < 0) {
         goto cleanup;
     }
 
     /* Register the domain */
+    if (directoryName != NULL) {
+        if (virAsprintf(&datastoreRelatedPath, "[%s] %s/%s.vmx", datastoreName,
+                        directoryName, escapedName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else {
+        if (virAsprintf(&datastoreRelatedPath, "[%s] %s.vmx", datastoreName,
+                        escapedName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
     if (esxVI_RegisterVM_Task(priv->primary, priv->primary->datacenter->vmFolder,
                               datastoreRelatedPath, NULL, esxVI_Boolean_False,
                               priv->primary->computeResource->resourcePool,
@@ -3061,6 +3068,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     VIR_FREE(vmx);
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
+    VIR_FREE(escapedName);
     VIR_FREE(url);
     VIR_FREE(datastoreRelatedPath);
     esxVI_ObjectContent_Free(&virtualMachine);

@@ -24,6 +24,7 @@
 
 #include <config.h>
 
+#include <c-ctype.h>
 #include <netdb.h>
 
 #include "internal.h"
@@ -620,4 +621,201 @@ esxUtil_ReformatUuid(const char *input, char *output)
     virUUIDFormat(uuid, output);
 
     return 0;
+}
+
+
+
+char *
+esxUtil_EscapeHex(const char *string, char escape, const char *special)
+{
+    char *escaped = NULL;
+    size_t length = 1; /* 1 byte for termination */
+    const char *tmp1 = string;
+    char *tmp2;
+
+    /* Calculate length of escaped string */
+    while (*tmp1 != '\0') {
+        if (*tmp1 == escape || strspn(tmp1, special) > 0) {
+            length += 2;
+        }
+
+        ++tmp1;
+        ++length;
+    }
+
+    if (VIR_ALLOC_N(escaped, length) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    tmp1 = string; /* reading from this one */
+    tmp2 = escaped; /* writing to this one */
+
+    /* Escape to 'cXX' where c is the escape char and X is a hex digit */
+    while (*tmp1 != '\0') {
+        if (*tmp1 == escape || strspn(tmp1, special) > 0) {
+            *tmp2++ = escape;
+
+            snprintf(tmp2, 3, "%02x", (unsigned int)*tmp1);
+
+            tmp2 += 2;
+        } else {
+            *tmp2++ = *tmp1;
+        }
+
+        ++tmp1;
+    }
+
+    *tmp2 = '\0';
+
+    return escaped;
+}
+
+
+
+int
+esxUtil_UnescapeHex(char *string, char escape)
+{
+    char *tmp1 = string; /* reading from this one */
+    char *tmp2 = string; /* writing to this one */
+
+    /* Unescape from 'cXX' where c is the escape char and X is a hex digit */
+    while (*tmp1 != '\0') {
+        if (*tmp1 == escape) {
+            if (!c_isxdigit(tmp1[1]) || !c_isxdigit(tmp1[2])) {
+                return -1;
+            }
+
+            *tmp2++ = virHexToBin(tmp1[1]) * 16 + virHexToBin(tmp1[2]);
+            tmp1 += 3;
+        } else {
+            *tmp2++ = *tmp1++;
+        }
+    }
+
+    *tmp2 = '\0';
+
+    return 0;
+}
+
+
+
+char *
+esxUtil_EscapeBase64(const char *string)
+{
+    /* 'normal' characters don't get base64 encoded */
+    static const char *normal =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'(),. _-";
+
+    /* VMware uses ',' instead of the path separator '/' in the base64 alphabet */
+    static const char *base64 =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,";
+
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    const char *tmp1 = string;
+    size_t length;
+    unsigned char c1, c2, c3;
+
+    /* Escape sequences of non-'normal' characters as base64 without padding */
+    while (*tmp1 != '\0') {
+        length = strspn(tmp1, normal);
+
+        if (length > 0) {
+            virBufferAdd(&buffer, tmp1, length);
+
+            tmp1 += length;
+        } else {
+            length = strcspn(tmp1, normal);
+
+            virBufferAddChar(&buffer, '+');
+
+            while (length > 0) {
+                c1 = *tmp1++;
+                c2 = length > 1 ? *tmp1++ : 0;
+                c3 = length > 2 ? *tmp1++ : 0;
+
+                virBufferAddChar(&buffer, base64[(c1 >> 2) & 0x3f]);
+                virBufferAddChar(&buffer, base64[((c1 << 4) + (c2 >> 4)) & 0x3f]);
+
+                if (length > 1) {
+                    virBufferAddChar(&buffer, base64[((c2 << 2) + (c3 >> 6)) & 0x3f]);
+                }
+
+                if (length > 2) {
+                    virBufferAddChar(&buffer, base64[c3 & 0x3f]);
+                }
+
+                length -= length > 3 ? 3 : length;
+            }
+
+            if (*tmp1 != '\0') {
+                virBufferAddChar(&buffer, '-');
+            }
+        }
+    }
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError();
+        virBufferFreeAndReset(&buffer);
+
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buffer);
+}
+
+
+
+void
+esxUtil_ReplaceSpecialWindowsPathChars(char *string)
+{
+    /* '/' and '\\' are missing on purpose */
+    static const char *specials = "\"*<>:|?";
+
+    char *tmp = string;
+    size_t length;
+
+    while (*tmp != '\0') {
+        length = strspn(tmp, specials);
+
+        while (length > 0) {
+            *tmp++ = '_';
+            --length;
+        }
+
+        if (*tmp != '\0') {
+            ++tmp;
+        }
+    }
+}
+
+
+
+char *
+esxUtil_EscapeDatastoreItem(const char *string)
+{
+    char *replaced = strdup(string);
+    char *escaped1;
+    char *escaped2 = NULL;
+
+    if (replaced == NULL) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    esxUtil_ReplaceSpecialWindowsPathChars(replaced);
+
+    escaped1 = esxUtil_EscapeHexPercent(replaced);
+
+    if (escaped1 == NULL) {
+        goto cleanup;
+    }
+
+    escaped2 = esxUtil_EscapeBase64(escaped1);
+
+  cleanup:
+    VIR_FREE(replaced);
+    VIR_FREE(escaped1);
+
+    return escaped2;
 }

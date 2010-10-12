@@ -876,8 +876,6 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
     long long numvcpus = 0;
     char *sched_cpu_affinity = NULL;
     char *guestOS = NULL;
-    char *tmp1;
-    char *tmp2;
     int controller;
     int bus;
     int port;
@@ -982,34 +980,28 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
         goto cleanup;
     }
 
+    if (def->name != NULL) {
+        if (esxUtil_UnescapeHexPercent(def->name) < 0 ||
+            esxUtil_UnescapeHexPipe(def->name) < 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("VMX entry 'name' contains invalid escape sequence"));
+            goto cleanup;
+        }
+    }
+
     /* vmx:annotation -> def:description */
     if (esxUtil_GetConfigString(conf, "annotation", &def->description,
                                 true) < 0) {
         goto cleanup;
     }
 
-    /* Unescape '|XX' where X is a hex digit */
     if (def->description != NULL) {
-        tmp1 = def->description; /* reading from this one */
-        tmp2 = def->description; /* writing to this one */
-
-        while (*tmp1 != '\0') {
-            if (*tmp1 == '|') {
-                if (!c_isxdigit(tmp1[1]) || !c_isxdigit(tmp1[2])) {
-                    ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("VMX entry 'annotation' contains invalid "
-                                "escape sequence"));
-                    goto cleanup;
-                }
-
-                *tmp2++ = virHexToBin(tmp1[1]) * 16 + virHexToBin(tmp1[2]);
-                tmp1 += 3;
-            } else {
-                *tmp2++ = *tmp1++;
-            }
+        if (esxUtil_UnescapeHexPipe(def->description) < 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("VMX entry 'annotation' contains invalid escape "
+                        "sequence"));
+            goto cleanup;
         }
-
-        *tmp2 = '\0';
     }
 
     /* vmx:memsize -> def:mem.max_balloon */
@@ -2460,9 +2452,8 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     int sched_cpu_affinity_length;
     unsigned char zero[VIR_UUID_BUFLEN];
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    size_t length;
-    char *tmp1;
-    char *tmp2;
+    char *preliminaryDisplayName = NULL;
+    char *displayName = NULL;
     char *annotation = NULL;
     bool scsi_present[4] = { false, false, false, false };
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
@@ -2536,44 +2527,23 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     }
 
     /* def:name -> vmx:displayName */
-    virBufferVSprintf(&buffer, "displayName = \"%s\"\n", def->name);
+    preliminaryDisplayName = esxUtil_EscapeHexPipe(def->name);
+
+    if (preliminaryDisplayName == NULL) {
+        goto cleanup;
+    }
+
+    displayName = esxUtil_EscapeHexPercent(preliminaryDisplayName);
+
+    if (displayName == NULL) {
+        goto cleanup;
+    }
+
+    virBufferVSprintf(&buffer, "displayName = \"%s\"\n", displayName);
 
     /* def:description -> vmx:annotation */
     if (def->description != NULL) {
-        /* Escape '"' as '|22' and '|' as '|7C' */
-        length = 1; /* 1 byte for termination */
-        tmp1 = def->description;
-
-        while (*tmp1 != '\0') {
-            if (*tmp1 == '"' || *tmp1 == '|') {
-                length += 2;
-            }
-
-            ++tmp1;
-            ++length;
-        }
-
-        if (VIR_ALLOC_N(annotation, length) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        tmp1 = def->description; /* reading from this one */
-        tmp2 = annotation; /* writing to this one */
-
-        while (*tmp1 != '\0') {
-            if (*tmp1 == '"') {
-                *tmp2++ = '|'; *tmp2++ = '2'; *tmp2++ = '2';
-            } else if (*tmp1 == '|') {
-                *tmp2++ = '|'; *tmp2++ = '7'; *tmp2++ = 'C';
-            } else {
-                *tmp2++ = *tmp1;
-            }
-
-            ++tmp1;
-        }
-
-        *tmp2 = '\0';
+        annotation = esxUtil_EscapeHexPipe(def->description);
 
         virBufferVSprintf(&buffer, "annotation = \"%s\"\n", annotation);
     }
@@ -2780,6 +2750,8 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         virBufferFreeAndReset(&buffer);
     }
 
+    VIR_FREE(preliminaryDisplayName);
+    VIR_FREE(displayName);
     VIR_FREE(annotation);
 
     return vmx;
