@@ -10325,30 +10325,40 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
  * Command string parsing
  * ---------------
  */
-#define VSH_TK_ERROR    -1
-#define VSH_TK_NONE    0
-#define VSH_TK_DATA    1
-#define VSH_TK_END    2
 
-static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
+typedef enum {
+    VSH_TK_ERROR, /* Failed to parse a token */
+    VSH_TK_ARG, /* Arbitrary argument, might be option or empty */
+    VSH_TK_SUBCMD_END, /* Separation between commands */
+    VSH_TK_END /* No more commands */
+} vshCommandToken;
+
+typedef struct __vshCommandParser {
+    vshCommandToken (*getNextArg)(vshControl *, struct __vshCommandParser *,
+                                  char **);
+    char *pos;
+} vshCommandParser;
+
+static int vshCommandParse(vshControl *ctl, vshCommandParser *parser);
+
+static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
 {
     bool double_quote = false;
     int sz = 0;
-    char *p = str;
-    char *q = vshStrdup(ctl, str);
+    char *p = parser->pos;
+    char *q = vshStrdup(ctl, p);
 
-    *end = NULL;
     *res = q;
 
-    while (p && *p && (*p == ' ' || *p == '\t'))
+    while (*p && (*p == ' ' || *p == '\t'))
         p++;
 
-    if (p == NULL || *p == '\0')
+    if (*p == '\0')
         return VSH_TK_END;
     if (*p == ';') {
-        *end = ++p;             /* = \0 or begin of next command */
-        return VSH_TK_END;
+        parser->pos = ++p;             /* = \0 or begin of next command */
+        return VSH_TK_SUBCMD_END;
     }
 
     while (*p) {
@@ -10371,14 +10381,25 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
     }
 
     *q = '\0';
-    *end = p;
-    return VSH_TK_DATA;
+    parser->pos = p;
+    return VSH_TK_ARG;
+}
+
+static int vshCommandStringParse(vshControl *ctl, char *cmdstr)
+{
+    vshCommandParser parser;
+
+    if (cmdstr == NULL || *cmdstr == '\0')
+        return FALSE;
+
+    parser.pos = cmdstr;
+    parser.getNextArg = vshCommandStringGetArg;
+    return vshCommandParse(ctl, &parser);
 }
 
 static int
-vshCommandParse(vshControl *ctl, char *cmdstr)
+vshCommandParse(vshControl *ctl, vshCommandParser *parser)
 {
-    char *str;
     char *tkdata = NULL;
     vshCmd *clast = NULL;
     vshCmdOpt *first = NULL;
@@ -10388,44 +10409,27 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
         ctl->cmd = NULL;
     }
 
-    if (cmdstr == NULL || *cmdstr == '\0')
-        return FALSE;
-
-    str = cmdstr;
-    while (str && *str) {
+    while (1) {
         vshCmdOpt *last = NULL;
         const vshCmdDef *cmd = NULL;
-        int tk = VSH_TK_NONE;
+        vshCommandToken tk;
         int data_ct = 0;
 
         first = NULL;
 
-        while (tk != VSH_TK_END) {
-            char *end = NULL;
+        while (1) {
             const vshCmdOptDef *opt = NULL;
 
             tkdata = NULL;
+            tk = parser->getNextArg(ctl, parser, &tkdata);
 
-            /* get token */
-            tk = vshCommandGetToken(ctl, str, &end, &tkdata);
-
-            str = end;
-
-            if (tk == VSH_TK_END) {
-                VIR_FREE(tkdata);
-                break;
-            }
             if (tk == VSH_TK_ERROR)
                 goto syntaxError;
+            if (tk != VSH_TK_ARG)
+                break;
 
             if (cmd == NULL) {
                 /* first token must be command name */
-                if (tk != VSH_TK_DATA) {
-                    vshError(ctl,
-                             _("unexpected token (command name): '%s'"),
-                             tkdata);
-                    goto syntaxError;
-                }
                 if (!(cmd = vshCmddefSearch(tkdata))) {
                     vshError(ctl, _("unknown command: '%s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */
@@ -10452,11 +10456,10 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                     if (optstr)
                         tkdata = optstr;
                     else
-                        tk = vshCommandGetToken(ctl, str, &end, &tkdata);
-                    str = end;
+                        tk = parser->getNextArg(ctl, parser, &tkdata);
                     if (tk == VSH_TK_ERROR)
                         goto syntaxError;
-                    if (tk != VSH_TK_DATA) {
+                    if (tk != VSH_TK_ARG) {
                         vshError(ctl,
                                  _("expected syntax: --%s <%s>"),
                                  opt->name,
@@ -10473,7 +10476,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                         goto syntaxError;
                     }
                 }
-            } else if (tk == VSH_TK_DATA) {
+            } else {
                 if (!(opt = vshCmddefGetData(cmd, data_ct++))) {
                     vshError(ctl, _("unexpected data '%s'"), tkdata);
                     goto syntaxError;
@@ -10500,8 +10503,6 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                          opt->type != VSH_OT_BOOL ? _("optdata") : _("bool"),
                          opt->type != VSH_OT_BOOL ? arg->data : _("(none)"));
             }
-            if (!str)
-                break;
         }
 
         /* command parsed -- allocate new struct for the command */
@@ -10523,6 +10524,9 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                 clast->next = c;
             clast = c;
         }
+
+        if (tk == VSH_TK_END)
+            break;
     }
 
     return TRUE;
@@ -10537,7 +10541,6 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
     VIR_FREE(tkdata);
     return FALSE;
 }
-
 
 /* ---------------
  * Misc utils
@@ -11188,7 +11191,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             strncat(cmdstr, " ", sz--);
         }
         vshDebug(ctl, 2, "command: \"%s\"\n", cmdstr);
-        ret = vshCommandParse(ctl, cmdstr);
+        ret = vshCommandStringParse(ctl, cmdstr);
 
         VIR_FREE(cmdstr);
         return ret;
@@ -11267,7 +11270,7 @@ main(int argc, char **argv)
 #if USE_READLINE
                 add_history(ctl->cmdstr);
 #endif
-                if (vshCommandParse(ctl, ctl->cmdstr))
+                if (vshCommandStringParse(ctl, ctl->cmdstr))
                     vshCommandRun(ctl, ctl->cmd);
             }
             VIR_FREE(ctl->cmdstr);
