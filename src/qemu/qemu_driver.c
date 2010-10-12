@@ -86,6 +86,8 @@
 #define QEMU_VNC_PORT_MIN  5900
 #define QEMU_VNC_PORT_MAX  65535
 
+#define QEMU_NB_MEM_PARAM  3
+
 #define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
 
 /* Only 1 job is allowed at any time
@@ -9365,6 +9367,107 @@ cleanup:
     return ret;
 }
 
+
+static int qemuDomainSetMemoryParameters(virDomainPtr dom,
+                                         virMemoryParameterPtr params,
+                                         int nparams,
+                                         unsigned int flags ATTRIBUTE_UNUSED)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    qemuDriverLock(driver);
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        __FUNCTION__);
+        goto cleanup;
+    }
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (i = 0; i < nparams; i++) {
+        virMemoryParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
+            int rc;
+            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for memory hard_limit tunable, expected a 'ullong'"));
+                ret = -1;
+                continue;
+            }
+
+            rc = virCgroupSetMemoryHardLimit(group, params[i].value.ul);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set memory hard_limit tunable"));
+                ret = -1;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
+            int rc;
+            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for memory soft_limit tunable, expected a 'ullong'"));
+                ret = -1;
+                continue;
+            }
+
+            rc = virCgroupSetMemorySoftLimit(group, params[i].value.ul);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set memory soft_limit tunable"));
+                ret = -1;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_SWAP_HARD_LIMIT)) {
+            int rc;
+            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for swap_hard_limit tunable, expected a 'ullong'"));
+                ret = -1;
+                continue;
+            }
+
+            rc = virCgroupSetSwapHardLimit(group, params[i].value.ul);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set swap_hard_limit tunable"));
+                ret = -1;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE)) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Memory tunable `%s' not implemented"), param->field);
+            ret = -1;
+        } else {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Parameter `%s' not supported"), param->field);
+            ret = -1;
+        }
+    }
+
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
 static int qemuSetSchedulerParameters(virDomainPtr dom,
                                       virSchedParameterPtr params,
                                       int nparams)
@@ -12710,7 +12813,7 @@ static virDriver qemuDriver = {
     qemuDomainRevertToSnapshot, /* domainRevertToSnapshot */
     qemuDomainSnapshotDelete, /* domainSnapshotDelete */
     qemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
-    NULL, /* domainSetMemoryParameters */
+    qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
 };
 
