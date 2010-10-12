@@ -316,6 +316,66 @@ static void *_vshRealloc(vshControl *ctl, void *ptr, size_t sz, const char *file
 static char *_vshStrdup(vshControl *ctl, const char *s, const char *filename, int line);
 #define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
 
+static void *
+_vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
+{
+    void *x;
+
+    if ((x = malloc(size)))
+        return x;
+    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
+             filename, line, (int) size);
+    exit(EXIT_FAILURE);
+}
+
+static void *
+_vshCalloc(vshControl *ctl, size_t nmemb, size_t size, const char *filename, int line)
+{
+    void *x;
+
+    if ((x = calloc(nmemb, size)))
+        return x;
+    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
+             filename, line, (int) (size*nmemb));
+    exit(EXIT_FAILURE);
+}
+
+static void *
+_vshRealloc(vshControl *ctl, void *ptr, size_t size, const char *filename, int line)
+{
+    void *x;
+
+    if ((x = realloc(ptr, size)))
+        return x;
+    VIR_FREE(ptr);
+    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
+             filename, line, (int) size);
+    exit(EXIT_FAILURE);
+}
+
+static char *
+_vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
+{
+    char *x;
+
+    if (s == NULL)
+        return(NULL);
+    if ((x = strdup(s)))
+        return x;
+    vshError(ctl, _("%s: %d: failed to allocate %lu bytes"),
+             filename, line, (unsigned long)strlen(s));
+    exit(EXIT_FAILURE);
+}
+
+/* Poison the raw allocating identifiers in favor of our vsh variants.  */
+#undef malloc
+#undef calloc
+#undef realloc
+#undef strdup
+#define malloc use_vshMalloc_instead_of_malloc
+#define calloc use_vshCalloc_instead_of_calloc
+#define realloc use_vshRealloc_instead_of_realloc
+#define strdup use_vshStrdup_instead_of_strdup
 
 static int idsorter(const void *a, const void *b) {
   const int *ia = (const int *)a;
@@ -7399,7 +7459,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             virNodeDevicePtr dev = virNodeDeviceLookupByName(ctl->conn, devices[i]);
             if (dev && STRNEQ(devices[i], "computer")) {
                 const char *parent = virNodeDeviceGetParent(dev);
-                parents[i] = parent ? strdup(parent) : NULL;
+                parents[i] = parent ? vshStrdup(ctl, parent) : NULL;
             } else {
                 parents[i] = NULL;
             }
@@ -9043,7 +9103,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
 
     from = vshCommandOptString(cmd, "xmlfile", NULL);
     if (from == NULL)
-        buffer = strdup("<domainsnapshot/>");
+        buffer = vshStrdup(ctl, "<domainsnapshot/>");
     else {
         if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
             /* we have to report the error here because during cleanup
@@ -10589,57 +10649,6 @@ vshError(vshControl *ctl, const char *format, ...)
     fputc('\n', stderr);
 }
 
-static void *
-_vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
-{
-    void *x;
-
-    if ((x = malloc(size)))
-        return x;
-    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
-             filename, line, (int) size);
-    exit(EXIT_FAILURE);
-}
-
-static void *
-_vshCalloc(vshControl *ctl, size_t nmemb, size_t size, const char *filename, int line)
-{
-    void *x;
-
-    if ((x = calloc(nmemb, size)))
-        return x;
-    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
-             filename, line, (int) (size*nmemb));
-    exit(EXIT_FAILURE);
-}
-
-static void *
-_vshRealloc(vshControl *ctl, void *ptr, size_t size, const char *filename, int line)
-{
-    void *x;
-
-    if ((x = realloc(ptr, size)))
-        return x;
-    VIR_FREE(ptr);
-    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
-             filename, line, (int) size);
-    exit(EXIT_FAILURE);
-}
-
-static char *
-_vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
-{
-    char *x;
-
-    if (s == NULL)
-        return(NULL);
-    if ((x = strdup(s)))
-        return x;
-    vshError(ctl, _("%s: %d: failed to allocate %lu bytes"),
-             filename, line, (unsigned long)strlen(s));
-    exit(EXIT_FAILURE);
-}
-
 /*
  * Initialize connection.
  */
@@ -11221,7 +11230,7 @@ main(int argc, char **argv)
     ctl->log_fd = -1;           /* Initialize log file descriptor */
 
     if ((defaultConn = getenv("VIRSH_DEFAULT_CONNECT_URI"))) {
-        ctl->name = strdup(defaultConn);
+        ctl->name = vshStrdup(ctl, defaultConn);
     }
 
     if (!vshParseArgv(ctl, argc, argv)) {
