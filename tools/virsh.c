@@ -10322,7 +10322,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
 }
 
 /* ---------------
- * Command string parsing
+ * Command parsing
  * ---------------
  */
 
@@ -10342,116 +10342,6 @@ typedef struct __vshCommandParser {
     char **arg_pos;
     char **arg_end;
 } vshCommandParser;
-
-static int vshCommandParse(vshControl *ctl, vshCommandParser *parser);
-
-/* ---------------
- * Command argv parsing
- * ---------------
- */
-
-static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-vshCommandArgvGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
-{
-    if (parser->arg_pos == parser->arg_end) {
-        *res = NULL;
-        return VSH_TK_END;
-    }
-
-    *res = vshStrdup(ctl, *parser->arg_pos);
-    parser->arg_pos++;
-    return VSH_TK_ARG;
-}
-
-static int vshCommandArgvParse(vshControl *ctl, int nargs, char **argv)
-{
-    vshCommandParser parser;
-
-    if (nargs <= 0)
-        return FALSE;
-
-    parser.arg_pos = argv;
-    parser.arg_end = argv + nargs;
-    parser.getNextArg = vshCommandArgvGetArg;
-    return vshCommandParse(ctl, &parser);
-}
-
-/* ---------------
- * Command string parsing
- * ---------------
- */
-
-static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
-{
-    bool single_quote = false;
-    bool double_quote = false;
-    int sz = 0;
-    char *p = parser->pos;
-    char *q = vshStrdup(ctl, p);
-
-    *res = q;
-
-    while (*p && (*p == ' ' || *p == '\t'))
-        p++;
-
-    if (*p == '\0')
-        return VSH_TK_END;
-    if (*p == ';') {
-        parser->pos = ++p;             /* = \0 or begin of next command */
-        return VSH_TK_SUBCMD_END;
-    }
-
-    while (*p) {
-        /* end of token is blank space or ';' */
-        if (!double_quote && !single_quote &&
-            (*p == ' ' || *p == '\t' || *p == ';'))
-            break;
-
-        if (!double_quote && *p == '\'') { /* single quote */
-            single_quote = !single_quote;
-            p++;
-            continue;
-        } else if (!single_quote && *p == '\\') { /* escape */
-            /*
-             * The same as the bash, a \ in "" is an escaper,
-             * but a \ in '' is not an escaper.
-             */
-            p++;
-            if (*p == '\0') {
-                vshError(ctl, "%s", _("dangling \\"));
-                return VSH_TK_ERROR;
-            }
-        } else if (!single_quote && *p == '"') { /* double quote */
-            double_quote = !double_quote;
-            p++;
-            continue;
-        }
-
-        *q++ = *p++;
-        sz++;
-    }
-    if (double_quote) {
-        vshError(ctl, "%s", _("missing \""));
-        return VSH_TK_ERROR;
-    }
-
-    *q = '\0';
-    parser->pos = p;
-    return VSH_TK_ARG;
-}
-
-static int vshCommandStringParse(vshControl *ctl, char *cmdstr)
-{
-    vshCommandParser parser;
-
-    if (cmdstr == NULL || *cmdstr == '\0')
-        return FALSE;
-
-    parser.pos = cmdstr;
-    parser.getNextArg = vshCommandStringGetArg;
-    return vshCommandParse(ctl, &parser);
-}
 
 static int
 vshCommandParse(vshControl *ctl, vshCommandParser *parser)
@@ -10604,6 +10494,114 @@ get_data:
         vshCommandOptFree(first);
     VIR_FREE(tkdata);
     return FALSE;
+}
+
+/* --------------------
+ * Command argv parsing
+ * --------------------
+ */
+
+static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+vshCommandArgvGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
+{
+    if (parser->arg_pos == parser->arg_end) {
+        *res = NULL;
+        return VSH_TK_END;
+    }
+
+    *res = vshStrdup(ctl, *parser->arg_pos);
+    parser->arg_pos++;
+    return VSH_TK_ARG;
+}
+
+static int vshCommandArgvParse(vshControl *ctl, int nargs, char **argv)
+{
+    vshCommandParser parser;
+
+    if (nargs <= 0)
+        return FALSE;
+
+    parser.arg_pos = argv;
+    parser.arg_end = argv + nargs;
+    parser.getNextArg = vshCommandArgvGetArg;
+    return vshCommandParse(ctl, &parser);
+}
+
+/* ----------------------
+ * Command string parsing
+ * ----------------------
+ */
+
+static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
+{
+    bool single_quote = false;
+    bool double_quote = false;
+    int sz = 0;
+    char *p = parser->pos;
+    char *q = vshStrdup(ctl, p);
+
+    *res = q;
+
+    while (*p && (*p == ' ' || *p == '\t'))
+        p++;
+
+    if (*p == '\0')
+        return VSH_TK_END;
+    if (*p == ';') {
+        parser->pos = ++p;             /* = \0 or begin of next command */
+        return VSH_TK_SUBCMD_END;
+    }
+
+    while (*p) {
+        /* end of token is blank space or ';' */
+        if (!double_quote && !single_quote &&
+            (*p == ' ' || *p == '\t' || *p == ';'))
+            break;
+
+        if (!double_quote && *p == '\'') { /* single quote */
+            single_quote = !single_quote;
+            p++;
+            continue;
+        } else if (!single_quote && *p == '\\') { /* escape */
+            /*
+             * The same as the bash, a \ in "" is an escaper,
+             * but a \ in '' is not an escaper.
+             */
+            p++;
+            if (*p == '\0') {
+                vshError(ctl, "%s", _("dangling \\"));
+                return VSH_TK_ERROR;
+            }
+        } else if (!single_quote && *p == '"') { /* double quote */
+            double_quote = !double_quote;
+            p++;
+            continue;
+        }
+
+        *q++ = *p++;
+        sz++;
+    }
+    if (double_quote) {
+        vshError(ctl, "%s", _("missing \""));
+        return VSH_TK_ERROR;
+    }
+
+    *q = '\0';
+    parser->pos = p;
+    return VSH_TK_ARG;
+}
+
+static int vshCommandStringParse(vshControl *ctl, char *cmdstr)
+{
+    vshCommandParser parser;
+
+    if (cmdstr == NULL || *cmdstr == '\0')
+        return FALSE;
+
+    parser.pos = cmdstr;
+    parser.getNextArg = vshCommandStringGetArg;
+    return vshCommandParse(ctl, &parser);
 }
 
 /* ---------------
