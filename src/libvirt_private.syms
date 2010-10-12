@@ -668,6 +668,7 @@ virFileResolveLink;
 saferead;
 safewrite;
 safezero;
+virHexToBin;
 virMacAddrCompare;
 virEnumFromString;
 virEnumToString;
