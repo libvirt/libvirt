@@ -10406,7 +10406,13 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
         if (!double_quote && (*p == ' ' || *p == '\t' || *p == ';'))
             break;
 
-        if (*p == '"') {
+        if (*p == '\\') { /* escape */
+            p++;
+            if (*p == '\0') {
+                vshError(ctl, "%s", _("dangling \\"));
+                return VSH_TK_ERROR;
+            }
+        } else if (*p == '"') { /* double quote */
             double_quote = !double_quote;
             p++;
             continue;
