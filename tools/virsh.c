@@ -11138,9 +11138,8 @@ vshUsage(void)
 static int
 vshParseArgv(vshControl *ctl, int argc, char **argv)
 {
-    char *last = NULL;
-    int i, end = 0, help = 0;
-    int arg, idx = 0;
+    bool help = false;
+    int arg;
     struct option opt[] = {
         {"debug", 1, 0, 'd'},
         {"help", 0, 0, 'h'},
@@ -11153,46 +11152,10 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         {0, 0, 0, 0}
     };
 
-
-    if (argc < 2)
-        return TRUE;
-
-    /* look for begin of the command, for example:
-     *   ./virsh --debug 5 -q command --cmdoption
-     *                  <--- ^ --->
-     *        getopt() stuff | command suff
-     */
-    for (i = 1; i < argc; i++) {
-        if (*argv[i] != '-') {
-            int valid = FALSE;
-
-            /* non "--option" argv, is it command? */
-            if (last) {
-                struct option *o;
-                int sz = strlen(last);
-
-                for (o = opt; o->name; o++) {
-                    if (o->has_arg == 1){
-                        if (sz == 2 && *(last + 1) == o->val)
-                            /* valid virsh short option */
-                            valid = TRUE;
-                        else if (sz > 2 && STREQ(o->name, last + 2))
-                            /* valid virsh long option */
-                            valid = TRUE;
-                    }
-                }
-            }
-            if (!valid) {
-                end = i;
-                break;
-            }
-        }
-        last = argv[i];
-    }
-    end = end ? end : argc;
-
-    /* standard (non-command) options */
-    while ((arg = getopt_long(end, argv, "d:hqtc:vrl:", opt, &idx)) != -1) {
+    /* Standard (non-command) options. The leading + ensures that no
+     * argument reordering takes place, so that command options are
+     * not confused with top-level virsh options. */
+    while ((arg = getopt_long(argc, argv, "+d:hqtc:vrl:", opt, NULL)) != -1) {
         switch (arg) {
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &ctl->debug) < 0) {
@@ -11201,7 +11164,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             }
             break;
         case 'h':
-            help = 1;
+            help = true;
             break;
         case 'q':
             ctl->quiet = TRUE;
@@ -11213,7 +11176,8 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             ctl->name = vshStrdup(ctl, optarg);
             break;
         case 'v':
-            fprintf(stdout, "%s\n", VERSION);
+            /* FIXME - list a copyright blurb, as in GNU programs?  */
+            puts(VERSION);
             exit(EXIT_SUCCESS);
         case 'r':
             ctl->readonly = TRUE;
@@ -11228,8 +11192,8 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     }
 
     if (help) {
-        if (end < argc) {
-            vshError(ctl, _("extra argument '%s'. See --help."), argv[end]);
+        if (optind < argc) {
+            vshError(ctl, _("extra argument '%s'. See --help."), argv[optind]);
             exit(EXIT_FAILURE);
         }
 
@@ -11238,14 +11202,14 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         exit(EXIT_SUCCESS);
     }
 
-    if (argc > end) {
+    if (argc > optind) {
         /* parse command */
         ctl->imode = FALSE;
-        if (argc - end == 1) {
-            vshDebug(ctl, 2, "commands: \"%s\"\n", argv[end]);
-            return vshCommandStringParse(ctl, argv[end]);
+        if (argc - optind == 1) {
+            vshDebug(ctl, 2, "commands: \"%s\"\n", argv[optind]);
+            return vshCommandStringParse(ctl, argv[optind]);
         } else {
-            return vshCommandArgvParse(ctl, argc - end, argv + end);
+            return vshCommandArgvParse(ctl, argc - optind, argv + optind);
         }
     }
     return TRUE;
