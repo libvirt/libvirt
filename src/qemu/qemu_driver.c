@@ -9468,6 +9468,128 @@ cleanup:
     return ret;
 }
 
+static int qemuDomainGetMemoryParameters(virDomainPtr dom,
+                                         virMemoryParameterPtr params,
+                                         int *nparams,
+                                         unsigned int flags ATTRIBUTE_UNUSED)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    unsigned long val;
+    int ret = -1;
+    int rc;
+
+    qemuDriverLock(driver);
+
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        __FUNCTION__);
+        goto cleanup;
+    }
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if ((*nparams) == 0) {
+        /* Current number of memory parameters supported by cgroups */
+        *nparams = QEMU_NB_MEM_PARAM;
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((*nparams) != QEMU_NB_MEM_PARAM) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        "%s", _("Invalid parameter count"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (i = 0; i < *nparams; i++) {
+        virMemoryParameterPtr param = &params[i];
+        val = 0;
+        param->value.ul = 0;
+        param->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+
+        switch(i) {
+        case 0: /* fill memory hard limit here */
+            rc = virCgroupGetMemoryHardLimit(group, &val);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to get memory hard limit"));
+                ret = -1;
+                continue;
+            }
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field memory hard limit too long for destination"));
+                ret = -1;
+                continue;
+            }
+            param->value.ul = val;
+            break;
+
+        case 1: /* fill memory soft limit here */
+            rc = virCgroupGetMemorySoftLimit(group, &val);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to get memory soft limit"));
+                ret = -1;
+                continue;
+            }
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field memory soft limit too long for destination"));
+                ret = -1;
+                continue;
+            }
+            param->value.ul = val;
+            break;
+
+        case 2: /* fill swap hard limit here */
+            rc = virCgroupGetSwapHardLimit(group, &val);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to get swap hard limit"));
+                ret = -1;
+                continue;
+            }
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_SWAP_HARD_LIMIT) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field swap hard limit too long for destination"));
+                ret = -1;
+                continue;
+            }
+            param->value.ul = val;
+            break;
+
+        default:
+            break;
+            /* should not hit here */
+        }
+    }
+
+cleanup:
+    if (group)
+        virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
 static int qemuSetSchedulerParameters(virDomainPtr dom,
                                       virSchedParameterPtr params,
                                       int nparams)
@@ -12814,7 +12936,7 @@ static virDriver qemuDriver = {
     qemuDomainSnapshotDelete, /* domainSnapshotDelete */
     qemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
     qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
+    qemuDomainGetMemoryParameters, /* domainGetMemoryParameters */
 };
 
 
