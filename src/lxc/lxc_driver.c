@@ -677,6 +677,103 @@ cleanup:
     return ret;
 }
 
+static int lxcDomainSetMemoryParameters(virDomainPtr dom,
+                                        virMemoryParameterPtr params,
+                                        int nparams,
+                                        unsigned int flags ATTRIBUTE_UNUSED)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr cgroup = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (i = 0; i < nparams; i++) {
+        virMemoryParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
+            int rc;
+            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+                lxcError(VIR_ERR_INVALID_ARG, "%s",
+                         _("invalid type for memory hard_limit tunable, expected a 'ullong'"));
+                ret = -1;
+                continue;
+            }
+
+            rc = virCgroupSetMemoryHardLimit(cgroup, params[i].value.ul);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set memory hard_limit tunable"));
+                ret = -1;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
+            int rc;
+            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+                lxcError(VIR_ERR_INVALID_ARG, "%s",
+                         _("invalid type for memory soft_limit tunable, expected a 'ullong'"));
+                ret = -1;
+                continue;
+            }
+
+            rc = virCgroupSetMemorySoftLimit(cgroup, params[i].value.ul);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set memory soft_limit tunable"));
+                ret = -1;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_SWAP_HARD_LIMIT)) {
+            int rc;
+            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+                lxcError(VIR_ERR_INVALID_ARG, "%s",
+                         _("invalid type for swap_hard_limit tunable, expected a 'ullong'"));
+                ret = -1;
+                continue;
+            }
+
+            rc = virCgroupSetSwapHardLimit(cgroup, params[i].value.ul);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set swap_hard_limit tunable"));
+                ret = -1;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE)) {
+            lxcError(VIR_ERR_INVALID_ARG,
+                     _("Memory tunable `%s' not implemented"), param->field);
+            ret = -1;
+        } else {
+            lxcError(VIR_ERR_INVALID_ARG,
+                     _("Parameter `%s' not supported"), param->field);
+            ret = -1;
+        }
+    }
+
+cleanup:
+    if (cgroup)
+        virCgroupFree(&cgroup);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
 static char *lxcDomainDumpXML(virDomainPtr dom,
                               int flags)
 {
@@ -2620,7 +2717,7 @@ static virDriver lxcDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainSetMemoryParameters */
+    lxcDomainSetMemoryParameters, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
 };
 
