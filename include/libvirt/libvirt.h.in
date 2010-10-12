@@ -674,6 +674,69 @@ int                     virDomainGetInfo        (virDomainPtr domain,
 char *                  virDomainGetSchedulerType(virDomainPtr domain,
                                                  int *nparams);
 
+/**
+ * virDomainMemoryParameterType:
+ *
+ * A memory parameter field type
+ */
+typedef enum {
+    VIR_DOMAIN_MEMORY_PARAM_INT     = 1, /* integer case */
+    VIR_DOMAIN_MEMORY_PARAM_UINT    = 2, /* unsigned integer case */
+    VIR_DOMAIN_MEMORY_PARAM_LLONG   = 3, /* long long case */
+    VIR_DOMAIN_MEMORY_PARAM_ULLONG  = 4, /* unsigned long long case */
+    VIR_DOMAIN_MEMORY_PARAM_DOUBLE  = 5, /* double case */
+    VIR_DOMAIN_MEMORY_PARAM_BOOLEAN = 6  /* boolean(character) case */
+} virMemoryParameterType;
+
+/**
+ * VIR_DOMAIN_MEMORY_FIELD_LENGTH:
+ *
+ * Macro providing the field length of virMemoryParameter
+ */
+
+#define VIR_DOMAIN_MEMORY_FIELD_LENGTH 80
+#define VIR_DOMAIN_MEMORY_HARD_LIMIT "hard_limit"
+#define VIR_DOMAIN_MEMORY_SOFT_LIMIT "soft_limit"
+#define VIR_DOMAIN_MEMORY_MIN_GUARANTEE "min_guarantee"
+#define VIR_DOMAIN_SWAP_HARD_LIMIT "swap_hard_limit"
+
+/**
+ * virDomainMemoryParameter:
+ *
+ * a virDomainMemoryParameter is the set of scheduler parameters
+ */
+
+typedef struct _virMemoryParameter virMemoryParameter;
+
+struct _virMemoryParameter {
+    char field[VIR_DOMAIN_MEMORY_FIELD_LENGTH];  /* parameter name */
+    int type;   /* parameter type */
+    union {
+        int i;                          /* data for integer case */
+        unsigned int ui;        /* data for unsigned integer case */
+        long long int l;        /* data for long long integer case */
+        unsigned long long int ul;      /* data for unsigned long long integer case */
+        double d;       /* data for double case */
+        char b;         /* data for char case */
+    } value; /* parameter value */
+};
+
+/**
+ * virMemoryParameterPtr:
+ *
+ * a virMemoryParameterPtr is a pointer to a virMemoryParameter structure.
+ */
+
+typedef virMemoryParameter *virMemoryParameterPtr;
+
+/* Set memory tunables for the domain*/
+int     virDomainSetMemoryParameters(virDomainPtr domain,
+                                     virMemoryParameterPtr params,
+                                     int nparams, unsigned int flags);
+int     virDomainGetMemoryParameters(virDomainPtr domain,
+                                     virMemoryParameterPtr params,
+                                     int *nparams, unsigned int flags);
+
 /*
  * Dynamic control of domains
  */

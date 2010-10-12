@@ -371,6 +371,20 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
     return VIR_PY_INT_SUCCESS;
 }
 
+/* FIXME: This is a place holder for the implementation. */
+static PyObject *
+libvirt_virDomainSetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                     PyObject *args) {
+    return VIR_PY_INT_FAIL;
+}
+
+/* FIXME: This is a place holder for the implementation. */
+static PyObject *
+libvirt_virDomainGetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                     PyObject *args) {
+    return VIR_PY_INT_FAIL;
+}
+
 static PyObject *
 libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
                           PyObject *args) {

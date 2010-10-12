@@ -162,6 +162,18 @@
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter objects'/>
     </function>
+    <function name='virDomainSetMemoryParameters' file='python'>
+      <info>Change the memory tunables</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='params' type='virMemoryParameterPtr' info='pointer to memory tunable objects'/>
+    </function>
+    <function name='virDomainGetMemoryParameters' file='python'>
+      <info>Get the memory parameters, the @params array will be filled with the values.</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='params' type='virMemoryParameterPtr' info='pointer to memory tunable objects'/>
+    </function>
     <function name='virConnectListStoragePools' file='python'>
       <info>list the storage pools, stores the pointers to the names in @names</info>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
