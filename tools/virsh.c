@@ -10271,16 +10271,18 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
 #define VSH_TK_DATA    2
 #define VSH_TK_END    3
 
-static int
+static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
 {
     int tk = VSH_TK_NONE;
-    int quote = FALSE;
+    bool double_quote = false;
     int sz = 0;
     char *p = str;
+    char *q = vshStrdup(ctl, str);
     char *tkstr = NULL;
 
     *end = NULL;
+    *res = q;
 
     while (p && *p && (*p == ' ' || *p == '\t'))
         p++;
@@ -10291,9 +10293,10 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
         *end = ++p;             /* = \0 or begin of next command */
         return VSH_TK_END;
     }
+
     while (*p) {
         /* end of token is blank space or ';' */
-        if ((quote == FALSE && (*p == ' ' || *p == '\t')) || *p == ';')
+        if (!double_quote && (*p == ' ' || *p == '\t' || *p == ';'))
             break;
 
         /* end of option name could be '=' */
@@ -10309,35 +10312,27 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
                 p += 2;
             } else {
                 tk = VSH_TK_DATA;
-                if (*p == '"') {
-                    quote = TRUE;
-                    p++;
-                } else {
-                    quote = FALSE;
-                }
             }
             tkstr = p;          /* begin of token */
-        } else if (quote && *p == '"') {
-            quote = FALSE;
-            p++;
-            break;              /* end of "..." token */
         }
-        p++;
+
+        if (*p == '"') {
+            double_quote = !double_quote;
+            p++;
+            continue;
+        }
+
+        *q++ = *p++;
         sz++;
     }
-    if (quote) {
+    if (double_quote) {
         vshError(ctl, "%s", _("missing \""));
         return VSH_TK_ERROR;
     }
-    if (tkstr == NULL || *tkstr == '\0' || p == NULL)
-        return VSH_TK_END;
-    if (sz == 0)
+    if (tkstr == NULL || *tkstr == '\0' || sz == 0)
         return VSH_TK_END;
 
-    *res = vshMalloc(ctl, sz + 1);
-    memcpy(*res, tkstr, sz);
-    *(*res + sz) = '\0';
-
+    *q = '\0';
     *end = p;
     return tk;
 }
