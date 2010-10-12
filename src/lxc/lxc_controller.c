@@ -110,6 +110,36 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         goto cleanup;
     }
 
+    if(def->mem.hard_limit) {
+        rc = virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set memory hard limit for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+
+    if(def->mem.soft_limit) {
+        rc = virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set memory soft limit for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+
+    if(def->mem.swap_hard_limit) {
+        rc = virCgroupSetSwapHardLimit(cgroup, def->mem.swap_hard_limit);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set swap hard limit for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+
     rc = virCgroupDenyAllDevices(cgroup);
     if (rc != 0) {
         virReportSystemError(-rc,
