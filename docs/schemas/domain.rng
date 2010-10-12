@@ -299,6 +299,37 @@
           </optional>
         </element>
       </optional>
+
+      <!-- All the memory/swap related tunables would go in the memtune -->
+      <optional>
+	<element name="memtune">
+	  <!-- Maximum memory the VM can use -->
+	  <optional>
+	    <element name="hard_limit">
+	      <ref name="memoryKB"/>
+	    </element>
+	  </optional>
+	  <!-- Minimum memory ascertained for the VM during contention -->
+	  <optional>
+	    <element name="soft_limit">
+	      <ref name="memoryKB"/>
+	    </element>
+	  </optional>
+	  <!-- Minimum amount of memory required to start the VM -->
+	  <optional>
+	    <element name="min_guarantee">
+	      <ref name="memoryKB"/>
+	    </element>
+	  </optional>
+	  <!-- Maximum swap area the VM can use -->
+	  <optional>
+	    <element name="swap_hard_limit">
+	      <ref name="memoryKB"/>
+	    </element>
+	  </optional>
+	</element>
+      </optional>
+
       <optional>
         <element name="vcpu">
           <optional>
