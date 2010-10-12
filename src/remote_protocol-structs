@@ -70,6 +70,21 @@ struct remote_sched_param {
 	remote_nonnull_string      field;
 	remote_sched_param_value   value;
 };
+struct remote_memory_param_value {
+	int                        type;
+	union {
+		int                i;
+		u_int              ui;
+		int64_t            l;
+		uint64_t           ul;
+		double             d;
+		int                b;
+	} remote_memory_param_value_u;
+};
+struct remote_memory_param {
+	remote_nonnull_string      field;
+	remote_memory_param_value  value;
+};
 struct remote_open_args {
 	remote_string              name;
 	int                        flags;
@@ -150,6 +165,26 @@ struct remote_domain_set_scheduler_parameters_args {
 		u_int              params_len;
 		remote_sched_param * params_val;
 	} params;
+};
+struct remote_domain_set_memory_parameters_args {
+	remote_nonnull_domain      dom;
+	struct {
+		u_int              params_len;
+		remote_memory_param * params_val;
+	} params;
+	u_int                      flags;
+};
+struct remote_domain_get_memory_parameters_args {
+	remote_nonnull_domain      dom;
+	int                        nparams;
+	u_int                      flags;
+};
+struct remote_domain_get_memory_parameters_ret {
+	struct {
+		u_int              params_len;
+		remote_memory_param * params_val;
+	} params;
+	int                        nparams;
 };
 struct remote_domain_block_stats_args {
 	remote_nonnull_domain      dom;

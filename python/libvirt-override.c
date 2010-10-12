@@ -374,14 +374,14 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
 /* FIXME: This is a place holder for the implementation. */
 static PyObject *
 libvirt_virDomainSetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args) {
+                                     PyObject *args ATTRIBUTE_UNUSED) {
     return VIR_PY_INT_FAIL;
 }
 
 /* FIXME: This is a place holder for the implementation. */
 static PyObject *
 libvirt_virDomainGetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args) {
+                                     PyObject *args ATTRIBUTE_UNUSED) {
     return VIR_PY_INT_FAIL;
 }
 
@@ -3532,6 +3532,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetSchedulerType", libvirt_virDomainGetSchedulerType, METH_VARARGS, NULL},
     {(char *) "virDomainGetSchedulerParameters", libvirt_virDomainGetSchedulerParameters, METH_VARARGS, NULL},
     {(char *) "virDomainSetSchedulerParameters", libvirt_virDomainSetSchedulerParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainSetMemoryParameters", libvirt_virDomainSetMemoryParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainGetMemoryParameters", libvirt_virDomainGetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetVcpus", libvirt_virDomainGetVcpus, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpu", libvirt_virDomainPinVcpu, METH_VARARGS, NULL},
     {(char *) "virConnectListStoragePools", libvirt_virConnectListStoragePools, METH_VARARGS, NULL},

@@ -1734,8 +1734,8 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
 
                 info->cpuTime = 0;
                 info->nrVirtCpu = CPUCount;
-                info->mem.cur_balloon = memorySize * 1024;
-                info->mem.max_balloon = maxMemorySize * 1024;
+                info->memory = memorySize * 1024;
+                info->maxMem = maxMemorySize * 1024;
                 switch(state) {
                     case MachineState_Running:
                         info->state = VIR_DOMAIN_RUNNING;
@@ -8344,6 +8344,8 @@ virDriver NAME(Driver) = {
     vboxDomainRevertToSnapshot, /* domainRevertToSnapshot */
     vboxDomainSnapshotDelete, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
+    NULL, /* domainSetMemoryParameters */
+    NULL, /* domainGetMemoryParameters */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {
