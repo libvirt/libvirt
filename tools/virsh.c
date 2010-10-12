@@ -100,18 +100,18 @@ typedef enum {
  *
  *    command_line    =     <command>\n | <command>; <command>; ...
  *
- *    command         =    <keyword> <option> <data>
+ *    command         =    <keyword> <option> [--] <data>
  *
  *    option          =     <bool_option> | <int_option> | <string_option>
  *    data            =     <string>
  *
  *    bool_option     =     --optionname
- *    int_option      =     --optionname <number>
- *    string_option   =     --optionname <string>
+ *    int_option      =     --optionname <number> | --optionname=<number>
+ *    string_option   =     --optionname <string> | --optionname=<string>
  *
- *    keyword         =     [a-zA-Z]
+ *    keyword         =     [a-zA-Z][a-zA-Z-]*
  *    number          =     [0-9]+
- *    string          =     [^[:blank:]] | "[[:alnum:]]"$
+ *    string          =     ('[^']*'|"([^\\"]|\\.)*"|([^ \t\n\\'"]|\\.))+
  *
  */
 
