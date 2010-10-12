@@ -874,6 +874,112 @@ int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
 }
 
 /**
+ * virCgroupSetMemoryHardLimit:
+ *
+ * @group: The cgroup to change memory hard limit for
+ * @kb: The memory amount in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long kb)
+{
+    return virCgroupSetMemory(group, kb);
+}
+
+/**
+ * virCgroupGetMemoryHardLimit:
+ *
+ * @group: The cgroup to get the memory hard limit for
+ * @kb: The memory amount in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long *kb)
+{
+    long long unsigned int limit_in_bytes;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_MEMORY,
+                               "memory.limit_in_bytes", &limit_in_bytes);
+    if (ret == 0)
+        *kb = (unsigned long) limit_in_bytes >> 10;
+    return ret;
+}
+
+/**
+ * virCgroupSetMemorySoftLimit:
+ *
+ * @group: The cgroup to change memory soft limit for
+ * @kb: The memory amount in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long kb)
+{
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_MEMORY,
+                                "memory.soft_limit_in_bytes",
+                                kb << 10);
+}
+
+
+/**
+ * virCgroupGetMemorySoftLimit:
+ *
+ * @group: The cgroup to get the memory soft limit for
+ * @kb: The memory amount in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long *kb)
+{
+    long long unsigned int limit_in_bytes;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_MEMORY,
+                               "memory.soft_limit_in_bytes", &limit_in_bytes);
+    if (ret == 0)
+        *kb = (unsigned long) limit_in_bytes >> 10;
+    return ret;
+}
+
+/**
+ * virCgroupSetSwapHardLimit:
+ *
+ * @group: The cgroup to change swap hard limit for
+ * @kb: The swap amount in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long kb)
+{
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_MEMORY,
+                                "memory.memsw.limit_in_bytes",
+                                kb << 10);
+}
+
+/**
+ * virCgroupGetSwapHardLimit:
+ *
+ * @group: The cgroup to get swap hard limit for
+ * @kb: The swap amount in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long *kb)
+{
+    long long unsigned int limit_in_bytes;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_MEMORY,
+                               "memory.memsw.limit_in_bytes", &limit_in_bytes);
+    if (ret == 0)
+        *kb = (unsigned long) limit_in_bytes >> 10;
+    return ret;
+}
+
+/**
  * virCgroupDenyAllDevices:
  *
  * @group: The cgroup to deny devices for

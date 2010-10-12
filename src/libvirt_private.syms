@@ -77,6 +77,12 @@ virCgroupControllerTypeFromString;
 virCgroupGetCpuacctUsage;
 virCgroupGetFreezerState;
 virCgroupSetFreezerState;
+virCgroupSetMemoryHardLimit;
+virCgroupGetMemoryHardLimit;
+virCgroupSetMemorySoftLimit;
+virCgroupGetMemorySoftLimit;
+virCgroupSetSwapHardLimit;
+virCgroupGetSwapHardLimit;
 
 
 # cpu.h
