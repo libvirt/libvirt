@@ -55,6 +55,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+#define LXC_NB_MEM_PARAM  3
+
 typedef struct _lxcDomainObjPrivate lxcDomainObjPrivate;
 typedef lxcDomainObjPrivate *lxcDomainObjPrivatePtr;
 struct _lxcDomainObjPrivate {
@@ -762,6 +764,122 @@ static int lxcDomainSetMemoryParameters(virDomainPtr dom,
             lxcError(VIR_ERR_INVALID_ARG,
                      _("Parameter `%s' not supported"), param->field);
             ret = -1;
+        }
+    }
+
+cleanup:
+    if (cgroup)
+        virCgroupFree(&cgroup);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+static int lxcDomainGetMemoryParameters(virDomainPtr dom,
+                                        virMemoryParameterPtr params,
+                                        int *nparams,
+                                        unsigned int flags ATTRIBUTE_UNUSED)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr cgroup = NULL;
+    virDomainObjPtr vm = NULL;
+    unsigned long val;
+    int ret = -1;
+    int rc;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if ((*nparams) == 0) {
+        /* Current number of memory parameters supported by cgroups */
+        *nparams = LXC_NB_MEM_PARAM;
+        ret = 0;
+        goto cleanup;
+    }
+    if ((*nparams) != LXC_NB_MEM_PARAM) {
+        lxcError(VIR_ERR_INVALID_ARG,
+                 "%s", _("Invalid parameter count"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("Unable to get cgroup for %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (i = 0; i < *nparams; i++) {
+        virMemoryParameterPtr param = &params[i];
+        val = 0;
+        param->value.ul = 0;
+        param->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+
+        switch(i) {
+        case 0: /* fill memory hard limit here */
+            rc = virCgroupGetMemoryHardLimit(cgroup, &val);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to get memory hard limit"));
+                ret = -1;
+                continue;
+            }
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT) == NULL) {
+                lxcError(VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("Field memory hard limit too long for destination"));
+                ret = -1;
+                continue;
+            }
+            param->value.ul = val;
+            break;
+
+        case 1: /* fill memory soft limit here */
+            rc = virCgroupGetMemorySoftLimit(cgroup, &val);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to get memory soft limit"));
+                ret = -1;
+                continue;
+            }
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT) == NULL) {
+                lxcError(VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("Field memory soft limit too long for destination"));
+                ret = -1;
+                continue;
+            }
+            param->value.ul = val;
+            break;
+
+        case 2: /* fill swap hard limit here */
+            rc = virCgroupGetSwapHardLimit(cgroup, &val);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to get swap hard limit"));
+                ret = -1;
+                continue;
+            }
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_SWAP_HARD_LIMIT) == NULL) {
+                lxcError(VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("Field swap hard limit too long for destination"));
+                ret = -1;
+                continue;
+            }
+            param->value.ul = val;
+            break;
+
+        default:
+            break;
+            /* should not hit here */
         }
     }
 
@@ -2718,7 +2836,7 @@ static virDriver lxcDriver = {
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
     lxcDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
+    lxcDomainGetMemoryParameters, /* domainGetMemoryParameters */
 };
 
 static virStateDriver lxcStateDriver = {
