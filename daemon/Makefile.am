@@ -99,11 +99,9 @@ libvirtd_LDADD =					\
 	$(SASL_LIBS)					\
 	$(POLKIT_LIBS)
 
-libvirtd_LDADD += ../src/libvirt_util.la ../src/libvirt-qemu.la
+libvirtd_LDADD += ../src/libvirt-qemu.la
 
-if WITH_DRIVER_MODULES
-  libvirtd_LDADD += ../src/libvirt_driver.la
-else
+if ! WITH_DRIVER_MODULES
 if WITH_QEMU
     libvirtd_LDADD += ../src/libvirt_driver_qemu.la
 endif

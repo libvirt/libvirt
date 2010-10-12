@@ -83,7 +83,7 @@ UTIL_SOURCES =							\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
 		util/xml.c util/xml.h				\
-		util/virtaudit.c util/virtaudit.h		\
+		util/virtaudit.c util/virtaudit.h               \
 		util/virterror.c util/virterror_internal.h
 
 EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
@@ -567,6 +567,7 @@ libvirt_driver_xen_la_CFLAGS =					\
 libvirt_driver_xen_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xen_la_LIBADD = $(XEN_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_xen_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_xen_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_xen_la_SOURCES = $(XEN_DRIVER_SOURCES)
@@ -580,6 +581,10 @@ noinst_LTLIBRARIES += libvirt_driver_phyp.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_phyp.la
 endif
 libvirt_driver_phyp_la_LIBADD = $(LIBSSH2_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_phyp_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_phyp_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
+endif
 libvirt_driver_phyp_la_CFLAGS = $(LIBSSH2_CFLAGS) \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 libvirt_driver_phyp_la_SOURCES = $(PHYP_DRIVER_SOURCES)
@@ -595,6 +600,7 @@ endif
 libvirt_driver_openvz_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 if WITH_DRIVER_MODULES
+libvirt_driver_openvz_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_openvz_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
 libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
@@ -609,10 +615,11 @@ libvirt_la_BUILT_LIBADD += libvirt_driver_vbox.la
 endif
 libvirt_driver_vbox_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
+libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
-libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS)
 libvirt_driver_vbox_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif
 
@@ -628,6 +635,7 @@ libvirt_driver_xenapi_la_CFLAGS = $(LIBXENSERVER_CFLAGS) $(LIBCURL_CFLAGS) \
 libvirt_driver_xenapi_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xenapi_la_LIBADD = $(LIBXENSERVER_LIBS) $(LIBCURL_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_xenapi_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_xenapi_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_xenapi_la_SOURCES = $(XENAPI_DRIVER_SOURCES)
@@ -646,6 +654,7 @@ libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS) \
 libvirt_driver_qemu_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_qemu_la_LIBADD = $(NUMACTL_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_qemu_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_qemu_la_SOURCES = $(QEMU_DRIVER_SOURCES)
@@ -671,6 +680,7 @@ endif
 libvirt_driver_lxc_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 if WITH_DRIVER_MODULES
+libvirt_driver_lxc_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_lxc_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
 libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
@@ -696,6 +706,7 @@ libvirt_driver_uml_la_CFLAGS = $(NUMACTL_CFLAGS) \
 libvirt_driver_uml_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_uml_la_LIBADD = $(NUMACTL_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_uml_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_uml_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_uml_la_SOURCES = $(UML_DRIVER_SOURCES)
@@ -715,6 +726,7 @@ libvirt_driver_one_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_one_la_LIBADD = $(XMLRPC_LIBS)
 #libvirt_driver_one_la_CFLAGS  = "-DWITH_ONE"
 if WITH_DRIVER_MODULES
+libvirt_driver_one_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_one_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_one_la_SOURCES = $(ONE_DRIVER_SOURCES)
@@ -738,6 +750,7 @@ libvirt_driver_esx_la_CFLAGS = $(LIBCURL_CFLAGS) \
 libvirt_driver_esx_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_esx_la_LIBADD = $(LIBCURL_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_esx_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_esx_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_esx_la_SOURCES = $(ESX_DRIVER_SOURCES)
@@ -755,6 +768,7 @@ endif
 libvirt_driver_network_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 if WITH_DRIVER_MODULES
+libvirt_driver_network_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_network_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
 libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
@@ -776,6 +790,7 @@ libvirt_driver_interface_la_CFLAGS = $(NETCF_CFLAGS) \
 libvirt_driver_interface_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_interface_la_LIBADD = $(NETCF_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_interface_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
@@ -792,8 +807,8 @@ endif
 libvirt_driver_secret_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 if WITH_DRIVER_MODULES
-libvirt_driver_secret_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 libvirt_driver_secret_la_LIBADD = ../gnulib/lib/libgnu.la
+libvirt_driver_secret_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
 libvirt_driver_secret_la_SOURCES = $(SECRET_DRIVER_SOURCES)
 endif
@@ -813,6 +828,7 @@ noinst_LTLIBRARIES += libvirt_driver_storage.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_storage.la
 endif
 if WITH_DRIVER_MODULES
+libvirt_driver_storage_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_storage_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
@@ -868,6 +884,7 @@ libvirt_driver_nodedev_la_LIBADD += $(UDEV_LIBS) $(PCIACCESS_LIBS)
 endif
 
 if WITH_DRIVER_MODULES
+libvirt_driver_nodedev_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_nodedev_la_LDFLAGS += -module -avoid-version
 endif
 endif
@@ -885,8 +902,8 @@ libvirt_driver_nwfilter_la_CFLAGS = $(LIBPCAP_CFLAGS) \
 libvirt_driver_nwfilter_la_LDFLAGS = $(LD_AMFLAGS)
 libvirt_driver_nwfilter_la_LIBADD = $(LIBPCAP_LIBS)
 if WITH_DRIVER_MODULES
-libvirt_driver_nwfilter_la_LDFLAGS += -module -avoid-version
 libvirt_driver_nwfilter_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_nwfilter_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_nwfilter_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)
 endif

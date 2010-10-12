@@ -3,6 +3,10 @@
 # more details.
 #
 
+# authhelper.h
+virRequestUsername;
+virRequestPassword;
+
 
 # bitmap.h
 virBitmapAlloc;
@@ -21,6 +25,8 @@ virBufferContentAndReset;
 virBufferError;
 virBufferURIEncodeString;
 virBufferFreeAndReset;
+virBufferUse;
+virBufferStrcat;
 
 
 # caps.h
@@ -153,8 +159,12 @@ virDomainDiskInsert;
 virDomainDiskInsertPreAlloced;
 virDomainDiskRemove;
 virDomainDiskDefAssignAddress;
+virDomainDiskTypeToString;
+virDomainDiskTypeFromString;
 virDomainControllerInsert;
 virDomainControllerInsertPreAlloced;
+virDomainControllerModelTypeFromString;
+virDomainControllerModelTypeToString;
 virDomainFindByID;
 virDomainFindByName;
 virDomainFindByUUID;
@@ -168,6 +178,8 @@ virDomainHostdevSubsysTypeToString;
 virDomainInputDefFree;
 virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;
+virDomainLifecycleCrashTypeFromString;
+virDomainLifecycleCrashTypeToString;
 virDomainLoadAllConfigs;
 virDomainNetDefFree;
 virDomainNetTypeToString;
@@ -232,11 +244,17 @@ virDomainSnapshotHasChildren;
 virDomainSnapshotObjUnref;
 virDomainSnapshotDefParseString;
 virDomainSnapshotDefFormat;
+virDomainSnapshotDefFree;
 virDomainSnapshotAssignDef;
 virDomainObjAssignDef;
 virDomainChrDefForeach;
 virDomainDiskDefForeachPath;
 virDomainChrConsoleTargetTypeToString;
+virDomainChrConsoleTargetTypeFromString;
+virDomainChrTcpProtocolTypeToString;
+virDomainChrTcpProtocolTypeFromString;
+virDomainDiskCacheTypeToString;
+virDomainDiskCacheTypeFromString;
 
 
 # domain_event.h
@@ -282,6 +300,11 @@ virDomainConfNWFilterRegister;
 virDomainConfNWFilterInstantiate;
 virDomainConfNWFilterTeardown;
 virDomainConfVMNWFilterTeardown;
+
+
+# driver.h
+virDriverLoadModule;
+
 
 # ebtables.h
 ebtablesAddForwardAllowIn;
@@ -510,6 +533,8 @@ virNodeDeviceDefFree;
 virNodeDevCapsDefFree;
 virNodeDeviceDefFormat;
 virNodeDeviceDefParseString;
+virNodeDeviceDefParseNode;
+virNodeDeviceDefParseFile;
 virNodeDeviceObjLock;
 virNodeDeviceObjUnlock;
 virNodeDeviceAssignDef;
@@ -653,6 +678,7 @@ virStorageFileIsSharedFS;
 
 # threads.h
 virMutexInit;
+virMutexInitRecursive;
 virMutexDestroy;
 virMutexLock;
 virMutexUnlock;
@@ -708,6 +734,7 @@ virParseVersionString;
 virPipeReadUntilEOF;
 virAsprintf;
 virRun;
+virRunWithHook;
 virSkipSpaces;
 virKillProcess;
 virGetUserDirectory;
@@ -718,6 +745,17 @@ virFileFindMountPoint;
 virFileWaitForDevices;
 virFileMatchesNameSuffix;
 virArgvToString;
+virStrcpy;
+virStrncpy;
+virBuildPathInternal;
+virFileStripSuffix;
+virFileOperation;
+virFork;
+virRandom;
+virRandomInitialize;
+virDirCreate;
+virIndexToDiskName;
+
 
 # interface.h
 ifaceCtrl;
@@ -741,6 +779,12 @@ virUUIDGenerate;
 virUUIDParse;
 virSetHostUUIDStr;
 virGetHostUUID;
+
+# virtaudit.h
+virAuditClose;
+virAuditLog;
+virAuditOpen;
+virAuditSend;
 
 
 # virterror_internal.h

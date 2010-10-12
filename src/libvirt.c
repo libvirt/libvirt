@@ -355,13 +355,27 @@ virInitialize(void)
      * If they try to open a connection for a module that
      * is not loaded they'll get a suitable error at that point
      */
+# ifdef WITH_TEST
     virDriverLoadModule("test");
+# endif
+# ifdef WITH_XEN
     virDriverLoadModule("xen");
+# endif
+# ifdef WITH_OPENVZ
     virDriverLoadModule("openvz");
+# endif
+# ifdef WITH_VBOX
     virDriverLoadModule("vbox");
+# endif
+# ifdef WITH_ESX
     virDriverLoadModule("esx");
+# endif
+# ifdef WITH_XENAPI
     virDriverLoadModule("xenapi");
+# endif
+# ifdef WITH_REMOTE
     virDriverLoadModule("remote");
+# endif
 #else
 # ifdef WITH_TEST
     if (testRegister() == -1) return -1;
