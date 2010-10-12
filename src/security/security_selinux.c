@@ -28,6 +28,8 @@
 #include "pci.h"
 #include "hostusb.h"
 #include "storage_file.h"
+#include "uuid.h"
+#include "virtaudit.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -160,20 +162,22 @@ SELinuxGenSecurityLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
                         virDomainObjPtr vm)
 {
     int rc = -1;
-    char mcs[1024];
+    char mcs[1024], uuidstr[VIR_UUID_STRING_BUFLEN];
     char *scontext = NULL;
     int c1 = 0;
     int c2 = 0;
 
-    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
-        return 0;
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC) {
+        rc = 0;
+        goto done;
+    }
 
     if (vm->def->seclabel.label ||
         vm->def->seclabel.model ||
         vm->def->seclabel.imagelabel) {
         virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("security label already defined for VM"));
-        return rc;
+        goto done;
     }
 
     do {
@@ -217,6 +221,16 @@ err:
     VIR_FREE(vm->def->seclabel.model);
 done:
     VIR_FREE(scontext);
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    /* The derived socket context is not audited. */
+#define STR(X) ((X) != NULL ? (X) : "?")
+    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_ID, rc == 0,
+              "name=%s uuid=%s process-context=%s image-context=%s",
+              vm->def->name, uuidstr, STR(vm->def->seclabel.label),
+              STR(vm->def->seclabel.imagelabel));
+#undef STR
+
     return rc;
 }
 
