@@ -3497,6 +3497,40 @@ static int qemuSetupCgroup(struct qemud_driver *driver,
             goto cleanup;
     }
 
+    if ((rc = qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY))) {
+        if (vm->def->mem.hard_limit != 0) {
+            rc = virCgroupSetMemoryHardLimit(cgroup, vm->def->mem.hard_limit);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set memory hard limit for domain %s"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+        if (vm->def->mem.soft_limit != 0) {
+            rc = virCgroupSetMemorySoftLimit(cgroup, vm->def->mem.soft_limit);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set memory soft limit for domain %s"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+
+        if (vm->def->mem.swap_hard_limit != 0) {
+            rc = virCgroupSetSwapHardLimit(cgroup, vm->def->mem.swap_hard_limit);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set swap hard limit for domain %s"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+    } else {
+        VIR_WARN("Memory cgroup is disabled in qemu configuration file: %s",
+                 vm->def->name);
+    }
+
 done:
     virCgroupFree(&cgroup);
     return 0;
