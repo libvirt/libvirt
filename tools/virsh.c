@@ -2614,6 +2614,152 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "memtune" command
+ */
+static const vshCmdInfo info_memtune[] = {
+    {"help", N_("Get/Set memory paramters")},
+    {"desc", N_("Get/Set the current memory paramters for the guest domain.\n" \
+                "    To get the memory parameters use following command: \n\n" \
+                "    virsh # memtune <domain>")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_memtune[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {VIR_DOMAIN_MEMORY_HARD_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
+     N_("Max memory in kilobytes")},
+    {VIR_DOMAIN_MEMORY_SOFT_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
+     N_("Memory during contention in kilobytes")},
+    {VIR_DOMAIN_SWAP_HARD_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
+     N_("Max swap in kilobytes")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdMemtune(vshControl * ctl, const vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int hard_limit, soft_limit, swap_hard_limit;
+    int nparams = 0;
+    unsigned int i = 0;
+    virMemoryParameterPtr params = NULL, temp = NULL;
+    int ret = FALSE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    hard_limit =
+        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_HARD_LIMIT, &hard_limit);
+    if (hard_limit)
+        nparams++;
+
+    soft_limit =
+        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_SOFT_LIMIT, &soft_limit);
+    if (soft_limit)
+        nparams++;
+
+    swap_hard_limit =
+        vshCommandOptInt(cmd, VIR_DOMAIN_SWAP_HARD_LIMIT,
+                         &swap_hard_limit);
+    if (swap_hard_limit)
+        nparams++;
+
+    if (nparams == 0) {
+        /* get the number of memory parameters */
+        if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) != 0) &&
+            (nparams != 0)) {
+            vshError(ctl, "%s",
+                     _("Unable to get number of memory parameters"));
+            goto cleanup;
+        }
+
+        /* now go get all the memory parameters */
+        params = vshMalloc(ctl, sizeof(virMemoryParameter) * nparams);
+        memset(params, 0, sizeof(virMemoryParameter) * nparams);
+        if (virDomainGetMemoryParameters(dom, params, &nparams, 0)) {
+            vshError(ctl, "%s", _("Unable to get memory parameters"));
+            goto cleanup;
+        }
+
+        for (i = 0; i < nparams; i++) {
+            switch (params[i].type) {
+                case VIR_DOMAIN_MEMORY_PARAM_INT:
+                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
+                             params[i].value.i);
+                    break;
+                case VIR_DOMAIN_MEMORY_PARAM_UINT:
+                    vshPrint(ctl, "%-15s: %u\n", params[i].field,
+                             params[i].value.ui);
+                    break;
+                case VIR_DOMAIN_MEMORY_PARAM_LLONG:
+                    vshPrint(ctl, "%-15s: %lld\n", params[i].field,
+                             params[i].value.l);
+                    break;
+                case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
+                    vshPrint(ctl, "%-15s: %llu\n", params[i].field,
+                             params[i].value.ul);
+                    break;
+                case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
+                    vshPrint(ctl, "%-15s: %f\n", params[i].field,
+                             params[i].value.d);
+                    break;
+                case VIR_DOMAIN_MEMORY_PARAM_BOOLEAN:
+                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
+                             params[i].value.b);
+                    break;
+                default:
+                    vshPrint(ctl, "unimplemented scheduler parameter type\n");
+            }
+        }
+
+        ret = TRUE;
+    } else {
+        /* set the memory parameters */
+        params = vshMalloc(ctl, sizeof(virMemoryParameter) * nparams);
+
+        memset(params, 0, sizeof(virMemoryParameter) * nparams);
+        for (i = 0; i < nparams; i++) {
+            temp = &params[i];
+            temp->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+
+            /*
+             * Some magic here, this is used to fill the params structure with
+             * the valid arguments passed, after filling the particular
+             * argument we purposely make them 0, so on the next pass it goes
+             * to the next valid argument and so on.
+             */
+            if (soft_limit) {
+                temp->value.ul = soft_limit;
+                strncpy(temp->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                        sizeof(temp->field));
+                soft_limit = 0;
+            } else if (hard_limit) {
+                temp->value.ul = hard_limit;
+                strncpy(temp->field, VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                        sizeof(temp->field));
+                hard_limit = 0;
+            } else if (swap_hard_limit) {
+                temp->value.ul = swap_hard_limit;
+                strncpy(temp->field, VIR_DOMAIN_SWAP_HARD_LIMIT,
+                        sizeof(temp->field));
+                swap_hard_limit = 0;
+            }
+        }
+        if (virDomainSetMemoryParameters(dom, params, nparams, 0) != 0)
+            vshError(ctl, "%s", _("Unable to change Memory Parameters"));
+        else
+            ret = TRUE;
+    }
+
+  cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "nodeinfo" command
  */
 static const vshCmdInfo info_nodeinfo[] = {
@@ -9431,6 +9577,7 @@ static const vshCmdDef commands[] = {
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
     {"setmem", cmdSetmem, opts_setmem, info_setmem},
     {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem},
+    {"memtune", cmdMemtune, opts_memtune, info_memtune},
     {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
     {"ttyconsole", cmdTTYConsole, opts_ttyconsole, info_ttyconsole},
