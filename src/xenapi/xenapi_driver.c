@@ -1284,12 +1284,12 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
     }
     unsigned long memory=0;
     memory = xenapiDomainGetMaxMemory(dom);
-    defPtr->maxmem = memory;
+    defPtr->mem.max_balloon = memory;
     int64_t dynamic_mem=0;
     if (xen_vm_get_memory_dynamic_max(session, &dynamic_mem, vm)) {
-        defPtr->memory = (unsigned long) (dynamic_mem / 1024);
+        defPtr->mem.cur_balloon = (unsigned long) (dynamic_mem / 1024);
     } else {
-        defPtr->memory = memory;
+        defPtr->mem.cur_balloon = memory;
     }
     defPtr->vcpus = xenapiDomainGetMaxVcpus(dom);
     enum xen_on_normal_exit action;

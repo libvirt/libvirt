@@ -500,7 +500,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     if (!virDomainObjIsActive(vm) || driver->cgroup == NULL) {
         info->cpuTime = 0;
-        info->memory = vm->def->memory;
+        info->memory = vm->def->mem.cur_balloon;
     } else {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             lxcError(VIR_ERR_INTERNAL_ERROR,
@@ -520,7 +520,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = vm->def->maxmem;
+    info->maxMem = vm->def->mem.max_balloon;
     info->nrVirtCpu = 1;
     ret = 0;
 
@@ -580,7 +580,7 @@ static unsigned long lxcDomainGetMaxMemory(virDomainPtr dom) {
         goto cleanup;
     }
 
-    ret = vm->def->maxmem;
+    ret = vm->def->mem.max_balloon;
 
 cleanup:
     if (vm)
@@ -605,13 +605,13 @@ static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
         goto cleanup;
     }
 
-    if (newmax < vm->def->memory) {
+    if (newmax < vm->def->mem.cur_balloon) {
         lxcError(VIR_ERR_INVALID_ARG,
                          "%s", _("Cannot set max memory lower than current memory"));
         goto cleanup;
     }
 
-    vm->def->maxmem = newmax;
+    vm->def->mem.max_balloon = newmax;
     ret = 0;
 
 cleanup:
@@ -637,7 +637,7 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (newmem > vm->def->maxmem) {
+    if (newmem > vm->def->mem.max_balloon) {
         lxcError(VIR_ERR_INVALID_ARG,
                  "%s", _("Cannot set memory higher than max memory"));
         goto cleanup;

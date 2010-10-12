@@ -2167,10 +2167,12 @@ xenDaemonParseSxpr(virConnectPtr conn,
         }
     }
 
-    def->maxmem = (unsigned long) (sexpr_u64(root, "domain/maxmem") << 10);
-    def->memory = (unsigned long) (sexpr_u64(root, "domain/memory") << 10);
-    if (def->memory > def->maxmem)
-        def->maxmem = def->memory;
+    def->mem.max_balloon = (unsigned long)
+                           (sexpr_u64(root, "domain/maxmem") << 10);
+    def->mem.cur_balloon = (unsigned long)
+                           (sexpr_u64(root, "domain/memory") << 10);
+    if (def->mem.cur_balloon > def->mem.max_balloon)
+        def->mem.cur_balloon = def->mem.max_balloon;
 
     if (cpus != NULL) {
         def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
@@ -5663,7 +5665,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferAddLit(&buf, "(vm ");
     virBufferVSprintf(&buf, "(name '%s')", def->name);
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
-                      def->memory/1024, def->maxmem/1024);
+                      def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
     virBufferVSprintf(&buf, "(vcpus %lu)", def->vcpus);
 
     if (def->cpumask) {

@@ -503,10 +503,10 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
         if (!((*record)->pv_bootloader_args = strdup(def->os.bootloaderArgs)))
             goto error_cleanup;
 
-    if (def->memory)
-        (*record)->memory_static_max = (int64_t) (def->memory * 1024);
-    if (def->maxmem)
-        (*record)->memory_dynamic_max = (int64_t) (def->maxmem * 1024);
+    if (def->mem.cur_balloon)
+        (*record)->memory_static_max = (int64_t) (def->mem.cur_balloon * 1024);
+    if (def->mem.max_balloon)
+        (*record)->memory_dynamic_max = (int64_t) (def->mem.max_balloon * 1024);
     else
         (*record)->memory_dynamic_max = (*record)->memory_static_max;
 

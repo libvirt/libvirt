@@ -866,9 +866,15 @@ struct _virDomainDef {
     char *name;
     char *description;
 
-    unsigned long memory;
-    unsigned long maxmem;
-    unsigned char hugepage_backed;
+    struct {
+        unsigned long max_balloon;
+        unsigned long cur_balloon;
+        unsigned long hugepage_backed;
+        unsigned long hard_limit;
+        unsigned long soft_limit;
+        unsigned long min_guarantee;
+        unsigned long swap_hard_limit;
+    } mem;
     unsigned long vcpus;
     int cpumasklen;
     char *cpumask;

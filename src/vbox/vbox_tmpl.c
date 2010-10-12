@@ -1708,7 +1708,7 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
             if (STREQ(dom->name, machineName)) {
                 /* Get the Machine State (also match it with
                 * virDomainState). Get the Machine memory and
-                * for time being set maxmem and memory to same
+                * for time being set max_balloon and cur_balloon to same
                 * Also since there is no direct way of checking
                 * the cputime required (one condition being the
                 * VM is remote), return zero for cputime. Get the
@@ -1734,8 +1734,8 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
 
                 info->cpuTime = 0;
                 info->nrVirtCpu = CPUCount;
-                info->memory = memorySize * 1024;
-                info->maxMem = maxMemorySize * 1024;
+                info->mem.cur_balloon = memorySize * 1024;
+                info->mem.max_balloon = maxMemorySize * 1024;
                 switch(state) {
                     case MachineState_Running:
                         info->state = VIR_DOMAIN_RUNNING;
@@ -1980,7 +1980,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
             def->name = strdup(dom->name);
 
             machine->vtbl->GetMemorySize(machine, &memorySize);
-            def->memory = memorySize * 1024;
+            def->mem.cur_balloon = memorySize * 1024;
 
             data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
             if (systemProperties) {
@@ -1996,8 +1996,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
              * the notation here seems to be inconsistent while
              * reading and while dumping xml
              */
-            /* def->maxmem = maxMemorySize * 1024; */
-            def->maxmem = memorySize * 1024;
+            /* def->mem.max_balloon = maxMemorySize * 1024; */
+            def->mem.max_balloon = memorySize * 1024;
 
             machine->vtbl->GetCPUCount(machine, &CPUCount);
             def->vcpus = CPUCount;
@@ -4562,12 +4562,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
-    rc = machine->vtbl->SetMemorySize(machine, def->memory / 1024);
+    rc = machine->vtbl->SetMemorySize(machine, def->mem.cur_balloon / 1024);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("could not set the memory size of the domain to: %lu Kb, "
                     "rc=%08x"),
-                  def->memory, (unsigned)rc);
+                  def->mem.cur_balloon, (unsigned)rc);
     }
 
     rc = machine->vtbl->SetCPUCount(machine, def->vcpus);

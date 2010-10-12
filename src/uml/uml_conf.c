@@ -502,7 +502,7 @@ int umlBuildCommandLine(virConnectPtr conn,
         }                                                               \
     } while (0)
 
-    snprintf(memory, sizeof(memory), "%luK", vm->def->memory);
+    snprintf(memory, sizeof(memory), "%luK", vm->def->mem.cur_balloon);
 
     ADD_ENV_LIT("LC_ALL=C");
 

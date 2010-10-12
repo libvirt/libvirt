@@ -3516,13 +3516,13 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
         goto err;
     }
 
-    if ((def.maxmem =
+    if ((def.mem.max_balloon =
          phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0) {
         VIR_ERROR0(_("Unable to determine domain's max memory."));
         goto err;
     }
 
-    if ((def.memory =
+    if ((def.mem.cur_balloon =
          phypGetLparMem(dom->conn, managed_system, dom->id, 1)) == 0) {
         VIR_ERROR0(_("Unable to determine domain's memory."));
         goto err;
@@ -3701,14 +3701,14 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!def->memory) {
+    if (!def->mem.cur_balloon) {
         PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
                 _("Field \"<memory>\" on the domain XML file is missing or has "
                     "invalid value."));
         goto err;
     }
 
-    if (!def->maxmem) {
+    if (!def->mem.max_balloon) {
         PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
                 _("Field \"<currentMemory>\" on the domain XML file is missing or"
                     " has invalid value."));
@@ -3733,8 +3733,9 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
         virBufferVSprintf(&buf, " -m %s", managed_system);
     virBufferVSprintf(&buf, " -r lpar -p %s -i min_mem=%d,desired_mem=%d,"
                       "max_mem=%d,desired_procs=%d,virtual_scsi_adapters=%s",
-                      def->name, (int) def->memory, (int) def->memory,
-                      (int) def->maxmem, (int) def->vcpus, def->disks[0]->src);
+                      def->name, (int) def->mem.cur_balloon,
+                      (int) def->mem.cur_balloon, (int) def->mem.max_balloon,
+                      (int) def->vcpus, def->disks[0]->src);
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();

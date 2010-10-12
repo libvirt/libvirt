@@ -403,8 +403,8 @@ static int openvzDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = vm->def->maxmem;
-    info->memory = vm->def->memory;
+    info->maxMem = vm->def->mem.max_balloon;
+    info->memory = vm->def->mem.cur_balloon;
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
@@ -934,8 +934,8 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         }
     }
 
-    if (vm->def->memory > 0) {
-        if (openvzDomainSetMemoryInternal(vm, vm->def->memory) < 0) {
+    if (vm->def->mem.cur_balloon > 0) {
+        if (openvzDomainSetMemoryInternal(vm, vm->def->mem.cur_balloon) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could not set memory size"));
              goto cleanup;

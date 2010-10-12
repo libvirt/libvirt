@@ -644,8 +644,8 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
         goto error;
 
     memset(info, 0, sizeof(virDomainInfo));
-    info->maxMem = entry->def->maxmem;
-    info->memory = entry->def->memory;
+    info->maxMem = entry->def->mem.max_balloon;
+    info->memory = entry->def->mem.cur_balloon;
     info->nrVirtCpu = entry->def->vcpus;
     info->state = VIR_DOMAIN_SHUTOFF;
     info->cpuTime = 0;
@@ -759,14 +759,16 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             goto cleanup;
     }
 
-    if (xenXMConfigGetULong(conf, "memory", &def->memory, MIN_XEN_GUEST_SIZE * 2) < 0)
+    if (xenXMConfigGetULong(conf, "memory", &def->mem.cur_balloon,
+                            MIN_XEN_GUEST_SIZE * 2) < 0)
         goto cleanup;
 
-    if (xenXMConfigGetULong(conf, "maxmem", &def->maxmem, def->memory) < 0)
+    if (xenXMConfigGetULong(conf, "maxmem", &def->mem.max_balloon,
+                            def->mem.cur_balloon) < 0)
         goto cleanup;
 
-    def->memory *= 1024;
-    def->maxmem *= 1024;
+    def->mem.cur_balloon *= 1024;
+    def->mem.max_balloon *= 1024;
 
 
     if (xenXMConfigGetULong(conf, "vcpus", &def->vcpus, 1) < 0)
@@ -1530,9 +1532,9 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    entry->def->memory = memory;
-    if (entry->def->memory > entry->def->maxmem)
-        entry->def->memory = entry->def->maxmem;
+    entry->def->mem.cur_balloon = memory;
+    if (entry->def->mem.cur_balloon > entry->def->mem.max_balloon)
+        entry->def->mem.cur_balloon = entry->def->mem.max_balloon;
 
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
@@ -1573,9 +1575,9 @@ int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    entry->def->maxmem = memory;
-    if (entry->def->memory > entry->def->maxmem)
-        entry->def->memory = entry->def->maxmem;
+    entry->def->mem.max_balloon = memory;
+    if (entry->def->mem.cur_balloon > entry->def->mem.max_balloon)
+        entry->def->mem.cur_balloon = entry->def->mem.max_balloon;
 
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
@@ -1614,7 +1616,7 @@ unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    ret = entry->def->maxmem;
+    ret = entry->def->mem.max_balloon;
 
 cleanup:
     xenUnifiedUnlock(priv);
@@ -2233,10 +2235,10 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     if (xenXMConfigSetString(conf, "uuid", uuid) < 0)
         goto no_memory;
 
-    if (xenXMConfigSetInt(conf, "maxmem", def->maxmem / 1024) < 0)
+    if (xenXMConfigSetInt(conf, "maxmem", def->mem.max_balloon / 1024) < 0)
         goto no_memory;
 
-    if (xenXMConfigSetInt(conf, "memory", def->memory / 1024) < 0)
+    if (xenXMConfigSetInt(conf, "memory", def->mem.cur_balloon / 1024) < 0)
         goto no_memory;
 
     if (xenXMConfigSetInt(conf, "vcpus", def->vcpus) < 0)

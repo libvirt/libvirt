@@ -48,8 +48,8 @@ domain-xml                        <=>   vmx
 def->id = <value>                 <=>   ???                                     # not representable
 def->uuid = <value>               <=>   uuid.bios = "<value>"
 def->name = <value>               <=>   displayName = "<value>"
-def->maxmem = <value kilobyte>    <=>   memsize = "<value megabyte>"            # must be a multiple of 4, defaults to 32
-def->memory = <value kilobyte>    <=>   sched.mem.max = "<value megabyte>"      # defaults to "unlimited" -> def->memory = def->maxmem
+def->mem.max_balloon = <value kilobyte>    <=>   memsize = "<value megabyte>"            # must be a multiple of 4, defaults to 32
+def->mem.cur_balloon = <value kilobyte>    <=>   sched.mem.max = "<value megabyte>"      # defaults to "unlimited" -> def->mem.cur_balloon = def->mem.max_balloon
 def->vcpus = <value>              <=>   numvcpus = "<value>"                    # must be 1 or a multiple of 2, defaults to 1
 def->cpumask = <uint list>        <=>   sched.cpu.affinity = "<uint list>"
 
@@ -1012,7 +1012,7 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
         *tmp2 = '\0';
     }
 
-    /* vmx:memsize -> def:maxmem */
+    /* vmx:memsize -> def:mem.max_balloon */
     if (esxUtil_GetConfigLong(conf, "memsize", &memsize, 32, true) < 0) {
         goto cleanup;
     }
@@ -1024,7 +1024,7 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
         goto cleanup;
     }
 
-    def->maxmem = memsize * 1024; /* Scale from megabytes to kilobytes */
+    def->mem.max_balloon = memsize * 1024; /* Scale from megabytes to kilobytes */
 
     /* vmx:sched.mem.max -> def:memory */
     if (esxUtil_GetConfigLong(conf, "sched.mem.max", &memory, memsize,
@@ -1036,10 +1036,10 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
         memory = memsize;
     }
 
-    def->memory = memory * 1024; /* Scale from megabytes to kilobytes */
+    def->mem.cur_balloon = memory * 1024; /* Scale from megabytes to kilobytes */
 
-    if (def->memory > def->maxmem) {
-        def->memory = def->maxmem;
+    if (def->mem.cur_balloon > def->mem.max_balloon) {
+        def->mem.cur_balloon = def->mem.max_balloon;
     }
 
     /* vmx:numvcpus -> def:vcpus */
@@ -2578,32 +2578,32 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         virBufferVSprintf(&buffer, "annotation = \"%s\"\n", annotation);
     }
 
-    /* def:maxmem -> vmx:memsize */
-    if (def->maxmem <= 0 || def->maxmem % 4096 != 0) {
+    /* def:mem.max_balloon -> vmx:memsize */
+    if (def->mem.max_balloon <= 0 || def->mem.max_balloon % 4096 != 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Expecting domain XML entry 'memory' to be an unsigned "
                     "integer (multiple of 4096) but found %lld"),
-                  (unsigned long long)def->maxmem);
+                  (unsigned long long)def->mem.max_balloon);
         goto cleanup;
     }
 
     /* Scale from kilobytes to megabytes */
     virBufferVSprintf(&buffer, "memsize = \"%d\"\n",
-                      (int)(def->maxmem / 1024));
+                      (int)(def->mem.max_balloon / 1024));
 
     /* def:memory -> vmx:sched.mem.max */
-    if (def->memory < def->maxmem) {
-        if (def->memory <= 0 || def->memory % 1024 != 0) {
+    if (def->mem.cur_balloon < def->mem.max_balloon) {
+        if (def->mem.cur_balloon <= 0 || def->mem.cur_balloon % 1024 != 0) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting domain XML entry 'currentMemory' to be an "
                         "unsigned integer (multiple of 1024) but found %lld"),
-                      (unsigned long long)def->memory);
+                      (unsigned long long)def->mem.cur_balloon);
             goto cleanup;
         }
 
         /* Scale from kilobytes to megabytes */
         virBufferVSprintf(&buffer, "sched.mem.max = \"%d\"\n",
-                          (int)(def->memory / 1024));
+                          (int)(def->mem.cur_balloon / 1024));
     }
 
     /* def:vcpus -> vmx:numvcpus */

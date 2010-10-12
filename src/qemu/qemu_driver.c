@@ -3939,7 +3939,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Setting initial memory amount");
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorSetBalloon(priv->mon, vm->def->memory) < 0) {
+    if (qemuMonitorSetBalloon(priv->mon, vm->def->mem.cur_balloon) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
@@ -4862,7 +4862,7 @@ static unsigned long qemudDomainGetMaxMemory(virDomainPtr dom) {
         goto cleanup;
     }
 
-    ret = vm->def->maxmem;
+    ret = vm->def->mem.max_balloon;
 
 cleanup:
     if (vm)
@@ -4893,7 +4893,7 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (newmem > vm->def->maxmem) {
+    if (newmem > vm->def->mem.max_balloon) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         "%s", _("cannot set memory higher than max memory"));
         goto cleanup;
@@ -4957,14 +4957,14 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = vm->def->maxmem;
+    info->maxMem = vm->def->mem.max_balloon;
 
     if (virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
         if ((vm->def->memballoon != NULL) &&
             (vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
-            info->memory = vm->def->maxmem;
+            info->memory = vm->def->mem.max_balloon;
         } else if (!priv->jobActive) {
             if (qemuDomainObjBeginJob(vm) < 0)
                 goto cleanup;
@@ -4980,7 +4980,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
 
             if (err == 0)
                 /* Balloon not supported, so maxmem is always the allocation */
-                info->memory = vm->def->maxmem;
+                info->memory = vm->def->mem.max_balloon;
             else
                 info->memory = balloon;
 
@@ -4989,10 +4989,10 @@ static int qemudDomainGetInfo(virDomainPtr dom,
                 goto cleanup;
             }
         } else {
-            info->memory = vm->def->memory;
+            info->memory = vm->def->mem.cur_balloon;
         }
     } else {
-        info->memory = vm->def->memory;
+        info->memory = vm->def->mem.cur_balloon;
     }
 
     info->nrVirtCpu = vm->def->vcpus;
@@ -6774,7 +6774,7 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
             if (err < 0)
                 goto cleanup;
             if (err > 0)
-                vm->def->memory = balloon;
+                vm->def->mem.cur_balloon = balloon;
             /* err == 0 indicates no balloon support, so ignore it */
         }
     }

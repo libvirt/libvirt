@@ -4235,18 +4235,37 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     def->description = virXPathString("string(./description[1])", ctxt);
 
     /* Extract domain memory */
-    if (virXPathULong("string(./memory[1])", ctxt, &def->maxmem) < 0) {
+    if (virXPathULong("string(./memory[1])", ctxt,
+                      &def->mem.max_balloon) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              "%s", _("missing memory element"));
         goto error;
     }
 
-    if (virXPathULong("string(./currentMemory[1])", ctxt, &def->memory) < 0)
-        def->memory = def->maxmem;
+    if (virXPathULong("string(./currentMemory[1])", ctxt,
+                      &def->mem.cur_balloon) < 0)
+        def->mem.cur_balloon = def->mem.max_balloon;
 
     node = virXPathNode("./memoryBacking/hugepages", ctxt);
     if (node)
-        def->hugepage_backed = 1;
+        def->mem.hugepage_backed = 1;
+
+    /* Extract other memory tunables */
+    if (virXPathULong("string(./memtune/hard_limit)", ctxt,
+                      &def->mem.hard_limit) < 0)
+        def->mem.hard_limit = 0;
+
+    if (virXPathULong("string(./memtune/soft_limit[1])", ctxt,
+                      &def->mem.soft_limit) < 0)
+        def->mem.soft_limit = 0;
+
+    if (virXPathULong("string(./memtune/min_guarantee[1])", ctxt,
+                      &def->mem.min_guarantee) < 0)
+        def->mem.min_guarantee = 0;
+
+    if (virXPathULong("string(./memtune/swap_hard_limit[1])", ctxt,
+                      &def->mem.swap_hard_limit) < 0)
+        def->mem.swap_hard_limit = 0;
 
     if (virXPathULong("string(./vcpu[1])", ctxt, &def->vcpus) < 0)
         def->vcpus = 1;
@@ -6384,10 +6403,29 @@ char *virDomainDefFormat(virDomainDefPtr def,
         virBufferEscapeString(&buf, "  <description>%s</description>\n",
                               def->description);
 
-    virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->maxmem);
+    virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->mem.max_balloon);
     virBufferVSprintf(&buf, "  <currentMemory>%lu</currentMemory>\n",
-                      def->memory);
-    if (def->hugepage_backed) {
+                      def->mem.cur_balloon);
+
+    /* add memtune only if there are any */
+    if(def->mem.hard_limit || def->mem.hard_limit || def->mem.hard_limit)
+        virBufferVSprintf(&buf, "  <memtune>\n");
+    if (def->mem.hard_limit) {
+        virBufferVSprintf(&buf, "    <hard_limit>%lu</hard_limit>\n",
+                          def->mem.hard_limit);
+    }
+    if (def->mem.soft_limit) {
+        virBufferVSprintf(&buf, "    <soft_limit>%lu</soft_limit>\n",
+                          def->mem.soft_limit);
+    }
+    if (def->mem.swap_hard_limit) {
+        virBufferVSprintf(&buf, "    <swap_hard_limit>%lu</swap_hard_limit>\n",
+                          def->mem.swap_hard_limit);
+    }
+    if(def->mem.hard_limit || def->mem.hard_limit || def->mem.hard_limit)
+        virBufferVSprintf(&buf, "  </memtune>\n");
+
+    if (def->mem.hugepage_backed) {
         virBufferAddLit(&buf, "  <memoryBacking>\n");
         virBufferAddLit(&buf, "    <hugepages/>\n");
         virBufferAddLit(&buf, "  </memoryBacking>\n");

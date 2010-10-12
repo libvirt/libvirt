@@ -1681,8 +1681,8 @@ static int testGetDomainInfo (virDomainPtr domain,
     }
 
     info->state = privdom->state;
-    info->memory = privdom->def->memory;
-    info->maxMem = privdom->def->maxmem;
+    info->memory = privdom->def->mem.cur_balloon;
+    info->maxMem = privdom->def->mem.max_balloon;
     info->nrVirtCpu = privdom->def->vcpus;
     info->cpuTime = ((tv.tv_sec * 1000ll * 1000ll  * 1000ll) + (tv.tv_usec * 1000ll));
     ret = 0;
@@ -1963,7 +1963,7 @@ static unsigned long testGetMaxMemory(virDomainPtr domain) {
         goto cleanup;
     }
 
-    ret = privdom->def->maxmem;
+    ret = privdom->def->mem.max_balloon;
 
 cleanup:
     if (privdom)
@@ -1989,7 +1989,7 @@ static int testSetMaxMemory(virDomainPtr domain,
     }
 
     /* XXX validate not over host memory wrt to other domains */
-    privdom->def->maxmem = memory;
+    privdom->def->mem.max_balloon = memory;
     ret = 0;
 
 cleanup:
@@ -2015,12 +2015,12 @@ static int testSetMemory(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (memory > privdom->def->maxmem) {
+    if (memory > privdom->def->mem.max_balloon) {
         testError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto cleanup;
     }
 
-    privdom->def->memory = memory;
+    privdom->def->mem.cur_balloon = memory;
     ret = 0;
 
 cleanup:

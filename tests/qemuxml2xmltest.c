@@ -178,6 +178,7 @@ mymain(int argc, char **argv)
     DO_TEST("hostdev-pci-address");
 
     DO_TEST("encrypted-disk");
+    DO_TEST("memtune");
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");

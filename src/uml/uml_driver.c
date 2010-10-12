@@ -1420,7 +1420,7 @@ static unsigned long umlDomainGetMaxMemory(virDomainPtr dom) {
                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
-    ret = vm->def->maxmem;
+    ret = vm->def->mem.max_balloon;
 
 cleanup:
     if (vm)
@@ -1446,13 +1446,13 @@ static int umlDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
         goto cleanup;
     }
 
-    if (newmax < vm->def->memory) {
+    if (newmax < vm->def->mem.cur_balloon) {
         umlReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("cannot set max memory lower than current memory"));
         goto cleanup;
     }
 
-    vm->def->maxmem = newmax;
+    vm->def->mem.max_balloon = newmax;
     ret = 0;
 
 cleanup:
@@ -1485,13 +1485,13 @@ static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (newmem > vm->def->maxmem) {
+    if (newmem > vm->def->mem.max_balloon) {
         umlReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("cannot set memory higher than max memory"));
         goto cleanup;
     }
 
-    vm->def->memory = newmem;
+    vm->def->mem.cur_balloon = newmem;
     ret = 0;
 
 cleanup:
@@ -1528,8 +1528,8 @@ static int umlDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = vm->def->maxmem;
-    info->memory = vm->def->memory;
+    info->maxMem = vm->def->mem.max_balloon;
+    info->memory = vm->def->mem.cur_balloon;
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 

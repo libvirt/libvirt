@@ -357,7 +357,7 @@ static int oneDomainGetInfo(virDomainPtr dom,
         cptr=strstr(vm_info,"MEMORY");
         cptr=index(cptr,':');
         cptr++;
-        vm->def->memory = atoi(cptr);
+        vm->def->mem.cur_balloon = atoi(cptr);
 
         //run time:
         cptr=strstr(vm_info,"START TIME");
@@ -369,8 +369,8 @@ static int oneDomainGetInfo(virDomainPtr dom,
     }
 
     info->state = vm->state;
-    info->maxMem = vm->def->maxmem;
-    info->memory = vm->def->memory;
+    info->maxMem = vm->def->mem.max_balloon;
+    info->memory = vm->def->mem.cur_balloon;
     info->nrVirtCpu = vm->def->vcpus;
 
     virDomainObjUnlock(vm);
@@ -818,6 +818,8 @@ static virDriver oneDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
+    NULL, /* domainSetMemoryParameters */
+    NULL, /* domainGetMemoryParameters */
 };
 
 static virStateDriver oneStateDriver = {

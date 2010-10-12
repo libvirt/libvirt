@@ -3849,7 +3849,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * is set post-startup using the balloon driver. If balloon driver
      * is not supported, then they're out of luck anyway
      */
-    snprintf(memory, sizeof(memory), "%lu", def->maxmem/1024);
+    snprintf(memory, sizeof(memory), "%lu", def->mem.max_balloon/1024);
     snprintf(domid, sizeof(domid), "%d", def->id);
 
     ADD_ENV_LIT("LC_ALL=C");
@@ -3895,7 +3895,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-enable-kvm");
     ADD_ARG_LIT("-m");
     ADD_ARG_LIT(memory);
-    if (def->hugepage_backed) {
+    if (def->mem.hugepage_backed) {
         if (!driver->hugetlbfs_mount) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             "%s", _("hugetlbfs filesystem is not mounted"));
@@ -6122,7 +6122,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     virUUIDGenerate(def->uuid);
 
     def->id = -1;
-    def->memory = def->maxmem = 64 * 1024;
+    def->mem.cur_balloon = def->mem.max_balloon = 64 * 1024;
     def->vcpus = 1;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
     def->features = (1 << VIR_DOMAIN_FEATURE_ACPI)
@@ -6237,7 +6237,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                                 _("cannot parse memory level '%s'"), val);
                 goto error;
             }
-            def->memory = def->maxmem = mem * 1024;
+            def->mem.cur_balloon = def->mem.max_balloon = mem * 1024;
         } else if (STREQ(arg, "-smp")) {
             WANT_VALUE();
             if (qemuParseCommandLineSmp(def, val) < 0)

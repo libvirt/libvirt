@@ -102,7 +102,7 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         goto cleanup;
     }
 
-    rc = virCgroupSetMemory(cgroup, def->maxmem);
+    rc = virCgroupSetMemory(cgroup, def->mem.max_balloon);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to set memory limit for domain %s"),
