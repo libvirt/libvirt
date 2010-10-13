@@ -1621,6 +1621,7 @@ x86Baseline(virCPUDefPtr *cpus,
     unsigned int i;
     const struct x86_vendor *vendor = NULL;
     struct x86_model *model = NULL;
+    bool outputVendor = true;
 
     if (!(map = x86LoadMap()))
         goto error;
@@ -1634,8 +1635,9 @@ x86Baseline(virCPUDefPtr *cpus,
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
 
-    if (cpus[0]->vendor &&
-        !(vendor = x86VendorFind(map, cpus[0]->vendor))) {
+    if (!cpus[0]->vendor)
+        outputVendor = false;
+    else if (!(vendor = x86VendorFind(map, cpus[0]->vendor))) {
         virCPUReportError(VIR_ERR_OPERATION_FAILED,
                 _("Unknown CPU vendor %s"), cpus[0]->vendor);
         goto error;
@@ -1657,8 +1659,11 @@ x86Baseline(virCPUDefPtr *cpus,
 
         if (cpus[i]->vendor)
             vn = cpus[i]->vendor;
-        else if (model->vendor)
-            vn = model->vendor->name;
+        else {
+            outputVendor = false;
+            if (model->vendor)
+                vn = model->vendor->name;
+        }
 
         if (vn) {
             if (!vendor) {
@@ -1693,6 +1698,9 @@ x86Baseline(virCPUDefPtr *cpus,
 
     if (x86Decode(cpu, data, models, nmodels, NULL) < 0)
         goto error;
+
+    if (!outputVendor)
+        VIR_FREE(cpu->vendor);
 
     VIR_FREE(cpu->arch);
 
