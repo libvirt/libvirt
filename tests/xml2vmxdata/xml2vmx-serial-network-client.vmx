@@ -1,3 +1,4 @@
+.encoding = "UTF-8"
 config.version = "8"
 virtualHW.version = "7"
 guestOS = "other"

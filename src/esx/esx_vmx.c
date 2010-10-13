@@ -2475,6 +2475,9 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         return NULL;
     }
 
+    /* vmx:.encoding */
+    virBufferAddLit(&buffer, ".encoding = \"UTF-8\"\n");
+
     /* vmx:config.version */
     virBufferAddLit(&buffer, "config.version = \"8\"\n");
 
