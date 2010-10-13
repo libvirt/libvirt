@@ -470,6 +470,7 @@ int virtTestMain(int argc,
         virRandomInitialize(time(NULL) ^ getpid()))
         return 1;
 
+    virLogSetFromEnv();
     if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
                            0, 0, NULL, 0) < 0)
         return 1;
