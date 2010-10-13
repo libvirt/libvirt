@@ -490,19 +490,17 @@ typedef virConnectCredential *virConnectCredentialPtr;
 
 
 /**
- * virConnectCredCallbackPtr
- *
- * @param authtype type of authentication being performed
- * @param cred list of virConnectCredential object to fetch from user
- * @param ncred size of cred list
- * @param cbdata opaque data passed to virConnectOpenAuth
+ * virConnectAuthCallbackPtr:
+ * @cred: list of virConnectCredential object to fetch from user
+ * @ncred: size of cred list
+ * @cbdata: opaque data passed to virConnectOpenAuth
  *
  * When authentication requires one or more interactions, this callback
  * is invoked. For each interaction supplied, data must be gathered
  * from the user and filled in to the 'result' and 'resultlen' fields.
  * If an interaction can not be filled, fill in NULL and 0.
  *
- * Return 0 if all interactions were filled, or -1 upon error
+ * Returns 0 if all interactions were filled, or -1 upon error
  */
 typedef int (*virConnectAuthCallbackPtr)(virConnectCredentialPtr cred,
                                          unsigned int ncred,
@@ -1578,6 +1576,14 @@ typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
                                              int detail,
                                              void *opaque);
 
+/*
+ * virFreeCallback:
+ * @opaque: opaque user data provided at registration
+ *
+ * Type for a domain event callback when the event is deregistered and
+ * need to be freed, @opaque is provided along with the callback at
+ * registration time
+ */
 typedef void (*virFreeCallback)(void *opaque);
 
 int virConnectDomainEventRegister(virConnectPtr conn,
@@ -2071,8 +2077,15 @@ int virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
 int virDomainSnapshotFree(virDomainSnapshotPtr snapshot);
 
-/* A generic callback definition. Specific events usually have a customization
- * with extra parameters */
+/*
+ * virConnectDomainEventGenericCallback:
+ * @conn: the connection pointer
+ * @dom: the domain pointer
+ * @opaque: application specified data
+ *
+ * A generic domain event callback handler. Specific events usually
+ * have a customization with extra parameters
+ */
 typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
                                                      void *opaque);
@@ -2135,7 +2148,7 @@ typedef enum {
 
 
 /**
- * virConnectDomainEventWatchdogCallback:
+ * virConnectDomainEventIOErrorCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
  * @srcPath: The host file on which the IO error occurred
@@ -2145,7 +2158,6 @@ typedef enum {
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
- *
  */
 typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -2155,7 +2167,7 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
                                                      void *opaque);
 
 /**
- * virConnectDomainEventWatchdogCallback:
+ * virConnectDomainEventIOErrorReasonCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
  * @srcPath: The host file on which the IO error occurred

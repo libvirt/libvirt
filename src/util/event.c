@@ -79,13 +79,14 @@ int virEventRemoveTimeout(int timer) {
 
 /**
  * virEventRegisterImpl:
- * Register an EventImpl
  * @addHandle: the callback to add fd handles
  * @updateHandle: the callback to update fd handles
  * @removeHandle: the callback to remove fd handles
  * @addTimeout: the callback to add a timeout
  * @updateTimeout: the callback to update a timeout
  * @removeTimeout: the callback to remove a timeout
+ *
+ * Registers an event implementation
  */
 void virEventRegisterImpl(virEventAddHandleFunc addHandle,
                           virEventUpdateHandleFunc updateHandle,
