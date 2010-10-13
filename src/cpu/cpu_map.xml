@@ -355,7 +355,7 @@
     </model>
 
     <model name='Conroe'>
-      <vendor>Intel</vendor>
+      <vendor name='Intel'/>
       <feature name='sse2'/>
       <feature name='sse'/>
       <feature name='fxsr'/>
@@ -386,7 +386,7 @@
     </model>
 
     <model name='Penryn'>
-      <vendor>Intel</vendor>
+      <vendor name='Intel'/>
       <feature name='sse2'/>
       <feature name='sse'/>
       <feature name='fxsr'/>
@@ -419,7 +419,7 @@
     </model>
 
     <model name='Nehalem'>
-      <vendor>Intel</vendor>
+      <vendor name='Intel'/>
       <feature name='sse2'/>
       <feature name='sse'/>
       <feature name='fxsr'/>
@@ -454,7 +454,7 @@
     </model>
 
     <model name='Opteron_G1'>
-      <vendor>AMD</vendor>
+      <vendor name='AMD'/>
       <feature name='sse2'/>
       <feature name='sse'/>
       <feature name='fxsr'/>
@@ -483,7 +483,7 @@
     </model>
 
     <model name='Opteron_G2'>
-      <vendor>AMD</vendor>
+      <vendor name='AMD'/>
       <feature name='sse2'/>
       <feature name='sse'/>
       <feature name='fxsr'/>
@@ -516,7 +516,7 @@
     </model>
 
     <model name='Opteron_G3'>
-      <vendor>AMD</vendor>
+      <vendor name='AMD'/>
       <feature name='sse2'/>
       <feature name='sse'/>
       <feature name='fxsr'/>

@@ -1015,8 +1015,15 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
                sizeof(*model->cpuid) * model->ncpuid);
     }
 
-    vendor = virXPathString("string(./vendor/@name)", ctxt);
-    if (vendor) {
+    if (virXPathBoolean("boolean(./vendor)", ctxt)) {
+        vendor = virXPathString("string(./vendor/@name)", ctxt);
+        if (!vendor) {
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("Invalid vendor element in CPU model %s"),
+                    model->name);
+            goto ignore;
+        }
+
         if (!(model->vendor = x86VendorFind(map, vendor))) {
             virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Unknown vendor %s referenced by CPU model %s"),
