@@ -724,6 +724,10 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     dbus_conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
     if (dbus_conn == NULL) {
         VIR_ERROR0(_("dbus_bus_get failed"));
+        /* We don't want to show a fatal error here,
+           otherwise entire libvirtd shuts down when
+           D-Bus isn't running */
+        ret = 0;
         goto failure;
     }
     dbus_connection_set_exit_on_disconnect(dbus_conn, FALSE);
