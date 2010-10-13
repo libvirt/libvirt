@@ -541,6 +541,8 @@ virNWFilterConfLayerShutdown;
 virNWFilterLockFilterUpdates;
 virNWFilterUnlockFilterUpdates;
 virNWFilterPrintStateMatchFlags;
+virNWFilterCallbackDriversLock;
+virNWFilterCallbackDriversUnlock;
 
 
 # nwfilter_params.h

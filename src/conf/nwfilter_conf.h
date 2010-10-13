@@ -658,6 +658,8 @@ void virNWFilterConfLayerShutdown(void);
 
 typedef int (*virNWFilterRebuild)(virConnectPtr conn,
                                   virHashIterator, void *data);
+typedef void (*virNWFilterVoidCall)(void);
+
 
 typedef struct _virNWFilterCallbackDriver virNWFilterCallbackDriver;
 typedef virNWFilterCallbackDriver *virNWFilterCallbackDriverPtr;
@@ -665,9 +667,13 @@ struct _virNWFilterCallbackDriver {
     const char *name;
 
     virNWFilterRebuild vmFilterRebuild;
+    virNWFilterVoidCall vmDriverLock;
+    virNWFilterVoidCall vmDriverUnlock;
 };
 
 void virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
+void virNWFilterCallbackDriversLock(void);
+void virNWFilterCallbackDriversUnlock(void);
 
 
 VIR_ENUM_DECL(virNWFilterRuleAction);

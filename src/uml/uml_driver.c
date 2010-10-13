@@ -2204,11 +2204,7 @@ static int
 umlVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                    virHashIterator iter, void *data)
 {
-    struct uml_driver *driver = uml_driver;
-
-    umlDriverLock(driver);
     virHashForEach(uml_driver->domains.objs, iter, data);
-    umlDriverUnlock(driver);
 
     return 0;
 }
@@ -2221,9 +2217,23 @@ static virStateDriver umlStateDriver = {
     .active = umlActive,
 };
 
+static void
+umlVMDriverLock(void)
+{
+    umlDriverLock(uml_driver);
+}
+
+static void
+umlVMDriverUnlock(void)
+{
+    umlDriverUnlock(uml_driver);
+}
+
 static virNWFilterCallbackDriver umlCallbackDriver = {
     .name = "UML",
     .vmFilterRebuild = umlVMFilterRebuild,
+    .vmDriverLock = umlVMDriverLock,
+    .vmDriverUnlock = umlVMDriverUnlock,
 };
 
 int umlRegister(void) {
