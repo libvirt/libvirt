@@ -10380,6 +10380,19 @@ static void qemuDomainEventQueue(struct qemud_driver *driver,
 
 /* Migration support. */
 
+static bool ATTRIBUTE_NONNULL(1)
+qemuDomainIsMigratable(virDomainDefPtr def)
+{
+    if (def->nhostdevs > 0) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                _("Domain with assigned host devices cannot be migrated"));
+        return false;
+    }
+
+    return true;
+}
+
+
 /* Tunnelled migration stream support */
 struct qemuStreamMigFile {
     int fd;
@@ -10709,6 +10722,9 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
     }
 
+    if (!qemuDomainIsMigratable(def))
+        goto cleanup;
+
     /* Target domain name, maybe renamed. */
     if (dname) {
         VIR_FREE(def->name);
@@ -10975,6 +10991,9 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
                         "%s", _("failed to parse XML"));
         goto cleanup;
     }
+
+    if (!qemuDomainIsMigratable(def))
+        goto cleanup;
 
     /* Target domain name, maybe renamed. */
     if (dname) {
