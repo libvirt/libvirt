@@ -317,17 +317,17 @@ struct remote_sched_param {
 };
 
 union remote_memory_param_value switch (int type) {
- case VIR_DOMAIN_MEMORY_FIELD_INT:
+ case VIR_DOMAIN_MEMORY_PARAM_INT:
      int i;
- case VIR_DOMAIN_MEMORY_FIELD_UINT:
+ case VIR_DOMAIN_MEMORY_PARAM_UINT:
      unsigned int ui;
- case VIR_DOMAIN_MEMORY_FIELD_LLONG:
+ case VIR_DOMAIN_MEMORY_PARAM_LLONG:
      hyper l;
- case VIR_DOMAIN_MEMORY_FIELD_ULLONG:
+ case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
      unsigned hyper ul;
- case VIR_DOMAIN_MEMORY_FIELD_DOUBLE:
+ case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
      double d;
- case VIR_DOMAIN_MEMORY_FIELD_BOOLEAN:
+ case VIR_DOMAIN_MEMORY_PARAM_BOOLEAN:
      int b;
 };
 

@@ -308,38 +308,39 @@ xdr_remote_sched_param (XDR *xdrs, remote_sched_param *objp)
 }
 
 bool_t
-xdr_remote_memory_param_value(XDR * xdrs, remote_memory_param_value * objp)
+xdr_remote_memory_param_value (XDR *xdrs, remote_memory_param_value *objp)
 {
 
-    if (!xdr_int(xdrs, &objp->type))
-        return FALSE;
-    switch (objp->type) {
+         if (!xdr_int (xdrs, &objp->type))
+                 return FALSE;
+        switch (objp->type) {
         case VIR_DOMAIN_MEMORY_PARAM_INT:
-            return FALSE;
+                         return FALSE;
+                break;
         case VIR_DOMAIN_MEMORY_PARAM_UINT:
-            if (!xdr_u_int(xdrs, &objp->remote_memory_param_value_u.ui))
-                return FALSE;
-            break;
+                 if (!xdr_u_int (xdrs, &objp->remote_memory_param_value_u.ui))
+                         return FALSE;
+                break;
         case VIR_DOMAIN_MEMORY_PARAM_LLONG:
-            if (!xdr_int64_t(xdrs, &objp->remote_memory_param_value_u.l))
-                return FALSE;
-            break;
+                 if (!xdr_int64_t (xdrs, &objp->remote_memory_param_value_u.l))
+                         return FALSE;
+                break;
         case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
-            if (!xdr_uint64_t(xdrs, &objp->remote_memory_param_value_u.ul))
-                return FALSE;
-            break;
+                 if (!xdr_uint64_t (xdrs, &objp->remote_memory_param_value_u.ul))
+                         return FALSE;
+                break;
         case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
-            if (!xdr_double(xdrs, &objp->remote_memory_param_value_u.d))
-                return FALSE;
-            break;
+                 if (!xdr_double (xdrs, &objp->remote_memory_param_value_u.d))
+                         return FALSE;
+                break;
         case VIR_DOMAIN_MEMORY_PARAM_BOOLEAN:
-            if (!xdr_int(xdrs, &objp->remote_memory_param_value_u.b))
-                return FALSE;
-            break;
+                 if (!xdr_int (xdrs, &objp->remote_memory_param_value_u.b))
+                         return FALSE;
+                break;
         default:
-            return FALSE;
-    }
-    return TRUE;
+                return FALSE;
+        }
+        return TRUE;
 }
 
 bool_t
