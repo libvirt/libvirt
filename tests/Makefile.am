@@ -208,7 +208,6 @@ TESTS_ENVIRONMENT =				\
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   SHELL="$(SHELL)"				\
   LIBVIRT_DRIVER_DIR="$(abs_top_builddir)/src/.libs" \
-  LIBVIRT_DEBUG="error"				\
   LC_ALL=C					\
   $(VG)
 
