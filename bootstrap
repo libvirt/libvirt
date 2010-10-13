@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2010-10-05.15; # UTC
+scriptversion=2010-10-08.16; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -79,6 +79,10 @@ gnulib_modules=
 
 # Any gnulib files needed that are not in modules.
 gnulib_files=
+
+# A function to be called to edit gnulib.mk right after it's created.
+# Override it via your own definition in bootstrap.conf.
+gnulib_mk_hook() { :; }
 
 # A function to be called after everything else in this script.
 # Override it via your own definition in bootstrap.conf.
@@ -394,7 +398,7 @@ fi
 if ! printf "$buildreq" | check_versions; then
   echo >&2
   if test -f README-prereq; then
-    echo "See README-prereq for notes on obtaining the prerequisite programs" >&2
+    echo "See README-prereq for how to get the prerequisite programs" >&2
   else
     echo "Please install the prerequisite programs" >&2
   fi
@@ -678,7 +682,8 @@ slurp() {
     for file in `ls -a $1/$dir`; do
       case $file in
       .|..) continue;;
-      .*) continue;; # FIXME: should all file names starting with "." be ignored?
+      # FIXME: should all file names starting with "." be ignored?
+      .*) continue;;
       esac
       test -d $1/$dir/$file && continue
       for excluded_file in $excluded_files; do
@@ -687,10 +692,12 @@ slurp() {
       if test $file = Makefile.am && test "X$gnulib_mk" != XMakefile.am; then
         copied=$copied${sep}$gnulib_mk; sep=$nl
         remove_intl='/^[^#].*\/intl/s/^/#/;'"s!$bt_regex/!!g"
-        sed "$remove_intl" $1/$dir/$file | cmp - $dir/$gnulib_mk > /dev/null || {
+        sed "$remove_intl" $1/$dir/$file |
+        cmp - $dir/$gnulib_mk > /dev/null || {
           echo "$0: Copying $1/$dir/$file to $dir/$gnulib_mk ..." &&
           rm -f $dir/$gnulib_mk &&
-          sed "$remove_intl" $1/$dir/$file >$dir/$gnulib_mk
+          sed "$remove_intl" $1/$dir/$file >$dir/$gnulib_mk &&
+          gnulib_mk_hook $dir/$gnulib_mk
         }
       elif { test "${2+set}" = set && test -r $2/$dir/$file; } ||
            version_controlled_file $dir $file; then
@@ -723,7 +730,14 @@ slurp() {
         # the name with just ".h".  Many gnulib headers are generated,
         # e.g., stdint.in.h -> stdint.h, dirent.in.h ->..., etc.
         # Likewise for .gperf -> .h, .y -> .c, and .sin -> .sed
-        f=`echo "$copied"|sed 's/\.in\.h$/.h/;s/\.sin$/.sed/;s/\.y$/.c/;s/\.gperf$/.h/'`
+        f=`echo "$copied" |
+          sed '
+            s/\.in\.h$/.h/
+            s/\.sin$/.sed/
+            s/\.y$/.c/
+            s/\.gperf$/.h/
+          '
+        `
         insert_sorted_if_absent $ig "$f"
 
         # For files like sys_stat.in.h and sys_time.in.h, record as
