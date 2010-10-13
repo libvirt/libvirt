@@ -79,7 +79,8 @@ EXTRA_DIST=					\
   $(xml) $(fig) $(png) \
   $(patches) \
   sitemap.html.in \
-  ChangeLog.awk
+  ChangeLog.awk \
+  todo.pl todo.cfg-example
 
 MAINTAINERCLEANFILES = $(dot_html) $(apihtml) $(devhelphtml)
 
