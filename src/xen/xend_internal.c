@@ -3535,6 +3535,82 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
 }
 
 /**
+ * xenDaemonDomainSetVcpusFlags:
+ * @domain: pointer to domain object
+ * @nvcpus: the new number of virtual CPUs for this domain
+ * @flags: bitwise-ORd from virDomainVcpuFlags
+ *
+ * Change virtual CPUs allocation of domain according to flags.
+ *
+ * Returns 0 on success, -1 if an error message was issued, and -2 if
+ * the unified driver should keep trying.
+ */
+int
+xenDaemonDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
+                             unsigned int flags)
+{
+    char buf[VIR_UUID_BUFLEN];
+    xenUnifiedPrivatePtr priv;
+    int max;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
+        || (vcpus < 1)) {
+        virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
+    if ((domain->id < 0 && priv->xendConfigVersion < 3) ||
+        (flags & VIR_DOMAIN_VCPU_MAXIMUM))
+        return -2;
+
+    /* With xendConfigVersion 2, only _LIVE is supported.  With
+     * xendConfigVersion 3, only _LIVE|_CONFIG is supported for
+     * running domains, or _CONFIG for inactive domains.  */
+    if (priv->xendConfigVersion < 3) {
+        if (flags & VIR_DOMAIN_VCPU_CONFIG) {
+            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend version does not support modifying "
+                           "persistent config"));
+            return -1;
+        }
+    } else if (domain->id < 0) {
+        if (flags & VIR_DOMAIN_VCPU_LIVE) {
+            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                         _("domain not running"));
+            return -1;
+        }
+    } else {
+        if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) !=
+            (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) {
+            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend only supports modifying both live and "
+                           "persistent config"));
+        }
+    }
+
+    /* Unfortunately, xend_op does not validate whether this exceeds
+     * the maximum.  */
+    flags |= VIR_DOMAIN_VCPU_MAXIMUM;
+    if ((max = xenDaemonDomainGetVcpusFlags(domain, flags)) < 0) {
+        virXendError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("could not determin max vcpus for the domain"));
+        return -1;
+    }
+    if (vcpus > max) {
+        virXendError(VIR_ERR_INVALID_ARG,
+                     _("requested vcpus is greater than max allowable"
+                       " vcpus for the domain: %d > %d"), vcpus, max);
+        return -1;
+    }
+
+    snprintf(buf, sizeof(buf), "%d", vcpus);
+    return xend_op(domain->conn, domain->name, "op", "set_vcpus", "vcpus",
+                   buf, NULL);
+}
+
+/**
  * xenDaemonDomainSetVcpus:
  * @domain: pointer to domain object
  * @nvcpus: the new number of virtual CPUs for this domain

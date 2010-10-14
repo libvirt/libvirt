@@ -1670,6 +1670,89 @@ cleanup:
     return ret;
 }
 
+/*
+ * xenXMDomainSetVcpusFlags:
+ * @domain: pointer to domain object
+ * @nvcpus: number of vcpus
+ * @flags: bitwise-ORd from virDomainVcpuFlags
+ *
+ * Change virtual CPUs allocation of domain according to flags.
+ *
+ * Returns 0 on success, -1 if an error message was issued, and -2 if
+ * the unified driver should keep trying.
+ */
+int
+xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
+                         unsigned int flags)
+{
+    xenUnifiedPrivatePtr priv;
+    const char *filename;
+    xenXMConfCachePtr entry;
+    int ret = -1;
+    int max;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        xenXMError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return -1;
+    }
+    if (domain->id != -1)
+        return -2;
+    if (flags & VIR_DOMAIN_VCPU_LIVE) {
+        xenXMError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("domain is not running"));
+        return -1;
+    }
+
+    priv = domain->conn->privateData;
+    xenUnifiedLock(priv);
+
+    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+        goto cleanup;
+
+    if (!(entry = virHashLookup(priv->configCache, filename)))
+        goto cleanup;
+
+    /* Hypervisor maximum. */
+    if ((max = xenUnifiedGetMaxVcpus(domain->conn, NULL)) < 0) {
+        xenXMError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("could not determin max vcpus for the domain"));
+        goto cleanup;
+    }
+    /* Can't specify a current larger than stored maximum; but
+     * reducing maximum can silently reduce current.  */
+    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM))
+        max = entry->def->maxvcpus;
+    if (vcpus > max) {
+        xenXMError(VIR_ERR_INVALID_ARG,
+                   _("requested vcpus is greater than max allowable"
+                     " vcpus for the domain: %d > %d"), vcpus, max);
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+        entry->def->maxvcpus = vcpus;
+        if (entry->def->vcpus > vcpus)
+            entry->def->vcpus = vcpus;
+    } else {
+        entry->def->vcpus = vcpus;
+    }
+
+    /* If this fails, should we try to undo our changes to the
+     * in-memory representation of the config file. I say not!
+     */
+    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
+        goto cleanup;
+    ret = 0;
+
+cleanup:
+    xenUnifiedUnlock(priv);
+    return ret;
+}
+
 /**
  * xenXMDomainGetVcpusFlags:
  * @domain: pointer to domain object

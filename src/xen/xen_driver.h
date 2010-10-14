@@ -220,6 +220,7 @@ int  xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr info,
 void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
                                     virDomainEventPtr event);
 unsigned long xenUnifiedVersion(void);
+int xenUnifiedGetMaxVcpus(virConnectPtr conn, const char *type);
 
 # ifndef PROXY
 void xenUnifiedLock(xenUnifiedPrivatePtr priv);
