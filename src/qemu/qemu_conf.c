@@ -2789,11 +2789,18 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
 
     if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("can only passthrough directories"));
+                        _("only supports mount filesystem type"));
         goto error;
     }
 
-    virBufferAddLit(&opt, "local,security_model=passthrough");
+    virBufferAddLit(&opt, "local");
+    if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_MAPPED) {
+        virBufferAddLit(&opt, ",security_model=mapped");
+    } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
+        virBufferAddLit(&opt, ",security_model=passthrough");
+    } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_SQUASH) {
+        virBufferAddLit(&opt, ",security_model=none");
+    }
     virBufferVSprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferVSprintf(&opt, ",path=%s", fs->src);
 

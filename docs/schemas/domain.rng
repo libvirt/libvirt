@@ -794,6 +794,13 @@
       </choice>
       <optional>
         <ref name="address"/>
+        <attribute name="accessmode">
+        <choice>
+          <value>passthrough</value>
+          <value>mapped</value>
+          <value>squash</value>
+        </choice>
+        </attribute>
       </optional>
     </element>
   </define>

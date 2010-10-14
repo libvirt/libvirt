@@ -161,6 +161,12 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "file",
               "template")
 
+VIR_ENUM_IMPL(virDomainFSAccessMode, VIR_DOMAIN_FS_ACCESSMODE_LAST,
+              "passthrough",
+              "mapped",
+              "squash")
+
+
 VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "user",
               "ethernet",
@@ -1853,6 +1859,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     char *type = NULL;
     char *source = NULL;
     char *target = NULL;
+    char *accessmode = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -1868,6 +1875,17 @@ virDomainFSDefParseXML(xmlNodePtr node,
         }
     } else {
         def->type = VIR_DOMAIN_FS_TYPE_MOUNT;
+    }
+
+    accessmode = virXMLPropString(node, "accessmode");
+    if (accessmode) {
+        if ((def->accessmode = virDomainFSAccessModeTypeFromString(accessmode)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown accessmode '%s'"), accessmode);
+            goto error;
+        }
+    } else {
+        def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
     }
 
     cur = node->children;
@@ -1918,6 +1936,7 @@ cleanup:
     VIR_FREE(type);
     VIR_FREE(target);
     VIR_FREE(source);
+    VIR_FREE(accessmode);
 
     return def;
 
@@ -5625,6 +5644,7 @@ virDomainFSDefFormat(virBufferPtr buf,
                      int flags)
 {
     const char *type = virDomainFSTypeToString(def->type);
+    const char *accessmode = virDomainFSAccessModeTypeToString(def->accessmode);
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5632,9 +5652,16 @@ virDomainFSDefFormat(virBufferPtr buf,
         return -1;
     }
 
+   if (!accessmode) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected accessmode %d"), def->accessmode);
+        return -1;
+    }
+
+
     virBufferVSprintf(buf,
-                      "    <filesystem type='%s'>\n",
-                      type);
+                      "    <filesystem type='%s' accessmode='%s'>\n",
+                      type, accessmode);
 
     if (def->src) {
         switch (def->type) {
