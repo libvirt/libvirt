@@ -2399,6 +2399,20 @@ virNWFilterPoolObjAssignDef(virConnectPtr conn,
 {
     virNWFilterPoolObjPtr pool;
 
+    pool = virNWFilterPoolObjFindByUUID(pools, def->uuid);
+
+    if (pool) {
+        if (!STREQ(def->name, pool->def->name)) {
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+                               _("filter with same UUID but different name "
+                                 "('%s') already exists"),
+                               pool->def->name);
+            virNWFilterPoolObjUnlock(pool);
+            return NULL;
+        }
+        virNWFilterPoolObjUnlock(pool);
+    }
+
     if (virNWFilterDefLoopDetect(conn, pools, def)) {
         virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                               "%s", _("filter would introduce a loop"));
