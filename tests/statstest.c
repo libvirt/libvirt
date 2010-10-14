@@ -9,15 +9,12 @@
 #include "xen/block_stats.h"
 #include "testutils.h"
 
-#if WITH_XEN
 static void testQuietError(void *userData ATTRIBUTE_UNUSED,
                            virErrorPtr error ATTRIBUTE_UNUSED)
 {
     /* nada */
 }
-#endif
 
-#if __linux__ && WITH_XEN
 static int testDevice(const char *path, int expect)
 {
     int actual = xenLinuxDomainDeviceID(NULL, 1, path);
@@ -43,14 +40,11 @@ static int testDeviceHelper(const void *data)
     return testDevice(info->dev, info->num);
 }
 
-#endif
-
 static int
 mymain(int argc ATTRIBUTE_UNUSED,
        char **argv ATTRIBUTE_UNUSED)
 {
     int ret = 0;
-#if __linux__ && WITH_XEN
     /* Some of our tests delibrately test failure cases, so
      * register a handler to stop error messages cluttering
      * up display
@@ -58,7 +52,7 @@ mymain(int argc ATTRIBUTE_UNUSED,
     if (!virTestGetDebug())
         virSetErrorFunc(NULL, testQuietError);
 
-# define DO_TEST(dev, num)                                              \
+#define DO_TEST(dev, num)                                              \
     do {                                                               \
         struct testInfo info = { dev, num };                           \
         if (virtTestRun("Device " dev " -> " # num,                    \
@@ -201,7 +195,6 @@ mymain(int argc ATTRIBUTE_UNUSED,
     DO_TEST("/dev/xvda1", 51713);
     DO_TEST("/dev/xvda15", 51727);
 
-#endif
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

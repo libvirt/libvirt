@@ -238,6 +238,10 @@ reconnect_SOURCES = \
 	reconnect.c
 reconnect_LDADD = $(LDADDS)
 
+statstest_SOURCES = \
+	statstest.c testutils.h testutils.c
+statstest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+
 else
 EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
 	xencapstest.c reconnect.c \
@@ -327,10 +331,6 @@ conftest_LDADD = $(LDADDS)
 nodeinfotest_SOURCES = \
 	nodeinfotest.c testutils.h testutils.c
 nodeinfotest_LDADD = $(LDADDS)
-
-statstest_SOURCES = \
-	statstest.c testutils.h testutils.c
-statstest_LDADD = $(LDADDS)
 
 if WITH_SECDRIVER_SELINUX
 seclabeltest_SOURCES = \
