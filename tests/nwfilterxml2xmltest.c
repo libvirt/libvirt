@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -22,7 +23,9 @@ static char *abs_srcdir;
 #define MAX_FILE 4096
 
 
-static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
+static int testCompareXMLToXMLFiles(const char *inxml,
+                                    const char *outxml,
+                                    bool expect_warning) {
     char inXmlData[MAX_FILE];
     char *inXmlPtr = &(inXmlData[0]);
     char outXmlData[MAX_FILE];
@@ -30,6 +33,7 @@ static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
     char *actual = NULL;
     int ret = -1;
     virNWFilterDefPtr dev = NULL;
+    char *log;
 
     if (virtTestLoadFile(inxml, &inXmlPtr, MAX_FILE) < 0)
         goto fail;
@@ -38,6 +42,20 @@ static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
 
     if (!(dev = virNWFilterDefParseString(NULL, inXmlData)))
         goto fail;
+
+    if ((log = virtTestLogContentAndReset()) == NULL)
+        goto fail;
+
+    if ((*log != '\0') != expect_warning) {
+        free(log);
+        goto fail;
+    }
+    free(log);
+
+    if (expect_warning) {
+        /* need to suppress the errors */
+        virResetLastError();
+    }
 
     if (!(actual = virNWFilterDefFormat(dev)))
         goto fail;
@@ -55,14 +73,20 @@ static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
     return ret;
 }
 
+typedef struct test_parms {
+    const char *name;
+    bool expect_warning;
+} test_parms;
+
 static int testCompareXMLToXMLHelper(const void *data) {
+    const test_parms *tp = data;
     char inxml[PATH_MAX];
     char outxml[PATH_MAX];
     snprintf(inxml, PATH_MAX, "%s/nwfilterxml2xmlin/%s.xml",
-             abs_srcdir, (const char*)data);
+             abs_srcdir, tp->name);
     snprintf(outxml, PATH_MAX, "%s/nwfilterxml2xmlout/%s.xml",
-             abs_srcdir, (const char*)data);
-    return testCompareXMLToXMLFiles(inxml, outxml);
+             abs_srcdir, tp->name);
+    return testCompareXMLToXMLFiles(inxml, outxml, tp->expect_warning);
 }
 
 
@@ -83,51 +107,57 @@ mymain(int argc, char **argv)
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
-#define DO_TEST(name) \
-    if (virtTestRun("NWFilter XML-2-XML " name, \
-                    1, testCompareXMLToXMLHelper, (name)) < 0) \
-        ret = -1
+#define DO_TEST(NAME, EXPECT_WARN)                                \
+    do {                                                          \
+        test_parms tp = {                                         \
+            .name = NAME,                                         \
+            .expect_warning = EXPECT_WARN,                        \
+        };                                                        \
+        if (virtTestRun("NWFilter XML-2-XML " NAME,               \
+                        1, testCompareXMLToXMLHelper, (&tp)) < 0) \
+            ret = -1;                                             \
+    } while (0)
 
-    DO_TEST("mac-test");
-    DO_TEST("arp-test");
-    DO_TEST("rarp-test");
-    DO_TEST("ip-test");
-    DO_TEST("ipv6-test");
+    DO_TEST("mac-test", true);
+    DO_TEST("arp-test", true);
+    DO_TEST("rarp-test", true);
+    DO_TEST("ip-test", true);
+    DO_TEST("ipv6-test", true);
 
-    DO_TEST("tcp-test");
-    DO_TEST("udp-test");
-    DO_TEST("icmp-test");
-    DO_TEST("igmp-test");
-    DO_TEST("sctp-test");
-    DO_TEST("udplite-test");
-    DO_TEST("esp-test");
-    DO_TEST("ah-test");
-    DO_TEST("all-test");
+    DO_TEST("tcp-test", true);
+    DO_TEST("udp-test", true);
+    DO_TEST("icmp-test", true);
+    DO_TEST("igmp-test", false);
+    DO_TEST("sctp-test", true);
+    DO_TEST("udplite-test", false);
+    DO_TEST("esp-test", false);
+    DO_TEST("ah-test", false);
+    DO_TEST("all-test", false);
 
-    DO_TEST("tcp-ipv6-test");
-    DO_TEST("udp-ipv6-test");
-    DO_TEST("icmpv6-test");
-    DO_TEST("sctp-ipv6-test");
-    DO_TEST("udplite-ipv6-test");
-    DO_TEST("esp-ipv6-test");
-    DO_TEST("ah-ipv6-test");
-    DO_TEST("all-ipv6-test");
+    DO_TEST("tcp-ipv6-test", true);
+    DO_TEST("udp-ipv6-test", true);
+    DO_TEST("icmpv6-test", true);
+    DO_TEST("sctp-ipv6-test", true);
+    DO_TEST("udplite-ipv6-test", true);
+    DO_TEST("esp-ipv6-test", true);
+    DO_TEST("ah-ipv6-test", true);
+    DO_TEST("all-ipv6-test", true);
 
-    DO_TEST("ref-test");
-    DO_TEST("ref-rule-test");
-    DO_TEST("ipt-no-macspoof-test");
-    DO_TEST("icmp-direction-test");
-    DO_TEST("icmp-direction2-test");
-    DO_TEST("icmp-direction3-test");
+    DO_TEST("ref-test", false);
+    DO_TEST("ref-rule-test", false);
+    DO_TEST("ipt-no-macspoof-test", false);
+    DO_TEST("icmp-direction-test", false);
+    DO_TEST("icmp-direction2-test", false);
+    DO_TEST("icmp-direction3-test", false);
 
-    DO_TEST("conntrack-test");
+    DO_TEST("conntrack-test", false);
 
-    DO_TEST("hex-data-test");
+    DO_TEST("hex-data-test", true);
 
-    DO_TEST("comment-test");
+    DO_TEST("comment-test", true);
 
-    DO_TEST("example-1");
-    DO_TEST("example-2");
+    DO_TEST("example-1", false);
+    DO_TEST("example-2", false);
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
