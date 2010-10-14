@@ -1100,6 +1100,19 @@ err_exit:
     return 1;
 }
 
+
+static void
+iptablesEnforceDirection(int directionIn,
+                         virNWFilterRuleDefPtr rule,
+                         virBufferPtr buf)
+{
+    if (rule->tt != VIR_NWFILTER_RULE_DIRECTION_INOUT)
+        virBufferVSprintf(buf, " -m conntrack --ctdir %s",
+                          (directionIn) ? "Original"
+                                        : "Reply");
+}
+
+
 /*
  * _iptablesCreateRuleInstance:
  * @chainPrefix : The prefix to put in front of the name of the chain
@@ -1494,6 +1507,10 @@ _iptablesCreateRuleInstance(int directionIn,
     if (match && !skipMatch)
         virBufferVSprintf(&buf, " %s", match);
 
+    if (defMatch && match != NULL)
+        iptablesEnforceDirection(directionIn,
+                                 rule,
+                                 &buf);
 
     virBufferVSprintf(&buf,
                       " -j %s" CMD_DEF_POST CMD_SEPARATOR
