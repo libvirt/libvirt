@@ -37,6 +37,7 @@
 %define with_lxc           0%{!?_without_lxc:%{server_drivers}}
 %define with_vbox          0%{!?_without_vbox:%{server_drivers}}
 %define with_uml           0%{!?_without_uml:%{server_drivers}}
+%define with_xenapi        0%{!?_without_xenapi:%{server_drivers}}
 # XXX this shouldn't be here, but it mistakenly links into libvirtd
 %define with_one           0%{!?_without_one:%{server_drivers}}
 
@@ -83,7 +84,8 @@
 %define with_numactl 0
 %endif
 
-# RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor or ESX
+# RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor, ESX,
+# or libxenserver (xenapi)
 %if 0%{?rhel}
 %define with_openvz 0
 %define with_vbox 0
@@ -91,6 +93,7 @@
 %define with_one 0
 %define with_phyp 0
 %define with_esx 0
+%define with_xenapi 0
 %endif
 
 # RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
@@ -445,6 +448,10 @@ of recent versions of Linux (and other OSes).
 %define _without_vbox --without-vbox
 %endif
 
+%if ! %{with_xenapi}
+%define _without_xenapi --without-xenapi
+%endif
+
 %if ! %{with_sasl}
 %define _without_sasl --without-sasl
 %endif
@@ -550,6 +557,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_openvz} \
            %{?_without_lxc} \
            %{?_without_vbox} \
+           %{?_without_xenapi} \
            %{?_without_sasl} \
            %{?_without_avahi} \
            %{?_without_polkit} \
