@@ -10385,7 +10385,7 @@ qemuDomainIsMigratable(virDomainDefPtr def)
 {
     if (def->nhostdevs > 0) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
-                _("Domain with assigned host devices cannot be migrated"));
+            "%s", _("Domain with assigned host devices cannot be migrated"));
         return false;
     }
 
