@@ -868,6 +868,8 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
 {
     bool success = false;
     virConfPtr conf = NULL;
+    char *encoding = NULL;
+    char *utf8;
     virDomainDefPtr def = NULL;
     long long config_version = 0;
     long long virtualHW_version = 0;
@@ -895,6 +897,33 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
         return NULL;
     }
 
+    /* vmx:.encoding */
+    if (esxUtil_GetConfigString(conf, ".encoding", &encoding, true) < 0) {
+        goto cleanup;
+    }
+
+    if (encoding == NULL || STRCASEEQ(encoding, "UTF-8")) {
+        /* nothing */
+    } else {
+        virConfFree(conf);
+        conf = NULL;
+
+        utf8 = esxUtil_ConvertToUTF8(encoding, vmx);
+
+        if (utf8 == NULL) {
+            goto cleanup;
+        }
+
+        conf = virConfReadMem(utf8, strlen(utf8), VIR_CONF_FLAG_VMX_FORMAT);
+
+        VIR_FREE(utf8);
+
+        if (conf == NULL) {
+            goto cleanup;
+        }
+    }
+
+    /* Allocate domain def */
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         return NULL;
@@ -1359,6 +1388,7 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
     }
 
     virConfFree(conf);
+    VIR_FREE(encoding);
     VIR_FREE(sched_cpu_affinity);
     VIR_FREE(guestOS);
 

@@ -89,4 +89,6 @@ void esxUtil_ReplaceSpecialWindowsPathChars(char *string);
 
 char *esxUtil_EscapeDatastoreItem(const char *string);
 
+char *esxUtil_ConvertToUTF8(const char *encoding, const char *string);
+
 #endif /* __ESX_UTIL_H__ */

@@ -612,9 +612,9 @@ esxUtil_ReformatUuid(const char *input, char *output)
     unsigned char uuid[VIR_UUID_BUFLEN];
 
     if (virUUIDParse(input, uuid) < 0) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     _("Could not parse UUID from string '%s'"),
-                     input);
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Could not parse UUID from string '%s'"),
+                  input);
         return -1;
     }
 
@@ -818,4 +818,42 @@ esxUtil_EscapeDatastoreItem(const char *string)
     VIR_FREE(escaped1);
 
     return escaped2;
+}
+
+
+
+char *
+esxUtil_ConvertToUTF8(const char *encoding, const char *string)
+{
+    char *result = NULL;
+    xmlCharEncodingHandlerPtr handler;
+    xmlBufferPtr input;
+    xmlBufferPtr utf8;
+
+    handler = xmlFindCharEncodingHandler(encoding);
+
+    if (handler == NULL) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("libxml2 doesn't handle %s encoding"), encoding);
+        return NULL;
+    }
+
+    input = xmlBufferCreateStatic((char *)string, strlen(string));
+    utf8 = xmlBufferCreate();
+
+    if (xmlCharEncInFunc(handler, utf8, input) < 0) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Could not convert from %s to UTF-8 encoding"), encoding);
+        goto cleanup;
+    }
+
+    result = (char *)utf8->content;
+    utf8->content = NULL;
+
+  cleanup:
+    xmlCharEncCloseFunc(handler);
+    xmlBufferFree(input);
+    xmlBufferFree(utf8);
+
+    return result;
 }

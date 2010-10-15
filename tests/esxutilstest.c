@@ -280,6 +280,47 @@ testEscapeDatastoreItem(const void *data ATTRIBUTE_UNUSED)
 
 
 
+struct testWindows1252ToUTF8 {
+    const char *windows1252;
+    const char *utf8;
+};
+
+static struct testWindows1252ToUTF8 windows1252ToUTF8[] = {
+    { "normal", "normal" },
+    { /* "A€Z" */ "A\200Z", "A\342\202\254Z" },
+    { /* "Aä1ö2ü3ß4#5~6!7§8/9%Z" */ "A\3441\3662\3743\3374#5~6!7\2478/9%Z",
+      "A\303\2441\303\2662\303\2743\303\2374#5~6!7\302\2478/9%Z" },
+    { /* "hÀÁÂÃÄÅH" */ "h\300\301\302\303\304\305H",
+      "h\303\200\303\201\303\202\303\203\303\204\303\205H" },
+};
+
+static int
+testConvertWindows1252ToUTF8(const void *data ATTRIBUTE_UNUSED)
+{
+    int i;
+    char *utf8 = NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(windows1252ToUTF8); ++i) {
+        VIR_FREE(utf8);
+
+        utf8 = esxUtil_ConvertToUTF8("Windows-1252",
+                                     windows1252ToUTF8[i].windows1252);
+
+        if (utf8 == NULL) {
+            return -1;
+        }
+
+        if (STRNEQ(windows1252ToUTF8[i].utf8, utf8)) {
+            VIR_FREE(utf8);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+
 static int
 mymain(int argc, char **argv)
 {
@@ -312,6 +353,7 @@ mymain(int argc, char **argv)
     DO_TEST(ParseDatastorePath);
     DO_TEST(ConvertDateTimeToCalendarTime);
     DO_TEST(EscapeDatastoreItem);
+    DO_TEST(ConvertWindows1252ToUTF8);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
