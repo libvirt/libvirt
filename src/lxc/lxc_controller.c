@@ -107,7 +107,9 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         virReportSystemError(-rc,
                              _("Unable to set memory limit for domain %s"),
                              def->name);
-        goto cleanup;
+        /* Don't fail if we can't set memory due to lack of kernel support */
+        if (rc != -ENOENT)
+            goto cleanup;
     }
 
     if(def->mem.hard_limit) {

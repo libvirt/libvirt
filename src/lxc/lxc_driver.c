@@ -485,7 +485,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virCgroupPtr cgroup = NULL;
-    int ret = -1;
+    int ret = -1, rc;
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -515,10 +515,15 @@ static int lxcDomainGetInfo(virDomainPtr dom,
                      "%s", _("Cannot read cputime for domain"));
             goto cleanup;
         }
-        if (virCgroupGetMemoryUsage(cgroup, &(info->memory)) < 0) {
+        if ((rc = virCgroupGetMemoryUsage(cgroup, &(info->memory))) < 0) {
             lxcError(VIR_ERR_OPERATION_FAILED,
                      "%s", _("Cannot read memory usage for domain"));
-            goto cleanup;
+            if (rc == -ENOENT) {
+                /* Don't fail if we can't read memory usage due to a lack of
+                 * kernel support */
+                info->memory = 0;
+            } else
+                goto cleanup;
         }
     }
 
