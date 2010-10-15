@@ -2329,15 +2329,17 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                 perfEntityMetric =
                   esxVI_PerfEntityMetric_DynamicCast(perfEntityMetricBase);
 
-                if (perfMetricIntSeries == NULL) {
-                    VIR_ERROR0(_("QueryPerf returned object with unexpected type"));
+                if (perfEntityMetric == NULL) {
+                    VIR_ERROR(_("QueryPerf returned object with unexpected type '%s'"),
+                              esxVI_Type_ToString(perfEntityMetricBase->_type));
                 }
 
                 perfMetricIntSeries =
                   esxVI_PerfMetricIntSeries_DynamicCast(perfEntityMetric->value);
 
                 if (perfMetricIntSeries == NULL) {
-                    VIR_ERROR0(_("QueryPerf returned object with unexpected type"));
+                    VIR_ERROR(_("QueryPerf returned object with unexpected type '%s'"),
+                              esxVI_Type_ToString(perfEntityMetric->value->_type));
                 }
 
                 for (; perfMetricIntSeries != NULL;
