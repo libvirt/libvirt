@@ -220,6 +220,17 @@ static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED) {
   return testCompareOutputLit(exp, NULL, argv);
 }
 
+struct testInfo {
+    const char *const *argv;
+    const char *result;
+};
+
+static int testCompareEcho(const void *data) {
+    const struct testInfo *info = data;
+    return testCompareOutputLit(info->result, NULL, info->argv);
+}
+
+
 static int
 mymain(int argc, char **argv)
 {
@@ -308,6 +319,92 @@ mymain(int argc, char **argv)
     if (virtTestRun("virsh domstate (by name)",
                     1, testCompareDomstateByName, NULL) != 0)
         ret = -1;
+
+    /* It's a bit awkward listing result before argument, but that's a
+     * limitation of C99 vararg macros.  */
+#define DO_TEST(i, result, ...)                                         \
+    do {                                                                \
+        const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL };    \
+        const struct testInfo info = { myargv, result };                \
+        if (virtTestRun("virsh echo " #i,                               \
+                        1, testCompareEcho, &info) < 0)                 \
+            ret = -1;                                                   \
+    } while (0)
+
+    /* Arg parsing quote removal tests.  */
+    DO_TEST(0, "\n",
+            "echo");
+    DO_TEST(1, "a\n",
+            "echo", "a");
+    DO_TEST(2, "a b\n",
+            "echo", "a", "b");
+    DO_TEST(3, "a b\n",
+            "echo a \t b");
+    DO_TEST(4, "a \t b\n",
+            "echo \"a \t b\"");
+    DO_TEST(5, "a \t b\n",
+            "echo 'a \t b'");
+    DO_TEST(6, "a \t b\n",
+            "echo a\\ \\\t\\ b");
+    DO_TEST(7, "\n\n",
+            "echo ; echo");
+    DO_TEST(8, "a\nb\n",
+            ";echo a; ; echo b;");
+    DO_TEST(9, "' \" \\;echo\ta\n",
+            "echo", "'", "\"", "\\;echo\ta");
+    DO_TEST(10, "' \" ;echo a\n",
+            "echo \\' \\\" \\;echo\ta");
+    DO_TEST(11, "' \" \\\na\n",
+            "echo \\' \\\" \\\\;echo\ta");
+    DO_TEST(12, "' \" \\\\\n",
+            "echo  \"'\"  '\"'  '\\'\"\\\\\"");
+
+    /* Tests of echo flags.  */
+    DO_TEST(13, "a A 0 + * ; . ' \" / ? =   \n < > &\n",
+            "echo", "a", "A", "0", "+", "*", ";", ".", "'", "\"", "/", "?",
+            "=", " ", "\n", "<", ">", "&");
+    DO_TEST(14, "a A 0 + '*' ';' . ''\\''' '\"' / '?' = ' ' '\n' '<' '>' '&'\n",
+            "echo", "--shell", "a", "A", "0", "+", "*", ";", ".", "'", "\"",
+            "/", "?", "=", " ", "\n", "<", ">", "&");
+    DO_TEST(15, "a A 0 + * ; . &apos; &quot; / ? =   \n &lt; &gt; &amp;\n",
+            "echo", "--xml", "a", "A", "0", "+", "*", ";", ".", "'", "\"",
+            "/", "?", "=", " ", "\n", "<", ">", "&");
+    DO_TEST(16, "a A 0 + '*' ';' . '&apos;' '&quot;' / '?' = ' ' '\n' '&lt;'"
+            " '&gt;' '&amp;'\n",
+            "echo", "--shell", "--xml", "a", "A", "0", "+", "*", ";", ".", "'",
+            "\"", "/", "?", "=", " ", "\n", "<", ">", "&");
+    DO_TEST(17, "\n",
+            "echo", "");
+    DO_TEST(18, "''\n",
+            "echo", "--shell", "");
+    DO_TEST(19, "\n",
+            "echo", "--xml", "");
+    DO_TEST(20, "''\n",
+            "echo", "--xml", "--shell", "");
+    DO_TEST(21, "\n",
+            "echo ''");
+    DO_TEST(22, "''\n",
+            "echo --shell \"\"");
+    DO_TEST(23, "\n",
+            "echo --xml ''");
+    DO_TEST(24, "''\n",
+            "echo --xml --shell \"\"''");
+
+    /* Tests of -- handling.  */
+    DO_TEST(25, "a\n",
+            "--", "echo", "--shell", "a");
+    DO_TEST(26, "a\n",
+            "--", "echo", "a", "--shell");
+    DO_TEST(27, "a --shell\n",
+            "--", "echo", "--", "a", "--shell");
+    DO_TEST(28, "-- --shell a\n",
+            "echo", "--", "--", "--shell", "a");
+    DO_TEST(29, "a\n",
+            "echo --s\\h'e'\"l\"l -- a");
+    DO_TEST(30, "--shell a\n",
+            "echo \t '-'\"-\" \t --shell \t a");
+
+#undef DO_TEST
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
