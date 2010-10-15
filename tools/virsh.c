@@ -119,11 +119,11 @@ typedef enum {
  * vshCmdOptType - command option type
  */
 typedef enum {
-    VSH_OT_NONE = 0,            /* none */
-    VSH_OT_BOOL,                /* boolean option */
-    VSH_OT_STRING,              /* string option */
-    VSH_OT_INT,                 /* int option */
-    VSH_OT_DATA                 /* string data (as non-option) */
+    VSH_OT_BOOL,     /* boolean option */
+    VSH_OT_STRING,   /* string option */
+    VSH_OT_INT,      /* int option */
+    VSH_OT_DATA,     /* string data (as non-option) */
+    VSH_OT_ARGV      /* remaining arguments, opt->name should be "" */
 } vshCmdOptType;
 
 /*
@@ -230,6 +230,7 @@ static char *vshCommandOptString(const vshCmd *cmd, const char *name,
 static long long vshCommandOptLongLong(const vshCmd *cmd, const char *name,
                                        int *found);
 static int vshCommandOptBool(const vshCmd *cmd, const char *name);
+static char *vshCommandOptArgv(const vshCmd *cmd, int count);
 
 #define VSH_BYID     (1 << 1)
 #define VSH_BYUUID   (1 << 2)
@@ -9707,8 +9708,8 @@ vshCmddefGetData(const vshCmdDef * cmd, int data_ct)
     const vshCmdOptDef *opt;
 
     for (opt = cmd->opts; opt && opt->name; opt++) {
-        if (opt->type == VSH_OT_DATA) {
-            if (data_ct == 0)
+        if (opt->type >= VSH_OT_DATA) {
+            if (data_ct == 0 || opt->type == VSH_OT_ARGV)
                 return opt;
             else
                 data_ct--;
@@ -9784,18 +9785,28 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
             const vshCmdOptDef *opt;
             for (opt = def->opts; opt->name; opt++) {
                 const char *fmt;
-                if (opt->type == VSH_OT_BOOL)
+                switch (opt->type) {
+                case VSH_OT_BOOL:
                     fmt = "[--%s]";
-                else if (opt->type == VSH_OT_INT)
+                    break;
+                case VSH_OT_INT:
                     /* xgettext:c-format */
                     fmt = _("[--%s <number>]");
-                else if (opt->type == VSH_OT_STRING)
+                    break;
+                case VSH_OT_STRING:
                     /* xgettext:c-format */
                     fmt = _("[--%s <string>]");
-                else if (opt->type == VSH_OT_DATA)
+                    break;
+                case VSH_OT_DATA:
                     fmt = ((opt->flag & VSH_OFLAG_REQ) ? "<%s>" : "[<%s>]");
-                else
+                    break;
+                case VSH_OT_ARGV:
+                    /* xgettext:c-format */
+                    fmt = _("[<string>]...");
+                    break;
+                default:
                     assert(0);
+                }
                 fputc(' ', stdout);
                 fprintf(stdout, fmt, opt->name);
             }
@@ -9812,15 +9823,26 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
             const vshCmdOptDef *opt;
             fputs(_("\n  OPTIONS\n"), stdout);
             for (opt = def->opts; opt->name; opt++) {
-                if (opt->type == VSH_OT_BOOL)
+                switch (opt->type) {
+                case VSH_OT_BOOL:
                     snprintf(buf, sizeof(buf), "--%s", opt->name);
-                else if (opt->type == VSH_OT_INT)
+                    break;
+                case VSH_OT_INT:
                     snprintf(buf, sizeof(buf), _("--%s <number>"), opt->name);
-                else if (opt->type == VSH_OT_STRING)
+                    break;
+                case VSH_OT_STRING:
                     snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
-                else if (opt->type == VSH_OT_DATA)
+                    break;
+                case VSH_OT_DATA:
                     snprintf(buf, sizeof(buf), _("[--%s] <string>"),
                              opt->name);
+                    break;
+                case VSH_OT_ARGV:
+                    /* Not really an option. */
+                    continue;
+                default:
+                    assert(0);
+                }
 
                 fprintf(stdout, "    %-15s  %s\n", buf, _(opt->help));
             }
@@ -9968,6 +9990,27 @@ static int
 vshCommandOptBool(const vshCmd *cmd, const char *name)
 {
     return vshCommandOpt(cmd, name) ? TRUE : FALSE;
+}
+
+/*
+ * Returns the COUNT argv argument, or NULL after last argument.
+ *
+ * Requires that a VSH_OT_ARGV option with the name "" be last in the
+ * list of supported options in CMD->def->opts.
+ */
+static char *
+vshCommandOptArgv(const vshCmd *cmd, int count)
+{
+    vshCmdOpt *opt = cmd->opts;
+
+    while (opt) {
+        if (opt->def && opt->def->type == VSH_OT_ARGV) {
+            if (count-- == 0)
+                return opt->data;
+        }
+        opt = opt->next;
+    }
+    return NULL;
 }
 
 /* Determine whether CMD->opts includes an option with name OPTNAME.
