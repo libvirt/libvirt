@@ -409,6 +409,13 @@ Using I<--security-info> security sensitive information will also be included
 in the XML dump. I<--update-cpu> updates domain CPU requirements according to
 host CPU.
 
+=item B<echo> optional I<--shell> I<--xml> I<arg>...
+
+Echo back each I<arg>, separated by space.  If I<--shell> is
+specified, then the output will be single-quoted where needed, so that
+it is suitable for reuse in a shell context.  If I<--xml> is
+specified, then the output will be escaped for use in XML.
+
 =item B<edit> I<domain-id>
 
 Edit the XML configuration file for a domain.

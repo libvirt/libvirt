@@ -8918,6 +8918,80 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 #endif
 
 /*
+ * "echo" command
+ */
+static const vshCmdInfo info_echo[] = {
+    {"help", N_("echo arguments")},
+    {"desc", N_("Echo back arguments, possibly with quoting.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_echo[] = {
+    {"shell", VSH_OT_BOOL, 0, N_("escape for shell use")},
+    {"xml", VSH_OT_BOOL, 0, N_("escape for XML use")},
+    {"", VSH_OT_ARGV, 0, N_("arguments to echo")},
+    {NULL, 0, 0, NULL}
+};
+
+/* Exists mainly for debugging virsh, but also handy for adding back
+ * quotes for later evaluation.
+ */
+static int
+cmdEcho (vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd)
+{
+    bool shell = false;
+    bool xml = false;
+    int count = 0;
+    char *arg;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (vshCommandOptBool(cmd, "shell"))
+        shell = true;
+    if (vshCommandOptBool(cmd, "xml"))
+        xml = true;
+
+    while ((arg = vshCommandOptArgv(cmd, count)) != NULL) {
+        bool close_quote = false;
+        char *q;
+
+        if (count)
+            virBufferAddChar(&buf, ' ');
+        /* Add outer '' only if arg included shell metacharacters.  */
+        if (shell &&
+            (strpbrk(arg, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") || !*arg)) {
+            virBufferAddChar(&buf, '\'');
+            close_quote = true;
+        }
+        if (xml) {
+            virBufferEscapeString(&buf, "%s", arg);
+        } else {
+            if (shell && (q = strchr(arg, '\''))) {
+                do {
+                    virBufferAdd(&buf, arg, q - arg);
+                    virBufferAddLit(&buf, "'\\''");
+                    arg = q + 1;
+                    q = strchr(arg, '\'');
+                } while (q);
+            }
+            virBufferAdd(&buf, arg, strlen(arg));
+        }
+        if (close_quote)
+            virBufferAddChar(&buf, '\'');
+        count++;
+    }
+
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        return FALSE;
+    }
+    arg = virBufferContentAndReset(&buf);
+    if (arg)
+        vshPrint(ctl, "%s", arg);
+    VIR_FREE(arg);
+    return TRUE;
+}
+
+/*
  * "edit" command
  */
 static const vshCmdInfo info_edit[] = {
@@ -9546,6 +9620,7 @@ static const vshCmdDef commands[] = {
     {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative, info_domxmlfromnative},
     {"domxml-to-native", cmdDomXMLToNative, opts_domxmltonative, info_domxmltonative},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
+    {"echo", cmdEcho, opts_echo, info_echo},
     {"edit", cmdEdit, opts_edit, info_edit},
     {"find-storage-pool-sources", cmdPoolDiscoverSources,
      opts_find_storage_pool_sources, info_find_storage_pool_sources},
