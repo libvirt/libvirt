@@ -1646,6 +1646,9 @@ qemu-kvm -net nic,model=? /dev/null
       need to explicitly add this element in the guest XML unless a
       specific PCI slot needs to be assigned.
       <span class="since">Since 0.8.3, Xen, QEMU and KVM only</span>
+      Additionally, <span class="since">since 0.8.4</span>, if the
+      memballoon device needs to be explicitly disabled,
+      <code>model='none'</code> may be used.
     </p>
 
     <p>
