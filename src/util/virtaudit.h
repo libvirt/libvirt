@@ -1,5 +1,5 @@
 /*
- * audit.h: auditing support
+ * virtaudit.h: auditing support
  *
  * Copyright (C) 2010 Red Hat, Inc.
  *

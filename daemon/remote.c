@@ -2233,8 +2233,6 @@ remoteDispatchDomainReboot (struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -2286,6 +2284,8 @@ remoteDispatchDomainResume (struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {

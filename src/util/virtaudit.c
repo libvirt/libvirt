@@ -1,5 +1,5 @@
 /*
- * audit.h: auditing support
+ * virtaudit.c: auditing support
  *
  * Copyright (C) 2010 Red Hat, Inc.
  *
@@ -80,7 +80,7 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func, size_t li
 void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func, size_t linenr,
                   const char *clienttty ATTRIBUTE_UNUSED,
                   const char *clientaddr ATTRIBUTE_UNUSED,
-                  enum virAuditRecordType type, bool success,
+                  enum virAuditRecordType type ATTRIBUTE_UNUSED, bool success,
                   const char *fmt, ...)
 #endif
 {
