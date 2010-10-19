@@ -2905,7 +2905,7 @@ static int
 cmdMemtune(vshControl * ctl, const vshCmd * cmd)
 {
     virDomainPtr dom;
-    int hard_limit, soft_limit, swap_hard_limit, min_guarantee;
+    long long hard_limit, soft_limit, swap_hard_limit, min_guarantee;
     int nparams = 0;
     unsigned int i = 0;
     virMemoryParameterPtr params = NULL, temp = NULL;
@@ -2918,24 +2918,22 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
         return FALSE;
 
     hard_limit =
-        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_HARD_LIMIT, &hard_limit);
+        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_HARD_LIMIT, NULL);
     if (hard_limit)
         nparams++;
 
     soft_limit =
-        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_SOFT_LIMIT, &soft_limit);
+        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_SOFT_LIMIT, NULL);
     if (soft_limit)
         nparams++;
 
     swap_hard_limit =
-        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                         &swap_hard_limit);
+        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, NULL);
     if (swap_hard_limit)
         nparams++;
 
     min_guarantee =
-        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
-                         &min_guarantee);
+        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_MIN_GUARANTEE, NULL);
     if (min_guarantee)
         nparams++;
 
@@ -2954,8 +2952,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
         }
 
         /* now go get all the memory parameters */
-        params = vshMalloc(ctl, sizeof(virMemoryParameter) * nparams);
-        memset(params, 0, sizeof(virMemoryParameter) * nparams);
+        params = vshCalloc(ctl, nparams, sizeof(*params));
         if (virDomainGetMemoryParameters(dom, params, &nparams, 0) != 0) {
             vshError(ctl, "%s", _("Unable to get memory parameters"));
             goto cleanup;
@@ -2995,9 +2992,8 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
         ret = TRUE;
     } else {
         /* set the memory parameters */
-        params = vshMalloc(ctl, sizeof(virMemoryParameter) * nparams);
+        params = vshCalloc(ctl, nparams, sizeof(*params));
 
-        memset(params, 0, sizeof(virMemoryParameter) * nparams);
         for (i = 0; i < nparams; i++) {
             temp = &params[i];
             temp->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
@@ -3037,6 +3033,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
     }
 
   cleanup:
+    VIR_FREE(params);
     virDomainFree(dom);
     return ret;
 }
