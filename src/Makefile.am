@@ -82,7 +82,8 @@ UTIL_SOURCES =							\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
 		util/xml.c util/xml.h				\
-		util/virterror.c util/virterror_internal.h
+		util/virterror.c util/virterror_internal.h	\
+		util/files.c util/files.h
 
 EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
 

@@ -43,6 +43,7 @@
 #include "util.h"
 #include "buf.h"
 #include "c-ctype.h"
+#include "files.h"
 
 #define MAX_BRIDGE_ID 256
 #define VIR_FROM_THIS VIR_FROM_NETWORK
@@ -687,7 +688,7 @@ int virNetworkSaveXML(const char *configDir,
         goto cleanup;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot save config file '%s'"),
                              configFile);
@@ -697,8 +698,7 @@ int virNetworkSaveXML(const char *configDir,
     ret = 0;
 
  cleanup:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     VIR_FREE(configFile);
 

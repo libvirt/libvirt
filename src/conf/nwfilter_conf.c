@@ -45,6 +45,7 @@
 #include "nwfilter_conf.h"
 #include "domain_conf.h"
 #include "c-ctype.h"
+#include "files.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -2193,7 +2194,7 @@ int virNWFilterSaveXML(const char *configDir,
         goto cleanup;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot save config file '%s'"),
                              configFile);
@@ -2203,9 +2204,7 @@ int virNWFilterSaveXML(const char *configDir,
     ret = 0;
 
  cleanup:
-    if (fd != -1)
-        close(fd);
-
+    VIR_FORCE_CLOSE(fd);
     VIR_FREE(configFile);
 
     return ret;
@@ -2604,7 +2603,7 @@ virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
         goto cleanup;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot save config file %s"),
                              pool->configFile);
@@ -2614,8 +2613,7 @@ virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
     ret = 0;
 
  cleanup:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     VIR_FREE(xml);
 

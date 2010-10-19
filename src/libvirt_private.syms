@@ -769,3 +769,6 @@ virXPathLongLong;
 virXPathULongLong;
 virXPathLongHex;
 virXPathULongHex;
+
+# files.h
+virClose;

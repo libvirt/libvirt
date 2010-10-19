@@ -43,6 +43,7 @@
 #include "buf.h"
 #include "util.h"
 #include "memory.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -1560,7 +1561,7 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
         goto cleanup;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot save config file %s"),
                              pool->configFile);
@@ -1570,9 +1571,7 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
     ret = 0;
 
  cleanup:
-    if (fd != -1)
-        close(fd);
-
+    VIR_FORCE_CLOSE(fd);
     VIR_FREE(xml);
 
     return ret;

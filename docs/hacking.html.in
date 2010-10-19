@@ -389,7 +389,30 @@
 </pre></li>
     </ul>
 
+    <h2><a name="file_handling">File handling</a></h2>
 
+    <p>
+      Use of the close() API is deprecated in libvirt code base to help
+      avoiding double-closing of a file descriptor. Instead of this API,
+      use the macro from files.h
+    </p>
+
+    <ul>
+      <li><p>eg close a file descriptor</p>
+
+<pre>
+       if (VIR_CLOSE(fd) &lt; 0) {
+           virReportSystemError(errno, _("failed to close file"));
+       }
+</pre></li>
+
+      <li><p>eg close a file descriptor in an error path, without losing
+             the previous errno value</p>
+
+<pre>
+       VIR_FORCE_CLOSE(fd);
+</pre></li>
+    </ul>
 
     <h2><a name="string_comparision">String comparisons</a></h2>
 

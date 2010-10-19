@@ -46,6 +46,7 @@
 #include "nwfilter_conf.h"
 #include "ignore-value.h"
 #include "storage_file.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -6798,7 +6799,7 @@ int virDomainSaveXML(const char *configDir,
         goto cleanup;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot save config file '%s'"),
                              configFile);
@@ -6807,8 +6808,8 @@ int virDomainSaveXML(const char *configDir,
 
     ret = 0;
  cleanup:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
+
     VIR_FREE(configFile);
     return ret;
 }
@@ -7765,10 +7766,14 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         }
 
         if (virStorageFileGetMetadataFromFD(path, fd, format, &meta) < 0) {
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
             goto cleanup;
         }
-        close(fd);
+
+        if (VIR_CLOSE(fd) < 0)
+            virReportSystemError(errno,
+                                 _("could not close file %s"),
+                                 path);
 
         if (virHashAddEntry(paths, path, (void*)0x1) < 0) {
             virReportOOMError();

@@ -318,6 +318,23 @@ routines, use the macros from memory.h
        VIR_FREE(domain);
 
 
+File handling
+=============
+
+Use of the close() API is deprecated in libvirt code base to help avoiding
+double-closing of a file descriptor. Instead of this API, use the macro from
+files.h
+
+   - eg close a file descriptor
+
+       if (VIR_CLOSE(fd) < 0) {
+           virReportSystemError(errno, _("failed to close file"));
+       }
+
+   - eg close a file descriptor in an error path, without losing the previous
+     errno value
+
+       VIR_FORCE_CLOSE(fd);
 
 String comparisons
 ==================
