@@ -1790,6 +1790,10 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
         return rc;
 
     maySkipICMP = directionIn;
+    if (needState)
+        matchState = directionIn ? MATCH_STATE_IN : MATCH_STATE_OUT;
+    else
+        matchState = NULL;
 
     chainPrefix[0] = 'H';
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
@@ -1800,8 +1804,8 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      ifname,
                                      vars,
                                      res,
-                                     NULL, true,
-                                     "ACCEPT",
+                                     matchState, true,
+                                     "RETURN",
                                      isIPv6,
                                      maySkipICMP);
 
