@@ -520,13 +520,14 @@ Change the maximum memory allocation limit in the guest domain. This should
 not change the current memory use. The memory limit is specified in
 kilobytes.
 
-=item B<memtune> I<domain-id>
+=item B<memtune> I<domain-id> optional I<--hard-limit> B<kilobytes>
+optional I<--soft-limit> B<kilobytes> optional I<--swap-hard-limit>
+B<kilobytes> -I<--min-guarantee> B<kilobytes>
 
-Displays the domain memory parameters.
-
-=item B<memtune> I<domain-id> optional I<--hard-limit> B<kilobytes> optional I<--soft-limit> B<kilobytes> optional I<--swap-hard-limit> B<kilobytes> -I<--min-guarantee> B<kilobytes>
-
-Allows you to set the domain memory parameters. LXC and QEMU/KVM supports these parameters.
+Allows you to display or set the domain memory parameters. Without
+flags, the current settings are displayed; with a flag, the
+appropriate limit is adjusted if supported by the hypervisor.  LXC and
+QEMU/KVM supports I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
 
 =item B<setvcpus> I<domain-id> I<count> optional I<--maximum> I<--config>
 I<--live>
