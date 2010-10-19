@@ -41,6 +41,7 @@
 #include <signal.h>
 #include <paths.h>
 #include <pwd.h>
+#include <grp.h>
 #include <stdio.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
@@ -6353,6 +6354,7 @@ parent_cleanup:
     char *buf = NULL;
     size_t bufsize = 1024 * 1024;
     int bytesread;
+    struct passwd pwd, *pwd_result;
 
     /* child doesn't need the read side of the pipe */
     close(pipefd[0]);
@@ -6365,6 +6367,26 @@ parent_cleanup:
         goto child_cleanup;
     }
 
+    if (VIR_ALLOC_N(buf, bufsize) < 0) {
+        exit_code = ENOMEM;
+        virReportOOMError();
+        goto child_cleanup;
+    }
+
+    exit_code = getpwuid_r(uid, &pwd, buf, bufsize, &pwd_result);
+    if (pwd_result == NULL) {
+        virReportSystemError(errno,
+                             _("cannot getpwuid_r(%d) to read '%s'"),
+                             uid, path);
+        goto child_cleanup;
+    }
+    if (initgroups(pwd.pw_name, pwd.pw_gid) != 0) {
+        exit_code = errno;
+        virReportSystemError(errno,
+                             _("cannot initgroups(\"%s\", %d) to read '%s'"),
+                             pwd.pw_name, pwd.pw_gid, path);
+        goto child_cleanup;
+    }
     if (setuid(uid) != 0) {
         exit_code = errno;
         virReportSystemError(errno,
@@ -6377,11 +6399,6 @@ parent_cleanup:
         virReportSystemError(errno,
                              _("cannot open '%s' as uid %d"),
                              path, uid);
-        goto child_cleanup;
-    }
-    if (VIR_ALLOC_N(buf, bufsize) < 0) {
-        exit_code = ENOMEM;
-        virReportOOMError();
         goto child_cleanup;
     }
 
