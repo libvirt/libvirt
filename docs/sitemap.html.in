@@ -242,6 +242,10 @@
                 <a href="java.html">Java</a>
                 <span>overview of the Java API bindings</span>
               </li>
+              <li>
+                <a href="csharp.html">C#</a>
+                <span>overview of the C# API bindings</span>
+              </li>
             </ul>
           </li>
           <li>
