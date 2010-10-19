@@ -3063,9 +3063,23 @@ error:
  * Get the memory parameters, the @params array will be filled with the values
  * equal to the number of parameters suggested by @nparams
  *
- * As a special case, if @nparams is zero and @params is NULL, the API will
- * set the number of parameters supported by the HV in @nparams and return
- * SUCCESS.
+ * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
+ * @params as NULL, the API returns the number of parameters supported by the
+ * HV by updating @nparams on SUCCESS. The caller should then allocate @params
+ * array, i.e. (sizeof(@virMemoryParameter) * @nparams) bytes and call the API
+ * again.
+ *
+ * Here is the sample code snippet:
+ *
+ * if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) == 0) &&
+ *     (nparams != 0)) {
+ *     params = vshMalloc(ctl, sizeof(virMemoryParameter) * nparams);
+ *     memset(params, 0, sizeof(virMemoryParameter) * nparams);
+ *     if (virDomainGetMemoryParameters(dom, params, &nparams, 0)) {
+ *         vshError(ctl, "%s", _("Unable to get memory parameters"));
+ *         goto error;
+ *     }
+ * }
  *
  * This function requires privileged access to the hypervisor. This function
  * expects the caller to allocate the @param

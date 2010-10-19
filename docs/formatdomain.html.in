@@ -194,6 +194,12 @@
   &lt;memoryBacking&gt;
     &lt;hugepages/&gt;
   &lt;/memoryBacking&gt;
+  &lt;memtune&gt;
+    &lt;hard_limit&gt;1048576&lt;/hard_limit&gt;
+    &lt;soft_limit&gt;131072&lt;/soft_limit&gt;
+    &lt;swap_hard_limit&gt;2097152&lt;/swap_hard_limit&gt;
+    &lt;min_guarantee&gt;65536&lt;/min_guarantee&gt;
+  &lt;/memtune&gt;
   &lt;vcpu cpuset="1-4,^3,6"&gt;2&lt;/vcpu&gt;
   ...</pre>
 
@@ -211,6 +217,26 @@
         <code>hugepages</code> element set within it. This tells the
         hypervisor that the guest should have its memory allocated using
         hugepages instead of the normal native page size.</dd>
+      <dt><code>memtune</code></dt>
+      <dd> The optional <code>memtune</code> element provides details
+      regarding the memory tuneable parameters for the domain. If this is
+      omitted, it defaults to the OS provided defaults.</dd>
+      <dt><code>hard_limit</code></dt>
+      <dd> The optional <code>hard_limit</code> element is the maximum memory
+	the guest can use. The units for this value are kilobytes (i.e. blocks
+	of 1024 bytes)</dd>
+      <dt><code>soft_limit</code></dt>
+      <dd> The optional <code>soft_limit</code> element is the memory limit to
+	enforce during memory contention. The units for this value are
+	kilobytes (i.e. blocks of 1024 bytes)</dd>
+      <dt><code>swap_hard_limit</code></dt>
+      <dd> The optional <code>swap_hard_limit</code> element is the maximum
+	swap the guest can use. The units for this value are kilobytes
+	(i.e. blocks of 1024 bytes)</dd>
+      <dt><code>min_guarantee</code></dt>
+      <dd> The optional <code>min_guarantee</code> element is the guaranteed
+	minimum memory allocation for the guest. The units for this value are
+	kilobytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>vcpu</code></dt>
       <dd>The content of this element defines the number of virtual
         CPUs allocated for the guest OS, which must be between 1 and
