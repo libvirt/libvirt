@@ -119,9 +119,9 @@ typedef enum {
  * vshCmdOptType - command option type
  */
 typedef enum {
-    VSH_OT_BOOL,     /* boolean option */
-    VSH_OT_STRING,   /* string option */
-    VSH_OT_INT,      /* int option */
+    VSH_OT_BOOL,     /* optional boolean option */
+    VSH_OT_STRING,   /* optional string option */
+    VSH_OT_INT,      /* optional or mandatory int option */
     VSH_OT_DATA,     /* string data (as non-option) */
     VSH_OT_ARGV      /* remaining arguments, opt->name should be "" */
 } vshCmdOptType;
@@ -2247,7 +2247,7 @@ static const vshCmdInfo info_freecell[] = {
 };
 
 static const vshCmdOptDef opts_freecell[] = {
-    {"cellno", VSH_OT_DATA, 0, N_("NUMA cell number")},
+    {"cellno", VSH_OT_INT, 0, N_("NUMA cell number")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2583,7 +2583,7 @@ static const vshCmdInfo info_vcpupin[] = {
 
 static const vshCmdOptDef opts_vcpupin[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"vcpu", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vcpu number")},
+    {"vcpu", VSH_OT_INT, VSH_OFLAG_REQ, N_("vcpu number")},
     {"cpulist", VSH_OT_DATA, VSH_OFLAG_REQ, N_("host cpu number(s) (comma separated)")},
     {NULL, 0, 0, NULL}
 };
@@ -2719,7 +2719,7 @@ static const vshCmdInfo info_setvcpus[] = {
 
 static const vshCmdOptDef opts_setvcpus[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"count", VSH_OT_DATA, VSH_OFLAG_REQ, N_("number of virtual CPUs")},
+    {"count", VSH_OT_INT, VSH_OFLAG_REQ, N_("number of virtual CPUs")},
     {"maximum", VSH_OT_BOOL, 0, N_("set maximum limit on next boot")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
@@ -2772,7 +2772,7 @@ static const vshCmdInfo info_setmem[] = {
 
 static const vshCmdOptDef opts_setmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, N_("number of kilobytes of memory")},
+    {"kilobytes", VSH_OT_INT, VSH_OFLAG_REQ, N_("number of kilobytes of memory")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2829,7 +2829,7 @@ static const vshCmdInfo info_setmaxmem[] = {
 
 static const vshCmdOptDef opts_setmaxmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, N_("maximum memory limit in kilobytes")},
+    {"kilobytes", VSH_OT_INT, VSH_OFLAG_REQ, N_("maximum memory limit in kilobytes")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2890,13 +2890,13 @@ static const vshCmdInfo info_memtune[] = {
 
 static const vshCmdOptDef opts_memtune[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {VIR_DOMAIN_MEMORY_HARD_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
+    {VIR_DOMAIN_MEMORY_HARD_LIMIT, VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Max memory in kilobytes")},
-    {VIR_DOMAIN_MEMORY_SOFT_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
+    {VIR_DOMAIN_MEMORY_SOFT_LIMIT, VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Memory during contention in kilobytes")},
-    {VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
+    {VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Max swap in kilobytes")},
-    {VIR_DOMAIN_MEMORY_MIN_GUARANTEE, VSH_OT_STRING, VSH_OFLAG_NONE,
+    {VIR_DOMAIN_MEMORY_MIN_GUARANTEE, VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Min guaranteed memory in kilobytes")},
     {NULL, 0, 0, NULL}
 };
@@ -3458,7 +3458,7 @@ static const vshCmdInfo info_migrate_setmaxdowntime[] = {
 
 static const vshCmdOptDef opts_migrate_setmaxdowntime[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"downtime", VSH_OT_DATA, VSH_OFLAG_REQ, N_("maximum tolerable downtime (in milliseconds) for migration")},
+    {"downtime", VSH_OT_INT, VSH_OFLAG_REQ, N_("maximum tolerable downtime (in milliseconds) for migration")},
     {NULL, 0, 0, NULL}
 };
 
@@ -10010,7 +10010,8 @@ vshCmddefGetData(const vshCmdDef * cmd, int data_ct)
     const vshCmdOptDef *opt;
 
     for (opt = cmd->opts; opt && opt->name; opt++) {
-        if (opt->type >= VSH_OT_DATA) {
+        if (opt->type >= VSH_OT_DATA ||
+            (opt->type == VSH_OT_INT && (opt->flag & VSH_OFLAG_REQ))) {
             if (data_ct == 0 || opt->type == VSH_OT_ARGV)
                 return opt;
             else
@@ -10093,7 +10094,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     break;
                 case VSH_OT_INT:
                     /* xgettext:c-format */
-                    fmt = _("[--%s <number>]");
+                    fmt = ((opt->flag & VSH_OFLAG_REQ) ? "<%s>"
+                           : _("[--%s <number>]"));
                     break;
                 case VSH_OT_STRING:
                     /* xgettext:c-format */
@@ -10130,9 +10132,12 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     snprintf(buf, sizeof(buf), "--%s", opt->name);
                     break;
                 case VSH_OT_INT:
-                    snprintf(buf, sizeof(buf), _("--%s <number>"), opt->name);
+                    snprintf(buf, sizeof(buf),
+                             (opt->flag & VSH_OFLAG_REQ) ? _("[--%s] <number>")
+                             : _("--%s <number>"), opt->name);
                     break;
                 case VSH_OT_STRING:
+                    /* OT_STRING should never be VSH_OFLAG_REQ */
                     snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
                     break;
                 case VSH_OT_DATA:
