@@ -15,6 +15,7 @@ libexec_PROGRAMS = libvirt_proxy
 
 libvirt_proxy_SOURCES = libvirt_proxy.c \
             @top_srcdir@/src/util/buf.c \
+            @top_srcdir@/src/util/files.c \
             @top_srcdir@/src/util/hash.c \
 	    @top_srcdir@/src/util/logging.c \
             @top_srcdir@/src/util/memory.c \
