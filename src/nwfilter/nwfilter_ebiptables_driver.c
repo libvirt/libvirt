@@ -1159,6 +1159,7 @@ _iptablesCreateRuleInstance(int directionIn,
     bool srcMacSkipped = false;
     bool skipRule = false;
     bool skipMatch = false;
+    bool hasICMPType = false;
 
     if (!iptables_cmd) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1399,6 +1400,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPType)) {
             const char *parm;
 
+            hasICMPType = true;
+
             if (maySkipICMP)
                 goto exit_no_error;
 
@@ -1507,7 +1510,7 @@ _iptablesCreateRuleInstance(int directionIn,
     if (match && !skipMatch)
         virBufferVSprintf(&buf, " %s", match);
 
-    if (defMatch && match != NULL)
+    if (defMatch && match != NULL && !skipMatch && !hasICMPType)
         iptablesEnforceDirection(directionIn,
                                  rule,
                                  &buf);
