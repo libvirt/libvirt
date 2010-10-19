@@ -83,8 +83,11 @@ if test 108 -lt `echo $SOCKPATH | wc -c`; then
     skip_test_ "CWD too long"
 fi
 
-# Replace the invalid host_uuid with one that is valid:
-sed 's/^\(host_uuid =.*\)0"$/\11"/' tmp.conf > k; mv k tmp.conf
+# Replace the invalid host_uuid with one that is valid and
+# relax audit_level from 2 to 1, otherwise libvirtd will report an error
+# when auditing is disabled on the host or during compilation
+sed 's/^\(host_uuid =.*\)0"$/\11"/; s/^\(audit_level =.*\)2$/\1 1/' tmp.conf > k
+mv k tmp.conf
 
 $abs_top_builddir/daemon/libvirtd --pid-file=pid-file --config=tmp.conf \
     > log 2>&1 & pid=$!
