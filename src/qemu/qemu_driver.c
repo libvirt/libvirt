@@ -5402,13 +5402,13 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                                   qemudDomainSaveFileOpHook, &hdata,
                                   0)) < 0) {
             /* If we failed as root, and the error was permission-denied
-               (EACCES), assume it's on a network-connected share where
-               root access is restricted (eg, root-squashed NFS). If the
+               (EACCES or EPERM), assume it's on a network-connected share
+               where root access is restricted (eg, root-squashed NFS). If the
                qemu user (driver->user) is non-root, just set a flag to
                bypass security driver shenanigans, and retry the operation
                after doing setuid to qemu user */
 
-            if ((rc != -EACCES) ||
+            if (((rc != -EACCES) && (rc != -EPERM)) ||
                 driver->user == getuid()) {
                 virReportSystemError(-rc, _("Failed to create domain save file '%s'"),
                                      path);
