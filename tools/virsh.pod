@@ -517,7 +517,7 @@ kilobytes.
 
 Displays the domain memory parameters.
 
-=item B<memtune> I<domain-id> optional I<--hard-limit> B<kilobytes> optional I<--soft-limit> B<kilobytes> optional I<--swap-hard-limit> B<kilobytes>
+=item B<memtune> I<domain-id> optional I<--hard-limit> B<kilobytes> optional I<--soft-limit> B<kilobytes> optional I<--swap-hard-limit> B<kilobytes> -I<--min-guarantee> B<kilobytes>
 
 Allows you to set the domain memory parameters. LXC and QEMU/KVM supports these parameters.
 

@@ -2693,6 +2693,8 @@ static const vshCmdOptDef opts_memtune[] = {
      N_("Memory during contention in kilobytes")},
     {VIR_DOMAIN_SWAP_HARD_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
      N_("Max swap in kilobytes")},
+    {VIR_DOMAIN_MEMORY_MIN_GUARANTEE, VSH_OT_STRING, VSH_OFLAG_NONE,
+     N_("Min guaranteed memory in kilobytes")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2700,7 +2702,7 @@ static int
 cmdMemtune(vshControl * ctl, const vshCmd * cmd)
 {
     virDomainPtr dom;
-    int hard_limit, soft_limit, swap_hard_limit;
+    int hard_limit, soft_limit, swap_hard_limit, min_guarantee;
     int nparams = 0;
     unsigned int i = 0;
     virMemoryParameterPtr params = NULL, temp = NULL;
@@ -2726,6 +2728,12 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
         vshCommandOptInt(cmd, VIR_DOMAIN_SWAP_HARD_LIMIT,
                          &swap_hard_limit);
     if (swap_hard_limit)
+        nparams++;
+
+    min_guarantee =
+        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                         &min_guarantee);
+    if (min_guarantee)
         nparams++;
 
     if (nparams == 0) {
@@ -2772,7 +2780,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
                              params[i].value.b);
                     break;
                 default:
-                    vshPrint(ctl, "unimplemented scheduler parameter type\n");
+                    vshPrint(ctl, "unimplemented memory parameter type\n");
             }
         }
 
@@ -2807,6 +2815,11 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
                 strncpy(temp->field, VIR_DOMAIN_SWAP_HARD_LIMIT,
                         sizeof(temp->field));
                 swap_hard_limit = 0;
+            } else if (min_guarantee) {
+                temp->value.ul = min_guarantee;
+                strncpy(temp->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                        sizeof(temp->field));
+                min_guarantee = 0;
             }
         }
         if (virDomainSetMemoryParameters(dom, params, nparams, 0) != 0)
