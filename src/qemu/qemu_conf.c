@@ -1225,9 +1225,6 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
     if (strstr(help, "-fsdev"))
         flags |= QEMUD_CMD_FLAG_FSDEV;
 
-    /* Keep disabled till we're actually ready to turn on netdev mode
-     * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
-#if 0
     if (strstr(help, "-netdev")) {
         /* Disable -netdev on 0.12 since although it exists,
          * the corresponding netdev_add/remove monitor commands
@@ -1235,7 +1232,7 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         if (version >= 13000)
             flags |= QEMUD_CMD_FLAG_NETDEV;
     }
-#endif
+
     if (strstr(help, "-sdl"))
         flags |= QEMUD_CMD_FLAG_SDL;
     if (strstr(help, "cores=") &&
@@ -1279,12 +1276,14 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
     if (version >= 10000)
         flags |= QEMUD_CMD_FLAG_0_10;
 
-    /* Keep disabled till we're actually ready to turn on JSON mode
-     * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
-#if 0
-    if (version >= 13000)
+    /* While JSON mode was available in 0.12.0, it was too
+     * incomplete to contemplate using. The 0.13.0 release
+     * is good enough to use, even though it lacks one or
+     * two features. The benefits of JSON mode now outweigh
+     * the downside.
+     */
+     if (version >= 13000)
         flags |= QEMUD_CMD_FLAG_MONITOR_JSON;
-#endif
 
     return flags;
 }
