@@ -6466,7 +6466,8 @@ char *virDomainDefFormat(virDomainDefPtr def,
                       def->mem.cur_balloon);
 
     /* add memtune only if there are any */
-    if(def->mem.hard_limit || def->mem.hard_limit || def->mem.hard_limit)
+    if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
+        def->mem.swap_hard_limit)
         virBufferVSprintf(&buf, "  <memtune>\n");
     if (def->mem.hard_limit) {
         virBufferVSprintf(&buf, "    <hard_limit>%lu</hard_limit>\n",
@@ -6476,11 +6477,16 @@ char *virDomainDefFormat(virDomainDefPtr def,
         virBufferVSprintf(&buf, "    <soft_limit>%lu</soft_limit>\n",
                           def->mem.soft_limit);
     }
+    if (def->mem.min_guarantee) {
+        virBufferVSprintf(&buf, "    <min_guarantee>%lu</min_guarantee>\n",
+                          def->mem.min_guarantee);
+    }
     if (def->mem.swap_hard_limit) {
         virBufferVSprintf(&buf, "    <swap_hard_limit>%lu</swap_hard_limit>\n",
                           def->mem.swap_hard_limit);
     }
-    if(def->mem.hard_limit || def->mem.hard_limit || def->mem.hard_limit)
+    if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
+        def->mem.swap_hard_limit)
         virBufferVSprintf(&buf, "  </memtune>\n");
 
     if (def->mem.hugepage_backed) {
