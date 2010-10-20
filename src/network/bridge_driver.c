@@ -1060,14 +1060,14 @@ static int networkCheckRouteCollision(virNetworkObjPtr network)
         goto error;
     }
 
-    if (inaddress.stor.ss_family != AF_INET ||
-        innetmask.stor.ss_family != AF_INET) {
+    if (inaddress.data.stor.ss_family != AF_INET ||
+        innetmask.data.stor.ss_family != AF_INET) {
         /* Only support collision check for IPv4 */
         goto out;
     }
 
-    net_dest = (inaddress.inet4.sin_addr.s_addr &
-                innetmask.inet4.sin_addr.s_addr);
+    net_dest = (inaddress.data.inet4.sin_addr.s_addr &
+                innetmask.data.inet4.sin_addr.s_addr);
 
     /* Read whole routing table into memory */
     if ((len = virFileReadAll(PROC_NET_ROUTE, MAX_ROUTE_SIZE, &buf)) < 0)
@@ -1120,7 +1120,7 @@ static int networkCheckRouteCollision(virNetworkObjPtr network)
         addr_val &= mask_val;
 
         if ((net_dest == addr_val) &&
-            (innetmask.inet4.sin_addr.s_addr == mask_val)) {
+            (innetmask.data.inet4.sin_addr.s_addr == mask_val)) {
             networkReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Network %s/%s is already in use by "
                                 "interface %s"),

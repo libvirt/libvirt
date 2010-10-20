@@ -27,10 +27,10 @@ static int getIPv4Addr(virSocketAddrPtr addr, virIPv4AddrPtr tab) {
     unsigned long val;
     int i;
 
-    if ((addr == NULL) || (tab == NULL) || (addr->stor.ss_family != AF_INET))
+    if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET))
         return(-1);
 
-    val = ntohl(addr->inet4.sin_addr.s_addr);
+    val = ntohl(addr->data.inet4.sin_addr.s_addr);
 
     for (i = 0;i < 4;i++) {
         (*tab)[3 - i] = val & 0xFF;
@@ -43,12 +43,12 @@ static int getIPv4Addr(virSocketAddrPtr addr, virIPv4AddrPtr tab) {
 static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
     int i;
 
-    if ((addr == NULL) || (tab == NULL) || (addr->stor.ss_family != AF_INET6))
+    if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET6))
         return(-1);
 
     for (i = 0;i < 8;i++) {
-        (*tab)[i] = ((addr->inet6.sin6_addr.s6_addr[2 * i] << 8) |
-                     addr->inet6.sin6_addr.s6_addr[2 * i + 1]);
+        (*tab)[i] = ((addr->data.inet6.sin6_addr.s6_addr[2 * i] << 8) |
+                     addr->data.inet6.sin6_addr.s6_addr[2 * i + 1]);
     }
 
     return(0);
@@ -81,8 +81,10 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int hint) {
     }
 
     len = res->ai_addrlen;
-    if (addr != NULL)
-        memcpy(&addr->stor, res->ai_addr, len);
+    if (addr != NULL) {
+        memcpy(&addr->data.stor, res->ai_addr, len);
+        addr->len = res->ai_addrlen;
+    }
 
     freeaddrinfo(res);
     return(len);
@@ -133,14 +135,14 @@ virSocketFormatAddr(virSocketAddrPtr addr) {
     if (addr == NULL)
         return NULL;
 
-    if (addr->stor.ss_family == AF_INET) {
+    if (addr->data.stor.ss_family == AF_INET) {
         outlen = INET_ADDRSTRLEN;
-        inaddr = &addr->inet4.sin_addr;
+        inaddr = &addr->data.inet4.sin_addr;
     }
 
-    else if (addr->stor.ss_family == AF_INET6) {
+    else if (addr->data.stor.ss_family == AF_INET6) {
         outlen = INET6_ADDRSTRLEN;
-        inaddr = &addr->inet6.sin6_addr;
+        inaddr = &addr->data.inet6.sin6_addr;
     }
 
     else {
@@ -150,7 +152,7 @@ virSocketFormatAddr(virSocketAddrPtr addr) {
     if (VIR_ALLOC_N(out, outlen) < 0)
         return NULL;
 
-    if (inet_ntop(addr->stor.ss_family, inaddr, out, outlen) == NULL) {
+    if (inet_ntop(addr->data.stor.ss_family, inaddr, out, outlen) == NULL) {
         VIR_FREE(out);
         return NULL;
     }
@@ -174,12 +176,12 @@ virSocketSetPort(virSocketAddrPtr addr, int port) {
 
     port = htons(port);
 
-    if(addr->stor.ss_family == AF_INET) {
-        addr->inet4.sin_port = port;
+    if(addr->data.stor.ss_family == AF_INET) {
+        addr->data.inet4.sin_port = port;
     }
 
-    else if(addr->stor.ss_family == AF_INET6) {
-        addr->inet6.sin6_port = port;
+    else if(addr->data.stor.ss_family == AF_INET6) {
+        addr->data.inet6.sin6_port = port;
     }
 
     else {
@@ -201,12 +203,12 @@ virSocketGetPort(virSocketAddrPtr addr) {
     if (addr == NULL)
         return -1;
 
-    if(addr->stor.ss_family == AF_INET) {
-        return ntohs(addr->inet4.sin_port);
+    if(addr->data.stor.ss_family == AF_INET) {
+        return ntohs(addr->data.inet4.sin_port);
     }
 
-    else if(addr->stor.ss_family == AF_INET6) {
-        return ntohs(addr->inet6.sin6_port);
+    else if(addr->data.stor.ss_family == AF_INET6) {
+        return ntohs(addr->data.inet6.sin6_port);
     }
 
     return -1;
@@ -245,14 +247,14 @@ int virSocketCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
 
     if ((addr1 == NULL) || (addr2 == NULL) || (netmask == NULL))
         return(-1);
-    if ((addr1->stor.ss_family != addr2->stor.ss_family) ||
-        (addr1->stor.ss_family != netmask->stor.ss_family))
+    if ((addr1->data.stor.ss_family != addr2->data.stor.ss_family) ||
+        (addr1->data.stor.ss_family != netmask->data.stor.ss_family))
         return(-1);
 
     if (virSocketAddrIsNetmask(netmask) != 0)
         return(-1);
 
-    if (addr1->stor.ss_family == AF_INET) {
+    if (addr1->data.stor.ss_family == AF_INET) {
         virIPv4Addr t1, t2, tm;
 
         if ((getIPv4Addr(addr1, &t1) < 0) ||
@@ -265,7 +267,7 @@ int virSocketCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
                 return(0);
         }
 
-    } else if (addr1->stor.ss_family == AF_INET) {
+    } else if (addr1->data.stor.ss_family == AF_INET) {
         virIPv6Addr t1, t2, tm;
 
         if ((getIPv6Addr(addr1, &t1) < 0) ||
@@ -301,10 +303,10 @@ int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
 
     if ((start == NULL) || (end == NULL))
         return(-1);
-    if (start->stor.ss_family != end->stor.ss_family)
+    if (start->data.stor.ss_family != end->data.stor.ss_family)
         return(-1);
 
-    if (start->stor.ss_family == AF_INET) {
+    if (start->data.stor.ss_family == AF_INET) {
         virIPv4Addr t1, t2;
 
         if ((getIPv4Addr(start, &t1) < 0) ||
@@ -319,7 +321,7 @@ int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
         if (ret < 0)
             return(-1);
         ret++;
-    } else if (start->stor.ss_family == AF_INET6) {
+    } else if (start->data.stor.ss_family == AF_INET6) {
         virIPv6Addr t1, t2;
 
         if ((getIPv6Addr(start, &t1) < 0) ||
@@ -355,7 +357,7 @@ int virSocketGetNumNetmaskBits(const virSocketAddrPtr netmask)
     int i, j;
     int c = 0;
 
-    if (netmask->stor.ss_family == AF_INET) {
+    if (netmask->data.stor.ss_family == AF_INET) {
         virIPv4Addr tm;
         uint8_t bit;
 
@@ -389,7 +391,7 @@ int virSocketGetNumNetmaskBits(const virSocketAddrPtr netmask)
         }
 
         return c;
-    } else if (netmask->stor.ss_family == AF_INET6) {
+    } else if (netmask->data.stor.ss_family == AF_INET6) {
         virIPv6Addr tm;
         uint16_t bit;
 

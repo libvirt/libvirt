@@ -17,11 +17,15 @@
 # include <sys/socket.h>
 # include <netdb.h>
 
-typedef union {
-    struct sockaddr_storage stor;
-    struct sockaddr_in inet4;
-    struct sockaddr_in6 inet6;
+typedef struct {
+    union {
+        struct sockaddr_storage stor;
+        struct sockaddr_in inet4;
+        struct sockaddr_in6 inet6;
+    } data;
+    socklen_t len;
 } virSocketAddr;
+
 typedef virSocketAddr *virSocketAddrPtr;
 
 int virSocketParseAddr    (const char *val,

@@ -2522,7 +2522,7 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
                 goto error;
             }
 
-            if (def->target.addr->stor.ss_family != AF_INET) {
+            if (def->target.addr->data.stor.ss_family != AF_INET) {
                 virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                      "%s", _("guestfwd channel only supports "
                                              "IPv4 addresses"));
