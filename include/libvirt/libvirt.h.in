@@ -697,7 +697,8 @@ typedef enum {
 /**
  * VIR_DOMAIN_MEMORY_HARD_LIMIT:
  *
- * Macro for the well-known tunable hard_limit.
+ * Macro for the memory tunable hard_limit: it represents the maximum memory
+ * the guest can use.
  */
 
 #define VIR_DOMAIN_MEMORY_HARD_LIMIT "hard_limit"
@@ -705,7 +706,8 @@ typedef enum {
 /**
  * VIR_DOMAIN_MEMORY_SOFT_LIMIT:
  *
- * Macro for the well-known tunable soft_limit.
+ * Macro for the memory tunable soft_limit: it represents the memory upper
+ * limit enforced during memory contention.
  */
 
 #define VIR_DOMAIN_MEMORY_SOFT_LIMIT "soft_limit"
@@ -713,7 +715,8 @@ typedef enum {
 /**
  * VIR_DOMAIN_MEMORY_MIN_GUARANTEE:
  *
- * Macro for the well-known tunable min_guarantee.
+ * Macro for the memory tunable min_guarantee: it represents the minimum
+ * memory guaranteed to be reserved for the guest.
  */
 
 #define VIR_DOMAIN_MEMORY_MIN_GUARANTEE "min_guarantee"
@@ -721,7 +724,8 @@ typedef enum {
 /**
  * VIR_DOMAIN_SWAP_HARD_LIMIT:
  *
- * Macro for the well-known tunable swap_hard_limit.
+ * Macro for the swap tunable swap_hard_limit: it represents the maximum swap
+ * the guest can use.
  */
 
 #define VIR_DOMAIN_SWAP_HARD_LIMIT "swap_hard_limit"
