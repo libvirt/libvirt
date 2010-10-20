@@ -58,6 +58,7 @@
 #include "util.h"
 #include "stream.h"
 #include "uuid.h"
+#include "network.h"
 #include "virtaudit.h"
 #include "libvirt/libvirt-qemu.h"
 
@@ -3632,43 +3633,6 @@ remoteDispatchAuthList (struct qemud_server *server,
 
 #if HAVE_SASL
 /*
- * NB, keep in sync with similar method in src/remote/remote_driver.c
- */
-static char *addrToString(remote_error *rerr,
-                          struct sockaddr_storage *ss, socklen_t salen) {
-    char host[NI_MAXHOST], port[NI_MAXSERV];
-    char *addr;
-    int err;
-    struct sockaddr *sa = (struct sockaddr *)ss;
-
-    if (sa->sa_family == AF_UNIX) {
-        if (!(addr = strdup("127.0.0.1;0"))) {
-            virReportOOMError();
-            return NULL;
-        }
-        return addr;
-    }
-
-    if ((err = getnameinfo(sa, salen,
-                           host, sizeof(host),
-                           port, sizeof(port),
-                           NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
-        remoteDispatchFormatError(rerr,
-                                  _("Cannot convert socket address to string: %s"),
-                                  gai_strerror(err));
-        return NULL;
-    }
-
-    if (virAsprintf(&addr, "%s;%s", host, port) == -1) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    return addr;
-}
-
-
-/*
  * Initializes the SASL session in prepare for authentication
  * and gives the client a list of allowed mechanisms to choose
  *
@@ -3677,7 +3641,7 @@ static char *addrToString(remote_error *rerr,
 static int
 remoteDispatchAuthSaslInit (struct qemud_server *server,
                             struct qemud_client *client,
-                            virConnectPtr conn ATTRIBUTE_UNUSED,
+                            virConnectPtr conn,
                             remote_message_header *hdr ATTRIBUTE_UNUSED,
                             remote_error *rerr,
                             void *args ATTRIBUTE_UNUSED,
@@ -3686,8 +3650,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     const char *mechlist = NULL;
     sasl_security_properties_t secprops;
     int err;
-    struct sockaddr_storage sa;
-    socklen_t salen;
+    virSocketAddr sa;
     char *localAddr, *remoteAddr;
 
     virMutexLock(&server->lock);
@@ -3702,29 +3665,31 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     }
 
     /* Get local address in form  IPADDR:PORT */
-    salen = sizeof(sa);
-    if (getsockname(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
+    sa.len = sizeof(sa.data.stor);
+    if (getsockname(client->fd, &sa.data.sa, &sa.len) < 0) {
         char ebuf[1024];
         remoteDispatchFormatError(rerr,
                                   _("failed to get sock address: %s"),
                                   virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if ((localAddr = addrToString(rerr, &sa, salen)) == NULL) {
+    if ((localAddr = virSocketFormatAddrFull(&sa, true, ";")) == NULL) {
+        remoteDispatchConnError(rerr, conn);
         goto error;
     }
 
     /* Get remote address in form  IPADDR:PORT */
-    salen = sizeof(sa);
-    if (getpeername(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
+    sa.len = sizeof(sa.data.stor);
+    if (getpeername(client->fd, &sa.data.sa, &sa.len) < 0) {
         char ebuf[1024];
         remoteDispatchFormatError(rerr, _("failed to get peer address: %s"),
                                   virStrerror(errno, ebuf, sizeof ebuf));
         VIR_FREE(localAddr);
         goto error;
     }
-    if ((remoteAddr = addrToString(rerr, &sa, salen)) == NULL) {
+    if ((localAddr = virSocketFormatAddrFull(&sa, true, ";")) == NULL) {
         VIR_FREE(localAddr);
+        remoteDispatchConnError(rerr, conn);
         goto error;
     }
 

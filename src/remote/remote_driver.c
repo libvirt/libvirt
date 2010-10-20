@@ -6888,43 +6888,6 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv,
 
 
 #if HAVE_SASL
-/*
- * NB, keep in sync with similar method in daemon/remote.c
- */
-static char *addrToString(struct sockaddr_storage *ss, socklen_t salen)
-{
-    char host[NI_MAXHOST], port[NI_MAXSERV];
-    char *addr;
-    int err;
-    struct sockaddr *sa = (struct sockaddr *)ss;
-
-    if (sa->sa_family == AF_UNIX) {
-        if (!(addr = strdup("127.0.0.1;0"))) {
-            virReportOOMError();
-            return NULL;
-        }
-        return addr;
-    }
-
-    if ((err = getnameinfo(sa, salen,
-                           host, sizeof(host),
-                           port, sizeof(port),
-                           NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
-        remoteError(VIR_ERR_UNKNOWN_HOST,
-                    _("Cannot convert socket address to string: %s"),
-                    gai_strerror(err));
-        return NULL;
-    }
-
-    if (virAsprintf(&addr, "%s;%s", host, port) == -1) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    return addr;
-}
-
-
 static int remoteAuthCredVir2SASL(int vircred)
 {
     switch (vircred) {
@@ -7105,8 +7068,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     unsigned int clientoutlen, serverinlen;
     const char *mech;
     int err, complete;
-    struct sockaddr_storage sa;
-    socklen_t salen;
+    virSocketAddr sa;
     char *localAddr = NULL, *remoteAddr = NULL;
     const void *val;
     sasl_ssf_t ssf;
@@ -7128,23 +7090,23 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     }
 
     /* Get local address in form  IPADDR:PORT */
-    salen = sizeof(sa);
-    if (getsockname(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
+    sa.len = sizeof(sa.data.stor);
+    if (getsockname(priv->sock, &sa.data.sa, &sa.len) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to get sock address"));
         goto cleanup;
     }
-    if ((localAddr = addrToString(&sa, salen)) == NULL)
+    if ((localAddr = virSocketFormatAddrFull(&sa, true, ";")) == NULL)
         goto cleanup;
 
     /* Get remote address in form  IPADDR:PORT */
-    salen = sizeof(sa);
-    if (getpeername(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
+    sa.len = sizeof(sa.data.stor);
+    if (getpeername(priv->sock, &sa.data.sa, &sa.len) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to get peer address"));
         goto cleanup;
     }
-    if ((remoteAddr = addrToString(&sa, salen)) == NULL)
+    if ((remoteAddr = virSocketFormatAddrFull(&sa, true, ";")) == NULL)
         goto cleanup;
 
     if (auth) {
