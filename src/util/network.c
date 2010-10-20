@@ -268,7 +268,7 @@ int virSocketCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
                 return(0);
         }
 
-    } else if (addr1->data.stor.ss_family == AF_INET) {
+    } else if (addr1->data.stor.ss_family == AF_INET6) {
         virIPv6Addr t1, t2, tm;
 
         if ((getIPv6Addr(addr1, &t1) < 0) ||
