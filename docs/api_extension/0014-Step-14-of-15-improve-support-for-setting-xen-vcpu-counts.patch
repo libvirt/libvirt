@@ -1,0 +1,342 @@
+From e443a003129a172a7332f3cb6e40b3c39363ed5e Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Thu, 14 Oct 2010 16:17:18 -0600
+Subject: [PATCH 14/15] vcpu: improve support for setting xen vcpu counts
+
+Tested with RHEL 5.6 (xendConfigVersion 2, where xend_internal
+controls live domains and xm_internal controls inactive domains).
+Hopefully this works with xendConfigVersion 3 (where xend_internal
+controls everything).
+
+* src/xen/xen_driver.c (xenUnifiedDomainSetVcpusFlags): Support
+more flags.
+(xenUnifiedGetMaxVcpus): Export.
+* src/xen/xm_internal.h (xenXMDomainSetVcpusFlags): New prototype.
+* src/xen/xend_internal.h (xenDaemonDomainSetVcpusFlags): Likewise.
+* src/xen/xen_driver.h (xenUnifiedGetMaxVcpus): Likewise.
+* src/xen/xm_internal.c (xenXMDomainSetVcpusFlags): New function.
+* src/xen/xend_internal.c (xenDaemonDomainSetVcpusFlags): Likewise.
+---
+ src/xen/xen_driver.c    |   60 ++++++++++++++++++++++++---------
+ src/xen/xen_driver.h    |    1 +
+ src/xen/xend_internal.c |   76 +++++++++++++++++++++++++++++++++++++++++++
+ src/xen/xend_internal.h |    3 ++
+ src/xen/xm_internal.c   |   83 +++++++++++++++++++++++++++++++++++++++++++++++
+ src/xen/xm_internal.h   |    2 +
+ 6 files changed, 208 insertions(+), 17 deletions(-)
+
+diff --git a/src/xen/xen_driver.c b/src/xen/xen_driver.c
+index fe2ff86..66e8518 100644
+--- a/src/xen/xen_driver.c
++++ b/src/xen/xen_driver.c
+@@ -508,7 +508,7 @@ xenUnifiedIsSecure(virConnectPtr conn)
+     return ret;
+ }
+
+-static int
++int
+ xenUnifiedGetMaxVcpus (virConnectPtr conn, const char *type)
+ {
+     GET_PRIVATE(conn);
+@@ -1073,36 +1073,62 @@ xenUnifiedDomainSetVcpusFlags (virDomainPtr dom, unsigned int nvcpus,
+                                unsigned int flags)
+ {
+     GET_PRIVATE(dom->conn);
+-    int i;
++    int ret;
++
++    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
++                  VIR_DOMAIN_VCPU_CONFIG |
++                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+
+-    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+-        xenUnifiedError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+-                        flags);
++    /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
++     * mixed with LIVE.  */
++    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0 ||
++        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
++         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) {
++        xenUnifiedError(VIR_ERR_INVALID_ARG,
++                        _("invalid flag combination: (0x%x)"), flags);
++        return -1;
++    }
++    if (!nvcpus || (unsigned short) nvcpus != nvcpus) {
++        xenUnifiedError(VIR_ERR_INVALID_ARG,
++                        _("argument out of range: %d"), nvcpus);
+         return -1;
+     }
+
+     /* Try non-hypervisor methods first, then hypervisor direct method
+      * as a last resort.
+      */
+-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+-        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
+-            priv->opened[i] &&
+-            drivers[i]->domainSetVcpus &&
+-            drivers[i]->domainSetVcpus (dom, nvcpus) == 0)
+-            return 0;
+-
+-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
+-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSetVcpus &&
+-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSetVcpus (dom, nvcpus) == 0)
+-        return 0;
++    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
++        ret = xenDaemonDomainSetVcpusFlags(dom, nvcpus, flags);
++        if (ret != -2)
++            return ret;
++    }
++    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
++        ret = xenXMDomainSetVcpusFlags(dom, nvcpus, flags);
++        if (ret != -2)
++            return ret;
++    }
++    if (flags == VIR_DOMAIN_VCPU_LIVE)
++        return xenHypervisorSetVcpus(dom, nvcpus);
+
++    xenUnifiedError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+     return -1;
+ }
+
+ static int
+ xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
+ {
+-    return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++    unsigned int flags = VIR_DOMAIN_VCPU_LIVE;
++    xenUnifiedPrivatePtr priv;
++
++    /* Per the documented API, it is hypervisor-dependent whether this
++     * affects just _LIVE or _LIVE|_CONFIG; in xen's case, that
++     * depends on xendConfigVersion.  */
++    if (dom) {
++        priv = dom->conn->privateData;
++        if (priv->xendConfigVersion >= 3)
++            flags |= VIR_DOMAIN_VCPU_CONFIG;
++    }
++    return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, flags);
+ }
+
+ static int
+diff --git a/src/xen/xen_driver.h b/src/xen/xen_driver.h
+index 3e7c1d0..115a26a 100644
+--- a/src/xen/xen_driver.h
++++ b/src/xen/xen_driver.h
+@@ -220,6 +220,7 @@ int  xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr info,
+ void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
+                                     virDomainEventPtr event);
+ unsigned long xenUnifiedVersion(void);
++int xenUnifiedGetMaxVcpus(virConnectPtr conn, const char *type);
+
+ # ifndef PROXY
+ void xenUnifiedLock(xenUnifiedPrivatePtr priv);
+diff --git a/src/xen/xend_internal.c b/src/xen/xend_internal.c
+index 3642296..55c2cc4 100644
+--- a/src/xen/xend_internal.c
++++ b/src/xen/xend_internal.c
+@@ -3535,6 +3535,82 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
+ }
+
+ /**
++ * xenDaemonDomainSetVcpusFlags:
++ * @domain: pointer to domain object
++ * @nvcpus: the new number of virtual CPUs for this domain
++ * @flags: bitwise-ORd from virDomainVcpuFlags
++ *
++ * Change virtual CPUs allocation of domain according to flags.
++ *
++ * Returns 0 on success, -1 if an error message was issued, and -2 if
++ * the unified driver should keep trying.
++ */
++int
++xenDaemonDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
++                             unsigned int flags)
++{
++    char buf[VIR_UUID_BUFLEN];
++    xenUnifiedPrivatePtr priv;
++    int max;
++
++    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
++        || (vcpus < 1)) {
++        virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
++        return (-1);
++    }
++
++    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
++
++    if ((domain->id < 0 && priv->xendConfigVersion < 3) ||
++        (flags & VIR_DOMAIN_VCPU_MAXIMUM))
++        return -2;
++
++    /* With xendConfigVersion 2, only _LIVE is supported.  With
++     * xendConfigVersion 3, only _LIVE|_CONFIG is supported for
++     * running domains, or _CONFIG for inactive domains.  */
++    if (priv->xendConfigVersion < 3) {
++        if (flags & VIR_DOMAIN_VCPU_CONFIG) {
++            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
++                         _("Xend version does not support modifying "
++                           "persistent config"));
++            return -1;
++        }
++    } else if (domain->id < 0) {
++        if (flags & VIR_DOMAIN_VCPU_LIVE) {
++            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
++                         _("domain not running"));
++            return -1;
++        }
++    } else {
++        if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) !=
++            (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) {
++            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
++                         _("Xend only supports modifying both live and "
++                           "persistent config"));
++        }
++    }
++
++    /* Unfortunately, xend_op does not validate whether this exceeds
++     * the maximum.  */
++    flags |= VIR_DOMAIN_VCPU_MAXIMUM;
++    if ((max = xenDaemonDomainGetVcpusFlags(domain, flags)) < 0) {
++        virXendError(VIR_ERR_OPERATION_INVALID, "%s",
++                     _("could not determin max vcpus for the domain"));
++        return -1;
++    }
++    if (vcpus > max) {
++        virXendError(VIR_ERR_INVALID_ARG,
++                     _("requested vcpus is greater than max allowable"
++                       " vcpus for the domain: %d > %d"), vcpus, max);
++        return -1;
++    }
++
++    snprintf(buf, sizeof(buf), "%d", vcpus);
++    return xend_op(domain->conn, domain->name, "op", "set_vcpus", "vcpus",
++                   buf, NULL);
++}
++
++/**
+  * xenDaemonDomainSetVcpus:
+  * @domain: pointer to domain object
+  * @nvcpus: the new number of virtual CPUs for this domain
+diff --git a/src/xen/xend_internal.h b/src/xen/xend_internal.h
+index 923cebd..53f5d2c 100644
+--- a/src/xen/xend_internal.h
++++ b/src/xen/xend_internal.h
+@@ -151,6 +151,9 @@ int xenDaemonDomainUndefine(virDomainPtr domain);
+
+ int	xenDaemonDomainSetVcpus		(virDomainPtr domain,
+                                          unsigned int vcpus);
++int	xenDaemonDomainSetVcpusFlags	(virDomainPtr domain,
++                                         unsigned int vcpus,
++                                         unsigned int flags);
+ int	xenDaemonDomainPinVcpu		(virDomainPtr domain,
+                                          unsigned int vcpu,
+                                          unsigned char *cpumap,
+diff --git a/src/xen/xm_internal.c b/src/xen/xm_internal.c
+index 4ea4245..2b8e51e 100644
+--- a/src/xen/xm_internal.c
++++ b/src/xen/xm_internal.c
+@@ -1670,6 +1670,89 @@ cleanup:
+     return ret;
+ }
+
++/*
++ * xenXMDomainSetVcpusFlags:
++ * @domain: pointer to domain object
++ * @nvcpus: number of vcpus
++ * @flags: bitwise-ORd from virDomainVcpuFlags
++ *
++ * Change virtual CPUs allocation of domain according to flags.
++ *
++ * Returns 0 on success, -1 if an error message was issued, and -2 if
++ * the unified driver should keep trying.
++ */
++int
++xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
++                         unsigned int flags)
++{
++    xenUnifiedPrivatePtr priv;
++    const char *filename;
++    xenXMConfCachePtr entry;
++    int ret = -1;
++    int max;
++
++    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
++        xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
++        return -1;
++    }
++    if (domain->conn->flags & VIR_CONNECT_RO) {
++        xenXMError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
++        return -1;
++    }
++    if (domain->id != -1)
++        return -2;
++    if (flags & VIR_DOMAIN_VCPU_LIVE) {
++        xenXMError(VIR_ERR_OPERATION_INVALID, "%s",
++                   _("domain is not running"));
++        return -1;
++    }
++
++    priv = domain->conn->privateData;
++    xenUnifiedLock(priv);
++
++    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
++        goto cleanup;
++
++    if (!(entry = virHashLookup(priv->configCache, filename)))
++        goto cleanup;
++
++    /* Hypervisor maximum. */
++    if ((max = xenUnifiedGetMaxVcpus(domain->conn, NULL)) < 0) {
++        xenXMError(VIR_ERR_INTERNAL_ERROR, "%s",
++                   _("could not determin max vcpus for the domain"));
++        goto cleanup;
++    }
++    /* Can't specify a current larger than stored maximum; but
++     * reducing maximum can silently reduce current.  */
++    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM))
++        max = entry->def->maxvcpus;
++    if (vcpus > max) {
++        xenXMError(VIR_ERR_INVALID_ARG,
++                   _("requested vcpus is greater than max allowable"
++                     " vcpus for the domain: %d > %d"), vcpus, max);
++        goto cleanup;
++    }
++
++    if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
++        entry->def->maxvcpus = vcpus;
++        if (entry->def->vcpus > vcpus)
++            entry->def->vcpus = vcpus;
++    } else {
++        entry->def->vcpus = vcpus;
++    }
++
++    /* If this fails, should we try to undo our changes to the
++     * in-memory representation of the config file. I say not!
++     */
++    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
++        goto cleanup;
++    ret = 0;
++
++cleanup:
++    xenUnifiedUnlock(priv);
++    return ret;
++}
++
+ /**
+  * xenXMDomainGetVcpusFlags:
+  * @domain: pointer to domain object
+diff --git a/src/xen/xm_internal.h b/src/xen/xm_internal.h
+index 3295fbd..a46e1a2 100644
+--- a/src/xen/xm_internal.h
++++ b/src/xen/xm_internal.h
+@@ -45,6 +45,8 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory);
+ int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
+ unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain);
+ int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus);
++int xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
++                             unsigned int flags);
+ int xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags);
+ int xenXMDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
+                        unsigned char *cpumap, int maplen);
+-- 
+1.7.2.3
+

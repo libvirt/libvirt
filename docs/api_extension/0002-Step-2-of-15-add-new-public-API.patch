@@ -1,0 +1,62 @@
+From ea3f5c68093429c6ad507b45689cdf209c2c257b Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Fri, 24 Sep 2010 16:48:45 -0600
+Subject: [PATCH 02/15] vcpu: add new public API
+
+API agreed on in
+https://www.redhat.com/archives/libvir-list/2010-September/msg00456.html,
+but modified for enum names to be consistent with virDomainDeviceModifyFlags.
+
+* include/libvirt/libvirt.h.in (virDomainVcpuFlags)
+(virDomainSetVcpusFlags, virDomainGetVcpusFlags): New
+declarations.
+* src/libvirt_public.syms: Export new symbols.
+---
+ include/libvirt/libvirt.h.in |   15 +++++++++++++++
+ src/libvirt_public.syms      |    2 ++
+ 2 files changed, 17 insertions(+), 0 deletions(-)
+
+diff --git a/include/libvirt/libvirt.h.in b/include/libvirt/libvirt.h.in
+index 2eba61e..d0cc4c0 100644
+--- a/include/libvirt/libvirt.h.in
++++ b/include/libvirt/libvirt.h.in
+@@ -915,8 +915,23 @@ struct _virVcpuInfo {
+ };
+ typedef virVcpuInfo *virVcpuInfoPtr;
+
++/* Flags for controlling virtual CPU hot-plugging.  */
++typedef enum {
++    /* Must choose at least one of these two bits; SetVcpus can choose both */
++    VIR_DOMAIN_VCPU_LIVE    = (1 << 0), /* Affect active domain */
++    VIR_DOMAIN_VCPU_CONFIG  = (1 << 1), /* Affect next boot */
++
++    /* Additional flags to be bit-wise OR'd in */
++    VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count */
++} virDomainVcpuFlags;
++
+ int                     virDomainSetVcpus       (virDomainPtr domain,
+                                                  unsigned int nvcpus);
++int                     virDomainSetVcpusFlags  (virDomainPtr domain,
++                                                 unsigned int nvcpus,
++                                                 unsigned int flags);
++int                     virDomainGetVcpusFlags  (virDomainPtr domain,
++                                                 unsigned int flags);
+
+ int                     virDomainPinVcpu        (virDomainPtr domain,
+                                                  unsigned int vcpu,
+diff --git a/src/libvirt_public.syms b/src/libvirt_public.syms
+index fceb516..a8091b1 100644
+--- a/src/libvirt_public.syms
++++ b/src/libvirt_public.syms
+@@ -409,6 +409,8 @@ LIBVIRT_0.8.5 {
+     global:
+         virDomainSetMemoryParameters;
+         virDomainGetMemoryParameters;
++        virDomainGetVcpusFlags;
++        virDomainSetVcpusFlags;
+ } LIBVIRT_0.8.2;
+
+ # .... define new API here using predicted next version number ....
+-- 
+1.7.2.3
+

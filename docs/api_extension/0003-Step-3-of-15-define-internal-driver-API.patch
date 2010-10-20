@@ -1,0 +1,222 @@
+From dd255d64053e9960cd375994ce8f056522e12acc Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Mon, 27 Sep 2010 09:18:22 -0600
+Subject: [PATCH 03/15] vcpu: define internal driver API
+
+* src/driver.h (virDrvDomainSetVcpusFlags)
+(virDrvDomainGetVcpusFlags): New typedefs.
+(_virDriver): New callback members.
+* src/esx/esx_driver.c (esxDriver): Add stub for driver.
+* src/lxc/lxc_driver.c (lxcDriver): Likewise.
+* src/opennebula/one_driver.c (oneDriver): Likewise.
+* src/openvz/openvz_driver.c (openvzDriver): Likewise.
+* src/phyp/phyp_driver.c (phypDriver): Likewise.
+* src/qemu/qemu_driver.c (qemuDriver): Likewise.
+* src/remote/remote_driver.c (remote_driver): Likewise.
+* src/test/test_driver.c (testDriver): Likewise.
+* src/uml/uml_driver.c (umlDriver): Likewise.
+* src/vbox/vbox_tmpl.c (Driver): Likewise.
+* src/xen/xen_driver.c (xenUnifiedDriver): Likewise.
+* src/xenapi/xenapi_driver.c (xenapiDriver): Likewise.
+---
+ src/driver.h                |    9 +++++++++
+ src/esx/esx_driver.c        |    2 ++
+ src/lxc/lxc_driver.c        |    2 ++
+ src/opennebula/one_driver.c |    2 ++
+ src/openvz/openvz_driver.c  |    2 ++
+ src/phyp/phyp_driver.c      |    2 ++
+ src/qemu/qemu_driver.c      |    2 ++
+ src/remote/remote_driver.c  |    2 ++
+ src/test/test_driver.c      |    2 ++
+ src/uml/uml_driver.c        |    2 ++
+ src/vbox/vbox_tmpl.c        |    2 ++
+ src/xen/xen_driver.c        |    2 ++
+ src/xenapi/xenapi_driver.c  |    2 ++
+ 13 files changed, 33 insertions(+), 0 deletions(-)
+
+diff --git a/src/driver.h b/src/driver.h
+index 32aeb04..79a96c1 100644
+--- a/src/driver.h
++++ b/src/driver.h
+@@ -185,6 +185,13 @@ typedef int
+         (*virDrvDomainSetVcpus)		(virDomainPtr domain,
+                                          unsigned int nvcpus);
+ typedef int
++        (*virDrvDomainSetVcpusFlags)	(virDomainPtr domain,
++                                         unsigned int nvcpus,
++                                         unsigned int flags);
++typedef int
++        (*virDrvDomainGetVcpusFlags)	(virDomainPtr domain,
++                                         unsigned int flags);
++typedef int
+         (*virDrvDomainPinVcpu)		(virDomainPtr domain,
+                                          unsigned int vcpu,
+                                          unsigned char *cpumap,
+@@ -520,6 +527,8 @@ struct _virDriver {
+     virDrvDomainRestore		domainRestore;
+     virDrvDomainCoreDump		domainCoreDump;
+     virDrvDomainSetVcpus		domainSetVcpus;
++    virDrvDomainSetVcpusFlags		domainSetVcpusFlags;
++    virDrvDomainGetVcpusFlags		domainGetVcpusFlags;
+     virDrvDomainPinVcpu		domainPinVcpu;
+     virDrvDomainGetVcpus		domainGetVcpus;
+     virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
+diff --git a/src/esx/esx_driver.c b/src/esx/esx_driver.c
+index 1b4ee29..2a32374 100644
+--- a/src/esx/esx_driver.c
++++ b/src/esx/esx_driver.c
+@@ -4160,6 +4160,8 @@ static virDriver esxDriver = {
+     NULL,                            /* domainRestore */
+     NULL,                            /* domainCoreDump */
+     esxDomainSetVcpus,               /* domainSetVcpus */
++    NULL,                            /* domainSetVcpusFlags */
++    NULL,                            /* domainGetVcpusFlags */
+     NULL,                            /* domainPinVcpu */
+     NULL,                            /* domainGetVcpus */
+     esxDomainGetMaxVcpus,            /* domainGetMaxVcpus */
+diff --git a/src/lxc/lxc_driver.c b/src/lxc/lxc_driver.c
+index df814da..7563a8c 100644
+--- a/src/lxc/lxc_driver.c
++++ b/src/lxc/lxc_driver.c
+@@ -2768,6 +2768,8 @@ static virDriver lxcDriver = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     NULL, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     NULL, /* domainPinVcpu */
+     NULL, /* domainGetVcpus */
+     NULL, /* domainGetMaxVcpus */
+diff --git a/src/opennebula/one_driver.c b/src/opennebula/one_driver.c
+index ced9a38..199fca3 100644
+--- a/src/opennebula/one_driver.c
++++ b/src/opennebula/one_driver.c
+@@ -751,6 +751,8 @@ static virDriver oneDriver = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     NULL, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     NULL, /* domainPinVcpu */
+     NULL, /* domainGetVcpus */
+     NULL, /* domainGetMaxVcpus */
+diff --git a/src/openvz/openvz_driver.c b/src/openvz/openvz_driver.c
+index 92cf4a1..9d19aeb 100644
+--- a/src/openvz/openvz_driver.c
++++ b/src/openvz/openvz_driver.c
+@@ -1590,6 +1590,8 @@ static virDriver openvzDriver = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     openvzDomainSetVcpus, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     NULL, /* domainPinVcpu */
+     NULL, /* domainGetVcpus */
+     openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/phyp/phyp_driver.c b/src/phyp/phyp_driver.c
+index e63d8d9..6e0a5e9 100644
+--- a/src/phyp/phyp_driver.c
++++ b/src/phyp/phyp_driver.c
+@@ -3941,6 +3941,8 @@ static virDriver phypDriver = {
+     NULL,                       /* domainRestore */
+     NULL,                       /* domainCoreDump */
+     phypDomainSetCPU,           /* domainSetVcpus */
++    NULL,                       /* domainSetVcpusFlags */
++    NULL,                       /* domainGetVcpusFlags */
+     NULL,                       /* domainPinVcpu */
+     NULL,                       /* domainGetVcpus */
+     phypGetLparCPUMAX,          /* domainGetMaxVcpus */
+diff --git a/src/qemu/qemu_driver.c b/src/qemu/qemu_driver.c
+index abd8e9d..3d17e04 100644
+--- a/src/qemu/qemu_driver.c
++++ b/src/qemu/qemu_driver.c
+@@ -12938,6 +12938,8 @@ static virDriver qemuDriver = {
+     qemudDomainRestore, /* domainRestore */
+     qemudDomainCoreDump, /* domainCoreDump */
+     qemudDomainSetVcpus, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     qemudDomainPinVcpu, /* domainPinVcpu */
+     qemudDomainGetVcpus, /* domainGetVcpus */
+     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/remote/remote_driver.c b/src/remote/remote_driver.c
+index 0b10406..1a687ad 100644
+--- a/src/remote/remote_driver.c
++++ b/src/remote/remote_driver.c
+@@ -10468,6 +10468,8 @@ static virDriver remote_driver = {
+     remoteDomainRestore, /* domainRestore */
+     remoteDomainCoreDump, /* domainCoreDump */
+     remoteDomainSetVcpus, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     remoteDomainPinVcpu, /* domainPinVcpu */
+     remoteDomainGetVcpus, /* domainGetVcpus */
+     remoteDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/test/test_driver.c b/src/test/test_driver.c
+index 7d4d119..6a00558 100644
+--- a/src/test/test_driver.c
++++ b/src/test/test_driver.c
+@@ -5260,6 +5260,8 @@ static virDriver testDriver = {
+     testDomainRestore, /* domainRestore */
+     testDomainCoreDump, /* domainCoreDump */
+     testSetVcpus, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     testDomainPinVcpu, /* domainPinVcpu */
+     testDomainGetVcpus, /* domainGetVcpus */
+     testDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/uml/uml_driver.c b/src/uml/uml_driver.c
+index 3dcd321..5161012 100644
+--- a/src/uml/uml_driver.c
++++ b/src/uml/uml_driver.c
+@@ -2129,6 +2129,8 @@ static virDriver umlDriver = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     NULL, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     NULL, /* domainPinVcpu */
+     NULL, /* domainGetVcpus */
+     NULL, /* domainGetMaxVcpus */
+diff --git a/src/vbox/vbox_tmpl.c b/src/vbox/vbox_tmpl.c
+index 7e7d8e4..cb9193a 100644
+--- a/src/vbox/vbox_tmpl.c
++++ b/src/vbox/vbox_tmpl.c
+@@ -8267,6 +8267,8 @@ virDriver NAME(Driver) = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     vboxDomainSetVcpus, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     NULL, /* domainPinVcpu */
+     NULL, /* domainGetVcpus */
+     vboxDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/xen/xen_driver.c b/src/xen/xen_driver.c
+index c2a4de3..7d67ced 100644
+--- a/src/xen/xen_driver.c
++++ b/src/xen/xen_driver.c
+@@ -1951,6 +1951,8 @@ static virDriver xenUnifiedDriver = {
+     xenUnifiedDomainRestore, /* domainRestore */
+     xenUnifiedDomainCoreDump, /* domainCoreDump */
+     xenUnifiedDomainSetVcpus, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     xenUnifiedDomainPinVcpu, /* domainPinVcpu */
+     xenUnifiedDomainGetVcpus, /* domainGetVcpus */
+     xenUnifiedDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/xenapi/xenapi_driver.c b/src/xenapi/xenapi_driver.c
+index e62a139..753169c 100644
+--- a/src/xenapi/xenapi_driver.c
++++ b/src/xenapi/xenapi_driver.c
+@@ -1754,6 +1754,8 @@ static virDriver xenapiDriver = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     xenapiDomainSetVcpus, /* domainSetVcpus */
++    NULL, /* domainSetVcpusFlags */
++    NULL, /* domainGetVcpusFlags */
+     xenapiDomainPinVcpu, /* domainPinVcpu */
+     xenapiDomainGetVcpus, /* domainGetVcpus */
+     xenapiDomainGetMaxVcpus, /* domainGetMaxVcpus */
+-- 
+1.7.2.3
+

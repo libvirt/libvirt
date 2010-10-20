@@ -1,0 +1,197 @@
+From 6c9e6b956453d0f0c4ff542ef8a184d663a39266 Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Mon, 4 Oct 2010 17:01:12 -0600
+Subject: [PATCH 09/15] vcpu: support all flags in test driver
+
+* src/test/test_driver.c (testDomainGetVcpusFlags)
+(testDomainSetVcpusFlags): Support all flags.
+(testDomainUpdateVCPUs): Update cpu count here.
+---
+ src/test/test_driver.c |  128 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 files changed, 109 insertions(+), 19 deletions(-)
+
+diff --git a/src/test/test_driver.c b/src/test/test_driver.c
+index b70c80d..a9d3d89 100644
+--- a/src/test/test_driver.c
++++ b/src/test/test_driver.c
+@@ -450,6 +450,7 @@ testDomainUpdateVCPUs(virConnectPtr conn,
+                 goto cleanup;
+     }
+
++    dom->def->vcpus = nvcpus;
+     ret = 0;
+ cleanup:
+     return ret;
+@@ -2032,12 +2033,51 @@ cleanup:
+ static int
+ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+ {
+-    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+-        testError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++    testConnPtr privconn = domain->conn->privateData;
++    virDomainObjPtr vm;
++    virDomainDefPtr def;
++    int ret = -1;
++
++    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
++                  VIR_DOMAIN_VCPU_CONFIG |
++                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
++
++    /* Exactly one of LIVE or CONFIG must be set.  */
++    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
++        testError(VIR_ERR_INVALID_ARG,
++                  _("invalid flag combination: (0x%x)"), flags);
+         return -1;
+     }
+
+-    return testGetMaxVCPUs(domain->conn, "test");
++    testDriverLock(privconn);
++    vm = virDomainFindByUUID(&privconn->domains, domain->uuid);
++    testDriverUnlock(privconn);
++
++    if (!vm) {
++        char uuidstr[VIR_UUID_STRING_BUFLEN];
++        virUUIDFormat(domain->uuid, uuidstr);
++        testError(VIR_ERR_NO_DOMAIN,
++                  _("no domain with matching uuid '%s'"), uuidstr);
++        goto cleanup;
++    }
++
++    if (flags & VIR_DOMAIN_VCPU_LIVE) {
++        if (!virDomainObjIsActive(vm)) {
++            testError(VIR_ERR_OPERATION_INVALID, "%s",
++                      _("domain not active"));
++            goto cleanup;
++        }
++        def = vm->def;
++    } else {
++        def = vm->newDef ? vm->newDef : vm->def;
++    }
++
++    ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
++
++cleanup:
++    if (vm)
++        virDomainObjUnlock(vm);
++    return ret;
+ }
+
+ static int
+@@ -2053,21 +2093,30 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
+ {
+     testConnPtr privconn = domain->conn->privateData;
+     virDomainObjPtr privdom = NULL;
++    virDomainDefPtr def;
+     int ret = -1, maxvcpus;
+
+-    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+-        testError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
++                  VIR_DOMAIN_VCPU_CONFIG |
++                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
++
++    /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
++     * mixed with LIVE.  */
++    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0 ||
++        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
++         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) {
++        testError(VIR_ERR_INVALID_ARG,
++                  _("invalid flag combination: (0x%x)"), flags);
++        return -1;
++    }
++    if (!nrCpus || (maxvcpus = testGetMaxVCPUs(domain->conn, NULL)) < nrCpus) {
++        testError(VIR_ERR_INVALID_ARG,
++                  _("argument out of range: %d"), nrCpus);
+         return -1;
+     }
+-
+-    /* Do this first before locking */
+-    maxvcpus = testDomainGetMaxVcpus(domain);
+-    if (maxvcpus < 0)
+-        goto cleanup;
+
+     testDriverLock(privconn);
+-    privdom = virDomainFindByName(&privconn->domains,
+-                                  domain->name);
++    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+     testDriverUnlock(privconn);
+
+     if (privdom == NULL) {
+@@ -2075,13 +2124,17 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
+         goto cleanup;
+     }
+
+-    if (!virDomainObjIsActive(privdom)) {
++    if (!virDomainObjIsActive(privdom) && (flags & VIR_DOMAIN_VCPU_LIVE)) {
+         testError(VIR_ERR_OPERATION_INVALID,
+                   "%s", _("cannot hotplug vcpus for an inactive domain"));
+         goto cleanup;
+     }
+
+-    /* We allow more cpus in guest than host */
++    /* We allow more cpus in guest than host, but not more than the
++     * domain's starting limit.  */
++    if ((flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
++        VIR_DOMAIN_VCPU_LIVE && privdom->def->maxvcpus < maxvcpus)
++        maxvcpus = privdom->def->maxvcpus;
+     if (nrCpus > maxvcpus) {
+         testError(VIR_ERR_INVALID_ARG,
+                   "requested cpu amount exceeds maximum (%d > %d)",
+@@ -2089,12 +2142,49 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
+         goto cleanup;
+     }
+
+-    /* Update VCPU state for the running domain */
+-    if (testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0) < 0)
+-        goto cleanup;
++    switch (flags) {
++    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
++        def = privdom->def;
++        if (virDomainObjIsActive(privdom)) {
++            if (privdom->newDef)
++                def = privdom->newDef;
++            else {
++                testError(VIR_ERR_OPERATION_INVALID, "%s",
++                          _("no persistent state"));
++                goto cleanup;
++            }
++        }
++        def->maxvcpus = nrCpus;
++        if (nrCpus < def->vcpus)
++            def->vcpus = nrCpus;
++        ret = 0;
++        break;
+
+-    privdom->def->vcpus = nrCpus;
+-    ret = 0;
++    case VIR_DOMAIN_VCPU_CONFIG:
++        def = privdom->def;
++        if (virDomainObjIsActive(privdom)) {
++            if (privdom->newDef)
++                def = privdom->newDef;
++            else {
++                testError(VIR_ERR_OPERATION_INVALID, "%s",
++                          _("no persistent state"));
++                goto cleanup;
++            }
++        }
++        def->vcpus = nrCpus;
++        ret = 0;
++        break;
++
++    case VIR_DOMAIN_VCPU_LIVE:
++        ret = testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0);
++        break;
++
++    case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
++        ret = testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0);
++        if (ret == 0 && privdom->newDef)
++            privdom->newDef->vcpus = nrCpus;
++        break;
++    }
+
+ cleanup:
+     if (privdom)
+-- 
+1.7.2.3
+

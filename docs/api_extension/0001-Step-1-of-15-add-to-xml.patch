@@ -1,0 +1,145 @@
+From a74f4e44649906dcd82151f7ef837f66d7fa2ab1 Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Mon, 27 Sep 2010 17:36:06 -0600
+Subject: [PATCH 01/15] vcpu: add current attribute to <vcpu> element
+
+Syntax agreed on in
+https://www.redhat.com/archives/libvir-list/2010-September/msg00476.html
+
+<domain ...>
+  <vcpu current='x'>y</vcpu>
+...
+
+can now be used to specify 1 <= x <= y current vcpus, in relation
+to the boot-time max of y vcpus.  If current is omitted, then
+current and max are assumed to be the same value.
+
+* docs/schemas/domain.rng: Add new attribute.
+* docs/formatdomain.html.in: Document it.
+* tests/qemuxml2argvdata/qemuxml2argv-smp.xml: Add to
+domainschematest.
+* tests/xml2sexprdata/xml2sexpr-pv-vcpus.xml: Likewise.
+---
+ docs/formatdomain.html.in                   |    9 +++++--
+ docs/schemas/domain.rng                     |    5 ++++
+ tests/qemuxml2argvdata/qemuxml2argv-smp.xml |   28 +++++++++++++++++++++++++++
+ tests/xml2sexprdata/xml2sexpr-pv-vcpus.xml  |   22 +++++++++++++++++++++
+ 4 files changed, 61 insertions(+), 3 deletions(-)
+ create mode 100644 tests/qemuxml2argvdata/qemuxml2argv-smp.xml
+ create mode 100644 tests/xml2sexprdata/xml2sexpr-pv-vcpus.xml
+
+diff --git a/docs/formatdomain.html.in b/docs/formatdomain.html.in
+index a8a1fac..96de121 100644
+--- a/docs/formatdomain.html.in
++++ b/docs/formatdomain.html.in
+@@ -200,7 +200,7 @@
+     &lt;swap_hard_limit&gt;2097152&lt;/swap_hard_limit&gt;
+     &lt;min_guarantee&gt;65536&lt;/min_guarantee&gt;
+   &lt;/memtune&gt;
+-  &lt;vcpu cpuset="1-4,^3,6"&gt;2&lt;/vcpu&gt;
++  &lt;vcpu cpuset="1-4,^3,6" current="1"&gt;2&lt;/vcpu&gt;
+   ...</pre>
+
+     <dl>
+@@ -238,7 +238,7 @@
+ 	minimum memory allocation for the guest. The units for this value are
+ 	kilobytes (i.e. blocks of 1024 bytes)</dd>
+       <dt><code>vcpu</code></dt>
+-      <dd>The content of this element defines the number of virtual
++      <dd>The content of this element defines the maximum number of virtual
+         CPUs allocated for the guest OS, which must be between 1 and
+         the maximum supported by the hypervisor.  <span class="since">Since
+         0.4.4</span>, this element can contain an optional
+@@ -246,7 +246,10 @@
+         list of physical CPU numbers that virtual CPUs can be pinned
+         to.  Each element in that list is either a single CPU number,
+         a range of CPU numbers, or a caret followed by a CPU number to
+-        be excluded from a previous range.
++        be excluded from a previous range.  <span class="since">Since
++        0.8.5</span>, the optional attribute <code>current</code> can
++        be used to specify whether fewer than the maximum number of
++        virtual CPUs should be enabled.
+       </dd>
+     </dl>
+
+diff --git a/docs/schemas/domain.rng b/docs/schemas/domain.rng
+index f230263..a934a77 100644
+--- a/docs/schemas/domain.rng
++++ b/docs/schemas/domain.rng
+@@ -337,6 +337,11 @@
+               <ref name="cpuset"/>
+             </attribute>
+           </optional>
++          <optional>
++            <attribute name="current">
++              <ref name="countCPU"/>
++            </attribute>
++          </optional>
+           <ref name="countCPU"/>
+         </element>
+       </optional>
+diff --git a/tests/qemuxml2argvdata/qemuxml2argv-smp.xml b/tests/qemuxml2argvdata/qemuxml2argv-smp.xml
+new file mode 100644
+index 0000000..975f873
+--- /dev/null
++++ b/tests/qemuxml2argvdata/qemuxml2argv-smp.xml
+@@ -0,0 +1,28 @@
++<domain type='qemu'>
++  <name>QEMUGuest1</name>
++  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
++  <memory>219200</memory>
++  <currentMemory>219200</currentMemory>
++  <vcpu current='1'>2</vcpu>
++  <os>
++    <type arch='i686' machine='pc'>hvm</type>
++    <boot dev='hd'/>
++  </os>
++  <cpu>
++    <topology sockets='2' cores='1' threads='1'/>
++  </cpu>
++  <clock offset='utc'/>
++  <on_poweroff>destroy</on_poweroff>
++  <on_reboot>restart</on_reboot>
++  <on_crash>destroy</on_crash>
++  <devices>
++    <emulator>/usr/bin/qemu</emulator>
++    <disk type='block' device='disk'>
++      <source dev='/dev/HostVG/QEMUGuest1'/>
++      <target dev='hda' bus='ide'/>
++      <address type='drive' controller='0' bus='0' unit='0'/>
++    </disk>
++    <controller type='ide' index='0'/>
++    <memballoon model='virtio'/>
++  </devices>
++</domain>
+diff --git a/tests/xml2sexprdata/xml2sexpr-pv-vcpus.xml b/tests/xml2sexprdata/xml2sexpr-pv-vcpus.xml
+new file mode 100644
+index 0000000..d061e11
+--- /dev/null
++++ b/tests/xml2sexprdata/xml2sexpr-pv-vcpus.xml
+@@ -0,0 +1,22 @@
++<domain type='xen' id='15'>
++  <name>pvtest</name>
++  <uuid>596a5d2171f48fb2e068e2386a5c413e</uuid>
++  <os>
++    <type>linux</type>
++    <kernel>/var/lib/xen/vmlinuz.2Dn2YT</kernel>
++    <initrd>/var/lib/xen/initrd.img.0u-Vhq</initrd>
++    <cmdline> method=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/test/5.91/x86_64/os  </cmdline>
++  </os>
++  <memory>430080</memory>
++  <vcpu current='2'>4</vcpu>
++  <on_poweroff>destroy</on_poweroff>
++  <on_reboot>destroy</on_reboot>
++  <on_crash>destroy</on_crash>
++  <devices>
++    <disk type='file' device='disk'>
++      <source file='/root/some.img'/>
++      <target dev='xvda'/>
++    </disk>
++    <console tty='/dev/pts/4'/>
++  </devices>
++</domain>
+-- 
+1.7.2.3
+

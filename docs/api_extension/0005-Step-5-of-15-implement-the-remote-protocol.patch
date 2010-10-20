@@ -1,0 +1,421 @@
+From eb826444f90c2563dadf148630b0cd6a9b41ba1e Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Mon, 27 Sep 2010 10:10:06 -0600
+Subject: [PATCH 05/15] vcpu: implement the remote protocol
+
+Done by editing the first three files, then running
+'make -C src rpcgen', then editing src/remote_protocol-structs
+to match.
+
+* daemon/remote.c (remoteDispatchDomainSetVcpusFlags)
+(remoteDispatchDomainGetVcpusFlags): New functions.
+* src/remote/remote_driver.c (remoteDomainSetVcpusFlags)
+(remoteDomainGetVcpusFlags, remote_driver): Client side
+serialization.
+* src/remote/remote_protocol.x
+(remote_domain_set_vcpus_flags_args)
+(remote_domain_get_vcpus_flags_args)
+(remote_domain_get_vcpus_flags_ret)
+(REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS)
+(REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS): Define wire format.
+* daemon/remote_dispatch_args.h: Regenerate.
+* daemon/remote_dispatch_prototypes.h: Likewise.
+* daemon/remote_dispatch_table.h: Likewise.
+* src/remote/remote_protocol.c: Likewise.
+* src/remote/remote_protocol.h: Likewise.
+* src/remote_protocol-structs: Likewise.
+---
+ daemon/remote.c                     |   53 ++++++++++++++++++++++++++++++++
+ daemon/remote_dispatch_args.h       |    2 +
+ daemon/remote_dispatch_prototypes.h |   16 ++++++++++
+ daemon/remote_dispatch_ret.h        |    1 +
+ daemon/remote_dispatch_table.h      |   10 ++++++
+ src/remote/remote_driver.c          |   57 +++++++++++++++++++++++++++++++++-
+ src/remote/remote_protocol.c        |   33 ++++++++++++++++++++
+ src/remote/remote_protocol.h        |   26 ++++++++++++++++
+ src/remote/remote_protocol.x        |   19 +++++++++++-
+ src/remote_protocol-structs         |   12 +++++++
+ 10 files changed, 226 insertions(+), 3 deletions(-)
+
+diff --git a/daemon/remote.c b/daemon/remote.c
+index 7a96e29..323f00c 100644
+--- a/daemon/remote.c
++++ b/daemon/remote.c
+@@ -1751,6 +1751,33 @@ oom:
+ }
+
+ static int
++remoteDispatchDomainGetVcpusFlags (struct qemud_server *server ATTRIBUTE_UNUSED,
++                                   struct qemud_client *client ATTRIBUTE_UNUSED,
++                                   virConnectPtr conn,
++                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
++                                   remote_error *rerr,
++                                   remote_domain_get_vcpus_flags_args *args,
++                                   remote_domain_get_vcpus_flags_ret *ret)
++{
++    virDomainPtr dom;
++
++    dom = get_nonnull_domain (conn, args->dom);
++    if (dom == NULL) {
++        remoteDispatchConnError(rerr, conn);
++        return -1;
++    }
++
++    ret->num = virDomainGetVcpusFlags (dom, args->flags);
++    if (ret->num == -1) {
++        virDomainFree(dom);
++        remoteDispatchConnError(rerr, conn);
++        return -1;
++    }
++    virDomainFree(dom);
++    return 0;
++}
++
++static int
+ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                     struct qemud_client *client ATTRIBUTE_UNUSED,
+                                     virConnectPtr conn,
+@@ -2568,6 +2595,32 @@ remoteDispatchDomainSetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
+ }
+
+ static int
++remoteDispatchDomainSetVcpusFlags (struct qemud_server *server ATTRIBUTE_UNUSED,
++                                   struct qemud_client *client ATTRIBUTE_UNUSED,
++                                   virConnectPtr conn,
++                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
++                                   remote_error *rerr,
++                                   remote_domain_set_vcpus_flags_args *args,
++                                   void *ret ATTRIBUTE_UNUSED)
++{
++    virDomainPtr dom;
++
++    dom = get_nonnull_domain (conn, args->dom);
++    if (dom == NULL) {
++        remoteDispatchConnError(rerr, conn);
++        return -1;
++    }
++
++    if (virDomainSetVcpusFlags (dom, args->nvcpus, args->flags) == -1) {
++        virDomainFree(dom);
++        remoteDispatchConnError(rerr, conn);
++        return -1;
++    }
++    virDomainFree(dom);
++    return 0;
++}
++
++static int
+ remoteDispatchDomainShutdown (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
+diff --git a/daemon/remote_dispatch_args.h b/daemon/remote_dispatch_args.h
+index d8528b6..9583e9c 100644
+--- a/daemon/remote_dispatch_args.h
++++ b/daemon/remote_dispatch_args.h
+@@ -167,3 +167,5 @@
+     remote_domain_create_with_flags_args val_remote_domain_create_with_flags_args;
+     remote_domain_set_memory_parameters_args val_remote_domain_set_memory_parameters_args;
+     remote_domain_get_memory_parameters_args val_remote_domain_get_memory_parameters_args;
++    remote_domain_set_vcpus_flags_args val_remote_domain_set_vcpus_flags_args;
++    remote_domain_get_vcpus_flags_args val_remote_domain_get_vcpus_flags_args;
+diff --git a/daemon/remote_dispatch_prototypes.h b/daemon/remote_dispatch_prototypes.h
+index b674bb4..6b35851 100644
+--- a/daemon/remote_dispatch_prototypes.h
++++ b/daemon/remote_dispatch_prototypes.h
+@@ -306,6 +306,14 @@ static int remoteDispatchDomainGetVcpus(
+     remote_error *err,
+     remote_domain_get_vcpus_args *args,
+     remote_domain_get_vcpus_ret *ret);
++static int remoteDispatchDomainGetVcpusFlags(
++    struct qemud_server *server,
++    struct qemud_client *client,
++    virConnectPtr conn,
++    remote_message_header *hdr,
++    remote_error *err,
++    remote_domain_get_vcpus_flags_args *args,
++    remote_domain_get_vcpus_flags_ret *ret);
+ static int remoteDispatchDomainHasCurrentSnapshot(
+     struct qemud_server *server,
+     struct qemud_client *client,
+@@ -554,6 +562,14 @@ static int remoteDispatchDomainSetVcpus(
+     remote_error *err,
+     remote_domain_set_vcpus_args *args,
+     void *ret);
++static int remoteDispatchDomainSetVcpusFlags(
++    struct qemud_server *server,
++    struct qemud_client *client,
++    virConnectPtr conn,
++    remote_message_header *hdr,
++    remote_error *err,
++    remote_domain_set_vcpus_flags_args *args,
++    void *ret);
+ static int remoteDispatchDomainShutdown(
+     struct qemud_server *server,
+     struct qemud_client *client,
+diff --git a/daemon/remote_dispatch_ret.h b/daemon/remote_dispatch_ret.h
+index 17c9bca..3723b00 100644
+--- a/daemon/remote_dispatch_ret.h
++++ b/daemon/remote_dispatch_ret.h
+@@ -136,3 +136,4 @@
+     remote_domain_get_block_info_ret val_remote_domain_get_block_info_ret;
+     remote_domain_create_with_flags_ret val_remote_domain_create_with_flags_ret;
+     remote_domain_get_memory_parameters_ret val_remote_domain_get_memory_parameters_ret;
++    remote_domain_get_vcpus_flags_ret val_remote_domain_get_vcpus_flags_ret;
+diff --git a/daemon/remote_dispatch_table.h b/daemon/remote_dispatch_table.h
+index 47d95eb..dd2adc7 100644
+--- a/daemon/remote_dispatch_table.h
++++ b/daemon/remote_dispatch_table.h
+@@ -997,3 +997,13 @@
+     .args_filter = (xdrproc_t) xdr_remote_domain_get_memory_parameters_args,
+     .ret_filter = (xdrproc_t) xdr_remote_domain_get_memory_parameters_ret,
+ },
++{   /* DomainSetVcpusFlags => 199 */
++    .fn = (dispatch_fn) remoteDispatchDomainSetVcpusFlags,
++    .args_filter = (xdrproc_t) xdr_remote_domain_set_vcpus_flags_args,
++    .ret_filter = (xdrproc_t) xdr_void,
++},
++{   /* DomainGetVcpusFlags => 200 */
++    .fn = (dispatch_fn) remoteDispatchDomainGetVcpusFlags,
++    .args_filter = (xdrproc_t) xdr_remote_domain_get_vcpus_flags_args,
++    .ret_filter = (xdrproc_t) xdr_remote_domain_get_vcpus_flags_ret,
++},
+diff --git a/src/remote/remote_driver.c b/src/remote/remote_driver.c
+index 1a687ad..37c37ef 100644
+--- a/src/remote/remote_driver.c
++++ b/src/remote/remote_driver.c
+@@ -2580,6 +2580,59 @@ done:
+ }
+
+ static int
++remoteDomainSetVcpusFlags (virDomainPtr domain, unsigned int nvcpus,
++                           unsigned int flags)
++{
++    int rv = -1;
++    remote_domain_set_vcpus_flags_args args;
++    struct private_data *priv = domain->conn->privateData;
++
++    remoteDriverLock(priv);
++
++    make_nonnull_domain (&args.dom, domain);
++    args.nvcpus = nvcpus;
++    args.flags = flags;
++
++    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS,
++              (xdrproc_t) xdr_remote_domain_set_vcpus_flags_args,
++              (char *) &args,
++              (xdrproc_t) xdr_void, (char *) NULL) == -1)
++        goto done;
++
++    rv = 0;
++
++done:
++    remoteDriverUnlock(priv);
++    return rv;
++}
++
++static int
++remoteDomainGetVcpusFlags (virDomainPtr domain, unsigned int flags)
++{
++    int rv = -1;
++    remote_domain_get_vcpus_flags_args args;
++    remote_domain_get_vcpus_flags_ret ret;
++    struct private_data *priv = domain->conn->privateData;
++
++    remoteDriverLock(priv);
++
++    make_nonnull_domain (&args.dom, domain);
++    args.flags = flags;
++
++    memset (&ret, 0, sizeof ret);
++    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS,
++              (xdrproc_t) xdr_remote_domain_get_vcpus_flags_args, (char *) &args,
++              (xdrproc_t) xdr_remote_domain_get_vcpus_flags_ret, (char *) &ret) == -1)
++        goto done;
++
++    rv = ret.num;
++
++done:
++    remoteDriverUnlock(priv);
++    return rv;
++}
++
++static int
+ remoteDomainPinVcpu (virDomainPtr domain,
+                      unsigned int vcpu,
+                      unsigned char *cpumap,
+@@ -10468,8 +10521,8 @@ static virDriver remote_driver = {
+     remoteDomainRestore, /* domainRestore */
+     remoteDomainCoreDump, /* domainCoreDump */
+     remoteDomainSetVcpus, /* domainSetVcpus */
+-    NULL, /* domainSetVcpusFlags */
+-    NULL, /* domainGetVcpusFlags */
++    remoteDomainSetVcpusFlags, /* domainSetVcpusFlags */
++    remoteDomainGetVcpusFlags, /* domainGetVcpusFlags */
+     remoteDomainPinVcpu, /* domainPinVcpu */
+     remoteDomainGetVcpus, /* domainGetVcpus */
+     remoteDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/remote/remote_protocol.c b/src/remote/remote_protocol.c
+index 5c55713..38ea050 100644
+--- a/src/remote/remote_protocol.c
++++ b/src/remote/remote_protocol.c
+@@ -1355,6 +1355,39 @@ xdr_remote_domain_set_vcpus_args (XDR *xdrs, remote_domain_set_vcpus_args *objp)
+ }
+
+ bool_t
++xdr_remote_domain_set_vcpus_flags_args (XDR *xdrs, remote_domain_set_vcpus_flags_args *objp)
++{
++
++         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
++                 return FALSE;
++         if (!xdr_u_int (xdrs, &objp->nvcpus))
++                 return FALSE;
++         if (!xdr_u_int (xdrs, &objp->flags))
++                 return FALSE;
++        return TRUE;
++}
++
++bool_t
++xdr_remote_domain_get_vcpus_flags_args (XDR *xdrs, remote_domain_get_vcpus_flags_args *objp)
++{
++
++         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
++                 return FALSE;
++         if (!xdr_u_int (xdrs, &objp->flags))
++                 return FALSE;
++        return TRUE;
++}
++
++bool_t
++xdr_remote_domain_get_vcpus_flags_ret (XDR *xdrs, remote_domain_get_vcpus_flags_ret *objp)
++{
++
++         if (!xdr_int (xdrs, &objp->num))
++                 return FALSE;
++        return TRUE;
++}
++
++bool_t
+ xdr_remote_domain_pin_vcpu_args (XDR *xdrs, remote_domain_pin_vcpu_args *objp)
+ {
+         char **objp_cpp0 = (char **) (void *) &objp->cpumap.cpumap_val;
+diff --git a/src/remote/remote_protocol.h b/src/remote/remote_protocol.h
+index 756da11..d75e76c 100644
+--- a/src/remote/remote_protocol.h
++++ b/src/remote/remote_protocol.h
+@@ -750,6 +750,24 @@ struct remote_domain_set_vcpus_args {
+ };
+ typedef struct remote_domain_set_vcpus_args remote_domain_set_vcpus_args;
+
++struct remote_domain_set_vcpus_flags_args {
++        remote_nonnull_domain dom;
++        u_int nvcpus;
++        u_int flags;
++};
++typedef struct remote_domain_set_vcpus_flags_args remote_domain_set_vcpus_flags_args;
++
++struct remote_domain_get_vcpus_flags_args {
++        remote_nonnull_domain dom;
++        u_int flags;
++};
++typedef struct remote_domain_get_vcpus_flags_args remote_domain_get_vcpus_flags_args;
++
++struct remote_domain_get_vcpus_flags_ret {
++        int num;
++};
++typedef struct remote_domain_get_vcpus_flags_ret remote_domain_get_vcpus_flags_ret;
++
+ struct remote_domain_pin_vcpu_args {
+         remote_nonnull_domain dom;
+         int vcpu;
+@@ -2281,6 +2299,8 @@ enum remote_procedure {
+         REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196,
+         REMOTE_PROC_DOMAIN_SET_MEMORY_PARAMETERS = 197,
+         REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198,
++        REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199,
++        REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200,
+ };
+ typedef enum remote_procedure remote_procedure;
+
+@@ -2422,6 +2442,9 @@ extern  bool_t xdr_remote_domain_define_xml_args (XDR *, remote_domain_define_xm
+ extern  bool_t xdr_remote_domain_define_xml_ret (XDR *, remote_domain_define_xml_ret*);
+ extern  bool_t xdr_remote_domain_undefine_args (XDR *, remote_domain_undefine_args*);
+ extern  bool_t xdr_remote_domain_set_vcpus_args (XDR *, remote_domain_set_vcpus_args*);
++extern  bool_t xdr_remote_domain_set_vcpus_flags_args (XDR *, remote_domain_set_vcpus_flags_args*);
++extern  bool_t xdr_remote_domain_get_vcpus_flags_args (XDR *, remote_domain_get_vcpus_flags_args*);
++extern  bool_t xdr_remote_domain_get_vcpus_flags_ret (XDR *, remote_domain_get_vcpus_flags_ret*);
+ extern  bool_t xdr_remote_domain_pin_vcpu_args (XDR *, remote_domain_pin_vcpu_args*);
+ extern  bool_t xdr_remote_domain_get_vcpus_args (XDR *, remote_domain_get_vcpus_args*);
+ extern  bool_t xdr_remote_domain_get_vcpus_ret (XDR *, remote_domain_get_vcpus_ret*);
+@@ -2762,6 +2785,9 @@ extern bool_t xdr_remote_domain_define_xml_args ();
+ extern bool_t xdr_remote_domain_define_xml_ret ();
+ extern bool_t xdr_remote_domain_undefine_args ();
+ extern bool_t xdr_remote_domain_set_vcpus_args ();
++extern bool_t xdr_remote_domain_set_vcpus_flags_args ();
++extern bool_t xdr_remote_domain_get_vcpus_flags_args ();
++extern bool_t xdr_remote_domain_get_vcpus_flags_ret ();
+ extern bool_t xdr_remote_domain_pin_vcpu_args ();
+ extern bool_t xdr_remote_domain_get_vcpus_args ();
+ extern bool_t xdr_remote_domain_get_vcpus_ret ();
+diff --git a/src/remote/remote_protocol.x b/src/remote/remote_protocol.x
+index e80fb5f..d57e6d0 100644
+--- a/src/remote/remote_protocol.x
++++ b/src/remote/remote_protocol.x
+@@ -768,6 +768,21 @@ struct remote_domain_set_vcpus_args {
+     int nvcpus;
+ };
+
++struct remote_domain_set_vcpus_flags_args {
++    remote_nonnull_domain dom;
++    unsigned int nvcpus;
++    unsigned int flags;
++};
++
++struct remote_domain_get_vcpus_flags_args {
++    remote_nonnull_domain dom;
++    unsigned int flags;
++};
++
++struct remote_domain_get_vcpus_flags_ret {
++    int num;
++};
++
+ struct remote_domain_pin_vcpu_args {
+     remote_nonnull_domain dom;
+     int vcpu;
+@@ -2062,7 +2077,9 @@ enum remote_procedure {
+     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195,
+     REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196,
+     REMOTE_PROC_DOMAIN_SET_MEMORY_PARAMETERS = 197,
+-    REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198
++    REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198,
++    REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199,
++    REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200
+
+     /*
+      * Notice how the entries are grouped in sets of 10 ?
+diff --git a/src/remote_protocol-structs b/src/remote_protocol-structs
+index 838423e..d505886 100644
+--- a/src/remote_protocol-structs
++++ b/src/remote_protocol-structs
+@@ -461,6 +461,18 @@ struct remote_domain_set_vcpus_args {
+ 	remote_nonnull_domain      dom;
+ 	int                        nvcpus;
+ };
++struct remote_domain_set_vcpus_flags_args {
++	remote_nonnull_domain      dom;
++	u_int                      nvcpus;
++	u_int                      flags;
++};
++struct remote_domain_get_vcpus_flags_args {
++	remote_nonnull_domain      dom;
++	u_int                      flags;
++};
++struct remote_domain_get_vcpus_flags_ret {
++	int                        num;
++};
+ struct remote_domain_pin_vcpu_args {
+ 	remote_nonnull_domain      dom;
+ 	int                        vcpu;
+-- 
+1.7.2.3
+

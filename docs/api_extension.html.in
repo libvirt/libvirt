@@ -10,8 +10,13 @@
 
     <p>
       This document walks you through the process of implementing a new
-      API in libvirt.  It uses as an example the addition of the node device
-      create and destroy APIs.
+      API in libvirt.  It uses as an example the addition of an API for
+      separating maximum from current vcpu usage of a domain.
+      Remember that new API consists of any new public functions, as
+      well as the addition of flags or extensions of XML used by
+      existing functions.  The example in this document adds both new
+      functions and an XML extension.  Not all libvirt API additions
+      require quite as many patches.
     </p>
 
     <p>
@@ -23,7 +28,12 @@
       added to libvirt.  Someone may already be working on the feature you
       want.  Also, recognize that everything you write is likely to undergo
       significant rework as you discuss it with the other developers, so
-      don't wait too long before getting feedback.
+      don't wait too long before getting feedback.  In the vcpu example
+      below, list feedback was first requested
+      <a href="https://www.redhat.com/archives/libvir-list/2010-September/msg00423.html">here</a>
+      and resulted in several rounds of improvements before coding
+      began.  In turn, this example is slightly rearranged from the actual
+      order of the commits.
     </p>
 
     <p>
@@ -46,11 +56,22 @@
       <li>define the public API</li>
       <li>define the internal driver API</li>
       <li>implement the public API</li>
-      <li>define the wire protocol format</li>
-      <li>implement the RPC client</li>
-      <li>implement the server side dispatcher</li>
-      <li>implement the driver methods</li>
+      <li>implement the remote protocol:
+        <ol>
+          <li>define the wire protocol format</li>
+          <li>implement the RPC client</li>
+          <li>implement the server side dispatcher</li>
+        </ol>
+      </li>
+      <li>use new API where appropriate in drivers</li>
       <li>add virsh support</li>
+      <li>add common handling for new API</li>
+      <li>for each driver that can support the new API:
+        <ol>
+          <li>add prerequisite support</li>
+          <li>fully implement new API</li>
+        </ol>
+      </li>
     </ol>
 
     <p>
@@ -66,11 +87,10 @@
       functionality--get the whole thing working and make sure you're happy
       with it.  Then use git or some other version control system that lets
       you rewrite your commit history and break patches into pieces so you
-      don't drop a big blob of code on the mailing list at one go.  For
-      example, I didn't follow my own advice when I originally submitted the
-      example code to the libvirt list but rather submitted it in several
-      large chunks.  I've used git's ability to rewrite my commit history to
-      break the code apart into the example patches shown.
+      don't drop a big blob of code on the mailing list in one go.
+      Also, you should follow the upstream tree, and rebase your
+      series to adapt your patches to work with any other changes
+      that were accepted upstream during your development.
     </p>
 
     <p>
@@ -86,9 +106,24 @@
 
     <h2><a name='publicapi'>Defining the public API</a></h2>
 
-    <p>The first task is to define the public API and add it to:</p>
+    <p>The first task is to define the public API.  If the new API
+      involves an XML extension, you have to enhance the RelaxNG
+      schema and document the new elements or attributes:</p>
 
-    <p><code>include/libvirt/libvirt.h.in</code></p>
+    <p><code>
+        docs/schemas/domain.rng<br/>
+        docs/formatdomain.html.in
+    </code></p>
+
+    <p>If the API extension involves a new function, you have to add a
+      declaration in the public header, and arrange to export the
+      function name (symbol) so other programs can link against the
+      libvirt library and call the new function:</p>
+
+    <p><code>
+        include/libvirt/libvirt.h.in
+        src/libvirt_public.syms
+    </code></p>
 
     <p>
       This task is in many ways the most important to get right, since once
@@ -99,12 +134,9 @@
       rework it as you go through the process of implementing it.
     </p>
 
-    <p>Once you have defined the API, you have to add the symbol names to:</p>
-
-    <p><code>src/libvirt_public.syms</code></p>
-
-    <p class="example">See <a href="api_extension/0001-Step-1-of-8-Define-the-public-API.patch">0001-Step-1-of-8-Define-the-public-API.patch</a> for example code.</p>
-
+    <p class="example">See <a href="api_extension/0001-Step-1-of-15-add-to-xml.patch">0001-Step-1-of-15-add-to-xml.patch</a>
+    and <a href="api_extension/0002-Step-2-of-15-add-new-public-API.patch">0002-Step-2-of-15-add-new-public-API.patch</a>
+    for example code.</p>
 
     <h2><a name='internalapi'>Defining the internal API</a></h2>
 
@@ -118,7 +150,7 @@
 
     <p>
       Of course, it's possible that the new API will involve the creation of
-      an entire new driver type, in which case the changes will include the
+      an entirely new driver type, in which case the changes will include the
       creation of a new struct type to represent the new driver type.
     </p>
 
@@ -129,10 +161,11 @@
     <p>
       To define the internal API, first typedef the driver function
       prototype and then add a new field for it to the relevant driver
-      struct.
+      struct.  Then, update all existing instances of the driver to
+      provide a <code>NULL</code> stub for the new function.
     </p>
 
-    <p class="example">See <a href="api_extension/0002-Step-2-of-8-Define-the-internal-driver-API.patch">0002-Step-2-of-8-Define-the-internal-driver-API.patch</a></p>
+    <p class="example">See <a href="api_extension/0003-Step-3-of-15-define-internal-driver-API.patch">0003-Step-3-of-15-define-internal-driver-API.patch</a></p>
 
     <h2><a name='implpublic'>Implementing the public API</a></h2>
 
@@ -166,16 +199,24 @@
 
     <p><code>src/libvirt.c</code></p>
 
-    <p class="example">See <a href="api_extension/0003-Step-3-of-8-Implement-the-public-API.patch">0003-Step-3-of-8-Implement-the-public-API.patch</a></p>
+    <p class="example">See <a href="api_extension/0004-Step-4-of-15-implement-the-public-APIs.patch">0004-Step-4-of-15-implement-the-public-APIs.patch</a></p>
 
-
-    <h2><a name='wireproto'>Defining the wire protocol format</a></h2>
+    <h2><a name='remoteproto'>Implementing the remote protocol</a></h2>
 
     <p>
-      Defining the wire protocol is essentially a straightforward exercise
-      which is probably most easily understood by referring to the existing
-      remote protocol wire format definitions and the example patch.  It
-      involves making two additions to:
+      Implementing the remote protocol is essentially a
+      straightforward exercise which is probably most easily
+      understood by referring to the existing code and the example
+      patch.  It involves several related changes, including the
+      regeneration of derived files, with further details below.
+    </p>
+
+    <p class="example">See <a href="api_extension/0005-Step-5-of-15-implement-the-remote-protocol.patch">0005-Step-5-of-15-implement-the-remote-protocol.patch</a></p>
+
+    <h3><a name='wireproto'>Defining the wire protocol format</a></h3>
+
+    <p>
+      Defining the wire protocol involves making additions to:
     </p>
 
     <p><code>src/remote/remote_protocol.x</code></p>
@@ -185,7 +226,7 @@
       to the API.  One struct describes the parameters to be passed to the
       remote function, and a second struct describes the value returned by
       the remote function.  The one exception to this rule is that functions
-      that return only integer status do not require a struct for returned
+      that return only 0 or -1 for status do not require a struct for returned
       data.
     </p>
 
@@ -194,23 +235,28 @@
       added to the API.
     </p>
 
-    <p class="example">See <a href="api_extension/0004-Step-4-of-8-Define-the-wire-protocol-format.patch">0004-Step-4-of-8-Define-the-wire-protocol-format.patch</a></p>
-
     <p>
       Once these changes are in place, it's necessary to run 'make rpcgen'
       in the src directory to create the .c and .h files required by the
       remote protocol code. This must be done on a Linux host using the
       GLibC rpcgen program. Other rpcgen versions may generate code which
-      results in bogus compile time warnings
+      results in bogus compile time warnings.  This regenerates the
+      following files:
     </p>
 
+    <p><code>
+        daemon/remote_dispatch_args.h
+        daemon/remote_dispatch_prototypes.h
+        daemon/remote_dispatch_table.h
+        src/remote/remote_protocol.c
+        src/remote/remote_protocol.h
+    </code></p>
 
-    <h2><a name='rpcclient'>Implement the RPC client</a></h2>
+    <h3><a name='rpcclient'>Implement the RPC client</a></h3>
 
     <p>
-      Implementing the RPC client is also relatively mechanical, so refer to
-      the exising code and example patch for guidance.  The RPC client uses
-      the rpcgen generated .h files.  The remote method calls go in:
+      Implementing the uses the rpcgen generated .h files.  The remote
+      method calls go in:
     </p>
 
     <p><code>src/remote/remote_internal.c</code></p>
@@ -227,17 +273,10 @@
       <li>unlocks the remote driver.</li>
     </ol>
 
-    <p>
-      Once you have created the remote method calls, you have to add fields
-      for them to the driver structs for the appropriate remote driver.
-    </p>
-
-    <p class="example">See <a href="api_extension/0005-Step-5-of-8-Implement-the-RPC-client.patch">0005-Step-5-of-8-Implement-the-RPC-client.patch</a></p>
-
-    <h2><a name="serverdispatch">Implement the server side dispatcher</a></h2>
+    <h3><a name="serverdispatch">Implement the server side dispatcher</a></h3>
 
     <p>
-      Implementing the server side of the remote function calls is simply a
+      Implementing the server side of the remote function call is simply a
       matter of deserializing the parameters passed in from the remote
       caller and passing them to the corresponding internal API function.
       The server side dispatchers are implemented in:
@@ -247,8 +286,64 @@
 
     <p>Again, this step uses the .h files generated by make rpcgen.</p>
 
-    <p class="example">See <a href="api_extension/0006-Step-6-of-8-Implement-the-server-side-dispatcher.patch">0006-Step-6-of-8-Implement-the-server-side-dispatcher.patch</a></p>
+    <p>
+      After all three pieces of the remote protocol are complete, and
+      the generated files have been updated, it will be necessary to
+      update the file:</p>
 
+    <p><code>src/remote_protocol-structs</code></p>
+
+    <p>
+      This file should only have new lines added; modifications to
+      existing lines probably imply a backwards-incompatible API change.
+    </p>
+
+    <p class="example">See <a href="api_extension/0005-Step-5-of-15-implement-the-remote-protocol.patch">0005-Step-5-of-15-implement-the-remote-protocol.patch</a></p>
+
+    <h2><a name="internaluseapi">Use the new API internally</a></h2>
+
+    <p>
+      Sometimes, a new API serves as a superset of existing API, by
+      adding more granularity in what can be managed.  When this is
+      the case, it makes sense to share a common implementation by
+      making the older API become a trivial wrapper around the new
+      API, rather than duplicating the common code.  This step should
+      not introduce any semantic differences for the old API, and is
+      not necessary if the new API has no relation to existing API.
+    </p>
+
+    <p class="example">See <a href="api_extension/0006-Step-6-of-15-make-old-API-trivially-wrap-to-new-API.patch">0006-Step-6-of-15-make-old-API-trivially-wrap-to-new-API.patch</a></p>
+
+    <h2><a name="virshuseapi">Expose the new API in virsh</a></h2>
+
+    <p>
+      All new API should be manageable from the virsh command line
+      shell.  This proves that the API is sufficient for the intended
+      purpose, and helps to identify whether the proposed API needs
+      slight changes for easier usage.  However, remember that virsh
+      is used to connect to hosts running older versions of libvirtd,
+      so new commands should have fallbacks to an older API if
+      possible; implementing the virsh hooks at this point makes it
+      very easy to test these fallbacks.  Also remember to document
+      virsh additions.
+    </p>
+
+    <p>
+      A virsh command is composed of a few pieces of code.  You need to
+      define an array of vshCmdInfo structs for each new command that
+      contain the help text and the command description text.  You also need
+      an array of vshCmdOptDef structs to describe the command options.
+      Once you have those pieces in place you can write the function
+      implementing the virsh command.  Finally, you need to add the new
+      command to the commands[] array.  The following files need changes:
+    </p>
+
+    <p><code>
+        tools/virsh.c<br/>
+        tools/virsh.pod
+    </code></p>
+
+    <p class="example">See <a href="api_extension/0007-Step-7-of-15-add-virsh-support.patch">0007-Step-7-of-15-add-virsh-support.patch</a></p>
 
     <h2><a name="driverimpl">Implement the driver methods</a></h2>
 
@@ -261,42 +356,77 @@
       adding.
     </p>
 
+    <h3><a name="commonimpl">Implement common handling</a></h3>
+
     <p>
-      In the example code, the extension is only an additional two function
-      calls in the node device API, so most of the new code is additions to
-      existing files.  The only new files are there for multi-platform
-      implementation convenience, as some of the new code is Linux specific.
+      If the new API is applicable to more than one driver, it may
+      make sense to provide some utility routines, or to factor some
+      of the work into the dispatcher, to avoid reimplementing the
+      same code in every driver.  In the example code, this involved
+      adding a member to the virDomainDefPtr struct for mapping
+      between the XML API addition and the in-memory representation of
+      a domain, along with updating all clients to use the new member.
+      Up to this point, there have been no changes to existing
+      semantics, and the new APIs will fail unless they are used in
+      the same way as the older API wrappers.
+    </p>
+
+    <p class="example">See <a href="api_extension/0008-Step-8-of-15-support-new-xml.patch">0008-Step-8-of-15-support-new-xml.patch</a></p>
+
+    <h3><a name="drivercode">Implement driver handling</a></h3>
+
+    <p>
+      The remaining patches should only touch one driver at a time.
+      It is possible to implement all changes for a driver in one
+      patch, but for review purposes it may still make sense to break
+      things into simpler steps.  Here is where the new APIs finally
+      start working.
     </p>
 
     <p>
-      The example code is probably uninteresting unless you're concerned
-      with libvirt storage, but I've included it here to show how new files
-      are added to the build environment.
+      In the example patches, three separate drivers are supported:
+      test, qemu, and xen.  It is always a good idea to patch the test
+      driver in addition to the target driver, to prove that the API
+      can be used for more than one driver.  The example updates the
+      test driver in one patch:
     </p>
 
-    <p class="example">See <a href="api_extension/0007-Step-7-of-8-Implement-the-driver-methods.patch">0007-Step-7-of-8-Implement-the-driver-methods.patch</a></p>
-
-    <h2><a name="virsh">Implement virsh commands</a></h2>
+    <p class="example">See <a href="api_extension/0009-Step-9-of-15-support-all-flags-in-test-driver.patch">0009-Step-9-of-15-support-all-flags-in-test-driver.patch</a></p>
 
     <p>
-      Once you have the new functionality in place, the easiest way to test
-      it and also to provide it to end users is to implement support for it
-      in virsh.
+      The qemu changes were easier to split into two phases, one for
+      updating the mapping between the new XML and the hypervisor
+      command line arguments, and one for supporting all possible
+      flags of the new API:
+    </p>
+
+    <p class="example">See <a href="api_extension/0010-Step-10-of-15-improve-vcpu-support-in-qemu-command-line.patch">0010-Step-10-of-15-improve-vcpu-support-in-qemu-command-line.patch</a>
+      and <a href="api_extension/0011-Step-11-of-15-complete-vcpu-support-in-qemu-driver.patch">0011-Step-11-of-15-complete-vcpu-support-in-qemu-driver.patch</a></p>
+
+    <p>
+      Finally, the example breaks the xen driver changes across four
+      patches.  One maps the XML changes to the hypervisor command,
+      the next two are independently implementing the getter and
+      setter APIs, and the last one provides cleanup of code that was
+      rendered dead by the new API.
+    </p>
+
+    <p class="example">See <a href="api_extension/0012-Step-12-of-15-improve-vcpu-support-in-xen-command-line.patch">0012-Step-12-of-15-improve-vcpu-support-in-xen-command-line.patch</a>,
+      <a href="api_extension/0013-Step-13-of-15-improve-support-for-getting-xen-vcpu-counts.patch">0013-Step-13-of-15-improve-support-for-getting-xen-vcpu-counts.patch</a>,
+      <a href="api_extension/0014-Step-14-of-15-improve-support-for-setting-xen-vcpu-counts.patch">0014-Step-14-of-15-improve-support-for-setting-xen-vcpu-counts.patch</a>,
+      and <a href="api_extension/0015-Step-15-of-15-remove-dead-xen-code.patch">0015-Step-15-of-15-remove-dead-xen-code.patch</a></p>
+
+    <p>
+      The exact details of the example code are probably uninteresting
+      unless you're concerned with virtual cpu management.
     </p>
 
     <p>
-      A virsh command is composed of a few pieces of code.  You need to
-      define an array of vshCmdInfo structs for each new command that
-      contain the help text and the command description text.  You also need
-      an array of vshCmdOptDef structs to describe the command options.
-      Once you have those pieces of data in place you can write the function
-      implementing the virsh command.  Finally, you need to add the new
-      command to the commands[] array.
+      Once you have working functionality, run make check and make
+      syntax-check on each patch of the series before submitting
+      patches.  It may also be worth writing tests for the libvirt-TCK
+      testsuite to exercise your new API, although those patches are
+      not kept in the libvirt repository.
     </p>
-
-    <p class="example">See <a href="api_extension/0008-Step-8-of-8-Add-virsh-support.patch">0008-Step-8-of-8-Add-virsh-support.patch</a></p>
-
-    <p>Once you have working functionality, run make check and make
-      syntax-check before generating patches.</p>
   </body>
 </html>

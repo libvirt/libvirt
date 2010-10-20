@@ -1,0 +1,294 @@
+From 0fab10e5ed971ab4f960a53e9640b0672f4b8ac3 Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Tue, 5 Oct 2010 08:18:52 -0600
+Subject: [PATCH 12/15] vcpu: improve vcpu support in xen command line
+
+This patch series focuses on xendConfigVersion 2 (xm_internal) and 3
+(xend_internal), but leaves out changes for xenapi drivers.
+
+See this link for more details about vcpu_avail for xm usage.
+http://lists.xensource.com/archives/html/xen-devel/2009-11/msg01061.html
+
+This relies on the fact that def->maxvcpus can be at most 32 with xen.
+
+* src/xen/xend_internal.c (xenDaemonParseSxpr)
+(sexpr_to_xend_domain_info, xenDaemonFormatSxpr): Use vcpu_avail
+when current vcpus is less than maximum.
+* src/xen/xm_internal.c (xenXMDomainConfigParse)
+(xenXMDomainConfigFormat): Likewise.
+* tests/xml2sexprdata/xml2sexpr-pv-vcpus.sexpr: New file.
+* tests/sexpr2xmldata/sexpr2xml-pv-vcpus.sexpr: Likewise.
+* tests/sexpr2xmldata/sexpr2xml-pv-vcpus.xml: Likewise.
+* tests/xmconfigdata/test-paravirt-vcpu.cfg: Likewise.
+* tests/xmconfigdata/test-paravirt-vcpu.xml: Likewise.
+* tests/xml2sexprtest.c (mymain): New test.
+* tests/sexpr2xmltest.c (mymain): Likewise.
+* tests/xmconfigtest.c (mymain): Likewise.
+---
+ src/xen/xend_internal.c                      |   19 +++++++++++++--
+ src/xen/xm_internal.c                        |   10 ++++++-
+ tests/sexpr2xmldata/sexpr2xml-pv-vcpus.sexpr |    1 +
+ tests/sexpr2xmldata/sexpr2xml-pv-vcpus.xml   |   27 +++++++++++++++++++++
+ tests/sexpr2xmltest.c                        |    1 +
+ tests/xmconfigdata/test-paravirt-vcpu.cfg    |   17 +++++++++++++
+ tests/xmconfigdata/test-paravirt-vcpu.xml    |   32 ++++++++++++++++++++++++++
+ tests/xmconfigtest.c                         |    1 +
+ tests/xml2sexprdata/xml2sexpr-pv-vcpus.sexpr |    1 +
+ tests/xml2sexprtest.c                        |    1 +
+ 10 files changed, 105 insertions(+), 5 deletions(-)
+ create mode 100644 tests/sexpr2xmldata/sexpr2xml-pv-vcpus.sexpr
+ create mode 100644 tests/sexpr2xmldata/sexpr2xml-pv-vcpus.xml
+ create mode 100644 tests/xmconfigdata/test-paravirt-vcpu.cfg
+ create mode 100644 tests/xmconfigdata/test-paravirt-vcpu.xml
+ create mode 100644 tests/xml2sexprdata/xml2sexpr-pv-vcpus.sexpr
+
+diff --git a/src/xen/xend_internal.c b/src/xen/xend_internal.c
+index 456b477..dfc6415 100644
+--- a/src/xen/xend_internal.c
++++ b/src/xen/xend_internal.c
+@@ -44,6 +44,7 @@
+ #include "xen_hypervisor.h"
+ #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
+ #include "memory.h"
++#include "count-one-bits.h"
+
+ /* required for cpumap_t */
+ #include <xen/dom0_ops.h>
+@@ -2191,7 +2192,9 @@ xenDaemonParseSxpr(virConnectPtr conn,
+     }
+
+     def->maxvcpus = sexpr_int(root, "domain/vcpus");
+-    def->vcpus = def->maxvcpus;
++    def->vcpus = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
++    if (!def->vcpus || def->maxvcpus < def->vcpus)
++        def->vcpus = def->maxvcpus;
+
+     tmp = sexpr_node(root, "domain/on_poweroff");
+     if (tmp != NULL) {
+@@ -2433,7 +2436,7 @@ sexpr_to_xend_domain_info(virDomainPtr domain, const struct sexpr *root,
+                           virDomainInfoPtr info)
+ {
+     const char *flags;
+-
++    int vcpus;
+
+     if ((root == NULL) || (info == NULL))
+         return (-1);
+@@ -2464,7 +2467,11 @@ sexpr_to_xend_domain_info(virDomainPtr domain, const struct sexpr *root,
+             info->state = VIR_DOMAIN_NOSTATE;
+     }
+     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
+-    info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
++    vcpus = sexpr_int(root, "domain/vcpus");
++    info->nrVirtCpu = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
++    if (!info->nrVirtCpu || vcpus < info->nrVirtCpu)
++        info->nrVirtCpu = vcpus;
++
+     return (0);
+ }
+
+@@ -5668,6 +5675,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
+     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
+                       def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
+     virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
++    /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is 32.  */
++    if (def->vcpus < def->maxvcpus)
++        virBufferVSprintf(&buf, "(vcpu_avail %u)", (1U << def->vcpus) - 1);
+
+     if (def->cpumask) {
+         char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
+@@ -5763,6 +5773,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
+                 virBufferVSprintf(&buf, "(kernel '%s')", def->os.loader);
+
+             virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
++            if (def->vcpus < def->maxvcpus)
++                virBufferVSprintf(&buf, "(vcpu_avail %u)",
++                                  (1U << def->vcpus) - 1);
+
+             for (i = 0 ; i < def->os.nBootDevs ; i++) {
+                 switch (def->os.bootDevs[i]) {
+diff --git a/src/xen/xm_internal.c b/src/xen/xm_internal.c
+index bf20a64..f7121ab 100644
+--- a/src/xen/xm_internal.c
++++ b/src/xen/xm_internal.c
+@@ -46,6 +46,7 @@
+ #include "util.h"
+ #include "memory.h"
+ #include "logging.h"
++#include "count-one-bits.h"
+
+ #define VIR_FROM_THIS VIR_FROM_XENXM
+
+@@ -772,10 +773,12 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
+     def->mem.max_balloon *= 1024;
+
+     if (xenXMConfigGetULong(conf, "vcpus", &count, 1) < 0 ||
+-        (unsigned short) count != count)
++        MAX_VIRT_CPUS < count)
+         goto cleanup;
+     def->maxvcpus = count;
+-    def->vcpus = def->maxvcpus;
++    if (xenXMConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
++        goto cleanup;
++    def->vcpus = MIN(count_one_bits(count), def->maxvcpus);
+
+     if (xenXMConfigGetString(conf, "cpus", &str, NULL) < 0)
+         goto cleanup;
+@@ -2246,6 +2249,9 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
+
+     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
+         goto no_memory;
++    if (def->vcpus < def->maxvcpus &&
++        xenXMConfigSetInt(conf, "vcpu_avail", (1U << def->vcpus) - 1) < 0)
++        goto no_memory;
+
+     if ((def->cpumask != NULL) &&
+         ((cpus = virDomainCpuSetFormat(def->cpumask,
+diff --git a/tests/sexpr2xmldata/sexpr2xml-pv-vcpus.sexpr b/tests/sexpr2xmldata/sexpr2xml-pv-vcpus.sexpr
+new file mode 100644
+index 0000000..2be6822
+--- /dev/null
++++ b/tests/sexpr2xmldata/sexpr2xml-pv-vcpus.sexpr
+@@ -0,0 +1 @@
++(domain (domid 6)(name 'pvtest')(memory 420)(maxmem 420)(vcpus 4)(vcpu_avail 3)(uuid '596a5d2171f48fb2e068e2386a5c413e')(on_poweroff 'destroy')(on_reboot 'destroy')(on_crash 'destroy')(image (linux (kernel '/var/lib/xen/vmlinuz.2Dn2YT')(ramdisk '/var/lib/xen/initrd.img.0u-Vhq')(args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/test/5.91/x86_64/os  ')))(device (vbd (dev 'xvda')(uname 'file:/root/some.img')(mode 'w'))))
+diff --git a/tests/sexpr2xmldata/sexpr2xml-pv-vcpus.xml b/tests/sexpr2xmldata/sexpr2xml-pv-vcpus.xml
+new file mode 100644
+index 0000000..0d6bf11
+--- /dev/null
++++ b/tests/sexpr2xmldata/sexpr2xml-pv-vcpus.xml
+@@ -0,0 +1,27 @@
++<domain type='xen' id='6'>
++  <name>pvtest</name>
++  <uuid>596a5d21-71f4-8fb2-e068-e2386a5c413e</uuid>
++  <memory>430080</memory>
++  <currentMemory>430080</currentMemory>
++  <vcpu current='2'>4</vcpu>
++  <os>
++    <type>linux</type>
++    <kernel>/var/lib/xen/vmlinuz.2Dn2YT</kernel>
++    <initrd>/var/lib/xen/initrd.img.0u-Vhq</initrd>
++    <cmdline> method=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/test/5.91/x86_64/os  </cmdline>
++  </os>
++  <clock offset='utc'/>
++  <on_poweroff>destroy</on_poweroff>
++  <on_reboot>destroy</on_reboot>
++  <on_crash>destroy</on_crash>
++  <devices>
++    <disk type='file' device='disk'>
++      <driver name='file'/>
++      <source file='/root/some.img'/>
++      <target dev='xvda' bus='xen'/>
++    </disk>
++    <console type='pty'>
++      <target type='xen' port='0'/>
++    </console>
++  </devices>
++</domain>
+diff --git a/tests/sexpr2xmltest.c b/tests/sexpr2xmltest.c
+index d62b44f..f100dd8 100644
+--- a/tests/sexpr2xmltest.c
++++ b/tests/sexpr2xmltest.c
+@@ -132,6 +132,7 @@ mymain(int argc, char **argv)
+     DO_TEST("pv-vfb-type-crash", "pv-vfb-type-crash", 3);
+     DO_TEST("fv-autoport", "fv-autoport", 3);
+     DO_TEST("pv-bootloader", "pv-bootloader", 1);
++    DO_TEST("pv-vcpus", "pv-vcpus", 1);
+
+     DO_TEST("disk-file", "disk-file", 2);
+     DO_TEST("disk-block", "disk-block", 2);
+diff --git a/tests/xmconfigdata/test-paravirt-vcpu.cfg b/tests/xmconfigdata/test-paravirt-vcpu.cfg
+new file mode 100644
+index 0000000..24c78f4
+--- /dev/null
++++ b/tests/xmconfigdata/test-paravirt-vcpu.cfg
+@@ -0,0 +1,17 @@
++name = "XenGuest1"
++uuid = "c7a5fdb0-cdaf-9455-926a-d65c16db1809"
++maxmem = 579
++memory = 394
++vcpus = 4
++vcpu_avail = 3
++bootloader = "/usr/bin/pygrub"
++on_poweroff = "destroy"
++on_reboot = "restart"
++on_crash = "restart"
++sdl = 0
++vnc = 1
++vncunused = 1
++vnclisten = "127.0.0.1"
++vncpasswd = "123poi"
++disk = [ "phy:/dev/HostVG/XenGuest1,xvda,w" ]
++vif = [ "mac=00:16:3e:66:94:9c,bridge=br0,script=vif-bridge" ]
+diff --git a/tests/xmconfigdata/test-paravirt-vcpu.xml b/tests/xmconfigdata/test-paravirt-vcpu.xml
+new file mode 100644
+index 0000000..0be9456
+--- /dev/null
++++ b/tests/xmconfigdata/test-paravirt-vcpu.xml
+@@ -0,0 +1,32 @@
++<domain type='xen'>
++  <name>XenGuest1</name>
++  <uuid>c7a5fdb0-cdaf-9455-926a-d65c16db1809</uuid>
++  <memory>592896</memory>
++  <currentMemory>403456</currentMemory>
++  <vcpu current='2'>4</vcpu>
++  <bootloader>/usr/bin/pygrub</bootloader>
++  <os>
++    <type arch='i686' machine='xenpv'>linux</type>
++  </os>
++  <clock offset='utc'/>
++  <on_poweroff>destroy</on_poweroff>
++  <on_reboot>restart</on_reboot>
++  <on_crash>restart</on_crash>
++  <devices>
++    <disk type='block' device='disk'>
++      <driver name='phy'/>
++      <source dev='/dev/HostVG/XenGuest1'/>
++      <target dev='xvda' bus='xen'/>
++    </disk>
++    <interface type='bridge'>
++      <mac address='00:16:3e:66:94:9c'/>
++      <source bridge='br0'/>
++      <script path='vif-bridge'/>
++    </interface>
++    <console type='pty'>
++      <target type='xen' port='0'/>
++    </console>
++    <input type='mouse' bus='xen'/>
++    <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' passwd='123poi'/>
++  </devices>
++</domain>
+diff --git a/tests/xmconfigtest.c b/tests/xmconfigtest.c
+index 221b322..ea00747 100644
+--- a/tests/xmconfigtest.c
++++ b/tests/xmconfigtest.c
+@@ -210,6 +210,7 @@ mymain(int argc, char **argv)
+     DO_TEST("paravirt-new-pvfb-vncdisplay", 3);
+     DO_TEST("paravirt-net-e1000", 3);
+     DO_TEST("paravirt-net-vifname", 3);
++    DO_TEST("paravirt-vcpu", 2);
+     DO_TEST("fullvirt-old-cdrom", 1);
+     DO_TEST("fullvirt-new-cdrom", 2);
+     DO_TEST("fullvirt-utc", 2);
+diff --git a/tests/xml2sexprdata/xml2sexpr-pv-vcpus.sexpr b/tests/xml2sexprdata/xml2sexpr-pv-vcpus.sexpr
+new file mode 100644
+index 0000000..e886545
+--- /dev/null
++++ b/tests/xml2sexprdata/xml2sexpr-pv-vcpus.sexpr
+@@ -0,0 +1 @@
++(vm (name 'pvtest')(memory 420)(maxmem 420)(vcpus 4)(vcpu_avail 3)(uuid '596a5d21-71f4-8fb2-e068-e2386a5c413e')(on_poweroff 'destroy')(on_reboot 'destroy')(on_crash 'destroy')(image (linux (kernel '/var/lib/xen/vmlinuz.2Dn2YT')(ramdisk '/var/lib/xen/initrd.img.0u-Vhq')(args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/test/5.91/x86_64/os  ')))(device (vbd (dev 'xvda')(uname 'file:/root/some.img')(mode 'w'))))
+\ No newline at end of file
+diff --git a/tests/xml2sexprtest.c b/tests/xml2sexprtest.c
+index 77cf760..9cf8d39 100644
+--- a/tests/xml2sexprtest.c
++++ b/tests/xml2sexprtest.c
+@@ -118,6 +118,7 @@ mymain(int argc, char **argv)
+     DO_TEST("pv-vfb-new", "pv-vfb-new", "pvtest", 3);
+     DO_TEST("pv-vfb-new-auto", "pv-vfb-new-auto", "pvtest", 3);
+     DO_TEST("pv-bootloader", "pv-bootloader", "pvtest", 1);
++    DO_TEST("pv-vcpus", "pv-vcpus", "pvtest", 1);
+
+     DO_TEST("disk-file", "disk-file", "pvtest", 2);
+     DO_TEST("disk-block", "disk-block", "pvtest", 2);
+-- 
+1.7.2.3
+

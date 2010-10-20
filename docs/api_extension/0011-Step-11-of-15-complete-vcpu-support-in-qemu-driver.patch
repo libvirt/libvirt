@@ -1,0 +1,169 @@
+From 28a3605906385cba43df77051dc26e865f237b09 Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Wed, 29 Sep 2010 17:40:45 -0600
+Subject: [PATCH 11/15] vcpu: complete vcpu support in qemu driver
+
+* src/qemu/qemu_driver.c (qemudDomainSetVcpusFlags)
+(qemudDomainGetVcpusFlags): Support all feasible flag
+combinations.
+---
+ src/qemu/qemu_driver.c |  100 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 files changed, 85 insertions(+), 15 deletions(-)
+
+diff --git a/src/qemu/qemu_driver.c b/src/qemu/qemu_driver.c
+index c66dc04..a9e057f 100644
+--- a/src/qemu/qemu_driver.c
++++ b/src/qemu/qemu_driver.c
+@@ -5941,13 +5941,27 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+ {
+     struct qemud_driver *driver = dom->conn->privateData;
+     virDomainObjPtr vm;
++    virDomainDefPtr def;
+     const char * type;
+     int max;
+     int ret = -1;
+
+-    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+-        qemuReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+-                        flags);
++    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
++                  VIR_DOMAIN_VCPU_CONFIG |
++                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
++
++    /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
++     * mixed with LIVE.  */
++    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0 ||
++        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
++         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) {
++        qemuReportError(VIR_ERR_INVALID_ARG,
++                        _("invalid flag combination: (0x%x)"), flags);
++        return -1;
++    }
++    if (!nvcpus || (unsigned short) nvcpus != nvcpus) {
++        qemuReportError(VIR_ERR_INVALID_ARG,
++                        _("argument out of range: %d"), nvcpus);
+         return -1;
+     }
+
+@@ -5966,7 +5980,7 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+     if (qemuDomainObjBeginJob(vm) < 0)
+         goto cleanup;
+
+-    if (!virDomainObjIsActive(vm)) {
++    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_VCPU_LIVE)) {
+         qemuReportError(VIR_ERR_OPERATION_INVALID,
+                          "%s", _("domain is not running"));
+         goto endjob;
+@@ -5985,6 +5999,11 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+         goto endjob;
+     }
+
++    if ((flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
++        VIR_DOMAIN_VCPU_LIVE && vm->def->maxvcpus < max) {
++        max = vm->def->maxvcpus;
++    }
++
+     if (nvcpus > max) {
+         qemuReportError(VIR_ERR_INVALID_ARG,
+                         _("requested vcpus is greater than max allowable"
+@@ -5992,7 +6011,49 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+         goto endjob;
+     }
+
+-    ret = qemudDomainHotplugVcpus(vm, nvcpus);
++    switch (flags) {
++    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
++        def = vm->def;
++        if (virDomainObjIsActive(vm)) {
++            if (vm->newDef)
++                def = vm->newDef;
++            else{
++                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
++                                _("no persistent state"));
++                goto endjob;
++            }
++        }
++        def->maxvcpus = nvcpus;
++        if (nvcpus < vm->newDef->vcpus)
++            def->vcpus = nvcpus;
++        ret = 0;
++        break;
++
++    case VIR_DOMAIN_VCPU_CONFIG:
++        def = vm->def;
++        if (virDomainObjIsActive(vm)) {
++            if (vm->newDef)
++                def = vm->newDef;
++            else {
++                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
++                                _("no persistent state"));
++                goto endjob;
++            }
++        }
++        def->vcpus = nvcpus;
++        ret = 0;
++        break;
++
++    case VIR_DOMAIN_VCPU_LIVE:
++        ret = qemudDomainHotplugVcpus(vm, nvcpus);
++        break;
++
++    case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
++        ret = qemudDomainHotplugVcpus(vm, nvcpus);
++        if (ret == 0 && vm->newDef)
++            vm->newDef->vcpus = nvcpus;
++        break;
++    }
+
+ endjob:
+     if (qemuDomainObjEndJob(vm) == 0)
+@@ -6171,12 +6232,17 @@ qemudDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+ {
+     struct qemud_driver *driver = dom->conn->privateData;
+     virDomainObjPtr vm;
+-    const char *type;
++    virDomainDefPtr def;
+     int ret = -1;
+
+-    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+-        qemuReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+-                        flags);
++    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
++                  VIR_DOMAIN_VCPU_CONFIG |
++                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
++
++    /* Exactly one of LIVE or CONFIG must be set.  */
++    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
++        qemuReportError(VIR_ERR_INVALID_ARG,
++                        _("invalid flag combination: (0x%x)"), flags);
+         return -1;
+     }
+
+@@ -6192,14 +6258,18 @@ qemudDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+         goto cleanup;
+     }
+
+-    if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
+-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+-                        _("unknown virt type in domain definition '%d'"),
+-                        vm->def->virtType);
+-        goto cleanup;
++    if (flags & VIR_DOMAIN_VCPU_LIVE) {
++        if (!virDomainObjIsActive(vm)) {
++            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
++                            _("domain not active"));
++            goto cleanup;
++        }
++        def = vm->def;
++    } else {
++        def = vm->newDef ? vm->newDef : vm->def;
+     }
+
+-    ret = qemudGetMaxVCPUs(NULL, type);
++    ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
+
+ cleanup:
+     if (vm)
+-- 
+1.7.2.3
+

@@ -1,0 +1,735 @@
+From 50c51f13e2af04afac46e181c4ed62581545a488 Mon Sep 17 00:00:00 2001
+From: Eric Blake <eblake@redhat.com>
+Date: Mon, 27 Sep 2010 16:37:53 -0600
+Subject: [PATCH 06/15] vcpu: make old API trivially wrap to new API
+
+Note - this wrapping is completely mechanical; the old API will
+function identically, since the new API validates that the exact
+same flags are provided by the old API.  On a per-driver basis,
+it may make sense to have the old API pass a different set of flags,
+but that should be done in the per-driver patch that implements
+the full range of flag support in the new API.
+
+* src/esx/esx_driver.c (esxDomainSetVcpus, escDomainGetMaxVpcus):
+Move guts...
+(esxDomainSetVcpusFlags, esxDomainGetVcpusFlags): ...to new
+functions.
+(esxDriver): Trivially support the new API.
+* src/openvz/openvz_driver.c (openvzDomainSetVcpus)
+(openvzDomainSetVcpusFlags, openvzDomainGetMaxVcpus)
+(openvzDomainGetVcpusFlags, openvzDriver): Likewise.
+* src/phyp/phyp_driver.c (phypDomainSetCPU)
+(phypDomainSetVcpusFlags, phypGetLparCPUMAX)
+(phypDomainGetVcpusFlags, phypDriver): Likewise.
+* src/qemu/qemu_driver.c (qemudDomainSetVcpus)
+(qemudDomainSetVcpusFlags, qemudDomainGetMaxVcpus)
+(qemudDomainGetVcpusFlags, qemuDriver): Likewise.
+* src/test/test_driver.c (testSetVcpus, testDomainSetVcpusFlags)
+(testDomainGetMaxVcpus, testDomainGetVcpusFlags, testDriver):
+Likewise.
+* src/vbox/vbox_tmpl.c (vboxDomainSetVcpus)
+(vboxDomainSetVcpusFlags, virDomainGetMaxVcpus)
+(virDomainGetVcpusFlags, virDriver): Likewise.
+* src/xen/xen_driver.c (xenUnifiedDomainSetVcpus)
+(xenUnifiedDomainSetVcpusFlags, xenUnifiedDomainGetMaxVcpus)
+(xenUnifiedDomainGetVcpusFlags, xenUnifiedDriver): Likewise.
+* src/xenapi/xenapi_driver.c (xenapiDomainSetVcpus)
+(xenapiDomainSetVcpusFlags, xenapiDomainGetMaxVcpus)
+(xenapiDomainGetVcpusFlags, xenapiDriver): Likewise.
+(xenapiError): New helper macro.
+---
+ src/esx/esx_driver.c       |   32 +++++++++++++++++++---
+ src/openvz/openvz_driver.c |   34 +++++++++++++++++++++---
+ src/phyp/phyp_driver.c     |   32 ++++++++++++++++++++---
+ src/qemu/qemu_driver.c     |   38 +++++++++++++++++++++++++---
+ src/test/test_driver.c     |   36 ++++++++++++++++++++++---
+ src/vbox/vbox_tmpl.c       |   36 +++++++++++++++++++++++---
+ src/xen/xen_driver.c       |   34 ++++++++++++++++++++++---
+ src/xenapi/xenapi_driver.c |   60 ++++++++++++++++++++++++++++++++++++++------
+ 8 files changed, 263 insertions(+), 39 deletions(-)
+
+diff --git a/src/esx/esx_driver.c b/src/esx/esx_driver.c
+index 2a32374..b3e1284 100644
+--- a/src/esx/esx_driver.c
++++ b/src/esx/esx_driver.c
+@@ -2384,7 +2384,8 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
+
+
+ static int
+-esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
++esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
++                       unsigned int flags)
+ {
+     int result = -1;
+     esxPrivate *priv = domain->conn->privateData;
+@@ -2394,6 +2395,11 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
+     esxVI_ManagedObjectReference *task = NULL;
+     esxVI_TaskInfoState taskInfoState;
+
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        ESX_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+     if (nvcpus < 1) {
+         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                   _("Requested number of virtual CPUs must at least be 1"));
+@@ -2453,15 +2459,26 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
+ }
+
+
++static int
++esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
++{
++    return esxDomainSetVcpusFlags(domain, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
+
+ static int
+-esxDomainGetMaxVcpus(virDomainPtr domain)
++esxDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+ {
+     esxPrivate *priv = domain->conn->privateData;
+     esxVI_String *propertyNameList = NULL;
+     esxVI_ObjectContent *hostSystem = NULL;
+     esxVI_DynamicProperty *dynamicProperty = NULL;
+
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        ESX_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+     if (priv->maxVcpus > 0) {
+         return priv->maxVcpus;
+     }
+@@ -2507,7 +2524,12 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
+     return priv->maxVcpus;
+ }
+
+-
++static int
++esxDomainGetMaxVcpus(virDomainPtr domain)
++{
++    return esxDomainGetVcpusFlags(domain, (VIR_DOMAIN_VCPU_LIVE |
++                                           VIR_DOMAIN_VCPU_MAXIMUM));
++}
+
+ static char *
+ esxDomainDumpXML(virDomainPtr domain, int flags)
+@@ -4160,8 +4182,8 @@ static virDriver esxDriver = {
+     NULL,                            /* domainRestore */
+     NULL,                            /* domainCoreDump */
+     esxDomainSetVcpus,               /* domainSetVcpus */
+-    NULL,                            /* domainSetVcpusFlags */
+-    NULL,                            /* domainGetVcpusFlags */
++    esxDomainSetVcpusFlags,          /* domainSetVcpusFlags */
++    esxDomainGetVcpusFlags,          /* domainGetVcpusFlags */
+     NULL,                            /* domainPinVcpu */
+     NULL,                            /* domainGetVcpus */
+     esxDomainGetMaxVcpus,            /* domainGetMaxVcpus */
+diff --git a/src/openvz/openvz_driver.c b/src/openvz/openvz_driver.c
+index 9d19aeb..0f3cfdf 100644
+--- a/src/openvz/openvz_driver.c
++++ b/src/openvz/openvz_driver.c
+@@ -67,7 +67,6 @@
+ static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
+ static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type);
+ static int openvzDomainGetMaxVcpus(virDomainPtr dom);
+-static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus);
+ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
+                                         unsigned int nvcpus);
+ static int openvzDomainSetMemoryInternal(virDomainObjPtr vm,
+@@ -1211,11 +1210,24 @@ static int openvzGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
+     return -1;
+ }
+
++static int
++openvzDomainGetVcpusFlags(virDomainPtr dom ATTRIBUTE_UNUSED,
++                          unsigned int flags)
++{
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        openvzError(VIR_ERR_INVALID_ARG, _("unsupported flags (0x%x)"), flags);
++        return -1;
++    }
+
+-static int openvzDomainGetMaxVcpus(virDomainPtr dom ATTRIBUTE_UNUSED) {
+     return openvzGetMaxVCPUs(NULL, "openvz");
+ }
+
++static int openvzDomainGetMaxVcpus(virDomainPtr dom)
++{
++    return openvzDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
++                                           VIR_DOMAIN_VCPU_MAXIMUM));
++}
++
+ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
+                                         unsigned int nvcpus)
+ {
+@@ -1241,12 +1253,18 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
+     return 0;
+ }
+
+-static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
++static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
++                                     unsigned int flags)
+ {
+     virDomainObjPtr         vm;
+     struct openvz_driver   *driver = dom->conn->privateData;
+     int                     ret = -1;
+
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        openvzError(VIR_ERR_INVALID_ARG, _("unsupported flags (0x%x)"), flags);
++        return -1;
++    }
++
+     openvzDriverLock(driver);
+     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+     openvzDriverUnlock(driver);
+@@ -1272,6 +1290,12 @@ cleanup:
+     return ret;
+ }
+
++static int
++openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
++{
++    return openvzDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
+ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
+                                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                    int flags ATTRIBUTE_UNUSED)
+@@ -1590,8 +1614,8 @@ static virDriver openvzDriver = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     openvzDomainSetVcpus, /* domainSetVcpus */
+-    NULL, /* domainSetVcpusFlags */
+-    NULL, /* domainGetVcpusFlags */
++    openvzDomainSetVcpusFlags, /* domainSetVcpusFlags */
++    openvzDomainGetVcpusFlags, /* domainGetVcpusFlags */
+     NULL, /* domainPinVcpu */
+     NULL, /* domainGetVcpus */
+     openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/phyp/phyp_driver.c b/src/phyp/phyp_driver.c
+index 6e0a5e9..e284ae0 100644
+--- a/src/phyp/phyp_driver.c
++++ b/src/phyp/phyp_driver.c
+@@ -1497,15 +1497,27 @@ phypGetLparCPU(virConnectPtr conn, const char *managed_system, int lpar_id)
+ }
+
+ static int
+-phypGetLparCPUMAX(virDomainPtr dom)
++phypDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+ {
+     phyp_driverPtr phyp_driver = dom->conn->privateData;
+     char *managed_system = phyp_driver->managed_system;
+
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        PHYP_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+     return phypGetLparCPUGeneric(dom->conn, managed_system, dom->id, 1);
+ }
+
+ static int
++phypGetLparCPUMAX(virDomainPtr dom)
++{
++    return phypDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
++                                         VIR_DOMAIN_VCPU_MAXIMUM));
++}
++
++static int
+ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
+                   const char *lpar_name)
+ {
+@@ -3831,7 +3843,8 @@ phypConnectGetCapabilities(virConnectPtr conn)
+ }
+
+ static int
+-phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
++phypDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
++                        unsigned int flags)
+ {
+     ConnectionData *connection_data = dom->conn->networkPrivateData;
+     phyp_driverPtr phyp_driver = dom->conn->privateData;
+@@ -3846,6 +3859,11 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
+     unsigned int amount = 0;
+     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        PHYP_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+     if ((ncpus = phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0)
+         return 0;
+
+@@ -3891,6 +3909,12 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
+
+ }
+
++static int
++phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
++{
++    return phypDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
+ static virDrvOpenStatus
+ phypVIOSDriverOpen(virConnectPtr conn,
+                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+@@ -3941,8 +3965,8 @@ static virDriver phypDriver = {
+     NULL,                       /* domainRestore */
+     NULL,                       /* domainCoreDump */
+     phypDomainSetCPU,           /* domainSetVcpus */
+-    NULL,                       /* domainSetVcpusFlags */
+-    NULL,                       /* domainGetVcpusFlags */
++    phypDomainSetVcpusFlags,    /* domainSetVcpusFlags */
++    phypDomainGetVcpusFlags,    /* domainGetVcpusFlags */
+     NULL,                       /* domainPinVcpu */
+     NULL,                       /* domainGetVcpus */
+     phypGetLparCPUMAX,          /* domainGetMaxVcpus */
+diff --git a/src/qemu/qemu_driver.c b/src/qemu/qemu_driver.c
+index 3d17e04..7a2ea8f 100644
+--- a/src/qemu/qemu_driver.c
++++ b/src/qemu/qemu_driver.c
+@@ -5934,13 +5934,22 @@ unsupported:
+ }
+
+
+-static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
++static int
++qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
++                         unsigned int flags)
++{
+     struct qemud_driver *driver = dom->conn->privateData;
+     virDomainObjPtr vm;
+     const char * type;
+     int max;
+     int ret = -1;
+
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        qemuReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
++                        flags);
++        return -1;
++    }
++
+     qemuDriverLock(driver);
+     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+     qemuDriverUnlock(driver);
+@@ -5994,6 +6003,12 @@ cleanup:
+     return ret;
+ }
+
++static int
++qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
++{
++    return qemudDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
+
+ static int
+ qemudDomainPinVcpu(virDomainPtr dom,
+@@ -6150,12 +6165,20 @@ cleanup:
+ }
+
+
+-static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
++static int
++qemudDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
++{
+     struct qemud_driver *driver = dom->conn->privateData;
+     virDomainObjPtr vm;
+     const char *type;
+     int ret = -1;
+
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        qemuReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
++                        flags);
++        return -1;
++    }
++
+     qemuDriverLock(driver);
+     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+     qemuDriverUnlock(driver);
+@@ -6183,6 +6206,13 @@ cleanup:
+     return ret;
+ }
+
++static int
++qemudDomainGetMaxVcpus(virDomainPtr dom)
++{
++    return qemudDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
++                                          VIR_DOMAIN_VCPU_MAXIMUM));
++}
++
+ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
+ {
+     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+@@ -12938,8 +12968,8 @@ static virDriver qemuDriver = {
+     qemudDomainRestore, /* domainRestore */
+     qemudDomainCoreDump, /* domainCoreDump */
+     qemudDomainSetVcpus, /* domainSetVcpus */
+-    NULL, /* domainSetVcpusFlags */
+-    NULL, /* domainGetVcpusFlags */
++    qemudDomainSetVcpusFlags, /* domainSetVcpusFlags */
++    qemudDomainGetVcpusFlags, /* domainGetVcpusFlags */
+     qemudDomainPinVcpu, /* domainPinVcpu */
+     qemudDomainGetVcpus, /* domainGetVcpus */
+     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/test/test_driver.c b/src/test/test_driver.c
+index 6a00558..b70c80d 100644
+--- a/src/test/test_driver.c
++++ b/src/test/test_driver.c
+@@ -2029,17 +2029,37 @@ cleanup:
+     return ret;
+ }
+
+-static int testDomainGetMaxVcpus(virDomainPtr domain)
++static int
++testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+ {
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        testError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+     return testGetMaxVCPUs(domain->conn, "test");
+ }
+
+-static int testSetVcpus(virDomainPtr domain,
+-                        unsigned int nrCpus) {
++static int
++testDomainGetMaxVcpus(virDomainPtr domain)
++{
++    return testDomainGetVcpusFlags(domain, (VIR_DOMAIN_VCPU_LIVE |
++                                            VIR_DOMAIN_VCPU_MAXIMUM));
++}
++
++static int
++testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
++                        unsigned int flags)
++{
+     testConnPtr privconn = domain->conn->privateData;
+     virDomainObjPtr privdom = NULL;
+     int ret = -1, maxvcpus;
+
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        testError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+     /* Do this first before locking */
+     maxvcpus = testDomainGetMaxVcpus(domain);
+     if (maxvcpus < 0)
+@@ -2082,6 +2102,12 @@ cleanup:
+     return ret;
+ }
+
++static int
++testSetVcpus(virDomainPtr domain, unsigned int nrCpus)
++{
++    return testDomainSetVcpusFlags(domain, nrCpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
+ static int testDomainGetVcpus(virDomainPtr domain,
+                               virVcpuInfoPtr info,
+                               int maxinfo,
+@@ -5260,8 +5286,8 @@ static virDriver testDriver = {
+     testDomainRestore, /* domainRestore */
+     testDomainCoreDump, /* domainCoreDump */
+     testSetVcpus, /* domainSetVcpus */
+-    NULL, /* domainSetVcpusFlags */
+-    NULL, /* domainGetVcpusFlags */
++    testDomainSetVcpusFlags, /* domainSetVcpusFlags */
++    testDomainGetVcpusFlags, /* domainGetVcpusFlags */
+     testDomainPinVcpu, /* domainPinVcpu */
+     testDomainGetVcpus, /* domainGetVcpus */
+     testDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/vbox/vbox_tmpl.c b/src/vbox/vbox_tmpl.c
+index cb9193a..0cbe8b3 100644
+--- a/src/vbox/vbox_tmpl.c
++++ b/src/vbox/vbox_tmpl.c
+@@ -1839,13 +1839,21 @@ cleanup:
+     return ret;
+ }
+
+-static int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
++static int
++vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
++                        unsigned int flags)
++{
+     VBOX_OBJECT_CHECK(dom->conn, int, -1);
+     IMachine *machine    = NULL;
+     vboxIID  *iid        = NULL;
+     PRUint32  CPUCount   = nvcpus;
+     nsresult rc;
+
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        vboxError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+ #if VBOX_API_VERSION == 2002
+     if (VIR_ALLOC(iid) < 0) {
+         virReportOOMError();
+@@ -1887,11 +1895,24 @@ cleanup:
+     return ret;
+ }
+
+-static int vboxDomainGetMaxVcpus(virDomainPtr dom) {
++static int
++vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
++{
++    return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
++static int
++vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
++{
+     VBOX_OBJECT_CHECK(dom->conn, int, -1);
+     ISystemProperties *systemProperties = NULL;
+     PRUint32 maxCPUCount = 0;
+
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        vboxError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
++        return -1;
++    }
++
+     /* Currently every domain supports the same number of max cpus
+      * as that supported by vbox and thus take it directly from
+      * the systemproperties.
+@@ -1909,6 +1930,13 @@ static int vboxDomainGetMaxVcpus(virDomainPtr dom) {
+     return ret;
+ }
+
++static int
++vboxDomainGetMaxVcpus(virDomainPtr dom)
++{
++    return vboxDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
++                                         VIR_DOMAIN_VCPU_MAXIMUM));
++}
++
+ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
+     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
+     virDomainDefPtr def  = NULL;
+@@ -8267,8 +8295,8 @@ virDriver NAME(Driver) = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     vboxDomainSetVcpus, /* domainSetVcpus */
+-    NULL, /* domainSetVcpusFlags */
+-    NULL, /* domainGetVcpusFlags */
++    vboxDomainSetVcpusFlags, /* domainSetVcpusFlags */
++    vboxDomainGetVcpusFlags, /* domainGetVcpusFlags */
+     NULL, /* domainPinVcpu */
+     NULL, /* domainGetVcpus */
+     vboxDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/xen/xen_driver.c b/src/xen/xen_driver.c
+index 7d67ced..d6c9c57 100644
+--- a/src/xen/xen_driver.c
++++ b/src/xen/xen_driver.c
+@@ -1069,11 +1069,18 @@ xenUnifiedDomainCoreDump (virDomainPtr dom, const char *to, int flags)
+ }
+
+ static int
+-xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
++xenUnifiedDomainSetVcpusFlags (virDomainPtr dom, unsigned int nvcpus,
++                               unsigned int flags)
+ {
+     GET_PRIVATE(dom->conn);
+     int i;
+
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        xenUnifiedError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
++                        flags);
++        return -1;
++    }
++
+     /* Try non-hypervisor methods first, then hypervisor direct method
+      * as a last resort.
+      */
+@@ -1093,6 +1100,12 @@ xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
+ }
+
+ static int
++xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
++{
++    return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
++static int
+ xenUnifiedDomainPinVcpu (virDomainPtr dom, unsigned int vcpu,
+                          unsigned char *cpumap, int maplen)
+ {
+@@ -1126,11 +1139,17 @@ xenUnifiedDomainGetVcpus (virDomainPtr dom,
+ }
+
+ static int
+-xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
++xenUnifiedDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
+ {
+     GET_PRIVATE(dom->conn);
+     int i, ret;
+
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        xenUnifiedError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
++                        flags);
++        return -1;
++    }
++
+     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+         if (priv->opened[i] && drivers[i]->domainGetMaxVcpus) {
+             ret = drivers[i]->domainGetMaxVcpus (dom);
+@@ -1140,6 +1159,13 @@ xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
+     return -1;
+ }
+
++static int
++xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
++{
++    return xenUnifiedDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
++                                               VIR_DOMAIN_VCPU_MAXIMUM));
++}
++
+ static char *
+ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
+ {
+@@ -1951,8 +1977,8 @@ static virDriver xenUnifiedDriver = {
+     xenUnifiedDomainRestore, /* domainRestore */
+     xenUnifiedDomainCoreDump, /* domainCoreDump */
+     xenUnifiedDomainSetVcpus, /* domainSetVcpus */
+-    NULL, /* domainSetVcpusFlags */
+-    NULL, /* domainGetVcpusFlags */
++    xenUnifiedDomainSetVcpusFlags, /* domainSetVcpusFlags */
++    xenUnifiedDomainGetVcpusFlags, /* domainGetVcpusFlags */
+     xenUnifiedDomainPinVcpu, /* domainPinVcpu */
+     xenUnifiedDomainGetVcpus, /* domainGetVcpus */
+     xenUnifiedDomainGetMaxVcpus, /* domainGetMaxVcpus */
+diff --git a/src/xenapi/xenapi_driver.c b/src/xenapi/xenapi_driver.c
+index 753169c..7d4ab8d 100644
+--- a/src/xenapi/xenapi_driver.c
++++ b/src/xenapi/xenapi_driver.c
+@@ -40,6 +40,11 @@
+ #include "xenapi_driver_private.h"
+ #include "xenapi_utils.h"
+
++#define VIR_FROM_THIS VIR_FROM_XENAPI
++
++#define xenapiError(code, ...)                                    \
++        virReportErrorHelper(NULL, VIR_FROM_THIS, code, __FILE__, \
++                             __FUNCTION__, __LINE__, __VA_ARGS__)
+
+ /*
+  * getCapsObject
+@@ -987,19 +992,26 @@ xenapiDomainGetInfo (virDomainPtr dom, virDomainInfoPtr info)
+
+
+ /*
+- * xenapiDomainSetVcpus
++ * xenapiDomainSetVcpusFlags
+  *
+  * Sets the VCPUs on the domain
+  * Return 0 on success or -1 in case of error
+  */
+ static int
+-xenapiDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
++xenapiDomainSetVcpusFlags (virDomainPtr dom, unsigned int nvcpus,
++                           unsigned int flags)
+ {
+-
+     /* vm.set_vcpus_max */
+     xen_vm vm;
+     xen_vm_set *vms;
+     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
++
++    if (flags != VIR_DOMAIN_VCPU_LIVE) {
++        xenapiError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
++                    flags);
++        return -1;
++    }
++
+     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
+         if (vms->size != 1) {
+             xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+@@ -1019,6 +1031,18 @@ xenapiDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
+ }
+
+ /*
++ * xenapiDomainSetVcpus
++ *
++ * Sets the VCPUs on the domain
++ * Return 0 on success or -1 in case of error
++ */
++static int
++xenapiDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
++{
++    return xenapiDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
++}
++
++/*
+  * xenapiDomainPinVcpu
+  *
+  * Dynamically change the real CPUs which can be allocated to a virtual CPU
+@@ -1140,19 +1164,26 @@ xenapiDomainGetVcpus (virDomainPtr dom,
+ }
+
+ /*
+- * xenapiDomainGetMaxVcpus
++ * xenapiDomainGetVcpusFlags
+  *
+  *
+- * Returns maximum number of Vcpus on success or -1 in case of error
++ * Returns Vcpus count on success or -1 in case of error
+  */
+ static int
+-xenapiDomainGetMaxVcpus (virDomainPtr dom)
++xenapiDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
+ {
+     xen_vm vm;
+     xen_vm_set *vms;
+     int64_t maxvcpu = 0;
+     enum xen_vm_power_state state;
+     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
++
++    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
++        xenapiError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
++                    flags);
++        return -1;
++    }
++
+     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
+         if (vms->size != 1) {
+             xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+@@ -1176,6 +1207,19 @@ xenapiDomainGetMaxVcpus (virDomainPtr dom)
+ }
+
+ /*
++ * xenapiDomainGetMaxVcpus
++ *
++ *
++ * Returns maximum number of Vcpus on success or -1 in case of error
++ */
++static int
++xenapiDomainGetMaxVcpus (virDomainPtr dom)
++{
++    return xenapiDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
++                                           VIR_DOMAIN_VCPU_MAXIMUM));
++}
++
++/*
+  * xenapiDomainDumpXML
+  *
+  *
+@@ -1754,8 +1798,8 @@ static virDriver xenapiDriver = {
+     NULL, /* domainRestore */
+     NULL, /* domainCoreDump */
+     xenapiDomainSetVcpus, /* domainSetVcpus */
+-    NULL, /* domainSetVcpusFlags */
+-    NULL, /* domainGetVcpusFlags */
++    xenapiDomainSetVcpusFlags, /* domainSetVcpusFlags */
++    xenapiDomainGetVcpusFlags, /* domainGetVcpusFlags */
+     xenapiDomainPinVcpu, /* domainPinVcpu */
+     xenapiDomainGetVcpus, /* domainGetVcpus */
+     xenapiDomainGetMaxVcpus, /* domainGetMaxVcpus */
+-- 
+1.7.2.3
+
