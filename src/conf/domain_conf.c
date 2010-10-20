@@ -2515,12 +2515,8 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
                 goto error;
             }
 
-            if (virSocketParseAddr(addrStr, def->target.addr, AF_UNSPEC) < 0) {
-                virDomainReportError(VIR_ERR_XML_ERROR,
-                                     _("%s is not a valid address"),
-                                     addrStr);
+            if (virSocketParseAddr(addrStr, def->target.addr, AF_UNSPEC) < 0)
                 goto error;
-            }
 
             if (def->target.addr->data.stor.ss_family != AF_INET) {
                 virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,

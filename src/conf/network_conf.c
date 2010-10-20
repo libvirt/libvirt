@@ -244,22 +244,14 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
             }
 
             if (virSocketParseAddr(start, &saddr, AF_UNSPEC) < 0) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("cannot parse dhcp start address '%s'"),
-                                      start);
                 xmlFree(start);
                 xmlFree(end);
-                cur = cur->next;
-                continue;
+                return -1;
             }
             if (virSocketParseAddr(end, &eaddr, AF_UNSPEC) < 0) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("cannot parse dhcp end address '%s'"),
-                                      end);
                 xmlFree(start);
                 xmlFree(end);
-                cur = cur->next;
-                continue;
+                return -1;
             }
 
             range = virSocketGetRange(&saddr, &eaddr);
@@ -269,8 +261,7 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                                       start, end);
                 xmlFree(start);
                 xmlFree(end);
-                cur = cur->next;
-                continue;
+                return -1;
             }
 
             if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {

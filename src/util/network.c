@@ -77,15 +77,28 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int family) {
     int len;
     struct addrinfo hints;
     struct addrinfo *res = NULL;
+    int err;
 
-    if (val == NULL)
-        return(-1);
+    if (val == NULL) {
+        virSocketError(VIR_ERR_INVALID_ARG, _("Missing address"));
+        return -1;
+    }
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = family;
     hints.ai_flags = AI_NUMERICHOST;
-    if ((getaddrinfo(val, NULL, &hints, &res) != 0) || (res ==  NULL)) {
-        return(-1);
+    if ((err = getaddrinfo(val, NULL, &hints, &res)) != 0) {
+        virSocketError(VIR_ERR_SYSTEM_ERROR,
+                       _("Cannot parse socket address '%s': %s"),
+                       val, gai_strerror(err));
+        return -1;
+    }
+
+    if (res == NULL) {
+        virSocketError(VIR_ERR_SYSTEM_ERROR,
+                       _("No socket addresses found for '%s'"),
+                       val);
+        return -1;
     }
 
     len = res->ai_addrlen;
