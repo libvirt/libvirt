@@ -95,6 +95,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_ENABLE_KQEMU  = (1LL << 39), /* -enable-kqemu flag */
     QEMUD_CMD_FLAG_FSDEV         = (1LL << 40), /* -fstype filesystem passthrough */
     QEMUD_CMD_FLAG_NESTING       = (1LL << 41), /* -enable-nesting (SVM/VMX) */
+    QEMUD_CMD_FLAG_NAME_PROCESS  = (1LL << 42), /* Is -name process= available */
 };
 
 /* Main driver state */
@@ -146,6 +147,7 @@ struct qemud_driver {
     unsigned int vncAllowHostAudio : 1;
     unsigned int clearEmulatorCapabilities : 1;
     unsigned int allowDiskFormatProbing : 1;
+    unsigned int setProcessName : 1;
 
     virCapsPtr caps;
 

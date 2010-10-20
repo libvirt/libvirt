@@ -370,6 +370,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE ("allow_disk_format_probing", VIR_CONF_LONG);
     if (p) driver->allowDiskFormatProbing = p->l;
 
+    p = virConfGetValue (conf, "set_process_name");
+    CHECK_TYPE ("set_process_name", VIR_CONF_LONG);
+    if (p) driver->setProcessName = p->l;
+
     virConfFree (conf);
     return 0;
 }
@@ -1165,8 +1169,11 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_ENABLE_KVM;
     if (strstr(help, "-no-reboot"))
         flags |= QEMUD_CMD_FLAG_NO_REBOOT;
-    if (strstr(help, "-name"))
+    if (strstr(help, "-name")) {
         flags |= QEMUD_CMD_FLAG_NAME;
+        if (strstr(help, ",process="))
+            flags |= QEMUD_CMD_FLAG_NAME_PROCESS;
+    }
     if (strstr(help, "-uuid"))
         flags |= QEMUD_CMD_FLAG_UUID;
     if (strstr(help, "-xen-domid"))
@@ -4034,7 +4041,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_NAME) {
         ADD_ARG_LIT("-name");
-        ADD_ARG_LIT(def->name);
+        if (driver->setProcessName &&
+            (qemuCmdFlags & QEMUD_CMD_FLAG_NAME_PROCESS)) {
+            char *name;
+            if (virAsprintf(&name, "%s,process=\"qemu:%s\"",
+                            def->name, def->name) < 0)
+                goto no_memory;
+            ADD_ARG_LIT(name);
+        } else {
+            ADD_ARG_LIT(def->name);
+        }
     }
     if (qemuCmdFlags & QEMUD_CMD_FLAG_UUID) {
         ADD_ARG_LIT("-uuid");
@@ -6477,9 +6493,16 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             if (strstr(val, "menu=on"))
                 def->os.bootmenu = 1;
         } else if (STREQ(arg, "-name")) {
+            char *process;
             WANT_VALUE();
-            if (!(def->name = strdup(val)))
-                goto no_memory;
+            process = strstr(val, ",process=");
+            if (process == NULL) {
+                if (!(def->name = strdup(val)))
+                    goto no_memory;
+            } else {
+                if (!(def->name = strndup(val, process - val)))
+                    goto no_memory;
+            }
         } else if (STREQ(arg, "-M")) {
             WANT_VALUE();
             if (!(def->os.machine = strdup(val)))

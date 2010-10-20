@@ -96,6 +96,8 @@ save_image_format = \"gzip\"
 
 hugetlbfs_mount = \"/dev/hugepages\"
 
+set_process_name = 1
+
 relaxed_acs_check = 1
 
 vnc_allow_host_audio = 1
@@ -208,6 +210,8 @@ allow_disk_format_probing = 1
 { "save_image_format" = "gzip" }
 { "#empty" }
 { "hugetlbfs_mount" = "/dev/hugepages" }
+{ "#empty" }
+{ "set_process_name" = "1" }
 { "#empty" }
 { "relaxed_acs_check" = "1" }
 { "#empty" }
