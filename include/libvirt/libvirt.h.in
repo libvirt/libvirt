@@ -722,13 +722,13 @@ typedef enum {
 #define VIR_DOMAIN_MEMORY_MIN_GUARANTEE "min_guarantee"
 
 /**
- * VIR_DOMAIN_SWAP_HARD_LIMIT:
+ * VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT:
  *
  * Macro for the swap tunable swap_hard_limit: it represents the maximum swap
  * the guest can use.
  */
 
-#define VIR_DOMAIN_SWAP_HARD_LIMIT "swap_hard_limit"
+#define VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT "swap_hard_limit"
 
 /**
  * virDomainMemoryParameter:

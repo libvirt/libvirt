@@ -746,7 +746,7 @@ static int lxcDomainSetMemoryParameters(virDomainPtr dom,
                                      _("unable to set memory soft_limit tunable"));
                 ret = -1;
             }
-        } else if (STREQ(param->field, VIR_DOMAIN_SWAP_HARD_LIMIT)) {
+        } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
             int rc;
             if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
                 lxcError(VIR_ERR_INVALID_ARG, "%s",
@@ -873,7 +873,7 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
                 ret = -1;
                 continue;
             }
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_SWAP_HARD_LIMIT) == NULL) {
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT) == NULL) {
                 lxcError(VIR_ERR_INTERNAL_ERROR,
                          "%s", _("Field swap hard limit too long for destination"));
                 ret = -1;

@@ -2894,7 +2894,7 @@ static const vshCmdOptDef opts_memtune[] = {
      N_("Max memory in kilobytes")},
     {VIR_DOMAIN_MEMORY_SOFT_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
      N_("Memory during contention in kilobytes")},
-    {VIR_DOMAIN_SWAP_HARD_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
+    {VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, VSH_OT_STRING, VSH_OFLAG_NONE,
      N_("Max swap in kilobytes")},
     {VIR_DOMAIN_MEMORY_MIN_GUARANTEE, VSH_OT_STRING, VSH_OFLAG_NONE,
      N_("Min guaranteed memory in kilobytes")},
@@ -2928,7 +2928,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
         nparams++;
 
     swap_hard_limit =
-        vshCommandOptInt(cmd, VIR_DOMAIN_SWAP_HARD_LIMIT,
+        vshCommandOptInt(cmd, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
                          &swap_hard_limit);
     if (swap_hard_limit)
         nparams++;
@@ -3015,7 +3015,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
                 hard_limit = 0;
             } else if (swap_hard_limit) {
                 temp->value.ul = swap_hard_limit;
-                strncpy(temp->field, VIR_DOMAIN_SWAP_HARD_LIMIT,
+                strncpy(temp->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
                         sizeof(temp->field));
                 swap_hard_limit = 0;
             } else if (min_guarantee) {
