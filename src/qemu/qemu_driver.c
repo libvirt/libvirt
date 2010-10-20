@@ -9676,7 +9676,6 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = 0;
     for (i = 0; i < *nparams; i++) {
         virMemoryParameterPtr param = &params[i];
         val = 0;
@@ -9689,14 +9688,12 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get memory hard limit"));
-                ret = -1;
-                continue;
+                goto cleanup;
             }
             if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field memory hard limit too long for destination"));
-                ret = -1;
-                continue;
+                goto cleanup;
             }
             param->value.ul = val;
             break;
@@ -9706,14 +9703,12 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get memory soft limit"));
-                ret = -1;
-                continue;
+                goto cleanup;
             }
             if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field memory soft limit too long for destination"));
-                ret = -1;
-                continue;
+                goto cleanup;
             }
             param->value.ul = val;
             break;
@@ -9723,14 +9718,12 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get swap hard limit"));
-                ret = -1;
-                continue;
+                goto cleanup;
             }
             if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field swap hard limit too long for destination"));
-                ret = -1;
-                continue;
+                goto cleanup;
             }
             param->value.ul = val;
             break;
@@ -9740,6 +9733,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             /* should not hit here */
         }
     }
+
+    ret = 0;
 
 cleanup:
     if (group)
