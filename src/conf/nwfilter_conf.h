@@ -110,13 +110,6 @@ struct _nwMACAddress {
 };
 
 
-typedef struct _nwIPAddress nwIPAddress;
-typedef nwIPAddress *nwIPAddressPtr;
-struct _nwIPAddress {
-    virSocketAddr addr;
-};
-
-
 typedef struct _nwItemDesc nwItemDesc;
 typedef nwItemDesc *nwItemDescPtr;
 struct _nwItemDesc {
@@ -125,7 +118,7 @@ struct _nwItemDesc {
     enum attrDatatype datatype;
     union {
         nwMACAddress macaddr;
-        nwIPAddress  ipaddr;
+        virSocketAddr ipaddr;
         uint8_t      u8;
         uint16_t     u16;
         char         protocolID[10];

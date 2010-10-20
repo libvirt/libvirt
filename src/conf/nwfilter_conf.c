@@ -1325,26 +1325,6 @@ virNWMACAddressParser(const char *input,
 }
 
 
-static bool
-virNWIPv4AddressParser(const char *input,
-                       nwIPAddressPtr output)
-{
-    if (virSocketParseIpv4Addr(input, &output->addr) == -1)
-        return 0;
-    return 1;
-}
-
-
-static bool
-virNWIPv6AddressParser(const char *input,
-                       nwIPAddressPtr output)
-{
-    if (virSocketParseIpv6Addr(input, &output->addr) == -1)
-        return 0;
-    return 1;
-}
-
-
 static int
 virNWFilterRuleDetailsParse(xmlNodePtr node,
                             virNWFilterRuleDefPtr nwf,
@@ -1359,11 +1339,10 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
     nwItemDesc *item;
     int int_val;
     unsigned int uint_val;
-    void *storage_ptr;
     union data data;
     valueValidator validator;
     char *match = virXMLPropString(node, "match");
-    nwIPAddress ipaddr;
+    virSocketAddr ipaddr;
     int base;
 
     if (match && STREQ(match, "no"))
@@ -1385,8 +1364,6 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
             if (STRPREFIX(prop, "$")) {
                 flags_set |= NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR;
-                storage_ptr = NULL;
-
                 if (virNWFilterRuleDefAddVar(nwf,
                                              item,
                                              &prop[1]))
@@ -1411,10 +1388,9 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         case DATATYPE_UINT8_HEX:
                             base = 16;
                         case DATATYPE_UINT8:
-                            storage_ptr = &item->u.u8;
                             if (virStrToLong_ui(prop, NULL, base, &uint_val) >= 0) {
                                 if (uint_val <= 0xff) {
-                                    *(uint8_t *)storage_ptr = uint_val;
+                                    item->u.u8 = uint_val;
                                     found = 1;
                                     data.ui = uint_val;
                                 } else
@@ -1426,10 +1402,9 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         case DATATYPE_UINT16_HEX:
                             base = 16;
                         case DATATYPE_UINT16:
-                            storage_ptr = &item->u.u16;
                             if (virStrToLong_ui(prop, NULL, base, &uint_val) >= 0) {
                                 if (uint_val <= 0xffff) {
-                                    *(uint16_t *)storage_ptr = uint_val;
+                                    item->u.u16 = uint_val;
                                     found = 1;
                                     data.ui = uint_val;
                                 } else
@@ -1439,43 +1414,38 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         break;
 
                         case DATATYPE_IPADDR:
-                            storage_ptr = &item->u.ipaddr;
-                            if (!virNWIPv4AddressParser(prop,
-                                       (nwIPAddressPtr)storage_ptr)) {
+                            if (virSocketParseIpv4Addr(prop,
+                                                       &item->u.ipaddr) < 0)
                                 rc = -1;
-                            }
                             found = 1;
                         break;
 
                         case DATATYPE_IPMASK:
-                            storage_ptr = &item->u.u8;
                             if (virStrToLong_ui(prop, NULL, 10, &uint_val) == 0) {
                                 if (uint_val <= 32) {
                                     if (!validator)
-                                        *(uint8_t *)storage_ptr =
-                                               (uint8_t)uint_val;
+                                        item->u.u8 = (uint8_t)uint_val;
                                     found = 1;
                                     data.ui = uint_val;
                                 } else
                                     rc = -1;
                             } else {
-                                if (virNWIPv4AddressParser(prop, &ipaddr)) {
-                                    int_val = virSocketGetNumNetmaskBits(
-                                                     &ipaddr.addr);
+                                if (virSocketParseIpv4Addr(prop, &ipaddr) < 0) {
+                                    rc = -1;
+                                } else {
+                                    int_val = virSocketGetNumNetmaskBits(&ipaddr);
                                     if (int_val >= 0)
-                                        *(uint8_t *)storage_ptr = int_val;
+                                        item->u.u8 = int_val;
                                     else
                                         rc = -1;
                                     found = 1;
-                                } else
-                                    rc = -1;
+                                }
                             }
                         break;
 
                         case DATATYPE_MACADDR:
-                            storage_ptr = &item->u.macaddr;
                             if (!virNWMACAddressParser(prop,
-                                        (nwMACAddressPtr)storage_ptr)) {
+                                                       &item->u.macaddr)) {
                                 rc = -1;
                             }
                             found = 1;
@@ -1483,46 +1453,41 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
                         case DATATYPE_MACMASK:
                             validator = checkMACMask;
-                            storage_ptr = &item->u.macaddr;
                             if (!virNWMACAddressParser(prop,
-                                        (nwMACAddressPtr)storage_ptr)) {
+                                                       &item->u.macaddr)) {
                                 rc = -1;
                             }
-                            data.v = storage_ptr;
+                            data.v = &item->u.macaddr;
                             found = 1;
                         break;
 
                         case DATATYPE_IPV6ADDR:
-                            storage_ptr = &item->u.ipaddr;
-                            if (!virNWIPv6AddressParser(prop,
-                                       (nwIPAddressPtr)storage_ptr)) {
+                            if (virSocketParseIpv6Addr(prop,
+                                                       &item->u.ipaddr) < 0)
                                 rc = -1;
-                            }
                             found = 1;
                         break;
 
                         case DATATYPE_IPV6MASK:
-                            storage_ptr = &item->u.u8;
                             if (virStrToLong_ui(prop, NULL, 10, &uint_val) == 0) {
                                 if (uint_val <= 128) {
                                     if (!validator)
-                                        *(uint8_t *)storage_ptr =
-                                               (uint8_t)uint_val;
+                                        item->u.u8 = (uint8_t)uint_val;
                                     found = 1;
                                     data.ui = uint_val;
                                 } else
                                     rc = -1;
                             } else {
-                                if (virNWIPv6AddressParser(prop, &ipaddr)) {
-                                    int_val = virSocketGetNumNetmaskBits(
-                                                  &ipaddr.addr);
+                                if (virSocketParseIpv6Addr(prop, &ipaddr) < 0) {
+                                    rc = -1;
+                                } else {
+                                    int_val = virSocketGetNumNetmaskBits(&ipaddr);
                                     if (int_val >= 0)
-                                        *(uint8_t *)storage_ptr = int_val;
+                                        item->u.u8 = int_val;
                                     else
                                         rc = -1;
                                     found = 1;
-                                } else
-                                   rc = -1;
+                                }
                             }
                         break;
 
@@ -2642,10 +2607,9 @@ virNWFilterPoolObjDeleteDef(virNWFilterPoolObjPtr pool)
 
 
 static void
-virNWIPAddressFormat(virBufferPtr buf, nwIPAddressPtr ipaddr)
+virNWIPAddressFormat(virBufferPtr buf, virSocketAddrPtr ipaddr)
 {
-    virSocketAddrPtr addr = &ipaddr->addr;
-    char *output = virSocketFormatAddr(addr);
+    char *output = virSocketFormatAddr(ipaddr);
 
     if (output) {
         virBufferVSprintf(buf, "%s", output);
@@ -2674,7 +2638,6 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
     while (att[i].name) {
         item = (nwItemDesc *)((char *)def + att[i].dataIdx);
         enum virNWFilterEntryItemFlags flags = item->flags;
-        void *storage_ptr;
         if ((flags & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)) {
             if (!typeShown) {
                 virBufferVSprintf(buf, "    <%s", type);
@@ -2725,33 +2688,29 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                case DATATYPE_IPV6MASK:
                    // display all masks in CIDR format
                case DATATYPE_UINT8:
-                   storage_ptr = &item->u.u8;
                    virBufferVSprintf(buf, asHex ? "0x%x" : "%d",
-                                     *(uint8_t *)storage_ptr);
+                                     item->u.u8);
                break;
 
                case DATATYPE_UINT16_HEX:
                    asHex = true;
                case DATATYPE_UINT16:
-                   storage_ptr = &item->u.u16;
                    virBufferVSprintf(buf, asHex ? "0x%x" : "%d",
-                                     *(uint16_t *)storage_ptr);
+                                     item->u.u16);
                break;
 
                case DATATYPE_IPADDR:
                case DATATYPE_IPV6ADDR:
-                   storage_ptr = &item->u.ipaddr;
                    virNWIPAddressFormat(buf,
-                                        (nwIPAddressPtr)storage_ptr);
+                                        &item->u.ipaddr);
                break;
 
                case DATATYPE_MACMASK:
                case DATATYPE_MACADDR:
-                   storage_ptr = &item->u.macaddr;
                    for (j = 0; j < 6; j++)
                        virBufferVSprintf(buf, "%02x%s",
-                                      ((nwMACAddressPtr)storage_ptr)->addr[j],
-                                      (j < 5) ? ":" : "");
+                                         item->u.macaddr.addr[j],
+                                         (j < 5) ? ":" : "");
                break;
 
                case DATATYPE_STRINGCOPY:

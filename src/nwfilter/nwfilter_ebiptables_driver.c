@@ -189,7 +189,7 @@ _printDataType(virNWFilterHashTablePtr vars,
 
     switch (item->datatype) {
     case DATATYPE_IPADDR:
-        data = virSocketFormatAddr(&item->u.ipaddr.addr);
+        data = virSocketFormatAddr(&item->u.ipaddr);
         if (!data) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("internal IPv4 address representation "
@@ -206,7 +206,7 @@ _printDataType(virNWFilterHashTablePtr vars,
     break;
 
     case DATATYPE_IPV6ADDR:
-        data = virSocketFormatAddr(&item->u.ipaddr.addr);
+        data = virSocketFormatAddr(&item->u.ipaddr);
         if (!data) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("internal IPv6 address representation "
