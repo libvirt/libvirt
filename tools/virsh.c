@@ -2941,17 +2941,22 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
 
     if (nparams == 0) {
         /* get the number of memory parameters */
-        if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) != 0) &&
-            (nparams != 0)) {
+        if (virDomainGetMemoryParameters(dom, NULL, &nparams, 0) != 0) {
             vshError(ctl, "%s",
                      _("Unable to get number of memory parameters"));
+            goto cleanup;
+        }
+
+        if (nparams == 0) {
+            /* nothing to output */
+            ret = TRUE;
             goto cleanup;
         }
 
         /* now go get all the memory parameters */
         params = vshMalloc(ctl, sizeof(virMemoryParameter) * nparams);
         memset(params, 0, sizeof(virMemoryParameter) * nparams);
-        if (virDomainGetMemoryParameters(dom, params, &nparams, 0)) {
+        if (virDomainGetMemoryParameters(dom, params, &nparams, 0) != 0) {
             vshError(ctl, "%s", _("Unable to get memory parameters"));
             goto cleanup;
         }
@@ -3026,7 +3031,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
             }
         }
         if (virDomainSetMemoryParameters(dom, params, nparams, 0) != 0)
-            vshError(ctl, "%s", _("Unable to change Memory Parameters"));
+            vshError(ctl, "%s", _("Unable to change memory parameters"));
         else
             ret = TRUE;
     }
