@@ -1046,14 +1046,14 @@ static int networkCheckRouteCollision(virNetworkObjPtr network)
     if (!network->def->ipAddress || !network->def->netmask)
         return 0;
 
-    if (virSocketParseAddr(network->def->ipAddress, &inaddress, 0) < 0) {
+    if (virSocketParseAddr(network->def->ipAddress, &inaddress, AF_UNSPEC) < 0) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse IP address '%s'"),
                            network->def->ipAddress);
         goto error;
     }
 
-    if (virSocketParseAddr(network->def->netmask, &innetmask, 0) < 0) {
+    if (virSocketParseAddr(network->def->netmask, &innetmask, AF_UNSPEC) < 0) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse netmask '%s'"),
                            network->def->netmask);

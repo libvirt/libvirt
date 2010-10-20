@@ -58,7 +58,7 @@ static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
  * virSocketParseAddr:
  * @val: a numeric network address IPv4 or IPv6
  * @addr: where to store the return value, optional.
- * @hint: optional hint to pass down to getaddrinfo
+ * @family: address family to pass down to getaddrinfo
  *
  * Mostly a wrapper for getaddrinfo() extracting the address storage
  * from the numeric string like 1.2.3.4 or 2001:db8:85a3:0:0:8a2e:370:7334
@@ -66,7 +66,7 @@ static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
  * Returns the length of the network address or -1 in case of error.
  */
 int
-virSocketParseAddr(const char *val, virSocketAddrPtr addr, int hint) {
+virSocketParseAddr(const char *val, virSocketAddrPtr addr, int family) {
     int len;
     struct addrinfo hints;
     struct addrinfo *res = NULL;
@@ -75,7 +75,8 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int hint) {
         return(-1);
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_flags = AI_NUMERICHOST | hint;
+    hints.ai_family = family;
+    hints.ai_flags = AI_NUMERICHOST;
     if ((getaddrinfo(val, NULL, &hints, &res) != 0) || (res ==  NULL)) {
         return(-1);
     }

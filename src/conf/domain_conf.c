@@ -2515,7 +2515,7 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
                 goto error;
             }
 
-            if (virSocketParseAddr(addrStr, def->target.addr, 0) < 0) {
+            if (virSocketParseAddr(addrStr, def->target.addr, AF_UNSPEC) < 0) {
                 virDomainReportError(VIR_ERR_XML_ERROR,
                                      _("%s is not a valid address"),
                                      addrStr);
