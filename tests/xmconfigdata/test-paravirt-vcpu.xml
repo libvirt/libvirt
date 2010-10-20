@@ -26,7 +26,5 @@
     <console type='pty'>
       <target type='xen' port='0'/>
     </console>
-    <input type='mouse' bus='xen'/>
-    <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' passwd='123poi'/>
   </devices>
 </domain>
