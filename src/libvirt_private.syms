@@ -501,6 +501,7 @@ virReallocN;
 virSocketAddrIsNetmask;
 virSocketCheckNetmask;
 virSocketFormatAddr;
+virSocketFormatAddrFull;
 virSocketGetPort;
 virSocketGetRange;
 virSocketParseAddr;

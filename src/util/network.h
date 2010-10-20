@@ -16,9 +16,11 @@
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <netdb.h>
+# include <stdbool.h>
 
 typedef struct {
     union {
+        struct sockaddr sa;
         struct sockaddr_storage stor;
         struct sockaddr_in inet4;
         struct sockaddr_in6 inet6;
@@ -39,6 +41,9 @@ int virSocketParseIpv6Addr(const char *val,
                            virSocketAddrPtr addr);
 
 char * virSocketFormatAddr(virSocketAddrPtr addr);
+char * virSocketFormatAddrFull(virSocketAddrPtr addr,
+                               bool withService,
+                               const char *separator);
 
 int virSocketSetPort(virSocketAddrPtr addr, int port);
 

@@ -13,6 +13,13 @@
 
 #include "memory.h"
 #include "network.h"
+#include "util.h"
+#include "virterror_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
+#define virSocketError(code, ...)                                       \
+    virReportErrorHelper(NULL, VIR_FROM_THIS, code, __FILE__,           \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /*
  * Helpers to extract the IP arrays from the virSocketAddrPtr
@@ -129,37 +136,74 @@ virSocketParseIpv6Addr(const char *val, virSocketAddrPtr addr) {
  */
 char *
 virSocketFormatAddr(virSocketAddrPtr addr) {
-    char   *out;
-    size_t outlen;
-    void   *inaddr;
-
-    if (addr == NULL)
-        return NULL;
-
-    if (addr->data.stor.ss_family == AF_INET) {
-        outlen = INET_ADDRSTRLEN;
-        inaddr = &addr->data.inet4.sin_addr;
-    }
-
-    else if (addr->data.stor.ss_family == AF_INET6) {
-        outlen = INET6_ADDRSTRLEN;
-        inaddr = &addr->data.inet6.sin6_addr;
-    }
-
-    else {
-        return NULL;
-    }
-
-    if (VIR_ALLOC_N(out, outlen) < 0)
-        return NULL;
-
-    if (inet_ntop(addr->data.stor.ss_family, inaddr, out, outlen) == NULL) {
-        VIR_FREE(out);
-        return NULL;
-    }
-
-    return out;
+    return virSocketFormatAddrFull(addr, false, NULL);
 }
+
+
+/*
+ * virSocketFormatAddrFull:
+ * @addr: an initialized virSocketAddrPtr
+ * @withService: if true, then service info is appended
+ * @separator: separator between hostname & service.
+ *
+ * Returns a string representation of the given address
+ * Returns NULL on any error
+ * Caller must free the returned string
+ */
+char *
+virSocketFormatAddrFull(virSocketAddrPtr addr,
+                        bool withService,
+                        const char *separator)
+{
+    char host[NI_MAXHOST], port[NI_MAXSERV];
+    char *addrstr;
+    int err;
+
+    if (addr == NULL) {
+        virSocketError(VIR_ERR_INVALID_ARG, _("Missing address"));
+        return NULL;
+    }
+
+    /* Short-circuit since getnameinfo doesn't work
+     * nicely for UNIX sockets */
+    if (addr->data.sa.sa_family == AF_UNIX) {
+        if (withService) {
+            if (virAsprintf(&addrstr, "127.0.0.1%s0",
+                            separator ? separator : ":") < 0)
+                goto no_memory;
+        } else {
+            if (!(addrstr = strdup("127.0.0.1")))
+                goto no_memory;
+        }
+        return addrstr;
+    }
+
+    if ((err = getnameinfo(&addr->data.sa,
+                           addr->len,
+                           host, sizeof(host),
+                           port, sizeof(port),
+                           NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
+        virSocketError(VIR_ERR_SYSTEM_ERROR,
+                       _("Cannot convert socket address to string: %s"),
+                       gai_strerror(err));
+        return NULL;
+    }
+
+    if (withService) {
+        if (virAsprintf(&addrstr, "%s%s%s", host, separator, port) == -1)
+            goto no_memory;
+    } else {
+        if (!(addrstr = strdup(host)))
+            goto no_memory;
+    }
+
+    return addrstr;
+
+no_memory:
+    virReportOOMError();
+    return NULL;
+}
+
 
 /*
  * virSocketSetPort:

@@ -4727,6 +4727,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG(devstr);
 
             char *addr = virSocketFormatAddr(channel->target.addr);
+            if (!addr)
+                goto error;
             int port = virSocketGetPort(channel->target.addr);
 
             ADD_ARG_LIT("-netdev");

@@ -5960,11 +5960,8 @@ virDomainChrDefFormat(virBufferPtr buf,
             }
 
             const char *addr = virSocketFormatAddr(def->target.addr);
-            if (addr == NULL) {
-                virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                     _("Unable to format guestfwd address"));
+            if (addr == NULL)
                 return -1;
-            }
 
             virBufferVSprintf(buf, " address='%s' port='%d'",
                               addr, port);

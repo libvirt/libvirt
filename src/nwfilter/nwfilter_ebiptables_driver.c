@@ -190,12 +190,8 @@ _printDataType(virNWFilterHashTablePtr vars,
     switch (item->datatype) {
     case DATATYPE_IPADDR:
         data = virSocketFormatAddr(&item->u.ipaddr);
-        if (!data) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("internal IPv4 address representation "
-                                     "is bad"));
+        if (!data)
             return 1;
-        }
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("buffer too small for IP address"));
@@ -207,12 +203,8 @@ _printDataType(virNWFilterHashTablePtr vars,
 
     case DATATYPE_IPV6ADDR:
         data = virSocketFormatAddr(&item->u.ipaddr);
-        if (!data) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("internal IPv6 address representation "
-                                     "is bad"));
+        if (!data)
             return 1;
-        }
 
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",

@@ -83,6 +83,7 @@ src/util/hostusb.c
 src/util/interface.c
 src/util/json.c
 src/util/macvtap.c
+src/util/network.c
 src/util/pci.c
 src/util/processinfo.c
 src/util/stats_linux.c
