@@ -6910,23 +6910,9 @@ static char *addrToString(struct sockaddr_storage *ss, socklen_t salen)
                            host, sizeof(host),
                            port, sizeof(port),
                            NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
-        char ip[INET6_ADDRSTRLEN];
-        void *rawaddr;
-
-        if (sa->sa_family == AF_INET)
-            rawaddr = &((struct sockaddr_in *)sa)->sin_addr;
-        else
-            rawaddr = &((struct sockaddr_in6 *)sa)->sin6_addr;
-
-        if (inet_ntop(sa->sa_family, rawaddr, ip, sizeof ip)) {
-            remoteError(VIR_ERR_UNKNOWN_HOST,
-                        _("Cannot resolve address %s: %s"),
-                        ip, gai_strerror(err));
-        } else {
-            remoteError(VIR_ERR_UNKNOWN_HOST,
-                        _("Cannot resolve address: %s"),
-                        gai_strerror(err));
-        }
+        remoteError(VIR_ERR_UNKNOWN_HOST,
+                    _("Cannot convert socket address to string: %s"),
+                    gai_strerror(err));
         return NULL;
     }
 
