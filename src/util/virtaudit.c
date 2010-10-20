@@ -71,18 +71,12 @@ void virAuditLog(int logging)
 }
 
 
-#if HAVE_AUDIT
-void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func, size_t linenr,
-                  const char *clienttty, const char *clientaddr,
-                  enum virAuditRecordType type, bool success,
-                  const char *fmt, ...)
-#else
-void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func, size_t linenr,
+void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
+                  size_t linenr,
                   const char *clienttty ATTRIBUTE_UNUSED,
                   const char *clientaddr ATTRIBUTE_UNUSED,
                   enum virAuditRecordType type ATTRIBUTE_UNUSED, bool success,
                   const char *fmt, ...)
-#endif
 {
     char *str = NULL;
     va_list args;
