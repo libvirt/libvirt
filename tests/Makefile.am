@@ -72,7 +72,7 @@ EXTRA_DIST =		\
 	domainsnapshotxml2xmlin \
 	qemuhelpdata
 
-check_PROGRAMS = virshtest conftest \
+check_PROGRAMS = virshtest conftest sockettest \
         nodeinfotest statstest qparamtest virbuftest
 
 if WITH_XEN
@@ -152,6 +152,7 @@ TESTS = virshtest \
 	statstest \
 	qparamtest \
 	virbuftest \
+	sockettest \
 	$(test_scripts)
 
 if WITH_XEN
@@ -213,6 +214,11 @@ TESTS_ENVIRONMENT =				\
 
 valgrind:
 	$(MAKE) check VG="valgrind --quiet --leak-check=full --suppressions=$(srcdir)/.valgrind.supp"
+
+sockettest_SOURCES = \
+	sockettest.c \
+	testutils.c testutils.h
+sockettest_LDADD = ../src/libvirt_util.la $(LDADDS)
 
 if WITH_XEN
 xml2sexprtest_SOURCES = \
