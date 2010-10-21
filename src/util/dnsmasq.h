@@ -22,6 +22,8 @@
 #ifndef __DNSMASQ_H__
 # define __DNSMASQ_H__
 
+# include "network.h"
+
 typedef struct
 {
     /*
@@ -50,7 +52,7 @@ dnsmasqContext * dnsmasqContextNew(const char *network_name,
 void             dnsmasqContextFree(dnsmasqContext *ctx);
 void             dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                                     const char *mac,
-                                    const char *ip,
+                                    virSocketAddr *ip,
                                     const char *name);
 int              dnsmasqSave(const dnsmasqContext *ctx);
 int              dnsmasqDelete(const dnsmasqContext *ctx);

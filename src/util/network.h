@@ -34,6 +34,12 @@ typedef struct {
     socklen_t len;
 } virSocketAddr;
 
+# define VIR_SOCKET_HAS_ADDR(s)                 \
+    ((s)->data.sa.sa_family != AF_UNSPEC)
+
+# define VIR_SOCKET_IS_FAMILY(s, f)             \
+    ((s)->data.sa.sa_family == f)
+
 typedef virSocketAddr *virSocketAddrPtr;
 
 int virSocketParseAddr    (const char *val,

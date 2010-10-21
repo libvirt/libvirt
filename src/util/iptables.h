@@ -22,6 +22,8 @@
 #ifndef __QEMUD_IPTABLES_H__
 # define __QEMUD_IPTABLES_H__
 
+# include "network.h"
+
 typedef struct _iptablesContext iptablesContext;
 
 iptablesContext *iptablesContextNew              (void);
@@ -42,29 +44,29 @@ int              iptablesRemoveUdpInput          (iptablesContext *ctx,
                                                   int port);
 
 int              iptablesAddForwardAllowOut      (iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *iface,
                                                   const char *physdev);
 int              iptablesRemoveForwardAllowOut   (iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *iface,
                                                   const char *physdev);
 
 int              iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *iface,
                                                   const char *physdev);
 int              iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *iface,
                                                   const char *physdev);
 
 int              iptablesAddForwardAllowIn       (iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *iface,
                                                   const char *physdev);
 int              iptablesRemoveForwardAllowIn    (iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *iface,
                                                   const char *physdev);
 
@@ -84,11 +86,11 @@ int              iptablesRemoveForwardRejectIn   (iptablesContext *ctx,
                                                   const char *iface);
 
 int              iptablesAddForwardMasquerade    (iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *physdev,
                                                   const char *protocol);
 int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
-                                                  const char *network,
+                                                  virSocketAddr *network,
                                                   const char *physdev,
                                                   const char *protocol);
 int              iptablesAddOutputFixUdpChecksum (iptablesContext *ctx,

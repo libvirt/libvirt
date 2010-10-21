@@ -44,6 +44,10 @@
 #include "virterror_internal.h"
 #include "logging.h"
 
+#define iptablesError(code, ...)                                        \
+    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,           \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+
 enum {
     ADD = 0,
     REMOVE
@@ -324,27 +328,41 @@ iptablesRemoveUdpInput(iptablesContext *ctx,
  */
 static int
 iptablesForwardAllowOut(iptablesContext *ctx,
-                         const char *network,
+                         virSocketAddr *network,
                          const char *iface,
                          const char *physdev,
                          int action)
 {
-    if (physdev && physdev[0]) {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--source", network,
-                                     "--in-interface", iface,
-                                     "--out-interface", physdev,
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    } else {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--source", network,
-                                     "--in-interface", iface,
-                                     "--jump", "ACCEPT",
-                                     NULL);
+    int ret;
+    char *networkstr;
+
+    if (!VIR_SOCKET_IS_FAMILY(network, AF_INET)) {
+        iptablesError(VIR_ERR_CONFIG_UNSUPPORTED,
+                      _("Only IPv4 addresses can be used with iptables"));
+        return -1;
     }
+
+    if (!(networkstr = virSocketFormatAddr(network)))
+        return -1;
+
+    if (physdev && physdev[0]) {
+        ret = iptablesAddRemoveRule(ctx->forward_filter,
+                                    action,
+                                    "--source", networkstr,
+                                    "--in-interface", iface,
+                                    "--out-interface", physdev,
+                                    "--jump", "ACCEPT",
+                                    NULL);
+    } else {
+        ret = iptablesAddRemoveRule(ctx->forward_filter,
+                                    action,
+                                    "--source", networkstr,
+                                    "--in-interface", iface,
+                                    "--jump", "ACCEPT",
+                                    NULL);
+    }
+    VIR_FREE(networkstr);
+    return ret;
 }
 
 /**
@@ -362,7 +380,7 @@ iptablesForwardAllowOut(iptablesContext *ctx,
  */
 int
 iptablesAddForwardAllowOut(iptablesContext *ctx,
-                            const char *network,
+                            virSocketAddr *network,
                             const char *iface,
                             const char *physdev)
 {
@@ -384,7 +402,7 @@ iptablesAddForwardAllowOut(iptablesContext *ctx,
  */
 int
 iptablesRemoveForwardAllowOut(iptablesContext *ctx,
-                               const char *network,
+                               virSocketAddr *network,
                                const char *iface,
                                const char *physdev)
 {
@@ -397,31 +415,45 @@ iptablesRemoveForwardAllowOut(iptablesContext *ctx,
  */
 static int
 iptablesForwardAllowRelatedIn(iptablesContext *ctx,
-                       const char *network,
+                       virSocketAddr *network,
                        const char *iface,
                        const char *physdev,
                        int action)
 {
-    if (physdev && physdev[0]) {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--destination", network,
-                                     "--in-interface", physdev,
-                                     "--out-interface", iface,
-                                     "--match", "state",
-                                     "--state", "ESTABLISHED,RELATED",
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    } else {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--destination", network,
-                                     "--out-interface", iface,
-                                     "--match", "state",
-                                     "--state", "ESTABLISHED,RELATED",
-                                     "--jump", "ACCEPT",
-                                     NULL);
+    int ret;
+    char *networkstr;
+
+    if (!VIR_SOCKET_IS_FAMILY(network, AF_INET)) {
+        iptablesError(VIR_ERR_CONFIG_UNSUPPORTED,
+                      _("Only IPv4 addresses can be used with iptables"));
+        return -1;
     }
+
+    if (!(networkstr = virSocketFormatAddr(network)))
+        return -1;
+
+    if (physdev && physdev[0]) {
+        ret = iptablesAddRemoveRule(ctx->forward_filter,
+                                    action,
+                                    "--destination", networkstr,
+                                    "--in-interface", physdev,
+                                    "--out-interface", iface,
+                                    "--match", "state",
+                                    "--state", "ESTABLISHED,RELATED",
+                                    "--jump", "ACCEPT",
+                                    NULL);
+    } else {
+        ret = iptablesAddRemoveRule(ctx->forward_filter,
+                                    action,
+                                    "--destination", networkstr,
+                                    "--out-interface", iface,
+                                    "--match", "state",
+                                    "--state", "ESTABLISHED,RELATED",
+                                    "--jump", "ACCEPT",
+                                    NULL);
+    }
+    VIR_FREE(networkstr);
+    return ret;
 }
 
 /**
@@ -439,7 +471,7 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
  */
 int
 iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
-                          const char *network,
+                          virSocketAddr *network,
                           const char *iface,
                           const char *physdev)
 {
@@ -461,7 +493,7 @@ iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
  */
 int
 iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
-                             const char *network,
+                             virSocketAddr *network,
                              const char *iface,
                              const char *physdev)
 {
@@ -472,27 +504,41 @@ iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
  */
 static int
 iptablesForwardAllowIn(iptablesContext *ctx,
-                       const char *network,
+                       virSocketAddr *network,
                        const char *iface,
                        const char *physdev,
                        int action)
 {
-    if (physdev && physdev[0]) {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--destination", network,
-                                     "--in-interface", physdev,
-                                     "--out-interface", iface,
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    } else {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--destination", network,
-                                     "--out-interface", iface,
-                                     "--jump", "ACCEPT",
-                                     NULL);
+    int ret;
+    char *networkstr;
+
+    if (!VIR_SOCKET_IS_FAMILY(network, AF_INET)) {
+        iptablesError(VIR_ERR_CONFIG_UNSUPPORTED,
+                      _("Only IPv4 addresses can be used with iptables"));
+        return -1;
     }
+
+    if (!(networkstr = virSocketFormatAddr(network)))
+        return -1;
+
+    if (physdev && physdev[0]) {
+        ret = iptablesAddRemoveRule(ctx->forward_filter,
+                                    action,
+                                    "--destination", networkstr,
+                                    "--in-interface", physdev,
+                                    "--out-interface", iface,
+                                    "--jump", "ACCEPT",
+                                    NULL);
+    } else {
+        ret = iptablesAddRemoveRule(ctx->forward_filter,
+                                    action,
+                                    "--destination", networkstr,
+                                    "--out-interface", iface,
+                                    "--jump", "ACCEPT",
+                                    NULL);
+    }
+    VIR_FREE(networkstr);
+    return ret;
 }
 
 /**
@@ -510,7 +556,7 @@ iptablesForwardAllowIn(iptablesContext *ctx,
  */
 int
 iptablesAddForwardAllowIn(iptablesContext *ctx,
-                          const char *network,
+                          virSocketAddr *network,
                           const char *iface,
                           const char *physdev)
 {
@@ -532,7 +578,7 @@ iptablesAddForwardAllowIn(iptablesContext *ctx,
  */
 int
 iptablesRemoveForwardAllowIn(iptablesContext *ctx,
-                             const char *network,
+                             virSocketAddr *network,
                              const char *iface,
                              const char *physdev)
 {
@@ -698,50 +744,64 @@ iptablesRemoveForwardRejectIn(iptablesContext *ctx,
  */
 static int
 iptablesForwardMasquerade(iptablesContext *ctx,
-                          const char *network,
+                          virSocketAddr *network,
                           const char *physdev,
                           const char *protocol,
                           int action)
 {
+    int ret;
+    char *networkstr;
+
+    if (!VIR_SOCKET_IS_FAMILY(network, AF_INET)) {
+        iptablesError(VIR_ERR_CONFIG_UNSUPPORTED,
+                      _("Only IPv4 addresses can be used with iptables"));
+        return -1;
+    }
+
+    if (!(networkstr = virSocketFormatAddr(network)))
+        return -1;
+
     if (protocol && protocol[0]) {
         if (physdev && physdev[0]) {
-            return iptablesAddRemoveRule(ctx->nat_postrouting,
-                                         action,
-                                         "--source", network,
-                                         "-p", protocol,
-                                         "!", "--destination", network,
-                                         "--out-interface", physdev,
-                                         "--jump", "MASQUERADE",
-                                         "--to-ports", "1024-65535",
-                                         NULL);
+            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
+                                        action,
+                                        "--source", networkstr,
+                                        "-p", protocol,
+                                        "!", "--destination", networkstr,
+                                        "--out-interface", physdev,
+                                        "--jump", "MASQUERADE",
+                                        "--to-ports", "1024-65535",
+                                        NULL);
         } else {
-            return iptablesAddRemoveRule(ctx->nat_postrouting,
-                                         action,
-                                         "--source", network,
-                                         "-p", protocol,
-                                         "!", "--destination", network,
-                                         "--jump", "MASQUERADE",
-                                         "--to-ports", "1024-65535",
-                                         NULL);
+            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
+                                        action,
+                                        "--source", networkstr,
+                                        "-p", protocol,
+                                        "!", "--destination", networkstr,
+                                        "--jump", "MASQUERADE",
+                                        "--to-ports", "1024-65535",
+                                        NULL);
         }
     } else {
         if (physdev && physdev[0]) {
-            return iptablesAddRemoveRule(ctx->nat_postrouting,
-                                         action,
-                                         "--source", network,
-                                         "!", "--destination", network,
-                                         "--out-interface", physdev,
-                                         "--jump", "MASQUERADE",
-                                         NULL);
+            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
+                                        action,
+                                        "--source", networkstr,
+                                        "!", "--destination", networkstr,
+                                        "--out-interface", physdev,
+                                        "--jump", "MASQUERADE",
+                                        NULL);
         } else {
-            return iptablesAddRemoveRule(ctx->nat_postrouting,
-                                         action,
-                                         "--source", network,
-                                         "!", "--destination", network,
-                                         "--jump", "MASQUERADE",
-                                         NULL);
+            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
+                                        action,
+                                        "--source", networkstr,
+                                        "!", "--destination", networkstr,
+                                        "--jump", "MASQUERADE",
+                                        NULL);
         }
     }
+    VIR_FREE(networkstr);
+    return ret;
 }
 
 /**
@@ -759,7 +819,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
  */
 int
 iptablesAddForwardMasquerade(iptablesContext *ctx,
-                             const char *network,
+                             virSocketAddr *network,
                              const char *physdev,
                              const char *protocol)
 {
@@ -781,7 +841,7 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
  */
 int
 iptablesRemoveForwardMasquerade(iptablesContext *ctx,
-                                const char *network,
+                                virSocketAddr *network,
                                 const char *physdev,
                                 const char *protocol)
 {

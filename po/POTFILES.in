@@ -81,6 +81,7 @@ src/util/dnsmasq.c
 src/util/hooks.c
 src/util/hostusb.c
 src/util/interface.c
+src/util/iptables.c
 src/util/json.c
 src/util/macvtap.c
 src/util/network.c

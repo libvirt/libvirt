@@ -76,23 +76,28 @@ hostsfileFree(dnsmasqHostsfile *hostsfile)
 static int
 hostsfileAdd(dnsmasqHostsfile *hostsfile,
              const char *mac,
-             const char *ip,
+             virSocketAddr *ip,
              const char *name)
 {
+    char *ipstr;
     if (VIR_REALLOC_N(hostsfile->hosts, hostsfile->nhosts + 1) < 0)
         goto alloc_error;
 
+    if (!(ipstr = virSocketFormatAddr(ip)))
+        return -1;
+
     if (name) {
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s,%s",
-                        mac, ip, name) < 0) {
+                        mac, ipstr, name) < 0) {
             goto alloc_error;
         }
     } else {
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s",
-                        mac, ip) < 0) {
+                        mac, ipstr) < 0) {
             goto alloc_error;
         }
     }
+    VIR_FREE(ipstr);
 
     hostsfile->nhosts++;
 
@@ -100,7 +105,7 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
 
  alloc_error:
     virReportOOMError();
-
+    VIR_FREE(ipstr);
     return -1;
 }
 
@@ -279,7 +284,7 @@ dnsmasqContextFree(dnsmasqContext *ctx)
  * dnsmasqAddDhcpHost:
  * @ctx: pointer to the dnsmasq context for each network
  * @mac: pointer to the string contains mac address of the host
- * @ip: pointer to the string contains ip address of the host
+ * @ip: pointer to the socket address contains ip of the host
  * @name: pointer to the string contains hostname of the host or NULL
  *
  * Add dhcp-host entry.
@@ -287,7 +292,7 @@ dnsmasqContextFree(dnsmasqContext *ctx)
 void
 dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                    const char *mac,
-                   const char *ip,
+                   virSocketAddr *ip,
                    const char *name)
 {
     if (ctx->hostsfile)

@@ -659,9 +659,8 @@ static int
 brSetInetAddr(brControl *ctl,
               const char *ifname,
               int cmd,
-              const char *addr)
+              virSocketAddr *addr)
 {
-    virSocketAddr sa;
     struct ifreq ifr;
 
     if (!ctl || !ctl->fd || !ifname || !addr)
@@ -672,13 +671,10 @@ brSetInetAddr(brControl *ctl,
     if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
         return EINVAL;
 
-    if (virSocketParseAddr(addr, &sa, AF_UNSPEC) < 0)
+    if (!VIR_SOCKET_IS_FAMILY(addr, AF_INET))
         return EINVAL;
 
-    if (sa.data.sa.sa_family != AF_INET)
-        return EINVAL;
-
-    ifr.ifr_addr = sa.data.sa;
+    ifr.ifr_addr = addr->data.sa;
 
     if (ioctl(ctl->fd, cmd, &ifr) < 0)
         return errno;
@@ -702,7 +698,7 @@ brSetInetAddr(brControl *ctl,
 int
 brSetInetAddress(brControl *ctl,
                  const char *ifname,
-                 const char *addr)
+                 virSocketAddr *addr)
 {
     return brSetInetAddr(ctl, ifname, SIOCSIFADDR, addr);
 }
@@ -723,7 +719,7 @@ brSetInetAddress(brControl *ctl,
 int
 brSetInetNetmask(brControl *ctl,
                  const char *ifname,
-                 const char *addr)
+                 virSocketAddr *addr)
 {
     return brSetInetAddr(ctl, ifname, SIOCSIFNETMASK, addr);
 }

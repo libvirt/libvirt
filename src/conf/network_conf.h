@@ -30,6 +30,7 @@
 
 # include "internal.h"
 # include "threads.h"
+# include "network.h"
 
 /* 2 possible types of forwarding */
 enum virNetworkForwardType {
@@ -43,9 +44,8 @@ enum virNetworkForwardType {
 typedef struct _virNetworkDHCPRangeDef virNetworkDHCPRangeDef;
 typedef virNetworkDHCPRangeDef *virNetworkDHCPRangeDefPtr;
 struct _virNetworkDHCPRangeDef {
-    char *start;
-    char *end;
-    int size;
+    virSocketAddr start;
+    virSocketAddr end;
 };
 
 typedef struct _virNetworkDHCPHostDef virNetworkDHCPHostDef;
@@ -53,7 +53,7 @@ typedef virNetworkDHCPHostDef *virNetworkDHCPHostDefPtr;
 struct _virNetworkDHCPHostDef {
     char *mac;
     char *name;
-    char *ip;
+    virSocketAddr ip;
 };
 
 typedef struct _virNetworkDef virNetworkDef;
@@ -70,9 +70,9 @@ struct _virNetworkDef {
     int forwardType;    /* One of virNetworkForwardType constants */
     char *forwardDev;   /* Destination device for forwarding */
 
-    char *ipAddress;    /* Bridge IP address */
-    char *netmask;
-    char *network;
+    virSocketAddr ipAddress;    /* Bridge IP address */
+    virSocketAddr netmask;
+    virSocketAddr network;
 
     unsigned int nranges;        /* Zero or more dhcp ranges */
     virNetworkDHCPRangeDefPtr ranges;
@@ -82,7 +82,7 @@ struct _virNetworkDef {
 
     char *tftproot;
     char *bootfile;
-    char *bootserver;
+    virSocketAddr bootserver;
 };
 
 typedef struct _virNetworkObj virNetworkObj;
