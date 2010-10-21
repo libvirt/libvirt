@@ -12,6 +12,10 @@
 #      | uniq \
 #      | sed -e 's/_r//'
 #
+# Also manually add in all inet_* functions some of which
+# are not threadsafe and do not have _r variants. They are
+# all deprecated in favour of getnameinfo/getaddrinfo
+#
 
 NON_REENTRANT =
 NON_REENTRANT += asctime
@@ -83,3 +87,14 @@ NON_REENTRANT += strerror
 NON_REENTRANT += strtok
 NON_REENTRANT += tmpnam
 NON_REENTRANT += ttyname
+NON_REENTRANT += inet_addr
+NON_REENTRANT += inet_aton
+NON_REENTRANT += inet_lnaof
+NON_REENTRANT += inet_makeaddr
+NON_REENTRANT += inet_netof
+NON_REENTRANT += inet_network
+NON_REENTRANT += inet_nsap_addr
+NON_REENTRANT += inet_nsap_ntoa
+NON_REENTRANT += inet_ntoa
+NON_REENTRANT += inet_ntop
+NON_REENTRANT += inet_pton
