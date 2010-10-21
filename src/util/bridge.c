@@ -48,6 +48,7 @@
 # include "memory.h"
 # include "util.h"
 # include "logging.h"
+# include "network.h"
 
 # define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 # define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
@@ -660,13 +661,8 @@ brSetInetAddr(brControl *ctl,
               int cmd,
               const char *addr)
 {
-    union {
-        struct sockaddr sa;
-        struct sockaddr_in sa_in;
-    } s;
+    virSocketAddr sa;
     struct ifreq ifr;
-    struct in_addr inaddr;
-    int ret;
 
     if (!ctl || !ctl->fd || !ifname || !addr)
         return EINVAL;
@@ -676,49 +672,15 @@ brSetInetAddr(brControl *ctl,
     if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
         return EINVAL;
 
-    if ((ret = inet_pton(AF_INET, addr, &inaddr)) < 0)
-        return errno;
-    else if (ret == 0)
+    if (virSocketParseAddr(addr, &sa, AF_UNSPEC) < 0)
         return EINVAL;
 
-    s.sa_in.sin_family = AF_INET;
-    s.sa_in.sin_addr   = inaddr;
+    if (sa.data.sa.sa_family != AF_INET)
+        return EINVAL;
 
-    ifr.ifr_addr = s.sa;
+    ifr.ifr_addr = sa.data.sa;
 
     if (ioctl(ctl->fd, cmd, &ifr) < 0)
-        return errno;
-
-    return 0;
-}
-
-static int
-brGetInetAddr(brControl *ctl,
-              const char *ifname,
-              int cmd,
-              char *addr,
-              int maxlen)
-{
-    struct ifreq ifr;
-    struct in_addr *inaddr;
-
-    if (!ctl || !ctl->fd || !ifname || !addr)
-        return EINVAL;
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
-        return EINVAL;
-
-    if (ioctl(ctl->fd, cmd, &ifr) < 0)
-        return errno;
-
-    if (maxlen < BR_INET_ADDR_MAXLEN || ifr.ifr_addr.sa_family != AF_INET)
-        return EFAULT;
-
-    inaddr = &((struct sockaddr_in *)&ifr.ifr_data)->sin_addr;
-
-    if (!inet_ntop(AF_INET, inaddr, addr, maxlen))
         return errno;
 
     return 0;
@@ -746,29 +708,6 @@ brSetInetAddress(brControl *ctl,
 }
 
 /**
- * brGetInetAddress:
- * @ctl: bridge control pointer
- * @ifname: the interface name
- * @addr: the array for the string representation of the IP address
- * @maxlen: size of @addr in bytes
- *
- * Function to get the IP address of an interface, it should handle
- * IPV4 and IPv6. The returned string for addr would be of the form
- * "ddd.ddd.ddd.ddd" assuming the common IPv4 format.
- *
- * Returns 0 in case of success or an errno code in case of failure.
- */
-
-int
-brGetInetAddress(brControl *ctl,
-                 const char *ifname,
-                 char *addr,
-                 int maxlen)
-{
-    return brGetInetAddr(ctl, ifname, SIOCGIFADDR, addr, maxlen);
-}
-
-/**
  * brSetInetNetmask:
  * @ctl: bridge control pointer
  * @ifname: the interface name
@@ -788,30 +727,6 @@ brSetInetNetmask(brControl *ctl,
 {
     return brSetInetAddr(ctl, ifname, SIOCSIFNETMASK, addr);
 }
-
-/**
- * brGetInetNetmask:
- * @ctl: bridge control pointer
- * @ifname: the interface name
- * @addr: the array for the string representation of the netmask
- * @maxlen: size of @addr in bytes
- *
- * Function to get the netmask of an interface, it should handle
- * IPV4 and IPv6. The returned string for addr would be of the form
- * "ddd.ddd.ddd.ddd" assuming the common IPv4 format.
- *
- * Returns 0 in case of success or an errno code in case of failure.
- */
-
-int
-brGetInetNetmask(brControl *ctl,
-                 const char *ifname,
-                 char *addr,
-                 int maxlen)
-{
-    return brGetInetAddr(ctl, ifname, SIOCGIFNETMASK, addr, maxlen);
-}
-
 
 /**
  * brSetForwardDelay:

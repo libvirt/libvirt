@@ -627,22 +627,27 @@ learnIPAddressThread(void *arg)
 
     if (req->status == 0) {
         int ret;
-        char inetaddr[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &vmaddr, inetaddr, sizeof(inetaddr));
+        virSocketAddr sa;
+        sa.len = sizeof(sa.data.inet4);
+        sa.data.inet4.sin_family = AF_INET;
+        sa.data.inet4.sin_addr.s_addr = vmaddr;
+        char *inetaddr;
 
-        virNWFilterAddIpAddrForIfname(req->ifname, strdup(inetaddr));
+        if ((inetaddr = virSocketFormatAddr(&sa))!= NULL) {
+            virNWFilterAddIpAddrForIfname(req->ifname, inetaddr);
 
-        ret = virNWFilterInstantiateFilterLate(NULL,
-                                               req->ifname,
-                                               req->ifindex,
-                                               req->linkdev,
-                                               req->nettype,
-                                               req->macaddr,
-                                               req->filtername,
-                                               req->filterparams,
-                                               req->driver);
-        VIR_DEBUG("Result from applying firewall rules on "
-                  "%s with IP addr %s : %d\n", req->ifname, inetaddr, ret);
+            ret = virNWFilterInstantiateFilterLate(NULL,
+                                                   req->ifname,
+                                                   req->ifindex,
+                                                   req->linkdev,
+                                                   req->nettype,
+                                                   req->macaddr,
+                                                   req->filtername,
+                                                   req->filterparams,
+                                                   req->driver);
+            VIR_DEBUG("Result from applying firewall rules on "
+                      "%s with IP addr %s : %d\n", req->ifname, inetaddr, ret);
+        }
     } else {
         if (showError)
             virReportSystemError(req->status,

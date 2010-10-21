@@ -278,7 +278,7 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
             xmlStrEqual(cur->name, BAD_CAST "host")) {
             xmlChar *mac, *name, *ip;
             unsigned char addr[6];
-            struct in_addr inaddress;
+            virSocketAddr inaddr;
 
             mac = xmlGetProp(cur, BAD_CAST "mac");
             if ((mac != NULL) &&
@@ -305,10 +305,7 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                 continue;
             }
             ip = xmlGetProp(cur, BAD_CAST "ip");
-            if (inet_pton(AF_INET, (const char *) ip, &inaddress) <= 0) {
-                virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                      _("cannot parse IP address '%s'"),
-                                      ip);
+            if (virSocketParseAddr((const char *)ip, &inaddr, AF_UNSPEC) < 0) {
                 VIR_FREE(ip);
                 VIR_FREE(mac);
                 VIR_FREE(name);
@@ -428,31 +425,34 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     def->netmask = virXPathString("string(./ip[1]/@netmask)", ctxt);
     if (def->ipAddress &&
         def->netmask) {
-        /* XXX someday we want IPv6 too, so inet_aton won't work there */
-        struct in_addr inaddress, innetmask;
+        virSocketAddr inaddress, innetmask;
         char *netaddr;
         xmlNodePtr ip;
 
-        if (inet_pton(AF_INET, def->ipAddress, &inaddress) <= 0) {
-            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot parse IP address '%s'"),
-                                  def->ipAddress);
+        if (virSocketParseAddr(def->ipAddress, &inaddress, AF_UNSPEC) < 0)
             goto error;
-        }
-        if (inet_pton(AF_INET, def->netmask, &innetmask) <= 0) {
-            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot parse netmask '%s'"),
-                                  def->netmask);
+        if (virSocketParseAddr(def->netmask, &innetmask, AF_UNSPEC) < 0)
+            goto error;
+
+        /* XXX someday we want IPv6, so will need to relax this */
+        if (inaddress.data.sa.sa_family != AF_INET ||
+            innetmask.data.sa.sa_family != AF_INET) {
+            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                  "%s", _("Only IPv4 addresses are supported"));
             goto error;
         }
 
-        inaddress.s_addr &= innetmask.s_addr;
-        netaddr = inet_ntoa(inaddress);
+        inaddress.data.inet4.sin_addr.s_addr &=
+            innetmask.data.inet4.sin_addr.s_addr;
+        if (!(netaddr = virSocketFormatAddr(&inaddress)))
+            goto error;
 
         if (virAsprintf(&def->network, "%s/%s", netaddr, def->netmask) < 0) {
+            VIR_FREE(netaddr);
             virReportOOMError();
             goto error;
         }
+        VIR_FREE(netaddr);
 
         if ((ip = virXPathNode("./ip[1]", ctxt)) &&
             virNetworkIPParseXML(def, ip) < 0)
