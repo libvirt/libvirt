@@ -1,5 +1,5 @@
 provider libvirtd {
-	 probe client_connect(int fd, int readonly);
+	 probe client_connect(int fd, int readonly, const char *localAddr, const char *remoteAddr);
 	 probe client_disconnect(int fd);
 
 	 probe client_auth_allow(int fd, int authtype, const char *identity);

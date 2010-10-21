@@ -15,6 +15,9 @@
 
 # include <sys/types.h>
 # include <sys/socket.h>
+# ifdef HAVE_SYS_UN_H
+#  include <sys/un.h>
+# endif
 # include <netdb.h>
 # include <stdbool.h>
 
@@ -24,6 +27,9 @@ typedef struct {
         struct sockaddr_storage stor;
         struct sockaddr_in inet4;
         struct sockaddr_in6 inet6;
+# ifdef HAVE_SYS_UN_H
+        struct sockaddr_un un;
+# endif
     } data;
     socklen_t len;
 } virSocketAddr;

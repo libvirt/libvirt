@@ -541,7 +541,6 @@ static int qemudWritePidFile(const char *pidFile) {
 static int qemudListenUnix(struct qemud_server *server,
                            char *path, int readonly, int auth) {
     struct qemud_socket *sock;
-    struct sockaddr_un addr;
     mode_t oldmask;
     gid_t oldgrp;
     char ebuf[1024];
@@ -552,10 +551,15 @@ static int qemudListenUnix(struct qemud_server *server,
     }
 
     sock->readonly = readonly;
-    sock->port = -1;
     sock->type = QEMUD_SOCK_TYPE_UNIX;
     sock->auth = auth;
     sock->path = path;
+    sock->addr.len = sizeof(sock->addr.data.un);
+    if (!(sock->addrstr = strdup(path))) {
+        VIR_ERROR(_("Failed to copy socket address: %s"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
+        goto cleanup;
+    }
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         VIR_ERROR(_("Failed to create socket: %s"),
@@ -567,14 +571,13 @@ static int qemudListenUnix(struct qemud_server *server,
         virSetNonBlock(sock->fd) < 0)
         goto cleanup;
 
-    memset(&addr, 0, sizeof(addr));
-    addr.sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr.sun_path, path) == NULL) {
+    sock->addr.data.un.sun_family = AF_UNIX;
+    if (virStrcpyStatic(sock->addr.data.un.sun_path, path) == NULL) {
         VIR_ERROR(_("Path %s too long for unix socket"), path);
         goto cleanup;
     }
-    if (addr.sun_path[0] == '@')
-        addr.sun_path[0] = '\0';
+    if (sock->addr.data.un.sun_path[0] == '@')
+        sock->addr.data.un.sun_path[0] = '\0';
 
     oldgrp = getgid();
     oldmask = umask(readonly ? ~unix_sock_ro_mask : ~unix_sock_rw_mask);
@@ -583,7 +586,7 @@ static int qemudListenUnix(struct qemud_server *server,
         goto cleanup;
     }
 
-    if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+    if (bind(sock->fd, &sock->addr.data.sa, sock->addr.len) < 0) {
         VIR_ERROR(_("Failed to bind socket to '%s': %s"),
                   path, virStrerror(errno, ebuf, sizeof ebuf));
         goto cleanup;
@@ -692,16 +695,7 @@ remoteListenTCP (struct qemud_server *server,
         return -1;
 
     for (i = 0; i < nfds; ++i) {
-        union {
-            struct sockaddr_storage sa_stor;
-            struct sockaddr sa;
-            struct sockaddr_in sa_in;
-#ifdef AF_INET6
-            struct sockaddr_in6 sa_in6;
-#endif
-        } s;
         char ebuf[1024];
-        socklen_t salen = sizeof(s);
 
         if (VIR_ALLOC(sock) < 0) {
             VIR_ERROR(_("remoteListenTCP: calloc: %s"),
@@ -709,6 +703,7 @@ remoteListenTCP (struct qemud_server *server,
             goto cleanup;
         }
 
+        sock->addr.len = sizeof(sock->addr.data.stor);
         sock->readonly = 0;
         sock->next = server->sockets;
         server->sockets = sock;
@@ -718,17 +713,11 @@ remoteListenTCP (struct qemud_server *server,
         sock->type = type;
         sock->auth = auth;
 
-        if (getsockname(sock->fd, &s.sa, &salen) < 0)
+        if (getsockname(sock->fd, &sock->addr.data.sa, &sock->addr.len) < 0)
             goto cleanup;
 
-        if (s.sa.sa_family == AF_INET) {
-            sock->port = htons(s.sa_in.sin_port);
-#ifdef AF_INET6
-        } else if (s.sa.sa_family == AF_INET6)
-            sock->port = htons(s.sa_in6.sin6_port);
-#endif
-        else
-            sock->port = -1;
+        if (!(sock->addrstr = virSocketFormatAddrFull(&sock->addr, true, ";")))
+            goto cleanup;
 
         if (virSetCloseExec(sock->fd) < 0 ||
             virSetNonBlock(sock->fd) < 0)
@@ -1043,8 +1032,9 @@ static int qemudNetworkInit(struct qemud_server *server) {
          */
         sock = server->sockets;
         while (sock) {
-            if (sock->port != -1 && sock->type == QEMUD_SOCK_TYPE_TLS) {
-                port = sock->port;
+            if (virSocketGetPort(&sock->addr) != -1 &&
+                sock->type == QEMUD_SOCK_TYPE_TLS) {
+                port = virSocketGetPort(&sock->addr);
                 break;
             }
             sock = sock->next;
@@ -1315,13 +1305,14 @@ int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
 
 static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket *sock) {
     int fd;
-    struct sockaddr_storage addr;
-    socklen_t addrlen = (socklen_t) (sizeof addr);
+    virSocketAddr addr;
+    char *addrstr = NULL;
     struct qemud_client *client = NULL;
     int no_slow_start = 1;
     int i;
 
-    if ((fd = accept(sock->fd, (struct sockaddr *)&addr, &addrlen)) < 0) {
+    addr.len = sizeof(addr.data.stor);
+    if ((fd = accept(sock->fd, &addr.data.sa, &addr.len)) < 0) {
         char ebuf[1024];
         if (errno == EAGAIN)
             return 0;
@@ -1329,11 +1320,17 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
                   virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
+    if (!(addrstr = virSocketFormatAddrFull(&addr, true, ";"))) {
+        VIR_ERROR0(_("Failed to format addresss: out of memory"));
+        goto error;
+    }
 
-    PROBE(CLIENT_CONNECT, "fd=%d, readonly=%d", fd, sock->readonly);
+    PROBE(CLIENT_CONNECT, "fd=%d, readonly=%d localAddr=%s remoteAddr=%s",
+          fd, sock->readonly, sock->addrstr, addrstr);
 
     if (server->nclients >= max_clients) {
-        VIR_ERROR(_("Too many active clients (%d), dropping connection"), max_clients);
+        VIR_ERROR(_("Too many active clients (%d), dropping connection from %s"),
+                  max_clients, addrstr);
         goto error;
     }
 
@@ -1384,8 +1381,9 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     client->readonly = sock->readonly;
     client->type = sock->type;
     client->auth = sock->auth;
-    memcpy (&client->addr, &addr, sizeof addr);
-    client->addrlen = addrlen;
+    client->addr = addr;
+    client->addrstr = addrstr;
+    addrstr = NULL;
 
     for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++) {
         client->domainEventCallbackID[i] = -1;
@@ -1411,7 +1409,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
         /* Client is running as root, so disable auth */
         if (uid == 0) {
-            VIR_INFO(_("Turn off polkit auth for privileged client %d"), pid);
+            VIR_INFO(_("Turn off polkit auth for privileged client pid %d from %s"),
+                     pid, addrstr);
             client->auth = REMOTE_AUTH_NONE;
         }
     }
@@ -1451,8 +1450,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
                 goto error;
         } else {
             PROBE(CLIENT_TLS_FAIL, "fd=%d", client->fd);
-            VIR_ERROR(_("TLS handshake failed: %s"),
-                      gnutls_strerror (ret));
+            VIR_ERROR(_("TLS handshake failed for client %s: %s"),
+                      addrstr, gnutls_strerror (ret));
             goto error;
         }
     }
@@ -1477,10 +1476,13 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 error:
     if (client) {
         if (client->tlssession) gnutls_deinit (client->tlssession);
-        if (client)
+        if (client) {
+            VIR_FREE(client->addrstr);
             VIR_FREE(client->rx);
+        }
         VIR_FREE(client);
     }
+    VIR_FREE(addrstr);
     close (fd);
     PROBE(CLIENT_DISCONNECT, "fd=%d", fd);
     return -1;
@@ -1530,6 +1532,7 @@ void qemudDispatchClientFailure(struct qemud_client *client) {
         close(client->fd);
         client->fd = -1;
     }
+    VIR_FREE(client->addrstr);
 }
 
 
@@ -2448,6 +2451,7 @@ static void qemudCleanup(struct qemud_server *server) {
             sock->path[0] != '@')
             unlink(sock->path);
         VIR_FREE(sock->path);
+        VIR_FREE(sock->addrstr);
 
         VIR_FREE(sock);
         sock = next;

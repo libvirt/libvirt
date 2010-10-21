@@ -2,6 +2,8 @@ probe libvirt.daemon.client.connect = process("libvirtd").mark("client_connect")
 {
   fd = $arg1;
   readonly = $arg2;
+  localAddr = user_string($arg3);
+  remoteAddr = user_string($arg4);
 }
 
 probe libvirt.daemon.client.disconnect = process("libvirtd").mark("client_disconnect")

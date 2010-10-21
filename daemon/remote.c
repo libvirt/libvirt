@@ -3687,7 +3687,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
         VIR_FREE(localAddr);
         goto error;
     }
-    if ((localAddr = virSocketFormatAddrFull(&sa, true, ";")) == NULL) {
+    if ((remoteAddr = virSocketFormatAddrFull(&sa, true, ";")) == NULL) {
         VIR_FREE(localAddr);
         remoteDispatchConnError(rerr, conn);
         goto error;

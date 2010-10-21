@@ -1,10 +1,10 @@
 #!/usr/bin/stap
 
 probe libvirt.daemon.client.connect {
-      printf("Client fd=%d connected readonly=%d\n", fd, readonly);
+      printf("Client fd=%d connected readonly=%d addr=%s\n", fd, readonly, addr);
 }
 probe libvirt.daemon.client.disconnect {
-      printf("Client fd=%d disconnected\n", fd);
+      printf("Client fd=%d disconnected addr=%s\n", fd, addr);
 }
 
 probe libvirt.daemon.client.tls_allow {
