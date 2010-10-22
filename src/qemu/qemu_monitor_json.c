@@ -1698,8 +1698,9 @@ int qemuMonitorJSONMigrateToFile(qemuMonitorPtr mon,
      * allow starting at an alignment of 512, but without wasting
      * padding to get to the larger alignment useful for speed.  Use
      * <> redirection to avoid truncating a regular file.  */
-    if (virAsprintf(&dest, "exec:%s | { dd bs=%llu seek=%llu if=/dev/null && "
-                    "dd bs=%llu; } 1<>%s",
+    if (virAsprintf(&dest, "exec:" VIR_WRAPPER_SHELL_PREFIX "%s | "
+                    "{ dd bs=%llu seek=%llu if=/dev/null && "
+                    "dd bs=%llu; } 1<>%s" VIR_WRAPPER_SHELL_SUFFIX,
                     argstr, QEMU_MONITOR_MIGRATE_TO_FILE_BS,
                     offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS,
                     QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
