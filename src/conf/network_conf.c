@@ -317,6 +317,7 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
             xmlChar *file;
             xmlChar *server;
             virSocketAddr inaddr;
+            memset(&inaddr, 0, sizeof(inaddr));
 
             if (!(file = xmlGetProp(cur, BAD_CAST "file"))) {
                 cur = cur->next;
@@ -324,7 +325,8 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
             }
             server = xmlGetProp(cur, BAD_CAST "server");
 
-            if (virSocketParseAddr((const char *)server, &inaddr, AF_UNSPEC) < 0)
+            if (server &&
+                virSocketParseAddr((const char *)server, &inaddr, AF_UNSPEC) < 0)
                 return -1;
 
             def->bootfile = (char *)file;
