@@ -24,6 +24,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <fcntl.h>
 #include <xen/dom0_ops.h>
 #include <libxml/uri.h>
 
@@ -45,6 +46,7 @@
 #include "node_device_conf.h"
 #include "pci.h"
 #include "uuid.h"
+#include "fdstream.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -1928,6 +1930,60 @@ out:
 }
 
 
+static int
+xenUnifiedDomainOpenConsole(virDomainPtr dom,
+                            const char *devname,
+                            virStreamPtr st,
+                            unsigned int flags)
+{
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+    virDomainChrDefPtr chr = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (dom->id == -1) {
+        xenUnifiedError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (devname) {
+        /* XXX support device aliases in future */
+        xenUnifiedError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("Named device aliases are not supported"));
+        goto cleanup;
+    }
+
+    def = xenDaemonDomainFetch(dom->conn, dom->id, dom->name, NULL);
+    if (!def)
+        goto cleanup;
+
+    if (def->console)
+        chr = def->console;
+    else if (def->nserials)
+        chr = def->serials[0];
+
+    if (!chr) {
+        xenUnifiedError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("cannot find default console device"));
+        goto cleanup;
+    }
+
+    if (chr->type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        xenUnifiedError(VIR_ERR_INTERNAL_ERROR,
+                        _("character device %s is not using a PTY"), devname);
+        goto cleanup;
+    }
+
+    if (virFDStreamOpenFile(st, chr->data.file.path, O_RDWR) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virDomainDefFree(def);
+    return ret;
+}
 /*----- Register with libvirt.c, and initialize Xen drivers. -----*/
 
 /* The interface which we export upwards to libvirt.c. */
@@ -2035,7 +2091,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
-    NULL, /* domainOpenConsole */
+    xenUnifiedDomainOpenConsole, /* domainOpenConsole */
 };
 
 /**

@@ -52,6 +52,7 @@
 #include "stats_linux.h"
 #include "hooks.h"
 #include "files.h"
+#include "fdstream.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -2730,6 +2731,70 @@ cleanup:
     return ret;
 }
 
+static int
+lxcDomainOpenConsole(virDomainPtr dom,
+                      const char *devname,
+                      virStreamPtr st,
+                      unsigned int flags)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    int ret = -1;
+    virDomainChrDefPtr chr = NULL;
+
+    virCheckFlags(0, -1);
+
+    lxcDriverLock(driver);
+    virUUIDFormat(dom->uuid, uuidstr);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        lxcError(VIR_ERR_OPERATION_INVALID,
+                 "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (devname) {
+        /* XXX support device aliases in future */
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                 _("Named device aliases are not supported"));
+        goto cleanup;
+    } else {
+        if (vm->def->console)
+            chr = vm->def->console;
+        else if (vm->def->nserials)
+            chr = vm->def->serials[0];
+    }
+
+    if (!chr) {
+        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("cannot find default console device"));
+        goto cleanup;
+    }
+
+    if (chr->type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("character device %s is not using a PTY"), devname);
+        goto cleanup;
+    }
+
+    if (virFDStreamOpenFile(st, chr->data.file.path, O_RDWR) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
 
 /* Function Tables */
 static virDriver lxcDriver = {
@@ -2836,7 +2901,7 @@ static virDriver lxcDriver = {
     NULL, /* qemuDomainMonitorCommand */
     lxcDomainSetMemoryParameters, /* domainSetMemoryParameters */
     lxcDomainGetMemoryParameters, /* domainGetMemoryParameters */
-    NULL, /* domainOpenConsole */
+    lxcDomainOpenConsole, /* domainOpenConsole */
 };
 
 static virStateDriver lxcStateDriver = {

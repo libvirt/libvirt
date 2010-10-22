@@ -60,6 +60,7 @@
 #include "logging.h"
 #include "domain_nwfilter.h"
 #include "files.h"
+#include "fdstream.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -2025,11 +2026,11 @@ cleanup:
 
 
 static int
-umlDomainBlockPeek (virDomainPtr dom,
-                      const char *path,
-                      unsigned long long offset, size_t size,
-                      void *buffer,
-                      unsigned int flags ATTRIBUTE_UNUSED)
+umlDomainBlockPeek(virDomainPtr dom,
+                   const char *path,
+                   unsigned long long offset, size_t size,
+                   void *buffer,
+                   unsigned int flags ATTRIBUTE_UNUSED)
 {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -2094,6 +2095,70 @@ cleanup:
     return ret;
 }
 
+
+static int
+umlDomainOpenConsole(virDomainPtr dom,
+                     const char *devname,
+                     virStreamPtr st,
+                     unsigned int flags)
+{
+    struct uml_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    int ret = -1;
+    virDomainChrDefPtr chr = NULL;
+
+    virCheckFlags(0, -1);
+
+    umlDriverLock(driver);
+    virUUIDFormat(dom->uuid, uuidstr);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        umlReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        umlReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (devname) {
+        /* XXX support device aliases in future */
+        umlReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Named device aliases are not supported"));
+        goto cleanup;
+    } else {
+        if (vm->def->console)
+            chr = vm->def->console;
+        else if (vm->def->nserials)
+            chr = vm->def->serials[0];
+    }
+
+    if (!chr) {
+        umlReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot find character device %s"), devname);
+        goto cleanup;
+    }
+
+    if (chr->type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        umlReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("character device %s is not using a PTY"), devname);
+        goto cleanup;
+    }
+
+    if (virFDStreamOpenFile(st, chr->data.file.path, O_RDWR) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    umlDriverUnlock(driver);
+    return ret;
+}
 
 
 static virDriver umlDriver = {
@@ -2200,7 +2265,7 @@ static virDriver umlDriver = {
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainSetMemoryParamters */
     NULL, /* domainGetMemoryParamters */
-    NULL, /* domainOpenConsole */
+    umlDomainOpenConsole, /* domainOpenConsole */
 };
 
 static int
