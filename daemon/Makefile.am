@@ -168,7 +168,7 @@ EXTRA_DIST += probes.d libvirtd.stp
 
 if WITH_DTRACE
 libvirtd_LDADD += probes.o
-libvirtd_SOURCES += probes.h
+libvirtd_nodist_SOURCES = probes.h
 
 BUILT_SOURCES += probes.h
 
