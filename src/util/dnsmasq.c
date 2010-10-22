@@ -79,7 +79,7 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
              virSocketAddr *ip,
              const char *name)
 {
-    char *ipstr;
+    char *ipstr = NULL;
     if (VIR_REALLOC_N(hostsfile->hosts, hostsfile->nhosts + 1) < 0)
         goto alloc_error;
 
