@@ -626,6 +626,45 @@ static PRUnichar *PRUnicharFromInt(int n) {
 
 #endif /* !(VBOX_API_VERSION == 2002) */
 
+static PRUnichar *
+vboxSocketFormatAddrUtf16(vboxGlobalData *data, virSocketAddrPtr addr)
+{
+    char *utf8 = NULL;
+    PRUnichar *utf16 = NULL;
+
+    utf8 = virSocketFormatAddr(addr);
+
+    if (utf8 == NULL) {
+        return NULL;
+    }
+
+    VBOX_UTF8_TO_UTF16(utf8, &utf16);
+    VIR_FREE(utf8);
+
+    return utf16;
+}
+
+static int
+vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
+                         virSocketAddrPtr addr)
+{
+    int result = -1;
+    char *utf8 = NULL;
+
+    VBOX_UTF16_TO_UTF8(utf16, &utf8);
+
+    if (virSocketParseAddr(utf8, addr, AF_UNSPEC) < 0) {
+        goto cleanup;
+    }
+
+    result = 0;
+
+cleanup:
+    VBOX_UTF8_FREE(utf8);
+
+    return result;
+}
+
 static virCapsPtr vboxCapsInit(void) {
     struct utsname utsname;
     virCapsPtr caps;
@@ -7073,8 +7112,8 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
          * with contigious address space from start to end
          */
         if ((def->nranges >= 1) &&
-            (def->ranges[0].start) &&
-            (def->ranges[0].end)) {
+            VIR_SOCKET_HAS_ADDR(&def->ranges[0].start) &&
+            VIR_SOCKET_HAS_ADDR(&def->ranges[0].end)) {
             IDHCPServer *dhcpServer = NULL;
 
             data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
@@ -7094,11 +7133,21 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
                 PRUnichar *toIPAddressUtf16   = NULL;
                 PRUnichar *trunkTypeUtf16     = NULL;
 
+                ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->ipAddress);
+                networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &def->netmask);
+                fromIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->ranges[0].start);
+                toIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->ranges[0].end);
 
-                VBOX_UTF8_TO_UTF16(def->ipAddress, &ipAddressUtf16);
-                VBOX_UTF8_TO_UTF16(def->netmask, &networkMaskUtf16);
-                VBOX_UTF8_TO_UTF16(def->ranges[0].start, &fromIPAddressUtf16);
-                VBOX_UTF8_TO_UTF16(def->ranges[0].end, &toIPAddressUtf16);
+                if (ipAddressUtf16 == NULL || networkMaskUtf16 == NULL ||
+                    fromIPAddressUtf16 == NULL || toIPAddressUtf16 == NULL) {
+                    VBOX_UTF16_FREE(ipAddressUtf16);
+                    VBOX_UTF16_FREE(networkMaskUtf16);
+                    VBOX_UTF16_FREE(fromIPAddressUtf16);
+                    VBOX_UTF16_FREE(toIPAddressUtf16);
+                    VBOX_RELEASE(dhcpServer);
+                    goto cleanup;
+                }
+
                 VBOX_UTF8_TO_UTF16("netflt", &trunkTypeUtf16);
 
                 dhcpServer->vtbl->SetEnabled(dhcpServer, PR_TRUE);
@@ -7125,12 +7174,18 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
         }
 
         if ((def->nhosts >= 1) &&
-            (def->hosts[0].ip)) {
+            VIR_SOCKET_HAS_ADDR(&def->hosts[0].ip)) {
             PRUnichar *ipAddressUtf16   = NULL;
             PRUnichar *networkMaskUtf16 = NULL;
 
-            VBOX_UTF8_TO_UTF16(def->netmask, &networkMaskUtf16);
-            VBOX_UTF8_TO_UTF16(def->hosts[0].ip, &ipAddressUtf16);
+            ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->hosts[0].ip);
+            networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &def->netmask);
+
+            if (ipAddressUtf16 == NULL || networkMaskUtf16 == NULL) {
+                VBOX_UTF16_FREE(ipAddressUtf16);
+                VBOX_UTF16_FREE(networkMaskUtf16);
+                goto cleanup;
+            }
 
             /* Current drawback is that since EnableStaticIpConfig() sets
              * IP and enables the interface so even if the dhcpserver is not
@@ -7393,6 +7448,7 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                         PRUnichar *networkMaskUtf16   = NULL;
                         PRUnichar *fromIPAddressUtf16 = NULL;
                         PRUnichar *toIPAddressUtf16   = NULL;
+                        bool errorOccurred = false;
 
                         dhcpServer->vtbl->GetIPAddress(dhcpServer, &ipAddressUtf16);
                         dhcpServer->vtbl->GetNetworkMask(dhcpServer, &networkMaskUtf16);
@@ -7401,15 +7457,25 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                         /* Currently virtualbox supports only one dhcp server per network
                          * with contigious address space from start to end
                          */
-                        VBOX_UTF16_TO_UTF8(ipAddressUtf16, &def->ipAddress);
-                        VBOX_UTF16_TO_UTF8(networkMaskUtf16, &def->netmask);
-                        VBOX_UTF16_TO_UTF8(fromIPAddressUtf16, &def->ranges[0].start);
-                        VBOX_UTF16_TO_UTF8(toIPAddressUtf16, &def->ranges[0].end);
+                        if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                                     &def->ipAddress) < 0 ||
+                            vboxSocketParseAddrUtf16(data, networkMaskUtf16,
+                                                     &def->netmask) < 0 ||
+                            vboxSocketParseAddrUtf16(data, fromIPAddressUtf16,
+                                                     &def->ranges[0].start) < 0 ||
+                            vboxSocketParseAddrUtf16(data, toIPAddressUtf16,
+                                                     &def->ranges[0].end) < 0) {
+                            errorOccurred = true;
+                        }
 
                         VBOX_UTF16_FREE(ipAddressUtf16);
                         VBOX_UTF16_FREE(networkMaskUtf16);
                         VBOX_UTF16_FREE(fromIPAddressUtf16);
                         VBOX_UTF16_FREE(toIPAddressUtf16);
+
+                        if (errorOccurred) {
+                            goto cleanup;
+                        }
                     } else {
                         def->nranges = 0;
                         virReportOOMError();
@@ -7425,15 +7491,24 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                         } else {
                             PRUnichar *macAddressUtf16 = NULL;
                             PRUnichar *ipAddressUtf16  = NULL;
+                            bool errorOccurred = false;
 
                             networkInterface->vtbl->GetHardwareAddress(networkInterface, &macAddressUtf16);
                             networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
 
                             VBOX_UTF16_TO_UTF8(macAddressUtf16, &def->hosts[0].mac);
-                            VBOX_UTF16_TO_UTF8(ipAddressUtf16, &def->hosts[0].ip);
+
+                            if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                                         &def->hosts[0].ip) < 0) {
+                                errorOccurred = true;
+                            }
 
                             VBOX_UTF16_FREE(macAddressUtf16);
                             VBOX_UTF16_FREE(ipAddressUtf16);
+
+                            if (errorOccurred) {
+                                goto cleanup;
+                            }
                         }
                     } else {
                         def->nhosts = 0;
@@ -7443,15 +7518,24 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                 } else {
                     PRUnichar *networkMaskUtf16 = NULL;
                     PRUnichar *ipAddressUtf16   = NULL;
+                    bool errorOccurred = false;
 
                     networkInterface->vtbl->GetNetworkMask(networkInterface, &networkMaskUtf16);
                     networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
 
-                    VBOX_UTF16_TO_UTF8(networkMaskUtf16, &def->netmask);
-                    VBOX_UTF16_TO_UTF8(ipAddressUtf16, &def->ipAddress);
+                    if (vboxSocketParseAddrUtf16(data, networkMaskUtf16,
+                                                 &def->netmask) < 0 ||
+                        vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                                 &def->ipAddress) < 0) {
+                        errorOccurred = true;
+                    }
 
                     VBOX_UTF16_FREE(networkMaskUtf16);
                     VBOX_UTF16_FREE(ipAddressUtf16);
+
+                    if (errorOccurred) {
+                        goto cleanup;
+                    }
                 }
 
                 DEBUGIID("Network UUID", vboxnet0IID);
