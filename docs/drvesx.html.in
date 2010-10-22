@@ -74,7 +74,7 @@ vpx://example-vcenter.com/dc1/cluster1/example-esx.com
 </pre>
 
 
-    <h4>Extra parameters</h4>
+    <h4><a name="extraparams">Extra parameters</h4>
     <p>
         Extra parameters can be added to a URI as part of the query string
         (the part following <code>?</code>). A single parameter is formed by a
@@ -117,7 +117,7 @@ vpx://example-vcenter.com/dc1/cluster1/example-esx.com
                 In order to perform a migration the driver needs to know the
                 VMware vCenter for the ESX server. If set to <code>*</code>,
                 the driver connects to the vCenter known to the ESX server.
-                This paramater in useful when connecting to an ESX server only.
+                This parameter in useful when connecting to an ESX server only.
             </td>
         </tr>
         <tr>
@@ -129,7 +129,9 @@ vpx://example-vcenter.com/dc1/cluster1/example-esx.com
             </td>
             <td>
                 If set to 1, this disables libcurl client checks of the server's
-                SSL certificate. The default value it 0.
+                SSL certificate. The default value it 0. See the
+                <a href="#certificates">Certificates for HTTPS</a> section for
+                details.
             </td>
         </tr>
         <tr>
@@ -185,6 +187,101 @@ vpx://example-vcenter.com/dc1/cluster1/example-esx.com
         occur if you use a restricted account. Detailed testing with restricted
         accounts has not been done yet.
     </p>
+
+
+    <h3><a name="certificates">Certificates for HTTPS</a></h3>
+    <p>
+        By default the ESX driver uses HTTPS to communicate with an ESX server.
+        Proper HTTPS communication requires correctly configured SSL
+        certificates. This certificates are different from the ones libvirt
+        uses for <a href="remote.html">secure communication over TLS</a> to a
+        libvirtd one a remote server.
+    </p>
+    <p>
+        By default the driver tries to verify the server's SSL certificate
+        using the CA certificate pool installed on your client computer. With
+        an out-of-the-box installed ESX server this won't work, because a newly
+        installed ESX server uses auto-generated self-signed certificates.
+        Those are singed by a CA certificate that is typically not known to your
+        client computer and libvirt will report an error like this one:
+    </p>
+<pre>
+error: internal error curl_easy_perform() returned an error: Peer certificate cannot be authenticated with known CA certificates (60)
+</pre>
+    <p>
+        Where are two ways to solve this problem:
+    </p>
+    <ul>
+        <li>
+            Use the <code>no_verify=1</code> <a href="#extraparams">extra parameter</a>
+            to disable server certificate verification.
+        </li>
+        <li>
+            Generate new SSL certificates signed by a CA known to your client
+            computer and replace the original ones on your ESX server. See the
+            section <i>Replace a Default Certificate with a CA-Signed Certificate</i>
+            in the <a href="http://www.vmware.com/pdf/vsphere4/r40/vsp_40_esx_server_config.pdf">ESX Configuration Guide</a>
+        </li>
+    </ul>
+
+
+    <h3><a name="connproblems">Connection problems</a></h3>
+    <p>
+        There are also other causes for connection problems than the
+        <a href="#certificates">HTTPS certificate</a> related ones.
+    </p>
+    <ul>
+        <li>
+            As stated before the ESX driver doesn't need the
+            <a href="remote.html">remote transport mechanism</a>
+            provided by the remote driver and libvirtd, nor does the ESX driver
+            support it. Therefore, using an URI including a transport in the
+            scheme won't work. Only <a href="#uriformat">URIs as described</a>
+            are supported by the ESX driver. Here's a collection of possible
+            error messages:
+<pre>
+$ virsh -c esx+tcp://example.com/
+error: unable to connect to libvirtd at 'example.com': Connection refused
+</pre>
+<pre>
+$ virsh -c esx+tls://example.com/
+error: Cannot access CA certificate '/etc/pki/CA/cacert.pem': No such file or directory
+</pre>
+<pre>
+$ virsh -c esx+ssh://example.com/
+error: cannot recv data: ssh: connect to host example.com port 22: Connection refused
+</pre>
+<pre>
+$ virsh -c esx+ssh://example.com/
+error: cannot recv data: Resource temporarily unavailable
+</pre>
+        </li>
+        <li>
+            <span class="since">Since 0.7.0</span> libvirt contains the ESX
+            driver. Earlier versions of libvirt will report a misleading error
+            about missing certificates when you try to connect to an ESX server.
+<pre>
+$ virsh -c esx://example.com/
+error: Cannot access CA certificate '/etc/pki/CA/cacert.pem': No such file or directory
+</pre>
+            <p>
+                Don't let this error message confuse you. Setting up certificates
+                as described on the <a href="remote.html#Remote_certificates">remote transport mechanism</a> page
+                does not help, as this is not a certificate related problem.
+            </p>
+            <p>
+                To fix this problem you need to update your libvirt to 0.7.0 or newer.
+                You may also see this error when you use a libvirt version that
+                contains the ESX driver but you or your distro disabled the ESX
+                driver during compilation. <span class="since">Since 0.8.3</span>
+                the error message has been improved in this case:
+            </p>
+<pre>
+$ virsh -c esx://example.com/
+error: invalid argument in libvirt was built without the 'esx' driver
+</pre>
+        </li>
+    </ul>
 
 
     <h2><a name="questions">Questions blocking tasks</a></h2>

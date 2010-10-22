@@ -61,10 +61,16 @@ machines through authenticated and encrypted connections.
       <a name="Remote_basic_usage">Basic usage</a>
     </h3>
     <p>
-On the remote machine, <code>libvirtd</code> should be running.
+On the remote machine, <code>libvirtd</code> should be running in general.
 See <a href="#Remote_libvirtd_configuration">the section
 on configuring libvirtd</a> for more information.
 </p>
+    <p>
+    Not all hypervisors supported by libvirt require a running
+    <code>libvirtd</code>. If you want to connect to a VMware ESX/ESXi or
+    GSX server then <code>libvirtd</code> is not necessary. See the
+    <a href="drvesx.html">VMware ESX page</a> for details.
+    </p>
     <p>
 To tell libvirt that you want to access a remote resource,
 you should supply a hostname in the normal <a href="uri.html">URI</a> that is passed
