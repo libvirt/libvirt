@@ -9033,6 +9033,7 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup = NULL;
+    char drivestr[PATH_MAX];
 
     i = qemudFindDisk(vm->def, dev->data.disk->dst);
 
@@ -9060,13 +9061,36 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
         goto cleanup;
     }
 
+    /* build the actual drive id string as the disk->info.alias doesn't
+     * contain the QEMU_DRIVE_HOST_PREFIX that is passed to qemu */
+    if ((ret = snprintf(drivestr, sizeof(drivestr), "%s%s",
+                   QEMU_DRIVE_HOST_PREFIX,
+                   detach->info.alias))
+        < 0 || ret >= sizeof(drivestr)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        ret = qemuMonitorDriveUnplug(priv->mon, drivestr);
+        DEBUG("DriveUnplug ret=%d", ret);
+        /* ret > 0 indicates unplug isn't supported, issue will be logged */
+        if (ret < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
             qemuDomainObjExitMonitor(vm);
             goto cleanup;
         }
     } else {
+        ret = qemuMonitorDriveUnplug(priv->mon, drivestr);
+        /* ret > 0 indicates unplug isn't supported, issue will be logged */
+        if (ret < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
         if (qemuMonitorRemovePCIDevice(priv->mon,
                                        &detach->info.addr.pci) < 0) {
             qemuDomainObjExitMonitor(vm);
@@ -9112,6 +9136,7 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup = NULL;
+    char drivestr[PATH_MAX];
 
     i = qemudFindDisk(vm->def, dev->data.disk->dst);
 
@@ -9138,7 +9163,22 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
         }
     }
 
+    /* build the actual drive id string as the disk->info.alias doesn't
+     * contain the QEMU_DRIVE_HOST_PREFIX that is passed to qemu */
+    if ((ret = snprintf(drivestr, sizeof(drivestr), "%s%s",
+                   QEMU_DRIVE_HOST_PREFIX,
+                   detach->info.alias))
+        < 0 || ret >= sizeof(drivestr)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    /* ret > 0 indicates unplug isn't supported, issue will be logged */
+    if (qemuMonitorDriveUnplug(priv->mon, drivestr) < 0) {
+        qemuDomainObjExitMonitor(vm);
+        goto cleanup;
+    }
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;

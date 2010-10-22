@@ -2392,6 +2392,52 @@ cleanup:
     return ret;
 }
 
+/* Attempts to unplug a drive.  Returns 1 if unsupported, 0 if ok, and -1 on
+ * other failure */
+int qemuMonitorTextDriveUnplug(qemuMonitorPtr mon,
+                             const char *drivestr)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    char *safedev;
+    int ret = -1;
+    DEBUG("TextDriveUnplug drivestr=%s", drivestr);
+
+    if (!(safedev = qemuMonitorEscapeArg(drivestr))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&cmd, "drive_unplug %s", safedev) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot unplug %s drive"), drivestr);
+        goto cleanup;
+    }
+
+    if (strstr(reply, "unknown command:")) {
+        VIR_ERROR0(_("unplugging disk is not supported.  "
+                    "This may leak data if disk is reassigned"));
+        ret = 1;
+        goto cleanup;
+    } else if (STRNEQ(reply, "")) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("unplugging %s drive failed: %s"), drivestr, reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    VIR_FREE(safedev);
+    return ret;
+}
 
 int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
                                       const char *alias,

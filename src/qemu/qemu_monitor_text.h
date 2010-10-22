@@ -187,6 +187,9 @@ int qemuMonitorTextDelDevice(qemuMonitorPtr mon,
 int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
                              const char *drivestr);
 
+int qemuMonitorTextDriveUnplug(qemuMonitorPtr mon,
+                             const char *drivestr);
+
 int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
                                       const char *alias,
                                       const char *passphrase);

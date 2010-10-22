@@ -2239,6 +2239,39 @@ int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorJSONDriveUnplug(qemuMonitorPtr mon,
+                             const char *drivestr)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    DEBUG("JSONDriveUnplug drivestr=%s", drivestr);
+    cmd = qemuMonitorJSONMakeCommand("drive_unplug",
+                                     "s:id", drivestr,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        /* See if drive_unplug isn't supported */
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+            VIR_ERROR0(_("unplugging disk is not supported.  "
+                        "This may leak data if disk is reassigned"));
+            ret = 1;
+            goto cleanup;
+        }
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
 int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
                                       const char *alias,
                                       const char *passphrase)
