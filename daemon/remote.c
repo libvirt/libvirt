@@ -4223,7 +4223,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
         goto authdeny;
     }
     PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
-          client->fd, REMOTE_AUTH_POLKIT, ident);
+          client->fd, REMOTE_AUTH_POLKIT, (char *)ident);
     VIR_INFO(_("Policy allowed action %s from pid %d, uid %d"),
              action, callerPid, callerUid);
     ret->complete = 1;
@@ -4238,7 +4238,7 @@ authfail:
 
 authdeny:
     PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
-          client->fd, REMOTE_AUTH_POLKIT, ident);
+          client->fd, REMOTE_AUTH_POLKIT, (char *)ident);
     goto error;
 
 error:

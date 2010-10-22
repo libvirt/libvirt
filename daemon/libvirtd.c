@@ -1230,11 +1230,11 @@ remoteCheckCertificate(struct qemud_client *client)
         }
     }
 
-    PROBE(CLIENT_TLS_ALLOW, "fd=%d, name=%s", client->fd, name);
+    PROBE(CLIENT_TLS_ALLOW, "fd=%d, name=%s", client->fd, (char *)name);
     return 0;
 
 authdeny:
-    PROBE(CLIENT_TLS_DENY, "fd=%d, name=%s", client->fd, name);
+    PROBE(CLIENT_TLS_DENY, "fd=%d, name=%s", client->fd, (char *)name);
     return -1;
 
 authfail:
