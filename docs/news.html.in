@@ -6,7 +6,7 @@
   <body>
     <h1 >Releases</h1>
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
-and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
     <h3>0.8.4: Sep 10 2010</h3>
     <ul>
       <li> Features:

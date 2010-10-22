@@ -73,13 +73,12 @@ fig = \
 
 EXTRA_DIST=					\
   apibuild.py \
-  site.xsl newapi.xsl news.xsl page.xsl ChangeLog.xsl \
+  site.xsl newapi.xsl news.xsl page.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(fig) $(png) \
   $(patches) \
   sitemap.html.in \
-  ChangeLog.awk \
   todo.pl todo.cfg-example
 
 MAINTAINERCLEANFILES = $(dot_html) $(apihtml) $(devhelphtml)
@@ -89,16 +88,6 @@ all: web
 api: libvirt-api.xml libvirt-refs.xml
 
 web: $(dot_html) html/index.html devhelp/index.html
-
-ChangeLog.xml: ../ChangeLog ChangeLog.awk
-	$(AWK) -f ChangeLog.awk < $< > $@
-
-ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
-	@if [ -x $(XSLTPROC) ] ; then \
-	  echo "Generating $@"; \
-	  name=`echo $@ | sed -e 's/.tmp//'`; \
-	  $(XSLTPROC) --nonet $(top_srcdir)/docs/ChangeLog.xsl $< > $@ \
-	    || { rm $@ && exit 1; }; fi
 
 todo.html.in: todo.pl
 	if [ -f  todo.cfg ]; then \
