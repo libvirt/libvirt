@@ -3,7 +3,9 @@
   <body>
     <h1>C# API bindings</h1>
 
-    <h2>Description</h2>
+    <ul id="toc"></ul>
+
+    <h2><a name="description">Description</a></h2>
 
     <p>
       The C# libvirt bindings are a class library.  They use a Microsoft
@@ -18,7 +20,7 @@
 
     <p>&nbsp;</p>
 
-    <h2>Requirements</h2>
+    <h2><a name="requirements">Requirements</a></h2>
 
     <p>
       These bindings depend upon the libvirt libraries being installed.
@@ -29,7 +31,7 @@
     <p>&nbsp;</p>
 
 <!-- 2010-10-19 JC: Commented out until we have C# tarballs to download
-    <h2>Getting them</h2>
+    <h2><a name="getting">Getting them</a></h2>
 
     <p>
       The latest versions of the libvirt C# bindings can be downloaded from:
@@ -41,7 +43,7 @@
     </ul>
 -->
 
-    <h2>GIT source repository</h2>
+    <h2><a name="git">GIT source repository</a></h2>
     <p>
       The C# bindings source code is maintained in a <a
       href="http://git-scm.com/">git</a> repository available on
@@ -62,7 +64,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2>Usage</h2>
+    <h2><a name="usage">Usage</a></h2>
 
     <p>
       The class library exposes the <b>LibvirtBindings</b> namespace.
@@ -80,7 +82,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2>Authors</h2>
+    <h2><a name="authors">Authors</a></h2>
 
     <p>
       The C# bindings are the work of Arnaud Champion
@@ -90,7 +92,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2>Notes on testing</h2>
+    <h2><a name="notes">Notes on testing</a></h2>
 
     <p>
       Windows testing is performed on Windows 7, with .NET 4, Visual Studio 2010, and MonoDevelop 2.4.
@@ -101,7 +103,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2>Type Coverage</h2>
+    <h2><a name="type">Type Coverage</a></h2>
 
     <p>
       Coverage of the libvirt types is:
@@ -178,7 +180,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2>Function Coverage</h2>
+    <h2><a name="funccover">Function Coverage</a></h2>
 
     <p>
       Coverage of the libvirt functions is:
