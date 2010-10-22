@@ -1187,6 +1187,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
             flags |= QEMUD_CMD_FLAG_DRIVE_CACHE_V2;
         if (strstr(help, "format="))
             flags |= QEMUD_CMD_FLAG_DRIVE_FORMAT;
+        if (strstr(help, "readonly="))
+            flags |= QEMUD_CMD_FLAG_DRIVE_READONLY;
     }
     if (strstr(help, "-vga") && !strstr(help, "-std-vga"))
         flags |= QEMUD_CMD_FLAG_VGA;
@@ -1202,8 +1204,14 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_CHARDEV;
     if (strstr(help, "-balloon"))
         flags |= QEMUD_CMD_FLAG_BALLOON;
-    if (strstr(help, "-device"))
+    if (strstr(help, "-device")) {
         flags |= QEMUD_CMD_FLAG_DEVICE;
+        /*
+         * When -device was introduced, qemu already supported drive's
+         * readonly option but didn't advertise that.
+         */
+        flags |= QEMUD_CMD_FLAG_DRIVE_READONLY;
+    }
     if (strstr(help, "-nodefconfig"))
         flags |= QEMUD_CMD_FLAG_NODEFCONFIG;
     /* The trailing ' ' is important to avoid a bogus match */
@@ -2688,7 +2696,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
     if (disk->readonly &&
-        qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_READONLY)
         virBufferAddLit(&opt, ",readonly=on");
     if (disk->driverType && *disk->driverType != '\0' &&
         disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&

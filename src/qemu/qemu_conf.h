@@ -96,6 +96,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_FSDEV         = (1LL << 40), /* -fstype filesystem passthrough */
     QEMUD_CMD_FLAG_NESTING       = (1LL << 41), /* -enable-nesting (SVM/VMX) */
     QEMUD_CMD_FLAG_NAME_PROCESS  = (1LL << 42), /* Is -name process= available */
+    QEMUD_CMD_FLAG_DRIVE_READONLY    = (1LL << 43), /* -drive readonly=on|off */
 };
 
 /* Main driver state */

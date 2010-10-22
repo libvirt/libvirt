@@ -276,7 +276,10 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-fat", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
     DO_TEST("disk-drive-readonly-disk", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
+            QEMUD_CMD_FLAG_DRIVE_READONLY | QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("disk-drive-readonly-no-device", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_READONLY | QEMUD_CMD_FLAG_NODEFCONFIG, false);
     DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
     DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE |
