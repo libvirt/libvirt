@@ -32,26 +32,12 @@
 /* This has to be the oldest version we support. */
 # include "vbox_CAPI_v2_2.h"
 
-# ifdef __cplusplus
-extern "C" {
-# endif
-
-/** The dlopen handle for VBoxXPCOMC. */
-extern void *g_hVBoxXPCOMC;
-/** The last load error. */
-extern char g_szVBoxErrMsg[256];
 /** Pointer to the VBoxXPCOMC function table. */
 extern PCVBOXXPCOM g_pVBoxFuncs;
 /** Pointer to VBoxGetXPCOMCFunctions for the loaded VBoxXPCOMC so/dylib/dll. */
 extern PFNVBOXGETXPCOMCFUNCTIONS g_pfnGetFunctions;
 
-
 int VBoxCGlueInit(void);
 void VBoxCGlueTerm(void);
-
-
-# ifdef __cplusplus
-}
-# endif
 
 #endif

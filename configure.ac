@@ -234,8 +234,8 @@ AC_ARG_WITH([xenapi],
   AC_HELP_STRING([--with-xenapi], [add XenAPI support @<:@default=check@:>@]),[],[with_xenapi=check])
 AC_ARG_WITH([vbox],
   AC_HELP_STRING([--with-vbox=@<:@PFX@:>@],
-                 [VirtualBox XPCOMC location @<:@default=check@:>@]),[],
-                 [with_vbox=check])
+                 [VirtualBox XPCOMC location @<:@default=yes@:>@]),[],
+                 [with_vbox=yes])
 AC_ARG_WITH([lxc],
   AC_HELP_STRING([--with-lxc], [add Linux Container support @<:@default=check@:>@]),[],[with_lxc=check])
 AC_ARG_WITH([one],
@@ -341,51 +341,10 @@ dnl
 
 vbox_xpcomc_dir=
 
-if test "x$with_vbox" = "xyes" || test "x$with_vbox" = "xcheck"; then
-    AC_MSG_CHECKING([for VirtualBox XPCOMC location])
-
-    for vbox in \
-        /usr/lib/virtualbox/VBoxXPCOMC.so \
-        /usr/lib64/virtualbox/VBoxXPCOMC.so \
-        /usr/lib/VirtualBox/VBoxXPCOMC.so \
-        /opt/virtualbox/VBoxXPCOMC.so \
-        /opt/VirtualBox/VBoxXPCOMC.so \
-        /opt/virtualbox/i386/VBoxXPCOMC.so \
-        /opt/VirtualBox/i386/VBoxXPCOMC.so \
-        /opt/virtualbox/amd64/VBoxXPCOMC.so \
-        /opt/VirtualBox/amd64/VBoxXPCOMC.so \
-        /usr/local/lib/virtualbox/VBoxXPCOMC.so \
-        /usr/local/lib/VirtualBox/VBoxXPCOMC.so \
-        /Applications/VirtualBox.app/Contents/MacOS/VBoxXPCOMC.dylib \
-        ; do
-        if test -f "$vbox"; then
-            vbox_xpcomc_dir=`AS_DIRNAME(["$vbox"])`
-            break
-        fi
-    done
-
-    if test -n "$vbox_xpcomc_dir"; then
-        AC_MSG_RESULT([$vbox_xpcomc_dir])
-        with_vbox=yes
-    else
-        if test "x$with_vbox" = "xcheck"; then
-            AC_MSG_RESULT([not found, disabling VirtualBox driver])
-            with_vbox=no
-        else
-            AC_MSG_RESULT([not found])
-            AC_MSG_ERROR([VirtualBox XPCOMC is required for the VirtualBox driver])
-        fi
-    fi
-else
-    if test "x$with_vbox" != "xno"; then
-        if test -f ${with_vbox}/VBoxXPCOMC.so || \
-           test -f ${with_vbox}/VBoxXPCOMC.dylib; then
-            vbox_xpcomc_dir=$with_vbox
-            with_vbox=yes
-        else
-            AC_MSG_ERROR([$with_vbox does not contain VirtualBox XPCOMC])
-        fi
-    fi
+if test "x$with_vbox" != "xyes" && test "x$with_vbox" != "xno"; then
+    # intentionally don't do any further checks here on the provided path
+    vbox_xpcomc_dir=$with_vbox
+    with_vbox=yes
 fi
 
 AC_DEFINE_UNQUOTED([VBOX_XPCOMC_DIR], ["$vbox_xpcomc_dir"],
