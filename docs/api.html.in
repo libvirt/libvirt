@@ -5,20 +5,9 @@
 
     <p> This page describes the main principles and architecture choices
     behind the definition of the libvirt API:
-    <ul>
-      <li>
-        <a href="#Objects">Objects exposed</a>
-      </li>
-      <li>
-        <a href="#Functions">Functions and naming conventions</a>
-      </li>
-      <li>
-        <a href="#Driver">The drivers</a>
-      </li>
-      <li>
-        <a href="#Remote">Daemon and remote access</a>
-      </li>
-    </ul>
+
+    <ul id="toc"></ul>
+
     <h2><a name="Objects">Objects exposed</a></h2>
     <p> As defined in the <a href="goals.html">goals section</a>, libvirt
     API need to expose all the resources needed to manage the virtualization

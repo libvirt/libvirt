@@ -1,23 +1,19 @@
+<?xml version="1.0"?>
 <html>
   <body>
     <h1 >libvirt architecture</h1>
-    <p>Currently libvirt supports 2 kind of virtualization, and its
-internal structure is based on a driver model which simplifies adding new
-engines:</p>
-    <ul>
-      <li>
-        <a href="#Xen">Xen hypervisor</a>
-      </li>
-      <li>
-        <a href="#QEmu">QEmu and KVM based virtualization</a>
-      </li>
-      <li>
-        <a href="#drivers">the driver architecture</a>
-      </li>
-    </ul>
-    <h3>
-      <a name="Xen">Libvirt Xen support</a>
-    </h3>
+
+    <p>
+      Currently libvirt supports 2 kind of virtualization, and its
+      internal structure is based on a driver model which simplifies
+      adding new
+      engines:
+    </p>
+
+    <ul id="toc"></ul>
+
+    <h2><a name="Xen">Xen support</a></h2>
+
     <p>When running in a Xen environment, programs using libvirt have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
 kernel provides most if not all of the actual drivers used by the set of
@@ -48,9 +44,9 @@ privilege access).</p>
 connect to initialize the library. It will then fork a libvirt_proxy
 program running as root and providing read_only access to the API, this is
 then only useful for reporting and monitoring.</p>
-    <h3>
-      <a name="QEmu">Libvirt QEmu and KVM support</a>
-    </h3>
+
+    <h2><a name="QEmu">QEmu and KVM support</a></h2>
+
     <p>The model for QEmu and KVM is completely similar, basically KVM is based
 on QEmu for the process controlling a new domain, only small details differs
 between the two. In both case the libvirt API is provided by a controlling
@@ -62,9 +58,9 @@ emulations models of QEmu, the selection is done when creating the new
 domain, by specifying the architecture and machine type targeted.</p>
     <p>The code controlling the QEmu process is available in the
 <code>qemud/</code> directory.</p>
-    <h3>
-      <a name="drivers">the driver based architecture</a>
-    </h3>
+
+    <h2><a name="drivers">Driver based architecture</a></h2>
+
     <p>As the previous section explains, libvirt can communicate using different
 channels with the current hypervisor, and should also be able to use
 different kind of hypervisor. To simplify the internal design, code, ease

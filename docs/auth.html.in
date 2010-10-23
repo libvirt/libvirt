@@ -1,30 +1,17 @@
+<?xml version="1.0"?>
 <html>
   <body>
     <h1 >Access control</h1>
     <p>
-When connecting to libvirt, some connections may require client
-authentication before allowing use of the APIs. The set of possible
-authentication mechanisms is administrator controlled, independent
-of applications using libvirt.
-</p>
-    <ul>
-      <li>
-        <a href="#ACL_server_config">Server configuration</a>
-      </li>
-      <li>
-        <a href="#ACL_server_unix_perms">UNIX socket permissions/group</a>
-      </li>
-      <li>
-        <a href="#ACL_server_polkit">UNIX socket PolicyKit auth</a>
-      </li>
-      <li>
-        <a href="#ACL_server_username">Username/password auth</a>
-      </li>
-      <li>
-        <a href="#ACL_server_kerberos">Kerberos auth</a>
-      </li>
-    </ul>
-    <h3><a name="ACL_server_config">Server configuration</a></h3>
+      When connecting to libvirt, some connections may require client
+      authentication before allowing use of the APIs. The set of possible
+      authentication mechanisms is administrator controlled, independent
+      of applications using libvirt.
+    </p>
+
+    <ul id="toc"></ul>
+
+    <h2><a name="ACL_server_config">Server configuration</a></h2>
     <p>
 The libvirt daemon allows the administrator to choose the authentication
 mechanisms used for client connections on each network socket independently.
@@ -35,7 +22,7 @@ currently a choice of <code>none</code>, <code>polkit</code>, and <code>sasl</co
 The SASL scheme can be further configured to choose between a large
 number of different mechanisms.
 </p>
-    <h3><a name="ACL_server_unix_perms">UNIX socket permissions/group</a></h3>
+    <h2><a name="ACL_server_unix_perms">UNIX socket permissions/group</a></h2>
     <p>
 If libvirt does not contain support for PolicyKit, then access control for
 the UNIX domain socket is done using traditional file user/group ownership
@@ -52,7 +39,7 @@ parameter. For example, setting the former to mode <code>0770</code> and the
 latter <code>wheel</code> would let any user in the wheel group connect to
 the libvirt daemon.
 </p>
-    <h3><a name="ACL_server_polkit">UNIX socket PolicyKit auth</a></h3>
+    <h2><a name="ACL_server_polkit">UNIX socket PolicyKit auth</a></h2>
     <p>
 If libvirt contains support for PolicyKit, then access control options are
 more advanced. The <code>unix_sock_auth</code> parameter will default to
@@ -86,7 +73,7 @@ ResultActive=yes</pre>
 Further examples of PolicyKit setup can be found on the
 <a href="http://wiki.libvirt.org/page/SSHPolicyKitSetup">wiki page</a>.
     </p>
-    <h3><a name="ACL_server_username">Username/password auth</a></h3>
+    <h2><a name="ACL_server_username">Username/password auth</a></h2>
     <p>
 The plain TCP socket of the libvirt daemon defaults to using SASL for authentication.
 The SASL mechanism configured by default is DIGEST-MD5, which provides a basic
@@ -123,7 +110,7 @@ again:
     <pre>
 # saslpasswd2 -a libvirt -d fred
 </pre>
-    <h3><a name="ACL_server_kerberos">Kerberos auth</a></h3>
+    <h2><a name="ACL_server_kerberos">Kerberos auth</a></h2>
     <p>
 The plain TCP socket of the libvirt daemon defaults to using SASL for authentication.
 The SASL mechanism configured by default is DIGEST-MD5, which provides a basic

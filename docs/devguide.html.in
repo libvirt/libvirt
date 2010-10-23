@@ -3,6 +3,8 @@
   <body>
     <h1>libvirt Application Development Guide</h1>
 
+    <ul id="toc"></ul>
+
     <p>
       The guide is both a learning tool for developing with libvirt and an
       API reference document. It is a work in progress, composed by a
@@ -16,7 +18,7 @@
       contribution to the content here will do it. :)
     </p>
 
-    <h2>Browsable online</h2>
+    <h2><a name="online">Browsable online</a></h2>
 
     <ul>
       <li><a href="http://libvirt.org/guide/html/">
@@ -33,7 +35,7 @@
         Source RPM format</a></li>
     </ul>
 
-    <h2>GIT source repository</h2>
+    <h2><a name="git">GIT source repository</a></h2>
 
     <p>
       The source is in a git repository:

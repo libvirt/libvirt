@@ -4,14 +4,18 @@
 
     <h1>Bug reporting</h1>
 
+    <ul id="toc"></ul>
+
+    <h2><a name="bugzilla">Bug Tracking</a></h2>
+
     <p>
       The <a href="http://bugzilla.redhat.com">Red Hat Bugzilla Server</a>
-      should be used to report bugs and request features against libvirt.
+      should be used to report bugs and request features in libvirt.
       Before submitting a ticket, check the existing tickets to see if
       the bug/feature is already tracked.
     </p>
 
-    <h2>General libvirt bug reports</h2>
+    <h2><a name="general">General libvirt bug reports</a></h2>
 
     <p>
       If you are using official libvirt binaries from a Linux distribution
@@ -27,7 +31,7 @@
       <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Virtualization%20Tools&amp;component=libvirt">New libvirt ticket</a></li>
     </ul>
 
-    <h2>Linux Distribution specific bug reports</h2>
+    <h2><a name="distribution">Linux Distribution specific bug reports</a></h2>
     <ul>
       <li>
         If you are using official binaries from a <strong>Fedora distribution</strong>, enter
@@ -54,7 +58,7 @@
     </ul>
 
 
-    <h2>How to file high quality bug reports</h2>
+    <h2><a name="quality">How to file high quality bug reports</a></h2>
 
     <p>
       To increase the likelihood of your bug report being addressed it is

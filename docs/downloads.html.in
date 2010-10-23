@@ -3,7 +3,9 @@
   <body>
     <h1>Downloads</h1>
 
-    <h2>Official Releases</h2>
+    <ul id="toc"></ul>
+
+    <h2><a name="releases">Official Releases</a></h2>
 
     <p>
       The latest versions of the libvirt C library can be downloaded from:
@@ -14,7 +16,7 @@
       <li><a href="http://libvirt.org/sources/">libvirt.org HTTP server</a></li>
     </ul>
 
-    <h2>Hourly development snapshots</h2>
+    <h2><a name="hourly">Hourly development snapshots</a></h2>
 
     <p>
       Once an hour, an automated snapshot is made from the git server
@@ -27,7 +29,7 @@
       <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.gz">libvirt.org HTTP server</a></li>
     </ul>
 
-    <h2>GIT source repository</h2>
+    <h2><a name="git">GIT source repository</a></h2>
 
     <p>
       Libvirt code source is now maintained in a <a href="http://git-scm.com/">git</a>
@@ -61,7 +63,7 @@
       contribution to the content here will do it. :)
     </p>
 
-    <h2>Downloadable PDF</h2>
+    <h2><a name="appdevpdf">Application Development Guide PDF</a></h2>
 
     <p>
       PDF download is available here:
@@ -71,7 +73,7 @@
       <li><a href="http://libvirt.org/guide/pdf/Application_Development_Guide.pdf">libvirt App Dev Guide</a> (PDF)</li>
     </ul>
 
-    <h2>GIT source repository</h2>
+    <h2><a name="appdevgit">Application Development Guide source GIT repository</a></h2>
 
     <p>
       The source is also in a git repository:
@@ -89,9 +91,9 @@
 
     <br />
 
-    <h1>libvirt Installation</h1>
+    <h1><a name="installation">libvirt Installation</a></h1>
 
-    <h2><a name="Compilatio">Compilation</a></h2>
+    <h2><a name="Compilatio">Compiling a release tarball</a></h2>
 
     <p>
       libvirt uses the standard configure/make/install steps:
@@ -116,7 +118,7 @@
       update your list of installed shared libs.
     </p>
 
-    <h2>Building from a source code checkout</h2>
+    <h2><a name="build">Building from a GIT checkout</a></h2>
 
     <p>
       The libvirt build process uses GNU autotools, so after obtaining a

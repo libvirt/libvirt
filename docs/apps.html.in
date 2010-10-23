@@ -4,19 +4,26 @@
 
     <p>
       This page provides an illustration of the wide variety of
-      applications using the libvirt management API. If you know
-      of interesting applications not listed on this page, send
-      a message to the <a href="contact.html">mailing list</a>
-      to request that it be added here. If your application uses
-      libvirt as its API, the following graphic is available for
-      your website to advertise support for libvirt:
+      applications using the libvirt management API.
+    </p>
+
+    <ul id="toc"></ul>
+
+    <h2><a name="add">Add an application</a></h2>
+
+    <p>
+      To add an application not listed on this page, send a message
+      to the <a href="contact.html">mailing list</a>, requesting it
+      be added here. If your application uses libvirt as its API,
+      the following graphic is available for your website to advertise
+      support for libvirt:
     </p>
 
     <p class="image">
       <img src="madeWith.png" alt="Made with libvirt"/>
     </p>
 
-    <h2>Command line tools</h2>
+    <h2><a name="command">Command line tools</a></h2>
 
     <dl>
       <dt>virsh</dt>
@@ -60,7 +67,7 @@
       </dd>
     </dl>
 
-    <h2>Desktop applications</h2>
+    <h2><a name="desktop">Desktop applications</a></h2>
 
     <dl>
       <dt><a href="http://virt-manager.org/">virt-manager</a></dt>
@@ -79,7 +86,7 @@
       </dd>
     </dl>
 
-    <h2>Web applications</h2>
+    <h2><a name="web">Web applications</a></h2>
 
     <dl>
       <dt><a href="http://ovirt.org/">oVirt</a></dt>
@@ -99,7 +106,7 @@
       </dd>
     </dl>
 
-    <h2>LiveCD / Appliances</h2>
+    <h2><a name="livecd">LiveCD / Appliances</a></h2>
 
     <dl>
       <dt><a href="http://et.redhat.com/~rjones/virt-p2v/">virt-p2v</a></dt>
@@ -111,7 +118,7 @@
       </dd>
     </dl>
 
-    <h2>Monitoring plugins</h2>
+    <h2><a name="monitoring">Monitoring plugins</a></h2>
     <dl>
       <dt><a href="http://honk.sigxcpu.org/projects/libvirt/#munin">for munin</a></dt>
       <dd>

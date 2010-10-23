@@ -2,16 +2,18 @@
   <body>
     <h1>Deployment</h1>
 
-    <h2>Pre-packaged releases</h2>
+    <ul id="toc"></ul>
+
+    <h2><a name="packages">Pre-packaged releases</a></h2>
 
     <p>
-      The libvirt API is now available in all major Linux distributions
+      The libvirt API is now available in all major Linux distributions,
       so the simplest deployment approach is to use your distributions'
       package management software to install the <code>libvirt</code>
       module.
     </p>
 
-    <h2>Self-built releases</h2>
+    <h2><a name="tarball">Self-built releases</a></h2>
 
     <p>
       libvirt uses GNU autotools for its build system, so deployment
@@ -25,7 +27,7 @@
       # make install
     </pre>
 
-    <h2>Built from GIT</h2>
+    <h2><a name="git">Built from GIT</a></h2>
 
     <p>
       When building from GIT it is necessary to generate the autotools
