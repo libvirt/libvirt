@@ -30,6 +30,9 @@
         <optional>
           <ref name="cpu"/>
         </optional>
+        <optional>
+          <ref name="sysinfo"/>
+        </optional>
         <ref name="os"/>
         <ref name="clock"/>
         <ref name="resources"/>
@@ -1742,6 +1745,78 @@
         <ref name="positiveInteger"/>
       </attribute>
     </element>
+  </define>
+
+  <!--
+      System information specification:
+       Placeholder for system specific informations likes the ones
+       contained in the SMBIOS area.
+       Only a limited subset of entries can be modified there, so we
+       fully enumerate each case here.
+       The DMTF spec doesn't specify any string subset, just 0 terminated
+       byte strings, but better be safe and restrict at least the names
+       to avoid problems with space normalization in attribute values,
+       the value is kept as the element body for maximum flexibility.
+       A priori we allow only type 0 and type 1 string updates
+      -->
+  <define name="sysinfo">
+    <element name="sysinfo">
+      <attribute name="type">
+        <value>smbios</value>
+      </attribute>
+      <interleave>
+        <optional>
+          <element name="bios">
+            <oneOrMore>
+              <element name="entry">
+                <attribute name="name">
+                  <ref name="sysinfo-bios-name"/>
+                </attribute>
+                <ref name="sysinfo-value"/>
+              </element>
+            </oneOrMore>
+          </element>
+        </optional>
+        <optional>
+          <element name="system">
+            <oneOrMore>
+              <element name="entry">
+                <attribute name="name">
+                  <ref name="sysinfo-system-name"/>
+                </attribute>
+                <ref name="sysinfo-value"/>
+              </element>
+            </oneOrMore>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="sysinfo-bios-name">
+    <choice>
+      <value>vendor</value>
+      <value>version</value>
+      <value>date</value>
+      <value>release</value>
+    </choice>
+  </define>
+
+  <define name="sysinfo-system-name">
+    <choice>
+      <value>manufacturer</value>
+      <value>product</value>
+      <value>version</value>
+      <value>serial</value>
+      <value>uuid</value>
+      <value>sku</value>
+    </choice>
+  </define>
+
+  <define name="sysinfo-value">
+    <data type="string">
+      <param name='pattern'>[a-zA-Z0-9/\-_\. ]+</param>
+    </data>
   </define>
 
   <define name="address">
