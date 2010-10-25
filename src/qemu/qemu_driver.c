@@ -3668,6 +3668,79 @@ static int qemuDomainSnapshotSetActive(virDomainObjPtr vm,
 static int qemuDomainSnapshotSetInactive(virDomainObjPtr vm,
                                          char *snapshotDir);
 
+static void qemuDomainDiskAudit(virDomainObjPtr vm,
+                                virDomainDiskDefPtr oldDef,
+                                virDomainDiskDefPtr newDef,
+                                const char *reason,
+                                bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    char *oldsrc = NULL;
+    char *newsrc = NULL;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN0("OOM while encoding audit message");
+        return;
+    }
+
+    if (!(oldsrc = virAuditEncode("old-disk",
+                                  oldDef && oldDef->src ?
+                                  oldDef->src : "?"))) {
+        VIR_WARN0("OOM while encoding audit message");
+        goto cleanup;
+    }
+    if (!(newsrc = virAuditEncode("new-disk",
+                                  newDef && newDef->src ?
+                                  newDef->src : "?"))) {
+        VIR_WARN0("OOM while encoding audit message");
+        goto cleanup;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "resrc=disk reason=%s %s uuid=%s %s %s",
+              reason, vmname, uuidstr,
+              oldsrc, newsrc);
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(oldsrc);
+    VIR_FREE(newsrc);
+}
+
+
+static void qemuDomainNetAudit(virDomainObjPtr vm,
+                               virDomainNetDefPtr oldDef,
+                               virDomainNetDefPtr newDef,
+                               const char *reason,
+                               bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char newMacstr[VIR_MAC_STRING_BUFLEN];
+    char oldMacstr[VIR_MAC_STRING_BUFLEN];
+    char *vmname;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (oldDef)
+        virFormatMacAddr(oldDef->mac, oldMacstr);
+    if (newDef)
+        virFormatMacAddr(newDef->mac, newMacstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN0("OOM while encoding audit message");
+        return;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "resrc=net reason=%s %s uuid=%s old-net='%s' new-net='%s'",
+              reason, vmname, uuidstr,
+              oldDef ? oldMacstr : "?",
+              newDef ? newMacstr : "?");
+
+    VIR_FREE(vmname);
+}
+
+
 static void qemuDomainLifecycleAudit(virDomainObjPtr vm,
                                      const char *op,
                                      const char *reason,
@@ -3677,6 +3750,7 @@ static void qemuDomainLifecycleAudit(virDomainObjPtr vm,
     char *vmname;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
+
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN0("OOM while encoding audit message");
         return;
@@ -3690,6 +3764,19 @@ static void qemuDomainLifecycleAudit(virDomainObjPtr vm,
 
 static void qemuDomainStartAudit(virDomainObjPtr vm, const char *reason, bool success)
 {
+    int i;
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        if (disk->src) /* Skips CDROM without media initially inserted */
+            qemuDomainDiskAudit(vm, NULL, disk, "start", true);
+    }
+
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
+        qemuDomainNetAudit(vm, NULL, net, "start", true);
+    }
+
     qemuDomainLifecycleAudit(vm, "start", reason, success);
 }
 
@@ -7565,6 +7652,8 @@ static int qemudDomainChangeEjectableMedia(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    qemuDomainDiskAudit(vm, origdisk, disk, "update", ret >= 0);
+
     if (ret < 0)
         goto error;
 
@@ -7663,6 +7752,8 @@ static int qemudDomainAttachPciDiskDevice(struct qemud_driver *driver,
         }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    qemuDomainDiskAudit(vm, NULL, disk, "attach", ret >= 0);
 
     if (ret < 0)
         goto error;
@@ -7899,6 +7990,8 @@ static int qemudDomainAttachSCSIDisk(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    qemuDomainDiskAudit(vm, NULL, disk, "attach", ret >= 0);
+
     if (ret < 0)
         goto error;
 
@@ -7983,6 +8076,8 @@ static int qemudDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
         ret = qemuMonitorAddUSBDisk(priv->mon, disk->src);
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    qemuDomainDiskAudit(vm, NULL, disk, "attach", ret >= 0);
 
     if (ret < 0)
         goto error;
@@ -8118,11 +8213,13 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
         if (qemuMonitorAddNetdev(priv->mon, netstr) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainNetAudit(vm, NULL, net, "attach", false);
             goto try_tapfd_close;
         }
     } else {
         if (qemuMonitorAddHostNetwork(priv->mon, netstr) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainNetAudit(vm, NULL, net, "attach", false);
             goto try_tapfd_close;
         }
     }
@@ -8150,18 +8247,22 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         if (qemuMonitorAddDevice(priv->mon, nicstr) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainNetAudit(vm, NULL, net, "attach", false);
             goto try_remove;
         }
     } else {
         if (qemuMonitorAddPCINetwork(priv->mon, nicstr,
                                      &guestAddr) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainNetAudit(vm, NULL, net, "attach", false);
             goto try_remove;
         }
         net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
         memcpy(&net->info.addr.pci, &guestAddr, sizeof(guestAddr));
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    qemuDomainNetAudit(vm, NULL, net, "attach", true);
 
     ret = 0;
 
@@ -8860,6 +8961,8 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    qemuDomainDiskAudit(vm, detach, NULL, "detach", ret >= 0);
+
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
         VIR_WARN("Unable to release PCI address on %s", dev->data.disk->src);
@@ -8927,6 +9030,8 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
         goto cleanup;
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    qemuDomainDiskAudit(vm, detach, NULL, "detach", ret >= 0);
 
     virDomainDiskRemove(vm->def, i);
 
@@ -9081,12 +9186,14 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
             qemuDomainObjExitMonitor(vm);
+            qemuDomainNetAudit(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
     } else {
         if (qemuMonitorRemovePCIDevice(priv->mon,
                                        &detach->info.addr.pci) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainNetAudit(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
     }
@@ -9095,15 +9202,19 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
         (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
         if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainNetAudit(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
     } else {
         if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainNetAudit(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    qemuDomainNetAudit(vm, detach, NULL, "detach", true);
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
