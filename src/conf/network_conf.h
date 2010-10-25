@@ -72,7 +72,6 @@ struct _virNetworkDef {
 
     virSocketAddr ipAddress;    /* Bridge IP address */
     virSocketAddr netmask;
-    virSocketAddr network;
 
     unsigned int nranges;        /* Zero or more dhcp ranges */
     virNetworkDHCPRangeDefPtr ranges;

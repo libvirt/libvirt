@@ -438,10 +438,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         }
 
-        def->network = def->ipAddress;
-        def->network.data.inet4.sin_addr.s_addr &=
-            def->netmask.data.inet4.sin_addr.s_addr;
-
         if ((ip = virXPathNode("./ip[1]", ctxt)) &&
             virNetworkIPParseXML(def, ip) < 0)
             goto error;

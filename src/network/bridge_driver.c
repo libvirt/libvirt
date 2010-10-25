@@ -671,7 +671,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     int err;
     /* allow forwarding packets from the bridge interface */
     if ((err = iptablesAddForwardAllowOut(driver->iptables,
-                                          &network->def->network,
+                                          &network->def->ipAddress,
+                                          &network->def->netmask,
                                           network->def->bridge,
                                           network->def->forwardDev))) {
         virReportSystemError(err,
@@ -682,9 +683,10 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 
     /* allow forwarding packets to the bridge interface if they are part of an existing connection */
     if ((err = iptablesAddForwardAllowRelatedIn(driver->iptables,
-                                         &network->def->network,
-                                         network->def->bridge,
-                                         network->def->forwardDev))) {
+                                                &network->def->ipAddress,
+                                                &network->def->netmask,
+                                                network->def->bridge,
+                                                network->def->forwardDev))) {
         virReportSystemError(err,
                              _("failed to add iptables rule to allow forwarding to '%s'"),
                              network->def->bridge);
@@ -716,7 +718,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 
     /* First the generic masquerade rule for other protocols */
     if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            &network->def->network,
+                                            &network->def->ipAddress,
+                                            &network->def->netmask,
                                             network->def->forwardDev,
                                             NULL))) {
         virReportSystemError(err,
@@ -727,7 +730,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 
     /* UDP with a source port restriction */
     if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            &network->def->network,
+                                            &network->def->ipAddress,
+                                            &network->def->netmask,
                                             network->def->forwardDev,
                                             "udp"))) {
         virReportSystemError(err,
@@ -738,7 +742,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 
     /* TCP with a source port restriction */
     if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            &network->def->network,
+                                            &network->def->ipAddress,
+                                            &network->def->netmask,
                                             network->def->forwardDev,
                                             "tcp"))) {
         virReportSystemError(err,
@@ -751,22 +756,26 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 
  masqerr5:
     iptablesRemoveForwardMasquerade(driver->iptables,
-                                    &network->def->network,
+                                    &network->def->ipAddress,
+                                    &network->def->netmask,
                                     network->def->forwardDev,
                                     "udp");
  masqerr4:
     iptablesRemoveForwardMasquerade(driver->iptables,
-                                    &network->def->network,
+                                    &network->def->ipAddress,
+                                    &network->def->netmask,
                                     network->def->forwardDev,
                                     NULL);
  masqerr3:
     iptablesRemoveForwardAllowRelatedIn(driver->iptables,
-                                 &network->def->network,
-                                 network->def->bridge,
-                                 network->def->forwardDev);
+                                        &network->def->ipAddress,
+                                        &network->def->netmask,
+                                        network->def->bridge,
+                                        network->def->forwardDev);
  masqerr2:
     iptablesRemoveForwardAllowOut(driver->iptables,
-                                  &network->def->network,
+                                  &network->def->ipAddress,
+                                  &network->def->netmask,
                                   network->def->bridge,
                                   network->def->forwardDev);
  masqerr1:
@@ -779,7 +788,8 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
     int err;
     /* allow routing packets from the bridge interface */
     if ((err = iptablesAddForwardAllowOut(driver->iptables,
-                                          &network->def->network,
+                                          &network->def->ipAddress,
+                                          &network->def->netmask,
                                           network->def->bridge,
                                           network->def->forwardDev))) {
         virReportSystemError(err,
@@ -790,7 +800,8 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
 
     /* allow routing packets to the bridge interface */
     if ((err = iptablesAddForwardAllowIn(driver->iptables,
-                                         &network->def->network,
+                                         &network->def->ipAddress,
+                                         &network->def->netmask,
                                          network->def->bridge,
                                          network->def->forwardDev))) {
         virReportSystemError(err,
@@ -804,7 +815,8 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
 
  routeerr2:
     iptablesRemoveForwardAllowOut(driver->iptables,
-                                  &network->def->network,
+                                  &network->def->ipAddress,
+                                  &network->def->netmask,
                                   network->def->bridge,
                                   network->def->forwardDev);
  routeerr1:
@@ -943,29 +955,35 @@ networkRemoveIptablesRules(struct network_driver *driver,
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE) {
         if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
             iptablesRemoveForwardMasquerade(driver->iptables,
-                                            &network->def->network,
+                                            &network->def->ipAddress,
+                                            &network->def->netmask,
                                             network->def->forwardDev,
                                             "tcp");
             iptablesRemoveForwardMasquerade(driver->iptables,
-                                            &network->def->network,
+                                            &network->def->ipAddress,
+                                            &network->def->netmask,
                                             network->def->forwardDev,
                                             "udp");
             iptablesRemoveForwardMasquerade(driver->iptables,
-                                            &network->def->network,
+                                            &network->def->ipAddress,
+                                            &network->def->netmask,
                                             network->def->forwardDev,
                                             NULL);
             iptablesRemoveForwardAllowRelatedIn(driver->iptables,
-                                                &network->def->network,
+                                                &network->def->ipAddress,
+                                                &network->def->netmask,
                                                 network->def->bridge,
                                                 network->def->forwardDev);
         } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)
             iptablesRemoveForwardAllowIn(driver->iptables,
-                                         &network->def->network,
+                                         &network->def->ipAddress,
+                                         &network->def->netmask,
                                          network->def->bridge,
                                          network->def->forwardDev);
 
         iptablesRemoveForwardAllowOut(driver->iptables,
-                                      &network->def->network,
+                                      &network->def->ipAddress,
+                                      &network->def->netmask,
                                       network->def->bridge,
                                       network->def->forwardDev);
     }
