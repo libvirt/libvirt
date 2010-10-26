@@ -3266,7 +3266,7 @@ qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev)
         return NULL;
     }
 
-    if (virAsprintf(&ret, "usb-host,hostbus=%.3d,hostaddr=%.3d,id=%s",
+    if (virAsprintf(&ret, "usb-host,hostbus=%d,hostaddr=%d,id=%s",
                     dev->source.subsys.u.usb.bus,
                     dev->source.subsys.u.usb.device,
                     dev->info.alias) < 0)
@@ -3288,7 +3288,7 @@ qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
         return NULL;
     }
 
-    if (virAsprintf(&ret, "host:%.3d.%.3d",
+    if (virAsprintf(&ret, "host:%d.%d",
                     dev->source.subsys.u.usb.bus,
                     dev->source.subsys.u.usb.device) < 0)
         virReportOOMError();
