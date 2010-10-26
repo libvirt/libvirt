@@ -647,7 +647,7 @@ although this use only replaces the media within the existing virtual cdrom or
 floppy device; consider using B<update-device> for this usage instead.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
 
-=item B<attach-interface> I<domain-id> I<type> I<source> optional I<--target target> I<--mac mac> I<--script script>
+=item B<attach-interface> I<domain-id> I<type> I<source> optional I<--target target> I<--mac mac> I<--script script> I<--model model> I<--persistent>
 
 Attach a new network interface to the domain.
 I<type> can be either I<network> to indicate a physical network device or I<bridge> to indicate a bridge to a device.
@@ -656,6 +656,8 @@ I<target> allows to indicate the target device in the guest.
 I<mac> allows to specify the MAC address of the network interface.
 I<script> allows to specify a path to a script handling a bridge instead of
 the default one.
+I<model> allows to specify the model type.
+I<persistent> indicates the changes will affect the next boot of the domain.
 
 =item B<detach-device> I<domain-id> I<FILE>
 

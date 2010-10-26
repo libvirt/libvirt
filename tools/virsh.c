@@ -8292,6 +8292,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
     {"target", VSH_OT_DATA, 0, N_("target network name")},
     {"mac",    VSH_OT_DATA, 0, N_("MAC address")},
     {"script", VSH_OT_DATA, 0, N_("script used to bridge network interface")},
+    {"model", VSH_OT_DATA, 0, N_("model type")},
     {"persistent", VSH_OT_BOOL, 0, N_("persist interface attachment")},
     {NULL, 0, 0, NULL}
 };
@@ -8300,7 +8301,7 @@ static int
 cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    char *mac, *target, *script, *type, *source;
+    char *mac, *target, *script, *type, *source, *model;
     int typ, ret = FALSE;
     unsigned int flags;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -8319,6 +8320,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     target = vshCommandOptString(cmd, "target", NULL);
     mac = vshCommandOptString(cmd, "mac", NULL);
     script = vshCommandOptString(cmd, "script", NULL);
+    model = vshCommandOptString(cmd, "model", NULL);
 
     /* check interface type */
     if (STREQ(type, "network")) {
@@ -8345,6 +8347,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         virBufferVSprintf(&buf, "  <mac address='%s'/>\n", mac);
     if (script != NULL)
         virBufferVSprintf(&buf, "  <script path='%s'/>\n", script);
+    if (model != NULL)
+        virBufferVSprintf(&buf, "  <model type='%s'/>\n", model);
 
     virBufferAddLit(&buf, "</interface>\n");
 
