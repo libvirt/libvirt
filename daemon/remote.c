@@ -59,7 +59,6 @@
 #include "stream.h"
 #include "uuid.h"
 #include "network.h"
-#include "virtaudit.h"
 #include "libvirt/libvirt-qemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
@@ -1216,8 +1215,6 @@ remoteDispatchDomainCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -1225,18 +1222,11 @@ remoteDispatchDomainCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    r = virDomainCreate(dom);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-              "op=start name=%s uuid=%s", dom->name, uuidstr);
-
-    if (r == -1) {
+    if (virDomainCreate (dom) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-
     virDomainFree(dom);
     return 0;
 }
@@ -1251,8 +1241,6 @@ remoteDispatchDomainCreateWithFlags (struct qemud_server *server ATTRIBUTE_UNUSE
                                      remote_domain_create_with_flags_ret *ret)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -1260,15 +1248,7 @@ remoteDispatchDomainCreateWithFlags (struct qemud_server *server ATTRIBUTE_UNUSE
         return -1;
     }
 
-    r = virDomainCreateWithFlags(dom, args->flags);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-              "op=%s name=%s uuid=%s",
-              (args->flags & VIR_DOMAIN_START_PAUSED) !=
-              0 ? "start-paused" : "start", dom->name, uuidstr);
-
-    if (r == -1) {
+    if (virDomainCreateWithFlags (dom, args->flags) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -1289,19 +1269,12 @@ remoteDispatchDomainCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
                                remote_domain_create_xml_ret *ret)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     dom = virDomainCreateXML (conn, args->xml_desc, args->flags);
     if (dom == NULL) {
-        VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 0,
-                  "op=start name=? uuid=?");
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 1, "op=start name=%s uuid=%s",
-              dom->name, uuidstr);
 
     make_nonnull_domain (&ret->dom, dom);
     virDomainFree(dom);
@@ -1342,8 +1315,6 @@ remoteDispatchDomainDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -1351,13 +1322,7 @@ remoteDispatchDomainDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    r = virDomainDestroy(dom);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-              "op=stop name=%s uuid=%s", dom->name, uuidstr);
-
-    if (r == -1) {
+    if (virDomainDestroy (dom) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -1842,8 +1807,6 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
     r = virDomainMigratePrepare (conn, &cookie, &cookielen,
                                  uri_in, uri_out,
                                  args->flags, dname, args->resource);
-    /* This creates a VM, but we don't audit it until the migration succeeds
-       and the VM actually starts. */
     if (r == -1) {
         VIR_FREE(uri_out);
         remoteDispatchConnError(rerr, conn);
@@ -1876,7 +1839,7 @@ remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED
 {
     int r;
     virDomainPtr dom;
-    char *dname, uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *dname;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -1891,11 +1854,6 @@ remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED
                                  args->cookie.cookie_len,
                                  args->uri,
                                  args->flags, dname, args->resource);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-              "op=migrate-out name=%s uuid=%s", dom->name, uuidstr);
-
     virDomainFree (dom);
     if (r == -1) {
         remoteDispatchConnError(rerr, conn);
@@ -1915,26 +1873,17 @@ remoteDispatchDomainMigrateFinish (struct qemud_server *server ATTRIBUTE_UNUSED,
                                    remote_domain_migrate_finish_ret *ret)
 {
     virDomainPtr ddom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     CHECK_CONN (client);
 
-    /* Note that we are not able to audit "op=migrate-in" here if
-       VIR_DRV_FEATURE_MIGRATION_DIRECT is used. */
     ddom = virDomainMigrateFinish (conn, args->dname,
                                    args->cookie.cookie_val,
                                    args->cookie.cookie_len,
                                    args->uri,
                                    args->flags);
     if (ddom == NULL) {
-        VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 0,
-                  "op=migrate-in name=%s uuid=?", args->dname);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-
-    virUUIDFormat(ddom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 1,
-              "op=migrate-in name=%s uuid=%s", ddom->name, uuidstr);
 
     make_nonnull_domain (&ret->ddom, ddom);
     virDomainFree (ddom);
@@ -1971,8 +1920,6 @@ remoteDispatchDomainMigratePrepare2 (struct qemud_server *server ATTRIBUTE_UNUSE
                                   uri_in, uri_out,
                                   args->flags, dname, args->resource,
                                   args->dom_xml);
-    /* This creates a VM, but we don't audit it until the migration succeeds
-       and the VM actually starts. */
     if (r == -1) {
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -1998,11 +1945,8 @@ remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED
                                     remote_domain_migrate_finish2_ret *ret)
 {
     virDomainPtr ddom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     CHECK_CONN (client);
 
-    /* Note that we are not able to audit "op=migrate-in" here if
-       VIR_DRV_FEATURE_MIGRATION_DIRECT is used. */
     ddom = virDomainMigrateFinish2 (conn, args->dname,
                                     args->cookie.cookie_val,
                                     args->cookie.cookie_len,
@@ -2010,15 +1954,9 @@ remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED
                                     args->flags,
                                     args->retcode);
     if (ddom == NULL) {
-        VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 0,
-                  "op=migrate-in name=%s uuid=?", args->dname);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-
-    virUUIDFormat(ddom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 1,
-              "op=migrate-in name=%s uuid=%s", ddom->name, uuidstr);
 
     make_nonnull_domain (&ret->ddom, ddom);
     virDomainFree (ddom);
@@ -2051,8 +1989,6 @@ remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_U
     r = virDomainMigratePrepareTunnel(conn, stream->st,
                                       args->flags, dname, args->resource,
                                       args->dom_xml);
-    /* This creates a VM, but we don't audit it until the migration succeeds
-       and the VM actually starts. */
     if (r == -1) {
         remoteFreeClientStream(client, stream);
         remoteDispatchConnError(rerr, conn);
@@ -2259,15 +2195,8 @@ remoteDispatchDomainRestore (struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_domain_restore_args *args,
                              void *ret ATTRIBUTE_UNUSED)
 {
-    int r;
 
-    r = virDomainRestore(conn, args->from);
-
-    /* We don't have enough information! */
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-              "op=start name=? uuid=? file=%s", args->from);
-
-    if (r == -1) {
+    if (virDomainRestore (conn, args->from) == -1) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
@@ -2285,8 +2214,6 @@ remoteDispatchDomainResume (struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -2294,13 +2221,7 @@ remoteDispatchDomainResume (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    r = virDomainResume(dom);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 1,
-              "op=resume name=%s uuid=%s", dom->name, uuidstr);
-
-    if (r == -1) {
+    if (virDomainResume (dom) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -2319,8 +2240,6 @@ remoteDispatchDomainSave (struct qemud_server *server ATTRIBUTE_UNUSED,
                           void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -2328,13 +2247,7 @@ remoteDispatchDomainSave (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    r = virDomainSave(dom, args->to);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-              "op=stop name=%s uuid=%s", dom->name, uuidstr);
-
-    if (r == -1) {
+    if (virDomainSave (dom, args->to) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -2353,7 +2266,6 @@ remoteDispatchDomainCoreDump (struct qemud_server *server ATTRIBUTE_UNUSED,
                               void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -2361,17 +2273,7 @@ remoteDispatchDomainCoreDump (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    r = virDomainCoreDump(dom, args->to, args->flags);
-
-    if ((args->flags & VIR_DUMP_CRASH) != 0) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(dom->uuid, uuidstr);
-        VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-                  "op=stop name=%s uuid=%s", dom->name, uuidstr);
-    }
-
-    if (r == -1) {
+    if (virDomainCoreDump (dom, args->to, args->flags) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -2756,8 +2658,6 @@ remoteDispatchDomainSuspend (struct qemud_server *server ATTRIBUTE_UNUSED,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -2765,13 +2665,7 @@ remoteDispatchDomainSuspend (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    r = virDomainSuspend(dom);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 1,
-              "op=suspend name=%s uuid=%s", dom->name, uuidstr);
-
-    if (r == -1) {
+    if (virDomainSuspend (dom) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -2883,8 +2777,6 @@ remoteDispatchDomainManagedSave (struct qemud_server *server ATTRIBUTE_UNUSED,
                                  void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int r;
 
     dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
@@ -2892,13 +2784,7 @@ remoteDispatchDomainManagedSave (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    r = virDomainManagedSave(dom, args->flags);
-
-    virUUIDFormat(dom->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, r != -1,
-              "op=stop name=%s uuid=%s", dom->name, uuidstr);
-
-    if (r == -1) {
+    if (virDomainManagedSave (dom, args->flags) == -1) {
         virDomainFree(dom);
         remoteDispatchConnError(rerr, conn);
         return -1;

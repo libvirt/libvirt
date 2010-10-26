@@ -80,7 +80,6 @@
 #include "domain_nwfilter.h"
 #include "hooks.h"
 #include "storage_file.h"
-#include "virtaudit.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -909,14 +908,8 @@ qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                      int hasError) {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     VIR_DEBUG("Received EOF on %p '%s'", vm, vm->def->name);
-
-    /* If the domain stops of its own will, we wouldn't audit it otherwise. */
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, 1,
-              "op=stopped name=%s uuid=%s", vm->def->name, uuidstr);
 
     virDomainObjLock(vm);
 
