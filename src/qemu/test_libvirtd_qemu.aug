@@ -113,6 +113,8 @@ allow_disk_format_probing = 1
 vnc_auto_unix_socket = 1
 
 max_processes = 12345
+
+lock_manager = \"fcntl\"
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -236,3 +238,5 @@ max_processes = 12345
 { "vnc_auto_unix_socket" = "1" }
 { "#empty" }
 { "max_processes" = "12345" }
+{ "#empty" }
+{ "lock_manager" = "fcntl" }

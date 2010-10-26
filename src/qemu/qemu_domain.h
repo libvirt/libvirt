@@ -88,6 +88,7 @@ struct _qemuDomainObjPrivate {
     int persistentAddrs;
 
     virBitmapPtr qemuCaps;
+    char *lockState;
 };
 
 struct qemuDomainWatchdogEvent

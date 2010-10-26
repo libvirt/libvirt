@@ -50,6 +50,7 @@
 #include "nodeinfo.h"
 #include "processinfo.h"
 #include "domain_nwfilter.h"
+#include "locking/domain_lock.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -368,6 +369,7 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virDomainObjLock(vm);
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         VIR_DEBUG("Transitioned guest %s to paused state due to unknown event",
                   vm->def->name);
 
@@ -375,6 +377,11 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+
+        VIR_FREE(priv->lockState);
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after state change",
@@ -437,12 +444,18 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (action == VIR_DOMAIN_EVENT_WATCHDOG_PAUSE &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         VIR_DEBUG("Transitioned guest %s to paused state due to watchdog", vm->def->name);
 
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_WATCHDOG);
         lifecycleEvent = virDomainEventNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG);
+
+        VIR_FREE(priv->lockState);
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after watchdog event",
@@ -516,12 +529,18 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         VIR_DEBUG("Transitioned guest %s to paused state due to IO error", vm->def->name);
 
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_IOERROR);
         lifecycleEvent = virDomainEventNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED_IOERROR);
+
+        VIR_FREE(priv->lockState);
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
             VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
@@ -1802,6 +1821,17 @@ struct qemuProcessHookData {
 static int qemuProcessHook(void *data)
 {
     struct qemuProcessHookData *h = data;
+    int ret = -1;
+
+    /* Some later calls want pid present */
+    h->vm->pid = getpid();
+
+    VIR_DEBUG("Obtaining domain lock");
+    if (virDomainLockProcessStart(h->driver->lockManager,
+                                  h->vm,
+                                  /* QEMU is always pased initially */
+                                  true) < 0)
+        goto cleanup;
 
     if (qemuProcessLimits(h->driver) < 0)
         return -1;
@@ -1809,18 +1839,25 @@ static int qemuProcessHook(void *data)
     /* This must take place before exec(), so that all QEMU
      * memory allocation is on the correct NUMA node
      */
+    VIR_DEBUG("Moving procss to cgroup");
     if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
-        return -1;
+        goto cleanup;
 
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
+    VIR_DEBUG("Setup CPU affinity");
     if (qemuProcessInitCpuAffinity(h->vm) < 0)
-        return -1;
+        goto cleanup;
 
+    VIR_DEBUG("Setting up security labeling");
     if (virSecurityManagerSetProcessLabel(h->driver->securityManager, h->vm) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    VIR_DEBUG("Hook complete ret=%d", ret);
+    return ret;
 }
 
 
@@ -1849,12 +1886,27 @@ qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
     int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
+    VIR_DEBUG("Using lock state '%s'", NULLSTR(priv->lockState));
+    if (virDomainLockProcessResume(driver->lockManager, vm, priv->lockState) < 0) {
+        /* Don't free priv->lockState on error, because we need
+         * to make sure we have state still present if the user
+         * tries to resume again
+         */
+        return -1;
+    }
+    VIR_FREE(priv->lockState);
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorStartCPUs(priv->mon, conn);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret == 0)
+    if (ret == 0) {
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
+    } else {
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+    }
 
     return ret;
 }
@@ -1868,6 +1920,7 @@ int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
     int oldReason;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
+    VIR_FREE(priv->lockState);
     oldState = virDomainObjGetState(vm, &oldReason);
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
 
@@ -1875,8 +1928,13 @@ int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
     ret = qemuMonitorStopCPUs(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret < 0)
+    if (ret == 0) {
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+    } else {
         virDomainObjSetState(vm, oldState, oldReason);
+    }
 
     return ret;
 }
@@ -2121,29 +2179,6 @@ int qemuProcessStart(virConnectPtr conn,
     }
     qemuAuditSecurityLabel(vm, true);
 
-    VIR_DEBUG("Generating setting domain security labels (if required)");
-    if (virSecurityManagerSetAllLabel(driver->securityManager,
-                                      vm, stdin_path) < 0)
-        goto cleanup;
-
-    if (stdin_fd != -1) {
-        /* if there's an fd to migrate from, and it's a pipe, put the
-         * proper security label on it
-         */
-        struct stat stdin_sb;
-
-        VIR_DEBUG("setting security label on pipe used for migration");
-
-        if (fstat(stdin_fd, &stdin_sb) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot stat fd %d"), stdin_fd);
-            goto cleanup;
-        }
-        if (S_ISFIFO(stdin_sb.st_mode) &&
-            virSecurityManagerSetFDLabel(driver->securityManager, vm, stdin_fd) < 0)
-            goto cleanup;
-    }
-
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
@@ -2328,6 +2363,7 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandNonblockingFDs(cmd);
     virCommandSetPidFile(cmd, pidfile);
     virCommandDaemonize(cmd);
+    virCommandRequireHandshake(cmd);
 
     ret = virCommandRun(cmd, NULL);
     VIR_FREE(pidfile);
@@ -2357,6 +2393,42 @@ int qemuProcessStart(virConnectPtr conn,
         ret = 0;
 #endif
     }
+
+    VIR_DEBUG("Waiting for handshake from child");
+    if (virCommandHandshakeWait(cmd) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Setting domain security labels");
+    if (virSecurityManagerSetAllLabel(driver->securityManager,
+                                      vm, stdin_path) < 0)
+        goto cleanup;
+
+    if (stdin_fd != -1) {
+        /* if there's an fd to migrate from, and it's a pipe, put the
+         * proper security label on it
+         */
+        struct stat stdin_sb;
+
+        VIR_DEBUG("setting security label on pipe used for migration");
+
+        if (fstat(stdin_fd, &stdin_sb) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot stat fd %d"), stdin_fd);
+            goto cleanup;
+        }
+        if (S_ISFIFO(stdin_sb.st_mode) &&
+            virSecurityManagerSetFDLabel(driver->securityManager, vm, stdin_fd) < 0)
+            goto cleanup;
+    }
+
+    VIR_DEBUG("Labelling done, completing handshake to child");
+    if (virCommandHandshakeNotify(cmd) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+    VIR_DEBUG("Handshake complete, child running");
 
     if (migrateFrom)
         start_paused = true;

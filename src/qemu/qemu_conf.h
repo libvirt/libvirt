@@ -43,6 +43,7 @@
 # include "macvtap.h"
 # include "command.h"
 # include "threadpool.h"
+# include "locking/lock_manager.h"
 
 # define QEMUD_CPUMASK_LEN CPU_SETSIZE
 
@@ -124,6 +125,8 @@ struct qemud_driver {
     virBitmapPtr reservedVNCPorts;
 
     virSysinfoDefPtr hostsysinfo;
+
+    virLockManagerPluginPtr lockManager;
 };
 
 typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;

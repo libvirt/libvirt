@@ -1,5 +1,5 @@
 /*
- * driver.c: core driver methods for managing qemu guests
+ * qemu_driver.c: core driver methods for managing qemu guests
  *
  * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
@@ -87,6 +87,7 @@
 #include "fdstream.h"
 #include "configmake.h"
 #include "threadpool.h"
+#include "locking/lock_manager.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -529,6 +530,14 @@ qemudStartup(int privileged) {
     }
     VIR_FREE(driverConf);
 
+    /* We should always at least have the 'nop' manager, so
+     * NULLs here are a fatal error
+     */
+    if (!qemu_driver->lockManager) {
+        VIR_ERROR(_("Missing lock manager implementation"));
+        goto error;
+    }
+
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
@@ -768,6 +777,8 @@ qemudShutdown(void) {
         brShutdown(qemu_driver->brctl);
 
     virCgroupFree(&qemu_driver->cgroup);
+
+    virLockManagerPluginUnref(qemu_driver->lockManager);
 
     qemuDriverUnlock(qemu_driver);
     virMutexDestroy(&qemu_driver->lock);

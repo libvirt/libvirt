@@ -115,6 +115,9 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     }
 #endif
 
+    if (!(driver->lockManager =
+          virLockManagerPluginNew("nop", 0)))
+        return -1;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -427,6 +430,15 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue(conf, "max_processes");
     CHECK_TYPE("max_processes", VIR_CONF_LONG);
     if (p) driver->maxProcesses = p->l;
+
+    p = virConfGetValue (conf, "lock_manager");
+    CHECK_TYPE ("lock_manager", VIR_CONF_STRING);
+    if (p && p->str) {
+        virLockManagerPluginUnref(driver->lockManager);
+        if (!(driver->lockManager =
+              virLockManagerPluginNew(p->str, 0)))
+            VIR_ERROR(_("Failed to load lock manager %s"), p->str);
+    }
 
     virConfFree (conf);
     return 0;

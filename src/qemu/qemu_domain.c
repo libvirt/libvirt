@@ -115,6 +115,7 @@ static void qemuDomainObjPrivateFree(void *data)
     VIR_FREE(priv->vcpupids);
     ignore_value(virCondDestroy(&priv->jobCond));
     ignore_value(virCondDestroy(&priv->signalCond));
+    VIR_FREE(priv->lockState);
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->mon) {
@@ -170,6 +171,9 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         }
         virBufferAddLit(buf, "  </qemuCaps>\n");
     }
+
+    if (priv->lockState)
+        virBufferAsprintf(buf, "  <lockstate>%s</lockstate>\n", priv->lockState);
 
     return 0;
 }
@@ -274,6 +278,7 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     }
     VIR_FREE(nodes);
 
+    priv->lockState = virXPathString("string(./lockstate)", ctxt);
 
     return 0;
 

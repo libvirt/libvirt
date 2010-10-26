@@ -48,6 +48,7 @@ module Libvirtd_qemu =
                  | bool_entry "allow_disk_format_probing"
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
+                 | str_entry "lock_manager"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry
