@@ -39,7 +39,8 @@ void virAuditLog(int enabled);
 void virAuditSend(const char *file, const char *func, size_t linenr,
                   const char *clienttty, const char *clientaddr,
                   enum virAuditRecordType type, bool success,
-                  const char *fmt, ...);
+                  const char *fmt, ...)
+    ATTRIBUTE_FMT_PRINTF(8, 9);
 
 char *virAuditEncode(const char *key, const char *value);
 
