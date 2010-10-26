@@ -406,15 +406,6 @@ sc_prohibit_newline_at_end_of_diagnostic:
 	  && { echo '$(ME): newline at end of message(s)' 1>&2;		\
 	    exit 1; } || :
 
-# Disallow trailing blank lines.
-sc_prohibit_trailing_blank_lines:
-	@$(VC_LIST_EXCEPT) | xargs perl -ln -0777 -e			\
-	  '/\n\n+$$/ and print $$ARGV' > $@-t
-	@found=0; test -s $@-t && { found=1; cat $@-t 1>&2;		\
-	  echo '$(ME): found trailing blank line(s)' 1>&2; };		\
-	rm -f $@-t;							\
-	test $$found = 0
-
 # Regex for grep -E that exempts generated files from style rules.
 preprocessor_exempt = ((qemu|remote)_(driver|protocol)\.h)$$
 # Enforce recommended preprocessor indentation style.

@@ -25,6 +25,7 @@ EXTRA_DIST = \
   .x-sc_avoid_write \
   .x-sc_m4_quote_check \
   .x-sc_prohibit_asprintf \
+  .x-sc_prohibit_empty_lines_at_EOF \
   .x-sc_prohibit_gethostby \
   .x-sc_prohibit_gethostname \
   .x-sc_prohibit_gettext_noop \
