@@ -26,6 +26,11 @@ devhelphtml =			\
   devhelp/libvirt-libvirt.html	\
   devhelp/libvirt-virterror.html
 
+css =         \
+  generic.css \
+  libvirt.css \
+  main.css
+
 devhelppng =		\
   devhelp/home.png	\
   devhelp/left.png	\
@@ -76,7 +81,7 @@ EXTRA_DIST=					\
   site.xsl newapi.xsl news.xsl page.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
-  $(xml) $(fig) $(png) \
+  $(xml) $(fig) $(png) $(css) \
   $(patches) \
   sitemap.html.in \
   todo.pl todo.cfg-example
@@ -167,6 +172,8 @@ rebuild: api all
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
+	for f in $(css) $(dot_html) $(gif) $(png); do \
+	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR); done
 	-$(INSTALL) -m 0644 $(srcdir)/Libxml2-Logo-90x34.gif $(DESTDIR)$(HTML_DIR)
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
 	for h in $(apihtml); do \
