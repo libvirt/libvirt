@@ -33,6 +33,7 @@ config.rpath
 config.status
 config.sub
 configure
+configure.lineno
 coverage
 cscope.files
 cscope.out

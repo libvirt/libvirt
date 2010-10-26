@@ -616,13 +616,13 @@ if test "$with_qemu" = yes; then
         test $lv_cv_wrapper_shell = none &&
           AC_MSG_ERROR([could not find decent shell])
         echo a > conftest.a
-        $lv_cv_wrapper_shell -c ': 1<>conftest.a'
+        ($lv_cv_wrapper_shell -c ': 1<>conftest.a') 2>/dev/null &&
         case `cat conftest.a`.$lv_cv_wrapper_shell in
           a./*) break;; dnl /bin/sh is good enough
           a.*) dnl bash, ksh, and zsh all understand 'command', use that
                dnl to determine the absolute path of the shell
             lv_cv_wrapper_shell=`$lv_cv_wrapper_shell -c \
-              'command -v $lv_cv_wrapper_shell'`
+              "command -v $lv_cv_wrapper_shell"`
             case $lv_cv_wrapper_shell in
               /*) break;;
             esac
@@ -636,7 +636,7 @@ if test "$with_qemu" = yes; then
     lv_wrapper_shell=$lv_cv_wrapper_shell
   fi
   if test "x$lv_wrapper_shell" != x; then
-    AC_DEFINE_UNQUOTED([VIR_WRAPPER_SHELL], [$lv_wrapper_shell],
+    AC_DEFINE_UNQUOTED([VIR_WRAPPER_SHELL], ["$lv_wrapper_shell"],
       [Define to the absolute path of a shell that does not truncate on
        <> redirection, if /bin/sh does not fit the bill])
   fi
