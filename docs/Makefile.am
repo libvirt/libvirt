@@ -123,10 +123,11 @@ todo:
 
 %.html: %.html.tmp
 	@if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
-	  if $(XMLCATALOG) /etc/xml/catalog \
+	  if $(XMLCATALOG) '$(XML_CATALOG_FILE)' \
 	    "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
 	  echo "Validating $@" ; \
-	  $(XMLLINT) --nonet --format --valid $< > $@ \
+	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
+	  $(XMLLINT) --catalogs --nonet --format --valid $< > $@ \
 	  || { rm $@ && exit 1; }; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi
 
@@ -136,10 +137,11 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	  echo "Rebuilding the HTML pages from the XML API" ; \
 	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi
 	-@if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
-	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" \
+	  if $(XMLCATALOG) '$(XML_CATALOG_FILE)' "-//W3C//DTD XHTML 1.0 Strict//EN" \
 	    > /dev/null ; then \
 	  echo "Validating the resulting XHTML pages" ; \
-	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
+	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
+	  $(XMLLINT) --catalogs --nonet --valid --noout html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi
 
 $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
