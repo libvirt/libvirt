@@ -2890,13 +2890,13 @@ static const vshCmdInfo info_memtune[] = {
 
 static const vshCmdOptDef opts_memtune[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {VIR_DOMAIN_MEMORY_HARD_LIMIT, VSH_OT_INT, VSH_OFLAG_NONE,
+    {"hard-limit", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Max memory in kilobytes")},
-    {VIR_DOMAIN_MEMORY_SOFT_LIMIT, VSH_OT_INT, VSH_OFLAG_NONE,
+    {"soft-limit", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Memory during contention in kilobytes")},
-    {VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, VSH_OT_INT, VSH_OFLAG_NONE,
+    {"swap-hard-limit", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Max swap in kilobytes")},
-    {VIR_DOMAIN_MEMORY_MIN_GUARANTEE, VSH_OT_INT, VSH_OFLAG_NONE,
+    {"min-guarantee", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Min guaranteed memory in kilobytes")},
     {NULL, 0, 0, NULL}
 };
@@ -2918,22 +2918,22 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
         return FALSE;
 
     hard_limit =
-        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_HARD_LIMIT, NULL);
+        vshCommandOptLongLong(cmd, "hard-limit", NULL);
     if (hard_limit)
         nparams++;
 
     soft_limit =
-        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_SOFT_LIMIT, NULL);
+        vshCommandOptLongLong(cmd, "soft-limit", NULL);
     if (soft_limit)
         nparams++;
 
     swap_hard_limit =
-        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, NULL);
+        vshCommandOptLongLong(cmd, "swap-hard-limit", NULL);
     if (swap_hard_limit)
         nparams++;
 
     min_guarantee =
-        vshCommandOptLongLong(cmd, VIR_DOMAIN_MEMORY_MIN_GUARANTEE, NULL);
+        vshCommandOptLongLong(cmd, "min-guarantee", NULL);
     if (min_guarantee)
         nparams++;
 
