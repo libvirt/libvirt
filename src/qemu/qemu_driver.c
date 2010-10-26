@@ -442,7 +442,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
  * obj must be locked before calling, qemud_driver does not matter
  *
  * To be called after completing the work associated with the
- * earlier  qemuDomainBeginJob() call
+ * earlier qemuDomainBeginJob() call
  *
  * Returns remaining refcount on 'obj', maybe 0 to indicated it
  * was deleted
@@ -466,7 +466,8 @@ static int ATTRIBUTE_RETURN_CHECK qemuDomainObjEndJob(virDomainObjPtr obj)
  * obj must be locked before calling, qemud_driver must be unlocked
  *
  * To be called immediately before any QEMU monitor API call
- * Must have alrady called qemuDomainObjBeginJob().
+ * Must have already called qemuDomainObjBeginJob(), and checked
+ * that the VM is still active.
  *
  * To be followed with qemuDomainObjExitMonitor() once complete
  */
@@ -482,7 +483,7 @@ static void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
 
 /* obj must NOT be locked before calling, qemud_driver must be unlocked
  *
- * Should be paired with an earlier  qemuDomainObjEnterMonitor() call
+ * Should be paired with an earlier qemuDomainObjEnterMonitor() call
  */
 static void qemuDomainObjExitMonitor(virDomainObjPtr obj)
 {
@@ -507,7 +508,7 @@ static void qemuDomainObjExitMonitor(virDomainObjPtr obj)
  * obj must be locked before calling, qemud_driver must be locked
  *
  * To be called immediately before any QEMU monitor API call
- * Must have alrady called qemuDomainObjBeginJob().
+ * Must have already called qemuDomainObjBeginJob().
  *
  * To be followed with qemuDomainObjExitMonitorWithDriver() once complete
  */
@@ -525,7 +526,7 @@ static void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver, vir
 /* obj must NOT be locked before calling, qemud_driver must be unlocked,
  * and will be locked after returning
  *
- * Should be paired with an earlier  qemuDomainObjEnterMonitor() call
+ * Should be paired with an earlier qemuDomainObjEnterMonitorWithDriver() call
  */
 static void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver, virDomainObjPtr obj)
 {
@@ -5077,12 +5078,6 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
-    }
-
     if (newmem > vm->def->mem.max_balloon) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         "%s", _("cannot set memory higher than max memory"));
@@ -5091,6 +5086,12 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
 
     if (qemuDomainObjBeginJob(vm) < 0)
         goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
 
     priv = vm->privateData;
     qemuDomainObjEnterMonitor(vm);
@@ -5158,26 +5159,25 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         } else if (!priv->jobActive) {
             if (qemuDomainObjBeginJob(vm) < 0)
                 goto cleanup;
-
-            qemuDomainObjEnterMonitor(vm);
-            err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
-            qemuDomainObjExitMonitor(vm);
-            if (err < 0) {
-                if (qemuDomainObjEndJob(vm) == 0)
-                    vm = NULL;
+            if (!virDomainObjIsActive(vm))
+                err = 0;
+            else {
+                qemuDomainObjEnterMonitor(vm);
+                err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
+                qemuDomainObjExitMonitor(vm);
+            }
+            if (qemuDomainObjEndJob(vm) == 0) {
+                vm = NULL;
                 goto cleanup;
             }
 
+            if (err < 0)
+                goto cleanup;
             if (err == 0)
                 /* Balloon not supported, so maxmem is always the allocation */
                 info->memory = vm->def->mem.max_balloon;
             else
                 info->memory = balloon;
-
-            if (qemuDomainObjEndJob(vm) == 0) {
-                vm = NULL;
-                goto cleanup;
-            }
         } else {
             info->memory = vm->def->mem.cur_balloon;
         }
@@ -10510,19 +10510,21 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     /* ..but if guest is running & not using raw
        disk format and on a block device, then query
        highest allocated extent from QEMU */
-    if (virDomainObjIsActive(vm) &&
-        disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+    if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
         format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
         if (qemuDomainObjBeginJob(vm) < 0)
             goto cleanup;
-
-        qemuDomainObjEnterMonitor(vm);
-        ret = qemuMonitorGetBlockExtent(priv->mon,
-                                        disk->info.alias,
-                                        &info->allocation);
-        qemuDomainObjExitMonitor(vm);
+        if (!virDomainObjIsActive(vm))
+            ret = 0;
+        else {
+            qemuDomainObjEnterMonitor(vm);
+            ret = qemuMonitorGetBlockExtent(priv->mon,
+                                            disk->info.alias,
+                                            &info->allocation);
+            qemuDomainObjExitMonitor(vm);
+        }
 
         if (qemuDomainObjEndJob(vm) == 0)
             vm = NULL;
