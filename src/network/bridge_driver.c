@@ -1171,6 +1171,7 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
                                      virNetworkObjPtr network)
 {
     int err;
+    virErrorPtr save_err;
 
     if (virNetworkObjIsActive(network)) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1255,7 +1256,12 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
     }
 
  err_delbr2:
+    save_err = virSaveLastError();
     networkRemoveIptablesRules(driver, network);
+    if (save_err) {
+        virSetError(save_err);
+        virFreeError(save_err);
+    }
 
  err_delbr1:
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
