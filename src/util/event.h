@@ -68,7 +68,7 @@ int virEventRemoveHandle(int watch);
  * Setting frequency to -1 will disable the timer. Setting the frequency
  * to zero will cause it to fire on every event loop iteration.
  *
- * returns -1 if the file handle cannot be registered, a positive
+ * returns -1 if the timer cannot be registered, a positive
  * integer timer id upon success
  */
 int virEventAddTimeout(int frequency,
