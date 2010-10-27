@@ -3698,6 +3698,27 @@ static void qemuDomainStopAudit(virDomainObjPtr vm, const char *reason)
     qemuDomainLifecycleAudit(vm, "stop", reason, true);
 }
 
+static void qemuDomainSecurityLabelAudit(virDomainObjPtr vm, bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN0("OOM while encoding audit message");
+        return;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_ID, success,
+              "%s uuid=%s vm-ctx=%s img-ctx=%s",
+              vmname, uuidstr,
+              VIR_AUDIT_STR(vm->def->seclabel.label),
+              VIR_AUDIT_STR(vm->def->seclabel.imagelabel));
+
+    VIR_FREE(vmname);
+}
+
+
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
@@ -3752,10 +3773,13 @@ static int qemudStartVMDaemon(virConnectPtr conn,
        then generate a security label for isolation */
     DEBUG0("Generating domain security label (if required)");
     if (driver->securityDriver &&
-        driver->securityDriver->domainGenSecurityLabel &&
-        driver->securityDriver->domainGenSecurityLabel(driver->securityDriver,
-                                                       vm) < 0)
-        goto cleanup;
+        driver->securityDriver->domainGenSecurityLabel) {
+        ret = driver->securityDriver->domainGenSecurityLabel(driver->securityDriver,
+                                                             vm);
+        qemuDomainSecurityLabelAudit(vm, ret >= 0);
+        if (ret < 0)
+            goto cleanup;
+    }
 
     DEBUG0("Generating setting domain security labels (if required)");
     if (driver->securityDriver &&
