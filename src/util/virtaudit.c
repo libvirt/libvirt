@@ -136,3 +136,15 @@ void virAuditClose(void)
     close(auditfd);
 #endif
 }
+
+char *virAuditEncode(const char *key, const char *value)
+{
+#if HAVE_AUDIT
+    return audit_encode_nv_string(key, value, 0);
+#else
+    char *str;
+    if (virAsprintf(&str, "%s=%s", key, value) < 0)
+        return NULL;
+    return str;
+#endif
+}

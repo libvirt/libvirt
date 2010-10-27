@@ -794,6 +794,7 @@ virUUIDParse;
 
 # virtaudit.h
 virAuditClose;
+virAuditEncode;
 virAuditLog;
 virAuditOpen;
 virAuditSend;
