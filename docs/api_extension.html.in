@@ -11,7 +11,8 @@
     <p>
       This document walks you through the process of implementing a new
       API in libvirt.  It uses as an example the addition of an API for
-      separating maximum from current vcpu usage of a domain.
+      separating maximum from current vcpu usage of a domain, over
+      the course of a fifteen-patch series.
       Remember that new API consists of any new public functions, as
       well as the addition of flags or extensions of XML used by
       existing functions.  The example in this document adds both new
@@ -134,8 +135,8 @@
       rework it as you go through the process of implementing it.
     </p>
 
-    <p class="example">See <a href="api_extension/0001-Step-1-of-15-add-to-xml.patch">0001-Step-1-of-15-add-to-xml.patch</a>
-    and <a href="api_extension/0002-Step-2-of-15-add-new-public-API.patch">0002-Step-2-of-15-add-new-public-API.patch</a>
+    <p class="example">See <a href="api_extension/0001-add-to-xml.patch">0001-add-to-xml.patch</a>
+    and <a href="api_extension/0002-add-new-public-API.patch">0002-add-new-public-API.patch</a>
     for example code.</p>
 
     <h2><a name='internalapi'>Defining the internal API</a></h2>
@@ -165,7 +166,7 @@
       provide a <code>NULL</code> stub for the new function.
     </p>
 
-    <p class="example">See <a href="api_extension/0003-Step-3-of-15-define-internal-driver-API.patch">0003-Step-3-of-15-define-internal-driver-API.patch</a></p>
+    <p class="example">See <a href="api_extension/0003-define-internal-driver-API.patch">0003-define-internal-driver-API.patch</a></p>
 
     <h2><a name='implpublic'>Implementing the public API</a></h2>
 
@@ -199,7 +200,7 @@
 
     <p><code>src/libvirt.c</code></p>
 
-    <p class="example">See <a href="api_extension/0004-Step-4-of-15-implement-the-public-APIs.patch">0004-Step-4-of-15-implement-the-public-APIs.patch</a></p>
+    <p class="example">See <a href="api_extension/0004-implement-the-public-APIs.patch">0004-implement-the-public-APIs.patch</a></p>
 
     <h2><a name='remoteproto'>Implementing the remote protocol</a></h2>
 
@@ -211,7 +212,7 @@
       regeneration of derived files, with further details below.
     </p>
 
-    <p class="example">See <a href="api_extension/0005-Step-5-of-15-implement-the-remote-protocol.patch">0005-Step-5-of-15-implement-the-remote-protocol.patch</a></p>
+    <p class="example">See <a href="api_extension/0005-implement-the-remote-protocol.patch">0005-implement-the-remote-protocol.patch</a></p>
 
     <h3><a name='wireproto'>Defining the wire protocol format</a></h3>
 
@@ -298,7 +299,7 @@
       existing lines probably imply a backwards-incompatible API change.
     </p>
 
-    <p class="example">See <a href="api_extension/0005-Step-5-of-15-implement-the-remote-protocol.patch">0005-Step-5-of-15-implement-the-remote-protocol.patch</a></p>
+    <p class="example">See <a href="api_extension/0005-implement-the-remote-protocol.patch">0005-implement-the-remote-protocol.patch</a></p>
 
     <h2><a name="internaluseapi">Use the new API internally</a></h2>
 
@@ -312,7 +313,7 @@
       not necessary if the new API has no relation to existing API.
     </p>
 
-    <p class="example">See <a href="api_extension/0006-Step-6-of-15-make-old-API-trivially-wrap-to-new-API.patch">0006-Step-6-of-15-make-old-API-trivially-wrap-to-new-API.patch</a></p>
+    <p class="example">See <a href="api_extension/0006-make-old-API-trivially-wrap-to-new-API.patch">0006-make-old-API-trivially-wrap-to-new-API.patch</a></p>
 
     <h2><a name="virshuseapi">Expose the new API in virsh</a></h2>
 
@@ -343,7 +344,7 @@
         tools/virsh.pod
     </code></p>
 
-    <p class="example">See <a href="api_extension/0007-Step-7-of-15-add-virsh-support.patch">0007-Step-7-of-15-add-virsh-support.patch</a></p>
+    <p class="example">See <a href="api_extension/0007-add-virsh-support.patch">0007-add-virsh-support.patch</a></p>
 
     <h2><a name="driverimpl">Implement the driver methods</a></h2>
 
@@ -371,7 +372,7 @@
       the same way as the older API wrappers.
     </p>
 
-    <p class="example">See <a href="api_extension/0008-Step-8-of-15-support-new-xml.patch">0008-Step-8-of-15-support-new-xml.patch</a></p>
+    <p class="example">See <a href="api_extension/0008-support-new-xml.patch">0008-support-new-xml.patch</a></p>
 
     <h3><a name="drivercode">Implement driver handling</a></h3>
 
@@ -391,7 +392,7 @@
       test driver in one patch:
     </p>
 
-    <p class="example">See <a href="api_extension/0009-Step-9-of-15-support-all-flags-in-test-driver.patch">0009-Step-9-of-15-support-all-flags-in-test-driver.patch</a></p>
+    <p class="example">See <a href="api_extension/0009-support-all-flags-in-test-driver.patch">0009-support-all-flags-in-test-driver.patch</a></p>
 
     <p>
       The qemu changes were easier to split into two phases, one for
@@ -400,8 +401,8 @@
       flags of the new API:
     </p>
 
-    <p class="example">See <a href="api_extension/0010-Step-10-of-15-improve-vcpu-support-in-qemu-command-line.patch">0010-Step-10-of-15-improve-vcpu-support-in-qemu-command-line.patch</a>
-      and <a href="api_extension/0011-Step-11-of-15-complete-vcpu-support-in-qemu-driver.patch">0011-Step-11-of-15-complete-vcpu-support-in-qemu-driver.patch</a></p>
+    <p class="example">See <a href="api_extension/0010-improve-vcpu-support-in-qemu-command-line.patch">0010-improve-vcpu-support-in-qemu-command-line.patch</a>
+      and <a href="api_extension/0011-complete-vcpu-support-in-qemu-driver.patch">0011-complete-vcpu-support-in-qemu-driver.patch</a></p>
 
     <p>
       Finally, the example breaks the xen driver changes across four
@@ -411,10 +412,10 @@
       rendered dead by the new API.
     </p>
 
-    <p class="example">See <a href="api_extension/0012-Step-12-of-15-improve-vcpu-support-in-xen-command-line.patch">0012-Step-12-of-15-improve-vcpu-support-in-xen-command-line.patch</a>,
-      <a href="api_extension/0013-Step-13-of-15-improve-support-for-getting-xen-vcpu-counts.patch">0013-Step-13-of-15-improve-support-for-getting-xen-vcpu-counts.patch</a>,
-      <a href="api_extension/0014-Step-14-of-15-improve-support-for-setting-xen-vcpu-counts.patch">0014-Step-14-of-15-improve-support-for-setting-xen-vcpu-counts.patch</a>,
-      and <a href="api_extension/0015-Step-15-of-15-remove-dead-xen-code.patch">0015-Step-15-of-15-remove-dead-xen-code.patch</a></p>
+    <p class="example">See <a href="api_extension/0012-improve-vcpu-support-in-xen-command-line.patch">0012-improve-vcpu-support-in-xen-command-line.patch</a>,
+      <a href="api_extension/0013-improve-getting-xen-vcpu-counts.patch">0013-improve-getting-xen-vcpu-counts.patch</a>,
+      <a href="api_extension/0014-improve-setting-xen-vcpu-counts.patch">0014-improve-setting-xen-vcpu-counts.patch</a>,
+      and <a href="api_extension/0015-remove-dead-xen-code.patch">0015-remove-dead-xen-code.patch</a></p>
 
     <p>
       The exact details of the example code are probably uninteresting
