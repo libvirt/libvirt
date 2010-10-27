@@ -927,6 +927,15 @@ virExecDaemonize(const char *const*argv ATTRIBUTE_UNUSED,
     return -1;
 }
 
+int
+virFork(pid_t *pid)
+{
+    *pid = -1;
+    errno = ENOTSUP;
+
+    return -1;
+}
+
 # endif /* WIN32 */
 
 int

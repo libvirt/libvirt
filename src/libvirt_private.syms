@@ -314,10 +314,6 @@ virDomainConfNWFilterTeardown;
 virDomainConfVMNWFilterTeardown;
 
 
-# driver.h
-virDriverLoadModule;
-
-
 # ebtables.h
 ebtablesAddForwardAllowIn;
 ebtablesAddForwardPolicyReject;
