@@ -952,7 +952,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
  * @xend: A xend instance
  * @sexpr: An S-Expr description of the domain.
  *
- * This method will create a domain based the passed in description.  The
+ * This method will create a domain based on the passed in description.  The
  * domain will be paused after creation and must be unpaused with
  * xenDaemonResumeDomain() to begin execution.
  * This method may be deprecated once switching to XML-RPC based communcations
@@ -5071,7 +5071,7 @@ error:
 
 /**
  * xenDaemonDomainBlockPeek:
- * @dom: domain object
+ * @domain: domain object
  * @path: path to the file or device
  * @offset: offset
  * @size: size
