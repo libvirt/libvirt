@@ -37,6 +37,7 @@
 #include "util.h"
 #include "memory.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -408,10 +409,10 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
             virReportSystemError(errno,
                                  _("cannot clear device header of '%s'"),
                                  pool->def->source.devices[i].path);
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
             goto cleanup;
         }
-        if (close(fd) < 0) {
+        if (VIR_CLOSE(fd) < 0) {
             virReportSystemError(errno,
                                  _("cannot close device '%s'"),
                                  pool->def->source.devices[i].path);
@@ -622,7 +623,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot close file '%s'"),
                              vol->target.path);
@@ -641,8 +642,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     return 0;
 
  cleanup:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
     return -1;
 }
