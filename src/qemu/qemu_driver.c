@@ -5742,6 +5742,22 @@ cleanup:
     return ret;
 }
 
+/* Returns true if a compression program is available in PATH */
+static bool qemudCompressProgramAvailable(enum qemud_save_formats compress)
+{
+    const char *prog;
+    char *c;
+
+    if (compress == QEMUD_SAVE_FORMAT_RAW)
+        return true;
+    prog = qemudSaveCompressionTypeToString(compress);
+    c = virFindFileInPath(prog);
+    if (!c)
+        return false;
+    VIR_FREE(c);
+    return true;
+}
+
 static int qemudDomainSave(virDomainPtr dom, const char *path)
 {
     struct qemud_driver *driver = dom->conn->privateData;
@@ -5759,6 +5775,12 @@ static int qemudDomainSave(virDomainPtr dom, const char *path)
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             "%s", _("Invalid save image format specified "
                                     "in configuration file"));
+            return -1;
+        }
+        if (!qemudCompressProgramAvailable(compressed)) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("Compression program for image format "
+                                    "in configuration file isn't available"));
             return -1;
         }
     }
@@ -5923,6 +5945,12 @@ static int qemudDomainCoreDump(virDomainPtr dom,
                            _("Invalid dump image format specified in "
                              "configuration file"));
            return -1;
+        }
+        if (!qemudCompressProgramAvailable(compress)) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("Compression program for dump image format "
+                                    "in configuration file isn't available"));
+            return -1;
         }
     }
 
