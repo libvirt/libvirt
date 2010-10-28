@@ -325,6 +325,17 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
+    p = virConfGetValue (conf, "dump_image_format");
+    CHECK_TYPE ("dump_image_format", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->dumpImageFormat);
+        if (!(driver->dumpImageFormat = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
      p = virConfGetValue (conf, "hugetlbfs_mount");
      CHECK_TYPE ("hugetlbfs_mount", VIR_CONF_STRING);
      if (p && p->str) {

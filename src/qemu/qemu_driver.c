@@ -5909,11 +5909,22 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     int resume = 0, paused = 0;
     int ret = -1, fd = -1;
     virDomainEventPtr event = NULL;
-    const char *args[] = {
-        "cat",
-        NULL,
-    };
+    int compress;
     qemuDomainObjPrivatePtr priv;
+    /*
+     * We reuse "save" flag for "dump" here. Then, we can support the same
+     * format in "save" and "dump".
+     */
+    compress = QEMUD_SAVE_FORMAT_RAW;
+    if (driver->dumpImageFormat) {
+        compress = qemudSaveCompressionTypeFromString(driver->dumpImageFormat);
+        if (compress < 0) {
+           qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Invalid dump image format specified in "
+                             "configuration file"));
+           return -1;
+        }
+    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -5980,9 +5991,25 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorMigrateToFile(priv->mon,
-                                   QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                   args, path, 0);
+    if (compress == QEMUD_SAVE_FORMAT_RAW) {
+        const char *args[] = {
+            "cat",
+            NULL,
+        };
+        ret = qemuMonitorMigrateToFile(priv->mon,
+                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                       args, path, 0);
+    } else {
+        const char *prog = qemudSaveCompressionTypeToString(compress);
+        const char *args[] = {
+            prog,
+            "-c",
+            NULL,
+        };
+        ret = qemuMonitorMigrateToFile(priv->mon,
+                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                       args, path, 0);
+    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret < 0)
         goto endjob;

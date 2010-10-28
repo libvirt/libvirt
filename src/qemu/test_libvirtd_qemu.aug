@@ -94,6 +94,8 @@ cgroup_device_acl = [ \"/dev/null\", \"/dev/full\", \"/dev/zero\" ]
 
 save_image_format = \"gzip\"
 
+dump_image_format = \"gzip\"
+
 hugetlbfs_mount = \"/dev/hugepages\"
 
 set_process_name = 1
@@ -208,6 +210,8 @@ allow_disk_format_probing = 1
 }
 { "#empty" }
 { "save_image_format" = "gzip" }
+{ "#empty" }
+{ "dump_image_format" = "gzip" }
 { "#empty" }
 { "hugetlbfs_mount" = "/dev/hugepages" }
 { "#empty" }

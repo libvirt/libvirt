@@ -164,6 +164,7 @@ struct qemud_driver {
     virSecurityDriverPtr securitySecondaryDriver;
 
     char *saveImageFormat;
+    char *dumpImageFormat;
 
     pciDeviceList *activePciHostdevs;
 
