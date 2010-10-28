@@ -24,6 +24,8 @@
 
     <p>
       These bindings depend upon the libvirt libraries being installed.
+    </p>
+    <p>
       In the .NET case, this is <b>libvirt-0.dll</b>, produced from
       compiling libvirt for windows.
     </p>
@@ -67,18 +69,51 @@ git clone git://libvirt.org/libvirt-csharp.git
     <h2><a name="usage">Usage</a></h2>
 
     <p>
-      The class library exposes the <b>LibvirtBindings</b> namespace.
-      This namespace exposes all of the needed types (enum, struct),
-      and 2 main classes, <b>libVirt</b> and <b>libvirtError</b>.
+      The libvirt C# bindings class library exposes the <b>Libvirt</b>
+      namespace.  This namespace exposes all of the needed types (enum,
+      struct), plus many classes exposing the libvirt API methods.
     </p>
     <p>
-      The <b>libVirt</b> class exposes all of the interfaces of the
-      libvirt library for handling virtualized domains.
+      These classes are grouped into functional areas, with each class
+      exposing libvirt methods related to that area.
     </p>
     <p>
-      The <b>libvirtError</b> class exposes all of the interfaces of
-      the libvirt library for handling errors raised while using the library.
+      For example, the libvirt methods related to connections, such as
+      <b>virConnectOpenAuth</b> and <b>virConnectNumOfDomains</b>, are in
+      the <b>Connect</b> class.
+      <br />
+      They are accessed as <b>Connect.OpenAuth</b>, and
+      <b>Connect.NumOfDomains</b> respectively.
     </p>
+    <p>
+      In the same manner, the other class name mappings are:
+    </p>
+    <table class="top_table">
+      <tr><th>Name of libvirt function</th><th>C# class name</th></tr>
+      <tr><td>virDomain...</td><td>Domain</td></tr>
+      <tr><td>virEvent...</td><td>Event</td></tr>
+      <tr><td>virInterface...</td><td>Interface</td></tr>
+      <tr><td>virNetwork...</td><td>Network</td></tr>
+      <tr><td>virNode...</td><td>Node</td></tr>
+      <tr><td>virSecret...</td><td>Secret</td></tr>
+      <tr><td>virStoragePool...</td><td>StoragePool</td></tr>
+      <tr><td>virStorageVolume...</td><td>StorageVolume</td></tr>
+      <tr><td>virStream...</td><td>Stream</td></tr>
+    </table>
+    <p>
+      There are some additions as well:
+    </p>
+    <ul>
+      <li>
+        There is a class named <b>Library</b>, exposing the
+        <b>virGetVersion</b> and <b>virInitialize</b> methods
+      </li>
+      <li>
+        There is a class named <b>Errors</b>, exposing the error
+        related methods.  For example, <b>virSetErrorFunc</b> and
+        <b>virConnResetLastError</b>.
+      </li>
+    </ul>
 
     <p>&nbsp;</p>
 
@@ -92,14 +127,16 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2><a name="notes">Notes on testing</a></h2>
+    <h2><a name="notes">Test Configuration</a></h2>
 
     <p>
-      Windows testing is performed on Windows 7, with .NET 4, Visual Studio 2010, and MonoDevelop 2.4.
+      Testing is performed using the following configurations:
     </p>
-    <p>
-      Linux testing is performed on Fedora 13 i686, with MonoDevelop 2.2.
-    </p>
+    <ul>
+      <li>Windows 7 (64 bits) / .Net 4</li>
+      <li>Windows 7 (64 bits) / Mono 2.6.7 (compiled in 32 bits)</li>
+      <li>Ubuntu 10.10 amd64 / Mono 2.6.7 (compiled in 64 bits)</li>
+    </ul>
 
     <p>&nbsp;</p>
 
@@ -109,7 +146,7 @@ git clone git://libvirt.org/libvirt-csharp.git
       Coverage of the libvirt types is:
     </p>
     <table class="top_table">
-      <tr><th>Type</th><th>Name</th><th>Binding?</th><th>Tested?</th><th>Sample Code?</th><th>Works?</th><th>Tested .Net/Windows Works?</th><th>Tested Mono/Windows Works?</th><th>Tested Mono/Linux Works?</th></tr>
+      <tr><th>Type</th><th>Name</th><th>Binding?</th><th>Tested?</th><th>Sample Code?</th><th>Works?</th><th>Tested .Net/Windows Works?</th><th>Tested Mono (32-bit)/Windows Works?</th><th>Tested Mono (64-bit)/Linux Works?</th></tr>
       <tr><td>enum</td><td>virCPUCompareResult</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virConnect</td><td>Yes, an IntPtr as the struct is not public</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virConnectAuth</td><td>Yes</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
@@ -122,7 +159,7 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>enum</td><td>virDomainCoreDumpFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainCreateFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainDeviceModifyFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventDefinedDetailType</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>enum</td><td>virDomainEventDefinedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>struct</td><td>virDomainEventGraphicsAddress</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainEventGraphicsAddressType</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainEventGraphicsPhase</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -130,12 +167,12 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>struct</td><td>virDomainEventGraphicsSubjectIdentity</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainEventID</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainEventIOErrorAction</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventResumedDetailType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventStartedDetailType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventStoppedDetailType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventSuspendedDetailType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventUndefinedDetailType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>enum</td><td>virDomainEventResumedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>enum</td><td>virDomainEventStartedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>enum</td><td>virDomainEventStoppedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>enum</td><td>virDomainEventSuspendedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>enum</td><td>virDomainEventType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>enum</td><td>virDomainEventUndefinedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>enum</td><td>virDomainEventWatchdogAction</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virDomainInfo</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virDomainInterfaceStatsStruct</td><td>Yes</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -149,7 +186,7 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>enum</td><td>virDomainSnapshotDeleteFlags</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainState</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virDomainXMLFlags</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virEventHandleType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>enum</td><td>virEventHandleType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>struct</td><td>virInterface</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virInterfaceXMLFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virNWFilter</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -162,10 +199,10 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>enum</td><td>virSecretUsageType</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virSecurityLabel</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virSecurityModel</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virStoragePool</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virStoragePoolBuildFlags</td><td>Yes</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virStoragePoolDeleteFlags</td><td>Yes</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virStoragePoolInfo</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>struct</td><td>virStoragePool</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virStoragePoolState</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>struct</td><td>virStorageVol</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>enum</td><td>virStorageVolDeleteFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -186,10 +223,10 @@ git clone git://libvirt.org/libvirt-csharp.git
       Coverage of the libvirt functions is:
     </p>
     <table class="top_table">
-      <tr><th>Name</th><th>Binding?</th><th>Type?</th><th>Tested?</th><th>Sample Code?</th><th>Working?</th><th>Tested .Net/Windows Works?</th><th>Tested Mono/Windows Works?</th><th>Tested Mono/Linux Works?</th></tr>
-      <tr><td>virConnectAuthCallbackPtr</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>&nbsp;</td></tr>
+      <tr><th>Name</th><th>Binding?</th><th>Type?</th><th>Tested?</th><th>Sample Code?</th><th>Working?</th><th>Tested .Net/Windows Works?</th><th>Tested Mono (32-bit)/Windows Works?</th><th>Tested Mono (64-bit)/Linux Works?</th></tr>
+      <tr><td>virConnectAuthCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectBaselineCPU</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectClose</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>&nbsp;</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>virConnectClose</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectCompareCPU</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectDomainEventCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectDomainEventDeregister</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -199,7 +236,7 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virConnectDomainEventIOErrorCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectDomainEventIOErrorReasonCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectDomainEventRTCChangeCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventRegister</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectDomainEventRegister</td><td>Yes</td><td>function</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectDomainEventRegisterAny</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectDomainEventWatchdogCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectDomainXMLFromNative</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -219,11 +256,11 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virConnectListDefinedNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectListDefinedStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectListDomains</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectListInterfaces</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes, if the host handles the method</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectListInterfaces</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes, if the host handle the method</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectListNWFilters </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectListNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectListSecrets</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectListStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectListStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpen</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectNumOfDefinedDomains</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectNumOfDefinedInterfaces</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectNumOfDefinedNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -233,8 +270,8 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virConnectNumOfNWFilters</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectNumOfNetworks </td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectNumOfSecrets</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectNumOfStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectOpen</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectNumOfStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpen</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>virConnectOpen</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpen, virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectOpenAuth</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectOpenReadOnly</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virConnectRef</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -272,29 +309,29 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virDomainGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainHasCurrentSnapshot</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainHasManagedSaveImage</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainInterfaceStats</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainInterfaceStats </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainIsActive</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainIsPersistent</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainLookupByID</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virDomainLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainLookupByUUID</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainLookupByUUIDString</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainManagedSave</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainManagedSave    </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainManagedSaveRemove</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainMemoryPeek</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainMemoryStats</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainMigrate</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainMigrateSetMaxDowntime</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainMigrateToURI</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainMigrateToURI   </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainPinVcpu</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainReboot</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainRef</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainRef    </td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainRestore</td><td>Yes </td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainResume</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainResume </td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainRevertToSnapshot</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainSave</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainSetAutostart</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSetMaxMemory</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainSetMaxMemory   </td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainSetMemory</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainSetSchedulerParameters</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virDomainSetVcpus</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -312,14 +349,14 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virDomainUpdateDeviceFlags</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virEventAddHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virEventAddTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virEventHandleCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virEventRegisterImpl</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virEventHandleCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>virEventRegisterImpl</td><td>Yes</td><td>function</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virEventRemoveHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virEventRemoveTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virEventTimeoutCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virEventTimeoutCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virEventUpdateHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virEventUpdateTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virFreeCallback</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virFreeCallback</td><td>Yes</td><td>function</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virGetVersion</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virInitialize</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virInterfaceCreate</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -333,7 +370,7 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virInterfaceIsActive</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virInterfaceLookupByMACString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virInterfaceLookupByName</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceRef</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virInterfaceRef </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virInterfaceUndefine</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNWFilterDefineXML</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNWFilterFree</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -344,7 +381,7 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virNWFilterLookupByName </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNWFilterLookupByUUID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNWFilterLookupByUUIDString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterRef</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virNWFilterRef  </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNWFilterUndefine</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNetworkCreate</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNetworkCreateXML</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -386,10 +423,10 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virNodeListDevices</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virNodeNumOfDevices</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virSecretDefineXML</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretFree</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virSecretFree   </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virSecretGetConnect</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virSecretGetUUID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetUUIDString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virSecretGetUUIDString  </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virSecretGetUsageID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virSecretGetUsageType</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virSecretGetValue</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -441,13 +478,13 @@ git clone git://libvirt.org/libvirt-csharp.git
       <tr><td>virStorageVolLookupByPath</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStorageVolRef</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStorageVolWipe</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamAbort</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virStreamAbort  </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamEventAddCallback</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamEventCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamEventRemoveCallback</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamEventUpdateCallback</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamFinish </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamFree</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virStreamFree   </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamNew</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamRecv</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
       <tr><td>virStreamRecvAll</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
