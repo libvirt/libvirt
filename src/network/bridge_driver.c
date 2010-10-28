@@ -990,7 +990,8 @@ networkRemoveIptablesRules(struct network_driver *driver,
     iptablesRemoveForwardAllowCross(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
+    if (network->def->tftproot)
+        iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
