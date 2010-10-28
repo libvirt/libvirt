@@ -30,6 +30,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "virtaudit.h"
+#include "util.h"
 
 /* Provide the macros in case the header file is old.
    FIXME: should be removed. */
