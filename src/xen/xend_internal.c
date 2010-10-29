@@ -2192,7 +2192,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
     }
 
     def->maxvcpus = sexpr_int(root, "domain/vcpus");
-    def->vcpus = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
+    def->vcpus = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
     if (!def->vcpus || def->maxvcpus < def->vcpus)
         def->vcpus = def->maxvcpus;
 
@@ -2468,7 +2468,7 @@ sexpr_to_xend_domain_info(virDomainPtr domain, const struct sexpr *root,
     }
     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
     vcpus = sexpr_int(root, "domain/vcpus");
-    info->nrVirtCpu = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
+    info->nrVirtCpu = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
     if (!info->nrVirtCpu || vcpus < info->nrVirtCpu)
         info->nrVirtCpu = vcpus;
 
@@ -3706,7 +3706,7 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 
     ret = sexpr_int(root, "domain/vcpus");
     if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM)) {
-        int vcpus = count_one_bits(sexpr_int(root, "domain/vcpu_avail"));
+        int vcpus = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
         if (vcpus)
             ret = MIN(vcpus, ret);
     }
@@ -5770,9 +5770,11 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
                       def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
     virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
-    /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is 32.  */
+    /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
+       either 32, or 64 on a platform where long is big enough.  */
+    verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
     if (def->vcpus < def->maxvcpus)
-        virBufferVSprintf(&buf, "(vcpu_avail %u)", (1U << def->vcpus) - 1);
+        virBufferVSprintf(&buf, "(vcpu_avail %lu)", (1UL << def->vcpus) - 1);
 
     if (def->cpumask) {
         char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
@@ -5869,8 +5871,8 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
             virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
             if (def->vcpus < def->maxvcpus)
-                virBufferVSprintf(&buf, "(vcpu_avail %u)",
-                                  (1U << def->vcpus) - 1);
+                virBufferVSprintf(&buf, "(vcpu_avail %lu)",
+                                  (1UL << def->vcpus) - 1);
 
             for (i = 0 ; i < def->os.nBootDevs ; i++) {
                 switch (def->os.bootDevs[i]) {

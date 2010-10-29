@@ -776,7 +776,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     def->maxvcpus = count;
     if (xenXMConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
         goto cleanup;
-    def->vcpus = MIN(count_one_bits(count), def->maxvcpus);
+    def->vcpus = MIN(count_one_bits_l(count), def->maxvcpus);
 
     if (xenXMConfigGetString(conf, "cpus", &str, NULL) < 0)
         goto cleanup;
@@ -2336,8 +2336,11 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
 
     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
         goto no_memory;
+    /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
+       either 32, or 64 on a platform where long is big enough.  */
+    verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
     if (def->vcpus < def->maxvcpus &&
-        xenXMConfigSetInt(conf, "vcpu_avail", (1U << def->vcpus) - 1) < 0)
+        xenXMConfigSetInt(conf, "vcpu_avail", (1UL << def->vcpus) - 1) < 0)
         goto no_memory;
 
     if ((def->cpumask != NULL) &&
