@@ -169,6 +169,8 @@ struct qemud_driver {
     pciDeviceList *activePciHostdevs;
 
     virBitmapPtr reservedVNCPorts;
+
+    virSysinfoDefPtr hostsysinfo;
 };
 
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;

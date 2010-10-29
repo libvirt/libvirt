@@ -77,6 +77,7 @@
 #include "xml.h"
 #include "cpu/cpu.h"
 #include "macvtap.h"
+#include "sysinfo.h"
 #include "domain_nwfilter.h"
 #include "hooks.h"
 #include "storage_file.h"
@@ -1753,6 +1754,10 @@ qemudStartup(int privileged) {
          virBitmapAlloc(QEMU_VNC_PORT_MAX - QEMU_VNC_PORT_MIN)) == NULL)
         goto out_of_memory;
 
+    /* read the host sysinfo */
+    if (privileged)
+        qemu_driver->hostsysinfo = virSysinfoRead();
+
     if (privileged) {
         if (virAsprintf(&qemu_driver->logDir,
                         "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
@@ -2058,6 +2063,8 @@ qemudShutdown(void) {
 
     virDomainObjListDeinit(&qemu_driver->domains);
     virBitmapFree(qemu_driver->reservedVNCPorts);
+
+    virSysinfoDefFree(qemu_driver->hostsysinfo);
 
     VIR_FREE(qemu_driver->securityDriverName);
     VIR_FREE(qemu_driver->logDir);
