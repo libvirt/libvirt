@@ -482,7 +482,7 @@ SELinuxSetSecurityImageLabel(virSecurityDriverPtr drv,
 
     return virDomainDiskDefForeachPath(disk,
                                        allowDiskFormatProbing,
-                                       false,
+                                       true,
                                        SELinuxSetSecurityFileLabel,
                                        secdef);
 }
