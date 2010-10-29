@@ -24,7 +24,6 @@
 
 # include "internal.h"
 
-# include "hash.h"
 # include "driver.h"
 # include "threads.h"
 
@@ -188,14 +187,6 @@ struct _virConnect {
     virErrorFunc handler;   /* associated handlet */
     void *userData;         /* the user data */
 
-    virHashTablePtr domains;  /* hash table for known domains */
-    virHashTablePtr networks; /* hash table for known domains */
-    virHashTablePtr interfaces; /* hash table for known interfaces */
-    virHashTablePtr storagePools;/* hash table for known storage pools */
-    virHashTablePtr storageVols;/* hash table for known storage vols */
-    virHashTablePtr nodeDevices; /* hash table for known node devices */
-    virHashTablePtr secrets;  /* hash table for known secrets */
-    virHashTablePtr nwfilters; /* hash table for known nw filters */
     int refs;                 /* reference count */
 };
 
@@ -211,7 +202,6 @@ struct _virDomain {
     char *name;                          /* the domain external name */
     int id;                              /* the domain ID */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the domain unique identifier */
-    virHashTablePtr snapshots; /* hash table for known snapshots */
 };
 
 /**
