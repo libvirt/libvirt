@@ -938,6 +938,16 @@ fi
 %endif
 
 %changelog
+* Fri Oct 29 2010 Daniel Veillard <veillard@redhat.com> - 0.8.5-1
+- Enable JSON and netdev features in QEMU >= 0.13
+- framework for auditing integration
+- framework DTrace/SystemTap integration
+- Setting the number of vcpu at boot
+- Enable support for nested SVM
+- Virtio plan9fs filesystem QEMU
+- Memory parameter controls
+- various improvements and bug fixes
+
 * Fri Sep 10 2010 Daniel Veillard <veillard@redhat.com> - 0.8.4-1
 - big improvements to UML driver
 - various improvements and bug fixes

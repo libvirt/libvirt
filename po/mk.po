@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mk\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2010-10-29 15:17+0200\n"
+"POT-Creation-Date: 2010-10-29 16:51+0200\n"
 "PO-Revision-Date: 2007-07-28 23:55+0200\n"
 "Last-Translator: Arangel Angov <arangel@linux.net.mk>\n"
 "Language-Team: Macedonian <ossm-members@hedona.on.net.mk>\n"
@@ -12863,6 +12863,21 @@ msgstr ""
 #: src/util/xml.c:533
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr ""
+
+#: src/vbox/vbox_XPCOMCGlue.c:98
+#, fuzzy, c-format
+msgid "Libaray '%s' doesn't exist"
+msgstr "наредбата „%s“ не постои"
+
+#: src/vbox/vbox_XPCOMCGlue.c:142
+#, fuzzy, c-format
+msgid "Could not dlsym %s from '%s': %s"
+msgstr "не можев да се поврзам со %s"
+
+#: src/vbox/vbox_XPCOMCGlue.c:150
+#, fuzzy, c-format
+msgid "Calling %s from '%s' failed"
+msgstr "операцијата не успеа: %s"
 
 #: src/vbox/vbox_driver.c:148 src/vbox/vbox_tmpl.c:829
 msgid "no VirtualBox driver path specified (try vbox:///session)"

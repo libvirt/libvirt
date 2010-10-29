@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.or\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2010-10-29 15:17+0200\n"
+"POT-Creation-Date: 2010-10-29 16:51+0200\n"
 "PO-Revision-Date: 2010-05-18 00:05+0530\n"
 "Last-Translator: Manoj Kumar Giri <mgiri@redhat.com>\n"
 "Language-Team: Oriya <Translation-team-or@lists.sourceforge.net>\n"
@@ -12531,6 +12531,21 @@ msgstr "virXPathNode() ପାଇଁ ଅବୈଧ ପ୍ରାଚଳ"
 #: src/util/xml.c:533
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "virXPathNodeSet() ପାଇଁ ଅବୈଧ ପ୍ରାଚଳ"
+
+#: src/vbox/vbox_XPCOMCGlue.c:98
+#, fuzzy, c-format
+msgid "Libaray '%s' doesn't exist"
+msgstr "'%s' ନିର୍ଦ୍ଦେଶ ଅବସ୍ଥିତ ନାହିଁ"
+
+#: src/vbox/vbox_XPCOMCGlue.c:142
+#, fuzzy, c-format
+msgid "Could not dlsym %s from '%s': %s"
+msgstr "ପ୍ରକାର ଫାଇଲ '%s'କୁ ଖୋଜି ପାଇବାରେ ବିଫଳ"
+
+#: src/vbox/vbox_XPCOMCGlue.c:150
+#, fuzzy, c-format
+msgid "Calling %s from '%s' failed"
+msgstr "'%s' ର stat ବିଫଳ ହୋଇଛି"
 
 #: src/vbox/vbox_driver.c:148 src/vbox/vbox_tmpl.c:829
 msgid "no VirtualBox driver path specified (try vbox:///session)"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2010-10-29 15:17+0200\n"
+"POT-Creation-Date: 2010-10-29 16:51+0200\n"
 "PO-Revision-Date: 2009-09-21 15:23+1000\n"
 "Last-Translator: \n"
 "Language-Team:  <it@li.org>\n"
@@ -12844,6 +12844,21 @@ msgstr "Parametro per virXPathNode() non valido"
 #: src/util/xml.c:533
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "Parameter per virXPathNodeSet() non valido"
+
+#: src/vbox/vbox_XPCOMCGlue.c:98
+#, fuzzy, c-format
+msgid "Libaray '%s' doesn't exist"
+msgstr "il comando '%s' non esiste"
+
+#: src/vbox/vbox_XPCOMCGlue.c:142
+#, fuzzy, c-format
+msgid "Could not dlsym %s from '%s': %s"
+msgstr "Impossibile eseguire %s"
+
+#: src/vbox/vbox_XPCOMCGlue.c:150
+#, fuzzy, c-format
+msgid "Calling %s from '%s' failed"
+msgstr "migrazione fallita: %s"
 
 #: src/vbox/vbox_driver.c:148 src/vbox/vbox_tmpl.c:829
 msgid "no VirtualBox driver path specified (try vbox:///session)"
