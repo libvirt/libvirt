@@ -804,7 +804,8 @@ virStorageFileGetMetadata(const char *path,
 # endif
 
 
-int virStorageFileIsSharedFS(const char *path)
+int virStorageFileIsSharedFSType(const char *path,
+                                 int fstypes)
 {
     char *dirpath, *p;
     struct statfs sb;
@@ -853,19 +854,36 @@ int virStorageFileIsSharedFS(const char *path)
     VIR_DEBUG("Check if path %s with FS magic %lld is shared",
               path, (long long int)sb.f_type);
 
-    if (sb.f_type == NFS_SUPER_MAGIC ||
-        sb.f_type == GFS2_MAGIC ||
-        sb.f_type == OCFS2_SUPER_MAGIC ||
-        sb.f_type == AFS_FS_MAGIC) {
+    if ((fstypes & VIR_STORAGE_FILE_SHFS_NFS) &&
+        (sb.f_type == NFS_SUPER_MAGIC))
         return 1;
-    }
+
+    if ((fstypes & VIR_STORAGE_FILE_SHFS_GFS2) &&
+        (sb.f_type == GFS2_MAGIC))
+        return 1;
+    if ((fstypes & VIR_STORAGE_FILE_SHFS_OCFS) &&
+        (sb.f_type == OCFS2_SUPER_MAGIC))
+        return 1;
+    if ((fstypes & VIR_STORAGE_FILE_SHFS_AFS) &&
+        (sb.f_type == AFS_FS_MAGIC))
+        return 1;
 
     return 0;
 }
 #else
-int virStorageFileIsSharedFS(const char *path ATTRIBUTE_UNUSED)
+int virStorageFileIsSharedFSType(const char *path ATTRIBUTE_UNUSED,
+                                 int fstypes ATTRIBUTE_UNUSED)
 {
     /* XXX implement me :-) */
     return 0;
 }
 #endif
+
+int virStorageFileIsSharedFS(const char *path)
+{
+    return virStorageFileIsSharedFSType(path,
+                                        VIR_STORAGE_FILE_SHFS_NFS |
+                                        VIR_STORAGE_FILE_SHFS_GFS2 |
+                                        VIR_STORAGE_FILE_SHFS_OCFS |
+                                        VIR_STORAGE_FILE_SHFS_AFS);
+}

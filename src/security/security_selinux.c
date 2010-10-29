@@ -1023,9 +1023,12 @@ SELinuxSetSecurityAllLabel(virSecurityDriverPtr drv,
         SELinuxSetFilecon(vm->def->os.initrd, default_content_context) < 0)
         return -1;
 
-    if (stdin_path &&
-        SELinuxSetFilecon(stdin_path, default_content_context) < 0)
-        return -1;
+    if (stdin_path) {
+        if (SELinuxSetFilecon(stdin_path, default_content_context) < 0 &&
+            virStorageFileIsSharedFSType(stdin_path,
+                                         VIR_STORAGE_FILE_SHFS_NFS) != 1)
+            return -1;
+    }
 
     return 0;
 }
