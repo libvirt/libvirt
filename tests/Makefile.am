@@ -73,11 +73,14 @@ EXTRA_DIST =		\
 	qemuhelpdata
 
 check_PROGRAMS = virshtest conftest sockettest \
-        nodeinfotest statstest qparamtest virbuftest
+        nodeinfotest qparamtest virbuftest
 
 if WITH_XEN
 check_PROGRAMS += xml2sexprtest sexpr2xmltest \
-	reconnect xmconfigtest xencapstest
+	xmconfigtest xencapstest
+if ENABLE_XEN_TESTS
+check_PROGRAMS += statstest reconnect
+endif
 endif
 if WITH_QEMU
 check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
@@ -149,7 +152,6 @@ EXTRA_DIST += $(test_scripts)
 
 TESTS = virshtest \
         nodeinfotest \
-	statstest \
 	qparamtest \
 	virbuftest \
 	sockettest \
@@ -161,7 +163,7 @@ TESTS += xml2sexprtest \
 	xmconfigtest \
 	xencapstest
 if ENABLE_XEN_TESTS
-TESTS += reconnect
+TESTS += reconnect statstest
 endif
 endif
 
