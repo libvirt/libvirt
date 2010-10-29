@@ -124,7 +124,14 @@ static int tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing)
     g_hVBoxXPCOMC = dlopen(name, RTLD_NOW | RTLD_LOCAL);
 
     if (g_hVBoxXPCOMC == NULL) {
-        VIR_WARN("Could not dlopen '%s': %s", name, dlerror());
+        /*
+         * FIXME: Don't warn in this case as it currently breaks make check
+         *        on systems without VirtualBox.
+         */
+        if (dir != NULL) {
+            VIR_WARN("Could not dlopen '%s': %s", name, dlerror());
+        }
+
         goto cleanup;
     }
 
