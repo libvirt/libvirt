@@ -3912,8 +3912,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         driver->securityDriver->domainSetSecurityAllLabel &&
         driver->securityDriver->domainSetSecurityAllLabel(driver->securityDriver,
                                                           vm, stdin_path) < 0) {
-        if (stdin_path && virStorageFileIsSharedFS(stdin_path) != 1)
-            goto cleanup;
+        goto cleanup;
     }
 
     /* Ensure no historical cgroup for this VM is lying around bogus
