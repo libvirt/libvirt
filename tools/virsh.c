@@ -1359,7 +1359,9 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_start[] = {
     {"help", N_("start a (previously defined) inactive domain")},
-    {"desc", N_("Start a domain.")},
+    {"desc", N_("Start a domain, either from the last managedsave\n"
+                "    state, or via a fresh boot if no managedsave state\n"
+                "    is present.")},
     {NULL, NULL}
 };
 
@@ -1462,7 +1464,10 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_managedsave[] = {
     {"help", N_("managed save of a domain state")},
-    {"desc", N_("Save and stop a running domain, so libvirt can restart it from the same state")},
+    {"desc", N_("Save and destroy a running domain, so it can be restarted from\n"
+                "    the same state at a later time.  When the virsh 'start'\n"
+                "    command is next run for the domain, it will automatically\n"
+                "    be started from this saved state.")},
     {NULL, NULL}
 };
 

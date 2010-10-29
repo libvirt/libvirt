@@ -433,15 +433,14 @@ variables, and defaults to C<vi>.
 
 =item B<managedsave> I<domain-id>
 
-Ask libvirt to save a running domain state in a place managed by libvirt.
-If libvirt is asked to restart the domain later on it will resume it from
-the saved domain state (and the state is discarded).
+Save and destroy a running domain, so it can be restarted from the same
+state at a later time.  When the virsh B<start> command is next run for
+the domain, it will automatically be started from this saved state.
 
 =item B<managedsave-remove> I<domain-id>
 
-Remove the managed save file for a domain if it exists.  The next time the
-domain is started it will not restore to its previous state but instead will
-do a full boot.
+Remove the B<managedsave> state file for a domain, if it exists.  This
+ensures the domain will do a full boot the next time it is started.
 
 =item B<maxvcpus> optional I<type>
 
@@ -562,9 +561,10 @@ I<on_shutdown> parameter in the domain's XML definition.
 
 =item B<start> I<domain-name> optional I<--console> I<--paused>
 
-Start a (previously defined) inactive domain.  The domain will be paused
-if the I<--paused> option is used and supported by the driver; otherwise
-it will be running.
+Start a (previously defined) inactive domain, either from the last
+B<managedsave> state, or via a fresh boot if no managedsave state is
+present.  The domain will be paused if the I<--paused> option is
+used and supported by the driver; otherwise it will be running.
 If I<--console> is requested, attach to the console after creation.
 
 =item B<suspend> I<domain-id>
