@@ -730,6 +730,8 @@ static int qemuCgroupControllerActive(struct qemud_driver *driver,
 {
     if (driver->cgroup == NULL)
         return 0;
+    if (!virCgroupMounted(driver->cgroup, controller))
+        return 0;
     if (driver->cgroupControllers & (1 << controller))
         return 1;
     return 0;

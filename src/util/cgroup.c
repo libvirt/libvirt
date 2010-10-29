@@ -71,6 +71,19 @@ void virCgroupFree(virCgroupPtr *group)
     VIR_FREE(*group);
 }
 
+/**
+ * virCgroupMounted: query whether a cgroup subsystem is mounted or not
+ *
+ * @cgroup: The group structure to be queried
+ * @controller: cgroup subsystem id
+ *
+ * Returns true if a cgroup is subsystem is mounted.
+ */
+bool virCgroupMounted(virCgroupPtr cgroup, int controller)
+{
+    return cgroup->controllers[controller].mountPoint != NULL;
+}
+
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 /*
  * Process /proc/mounts figuring out what controllers are

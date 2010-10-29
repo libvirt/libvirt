@@ -83,5 +83,6 @@ int virCgroupGetFreezerState(virCgroupPtr group, char **state);
 int virCgroupRemove(virCgroupPtr group);
 
 void virCgroupFree(virCgroupPtr *group);
+bool virCgroupMounted(virCgroupPtr cgroup, int controller);
 
 #endif /* CGROUP_H */
