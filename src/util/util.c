@@ -38,6 +38,7 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 #if HAVE_MMAP
 # include <sys/mman.h>
 #endif
@@ -2911,4 +2912,31 @@ int virBuildPathInternal(char **path, ...)
     }
 
     return ret;
+}
+
+/**
+ * virTimestamp:
+ *
+ * Return an allocated string containing the current date and time,
+ * followed by ": ".  Return NULL on allocation failure.
+ */
+char *
+virTimestamp(void)
+{
+    struct timeval cur_time;
+    struct tm time_info;
+    char timestr[100];
+    char *timestamp;
+
+    gettimeofday(&cur_time, NULL);
+    localtime_r(&cur_time.tv_sec, &time_info);
+
+    strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", &time_info);
+
+    if (virAsprintf(&timestamp, "%s.%03d: ",
+                    timestr, (int) cur_time.tv_usec / 1000) < 0) {
+        return NULL;
+    }
+
+    return timestamp;
 }

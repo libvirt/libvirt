@@ -160,6 +160,7 @@ int virFileOpenTtyAt(const char *ptmx,
 
 char* virFilePid(const char *dir,
                  const char *name);
+
 int virFileWritePidPath(const char *path,
                         pid_t pid) ATTRIBUTE_RETURN_CHECK;
 int virFileWritePid(const char *dir,
@@ -276,5 +277,7 @@ void virFileWaitForDevices(void);
 
 # define virBuildPath(path, ...) virBuildPathInternal(path, __VA_ARGS__, NULL)
 int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
+
+char *virTimestamp(void);
 
 #endif /* __VIR_UTIL_H__ */
