@@ -5744,6 +5744,10 @@ xenDaemonFormatSxprInput(virDomainInputDefPtr input,
 }
 
 
+/* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
+   either 32, or 64 on a platform where long is big enough.  */
+verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
+
 /**
  * xenDaemonFormatSxpr:
  * @conn: pointer to the hypervisor connection
@@ -5772,7 +5776,6 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */
-    verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
     if (def->vcpus < def->maxvcpus)
         virBufferVSprintf(&buf, "(vcpu_avail %lu)", (1UL << def->vcpus) - 1);
 
