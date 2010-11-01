@@ -70,7 +70,7 @@ qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
       application. Thus the QEMU instances spawned from this driver will
       share the same privileges as the client application. The intended
       use case for this driver is desktop virtualization, with virtual
-      machines storing their disk imags in the user's home directory and
+      machines storing their disk images in the user's home directory and
       being managed from the local desktop login session.
     </p>
 
