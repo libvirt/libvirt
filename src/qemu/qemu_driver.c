@@ -3434,6 +3434,25 @@ static int qemuSetupChardevCgroup(virDomainDefPtr def,
 }
 
 
+static int qemuSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
+                                        const char *path,
+                                        void *opaque)
+{
+    virCgroupPtr cgroup = opaque;
+    int rc;
+
+    VIR_DEBUG("Process path '%s' for USB device", path);
+    rc = virCgroupAllowDevicePath(cgroup, path);
+    if (rc != 0) {
+        virReportSystemError(-rc,
+                             _("Unable to allow device %s"),
+                             path);
+        return -1;
+    }
+
+    return 0;
+}
+
 static int qemuSetupCgroup(struct qemud_driver *driver,
                            virDomainObjPtr vm)
 {
@@ -3507,6 +3526,23 @@ static int qemuSetupCgroup(struct qemud_driver *driver,
                                    qemuSetupChardevCgroup,
                                    cgroup) < 0)
             goto cleanup;
+
+        for (i = 0; i < vm->def->nhostdevs; i++) {
+            virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
+            usbDevice *usb;
+
+            if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+                continue;
+            if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+                continue;
+
+            if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
+                                    hostdev->source.subsys.u.usb.device)) == NULL)
+                goto cleanup;
+
+            if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, cgroup) < 0 )
+                goto cleanup;
+        }
     }
 
     if ((rc = qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY))) {
@@ -8509,6 +8545,25 @@ static int qemudDomainAttachHostUsbDevice(struct qemud_driver *driver,
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError();
         goto error;
+    }
+
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virCgroupPtr cgroup = NULL;
+        usbDevice *usb;
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unable to find cgroup for %s\n"),
+                            vm->def->name);
+            goto error;
+        }
+
+        if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
+                                hostdev->source.subsys.u.usb.device)) == NULL)
+            goto error;
+
+        if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, cgroup) < 0 )
+            goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
