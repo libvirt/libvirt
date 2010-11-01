@@ -29,6 +29,8 @@
 #  include <winsock2.h>
 # endif
 
+# include <xen/xen.h>
+
 /* xen-unstable changeset 19788 removed MAX_VIRT_CPUS from public
  * headers.  Its semantic was retained with XEN_LEGACY_MAX_VCPUS.
  * Ensure MAX_VIRT_CPUS is defined accordingly.

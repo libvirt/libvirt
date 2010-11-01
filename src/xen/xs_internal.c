@@ -22,7 +22,6 @@
 
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
-#include <xen/xen.h>
 
 #include <xs.h>
 
