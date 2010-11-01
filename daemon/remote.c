@@ -4152,6 +4152,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     DBusError err;
     const char *action;
     char ident[100];
+    int rv;
 
     memset(ident, 0, sizeof ident);
 
