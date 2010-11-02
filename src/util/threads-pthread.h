@@ -31,6 +31,10 @@ struct virCond {
     pthread_cond_t cond;
 };
 
+struct virThread {
+    pthread_t thread;
+};
+
 struct virThreadLocal {
     pthread_key_t key;
 };

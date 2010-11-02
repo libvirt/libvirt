@@ -722,6 +722,10 @@ virMutexInit;
 virMutexInitRecursive;
 virMutexLock;
 virMutexUnlock;
+virThreadCreate;
+virThreadIsSelf;
+virThreadJoin;
+virThreadSelf;
 
 
 # usb.h

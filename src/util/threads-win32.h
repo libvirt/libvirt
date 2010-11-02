@@ -33,6 +33,10 @@ struct virCond {
     HANDLE *waiters;
 };
 
+struct virThread {
+    HANDLE thread;
+    bool joinable;
+};
 
 struct virThreadLocal {
     DWORD key;

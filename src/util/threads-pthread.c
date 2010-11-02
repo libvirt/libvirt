@@ -129,6 +129,51 @@ void virCondBroadcast(virCondPtr c)
     pthread_cond_broadcast(&c->cond);
 }
 
+struct virThreadArgs {
+    virThreadFunc func;
+    void *opaque;
+};
+
+static void *virThreadHelper(void *data)
+{
+    struct virThreadArgs *args = data;
+    args->func(args->opaque);
+    return NULL;
+}
+
+int virThreadCreate(virThreadPtr thread,
+                    bool joinable,
+                    virThreadFunc func,
+                    void *opaque)
+{
+    struct virThreadArgs args = { func, opaque };
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    if (!joinable)
+        pthread_attr_setdetachstate(&attr, 1);
+
+    int ret = pthread_create(&thread->thread, &attr, virThreadHelper, &args);
+    if (ret != 0) {
+        errno = ret;
+        return -1;
+    }
+    return 0;
+}
+
+void virThreadSelf(virThreadPtr thread)
+{
+    thread->thread = pthread_self();
+}
+
+bool virThreadIsSelf(virThreadPtr thread)
+{
+    return pthread_equal(pthread_self(), thread->thread) ? true : false;
+}
+
+void virThreadJoin(virThreadPtr thread)
+{
+    pthread_join(thread->thread, NULL);
+}
 
 int virThreadLocalInit(virThreadLocalPtr l,
                        virThreadLocalCleanup c)

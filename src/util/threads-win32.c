@@ -21,6 +21,8 @@
 
 #include <config.h>
 
+#include <process.h>
+
 #include "memory.h"
 
 struct virThreadLocalData {
@@ -33,7 +35,7 @@ typedef virThreadLocalData *virThreadLocalDataPtr;
 virMutex virThreadLocalLock;
 unsigned int virThreadLocalCount = 0;
 virThreadLocalDataPtr virThreadLocalList = NULL;
-
+DWORD selfkey;
 
 virThreadLocal virCondEvent;
 
@@ -45,7 +47,8 @@ int virThreadInitialize(void)
         return -1;
     if (virThreadLocalInit(&virCondEvent, virCondEventCleanup) < 0)
         return -1;
-
+    if ((selfkey = TlsAlloc()) == TLS_OUT_OF_INDEXES)
+        return -1;
     return 0;
 }
 
@@ -204,6 +207,96 @@ void virCondBroadcast(virCondPtr c)
     virMutexUnlock(&c->lock);
 }
 
+
+struct virThreadArgs {
+    virThreadFunc func;
+    void *opaque;
+};
+
+static void virThreadHelperDaemon(void *data)
+{
+    struct virThreadArgs *args = data;
+    virThread self;
+    HANDLE handle = GetCurrentThread();
+    HANDLE process = GetCurrentProcess();
+
+    self.joinable = false;
+    DuplicateHandle(process, handle, process,
+                    &self.thread, 0, FALSE,
+                    DUPLICATE_SAME_ACCESS);
+    TlsSetValue(selfkey, &self);
+
+    args->func(args->opaque);
+
+    TlsSetValue(selfkey, NULL);
+    CloseHandle(self.thread);
+}
+
+static unsigned int __stdcall virThreadHelperJoinable(void *data)
+{
+    struct virThreadArgs *args = data;
+    virThread self;
+    HANDLE handle = GetCurrentThread();
+    HANDLE process = GetCurrentProcess();
+
+    self.joinable = true;
+    DuplicateHandle(process, handle, process,
+                    &self.thread, 0, FALSE,
+                    DUPLICATE_SAME_ACCESS);
+    TlsSetValue(selfkey, &self);
+
+    args->func(args->opaque);
+
+    TlsSetValue(selfkey, NULL);
+    CloseHandle(self.thread);
+    return 0;
+}
+
+int virThreadCreate(virThreadPtr thread,
+                    bool joinable,
+                    virThreadFunc func,
+                    void *opaque)
+{
+    struct virThreadArgs args = { func, opaque };
+    thread->joinable = joinable;
+    if (joinable) {
+        thread->thread = (HANDLE)_beginthreadex(NULL, 0,
+                                                virThreadHelperJoinable,
+                                                &args, 0, NULL);
+        if (thread->thread == 0)
+            return -1;
+    } else {
+        thread->thread = (HANDLE)_beginthread(virThreadHelperDaemon,
+                                              0, &args);
+        if (thread->thread == (HANDLE)-1L)
+            return -1;
+    }
+    return 0;
+}
+
+void virThreadSelf(virThreadPtr thread)
+{
+    virThreadPtr self = TlsGetValue(selfkey);
+    thread->thread = self->thread;
+    thread->joinable = self->joinable;
+}
+
+bool virThreadIsSelf(virThreadPtr thread)
+{
+    virThread self;
+    virThreadSelf(&self);
+    return self.thread == thread->thread ? true : false;
+}
+
+void virThreadJoin(virThreadPtr thread)
+{
+    if (thread->joinable) {
+        WaitForSingleObject(thread->thread, INFINITE);
+        CloseHandle(thread->thread);
+        thread->thread = 0;
+        thread->joinable = false;
+    }
+}
 
 
 int virThreadLocalInit(virThreadLocalPtr l,
