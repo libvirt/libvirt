@@ -66,6 +66,13 @@ enum {
      * perform step is used.
      */
     VIR_DRV_FEATURE_MIGRATION_DIRECT = 5,
+
+    /*
+     * Driver supports V3-style virDomainMigrate, ie domainMigrateBegin3/
+     * domainMigratePrepare3/domainMigratePerform3/domainMigrateFinish3/
+     * domainMigrateConfirm3.
+     */
+    VIR_DRV_FEATURE_MIGRATION_V3 = 6,
 };
 
 
@@ -114,5 +121,64 @@ int virDomainMigratePrepareTunnel(virConnectPtr dconn,
                                   const char *dname,
                                   unsigned long resource,
                                   const char *dom_xml);
+
+
+char *virDomainMigrateBegin3(virDomainPtr domain,
+                             char **cookieout,
+                             int *cookieoutlen,
+                             unsigned long flags,
+                             const char *dname,
+                             unsigned long resource);
+
+int virDomainMigratePrepare3(virConnectPtr dconn,
+                             const char *cookiein,
+                             int cookieinlen,
+                             char **cookieout,
+                             int *cookieoutlen,
+                             const char *uri_in,
+                             char **uri_out,
+                             unsigned long flags,
+                             const char *dname,
+                             unsigned long resource,
+                             const char *dom_xml);
+
+int virDomainMigratePrepareTunnel3(virConnectPtr dconn,
+                                   virStreamPtr st,
+                                   const char *cookiein,
+                                   int cookieinlen,
+                                   char **cookieout,
+                                   int *cookieoutlen,
+                                   unsigned long flags,
+                                   const char *dname,
+                                   unsigned long resource,
+                                   const char *dom_xml);
+
+
+int virDomainMigratePerform3(virDomainPtr dom,
+                             const char *cookiein,
+                             int cookieinlen,
+                             char **cookieout,
+                             int *cookieoutlen,
+                             const char *uri,
+                             unsigned long flags,
+                             const char *dname,
+                             unsigned long resource);
+
+int virDomainMigrateFinish3(virConnectPtr dconn,
+                            const char *dname,
+                            const char *cookiein,
+                            int cookieinlen,
+                            char **cookieout,
+                            int *cookieoutlen,
+                            const char *uri,
+                            unsigned long flags,
+                            int cancelled, /* Kill the dst VM */
+                            virDomainPtr *newdom);
+
+int virDomainMigrateConfirm3(virDomainPtr domain,
+                             const char *cookiein,
+                             int cookieinlen,
+                             unsigned long flags,
+                             int restart); /* Restart the src VM */
 
 #endif

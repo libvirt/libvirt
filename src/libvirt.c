@@ -312,15 +312,15 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
 };
 
 /* Helper macros to implement VIR_DOMAIN_DEBUG using just C99.  This
- * assumes you pass fewer than 10 arguments to VIR_DOMAIN_DEBUG, but
+ * assumes you pass fewer than 15 arguments to VIR_DOMAIN_DEBUG, but
  * can easily be expanded if needed.
  *
  * Note that gcc provides extensions of "define a(b...) b" or
  * "define a(b,...) b,##__VA_ARGS__" as a means of eliding a comma
  * when no var-args are present, but we don't want to require gcc.
  */
-#define VIR_ARG10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, ...) _10
-#define VIR_HAS_COMMA(...) VIR_ARG10(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+#define VIR_ARG15(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, ...) _15
+#define VIR_HAS_COMMA(...) VIR_ARG15(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
 /* Form the name VIR_DOMAIN_DEBUG_[01], then call that macro,
  * according to how many arguments are present.  Two-phase due to
@@ -3479,6 +3479,22 @@ error:
 }
 
 
+/*
+ * Sequence v1:
+ *
+ *  Dst: Prepare
+ *        - Get ready to accept incoming VM
+ *        - Generate optional cookie to pass to src
+ *
+ *  Src: Perform
+ *        - Start migration and wait for send completion
+ *        - Kill off VM if successful, resume if failed
+ *
+ *  Dst: Finish
+ *        - Wait for recv completion and check status
+ *        - Kill off VM if unsuccessful
+ *
+ */
 static virDomainPtr
 virDomainMigrateVersion1 (virDomainPtr domain,
                           virConnectPtr dconn,
@@ -3547,6 +3563,25 @@ virDomainMigrateVersion1 (virDomainPtr domain,
     return ddomain;
 }
 
+/*
+ * Sequence v2:
+ *
+ *  Src: DumpXML
+ *        - Generate XML to pass to dst
+ *
+ *  Dst: Prepare
+ *        - Get ready to accept incoming VM
+ *        - Generate optional cookie to pass to src
+ *
+ *  Src: Perform
+ *        - Start migration and wait for send completion
+ *        - Kill off VM if successful, resume if failed
+ *
+ *  Dst: Finish
+ *        - Wait for recv completion and check status
+ *        - Kill off VM if unsuccessful
+ *
+ */
 static virDomainPtr
 virDomainMigrateVersion2 (virDomainPtr domain,
                           virConnectPtr dconn,
@@ -3595,6 +3630,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
         flags |= VIR_MIGRATE_PAUSED;
     }
 
+    VIR_DEBUG("Prepare2 %p", dconn);
     ret = dconn->driver->domainMigratePrepare2
         (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
          bandwidth, dom_xml);
@@ -3614,6 +3650,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
      */
+    VIR_DEBUG("Perform %p", domain->conn);
     ret = domain->conn->driver->domainMigratePerform
         (domain, cookie, cookielen, uri, flags, dname, bandwidth);
 
@@ -3626,6 +3663,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
      * so it can do any cleanup if the migration failed.
      */
     dname = dname ? dname : domain->name;
+    VIR_DEBUG("Finish2 %p ret=%d", dconn, ret);
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, cookie, cookielen, uri, flags, ret);
 
@@ -3640,13 +3678,181 @@ virDomainMigrateVersion2 (virDomainPtr domain,
 }
 
 
+/*
+ * Sequence v3:
+ *
+ *  Src: Begin
+ *        - Generate XML to pass to dst
+ *        - Generate optional cookie to pass to dst
+ *
+ *  Dst: Prepare
+ *        - Get ready to accept incoming VM
+ *        - Generate optional cookie to pass to src
+ *
+ *  Src: Perform
+ *        - Start migration and wait for send completion
+ *        - Generate optional cookie to pass to dst
+ *
+ *  Dst: Finish
+ *        - Wait for recv completion and check status
+ *        - Kill off VM if failed, resume if success
+ *        - Generate optional cookie to pass to src
+ *
+ *  Src: Confirm
+ *        - Kill off VM if success, resume if failed
+ *
+ */
+static virDomainPtr
+virDomainMigrateVersion3(virDomainPtr domain,
+                         virConnectPtr dconn,
+                         unsigned long flags,
+                         const char *dname,
+                         const char *uri,
+                         unsigned long bandwidth)
+{
+    virDomainPtr ddomain = NULL;
+    char *uri_out = NULL;
+    char *cookiein = NULL;
+    char *cookieout = NULL;
+    char *dom_xml = NULL;
+    int cookieinlen = 0;
+    int cookieoutlen = 0;
+    int ret;
+    virDomainInfo info;
+    virErrorPtr orig_err = NULL;
+    int cancelled;
+
+    if (!domain->conn->driver->domainMigrateBegin3 ||
+        !domain->conn->driver->domainMigratePerform3 ||
+        !domain->conn->driver->domainMigrateConfirm3 ||
+        !dconn->driver->domainMigratePrepare3 ||
+        !dconn->driver->domainMigrateFinish3) {
+        virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        virDispatchError(domain->conn);
+        return NULL;
+    }
+
+    VIR_DEBUG("Begin3 %p", domain->conn);
+    dom_xml = domain->conn->driver->domainMigrateBegin3
+        (domain, &cookieout, &cookieoutlen, flags, dname,
+         bandwidth);
+    if (!dom_xml)
+        goto done;
+
+    ret = virDomainGetInfo (domain, &info);
+    if (ret == 0 && info.state == VIR_DOMAIN_PAUSED) {
+        flags |= VIR_MIGRATE_PAUSED;
+    }
+
+    VIR_DEBUG("Prepare3 %p", dconn);
+    cookiein = cookieout;
+    cookieinlen = cookieoutlen;
+    cookieout = NULL;
+    cookieoutlen = 0;
+    ret = dconn->driver->domainMigratePrepare3
+        (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+         uri, &uri_out, flags, dname, bandwidth, dom_xml);
+    VIR_FREE (dom_xml);
+    if (ret == -1)
+        goto done;
+
+    if (uri == NULL && uri_out == NULL) {
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("domainMigratePrepare3 did not set uri"));
+        virDispatchError(domain->conn);
+        goto done;
+    }
+    if (uri_out)
+        uri = uri_out; /* Did domainMigratePrepare3 change URI? */
+
+    /* Perform the migration.  The driver isn't supposed to return
+     * until the migration is complete. The src VM should remain
+     * running, but in paused state until the destination can
+     * confirm migration completion.
+     */
+    VIR_DEBUG("Perform3 %p uri=%s", domain->conn, uri);
+    VIR_FREE(cookiein);
+    cookiein = cookieout;
+    cookieinlen = cookieoutlen;
+    cookieout = NULL;
+    cookieoutlen = 0;
+    ret = domain->conn->driver->domainMigratePerform3
+        (domain, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+         uri, flags, dname, bandwidth);
+
+    /* Perform failed. Make sure Finish doesn't overwrite the error */
+    if (ret < 0)
+        orig_err = virSaveLastError();
+
+    /* If Perform returns < 0, then we need to cancel the VM
+     * startup on the destination
+     */
+    cancelled = ret < 0 ? 1 : 0;
+
+    /*
+     * The status code from the source is passed to the destination.
+     * The dest can cleanup if the source indicated it failed to
+     * send all migration data. Returns NULL for ddomain if
+     * the dest was unable to complete migration.
+     */
+    VIR_DEBUG("Finish3 %p ret=%d", dconn, ret);
+    VIR_FREE(cookiein);
+    cookiein = cookieout;
+    cookieinlen = cookieoutlen;
+    cookieout = NULL;
+    cookieoutlen = 0;
+    dname = dname ? dname : domain->name;
+    ret = dconn->driver->domainMigrateFinish3
+        (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+         uri, flags, cancelled, &ddomain);
+
+    /* If ret is 0 then 'ddomain' indicates whether the VM is
+     * running on the dest. If not running, we can restart
+     * the source.  If ret is -1, we can't be sure what happened
+     * to the VM on the dest, thus the only safe option is to
+     * kill the VM on the source, even though that may leave
+     * no VM at all on either host.
+     */
+    cancelled = ret == 0 && ddomain == NULL ? 1 : 0;
+
+    /*
+     * If cancelled, then src VM will be restarted, else
+     * it will be killed
+     */
+    VIR_DEBUG("Confirm3 %p ret=%d domain=%p", domain->conn, ret, domain);
+    VIR_FREE(cookiein);
+    cookiein = cookieout;
+    cookieinlen = cookieoutlen;
+    cookieout = NULL;
+    cookieoutlen = 0;
+    ret = domain->conn->driver->domainMigrateConfirm3
+        (domain, cookiein, cookieinlen,
+         flags, cancelled);
+    /* If Confirm3 returns -1, there's nothing more we can
+     * do, but fortunately worst case is that there is a
+     * domain left in 'paused' state on source.
+     */
+
+ done:
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+    VIR_FREE(uri_out);
+    VIR_FREE(cookiein);
+    VIR_FREE(cookieout);
+    return ddomain;
+}
+
+
  /*
-  * This is sort of a migration v3
+  * In normal migration, the libvirt client co-ordinates communcation
+  * between the 2 libvirtd instances on source & dest hosts.
   *
-  * In this version, the client does not talk to the destination
-  * libvirtd. The source libvirtd will still try to talk to the
-  * destination libvirtd though, and will do the prepare/perform/finish
-  * steps.
+  * In this peer-2-peer migration alternative, the libvirt client
+  * only talks to the source libvirtd instance. The source libvirtd
+  * then opens its own connection to the destination and co-ordinates
+  * migration itself.
   */
 static int
 virDomainMigratePeer2Peer (virDomainPtr domain,
@@ -3692,14 +3898,15 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
 
 
 /*
- * This is a variation on v1 & 2  migration
+ * In normal migration, the libvirt client co-ordinates communcation
+ * between the 2 libvirtd instances on source & dest hosts.
  *
- * This is for hypervisors which can directly handshake
- * without any libvirtd involvement on destination either
- * from client, or source libvirt.
+ * Some hypervisors support an alternative, direct migration where
+ * there is no requirement for a libvirtd instance on the dest host.
+ * In this case
  *
- * eg, XenD can talk direct to XenD, so libvirtd on dest
- * does not need to be involved at all, or even running
+ * eg, XenD can talk direct to XenD, so libvirtd on dest does not
+ * need to be involved at all, or even running
  */
 static int
 virDomainMigrateDirect (virDomainPtr domain,
@@ -3839,6 +4046,7 @@ virDomainMigrate (virDomainPtr domain,
                     return NULL;
             }
 
+            VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigratePeer2Peer(domain, flags, dname, uri ? uri : dstURI, bandwidth) < 0) {
                 VIR_FREE(dstURI);
                 goto error;
@@ -3860,16 +4068,24 @@ virDomainMigrate (virDomainPtr domain,
 
         /* Check that migration is supported by both drivers. */
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                     VIR_DRV_FEATURE_MIGRATION_V1) &&
+                                     VIR_DRV_FEATURE_MIGRATION_V3) &&
             VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                     VIR_DRV_FEATURE_MIGRATION_V1))
-            ddomain = virDomainMigrateVersion1(domain, dconn, flags, dname, uri, bandwidth);
-        else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                          VIR_DRV_FEATURE_MIGRATION_V2) &&
-                 VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                          VIR_DRV_FEATURE_MIGRATION_V2))
+                                     VIR_DRV_FEATURE_MIGRATION_V3)) {
+            VIR_DEBUG("Using migration protocol 3");
+            ddomain = virDomainMigrateVersion3(domain, dconn, flags, dname, uri, bandwidth);
+        } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                            VIR_DRV_FEATURE_MIGRATION_V2) &&
+                   VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                          VIR_DRV_FEATURE_MIGRATION_V2)) {
+            VIR_DEBUG("Using migration protocol 2");
             ddomain = virDomainMigrateVersion2(domain, dconn, flags, dname, uri, bandwidth);
-        else {
+        } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                            VIR_DRV_FEATURE_MIGRATION_V1) &&
+                   VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                            VIR_DRV_FEATURE_MIGRATION_V1)) {
+            VIR_DEBUG("Using migration protocol 1");
+            ddomain = virDomainMigrateVersion1(domain, dconn, flags, dname, uri, bandwidth);
+        } else {
             /* This driver does not support any migration method */
             virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             goto error;
@@ -4295,6 +4511,330 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
 
 error:
     virDispatchError(conn);
+    return -1;
+}
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+char *
+virDomainMigrateBegin3(virDomainPtr domain,
+                       char **cookieout,
+                       int *cookieoutlen,
+                       unsigned long flags,
+                       const char *dname,
+                       unsigned long bandwidth)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "cookieout=%p, cookieoutlen=%p, "
+                     "flags=%lu, dname=%s, bandwidth=%lu",
+                     cookieout, cookieoutlen, flags,
+                     NULLSTR(dname), bandwidth);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    conn = domain->conn;
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigrateBegin3) {
+        char *xml;
+        xml = conn->driver->domainMigrateBegin3(domain,
+                                                cookieout, cookieoutlen,
+                                                flags, dname, bandwidth);
+        VIR_DEBUG("xml %s", NULLSTR(xml));
+        if (!xml)
+            goto error;
+        return xml;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return NULL;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigratePrepare3(virConnectPtr dconn,
+                         const char *cookiein,
+                         int cookieinlen,
+                         char **cookieout,
+                         int *cookieoutlen,
+                         const char *uri_in,
+                         char **uri_out,
+                         unsigned long flags,
+                         const char *dname,
+                         unsigned long bandwidth,
+                         const char *dom_xml)
+{
+    VIR_DEBUG("dconn=%p, cookiein=%p, cookieinlen=%d, cookieout=%p, cookieoutlen=%p,"
+              "uri_in=%s, uri_out=%p, flags=%lu, dname=%s, bandwidth=%lu, dom_xml=%s",
+              dconn, cookiein, cookieinlen, cookieout, cookieoutlen, uri_in, uri_out,
+              flags, NULLSTR(dname), bandwidth, dom_xml);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT (dconn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (dconn->driver->domainMigratePrepare3) {
+        int ret;
+        ret = dconn->driver->domainMigratePrepare3(dconn,
+                                                   cookiein, cookieinlen,
+                                                   cookieout, cookieoutlen,
+                                                   uri_in, uri_out,
+                                                   flags, dname, bandwidth,
+                                                   dom_xml);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dconn);
+    return -1;
+}
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigratePrepareTunnel3(virConnectPtr conn,
+                               virStreamPtr st,
+                               const char *cookiein,
+                               int cookieinlen,
+                               char **cookieout,
+                               int *cookieoutlen,
+                               unsigned long flags,
+                               const char *dname,
+                               unsigned long bandwidth,
+                               const char *dom_xml)
+
+{
+    VIR_DEBUG("conn=%p, stream=%p, cookiein=%p, cookieinlen=%d, cookieout=%p,"
+              " cookieoutlen=%p, flags=%lu, dname=%s, bandwidth=%lu, dom_xml=%s",
+              conn, st, cookiein, cookieinlen, cookieout, cookieoutlen, flags,
+              NULLSTR(dname), bandwidth, dom_xml);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn != st->conn) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigratePrepareTunnel3) {
+        int rv = conn->driver->domainMigratePrepareTunnel3(conn, st,
+                                                           cookiein, cookieinlen,
+                                                           cookieout, cookieoutlen,
+                                                           flags, dname,
+                                                           bandwidth, dom_xml);
+        if (rv < 0)
+            goto error;
+        return rv;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigratePerform3(virDomainPtr domain,
+                         const char *cookiein,
+                         int cookieinlen,
+                         char **cookieout,
+                         int *cookieoutlen,
+                         const char *uri,
+                         unsigned long flags,
+                         const char *dname,
+                         unsigned long bandwidth)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "cookiein=%p, cookieinlen=%d, cookieout=%p, cookieoutlen=%p,"
+                     "uri=%s, flags=%lu, dname=%s, bandwidth=%lu",
+                     cookiein, cookieinlen, cookieout, cookieoutlen,
+                     uri, flags, NULLSTR(dname), bandwidth);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = domain->conn;
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigratePerform3) {
+        int ret;
+        ret = conn->driver->domainMigratePerform3(domain,
+                                                  cookiein, cookieinlen,
+                                                  cookieout, cookieoutlen,
+                                                  uri,
+                                                  flags, dname, bandwidth);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigrateFinish3(virConnectPtr dconn,
+                        const char *dname,
+                        const char *cookiein,
+                        int cookieinlen,
+                        char **cookieout,
+                        int *cookieoutlen,
+                        const char *uri,
+                        unsigned long flags,
+                        int cancelled,
+                        virDomainPtr *newdom)
+{
+    VIR_DEBUG("dconn=%p, dname=%s, cookiein=%p, cookieinlen=%d, cookieout=%p,"
+              "cookieoutlen=%p, uri=%s, flags=%lu, retcode=%d newdom=%p",
+              dconn, NULLSTR(dname), cookiein, cookieinlen, cookieout,
+              cookieoutlen, uri, flags, cancelled, newdom);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT (dconn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (dconn->driver->domainMigrateFinish3) {
+        int ret;
+        ret = dconn->driver->domainMigrateFinish3(dconn, dname,
+                                                  cookiein, cookieinlen,
+                                                  cookieout, cookieoutlen,
+                                                  uri, flags,
+                                                  cancelled,
+                                                  newdom);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dconn);
+    return -1;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigrateConfirm3(virDomainPtr domain,
+                         const char *cookiein,
+                         int cookieinlen,
+                         unsigned long flags,
+                         int cancelled)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "cookiein=%p, cookieinlen=%d, flags=%lu, cancelled=%d",
+                     cookiein, cookieinlen, flags, cancelled);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = domain->conn;
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigrateConfirm3) {
+        int ret;
+        ret = conn->driver->domainMigrateConfirm3(domain,
+                                                  cookiein, cookieinlen,
+                                                  flags, cancelled);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
     return -1;
 }
 

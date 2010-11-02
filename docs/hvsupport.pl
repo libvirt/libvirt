@@ -127,7 +127,7 @@ $apis{virDomainMigratePrepare3} = "0.9.2";
 $apis{virDomainMigratePrepareTunnel3} = "0.9.2";
 $apis{virDomainMigratePerform3} = "0.9.2";
 $apis{virDomainMigrateFinish3} = "0.9.2";
-$apis{virDomainMigrateConfirm} = "0.9.2";
+$apis{virDomainMigrateConfirm3} = "0.9.2";
 
 
 

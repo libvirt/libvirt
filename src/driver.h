@@ -413,7 +413,7 @@ typedef int
 
 typedef int
     (*virDrvDomainMigratePrepareTunnel)
-                    (virConnectPtr conn,
+                    (virConnectPtr dconn,
                      virStreamPtr st,
                      unsigned long flags,
                      const char *dname,
@@ -528,6 +528,75 @@ typedef int
 typedef int
     (*virDrvDomainInjectNMI)(virDomainPtr dom, unsigned int flags);
 
+typedef char *
+    (*virDrvDomainMigrateBegin3)
+                    (virDomainPtr domain,
+                     char **cookieout,
+                     int *cookieoutlen,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource);
+
+typedef int
+    (*virDrvDomainMigratePrepare3)
+                    (virConnectPtr dconn,
+                     const char *cookiein,
+                     int cookieinlen,
+                     char **cookieout,
+                     int *cookieoutlen,
+                     const char *uri_in,
+                     char **uri_out,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource,
+                     const char *dom_xml);
+
+typedef int
+    (*virDrvDomainMigratePrepareTunnel3)
+                    (virConnectPtr dconn,
+                     virStreamPtr st,
+                     const char *cookiein,
+                     int cookieinlen,
+                     char **cookieout,
+                     int *cookieoutlen,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource,
+                     const char *dom_xml);
+
+
+typedef int
+    (*virDrvDomainMigratePerform3)
+                    (virDomainPtr dom,
+                     const char *cookiein,
+                     int cookieinlen,
+                     char **cookieout,
+                     int *cookieoutlen,
+                     const char *uri,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource);
+
+typedef int
+    (*virDrvDomainMigrateFinish3)
+                    (virConnectPtr dconn,
+                     const char *dname,
+                     const char *cookiein,
+                     int cookieinlen,
+                     char **cookieout,
+                     int *cookieoutlen,
+                     const char *uri,
+                     unsigned long flags,
+                     int cancelled,
+                     virDomainPtr *newdom);
+
+typedef int
+    (*virDrvDomainMigrateConfirm3)
+                    (virDomainPtr domain,
+                     const char *cookiein,
+                     int cookieinlen,
+                     unsigned long flags,
+                     int cancelled);
 
 /**
  * _virDriver:
@@ -655,6 +724,12 @@ struct _virDriver {
     virDrvDomainQemuMonitorCommand qemuDomainMonitorCommand;
     virDrvDomainOpenConsole domainOpenConsole;
     virDrvDomainInjectNMI domainInjectNMI;
+    virDrvDomainMigrateBegin3	domainMigrateBegin3;
+    virDrvDomainMigratePrepare3	domainMigratePrepare3;
+    virDrvDomainMigratePrepareTunnel3	domainMigratePrepareTunnel3;
+    virDrvDomainMigratePerform3	domainMigratePerform3;
+    virDrvDomainMigrateFinish3	domainMigrateFinish3;
+    virDrvDomainMigrateConfirm3	domainMigrateConfirm3;
 };
 
 typedef int
