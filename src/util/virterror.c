@@ -179,7 +179,7 @@ static const char *virErrorDomainName(virErrorDomain domain) {
             dom = "CPU ";
             break;
         case VIR_FROM_NWFILTER:
-            dom = "Network Filter";
+            dom = "Network Filter ";
             break;
         case VIR_FROM_HOOK:
             dom = "Sync Hook ";
@@ -188,7 +188,7 @@ static const char *virErrorDomainName(virErrorDomain domain) {
             dom = "Domain Snapshot ";
             break;
         case VIR_FROM_AUDIT:
-            dom = "Audit";
+            dom = "Audit ";
             break;
     }
     return(dom);
