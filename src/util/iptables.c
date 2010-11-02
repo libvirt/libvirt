@@ -334,7 +334,7 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
 
     if (!VIR_SOCKET_IS_FAMILY(netaddr, AF_INET) ||
         !VIR_SOCKET_IS_FAMILY(netmask, AF_INET)) {
-        iptablesError(VIR_ERR_CONFIG_UNSUPPORTED,
+        iptablesError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                       _("Only IPv4 addresses can be used with iptables"));
         return NULL;
     }

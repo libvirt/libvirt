@@ -2611,7 +2611,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
 
     /* def:maxvcpus -> vmx:numvcpus */
     if (def->vcpus != def->maxvcpus) {
-        ESX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+        ESX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                   _("No support for domain XML entry 'vcpu' attribute "
                     "'current'"));
         goto cleanup;

@@ -80,7 +80,7 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int family) {
     int err;
 
     if (val == NULL) {
-        virSocketError(VIR_ERR_INVALID_ARG, _("Missing address"));
+        virSocketError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
         return -1;
     }
 
@@ -173,7 +173,7 @@ virSocketFormatAddrFull(virSocketAddrPtr addr,
     int err;
 
     if (addr == NULL) {
-        virSocketError(VIR_ERR_INVALID_ARG, _("Missing address"));
+        virSocketError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
         return NULL;
     }
 
