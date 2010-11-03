@@ -25,6 +25,9 @@ grep -v '\"PARAMETER = VALUE\"' "$conf" | grep '[a-z_]  *=  *[^ ]' | grep -vE '^
 # Start with the sample libvirtd.conf file, uncommenting all real directives.
 sed -n 's/^#\([^ #]\)/\1/p' "$conf" > tmp.conf
 
+sed -e "s/^\(unix_sock_group =\).*/\1 \"$USER\"/g" tmp.conf > k
+mv k tmp.conf
+
 # Iterate through that list of directives, corrupting one RHS at a
 # time and running libvirtd with the resulting config.  Each libvirtd
 # invocation must fail.
