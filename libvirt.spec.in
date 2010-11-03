@@ -793,7 +793,6 @@ fi
 
 %dir %{_localstatedir}/run/libvirt/
 
-%dir %{_localstatedir}/lib/libvirt/
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/images/
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/boot/
 %dir %attr(0700, root, root) %{_localstatedir}/cache/libvirt/
@@ -883,7 +882,7 @@ fi
 
 %{_sysconfdir}/rc.d/init.d/libvirt-guests
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt
+%dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 
 %if %{with_sasl}
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
