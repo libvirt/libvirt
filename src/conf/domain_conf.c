@@ -8218,6 +8218,13 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         depth++;
         nextpath = meta.backingStore;
 
+        /* Stop iterating if we reach a non-file backing store */
+        if (nextpath && !meta.backingStoreIsFile) {
+            VIR_DEBUG("Stopping iteration on non-file backing store: %s",
+                      nextpath);
+            break;
+        }
+
         format = meta.backingStoreFormat;
 
         if (format == VIR_STORAGE_FILE_AUTO &&

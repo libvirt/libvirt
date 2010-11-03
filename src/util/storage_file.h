@@ -48,6 +48,7 @@ VIR_ENUM_DECL(virStorageFileFormat);
 typedef struct _virStorageFileMetadata {
     char *backingStore;
     int backingStoreFormat;
+    bool backingStoreIsFile;
     unsigned long long capacity;
     bool encrypted;
 } virStorageFileMetadata;

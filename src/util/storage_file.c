@@ -503,6 +503,14 @@ virStorageFileMatchesVersion(int format,
     return true;
 }
 
+static bool
+virBackingStoreIsFile(const char *backing)
+{
+    /* Backing store is a network block device */
+    if (STRPREFIX(backing, "nbd:"))
+        return false;
+    return true;
+}
 
 static int
 virStorageFileGetMetadataFromBuf(int format,
@@ -573,8 +581,14 @@ virStorageFileGetMetadataFromBuf(int format,
         if (ret == BACKING_STORE_ERROR)
             return -1;
 
+        meta->backingStoreIsFile = false;
         if (backing != NULL) {
-            meta->backingStore = absolutePathFromBaseFile(path, backing);
+            if (virBackingStoreIsFile(backing)) {
+                meta->backingStoreIsFile = true;
+                meta->backingStore = absolutePathFromBaseFile(path, backing);
+            } else {
+                meta->backingStore = strdup(backing);
+            }
             VIR_FREE(backing);
             if (meta->backingStore == NULL) {
                 virReportOOMError();
