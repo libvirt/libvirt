@@ -2343,7 +2343,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
         def->data.direct.linkdev = dev;
         dev = NULL;
 
-        VIR_FREE(ifname);
+        if ((flags & VIR_DOMAIN_XML_INACTIVE))
+            VIR_FREE(ifname);
 
         break;
 
