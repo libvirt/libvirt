@@ -984,6 +984,9 @@ virPipeReadUntilEOF(int outfd, int errfd,
 
             got = read(fds[i].fd, data, sizeof(data));
 
+            if (got == sizeof(data))
+                finished[i] = 0;
+
             if (got == 0) {
                 finished[i] = 1;
                 continue;
