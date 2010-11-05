@@ -225,7 +225,10 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
 VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
               "virtio",
               "xen",
-              "none");
+              "none")
+
+VIR_ENUM_IMPL(virDomainSysinfo, VIR_DOMAIN_SYSINFO_LAST,
+              "smbios")
 
 VIR_ENUM_IMPL(virDomainWatchdogModel, VIR_DOMAIN_WATCHDOG_MODEL_LAST,
               "i6300esb",
@@ -712,6 +715,25 @@ virDomainClockDefClear(virDomainClockDefPtr def)
     VIR_FREE(def->timers);
 }
 
+static void virSysinfoDefFree(virSysinfoDefPtr def)
+{
+    if (def == NULL)
+        return;
+
+    VIR_FREE(def->bios_vendor);
+    VIR_FREE(def->bios_version);
+    VIR_FREE(def->bios_date);
+    VIR_FREE(def->bios_release);
+
+    VIR_FREE(def->system_manufacturer);
+    VIR_FREE(def->system_product);
+    VIR_FREE(def->system_version);
+    VIR_FREE(def->system_serial);
+    VIR_FREE(def->system_uuid);
+    VIR_FREE(def->system_sku);
+    VIR_FREE(def);
+}
+
 void virDomainDefFree(virDomainDefPtr def)
 {
     unsigned int i;
@@ -795,6 +817,8 @@ void virDomainDefFree(virDomainDefPtr def)
     virSecurityLabelDefFree(def);
 
     virCPUDefFree(def->cpu);
+
+    virSysinfoDefFree(def->sysinfo);
 
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
@@ -3318,6 +3342,11 @@ virDomainMemballoonDefParseXML(const xmlNodePtr node,
     }
 
     model = virXMLPropString(node, "model");
+    if (model == NULL) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("balloon memory must contain model name"));
+        goto error;
+    }
     if ((def->model = virDomainMemballoonModelTypeFromString(model)) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unknown memory balloon model '%s'"), model);
@@ -3338,6 +3367,70 @@ error:
     goto cleanup;
 }
 
+static virSysinfoDefPtr
+virSysinfoParseXML(const xmlNodePtr node,
+                  xmlXPathContextPtr ctxt)
+{
+    virSysinfoDefPtr def;
+    char *type;
+
+    if (!xmlStrEqual(node->name, BAD_CAST "sysinfo")) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                        _("XML does not contain expected 'sysinfo' element"));
+        return(NULL);
+    }
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return(NULL);
+    }
+
+    type = virXMLPropString(node, "type");
+    if (type == NULL) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("sysinfo must contain a type attribute"));
+        goto error;
+    }
+    if ((def->type = virDomainSysinfoTypeFromString(type)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown sysinfo type '%s'"), type);
+        goto error;
+    }
+
+
+    /* Extract BIOS related metadata */
+    def->bios_vendor =
+        virXPathString("string(bios/entry[@name='vendor'])", ctxt);
+    def->bios_version =
+        virXPathString("string(bios/entry[@name='version'])", ctxt);
+    def->bios_date =
+        virXPathString("string(bios/entry[@name='date'])", ctxt);
+    def->bios_release =
+        virXPathString("string(bios/entry[@name='release'])", ctxt);
+
+    /* Extract system related metadata */
+    def->system_manufacturer =
+        virXPathString("string(system/entry[@name='manufacturer'])", ctxt);
+    def->system_product =
+        virXPathString("string(system/entry[@name='product'])", ctxt);
+    def->system_version =
+        virXPathString("string(system/entry[@name='version'])", ctxt);
+    def->system_serial =
+        virXPathString("string(system/entry[@name='serial'])", ctxt);
+    def->system_uuid =
+        virXPathString("string(system/entry[@name='uuid'])", ctxt);
+    def->system_sku =
+        virXPathString("string(system/entry[@name='sku'])", ctxt);
+
+cleanup:
+    VIR_FREE(type);
+    return(def);
+
+error:
+    virSysinfoDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
 
 int
 virDomainVideoDefaultRAM(virDomainDefPtr def,
@@ -4967,6 +5060,16 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
     }
 
+    if ((node = virXPathNode("./sysinfo[1]", ctxt)) != NULL) {
+        xmlNodePtr oldnode = ctxt->node;
+        ctxt->node = node;
+        def->sysinfo = virSysinfoParseXML(node, ctxt);
+        ctxt->node = oldnode;
+
+        if (def->sysinfo == NULL)
+            goto error;
+    }
+
     /* we have to make a copy of all of the callback pointers here since
      * we won't have the virCaps structure available during free
      */
@@ -6064,6 +6167,77 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     return 0;
 }
 
+static int
+virDomainSysinfoDefFormat(virBufferPtr buf,
+                          virSysinfoDefPtr def)
+{
+    const char *type = virDomainSysinfoTypeToString(def->type);
+
+    if (!type) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected sysinfo type model %d"),
+                             def->type);
+        return -1;
+    }
+
+    virBufferVSprintf(buf, "  <sysinfo type='%s'>\n", type);
+    if ((def->bios_vendor != NULL) || (def->bios_version != NULL) ||
+        (def->bios_date != NULL) || (def->bios_release != NULL)) {
+        virBufferAddLit(buf, "    <bios>\n");
+        if (def->bios_vendor != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='vendor'>%s</entry>\n",
+                                  def->bios_vendor);
+        if (def->bios_version != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='version'>%s</entry>\n",
+                                  def->bios_version);
+        if (def->bios_date != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='date'>%s</entry>\n",
+                                  def->bios_date);
+        if (def->bios_release != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='release'>%s</entry>\n",
+                                  def->bios_release);
+        virBufferAddLit(buf, "    </bios>\n");
+    }
+    if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
+        (def->system_version != NULL) || (def->system_serial != NULL) ||
+        (def->system_uuid != NULL) || (def->system_sku != NULL)) {
+        virBufferAddLit(buf, "    <system>\n");
+        if (def->system_manufacturer != NULL)
+            virBufferEscapeString(buf,
+                          "      <entry name='manufacturer'>%s</entry>\n",
+                                  def->system_manufacturer);
+        if (def->system_product != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='product'>%s</entry>\n",
+                                  def->system_product);
+        if (def->system_version != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='version'>%s</entry>\n",
+                                  def->system_version);
+        if (def->system_serial != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='serial'>%s</entry>\n",
+                                  def->system_serial);
+        if (def->system_uuid != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='uuid'>%s</entry>\n",
+                                  def->system_uuid);
+        if (def->system_sku != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='sku'>%s</entry>\n",
+                                  def->system_sku);
+        virBufferAddLit(buf, "    </system>\n");
+    }
+
+    virBufferAddLit(buf, "  </sysinfo>\n");
+
+    return 0;
+}
+
 
 static int
 virDomainWatchdogDefFormat(virBufferPtr buf,
@@ -6488,6 +6662,7 @@ char *virDomainDefFormat(virDomainDefPtr def,
         virBufferAddLit(&buf, "    <hugepages/>\n");
         virBufferAddLit(&buf, "  </memoryBacking>\n");
     }
+
     for (n = 0 ; n < def->cpumasklen ; n++)
         if (def->cpumask[n] != 1)
             allones = 0;
@@ -6504,6 +6679,9 @@ char *virDomainDefFormat(virDomainDefPtr def,
     if (def->vcpus != def->maxvcpus)
         virBufferVSprintf(&buf, " current='%u'", def->vcpus);
     virBufferVSprintf(&buf, ">%u</vcpu>\n", def->maxvcpus);
+
+    if (def->sysinfo)
+        virDomainSysinfoDefFormat(&buf, def->sysinfo);
 
     if (def->os.bootloader) {
         virBufferEscapeString(&buf, "  <bootloader>%s</bootloader>\n",

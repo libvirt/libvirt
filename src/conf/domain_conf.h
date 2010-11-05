@@ -606,6 +606,30 @@ struct _virDomainMemballoonDef {
 };
 
 
+enum virDomainSysinfoType {
+    VIR_DOMAIN_SYSINFO_SMBIOS,
+
+    VIR_DOMAIN_SYSINFO_LAST
+};
+
+typedef struct _virSysinfoDef virSysinfoDef;
+typedef virSysinfoDef *virSysinfoDefPtr;
+struct _virSysinfoDef {
+    int type;
+
+    char *bios_vendor;
+    char *bios_version;
+    char *bios_date;
+    char *bios_release;
+
+    char *system_manufacturer;
+    char *system_product;
+    char *system_version;
+    char *system_serial;
+    char *system_uuid;
+    char *system_sku;
+};
+
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_DISK,
@@ -943,6 +967,7 @@ struct _virDomainDef {
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
     virCPUDefPtr cpu;
+    virSysinfoDefPtr sysinfo;
 
     void *namespaceData;
     virDomainXMLNamespace ns;
@@ -1195,6 +1220,7 @@ VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)
+VIR_ENUM_DECL(virDomainSysinfo)
 VIR_ENUM_DECL(virDomainWatchdogModel)
 VIR_ENUM_DECL(virDomainWatchdogAction)
 VIR_ENUM_DECL(virDomainVideo)
