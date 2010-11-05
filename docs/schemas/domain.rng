@@ -135,6 +135,9 @@
             </attribute>
           </element>
         </optional>
+        <optional>
+          <ref name="smbios"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -1817,6 +1820,19 @@
     <data type="string">
       <param name='pattern'>[a-zA-Z0-9/\-_\. ]+</param>
     </data>
+  </define>
+
+  <define name="smbios">
+    <element name="smbios">
+      <attribute name="mode">
+        <choice>
+          <value>emulate</value>
+          <value>host</value>
+          <value>sysinfo</value>
+        </choice>
+      </attribute>
+      <empty/>
+    </element>
   </define>
 
   <define name="address">

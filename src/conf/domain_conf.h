@@ -630,6 +630,15 @@ struct _virSysinfoDef {
     char *system_sku;
 };
 
+enum virDomainSmbiosMode {
+    VIR_DOMAIN_SMBIOS_NONE,
+    VIR_DOMAIN_SMBIOS_EMULATE,
+    VIR_DOMAIN_SMBIOS_HOST,
+    VIR_DOMAIN_SMBIOS_SYSINFO,
+
+    VIR_DOMAIN_SMBIOS_LAST
+};
+
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_DISK,
@@ -728,6 +737,7 @@ struct _virDomainOSDef {
     char *loader;
     char *bootloader;
     char *bootloaderArgs;
+    int smbios_mode;
 };
 
 enum virDomainSeclabelType {
@@ -1221,6 +1231,7 @@ VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainSysinfo)
+VIR_ENUM_DECL(virDomainSmbiosMode)
 VIR_ENUM_DECL(virDomainWatchdogModel)
 VIR_ENUM_DECL(virDomainWatchdogAction)
 VIR_ENUM_DECL(virDomainVideo)

@@ -230,6 +230,12 @@ VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
 VIR_ENUM_IMPL(virDomainSysinfo, VIR_DOMAIN_SYSINFO_LAST,
               "smbios")
 
+VIR_ENUM_IMPL(virDomainSmbiosMode, VIR_DOMAIN_SMBIOS_LAST,
+              "none",
+              "emulate",
+              "host",
+              "sysinfo")
+
 VIR_ENUM_IMPL(virDomainWatchdogModel, VIR_DOMAIN_WATCHDOG_MODEL_LAST,
               "i6300esb",
               "ib700")
@@ -5069,6 +5075,20 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (def->sysinfo == NULL)
             goto error;
     }
+    tmp = virXPathString("string(./os/smbios/@mode)", ctxt);
+    if (tmp) {
+        int mode;
+
+        if ((mode = virDomainSmbiosModeTypeFromString(tmp)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown smbios mode '%s'"), tmp);
+            goto error;
+        }
+        def->os.smbios_mode = mode;
+        VIR_FREE(tmp);
+    } else {
+        def->os.smbios_mode = VIR_DOMAIN_SMBIOS_NONE; /* not present */
+    }
 
     /* we have to make a copy of all of the callback pointers here since
      * we won't have the virCaps structure available during free
@@ -6746,6 +6766,18 @@ char *virDomainDefFormat(virDomainDefPtr def,
                                                                 : "no");
             virBufferVSprintf(&buf, "    <bootmenu enable='%s'/>\n", enabled);
         }
+    }
+
+    if (def->os.smbios_mode) {
+        const char *mode;
+
+        mode = virDomainSmbiosModeTypeToString(def->os.smbios_mode);
+        if (mode == NULL) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                         _("unexpected smbios mode %d"), def->os.smbios_mode);
+            goto cleanup;
+        }
+        virBufferVSprintf(&buf, "    <smbios mode='%s'/>\n", mode);
     }
 
     virBufferAddLit(&buf, "  </os>\n");
