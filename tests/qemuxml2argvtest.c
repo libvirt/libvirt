@@ -385,6 +385,8 @@ mymain(int argc, char **argv)
     DO_TEST("console-virtio", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
 
+    DO_TEST("smbios", QEMUD_CMD_FLAG_SMBIOS_TYPE, false);
+
     DO_TEST("watchdog", 0, false);
     DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
