@@ -77,6 +77,7 @@ UTIL_SOURCES =							\
 		util/qparams.c util/qparams.h			\
 		util/stats_linux.c util/stats_linux.h		\
 		util/storage_file.c util/storage_file.h		\
+		util/sysinfo.c util/sysinfo.h			\
 		util/threads.c util/threads.h			\
 		util/threads-pthread.h				\
 		util/threads-win32.h				\

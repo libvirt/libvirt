@@ -694,6 +694,11 @@ virStorageFileProbeFormat;
 virStorageFileProbeFormatFromFD;
 
 
+# sysinfo.h
+virSysinfoDefFree;
+virSysinfoRead;
+
+
 # threads.h
 virCondBroadcast;
 virCondDestroy;

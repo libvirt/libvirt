@@ -39,6 +39,7 @@
 # include "nwfilter_params.h"
 # include "nwfilter_conf.h"
 # include "macvtap.h"
+# include "sysinfo.h"
 
 /* Private component of virDomainXMLFlags */
 typedef enum {
@@ -605,30 +606,6 @@ struct _virDomainMemballoonDef {
     virDomainDeviceInfo info;
 };
 
-
-enum virDomainSysinfoType {
-    VIR_DOMAIN_SYSINFO_SMBIOS,
-
-    VIR_DOMAIN_SYSINFO_LAST
-};
-
-typedef struct _virSysinfoDef virSysinfoDef;
-typedef virSysinfoDef *virSysinfoDefPtr;
-struct _virSysinfoDef {
-    int type;
-
-    char *bios_vendor;
-    char *bios_version;
-    char *bios_date;
-    char *bios_release;
-
-    char *system_manufacturer;
-    char *system_product;
-    char *system_version;
-    char *system_serial;
-    char *system_uuid;
-    char *system_sku;
-};
 
 enum virDomainSmbiosMode {
     VIR_DOMAIN_SMBIOS_NONE,

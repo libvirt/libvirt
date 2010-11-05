@@ -89,6 +89,7 @@ src/util/pci.c
 src/util/processinfo.c
 src/util/stats_linux.c
 src/util/storage_file.c
+src/util/sysinfo.c
 src/util/util.c
 src/util/virtaudit.c
 src/util/virterror.c

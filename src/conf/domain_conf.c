@@ -721,25 +721,6 @@ virDomainClockDefClear(virDomainClockDefPtr def)
     VIR_FREE(def->timers);
 }
 
-static void virSysinfoDefFree(virSysinfoDefPtr def)
-{
-    if (def == NULL)
-        return;
-
-    VIR_FREE(def->bios_vendor);
-    VIR_FREE(def->bios_version);
-    VIR_FREE(def->bios_date);
-    VIR_FREE(def->bios_release);
-
-    VIR_FREE(def->system_manufacturer);
-    VIR_FREE(def->system_product);
-    VIR_FREE(def->system_version);
-    VIR_FREE(def->system_serial);
-    VIR_FREE(def->system_uuid);
-    VIR_FREE(def->system_sku);
-    VIR_FREE(def);
-}
-
 void virDomainDefFree(virDomainDefPtr def)
 {
     unsigned int i;
