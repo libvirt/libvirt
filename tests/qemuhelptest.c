@@ -152,7 +152,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_NO_KVM_PIT |
             QEMUD_CMD_FLAG_TDF |
-            QEMUD_CMD_FLAG_DRIVE_READONLY,
+            QEMUD_CMD_FLAG_DRIVE_READONLY |
+            QEMUD_CMD_FLAG_SMBIOS_TYPE,
             9001, 1,  83);
     DO_TEST("qemu-0.10.5",
             QEMUD_CMD_FLAG_KQEMU |
@@ -220,7 +221,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_NO_KVM_PIT |
             QEMUD_CMD_FLAG_TDF |
-            QEMUD_CMD_FLAG_NESTING,
+            QEMUD_CMD_FLAG_NESTING |
+            QEMUD_CMD_FLAG_SMBIOS_TYPE,
             10050, 1,  0);
     DO_TEST("qemu-kvm-0.11.0-rc2",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -249,7 +251,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_TDF |
             QEMUD_CMD_FLAG_BOOT_MENU |
             QEMUD_CMD_FLAG_NESTING |
-            QEMUD_CMD_FLAG_NAME_PROCESS,
+            QEMUD_CMD_FLAG_NAME_PROCESS |
+            QEMUD_CMD_FLAG_SMBIOS_TYPE,
             10092, 1,  0);
     DO_TEST("qemu-0.12.1",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -276,7 +279,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_RTC |
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_BOOT_MENU |
-            QEMUD_CMD_FLAG_NAME_PROCESS,
+            QEMUD_CMD_FLAG_NAME_PROCESS |
+            QEMUD_CMD_FLAG_SMBIOS_TYPE,
             12001, 0,  0);
     DO_TEST("qemu-kvm-0.12.3",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -310,7 +314,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_TDF |
             QEMUD_CMD_FLAG_BOOT_MENU |
             QEMUD_CMD_FLAG_NESTING |
-            QEMUD_CMD_FLAG_NAME_PROCESS,
+            QEMUD_CMD_FLAG_NAME_PROCESS |
+            QEMUD_CMD_FLAG_SMBIOS_TYPE,
             12003, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

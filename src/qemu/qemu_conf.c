@@ -1243,6 +1243,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_BOOT_MENU;
     if (strstr(help, "-fsdev"))
         flags |= QEMUD_CMD_FLAG_FSDEV;
+    if (strstr(help, "-smbios type"))
+        flags |= QEMUD_CMD_FLAG_SMBIOS_TYPE;
 
     if (strstr(help, "-netdev")) {
         /* Disable -netdev on 0.12 since although it exists,
@@ -3512,6 +3514,83 @@ error:
     return NULL;
 }
 
+static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if ((def->bios_vendor == NULL) && (def->bios_version == NULL) &&
+        (def->bios_date == NULL) && (def->bios_release == NULL))
+        return(NULL);
+
+    virBufferAddLit(&buf, "type=0");
+
+    /* 0:Vendor */
+    if (def->bios_vendor)
+        virBufferVSprintf(&buf, ",vendor=\"%s\"", def->bios_vendor);
+    /* 0:BIOS Version */
+    if (def->bios_version)
+        virBufferVSprintf(&buf, ",version=\"%s\"", def->bios_version);
+    /* 0:BIOS Release Date */
+    if (def->bios_date)
+        virBufferVSprintf(&buf, ",date=\"%s\"", def->bios_date);
+    /* 0:System BIOS Major Release and 0:System BIOS Minor Release */
+    if (def->bios_release)
+        virBufferVSprintf(&buf, ",release=\"%s\"", def->bios_release);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return(NULL);
+}
+
+static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if ((def->system_manufacturer == NULL) && (def->system_sku == NULL) &&
+        (def->system_product == NULL) && (def->system_uuid == NULL) &&
+        (def->system_version == NULL) && (def->system_serial == NULL))
+        return(NULL);
+
+    virBufferAddLit(&buf, "type=1");
+
+    /* 1:Manufacturer */
+    if (def->system_manufacturer)
+        virBufferVSprintf(&buf, ",manufacturer=\"%s\"",
+                          def->system_manufacturer);
+     /* 1:Product Name */
+    if (def->system_product)
+        virBufferVSprintf(&buf, ",product=\"%s\"", def->system_product);
+    /* 1:Version */
+    if (def->system_version)
+        virBufferVSprintf(&buf, ",version=\"%s\"", def->system_version);
+    /* 1:Serial Number */
+    if (def->system_serial)
+        virBufferVSprintf(&buf, ",serial=\"%s\"", def->system_serial);
+    /* 1:UUID */
+    if (def->system_uuid)
+        virBufferVSprintf(&buf, ",uuid=\"%s\"", def->system_uuid);
+    /* 1:SKU Number */
+    if (def->system_sku)
+        virBufferVSprintf(&buf, ",sku=\"%s\"", def->system_sku);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return(NULL);
+}
 
 static char *
 qemuBuildClockArgStr(virDomainClockDefPtr def)
@@ -4089,6 +4168,50 @@ int qemudBuildCommandLine(virConnectPtr conn,
                             _("qemu emulator '%s' does not support xen"),
                             def->emulator);
             goto error;
+        }
+    }
+
+    if ((def->os.smbios_mode != VIR_DOMAIN_SMBIOS_NONE) &&
+        (def->os.smbios_mode != VIR_DOMAIN_SMBIOS_EMULATE)) {
+        virSysinfoDefPtr source = NULL;
+
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_SMBIOS_TYPE)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("the QEMU binary %s does not support smbios settings"),
+                            emulator);
+            goto error;
+        }
+
+        /* should we really error out or just warn in those cases ? */
+        if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_HOST) {
+            if (driver->hostsysinfo == NULL) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Host SMBIOS information is not available"));
+                goto error;
+            }
+            source = driver->hostsysinfo;
+        } else if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_SYSINFO) {
+            if (def->sysinfo == NULL) {
+                qemuReportError(VIR_ERR_XML_ERROR,
+                            _("Domain '%s' sysinfo are not available"),
+                               def->name);
+                goto error;
+            }
+            source = def->sysinfo;
+        }
+        if (source != NULL) {
+            char *smbioscmd;
+
+            smbioscmd = qemuBuildSmbiosBiosStr(source);
+            if (smbioscmd != NULL) {
+                ADD_ARG_LIT("-smbios");
+                ADD_ARG(smbioscmd);
+            }
+            smbioscmd = qemuBuildSmbiosSystemStr(source);
+            if (smbioscmd != NULL) {
+                ADD_ARG_LIT("-smbios");
+                ADD_ARG(smbioscmd);
+            }
         }
     }
 
