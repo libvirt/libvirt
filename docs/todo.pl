@@ -97,7 +97,7 @@ if (defined $blurb) {
     print "    </p>\n";
 }
 foreach my $tracker (sort { $a->{summary} cmp $b->{summary} } @trackers) {
-    next unless $#{$tracker->{features}} > 0;
+    next unless $#{$tracker->{features}} >= 0;
 
     my $summary = &escape($tracker->{summary});
     my $id = $tracker->{id};
