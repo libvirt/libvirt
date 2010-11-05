@@ -1773,7 +1773,7 @@ qemudStartup(int privileged) {
                       "%s/cache/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
         if (virAsprintf(&qemu_driver->saveDir,
-                      "%s/lib/libvirt/qemu/save/", LOCAL_STATE_DIR) == -1)
+                      "%s/lib/libvirt/qemu/save", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
         if (virAsprintf(&qemu_driver->snapshotDir,
                         "%s/lib/libvirt/qemu/snapshot", LOCAL_STATE_DIR) == -1)
