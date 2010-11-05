@@ -466,7 +466,6 @@ static int lxcContainerPopulateDevices(void)
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL, 0666, "/dev/null" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO, 0666, "/dev/zero" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL, 0666, "/dev/full" },
-        { LXC_DEV_MAJ_TTY, LXC_DEV_MIN_CONSOLE, 0600, "/dev/console" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM, 0666, "/dev/random" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM, 0666, "/dev/urandom" },
     };
@@ -506,6 +505,11 @@ static int lxcContainerPopulateDevices(void)
     if (symlink("/dev/pts/0", "/dev/tty1") < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to symlink /dev/pts/0 to /dev/tty1"));
+        return -1;
+    }
+    if (symlink("/dev/pts/0", "/dev/console") < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to symlink /dev/pts/0 to /dev/console"));
         return -1;
     }
 

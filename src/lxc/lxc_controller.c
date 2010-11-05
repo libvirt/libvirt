@@ -80,7 +80,6 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM},
         {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM},
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY},
-        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_CONSOLE},
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
         {0,   0, 0}};
 
