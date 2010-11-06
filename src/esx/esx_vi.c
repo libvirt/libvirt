@@ -1840,6 +1840,37 @@ esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
     return 0;
 }
 
+int
+esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
+              esxVI_Long **value, esxVI_Occurrence occurence)
+{
+    esxVI_DynamicProperty *dynamicProperty;
+
+    if (value == NULL || *value != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, propertyName)) {
+            if (esxVI_Long_CastFromAnyType(dynamicProperty->val, value) < 0) {
+                return -1;
+            }
+
+            break;
+        }
+    }
+
+    if (*value == NULL && occurence == esxVI_Occurrence_RequiredItem) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Missing '%s' property"), propertyName);
+        return -1;
+    }
+
+    return 0;
+}
+
 
 
 int

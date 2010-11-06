@@ -50,6 +50,7 @@ def->uuid = <value>               <=>   uuid.bios = "<value>"
 def->name = <value>               <=>   displayName = "<value>"
 def->mem.max_balloon = <value kilobyte>    <=>   memsize = "<value megabyte>"            # must be a multiple of 4, defaults to 32
 def->mem.cur_balloon = <value kilobyte>    <=>   sched.mem.max = "<value megabyte>"      # defaults to "unlimited" -> def->mem.cur_balloon = def->mem.max_balloon
+def->mem.min_guarantee = <value kilobyte>  <=>   sched.mem.minsize = "<value megabyte>"  # defaults to 0
 def->maxvcpus = <value>           <=>   numvcpus = "<value>"                    # must be 1 or a multiple of 2, defaults to 1
 def->cpumask = <uint list>        <=>   sched.cpu.affinity = "<uint list>"
 
@@ -874,7 +875,8 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
     long long config_version = 0;
     long long virtualHW_version = 0;
     long long memsize = 0;
-    long long memory = 0;
+    long long sched_mem_max = 0;
+    long long sched_mem_minsize = 0;
     long long numvcpus = 0;
     char *sched_cpu_affinity = NULL;
     char *guestOS = NULL;
@@ -1047,20 +1049,36 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
 
     def->mem.max_balloon = memsize * 1024; /* Scale from megabytes to kilobytes */
 
-    /* vmx:sched.mem.max -> def:memory */
-    if (esxUtil_GetConfigLong(conf, "sched.mem.max", &memory, memsize,
+    /* vmx:sched.mem.max -> def:mem.cur_balloon */
+    if (esxUtil_GetConfigLong(conf, "sched.mem.max", &sched_mem_max, memsize,
                               true) < 0) {
         goto cleanup;
     }
 
-    if (memory < 0) {
-        memory = memsize;
+    if (sched_mem_max < 0) {
+        sched_mem_max = memsize;
     }
 
-    def->mem.cur_balloon = memory * 1024; /* Scale from megabytes to kilobytes */
+    def->mem.cur_balloon = sched_mem_max * 1024; /* Scale from megabytes to kilobytes */
 
     if (def->mem.cur_balloon > def->mem.max_balloon) {
         def->mem.cur_balloon = def->mem.max_balloon;
+    }
+
+    /* vmx:sched.mem.minsize -> def:mem.min_guarantee */
+    if (esxUtil_GetConfigLong(conf, "sched.mem.minsize", &sched_mem_minsize, 0,
+                              true) < 0) {
+        goto cleanup;
+    }
+
+    if (sched_mem_minsize < 0) {
+        sched_mem_minsize = 0;
+    }
+
+    def->mem.min_guarantee = sched_mem_minsize * 1024; /* Scale from megabytes to kilobytes */
+
+    if (def->mem.min_guarantee > def->mem.max_balloon) {
+        def->mem.min_guarantee = def->mem.max_balloon;
     }
 
     /* vmx:numvcpus -> def:vcpus */
@@ -2594,12 +2612,12 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     virBufferVSprintf(&buffer, "memsize = \"%d\"\n",
                       (int)(def->mem.max_balloon / 1024));
 
-    /* def:memory -> vmx:sched.mem.max */
+    /* def:mem.cur_balloon -> vmx:sched.mem.max */
     if (def->mem.cur_balloon < def->mem.max_balloon) {
         if (def->mem.cur_balloon <= 0 || def->mem.cur_balloon % 1024 != 0) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting domain XML entry 'currentMemory' to be an "
-                        "unsigned integer (multiple of 1024) but found %lld"),
+                        "unsigned integer (multiple of 1024) but found %llu"),
                       (unsigned long long)def->mem.cur_balloon);
             goto cleanup;
         }
@@ -2607,6 +2625,21 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         /* Scale from kilobytes to megabytes */
         virBufferVSprintf(&buffer, "sched.mem.max = \"%d\"\n",
                           (int)(def->mem.cur_balloon / 1024));
+    }
+
+    /* def:mem.min_guarantee -> vmx:sched.mem.minsize */
+    if (def->mem.min_guarantee > 0) {
+        if (def->mem.min_guarantee % 1024 != 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("Expecting domain XML entry 'memtune/min_guarantee' to "
+                        "be an unsigned integer (multiple of 1024) but found %llu"),
+                      (unsigned long long)def->mem.min_guarantee);
+            goto cleanup;
+        }
+
+        /* Scale from kilobytes to megabytes */
+        virBufferVSprintf(&buffer, "sched.mem.minsize = \"%d\"\n",
+                          (int)(def->mem.min_guarantee / 1024));
     }
 
     /* def:maxvcpus -> vmx:numvcpus */

@@ -1235,6 +1235,11 @@ ESX_VI__TEMPLATE__VALIDATE(Long,
 /* esxVI_Long_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(Long)
 
+/* esxVI_Long_CastFromAnyType */
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(Long,
+{
+})
+
 /* esxVI_Long_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(Long,
 {

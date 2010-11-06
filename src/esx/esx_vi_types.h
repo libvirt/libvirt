@@ -227,6 +227,7 @@ int esxVI_Long_Alloc(esxVI_Long **number);
 void esxVI_Long_Free(esxVI_Long **numberList);
 int esxVI_Long_Validate(esxVI_Long *number);
 int esxVI_Long_AppendToList(esxVI_Long **numberList, esxVI_Long *number);
+int esxVI_Long_CastFromAnyType(esxVI_AnyType *anyType, esxVI_Long **number);
 int esxVI_Long_Serialize(esxVI_Long *number, const char *element,
                          virBufferPtr output);
 int esxVI_Long_SerializeList(esxVI_Long *numberList, const char *element,

@@ -4149,6 +4149,135 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
 
 
 
+static int
+esxDomainSetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
+                             int nparams, unsigned int flags)
+{
+    int result = -1;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_VirtualMachineConfigSpec *spec = NULL;
+    esxVI_ManagedObjectReference *task = NULL;
+    esxVI_TaskInfoState taskInfoState;
+    int i;
+
+    virCheckFlags(0, -1);
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (priv->primary, domain->uuid, NULL, &virtualMachine,
+           priv->autoAnswer) < 0 ||
+        esxVI_VirtualMachineConfigSpec_Alloc(&spec) < 0 ||
+        esxVI_ResourceAllocationInfo_Alloc(&spec->memoryAllocation) < 0) {
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; ++i) {
+        if (STREQ (params[i].field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE) &&
+            params[i].type == VIR_DOMAIN_SCHED_FIELD_ULLONG) {
+            if (esxVI_Long_Alloc(&spec->memoryAllocation->reservation) < 0) {
+                goto cleanup;
+            }
+
+            spec->memoryAllocation->reservation->value =
+              params[i].value.ul / 1024; /* Scale from kilobytes to megabytes */
+        } else {
+            ESX_ERROR(VIR_ERR_INVALID_ARG, _("Unknown field '%s'"),
+                      params[i].field);
+            goto cleanup;
+        }
+    }
+
+    if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
+                              &task) < 0 ||
+        esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
+                                    priv->autoAnswer, &taskInfoState) < 0) {
+        goto cleanup;
+    }
+
+    if (taskInfoState != esxVI_TaskInfoState_Success) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not change memory parameters"));
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_VirtualMachineConfigSpec_Free(&spec);
+    esxVI_ManagedObjectReference_Free(&task);
+
+    return result;
+}
+
+
+
+static int
+esxDomainGetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
+                             int *nparams, unsigned int flags)
+{
+    int result = -1;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_Long *reservation = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (*nparams == 0) {
+        *nparams = 1; /* min_guarantee */
+        return 0;
+    }
+
+    if (*nparams < 1) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Parameter array must have space for 1 item"));
+        return -1;
+    }
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList
+          (&propertyNameList, "config.memoryAllocation.reservation") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         propertyNameList, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetLong(virtualMachine, "config.memoryAllocation.reservation",
+                      &reservation, esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    if (virStrcpyStatic(params[0].field,
+                        VIR_DOMAIN_MEMORY_MIN_GUARANTEE) == NULL) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Field %s too big for destination"),
+                  VIR_DOMAIN_MEMORY_MIN_GUARANTEE);
+        goto cleanup;
+    }
+
+    params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
+    params[0].value.ul = reservation->value * 1024; /* Scale from megabytes to kilobytes */
+
+    *nparams = 1;
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_Long_Free(&reservation);
+
+    return result;
+}
+
+
+
 static virDriver esxDriver = {
     VIR_DRV_ESX,
     "ESX",
@@ -4251,8 +4380,8 @@ static virDriver esxDriver = {
     esxDomainRevertToSnapshot,       /* domainRevertToSnapshot */
     esxDomainSnapshotDelete,         /* domainSnapshotDelete */
     NULL,                            /* qemuDomainMonitorCommand */
-    NULL,                            /* domainSetMemoryParameters */
-    NULL,                            /* domainGetMemoryParameters */
+    esxDomainSetMemoryParameters,    /* domainSetMemoryParameters */
+    esxDomainGetMemoryParameters,    /* domainGetMemoryParameters */
 };
 
 
