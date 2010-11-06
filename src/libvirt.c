@@ -3096,7 +3096,7 @@ error:
  * }
  *
  * This function requires privileged access to the hypervisor. This function
- * expects the caller to allocate the @param
+ * expects the caller to allocate the @params.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -3114,10 +3114,6 @@ virDomainGetMemoryParameters(virDomainPtr domain,
         virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
-    }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
     }
     if ((nparams == NULL) || (*nparams < 0)) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
