@@ -22,7 +22,6 @@ int    xenHypervisorInit                 (void);
 
 virCapsPtr xenHypervisorMakeCapabilities (virConnectPtr conn);
 
-/* The following calls are made directly by the Xen proxy: */
 int
         xenHypervisorHasDomain(virConnectPtr conn,
                                int id);

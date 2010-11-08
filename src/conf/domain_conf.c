@@ -335,8 +335,6 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#ifndef PROXY
-
 int virDomainObjListInit(virDomainObjListPtr doms)
 {
     doms->objs = virHashCreate(50);
@@ -427,8 +425,6 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
         virDomainObjLock(obj);
     return obj;
 }
-
-#endif /* !PROXY */
 
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 {
@@ -813,8 +809,6 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def);
 }
 
-#ifndef PROXY
-
 static void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots);
 static void virDomainObjFree(virDomainObjPtr dom)
 {
@@ -990,7 +984,6 @@ int virDomainDeviceVirtioSerialAddressIsValid(
 {
     return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
 }
-#endif /* !PROXY */
 
 
 int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info)
@@ -1151,9 +1144,6 @@ static int virDomainDeviceInfoFormat(virBufferPtr buf,
 
     return 0;
 }
-
-
-#ifndef PROXY
 
 
 static int
@@ -4045,7 +4035,6 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     VIR_FREE(dev);
     return NULL;
 }
-#endif /* !PROXY */
 
 
 static const char *
@@ -4236,7 +4225,6 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
 }
 
 
-#ifndef PROXY
 static char *virDomainDefDefaultEmulator(virDomainDefPtr def,
                                          virCapsPtr caps) {
     const char *type;
@@ -5399,8 +5387,6 @@ int virDomainDefAddImplicitControllers(virDomainDefPtr def)
     return 0;
 }
 
-
-#endif /* ! PROXY */
 
 /************************************************************************
  *                                                                        *
@@ -6949,7 +6935,6 @@ char *virDomainDefFormat(virDomainDefPtr def,
     return NULL;
 }
 
-#ifndef PROXY
 
 static char *virDomainObjFormat(virCapsPtr caps,
                                 virDomainObjPtr obj,
@@ -8020,5 +8005,3 @@ cleanup:
 
     return ret;
 }
-
-#endif /* ! PROXY */

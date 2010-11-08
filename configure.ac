@@ -1893,29 +1893,6 @@ if test "$enable_locking" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_CIL],[test "$enable_locking" = "yes"])
 
-dnl Enable building the proxy?
-
-AC_ARG_WITH([xen-proxy],
-  AC_HELP_STRING([--with-xen-proxy], [add XEN setuid proxy support @<:@default=auto@:>@]),[],[with_xen_proxy=auto])
-
-AC_MSG_CHECKING([if Xen setuid proxy is needed])
-if test "$with_xen_proxy" = "auto"; then
-  if test "$with_polkit" = "yes"; then
-    with_xen_proxy="no"
-  else
-    with_xen_proxy="yes"
-  fi
-fi
-if test "$with_xen" != "yes"; then
-  with_xen_proxy="no"
-fi
-AC_MSG_RESULT([$with_xen_proxy])
-
-AM_CONDITIONAL([WITH_PROXY],[test "$with_xen_proxy" = "yes"])
-if test "$with_xen_proxy" = "yes"; then
-  AC_DEFINE([WITH_PROXY], 1, [Whether Xen proxy is enabled])
-fi
-
 dnl Enable building libvirtd?
 AM_CONDITIONAL([WITH_LIBVIRTD],[test "x$with_libvirtd" = "xyes"])
 
@@ -2258,7 +2235,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
 	  python/Makefile python/tests/Makefile \
           daemon/Makefile \
           tools/Makefile \
-          tests/Makefile proxy/Makefile \
+          tests/Makefile \
           tests/xml2sexprdata/Makefile \
           tests/sexpr2xmldata/Makefile \
           tests/xmconfigdata/Makefile \
@@ -2281,7 +2258,6 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Drivers])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([     Xen: $with_xen])
-AC_MSG_NOTICE([   Proxy: $with_xen_proxy])
 AC_MSG_NOTICE([    QEMU: $with_qemu])
 AC_MSG_NOTICE([     UML: $with_uml])
 AC_MSG_NOTICE([  OpenVZ: $with_openvz])

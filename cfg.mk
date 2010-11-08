@@ -346,7 +346,6 @@ msg_gen_function += virLibConnError
 msg_gen_function += virLibDomainError
 msg_gen_function += virNetworkReportError
 msg_gen_function += virNodeDeviceReportError
-msg_gen_function += virProxyError
 msg_gen_function += virRaiseError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError

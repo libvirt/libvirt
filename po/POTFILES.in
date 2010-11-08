@@ -97,7 +97,6 @@ src/util/xml.c
 src/vbox/vbox_XPCOMCGlue.c
 src/vbox/vbox_driver.c
 src/vbox/vbox_tmpl.c
-src/xen/proxy_internal.c
 src/xen/xen_driver.c
 src/xen/xen_hypervisor.c
 src/xen/xen_inotify.c

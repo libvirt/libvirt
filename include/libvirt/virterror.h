@@ -45,7 +45,7 @@ typedef enum {
     VIR_FROM_XML,	/* Error in the XML code */
     VIR_FROM_DOM,	/* Error when operating on a domain */
     VIR_FROM_RPC,	/* Error in the XML-RPC code */
-    VIR_FROM_PROXY,	/* Error in the proxy code */
+    VIR_FROM_PROXY,	/* Error in the proxy code */ /* unused since 0.8.6 */
     VIR_FROM_CONF,	/* Error in the configuration file handling */
     VIR_FROM_QEMU,      /* Error at the QEMU daemon */
     VIR_FROM_NET,       /* Error when operating on a network */

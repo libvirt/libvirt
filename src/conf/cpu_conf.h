@@ -26,9 +26,7 @@
 
 # include "util.h"
 # include "buf.h"
-# ifndef PROXY
-#  include "xml.h"
-# endif
+# include "xml.h"
 
 enum virCPUType {
     VIR_CPU_TYPE_HOST,
@@ -87,12 +85,10 @@ virCPUDefFree(virCPUDefPtr def);
 virCPUDefPtr
 virCPUDefCopy(const virCPUDefPtr cpu);
 
-# ifndef PROXY
 virCPUDefPtr
 virCPUDefParseXML(const xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   enum virCPUType mode);
-# endif
 
 enum virCPUFormatFlags {
     VIR_CPU_FORMAT_EMBEDED  = (1 << 0)  /* embed into existing <cpu/> element

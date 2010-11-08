@@ -202,8 +202,6 @@ err_exit:
 }
 
 
-#ifndef PROXY
-
 static bool
 isValidVarName(const char *var)
 {
@@ -258,7 +256,6 @@ skip_entry:
     }
     return table;
 }
-#endif
 
 
 struct formatterParam {

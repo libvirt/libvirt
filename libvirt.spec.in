@@ -31,7 +31,6 @@
 
 # Then the hypervisor drivers that run on local host
 %define with_xen           0%{!?_without_xen:%{server_drivers}}
-%define with_xen_proxy     0%{!?_without_xen_proxy:%{server_drivers}}
 %define with_qemu          0%{!?_without_qemu:%{server_drivers}}
 %define with_openvz        0%{!?_without_openvz:%{server_drivers}}
 %define with_lxc           0%{!?_without_lxc:%{server_drivers}}
@@ -115,11 +114,6 @@
 %define with_xen 0
 %endif
 
-# If Xen isn't turned on, we shouldn't build the xen proxy either
-%if ! %{with_xen}
-%define with_xen_proxy 0
-%endif
-
 # Fedora doesn't have any QEMU on ppc64 - only ppc
 %if 0%{?fedora}
 %ifarch ppc64
@@ -127,11 +121,9 @@
 %endif
 %endif
 
-# PolicyKit was introduced in Fedora 8 / RHEL-6 or newer, allowing
-# the setuid Xen proxy to be killed off
+# PolicyKit was introduced in Fedora 8 / RHEL-6 or newer
 %if 0%{?fedora} >= 8 || 0%{?rhel} >= 6
 %define with_polkit    0%{!?_without_polkit:1}
-%define with_xen_proxy 0
 %endif
 
 # libcapng is used to manage capabilities in Fedora 12 / RHEL-6 or newer
@@ -847,10 +839,6 @@ fi
 %endif
 
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
-
-%if %{with_xen_proxy}
-%attr(4755, root, root) %{_libexecdir}/libvirt_proxy
-%endif
 
 %if %{with_lxc}
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc

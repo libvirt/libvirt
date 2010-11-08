@@ -51,15 +51,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEND
 
-#ifndef PROXY
-
 /*
  * The number of Xen scheduler parameters
  */
-# define XEN_SCHED_SEDF_NPARAM   6
-# define XEN_SCHED_CRED_NPARAM   2
-
-#endif /* PROXY */
+#define XEN_SCHED_SEDF_NPARAM   6
+#define XEN_SCHED_CRED_NPARAM   2
 
 #ifdef WITH_RHEL5_API
 # define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
@@ -71,7 +67,6 @@
 
 #define XEND_RCV_BUF_MAX_LEN 65536
 
-#ifndef PROXY
 static int
 xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
                         virDomainDiskDefPtr def,
@@ -97,7 +92,6 @@ virDomainXMLDevID(virDomainPtr domain,
                   char *class,
                   char *ref,
                   int ref_len);
-#endif
 
 #define virXendError(code, ...)                                            \
         virReportErrorHelper(NULL, VIR_FROM_XEND, code, __FILE__,          \
@@ -399,7 +393,6 @@ xend_get(virConnectPtr xend, const char *path,
     return ret;
 }
 
-#ifndef PROXY
 /**
  * xend_post:
  * @xend: pointer to the Xen Daemon structure
@@ -460,7 +453,6 @@ xend_post(virConnectPtr xend, const char *path, const char *ops)
     VIR_FREE(err_buf);
     return ret;
 }
-#endif /* ! PROXY */
 
 
 /**
@@ -495,7 +487,6 @@ http2unix(int ret)
     return -1;
 }
 
-#ifndef PROXY
 /**
  * xend_op_ext:
  * @xend: pointer to the Xen Daemon structure
@@ -570,7 +561,6 @@ xend_op(virConnectPtr xend, const char *name, const char *key, ...)
     return ret;
 }
 
-#endif /* ! PROXY */
 
 /**
  * sexpr_get:
@@ -698,7 +688,6 @@ sexpr_uuid(unsigned char *ptr, const struct sexpr *node, const char *path)
 }
 
 
-#ifndef PROXY
 /**
  * urlencode:
  * @string: the input URL
@@ -737,7 +726,6 @@ urlencode(const char *string)
 
     return buffer;
 }
-#endif /* ! PROXY */
 
 /* PUBLIC FUNCTIONS */
 
@@ -779,7 +767,7 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
     return (0);
 }
 
-#ifndef PROXY
+
 /**
  * xenDaemonOpen_tcp:
  * @conn: an existing virtual connection block
@@ -879,9 +867,6 @@ xend_wait_for_devices(virConnectPtr xend, const char *name)
 }
 
 
-#endif /* PROXY */
-
-
 /**
  * xenDaemonListDomainsOld:
  * @xend: pointer to the Xen Daemon block
@@ -946,7 +931,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
     return ret;
 }
 
-#ifndef PROXY
+
 /**
  * xenDaemonDomainCreateXML:
  * @xend: A xend instance
@@ -983,7 +968,7 @@ xenDaemonDomainCreateXML(virConnectPtr xend, const char *sexpr)
 
     return ret;
 }
-#endif /* ! PROXY */
+
 
 /**
  * xenDaemonDomainLookupByName_ids:
@@ -1090,7 +1075,6 @@ error:
 }
 
 
-#ifndef PROXY
 static int
 xend_detect_config_version(virConnectPtr conn) {
     struct sexpr *root;
@@ -1121,7 +1105,6 @@ xend_detect_config_version(virConnectPtr conn) {
     return (0);
 }
 
-#endif /* PROXY */
 
 /*****************************************************************
  ******
@@ -1767,9 +1750,7 @@ xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
                               int hvm,
                               int xendConfigVersion)
 {
-#ifndef PROXY
     xenUnifiedPrivatePtr priv = conn->privateData;
-#endif
     const char *tmp;
     virDomainGraphicsDefPtr graphics = NULL;
 
@@ -1858,9 +1839,7 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                               virDomainDefPtr def,
                               const struct sexpr *root)
 {
-#ifndef PROXY
     xenUnifiedPrivatePtr priv = conn->privateData;
-#endif
     virDomainGraphicsDefPtr graphics = NULL;
     const struct sexpr *cur, *node;
     const char *tmp;
@@ -2099,9 +2078,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
                    int xendConfigVersion,
                    const char *cpus)
 {
-#ifndef PROXY
     xenUnifiedPrivatePtr priv = conn->privateData;
-#endif
     const char *tmp;
     virDomainDefPtr def;
     int hvm = 0;
@@ -2624,7 +2601,6 @@ sexpr_to_xend_topology(const struct sexpr *root,
 }
 
 
-#ifndef PROXY
 /**
  * sexpr_to_domain:
  * @conn: an existing virtual connection block
@@ -2678,7 +2654,7 @@ error:
         virUnrefDomain(ret);
     return(NULL);
 }
-#endif /* !PROXY */
+
 
 /*****************************************************************
  ******
@@ -2691,7 +2667,6 @@ error:
  ******
  ******
  *****************************************************************/
-#ifndef PROXY
 /**
  * xenDaemonOpen:
  * @conn: an existing virtual connection block
@@ -3053,7 +3028,7 @@ xenDaemonDomainRestore(virConnectPtr conn, const char *filename)
     }
     return xend_op(conn, "", "op", "restore", "file", filename, NULL);
 }
-#endif /* !PROXY */
+
 
 /**
  * xenDaemonDomainGetMaxMemory:
@@ -3091,7 +3066,7 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
     return(ret);
 }
 
-#ifndef PROXY
+
 /**
  * xenDaemonDomainSetMaxMemory:
  * @domain: pointer to the Domain block
@@ -3161,7 +3136,6 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
                    "target", buf, NULL);
 }
 
-#endif /* ! PROXY */
 
 virDomainDefPtr
 xenDaemonDomainFetch(virConnectPtr conn,
@@ -3199,7 +3173,6 @@ cleanup:
 }
 
 
-#ifndef PROXY
 /**
  * xenDaemonDomainDumpXML:
  * @domain: a domain object
@@ -3241,7 +3214,7 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags, const char *cpus)
 
     return xml;
 }
-#endif /* !PROXY */
+
 
 /**
  * xenDaemonDomainGetInfo:
@@ -3280,7 +3253,7 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     return (ret);
 }
 
-#ifndef PROXY
+
 /**
  * xenDaemonLookupByName:
  * @conn: A xend instance
@@ -3313,7 +3286,7 @@ error:
     sexpr_free(root);
     return(ret);
 }
-#endif /* ! PROXY */
+
 
 /**
  * xenDaemonNodeGetInfo:
@@ -3420,7 +3393,7 @@ xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
     return(0);
 }
 
-#ifndef PROXY
+
 /**
  * xenDaemonListDomains:
  * @conn: pointer to the hypervisor connection
@@ -3500,9 +3473,8 @@ error:
     sexpr_free(root);
     return(ret);
 }
-#endif /* ! PROXY */
 
-#ifndef PROXY
+
 /**
  * xenDaemonLookupByID:
  * @conn: pointer to the hypervisor connection
@@ -6130,5 +6102,3 @@ virDomainXMLDevID(virDomainPtr domain,
 
     return 0;
 }
-
-#endif /* ! PROXY */

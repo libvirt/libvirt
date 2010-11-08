@@ -1057,7 +1057,6 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 
-# ifndef PROXY
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               const virDomainDefPtr def,
                                               const char *xmlStr,
@@ -1081,7 +1080,6 @@ virDomainObjPtr virDomainObjParseNode(virCapsPtr caps,
 
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 
-# endif
 char *virDomainDefFormat(virDomainDefPtr def,
                          int flags);
 

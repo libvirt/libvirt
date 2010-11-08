@@ -42,16 +42,15 @@
 extern int xenRegister (void);
 
 # define XEN_UNIFIED_HYPERVISOR_OFFSET 0
-# define XEN_UNIFIED_PROXY_OFFSET 1
-# define XEN_UNIFIED_XEND_OFFSET 2
-# define XEN_UNIFIED_XS_OFFSET 3
-# define XEN_UNIFIED_XM_OFFSET 4
+# define XEN_UNIFIED_XEND_OFFSET 1
+# define XEN_UNIFIED_XS_OFFSET 2
+# define XEN_UNIFIED_XM_OFFSET 3
 
 # if WITH_XEN_INOTIFY
-#  define XEN_UNIFIED_INOTIFY_OFFSET 5
-#  define XEN_UNIFIED_NR_DRIVERS 6
-# else
+#  define XEN_UNIFIED_INOTIFY_OFFSET 4
 #  define XEN_UNIFIED_NR_DRIVERS 5
+# else
+#  define XEN_UNIFIED_NR_DRIVERS 4
 # endif
 
 # define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
@@ -175,8 +174,6 @@ struct _xenUnifiedPrivate {
 
     struct xs_handle *xshandle; /* handle to talk to the xenstore */
 
-    int proxy;                  /* fd of proxy. */
-
 
     /* A list of xenstore watches */
     xenStoreWatchListPtr xsWatchList;
@@ -230,12 +227,7 @@ void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
 unsigned long xenUnifiedVersion(void);
 int xenUnifiedGetMaxVcpus(virConnectPtr conn, const char *type);
 
-# ifndef PROXY
 void xenUnifiedLock(xenUnifiedPrivatePtr priv);
 void xenUnifiedUnlock(xenUnifiedPrivatePtr priv);
-# else
-#  define xenUnifiedLock(p) do {} while(0)
-#  define xenUnifiedUnlock(p) do {} while(0)
-# endif
 
 #endif /* __VIR_XEN_UNIFIED_H__ */

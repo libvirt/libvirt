@@ -106,7 +106,6 @@ no_memory:
 }
 
 
-#ifndef PROXY
 virCPUDefPtr
 virCPUDefParseXML(const xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
@@ -298,7 +297,6 @@ error:
     def = NULL;
     goto cleanup;
 }
-#endif
 
 
 char *

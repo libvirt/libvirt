@@ -302,7 +302,8 @@ connection.
 </p>
     <p>
 You should consider using <a href="remote.html">libvirt remote support</a>
-in future.
+in future. <span class="since">Since 0.8.6</span> libvirt doesn't contain
+the Xen proxy anymore and you should use libvirtd instead.
 </p>
   </body>
 </html>

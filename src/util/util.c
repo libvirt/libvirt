@@ -195,8 +195,6 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
 # endif /* HAVE_MMAP */
 #endif /* HAVE_POSIX_FALLOCATE */
 
-#ifndef PROXY
-
 int virFileStripSuffix(char *str,
                        const char *suffix)
 {
@@ -241,14 +239,14 @@ virArgvToString(const char *const *argv)
 }
 
 int virSetNonBlock(int fd) {
-# ifndef WIN32
+#ifndef WIN32
     int flags;
     if ((flags = fcntl(fd, F_GETFL)) < 0)
         return -1;
     flags |= O_NONBLOCK;
     if ((fcntl(fd, F_SETFL, flags)) < 0)
         return -1;
-# else
+#else
     unsigned long flag = 1;
 
     /* This is actually Gnulib's replacement rpl_ioctl function.
@@ -256,12 +254,12 @@ int virSetNonBlock(int fd) {
      */
     if (ioctl (fd, FIONBIO, (void *) &flag) == -1)
         return -1;
-# endif
+#endif
     return 0;
 }
 
 
-# ifndef WIN32
+#ifndef WIN32
 
 int virSetCloseExec(int fd) {
     int flags;
@@ -274,7 +272,7 @@ int virSetCloseExec(int fd) {
 }
 
 
-#  if HAVE_CAPNG
+# if HAVE_CAPNG
 static int virClearCapabilities(void)
 {
     int ret;
@@ -289,13 +287,13 @@ static int virClearCapabilities(void)
 
     return 0;
 }
-#  else
+# else
 static int virClearCapabilities(void)
 {
 //    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
     return 0;
 }
-#  endif
+# endif
 
 
 /* virFork() - fork a new process while avoiding various race/deadlock conditions
@@ -314,9 +312,9 @@ static int virClearCapabilities(void)
 
  */
 int virFork(pid_t *pid) {
-#  ifdef HAVE_PTHREAD_SIGMASK
+# ifdef HAVE_PTHREAD_SIGMASK
     sigset_t oldmask, newmask;
-#  endif
+# endif
     struct sigaction sig_action;
     int saved_errno, ret = -1;
 
@@ -326,7 +324,7 @@ int virFork(pid_t *pid) {
      * Need to block signals now, so that child process can safely
      * kill off caller's signal handlers without a race.
      */
-#  ifdef HAVE_PTHREAD_SIGMASK
+# ifdef HAVE_PTHREAD_SIGMASK
     sigfillset(&newmask);
     if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
         saved_errno = errno;
@@ -334,7 +332,7 @@ int virFork(pid_t *pid) {
                              "%s", _("cannot block signals"));
         goto cleanup;
     }
-#  endif
+# endif
 
     /* Ensure we hold the logging lock, to protect child processes
      * from deadlocking on another thread's inherited mutex state */
@@ -347,11 +345,11 @@ int virFork(pid_t *pid) {
     virLogUnlock();
 
     if (*pid < 0) {
-#  ifdef HAVE_PTHREAD_SIGMASK
+# ifdef HAVE_PTHREAD_SIGMASK
         /* attempt to restore signal mask, but ignore failure, to
            avoid obscuring the fork failure */
         ignore_value (pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
-#  endif
+# endif
         virReportSystemError(saved_errno,
                              "%s", _("cannot fork child process"));
         goto cleanup;
@@ -361,7 +359,7 @@ int virFork(pid_t *pid) {
 
         /* parent process */
 
-#  ifdef HAVE_PTHREAD_SIGMASK
+# ifdef HAVE_PTHREAD_SIGMASK
         /* Restore our original signal mask now that the child is
            safely running */
         if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
@@ -369,7 +367,7 @@ int virFork(pid_t *pid) {
             virReportSystemError(errno, "%s", _("cannot unblock signals"));
             goto cleanup;
         }
-#  endif
+# endif
         ret = 0;
 
     } else {
@@ -405,7 +403,7 @@ int virFork(pid_t *pid) {
             sigaction(i, &sig_action, NULL);
         }
 
-#  ifdef HAVE_PTHREAD_SIGMASK
+# ifdef HAVE_PTHREAD_SIGMASK
         /* Unmask all signals in child, since we've no idea
            what the caller's done with their signal mask
            and don't want to propagate that to children */
@@ -415,7 +413,7 @@ int virFork(pid_t *pid) {
             virReportSystemError(errno, "%s", _("cannot unblock signals"));
             goto cleanup;
         }
-#  endif
+# endif
         ret = 0;
     }
 
@@ -873,7 +871,7 @@ virRunWithHook(const char *const*argv,
     return ret;
 }
 
-# else /* WIN32 */
+#else /* WIN32 */
 
 int virSetCloseExec(int fd ATTRIBUTE_UNUSED)
 {
@@ -937,7 +935,7 @@ virFork(pid_t *pid)
     return -1;
 }
 
-# endif /* WIN32 */
+#endif /* WIN32 */
 
 int
 virPipeReadUntilEOF(int outfd, int errfd,
@@ -1173,7 +1171,7 @@ int virFileHasSuffix(const char *str,
     return STRCASEEQ(str + len - suffixlen, suffix);
 }
 
-# define SAME_INODE(Stat_buf_1, Stat_buf_2) \
+#define SAME_INODE(Stat_buf_1, Stat_buf_2) \
   ((Stat_buf_1).st_ino == (Stat_buf_2).st_ino \
    && (Stat_buf_1).st_dev == (Stat_buf_2).st_dev)
 
@@ -1279,7 +1277,7 @@ int virFileExists(const char *path)
     return(0);
 }
 
-# ifndef WIN32
+#ifndef WIN32
 /* return -errno on failure, or 0 on success */
 static int virFileOperationNoFork(const char *path, int openflags, mode_t mode,
                                   uid_t uid, gid_t gid,
@@ -1591,7 +1589,7 @@ childerror:
     _exit(ret);
 }
 
-# else /* WIN32 */
+#else /* WIN32 */
 
 /* return -errno on failure, or 0 on success */
 int virFileOperation(const char *path ATTRIBUTE_UNUSED,
@@ -1620,7 +1618,7 @@ int virDirCreate(const char *path ATTRIBUTE_UNUSED,
 
     return -1;
 }
-# endif /* WIN32 */
+#endif /* WIN32 */
 
 static int virFileMakePathHelper(char *path) {
     struct stat st;
@@ -1714,7 +1712,7 @@ int virFileOpenTty(int *ttymaster,
                             rawmode);
 }
 
-# ifdef __linux__
+#ifdef __linux__
 int virFileOpenTtyAt(const char *ptmx,
                      int *ttymaster,
                      char **ttyName,
@@ -1764,7 +1762,7 @@ cleanup:
     return rc;
 
 }
-# else
+#else
 int virFileOpenTtyAt(const char *ptmx ATTRIBUTE_UNUSED,
                      int *ttymaster ATTRIBUTE_UNUSED,
                      char **ttyName ATTRIBUTE_UNUSED,
@@ -1772,7 +1770,7 @@ int virFileOpenTtyAt(const char *ptmx ATTRIBUTE_UNUSED,
 {
     return -1;
 }
-# endif
+#endif
 
 char* virFilePid(const char *dir, const char* name)
 {
@@ -1911,7 +1909,6 @@ cleanup:
     return rc;
 }
 
-#endif /* PROXY */
 
 /*
  * Creates an absolute path for a potentialy realtive path.
@@ -2861,15 +2858,14 @@ virFileFindMountPoint(const char *type ATTRIBUTE_UNUSED)
 
 #endif /* defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
-#ifndef PROXY
-# if defined(UDEVADM) || defined(UDEVSETTLE)
+#if defined(UDEVADM) || defined(UDEVSETTLE)
 void virFileWaitForDevices(void)
 {
-#  ifdef UDEVADM
+# ifdef UDEVADM
     const char *const settleprog[] = { UDEVADM, "settle", NULL };
-#  else
+# else
     const char *const settleprog[] = { UDEVSETTLE, NULL };
-#  endif
+# endif
     int exitstatus;
 
     if (access(settleprog[0], X_OK) != 0)
@@ -2884,9 +2880,8 @@ void virFileWaitForDevices(void)
     if (virRun(settleprog, &exitstatus) < 0)
     {}
 }
-# else
+#else
 void virFileWaitForDevices(void) {}
-# endif
 #endif
 
 int virBuildPathInternal(char **path, ...)

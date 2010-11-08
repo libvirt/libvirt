@@ -228,7 +228,6 @@ TEST_DRIVER_SOURCES =						\
 
 # Now the Hypervisor specific drivers
 XEN_DRIVER_SOURCES =						\
-		xen/proxy_internal.c xen/proxy_internal.h	\
 		xen/sexpr.c xen/sexpr.h				\
 		xen/block_stats.c xen/block_stats.h		\
 		xen/xen_hypervisor.c xen/xen_hypervisor.h	\

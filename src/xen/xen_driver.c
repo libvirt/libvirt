@@ -13,7 +13,7 @@
 /* Note:
  *
  * This driver provides a unified interface to the five
- * separate underlying Xen drivers (xen_internal, proxy_internal,
+ * separate underlying Xen drivers (xen_internal,
  * xend_internal, xs_internal and xm_internal).  Historically
  * the body of libvirt.c handled the five Xen drivers,
  * and contained Xen-specific code.
@@ -33,7 +33,6 @@
 #include "xen_driver.h"
 
 #include "xen_hypervisor.h"
-#include "proxy_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
 #include "xm_internal.h"
@@ -61,7 +60,6 @@ xenUnifiedDomainGetVcpus (virDomainPtr dom,
 /* The five Xen drivers below us. */
 static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
     [XEN_UNIFIED_HYPERVISOR_OFFSET] = &xenHypervisorDriver,
-    [XEN_UNIFIED_PROXY_OFFSET] = &xenProxyDriver,
     [XEN_UNIFIED_XEND_OFFSET] = &xenDaemonDriver,
     [XEN_UNIFIED_XS_OFFSET] = &xenStoreDriver,
     [XEN_UNIFIED_XM_OFFSET] = &xenXMDriver,
@@ -318,7 +316,6 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
     priv->handle = -1;
     priv->xendConfigVersion = -1;
     priv->xshandle = NULL;
-    priv->proxy = -1;
 
 
     /* Hypervisor is only run with privilege & required to succeed */
@@ -331,9 +328,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
         }
     }
 
-    /* XenD is required to succeed if privileged.
-     * If it fails as non-root, then the proxy driver may take over
-     */
+    /* XenD is required to succeed if privileged */
     DEBUG0("Trying XenD sub-driver");
     if (drivers[XEN_UNIFIED_XEND_OFFSET]->open(conn, auth, flags) ==
         VIR_DRV_OPEN_SUCCESS) {
@@ -363,20 +358,9 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
         if (xenHavePrivilege()) {
             goto fail; /* XenD is mandatory when privileged */
         } else {
-#if WITH_PROXY
-            DEBUG0("Trying proxy sub-driver");
-            if (drivers[XEN_UNIFIED_PROXY_OFFSET]->open(conn, auth, flags) ==
-                VIR_DRV_OPEN_SUCCESS) {
-                DEBUG0("Activated proxy sub-driver");
-                priv->opened[XEN_UNIFIED_PROXY_OFFSET] = 1;
-            } else {
-                goto fail; /* Proxy is mandatory if XenD failed */
-            }
-#else
             DEBUG0("Handing off for remote driver");
             ret = VIR_DRV_OPEN_DECLINED; /* Let remote_driver try instead */
             goto clean;
-#endif
         }
     }
 
@@ -402,9 +386,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
 fail:
     ret = VIR_DRV_OPEN_ERROR;
-#ifndef WITH_PROXY
 clean:
-#endif
     DEBUG0("Failed to activate a mandatory sub-driver");
     for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
         if (priv->opened[i]) drivers[i]->close(conn);
@@ -579,11 +561,6 @@ xenUnifiedListDomains (virConnectPtr conn, int *ids, int maxids)
         if (ret >= 0) return ret;
     }
 
-    /* Try proxy. */
-    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
-        ret = xenProxyListDomains (conn, ids, maxids);
-        if (ret >= 0) return ret;
-    }
     return -1;
 }
 
@@ -608,12 +585,6 @@ xenUnifiedNumOfDomains (virConnectPtr conn)
     /* Try xend. */
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
         ret = xenDaemonNumOfDomains (conn);
-        if (ret >= 0) return ret;
-    }
-
-    /* Try proxy. */
-    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
-        ret = xenProxyNumOfDomains (conn);
         if (ret >= 0) return ret;
     }
 
@@ -659,13 +630,6 @@ xenUnifiedDomainLookupByID (virConnectPtr conn, int id)
             return ret;
     }
 
-    /* Try proxy. */
-    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
-        ret = xenProxyLookupByID (conn, id);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
-
     /* Try xend. */
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
         ret = xenDaemonLookupByID (conn, id);
@@ -693,13 +657,6 @@ xenUnifiedDomainLookupByUUID (virConnectPtr conn,
     /* Try hypervisor/xenstore combo. */
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
         ret = xenHypervisorLookupDomainByUUID (conn, uuid);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
-
-    /* Try proxy. */
-    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
-        ret = xenProxyLookupByUUID (conn, uuid);
         if (ret || conn->err.code != VIR_ERR_OK)
             return ret;
     }
@@ -734,13 +691,6 @@ xenUnifiedDomainLookupByName (virConnectPtr conn,
      * there is one hanging around from a previous call.
      */
     virConnResetLastError (conn);
-
-    /* Try proxy. */
-    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
-        ret = xenProxyLookupByName (conn, name);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
 
     /* Try xend. */
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
@@ -1223,8 +1173,6 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
             VIR_FREE(cpus);
             return(res);
         }
-        if (priv->opened[XEN_UNIFIED_PROXY_OFFSET])
-            return xenProxyDomainDumpXML(dom, flags);
     }
 
     xenUnifiedError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
