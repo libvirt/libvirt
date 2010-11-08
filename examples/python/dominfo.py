@@ -27,10 +27,6 @@ def print_xml(key, ctx, path):
     print_entry(key, value)
     return value
 
-if not os.access("/proc/xen", os.R_OK):
-    print 'System is not running a Xen kernel'
-    sys.exit(1)
-
 if len(sys.argv) != 2:
     usage()
     sys.exit(2)
