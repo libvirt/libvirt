@@ -11525,6 +11525,7 @@ vshUsage(void)
                       "    -t | --timing           print timing information\n"
                       "    -l | --log <file>       output logging to file\n"
                       "    -v | --version          program version\n\n"
+                      "    -V                      version and full options\n\n"
                       "  commands (non interactive mode):\n"), progname, progname);
 
     for (cmd = commands; cmd->name; cmd++)
@@ -11534,6 +11535,129 @@ vshUsage(void)
     fprintf(stdout, "%s",
             _("\n  (specify help <command> for details about the command)\n\n"));
     return;
+}
+
+/*
+ * Show version and options compiled in
+ */
+static void
+vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
+{
+    /* FIXME - list a copyright blurb, as in GNU programs?  */
+    vshPrint(ctl, _("Virsh command line tool of libvirt %s\n"), VERSION);
+    vshPrint(ctl, _("See web site at %s\n\n"), "http://libvirt.org/");
+
+    vshPrint(ctl, _("Compiled with support for:\n"));
+    vshPrint(ctl, _(" Hypervisors:"));
+#ifdef WITH_XEN
+    vshPrint(ctl, " Xen");
+#endif
+#ifdef WITH_QEMU
+    vshPrint(ctl, " QEmu/KVM");
+#endif
+#ifdef WITH_UML
+    vshPrint(ctl, " UML");
+#endif
+#ifdef WITH_OPENVZ
+    vshPrint(ctl, " OpenVZ");
+#endif
+#ifdef WITH_VBOX
+    vshPrint(ctl, " VirtualBox");
+#endif
+#ifdef WITH_XENAPI
+    vshPrint(ctl, " XenAPI");
+#endif
+#ifdef WITH_LXC
+    vshPrint(ctl, " LXC");
+#endif
+#ifdef WITH_ESX
+    vshPrint(ctl, " ESX");
+#endif
+#ifdef WITH_PHYP
+    vshPrint(ctl, " PHYP");
+#endif
+#ifdef WITH_ONE
+    vshPrint(ctl, " ONE");
+#endif
+#ifdef WITH_TEST
+    vshPrint(ctl, " Test");
+#endif
+    vshPrint(ctl, "\n");
+
+    vshPrint(ctl, _(" Networking:"));
+#ifdef WITH_REMOTE
+    vshPrint(ctl, " Remote");
+#endif
+#ifdef WITH_PROXY
+    vshPrint(ctl, " Proxy");
+#endif
+#ifdef WITH_LIBVIRTD
+    vshPrint(ctl, " Daemon");
+#endif
+#ifdef WITH_NETWORK
+    vshPrint(ctl, " Network");
+#endif
+#ifdef WITH_BRIDGE
+    vshPrint(ctl, " Bridging");
+#endif
+#ifdef WITH_NETCF
+    vshPrint(ctl, " Netcf");
+#endif
+#ifdef WITH_NWFILTER
+    vshPrint(ctl, " Nwfilter");
+#endif
+#ifdef WITH_VIRTUALPORT
+    vshPrint(ctl, " VirtualPort");
+#endif
+    vshPrint(ctl, "\n");
+
+    vshPrint(ctl, _(" Storage:"));
+#ifdef WITH_STORAGE_DIR
+    vshPrint(ctl, " Dir");
+#endif
+#ifdef WITH_STORAGE_DISK
+    vshPrint(ctl, " Disk");
+#endif
+#ifdef WITH_STORAGE_FS
+    vshPrint(ctl, " Filesystem");
+#endif
+#ifdef WITH_STORAGE_SCSI
+    vshPrint(ctl, " SCSI");
+#endif
+#ifdef WITH_STORAGE_MPATH
+    vshPrint(ctl, " Multipath");
+#endif
+#ifdef WITH_STORAGE_ISCSI
+    vshPrint(ctl, " iSCSI");
+#endif
+#ifdef WITH_STORAGE_LVM
+    vshPrint(ctl, " LVM");
+#endif
+    vshPrint(ctl, "\n");
+
+    vshPrint(ctl, _(" Miscellaneous:"));
+#ifdef ENABLE_SECDRIVER_APPARMOR
+    vshPrint(ctl, " AppArmor");
+#endif
+#ifdef WITH_SECDRIVER_SELINUX
+    vshPrint(ctl, " SELinux");
+#endif
+#ifdef WITH_SECRETS
+    vshPrint(ctl, " Secrets");
+#endif
+#ifdef ENABLE_DEBUG
+    vshPrint(ctl, " Debug");
+#endif
+#ifdef WITH_DTRACE
+    vshPrint(ctl, " DTrace");
+#endif
+#ifdef USE_READLINE
+    vshPrint(ctl, " Readline");
+#endif
+#ifdef WITH_DRIVER_MODULES
+    vshPrint(ctl, " Modular");
+#endif
+    vshPrint(ctl, "\n");
 }
 
 /*
@@ -11560,7 +11684,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     /* Standard (non-command) options. The leading + ensures that no
      * argument reordering takes place, so that command options are
      * not confused with top-level virsh options. */
-    while ((arg = getopt_long(argc, argv, "+d:hqtc:vrl:", opt, NULL)) != -1) {
+    while ((arg = getopt_long(argc, argv, "+d:hqtc:vVrl:", opt, NULL)) != -1) {
         switch (arg) {
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &ctl->debug) < 0) {
@@ -11580,8 +11704,10 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         case 'c':
             ctl->name = vshStrdup(ctl, optarg);
             break;
+        case 'V':
+            vshShowVersion(ctl);
+            exit(EXIT_SUCCESS);
         case 'v':
-            /* FIXME - list a copyright blurb, as in GNU programs?  */
             puts(VERSION);
             exit(EXIT_SUCCESS);
         case 'r':

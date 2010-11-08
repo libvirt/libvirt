@@ -56,8 +56,13 @@ given instead.
 
 =item B<-v>, B<--version>
 
-Ignore all other arguments, and behave as if the B<version> command were
-given instead.
+Ignore all other arguments, and prints the version of the libvirt library
+virsh is coming from
+
+=item B<-V>
+
+Ignore all other arguments, and prints the version of the libvirt library
+virsh is coming from and which options and driver are compiled in.
 
 =item B<-c>, B<--connect> I<URI>
 
