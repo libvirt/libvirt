@@ -354,9 +354,6 @@
     </interleave>
   </define>
   <define name="clock">
-    <zeroOrMore>
-      <ref name="timer"/>
-    </zeroOrMore>
     <optional>
       <element name="clock">
         <choice>
@@ -387,7 +384,9 @@
             </optional>
           </group>
         </choice>
-        <empty/>
+        <zeroOrMore>
+          <ref name="timer"/>
+        </zeroOrMore>
       </element>
     </optional>
   </define>
