@@ -203,12 +203,10 @@ int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online);
 /* XXX should we pass the virDomainDiskDefPtr instead
  * and hide devname details inside monitor. Reconsider
  * this when doing the QMP implementation
- *
- * XXXX 'eject' has gained a 'force' flag we might like
- * to make use of...
  */
 int qemuMonitorEjectMedia(qemuMonitorPtr mon,
-                          const char *devname);
+                          const char *devname,
+                          bool force);
 int qemuMonitorChangeMedia(qemuMonitorPtr mon,
                            const char *devname,
                            const char *newmedia,

@@ -7704,7 +7704,8 @@ cleanup:
 static int qemudDomainChangeEjectableMedia(struct qemud_driver *driver,
                                            virDomainObjPtr vm,
                                            virDomainDiskDefPtr disk,
-                                           unsigned long long qemuCmdFlags)
+                                           unsigned long long qemuCmdFlags,
+                                           bool force)
 {
     virDomainDiskDefPtr origdisk = NULL;
     int i;
@@ -7765,7 +7766,7 @@ static int qemudDomainChangeEjectableMedia(struct qemud_driver *driver,
                                      driveAlias,
                                      disk->src, format);
     } else {
-        ret = qemuMonitorEjectMedia(priv->mon, driveAlias);
+        ret = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -8732,7 +8733,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
             ret = qemudDomainChangeEjectableMedia(driver, vm,
                                                   dev->data.disk,
-                                                  qemuCmdFlags);
+                                                  qemuCmdFlags,
+                                                  false);
             if (ret == 0)
                 dev->data.disk = NULL;
             break;
@@ -8919,10 +8921,12 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     unsigned long long qemuCmdFlags;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
+    bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
 
     virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_CURRENT |
                   VIR_DOMAIN_DEVICE_MODIFY_LIVE |
-                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG |
+                  VIR_DOMAIN_DEVICE_MODIFY_FORCE, -1);
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -8977,7 +8981,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
             ret = qemudDomainChangeEjectableMedia(driver, vm,
                                                   dev->data.disk,
-                                                  qemuCmdFlags);
+                                                  qemuCmdFlags,
+                                                  force);
             if (ret == 0)
                 dev->data.disk = NULL;
             break;

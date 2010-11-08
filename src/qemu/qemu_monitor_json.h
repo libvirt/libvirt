@@ -68,7 +68,8 @@ int qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
 int qemuMonitorJSONSetCPU(qemuMonitorPtr mon, int cpu, int online);
 
 int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
-                              const char *devname);
+                              const char *devname,
+                              bool force);
 int qemuMonitorJSONChangeMedia(qemuMonitorPtr mon,
                                const char *devname,
                                const char *newmedia,

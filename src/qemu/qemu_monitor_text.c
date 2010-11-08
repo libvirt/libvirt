@@ -848,13 +848,14 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
 
 
 int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
-                              const char *devname)
+                              const char *devname,
+                              bool force)
 {
     char *cmd = NULL;
     char *reply = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cmd, "eject %s", devname) < 0) {
+    if (virAsprintf(&cmd, "eject %s%s", force ? "-f " : "", devname) < 0) {
         virReportOOMError();
         goto cleanup;
     }

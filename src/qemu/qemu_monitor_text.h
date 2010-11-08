@@ -66,7 +66,8 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
 int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online);
 
 int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
-                              const char *devname);
+                              const char *devname,
+                              bool force);
 int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
                                const char *devname,
                                const char *newmedia,

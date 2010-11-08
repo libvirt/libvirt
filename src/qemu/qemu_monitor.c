@@ -1147,10 +1147,11 @@ int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online)
 
 
 int qemuMonitorEjectMedia(qemuMonitorPtr mon,
-                          const char *devname)
+                          const char *devname,
+                          bool force)
 {
     int ret;
-    DEBUG("mon=%p devname=%s", mon, devname);
+    DEBUG("mon=%p devname=%s force=%d", mon, devname, force);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1159,9 +1160,9 @@ int qemuMonitorEjectMedia(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONEjectMedia(mon, devname);
+        ret = qemuMonitorJSONEjectMedia(mon, devname, force);
     else
-        ret = qemuMonitorTextEjectMedia(mon, devname);
+        ret = qemuMonitorTextEjectMedia(mon, devname, force);
     return ret;
 }
 
