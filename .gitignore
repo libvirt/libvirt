@@ -14,8 +14,8 @@
 .sc-start-sc_*
 /GNUmakefile
 /libvirt-[0-9]*
-/proxy/
 /maint.mk
+/proxy/
 ABOUT-NLS
 COPYING
 ChangeLog
