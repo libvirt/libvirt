@@ -4185,7 +4185,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         /* should we really error out or just warn in those cases ? */
         if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_HOST) {
             if (driver->hostsysinfo == NULL) {
-                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("Host SMBIOS information is not available"));
                 goto error;
             }
