@@ -39,6 +39,7 @@
 #include "util.h"
 #include "interface.h"
 #include "virterror_internal.h"
+#include "files.h"
 
 #define ifaceError(code, ...) \
         virReportErrorHelper(NULL, VIR_FROM_NET, code, __FILE__, \
@@ -82,7 +83,7 @@ ifaceGetFlags(const char *ifname, short *flags) {
 
     *flags = ifr.ifr_flags;
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return rc;
 }
@@ -161,7 +162,7 @@ static int chgIfaceFlags(const char *ifname, short flagclear, short flagset) {
     }
 
 err_exit:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return rc;
 }
 
@@ -259,8 +260,7 @@ ifaceCheck(bool reportError, const char *ifname,
     }
 
  err_exit:
-    if (fd >= 0)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return rc;
 }
@@ -326,7 +326,7 @@ ifaceGetIndex(bool reportError, const char *ifname, int *ifindex)
     }
 
 err_exit:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return rc;
 }
@@ -373,7 +373,7 @@ ifaceGetVlanID(const char *vlanifname, int *vlanid) {
     *vlanid = vlanargs.u.VID;
 
  err_exit:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return rc;
 }

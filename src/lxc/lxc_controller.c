@@ -48,6 +48,7 @@
 #include "veth.h"
 #include "memory.h"
 #include "util.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -233,8 +234,7 @@ static int lxcMonitorServer(const char *sockpath)
     return fd;
 
 error:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     return -1;
 }
 
@@ -409,7 +409,7 @@ static int lxcControllerMain(int monitor,
                     goto cleanup;
                 }
                 if (client != -1) { /* Already connected, so kick new one out */
-                    close(fd);
+                    VIR_FORCE_CLOSE(fd);
                     continue;
                 }
                 client = fd;
@@ -426,8 +426,7 @@ static int lxcControllerMain(int monitor,
                                          _("epoll_ctl(client) failed"));
                     goto cleanup;
                 }
-                close(client);
-                client = -1;
+                VIR_FORCE_CLOSE(client);
             } else {
                 if (epollEvent.events & EPOLLIN) {
                     curFdOff = epollEvent.data.fd == appPty ? 0 : 1;
@@ -485,9 +484,9 @@ static int lxcControllerMain(int monitor,
     rc = 0;
 
 cleanup:
-    close(appPty);
-    close(contPty);
-    close(epollFd);
+    VIR_FORCE_CLOSE(appPty);
+    VIR_FORCE_CLOSE(contPty);
+    VIR_FORCE_CLOSE(epollFd);
     return rc;
 }
 
@@ -660,8 +659,7 @@ lxcControllerRun(virDomainDefPtr def,
                                        control[1],
                                        containerPtyPath)) < 0)
         goto cleanup;
-    close(control[1]);
-    control[1] = -1;
+    VIR_FORCE_CLOSE(control[1]);
 
     if (lxcControllerMoveInterfaces(nveths, veths, container) < 0)
         goto cleanup;
@@ -679,13 +677,10 @@ lxcControllerRun(virDomainDefPtr def,
 cleanup:
     VIR_FREE(devptmx);
     VIR_FREE(devpts);
-    if (control[0] != -1)
-        close(control[0]);
-    if (control[1] != -1)
-        close(control[1]);
+    VIR_FORCE_CLOSE(control[0]);
+    VIR_FORCE_CLOSE(control[1]);
     VIR_FREE(containerPtyPath);
-    if (containerPty != -1)
-        close(containerPty);
+    VIR_FORCE_CLOSE(containerPty);
 
     if (container > 1) {
         int status;

@@ -72,6 +72,7 @@
 #include "memory.h"
 #include "threads.h"
 #include "verify.h"
+#include "files.h"
 
 #ifndef NSIG
 # define NSIG 32
@@ -460,6 +461,7 @@ __virExec(const char *const*argv,
     int pipeerr[2] = {-1,-1};
     int childout = -1;
     int childerr = -1;
+    int tmpfd;
 
     if ((null = open("/dev/null", O_RDONLY)) < 0) {
         virReportSystemError(errno,
@@ -533,13 +535,13 @@ __virExec(const char *const*argv,
     }
 
     if (pid) { /* parent */
-        close(null);
+        VIR_FORCE_CLOSE(null);
         if (outfd && *outfd == -1) {
-            close(pipeout[1]);
+            VIR_FORCE_CLOSE(pipeout[1]);
             *outfd = pipeout[0];
         }
         if (errfd && *errfd == -1) {
-            close(pipeerr[1]);
+            VIR_FORCE_CLOSE(pipeerr[1]);
             *errfd = pipeerr[0];
         }
 
@@ -567,8 +569,10 @@ __virExec(const char *const*argv,
             i != childout &&
             i != childerr &&
             (!keepfd ||
-             !FD_ISSET(i, keepfd)))
-            close(i);
+             !FD_ISSET(i, keepfd))) {
+            tmpfd = i;
+            VIR_FORCE_CLOSE(tmpfd);
+        }
 
     if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
         virReportSystemError(errno,
@@ -588,14 +592,15 @@ __virExec(const char *const*argv,
         goto fork_error;
     }
 
-    if (infd > 0)
-        close(infd);
-    close(null);
-    if (childout > 0)
-        close(childout);
+    VIR_FORCE_CLOSE(infd);
+    VIR_FORCE_CLOSE(null);
+    tmpfd = childout;   /* preserve childout value */
+    VIR_FORCE_CLOSE(tmpfd);
     if (childerr > 0 &&
-        childerr != childout)
-        close(childerr);
+        childerr != childout) {
+        VIR_FORCE_CLOSE(childerr);
+        childout = -1;
+    }
 
     /* Daemonize as late as possible, so the parent process can detect
      * the above errors with wait* */
@@ -665,16 +670,11 @@ __virExec(const char *const*argv,
     /* NB we don't virUtilError() on any failures here
        because the code which jumped hre already raised
        an error condition which we must not overwrite */
-    if (pipeerr[0] > 0)
-        close(pipeerr[0]);
-    if (pipeerr[1] > 0)
-        close(pipeerr[1]);
-    if (pipeout[0] > 0)
-        close(pipeout[0]);
-    if (pipeout[1] > 0)
-        close(pipeout[1]);
-    if (null > 0)
-        close(null);
+    VIR_FORCE_CLOSE(pipeerr[0]);
+    VIR_FORCE_CLOSE(pipeerr[1]);
+    VIR_FORCE_CLOSE(pipeout[0]);
+    VIR_FORCE_CLOSE(pipeout[1]);
+    VIR_FORCE_CLOSE(null);
     return -1;
 }
 
@@ -864,10 +864,8 @@ virRunWithHook(const char *const*argv,
     VIR_FREE(outbuf);
     VIR_FREE(errbuf);
     VIR_FREE(argv_str);
-    if (outfd != -1)
-        close(outfd);
-    if (errfd != -1)
-        close(errfd);
+    VIR_FORCE_CLOSE(outfd);
+    VIR_FORCE_CLOSE(errfd);
     return ret;
 }
 
@@ -1110,7 +1108,7 @@ int virFileReadAll(const char *path, int maxlen, char **buf)
     }
 
     int len = virFileReadLimFD(fd, maxlen, buf);
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     if (len < 0) {
         virReportSystemError(errno, _("Failed to read file '%s'"), path);
         return -1;
@@ -1131,13 +1129,13 @@ int virFileWriteStr(const char *path, const char *str)
 
     if (safewrite(fd, str, strlen(str)) < 0) {
         int saved_errno = errno;
-        close (fd);
+        VIR_FORCE_CLOSE(fd);
         errno = saved_errno;
         return -1;
     }
 
     /* Use errno from failed close only if there was no write error.  */
-    if (close (fd) != 0)
+    if (VIR_CLOSE(fd) != 0)
         return -1;
 
     return 0;
@@ -1316,7 +1314,7 @@ static int virFileOperationNoFork(const char *path, int openflags, mode_t mode,
     if ((hook) && ((ret = hook(fd, hookdata)) != 0)) {
         goto error;
     }
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         ret = -errno;
         virReportSystemError(errno, _("failed to close new file '%s'"),
                              path);
@@ -1325,8 +1323,7 @@ static int virFileOperationNoFork(const char *path, int openflags, mode_t mode,
     }
     fd = -1;
 error:
-    if (fd != -1)
-       close(fd);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -1477,7 +1474,7 @@ parenterror:
     if ((hook) && ((ret = hook(fd, hookdata)) != 0)) {
         goto childerror;
     }
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         ret = -errno;
         virReportSystemError(errno, _("child failed to close new file '%s'"),
                              path);
@@ -1754,10 +1751,8 @@ int virFileOpenTtyAt(const char *ptmx,
     rc = 0;
 
 cleanup:
-    if (rc != 0 &&
-        *ttymaster != -1) {
-        close(*ttymaster);
-    }
+    if (rc != 0)
+        VIR_FORCE_CLOSE(*ttymaster);
 
     return rc;
 
@@ -1823,7 +1818,7 @@ int virFileWritePidPath(const char *pidfile,
 
     if (!(file = fdopen(fd, "w"))) {
         rc = errno;
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         goto cleanup;
     }
 

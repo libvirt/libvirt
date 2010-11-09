@@ -31,6 +31,7 @@
 #include "logging.h"
 #include "virtaudit.h"
 #include "util.h"
+#include "files.h"
 
 /* Provide the macros in case the header file is old.
    FIXME: should be removed. */
@@ -134,7 +135,7 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
 void virAuditClose(void)
 {
 #if HAVE_AUDIT
-    close(auditfd);
+    VIR_FORCE_CLOSE(auditfd);
 #endif
 }
 

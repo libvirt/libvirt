@@ -39,6 +39,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
+#include "files.h"
 
 #ifndef ENODATA
 # define ENODATA EIO
@@ -61,7 +62,7 @@ virUUIDGenerateRandomBytes(unsigned char *buf,
         if ((n = read(fd, buf, buflen)) <= 0) {
             if (errno == EINTR)
                 continue;
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
             return n < 0 ? errno : ENODATA;
         }
 
@@ -69,7 +70,7 @@ virUUIDGenerateRandomBytes(unsigned char *buf,
         buflen -= n;
     }
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return 0;
 }
@@ -240,10 +241,10 @@ getDMISystemUUID(char *uuid, int len)
         int fd = open(paths[i], O_RDONLY);
         if (fd > 0) {
             if (saferead(fd, uuid, len) == len) {
-                close(fd);
+                VIR_FORCE_CLOSE(fd);
                 return 0;
             }
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
         }
         i++;
     }

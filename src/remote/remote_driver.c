@@ -82,6 +82,7 @@
 #include "util.h"
 #include "event.h"
 #include "ignore-value.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -621,7 +622,7 @@ doRemoteOpen (virConnectPtr conn,
 
             if (connect (priv->sock, r->ai_addr, r->ai_addrlen) == -1) {
                 saved_errno = errno;
-                close (priv->sock);
+                VIR_FORCE_CLOSE(priv->sock);
                 continue;
             }
 
@@ -630,8 +631,7 @@ doRemoteOpen (virConnectPtr conn,
                     negotiate_gnutls_on_connection
                       (conn, priv, no_verify);
                 if (!priv->session) {
-                    close (priv->sock);
-                    priv->sock = -1;
+                    VIR_FORCE_CLOSE(priv->sock);
                     goto failed;
                 }
             }
@@ -711,8 +711,7 @@ doRemoteOpen (virConnectPtr conn,
             if (errno == ECONNREFUSED &&
                 flags & VIR_DRV_OPEN_REMOTE_AUTOSTART &&
                 trials < 20) {
-                close(priv->sock);
-                priv->sock = -1;
+                VIR_FORCE_CLOSE(priv->sock);
                 if (trials > 0 ||
                     remoteForkDaemon() == 0) {
                     trials++;
@@ -806,8 +805,8 @@ doRemoteOpen (virConnectPtr conn,
             goto failed;
 
         /* Parent continues here. */
-        close (sv[1]);
-        close (errfd[1]);
+        VIR_FORCE_CLOSE(sv[1]);
+        VIR_FORCE_CLOSE(errfd[1]);
         priv->sock = sv[0];
         priv->errfd = errfd[0];
         priv->pid = pid;
@@ -955,15 +954,14 @@ doRemoteOpen (virConnectPtr conn,
 
  failed:
     /* Close the socket if we failed. */
-    if (priv->errfd >= 0)
-        close(priv->errfd);
+    VIR_FORCE_CLOSE(priv->errfd);
 
     if (priv->sock >= 0) {
         if (priv->uses_tls && priv->session) {
             gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
             gnutls_deinit (priv->session);
         }
-        close (priv->sock);
+        VIR_FORCE_CLOSE(priv->sock);
 #ifndef WIN32
         if (priv->pid > 0) {
             pid_t reap;
@@ -977,10 +975,8 @@ retry:
 #endif
     }
 
-    if (wakeupFD[0] >= 0) {
-        close(wakeupFD[0]);
-        close(wakeupFD[1]);
-    }
+    VIR_FORCE_CLOSE(wakeupFD[0]);
+    VIR_FORCE_CLOSE(wakeupFD[1]);
 
     VIR_FREE(priv->hostname);
     goto cleanup;
@@ -1442,8 +1438,8 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
     if (priv->saslconn)
         sasl_dispose (&priv->saslconn);
 #endif
-    close (priv->sock);
-    close (priv->errfd);
+    VIR_FORCE_CLOSE(priv->sock);
+    VIR_FORCE_CLOSE(priv->errfd);
 
 #ifndef WIN32
     if (priv->pid > 0) {
@@ -1456,10 +1452,8 @@ retry:
         } while (reap != -1 && reap != priv->pid);
     }
 #endif
-    if (priv->wakeupReadFD >= 0) {
-        close(priv->wakeupReadFD);
-        close(priv->wakeupSendFD);
-    }
+    VIR_FORCE_CLOSE(priv->wakeupReadFD);
+    VIR_FORCE_CLOSE(priv->wakeupSendFD);
 
 
     /* Free hostname copy */

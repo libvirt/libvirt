@@ -58,6 +58,7 @@
 #include "domain_conf.h"
 #include "storage_conf.h"
 #include "nodeinfo.h"
+#include "files.h"
 
 #include "phyp_driver.h"
 
@@ -457,11 +458,15 @@ phypUUIDTable_WriteFile(virConnectPtr conn)
         }
     }
 
-    close(fd);
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("Could not close %s"),
+                             local_file);
+        goto err;
+    }
     return 0;
 
   err:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return -1;
 }
 
@@ -672,11 +677,11 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
     } else
         virReportOOMError();
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return 0;
 
   err:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return -1;
 }
 
@@ -764,7 +769,11 @@ phypUUIDTable_Pull(virConnectPtr conn)
         }
         break;
     }
-    close(fd);
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("Could not close %s"),
+                             local_file);
+        goto err;
+    }
     goto exit;
 
   exit:
@@ -1001,7 +1010,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
             if (connect(sock, cur->ai_addr, cur->ai_addrlen) == 0) {
                 goto connected;
             }
-            close(sock);
+            VIR_FORCE_CLOSE(sock);
         }
         cur = cur->ai_next;
     }

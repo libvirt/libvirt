@@ -37,6 +37,7 @@
 #include "uuid.h"
 #include "pci.h"
 #include "hostusb.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_APPARMOR_VOID_DOI      "0"
@@ -215,7 +216,7 @@ load_profile(virSecurityDriverPtr drv,
         virReportSystemError(errno, "%s", _("unable to write to pipe"));
         goto clean;
     }
-    close(pipefd[1]);
+    VIR_FORCE_CLOSE(pipefd[1]);
     rc = 0;
 
   rewait:
@@ -233,10 +234,8 @@ load_profile(virSecurityDriverPtr drv,
   clean:
     VIR_FREE(xml);
 
-    if (pipefd[0] > 0)
-        close(pipefd[0]);
-    if (pipefd[1] > 0)
-        close(pipefd[1]);
+    VIR_FORCE_CLOSE(pipefd[0]);
+    VIR_FORCE_CLOSE(pipefd[1]);
 
     return rc;
 }

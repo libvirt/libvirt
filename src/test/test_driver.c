@@ -50,6 +50,7 @@
 #include "xml.h"
 #include "threads.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -788,8 +789,7 @@ static int testOpenFromFile(virConnectPtr conn,
                   _("Invalid XML in file '%s'"), file);
         goto error;
     }
-    close(fd);
-    fd = -1;
+    VIR_FORCE_CLOSE(fd);
 
     root = xmlDocGetRootElement(xml);
     if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "node"))) {
@@ -1101,8 +1101,7 @@ static int testOpenFromFile(virConnectPtr conn,
     VIR_FREE(networks);
     VIR_FREE(ifaces);
     VIR_FREE(pools);
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     virDomainObjListDeinit(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
@@ -1752,7 +1751,7 @@ static int testDomainSave(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("saving domain '%s' to '%s': write failed"),
                              domain->name, path);
@@ -1779,8 +1778,7 @@ cleanup:
      * in either case we're already in a failure scenario
      * and have reported a earlier error */
     if (ret != 0) {
-        if (fd != -1)
-            close(fd);
+        VIR_FORCE_CLOSE(fd);
         unlink(path);
     }
     if (privdom)
@@ -1870,8 +1868,7 @@ static int testDomainRestore(virConnectPtr conn,
 cleanup:
     virDomainDefFree(def);
     VIR_FREE(xml);
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     if (dom)
         virDomainObjUnlock(dom);
     if (event)
@@ -1911,7 +1908,7 @@ static int testDomainCoreDump(virDomainPtr domain,
                              domain->name, to);
         goto cleanup;
     }
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("domain '%s' coredump: write failed: %s"),
                              domain->name, to);
@@ -1932,8 +1929,7 @@ static int testDomainCoreDump(virDomainPtr domain,
 
     ret = 0;
 cleanup:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     if (privdom)
         virDomainObjUnlock(privdom);
     if (event)

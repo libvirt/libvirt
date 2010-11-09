@@ -65,6 +65,7 @@
 #include "buf.h"
 #include "capabilities.h"
 #include "memory.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -2019,7 +2020,7 @@ xenHypervisorInit(void)
     hypervisor_version = -1;
     virXenError(VIR_ERR_XEN_CALL, " ioctl %lu",
                 (unsigned long) IOCTL_PRIVCMD_HYPERCALL);
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     in_init = 0;
     return(-1);
 
@@ -2105,13 +2106,13 @@ xenHypervisorInit(void)
     hypervisor_version = -1;
     virXenError(VIR_ERR_XEN_CALL, " ioctl %lu",
                 (unsigned long)IOCTL_PRIVCMD_HYPERCALL);
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     in_init = 0;
     VIR_FREE(ipt);
     return(-1);
 
  done:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     in_init = 0;
     VIR_FREE(ipt);
     return(0);
@@ -2174,7 +2175,7 @@ xenHypervisorClose(virConnectPtr conn)
     if (priv->handle < 0)
         return -1;
 
-    ret = close(priv->handle);
+    ret = VIR_CLOSE(priv->handle);
     if (ret < 0)
         return (-1);
 
@@ -2379,8 +2380,7 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
     ret = 1;
 
 out:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 

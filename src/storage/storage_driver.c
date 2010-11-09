@@ -45,6 +45,7 @@
 #include "memory.h"
 #include "storage_backend.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -1664,9 +1665,7 @@ storageVolumeWipeInternal(virStorageVolDefPtr def)
 out:
     VIR_FREE(writebuf);
 
-    if (fd != -1) {
-        close(fd);
-    }
+    VIR_FORCE_CLOSE(fd);
 
     return ret;
 }

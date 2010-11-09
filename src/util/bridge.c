@@ -24,6 +24,7 @@
 #if defined(WITH_BRIDGE)
 
 # include "bridge.h"
+# include "files.h"
 
 # include <stdlib.h>
 # include <stdio.h>
@@ -82,12 +83,12 @@ brInit(brControl **ctlp)
     if ((flags = fcntl(fd, F_GETFD)) < 0 ||
         fcntl(fd, F_SETFD, flags | FD_CLOEXEC) < 0) {
         int err = errno;
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return err;
     }
 
     if (VIR_ALLOC(*ctlp) < 0) {
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return ENOMEM;
     }
 
@@ -108,8 +109,7 @@ brShutdown(brControl *ctl)
     if (!ctl)
         return;
 
-    close(ctl->fd);
-    ctl->fd = 0;
+    VIR_FORCE_CLOSE(ctl->fd);
 
     VIR_FREE(ctl);
 }
@@ -540,11 +540,11 @@ brAddTap(brControl *ctl,
     if (tapfd)
         *tapfd = fd;
     else
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
     return 0;
 
  error:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return errno;
 }
@@ -575,7 +575,7 @@ int brDeleteTap(brControl *ctl,
     }
 
  error:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return errno;
 }

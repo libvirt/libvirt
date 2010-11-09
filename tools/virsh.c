@@ -51,6 +51,7 @@
 #include "memory.h"
 #include "xml.h"
 #include "libvirt/libvirt-qemu.h"
+#include "files.h"
 
 static char *progname;
 
@@ -11269,11 +11270,9 @@ static void
 vshCloseLogFile(vshControl *ctl)
 {
     /* log file close */
-    if (ctl->log_fd >= 0) {
-        if (close(ctl->log_fd) < 0)
-            vshError(ctl, _("%s: failed to write log file: %s"),
-                     ctl->logfile ? ctl->logfile : "?", strerror (errno));
-        ctl->log_fd = -1;
+    if (VIR_CLOSE(ctl->log_fd) < 0) {
+        vshError(ctl, _("%s: failed to write log file: %s"),
+                 ctl->logfile ? ctl->logfile : "?", strerror (errno));
     }
 
     if (ctl->logfile) {

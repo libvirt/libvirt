@@ -24,6 +24,7 @@
 #include "util.h"
 #include "c-ctype.h"
 #include "memory.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 
@@ -954,7 +955,7 @@ virConfWriteFile(const char *filename, virConfPtr conf)
     content = virBufferContentAndReset(&buf);
     ret = safewrite(fd, content, use);
     VIR_FREE(content);
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     if (ret != (int)use) {
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to save content"));
         return -1;

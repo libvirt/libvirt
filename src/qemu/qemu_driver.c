@@ -82,6 +82,7 @@
 #include "hooks.h"
 #include "storage_file.h"
 #include "virtaudit.h"
+#include "files.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -768,7 +769,7 @@ qemudLogFD(struct qemud_driver *driver, const char* name)
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
     return fd;
@@ -800,14 +801,14 @@ qemudLogReadFD(const char* logDir, const char* name, off_t pos)
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
     if (pos < 0 || lseek(fd, pos, SEEK_SET) < 0) {
-      virReportSystemError(pos < 0 ? 0 : errno,
+        virReportSystemError(pos < 0 ? 0 : errno,
                              _("Unable to seek to %lld in %s"),
                              (long long) pos, logfile);
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
     }
     return fd;
 }
@@ -2401,7 +2402,7 @@ cleanup:
     }
 
 closelog:
-    if (close(logfd) < 0) {
+    if (VIR_CLOSE(logfd) < 0) {
         char ebuf[4096];
         VIR_WARN("Unable to close logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
@@ -2982,13 +2983,13 @@ static int qemudNextFreePort(struct qemud_driver *driver,
             return -1;
 
         if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&reuse, sizeof(reuse)) < 0) {
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
             break;
         }
 
         if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
             /* Not in use, lets grab it */
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
             /* Add port to bitmap of reserved ports */
             if (virBitmapSetBit(driver->reservedVNCPorts,
                                 i - QEMU_VNC_PORT_MIN) < 0) {
@@ -2997,7 +2998,7 @@ static int qemudNextFreePort(struct qemud_driver *driver,
             }
             return i;
         }
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
 
         if (errno == EADDRINUSE) {
             /* In use, try next */
@@ -3249,7 +3250,7 @@ qemuPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return 0;
 }
@@ -4163,7 +4164,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     if (vmfds) {
         for (i = 0 ; i < nvmfds ; i++) {
-            close(vmfds[i]);
+            VIR_FORCE_CLOSE(vmfds[i]);
         }
         VIR_FREE(vmfds);
     }
@@ -4216,8 +4217,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
 
-    if (logfile != -1)
-        close(logfile);
+    VIR_FORCE_CLOSE(logfile);
 
     return 0;
 
@@ -4227,8 +4227,7 @@ cleanup:
      * pretend we never started it */
     qemudShutdownVMDaemon(driver, vm, 0);
 
-    if (logfile != -1)
-        close(logfile);
+    VIR_FORCE_CLOSE(logfile);
 
     return -1;
 }
@@ -4503,7 +4502,7 @@ static int kvmGetMaxVCPUs(void) {
     if (r > 0)
         maxvcpus = r;
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return maxvcpus;
 }
 
@@ -5608,10 +5607,10 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
             goto endjob;
         }
         if (qemudDomainSaveFileOpHook(fd, &hdata) < 0) {
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
             goto endjob;
         }
-        if (close(fd) < 0) {
+        if (VIR_CLOSE(fd) < 0) {
             virReportSystemError(errno, _("unable to close %s"), path);
             goto endjob;
         }
@@ -6047,7 +6046,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         goto endjob;
     }
 
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("unable to save file %s"),
                              path);
@@ -6692,8 +6691,7 @@ static int qemudOpenAsUID(const char *path, uid_t uid, pid_t *child_pid) {
         /* parent */
 
         /* parent doesn't need the write side of the pipe */
-        close(pipefd[1]);
-        pipefd[1] = -1;
+        VIR_FORCE_CLOSE(pipefd[1]);
 
         if (forkRet < 0) {
             virReportSystemError(errno,
@@ -6705,10 +6703,8 @@ static int qemudOpenAsUID(const char *path, uid_t uid, pid_t *child_pid) {
         fd = pipefd[0];
         pipefd[0] = -1;
 parent_cleanup:
-        if (pipefd[0] != -1)
-            close(pipefd[0]);
-        if (pipefd[1] != -1)
-            close(pipefd[1]);
+        VIR_FORCE_CLOSE(pipefd[0]);
+        VIR_FORCE_CLOSE(pipefd[1]);
         if ((fd < 0) && (*child_pid > 0)) {
             /* a child process was started and subsequently an error
                occurred in the parent, so we need to wait for it to
@@ -6734,7 +6730,7 @@ parent_cleanup:
     struct passwd pwd, *pwd_result;
 
     /* child doesn't need the read side of the pipe */
-    close(pipefd[0]);
+    VIR_FORCE_CLOSE(pipefd[0]);
 
     if (forkRet < 0) {
         exit_code = errno;
@@ -6799,10 +6795,8 @@ parent_cleanup:
 
 child_cleanup:
     VIR_FREE(buf);
-    if (fd != -1)
-        close(fd);
-    if (pipefd[1] != -1)
-        close(pipefd[1]);
+    VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_CLOSE(pipefd[1]);
     _exit(exit_code);
 }
 
@@ -6810,8 +6804,10 @@ static int qemudDomainSaveImageClose(int fd, pid_t read_pid, int *status)
 {
     int ret = 0;
 
-    if (fd != -1)
-        close(fd);
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot close file"));
+    }
 
     if (read_pid != -1) {
         /* reap the process that read the file */
@@ -6967,8 +6963,7 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
             /* empty */
         }
     }
-    if (intermediatefd != -1)
-        close(intermediatefd);
+    VIR_FORCE_CLOSE(intermediatefd);
 
     wait_ret = qemudDomainSaveImageClose(fd, read_pid, &status);
     fd = -1;
@@ -8347,9 +8342,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (tapfd != -1)
-        close(tapfd);
-    tapfd = -1;
+    VIR_FORCE_CLOSE(tapfd);
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -8403,8 +8396,7 @@ cleanup:
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
     VIR_FREE(tapfd_name);
-    if (tapfd != -1)
-        close(tapfd);
+    VIR_FORCE_CLOSE(tapfd);
 
     return ret;
 
@@ -8533,8 +8525,7 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
 
     VIR_FREE(devstr);
     VIR_FREE(configfd_name);
-    if (configfd >= 0)
-        close(configfd);
+    VIR_FORCE_CLOSE(configfd);
 
     return 0;
 
@@ -8548,8 +8539,7 @@ error:
 
     VIR_FREE(devstr);
     VIR_FREE(configfd_name);
-    if (configfd >= 0)
-        close(configfd);
+    VIR_FORCE_CLOSE(configfd);
 
     return -1;
 }
@@ -10430,8 +10420,7 @@ qemudDomainBlockPeek (virDomainPtr dom,
     }
 
 cleanup:
-    if (fd >= 0)
-        close (fd);
+    VIR_FORCE_CLOSE(fd);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
@@ -10518,7 +10507,7 @@ endjob:
 
 cleanup:
     VIR_FREE(tmp);
-    if (fd >= 0) close (fd);
+    VIR_FORCE_CLOSE(fd);
     unlink (tmp);
     if (vm)
         virDomainObjUnlock(vm);
@@ -10674,8 +10663,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
 cleanup:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
@@ -10990,8 +10978,7 @@ cleanup:
 
 static void qemuStreamMigFree(struct qemuStreamMigFile *qemust)
 {
-    if (qemust->fd != -1)
-        close(qemust->fd);
+    VIR_FORCE_CLOSE(qemust->fd);
     VIR_FREE(qemust);
 }
 
@@ -11832,10 +11819,8 @@ finish:
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
 cleanup:
-    if (client_sock != -1)
-        close(client_sock);
-    if (qemu_sock != -1)
-        close(qemu_sock);
+    VIR_FORCE_CLOSE(client_sock);
+    VIR_FORCE_CLOSE(qemu_sock);
 
     if (ddomain)
         virUnrefDomain(ddomain);
@@ -12616,8 +12601,7 @@ cleanup:
     VIR_FREE(snapFile);
     VIR_FREE(snapDir);
     VIR_FREE(newxml);
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 

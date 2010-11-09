@@ -45,6 +45,7 @@
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
 #include "memory.h"
 #include "count-one-bits.h"
+#include "files.h"
 
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
@@ -112,7 +113,6 @@ static int
 do_connect(virConnectPtr xend)
 {
     int s;
-    int serrno;
     int no_slow_start = 1;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) xend->privateData;
 
@@ -131,10 +131,7 @@ do_connect(virConnectPtr xend)
 
 
     if (connect(s, (struct sockaddr *)&priv->addr, priv->addrlen) == -1) {
-        serrno = errno;
-        close(s);
-        errno = serrno;
-        s = -1;
+        VIR_FORCE_CLOSE(s); /* preserves errno */
 
         /*
          * Connecting to XenD when privileged is mandatory, so log this
@@ -381,7 +378,7 @@ xend_get(virConnectPtr xend, const char *path,
             "Content-Type: application/x-www-form-urlencoded\r\n" "\r\n");
 
     ret = xend_req(s, content);
-    close(s);
+    VIR_FORCE_CLOSE(s);
 
     if (((ret < 0) || (ret >= 300)) &&
         ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
@@ -430,7 +427,7 @@ xend_post(virConnectPtr xend, const char *path, const char *ops)
     swrites(s, ops);
 
     ret = xend_req(s, &err_buf);
-    close(s);
+    VIR_FORCE_CLOSE(s);
 
     if ((ret < 0) || (ret >= 300)) {
         virXendError(VIR_ERR_POST_FAILED,
@@ -821,7 +818,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
 
         if (connect (sock, r->ai_addr, r->ai_addrlen) == -1) {
             saved_errno = errno;
-            close (sock);
+            VIR_FORCE_CLOSE(sock);
             continue;
         }
 
@@ -831,7 +828,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
         memcpy(&priv->addr,
                r->ai_addr,
                r->ai_addrlen);
-        close(sock);
+        VIR_FORCE_CLOSE(sock);
         break;
     }
 
@@ -5125,7 +5122,7 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
 
     ret = 0;
  cleanup:
-    if (fd >= 0) close (fd);
+    VIR_FORCE_CLOSE(fd);
     sexpr_free(root);
     virDomainDefFree(def);
     return ret;

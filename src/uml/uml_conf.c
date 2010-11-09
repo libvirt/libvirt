@@ -47,6 +47,7 @@
 #include "bridge.h"
 #include "logging.h"
 #include "domain_nwfilter.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -367,7 +368,7 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
             }
             if (virAsprintf(&ret, "%s%d=null,fd:%d", dev, def->target.port, fd_out) < 0) {
                 virReportOOMError();
-                close(fd_out);
+                VIR_FORCE_CLOSE(fd_out);
                 return NULL;
             }
             FD_SET(fd_out, keepfd);

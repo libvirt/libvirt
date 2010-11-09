@@ -36,6 +36,7 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -688,7 +689,7 @@ virStorageFileProbeFormat(const char *path)
 
     ret = virStorageFileProbeFormatFromFD(path, fd);
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return ret;
 }
@@ -782,7 +783,7 @@ virStorageFileGetMetadata(const char *path,
 
     ret = virStorageFileGetMetadataFromFD(path, fd, format, meta);
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return ret;
 }

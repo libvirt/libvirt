@@ -28,6 +28,7 @@
 #include "pci.h"
 #include "hostusb.h"
 #include "storage_file.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -120,10 +121,10 @@ SELinuxInitialize(void)
         virReportSystemError(errno,
                              _("cannot read SELinux virtual domain context file %s"),
                              selinux_virtual_domain_context_path());
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     ptr = strchrnul(default_domain_context, '\n');
     *ptr = '\0';
@@ -139,10 +140,10 @@ SELinuxInitialize(void)
         virReportSystemError(errno,
                              _("cannot read SELinux virtual image context file %s"),
                              selinux_virtual_image_context_path());
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     ptr = strchrnul(default_image_context, '\n');
     if (*ptr == '\n') {

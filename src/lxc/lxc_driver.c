@@ -51,6 +51,7 @@
 #include "uuid.h"
 #include "stats_linux.h"
 #include "hooks.h"
+#include "files.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -969,7 +970,7 @@ static int lxcVmCleanup(lxc_driver_t *driver,
     }
 
     virEventRemoveHandle(priv->monitorWatch);
-    close(priv->monitor);
+    VIR_FORCE_CLOSE(priv->monitor);
 
     virFileDeletePid(driver->stateDir, vm->def->name);
     virDomainDeleteConfig(driver->stateDir, NULL, vm);
@@ -1151,8 +1152,7 @@ static int lxcMonitorClient(lxc_driver_t * driver,
 
 error:
     VIR_FREE(sockpath);
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     return -1;
 }
 
@@ -1534,19 +1534,18 @@ static int lxcVmStart(virConnectPtr conn,
     rc = 0;
 
 cleanup:
+    if (VIR_CLOSE(logfd) < 0) {
+        virReportSystemError(errno, "%s", _("could not close logfile"));
+        rc = -1;
+    }
     for (i = 0 ; i < nveths ; i++) {
         if (rc != 0)
             vethDelete(veths[i]);
         VIR_FREE(veths[i]);
     }
-    if (rc != 0 && priv->monitor != -1) {
-        close(priv->monitor);
-        priv->monitor = -1;
-    }
-    if (parentTty != -1)
-        close(parentTty);
-    if (logfd != -1)
-        close(logfd);
+    if (rc != 0)
+        VIR_FORCE_CLOSE(priv->monitor);
+    VIR_FORCE_CLOSE(parentTty);
     VIR_FREE(logfile);
     return rc;
 }
@@ -2006,8 +2005,7 @@ lxcReconnectVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
 
     /* Read pid from controller */
     if ((virFileReadPid(lxc_driver->stateDir, vm->def->name, &vm->pid)) != 0) {
-        close(priv->monitor);
-        priv->monitor = -1;
+        VIR_FORCE_CLOSE(priv->monitor);
         goto cleanup;
     }
 
@@ -2037,8 +2035,7 @@ lxcReconnectVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
         }
     } else {
         vm->def->id = -1;
-        close(priv->monitor);
-        priv->monitor = -1;
+        VIR_FORCE_CLOSE(priv->monitor);
     }
 
 cleanup:

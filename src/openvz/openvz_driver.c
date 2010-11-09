@@ -57,6 +57,7 @@
 #include "nodeinfo.h"
 #include "memory.h"
 #include "bridge.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -1540,7 +1541,7 @@ Version: 2.2
         }
     }
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     if (ret < 0)
         return -1;
 

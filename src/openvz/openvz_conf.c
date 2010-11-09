@@ -50,6 +50,7 @@
 #include "memory.h"
 #include "util.h"
 #include "nodeinfo.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -109,7 +110,7 @@ openvzExtractVersionInfo(const char *cmd, int *retversion)
 
 cleanup2:
     VIR_FREE(help);
-    if (close(newstdout) < 0)
+    if (VIR_CLOSE(newstdout) < 0)
         ret = -1;
 
 rewait:
@@ -569,7 +570,7 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
         goto error;
     temp_fd = open(temp_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (temp_fd == -1) {
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         goto error;
     }
 
@@ -590,12 +591,10 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
         safewrite(temp_fd, "\"\n", 2) < 0)
         goto error;
 
-    if (close(fd) < 0)
+    if (VIR_CLOSE(fd) < 0)
         goto error;
-    fd = -1;
-    if (close(temp_fd) < 0)
+    if (VIR_CLOSE(temp_fd) < 0)
         goto error;
-    temp_fd = -1;
 
     if (rename(temp_file, conf_file) < 0)
         goto error;
@@ -603,10 +602,8 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     return 0;
 
 error:
-    if (fd != -1)
-        close(fd);
-    if (temp_fd != -1)
-        close(temp_fd);
+    VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_CLOSE(temp_fd);
     if (temp_file)
         unlink(temp_file);
     VIR_FREE(temp_file);
@@ -662,7 +659,7 @@ openvzReadConfigParam(const char * conf_file ,const char * param, char *value, i
             }
        }
     }
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     if (ret == 0 && found)
         ret = 1;
@@ -703,7 +700,7 @@ openvz_copyfile(char* from_path, char* to_path)
         return -1;
     copy_fd = open(to_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (copy_fd == -1) {
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
 
@@ -716,19 +713,16 @@ openvz_copyfile(char* from_path, char* to_path)
             goto error;
     }
 
-    if (close(fd) < 0)
+    if (VIR_CLOSE(fd) < 0)
         goto error;
-    fd = -1;
-    if (close(copy_fd) < 0)
+    if (VIR_CLOSE(copy_fd) < 0)
         goto error;
 
     return 0;
 
 error:
-    if (fd != -1)
-        close(fd);
-    if (copy_fd != -1)
-        close(copy_fd);
+    VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_CLOSE(copy_fd);
     return -1;
 }
 
@@ -880,8 +874,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
     }
     retval = 0;
 cleanup:
-    if (fd >= 0)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     VIR_FREE(conf_file);
 
     return retval;

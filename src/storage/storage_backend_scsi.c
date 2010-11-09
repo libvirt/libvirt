@@ -32,6 +32,7 @@
 #include "storage_backend_scsi.h"
 #include "memory.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -154,8 +155,7 @@ virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
     ret = 0;
 
 cleanup:
-    if (fd >= 0)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return ret;
 }
@@ -572,14 +572,14 @@ virStorageBackendSCSITriggerRescan(uint32_t host)
     if (safewrite(fd,
                   LINUX_SYSFS_SCSI_HOST_SCAN_STRING,
                   sizeof(LINUX_SYSFS_SCSI_HOST_SCAN_STRING)) < 0) {
-
+        VIR_FORCE_CLOSE(fd);
         virReportSystemError(errno,
                              _("Write to '%s' to trigger host scan failed"),
                              path);
         retval = -1;
     }
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 free_path:
     VIR_FREE(path);
 out:

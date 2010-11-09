@@ -37,6 +37,7 @@
 #include "nwfilter_conf.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
+#include "files.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -2493,13 +2494,12 @@ ebiptablesWriteToTempFile(const char *string) {
     }
 
     VIR_FREE(header);
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return filnam;
 
 err_exit:
     VIR_FREE(header);
-    if (fd >= 0)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     unlink(filename);
     return NULL;
 }
@@ -3259,7 +3259,7 @@ iptablesCheckBridgeNFCallEnabled(bool isIPv6)
                         lastReport = now;
                 }
             }
-            close(fd);
+            VIR_FORCE_CLOSE(fd);
         }
     }
 }

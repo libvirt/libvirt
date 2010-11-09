@@ -41,6 +41,7 @@
 #include "util.h"
 #include "memory.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -237,9 +238,7 @@ out:
     if (fp != NULL) {
         fclose(fp);
     } else {
-        if (fd != -1) {
-            close(fd);
-        }
+        VIR_FORCE_CLOSE(fd);
     }
 
     return ret;

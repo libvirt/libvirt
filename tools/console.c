@@ -39,6 +39,7 @@
 # include "internal.h"
 # include "logging.h"
 # include "util.h"
+# include "files.h"
 
 /* ie  Ctrl-]  as per telnet */
 # define CTRL_CLOSE_BRACKET '\35'
@@ -192,7 +193,7 @@ int vshRunConsole(const char *tty) {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &ttyattr);
 
  closetty:
-    close(ttyfd);
+    VIR_FORCE_CLOSE(ttyfd);
 
     return ret;
 }

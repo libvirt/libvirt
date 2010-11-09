@@ -41,6 +41,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "virterror_internal.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -181,7 +182,7 @@ replaceFile(const char *filename, void *data, size_t size)
                               tmp_path);
         goto cleanup;
     }
-    if (close(fd) < 0) {
+    if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, _("error closing '%s'"), tmp_path);
         goto cleanup;
     }
@@ -196,8 +197,7 @@ replaceFile(const char *filename, void *data, size_t size)
     ret = 0;
 
 cleanup:
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     if (tmp_path != NULL) {
         unlink(tmp_path);
         VIR_FREE(tmp_path);
@@ -394,8 +394,7 @@ secretLoadValue(virSecretDriverStatePtr driver,
         virReportSystemError(errno, _("cannot read '%s'"), filename);
         goto cleanup;
     }
-    close(fd);
-    fd = -1;
+    VIR_FORCE_CLOSE(fd);
 
     if (!base64_decode_alloc(contents, st.st_size, &value, &value_size)) {
         virSecretReportError(VIR_ERR_INTERNAL_ERROR,
@@ -422,8 +421,7 @@ cleanup:
         memset(contents, 0, st.st_size);
         VIR_FREE(contents);
     }
-    if (fd != -1)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
     VIR_FREE(filename);
     return ret;
 }

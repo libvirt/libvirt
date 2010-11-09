@@ -45,6 +45,7 @@
 #include "util.h"
 #include "memory.h"
 #include "xml.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -72,25 +73,25 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd,
                                                       allocation,
                                                       capacity)) < 0) {
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return ret;
     }
 
     memset(&meta, 0, sizeof(meta));
 
     if ((target->format = virStorageFileProbeFormatFromFD(target->path, fd)) < 0) {
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
 
     if (virStorageFileGetMetadataFromFD(target->path, fd,
                                         target->format,
                                         &meta) < 0) {
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
 
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     if (meta.backingStore) {
         *backingStore = meta.backingStore;
@@ -98,7 +99,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
         if (meta.backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
             if ((*backingStoreFormat
                  = virStorageFileProbeFormat(*backingStore)) < 0) {
-                close(fd);
+                VIR_FORCE_CLOSE(fd);
                 goto cleanup;
             }
         } else {

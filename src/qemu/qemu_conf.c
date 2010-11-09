@@ -55,6 +55,7 @@
 #include "macvtap.h"
 #include "cpu/cpu.h"
 #include "domain_nwfilter.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -588,7 +589,7 @@ qemudProbeMachineTypes(const char *binary,
 cleanup2:
     VIR_FREE(output);
 cleanup:
-    if (close(newstdout) < 0)
+    if (VIR_CLOSE(newstdout) < 0)
         ret = -1;
 
 rewait:
@@ -838,7 +839,7 @@ qemudProbeCPUModels(const char *qemu,
 
 cleanup:
     VIR_FREE(output);
-    if (close(newstdout) < 0)
+    if (VIR_CLOSE(newstdout) < 0)
         ret = -1;
 
 rewait:
@@ -1495,7 +1496,7 @@ static void qemudParsePCIDeviceStrs(const char *qemu, unsigned long long *flags)
 
 cleanup:
     VIR_FREE(pciassign);
-    close(newstderr);
+    VIR_FORCE_CLOSE(newstderr);
 rewait:
     if (waitpid(child, &status, 0) != child) {
         if (errno == EINTR)
@@ -1555,7 +1556,7 @@ int qemudExtractVersionInfo(const char *qemu,
 
 cleanup2:
     VIR_FREE(help);
-    if (close(newstdout) < 0)
+    if (VIR_CLOSE(newstdout) < 0)
         ret = -1;
 
 rewait:
@@ -1670,8 +1671,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
         if ((net->filter) && (net->ifname)) {
             err = virDomainConfNWFilterInstantiate(conn, net);
             if (err) {
-                close(rc);
-                rc = -1;
+                VIR_FORCE_CLOSE(rc);
                 delMacvtap(net->ifname, net->mac, net->data.direct.linkdev,
                            &net->data.direct.virtPortProfile);
                 VIR_FREE(net->ifname);
@@ -1816,10 +1816,8 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     if (tapfd >= 0) {
         if ((net->filter) && (net->ifname)) {
             err = virDomainConfNWFilterInstantiate(conn, net);
-            if (err) {
-                close(tapfd);
-                tapfd = -1;
-            }
+            if (err)
+                VIR_FORCE_CLOSE(tapfd);
         }
     }
 
@@ -4782,7 +4780,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
                 if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
                     virDomainConfNWFilterTeardown(net);
-                    close(tapfd);
+                    VIR_FORCE_CLOSE(tapfd);
                     goto no_memory;
                 }
 
@@ -4801,7 +4799,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
                 if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
                     virDomainConfNWFilterTeardown(net);
-                    close(tapfd);
+                    VIR_FORCE_CLOSE(tapfd);
                     goto no_memory;
                 }
 
@@ -4821,7 +4819,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 int vhostfd = qemudOpenVhostNet(net, qemuCmdFlags);
                 if (vhostfd >= 0) {
                     if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
-                        close(vhostfd);
+                        VIR_FORCE_CLOSE(vhostfd);
                         goto no_memory;
                     }
 
@@ -5410,14 +5408,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
                     if (configfd >= 0) {
                         if (virAsprintf(&configfd_name, "%d", configfd) < 0) {
-                            close(configfd);
+                            VIR_FORCE_CLOSE(configfd);
                             virReportOOMError();
                             goto no_memory;
                         }
 
                         if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
                             VIR_FREE(configfd_name);
-                            close(configfd);
+                            VIR_FORCE_CLOSE(configfd);
                             goto no_memory;
                         }
 
@@ -5510,7 +5508,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (vmfds &&
         *vmfds) {
         for (i = 0; i < *nvmfds; i++)
-            close((*vmfds)[i]);
+            VIR_FORCE_CLOSE((*vmfds)[i]);
         VIR_FREE(*vmfds);
         *nvmfds = 0;
     }

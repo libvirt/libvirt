@@ -37,6 +37,7 @@
 #include "uuid.h"
 #include "hostusb.h"
 #include "pci.h"
+#include "files.h"
 
 static char *progname;
 
@@ -278,12 +279,12 @@ update_include_file(const char *include_file, const char *included_files,
     }
 
     if (safewrite(fd, pcontent, plen) < 0) { /* don't write the '\0' */
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         vah_error(NULL, 0, "failed to write to profile");
         goto clean;
     }
 
-    if (close(fd) != 0) {
+    if (VIR_CLOSE(fd) != 0) {
         vah_error(NULL, 0, "failed to close or write to profile");
         goto clean;
     }
@@ -385,12 +386,12 @@ create_profile(const char *profile, const char *profile_name,
     }
 
     if (safewrite(fd, pcontent, plen - 1) < 0) { /* don't write the '\0' */
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         vah_error(NULL, 0, "failed to write to profile");
         goto clean_all;
     }
 
-    if (close(fd) != 0) {
+    if (VIR_CLOSE(fd) != 0) {
         vah_error(NULL, 0, "failed to close or write to profile");
         goto clean_all;
     }

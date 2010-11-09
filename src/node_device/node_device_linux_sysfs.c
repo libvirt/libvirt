@@ -31,6 +31,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
+#include "files.h"
 #include <dirent.h>
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
@@ -104,9 +105,7 @@ int read_wwn_linux(int host, const char *file, char **wwn)
     }
 
 out:
-    if (fd != -1) {
-        close(fd);
-    }
+    VIR_FORCE_CLOSE(fd);
     return retval;
 }
 

@@ -50,6 +50,7 @@
 
 #include "libvirt_internal.h"
 #include "virterror_internal.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -425,7 +426,7 @@ static int daemonForkIntoBackground(void) {
             int stdoutfd = -1;
             int nextpid;
 
-            close(statuspipe[0]);
+            VIR_FORCE_CLOSE(statuspipe[0]);
 
             if ((stdinfd = open("/dev/null", O_RDONLY)) < 0)
                 goto cleanup;
@@ -437,12 +438,10 @@ static int daemonForkIntoBackground(void) {
                 goto cleanup;
             if (dup2(stdoutfd, STDERR_FILENO) != STDERR_FILENO)
                 goto cleanup;
-            if (close(stdinfd) < 0)
+            if (VIR_CLOSE(stdinfd) < 0)
                 goto cleanup;
-            stdinfd = -1;
-            if (close(stdoutfd) < 0)
+            if (VIR_CLOSE(stdoutfd) < 0)
                 goto cleanup;
-            stdoutfd = -1;
 
             if (setsid() < 0)
                 goto cleanup;
@@ -458,10 +457,8 @@ static int daemonForkIntoBackground(void) {
             }
 
         cleanup:
-            if (stdoutfd != -1)
-                close(stdoutfd);
-            if (stdinfd != -1)
-                close(stdinfd);
+            VIR_FORCE_CLOSE(stdoutfd);
+            VIR_FORCE_CLOSE(stdinfd);
             return -1;
 
         }
@@ -475,7 +472,7 @@ static int daemonForkIntoBackground(void) {
             int ret;
             char status;
 
-            close(statuspipe[1]);
+            VIR_FORCE_CLOSE(statuspipe[1]);
 
             /* We wait to make sure the first child forked successfully */
             if ((got = waitpid(pid, &exitstatus, 0)) < 0 ||
@@ -518,7 +515,7 @@ static int qemudWritePidFile(const char *pidFile) {
     if (!(fh = fdopen(fd, "w"))) {
         VIR_ERROR(_("Failed to fdopen pid file '%s' : %s"),
                   pidFile, virStrerror(errno, ebuf, sizeof ebuf));
-        close(fd);
+        VIR_FORCE_CLOSE(fd);
         return -1;
     }
 
@@ -610,8 +607,7 @@ static int qemudListenUnix(struct qemud_server *server,
     return 0;
 
  cleanup:
-    if (sock->fd >= 0)
-        close(sock->fd);
+    VIR_FORCE_CLOSE(sock->fd);
     VIR_FREE(sock);
     return -1;
 }
@@ -665,7 +661,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
                 VIR_ERROR(_("bind: %s"), virStrerror (errno, ebuf, sizeof ebuf));
                 return -1;
             }
-            close (fds[*nfds_r]);
+            VIR_FORCE_CLOSE(fds[*nfds_r]);
         } else {
             ++*nfds_r;
         }
@@ -734,7 +730,7 @@ remoteListenTCP (struct qemud_server *server,
 
 cleanup:
     for (i = 0; i < nfds; ++i)
-        close(fds[i]);
+        VIR_FORCE_CLOSE(fds[i]);
     return -1;
 }
 
@@ -1483,7 +1479,7 @@ error:
         VIR_FREE(client);
     }
     VIR_FREE(addrstr);
-    close (fd);
+    VIR_FORCE_CLOSE(fd);
     PROBE(CLIENT_DISCONNECT, "fd=%d", fd);
     return -1;
 }
@@ -1529,8 +1525,7 @@ void qemudDispatchClientFailure(struct qemud_client *client) {
     }
     if (client->fd != -1) {
         PROBE(CLIENT_DISCONNECT, "fd=%d", client->fd);
-        close(client->fd);
-        client->fd = -1;
+        VIR_FORCE_CLOSE(client->fd);
     }
     VIR_FREE(client->addrstr);
 }
@@ -2433,17 +2428,15 @@ static int qemudStartEventLoop(struct qemud_server *server) {
 static void qemudCleanup(struct qemud_server *server) {
     struct qemud_socket *sock;
 
-    if (server->sigread != -1)
-        close(server->sigread);
-    if (server->sigwrite != -1)
-        close(server->sigwrite);
+    VIR_FORCE_CLOSE(server->sigread);
+    VIR_FORCE_CLOSE(server->sigwrite);
 
     sock = server->sockets;
     while (sock) {
         struct qemud_socket *next = sock->next;
         if (sock->watch)
             virEventRemoveHandleImpl(sock->watch);
-        close(sock->fd);
+        VIR_FORCE_CLOSE(sock->fd);
 
         /* Unlink unix domain sockets which are not in
          * the abstract namespace */
@@ -2999,8 +2992,8 @@ daemonSetupSignals(struct qemud_server *server)
     return 0;
 
 error:
-    close(sigpipe[0]);
-    close(sigpipe[1]);
+    VIR_FORCE_CLOSE(sigpipe[0]);
+    VIR_FORCE_CLOSE(sigpipe[1]);
     return -1;
 }
 
@@ -3257,8 +3250,7 @@ int main(int argc, char **argv) {
         while (write(statuswrite, &status, 1) == -1 &&
                errno == EINTR)
             ;
-        close(statuswrite);
-        statuswrite = -1;
+        VIR_FORCE_CLOSE(statuswrite);
     }
 
     /* Start the event loop in a background thread, since
@@ -3315,7 +3307,7 @@ error:
                    errno == EINTR)
                 ;
         }
-        close(statuswrite);
+        VIR_FORCE_CLOSE(statuswrite);
     }
     if (server)
         qemudCleanup(server);

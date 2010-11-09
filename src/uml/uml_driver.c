@@ -59,6 +59,7 @@
 #include "datatypes.h"
 #include "logging.h"
 #include "domain_nwfilter.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -533,7 +534,7 @@ umlShutdown(void) {
     umlDriverLock(uml_driver);
     if (uml_driver->inotifyWatch != -1)
         virEventRemoveHandle(uml_driver->inotifyWatch);
-    close(uml_driver->inotifyFD);
+    VIR_FORCE_CLOSE(uml_driver->inotifyFD);
     virCapabilitiesFree(uml_driver->caps);
 
     /* shutdown active VMs
@@ -659,8 +660,7 @@ restat:
     if (bind(priv->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
         virReportSystemError(errno,
                              "%s", _("cannot bind socket"));
-        close(priv->monitor);
-        priv->monitor = -1;
+        VIR_FORCE_CLOSE(priv->monitor);
         return -1;
     }
 
@@ -870,13 +870,13 @@ static int umlStartVMDaemon(virConnectPtr conn,
     if (umlSetCloseExec(logfd) < 0) {
         virReportSystemError(errno,
                              "%s", _("Unable to set VM logfile close-on-exec flag"));
-        close(logfd);
+        VIR_FORCE_CLOSE(logfd);
         return -1;
     }
 
     if (umlBuildCommandLine(conn, driver, vm, &keepfd,
                             &argv, &progenv) < 0) {
-        close(logfd);
+        VIR_FORCE_CLOSE(logfd);
         virDomainConfVMNWFilterTeardown(vm);
         umlCleanupTapDevices(conn, vm);
         return -1;
@@ -912,15 +912,17 @@ static int umlStartVMDaemon(virConnectPtr conn,
                            -1, &logfd, &logfd,
                            VIR_EXEC_CLEAR_CAPS,
                            NULL, NULL, NULL);
-    close(logfd);
+    VIR_FORCE_CLOSE(logfd);
 
     /*
      * At the moment, the only thing that populates keepfd is
      * umlBuildCommandLineChr. We want to close every fd it opens.
      */
     for (i = 0; i < FD_SETSIZE; i++)
-        if (FD_ISSET(i, &keepfd))
-            close(i);
+        if (FD_ISSET(i, &keepfd)) {
+            int tmpfd = i;
+            VIR_FORCE_CLOSE(tmpfd);
+        }
 
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);
@@ -957,9 +959,7 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virKillProcess(vm->pid, SIGTERM);
 
-    if (priv->monitor != -1)
-        close(priv->monitor);
-    priv->monitor = -1;
+    VIR_FORCE_CLOSE(priv->monitor);
 
     if ((ret = waitpid(vm->pid, NULL, 0)) != vm->pid) {
         VIR_WARN("Got unexpected pid %d != %d",
@@ -2088,7 +2088,7 @@ umlDomainBlockPeek (virDomainPtr dom,
     }
 
 cleanup:
-    if (fd >= 0) close (fd);
+    VIR_FORCE_CLOSE(fd);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;

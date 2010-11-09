@@ -36,6 +36,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -283,7 +284,7 @@ qemuMonitorOpenUnix(const char *monitor)
     return monfd;
 
 error:
-    close(monfd);
+    VIR_FORCE_CLOSE(monfd);
     return -1;
 }
 

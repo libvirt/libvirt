@@ -52,6 +52,7 @@
 # include "conf/domain_conf.h"
 # include "virterror_internal.h"
 # include "uuid.h"
+# include "files.h"
 
 # define VIR_FROM_THIS VIR_FROM_NET
 
@@ -89,12 +90,6 @@ static int nlOpen(void)
         virReportSystemError(errno,
                              "%s",_("cannot open netlink socket"));
     return fd;
-}
-
-
-static void nlClose(int fd)
-{
-    close(fd);
 }
 
 
@@ -191,7 +186,7 @@ err_exit:
         *respbuflen = 0;
     }
 
-    nlClose(fd);
+    VIR_FORCE_CLOSE(fd);
     return rc;
 }
 
@@ -689,8 +684,7 @@ create_name:
 
     if (rc >= 0) {
         if (configMacvtapTap(rc, vnet_hdr) < 0) {
-            close(rc);
-            rc = -1;
+            VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
         *res_ifname = strdup(cr_ifname);
@@ -778,8 +772,7 @@ getLldpadPid(void) {
                              _("Error opening file %s"), LLDPAD_PID_FILE);
     }
 
-    if (fd >= 0)
-        close(fd);
+    VIR_FORCE_CLOSE(fd);
 
     return pid;
 }
