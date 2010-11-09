@@ -1149,7 +1149,7 @@
                   <value>insecure</value>
                 </choice>
               </attribute>
-	      <empty/>
+              <empty/>
             </element>
           </zeroOrMore>
         </group>
