@@ -8964,10 +8964,10 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
 
     tmpdir = getenv ("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
-    snprintf (ret, PATH_MAX, "%s/virshXXXXXX", tmpdir);
-    fd = mkstemp (ret);
+    snprintf (ret, PATH_MAX, "%s/virshXXXXXX.xml", tmpdir);
+    fd = mkstemps(ret, 4);
     if (fd == -1) {
-        vshError(ctl, _("mkstemp: failed to create temporary file: %s"),
+        vshError(ctl, _("mkstemps: failed to create temporary file: %s"),
                  strerror(errno));
         VIR_FREE(ret);
         return NULL;
