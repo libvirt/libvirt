@@ -54,12 +54,12 @@ The B<virsh> program understands the following I<OPTIONS>.
 Ignore all other arguments, and behave as if the B<help> command were
 given instead.
 
-=item B<-v>, B<--version>
+=item B<-v>, B<--version[=short]>
 
 Ignore all other arguments, and prints the version of the libvirt library
 virsh is coming from
 
-=item B<-V>
+=item B<-V>, B<--version=long>
 
 Ignore all other arguments, and prints the version of the libvirt library
 virsh is coming from and which options and driver are compiled in.

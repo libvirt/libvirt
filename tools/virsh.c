@@ -11523,8 +11523,8 @@ vshUsage(void)
                       "    -q | --quiet            quiet mode\n"
                       "    -t | --timing           print timing information\n"
                       "    -l | --log <file>       output logging to file\n"
-                      "    -v | --version          program version\n\n"
-                      "    -V                      version and full options\n\n"
+                      "    -v | --version[=short]  program version\n\n"
+                      "    -V | --version=long     version and full options\n\n"
                       "  commands (non interactive mode):\n"), progname, progname);
 
     for (cmd = commands; cmd->name; cmd++)
@@ -11669,15 +11669,15 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     bool help = false;
     int arg;
     struct option opt[] = {
-        {"debug", 1, 0, 'd'},
-        {"help", 0, 0, 'h'},
-        {"quiet", 0, 0, 'q'},
-        {"timing", 0, 0, 't'},
-        {"version", 0, 0, 'v'},
-        {"connect", 1, 0, 'c'},
-        {"readonly", 0, 0, 'r'},
-        {"log", 1, 0, 'l'},
-        {0, 0, 0, 0}
+        {"debug", required_argument, NULL, 'd'},
+        {"help", no_argument, NULL, 'h'},
+        {"quiet", no_argument, NULL, 'q'},
+        {"timing", no_argument, NULL, 't'},
+        {"version", optional_argument, NULL, 'v'},
+        {"connect", required_argument, NULL, 'c'},
+        {"readonly", no_argument, NULL, 'r'},
+        {"log", required_argument, NULL, 'l'},
+        {NULL, 0, NULL, 0}
     };
 
     /* Standard (non-command) options. The leading + ensures that no
@@ -11703,11 +11703,14 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         case 'c':
             ctl->name = vshStrdup(ctl, optarg);
             break;
+        case 'v':
+            if (STRNEQ_NULLABLE(optarg, "long")) {
+                puts(VERSION);
+                exit(EXIT_SUCCESS);
+            }
+            /* fall through */
         case 'V':
             vshShowVersion(ctl);
-            exit(EXIT_SUCCESS);
-        case 'v':
-            puts(VERSION);
             exit(EXIT_SUCCESS);
         case 'r':
             ctl->readonly = TRUE;
