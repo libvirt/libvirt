@@ -2246,7 +2246,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
         goto no_memory;
 
 
-    if (sys_interface_version >= SYS_IFACE_MIN_VERS_NUMA) {
+    if (sys_interface_version >= SYS_IFACE_MIN_VERS_NUMA && conn != NULL) {
         if (xenDaemonNodeGetTopology(conn, caps) != 0) {
             virCapabilitiesFree(caps);
             return NULL;
