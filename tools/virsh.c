@@ -11546,8 +11546,8 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, _("Virsh command line tool of libvirt %s\n"), VERSION);
     vshPrint(ctl, _("See web site at %s\n\n"), "http://libvirt.org/");
 
-    vshPrint(ctl, _("Compiled with support for:\n"));
-    vshPrint(ctl, _(" Hypervisors:"));
+    vshPrint(ctl, "%s", _("Compiled with support for:\n"));
+    vshPrint(ctl, "%s", _(" Hypervisors:"));
 #ifdef WITH_XEN
     vshPrint(ctl, " Xen");
 #endif
@@ -11583,7 +11583,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #endif
     vshPrint(ctl, "\n");
 
-    vshPrint(ctl, _(" Networking:"));
+    vshPrint(ctl, "%s", _(" Networking:"));
 #ifdef WITH_REMOTE
     vshPrint(ctl, " Remote");
 #endif
@@ -11610,7 +11610,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #endif
     vshPrint(ctl, "\n");
 
-    vshPrint(ctl, _(" Storage:"));
+    vshPrint(ctl, "%s", _(" Storage:"));
 #ifdef WITH_STORAGE_DIR
     vshPrint(ctl, " Dir");
 #endif
@@ -11634,7 +11634,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #endif
     vshPrint(ctl, "\n");
 
-    vshPrint(ctl, _(" Miscellaneous:"));
+    vshPrint(ctl, "%s", _(" Miscellaneous:"));
 #ifdef ENABLE_SECDRIVER_APPARMOR
     vshPrint(ctl, " AppArmor");
 #endif
