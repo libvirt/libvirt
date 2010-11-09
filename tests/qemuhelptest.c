@@ -153,7 +153,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NO_KVM_PIT |
             QEMUD_CMD_FLAG_TDF |
             QEMUD_CMD_FLAG_DRIVE_READONLY |
-            QEMUD_CMD_FLAG_SMBIOS_TYPE,
+            QEMUD_CMD_FLAG_SMBIOS_TYPE |
+            QEMUD_CMD_FLAG_SPICE,
             9001, 1,  83);
     DO_TEST("qemu-0.10.5",
             QEMUD_CMD_FLAG_KQEMU |

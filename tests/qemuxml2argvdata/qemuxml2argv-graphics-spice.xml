@@ -31,5 +31,6 @@
     <video>
       <model type='qxl' vram='65536' heads='1'/>
     </video>
+    <memballoon model='virtio'/>
   </devices>
 </domain>
