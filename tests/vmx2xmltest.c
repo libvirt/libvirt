@@ -285,6 +285,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("annotation", "annotation", esxVI_ProductVersion_ESX35);
 
+    DO_TEST("smbios", "smbios", esxVI_ProductVersion_ESX35);
+
     virCapabilitiesFree(caps);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

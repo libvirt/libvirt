@@ -74,6 +74,7 @@ def->os
 ->loader
 ->bootloader
 ->bootloaderArgs
+->smbios_mode                     <=>   smbios.reflecthost = "<value>"          # <value> == true means SMBIOS_HOST, otherwise it's SMBIOS_EMULATE, defaults to "false"
 
 
 
@@ -880,6 +881,7 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
     long long numvcpus = 0;
     char *sched_cpu_affinity = NULL;
     char *guestOS = NULL;
+    bool smbios_reflecthost = false;
     int controller;
     int bus;
     int port;
@@ -1193,6 +1195,16 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
     if (def->os.arch == NULL) {
         virReportOOMError();
         goto cleanup;
+    }
+
+    /* vmx:smbios.reflecthost -> def:os.smbios_mode */
+    if (esxUtil_GetConfigBoolean(conf, "smbios.reflecthost",
+                                 &smbios_reflecthost, false, true) < 0) {
+        goto cleanup;
+    }
+
+    if (smbios_reflecthost) {
+        def->os.smbios_mode = VIR_DOMAIN_SMBIOS_HOST;
     }
 
     /* def:features */
@@ -2552,7 +2564,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         goto cleanup;
     }
 
-    /* def:arch -> vmx:guestOS */
+    /* def:os.arch -> vmx:guestOS */
     if (def->os.arch == NULL || STRCASEEQ(def->os.arch, "i686")) {
         virBufferAddLit(&buffer, "guestOS = \"other\"\n");
     } else if (STRCASEEQ(def->os.arch, "x86_64")) {
@@ -2561,6 +2573,19 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Expecting domain XML attribute 'arch' of entry 'os/type' "
                     "to be 'i686' or 'x86_64' but found '%s'"), def->os.arch);
+        goto cleanup;
+    }
+
+    /* def:os.smbios_mode -> vmx:smbios.reflecthost */
+    if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_NONE ||
+        def->os.smbios_mode == VIR_DOMAIN_SMBIOS_EMULATE) {
+        /* nothing */
+    } else if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_HOST) {
+        virBufferAddLit(&buffer, "smbios.reflecthost = \"true\"\n");
+    } else {
+        ESX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                  _("Unsupported SMBIOS mode '%s'"),
+                  virDomainSmbiosModeTypeToString(def->os.smbios_mode));
         goto cleanup;
     }
 
