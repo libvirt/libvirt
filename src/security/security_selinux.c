@@ -453,20 +453,26 @@ SELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
                             void *opaque)
 {
     const virSecurityLabelDefPtr secdef = opaque;
+    int ret;
 
     if (depth == 0) {
         if (disk->shared) {
-            return SELinuxSetFilecon(path, default_image_context);
+            ret = SELinuxSetFilecon(path, default_image_context);
         } else if (disk->readonly) {
-            return SELinuxSetFilecon(path, default_content_context);
+            ret = SELinuxSetFilecon(path, default_content_context);
         } else if (secdef->imagelabel) {
-            return SELinuxSetFilecon(path, secdef->imagelabel);
+            ret = SELinuxSetFilecon(path, secdef->imagelabel);
         } else {
-            return 0;
+            ret = 0;
         }
     } else {
-        return SELinuxSetFilecon(path, default_content_context);
+        ret = SELinuxSetFilecon(path, default_content_context);
     }
+    if (ret < 0 &&
+        virStorageFileIsSharedFSType(path,
+                                     VIR_STORAGE_FILE_SHFS_NFS) == 1)
+       ret = 0;
+    return ret;
 }
 
 static int
