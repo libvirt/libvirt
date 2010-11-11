@@ -605,6 +605,37 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     }
 }
 
+static int
+verify_xpath_context(xmlXPathContextPtr ctxt)
+{
+    int rc = -1;
+    char *tmp = NULL;
+
+    if (!ctxt) {
+        vah_warning("Invalid context");
+        goto error;
+    }
+
+    /* check if have <name> */
+    if (!(tmp = virXPathString("string(./name[1])", ctxt))) {
+        vah_warning("Could not find <name>");
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    /* check if have <uuid> */
+    if (!(tmp = virXPathString("string(./uuid[1])", ctxt))) {
+        vah_warning("Could not find <uuid>");
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    rc = 0;
+
+  error:
+    return rc;
+}
+
 /*
  * Parse the xml we received to fill in the following:
  * ctl->hvm
@@ -652,6 +683,10 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
         goto cleanup;
     }
     ctxt->node = root;
+
+    /* Quick sanity check for some required elements */
+    if (verify_xpath_context(ctxt) != 0)
+        goto cleanup;
 
     ctl->hvm = virXPathString("string(./os/type[1])", ctxt);
     if (!ctl->hvm || STRNEQ(ctl->hvm, "hvm")) {
