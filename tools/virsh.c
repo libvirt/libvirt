@@ -637,8 +637,9 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     char *name;
 
     if (ctl->conn) {
-        if (virConnectClose(ctl->conn) != 0) {
-            vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
+        int ret;
+        if ((ret = virConnectClose(ctl->conn)) != 0) {
+            vshError(ctl, _("Failed to disconnect from the hypervisor, %d leaked reference(s)"), ret);
             return FALSE;
         }
         ctl->conn = NULL;
@@ -11463,8 +11464,9 @@ vshDeinit(vshControl *ctl)
     vshCloseLogFile(ctl);
     VIR_FREE(ctl->name);
     if (ctl->conn) {
-        if (virConnectClose(ctl->conn) != 0) {
-            vshError(ctl, "%s", _("failed to disconnect from the hypervisor"));
+        int ret;
+        if ((ret = virConnectClose(ctl->conn)) != 0) {
+            vshError(ctl, _("Failed to disconnect from the hypervisor, %d leaked reference(s)"), ret);
         }
     }
     virResetLastError();

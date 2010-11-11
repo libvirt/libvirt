@@ -89,6 +89,19 @@ cfmakeraw (struct termios *attr)
 # endif /* !HAVE_CFMAKERAW */
 
 static void
+virConsoleShutdown(virConsolePtr con)
+{
+    con->quit = true;
+    virStreamEventRemoveCallback(con->st);
+    if (con->stdinWatch != -1)
+        virEventRemoveHandleImpl(con->stdinWatch);
+    if (con->stdinWatch != -1)
+        virEventRemoveHandleImpl(con->stdoutWatch);
+    con->stdinWatch = -1;
+    con->stdoutWatch = -1;
+}
+
+static void
 virConsoleEventOnStream(virStreamPtr st,
                         int events, void *opaque)
 {
@@ -103,7 +116,7 @@ virConsoleEventOnStream(virStreamPtr st,
             if (VIR_REALLOC_N(con->streamToTerminal.data,
                               con->streamToTerminal.length + 1024) < 0) {
                 virReportOOMError();
-                con->quit = true;
+                virConsoleShutdown(con);
                 return;
             }
             con->streamToTerminal.length += 1024;
@@ -117,7 +130,7 @@ virConsoleEventOnStream(virStreamPtr st,
         if (got == -2)
             return; /* blocking */
         if (got <= 0) {
-            con->quit = true;
+            virConsoleShutdown(con);
             return;
         }
         con->streamToTerminal.offset += got;
@@ -136,7 +149,7 @@ virConsoleEventOnStream(virStreamPtr st,
         if (done == -2)
             return; /* blocking */
         if (done < 0) {
-            con->quit = true;
+            virConsoleShutdown(con);
             return;
         }
         memmove(con->terminalToStream.data,
@@ -158,7 +171,7 @@ virConsoleEventOnStream(virStreamPtr st,
 
     if (events & VIR_STREAM_EVENT_ERROR ||
         events & VIR_STREAM_EVENT_HANGUP) {
-        con->quit = true;
+        virConsoleShutdown(con);
     }
 }
 
@@ -179,7 +192,7 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
             if (VIR_REALLOC_N(con->terminalToStream.data,
                               con->terminalToStream.length + 1024) < 0) {
                 virReportOOMError();
-                con->quit = true;
+                virConsoleShutdown(con);
                 return;
             }
             con->terminalToStream.length += 1024;
@@ -192,16 +205,16 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
                    avail);
         if (got < 0) {
             if (errno != EAGAIN) {
-                con->quit = true;
+                virConsoleShutdown(con);
             }
             return;
         }
         if (got == 0) {
-            con->quit = true;
+            virConsoleShutdown(con);
             return;
         }
         if (con->terminalToStream.data[con->terminalToStream.offset] == CTRL_CLOSE_BRACKET) {
-            con->quit = true;
+            virConsoleShutdown(con);
             return;
         }
 
@@ -214,7 +227,7 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
 
     if (events & VIR_EVENT_HANDLE_ERROR ||
         events & VIR_EVENT_HANDLE_HANGUP) {
-        con->quit = true;
+        virConsoleShutdown(con);
     }
 }
 
@@ -235,7 +248,7 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
                      con->streamToTerminal.offset);
         if (done < 0) {
             if (errno != EAGAIN) {
-                con->quit = true;
+                virConsoleShutdown(con);
             }
             return;
         }
@@ -258,7 +271,7 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
 
     if (events & VIR_EVENT_HANDLE_ERROR ||
         events & VIR_EVENT_HANDLE_HANGUP) {
-        con->quit = true;
+        virConsoleShutdown(con);
     }
 }
 
@@ -340,10 +353,6 @@ int vshRunConsole(virDomainPtr dom, const char *devname)
         if (virEventRunOnce() < 0)
             break;
     }
-
-    virStreamEventRemoveCallback(con->st);
-    virEventRemoveHandleImpl(con->stdinWatch);
-    virEventRemoveHandleImpl(con->stdoutWatch);
 
     ret = 0;
 
