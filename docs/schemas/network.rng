@@ -83,14 +83,12 @@
         <optional>
           <!-- The IP element sets up NAT'ing and an optional DHCP server
                local to the host. -->
-          <!-- FIXME: address, netmask and the start and end of the ranges
-               are IP addresses, and should be validated as such in the scheme -->
           <element name="ip">
             <optional>
-              <attribute name="address"><text/></attribute>
+              <attribute name="address"><ref name="ipv4-addr"/></attribute>
             </optional>
             <optional>
-              <attribute name="netmask"><text/></attribute>
+              <attribute name="netmask"><ref name="ipv4-addr"/></attribute>
             </optional>
             <optional>
               <element name="tftp">
@@ -102,13 +100,13 @@
             <element name="dhcp">
               <zeroOrMore>
                 <element name="range">
-                  <attribute name="start"><text/></attribute>
-                  <attribute name="end"><text/></attribute>
+                  <attribute name="start"><ref name="ipv4-addr"/></attribute>
+                  <attribute name="end"><ref name="ipv4-addr"/></attribute>
                 </element>
               </zeroOrMore>
               <zeroOrMore>
                 <element name="host">
-                  <attribute name="mac"><text/></attribute>
+                  <attribute name="mac"><ref name="mac-addr"/></attribute>
                   <attribute name="name"><text/></attribute>
                   <attribute name="ip"><text/></attribute>
                 </element>
@@ -127,4 +125,19 @@
       </interleave>
     </element>
   </define>
+
+  <!-- An ipv4 "dotted quad" address -->
+  <define name='ipv4-addr'>
+    <data type='string'>
+      <param name="pattern">(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))</param>
+    </data>
+  </define>
+
+  <!-- a 6 byte MAC address in ASCII-hex format, eg "12:34:56:78:9A:BC" -->
+  <define name='mac-addr'>
+    <data type='string'>
+      <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
+    </data>
+  </define>
+
 </grammar>
