@@ -54,6 +54,7 @@ virsh_CFLAGS =							\
 		-I../include -I$(top_srcdir)/include		\
 		-I$(top_srcdir)/src				\
 		-I$(top_srcdir)/src/util			\
+		-I$(top_srcdir)					\
 		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
 		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
 		$(WARN_CFLAGS)					\
