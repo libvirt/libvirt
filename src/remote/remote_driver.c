@@ -8481,7 +8481,7 @@ remoteStreamEventAddCallback(virStreamPtr st,
 
     if (privst->cb) {
         remoteError(VIR_ERR_INTERNAL_ERROR,
-                    _("multiple stream callbacks not supported"));
+                    "%s", _("multiple stream callbacks not supported"));
         goto cleanup;
     }
 
@@ -8521,7 +8521,7 @@ remoteStreamEventUpdateCallback(virStreamPtr st,
 
     if (!privst->cb) {
         remoteError(VIR_ERR_INTERNAL_ERROR,
-                    _("no stream callback registered"));
+                    "%s", _("no stream callback registered"));
         goto cleanup;
     }
 
@@ -8548,7 +8548,7 @@ remoteStreamEventRemoveCallback(virStreamPtr st)
 
     if (!privst->cb) {
         remoteError(VIR_ERR_INTERNAL_ERROR,
-                    _("no stream callback registered"));
+                    "%s", _("no stream callback registered"));
         goto cleanup;
     }
 
