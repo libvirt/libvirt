@@ -1,6 +1,13 @@
 <!-- A Relax NG schema for the libvirt network XML format -->
-<element name="network" xmlns="http://relaxng.org/ns/structure/1.0"
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <ref name="network"/>
+  </start>
+
+<define name="network">
+
+<element name="network">
   <interleave>
 
   <!-- The name of the network, used to refer to it through the API
@@ -119,3 +126,5 @@
   </optional>
   </interleave>
 </element>
+</define>
+</grammar>
