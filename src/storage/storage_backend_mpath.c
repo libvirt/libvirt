@@ -291,6 +291,22 @@ out:
     return retval;
 }
 
+static int
+virStorageBackendMpathCheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                                bool *isActive)
+{
+    const char *path = "/dev/mpath";
+
+    *isActive = false;
+
+    if (access(path, F_OK) == 0)
+        *isActive = true;
+
+    return 0;
+}
+
+
 
 static int
 virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -313,5 +329,6 @@ virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 virStorageBackend virStorageBackendMpath = {
     .type = VIR_STORAGE_POOL_MPATH,
 
+    .checkPool = virStorageBackendMpathCheckPool,
     .refreshPool = virStorageBackendMpathRefreshPool,
 };

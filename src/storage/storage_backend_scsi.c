@@ -587,6 +587,26 @@ out:
     return retval;
 }
 
+static int
+virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                               virStoragePoolObjPtr pool,
+                               bool *isActive)
+{
+    char *path;
+
+    *isActive = false;
+    if (virAsprintf(&path, "/sys/class/scsi_host/%s", pool->def->source.adapter) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (access(path, F_OK) == 0)
+        *isActive = true;
+
+    VIR_FREE(path);
+
+    return 0;
+}
 
 static int
 virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -621,5 +641,6 @@ out:
 virStorageBackend virStorageBackendSCSI = {
     .type = VIR_STORAGE_POOL_SCSI,
 
+    .checkPool = virStorageBackendSCSICheckPool,
     .refreshPool = virStorageBackendSCSIRefreshPool,
 };

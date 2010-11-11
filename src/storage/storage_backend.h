@@ -25,10 +25,12 @@
 # define __VIR_STORAGE_BACKEND_H__
 
 # include <stdint.h>
+# include <stdbool.h>
 # include "internal.h"
 # include "storage_conf.h"
 
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn, const char *srcSpec, unsigned int flags);
+typedef int (*virStorageBackendCheckPool)(virConnectPtr conn, virStoragePoolObjPtr pool, bool *active);
 typedef int (*virStorageBackendStartPool)(virConnectPtr conn, virStoragePoolObjPtr pool);
 typedef int (*virStorageBackendBuildPool)(virConnectPtr conn, virStoragePoolObjPtr pool, unsigned int flags);
 typedef int (*virStorageBackendRefreshPool)(virConnectPtr conn, virStoragePoolObjPtr pool);
@@ -65,6 +67,7 @@ struct _virStorageBackend {
     int type;
 
     virStorageBackendFindPoolSources findPoolSources;
+    virStorageBackendCheckPool checkPool;
     virStorageBackendStartPool startPool;
     virStorageBackendBuildPool buildPool;
     virStorageBackendRefreshPool refreshPool;

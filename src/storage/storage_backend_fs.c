@@ -479,6 +479,30 @@ virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
 #endif /* WITH_STORAGE_FS */
 
 
+static int
+virStorageBackendFileSystemCheck(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                 virStoragePoolObjPtr pool,
+                                 bool *isActive)
+{
+    *isActive = false;
+    if (pool->def->type == VIR_STORAGE_POOL_DIR) {
+        if (access(pool->def->target.path, F_OK) == 0)
+            *isActive = true;
+#if WITH_STORAGE_FS
+    } else {
+        int ret;
+        if ((ret = virStorageBackendFileSystemIsMounted(pool)) != 0) {
+            if (ret < 0)
+                return -1;
+            *isActive = true;
+        }
+#endif /* WITH_STORAGE_FS */
+    }
+
+    return 0;
+}
+
+#if WITH_STORAGE_FS
 /**
  * @conn connection to report errors against
  * @pool storage pool to start
@@ -489,7 +513,6 @@ virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
  *
  * Returns 0 on success, -1 on error
  */
-#if WITH_STORAGE_FS
 static int
 virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool)
@@ -937,6 +960,7 @@ virStorageBackend virStorageBackendDirectory = {
     .type = VIR_STORAGE_POOL_DIR,
 
     .buildPool = virStorageBackendFileSystemBuild,
+    .checkPool = virStorageBackendFileSystemCheck,
     .refreshPool = virStorageBackendFileSystemRefresh,
     .deletePool = virStorageBackendFileSystemDelete,
     .buildVol = virStorageBackendFileSystemVolBuild,
@@ -951,6 +975,7 @@ virStorageBackend virStorageBackendFileSystem = {
     .type = VIR_STORAGE_POOL_FS,
 
     .buildPool = virStorageBackendFileSystemBuild,
+    .checkPool = virStorageBackendFileSystemCheck,
     .startPool = virStorageBackendFileSystemStart,
     .refreshPool = virStorageBackendFileSystemRefresh,
     .stopPool = virStorageBackendFileSystemStop,
@@ -965,6 +990,7 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .type = VIR_STORAGE_POOL_NETFS,
 
     .buildPool = virStorageBackendFileSystemBuild,
+    .checkPool = virStorageBackendFileSystemCheck,
     .startPool = virStorageBackendFileSystemStart,
     .findPoolSources = virStorageBackendFileSystemNetFindPoolSources,
     .refreshPool = virStorageBackendFileSystemRefresh,

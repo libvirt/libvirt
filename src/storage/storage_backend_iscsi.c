@@ -634,6 +634,39 @@ cleanup:
 }
 
 static int
+virStorageBackendISCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                virStoragePoolObjPtr pool,
+                                bool *isActive)
+{
+    char *session = NULL;
+    int ret = -1;
+
+    *isActive = false;
+
+    if (pool->def->source.host.name == NULL) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("missing source host"));
+        return -1;
+    }
+
+    if (pool->def->source.ndevice != 1 ||
+        pool->def->source.devices[0].path == NULL) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("missing source device"));
+        return -1;
+    }
+
+    if ((session = virStorageBackendISCSISession(pool, 1)) != NULL) {
+        *isActive = true;
+        VIR_FREE(session);
+    }
+    ret = 0;
+
+    return ret;
+}
+
+
+static int
 virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool)
 {
@@ -730,6 +763,7 @@ cleanup:
 virStorageBackend virStorageBackendISCSI = {
     .type = VIR_STORAGE_POOL_ISCSI,
 
+    .checkPool = virStorageBackendISCSICheckPool,
     .startPool = virStorageBackendISCSIStartPool,
     .refreshPool = virStorageBackendISCSIRefreshPool,
     .stopPool = virStorageBackendISCSIStopPool,

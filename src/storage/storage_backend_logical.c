@@ -361,6 +361,27 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
+virStorageBackendLogicalCheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virStoragePoolObjPtr pool,
+                                  bool *isActive)
+{
+    char *path;
+
+    *isActive = false;
+    if (virAsprintf(&path, "/dev/%s", pool->def->source.name) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (access(path, F_OK) == 0)
+        *isActive = true;
+
+    VIR_FREE(path);
+
+    return 0;
+}
+
+static int
 virStorageBackendLogicalStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool)
 {
@@ -684,6 +705,7 @@ virStorageBackend virStorageBackendLogical = {
     .type = VIR_STORAGE_POOL_LOGICAL,
 
     .findPoolSources = virStorageBackendLogicalFindPoolSources,
+    .checkPool = virStorageBackendLogicalCheckPool,
     .startPool = virStorageBackendLogicalStartPool,
     .buildPool = virStorageBackendLogicalBuildPool,
     .refreshPool = virStorageBackendLogicalRefreshPool,
