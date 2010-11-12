@@ -5829,20 +5829,12 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
 
     if (host) {
-        size_t hostlen = strlen(host);
         char *port = vshCommandOptString(cmd, "port", &found);
-        if (!found) {
-            port = strrchr(host, ':');
-            if (port) {
-                if (*(++port))
-                    hostlen = port - host - 1;
-                else
-                    port = NULL;
-            }
-        }
+        if (!found)
+            port = NULL;
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         virBufferAddLit(&buf, "<source>\n");
-        virBufferVSprintf(&buf, "  <host name='%.*s'",(int)hostlen, host);
+        virBufferVSprintf(&buf, "  <host name='%s'", host);
         if (port)
             virBufferVSprintf(&buf, " port='%s'", port);
         virBufferAddLit(&buf, "/>\n");
