@@ -5802,6 +5802,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
      N_("type of storage pool sources to find")},
     {"host", VSH_OT_DATA, VSH_OFLAG_NONE, N_("optional host to query")},
     {"port", VSH_OT_DATA, VSH_OFLAG_NONE, N_("optional port to query")},
+    {"initiator", VSH_OT_DATA, VSH_OFLAG_NONE, N_("optional initiator IQN to use for query")},
     {NULL, 0, 0, NULL}
 };
 
@@ -5811,6 +5812,7 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     char *type, *host;
     char *srcSpec = NULL;
     char *srcList;
+    char *initiator;
     int found;
 
     type = vshCommandOptString(cmd, "type", &found);
@@ -5819,6 +5821,9 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     host = vshCommandOptString(cmd, "host", &found);
     if (!found)
         host = NULL;
+    initiator = vshCommandOptString(cmd, "initiator", &found);
+    if (!found)
+        initiator = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
@@ -5841,6 +5846,11 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
         if (port)
             virBufferVSprintf(&buf, " port='%s'", port);
         virBufferAddLit(&buf, "/>\n");
+        if (initiator) {
+            virBufferAddLit(&buf, "  <initiator>\n");
+            virBufferVSprintf(&buf, "    <iqn name='%s'/>\n", initiator);
+            virBufferAddLit(&buf, "  </initiator>\n");
+        }
         virBufferAddLit(&buf, "</source>\n");
         if (virBufferError(&buf)) {
             vshError(ctl, "%s", _("Out of memory"));
