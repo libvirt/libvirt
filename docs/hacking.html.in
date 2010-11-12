@@ -5,20 +5,21 @@
     <ul id="toc"></ul>
 
     <h2><a name="patches">General tips for contributing patches</a></h2>
-
     <ol>
       <li>Discuss any large changes on the mailing list first.  Post patches
         early and listen to feedback.</li>
 
       <li><p>Post patches in unified diff format.  A command similar to this
         should work:</p>
-        <pre>
-  diff -urp libvirt.orig/ libvirt.modified/ &gt; libvirt-myfeature.patch</pre>
+<pre>
+  diff -urp libvirt.orig/ libvirt.modified/ &gt; libvirt-myfeature.patch
+</pre>
         <p>
           or:
         </p>
-        <pre>
-  git diff > libvirt-myfeature.patch</pre>
+<pre>
+  git diff > libvirt-myfeature.patch
+</pre>
       </li>
       <li>Split large changes into a series of smaller patches, self-contained
         if possible, with an explanation of each patch and an explanation of how
@@ -27,35 +28,39 @@
         only follow GIT and don't care much about released versions.</li>
       <li><p>Run the automated tests on your code before submitting any changes.
           In particular, configure with compile warnings set to -Werror:</p>
-        <pre>
-  ./configure --enable-compile-warnings=error</pre>
+<pre>
+  ./configure --enable-compile-warnings=error
+</pre>
         <p>
           and run the tests:
         </p>
-        <pre>
+<pre>
   make check
   make syntax-check
-  make -C tests valgrind</pre>
+  make -C tests valgrind
+</pre>
         <p>
           The latter test checks for memory leaks.
         </p>
 
-	<p>
-	  If you encounter any failing tests, the VIR_TEST_DEBUG
-	  environment variable may provide extra information to debug
-	  the failures. Larger values of VIR_TEST_DEBUG may provide
-	  larger amounts of information:
-	</p>
+        <p>
+          If you encounter any failing tests, the VIR_TEST_DEBUG
+          environment variable may provide extra information to debug
+          the failures. Larger values of VIR_TEST_DEBUG may provide
+          larger amounts of information:
+        </p>
 
-	<pre>
+<pre>
   VIR_TEST_DEBUG=1 make check    (or)
-  VIR_TEST_DEBUG=2 make check</pre>
-	<p>
-	  Also, individual tests can be run from inside the 'tests/'
-	  directory, like:
-	</p>
-	<pre>
-  ./qemuxml2xmltest</pre>
+  VIR_TEST_DEBUG=2 make check
+</pre>
+        <p>
+          Also, individual tests can be run from inside the <code>tests/</code>
+          directory, like:
+        </p>
+<pre>
+  ./qemuxml2xmltest
+</pre>
 
       </li>
       <li>Update tests and/or documentation, particularly if you are adding
@@ -82,7 +87,7 @@
       If you use Emacs, add the following to one of one of your start-up files
       (e.g., ~/.emacs), to help ensure that you get indentation right:
     </p>
-    <pre>
+<pre>
   ;;; When editing C sources in libvirt, use this style.
   (defun libvirt-c-mode ()
     "C mode with adjusted defaults for use with libvirt."
@@ -105,7 +110,7 @@
       around operators and keywords:
     </p>
 
-    <pre>
+<pre>
   indent-libvirt()
   {
     indent -bad -bap -bbb -bli4 -br -ce -brs -cs -i4 -l75 -lc75 \
@@ -116,7 +121,7 @@
 
     <p>
       Note that sometimes you'll have to post-process that output further, by
-      piping it through "expand -i", since some leading TABs can get through.
+      piping it through <code>expand -i</code>, since some leading TABs can get through.
       Usually they're in macro definitions or strings, and should be converted
       anyhow.
     </p>
@@ -125,18 +130,20 @@
     <h2><a name="curly_braces">Curly braces</a></h2>
 
     <p>
-      Omit the curly braces around an "if", "while", "for" etc. body only
+      Omit the curly braces around an <code>if</code>, <code>while</code>,
+      <code>for</code> etc. body only
       when that body occupies a single line.  In every other case we require
       the braces.  This ensures that it is trivially easy to identify a
-      single-*statement* loop: each has only one *line* in its body.
+      single-<i>statement</i> loop: each has only one <i>line</i> in its body.
     </p>
     <p>
       Omitting braces with a single-line body is fine:
     </p>
 
-    <pre>
+<pre>
   while (expr) // one-line body -> omitting curly braces is ok
-      single_line_stmt ();</pre>
+      single_line_stmt();
+</pre>
 
     <p>
       However, the moment your loop/if/else body extends onto a second
@@ -146,26 +153,29 @@
       it is already a multi-statement loop:
     </p>
 
-    <pre>
+<pre>
   while (true) // BAD! multi-line body with no braces
       /* comment... */
-      single_line_stmt ();</pre>
+      single_line_stmt();
+</pre>
     <p>
       Do this instead:
     </p>
-    <pre>
+<pre>
   while (true) { // Always put braces around a multi-line body.
       /* comment... */
-      single_line_stmt ();
-  }</pre>
+      single_line_stmt();
+  }
+</pre>
     <p>
       There is one exception: when the second body line is not at the same
       indentation level as the first body line:
     </p>
-    <pre>
+<pre>
   if (expr)
-      die ("a diagnostic that would make this line"
-           " extend past the 80-column limit"));</pre>
+      die("a diagnostic that would make this line"
+          " extend past the 80-column limit"));
+</pre>
 
     <p>
       It is safe to omit the braces in the code above, since the
@@ -177,40 +187,44 @@
       To reiterate, don't do this:
     </p>
 
-    <pre>
+<pre>
   if (expr)            // BAD: no braces around...
       while (expr_2) { // ... a multi-line body
           ...
-      }</pre>
+      }
+</pre>
 
     <p>
       Do this, instead:
     </p>
 
-    <pre>
+<pre>
   if (expr) {
       while (expr_2) {
           ...
       }
-  }</pre>
+  }
+</pre>
 
     <p>
       However, there is one exception in the other direction, when even a
       one-line block should have braces.  That occurs when that one-line,
-      brace-less block is an "else" block, and the corresponding "then" block
-      *does* use braces.  In that case, either put braces around the "else"
-      block, or negate the "if"-condition and swap the bodies, putting the
+      brace-less block is an <code>else</code> block, and the corresponding
+      <code>then</code> block <b>does</b> use braces.  In that case, either
+      put braces around the <code>else</code> block, or negate the
+      <code>if</code>-condition and swap the bodies, putting the
       one-line block first and making the longer, multi-line block be the
-      "else" block.
+      <code>else</code> block.
     </p>
 
-    <pre>
+<pre>
   if (expr) {
       ...
       ...
   }
   else
-      x = y;    // BAD: braceless "else" with braced "then"</pre>
+      x = y;    // BAD: braceless "else" with braced "then"
+</pre>
 
     <p>
       This is preferred, especially when the multi-line body is more than a
@@ -219,43 +233,45 @@
       after the more involved block:
     </p>
 
-    <pre>
+<pre>
   if (!expr)
     x = y; // putting the smaller block first is more readable
   else {
       ...
       ...
-  }</pre>
+  }
+</pre>
 
     <p>
       If you'd rather not negate the condition, then at least add braces:
     </p>
 
-    <pre>
+<pre>
   if (expr) {
       ...
       ...
   } else {
       x = y;
-  }</pre>
+  }
+</pre>
 
     <h2><a href="types">Preprocessor</a></h2>
 
     <p>
       For variadic macros, stick with C99 syntax:
     </p>
-  <pre>
+<pre>
   #define vshPrint(_ctl, ...) fprintf(stdout, __VA_ARGS__)
-  </pre>
+</pre>
 
     <p>Use parenthesis when checking if a macro is defined, and use
     indentation to track nesting:
     </p>
-  <pre>
+<pre>
   #if defined(HAVE_POSIX_FALLOCATE) &amp;&amp; !defined(HAVE_FALLOCATE)
   # define fallocate(a,ignored,b,c) posix_fallocate(a,b,c)
   #endif
-  </pre>
+</pre>
 
     <h2><a href="types">C types</a></h2>
 
@@ -266,45 +282,51 @@
     <h3>Scalars</h3>
 
     <ul>
-      <li>If you're using "int" or "long", odds are good that there's a better type.</li>
+      <li>If you're using <code>int</code> or <code>long</code>, odds are
+          good that there's a better type.</li>
       <li>If a variable is counting something, be sure to declare it with an
         unsigned type.</li>
-      <li>If it's memory-size-related, use size_t (use ssize_t only if required).</li>
-      <li>If it's file-size related, use uintmax_t, or maybe off_t.</li>
-      <li>If it's file-offset related (i.e., signed), use off_t.</li>
-      <li>If it's just counting small numbers use "unsigned int";
+      <li>If it's memory-size-related, use <code>size_t</code> (use
+        <code>ssize_t</code> only if required).</li>
+      <li>If it's file-size related, use uintmax_t, or maybe <code>off_t</code>.</li>
+      <li>If it's file-offset related (i.e., signed), use <code>off_t</code>.</li>
+      <li>If it's just counting small numbers use <code>unsigned int</code>;
         (on all but oddball embedded systems, you can assume that that
         type is at least four bytes wide).</li>
-      <li>If a variable has boolean semantics, give it the "bool" type
-        and use the corresponding "true" and "false" macros.  It's ok
-        to include &lt;stdbool.h&gt;, since libvirt's use of gnulib ensures
+      <li>If a variable has boolean semantics, give it the <code>bool</code> type
+        and use the corresponding <code>true</code> and <code>false</code> macros.
+         It's ok to include &lt;stdbool.h&gt;, since libvirt's use of gnulib ensures
           that it exists and is usable.</li>
       <li>In the unusual event that you require a specific width, use a
-        standard type like int32_t, uint32_t, uint64_t, etc.</li>
-      <li>While using "bool" is good for readability, it comes with minor caveats:
+        standard type like <code>int32_t</code>, <code>uint32_t</code>,
+        <code>uint64_t</code>, etc.</li>
+      <li>While using <code>bool</code> is good for readability, it comes with
+          minor caveats:
         <ul>
-          <li>Don't use "bool" in places where the type size must be constant across
+          <li>Don't use <code>bool</code> in places where the type size must be constant across
             all systems, like public interfaces and on-the-wire protocols.  Note
-            that it would be possible (albeit wasteful) to use "bool" in libvirt's
-            logical wire protocol, since XDR maps that to its lower-level bool_t
-            type, which *is* fixed-size.</li>
-          <li>Don't compare a bool variable against the literal, "true",
-            since a value with a logical non-false value need not be "1".
-            I.e., don't write "if (seen == true) ...".  Rather, write "if (seen)...".</li>
+            that it would be possible (albeit wasteful) to use <code>bool</code> in libvirt's
+            logical wire protocol, since XDR maps that to its lower-level <code>bool_t</code>
+            type, which <b>is</b> fixed-size.</li>
+          <li>Don't compare a bool variable against the literal, <code>true</code>,
+            since a value with a logical non-false value need not be <code>1</code>.
+            I.e., don't write <code>if (seen == true) ...</code>.  Rather,
+            write <code>if (seen)...</code>.</li>
         </ul>
       </li>
     </ul>
 
     <p>
       Of course, take all of the above with a grain of salt.  If you're about
-      to use some system interface that requires a type like size_t, pid_t or
-      off_t, use matching types for any corresponding variables.
+      to use some system interface that requires a type like <code>size_t</code>,
+      <code>pid_t</code> or <code>off_t</code>, use matching types for any
+      corresponding variables.
     </p>
 
     <p>
-      Also, if you try to use e.g., "unsigned int" as a type, and that
+      Also, if you try to use e.g., <code>unsigned int</code> as a type, and that
       conflicts with the signedness of a related variable, sometimes
-      it's best just to use the *wrong* type, if "pulling the thread"
+      it's best just to use the <b>wrong</b> type, if <i>pulling the thread</i>
       and fixing all related variables would be too invasive.
     </p>
 
@@ -317,9 +339,9 @@
     <h3>Pointers</h3>
 
     <p>
-      Ensure that all of your pointers are "const-correct".
+      Ensure that all of your pointers are <i>const-correct</i>.
       Unless a pointer is used to modify the pointed-to storage,
-      give it the "const" attribute.  That way, the reader knows
+      give it the <code>const</code> attribute.  That way, the reader knows
       up-front that this is a read-only pointer.  Perhaps more
       importantly, if we're diligent about this, when you see a non-const
       pointer, you're guaranteed that it is used to modify the storage
@@ -336,57 +358,57 @@
     </p>
 
     <ul>
-      <li><p>eg to allocate  a single object:</p>
-
+      <li><p>e.g. to allocate  a single object:</p>
 <pre>
-      virDomainPtr domain;
+  virDomainPtr domain;
 
-      if (VIR_ALLOC(domain) &lt; 0) {
-          virReportOOMError();
-          return NULL;
-      }
-</pre></li>
+  if (VIR_ALLOC(domain) &lt; 0) {
+      virReportOOMError();
+      return NULL;
+  }
+</pre>
+      </li>
 
-      <li><p>eg to allocate an array of objects</p>
-
+      <li><p>e.g. to allocate an array of objects</p>
 <pre>
-       virDomainPtr domains;
-       int ndomains = 10;
+  virDomainPtr domains;
+  int ndomains = 10;
 
-       if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-           virReportOOMError();
-           return NULL;
-       }
-</pre></li>
+  if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
+      virReportOOMError();
+      return NULL;
+  }
+</pre>
+      </li>
 
-      <li><p>eg to allocate an array of object pointers</p>
-
+      <li><p>e.g. to allocate an array of object pointers</p>
 <pre>
-       virDomainPtr *domains;
-       int ndomains = 10;
+  virDomainPtr *domains;
+  int ndomains = 10;
 
-       if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-           virReportOOMError();
-           return NULL;
-       }
-</pre></li>
+  if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
+      virReportOOMError();
+      return NULL;
+  }
+</pre>
+      </li>
 
-      <li><p>eg to re-allocate the array of domains to be longer</p>
-
+      <li><p>e.g. to re-allocate the array of domains to be longer</p>
 <pre>
-       ndomains = 20
+  ndomains = 20
 
-       if (VIR_REALLOC_N(domains, ndomains) &lt; 0) {
-           virReportOOMError();
-           return NULL;
-       }
-</pre></li>
+  if (VIR_REALLOC_N(domains, ndomains) &lt; 0) {
+      virReportOOMError();
+      return NULL;
+  }
+</pre>
+      </li>
 
-      <li><p>eg to free the domain</p>
-
+      <li><p>e.g. to free the domain</p>
 <pre>
-       VIR_FREE(domain);
-</pre></li>
+  VIR_FREE(domain);
+</pre>
+       </li>
     </ul>
 
     <h2><a name="file_handling">File handling</a></h2>
@@ -398,20 +420,21 @@
     </p>
 
     <ul>
-      <li><p>eg close a file descriptor</p>
-
+      <li><p>e.g. close a file descriptor</p>
 <pre>
-       if (VIR_CLOSE(fd) &lt; 0) {
-           virReportSystemError(errno, _("failed to close file"));
-       }
-</pre></li>
+  if (VIR_CLOSE(fd) &lt; 0) {
+      virReportSystemError(errno, _("failed to close file"));
+  }
+</pre>
+       </li>
 
       <li><p>eg close a file descriptor in an error path, without losing
-             the previous errno value</p>
+             the previous <code>errno</code> value</p>
 
 <pre>
-       VIR_FORCE_CLOSE(fd);
-</pre></li>
+  VIR_FORCE_CLOSE(fd);
+</pre>
+      </li>
     </ul>
 
     <h2><a name="string_comparision">String comparisons</a></h2>
@@ -423,39 +446,36 @@
 
     <ul>
       <li><p>For strict equality:</p>
-        <pre>
-     STREQ(a,b)
-     STRNEQ(a,b)
+<pre>
+  STREQ(a,b)
+  STRNEQ(a,b)
 </pre>
       </li>
 
       <li><p>For case insensitive equality:</p>
-        <pre>
-     STRCASEEQ(a,b)
-     STRCASENEQ(a,b)
+<pre>
+  STRCASEEQ(a,b)
+  STRCASENEQ(a,b)
 </pre>
       </li>
 
       <li><p>For strict equality of a substring:</p>
-
-        <pre>
-     STREQLEN(a,b,n)
-     STRNEQLEN(a,b,n)
+<pre>
+  STREQLEN(a,b,n)
+  STRNEQLEN(a,b,n)
 </pre>
       </li>
 
       <li><p>For case insensitive equality of a substring:</p>
-
-        <pre>
-     STRCASEEQLEN(a,b,n)
-     STRCASENEQLEN(a,b,n)
+<pre>
+  STRCASEEQLEN(a,b,n)
+  STRCASENEQLEN(a,b,n)
 </pre>
       </li>
 
       <li><p>For strict equality of a prefix:</p>
-
-        <pre>
-     STRPREFIX(a,b)
+<pre>
+  STRPREFIX(a,b)
 </pre>
       </li>
     </ul>
@@ -469,7 +489,10 @@
       it extremely dangerous to use.  Instead, use one of the
       functionally equivalent functions:
     </p>
-    <pre>virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)</pre>
+
+<pre>
+  virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
+</pre>
     <p>
       The first three arguments have the same meaning as for strncpy;
       namely the destination, source, and number of bytes to copy,
@@ -481,8 +504,9 @@
       trailing \0 is appended.
     </p>
 
-    <pre>virStrcpy(char *dest, const char *src, size_t destbytes)</pre>
-
+<pre>
+  virStrcpy(char *dest, const char *src, size_t destbytes)
+</pre>
     <p>
       Use this variant if you know you want to copy the entire src
       string into dest.  Note that this is a macro, so arguments could
@@ -490,11 +514,12 @@
       virStrncpy(dest, src, strlen(src), destbytes)
       </p>
 
-    <pre>virStrcpyStatic(char *dest, const char *src)</pre>
-
+<pre>
+  virStrcpyStatic(char *dest, const char *src)
+</pre>
     <p>
       Use this variant if you know you want to copy the entire src
-      string into dest *and* you know that your destination string is
+      string into dest <b>and</b> you know that your destination string is
       a static string (i.e. that sizeof(dest) returns something
       meaningful).  Note that this is a macro, so arguments could be
       evaluated more than once.  This is equivalent to
@@ -511,9 +536,10 @@
 
     <p>eg typical usage is as follows:</p>
 
-    <pre>
+<pre>
   char *
-  somefunction(...) {
+  somefunction(...)
+  {
      virBuffer buf = VIR_BUFFER_INITIALIZER;
 
      ...
@@ -545,7 +571,7 @@
       *.c source files:
     </p>
 
-    <pre>
+<pre>
   /*
    * Copyright notice
    * ....
@@ -561,7 +587,7 @@
   #include &lt;limits.h&gt;
 
   #if HAVE_NUMACTL                Some system includes aren't supported
-  # include &lt;numa.h&gt;               everywhere so need these #if guards.
+  # include &lt;numa.h&gt;              everywhere so need these #if guards.
   #endif
 
   #include "internal.h"           Include this first, after system includes.
@@ -569,13 +595,14 @@
   #include "util.h"               Any libvirt internal header files.
   #include "buf.h"
 
-  static myInternalFunc ()        The actual code.
+  static int
+  myInternalFunc()                The actual code.
   {
-    ...
+      ...
 </pre>
 
     <p>
-      Of particular note: *DO NOT* include libvirt/libvirt.h or
+      Of particular note: <b>Do not</b> include libvirt/libvirt.h or
       libvirt/virterror.h.  It is included by "internal.h" already and there
       are some special reasons why you cannot include these files
       explicitly.
@@ -591,9 +618,9 @@
       the one for virAsprintf, in util.h:
     </p>
 
-    <pre>
-    int virAsprintf(char **strp, const char *fmt, ...)
-        ATTRIBUTE_FORMAT(printf, 2, 3);
+<pre>
+  int virAsprintf(char **strp, const char *fmt, ...)
+      ATTRIBUTE_FORMAT(printf, 2, 3);
 </pre>
 
     <p>
@@ -654,7 +681,7 @@
       Although libvirt does not encourage the Linux kernel wind/unwind
       style of multiple labels, there's a good general discussion of
       the issue archived at
-      <a href=http://kerneltrap.org/node/553/2131>KernelTrap</a>
+      <a href="http://kerneltrap.org/node/553/2131">KernelTrap</a>
     </p>
 
     <p>
@@ -662,11 +689,12 @@
       makes sense:
     </p>
 
-    <pre>
+<pre>
       error: A path only taken upon return with an error code
     cleanup: A path taken upon return with success code + optional error
   no_memory: A path only taken upon return with an OOM error code
-      retry: If needing to jump upwards (eg retry on EINTR)</pre>
+      retry: If needing to jump upwards (eg retry on EINTR)
+</pre>
 
 
 
@@ -691,7 +719,7 @@
       configure with
     </p>
 <pre>
-      --enable-compile-warnings=error
+  --enable-compile-warnings=error
 </pre>
     <p>
       which adds -Werror to compile flags, so no warnings get missed
