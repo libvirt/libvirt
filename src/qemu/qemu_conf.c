@@ -4223,7 +4223,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         if (driver->setProcessName &&
             (qemuCmdFlags & QEMUD_CMD_FLAG_NAME_PROCESS)) {
             char *name;
-            if (virAsprintf(&name, "%s,process=\"qemu:%s\"",
+            if (virAsprintf(&name, "%s,process=qemu:%s",
                             def->name, def->name) < 0)
                 goto no_memory;
             ADD_ARG_LIT(name);
