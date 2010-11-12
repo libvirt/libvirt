@@ -628,7 +628,7 @@ storagePoolUndefine(virStoragePoolPtr obj) {
     }
 
     if (virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("pool is still active"));
         goto cleanup;
     }
@@ -685,7 +685,7 @@ storagePoolStart(virStoragePoolPtr obj,
         goto cleanup;
 
     if (virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("pool already active"));
         goto cleanup;
     }
@@ -730,7 +730,7 @@ storagePoolBuild(virStoragePoolPtr obj,
         goto cleanup;
 
     if (virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is already active"));
         goto cleanup;
     }
@@ -767,7 +767,7 @@ storagePoolDestroy(virStoragePoolPtr obj) {
         goto cleanup;
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -823,7 +823,7 @@ storagePoolDelete(virStoragePoolPtr obj,
         goto cleanup;
 
     if (virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is still active"));
         goto cleanup;
     }
@@ -872,7 +872,7 @@ storagePoolRefresh(virStoragePoolPtr obj,
         goto cleanup;
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1077,7 +1077,7 @@ storagePoolNumVolumes(virStoragePoolPtr obj) {
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1110,7 +1110,7 @@ storagePoolListVolumes(virStoragePoolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1155,7 +1155,7 @@ storageVolumeLookupByName(virStoragePoolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1286,7 +1286,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1414,13 +1414,13 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
 
     if (origpool && !virStoragePoolObjIsActive(origpool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1709,7 +1709,7 @@ storageVolumeWipe(virStorageVolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto out;
     }
@@ -1766,7 +1766,7 @@ storageVolumeDelete(virStorageVolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1845,7 +1845,7 @@ storageVolumeGetInfo(virStorageVolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1898,7 +1898,7 @@ storageVolumeGetXMLDesc(virStorageVolPtr obj,
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
@@ -1945,7 +1945,7 @@ storageVolumeGetPath(virStorageVolPtr obj) {
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               "%s", _("storage pool is not active"));
         goto cleanup;
     }
