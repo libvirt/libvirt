@@ -269,9 +269,9 @@ fi
 
 AC_MSG_CHECKING([where to write libvirtd PID file])
 AC_ARG_WITH([remote-pid-file], [AC_HELP_STRING([--with-remote-pid-file=@<:@pidfile|none@:>@], [PID file for libvirtd])])
-if test "x$with_remote_pid_file" == "x" ; then
+if test "x$with_remote_pid_file" = "x" ; then
    REMOTE_PID_FILE="$localstatedir/run/libvirtd.pid"
-elif test "x$with_remote_pid_file" == "xnone" ; then
+elif test "x$with_remote_pid_file" = "xnone" ; then
    REMOTE_PID_FILE=""
 else
    REMOTE_PID_FILE="$with_remote_pid_file"
@@ -1776,7 +1776,7 @@ if test "$with_python" != "no" ; then
         fi
     fi
 
-    if test "$with_python" == "yes" ; then
+    if test "$with_python" = "yes" ; then
         AM_PATH_PYTHON(,, [:])
 
         if test "$PYTHON" != : ; then
