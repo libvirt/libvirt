@@ -56,6 +56,13 @@ NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in
 	   | perl -pe 's/[ \t]+$$//'				\
 	   > $@-t && mv $@-t $@ ; fi );
 
+$(top_srcdir)/HACKING: $(top_srcdir)/docs/hacking1.xsl $(top_srcdir)/docs/hacking2.xsl \
+                       $(top_srcdir)/docs/wrapstring.xsl $(top_srcdir)/docs/hacking.html.in
+	-@(if [ -x $(XSLTPROC) ] ; then \
+	   $(XSLTPROC) --nonet $(top_srcdir)/docs/hacking1.xsl $(top_srcdir)/docs/hacking.html.in | \
+	   $(XSLTPROC) --nonet $(top_srcdir)/docs/hacking2.xsl - \
+	   | perl -0777 -pe 's/\n\n+$$/\n/' \
+	   > $@-t && mv $@-t $@ ; fi );
 
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.gz)
