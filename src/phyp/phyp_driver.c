@@ -3927,10 +3927,8 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
 static virDrvOpenStatus
 phypVIOSDriverOpen(virConnectPtr conn,
                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                   int flags)
+                   int flags ATTRIBUTE_UNUSED)
 {
-    virCheckFlags(0, VIR_DRV_OPEN_ERROR);
-
     if (conn->driver->no != VIR_DRV_PHYP)
         return VIR_DRV_OPEN_DECLINED;
 
