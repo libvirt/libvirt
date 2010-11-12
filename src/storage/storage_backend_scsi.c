@@ -162,7 +162,7 @@ cleanup:
 
 static int
 virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
-                            uint32_t host,
+                            uint32_t host ATTRIBUTE_UNUSED,
                             uint32_t bus,
                             uint32_t target,
                             uint32_t lun,
@@ -180,7 +180,12 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
-    if (virAsprintf(&(vol->name), "%u.%u.%u.%u", host, bus, target, lun) < 0) {
+    /* 'host' is dynamically allocated by the kernel, first come,
+     * first served, per HBA. As such it isn't suitable for use
+     * in the volume name. We only need uniqueness per-pool, so
+     * just leave 'host' out
+     */
+    if (virAsprintf(&(vol->name), "unit:%u:%u:%u", bus, target, lun) < 0) {
         virReportOOMError();
         retval = -1;
         goto free_vol;
