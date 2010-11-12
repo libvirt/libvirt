@@ -5826,7 +5826,6 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     if (host) {
         size_t hostlen = strlen(host);
         char *port = vshCommandOptString(cmd, "port", &found);
-        int ret;
         if (!found) {
             port = strrchr(host, ':');
             if (port) {
@@ -5836,23 +5835,18 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
                     port = NULL;
             }
         }
-        ret = port ?
-            virAsprintf(&srcSpec,
-                        "<source><host name='%.*s' port='%s'/></source>",
-                        (int)hostlen, host, port) :
-            virAsprintf(&srcSpec,
-                        "<source><host name='%.*s'/></source>",
-                        (int)hostlen, host);
-        if (ret < 0) {
-            switch (errno) {
-            case ENOMEM:
-                vshError(ctl, "%s", _("Out of memory"));
-                break;
-            default:
-                vshError(ctl, _("virAsprintf failed (errno %d)"), errno);
-            }
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        virBufferAddLit(&buf, "<source>\n");
+        virBufferVSprintf(&buf, "  <host name='%.*s'",(int)hostlen, host);
+        if (port)
+            virBufferVSprintf(&buf, " port='%s'", port);
+        virBufferAddLit(&buf, "/>\n");
+        virBufferAddLit(&buf, "</source>\n");
+        if (virBufferError(&buf)) {
+            vshError(ctl, "%s", _("Out of memory"));
             return FALSE;
         }
+        srcSpec = virBufferContentAndReset(&buf);
     }
 
     srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
