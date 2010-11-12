@@ -906,7 +906,7 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
 
     if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could not eject media on %s"), devname);
+                        _("could not change media on %s"), devname);
         goto cleanup;
     }
 
@@ -915,7 +915,7 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
      * No message is printed on success it seems */
     if (strstr(reply, "device ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could not eject media on %s: %s"), devname, reply);
+                        _("could not change media on %s: %s"), devname, reply);
         goto cleanup;
     }
 
