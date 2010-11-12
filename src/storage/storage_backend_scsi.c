@@ -33,6 +33,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "files.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -160,6 +161,45 @@ cleanup:
     return ret;
 }
 
+
+static char *
+virStorageBackendSCSISerial(const char *dev)
+{
+    char *serial = NULL;
+#ifdef HAVE_UDEV
+    virCommandPtr cmd = virCommandNewArgList(
+        "/lib/udev/scsi_id",
+        "--replace-whitespace",
+        "--whitelisted",
+        "--device", dev,
+        NULL
+        );
+
+    /* Run the program and capture its output */
+    virCommandSetOutputBuffer(cmd, &serial);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+#endif
+
+    if (serial && STRNEQ(serial, "")) {
+        char *nl = strchr(serial, '\n');
+        if (nl)
+            *nl = '\0';
+    } else {
+        VIR_FREE(serial);
+        if (!(serial = strdup(dev)))
+            virReportOOMError();
+    }
+
+#ifdef HAVE_UDEV
+cleanup:
+    virCommandFree(cmd);
+#endif
+
+    return serial;
+}
+
+
 static int
 virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                             uint32_t host ATTRIBUTE_UNUSED,
@@ -233,10 +273,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         goto free_vol;
     }
 
-    /* XXX should use logical unit's UUID instead */
-    vol->key = strdup(vol->target.path);
-    if (vol->key == NULL) {
-        virReportOOMError();
+    if (!(vol->key = virStorageBackendSCSISerial(vol->target.path))) {
         retval = -1;
         goto free_vol;
     }
