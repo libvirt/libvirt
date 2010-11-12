@@ -568,6 +568,71 @@ virStorageBackendISCSIScanTargets(const char *portal,
 }
 
 
+static char *
+virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                      const char *srcSpec,
+                                      unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virStoragePoolSourcePtr source = NULL;
+    size_t ntargets = 0;
+    char **targets = NULL;
+    char *ret = NULL;
+    int i;
+    virStoragePoolSourceList list = {
+        .type = VIR_STORAGE_POOL_ISCSI,
+        .nsources = 0,
+        .sources = NULL
+    };
+    char *portal = NULL;
+
+    if (!(source = virStoragePoolDefParseSourceString(srcSpec,
+                                                      list.type)))
+        return NULL;
+
+    if (!(portal = virStorageBackendISCSIPortal(source)))
+        goto cleanup;
+
+    if (virStorageBackendISCSIScanTargets(portal,
+                                          source->initiator.iqn,
+                                          &ntargets, &targets) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(list.sources, ntargets) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < ntargets ; i++) {
+        if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        list.sources[i].host = source->host;
+        list.sources[i].initiator = source->initiator;
+        list.sources[i].ndevice = 1;
+        list.sources[i].devices[0].path = targets[i];
+        list.nsources++;
+    }
+
+    if (!(ret = virStoragePoolSourceListFormat(&list))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+cleanup:
+    if (list.sources) {
+        for (i = 0 ; i < ntargets ; i++)
+            VIR_FREE(list.sources[i].devices);
+        VIR_FREE(list.sources);
+    }
+    for (i = 0 ; i < ntargets ; i++)
+        VIR_FREE(targets[i]);
+    VIR_FREE(targets);
+    VIR_FREE(portal);
+    virStoragePoolSourceFree(source);
+    return ret;
+}
+
 static int
 virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool)
@@ -668,4 +733,5 @@ virStorageBackend virStorageBackendISCSI = {
     .startPool = virStorageBackendISCSIStartPool,
     .refreshPool = virStorageBackendISCSIRefreshPool,
     .stopPool = virStorageBackendISCSIStopPool,
+    .findPoolSources = virStorageBackendISCSIFindPoolSources,
 };
