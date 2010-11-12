@@ -266,6 +266,10 @@
             <a href="devguide.html">Development Guide</a>
             <span>A guide and reference for developing with libvirt</span>
           </li>
+          <li>
+            <a href="virshcmdref.html">Virsh Commands</a>
+            <span>Command reference for virsh</span>
+          </li>
         </ul>
       </li>
       <li>
