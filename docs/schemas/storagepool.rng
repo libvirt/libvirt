@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!-- A Relax NG schema for the libvirt storage pool XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
@@ -186,6 +187,11 @@
       <attribute name='name'>
         <text/>
       </attribute>
+      <optional>
+        <attribute name='port'>
+          <ref name="PortNumber"/>
+        </attribute>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -471,5 +477,10 @@
     </data>
   </define>
 
+  <define name="PortNumber">
+    <data type="short">
+      <param name="minInclusive">-1</param>
+    </data>
+  </define>
 
 </grammar>

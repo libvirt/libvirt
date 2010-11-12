@@ -396,6 +396,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     char *authType = NULL;
     int nsource, i;
     virStoragePoolOptionsPtr options;
+    char *port;
 
     relnode = ctxt->node;
     ctxt->node = node;
@@ -423,6 +424,17 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     }
 
     source->host.name = virXPathString("string(./host/@name)", ctxt);
+    port = virXPathString("string(./host/@port)", ctxt);
+    if (port) {
+        if (virStrToLong_i(port, NULL, 10, &source->host.port) < 0) {
+            virStorageReportError(VIR_ERR_XML_ERROR,
+                                  _("Invalid port number: %s"),
+                                  port);
+            goto cleanup;
+        }
+    }
+
+
     source->initiator.iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
 
     nsource = virXPathNodeSet("./device", ctxt, &nodeset);
@@ -475,6 +487,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 cleanup:
     ctxt->node = relnode;
 
+    VIR_FREE(port);
     VIR_FREE(authType);
     VIR_FREE(nodeset);
     return ret;
@@ -790,8 +803,12 @@ virStoragePoolSourceFormat(virBufferPtr buf,
 
     virBufferAddLit(buf,"  <source>\n");
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_HOST) &&
-        src->host.name)
-        virBufferVSprintf(buf,"    <host name='%s'/>\n", src->host.name);
+        src->host.name) {
+        virBufferVSprintf(buf, "    <host name='%s'", src->host.name);
+        if (src->host.port)
+            virBufferVSprintf(buf, " port='%d'", src->host.port);
+        virBufferAddLit(buf, "/>\n");
+    }
 
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_DEVICE) &&
         src->ndevice) {

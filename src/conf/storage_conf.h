@@ -155,7 +155,6 @@ typedef virStoragePoolSourceHost *virStoragePoolSourceHostPtr;
 struct _virStoragePoolSourceHost {
     char *name;
     int port;
-    int protocol;
 };
 
 
