@@ -6796,6 +6796,12 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Determine the number of volumes in the pool */
     numVolumes = virStoragePoolNumOfVolumes(pool);
 
+    if (numVolumes < 0) {
+        vshError(ctl, "%s", _("Failed to list storage volumes"));
+        virStoragePoolFree(pool);
+        return FALSE;
+    }
+
     /* Retrieve the list of volume names in the pool */
     if (numVolumes > 0) {
         activeNames = vshCalloc(ctl, numVolumes, sizeof(*activeNames));
