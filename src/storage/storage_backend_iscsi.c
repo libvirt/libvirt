@@ -447,19 +447,123 @@ virStorageBackendISCSIRescanLUNs(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
     return 0;
 }
 
+struct virStorageBackendISCSITargetList {
+    size_t ntargets;
+    char **targets;
+};
 
 static int
-virStorageBackendISCSIScanTargets(const char *portal)
+virStorageBackendISCSIGetTargets(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                                 char **const groups,
+                                 void *data)
 {
-    const char *const sendtargets[] = {
-        ISCSIADM, "--mode", "discovery", "--type", "sendtargets", "--portal", portal, NULL
-    };
-    if (virRun(sendtargets, NULL) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to run %s to get target list"),
-                              sendtargets[0]);
+    struct virStorageBackendISCSITargetList *list = data;
+    char *target;
+
+    if (!(target = strdup(groups[1]))) {
+        virReportOOMError();
         return -1;
     }
+
+    if (VIR_REALLOC_N(list->targets, list->ntargets + 1) < 0) {
+        VIR_FREE(target);
+        virReportOOMError();
+        return -1;
+    }
+
+    list->targets[list->ntargets] = target;
+    list->ntargets++;
+
+    return 0;
+}
+
+static int
+virStorageBackendISCSITargetAutologin(const char *portal,
+                                      const char *initiatoriqn,
+                                      const char *target,
+                                      bool enable)
+{
+    const char *extraargv[] = { "--op", "update",
+                                "--name", "node.startup",
+                                "--value", enable ? "automatic" : "manual",
+                                NULL };
+
+    return virStorageBackendISCSIConnection(portal, initiatoriqn, target, extraargv);
+}
+
+
+static int
+virStorageBackendISCSIScanTargets(const char *portal,
+                                  const char *initiatoriqn,
+                                  size_t *ntargetsret,
+                                  char ***targetsret)
+{
+    /**
+     *
+     * The output of sendtargets is very simple, just two columns,
+     * portal then target name
+     *
+     * 192.168.122.185:3260,1 iqn.2004-04.com:fedora14:iscsi.demo0.bf6d84
+     * 192.168.122.185:3260,1 iqn.2004-04.com:fedora14:iscsi.demo1.bf6d84
+     * 192.168.122.185:3260,1 iqn.2004-04.com:fedora14:iscsi.demo2.bf6d84
+     * 192.168.122.185:3260,1 iqn.2004-04.com:fedora14:iscsi.demo3.bf6d84
+     */
+    const char *regexes[] = {
+        "^\\s*(\\S+)\\s+(\\S+)\\s*$"
+    };
+    int vars[] = { 2 };
+    const char *const cmdsendtarget[] = {
+        ISCSIADM, "--mode", "discovery", "--type", "sendtargets",
+        "--portal", portal, NULL
+    };
+    struct virStorageBackendISCSITargetList list;
+    int i;
+    int exitstatus;
+
+    memset(&list, 0, sizeof(list));
+
+    if (virStorageBackendRunProgRegex(NULL, /* No pool for callback */
+                                      cmdsendtarget,
+                                      1,
+                                      regexes,
+                                      vars,
+                                      virStorageBackendISCSIGetTargets,
+                                      &list,
+                                      &exitstatus) < 0) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("iscsiadm command failed"));
+                              return -1;
+    }
+
+    if (exitstatus != 0) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              _("iscsiadm sendtargets command failed with exitstatus %d"),
+                              exitstatus);
+        return -1;
+    }
+
+    for (i = 0 ; i < list.ntargets ; i++) {
+        /* We have to ignore failure, because we can't undo
+         * the results of 'sendtargets', unless we go scrubbing
+         * around in the dirt in /var/lib/iscsi.
+         */
+        if (virStorageBackendISCSITargetAutologin(portal,
+                                                  initiatoriqn,
+                                                  list.targets[i], false) < 0)
+            VIR_WARN("Unable to disable auto-login on iSCSI target %s: %s",
+                     portal, list.targets[i]);
+    }
+
+    if (ntargetsret && targetsret) {
+        *ntargetsret = list.ntargets;
+        *targetsret = list.targets;
+    } else {
+        for (i = 0 ; i < list.ntargets ; i++) {
+            VIR_FREE(list.targets[i]);
+        }
+        VIR_FREE(list.targets);
+    }
+
     return 0;
 }
 
@@ -493,7 +597,9 @@ virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
          * iscsiadm doesn't let you login to a target, unless you've
          * first issued a 'sendtargets' command to the portal :-(
          */
-        if (virStorageBackendISCSIScanTargets(portal) < 0)
+        if (virStorageBackendISCSIScanTargets(portal,
+                                              pool->def->source.initiator.iqn,
+                                              NULL, NULL) < 0)
             goto cleanup;
 
         if (virStorageBackendISCSIConnection(portal,
