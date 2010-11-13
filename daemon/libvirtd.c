@@ -1077,33 +1077,33 @@ static int qemudNetworkEnable(struct qemud_server *server) {
 static gnutls_session_t
 remoteInitializeTLSSession (void)
 {
-  gnutls_session_t session;
-  int err;
+    gnutls_session_t session;
+    int err;
 
-  err = gnutls_init (&session, GNUTLS_SERVER);
-  if (err != 0) goto failed;
+    err = gnutls_init (&session, GNUTLS_SERVER);
+    if (err != 0) goto failed;
 
-  /* avoid calling all the priority functions, since the defaults
-   * are adequate.
-   */
-  err = gnutls_set_default_priority (session);
-  if (err != 0) goto failed;
+    /* avoid calling all the priority functions, since the defaults
+     * are adequate.
+     */
+    err = gnutls_set_default_priority (session);
+    if (err != 0) goto failed;
 
-  err = gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, x509_cred);
-  if (err != 0) goto failed;
+    err = gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, x509_cred);
+    if (err != 0) goto failed;
 
-  /* request client certificate if any.
-   */
-  gnutls_certificate_server_set_request (session, GNUTLS_CERT_REQUEST);
+    /* request client certificate if any.
+     */
+    gnutls_certificate_server_set_request (session, GNUTLS_CERT_REQUEST);
 
-  gnutls_dh_set_prime_bits (session, DH_BITS);
+    gnutls_dh_set_prime_bits (session, DH_BITS);
 
-  return session;
+    return session;
 
- failed:
-  VIR_ERROR(_("remoteInitializeTLSSession: %s"),
-            gnutls_strerror (err));
-  return NULL;
+failed:
+    VIR_ERROR(_("remoteInitializeTLSSession: %s"),
+              gnutls_strerror (err));
+    return NULL;
 }
 
 /* Check DN is on tls_allowed_dn_list. */
