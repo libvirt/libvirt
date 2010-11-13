@@ -699,7 +699,10 @@ class Object:
 
             if self.features & Object.FEATURE__LIST:
                 if self.extends is not None:
-                    source += "    esxVI_%s_Free((esxVI_%s **)&item->_next);\n\n" % (self.extends, self.extends)
+                    # avoid "dereferencing type-punned pointer will break strict-aliasing rules" warnings
+                    source += "    esxVI_%s *next = (esxVI_%s *)item->_next;\n\n" % (self.extends, self.extends)
+                    source += "    esxVI_%s_Free(&next);\n" % self.extends
+                    source += "    item->_next = (esxVI_%s *)next;\n\n" % self.name
                 else:
                     source += "    esxVI_%s_Free(&item->_next);\n\n" % self.name
 
@@ -719,7 +722,10 @@ class Object:
 
             if self.features & Object.FEATURE__LIST:
                 if self.extends is not None:
-                    source += "    esxVI_%s_Free((esxVI_%s **)&item->_next);\n\n" % (self.extends, self.extends)
+                    # avoid "dereferencing type-punned pointer will break strict-aliasing rules" warnings
+                    source += "    esxVI_%s *next = (esxVI_%s *)item->_next;\n\n" % (self.extends, self.extends)
+                    source += "    esxVI_%s_Free(&next);\n" % self.extends
+                    source += "    item->_next = (esxVI_%s *)next;\n\n" % self.name
                 else:
                     source += "    esxVI_%s_Free(&item->_next);\n\n" % self.name
 
