@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 # dominfo - print some information about a domain
 
 import libvirt

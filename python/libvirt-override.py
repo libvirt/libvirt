@@ -2,6 +2,11 @@
 # Manually written part of python bindings for libvirt
 #
 
+# Specify -i commandline option after python was started
+if __name__ == "__main__":
+    import os
+    os.environ["PYTHONINSPECT"] = "1"
+
 # On cygwin, the DLL is called cygvirtmod.dll
 try:
     import libvirtmod
