@@ -14,17 +14,14 @@ XML_EXAMPLES = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(addprefix $(srcdir)/examples/xml/, \
 					test/*.xml storage/*.xml)))
 
-EXTRA_DIST = \
-  ChangeLog-old \
-  libvirt.spec libvirt.spec.in \
-  mingw32-libvirt.spec.in \
-  libvirt.pc libvirt.pc.in \
-  autobuild.sh \
+syntax_check_exceptions = \
   .x-sc_avoid_ctype_macros \
   .x-sc_avoid_if_before_free \
   .x-sc_avoid_write \
   .x-sc_bindtextdomain \
   .x-sc_m4_quote_check \
+  .x-sc_po_check \
+  .x-sc_prohibit_always_true_header_tests \
   .x-sc_prohibit_asprintf \
   .x-sc_prohibit_close \
   .x-sc_prohibit_empty_lines_at_EOF \
@@ -34,6 +31,7 @@ EXTRA_DIST = \
   .x-sc_prohibit_have_config_h \
   .x-sc_prohibit_HAVE_MBRTOWC \
   .x-sc_prohibit_nonreentrant \
+  .x-sc_prohibit_readlink \
   .x-sc_prohibit_sprintf \
   .x-sc_prohibit_strcmp \
   .x-sc_prohibit_strncmp \
@@ -43,9 +41,18 @@ EXTRA_DIST = \
   .x-sc_require_config_h \
   .x-sc_require_config_h_first \
   .x-sc_trailing_blank \
+  .x-sc_unmarked_diagnostics
+
+EXTRA_DIST = \
+  ChangeLog-old \
+  libvirt.spec libvirt.spec.in \
+  mingw32-libvirt.spec.in \
+  libvirt.pc libvirt.pc.in \
+  autobuild.sh \
   Makefile.nonreentrant \
   autogen.sh \
   examples/domain-events/events-python \
+  $(syntax_check_exceptions) \
   $(XML_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig

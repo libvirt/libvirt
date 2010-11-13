@@ -454,6 +454,19 @@ sc_prohibit_gettext_markup:
 	halt='do not mark these strings for translation'		\
 	  $(_sc_search_regexp)
 
+# Ensure that the syntax_check_exceptions file list in Makefile.am
+# stays in sync with corresponding files in the repository.
+sce = syntax_check_exceptions
+sc_x_sc_dist_check:
+	@test "$$( ($(VC_LIST) | sed -n '/\.x-sc_/p'			\
+		     | sed 's|^$(_dot_escaped_srcdir)/||';		\
+		   sed -n '/^$(sce) =[	 ]*\\$$/,/[^\]$$/p'		\
+		     $(srcdir)/Makefile.am				\
+		       | sed 's/^  *//;/^$(sce) =/d'			\
+		       | tr -s '\012\\' '  ' | fmt -1			\
+		   ) | sort | uniq -u)"					\
+	  && { echo 'Makefile.am: $(sce) mismatch' >&2; exit 1; } || :;
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
