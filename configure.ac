@@ -1497,6 +1497,18 @@ if test "$with_osx" = "yes"; then
 fi
 
 if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
+    AC_CHECK_HEADER([mntent.h],,
+    [
+        if test "$with_storage_fs" = "check"; then
+            with_storage_fs=no
+            AC_MSG_NOTICE([<mntent.h> is required for the FS storage driver, disabling it])
+        else
+            AC_MSG_ERROR([<mntent.h> is required for the FS storage driver])
+        fi
+    ])
+fi
+
+if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
   AC_PATH_PROG([MOUNT], [mount], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([UMOUNT], [umount], [], [$PATH:/sbin:/usr/sbin])
   if test "$with_storage_fs" = "yes" ; then
