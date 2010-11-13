@@ -20,6 +20,7 @@
 # endif
 # include <netdb.h>
 # include <stdbool.h>
+# include <netinet/in.h>
 
 typedef struct {
     union {
