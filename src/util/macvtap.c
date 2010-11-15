@@ -83,16 +83,6 @@ enum virVirtualPortOp {
 };
 
 
-static int nlOpen(void)
-{
-    int fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
-    if (fd < 0)
-        virReportSystemError(errno,
-                             "%s",_("cannot open netlink socket"));
-    return fd;
-}
-
-
 /**
  * nlComm:
  * @nlmsg: pointer to netlink message
@@ -106,8 +96,8 @@ static int nlOpen(void)
  * buffer will be returned.
  */
 static
-int nlComm(struct nlmsghdr *nlmsg,
-           char **respbuf, unsigned int *respbuflen,
+int nlComm(struct nl_msg *nl_msg,
+           unsigned char **respbuf, unsigned int *respbuflen,
            int nl_pid)
 {
     int rc = 0;
@@ -116,30 +106,37 @@ int nlComm(struct nlmsghdr *nlmsg,
             .nl_pid    = nl_pid,
             .nl_groups = 0,
     };
-    int rcvChunkSize = 1024; // expecting less than that
-    int rcvoffset = 0;
     ssize_t nbytes;
     struct timeval tv = {
         .tv_sec = NETLINK_ACK_TIMEOUT_S,
     };
     fd_set readfds;
-    int fd = nlOpen();
+    int fd;
     int n;
+    struct nl_handle *nlhandle = nl_handle_alloc();
+    struct nlmsghdr *nlmsg = nlmsg_hdr(nl_msg);
 
-    if (fd < 0)
+    if (!nlhandle)
         return -1;
 
-    nlmsg->nlmsg_pid = getpid();
-    nlmsg->nlmsg_flags |= NLM_F_ACK;
+    if (nl_connect(nlhandle, NETLINK_ROUTE) < 0) {
+        rc = -1;
+        goto err_exit;
+    }
 
-    nbytes = sendto(fd, (void *)nlmsg, nlmsg->nlmsg_len, 0,
-                    (struct sockaddr *)&nladdr, sizeof(nladdr));
+    nlmsg_set_dst(nl_msg, &nladdr);
+
+    nlmsg->nlmsg_pid = getpid();
+
+    nbytes = nl_send_auto_complete(nlhandle, nl_msg);
     if (nbytes < 0) {
         virReportSystemError(errno,
                              "%s", _("cannot send to netlink socket"));
         rc = -1;
         goto err_exit;
     }
+
+    fd = nl_socket_get_fd(nlhandle);
 
     FD_ZERO(&readfds);
     FD_SET(fd, &readfds);
@@ -156,28 +153,9 @@ int nlComm(struct nlmsghdr *nlmsg,
         goto err_exit;
     }
 
-    while (1) {
-        if (VIR_REALLOC_N(*respbuf, rcvoffset+rcvChunkSize) < 0) {
-            virReportOOMError();
-            rc = -1;
-            goto err_exit;
-        }
-
-        socklen_t addrlen = sizeof(nladdr);
-        nbytes = recvfrom(fd, &((*respbuf)[rcvoffset]), rcvChunkSize, 0,
-                          (struct sockaddr *)&nladdr, &addrlen);
-        if (nbytes < 0) {
-            if (errno == EAGAIN || errno == EINTR)
-                continue;
-            virReportSystemError(errno, "%s",
-                                 _("error receiving from netlink socket"));
-            rc = -1;
-            goto err_exit;
-        }
-        rcvoffset += nbytes;
-        break;
-    }
-    *respbuflen = rcvoffset;
+    *respbuflen = nl_recv(nlhandle, &nladdr, respbuf, NULL);
+    if (*respbuflen <= 0)
+        rc = -1;
 
 err_exit:
     if (rc == -1) {
@@ -186,7 +164,7 @@ err_exit:
         *respbuflen = 0;
     }
 
-    VIR_FORCE_CLOSE(fd);
+    nl_handle_destroy(nlhandle);
     return rc;
 }
 
@@ -206,7 +184,7 @@ link_add(const char *type,
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     int ifindex;
-    char *recvbuf = NULL;
+    unsigned char *recvbuf = NULL;
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
     struct nlattr *linkinfo, *info_data;
@@ -255,7 +233,7 @@ link_add(const char *type,
 
     nla_nest_end(nl_msg, linkinfo);
 
-    if (nlComm(nlmsg_hdr(nl_msg), &recvbuf, &recvbuflen, 0) < 0) {
+    if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
         rc = -1;
         goto err_exit;
     }
@@ -327,7 +305,7 @@ link_del(const char *ifname)
     struct nlmsghdr *resp;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    char *recvbuf = NULL;
+    unsigned char *recvbuf = NULL;
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
 
@@ -344,7 +322,7 @@ link_del(const char *ifname)
     if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
         goto buffer_too_small;
 
-    if (nlComm(nlmsg_hdr(nl_msg), &recvbuf, &recvbuflen, 0) < 0) {
+    if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
         rc = -1;
         goto err_exit;
     }
@@ -739,7 +717,7 @@ getLldpadPid(void) {
 
 static int
 link_dump(bool nltarget_kernel, const char *ifname, int ifindex,
-          struct nlattr **tb, char **recvbuf)
+          struct nlattr **tb, unsigned char **recvbuf)
 {
     int rc = 0;
     struct nlmsghdr *resp;
@@ -776,7 +754,7 @@ link_dump(bool nltarget_kernel, const char *ifname, int ifindex,
         }
     }
 
-    if (nlComm(nlmsg_hdr(nl_msg), recvbuf, &recvbuflen, pid) < 0) {
+    if (nlComm(nl_msg, recvbuf, &recvbuflen, pid) < 0) {
         rc = -1;
         goto err_exit;
     }
@@ -862,7 +840,7 @@ ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
 {
     int rc;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL, };
-    char *recvbuf = NULL;
+    unsigned char *recvbuf = NULL;
     bool end = false;
     unsigned int i = 0;
 
@@ -1022,7 +1000,7 @@ doPortProfileOpSetLink(bool nltarget_kernel,
         .ifi_family = AF_UNSPEC,
         .ifi_index  = ifindex,
     };
-    char *recvbuf = NULL;
+    unsigned char *recvbuf = NULL;
     unsigned int recvbuflen = 0;
     uint32_t pid = 0;
     struct nl_msg *nl_msg;
@@ -1133,7 +1111,7 @@ doPortProfileOpSetLink(bool nltarget_kernel,
         }
     }
 
-    if (nlComm(nlmsg_hdr(nl_msg), &recvbuf, &recvbuflen, pid) < 0) {
+    if (nlComm(nl_msg, &recvbuf, &recvbuflen, pid) < 0) {
         rc = -1;
         goto err_exit;
     }
@@ -1201,7 +1179,7 @@ doPortProfileOpCommon(bool nltarget_kernel,
                       uint8_t op)
 {
     int rc;
-    char *recvbuf = NULL;
+    unsigned char *recvbuf = NULL;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL , };
     int repeats = STATUS_POLL_TIMEOUT_USEC / STATUS_POLL_INTERVL_USEC;
     uint16_t status = 0;
