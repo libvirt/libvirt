@@ -177,43 +177,46 @@
              xmit_hash_policy       (since 2.6.3/3.2.2)
       -->
 
-      <choice>
-        <element name="miimon">
-          <!-- miimon frequency in ms -->
-          <attribute name="freq"><ref name="uint"/></attribute>
-          <optional>
-            <attribute name="downdelay"><ref name="uint"/></attribute>
-          </optional>
-          <optional>
-            <attribute name="updelay"><ref name="uint"/></attribute>
-          </optional>
-          <optional>
-            <!-- use_carrier -->
-            <attribute name="carrier">
-              <choice>
-                <!-- use MII/ETHTOOL ioctl -->
-                <value>ioctl</value>
-                <!-- use netif_carrier_ok() -->
-                <value>netif</value>
-              </choice>
-            </attribute>
-          </optional>
-        </element>
-        <element name="arpmon">
-          <attribute name="interval"><ref name="uint"/></attribute>
-          <attribute name="target"><ref name="ipv4-addr"/></attribute>
-          <optional>
-            <attribute name="validate">
-              <choice>
-                <value>none</value>
-                <value>active</value>
-                <value>backup</value>
-                <value>all</value>
-              </choice>
-            </attribute>
-          </optional>
-        </element>
-      </choice>
+      <optional>
+        <choice>
+          <element name="miimon">
+            <!-- miimon frequency in ms -->
+            <attribute name="freq"><ref name="uint"/></attribute>
+            <optional>
+              <attribute name="downdelay"><ref name="uint"/></attribute>
+            </optional>
+            <optional>
+              <attribute name="updelay"><ref name="uint"/></attribute>
+            </optional>
+            <optional>
+              <!-- use_carrier -->
+              <attribute name="carrier">
+                <choice>
+                  <!-- use MII/ETHTOOL ioctl -->
+                  <value>ioctl</value>
+                  <!-- use netif_carrier_ok() -->
+                  <value>netif</value>
+                </choice>
+              </attribute>
+            </optional>
+          </element>
+          <element name="arpmon">
+            <attribute name="interval"><ref name="uint"/></attribute>
+            <attribute name="target"><ref name="ipv4-addr"/></attribute>
+            <optional>
+              <attribute name="validate">
+                <choice>
+                  <value>none</value>
+                  <value>active</value>
+                  <value>backup</value>
+                  <value>all</value>
+                </choice>
+              </attribute>
+            </optional>
+          </element>
+        </choice>
+      </optional>
+
       <oneOrMore>
         <!-- The slave interfaces -->
         <ref name="bare-ethernet-interface"/>
