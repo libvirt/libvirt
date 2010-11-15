@@ -4781,6 +4781,26 @@ cleanup:
     return ret;
 }
 
+static int qemuDomainIsUpdated(virDomainPtr dom)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    qemuDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+    if (!obj) {
+        qemuReportError(VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = obj->updated;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
 
 static int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
     struct qemud_driver *driver = conn->privateData;
@@ -13249,7 +13269,7 @@ static virDriver qemuDriver = {
     qemuIsSecure, /* isSecure */
     qemuDomainIsActive, /* domainIsActive */
     qemuDomainIsPersistent, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    qemuDomainIsUpdated, /* domainIsUpdated */
     qemuCPUCompare, /* cpuCompare */
     qemuCPUBaseline, /* cpuBaseline */
     qemuDomainGetJobInfo, /* domainGetJobInfo */
