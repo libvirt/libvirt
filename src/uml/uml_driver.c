@@ -2248,6 +2248,7 @@ static virDriver umlDriver = {
     umlIsSecure, /* isSecure */
     umlDomainIsActive, /* domainIsActive */
     umlDomainIsPersistent, /* domainIsPersistent */
+    NULL, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

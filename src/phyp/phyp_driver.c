@@ -4021,6 +4021,7 @@ static virDriver phypDriver = {
     phypIsSecure,               /* isSecure */
     NULL,                       /* domainIsActive */
     NULL,                       /* domainIsPersistent */
+    NULL,                       /* domainIsUpdated */
     NULL,                       /* cpuCompare */
     NULL,                       /* cpuBaseline */
     NULL,                       /* domainGetJobInfo */

@@ -8451,6 +8451,7 @@ virDriver NAME(Driver) = {
     vboxIsSecure, /* isSecure */
     vboxDomainIsActive, /* domainIsActive */
     vboxDomainIsPersistent, /* domainIsPersistent */
+    NULL, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

@@ -2070,6 +2070,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedIsSecure, /* isSecure */
     xenUnifiedDomainIsActive, /* domainIsActive */
     xenUnifiedDomainisPersistent, /* domainIsPersistent */
+    NULL, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

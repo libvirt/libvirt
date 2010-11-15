@@ -2882,6 +2882,7 @@ static virDriver lxcDriver = {
     lxcIsSecure, /* isSecure */
     lxcDomainIsActive, /* domainIsActive */
     lxcDomainIsPersistent, /* domainIsPersistent */
+    NULL, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

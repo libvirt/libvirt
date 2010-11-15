@@ -13249,6 +13249,7 @@ static virDriver qemuDriver = {
     qemuIsSecure, /* isSecure */
     qemuDomainIsActive, /* domainIsActive */
     qemuDomainIsPersistent, /* domainIsPersistent */
+    NULL, /* domainIsUpdated */
     qemuCPUCompare, /* cpuCompare */
     qemuCPUBaseline, /* cpuBaseline */
     qemuDomainGetJobInfo, /* domainGetJobInfo */

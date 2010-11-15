@@ -10734,6 +10734,7 @@ static virDriver remote_driver = {
     remoteIsSecure, /* isSecure */
     remoteDomainIsActive, /* domainIsActive */
     remoteDomainIsPersistent, /* domainIsPersistent */
+    NULL, /* domainIsUpdated */
     remoteCPUCompare, /* cpuCompare */
     remoteCPUBaseline, /* cpuBaseline */
     remoteDomainGetJobInfo, /* domainGetJobInfo */

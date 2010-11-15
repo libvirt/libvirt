@@ -395,6 +395,8 @@ typedef int
     (*virDrvDomainIsActive)(virDomainPtr dom);
 typedef int
     (*virDrvDomainIsPersistent)(virDomainPtr dom);
+typedef int
+    (*virDrvDomainIsUpdated)(virDomainPtr dom);
 
 typedef int
     (*virDrvCPUCompare)(virConnectPtr conn,
@@ -581,6 +583,7 @@ struct _virDriver {
     virDrvConnectIsSecure      isSecure;
     virDrvDomainIsActive       domainIsActive;
     virDrvDomainIsPersistent   domainIsPersistent;
+    virDrvDomainIsUpdated      domainIsUpdated;
     virDrvCPUCompare            cpuCompare;
     virDrvCPUBaseline           cpuBaseline;
     virDrvDomainGetJobInfo     domainGetJobInfo;

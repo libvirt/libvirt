@@ -800,6 +800,7 @@ static virDriver oneDriver = {
     oneIsSecure, /* isSecure */
     NULL, /* domainIsActive */
     NULL, /* domainIsPersistent */
+    NULL, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
