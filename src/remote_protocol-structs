@@ -1152,6 +1152,12 @@ struct remote_domain_is_persistent_args {
 struct remote_domain_is_persistent_ret {
 	int                        persistent;
 };
+struct remote_domain_is_updated_args {
+	remote_nonnull_domain      dom;
+};
+struct remote_domain_is_updated_ret {
+	int                        updated;
+};
 struct remote_network_is_active_args {
 	remote_nonnull_network     net;
 };

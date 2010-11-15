@@ -1801,6 +1801,16 @@ struct remote_domain_is_persistent_ret {
 };
 typedef struct remote_domain_is_persistent_ret remote_domain_is_persistent_ret;
 
+struct remote_domain_is_updated_args {
+        remote_nonnull_domain dom;
+};
+typedef struct remote_domain_is_updated_args remote_domain_is_updated_args;
+
+struct remote_domain_is_updated_ret {
+        int updated;
+};
+typedef struct remote_domain_is_updated_ret remote_domain_is_updated_ret;
+
 struct remote_network_is_active_args {
         remote_nonnull_network net;
 };
@@ -2309,6 +2319,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199,
         REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200,
         REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201,
+        REMOTE_PROC_DOMAIN_IS_UPDATED = 202,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2630,6 +2641,8 @@ extern  bool_t xdr_remote_domain_is_active_args (XDR *, remote_domain_is_active_
 extern  bool_t xdr_remote_domain_is_active_ret (XDR *, remote_domain_is_active_ret*);
 extern  bool_t xdr_remote_domain_is_persistent_args (XDR *, remote_domain_is_persistent_args*);
 extern  bool_t xdr_remote_domain_is_persistent_ret (XDR *, remote_domain_is_persistent_ret*);
+extern  bool_t xdr_remote_domain_is_updated_args (XDR *, remote_domain_is_updated_args*);
+extern  bool_t xdr_remote_domain_is_updated_ret (XDR *, remote_domain_is_updated_ret*);
 extern  bool_t xdr_remote_network_is_active_args (XDR *, remote_network_is_active_args*);
 extern  bool_t xdr_remote_network_is_active_ret (XDR *, remote_network_is_active_ret*);
 extern  bool_t xdr_remote_network_is_persistent_args (XDR *, remote_network_is_persistent_args*);
@@ -2974,6 +2987,8 @@ extern bool_t xdr_remote_domain_is_active_args ();
 extern bool_t xdr_remote_domain_is_active_ret ();
 extern bool_t xdr_remote_domain_is_persistent_args ();
 extern bool_t xdr_remote_domain_is_persistent_ret ();
+extern bool_t xdr_remote_domain_is_updated_args ();
+extern bool_t xdr_remote_domain_is_updated_ret ();
 extern bool_t xdr_remote_network_is_active_args ();
 extern bool_t xdr_remote_network_is_active_ret ();
 extern bool_t xdr_remote_network_is_persistent_args ();

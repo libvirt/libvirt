@@ -3177,6 +3177,24 @@ xdr_remote_domain_is_persistent_ret (XDR *xdrs, remote_domain_is_persistent_ret 
 }
 
 bool_t
+xdr_remote_domain_is_updated_args (XDR *xdrs, remote_domain_is_updated_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_is_updated_ret (XDR *xdrs, remote_domain_is_updated_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->updated))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_network_is_active_args (XDR *xdrs, remote_network_is_active_args *objp)
 {
 

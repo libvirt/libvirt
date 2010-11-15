@@ -5965,6 +5965,34 @@ static int remoteDispatchDomainIsPersistent(struct qemud_server *server ATTRIBUT
     return 0;
 }
 
+static int remoteDispatchDomainIsUpdated(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                                            virConnectPtr conn,
+                                            remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                            remote_error *err,
+                                            remote_domain_is_updated_args *args,
+                                            remote_domain_is_updated_ret *ret)
+{
+    virDomainPtr domain;
+
+    domain = get_nonnull_domain(conn, args->dom);
+    if (domain == NULL) {
+        remoteDispatchConnError(err, conn);
+        return -1;
+    }
+
+    ret->updated = virDomainIsUpdated(domain);
+
+    if (ret->updated < 0) {
+        virDomainFree(domain);
+        remoteDispatchConnError(err, conn);
+        return -1;
+    }
+
+    virDomainFree(domain);
+    return 0;
+}
+
 static int remoteDispatchInterfaceIsActive(struct qemud_server *server ATTRIBUTE_UNUSED,
                                            struct qemud_client *client ATTRIBUTE_UNUSED,
                                            virConnectPtr conn,

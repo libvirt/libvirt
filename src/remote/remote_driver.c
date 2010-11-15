@@ -1983,6 +1983,30 @@ done:
     return rv;
 }
 
+static int
+remoteDomainIsUpdated(virDomainPtr domain)
+{
+    int rv = -1;
+    remote_domain_is_updated_args args;
+    remote_domain_is_updated_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_IS_UPDATED,
+              (xdrproc_t) xdr_remote_domain_is_updated_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_is_updated_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.updated;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static virDomainPtr
 remoteDomainCreateXML (virConnectPtr conn,
                          const char *xmlDesc,
@@ -10734,7 +10758,7 @@ static virDriver remote_driver = {
     remoteIsSecure, /* isSecure */
     remoteDomainIsActive, /* domainIsActive */
     remoteDomainIsPersistent, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    remoteDomainIsUpdated, /* domainIsUpdated */
     remoteCPUCompare, /* cpuCompare */
     remoteCPUBaseline, /* cpuBaseline */
     remoteDomainGetJobInfo, /* domainGetJobInfo */
