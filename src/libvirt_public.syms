@@ -416,6 +416,7 @@ LIBVIRT_0.8.5 {
 LIBVIRT_0.8.6 {
     global:
         virDomainOpenConsole;
+        virDomainIsUpdated;
 } LIBVIRT_0.8.5;
 
 # .... define new API here using predicted next version number ....

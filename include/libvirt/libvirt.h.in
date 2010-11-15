@@ -1931,6 +1931,7 @@ int virStreamFree(virStreamPtr st);
 
 int virDomainIsActive(virDomainPtr dom);
 int virDomainIsPersistent(virDomainPtr dom);
+int virDomainIsUpdated(virDomainPtr dom);
 
 int virNetworkIsActive(virNetworkPtr net);
 int virNetworkIsPersistent(virNetworkPtr net);
