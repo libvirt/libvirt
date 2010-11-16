@@ -743,6 +743,10 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
+=item B<net-info> I<network>
+
+Returns basic information about the I<network> object.
+
 =item B<net-list> optional I<--inactive> or I<--all>
 
 Returns the list of active networks, if I<--all> is specified this will also

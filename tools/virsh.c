@@ -3678,6 +3678,64 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "net-info" command
+ */
+static const vshCmdInfo info_network_info[] = {
+    {"help", N_("network information")},
+    {"desc", "Returns basic information about the network"},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_network_info[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virNetworkPtr network;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    int autostart;
+    int persistent = -1;
+    int active = -1;
+    char *bridge = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return FALSE;
+
+    if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL,
+                                           VSH_BYNAME)))
+        return FALSE;
+
+    vshPrint(ctl, "%-15s %s\n", _("Name"), virNetworkGetName(network));
+
+    if (virNetworkGetUUIDString(network, uuid) == 0)
+        vshPrint(ctl, "%-15s %s\n", _("UUID"), uuid);
+
+    active = virNetworkIsActive(network);
+    if (active >= 0)
+        vshPrint(ctl, "%-15s %s\n", _("Active:"), active? _("yes") : _("no"));
+
+    persistent = virNetworkIsPersistent(network);
+    if (persistent < 0)
+        vshPrint(ctl, "%-15s %s\n", _("Persistent:"), _("unknown"));
+    else
+        vshPrint(ctl, "%-15s %s\n", _("Persistent:"), persistent ? _("yes") : _("no"));
+
+    if (virNetworkGetAutostart(network, &autostart) < 0)
+        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("no autostart"));
+    else
+        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), autostart ? _("yes") : _("no"));
+
+    bridge = virNetworkGetBridgeName(network);
+    if (bridge)
+        vshPrint(ctl, "%-15s %s\n", _("Bridge:"), bridge);
+
+    virNetworkFree(network);
+    return TRUE;
+}
 
 /*
  * "iface-edit" command
@@ -9879,6 +9937,7 @@ static const vshCmdDef commands[] = {
     {"net-destroy", cmdNetworkDestroy, opts_network_destroy, info_network_destroy},
     {"net-dumpxml", cmdNetworkDumpXML, opts_network_dumpxml, info_network_dumpxml},
     {"net-edit", cmdNetworkEdit, opts_network_edit, info_network_edit},
+    {"net-info", cmdNetworkInfo, opts_network_info, info_network_info},
     {"net-list", cmdNetworkList, opts_network_list, info_network_list},
     {"net-name", cmdNetworkName, opts_network_name, info_network_name},
     {"net-start", cmdNetworkStart, opts_network_start, info_network_start},
