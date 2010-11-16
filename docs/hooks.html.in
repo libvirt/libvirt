@@ -19,7 +19,7 @@
 
     <h2><a name="location">Script location</a></h2>
     <p>The libvirt hook scripts are located in the directory
-       <code>$SYSCONF_DIR/libvirt/hooks/</code>.</p>
+       <code>$SYSCONFDIR/libvirt/hooks/</code>.</p>
     <ul>
       <li>In Linux distributions such as Fedora and RHEL, this is
           <code>/etc/libvirt/hooks/</code>.  Other Linux distributions may do

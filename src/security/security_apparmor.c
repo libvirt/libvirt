@@ -38,11 +38,12 @@
 #include "pci.h"
 #include "hostusb.h"
 #include "files.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_APPARMOR_VOID_DOI      "0"
 #define SECURITY_APPARMOR_NAME          "apparmor"
-#define VIRT_AA_HELPER BINDIR "/virt-aa-helper"
+#define VIRT_AA_HELPER LIBEXECDIR "/virt-aa-helper"
 
 /* Data structure to pass to *FileIterate so we have everything we need */
 struct SDPDOP {
@@ -561,7 +562,7 @@ AppArmorRestoreSecurityAllLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
 }
 
 /* Called via virExecWithHook. Output goes to
- * LOCAL_STATE_DIR/log/libvirt/qemu/<vm name>.log
+ * LOCALSTATEDIR/log/libvirt/qemu/<vm name>.log
  */
 static int
 AppArmorSetSecurityProcessLabel(virSecurityDriverPtr drv, virDomainObjPtr vm)

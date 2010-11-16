@@ -42,6 +42,7 @@
 #include "uuid.h"
 #include "virterror_internal.h"
 #include "files.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -994,7 +995,7 @@ secretDriverStartup(int privileged)
     secretDriverLock(driverState);
 
     if (privileged) {
-        base = strdup(SYSCONF_DIR "/libvirt");
+        base = strdup(SYSCONFDIR "/libvirt");
         if (base == NULL)
             goto out_of_memory;
     } else {

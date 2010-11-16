@@ -31,10 +31,11 @@
 #include "storage_backend_disk.h"
 #include "util.h"
 #include "memory.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-#define PARTHELPER BINDIR "/libvirt_parthelper"
+#define PARTHELPER LIBEXECDIR "/libvirt_parthelper"
 
 #define SECTOR_SIZE 512
 

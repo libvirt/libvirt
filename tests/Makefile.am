@@ -17,7 +17,6 @@ INCLUDES = \
 	$(SASL_CFLAGS) \
 	$(SELINUX_CFLAGS) \
 	$(APPARMOR_CFLAGS) \
-        -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
          $(COVERAGE_CFLAGS) \
          $(WARN_CFLAGS)
 

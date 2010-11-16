@@ -53,6 +53,7 @@
 #include "libvirt/libvirt-qemu.h"
 #include "files.h"
 #include "../daemon/event.h"
+#include "configmake.h"
 
 static char *progname;
 
@@ -11786,11 +11787,11 @@ main(int argc, char **argv)
         perror("setlocale");
         /* failure to setup locale is not fatal */
     }
-    if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR)) {
+    if (!bindtextdomain(PACKAGE, LOCALEDIR)) {
         perror("bindtextdomain");
         return -1;
     }
-    if (!textdomain(GETTEXT_PACKAGE)) {
+    if (!textdomain(PACKAGE)) {
         perror("textdomain");
         return -1;
     }

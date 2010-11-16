@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_conf.c: config functions for managing linux containers
@@ -34,7 +35,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"
-
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -73,7 +74,7 @@ virCapsPtr lxcCapsInit(void)
                                          "exe",
                                          utsname.machine,
                                          sizeof(int) == 4 ? 32 : 8,
-                                         BINDIR "/libvirt_lxc",
+                                         LIBEXECDIR "/libvirt_lxc",
                                          NULL,
                                          0,
                                          NULL)) == NULL)
@@ -114,7 +115,7 @@ int lxcLoadDriverConfig(lxc_driver_t *driver)
         goto no_memory;
 
 
-    if ((filename = strdup(SYSCONF_DIR "/libvirt/lxc.conf")) == NULL)
+    if ((filename = strdup(SYSCONFDIR "/libvirt/lxc.conf")) == NULL)
         goto no_memory;
 
     /* Avoid error from non-existant or unreadable file. */

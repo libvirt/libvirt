@@ -85,12 +85,10 @@ libvirtd_CFLAGS = \
 	-I$(top_srcdir)/src/remote \
 	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
 	$(POLKIT_CFLAGS) \
-	$(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
+	$(WARN_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
-	-DSYSCONF_DIR="\"$(sysconfdir)\"" \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
-	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
-	-DGETTEXT_PACKAGE=\"$(PACKAGE)\"
+	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\""
 
 libvirtd_LDFLAGS = 					\
 	$(WARN_CFLAGS) 					\

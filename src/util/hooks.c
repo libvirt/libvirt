@@ -37,6 +37,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "files.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_HOOK
 
@@ -44,7 +45,7 @@
     virReportErrorHelper(NULL, VIR_FROM_HOOK, code, __FILE__,      \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#define LIBVIRT_HOOK_DIR SYSCONF_DIR "/libvirt/hooks"
+#define LIBVIRT_HOOK_DIR SYSCONFDIR "/libvirt/hooks"
 
 VIR_ENUM_DECL(virHookDriver)
 VIR_ENUM_DECL(virHookDaemonOp)

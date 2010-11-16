@@ -1,7 +1,7 @@
 /*
  * storage_driver.c: core driver for storage APIs
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -46,6 +46,7 @@
 #include "storage_backend.h"
 #include "logging.h"
 #include "files.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -125,7 +126,7 @@ storageDriverStartup(int privileged) {
     storageDriverLock(driverState);
 
     if (privileged) {
-        if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
+        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
         uid_t uid = geteuid();

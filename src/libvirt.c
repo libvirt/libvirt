@@ -39,6 +39,7 @@
 #include "uuid.h"
 #include "util.h"
 #include "memory.h"
+#include "configmake.h"
 
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
@@ -342,7 +343,7 @@ virInitialize(void)
     if (winsock_init () == -1) return -1;
 #endif
 
-    if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR))
+    if (!bindtextdomain(PACKAGE, LOCALEDIR))
         return (-1);
 
     /*

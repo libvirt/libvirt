@@ -38,6 +38,7 @@
 #include "hostusb.h"
 #include "pci.h"
 #include "files.h"
+#include "configmake.h"
 
 static char *progname;
 
@@ -1179,11 +1180,11 @@ main(int argc, char **argv)
                 goto clean;
         } else {
             virBufferVSprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
-                              LOCAL_STATE_DIR, ctl->def->name);
+                              LOCALSTATEDIR, ctl->def->name);
             virBufferVSprintf(&buf, "  \"%s/lib/libvirt/**/%s.monitor\" rw,\n",
-                              LOCAL_STATE_DIR, ctl->def->name);
+                              LOCALSTATEDIR, ctl->def->name);
             virBufferVSprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
-                              LOCAL_STATE_DIR, ctl->def->name);
+                              LOCALSTATEDIR, ctl->def->name);
             if (ctl->files)
                 virBufferVSprintf(&buf, "%s", ctl->files);
         }

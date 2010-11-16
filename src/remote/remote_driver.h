@@ -2,7 +2,7 @@
  * remote_internal.h: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2006-2007 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,8 @@
 
 # include "libvirt/virterror.h"
 
+# include "configmake.h"
+
 int remoteRegister (void);
 
 unsigned long remoteVersion(void);
@@ -33,13 +35,13 @@ unsigned long remoteVersion(void);
 # define LIBVIRTD_LISTEN_ADDR NULL
 # define LIBVIRTD_TLS_PORT "16514"
 # define LIBVIRTD_TCP_PORT "16509"
-# define LIBVIRTD_PRIV_UNIX_SOCKET LOCAL_STATE_DIR "/run/libvirt/libvirt-sock"
-# define LIBVIRTD_PRIV_UNIX_SOCKET_RO LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro"
+# define LIBVIRTD_PRIV_UNIX_SOCKET LOCALSTATEDIR "/run/libvirt/libvirt-sock"
+# define LIBVIRTD_PRIV_UNIX_SOCKET_RO LOCALSTATEDIR "/run/libvirt/libvirt-sock-ro"
 # define LIBVIRTD_USER_UNIX_SOCKET "/.libvirt/libvirt-sock"
-# define LIBVIRTD_CONFIGURATION_FILE SYSCONF_DIR "/libvirtd.conf"
+# define LIBVIRTD_CONFIGURATION_FILE SYSCONFDIR "/libvirtd.conf"
 
 /* Defaults for PKI directory. */
-# define LIBVIRT_PKI_DIR SYSCONF_DIR "/pki"
+# define LIBVIRT_PKI_DIR SYSCONFDIR "/pki"
 # define LIBVIRT_CACERT LIBVIRT_PKI_DIR "/CA/cacert.pem"
 # define LIBVIRT_CLIENTKEY LIBVIRT_PKI_DIR "/libvirt/private/clientkey.pem"
 # define LIBVIRT_CLIENTCERT LIBVIRT_PKI_DIR "/libvirt/clientcert.pem"

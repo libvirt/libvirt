@@ -84,7 +84,7 @@
 #include "virtaudit.h"
 #include "files.h"
 #include "fdstream.h"
-
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1762,28 +1762,28 @@ qemudStartup(int privileged) {
 
     if (privileged) {
         if (virAsprintf(&qemu_driver->logDir,
-                        "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+                        "%s/log/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
+        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
 
         if (virAsprintf(&qemu_driver->stateDir,
-                      "%s/run/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+                      "%s/run/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
         if (virAsprintf(&qemu_driver->libDir,
-                      "%s/lib/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+                      "%s/lib/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
         if (virAsprintf(&qemu_driver->cacheDir,
-                      "%s/cache/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+                      "%s/cache/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
         if (virAsprintf(&qemu_driver->saveDir,
-                      "%s/lib/libvirt/qemu/save", LOCAL_STATE_DIR) == -1)
+                      "%s/lib/libvirt/qemu/save", LOCALSTATEDIR) == -1)
             goto out_of_memory;
         if (virAsprintf(&qemu_driver->snapshotDir,
-                        "%s/lib/libvirt/qemu/snapshot", LOCAL_STATE_DIR) == -1)
+                        "%s/lib/libvirt/qemu/snapshot", LOCALSTATEDIR) == -1)
             goto out_of_memory;
     } else {
         uid_t uid = geteuid();

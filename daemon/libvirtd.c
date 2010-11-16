@@ -137,6 +137,8 @@ static int unix_sock_ro_mask = 0777; /* Allow world */
 
 #endif /* __sun */
 
+#include "configmake.h"
+
 static int godaemon = 0;        /* -d: Be a daemon */
 static int verbose = 0;         /* -v: Verbose mode */
 static int timeout = -1;        /* -t: Shutdown timeout */
@@ -745,7 +747,7 @@ static int qemudInitPaths(struct qemud_server *server,
     /* The base_dir_prefix is the base under which all libvirtd
      * files live */
     if (server->privileged) {
-        if (!(base_dir_prefix = strdup (LOCAL_STATE_DIR)))
+        if (!(base_dir_prefix = strdup (LOCALSTATEDIR)))
             goto no_memory;
     } else {
         uid_t uid = geteuid();
@@ -3038,9 +3040,9 @@ libvirt management daemon:\n\
       %s\n\
 \n"),
                argv0,
-               SYSCONF_DIR,
-               LOCAL_STATE_DIR,
-               LOCAL_STATE_DIR,
+               SYSCONFDIR,
+               LOCALSTATEDIR,
+               LOCALSTATEDIR,
                LIBVIRT_CACERT,
                LIBVIRT_SERVERCERT,
                LIBVIRT_SERVERKEY,
@@ -3137,7 +3139,7 @@ int main(int argc, char **argv) {
 
     if (remote_config_file == NULL) {
         static const char *default_config_file
-            = SYSCONF_DIR "/libvirt/libvirtd.conf";
+            = SYSCONFDIR "/libvirt/libvirtd.conf";
         remote_config_file =
             (access(default_config_file, R_OK) == 0
              ? default_config_file
@@ -3169,7 +3171,7 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (geteuid() == 0) {
-        const char *rundir = LOCAL_STATE_DIR "/run/libvirt";
+        const char *rundir = LOCALSTATEDIR "/run/libvirt";
 
         if (mkdir (rundir, 0755)) {
             if (errno != EEXIST) {

@@ -56,6 +56,7 @@
 #include "cpu/cpu.h"
 #include "domain_nwfilter.h"
 #include "files.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -112,7 +113,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         virReportOOMError();
         return -1;
     }
-    if (!(driver->vncTLSx509certdir = strdup(SYSCONF_DIR "/pki/libvirt-vnc"))) {
+    if (!(driver->vncTLSx509certdir = strdup(SYSCONFDIR "/pki/libvirt-vnc"))) {
         virReportOOMError();
         return -1;
     }
@@ -121,7 +122,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         virReportOOMError();
         return -1;
     }
-    if (!(driver->spiceTLSx509certdir = strdup(SYSCONF_DIR "/pki/libvirt-spice"))) {
+    if (!(driver->spiceTLSx509certdir
+          = strdup(SYSCONFDIR "/pki/libvirt-spice"))) {
         virReportOOMError();
         return -1;
     }

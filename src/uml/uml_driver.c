@@ -61,11 +61,12 @@
 #include "domain_nwfilter.h"
 #include "files.h"
 #include "fdstream.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
 /* For storing short-lived temporary files. */
-#define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
+#define TEMPDIR LOCALSTATEDIR "/cache/libvirt"
 
 typedef struct _umlDomainObjPrivate umlDomainObjPrivate;
 typedef umlDomainObjPrivate *umlDomainObjPrivatePtr;
@@ -371,14 +372,14 @@ umlStartup(int privileged) {
 
     if (privileged) {
         if (virAsprintf(&uml_driver->logDir,
-                        "%s/log/libvirt/uml", LOCAL_STATE_DIR) == -1)
+                        "%s/log/libvirt/uml", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
+        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
 
         if (virAsprintf(&uml_driver->monitorDir,
-                        "%s/run/libvirt/uml-guest", LOCAL_STATE_DIR) == -1)
+                        "%s/run/libvirt/uml-guest", LOCALSTATEDIR) == -1)
             goto out_of_memory;
     } else {
 

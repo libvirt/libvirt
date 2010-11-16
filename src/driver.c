@@ -1,7 +1,7 @@
 /*
  * driver.c: Helpers for loading drivers
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "util.h"
+#include "configmake.h"
 
 #define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/drivers"
 

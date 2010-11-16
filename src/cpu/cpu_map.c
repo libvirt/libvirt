@@ -1,7 +1,7 @@
 /*
  * cpu_map.c: internal functions for handling CPU mapping configuration
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@
 #include "memory.h"
 #include "cpu.h"
 #include "cpu_map.h"
-
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 

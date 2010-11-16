@@ -55,8 +55,6 @@ virsh_CFLAGS =							\
 		-I$(top_srcdir)/src				\
 		-I$(top_srcdir)/src/util			\
 		-I$(top_srcdir)					\
-		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
-		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
 		$(WARN_CFLAGS)					\
 		$(COVERAGE_CFLAGS)				\
 		$(LIBXML_CFLAGS)				\

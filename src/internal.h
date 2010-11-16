@@ -52,7 +52,7 @@
 #  define INET_ADDRSTRLEN 16
 # endif
 
-# define _(str) dgettext(GETTEXT_PACKAGE, (str))
+# define _(str) dgettext(PACKAGE, (str))
 # define N_(str) str
 
 /* String equality tests, suggested by Jim Meyering. */

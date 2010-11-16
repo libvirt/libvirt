@@ -11,14 +11,6 @@ INCLUDES =							\
 		-I@top_srcdir@/include				\
 		$(DRIVER_MODULE_CFLAGS)				\
 		$(LIBXML_CFLAGS)				\
-		-DLIBDIR=\""$(libdir)"\"			\
-		-DBINDIR=\""$(libexecdir)"\"			\
-		-DSBINDIR=\""$(sbindir)"\"			\
-		-DSYSCONF_DIR="\"$(sysconfdir)\""		\
-		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
-		-DPKGDATADIR=\""$(pkgdatadir)"\"		\
-		-DLOCAL_STATE_DIR=\""$(localstatedir)"\"	\
-		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
 		$(WARN_CFLAGS)					\
 		$(LOCK_CHECKING_CFLAGS)			\
 		-DIN_LIBVIRT				\

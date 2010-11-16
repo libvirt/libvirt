@@ -2,7 +2,7 @@
  * nwfilter_driver.c: core driver for network filter APIs
  *                    (based on storage_driver.c)
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
@@ -37,7 +37,7 @@
 #include "nwfilter_conf.h"
 #include "nwfilter_driver.h"
 #include "nwfilter_gentech_driver.h"
-
+#include "configmake.h"
 
 #include "nwfilter_learnipaddr.h"
 
@@ -83,7 +83,7 @@ nwfilterDriverStartup(int privileged) {
     nwfilterDriverLock(driverState);
 
     if (privileged) {
-        if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
+        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
         uid_t uid = geteuid();

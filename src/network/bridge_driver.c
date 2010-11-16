@@ -58,11 +58,12 @@
 #include "logging.h"
 #include "dnsmasq.h"
 #include "util/network.h"
+#include "configmake.h"
 
-#define NETWORK_PID_DIR LOCAL_STATE_DIR "/run/libvirt/network"
-#define NETWORK_STATE_DIR LOCAL_STATE_DIR "/lib/libvirt/network"
+#define NETWORK_PID_DIR LOCALSTATEDIR "/run/libvirt/network"
+#define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"
 
-#define DNSMASQ_STATE_DIR LOCAL_STATE_DIR "/lib/libvirt/dnsmasq"
+#define DNSMASQ_STATE_DIR LOCALSTATEDIR "/lib/libvirt/dnsmasq"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
@@ -209,10 +210,10 @@ networkStartup(int privileged) {
 
     if (privileged) {
         if (virAsprintf(&driverState->logDir,
-                        "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+                        "%s/log/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
+        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
         char *userdir = virGetUserDirectory(uid);
