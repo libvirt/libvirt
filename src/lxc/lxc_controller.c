@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_controller.c: linux container process controller
@@ -34,6 +35,7 @@
 #include <signal.h>
 #include <getopt.h>
 #include <sys/mount.h>
+#include <locale.h>
 
 #if HAVE_CAPNG
 # include <cap-ng.h>
@@ -716,6 +718,13 @@ int main(int argc, char *argv[])
         { "help", 0, NULL, 'h' },
         { 0, 0, 0, 0 },
     };
+
+    if (setlocale(LC_ALL, "") == NULL ||
+        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
+        textdomain(PACKAGE) == NULL) {
+        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     while (1) {
         int c;

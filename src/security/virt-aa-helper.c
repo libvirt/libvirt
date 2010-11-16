@@ -1134,6 +1134,13 @@ main(int argc, char **argv)
     char profile[PATH_MAX];
     char include_file[PATH_MAX];
 
+    if (setlocale(LC_ALL, "") == NULL ||
+        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
+        textdomain(PACKAGE) == NULL) {
+        fprintf(stderr, _("%s: initialization failed\n"), argv0);
+        exit(EXIT_FAILURE);
+    }
+
     /* clear the environment */
     environ = NULL;
     if (setenv("PATH", "/sbin:/usr/sbin", 1) != 0) {

@@ -47,6 +47,7 @@
 #include <grp.h>
 #include <signal.h>
 #include <netdb.h>
+#include <locale.h>
 
 #include "libvirt_internal.h"
 #include "virterror_internal.h"
@@ -3076,9 +3077,12 @@ int main(int argc, char **argv) {
         {0, 0, 0, 0}
     };
 
-    if (virInitialize() < 0) {
-        fprintf (stderr, _("%s: initialization failed\n"), argv0);
-        exit (EXIT_FAILURE);
+    if (setlocale (LC_ALL, "") == NULL ||
+        bindtextdomain (PACKAGE, LOCALEDIR) == NULL ||
+        textdomain(PACKAGE) == NULL ||
+        virInitialize() < 0) {
+        fprintf(stderr, _("%s: initialization failed\n"), argv0);
+        exit(EXIT_FAILURE);
     }
 
     while (1) {

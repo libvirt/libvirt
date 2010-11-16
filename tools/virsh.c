@@ -11789,11 +11789,11 @@ main(int argc, char **argv)
     }
     if (!bindtextdomain(PACKAGE, LOCALEDIR)) {
         perror("bindtextdomain");
-        return -1;
+        return EXIT_FAILURE;
     }
     if (!textdomain(PACKAGE)) {
         perror("textdomain");
-        return -1;
+        return EXIT_FAILURE;
     }
 
     if (!(progname = strrchr(argv[0], '/')))
