@@ -3855,6 +3855,8 @@ static void qemuDomainSecurityLabelAudit(virDomainObjPtr vm, bool success)
     VIR_FREE(vmname);
 }
 
+#define START_POSTFIX ": starting up\n"
+#define SHUTDOWN_POSTFIX ": shutting down\n"
 
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
@@ -3877,6 +3879,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     char ebuf[1024];
     char *pidfile = NULL;
     int logfile = -1;
+    char *timestamp;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     struct qemudHookData hookData;
@@ -4084,7 +4087,21 @@ static int qemudStartVMDaemon(virConnectPtr conn,
             goto cleanup;
     }
 
+    if ((timestamp = virTimestamp()) == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    } else {
+        if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
+            safewrite(logfile, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
+            VIR_WARN("Unable to write timestamp to logfile: %s",
+                     virStrerror(errno, ebuf, sizeof ebuf));
+        }
+
+        VIR_FREE(timestamp);
+    }
+
     tmp = progenv;
+
     while (*tmp) {
         if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
             VIR_WARN("Unable to write envv to logfile: %s",
@@ -4233,7 +4250,6 @@ cleanup:
     return -1;
 }
 
-
 static void qemudShutdownVMDaemon(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   int migrated) {
@@ -4243,9 +4259,36 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     virErrorPtr orig_err;
     virDomainDefPtr def;
     int i;
+    int logfile = -1;
+    char *timestamp;
+    char ebuf[1024];
 
     VIR_DEBUG("Shutting down VM '%s' pid=%d migrated=%d",
               vm->def->name, vm->pid, migrated);
+
+    if ((logfile = qemudLogFD(driver, vm->def->name)) < 0) {
+        /* To not break the normal domain shutdown process, skip the
+         * timestamp log writing if failed on opening log file. */
+        VIR_WARN("Unable to open logfile: %s",
+                  virStrerror(errno, ebuf, sizeof ebuf));
+    } else {
+        if ((timestamp = virTimestamp()) == NULL) {
+            virReportOOMError();
+        } else {
+            if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
+                safewrite(logfile, SHUTDOWN_POSTFIX,
+                          strlen(SHUTDOWN_POSTFIX)) < 0) {
+                VIR_WARN("Unable to write timestamp to logfile: %s",
+                         virStrerror(errno, ebuf, sizeof ebuf));
+            }
+
+            VIR_FREE(timestamp);
+        }
+
+        if (VIR_CLOSE(logfile) < 0)
+             VIR_WARN("Unable to close logfile: %s",
+                      virStrerror(errno, ebuf, sizeof ebuf));
+    }
 
     /* This method is routinely used in clean up paths. Disable error
      * reporting so we don't squash a legit error. */
@@ -4381,7 +4424,6 @@ retry:
         virFreeError(orig_err);
     }
 }
-
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
