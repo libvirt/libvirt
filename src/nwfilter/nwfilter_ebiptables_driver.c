@@ -61,7 +61,7 @@
 #define CMD_DEF_PRE  "cmd='"
 #define CMD_DEF_POST "'"
 #define CMD_DEF(X) CMD_DEF_PRE X CMD_DEF_POST
-#define CMD_EXEC   "eval res=\\$(\"${cmd}\")" CMD_SEPARATOR
+#define CMD_EXEC   "eval res=\\$\\(\"${cmd}\"\\)" CMD_SEPARATOR
 #define CMD_STOPONERR(X) \
     X ? "if [ $? -ne 0 ]; then" \
         "  echo \"Failure to execute command '${cmd}'.\";" \
