@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2010-10-08.16; # UTC
+scriptversion=2010-11-12.21; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -261,6 +261,21 @@ insert_sorted_if_absent() {
     || exit 1
 }
 
+# Adjust $PATTERN for $VC_IGNORE_FILE and insert it with
+# insert_sorted_if_absent.
+insert_vc_ignore() {
+  vc_ignore_file="$1"
+  pattern="$2"
+  case $vc_ignore_file in
+  *.gitignore)
+    # A .gitignore entry that does not start with `/' applies
+    # recursively to subdirectories, so prepend `/' to every
+    # .gitignore entry.
+    pattern=`echo "$pattern" | sed s,^,/,`;;
+  esac
+  insert_sorted_if_absent "$vc_ignore_file" "$pattern"
+}
+
 # Die if there is no AC_CONFIG_AUX_DIR($build_aux) line in configure.ac.
 found_aux_dir=no
 grep '^[	 ]*AC_CONFIG_AUX_DIR(\['"$build_aux"'\])' configure.ac \
@@ -279,7 +294,7 @@ if test ! -d $build_aux; then
   mkdir $build_aux
   for dot_ig in x $vc_ignore; do
     test $dot_ig = x && continue
-    insert_sorted_if_absent $dot_ig $build_aux
+    insert_vc_ignore $dot_ig $build_aux
   done
 fi
 
@@ -329,17 +344,18 @@ get_version() {
   $app --version >/dev/null 2>&1 || return 1
 
   $app --version 2>&1 |
-  sed -n '# extract version within line
-          s/.*[v ]\{1,\}\([0-9]\{1,\}\.[.a-z0-9-]*\).*/\1/
-          t done
+  sed -n '# Move version to start of line.
+          s/.*[v ]\([0-9]\)/\1/
 
-          # extract version at start of line
-          s/^\([0-9]\{1,\}\.[.a-z0-9-]*\).*/\1/
-          t done
+          # Skip lines that do not start with version.
+          /^[0-9]/!d
 
-          d
+          # Remove characters after the version.
+          s/[^.a-z0-9-].*//
 
-          :done
+          # The first component must be digits only.
+          s/^\([0-9]*\)[a-z-].*/\1/
+
           #the following essentially does s/5.005/5.5/
           s/\.0*\([1-9]\)/.\1/g
           p
@@ -565,7 +581,7 @@ symlink_to_dir()
       for dot_ig in x $vc_ignore; do
         test $dot_ig = x && continue
         ig=$parent/$dot_ig
-        insert_sorted_if_absent $ig `echo "$dst_dir"|sed 's,.*/,,'`
+        insert_vc_ignore $ig `echo "$dst_dir"|sed 's,.*/,,'`
       done
     fi
 
@@ -725,7 +741,7 @@ slurp() {
       test $dot_ig = x && continue
       ig=$dir/$dot_ig
       if test -n "$copied"; then
-        insert_sorted_if_absent $ig "$copied"
+        insert_vc_ignore $ig "$copied"
         # If an ignored file name ends with .in.h, then also add
         # the name with just ".h".  Many gnulib headers are generated,
         # e.g., stdint.in.h -> stdint.h, dirent.in.h ->..., etc.
@@ -738,12 +754,12 @@ slurp() {
             s/\.gperf$/.h/
           '
         `
-        insert_sorted_if_absent $ig "$f"
+        insert_vc_ignore $ig "$f"
 
         # For files like sys_stat.in.h and sys_time.in.h, record as
         # ignorable the directory we might eventually create: sys/.
         f=`echo "$copied"|sed 's/sys_.*\.in\.h$/sys/'`
-        insert_sorted_if_absent $ig "$f"
+        insert_vc_ignore $ig "$f"
       fi
     done
   done

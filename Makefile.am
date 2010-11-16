@@ -23,6 +23,7 @@ EXTRA_DIST = \
   .x-sc_avoid_ctype_macros \
   .x-sc_avoid_if_before_free \
   .x-sc_avoid_write \
+  .x-sc_bindtextdomain \
   .x-sc_m4_quote_check \
   .x-sc_prohibit_asprintf \
   .x-sc_prohibit_empty_lines_at_EOF \
