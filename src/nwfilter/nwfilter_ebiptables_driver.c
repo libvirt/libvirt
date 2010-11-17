@@ -117,6 +117,7 @@ static int ebtablesRemoveBasicRules(const char *ifname);
 static int ebiptablesDriverInit(void);
 static void ebiptablesDriverShutdown(void);
 static int ebtablesCleanAll(const char *ifname);
+static int ebiptablesAllTeardown(const char *ifname);
 
 static virMutex execCLIMutex;
 
@@ -2942,7 +2943,7 @@ ebtablesApplyBasicRules(const char *ifname,
 
     virFormatMacAddr(macaddr, macaddr_str);
 
-    ebtablesCleanAll(ifname);
+    ebiptablesAllTeardown(ifname);
 
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
 
@@ -3041,7 +3042,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     virFormatMacAddr(macaddr, macaddr_str);
 
-    ebtablesCleanAll(ifname);
+    ebiptablesAllTeardown(ifname);
 
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
@@ -3143,7 +3144,7 @@ ebtablesApplyDropAllRules(const char *ifname)
         return 1;
     }
 
-    ebtablesCleanAll(ifname);
+    ebiptablesAllTeardown(ifname);
 
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
