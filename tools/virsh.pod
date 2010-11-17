@@ -306,7 +306,7 @@ L<http://libvirt.org/formatdomain.html#elementsCPU>
 
 The following commands manipulate domains directly, as stated
 previously most commands take domain-id as the first parameter. The
-I<domain-id> can be specified as an short integer, a name or a full UUID.
+I<domain-id> can be specified as a short integer, a name or a full UUID.
 
 =over 4
 
@@ -334,7 +334,7 @@ If I<--console> is requested, attach to the console after creation.
 B<Example>
 
  virsh dumpxml <domain-id> > domain.xml
- edit domain.xml
+ vi domain.xml (or make changes with your other text editor)
  virsh create < domain.xml
 
 =item B<define> I<FILE>
@@ -431,7 +431,7 @@ Edit the XML configuration file for a domain.
 This is equivalent to:
 
  virsh dumpxml domain > domain.xml
- edit domain.xml
+ vi domain.xml (or make changes with your other text editor)
  virsh define domain.xml
 
 except that it does some error checking.
@@ -631,7 +631,7 @@ is not available the processes will provide an exit code of 1.
 =head1 DEVICE COMMANDS
 
 The following commands manipulate devices associated to domains.
-The domain-id can be specified as an short integer, a name or a full UUID.
+The domain-id can be specified as a short integer, a name or a full UUID.
 To better understand the values allowed as options for the command
 reading the documentation at L<http://libvirt.org/formatdomain.html> on the
 format of the device sections to get the most accurate set of accepted values.
@@ -735,7 +735,7 @@ Edit the XML configuration file for a network.
 This is equivalent to:
 
  virsh net-dumpxml network > network.xml
- edit network.xml
+ vi network.xml (or make changes with your other text editor)
  virsh net-define network.xml
 
 except that it does some error checking.
@@ -851,7 +851,7 @@ Edit the XML configuration file for a storage pool.
 This is equivalent to:
 
  virsh pool-dumpxml pool > pool.xml
- edit pool.xml
+ vi pool.xml (or make changes with your other text editor)
  virsh pool-define pool.xml
 
 except that it does some error checking.
@@ -908,7 +908,7 @@ pre-existing volume.
 B<Example>
 
  virsh vol-dumpxml --pool storagepool1 appvolume1 > newvolume.xml
- edit newvolume.xml
+ vi newvolume.xml (or make changes with your other text editor)
  virsh vol-create differentstoragepool newvolume.xml
 
 =item B<vol-create-from> I<pool-or-uuid> I<FILE> [optional I<--inputpool>
@@ -1138,7 +1138,7 @@ Edit the XML of a network filter.
 This is equivalent to:
 
  virsh nwfilter-dumpxml myfilter > myfilter.xml
- edit myfilter.xml
+ vi myfilter.xml (or make changes with your other text editor)
  virsh nwfilter-define myfilter.xml
 
 except that it does some error checking.
