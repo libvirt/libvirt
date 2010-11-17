@@ -26,6 +26,7 @@
 #include <getopt.h>
 #include <stdbool.h>
 #include <sys/utsname.h>
+#include <locale.h>
 
 #include "internal.h"
 #include "buf.h"
@@ -84,21 +85,21 @@ vahDeinit(vahControl * ctl)
 static void
 vah_usage(void)
 {
-    fprintf(stdout, _("\n%s [options] [< def.xml]\n\n
-  Options:\n
-    -a | --add                     load profile\n
-    -c | --create                  create profile from template\n
-    -D | --delete                  unload and delete profile\n
-    -f | --add-file <file>         add file to profile\n
-    -F | --append-file <file>      append file to profile\n
-    -r | --replace                 reload profile\n
-    -R | --remove                  unload profile\n
-    -h | --help                    this help\n
-    -u | --uuid <uuid>             uuid (profile name)\n
-\n", progname);
+    printf(_("\n%s [options] [< def.xml]\n\n"
+            "  Options:\n"
+            "    -a | --add                     load profile\n"
+            "    -c | --create                  create profile from template\n"
+            "    -D | --delete                  unload and delete profile\n"
+            "    -f | --add-file <file>         add file to profile\n"
+            "    -F | --append-file <file>      append file to profile\n"
+            "    -r | --replace                 reload profile\n"
+            "    -R | --remove                  unload profile\n"
+            "    -h | --help                    this help\n"
+            "    -u | --uuid <uuid>             uuid (profile name)\n"
+            "\n"), progname);
 
-    fputs(_("This command is intended to be used by libvirtd "
-            "and not used directly.\n"));
+    puts(_("This command is intended to be used by libvirtd "
+           "and not used directly.\n"));
     return;
 }
 
@@ -289,7 +290,7 @@ update_include_file(const char *include_file, const char *included_files,
     }
 
     if (VIR_CLOSE(fd) != 0) {
-        vah_error(NULL, 0, _("failed to close or write to profile")_;
+        vah_error(NULL, 0, _("failed to close or write to profile"));
         goto clean;
     }
     rc = 0;
@@ -396,7 +397,7 @@ create_profile(const char *profile, const char *profile_name,
     }
 
     if (VIR_CLOSE(fd) != 0) {
-        vah_error(NULL, 0, _("failed to close or write to profile")_;
+        vah_error(NULL, 0, _("failed to close or write to profile"));
         goto clean_all;
     }
     rc = 0;
@@ -1061,7 +1062,7 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
             case 'f':
             case 'F':
                 if ((ctl->newfile = strdup(optarg)) == NULL)
-                    vah_error(ctl, 1, _("could not allocate memory for disk")_;
+                    vah_error(ctl, 1, _("could not allocate memory for disk"));
                 ctl->append = arg == 'F';
                 break;
             case 'h':
@@ -1140,7 +1141,7 @@ main(int argc, char **argv)
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
         textdomain(PACKAGE) == NULL) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv0);
+        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
 
