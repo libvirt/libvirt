@@ -8994,12 +8994,12 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
     if (safewrite (fd, doc, strlen (doc)) == -1) {
         vshError(ctl, _("write: %s: failed to write to temporary file: %s"),
                  ret, strerror(errno));
-        close (fd);
+        VIR_FORCE_CLOSE(fd);
         unlink (ret);
         VIR_FREE(ret);
         return NULL;
     }
-    if (close (fd) == -1) {
+    if (VIR_CLOSE(fd) < 0) {
         vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
                  ret, strerror(errno));
         unlink (ret);
