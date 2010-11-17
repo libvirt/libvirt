@@ -83,10 +83,8 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
         return -1;
     }
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityImageLabel &&
-        driver->securityDriver->domainSetSecurityImageLabel(driver->securityDriver,
-                                                            vm, disk) < 0)
+    if (virSecurityManagerSetImageLabel(driver->securityManager,
+                                        vm, disk) < 0)
         return -1;
 
     if (!(driveAlias = qemuDeviceDriveHostAlias(origdisk, qemuCmdFlags)))
@@ -115,10 +113,8 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
     if (ret < 0)
         goto error;
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityImageLabel &&
-        driver->securityDriver->domainRestoreSecurityImageLabel(driver->securityDriver,
-                                                                vm, origdisk) < 0)
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm, origdisk) < 0)
         VIR_WARN("Unable to restore security label on ejected image %s", origdisk->src);
 
     VIR_FREE(origdisk->src);
@@ -134,10 +130,8 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
 
 error:
     VIR_FREE(driveAlias);
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityImageLabel &&
-        driver->securityDriver->domainRestoreSecurityImageLabel(driver->securityDriver,
-                                                                vm, disk) < 0)
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm, disk) < 0)
         VIR_WARN("Unable to restore security label on new media %s", disk->src);
     return -1;
 }
@@ -162,10 +156,8 @@ int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
         }
     }
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityImageLabel &&
-        driver->securityDriver->domainSetSecurityImageLabel(driver->securityDriver,
-                                                            vm, disk) < 0)
+    if (virSecurityManagerSetImageLabel(driver->securityManager,
+                                        vm, disk) < 0)
         return -1;
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
@@ -232,10 +224,8 @@ error:
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &disk->info) < 0)
         VIR_WARN("Unable to release PCI address on %s", disk->src);
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityImageLabel &&
-        driver->securityDriver->domainRestoreSecurityImageLabel(driver->securityDriver,
-                                                                vm, disk) < 0)
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", disk->src);
 
     return -1;
@@ -375,10 +365,8 @@ int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
     }
 
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityImageLabel &&
-        driver->securityDriver->domainSetSecurityImageLabel(driver->securityDriver,
-                                                            vm, disk) < 0)
+    if (virSecurityManagerSetImageLabel(driver->securityManager,
+                                        vm, disk) < 0)
         return -1;
 
     /* We should have an address already, so make sure */
@@ -464,10 +452,8 @@ error:
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityImageLabel &&
-        driver->securityDriver->domainRestoreSecurityImageLabel(driver->securityDriver,
-                                                                vm, disk) < 0)
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", disk->src);
 
     return -1;
@@ -492,10 +478,8 @@ int qemuDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
         }
     }
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityImageLabel &&
-        driver->securityDriver->domainSetSecurityImageLabel(driver->securityDriver,
-                                                            vm, disk) < 0)
+    if (virSecurityManagerSetImageLabel(driver->securityManager,
+                                        vm, disk) < 0)
         return -1;
 
     if (!disk->src) {
@@ -551,10 +535,8 @@ error:
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityImageLabel &&
-        driver->securityDriver->domainRestoreSecurityImageLabel(driver->securityDriver,
-                                                                vm, disk) < 0)
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", disk->src);
 
     return -1;
@@ -979,10 +961,8 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
     }
 
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityHostdevLabel &&
-        driver->securityDriver->domainSetSecurityHostdevLabel(driver->securityDriver,
-                                                              vm, hostdev) < 0)
+    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                          vm, hostdev) < 0)
         return -1;
 
     switch (hostdev->source.subsys.type) {
@@ -1008,10 +988,8 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
     return 0;
 
 error:
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityHostdevLabel &&
-        driver->securityDriver->domainRestoreSecurityHostdevLabel(driver->securityDriver,
-                                                                  vm, hostdev) < 0)
+    if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                              vm, hostdev) < 0)
         VIR_WARN0("Unable to restore host device labelling on hotplug fail");
 
     return -1;
@@ -1183,10 +1161,8 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
 
     virDomainDiskDefFree(detach);
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityImageLabel &&
-        driver->securityDriver->domainRestoreSecurityImageLabel(driver->securityDriver,
-                                                                vm, dev->data.disk) < 0)
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm, dev->data.disk) < 0)
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
@@ -1263,10 +1239,8 @@ int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
 
     virDomainDiskDefFree(detach);
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityImageLabel &&
-        driver->securityDriver->domainRestoreSecurityImageLabel(driver->securityDriver,
-                                                                vm, dev->data.disk) < 0)
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm, dev->data.disk) < 0)
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
@@ -1699,10 +1673,8 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityHostdevLabel &&
-        driver->securityDriver->domainRestoreSecurityHostdevLabel(driver->securityDriver,
-                                                                  vm, dev->data.hostdev) < 0)
+    if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                              vm, dev->data.hostdev) < 0)
         VIR_WARN0("Failed to restore host device labelling");
 
     return ret;

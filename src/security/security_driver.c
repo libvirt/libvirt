@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "virterror_internal.h"
+#include "logging.h"
 
 #include "security_driver.h"
 #ifdef WITH_SECDRIVER_SELINUX
@@ -24,116 +25,53 @@
 # include "security_apparmor.h"
 #endif
 
+#include "security_nop.h"
+
 static virSecurityDriverPtr security_drivers[] = {
 #ifdef WITH_SECDRIVER_SELINUX
-    &virSELinuxSecurityDriver,
+    &virSecurityDriverSELinux,
 #endif
 #ifdef WITH_SECDRIVER_APPARMOR
     &virAppArmorSecurityDriver,
 #endif
-    NULL
+    &virSecurityDriverNop, /* Must always be last, since it will always probe */
 };
 
-int
-virSecurityDriverVerify(virDomainDefPtr def)
+virSecurityDriverPtr virSecurityDriverLookup(const char *name)
 {
-    unsigned int i;
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    virSecurityDriverPtr drv = NULL;
+    int i;
 
-    if (!secdef->model ||
-        STREQ(secdef->model, "none"))
-        return 0;
+    VIR_DEBUG("name=%s", NULLSTR(name));
 
-    for (i = 0; security_drivers[i] != NULL ; i++) {
-        if (STREQ(security_drivers[i]->name, secdef->model)) {
-            return security_drivers[i]->domainSecurityVerify(def);
-        }
-    }
-    virSecurityReportError(VIR_ERR_XML_ERROR,
-                           _("invalid security model '%s'"), secdef->model);
-    return -1;
-}
-
-int
-virSecurityDriverStartup(virSecurityDriverPtr *drv,
-                         const char *name,
-                         bool allowDiskFormatProbing)
-{
-    unsigned int i;
-
-    if (name && STREQ(name, "none"))
-        return -2;
-
-    for (i = 0; security_drivers[i] != NULL ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(security_drivers) && !drv ; i++) {
         virSecurityDriverPtr tmp = security_drivers[i];
 
-        if (name && STRNEQ(tmp->name, name))
+        if (name &&
+            STRNEQ(tmp->name, name))
             continue;
 
         switch (tmp->probe()) {
         case SECURITY_DRIVER_ENABLE:
-            virSecurityDriverInit(tmp);
-            if (tmp->open(tmp, allowDiskFormatProbing) == -1) {
-                return -1;
-            } else {
-                *drv = tmp;
-                return 0;
-            }
+            VIR_DEBUG("Probed name=%s", tmp->name);
+            drv = tmp;
             break;
 
         case SECURITY_DRIVER_DISABLE:
+            VIR_DEBUG("Not enabled name=%s", tmp->name);
             break;
 
         default:
-            return -1;
+            return NULL;
         }
     }
-    return -2;
-}
 
-/*
- * Helpers
- */
-void
-virSecurityDriverInit(virSecurityDriverPtr drv)
-{
-    memset(&drv->_private, 0, sizeof drv->_private);
-}
-
-int
-virSecurityDriverSetDOI(virSecurityDriverPtr drv,
-                        const char *doi)
-{
-    if (strlen(doi) >= VIR_SECURITY_DOI_BUFLEN) {
+    if (!drv) {
         virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("%s: DOI \'%s\' is "
-                               "longer than the maximum allowed length of %d"),
-                               __func__, doi, VIR_SECURITY_DOI_BUFLEN - 1);
-        return -1;
+                               _("Security driver %s not found"),
+                               NULLSTR(name));
+        return NULL;
     }
-    strcpy(drv->_private.doi, doi);
-    return 0;
-}
 
-const char *
-virSecurityDriverGetDOI(virSecurityDriverPtr drv)
-{
-    return drv->_private.doi;
-}
-
-const char *
-virSecurityDriverGetModel(virSecurityDriverPtr drv)
-{
-    return drv->name;
-}
-
-void virSecurityDriverSetAllowDiskFormatProbing(virSecurityDriverPtr drv,
-                                                bool allowDiskFormatProbing)
-{
-    drv->_private.allowDiskFormatProbing = allowDiskFormatProbing;
-}
-
-bool virSecurityDriverGetAllowDiskFormatProbing(virSecurityDriverPtr drv)
-{
-    return drv->_private.allowDiskFormatProbing;
+    return drv;
 }

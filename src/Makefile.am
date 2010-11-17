@@ -288,11 +288,7 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_monitor_json.h			\
 		qemu/qemu_driver.c qemu/qemu_driver.h		\
 		qemu/qemu_bridge_filter.c			\
-		qemu/qemu_bridge_filter.h			\
-		qemu/qemu_security_stacked.h			\
-		qemu/qemu_security_stacked.c			\
-		qemu/qemu_security_dac.h			\
-		qemu/qemu_security_dac.c
+		qemu/qemu_bridge_filter.h
 
 XENAPI_DRIVER_SOURCES =								\
 		xenapi/xenapi_driver.c xenapi/xenapi_driver.h	\
@@ -390,7 +386,11 @@ NWFILTER_DRIVER_SOURCES =					\
 
 # Security framework and drivers for various models
 SECURITY_DRIVER_SOURCES =					\
-		security/security_driver.h security/security_driver.c
+		security/security_driver.h security/security_driver.c \
+		security/security_nop.h security/security_nop.c \
+		security/security_stack.h security/security_stack.c \
+		security/security_dac.h security/security_dac.c \
+		security/security_manager.h security/security_manager.c
 
 SECURITY_DRIVER_SELINUX_SOURCES =				\
 		security/security_selinux.h security/security_selinux.c

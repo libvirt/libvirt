@@ -10,22 +10,16 @@
 int
 main (int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 {
-    int ret;
-
+    virSecurityManagerPtr mgr;
     const char *doi, *model;
-    virSecurityDriverPtr security_drv;
 
-    ret = virSecurityDriverStartup (&security_drv, "selinux", false);
-    if (ret == -1)
-    {
+    mgr = virSecurityManagerNew(NULL, false);
+    if (mgr == NULL) {
         fprintf (stderr, "Failed to start security driver");
         exit (-1);
     }
-    /* No security driver wanted to be enabled: just return */
-    if (ret == -2)
-        return 0;
 
-    model = virSecurityDriverGetModel (security_drv);
+    model = virSecurityManagerGetModel(mgr);
     if (!model)
     {
         fprintf (stderr, "Failed to copy secModel model: %s",
@@ -33,13 +27,15 @@ main (int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
         exit (-1);
     }
 
-    doi = virSecurityDriverGetDOI (security_drv);
+    doi = virSecurityManagerGetDOI(mgr);
     if (!doi)
     {
         fprintf (stderr, "Failed to copy secModel DOI: %s",
                  strerror (errno));
         exit (-1);
     }
+
+    virSecurityManagerFree(mgr);
 
     return 0;
 }

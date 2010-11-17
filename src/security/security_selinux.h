@@ -13,6 +13,6 @@
 #ifndef __VIR_SECURITY_SELINUX_H__
 # define __VIR_SECURITY_SELINUX_H__
 
-extern virSecurityDriver virSELinuxSecurityDriver;
+extern virSecurityDriver virSecurityDriverSELinux;
 
 #endif /* __VIR_SECURITY_SELINUX_H__ */

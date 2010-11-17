@@ -5642,6 +5642,8 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
 {
     virConnectPtr conn;
 
+    VIR_DOMAIN_DEBUG(domain, "seclabel=%p", seclabel);
+
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
@@ -5684,6 +5686,8 @@ error:
 int
 virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
 {
+    DEBUG("conn=%p secmodel=%p", conn, secmodel);
+
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);

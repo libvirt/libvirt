@@ -701,13 +701,33 @@ virSecretDefParseFile;
 virSecretDefParseString;
 
 
-# security.h
-virSecurityDriverGetDOI;
-virSecurityDriverGetModel;
-virSecurityDriverInit;
-virSecurityDriverSetDOI;
-virSecurityDriverStartup;
-virSecurityDriverVerify;
+# security_driver.h
+virSecurityDriverLookup;
+
+
+# security_manager.h
+virSecurityManagerClearSocketLabel;
+virSecurityManagerFree;
+virSecurityManagerGenLabel;
+virSecurityManagerGetDOI;
+virSecurityManagerGetModel;
+virSecurityManagerGetProcessLabel;
+virSecurityManagerNew;
+virSecurityManagerNewStack;
+virSecurityManagerNewDAC;
+virSecurityManagerReleaseLabel;
+virSecurityManagerReserveLabel;
+virSecurityManagerRestoreImageLabel;
+virSecurityManagerRestoreAllLabel;
+virSecurityManagerRestoreHostdevLabel;
+virSecurityManagerRestoreSavedStateLabel;
+virSecurityManagerSetAllLabel;
+virSecurityManagerSetImageLabel;
+virSecurityManagerSetHostdevLabel;
+virSecurityManagerSetProcessLabel;
+virSecurityManagerSetSavedStateLabel;
+virSecurityManagerSetSocketLabel;
+virSecurityManagerVerify;
 
 
 # storage_conf.h

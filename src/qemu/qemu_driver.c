@@ -73,8 +73,6 @@
 #include "pci.h"
 #include "hostusb.h"
 #include "processinfo.h"
-#include "qemu_security_stacked.h"
-#include "qemu_security_dac.h"
 #include "libvirt_internal.h"
 #include "xml.h"
 #include "cpu/cpu.h"
@@ -861,10 +859,7 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecuritySocketLabel &&
-        driver->securityDriver->domainSetSecuritySocketLabel
-          (driver->securityDriver,vm) < 0) {
+    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm) < 0) {
         VIR_ERROR(_("Failed to set security context for monitor for %s"),
                   vm->def->name);
         goto error;
@@ -882,10 +877,7 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     if (priv->mon == NULL)
         virDomainObjUnref(vm);
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainClearSecuritySocketLabel &&
-        driver->securityDriver->domainClearSecuritySocketLabel
-          (driver->securityDriver,vm) < 0) {
+    if (virSecurityManagerClearSocketLabel(driver->securityManager, vm) < 0) {
         VIR_ERROR(_("Failed to clear security context for monitor for %s"),
                   vm->def->name);
         goto error;
@@ -954,10 +946,7 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
             goto error;
     }
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainReserveSecurityLabel &&
-        driver->securityDriver->domainReserveSecurityLabel(driver->securityDriver,
-                                                           obj) < 0)
+    if (virSecurityManagerReserveLabel(driver->securityManager, obj) < 0)
         goto error;
 
     if (qemudVMFiltersInstantiate(conn, obj->def))
@@ -995,35 +984,34 @@ qemuReconnectDomains(virConnectPtr conn, struct qemud_driver *driver)
 
 
 static int
-qemudSecurityInit(struct qemud_driver *qemud_drv)
+qemuSecurityInit(struct qemud_driver *driver)
 {
-    int ret;
-    virSecurityDriverPtr security_drv;
+    virSecurityManagerPtr mgr = virSecurityManagerNew(driver->securityDriverName,
+                                                      driver->allowDiskFormatProbing);
+    if (!mgr)
+        goto error;
 
-    qemuSecurityStackedSetDriver(qemud_drv);
-    qemuSecurityDACSetDriver(qemud_drv);
+    if (driver->privileged) {
+        virSecurityManagerPtr dac = virSecurityManagerNewDAC(driver->user,
+                                                             driver->group,
+                                                             driver->allowDiskFormatProbing,
+                                                             driver->dynamicOwnership);
+        if (!dac)
+            goto error;
 
-    ret = virSecurityDriverStartup(&security_drv,
-                                   qemud_drv->securityDriverName,
-                                   qemud_drv->allowDiskFormatProbing);
-    if (ret == -1) {
-        VIR_ERROR0(_("Failed to start security driver"));
-        return -1;
-    }
-
-    /* No primary security driver wanted to be enabled: just setup
-     * the DAC driver on its own */
-    if (ret == -2) {
-        qemud_drv->securityDriver = &qemuDACSecurityDriver;
-        VIR_INFO0(_("No security driver available"));
+        if (!(driver->securityManager = virSecurityManagerNewStack(mgr,
+                                                                   dac)))
+            goto error;
     } else {
-        qemud_drv->securityPrimaryDriver = security_drv;
-        qemud_drv->securitySecondaryDriver = &qemuDACSecurityDriver;
-        qemud_drv->securityDriver = &qemuStackedSecurityDriver;
-        VIR_INFO("Initialized security driver %s", security_drv->name);
+        driver->securityManager = mgr;
     }
 
     return 0;
+
+error:
+    VIR_ERROR0(_("Failed to initialize security drivers"));
+    virSecurityManagerFree(mgr);
+    return -1;
 }
 
 
@@ -1057,20 +1045,19 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
     }
 
     /* Security driver data */
-    if (driver->securityPrimaryDriver) {
-        const char *doi, *model;
+    const char *doi, *model;
 
-        doi = virSecurityDriverGetDOI(driver->securityPrimaryDriver);
-        model = virSecurityDriverGetModel(driver->securityPrimaryDriver);
-
+    doi = virSecurityManagerGetDOI(driver->securityManager);
+    model = virSecurityManagerGetModel(driver->securityManager);
+    if (STRNEQ(model, "none")) {
         if (!(caps->host.secModel.model = strdup(model)))
             goto no_memory;
         if (!(caps->host.secModel.doi = strdup(doi)))
             goto no_memory;
-
-        VIR_DEBUG("Initialized caps for security driver \"%s\" with "
-                  "DOI \"%s\"", model, doi);
     }
+
+    VIR_DEBUG("Initialized caps for security driver \"%s\" with "
+              "DOI \"%s\"", model, doi);
 
     return caps;
 
@@ -1336,7 +1323,7 @@ qemudStartup(int privileged) {
     }
     VIR_FREE(driverConf);
 
-    if (qemudSecurityInit(qemu_driver) < 0)
+    if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
     if ((qemu_driver->caps = qemuCreateCapabilities(NULL,
@@ -1555,9 +1542,10 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->spicePassword);
     VIR_FREE(qemu_driver->hugetlbfs_mount);
     VIR_FREE(qemu_driver->hugepage_path);
-    VIR_FREE(qemu_driver->securityDriverName);
     VIR_FREE(qemu_driver->saveImageFormat);
     VIR_FREE(qemu_driver->dumpImageFormat);
+
+    virSecurityManagerFree(qemu_driver->securityManager);
 
     ebtablesContextFree(qemu_driver->ebtables);
 
@@ -2573,9 +2561,7 @@ static int qemudSecurityHook(void *data) {
     if (qemudInitCpuAffinity(h->vm) < 0)
         return -1;
 
-    if (h->driver->securityDriver &&
-        h->driver->securityDriver->domainSetSecurityProcessLabel &&
-        h->driver->securityDriver->domainSetSecurityProcessLabel(h->driver->securityDriver, h->vm) < 0)
+    if (virSecurityManagerSetProcessLabel(h->driver->securityManager, h->vm) < 0)
         return -1;
 
     return 0;
@@ -2660,22 +2646,16 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
     DEBUG0("Generating domain security label (if required)");
-    if (driver->securityDriver &&
-        driver->securityDriver->domainGenSecurityLabel) {
-        ret = driver->securityDriver->domainGenSecurityLabel(driver->securityDriver,
-                                                             vm);
-        qemuDomainSecurityLabelAudit(vm, ret >= 0);
-        if (ret < 0)
-            goto cleanup;
-    }
-
-    DEBUG0("Generating setting domain security labels (if required)");
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityAllLabel &&
-        driver->securityDriver->domainSetSecurityAllLabel(driver->securityDriver,
-                                                          vm, stdin_path) < 0) {
+    if (virSecurityManagerGenLabel(driver->securityManager, vm) < 0) {
+        qemuDomainSecurityLabelAudit(vm, false);
         goto cleanup;
     }
+    qemuDomainSecurityLabelAudit(vm, true);
+
+    DEBUG0("Generating setting domain security labels (if required)");
+    if (virSecurityManagerSetAllLabel(driver->securityManager,
+                                      vm, stdin_path) < 0)
+        goto cleanup;
 
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
@@ -3057,14 +3037,9 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     }
 
     /* Reset Security Labels */
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityAllLabel)
-        driver->securityDriver->domainRestoreSecurityAllLabel(driver->securityDriver,
-                                                              vm, migrated);
-    if (driver->securityDriver &&
-        driver->securityDriver->domainReleaseSecurityLabel)
-        driver->securityDriver->domainReleaseSecurityLabel(driver->securityDriver,
-                                                           vm);
+    virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                      vm, migrated);
+    virSecurityManagerReleaseLabel(driver->securityManager, vm);
 
     /* Clear out dynamically assigned labels */
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
@@ -3568,7 +3543,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virSecurityDriverVerify(def) < 0)
+    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
@@ -4471,10 +4446,8 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     }
 
     if ((!bypassSecurityDriver) &&
-        driver->securityDriver &&
-        driver->securityDriver->domainSetSavedStateLabel &&
-        driver->securityDriver->domainSetSavedStateLabel(driver->securityDriver,
-                                                         vm, path) == -1)
+        virSecurityManagerSetSavedStateLabel(driver->securityManager,
+                                             vm, path) < 0)
         goto endjob;
 
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
@@ -4507,10 +4480,8 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         goto endjob;
 
     if ((!bypassSecurityDriver) &&
-        driver->securityDriver &&
-        driver->securityDriver->domainRestoreSavedStateLabel &&
-        driver->securityDriver->domainRestoreSavedStateLabel(driver->securityDriver,
-                                                             vm, path) == -1)
+        virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
+                                                 vm, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
 
     if (cgroup != NULL) {
@@ -4552,10 +4523,8 @@ endjob:
             }
 
             if ((!bypassSecurityDriver) &&
-                driver->securityDriver &&
-                driver->securityDriver->domainRestoreSavedStateLabel &&
-                driver->securityDriver->domainRestoreSavedStateLabel(driver->securityDriver,
-                                                                     vm, path) == -1)
+                virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
+                                                         vm, path) < 0)
                 VIR_WARN("failed to restore save state label on %s", path);
         }
 
@@ -4779,10 +4748,8 @@ static int doCoreDump(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSavedStateLabel &&
-        driver->securityDriver->domainSetSavedStateLabel(driver->securityDriver,
-                                                         vm, path) == -1)
+    if (virSecurityManagerSetSavedStateLabel(driver->securityManager,
+                                             vm, path) < 0)
         goto cleanup;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -4814,10 +4781,8 @@ static int doCoreDump(struct qemud_driver *driver,
     if (ret < 0)
         goto cleanup;
 
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSavedStateLabel &&
-        driver->securityDriver->domainRestoreSavedStateLabel(driver->securityDriver,
-                                                             vm, path) == -1)
+    if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
+                                                 vm, path) < 0)
         goto cleanup;
 
 cleanup:
@@ -5434,10 +5399,8 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
      *   QEMU monitor hasn't seen SIGHUP/ERR on poll().
      */
     if (virDomainObjIsActive(vm)) {
-        if (driver->securityDriver &&
-            driver->securityDriver->domainGetSecurityProcessLabel &&
-            driver->securityDriver->domainGetSecurityProcessLabel(driver->securityDriver,
-                                                                  vm, seclabel) < 0) {
+        if (virSecurityManagerGetProcessLabel(driver->securityManager,
+                                              vm, seclabel) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             "%s", _("Failed to get security label"));
             goto cleanup;
@@ -5461,10 +5424,12 @@ static int qemudNodeGetSecurityModel(virConnectPtr conn,
     int ret = 0;
 
     qemuDriverLock(driver);
-    if (!driver->securityPrimaryDriver) {
-        memset(secmodel, 0, sizeof (*secmodel));
+    memset(secmodel, 0, sizeof(*secmodel));
+
+    /* NULL indicates no driver, which we treat as
+     * success, but simply return no data in *secmodel */
+    if (driver->caps->host.secModel.model == NULL)
         goto cleanup;
-    }
 
     p = driver->caps->host.secModel.model;
     if (strlen(p) >= VIR_SECURITY_MODEL_BUFLEN-1) {
@@ -5840,10 +5805,8 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     ret = 0;
 
 out:
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSavedStateLabel &&
-        driver->securityDriver->domainRestoreSavedStateLabel(driver->securityDriver,
-                                                             vm, path) == -1)
+    if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
+                                                 vm, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
 
     return ret;
@@ -6372,7 +6335,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virSecurityDriverVerify(def) < 0)
+    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
     if ((dupVM = virDomainObjIsDuplicate(&driver->domains, def, 0)) < 0)

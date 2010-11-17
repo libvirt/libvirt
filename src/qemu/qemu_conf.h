@@ -35,7 +35,7 @@
 # include "domain_conf.h"
 # include "domain_event.h"
 # include "threads.h"
-# include "security/security_driver.h"
+# include "security/security_manager.h"
 # include "cgroup.h"
 # include "pci.h"
 # include "cpu_conf.h"
@@ -114,9 +114,7 @@ struct qemud_driver {
     int domainEventDispatching;
 
     char *securityDriverName;
-    virSecurityDriverPtr securityDriver;
-    virSecurityDriverPtr securityPrimaryDriver;
-    virSecurityDriverPtr securitySecondaryDriver;
+    virSecurityManagerPtr securityManager;
 
     char *saveImageFormat;
     char *dumpImageFormat;

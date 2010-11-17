@@ -14,6 +14,8 @@
 #ifndef __VIR_SECURITY_APPARMOR_H__
 # define __VIR_SECURITY_APPARMOR_H__
 
+# include "security_driver.h"
+
 extern virSecurityDriver virAppArmorSecurityDriver;
 
 # define AA_PREFIX  "libvirt-"
