@@ -56,6 +56,32 @@ struct _virNetworkDHCPHostDef {
     virSocketAddr ip;
 };
 
+typedef struct _virNetworkIpDef virNetworkIpDef;
+typedef virNetworkIpDef *virNetworkIpDefPtr;
+struct _virNetworkIpDef {
+    char *family;               /* ipv4 or ipv6 - default is ipv4 */
+    virSocketAddr address;      /* Bridge IP address */
+
+    /* One or the other of the following two will be used for a given
+     * IP address, but never both. The parser guarantees this.
+     * Use virNetworkIpDefPrefix/virNetworkIpDefNetmask rather
+     * than accessing the data directly - these utility functions
+     * will convert one into the other as necessary.
+     */
+    unsigned int prefix;        /* ipv6 - only prefix allowed */
+    virSocketAddr netmask;      /* ipv4 - either netmask or prefix specified */
+
+    unsigned int nranges;        /* Zero or more dhcp ranges */
+    virNetworkDHCPRangeDefPtr ranges;
+
+    unsigned int nhosts;         /* Zero or more dhcp hosts */
+    virNetworkDHCPHostDefPtr hosts;
+
+    char *tftproot;
+    char *bootfile;
+    virSocketAddr bootserver;
+   };
+
 typedef struct _virNetworkDef virNetworkDef;
 typedef virNetworkDef *virNetworkDefPtr;
 struct _virNetworkDef {
@@ -70,18 +96,8 @@ struct _virNetworkDef {
     int forwardType;    /* One of virNetworkForwardType constants */
     char *forwardDev;   /* Destination device for forwarding */
 
-    virSocketAddr ipAddress;    /* Bridge IP address */
-    virSocketAddr netmask;
-
-    unsigned int nranges;        /* Zero or more dhcp ranges */
-    virNetworkDHCPRangeDefPtr ranges;
-
-    unsigned int nhosts;         /* Zero or more dhcp hosts */
-    virNetworkDHCPHostDefPtr hosts;
-
-    char *tftproot;
-    char *bootfile;
-    virSocketAddr bootserver;
+    size_t nips;
+    virNetworkIpDefPtr ips; /* ptr to array of IP addresses on this network */
 };
 
 typedef struct _virNetworkObj virNetworkObj;
@@ -133,9 +149,12 @@ virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
 
 char *virNetworkDefFormat(const virNetworkDefPtr def);
 
-int virNetworkDefPrefix(const virNetworkDefPtr def);
-int virNetworkDefNetmask(const virNetworkDefPtr def,
-                         virSocketAddrPtr netmask);
+virNetworkIpDefPtr
+virNetworkDefGetIpByIndex(const virNetworkDefPtr def,
+                          int family, size_t n);
+int virNetworkIpDefPrefix(const virNetworkIpDefPtr def);
+int virNetworkIpDefNetmask(const virNetworkIpDefPtr def,
+                           virSocketAddrPtr netmask);
 
 int virNetworkSaveXML(const char *configDir,
                       virNetworkDefPtr def,

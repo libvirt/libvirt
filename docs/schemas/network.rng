@@ -80,15 +80,21 @@
         </optional>
 
         <!-- <ip> element -->
-        <optional>
+        <zeroOrMore>
           <!-- The IP element sets up NAT'ing and an optional DHCP server
                local to the host. -->
           <element name="ip">
             <optional>
-              <attribute name="address"><ref name="ipv4-addr"/></attribute>
+              <attribute name="address"><ref name="ip-addr"/></attribute>
             </optional>
             <optional>
-              <attribute name="netmask"><ref name="ipv4-addr"/></attribute>
+              <choice>
+                <attribute name="netmask"><ref name="ipv4-addr"/></attribute>
+                <attribute name="prefix"><ref name="ip-prefix"/></attribute>
+              </choice>
+            </optional>
+            <optional>
+              <attribute name="family"><ref name="addr-family"/></attribute>
             </optional>
             <optional>
               <element name="tftp">
@@ -123,7 +129,7 @@
               </element>
             </optional>
           </element>
-        </optional>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>
@@ -132,6 +138,33 @@
   <define name='ipv4-addr'>
     <data type='string'>
       <param name="pattern">(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))</param>
+    </data>
+  </define>
+
+  <!-- Based on http://blog.mes-stats.fr/2008/10/09/regex-ipv4-et-ipv6 -->
+  <define name='ipv6-addr'>
+    <data type='string'>
+      <!-- To understand this better, take apart the toplevel '|'s -->
+      <param name="pattern">(([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|(([0-9A-Fa-f]{1,4}:){0,5}:(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|(::([0-9A-Fa-f]{1,4}:){0,5}(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:)</param>
+    </data>
+  </define>
+
+  <define name='ip-addr'>
+    <choice>
+      <ref name='ipv4-addr'/>
+      <ref name='ipv6-addr'/>
+    </choice>
+  </define>
+
+  <define name='ip-prefix'>
+    <data type='unsignedInt'>
+      <param name="maxInclusive">128</param>
+    </data>
+  </define>
+
+  <define name='addr-family'>
+    <data type='string'>
+      <param name="pattern">(ipv4)|(ipv6)</param>
     </data>
   </define>
 

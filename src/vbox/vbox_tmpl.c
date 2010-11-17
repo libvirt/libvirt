@@ -7038,9 +7038,23 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
     IHostNetworkInterface *networkInterface = NULL;
 
     virNetworkDefPtr def = virNetworkDefParseString(xml);
+    virNetworkIpDefPtr ipdef;
+    virSocketAddr netmask;
 
     if (   (!def)
-        || (def->forwardType != VIR_NETWORK_FORWARD_NONE))
+        || (def->forwardType != VIR_NETWORK_FORWARD_NONE)
+        || (def->nips == 0 || !def->ips))
+        goto cleanup;
+
+    /* Look for the first IPv4 IP address definition and use that.
+     * If there weren't any IPv4 addresses, ignore the network (since it's
+     * required below to have an IPv4 address)
+    */
+    ipdef = virNetworkDefGetIpByIndex(def, AF_INET, 0);
+    if (!ipdef)
+        goto cleanup;
+
+    if (virNetworkIpDefNetmask(ipdef, &netmask) < 0)
         goto cleanup;
 
     /* the current limitation of hostonly network is that you can't
@@ -7096,9 +7110,9 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
         /* Currently support only one dhcp server per network
          * with contigious address space from start to end
          */
-        if ((def->nranges >= 1) &&
-            VIR_SOCKET_HAS_ADDR(&def->ranges[0].start) &&
-            VIR_SOCKET_HAS_ADDR(&def->ranges[0].end)) {
+        if ((ipdef->nranges >= 1) &&
+            VIR_SOCKET_HAS_ADDR(&ipdef->ranges[0].start) &&
+            VIR_SOCKET_HAS_ADDR(&ipdef->ranges[0].end)) {
             IDHCPServer *dhcpServer = NULL;
 
             data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
@@ -7118,10 +7132,10 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
                 PRUnichar *toIPAddressUtf16   = NULL;
                 PRUnichar *trunkTypeUtf16     = NULL;
 
-                ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->ipAddress);
-                networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &def->netmask);
-                fromIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->ranges[0].start);
-                toIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->ranges[0].end);
+                ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->address);
+                networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &netmask);
+                fromIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->ranges[0].start);
+                toIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->ranges[0].end);
 
                 if (ipAddressUtf16 == NULL || networkMaskUtf16 == NULL ||
                     fromIPAddressUtf16 == NULL || toIPAddressUtf16 == NULL) {
@@ -7158,13 +7172,13 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
             }
         }
 
-        if ((def->nhosts >= 1) &&
-            VIR_SOCKET_HAS_ADDR(&def->hosts[0].ip)) {
+        if ((ipdef->nhosts >= 1) &&
+            VIR_SOCKET_HAS_ADDR(&ipdef->hosts[0].ip)) {
             PRUnichar *ipAddressUtf16   = NULL;
             PRUnichar *networkMaskUtf16 = NULL;
 
-            ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &def->hosts[0].ip);
-            networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &def->netmask);
+            ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->hosts[0].ip);
+            networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &netmask);
 
             if (ipAddressUtf16 == NULL || networkMaskUtf16 == NULL) {
                 VBOX_UTF16_FREE(ipAddressUtf16);
@@ -7385,12 +7399,19 @@ static int vboxNetworkDestroy(virNetworkPtr network) {
 static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
     VBOX_OBJECT_HOST_CHECK(network->conn, char *, NULL);
     virNetworkDefPtr def  = NULL;
+    virNetworkIpDefPtr ipdef = NULL;
     char *networkNameUtf8 = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    if (VIR_ALLOC(ipdef) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    def->ips = ipdef;
+    def->nips = 1;
 
     if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
         virReportOOMError();
@@ -7427,8 +7448,8 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                                                                  networkNameUtf16,
                                                                  &dhcpServer);
                 if (dhcpServer) {
-                    def->nranges = 1;
-                    if (VIR_ALLOC_N(def->ranges, def->nranges) >=0 ) {
+                    ipdef->nranges = 1;
+                    if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) >=0 ) {
                         PRUnichar *ipAddressUtf16     = NULL;
                         PRUnichar *networkMaskUtf16   = NULL;
                         PRUnichar *fromIPAddressUtf16 = NULL;
@@ -7443,13 +7464,13 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                          * with contigious address space from start to end
                          */
                         if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                                     &def->ipAddress) < 0 ||
+                                                     &ipdef->address) < 0 ||
                             vboxSocketParseAddrUtf16(data, networkMaskUtf16,
-                                                     &def->netmask) < 0 ||
+                                                     &ipdef->netmask) < 0 ||
                             vboxSocketParseAddrUtf16(data, fromIPAddressUtf16,
-                                                     &def->ranges[0].start) < 0 ||
+                                                     &ipdef->ranges[0].start) < 0 ||
                             vboxSocketParseAddrUtf16(data, toIPAddressUtf16,
-                                                     &def->ranges[0].end) < 0) {
+                                                     &ipdef->ranges[0].end) < 0) {
                             errorOccurred = true;
                         }
 
@@ -7462,16 +7483,16 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                             goto cleanup;
                         }
                     } else {
-                        def->nranges = 0;
+                        ipdef->nranges = 0;
                         virReportOOMError();
                     }
 
-                    def->nhosts = 1;
-                    if (VIR_ALLOC_N(def->hosts, def->nhosts) >=0 ) {
-                        def->hosts[0].name = strdup(network->name);
-                        if (def->hosts[0].name == NULL) {
-                            VIR_FREE(def->hosts);
-                            def->nhosts = 0;
+                    ipdef->nhosts = 1;
+                    if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >=0 ) {
+                        ipdef->hosts[0].name = strdup(network->name);
+                        if (ipdef->hosts[0].name == NULL) {
+                            VIR_FREE(ipdef->hosts);
+                            ipdef->nhosts = 0;
                             virReportOOMError();
                         } else {
                             PRUnichar *macAddressUtf16 = NULL;
@@ -7481,10 +7502,10 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                             networkInterface->vtbl->GetHardwareAddress(networkInterface, &macAddressUtf16);
                             networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
 
-                            VBOX_UTF16_TO_UTF8(macAddressUtf16, &def->hosts[0].mac);
+                            VBOX_UTF16_TO_UTF8(macAddressUtf16, &ipdef->hosts[0].mac);
 
                             if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                                         &def->hosts[0].ip) < 0) {
+                                                         &ipdef->hosts[0].ip) < 0) {
                                 errorOccurred = true;
                             }
 
@@ -7496,7 +7517,7 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                             }
                         }
                     } else {
-                        def->nhosts = 0;
+                        ipdef->nhosts = 0;
                     }
 
                     VBOX_RELEASE(dhcpServer);
@@ -7509,9 +7530,9 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                     networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
 
                     if (vboxSocketParseAddrUtf16(data, networkMaskUtf16,
-                                                 &def->netmask) < 0 ||
+                                                 &ipdef->netmask) < 0 ||
                         vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                                 &def->ipAddress) < 0) {
+                                                 &ipdef->address) < 0) {
                         errorOccurred = true;
                     }
 
