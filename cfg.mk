@@ -231,12 +231,14 @@ sc_avoid_write:
 	halt='consider using safewrite instead of write'		\
 	  $(_sc_search_regexp)
 
-# Use STREQ rather than comparing strcmp == 0, or != 0.
-# Similarly, use STREQLEN or STRPREFIX rather than strncmp.
-sc_prohibit_strcmp_and_strncmp:
-	@prohibit='strn?cmp *\('					\
-	halt='use STREQ() in place of the above uses of str[n]cmp'	\
-	  $(_sc_search_regexp)
+# Similar to the gnulib maint.mk rule for sc_prohibit_strcmp
+# Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
+sc_prohibit_strncmp:
+	@grep -nE '! *str''ncmp *\(|\<str''ncmp *\([^)]+\) *=='		\
+	    $$($(VC_LIST_EXCEPT))					\
+	  | grep -vE ':# *define STREQ\(' &&				\
+	  { echo '$(ME): use STREQLEN or STRPREFIX instead of str''ncmp' \
+		1>&2; exit 1; } || :
 
 # Use virAsprintf rather than as'printf since *strp is undefined on error.
 sc_prohibit_asprintf:
