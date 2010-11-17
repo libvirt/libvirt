@@ -41,7 +41,7 @@ st=$(
   { make check syntax-check 2>&1; echo $? >&4; } | tee "$RESULTS"
 )
 exec 3>&-
-test $st = 0
+test "$st" = 0
 test -x /usr/bin/lcov && make cov
 
 rm -f *.tar.gz

@@ -160,5 +160,6 @@ endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 
 
 CLEANFILES = $(bin_SCRIPTS) $(man1_MANS)
+CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 
 DISTCLEANFILES = $(BUILT_SOURCES)
