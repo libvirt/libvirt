@@ -2641,7 +2641,7 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
     capabilities = fopen ("/sys/hypervisor/properties/capabilities", "r");
     if (capabilities == NULL) {
         if (errno != ENOENT) {
-            fclose(cpuinfo);
+            VIR_FORCE_FCLOSE(cpuinfo);
             virReportSystemError(errno,
                                  _("cannot read file %s"),
                                  "/sys/hypervisor/properties/capabilities");
@@ -2654,10 +2654,8 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
                                                  cpuinfo,
                                                  capabilities);
 
-    if (cpuinfo)
-        fclose(cpuinfo);
-    if (capabilities)
-        fclose(capabilities);
+    VIR_FORCE_FCLOSE(cpuinfo);
+    VIR_FORCE_FCLOSE(capabilities);
 
     return caps;
 #endif /* __sun */

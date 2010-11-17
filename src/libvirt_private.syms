@@ -344,6 +344,8 @@ virFDStreamCreateFile;
 
 # files.h
 virClose;
+virFclose;
+virFdopen;
 
 
 # hash.h

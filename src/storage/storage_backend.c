@@ -1398,7 +1398,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
-    if ((list = fdopen(fd, "r")) == NULL) {
+    if ((list = VIR_FDOPEN(fd, "r")) == NULL) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("cannot read fd"));
         goto cleanup;
@@ -1458,10 +1458,8 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
 
     VIR_FREE(reg);
 
-    if (list)
-        fclose(list);
-    else
-        VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_FCLOSE(list);
+    VIR_FORCE_CLOSE(fd);
 
     while ((err = waitpid(child, &exitstatus, 0) == -1) && errno == EINTR);
 
@@ -1531,9 +1529,9 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
-    if ((fp = fdopen(fd, "r")) == NULL) {
+    if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("cannot read fd"));
+                              "%s", _("cannot open file using fd"));
         goto cleanup;
     }
 
@@ -1573,10 +1571,8 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
         VIR_FREE(v[i]);
     VIR_FREE(v);
 
-    if (fp)
-        fclose (fp);
-    else
-        VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_FCLOSE(fp);
+    VIR_FORCE_CLOSE(fd);
 
     while ((w_err = waitpid (child, &exitstatus, 0) == -1) && errno == EINTR)
         /* empty */ ;

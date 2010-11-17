@@ -512,7 +512,7 @@ static int qemudWritePidFile(const char *pidFile) {
         return -1;
     }
 
-    if (!(fh = fdopen(fd, "w"))) {
+    if (!(fh = VIR_FDOPEN(fd, "w"))) {
         VIR_ERROR(_("Failed to fdopen pid file '%s' : %s"),
                   pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         VIR_FORCE_CLOSE(fd);
@@ -522,11 +522,11 @@ static int qemudWritePidFile(const char *pidFile) {
     if (fprintf(fh, "%lu\n", (unsigned long)getpid()) < 0) {
         VIR_ERROR(_("%s: Failed to write to pid file '%s' : %s"),
                   argv0, pidFile, virStrerror(errno, ebuf, sizeof ebuf));
-        fclose(fh);
+        VIR_FORCE_FCLOSE(fh);
         return -1;
     }
 
-    if (fclose(fh) == EOF) {
+    if (VIR_FCLOSE(fh) == EOF) {
         VIR_ERROR(_("%s: Failed to close pid file '%s' : %s"),
                   argv0, pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         return -1;

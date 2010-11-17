@@ -44,6 +44,7 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 #define DNSMASQ_HOSTSFILE_SUFFIX "hostsfile"
@@ -171,7 +172,7 @@ hostsfileWrite(const char *path,
     for (i = 0; i < nhosts; i++) {
         if (fputs(hosts[i].host, f) == EOF || fputc('\n', f) == EOF) {
             rc = errno;
-            fclose(f);
+            VIR_FORCE_FCLOSE(f);
 
             if (istmp)
                 unlink(tmp);
@@ -180,7 +181,7 @@ hostsfileWrite(const char *path,
         }
     }
 
-    if (fclose(f) == EOF) {
+    if (VIR_FCLOSE(f) == EOF) {
         rc = errno;
         goto cleanup;
     }

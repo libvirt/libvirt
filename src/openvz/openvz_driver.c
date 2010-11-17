@@ -154,7 +154,7 @@ openvzDomainDefineCmd(const char *args[],
             max_veid = veid;
         }
     }
-    fclose(fp);
+    VIR_FORCE_FCLOSE(fp);
 
     if (max_veid == 0) {
         max_veid = 100;
@@ -189,7 +189,7 @@ no_memory:
     return -1;
 
 cleanup:
-    fclose(fp);
+    VIR_FORCE_FCLOSE(fp);
     return -1;
 
 #undef ADD_ARG

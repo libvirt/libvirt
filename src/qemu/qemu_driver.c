@@ -4630,7 +4630,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pi
                /* startstack -> processor */
                "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u %*d %d",
                &usertime, &systime, &cpu) != 3) {
-        fclose(pidinfo);
+        VIR_FORCE_FCLOSE(pidinfo);
         VIR_WARN0("cannot parse process status data");
         errno = -EINVAL;
         return -1;
@@ -4650,7 +4650,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pi
     VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d",
               pid, tid, usertime, systime, cpu);
 
-    fclose(pidinfo);
+    VIR_FORCE_FCLOSE(pidinfo);
 
     return 0;
 }

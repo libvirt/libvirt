@@ -25,6 +25,7 @@
 # include "util.h"
 # include "stats_linux.h"
 # include "memory.h"
+# include "files.h"
 
 # define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 
@@ -98,12 +99,12 @@ linuxDomainInterfaceStats(const char *path,
             stats->tx_packets = tx_packets;
             stats->tx_errs = tx_errs;
             stats->tx_drop = tx_drop;
-            fclose (fp);
+            VIR_FORCE_FCLOSE (fp);
 
             return 0;
         }
     }
-    fclose (fp);
+    VIR_FORCE_FCLOSE(fp);
 
     virStatsError(VIR_ERR_INTERNAL_ERROR,
                   "/proc/net/dev: Interface not found");

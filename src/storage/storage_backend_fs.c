@@ -284,12 +284,12 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool) {
 
     while ((getmntent_r(mtab, &ent, buf, sizeof(buf))) != NULL) {
         if (STREQ(ent.mnt_dir, pool->def->target.path)) {
-            fclose(mtab);
+            VIR_FORCE_FCLOSE(mtab);
             return 1;
         }
     }
 
-    fclose(mtab);
+    VIR_FORCE_FCLOSE(mtab);
     return 0;
 }
 

@@ -188,7 +188,7 @@ virStorageBackendIQNFound(virStoragePoolObjPtr pool,
         goto out;
     }
 
-    if ((fp = fdopen(fd, "r")) == NULL) {
+    if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to open stream for file descriptor "
                                 "when reading output from '%s': '%s'"),
@@ -235,11 +235,8 @@ out:
     }
 
     VIR_FREE(line);
-    if (fp != NULL) {
-        fclose(fp);
-    } else {
-        VIR_FORCE_CLOSE(fd);
-    }
+    VIR_FORCE_FCLOSE(fp);
+    VIR_FORCE_CLOSE(fd);
 
     return ret;
 }

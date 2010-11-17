@@ -44,3 +44,37 @@ int virClose(int *fdptr, bool preserve_errno)
 
     return rc;
 }
+
+
+int virFclose(FILE **file, bool preserve_errno)
+{
+    int saved_errno;
+    int rc = 0;
+
+    if (*file) {
+        if (preserve_errno)
+            saved_errno = errno;
+        rc = fclose(*file);
+        *file = NULL;
+        if (preserve_errno)
+            errno = saved_errno;
+    }
+
+    return rc;
+}
+
+
+FILE *virFdopen(int *fdptr, const char *mode)
+{
+    FILE *file = NULL;
+
+    if (*fdptr >= 0) {
+        file = fdopen(*fdptr, mode);
+        if (file)
+            *fdptr = -1;
+    } else {
+        errno = EBADF;
+    }
+
+    return file;
+}

@@ -9,6 +9,7 @@
 #include "xml.h"
 #include "testutils.h"
 #include "xen/xen_hypervisor.h"
+#include "files.h"
 
 static char *progname;
 static char *abs_srcdir;
@@ -63,10 +64,8 @@ static int testCompareFiles(const char *hostmachine,
  fail:
 
   free(actualxml);
-  if (fp1)
-    fclose(fp1);
-  if (fp2)
-    fclose(fp2);
+  VIR_FORCE_FCLOSE(fp1);
+  VIR_FORCE_FCLOSE(fp2);
 
   virCapabilitiesFree(caps);
   return ret;

@@ -339,22 +339,43 @@ routines, use the macros from memory.h
 
 File handling
 =============
-Use of the close() API is deprecated in libvirt code base to help avoiding
-double-closing of a file descriptor. Instead of this API, use the macro from
-files.h
+Usage of the "fdopen()", "close()", "fclose()" APIs is deprecated in libvirt
+code base to help avoiding double-closing of files or file descriptors, which
+is particulary dangerous in a multi-threaded applications. Instead of these
+APIs, use the macros from files.h
+
+- eg opening a file from a file descriptor
+
+  if ((file = VIR_FDOPEN(fd, "r")) == NULL) {
+      virReportSystemError(errno, "%s",
+                           _("failed to open file from file descriptor"));
+      return -1;
+  }
+  /* fd is now invalid; only access the file using file variable */
+
+
 
 - e.g. close a file descriptor
 
   if (VIR_CLOSE(fd) < 0) {
-      virReportSystemError(errno, _("failed to close file"));
+      virReportSystemError(errno, "%s", _("failed to close file"));
   }
 
 
 
-- eg close a file descriptor in an error path, without losing the previous
-"errno" value
+- eg close a file
+
+  if (VIR_FCLOSE(file) < 0) {
+      virReportSystemError(errno, "%s", _("failed to close file"));
+  }
+
+
+
+- eg close a file or file descriptor in an error path, without losing the
+previous "errno" value
 
   VIR_FORCE_CLOSE(fd);
+  VIR_FORCE_FCLOSE(file);
 
 
 

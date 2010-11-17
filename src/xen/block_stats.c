@@ -27,6 +27,7 @@
 # include "util.h"
 # include "block_stats.h"
 # include "memory.h"
+# include "files.h"
 
 # define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 
@@ -100,7 +101,7 @@ read_stat (const char *path)
     /* read, but don't bail out before closing */
     i = fread (str, 1, sizeof str - 1, fp);
 
-    if (fclose (fp) != 0        /* disk error */
+    if (VIR_FCLOSE(fp) != 0        /* disk error */
         || i < 1)               /* ensure we read at least one byte */
         return -1;
 

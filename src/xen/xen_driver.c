@@ -47,6 +47,7 @@
 #include "pci.h"
 #include "uuid.h"
 #include "fdstream.h"
+#include "files.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -216,10 +217,10 @@ xenUnifiedProbe (void)
         return 1;
 #endif
 #ifdef __sun
-    FILE *fh;
+    int fd;
 
-    if (fh = fopen("/dev/xen/domcaps", "r")) {
-        fclose(fh);
+    if ((fd = open("/dev/xen/domcaps", O_RDONLY)) >= 0) {
+        VIR_FORCE_CLOSE(fd);
         return 1;
     }
 #endif

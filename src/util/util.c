@@ -1816,7 +1816,7 @@ int virFileWritePidPath(const char *pidfile,
         goto cleanup;
     }
 
-    if (!(file = fdopen(fd, "w"))) {
+    if (!(file = VIR_FDOPEN(fd, "w"))) {
         rc = errno;
         VIR_FORCE_CLOSE(fd);
         goto cleanup;
@@ -1830,10 +1830,8 @@ int virFileWritePidPath(const char *pidfile,
     rc = 0;
 
 cleanup:
-    if (file &&
-        fclose(file) < 0) {
+    if (VIR_FCLOSE(file) < 0)
         rc = errno;
-    }
 
     return rc;
 }
@@ -1864,11 +1862,11 @@ int virFileReadPid(const char *dir,
 
     if (fscanf(file, "%d", pid) != 1) {
         rc = EINVAL;
-        fclose(file);
+        VIR_FORCE_FCLOSE(file);
         goto cleanup;
     }
 
-    if (fclose(file) < 0) {
+    if (VIR_FCLOSE(file) < 0) {
         rc = errno;
         goto cleanup;
     }

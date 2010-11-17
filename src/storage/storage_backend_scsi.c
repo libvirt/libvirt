@@ -70,7 +70,7 @@ getDeviceType(uint32_t host,
     }
 
     gottype = fgets(typestr, 3, typefile);
-    fclose(typefile);
+    VIR_FORCE_FCLOSE(typefile);
 
     if (gottype == NULL) {
         virReportSystemError(errno,

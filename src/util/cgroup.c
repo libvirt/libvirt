@@ -31,6 +31,7 @@
 #include "memory.h"
 #include "cgroup.h"
 #include "logging.h"
+#include "files.h"
 
 #define CGROUP_MAX_VAL 512
 
@@ -127,13 +128,12 @@ static int virCgroupDetectMounts(virCgroupPtr group)
         }
     }
 
-    fclose(mounts);
+    VIR_FORCE_FCLOSE(mounts);
 
     return 0;
 
 no_memory:
-    if (mounts)
-        fclose(mounts);
+    VIR_FORCE_FCLOSE(mounts);
     return -ENOMEM;
 }
 
@@ -192,12 +192,12 @@ static int virCgroupDetectPlacement(virCgroupPtr group)
         }
     }
 
-    fclose(mapping);
+    VIR_FORCE_FCLOSE(mapping);
 
     return 0;
 
 no_memory:
-    fclose(mapping);
+    VIR_FORCE_FCLOSE(mapping);
     return -ENOMEM;
 
 }

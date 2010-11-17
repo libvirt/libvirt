@@ -414,11 +414,11 @@ int openTap(const char *ifname,
         virReportSystemError(errno,
                              "%s",_("cannot determine macvtap's tap device "
                              "interface index"));
-        fclose(file);
+        VIR_FORCE_FCLOSE(file);
         return -1;
     }
 
-    fclose(file);
+    VIR_FORCE_FCLOSE(file);
 
     if (snprintf(tapname, sizeof(tapname),
                  "/dev/tap%d", ifindex) >= sizeof(tapname)) {

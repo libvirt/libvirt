@@ -9,6 +9,7 @@
 #include "internal.h"
 #include "nodeinfo.h"
 #include "util.h"
+#include "files.h"
 
 #ifndef __linux__
 
@@ -49,10 +50,10 @@ static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile
                 fprintf(stderr, "\n%s\n", error->message);
             virFreeError(error);
         }
-        fclose(cpuinfo);
+        VIR_FORCE_FCLOSE(cpuinfo);
         return -1;
     }
-    fclose(cpuinfo);
+    VIR_FORCE_FCLOSE(cpuinfo);
 
     /* 'nodes' is filled using libnuma.so from current machine
      * topology, which makes it unsuitable for the test suite

@@ -528,7 +528,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         dom = NULL;
     }
 
-    fclose(fp);
+    VIR_FORCE_FCLOSE(fp);
 
     return 0;
 
@@ -536,7 +536,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     virReportOOMError();
 
  cleanup:
-    fclose(fp);
+    VIR_FORCE_FCLOSE(fp);
     if (dom)
         virDomainObjUnref(dom);
     return -1;
@@ -888,6 +888,7 @@ openvzSetDefinedUUID(int vpsid, unsigned char *uuid)
 {
     char *conf_file;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    FILE *fp = NULL;
     int ret = -1;
 
     if (uuid == NULL)
@@ -900,21 +901,22 @@ openvzSetDefinedUUID(int vpsid, unsigned char *uuid)
         goto cleanup;
 
     if (uuidstr[0] == 0) {
-        FILE *fp = fopen(conf_file, "a"); /* append */
+        fp = fopen(conf_file, "a"); /* append */
         if (fp == NULL)
             goto cleanup;
 
         virUUIDFormat(uuid, uuidstr);
 
-        /* Record failure if fprintf or fclose fails,
+        /* Record failure if fprintf or VIR_FCLOSE fails,
            and be careful always to close the stream.  */
-        if ((fprintf(fp, "\n#UUID: %s\n", uuidstr) < 0)
-            + (fclose(fp) == EOF))
+        if ((fprintf(fp, "\n#UUID: %s\n", uuidstr) < 0) ||
+            (VIR_FCLOSE(fp) == EOF))
             goto cleanup;
     }
 
     ret = 0;
 cleanup:
+    VIR_FORCE_FCLOSE(fp);
     VIR_FREE(conf_file);
     return ret;
 }
@@ -996,7 +998,7 @@ int openvzGetVEID(const char *name) {
     }
 
     ok = fscanf(fp, "%d\n", &veid ) == 1;
-    fclose(fp);
+    VIR_FORCE_FCLOSE(fp);
     if (ok && veid >= 0)
         return veid;
 

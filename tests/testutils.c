@@ -180,26 +180,26 @@ int virtTestLoadFile(const char *file,
 
     if (fstat(fileno(fp), &st) < 0) {
         fprintf (stderr, "%s: failed to fstat: %s\n", file, strerror(errno));
-        fclose(fp);
+        VIR_FORCE_FCLOSE(fp);
         return -1;
     }
 
     if (st.st_size > (buflen-1)) {
         fprintf (stderr, "%s: larger than buffer (> %d)\n", file, buflen-1);
-        fclose(fp);
+        VIR_FORCE_FCLOSE(fp);
         return -1;
     }
 
     if (st.st_size) {
         if (fread(*buf, st.st_size, 1, fp) != 1) {
             fprintf (stderr, "%s: read failed: %s\n", file, strerror(errno));
-            fclose(fp);
+            VIR_FORCE_FCLOSE(fp);
             return -1;
         }
     }
     (*buf)[st.st_size] = '\0';
 
-    fclose(fp);
+    VIR_FORCE_FCLOSE(fp);
     return st.st_size;
 }
 
