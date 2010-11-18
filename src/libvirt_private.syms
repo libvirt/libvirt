@@ -734,6 +734,7 @@ virThreadCreate;
 virThreadIsSelf;
 virThreadJoin;
 virThreadSelf;
+virThreadSelfID;
 
 
 # usb.h

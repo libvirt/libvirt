@@ -288,6 +288,12 @@ bool virThreadIsSelf(virThreadPtr thread)
     return self.thread == thread->thread ? true : false;
 }
 
+int virThreadSelfID(void)
+{
+    return (int)GetCurrentThreadId();
+}
+
+
 void virThreadJoin(virThreadPtr thread)
 {
     if (thread->joinable) {

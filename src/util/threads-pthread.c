@@ -21,6 +21,11 @@
 
 #include <config.h>
 
+#include <unistd.h>
+#if HAVE_SYS_SYSCALL_H
+# include <sys/syscall.h>
+#endif
+
 
 /* Nothing special required for pthreads */
 int virThreadInitialize(void)
@@ -168,6 +173,17 @@ void virThreadSelf(virThreadPtr thread)
 bool virThreadIsSelf(virThreadPtr thread)
 {
     return pthread_equal(pthread_self(), thread->thread) ? true : false;
+}
+
+int virThreadSelfID(void)
+{
+#if defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)
+    pid_t tid;
+    tid = syscall(SYS_gettid);
+    return (int)tid;
+#else
+    return (int)pthread_self();
+#endif
 }
 
 void virThreadJoin(virThreadPtr thread)

@@ -110,7 +110,7 @@ LIBS=$old_libs
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
-  sys/un.h])
+  sys/un.h sys/syscall.h])
 
 AC_CHECK_LIB([intl],[gettext],[])
 
