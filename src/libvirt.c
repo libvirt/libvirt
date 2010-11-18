@@ -11439,6 +11439,39 @@ error:
 }
 
 /**
+ * virDomainIsUpdated:
+ * @dom: pointer to the domain object
+ *
+ * Determine if the domain has been updated.
+ *
+ * Returns 1 if updated, 0 if not, -1 on error
+ */
+int virDomainIsUpdated(virDomainPtr dom)
+{
+    DEBUG("dom=%p", dom);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+    if (dom->conn->driver->domainIsUpdated) {
+        int ret;
+        ret = dom->conn->driver->domainIsUpdated(dom);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
  * virNetworkIsActive:
  * @net: pointer to the network object
  *
