@@ -710,6 +710,7 @@ urlencode(const char *string)
         switch (string[i]) {
             case ' ':
             case '\n':
+            case '&':
                 snprintf(ptr, 4, "%%%02x", string[i]);
                 ptr += 3;
                 break;
