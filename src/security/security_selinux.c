@@ -694,9 +694,10 @@ SELinuxRestoreSecurityChardevLabel(virDomainObjPtr vm,
     switch (dev->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = SELinuxSetFilecon(dev->data.file.path, secdef->imagelabel);
+        if (SELinuxRestoreSecurityFileLabel(dev->data.file.path) < 0)
+            goto done;
+        ret = 0;
         break;
-
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if ((virAsprintf(&out, "%s.out", dev->data.file.path) < 0) ||
             (virAsprintf(&in, "%s.in", dev->data.file.path) < 0)) {
