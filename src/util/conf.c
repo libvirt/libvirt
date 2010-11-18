@@ -394,17 +394,20 @@ virConfParseString(virConfParserCtxtPtr ctxt)
             return NULL;
         }
         NEXT;
-    } else if ((ctxt->cur + 6 < ctxt->end) && (ctxt->cur[0] == '"') &&
-               (ctxt->cur[1] == '"') && (ctxt->cur[2] == '"')) {
+    } else if ((ctxt->cur + 6 < ctxt->end) &&
+               (STRPREFIX(ctxt->cur, "\"\"\""))) {
+        /* String starts with python-style triple quotes """ */
         ctxt->cur += 3;
         base = ctxt->cur;
-        while ((ctxt->cur + 2 < ctxt->end) && (ctxt->cur[0] == '"') &&
-               (ctxt->cur[1] == '"') && (ctxt->cur[2] == '"')) {
-               if (CUR == '\n') ctxt->line++;
-               NEXT;
+
+        while ((ctxt->cur + 2 < ctxt->end) &&
+               (STRPREFIX(ctxt->cur, "\"\"\""))) {
+            if (CUR == '\n')
+                ctxt->line++;
+            NEXT;
         }
-        if ((ctxt->cur[0] != '"') || (ctxt->cur[1] != '"') ||
-            (ctxt->cur[2] != '"')) {
+
+        if (!STRPREFIX(ctxt->cur, "\"\"\"")) {
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return(NULL);
         }
