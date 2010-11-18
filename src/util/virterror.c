@@ -64,18 +64,6 @@ void *virUserData = NULL;        /* associated data */
     }}								\
 }
 
-static virLogPriority virErrorLevelPriority(virErrorLevel level) {
-    switch (level) {
-        case VIR_ERR_NONE:
-            return(VIR_LOG_INFO);
-        case VIR_ERR_WARNING:
-            return(VIR_LOG_WARN);
-        case VIR_ERR_ERROR:
-            return(VIR_LOG_ERROR);
-    }
-    return(VIR_LOG_ERROR);
-}
-
 static const char *virErrorDomainName(virErrorDomain domain) {
     const char *dom = "unknown";
     switch (domain) {
@@ -716,7 +704,7 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
      * Hook up the error or warning to the logging facility
      * XXXX should we include filename as 'category' instead of domain name ?
      */
-    virLogMessage(virErrorDomainName(domain), virErrorLevelPriority(level),
+    virLogMessage(virErrorDomainName(domain), VIR_LOG_INFO,
                   funcname, linenr, 1, "%s", str);
 
     /*
