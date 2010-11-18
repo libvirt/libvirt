@@ -400,8 +400,9 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         ctxt->cur += 3;
         base = ctxt->cur;
 
+        /* Find the ending triple quotes */
         while ((ctxt->cur + 2 < ctxt->end) &&
-               (STRPREFIX(ctxt->cur, "\"\"\""))) {
+               !(STRPREFIX(ctxt->cur, "\"\"\""))) {
             if (CUR == '\n')
                 ctxt->line++;
             NEXT;
