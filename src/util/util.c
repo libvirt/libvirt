@@ -602,6 +602,9 @@ __virExec(const char *const*argv,
         childout = -1;
     }
 
+    /* Initialize full logging for a while */
+    virLogSetFromEnv();
+
     /* Daemonize as late as possible, so the parent process can detect
      * the above errors with wait* */
     if (flags & VIR_EXEC_DAEMON) {
@@ -649,6 +652,9 @@ __virExec(const char *const*argv,
     if ((flags & VIR_EXEC_CLEAR_CAPS) &&
         virClearCapabilities() < 0)
         goto fork_error;
+
+    /* Close logging again to ensure no FDs leak to child */
+    virLogReset();
 
     if (envp)
         execve(argv[0], (char **) argv, (char**)envp);
