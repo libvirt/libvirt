@@ -457,26 +457,6 @@ cleanup:
     return ret;
 }
 
-/* Set up domain runtime state */
-static int
-testDomainStartState(virConnectPtr conn,
-                     virDomainObjPtr dom)
-{
-    testConnPtr privconn = conn->privateData;
-    int ret = -1;
-
-    if (testDomainUpdateVCPUs(conn, dom, dom->def->vcpus, 1) < 0)
-        goto cleanup;
-
-    /* Set typical run state */
-    dom->state = VIR_DOMAIN_RUNNING;
-    dom->def->id = privconn->nextDomID++;
-
-    ret = 0;
-cleanup:
-    return ret;
-}
-
 static void
 testDomainShutdownState(virDomainPtr domain,
                         virDomainObjPtr privdom)
@@ -489,7 +469,33 @@ testDomainShutdownState(virDomainPtr domain,
 
     privdom->state = VIR_DOMAIN_SHUTOFF;
     privdom->def->id = -1;
-    domain->id = -1;
+    if (domain)
+        domain->id = -1;
+}
+
+/* Set up domain runtime state */
+static int
+testDomainStartState(virConnectPtr conn,
+                     virDomainObjPtr dom)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    if (testDomainUpdateVCPUs(conn, dom, dom->def->vcpus, 1) < 0)
+        goto cleanup;
+
+    dom->state = VIR_DOMAIN_RUNNING;
+    dom->def->id = privconn->nextDomID++;
+
+    if (virDomainObjSetDefTransient(privconn->caps, dom) < 0) {
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    if (ret < 0)
+        testDomainShutdownState(NULL, dom);
+    return ret;
 }
 
 static int testOpenDefault(virConnectPtr conn) {
@@ -558,12 +564,12 @@ static int testOpenDefault(virConnectPtr conn) {
         goto error;
     domdef = NULL;
 
+    domobj->persistent = 1;
     if (testDomainStartState(conn, domobj) < 0) {
         virDomainObjUnlock(domobj);
         goto error;
     }
 
-    domobj->persistent = 1;
     virDomainObjUnlock(domobj);
 
     if (!(netdef = virNetworkDefParseString(defaultNetworkXML)))
@@ -918,12 +924,12 @@ static int testOpenFromFile(virConnectPtr conn,
             goto error;
         }
 
+        dom->persistent = 1;
         if (testDomainStartState(conn, dom) < 0) {
             virDomainObjUnlock(dom);
             goto error;
         }
 
-        dom->persistent = 1;
         virDomainObjUnlock(dom);
     }
     VIR_FREE(domains);

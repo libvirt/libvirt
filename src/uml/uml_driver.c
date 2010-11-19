@@ -916,7 +916,11 @@ static int umlStartVMDaemon(virConnectPtr conn,
                            VIR_EXEC_CLEAR_CAPS,
                            NULL, NULL, NULL);
     VIR_FORCE_CLOSE(logfd);
+    if (ret < 0)
+        goto cleanup;
 
+    ret = virDomainObjSetDefTransient(driver->caps, vm);
+cleanup:
     /*
      * At the moment, the only thing that populates keepfd is
      * umlBuildCommandLineChr. We want to close every fd it opens.
@@ -939,7 +943,6 @@ static int umlStartVMDaemon(virConnectPtr conn,
         virDomainConfVMNWFilterTeardown(vm);
         umlCleanupTapDevices(conn, vm);
     }
-
 
     /* NB we don't mark it running here - we do that async
        with inotify */

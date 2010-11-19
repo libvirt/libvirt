@@ -4235,6 +4235,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
 
+    /* Do this last, since it depends on domain being active */
+    DEBUG0("Setting running domain def as transient");
+    if (virDomainObjSetDefTransient(driver->caps, vm) < 0)
+        goto cleanup;
+
     VIR_FORCE_CLOSE(logfile);
 
     return 0;
