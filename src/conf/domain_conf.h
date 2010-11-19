@@ -1092,6 +1092,8 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            const virDomainDefPtr def,
                            bool live);
+int virDomainObjSetDefTransient(virCapsPtr caps,
+                                virDomainObjPtr domain);
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 

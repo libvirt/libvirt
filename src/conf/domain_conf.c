@@ -352,6 +352,9 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+#define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
+#define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
+
 int virDomainObjListInit(virDomainObjListPtr doms)
 {
     doms->objs = virHashCreate(50);
@@ -963,6 +966,45 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
     }
 
     return domain;
+}
+
+/*
+ * Mark the running VM config as transient. Ensures transient hotplug
+ * operations do not persist past shutdown.
+ *
+ * @param caps pointer to capabilities info
+ * @param domain domain object pointer
+ * @return 0 on success, -1 on failure
+ */
+int
+virDomainObjSetDefTransient(virCapsPtr caps,
+                            virDomainObjPtr domain)
+{
+    int ret = -1;
+    char *xml = NULL;
+    virDomainDefPtr newDef = NULL;
+
+    if (!virDomainObjIsActive(domain))
+        return 0;
+
+    if (!domain->persistent)
+        return 0;
+
+    if (domain->newDef)
+        return 0;
+
+    if (!(xml = virDomainDefFormat(domain->def, VIR_DOMAIN_XML_WRITE_FLAGS)))
+        goto out;
+
+    if (!(newDef = virDomainDefParseString(caps, xml,
+                                           VIR_DOMAIN_XML_READ_FLAGS)))
+        goto out;
+
+    domain->newDef = newDef;
+    ret = 0;
+out:
+    VIR_FREE(xml);
+    return ret;
 }
 
 /*
@@ -7256,7 +7298,7 @@ int virDomainSaveConfig(const char *configDir,
     char *xml;
 
     if (!(xml = virDomainDefFormat(def,
-                                   VIR_DOMAIN_XML_SECURE)))
+                                   VIR_DOMAIN_XML_WRITE_FLAGS)))
         goto cleanup;
 
     if (virDomainSaveXML(configDir, def, xml))

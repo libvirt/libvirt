@@ -225,6 +225,7 @@ virDomainMemballoonModelTypeToString;
 virDomainNetDefFree;
 virDomainNetTypeToString;
 virDomainObjAssignDef;
+virDomainObjSetDefTransient;
 virDomainObjIsDuplicate;
 virDomainObjListDeinit;
 virDomainObjListGetActiveIDs;
