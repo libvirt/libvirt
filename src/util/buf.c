@@ -355,6 +355,61 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
 }
 
 /**
+ * virBufferEscapeSexpr:
+ * @buf:  the buffer to dump
+ * @format: a printf like format string but with only one %s parameter
+ * @str:  the string argument which need to be escaped
+ *
+ * Do a formatted print with a single string to an sexpr buffer. The string
+ * is escaped to avoid generating a sexpr that xen will choke on. This
+ * doesn't fully escape the sexpr, just enough for our code to work.
+ */
+void
+virBufferEscapeSexpr(const virBufferPtr buf,
+                     const char *format,
+                     const char *str)
+{
+    int len;
+    char *escaped, *out;
+    const char *cur;
+
+    if ((format == NULL) || (buf == NULL) || (str == NULL))
+        return;
+
+    if (buf->error)
+        return;
+
+    len = strlen(str);
+    if (strcspn(str, "\\'") == len) {
+        virBufferVSprintf(buf, format, str);
+        return;
+    }
+
+    if (VIR_ALLOC_N(escaped, 2 * len + 1) < 0) {
+        virBufferNoMemory(buf);
+        return;
+    }
+
+    cur = str;
+    out = escaped;
+    while (*cur != 0) {
+        switch (*cur) {
+        case '\\':
+        case '\'':
+            *out++ = '\\';
+            /* fallthrough */
+        default:
+            *out++ = *cur;
+        }
+        cur++;
+    }
+    *out = 0;
+
+    virBufferVSprintf(buf, format, escaped);
+    VIR_FREE(escaped);
+}
+
+/**
  * virBufferURIEncodeString:
  * @buf:  the buffer to append to
  * @str:  the string argument which will be URI-encoded

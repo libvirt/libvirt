@@ -522,6 +522,7 @@ xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
     }
 
     content = virBufferContentAndReset(&buf);
+    DEBUG("xend op: %s\n", content);
     ret = http2unix(xend_post(xend, path, content));
     VIR_FREE(content);
 
@@ -4605,8 +4606,6 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
         goto error;
     }
 
-    DEBUG("Defining w/ sexpr: \n%s", sexpr);
-
     ret = xend_op(conn, "", "op", "new", "config", sexpr, NULL);
     VIR_FREE(sexpr);
     if (ret != 0) {
@@ -5297,11 +5296,12 @@ xenDaemonFormatSxprChr(virDomainChrDefPtr def,
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferVSprintf(buf, "%s:%s", type, def->data.file.path);
+        virBufferVSprintf(buf, "%s:", type);
+        virBufferEscapeSexpr(buf, "%s", def->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferVSprintf(buf, "%s", def->data.file.path);
+        virBufferEscapeSexpr(buf, "%s", def->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -5322,9 +5322,10 @@ xenDaemonFormatSxprChr(virDomainChrDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferVSprintf(buf, "%s:%s%s", type,
-                          def->data.nix.path,
-                          def->data.nix.listen ? ",server,nowait" : "");
+        virBufferVSprintf(buf, "%s:", type);
+        virBufferEscapeSexpr(buf, "%s", def->data.nix.path);
+        if (def->data.nix.listen)
+            virBufferAddLit(buf, ",server,nowait");
         break;
     }
 
@@ -5400,39 +5401,42 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (hvm) {
         /* Xend <= 3.0.2 wants a ioemu: prefix on devices for HVM */
-        if (xendConfigVersion == 1)
-            virBufferVSprintf(buf, "(dev 'ioemu:%s')", def->dst);
-        else                    /* But newer does not */
-            virBufferVSprintf(buf, "(dev '%s:%s')", def->dst,
+        if (xendConfigVersion == 1) {
+            virBufferEscapeSexpr(buf, "(dev 'ioemu:%s')", def->dst);
+        } else {
+            /* But newer does not */
+            virBufferEscapeSexpr(buf, "(dev '%s:", def->dst);
+            virBufferVSprintf(buf, "%s')",
                               def->device == VIR_DOMAIN_DISK_DEVICE_CDROM ?
                               "cdrom" : "disk");
+        }
     } else if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        virBufferVSprintf(buf, "(dev '%s:cdrom')", def->dst);
+        virBufferEscapeSexpr(buf, "(dev '%s:cdrom')", def->dst);
     } else {
-        virBufferVSprintf(buf, "(dev '%s')", def->dst);
+        virBufferEscapeSexpr(buf, "(dev '%s')", def->dst);
     }
 
     if (def->src) {
         if (def->driverName) {
             if (STREQ(def->driverName, "tap") ||
                 STREQ(def->driverName, "tap2")) {
-                virBufferVSprintf(buf, "(uname '%s:%s:%s')",
-                                  def->driverName,
-                                  def->driverType ? def->driverType : "aio",
-                                  def->src);
+                virBufferEscapeSexpr(buf, "(uname '%s:", def->driverName);
+                virBufferEscapeSexpr(buf, "%s:",
+                                     def->driverType ? def->driverType : "aio");
+                virBufferEscapeSexpr(buf, "%s')", def->src);
             } else {
-                virBufferVSprintf(buf, "(uname '%s:%s')",
-                                  def->driverName,
-                                  def->src);
+                virBufferEscapeSexpr(buf, "(uname '%s:", def->driverName);
+                virBufferEscapeSexpr(buf, "%s')", def->src);
             }
         } else {
             if (def->type == VIR_DOMAIN_DISK_TYPE_FILE) {
-                virBufferVSprintf(buf, "(uname 'file:%s')", def->src);
+                virBufferEscapeSexpr(buf, "(uname 'file:%s')", def->src);
             } else if (def->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                 if (def->src[0] == '/')
-                    virBufferVSprintf(buf, "(uname 'phy:%s')", def->src);
+                    virBufferEscapeSexpr(buf, "(uname 'phy:%s')", def->src);
                 else
-                    virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", def->src);
+                    virBufferEscapeSexpr(buf, "(uname 'phy:/dev/%s')",
+                                         def->src);
             } else {
                 virXendError(VIR_ERR_CONFIG_UNSUPPORTED,
                              _("unsupported disk type %s"),
@@ -5501,13 +5505,13 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        virBufferVSprintf(buf, "(bridge '%s')", def->data.bridge.brname);
+        virBufferEscapeSexpr(buf, "(bridge '%s')", def->data.bridge.brname);
         if (def->data.bridge.script)
             script = def->data.bridge.script;
 
-        virBufferVSprintf(buf, "(script '%s')", script);
+        virBufferEscapeSexpr(buf, "(script '%s')", script);
         if (def->data.bridge.ipaddr != NULL)
-            virBufferVSprintf(buf, "(ip '%s')", def->data.bridge.ipaddr);
+            virBufferEscapeSexpr(buf, "(ip '%s')", def->data.bridge.ipaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -5530,17 +5534,18 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
                          def->data.network.name);
             return -1;
         }
-        virBufferVSprintf(buf, "(bridge '%s')", bridge);
-        virBufferVSprintf(buf, "(script '%s')", script);
+        virBufferEscapeSexpr(buf, "(bridge '%s')", bridge);
+        virBufferEscapeSexpr(buf, "(script '%s')", script);
         VIR_FREE(bridge);
     }
     break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (def->data.ethernet.script)
-            virBufferVSprintf(buf, "(script '%s')", def->data.ethernet.script);
+            virBufferEscapeSexpr(buf, "(script '%s')",
+                                 def->data.ethernet.script);
         if (def->data.ethernet.ipaddr != NULL)
-            virBufferVSprintf(buf, "(ip '%s')", def->data.ethernet.ipaddr);
+            virBufferEscapeSexpr(buf, "(ip '%s')", def->data.ethernet.ipaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -5555,11 +5560,11 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
 
     if (def->ifname != NULL &&
         !STRPREFIX(def->ifname, "vif"))
-        virBufferVSprintf(buf, "(vifname '%s')", def->ifname);
+        virBufferEscapeSexpr(buf, "(vifname '%s')", def->ifname);
 
     if (!hvm) {
         if (def->model != NULL)
-            virBufferVSprintf(buf, "(model '%s')", def->model);
+            virBufferEscapeSexpr(buf, "(model '%s')", def->model);
     }
     else if (def->model == NULL) {
         /*
@@ -5573,7 +5578,7 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
         virBufferAddLit(buf, "(type netfront)");
     }
     else {
-        virBufferVSprintf(buf, "(model '%s')", def->model);
+        virBufferEscapeSexpr(buf, "(model '%s')", def->model);
         virBufferAddLit(buf, "(type ioemu)");
     }
 
@@ -5680,7 +5685,9 @@ xenDaemonFormatSxprSound(virDomainDefPtr def,
                          def->sounds[i]->model);
             return -1;
         }
-        virBufferVSprintf(buf, "%s%s", i ? "," : "", str);
+        if (i)
+            virBufferAddChar(buf, ',');
+        virBufferEscapeSexpr(buf, "%s", str);
     }
 
     if (virBufferError(buf)) {
@@ -5737,10 +5744,13 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *tmp;
+    char *bufout;
     int hvm = 0, i;
 
+    DEBUG0("Formatting domain sexpr");
+
     virBufferAddLit(&buf, "(vm ");
-    virBufferVSprintf(&buf, "(name '%s')", def->name);
+    virBufferEscapeSexpr(&buf, "(name '%s')", def->name);
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
                       def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
     virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
@@ -5753,7 +5763,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
         char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
         if (ranges == NULL)
             goto error;
-        virBufferVSprintf(&buf, "(cpus '%s')", ranges);
+        virBufferEscapeSexpr(&buf, "(cpus '%s')", ranges);
         VIR_FREE(ranges);
     }
 
@@ -5761,16 +5771,16 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(uuid '%s')", uuidstr);
 
     if (def->description)
-        virBufferVSprintf(&buf, "(description '%s')", def->description);
+        virBufferEscapeSexpr(&buf, "(description '%s')", def->description);
 
     if (def->os.bootloader) {
         if (def->os.bootloader[0])
-            virBufferVSprintf(&buf, "(bootloader '%s')", def->os.bootloader);
+            virBufferEscapeSexpr(&buf, "(bootloader '%s')", def->os.bootloader);
         else
             virBufferAddLit(&buf, "(bootloader)");
 
         if (def->os.bootloaderArgs)
-            virBufferVSprintf(&buf, "(bootloader_args '%s')", def->os.bootloaderArgs);
+            virBufferEscapeSexpr(&buf, "(bootloader_args '%s')", def->os.bootloaderArgs);
     }
 
     if (!(tmp = virDomainLifecycleTypeToString(def->onPoweroff))) {
@@ -5827,20 +5837,20 @@ xenDaemonFormatSxpr(virConnectPtr conn,
         }
 
         if (def->os.kernel)
-            virBufferVSprintf(&buf, "(kernel '%s')", def->os.kernel);
+            virBufferEscapeSexpr(&buf, "(kernel '%s')", def->os.kernel);
         if (def->os.initrd)
-            virBufferVSprintf(&buf, "(ramdisk '%s')", def->os.initrd);
+            virBufferEscapeSexpr(&buf, "(ramdisk '%s')", def->os.initrd);
         if (def->os.root)
-            virBufferVSprintf(&buf, "(root '%s')", def->os.root);
+            virBufferEscapeSexpr(&buf, "(root '%s')", def->os.root);
         if (def->os.cmdline)
-            virBufferVSprintf(&buf, "(args '%s')", def->os.cmdline);
+            virBufferEscapeSexpr(&buf, "(args '%s')", def->os.cmdline);
 
         if (hvm) {
             char bootorder[VIR_DOMAIN_BOOT_LAST+1];
             if (def->os.kernel)
-                virBufferVSprintf(&buf, "(loader '%s')", def->os.loader);
+                virBufferEscapeSexpr(&buf, "(loader '%s')", def->os.loader);
             else
-                virBufferVSprintf(&buf, "(kernel '%s')", def->os.loader);
+                virBufferEscapeSexpr(&buf, "(kernel '%s')", def->os.loader);
 
             virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
             if (def->vcpus < def->maxvcpus)
@@ -5883,14 +5893,14 @@ xenDaemonFormatSxpr(virConnectPtr conn,
                         def->disks[i]->src == NULL)
                         break;
 
-                    virBufferVSprintf(&buf, "(cdrom '%s')",
-                                      def->disks[i]->src);
+                    virBufferEscapeSexpr(&buf, "(cdrom '%s')",
+                                         def->disks[i]->src);
                     break;
 
                 case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
                     /* all xend versions define floppies here */
-                    virBufferVSprintf(&buf, "(%s '%s')", def->disks[i]->dst,
-                        def->disks[i]->src);
+                    virBufferEscapeSexpr(&buf, "(%s ", def->disks[i]->dst);
+                    virBufferEscapeSexpr(&buf, "'%s')", def->disks[i]->src);
                     break;
 
                 default:
@@ -5942,7 +5952,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
         /* get the device emulation model */
         if (def->emulator && (hvm || xendConfigVersion >= 3))
-            virBufferVSprintf(&buf, "(device_model '%s')", def->emulator);
+            virBufferEscapeSexpr(&buf, "(device_model '%s')", def->emulator);
 
 
         /* PV graphics for xen <= 3.0.4, or HVM graphics for xen <= 3.1.0 */
@@ -5986,7 +5996,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
         goto error;
     }
 
-    return virBufferContentAndReset(&buf);
+    bufout = virBufferContentAndReset(&buf);
+    DEBUG("Formatted sexpr: \n%s", bufout);
+    return bufout;
 
 error:
     virBufferFreeAndReset(&buf);

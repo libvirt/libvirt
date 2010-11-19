@@ -163,6 +163,7 @@ mymain(int argc, char **argv)
     DO_TEST("fv-net-netfront", "fv-net-netfront", "fvtest", 1);
 
     DO_TEST("boot-grub", "boot-grub", "fvtest", 1);
+    DO_TEST("escape", "escape", "fvtest", 1);
 
     virCapabilitiesFree(caps);
 
