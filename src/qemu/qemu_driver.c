@@ -6264,7 +6264,7 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     const char * type;
     int max;
     int ret = -1;
@@ -6309,6 +6309,12 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
+    if (!vm->persistent && (flags & VIR_DOMAIN_VCPU_CONFIG)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("cannot change persistent config of a transient domain"));
+        goto endjob;
+    }
+
     if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unknown virt type in domain definition '%d'"),
@@ -6333,36 +6339,19 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
+    if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+        goto endjob;
+
     switch (flags) {
     case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
-        def = vm->def;
-        if (virDomainObjIsActive(vm)) {
-            if (vm->newDef)
-                def = vm->newDef;
-            else{
-                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                _("no persistent state"));
-                goto endjob;
-            }
-        }
-        def->maxvcpus = nvcpus;
-        if (nvcpus < vm->newDef->vcpus)
-            def->vcpus = nvcpus;
+        persistentDef->maxvcpus = nvcpus;
+        if (nvcpus < persistentDef->vcpus)
+            persistentDef->vcpus = nvcpus;
         ret = 0;
         break;
 
     case VIR_DOMAIN_VCPU_CONFIG:
-        def = vm->def;
-        if (virDomainObjIsActive(vm)) {
-            if (vm->newDef)
-                def = vm->newDef;
-            else {
-                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                _("no persistent state"));
-                goto endjob;
-            }
-        }
-        def->vcpus = nvcpus;
+        persistentDef->vcpus = nvcpus;
         ret = 0;
         break;
 
@@ -6372,8 +6361,9 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
         ret = qemudDomainHotplugVcpus(vm, nvcpus);
-        if (ret == 0 && vm->newDef)
-            vm->newDef->vcpus = nvcpus;
+        if (ret == 0) {
+            persistentDef->vcpus = nvcpus;
+        }
         break;
     }
 

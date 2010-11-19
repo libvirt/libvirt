@@ -2095,7 +2095,7 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom = NULL;
-    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     int ret = -1, maxvcpus;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
@@ -2145,36 +2145,20 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         goto cleanup;
     }
 
+    if (!(persistentDef = virDomainObjGetPersistentDef(privconn->caps,
+                                                       privdom)))
+        goto cleanup;
+
     switch (flags) {
     case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
-        def = privdom->def;
-        if (virDomainObjIsActive(privdom)) {
-            if (privdom->newDef)
-                def = privdom->newDef;
-            else {
-                testError(VIR_ERR_OPERATION_INVALID, "%s",
-                          _("no persistent state"));
-                goto cleanup;
-            }
-        }
-        def->maxvcpus = nrCpus;
-        if (nrCpus < def->vcpus)
-            def->vcpus = nrCpus;
+        persistentDef->maxvcpus = nrCpus;
+        if (nrCpus < persistentDef->vcpus)
+            persistentDef->vcpus = nrCpus;
         ret = 0;
         break;
 
     case VIR_DOMAIN_VCPU_CONFIG:
-        def = privdom->def;
-        if (virDomainObjIsActive(privdom)) {
-            if (privdom->newDef)
-                def = privdom->newDef;
-            else {
-                testError(VIR_ERR_OPERATION_INVALID, "%s",
-                          _("no persistent state"));
-                goto cleanup;
-            }
-        }
-        def->vcpus = nrCpus;
+        persistentDef->vcpus = nrCpus;
         ret = 0;
         break;
 
@@ -2184,8 +2168,9 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 
     case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
         ret = testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0);
-        if (ret == 0 && privdom->newDef)
-            privdom->newDef->vcpus = nrCpus;
+        if (ret == 0) {
+            persistentDef->vcpus = nrCpus;
+        }
         break;
     }
 

@@ -1008,6 +1008,27 @@ out:
 }
 
 /*
+ * Return the persistent domain configuration. If domain is transient,
+ * return the running config.
+ *
+ * @param caps pointer to capabilities info
+ * @param domain domain object pointer
+ * @return NULL on error, virDOmainDefPtr on success
+ */
+virDomainDefPtr
+virDomainObjGetPersistentDef(virCapsPtr caps,
+                             virDomainObjPtr domain)
+{
+    if (virDomainObjSetDefTransient(caps, domain) < 0)
+        return NULL;
+
+    if (domain->newDef)
+        return domain->newDef;
+    else
+        return domain->def;
+}
+
+/*
  * The caller must hold a lock  on the driver owning 'doms',
  * and must also have locked 'dom', to ensure no one else
  * is either waiting for 'dom' or still usingn it

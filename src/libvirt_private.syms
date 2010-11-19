@@ -226,6 +226,7 @@ virDomainNetDefFree;
 virDomainNetTypeToString;
 virDomainObjAssignDef;
 virDomainObjSetDefTransient;
+virDomainObjGetPersistentDef;
 virDomainObjIsDuplicate;
 virDomainObjListDeinit;
 virDomainObjListGetActiveIDs;
