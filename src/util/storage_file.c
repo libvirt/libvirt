@@ -90,6 +90,8 @@ static int qcow2GetBackingStore(char **, int *,
                                 const unsigned char *, size_t);
 static int vmdk4GetBackingStore(char **, int *,
                                 const unsigned char *, size_t);
+static int
+qedGetBackingStore(char **, int *, const unsigned char *, size_t);
 
 #define QCOWX_HDR_VERSION (4)
 #define QCOWX_HDR_BACKING_FILE_OFFSET (QCOWX_HDR_VERSION+4)
@@ -105,7 +107,12 @@ static int vmdk4GetBackingStore(char **, int *,
 #define QCOW2_HDR_EXTENSION_END 0
 #define QCOW2_HDR_EXTENSION_BACKING_FORMAT 0xE2792ACA
 
-#define QED_HDR_IMAGE_SIZE (4+4+4+4+8+8+8)
+#define QED_HDR_FEATURES_OFFSET (4+4+4+4)
+#define QED_HDR_IMAGE_SIZE (QED_HDR_FEATURES_OFFSET+8+8+8)
+#define QED_HDR_BACKING_FILE_OFFSET (QED_HDR_IMAGE_SIZE+8+8)
+#define QED_HDR_BACKING_FILE_SIZE (QED_HDR_BACKING_FILE_OFFSET+4)
+#define QED_F_BACKING_FILE 0x01
+#define QED_F_BACKING_FORMAT_NO_PROBE 0x04
 
 /* VMDK needs at least this to find backing store,
  * other formats need less */
@@ -158,7 +165,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         /* http://wiki.qemu.org/Features/QED */
         "QED\0", NULL,
         LV_LITTLE_ENDIAN, -1, -1,
-        QED_HDR_IMAGE_SIZE, 8, 1, -1, NULL,
+        QED_HDR_IMAGE_SIZE, 8, 1, -1, qedGetBackingStore,
     },
     [VIR_STORAGE_FILE_VMDK] = {
         "KDMV", NULL,
@@ -416,6 +423,73 @@ vmdk4GetBackingStore(char **res,
 cleanup:
     VIR_FREE(desc);
     return ret;
+}
+
+static unsigned long
+qedGetHeaderUL(const unsigned char *loc)
+{
+    return ( ((unsigned long)loc[3] << 24)
+           | ((unsigned long)loc[2] << 16)
+           | ((unsigned long)loc[1] << 8)
+           | ((unsigned long)loc[0] << 0));
+}
+
+static unsigned long long
+qedGetHeaderULL(const unsigned char *loc)
+{
+    return ( ((unsigned long)loc[7] << 56)
+           | ((unsigned long)loc[6] << 48)
+           | ((unsigned long)loc[5] << 40)
+           | ((unsigned long)loc[4] << 32)
+           | ((unsigned long)loc[3] << 24)
+           | ((unsigned long)loc[2] << 16)
+           | ((unsigned long)loc[1] << 8)
+           | ((unsigned long)loc[0] << 0));
+}
+
+static int
+qedGetBackingStore(char **res,
+                   int *format,
+                   const unsigned char *buf,
+                   size_t buf_size)
+{
+    unsigned long long flags;
+    unsigned long offset, size;
+
+    *res = NULL;
+    /* Check if this image has a backing file */
+    if (buf_size < QED_HDR_FEATURES_OFFSET+8)
+        return BACKING_STORE_INVALID;
+    flags = qedGetHeaderULL(buf + QED_HDR_FEATURES_OFFSET);
+    if (!(flags & QED_F_BACKING_FILE))
+        return BACKING_STORE_OK;
+
+    /* Parse the backing file */
+    if (buf_size < QED_HDR_BACKING_FILE_OFFSET+8)
+        return BACKING_STORE_INVALID;
+    offset = qedGetHeaderUL(buf + QED_HDR_BACKING_FILE_OFFSET);
+    if (offset > buf_size)
+        return BACKING_STORE_INVALID;
+    size = qedGetHeaderUL(buf + QED_HDR_BACKING_FILE_SIZE);
+    if (size == 0)
+        return BACKING_STORE_OK;
+    if (offset + size > buf_size || offset + size < offset)
+        return BACKING_STORE_INVALID;
+    if (VIR_ALLOC_N(*res, size + 1) < 0) {
+        virReportOOMError();
+        return BACKING_STORE_ERROR;
+    }
+    memcpy(*res, buf + offset, size);
+    (*res)[size] = '\0';
+
+    if (format) {
+        if (flags & QED_F_BACKING_FORMAT_NO_PROBE)
+            *format = virStorageFileFormatTypeFromString("raw");
+        else
+            *format = VIR_STORAGE_FILE_AUTO_SAFE;
+    }
+
+    return BACKING_STORE_OK;
 }
 
 /**
