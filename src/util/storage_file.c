@@ -479,7 +479,7 @@ virStorageFileMatchesVersion(int format,
 
     /* Validate version number info */
     if (fileTypeInfo[format].versionOffset == -1)
-        return false;
+        return true;
 
     if ((fileTypeInfo[format].versionOffset + 4) > buflen)
         return false;
