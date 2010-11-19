@@ -42,7 +42,7 @@
 
 VIR_ENUM_IMPL(virStorageFileFormat,
               VIR_STORAGE_FILE_LAST,
-              "raw", "dir", "bochs",
+              "raw", "probe", "dir", "bochs",
               "cloop", "cow", "dmg", "iso",
               "qcow", "qcow2", "qed", "vmdk", "vpc")
 

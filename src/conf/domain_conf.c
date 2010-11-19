@@ -8230,6 +8230,10 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         if (format == VIR_STORAGE_FILE_AUTO &&
             !allowProbing)
             format = VIR_STORAGE_FILE_RAW; /* Stops further recursion */
+
+        /* Allow probing for image formats that are safe */
+        if (format == VIR_STORAGE_FILE_AUTO_SAFE)
+            format = VIR_STORAGE_FILE_AUTO;
     } while (nextpath);
 
     ret = 0;
