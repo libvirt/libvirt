@@ -44,7 +44,7 @@ VIR_ENUM_IMPL(virStorageFileFormat,
               VIR_STORAGE_FILE_LAST,
               "raw", "dir", "bochs",
               "cloop", "cow", "dmg", "iso",
-              "qcow", "qcow2", "vmdk", "vpc")
+              "qcow", "qcow2", "qed", "vmdk", "vpc")
 
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */
@@ -105,6 +105,8 @@ static int vmdk4GetBackingStore(char **, int *,
 #define QCOW2_HDR_EXTENSION_END 0
 #define QCOW2_HDR_EXTENSION_BACKING_FORMAT 0xE2792ACA
 
+#define QED_HDR_IMAGE_SIZE (4+4+4+4+8+8+8)
+
 /* VMDK needs at least this to find backing store,
  * other formats need less */
 #define STORAGE_MAX_HEAD (20*512)
@@ -151,6 +153,12 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         "QFI", NULL,
         LV_BIG_ENDIAN, 4, 2,
         QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW2_HDR_CRYPT, qcow2GetBackingStore,
+    },
+    [VIR_STORAGE_FILE_QED] = {
+        /* http://wiki.qemu.org/Features/QED */
+        "QED\0", NULL,
+        LV_LITTLE_ENDIAN, -1, -1,
+        QED_HDR_IMAGE_SIZE, 8, 1, -1, NULL,
     },
     [VIR_STORAGE_FILE_VMDK] = {
         "KDMV", NULL,
