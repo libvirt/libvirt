@@ -552,6 +552,8 @@ virNWFilterRuleInstancesToArray(int nEntries,
  * all its subfilters in a depth-first traversal of the tree of referenced
  * filters. The name of the interface to which the rules belong must be
  * provided. Apply the values of variables as needed.
+ *
+ * Call this function while holding the NWFilter filter update lock
  */
 static int
 virNWFilterInstantiate(virConnectPtr conn,
@@ -574,8 +576,6 @@ virNWFilterInstantiate(virConnectPtr conn,
     virNWFilterRuleInstPtr *insts = NULL;
     void **ptrs = NULL;
     int instantiate = 1;
-
-    virNWFilterLockFilterUpdates();
 
     virNWFilterHashTablePtr missing_vars = virNWFilterHashTableCreate(0);
     if (!missing_vars) {
@@ -668,8 +668,6 @@ virNWFilterInstantiate(virConnectPtr conn,
 
 err_exit:
 
-    virNWFilterUnlockFilterUpdates();
-
     for (j = 0; j < nEntries; j++)
         virNWFilterRuleInstFree(insts[j]);
 
@@ -681,6 +679,9 @@ err_exit:
 }
 
 
+/*
+ * Call this function while holding the NWFilter filter update lock
+ */
 static int
 __virNWFilterInstantiateFilter(virConnectPtr conn,
                                bool teardownOld,
@@ -823,23 +824,30 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
                           ? net->data.direct.linkdev
                           : NULL;
     int ifindex;
+    int rc;
 
     if (ifaceGetIndex(true, net->ifname, &ifindex))
         return 1;
 
-    return __virNWFilterInstantiateFilter(conn,
-                                          teardownOld,
-                                          net->ifname,
-                                          ifindex,
-                                          linkdev,
-                                          net->type,
-                                          net->mac,
-                                          net->filter,
-                                          net->filterparams,
-                                          useNewFilter,
-                                          conn->nwfilterPrivateData,
-                                          false,
-                                          foundNewFilter);
+    virNWFilterLockFilterUpdates();
+
+    rc = __virNWFilterInstantiateFilter(conn,
+                                        teardownOld,
+                                        net->ifname,
+                                        ifindex,
+                                        linkdev,
+                                        net->type,
+                                        net->mac,
+                                        net->filter,
+                                        net->filterparams,
+                                        useNewFilter,
+                                        conn->nwfilterPrivateData,
+                                        false,
+                                        foundNewFilter);
+
+    virNWFilterUnlockFilterUpdates();
+
+    return rc;
 }
 
 
@@ -856,6 +864,8 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
 {
     int rc;
     bool foundNewFilter = false;
+
+    virNWFilterLockFilterUpdates();
 
     rc = __virNWFilterInstantiateFilter(conn,
                                         1,
@@ -878,6 +888,9 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
             _virNWFilterTeardownFilter(ifname);
         }
     }
+
+    virNWFilterUnlockFilterUpdates();
+
     return rc;
 }
 
