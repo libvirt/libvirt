@@ -1212,6 +1212,20 @@ initialize_gnutls(void)
 
 static int verify_certificate (virConnectPtr conn, struct private_data *priv, gnutls_session_t session);
 
+#if HAVE_WINSOCK2_H
+static ssize_t
+custom_gnutls_push(void *s, const void *buf, size_t len)
+{
+    return send((size_t)s, buf, len, 0);
+}
+
+static ssize_t
+custom_gnutls_pull(void *s, void *buf, size_t len)
+{
+    return recv((size_t)s, buf, len, 0);
+}
+#endif
+
 static gnutls_session_t
 negotiate_gnutls_on_connection (virConnectPtr conn,
                                 struct private_data *priv,
@@ -1265,6 +1279,13 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
 
     gnutls_transport_set_ptr (session,
                               (gnutls_transport_ptr_t) (long) priv->sock);
+
+#if HAVE_WINSOCK2_H
+    /* Make sure GnuTLS uses gnulib's replacment functions for send() and
+     * recv() on Windows */
+    gnutls_transport_set_push_function(session, custom_gnutls_push);
+    gnutls_transport_set_pull_function(session, custom_gnutls_pull);
+#endif
 
     /* Perform the TLS handshake. */
  again:
