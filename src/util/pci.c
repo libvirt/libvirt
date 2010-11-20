@@ -1095,7 +1095,7 @@ pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher)
         }
     }
 
-    fclose(fp);
+    VIR_FORCE_FCLOSE(fp);
 
     return ret;
 }

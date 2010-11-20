@@ -231,6 +231,15 @@ sc_avoid_write:
 	halt='consider using safewrite instead of write'		\
 	  $(_sc_search_regexp)
 
+# Avoid functions that can lead to double-close bugs.
+sc_prohibit_close:
+	@prohibit='\<[f]close *\('					\
+	halt='use VIR_{FORCE_}[F]CLOSE instead of [f]close'		\
+	  $(_sc_search_regexp)
+	@prohibit='\<fdopen *\('					\
+	halt='use VIR_FDOPEN instead of fdopen'				\
+	  $(_sc_search_regexp)
+
 # Similar to the gnulib maint.mk rule for sc_prohibit_strcmp
 # Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
 sc_prohibit_strncmp:

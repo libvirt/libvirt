@@ -1,0 +1,3 @@
+^docs/.*
+^HACKING$
+^src/util/files.c$
