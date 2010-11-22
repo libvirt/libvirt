@@ -6367,6 +6367,10 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         break;
     }
 
+    /* Save the persistent config to disk */
+    if (flags & VIR_DOMAIN_VCPU_CONFIG)
+        ret = virDomainSaveConfig(driver->configDir, persistentDef);
+
 endjob:
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
