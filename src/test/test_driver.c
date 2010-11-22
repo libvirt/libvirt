@@ -2134,9 +2134,10 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 
     /* We allow more cpus in guest than host, but not more than the
      * domain's starting limit.  */
-    if ((flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
-        VIR_DOMAIN_VCPU_LIVE && privdom->def->maxvcpus < maxvcpus)
+    if (!(flags & (VIR_DOMAIN_VCPU_MAXIMUM)) &&
+        privdom->def->maxvcpus < maxvcpus)
         maxvcpus = privdom->def->maxvcpus;
+
     if (nrCpus > maxvcpus) {
         testError(VIR_ERR_INVALID_ARG,
                   "requested cpu amount exceeds maximum (%d > %d)",

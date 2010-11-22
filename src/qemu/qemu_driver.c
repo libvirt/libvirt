@@ -6322,8 +6322,7 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if ((flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
-        VIR_DOMAIN_VCPU_LIVE && vm->def->maxvcpus < max) {
+    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && vm->def->maxvcpus < max) {
         max = vm->def->maxvcpus;
     }
 
