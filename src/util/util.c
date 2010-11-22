@@ -2199,6 +2199,22 @@ virParseVersionString(const char *str, unsigned long *version)
 }
 
 /**
+ * virVasprintf
+ *
+ * like glibc's vasprintf but makes sure *strp == NULL on failure
+ */
+int
+virVasprintf(char **strp, const char *fmt, va_list list)
+{
+    int ret;
+
+    if ((ret = vasprintf(strp, fmt, list)) == -1)
+        *strp = NULL;
+
+    return ret;
+}
+
+/**
  * virAsprintf
  *
  * like glibc's_asprintf but makes sure *strp == NULL on failure
@@ -2210,10 +2226,7 @@ virAsprintf(char **strp, const char *fmt, ...)
     int ret;
 
     va_start(ap, fmt);
-
-    if ((ret = vasprintf(strp, fmt, ap)) == -1)
-        *strp = NULL;
-
+    ret = virVasprintf(strp, fmt, ap);
     va_end(ap);
     return ret;
 }

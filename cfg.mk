@@ -255,7 +255,7 @@ sc_prohibit_strncmp:
 
 # Use virAsprintf rather than as'printf since *strp is undefined on error.
 sc_prohibit_asprintf:
-	@prohibit='\<a[s]printf\>'					\
+	@prohibit='\<v?a[s]printf\>'					\
 	halt='use virAsprintf, not as'printf				\
 	  $(_sc_search_regexp)
 

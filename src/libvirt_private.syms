@@ -817,6 +817,7 @@ virStrToLong_ull;
 virStrcpy;
 virStrncpy;
 virTimestamp;
+virVasprintf;
 
 
 # uuid.h

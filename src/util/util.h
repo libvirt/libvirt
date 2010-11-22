@@ -31,6 +31,7 @@
 # include <unistd.h>
 # include <sys/select.h>
 # include <sys/types.h>
+# include <stdarg.h>
 
 # ifndef MIN
 #  define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -202,7 +203,10 @@ int virMacAddrCompare (const char *mac1, const char *mac2);
 void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);
 int virParseVersionString(const char *str, unsigned long *version);
-int virAsprintf(char **strp, const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(2, 3);
+int virAsprintf(char **strp, const char *fmt, ...)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 3);
+int virVasprintf(char **strp, const char *fmt, va_list list)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 0);
 char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 char *virStrcpy(char *dest, const char *src, size_t destbytes)

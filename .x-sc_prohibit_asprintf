@@ -1,3 +1,5 @@
+ChangeLog
+^bootstrap.conf$
 ^gnulib/
 ^po/
-ChangeLog
+^src/util/util.c$

@@ -95,7 +95,7 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
 #endif
 
     va_start(args, fmt);
-    if (vasprintf(&str, fmt, args) < 0) {
+    if (virVasprintf(&str, fmt, args) < 0) {
         VIR_WARN0("Out of memory while formatting audit message");
         str = NULL;
     }
