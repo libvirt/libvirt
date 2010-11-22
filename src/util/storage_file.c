@@ -42,7 +42,7 @@
 
 VIR_ENUM_IMPL(virStorageFileFormat,
               VIR_STORAGE_FILE_LAST,
-              "raw", "probe", "dir", "bochs",
+              "raw", "dir", "bochs",
               "cloop", "cow", "dmg", "iso",
               "qcow", "qcow2", "qed", "vmdk", "vpc")
 
@@ -108,8 +108,8 @@ qedGetBackingStore(char **, int *, const unsigned char *, size_t);
 #define QCOW2_HDR_EXTENSION_BACKING_FORMAT 0xE2792ACA
 
 #define QED_HDR_FEATURES_OFFSET (4+4+4+4)
-#define QED_HDR_IMAGE_SIZE (QED_HDR_FEATURES_OFFSET+8+8+8)
-#define QED_HDR_BACKING_FILE_OFFSET (QED_HDR_IMAGE_SIZE+8+8)
+#define QED_HDR_IMAGE_SIZE (QED_HDR_FEATURES_OFFSET+8+8+8+8)
+#define QED_HDR_BACKING_FILE_OFFSET (QED_HDR_IMAGE_SIZE+8)
 #define QED_HDR_BACKING_FILE_SIZE (QED_HDR_BACKING_FILE_OFFSET+4)
 #define QED_F_BACKING_FILE 0x01
 #define QED_F_BACKING_FORMAT_NO_PROBE 0x04

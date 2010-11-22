@@ -28,9 +28,9 @@
 # include <stdbool.h>
 
 enum virStorageFileFormat {
+    VIR_STORAGE_FILE_AUTO_SAFE = -2,
     VIR_STORAGE_FILE_AUTO = -1,
     VIR_STORAGE_FILE_RAW = 0,
-    VIR_STORAGE_FILE_AUTO_SAFE,
     VIR_STORAGE_FILE_DIR,
     VIR_STORAGE_FILE_BOCHS,
     VIR_STORAGE_FILE_CLOOP,
