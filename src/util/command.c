@@ -36,6 +36,8 @@
 #include "files.h"
 #include "buf.h"
 
+#include <stdlib.h>
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define virCommandError(code, ...)                                      \
@@ -77,6 +79,10 @@ struct _virCommand {
     int *outfdptr;
     int *errfdptr;
 
+    bool handshake;
+    int handshakeWait[2];
+    int handshakeNotify[2];
+
     virExecHook hook;
     void *opaque;
 
@@ -107,6 +113,11 @@ virCommandNewArgs(const char *const*args)
 
     if (VIR_ALLOC(cmd) < 0)
         return NULL;
+
+    cmd->handshakeWait[0] = -1;
+    cmd->handshakeWait[1] = -1;
+    cmd->handshakeNotify[0] = -1;
+    cmd->handshakeNotify[1] = -1;
 
     FD_ZERO(&cmd->preserve);
     FD_ZERO(&cmd->transfer);
@@ -1174,12 +1185,61 @@ virCommandHook(void *data)
     virCommandPtr cmd = data;
     int res = 0;
 
-    if (cmd->hook)
+    if (cmd->hook) {
+        VIR_DEBUG("Run hook %p %p", cmd->hook, cmd->opaque);
         res = cmd->hook(cmd->opaque);
+        VIR_DEBUG("Done hook %d", res);
+    }
     if (res == 0 && cmd->pwd) {
         VIR_DEBUG("Running child in %s", cmd->pwd);
         res = chdir(cmd->pwd);
+        if (res < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to change to %s"), cmd->pwd);
+        }
     }
+    if (cmd->handshake) {
+        char c = res < 0 ? '0' : '1';
+        int rv;
+        VIR_DEBUG("Notifying parent for handshake start on %d", cmd->handshakeWait[1]);
+        if (safewrite(cmd->handshakeWait[1], &c, sizeof(c)) != sizeof(c)) {
+            virReportSystemError(errno, "%s", _("Unable to notify parent process"));
+            return -1;
+        }
+
+        /* On failure we pass the error message back to parent,
+         * so they don't have to dig through stderr logs
+         */
+        if (res < 0) {
+            virErrorPtr err = virGetLastError();
+            const char *msg = err ? err->message :
+                _("Unknown failure during hook execution");
+            size_t len = strlen(msg) + 1;
+            if (safewrite(cmd->handshakeWait[1], msg, len) != len) {
+                virReportSystemError(errno, "%s", _("Unable to send error to parent process"));
+                return -1;
+            }
+            return -1;
+        }
+
+        VIR_DEBUG("Waiting on parent for handshake complete on %d", cmd->handshakeNotify[0]);
+        if ((rv = saferead(cmd->handshakeNotify[0], &c, sizeof(c))) != sizeof(c)) {
+            if (rv < 0)
+                virReportSystemError(errno, "%s", _("Unable to wait on parent process"));
+            else
+                virReportSystemError(EIO, "%s", _("libvirtd quit during handshake"));
+            return -1;
+        }
+        if (c != '1') {
+            virReportSystemError(EINVAL, _("Unexpected confirm code '%c' from parent process"), c);
+            return -1;
+        }
+        VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
+        VIR_FORCE_CLOSE(cmd->handshakeNotify[0]);
+    }
+
+    VIR_DEBUG("Hook is done %d", res);
+
     return res;
 }
 
@@ -1409,6 +1469,119 @@ virCommandAbort(virCommandPtr cmd ATTRIBUTE_UNUSED)
 }
 #endif
 
+
+void virCommandRequireHandshake(virCommandPtr cmd)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    if (cmd->handshake) {
+        cmd->has_error = -1;
+        VIR_DEBUG("Cannot require handshake twice");
+        return;
+    }
+
+    if (pipe(cmd->handshakeWait) < 0) {
+        cmd->has_error = errno;
+        return;
+    }
+    if (pipe(cmd->handshakeNotify) < 0) {
+        VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
+        VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
+        cmd->has_error = errno;
+        return;
+    }
+
+    VIR_DEBUG("Transfer handshake wait=%d notify=%d",
+              cmd->handshakeWait[1], cmd->handshakeNotify[0]);
+    virCommandTransferFD(cmd, cmd->handshakeWait[1]);
+    virCommandTransferFD(cmd, cmd->handshakeNotify[0]);
+    cmd->handshake = true;
+}
+
+int virCommandHandshakeWait(virCommandPtr cmd)
+{
+    char c;
+    int rv;
+    if (!cmd ||cmd->has_error == ENOMEM) {
+        virReportOOMError();
+        return -1;
+    }
+    if (cmd->has_error || !cmd->handshake) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("invalid use of command API"));
+        return -1;
+    }
+
+    if (cmd->handshakeWait[0] == -1) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Handshake is already complete"));
+        return -1;
+    }
+
+    VIR_DEBUG("Wait for handshake on %d", cmd->handshakeWait[0]);
+    if ((rv = saferead(cmd->handshakeWait[0], &c, sizeof(c))) != sizeof(c)) {
+        if (rv < 0)
+            virReportSystemError(errno, "%s", _("Unable to wait for child process"));
+        else
+            virReportSystemError(EIO, "%s", _("Child process quit during startup handshake"));
+        VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
+        return -1;
+    }
+    if (c != '1') {
+        char *msg;
+        ssize_t len;
+        if (VIR_ALLOC_N(msg, 1024) < 0) {
+            virReportOOMError();
+            VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
+            return -1;
+        }
+        if ((len = saferead(cmd->handshakeWait[0], msg, 1024)) < 0) {
+            VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
+            VIR_FREE(msg);
+            virReportSystemError(errno, "%s", _("No error message from child failure"));
+            return -1;
+        }
+        VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
+        msg[len-1] = '\0';
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s", msg);
+        VIR_FREE(msg);
+        return -1;
+    }
+    VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
+    return 0;
+}
+
+int virCommandHandshakeNotify(virCommandPtr cmd)
+{
+    char c = '1';
+    if (!cmd ||cmd->has_error == ENOMEM) {
+        virReportOOMError();
+        return -1;
+    }
+    if (cmd->has_error || !cmd->handshake) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("invalid use of command API"));
+        return -1;
+    }
+
+    if (cmd->handshakeNotify[1] == -1) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Handshake is already complete"));
+        return -1;
+    }
+
+    VIR_DEBUG("Notify handshake on %d", cmd->handshakeWait[0]);
+    if (safewrite(cmd->handshakeNotify[1], &c, sizeof(c)) != sizeof(c)) {
+        virReportSystemError(errno, "%s", _("Unable to notify child process"));
+        VIR_FORCE_CLOSE(cmd->handshakeNotify[1]);
+        return -1;
+    }
+    VIR_FORCE_CLOSE(cmd->handshakeNotify[1]);
+    return 0;
+}
+
+
 /*
  * Release all resources
  */
@@ -1439,6 +1612,14 @@ virCommandFree(virCommandPtr cmd)
     VIR_FREE(cmd->env);
 
     VIR_FREE(cmd->pwd);
+
+    if (cmd->handshake) {
+        /* The other 2 fds in these arrays are closed
+         * due to use with virCommandTransferFD
+         */
+        VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
+        VIR_FORCE_CLOSE(cmd->handshakeNotify[1]);
+    }
 
     VIR_FREE(cmd->pidfile);
 

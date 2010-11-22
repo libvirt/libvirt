@@ -292,6 +292,28 @@ int virCommandWait(virCommandPtr cmd,
                    int *exitstatus) ATTRIBUTE_RETURN_CHECK;
 
 /*
+ * Request that the child perform a handshake with
+ * the parent when the hook function has completed
+ * execution. The child will not exec() until the
+ * parent has notified
+ */
+void virCommandRequireHandshake(virCommandPtr cmd);
+
+/*
+ * Wait for the child to complete execution of its
+ * hook function
+ */
+int virCommandHandshakeWait(virCommandPtr cmd)
+    ATTRIBUTE_RETURN_CHECK;
+
+/*
+ * Notify the child that it is OK to exec() the
+ * real binary now
+ */
+int virCommandHandshakeNotify(virCommandPtr cmd)
+    ATTRIBUTE_RETURN_CHECK;
+
+/*
  * Abort an async command if it is running, without issuing
  * any errors or affecting errno.  Designed for error paths
  * where some but not all paths to the cleanup code might
