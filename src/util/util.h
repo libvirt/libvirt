@@ -36,7 +36,7 @@
 #  define MIN(a, b) ((a) < (b) ? (a) : (b))
 # endif
 
-int saferead(int fd, void *buf, size_t count) ATTRIBUTE_RETURN_CHECK;
+ssize_t saferead(int fd, void *buf, size_t count) ATTRIBUTE_RETURN_CHECK;
 ssize_t safewrite(int fd, const void *buf, size_t count)
     ATTRIBUTE_RETURN_CHECK;
 int safezero(int fd, int flags, off_t offset, off_t len)
