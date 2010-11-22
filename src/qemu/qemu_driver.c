@@ -741,7 +741,7 @@ static int qemuCgroupControllerActive(struct qemud_driver *driver,
 }
 
 static int
-qemudLogFD(struct qemud_driver *driver, const char* name)
+qemudLogFD(struct qemud_driver *driver, const char* name, bool append)
 {
     char logfile[PATH_MAX];
     mode_t logmode;
@@ -756,7 +756,7 @@ qemudLogFD(struct qemud_driver *driver, const char* name)
 
     logmode = O_CREAT | O_WRONLY;
     /* Only logrotate files in /var/log, so only append if running privileged */
-    if (driver->privileged)
+    if (driver->privileged || append)
         logmode |= O_APPEND;
     else
         logmode |= O_TRUNC;
@@ -3976,7 +3976,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     DEBUG0("Creating domain log file");
-    if ((logfile = qemudLogFD(driver, vm->def->name)) < 0)
+    if ((logfile = qemudLogFD(driver, vm->def->name, false)) < 0)
         goto cleanup;
 
     emulator = vm->def->emulator;
@@ -4271,7 +4271,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     VIR_DEBUG("Shutting down VM '%s' pid=%d migrated=%d",
               vm->def->name, vm->pid, migrated);
 
-    if ((logfile = qemudLogFD(driver, vm->def->name)) < 0) {
+    if ((logfile = qemudLogFD(driver, vm->def->name, true)) < 0) {
         /* To not break the normal domain shutdown process, skip the
          * timestamp log writing if failed on opening log file. */
         VIR_WARN("Unable to open logfile: %s",
