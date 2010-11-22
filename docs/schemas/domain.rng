@@ -497,7 +497,7 @@
       </optional>
       <optional>
         <element name="root">
-          <ref name="devicePath"/>
+          <ref name="absFilePath"/>
         </element>
       </optional>
       <optional>
@@ -588,7 +588,7 @@
             <optional>
               <element name="source">
                 <attribute name="dev">
-                  <ref name="deviceName"/>
+                  <ref name="absFilePath"/>
                 </attribute>
                 <empty/>
               </element>
@@ -766,7 +766,7 @@
           <interleave>
             <element name="source">
               <attribute name="dev">
-                <ref name="deviceName"/>
+                <ref name="absFilePath"/>
               </attribute>
               <empty/>
             </element>
@@ -1338,7 +1338,7 @@
     <ref name="qemucdevSrcType"/>
     <optional>
       <attribute name="tty">
-        <ref name="devicePath"/>
+        <ref name="absFilePath"/>
       </attribute>
     </optional>
     <interleave>
@@ -1430,7 +1430,7 @@
         <group>
           <optional>
             <attribute name="tty">
-              <ref name="devicePath"/>
+              <ref name="absFilePath"/>
             </attribute>
           </optional>
           <empty/>
@@ -2028,27 +2028,22 @@
   </define>
   <define name="filePath">
     <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\.\+\-&amp;/%]+</param>
+      <param name="pattern">[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
     </data>
   </define>
   <define name="absFilePath">
     <data type="string">
-      <param name="pattern">/[a-zA-Z0-9_\.\+\-&amp;/%]+</param>
+      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
     </data>
   </define>
   <define name="absDirPath">
     <data type="string">
-      <param name="pattern">/[a-zA-Z0-9_\.\+\-&amp;/%]*</param>
-    </data>
-  </define>
-  <define name="devicePath">
-    <data type="string">
-      <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
+      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]*</param>
     </data>
   </define>
   <define name="deviceName">
     <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\.\-:/]+</param>
+      <param name="pattern">[a-zA-Z0-9_\.\-\\:/]+</param>
     </data>
   </define>
   <define name="bridgeMode">
