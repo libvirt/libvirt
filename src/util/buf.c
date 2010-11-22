@@ -282,7 +282,7 @@ err:
 void
 virBufferEscapeString(const virBufferPtr buf, const char *format, const char *str)
 {
-    int size, count, len, grow_size;
+    int len;
     char *escaped, *out;
     const char *cur;
 
@@ -293,6 +293,11 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
         return;
 
     len = strlen(str);
+    if (strcspn(str, "<>&'\"") == len) {
+        virBufferVSprintf(buf, format, str);
+        return;
+    }
+
     if (VIR_ALLOC_N(escaped, 6 * len + 1) < 0) {
         virBufferNoMemory(buf);
         return;
@@ -345,36 +350,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
     }
     *out = 0;
 
-    if ((buf->use >= buf->size) &&
-        virBufferGrow(buf, 100) < 0) {
-        goto err;
-    }
-
-    size = buf->size - buf->use;
-    if ((count = snprintf(&buf->content[buf->use], size,
-                          format, (char *)escaped)) < 0) {
-            buf->error = 1;
-        goto err;
-    }
-
-    /* Grow buffer if necessary and retry */
-    if (count >= size) {
-        buf->content[buf->use] = 0;
-        grow_size = (count + 1 > 1000) ? count + 1 : 1000;
-        if (virBufferGrow(buf, grow_size) < 0) {
-            goto err;
-        }
-        size = buf->size - buf->use;
-
-        if ((count = snprintf(&buf->content[buf->use], size,
-                              format, (char *)escaped)) < 0) {
-            buf->error = 1;
-            goto err;
-        }
-    }
-    buf->use += count;
-
-err:
+    virBufferVSprintf(buf, format, escaped);
     VIR_FREE(escaped);
 }
 
