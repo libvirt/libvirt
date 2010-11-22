@@ -163,6 +163,6 @@ PURPOSE
 =head1 SEE ALSO
 
 L<virsh(1)>, L<virt-install(1)>, L<virt-xml-validate(1)>, L<virt-top(1)>,
-L<virt-mem(1)>, L<virt-df(1)>, L<http://www.libvirt.org/>
+L<virt-df(1)>, L<http://www.libvirt.org/>
 
 =cut
