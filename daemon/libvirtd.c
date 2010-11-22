@@ -2362,7 +2362,8 @@ static void *qemudRunLoop(void *opaque) {
                             server->clients + i + 1,
                             sizeof (*server->clients) * (server->nclients - i));
 
-                VIR_SHRINK_N(server->clients, server->nclients, 0);
+                VIR_SHRINK_N(server->clients, server->nclients_max,
+                             server->nclients_max - server->nclients);
                 goto reprocess;
             }
         }

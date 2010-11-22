@@ -347,13 +347,14 @@ scales better, but requires tracking allocation separately from usage)
 
 
 
-- To trim an array of domains to have one less element:
+- To trim an array of domains from its allocated size down to the actual used
+size:
 
   virDomainPtr domains;
   size_t ndomains = x;
   size_t ndomains_max = y;
 
-  VIR_SHRINK_N(domains, ndomains_max, 1);
+  VIR_SHRINK_N(domains, ndomains_max, ndomains_max - ndomains);
 
 
 
