@@ -2930,7 +2930,7 @@ virTimestamp(void)
 
     strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", &time_info);
 
-    if (virAsprintf(&timestamp, "%s.%03d: ",
+    if (virAsprintf(&timestamp, "%s.%03d",
                     timestr, (int) cur_time.tv_usec / 1000) < 0) {
         return NULL;
     }
