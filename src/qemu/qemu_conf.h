@@ -25,6 +25,7 @@
 # define __QEMUD_CONF_H
 
 # include <config.h>
+# include <stdbool.h>
 
 # include "ebtables.h"
 # include "internal.h"
@@ -41,6 +42,7 @@
 # include "driver.h"
 # include "bitmap.h"
 # include "macvtap.h"
+# include "command.h"
 
 # define qemudDebug(fmt, ...) do {} while(0)
 
@@ -228,16 +230,12 @@ int         qemudParseHelpStr           (const char *qemu,
                                          unsigned int *is_kvm,
                                          unsigned int *kvm_version);
 
-int         qemudBuildCommandLine       (virConnectPtr conn,
+virCommandPtr qemudBuildCommandLine     (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainDefPtr def,
                                          virDomainChrDefPtr monitor_chr,
-                                         int monitor_json,
+                                         bool monitor_json,
                                          unsigned long long qemuCmdFlags,
-                                         const char ***retargv,
-                                         const char ***retenv,
-                                         int **vmfds,
-                                         int *nvmfds,
                                          const char *migrateFrom,
                                          virDomainSnapshotObjPtr current_snapshot,
                                          enum virVMOperationType vmop)

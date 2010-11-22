@@ -3025,14 +3025,6 @@ qemuAssignPCIAddresses(virDomainDefPtr def)
     int ret = -1;
     unsigned long long qemuCmdFlags = 0;
     qemuDomainPCIAddressSetPtr addrs = NULL;
-    struct stat sb;
-
-    if (stat(def->emulator, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot find QEMU binary %s"),
-                             def->emulator);
-        goto cleanup;
-    }
 
     if (qemudExtractVersionInfo(def->emulator,
                                 NULL,
@@ -3873,29 +3865,20 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               int stdin_fd,
                               const char *stdin_path,
                               enum virVMOperationType vmop) {
-    const char **argv = NULL, **tmp;
-    const char **progenv = NULL;
-    int i, ret, runflags;
-    struct stat sb;
-    int *vmfds = NULL;
-    int nvmfds = 0;
+    int ret;
     unsigned long long qemuCmdFlags;
-    fd_set keepfd;
-    const char *emulator;
-    pid_t child;
     int pos = -1;
     char ebuf[1024];
     char *pidfile = NULL;
     int logfile = -1;
     char *timestamp;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCommandPtr cmd = NULL;
 
     struct qemudHookData hookData;
     hookData.conn = conn;
     hookData.vm = vm;
     hookData.driver = driver;
-
-    FD_ZERO(&keepfd);
 
     DEBUG0("Beginning VM startup process");
 
@@ -3987,21 +3970,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if ((logfile = qemudLogFD(driver, vm->def->name, false)) < 0)
         goto cleanup;
 
-    emulator = vm->def->emulator;
-
-    /* Make sure the binary we are about to try exec'ing exists.
-     * Technically we could catch the exec() failure, but that's
-     * in a sub-process so its hard to feed back a useful error
-     */
-    if (stat(emulator, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot find QEMU binary %s"),
-                             emulator);
-        goto cleanup;
-    }
-
-    DEBUG0("Determing emulator version");
-    if (qemudExtractVersionInfo(emulator,
+    DEBUG0("Determining emulator version");
+    if (qemudExtractVersionInfo(vm->def->emulator,
                                 NULL,
                                 &qemuCmdFlags) < 0)
         goto cleanup;
@@ -4070,10 +4040,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Building emulator command line");
     vm->def->id = driver->nextvmid++;
-    if (qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
-                              priv->monJSON, qemuCmdFlags, &argv, &progenv,
-                              &vmfds, &nvmfds, migrateFrom,
-                              vm->current_snapshot, vmop) < 0)
+    if (!(cmd = qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
+                                      priv->monJSON != 0, qemuCmdFlags,
+                                      migrateFrom,
+                                      vm->current_snapshot, vmop)))
         goto cleanup;
 
     if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
@@ -4108,50 +4078,28 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         VIR_FREE(timestamp);
     }
 
-    tmp = progenv;
-
-    while (*tmp) {
-        if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN("Unable to write envv to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof ebuf));
-        if (safewrite(logfile, " ", 1) < 0)
-            VIR_WARN("Unable to write envv to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof ebuf));
-        tmp++;
-    }
-    tmp = argv;
-    while (*tmp) {
-        if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN("Unable to write argv to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof ebuf));
-        if (safewrite(logfile, " ", 1) < 0)
-            VIR_WARN("Unable to write argv to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof ebuf));
-        tmp++;
-    }
-    if (safewrite(logfile, "\n", 1) < 0)
-        VIR_WARN("Unable to write argv to logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
+    virCommandWriteArgLog(cmd, logfile);
 
     if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
         VIR_WARN("Unable to seek to end of logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
 
-    for (i = 0 ; i < nvmfds ; i++)
-        FD_SET(vmfds[i], &keepfd);
-
     VIR_DEBUG("Clear emulator capabilities: %d",
               driver->clearEmulatorCapabilities);
-    runflags = VIR_EXEC_NONBLOCK;
-    if (driver->clearEmulatorCapabilities) {
-        runflags |= VIR_EXEC_CLEAR_CAPS;
-    }
+    if (driver->clearEmulatorCapabilities)
+        virCommandClearCaps(cmd);
 
-    ret = virExecDaemonize(argv, progenv, &keepfd, &child,
-                           stdin_fd, &logfile, &logfile,
-                           runflags,
-                           qemudSecurityHook, &hookData,
-                           pidfile);
+    VIR_WARN("Executing %s", vm->def->emulator);
+    virCommandSetPreExecHook(cmd, qemudSecurityHook, &hookData);
+    virCommandSetInputFD(cmd, stdin_fd);
+    virCommandSetOutputFD(cmd, &logfile);
+    virCommandSetErrorFD(cmd, &logfile);
+    virCommandNonblockingFDs(cmd);
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandDaemonize(cmd);
+
+    ret = virCommandRun(cmd, NULL);
+    VIR_WARN("Executing done %s", vm->def->emulator);
     VIR_FREE(pidfile);
 
     /* wait for qemu process to to show up */
@@ -4161,7 +4109,13 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                             _("Domain %s didn't show up\n"), vm->def->name);
             ret = -1;
         }
+#if 0
     } else if (ret == -2) {
+        /*
+         * XXX this is bogus. It isn't safe to set vm->pid = child
+         * because the child no longer exists.
+         */
+
         /* The virExec process that launches the daemon failed. Pending on
          * when it failed (we can't determine for sure), there may be
          * extra info in the domain log (if the hook failed for example).
@@ -4171,29 +4125,15 @@ static int qemudStartVMDaemon(virConnectPtr conn,
          */
         vm->pid = child;
         ret = 0;
+#endif
     }
 
     if (migrateFrom)
         start_paused = true;
     vm->state = start_paused ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
 
-    for (i = 0 ; argv[i] ; i++)
-        VIR_FREE(argv[i]);
-    VIR_FREE(argv);
-
-    for (i = 0 ; progenv[i] ; i++)
-        VIR_FREE(progenv[i]);
-    VIR_FREE(progenv);
-
     if (ret == -1) /* The VM failed to start; tear filters before taps */
         virDomainConfVMNWFilterTeardown(vm);
-
-    if (vmfds) {
-        for (i = 0 ; i < nvmfds ; i++) {
-            VIR_FORCE_CLOSE(vmfds[i]);
-        }
-        VIR_FREE(vmfds);
-    }
 
     if (ret == -1) /* The VM failed to start */
         goto cleanup;
@@ -4248,6 +4188,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (virDomainObjSetDefTransient(driver->caps, vm) < 0)
         goto cleanup;
 
+    virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
 
     return 0;
@@ -4256,9 +4197,9 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
-    qemudShutdownVMDaemon(driver, vm, 0);
-
+    virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
+    qemudShutdownVMDaemon(driver, vm, 0);
 
     return -1;
 }
@@ -7331,13 +7272,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainChrDef monConfig;
-    const char *emulator;
     unsigned long long qemuCmdFlags;
-    struct stat sb;
-    const char **retargv = NULL;
-    const char **retenv = NULL;
-    const char **tmp;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virCommandPtr cmd = NULL;
     char *ret = NULL;
     int i;
 
@@ -7388,71 +7324,26 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             def->graphics[i]->data.vnc.autoport)
             def->graphics[i]->data.vnc.port = QEMU_VNC_PORT_MIN;
     }
-    emulator = def->emulator;
 
-    /* Make sure the binary we are about to try exec'ing exists.
-     * Technically we could catch the exec() failure, but that's
-     * in a sub-process so its hard to feed back a useful error
-     */
-    if (stat(emulator, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot find QEMU binary %s"),
-                             emulator);
-        goto cleanup;
-    }
-
-    if (qemudExtractVersionInfo(emulator,
+    if (qemudExtractVersionInfo(def->emulator,
                                 NULL,
-                                &qemuCmdFlags) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Cannot determine QEMU argv syntax %s"),
-                        emulator);
+                                &qemuCmdFlags) < 0)
         goto cleanup;
-    }
 
     if (qemuPrepareMonitorChr(driver, &monConfig, def->name) < 0)
         goto cleanup;
 
-    if (qemudBuildCommandLine(conn, driver, def,
-                              &monConfig, 0, qemuCmdFlags,
-                              &retargv, &retenv,
-                              NULL, NULL, /* Don't want it to create TAP devices */
-                              NULL, NULL,
-                              VIR_VM_OP_NO_OP) < 0) {
+    if (!(cmd = qemudBuildCommandLine(conn, driver, def,
+                                      &monConfig, false, qemuCmdFlags,
+                                      NULL, NULL, VIR_VM_OP_NO_OP)))
         goto cleanup;
-    }
 
-    tmp = retenv;
-    while (*tmp) {
-        virBufferAdd(&buf, *tmp, strlen(*tmp));
-        virBufferAddLit(&buf, " ");
-        tmp++;
-    }
-    tmp = retargv;
-    while (*tmp) {
-        virBufferAdd(&buf, *tmp, strlen(*tmp));
-        virBufferAddLit(&buf, " ");
-        tmp++;
-    }
-
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ret = virBufferContentAndReset(&buf);
+    ret = virCommandToString(cmd);
 
 cleanup:
     qemuDriverUnlock(driver);
-    for (tmp = retargv ; tmp && *tmp ; tmp++)
-        VIR_FREE(*tmp);
-    VIR_FREE(retargv);
 
-    for (tmp = retenv ; tmp && *tmp ; tmp++)
-        VIR_FREE(*tmp);
-    VIR_FREE(retenv);
-
+    virCommandFree(cmd);
     virDomainDefFree(def);
     return ret;
 }

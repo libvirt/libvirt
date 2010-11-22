@@ -27,29 +27,31 @@ static struct qemud_driver driver;
 # define MAX_FILE 4096
 
 static int testCompareXMLToArgvFiles(const char *xml,
-                                     const char *cmd,
+                                     const char *cmdline,
                                      unsigned long long extraFlags,
                                      const char *migrateFrom,
                                      bool expectError) {
     char argvData[MAX_FILE];
     char *expectargv = &(argvData[0]);
+    int len;
     char *actualargv = NULL;
-    const char **argv = NULL;
-    const char **qenv = NULL;
-    const char **tmp = NULL;
-    int ret = -1, len;
+    int ret = -1;
     unsigned long long flags;
     virDomainDefPtr vmdef = NULL;
     virDomainChrDef monitor_chr;
     virConnectPtr conn;
     char *log = NULL;
     char *emulator = NULL;
+    virCommandPtr cmd = NULL;
 
     if (!(conn = virGetConnect()))
         goto fail;
 
-    if (virtTestLoadFile(cmd, &expectargv, MAX_FILE) < 0)
+    len = virtTestLoadFile(cmdline, &expectargv, MAX_FILE);
+    if (len < 0)
         goto fail;
+    if (len && expectargv[len - 1] == '\n')
+        expectargv[len - 1] = '\0';
 
     if (!(vmdef = virDomainDefParseFile(driver.caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
@@ -109,11 +111,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
     free(virtTestLogContentAndReset());
     virResetLastError();
 
-    if (qemudBuildCommandLine(conn, &driver,
-                              vmdef, &monitor_chr, 0, flags,
-                              &argv, &qenv,
-                              NULL, NULL, migrateFrom, NULL,
-                              VIR_VM_OP_CREATE) < 0)
+    if (!(cmd = qemudBuildCommandLine(conn, &driver,
+                                      vmdef, &monitor_chr, false, flags,
+                                      migrateFrom, NULL, VIR_VM_OP_CREATE)))
         goto fail;
 
     if (!!virGetLastError() != expectError) {
@@ -127,42 +127,17 @@ static int testCompareXMLToArgvFiles(const char *xml,
         virResetLastError();
     }
 
-    if (emulator && *argv) {
-        free(*(char**) argv);
-        *argv = emulator;
-        emulator = NULL;
-    }
-
-    len = 1; /* for trailing newline */
-    tmp = qenv;
-    while (*tmp) {
-        len += strlen(*tmp) + 1;
-        tmp++;
-    }
-
-    tmp = argv;
-    while (*tmp) {
-        len += strlen(*tmp) + 1;
-        tmp++;
-    }
-    if ((actualargv = malloc(sizeof(*actualargv)*len)) == NULL)
+    if (!(actualargv = virCommandToString(cmd)))
         goto fail;
-    actualargv[0] = '\0';
-    tmp = qenv;
-    while (*tmp) {
-        if (actualargv[0])
-            strcat(actualargv, " ");
-        strcat(actualargv, *tmp);
-        tmp++;
+
+    if (emulator) {
+        /* Skip the abs_srcdir portion of replacement emulator.  */
+        char *start_skip = strstr(actualargv, abs_srcdir);
+        char *end_skip = strstr(actualargv, emulator);
+        if (!start_skip || !end_skip)
+            goto fail;
+        memmove(start_skip, end_skip, strlen(end_skip) + 1);
     }
-    tmp = argv;
-    while (*tmp) {
-        if (actualargv[0])
-            strcat(actualargv, " ");
-        strcat(actualargv, *tmp);
-        tmp++;
-    }
-    strcat(actualargv, "\n");
 
     if (STRNEQ(expectargv, actualargv)) {
         virtTestDifference(stderr, expectargv, actualargv);
@@ -175,22 +150,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     free(log);
     free(emulator);
     free(actualargv);
-    if (argv) {
-        tmp = argv;
-        while (*tmp) {
-            free(*(char**)tmp);
-            tmp++;
-        }
-        free(argv);
-    }
-    if (qenv) {
-        tmp = qenv;
-        while (*tmp) {
-            free(*(char**)tmp);
-            tmp++;
-        }
-        free(qenv);
-    }
+    virCommandFree(cmd);
     virDomainDefFree(vmdef);
     virUnrefConnect(conn);
     return ret;
