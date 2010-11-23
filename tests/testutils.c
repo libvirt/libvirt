@@ -126,13 +126,20 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
 
         if (ts)
             GETTIMEOFDAY(&before);
+
         virResetLastError();
-        if ((ret = body(data)) != 0)
-            break;
+        ret = body(data);
         virErrorPtr err = virGetLastError();
-        if (err)
-            virDispatchError(NULL);
-        if (ts)	{
+        if (err) {
+            if (virTestGetVerbose() || virTestGetDebug())
+                virDispatchError(NULL);
+        }
+
+        if (ret != 0) {
+            break;
+        }
+
+        if (ts) {
             GETTIMEOFDAY(&after);
             ts[i] = DIFF_MSEC(&after, &before);
         }
