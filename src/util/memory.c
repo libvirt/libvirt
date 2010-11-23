@@ -237,18 +237,18 @@ int virResizeN(void *ptrptr, size_t size, size_t *allocptr, size_t count,
  * @ptrptr: pointer to pointer for address of allocated memory
  * @size: number of bytes per element
  * @countptr: pointer to number of elements in array
- * @remove: number of elements to remove
+ * @toremove: number of elements to remove
  *
  * Resize the block of memory in 'ptrptr' to be an array of
- * '*countptr' - 'remove' elements, each 'size' bytes in length.
+ * '*countptr' - 'toremove' elements, each 'size' bytes in length.
  * Update 'ptrptr' and 'countptr'  with the details of the newly
- * allocated memory. If 'remove' is larger than 'countptr', free
+ * allocated memory. If 'toremove' is larger than 'countptr', free
  * the entire array.
  */
-void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t remove)
+void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
 {
-    if (remove < *countptr)
-        ignore_value(virReallocN(ptrptr, size, *countptr -= remove));
+    if (toremove < *countptr)
+        ignore_value(virReallocN(ptrptr, size, *countptr -= toremove));
     else {
         virFree(ptrptr);
         *countptr = 0;
