@@ -2973,7 +2973,6 @@ daemonSetupSignals(struct qemud_server *server)
     sigaction(SIGINT, &sig_action, NULL);
     sigaction(SIGQUIT, &sig_action, NULL);
     sigaction(SIGTERM, &sig_action, NULL);
-    sigaction(SIGCHLD, &sig_action, NULL);
 
     sig_action.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &sig_action, NULL);
