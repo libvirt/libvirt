@@ -437,14 +437,14 @@ qedGetHeaderUL(const unsigned char *loc)
 static unsigned long long
 qedGetHeaderULL(const unsigned char *loc)
 {
-    return ( ((unsigned long)loc[7] << 56)
-           | ((unsigned long)loc[6] << 48)
-           | ((unsigned long)loc[5] << 40)
-           | ((unsigned long)loc[4] << 32)
-           | ((unsigned long)loc[3] << 24)
-           | ((unsigned long)loc[2] << 16)
-           | ((unsigned long)loc[1] << 8)
-           | ((unsigned long)loc[0] << 0));
+    return ( ((unsigned long long)loc[7] << 56)
+           | ((unsigned long long)loc[6] << 48)
+           | ((unsigned long long)loc[5] << 40)
+           | ((unsigned long long)loc[4] << 32)
+           | ((unsigned long long)loc[3] << 24)
+           | ((unsigned long long)loc[2] << 16)
+           | ((unsigned long long)loc[1] << 8)
+           | ((unsigned long long)loc[0] << 0));
 }
 
 static int
