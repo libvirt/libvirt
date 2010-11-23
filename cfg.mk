@@ -127,6 +127,7 @@ useless_free_options =				\
   --name=virLastErrFreeData			\
   --name=virNetMessageFree                      \
   --name=virNetSocketFree                       \
+  --name=virNetTLSSessionFree                   \
   --name=virNWFilterDefFree			\
   --name=virNWFilterEntryFree			\
   --name=virNWFilterHashTableFree		\

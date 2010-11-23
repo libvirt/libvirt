@@ -1193,10 +1193,13 @@ noinst_LTLIBRARIES += libvirt-net-rpc.la
 libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \
 	rpc/virnetprotocol.h rpc/virnetprotocol.c \
-	rpc/virnetsocket.h rpc/virnetsocket.c
+	rpc/virnetsocket.h rpc/virnetsocket.c \
+	rpc/virnettlscontext.h rpc/virnettlscontext.c
 libvirt_net_rpc_la_CFLAGS = \
+			$(GNUTLS_CFLAGS) \
 			$(AM_CFLAGS)
 libvirt_net_rpc_la_LDFLAGS = \
+			$(GNUTLS_LIBS) \
 			$(AM_LDFLAGS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)
