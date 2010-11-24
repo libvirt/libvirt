@@ -32,6 +32,7 @@
 #include "virtaudit.h"
 #include "util.h"
 #include "files.h"
+#include "memory.h"
 
 /* Provide the macros in case the header file is old.
    FIXME: should be removed. */
@@ -110,8 +111,10 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
     }
 
 #if HAVE_AUDIT
-    if (auditfd < 0)
+    if (auditfd < 0) {
+        VIR_FREE(str);
         return;
+    }
 
     if (str) {
         static const int record_types[] = {
@@ -128,6 +131,7 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
             VIR_WARN("Failed to send audit message %s: %s",
                      NULLSTR(str), virStrerror(errno, ebuf, sizeof ebuf));
         }
+        VIR_FREE(str);
     }
 #endif
 }

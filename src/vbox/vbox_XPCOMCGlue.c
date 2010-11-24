@@ -98,6 +98,7 @@ static int tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing)
                 VIR_ERROR(_("Libaray '%s' doesn't exist"), name);
             }
 
+            VIR_FREE(name);
             return -1;
         }
     } else {
