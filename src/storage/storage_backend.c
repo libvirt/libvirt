@@ -1148,11 +1148,11 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
         }
     } else {
         target->perms.label = strdup(filecon);
+        freecon(filecon);
         if (target->perms.label == NULL) {
             virReportOOMError();
             return -1;
         }
-        freecon(filecon);
     }
 #else
     target->perms.label = NULL;

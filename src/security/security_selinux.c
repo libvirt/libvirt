@@ -239,7 +239,7 @@ SELinuxReserveSecurityLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
     }
 
     ctx = context_new(pctx);
-    VIR_FREE(pctx);
+    freecon(pctx);
     if (!ctx)
         goto err;
 
@@ -298,11 +298,12 @@ SELinuxGetSecurityProcessLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
                                _("security label exceeds "
                                  "maximum length: %d"),
                                VIR_SECURITY_LABEL_BUFLEN - 1);
+        freecon(ctx);
         return -1;
     }
 
     strcpy(sec->label, (char *) ctx);
-    VIR_FREE(ctx);
+    freecon(ctx);
 
     sec->enforcing = security_getenforce();
     if (sec->enforcing == -1) {
@@ -387,7 +388,7 @@ SELinuxRestoreSecurityFileLabel(const char *path)
     }
 
 err:
-    VIR_FREE(fcon);
+    freecon(fcon);
     VIR_FREE(newpath);
     return rc;
 }
