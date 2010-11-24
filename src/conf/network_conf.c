@@ -252,10 +252,10 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                 VIR_FREE(end);
                 return -1;
             }
+            VIR_FREE(start);
+            VIR_FREE(end);
 
             if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
-                VIR_FREE(start);
-                VIR_FREE(end);
                 virReportOOMError();
                 return -1;
             }
@@ -300,8 +300,8 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                 cur = cur->next;
                 continue;
             }
+            VIR_FREE(ip);
             if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0) {
-                VIR_FREE(ip);
                 VIR_FREE(mac);
                 VIR_FREE(name);
                 virReportOOMError();
@@ -326,11 +326,15 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
             server = virXMLPropString(cur, "server");
 
             if (server &&
-                virSocketParseAddr(server, &inaddr, AF_UNSPEC) < 0)
+                virSocketParseAddr(server, &inaddr, AF_UNSPEC) < 0) {
+                VIR_FREE(file);
+                VIR_FREE(server);
                 return -1;
+            }
 
             def->bootfile = file;
             def->bootserver = inaddr;
+            VIR_FREE(server);
         }
 
         cur = cur->next;
