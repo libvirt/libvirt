@@ -335,6 +335,12 @@ sc_prohibit_gethostby:
 	halt='use getaddrinfo, not gethostby*'				\
 	  $(_sc_search_regexp)
 
+# raw xmlGetProp requires some nasty casts
+sc_prohibit_xmlGetProp:
+	@prohibit='\<xmlGetProp *\('					\
+	halt='use virXMLPropString, not xmlGetProp'			\
+	  $(_sc_search_regexp)
+
 # Many of the function names below came from this filter:
 # git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
 # |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \

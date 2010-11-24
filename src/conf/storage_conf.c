@@ -446,14 +446,14 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         }
 
         for (i = 0 ; i < nsource ; i++) {
-            xmlChar *path = xmlGetProp(nodeset[i], BAD_CAST "path");
+            char *path = virXMLPropString(nodeset[i], "path");
             if (path == NULL) {
                 VIR_FREE(nodeset);
                 virStorageReportError(VIR_ERR_XML_ERROR,
                         "%s", _("missing storage pool source device path"));
                 goto cleanup;
             }
-            source->devices[i].path = (char *)path;
+            source->devices[i].path = path;
         }
         source->ndevice = nsource;
     }

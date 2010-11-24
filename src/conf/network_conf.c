@@ -222,24 +222,24 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
             virSocketAddr saddr, eaddr;
             int range;
 
-            if (!(start = (char *) xmlGetProp(cur, BAD_CAST "start"))) {
+            if (!(start = virXMLPropString(cur, "start"))) {
                 cur = cur->next;
                 continue;
             }
-            if (!(end = (char *) xmlGetProp(cur, BAD_CAST "end"))) {
-                xmlFree(start);
+            if (!(end = virXMLPropString(cur, "end"))) {
+                VIR_FREE(start);
                 cur = cur->next;
                 continue;
             }
 
             if (virSocketParseAddr(start, &saddr, AF_UNSPEC) < 0) {
-                xmlFree(start);
-                xmlFree(end);
+                VIR_FREE(start);
+                VIR_FREE(end);
                 return -1;
             }
             if (virSocketParseAddr(end, &eaddr, AF_UNSPEC) < 0) {
-                xmlFree(start);
-                xmlFree(end);
+                VIR_FREE(start);
+                VIR_FREE(end);
                 return -1;
             }
 
@@ -248,14 +248,14 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                 virNetworkReportError(VIR_ERR_XML_ERROR,
                                       _("dhcp range '%s' to '%s' invalid"),
                                       start, end);
-                xmlFree(start);
-                xmlFree(end);
+                VIR_FREE(start);
+                VIR_FREE(end);
                 return -1;
             }
 
             if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
-                xmlFree(start);
-                xmlFree(end);
+                VIR_FREE(start);
+                VIR_FREE(end);
                 virReportOOMError();
                 return -1;
             }
@@ -264,19 +264,19 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
             def->nranges++;
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "host")) {
-            xmlChar *mac, *name, *ip;
+            char *mac, *name, *ip;
             unsigned char addr[6];
             virSocketAddr inaddr;
 
-            mac = xmlGetProp(cur, BAD_CAST "mac");
+            mac = virXMLPropString(cur, "mac");
             if ((mac != NULL) &&
-                (virParseMacAddr((const char *) mac, &addr[0]) != 0)) {
+                (virParseMacAddr(mac, &addr[0]) != 0)) {
                 virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("cannot parse MAC address '%s'"),
                                       mac);
                 VIR_FREE(mac);
             }
-            name = xmlGetProp(cur, BAD_CAST "name");
+            name = virXMLPropString(cur, "name");
             if ((name != NULL) && (!c_isalpha(name[0]))) {
                 virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("cannot use name address '%s'"),
@@ -292,8 +292,8 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                 cur = cur->next;
                 continue;
             }
-            ip = xmlGetProp(cur, BAD_CAST "ip");
-            if (virSocketParseAddr((const char *)ip, &inaddr, AF_UNSPEC) < 0) {
+            ip = virXMLPropString(cur, "ip");
+            if (virSocketParseAddr(ip, &inaddr, AF_UNSPEC) < 0) {
                 VIR_FREE(ip);
                 VIR_FREE(mac);
                 VIR_FREE(name);
@@ -307,29 +307,29 @@ virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                 virReportOOMError();
                 return -1;
             }
-            def->hosts[def->nhosts].mac = (char *)mac;
-            def->hosts[def->nhosts].name = (char *)name;
+            def->hosts[def->nhosts].mac = mac;
+            def->hosts[def->nhosts].name = name;
             def->hosts[def->nhosts].ip = inaddr;
             def->nhosts++;
 
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "bootp")) {
-            xmlChar *file;
-            xmlChar *server;
+            char *file;
+            char *server;
             virSocketAddr inaddr;
             memset(&inaddr, 0, sizeof(inaddr));
 
-            if (!(file = xmlGetProp(cur, BAD_CAST "file"))) {
+            if (!(file = virXMLPropString(cur, "file"))) {
                 cur = cur->next;
                 continue;
             }
-            server = xmlGetProp(cur, BAD_CAST "server");
+            server = virXMLPropString(cur, "server");
 
             if (server &&
-                virSocketParseAddr((const char *)server, &inaddr, AF_UNSPEC) < 0)
+                virSocketParseAddr(server, &inaddr, AF_UNSPEC) < 0)
                 return -1;
 
-            def->bootfile = (char *)file;
+            def->bootfile = file;
             def->bootserver = inaddr;
         }
 
@@ -354,14 +354,14 @@ virNetworkIPParseXML(virNetworkDefPtr def,
 
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "tftp")) {
-            xmlChar *root;
+            char *root;
 
-            if (!(root = xmlGetProp(cur, BAD_CAST "root"))) {
+            if (!(root = virXMLPropString(cur, "root"))) {
                 cur = cur->next;
                 continue;
             }
 
-            def->tftproot = (char *)root;
+            def->tftproot = root;
         }
 
         cur = cur->next;

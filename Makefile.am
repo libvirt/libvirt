@@ -38,6 +38,7 @@ syntax_check_exceptions = \
   .x-sc_prohibit_strncpy \
   .x-sc_prohibit_test_minus_ao \
   .x-sc_prohibit_VIR_ERR_NO_MEMORY \
+  .x-sc_prohibit_xmlGetProp \
   .x-sc_require_config_h \
   .x-sc_require_config_h_first \
   .x-sc_trailing_blank \

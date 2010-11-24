@@ -8434,7 +8434,6 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     xmlXPathObjectPtr obj=NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL;
-    xmlChar *tmp_mac = NULL;
     xmlBufferPtr xml_buf = NULL;
     char *doc, *mac =NULL, *type;
     char buf[64];
@@ -8485,10 +8484,11 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     for (; i < obj->nodesetval->nodeNr; i++) {
         cur = obj->nodesetval->nodeTab[i]->children;
         while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE && xmlStrEqual(cur->name, BAD_CAST "mac")) {
-                tmp_mac = xmlGetProp(cur, BAD_CAST "address");
-                diff_mac = virMacAddrCompare ((char *) tmp_mac, mac);
-                xmlFree(tmp_mac);
+            if (cur->type == XML_ELEMENT_NODE &&
+                xmlStrEqual(cur->name, BAD_CAST "mac")) {
+                char *tmp_mac = virXMLPropString(cur, "address");
+                diff_mac = virMacAddrCompare (tmp_mac, mac);
+                VIR_FREE(tmp_mac);
                 if (!diff_mac) {
                     goto hit;
                 }
@@ -8689,7 +8689,6 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     xmlXPathObjectPtr obj=NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL;
-    xmlChar *tmp_tgt = NULL;
     xmlBufferPtr xml_buf = NULL;
     virDomainPtr dom = NULL;
     char *doc, *target;
@@ -8734,10 +8733,11 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     for (; i < obj->nodesetval->nodeNr; i++) {
         cur = obj->nodesetval->nodeTab[i]->children;
         while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE && xmlStrEqual(cur->name, BAD_CAST "target")) {
-                tmp_tgt = xmlGetProp(cur, BAD_CAST "dev");
-                diff_tgt = xmlStrEqual(tmp_tgt, BAD_CAST target);
-                xmlFree(tmp_tgt);
+            if (cur->type == XML_ELEMENT_NODE &&
+                xmlStrEqual(cur->name, BAD_CAST "target")) {
+                char *tmp_tgt = virXMLPropString(cur, "dev");
+                diff_tgt = STREQ(tmp_tgt, target);
+                VIR_FREE(tmp_tgt);
                 if (diff_tgt) {
                     goto hit;
                 }
