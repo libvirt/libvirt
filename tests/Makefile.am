@@ -244,7 +244,7 @@ TESTS_ENVIRONMENT =				\
 
 
 valgrind:
-	$(MAKE) check VG="valgrind --quiet --leak-check=full --suppressions=$(srcdir)/.valgrind.supp"
+	$(MAKE) check VG="libtool --mode=execute valgrind --quiet --leak-check=full --suppressions=$(srcdir)/.valgrind.supp"
 
 sockettest_SOURCES = \
 	sockettest.c \
