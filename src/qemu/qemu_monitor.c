@@ -199,6 +199,7 @@ static void qemuMonitorFree(qemuMonitorPtr mon)
     if (virCondDestroy(&mon->notify) < 0)
     {}
     virMutexDestroy(&mon->lock);
+    VIR_FREE(mon->buffer);
     VIR_FREE(mon);
 }
 
