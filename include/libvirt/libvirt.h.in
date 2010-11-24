@@ -219,9 +219,12 @@ struct _virNodeInfo {
     unsigned long memory;/* memory size in kilobytes */
     unsigned int cpus;  /* the number of active CPUs */
     unsigned int mhz;   /* expected CPU frequency */
-    unsigned int nodes; /* the number of NUMA cell, 1 for uniform mem access */
-    unsigned int sockets;/* number of CPU socket per node */
-    unsigned int cores; /* number of core per socket */
+    unsigned int nodes; /* the number of NUMA cell, 1 for unusual NUMA
+                           topologies or uniform memory access; check
+                           capabilities XML for the actual NUMA topology */
+    unsigned int sockets;/* number of CPU sockets per node if nodes > 1,
+                            total number of CPU sockets otherwise */
+    unsigned int cores; /* number of cores per socket */
     unsigned int threads;/* number of threads per core */
 };
 

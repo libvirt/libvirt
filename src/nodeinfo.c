@@ -305,6 +305,16 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         return -1;
     }
 
+    /* nodeinfo->sockets is supposed to be a number of sockets per NUMA node,
+     * however if NUMA nodes are not composed of whole sockets, we just lie
+     * about the number of NUMA nodes and force apps to check capabilities XML
+     * for the actual NUMA topology.
+     */
+    if (nodeinfo->sockets % nodeinfo->nodes == 0)
+        nodeinfo->sockets /= nodeinfo->nodes;
+    else
+        nodeinfo->nodes = 1;
+
     return 0;
 }
 

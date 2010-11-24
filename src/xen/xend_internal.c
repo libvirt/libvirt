@@ -2497,12 +2497,21 @@ sexpr_to_xend_node_info(const struct sexpr *root, virNodeInfoPtr info)
         if (procs == 0) /* Sanity check in case of Xen bugs in futures..*/
             return (-1);
         info->sockets = nr_cpus / procs;
-        /* Should already be fine, but for further sanity make
-         * sure we have at least one socket
-         */
-        if (info->sockets == 0)
-            info->sockets = 1;
     }
+
+    /* On systems where NUMA nodes are not composed of whole sockets either Xen
+     * provided us wrong number of sockets per node or we computed the wrong
+     * number in the compatibility code above. In such case, we compute the
+     * correct number of sockets on the host, lie about the number of NUMA
+     * nodes, and force apps to check capabilities XML for the actual NUMA
+     * topology.
+     */
+    if (info->nodes * info->sockets * info->cores * info->threads
+        != info->cpus) {
+        info->nodes = 1;
+        info->sockets = info->cpus / (info->cores * info->threads);
+    }
+
     return (0);
 }
 
