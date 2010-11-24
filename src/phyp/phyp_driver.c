@@ -1277,6 +1277,11 @@ phypIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
+static int
+phypIsUpdated(virDomainPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 
 /* return the lpar_id given a name and a managed system name */
 static int
@@ -4021,7 +4026,7 @@ static virDriver phypDriver = {
     phypIsSecure,               /* isSecure */
     NULL,                       /* domainIsActive */
     NULL,                       /* domainIsPersistent */
-    NULL,                       /* domainIsUpdated */
+    phypIsUpdated,              /* domainIsUpdated */
     NULL,                       /* cpuCompare */
     NULL,                       /* cpuBaseline */
     NULL,                       /* domainGetJobInfo */

@@ -1347,6 +1347,10 @@ static int vboxDomainIsPersistent(virDomainPtr dom ATTRIBUTE_UNUSED) {
 }
 
 
+static int vboxDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED) {
+    return 0;
+}
+
 static int vboxDomainSuspend(virDomainPtr dom) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -8451,7 +8455,7 @@ virDriver NAME(Driver) = {
     vboxIsSecure, /* isSecure */
     vboxDomainIsActive, /* domainIsActive */
     vboxDomainIsPersistent, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    vboxDomainIsUpdated, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

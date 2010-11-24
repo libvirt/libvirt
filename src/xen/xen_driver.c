@@ -740,7 +740,7 @@ xenUnifiedDomainIsActive(virDomainPtr dom)
 }
 
 static int
-xenUnifiedDomainisPersistent(virDomainPtr dom)
+xenUnifiedDomainIsPersistent(virDomainPtr dom)
 {
     GET_PRIVATE(dom->conn);
     virDomainPtr currdom = NULL;
@@ -788,6 +788,12 @@ done:
         virDomainFree(currdom);
 
     return ret;
+}
+
+static int
+xenUnifiedDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
+{
+    return 0;
 }
 
 static int
@@ -2069,8 +2075,8 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedIsEncrypted, /* isEncrypted */
     xenUnifiedIsSecure, /* isSecure */
     xenUnifiedDomainIsActive, /* domainIsActive */
-    xenUnifiedDomainisPersistent, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    xenUnifiedDomainIsPersistent, /* domainIsPersistent */
+    xenUnifiedDomainIsUpdated, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

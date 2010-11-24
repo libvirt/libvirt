@@ -1295,6 +1295,11 @@ cleanup:
     return ret;
 }
 
+static int testDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 static virDomainPtr
 testDomainCreateXML(virConnectPtr conn, const char *xml,
                       unsigned int flags)
@@ -5413,7 +5418,7 @@ static virDriver testDriver = {
     testIsSecure, /* isEncrypted */
     testDomainIsActive, /* domainIsActive */
     testDomainIsPersistent, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    testDomainIsUpdated, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

@@ -3765,7 +3765,11 @@ esxDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
     return 1;
 }
 
-
+static int
+esxDomainIsUpdated(virDomainPtr domain ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 
 static virDomainSnapshotPtr
 esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
@@ -4360,7 +4364,7 @@ static virDriver esxDriver = {
     esxIsSecure,                     /* isSecure */
     esxDomainIsActive,               /* domainIsActive */
     esxDomainIsPersistent,           /* domainIsPersistent */
-    NULL,                            /* domainIsUpdated */
+    esxDomainIsUpdated,              /* domainIsUpdated */
     NULL,                            /* cpuCompare */
     NULL,                            /* cpuBaseline */
     NULL,                            /* domainGetJobInfo */

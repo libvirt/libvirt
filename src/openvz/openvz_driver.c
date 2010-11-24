@@ -459,6 +459,10 @@ cleanup:
     return ret;
 }
 
+static int openvzDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 
 static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
     struct openvz_driver *driver = dom->conn->privateData;
@@ -1670,7 +1674,7 @@ static virDriver openvzDriver = {
     openvzIsSecure,
     openvzDomainIsActive,
     openvzDomainIsPersistent,
-    NULL, /* domainIsUpdated */
+    openvzDomainIsUpdated, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

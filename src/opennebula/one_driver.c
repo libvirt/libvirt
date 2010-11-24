@@ -106,6 +106,10 @@ static int oneIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 0;
 }
 
+static int oneIsUpdated(virDomainPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 
 static virDomainPtr oneDomainLookupByID(virConnectPtr conn,
                                         int id)
@@ -800,7 +804,7 @@ static virDriver oneDriver = {
     oneIsSecure, /* isSecure */
     NULL, /* domainIsActive */
     NULL, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    oneIsUpdated, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

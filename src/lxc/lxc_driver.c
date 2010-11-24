@@ -325,6 +325,29 @@ cleanup:
     return ret;
 }
 
+static int lxcDomainIsUpdated(virDomainPtr dom)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+    if (!obj) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+    ret = obj->updated;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
 
 static int lxcListDomains(virConnectPtr conn, int *ids, int nids) {
     lxc_driver_t *driver = conn->privateData;
@@ -2882,7 +2905,7 @@ static virDriver lxcDriver = {
     lxcIsSecure, /* isSecure */
     lxcDomainIsActive, /* domainIsActive */
     lxcDomainIsPersistent, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    lxcDomainIsUpdated, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

@@ -1236,6 +1236,26 @@ cleanup:
     return ret;
 }
 
+static int umlDomainIsUpdated(virDomainPtr dom)
+{
+    struct uml_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    umlDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    umlDriverUnlock(driver);
+    if (!obj) {
+        umlReportError(VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = obj->updated;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
 
 static int umlGetVersion(virConnectPtr conn, unsigned long *version) {
     struct uml_driver *driver = conn->privateData;
@@ -2248,7 +2268,7 @@ static virDriver umlDriver = {
     umlIsSecure, /* isSecure */
     umlDomainIsActive, /* domainIsActive */
     umlDomainIsPersistent, /* domainIsPersistent */
-    NULL, /* domainIsUpdated */
+    umlDomainIsUpdated, /* domainIsUpdated */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
