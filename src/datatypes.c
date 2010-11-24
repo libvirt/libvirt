@@ -247,6 +247,29 @@ failed:
 static void
 virReleaseConnect(virConnectPtr conn) {
     DEBUG("release connection %p", conn);
+
+    /* make sure to release the connection lock before we call the
+     * close() callbacks, otherwise we will deadlock if an error
+     * is raised by any of the callbacks */
+    virMutexUnlock(&conn->lock);
+
+    if (conn->networkDriver)
+        conn->networkDriver->close (conn);
+    if (conn->interfaceDriver)
+        conn->interfaceDriver->close (conn);
+    if (conn->storageDriver)
+        conn->storageDriver->close (conn);
+    if (conn->deviceMonitor)
+        conn->deviceMonitor->close (conn);
+    if (conn->secretDriver)
+        conn->secretDriver->close (conn);
+    if (conn->nwfilterDriver)
+        conn->nwfilterDriver->close (conn);
+    if (conn->driver)
+        conn->driver->close (conn);
+
+    virMutexLock(&conn->lock);
+
     if (conn->domains != NULL)
         virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
     if (conn->networks != NULL)
@@ -295,30 +318,6 @@ virUnrefConnect(virConnectPtr conn) {
     conn->refs--;
     refs = conn->refs;
     if (refs == 0) {
-        /* make sure to release the connection lock before we call the
-         * close() callbacks, otherwise we will deadlock if an error
-         * is raised by any of the callbacks
-         */
-        virMutexUnlock(&conn->lock);
-        if (conn->networkDriver)
-            conn->networkDriver->close (conn);
-        if (conn->interfaceDriver)
-            conn->interfaceDriver->close (conn);
-        if (conn->storageDriver)
-            conn->storageDriver->close (conn);
-        if (conn->deviceMonitor)
-            conn->deviceMonitor->close (conn);
-        if (conn->secretDriver)
-            conn->secretDriver->close (conn);
-        if (conn->nwfilterDriver)
-            conn->nwfilterDriver->close (conn);
-        if (conn->driver)
-            conn->driver->close (conn);
-
-        /* reacquire the connection lock since virReleaseConnect expects
-         * it to already be held
-         */
-        virMutexLock(&conn->lock);
         virReleaseConnect(conn);
         /* Already unlocked mutex */
         return (0);
