@@ -606,7 +606,7 @@
      ...
 
      virBufferAddLit(&amp;buf, "&lt;domain&gt;\n");
-     virBufferVSprint(&amp;buf, "  &lt;memory&gt;%d&lt;/memory&gt;\n", memory);
+     virBufferVSprintf(&amp;buf, "  &lt;memory&gt;%d&lt;/memory&gt;\n", memory);
      ...
      virBufferAddLit(&amp;buf, "&lt;/domain&gt;\n");
 

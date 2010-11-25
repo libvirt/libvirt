@@ -508,7 +508,7 @@ Typical usage is as follows:
      ...
 
      virBufferAddLit(&buf, "<domain>\n");
-     virBufferVSprint(&buf, "  <memory>%d</memory>\n", memory);
+     virBufferVSprintf(&buf, "  <memory>%d</memory>\n", memory);
      ...
      virBufferAddLit(&buf, "</domain>\n");
 
