@@ -71,7 +71,7 @@
           &lt;host name="iscsi.example.com"/&gt;
           &lt;device path="demo-target"/&gt;
           &lt;vendor name="Acme"/&gt;
-          &lt;product name="model"/&t;
+          &lt;product name="model"/&gt;
         &lt;/source&gt;
         ...</pre>
 
