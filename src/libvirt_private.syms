@@ -559,6 +559,9 @@ virShrinkN;
 
 # network.h
 virSocketAddrIsNetmask;
+virSocketAddrMask;
+virSocketAddrMaskByPrefix;
+virSocketAddrPrefixToNetmask;
 virSocketCheckNetmask;
 virSocketFormatAddr;
 virSocketFormatAddrFull;
