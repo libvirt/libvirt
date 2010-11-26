@@ -133,6 +133,9 @@ virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
 
 char *virNetworkDefFormat(const virNetworkDefPtr def);
 
+int virNetworkDefPrefix(const virNetworkDefPtr def);
+int virNetworkDefNetmask(const virNetworkDefPtr def,
+                         virSocketAddrPtr netmask);
 
 int virNetworkSaveXML(const char *configDir,
                       virNetworkDefPtr def,

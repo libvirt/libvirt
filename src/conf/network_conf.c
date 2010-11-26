@@ -207,6 +207,52 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
     }
 }
 
+/* return number of 1 bits in netmask for the network's ipAddress,
+ * or -1 on error
+ */
+int virNetworkDefPrefix(const virNetworkDefPtr def)
+{
+    if (VIR_SOCKET_HAS_ADDR(&def->netmask)) {
+        return virSocketGetNumNetmaskBits(&def->netmask);
+    } else if (VIR_SOCKET_IS_FAMILY(&def->ipAddress, AF_INET)) {
+        /* Return the natural prefix for the network's ip address.
+         * On Linux we could use the IN_CLASSx() macros, but those
+         * aren't guaranteed on all platforms, so we just deal with
+         * the bits ourselves.
+         */
+        unsigned char octet
+            = ntohl(def->ipAddress.data.inet4.sin_addr.s_addr) >> 24;
+        if ((octet & 0x80) == 0) {
+            /* Class A network */
+            return 8;
+        } else if ((octet & 0xC0) == 0x80) {
+            /* Class B network */
+            return 16;
+        } else if ((octet & 0xE0) == 0xC0) {
+            /* Class C network */
+            return 24;
+        }
+        return -1;
+    }
+    return -1;
+}
+
+/* Fill in a virSocketAddr with the proper netmask for this
+ * definition, based on either the definition's netmask, or its
+ * prefix. Return -1 on error (and set the netmask family to AF_UNSPEC)
+ */
+int virNetworkDefNetmask(const virNetworkDefPtr def,
+                         virSocketAddrPtr netmask)
+{
+    if (VIR_SOCKET_IS_FAMILY(&def->netmask, AF_INET)) {
+        *netmask = def->netmask;
+        return 0;
+    }
+
+    return virSocketAddrPrefixToNetmask(virNetworkDefPrefix(def), netmask,
+                                        VIR_SOCKET_FAMILY(&def->ipAddress));
+}
+
 
 static int
 virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
