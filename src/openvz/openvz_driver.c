@@ -58,7 +58,6 @@
 #include "memory.h"
 #include "bridge.h"
 #include "files.h"
-#include "intprops.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -103,10 +102,6 @@ openvzDomainDefineCmd(const char *args[],
                       int maxarg, virDomainDefPtr vmdef)
 {
     int narg;
-    int veid;
-    int max_veid;
-    char str_id[INT_BUFSIZE_BOUND(max_veid)];
-    FILE *fp;
 
     for (narg = 0; narg < maxarg; narg++)
         args[narg] = NULL;
@@ -116,6 +111,7 @@ openvzDomainDefineCmd(const char *args[],
                     _("Container is not defined"));
         return -1;
     }
+
 #define ADD_ARG(thisarg)                                                \
     do {                                                                \
         if (narg >= maxarg)                                             \
@@ -136,36 +132,7 @@ openvzDomainDefineCmd(const char *args[],
     ADD_ARG_LIT("--quiet");
     ADD_ARG_LIT("create");
 
-    if ((fp = popen(VZLIST " -a -ovpsid -H 2>/dev/null", "r")) == NULL) {
-        openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("popen  failed"));
-        return -1;
-    }
-    max_veid = 0;
-    while (!feof(fp)) {
-        if (fscanf(fp, "%d\n", &veid) != 1) {
-            if (feof(fp))
-                break;
-
-            openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Failed to parse vzlist output"));
-            goto cleanup;
-        }
-        if (veid > max_veid) {
-            max_veid = veid;
-        }
-    }
-    VIR_FORCE_FCLOSE(fp);
-
-    if (max_veid == 0) {
-        max_veid = 100;
-    } else {
-        max_veid++;
-    }
-
-    snprintf(str_id, sizeof(str_id), "%d", max_veid);
-    ADD_ARG_LIT(str_id);
-
+    ADD_ARG_LIT(vmdef->name);
     ADD_ARG_LIT("--name");
     ADD_ARG_LIT(vmdef->name);
 
@@ -187,10 +154,6 @@ openvzDomainDefineCmd(const char *args[],
 no_memory:
     openvzError(VIR_ERR_INTERNAL_ERROR,
                 _("Could not put argument to %s"), VZCTL);
-    return -1;
-
-cleanup:
-    VIR_FORCE_FCLOSE(fp);
     return -1;
 
 #undef ADD_ARG
