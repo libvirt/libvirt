@@ -25,7 +25,7 @@ static char *abs_srcdir;
 
 static int testCompareXMLToXMLFiles(const char *inxml,
                                     const char *outxml,
-                                    bool expect_warning) {
+                                    bool expect_error) {
     char inXmlData[MAX_FILE];
     char *inXmlPtr = &(inXmlData[0]);
     char outXmlData[MAX_FILE];
@@ -33,26 +33,21 @@ static int testCompareXMLToXMLFiles(const char *inxml,
     char *actual = NULL;
     int ret = -1;
     virNWFilterDefPtr dev = NULL;
-    char *log;
 
     if (virtTestLoadFile(inxml, &inXmlPtr, MAX_FILE) < 0)
         goto fail;
     if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
         goto fail;
 
+    virResetLastError();
+
     if (!(dev = virNWFilterDefParseString(NULL, inXmlData)))
         goto fail;
 
-    if ((log = virtTestLogContentAndReset()) == NULL)
+    if (!!virGetLastError() != expect_error)
         goto fail;
 
-    if ((*log != '\0') != expect_warning) {
-        free(log);
-        goto fail;
-    }
-    free(log);
-
-    if (expect_warning) {
+    if (expect_error) {
         /* need to suppress the errors */
         virResetLastError();
     }

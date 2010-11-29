@@ -84,6 +84,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 
     free(virtTestLogContentAndReset());
+    virResetLastError();
 
     if (qemudBuildCommandLine(conn, &driver,
                               vmdef, &monitor_chr, 0, flags,
@@ -91,11 +92,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
                               NULL, NULL, migrateFrom, NULL) < 0)
         goto fail;
 
-    if ((log = virtTestLogContentAndReset()) == NULL)
-        goto fail;
-
-    if (!!strstr(log, ": error :") != expectError) {
-        if (virTestGetDebug())
+    if (!!virGetLastError() != expectError) {
+        if (virTestGetDebug() && (log = virtTestLogContentAndReset()))
             fprintf(stderr, "\n%s", log);
         goto fail;
     }
