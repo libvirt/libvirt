@@ -276,25 +276,24 @@ iptablesRemoveUdpInput(iptablesContext *ctx,
 
 
 static char *iptablesFormatNetwork(virSocketAddr *netaddr,
-                                   virSocketAddr *netmask)
+                                   unsigned int prefix)
 {
     virSocketAddr network;
-    int prefix;
     char *netstr;
     char *ret;
 
-    if (!VIR_SOCKET_IS_FAMILY(netaddr, AF_INET) ||
-        !VIR_SOCKET_IS_FAMILY(netmask, AF_INET)) {
+    if (!VIR_SOCKET_IS_FAMILY(netaddr, AF_INET)) {
         iptablesError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                       _("Only IPv4 addresses can be used with iptables"));
         return NULL;
     }
 
     network = *netaddr;
-    network.data.inet4.sin_addr.s_addr &=
-        netmask->data.inet4.sin_addr.s_addr;
-
-    prefix = virSocketGetNumNetmaskBits(netmask);
+    if (virSocketAddrMaskByPrefix(&network, prefix) < 0) {
+        iptablesError(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("Failure to mask address"));
+        return NULL;
+    }
 
     netstr = virSocketFormatAddr(&network);
 
@@ -315,7 +314,7 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
 static int
 iptablesForwardAllowOut(iptablesContext *ctx,
                         virSocketAddr *netaddr,
-                        virSocketAddr *netmask,
+                        unsigned int prefix,
                         const char *iface,
                         const char *physdev,
                         int action)
@@ -323,7 +322,7 @@ iptablesForwardAllowOut(iptablesContext *ctx,
     int ret;
     char *networkstr;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, netmask)))
+    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
     if (physdev && physdev[0]) {
@@ -362,11 +361,11 @@ iptablesForwardAllowOut(iptablesContext *ctx,
 int
 iptablesAddForwardAllowOut(iptablesContext *ctx,
                            virSocketAddr *netaddr,
-                           virSocketAddr *netmask,
+                           unsigned int prefix,
                            const char *iface,
                            const char *physdev)
 {
-    return iptablesForwardAllowOut(ctx, netaddr, netmask, iface, physdev, ADD);
+    return iptablesForwardAllowOut(ctx, netaddr, prefix, iface, physdev, ADD);
 }
 
 /**
@@ -385,11 +384,11 @@ iptablesAddForwardAllowOut(iptablesContext *ctx,
 int
 iptablesRemoveForwardAllowOut(iptablesContext *ctx,
                               virSocketAddr *netaddr,
-                              virSocketAddr *netmask,
+                              unsigned int prefix,
                               const char *iface,
                               const char *physdev)
 {
-    return iptablesForwardAllowOut(ctx, netaddr, netmask, iface, physdev, REMOVE);
+    return iptablesForwardAllowOut(ctx, netaddr, prefix, iface, physdev, REMOVE);
 }
 
 
@@ -399,7 +398,7 @@ iptablesRemoveForwardAllowOut(iptablesContext *ctx,
 static int
 iptablesForwardAllowRelatedIn(iptablesContext *ctx,
                               virSocketAddr *netaddr,
-                              virSocketAddr *netmask,
+                              unsigned int prefix,
                               const char *iface,
                               const char *physdev,
                               int action)
@@ -407,7 +406,7 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
     int ret;
     char *networkstr;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, netmask)))
+    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
     if (physdev && physdev[0]) {
@@ -450,11 +449,11 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
 int
 iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
                                  virSocketAddr *netaddr,
-                                 virSocketAddr *netmask,
+                                 unsigned int prefix,
                                  const char *iface,
                                  const char *physdev)
 {
-    return iptablesForwardAllowRelatedIn(ctx, netaddr, netmask, iface, physdev, ADD);
+    return iptablesForwardAllowRelatedIn(ctx, netaddr, prefix, iface, physdev, ADD);
 }
 
 /**
@@ -473,11 +472,11 @@ iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
 int
 iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
                                     virSocketAddr *netaddr,
-                                    virSocketAddr *netmask,
+                                    unsigned int prefix,
                                     const char *iface,
                                     const char *physdev)
 {
-    return iptablesForwardAllowRelatedIn(ctx, netaddr, netmask, iface, physdev, REMOVE);
+    return iptablesForwardAllowRelatedIn(ctx, netaddr, prefix, iface, physdev, REMOVE);
 }
 
 /* Allow all traffic destined to the bridge, with a valid network address
@@ -485,7 +484,7 @@ iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
 static int
 iptablesForwardAllowIn(iptablesContext *ctx,
                        virSocketAddr *netaddr,
-                       virSocketAddr *netmask,
+                       unsigned int prefix,
                        const char *iface,
                        const char *physdev,
                        int action)
@@ -493,7 +492,7 @@ iptablesForwardAllowIn(iptablesContext *ctx,
     int ret;
     char *networkstr;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, netmask)))
+    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
     if (physdev && physdev[0]) {
@@ -532,11 +531,11 @@ iptablesForwardAllowIn(iptablesContext *ctx,
 int
 iptablesAddForwardAllowIn(iptablesContext *ctx,
                           virSocketAddr *netaddr,
-                          virSocketAddr *netmask,
+                          unsigned int prefix,
                           const char *iface,
                           const char *physdev)
 {
-    return iptablesForwardAllowIn(ctx, netaddr, netmask, iface, physdev, ADD);
+    return iptablesForwardAllowIn(ctx, netaddr, prefix, iface, physdev, ADD);
 }
 
 /**
@@ -555,11 +554,11 @@ iptablesAddForwardAllowIn(iptablesContext *ctx,
 int
 iptablesRemoveForwardAllowIn(iptablesContext *ctx,
                              virSocketAddr *netaddr,
-                             virSocketAddr *netmask,
+                             unsigned int prefix,
                              const char *iface,
                              const char *physdev)
 {
-    return iptablesForwardAllowIn(ctx, netaddr, netmask, iface, physdev, REMOVE);
+    return iptablesForwardAllowIn(ctx, netaddr, prefix, iface, physdev, REMOVE);
 }
 
 
@@ -722,7 +721,7 @@ iptablesRemoveForwardRejectIn(iptablesContext *ctx,
 static int
 iptablesForwardMasquerade(iptablesContext *ctx,
                           virSocketAddr *netaddr,
-                          virSocketAddr *netmask,
+                          unsigned int prefix,
                           const char *physdev,
                           const char *protocol,
                           int action)
@@ -730,7 +729,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
     int ret;
     char *networkstr;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, netmask)))
+    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
     if (protocol && protocol[0]) {
@@ -792,11 +791,11 @@ iptablesForwardMasquerade(iptablesContext *ctx,
 int
 iptablesAddForwardMasquerade(iptablesContext *ctx,
                              virSocketAddr *netaddr,
-                             virSocketAddr *netmask,
+                             unsigned int prefix,
                              const char *physdev,
                              const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, netmask, physdev, protocol, ADD);
+    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, protocol, ADD);
 }
 
 /**
@@ -815,11 +814,11 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
 int
 iptablesRemoveForwardMasquerade(iptablesContext *ctx,
                                 virSocketAddr *netaddr,
-                                virSocketAddr *netmask,
+                                unsigned int prefix,
                                 const char *physdev,
                                 const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, netmask, physdev, protocol, REMOVE);
+    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, protocol, REMOVE);
 }
 
 

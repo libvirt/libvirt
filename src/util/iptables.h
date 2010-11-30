@@ -45,34 +45,34 @@ int              iptablesRemoveUdpInput          (iptablesContext *ctx,
 
 int              iptablesAddForwardAllowOut      (iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev);
 int              iptablesRemoveForwardAllowOut   (iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev);
 
 int              iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev);
 int              iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev);
 
 int              iptablesAddForwardAllowIn       (iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev);
 int              iptablesRemoveForwardAllowIn    (iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev);
 
@@ -93,12 +93,12 @@ int              iptablesRemoveForwardRejectIn   (iptablesContext *ctx,
 
 int              iptablesAddForwardMasquerade    (iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *physdev,
                                                   const char *protocol);
 int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
                                                   virSocketAddr *netaddr,
-                                                  virSocketAddr *netmask,
+                                                  unsigned int prefix,
                                                   const char *physdev,
                                                   const char *protocol);
 int              iptablesAddOutputFixUdpChecksum (iptablesContext *ctx,

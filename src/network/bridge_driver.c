@@ -585,11 +585,19 @@ cleanup:
 static int
 networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                     virNetworkObjPtr network) {
+    int prefix = virNetworkDefPrefix(network->def);
+
+    if (prefix < 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid prefix or netmask for '%s'"),
+                           network->def->bridge);
+        goto masqerr1;
+    }
 
     /* allow forwarding packets from the bridge interface */
     if (iptablesAddForwardAllowOut(driver->iptables,
                                    &network->def->ipAddress,
-                                   &network->def->netmask,
+                                   prefix,
                                    network->def->bridge,
                                    network->def->forwardDev) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
@@ -601,7 +609,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     /* allow forwarding packets to the bridge interface if they are part of an existing connection */
     if (iptablesAddForwardAllowRelatedIn(driver->iptables,
                                          &network->def->ipAddress,
-                                         &network->def->netmask,
+                                         prefix,
                                          network->def->bridge,
                                          network->def->forwardDev) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
@@ -636,7 +644,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     /* First the generic masquerade rule for other protocols */
     if (iptablesAddForwardMasquerade(driver->iptables,
                                      &network->def->ipAddress,
-                                     &network->def->netmask,
+                                     prefix,
                                      network->def->forwardDev,
                                      NULL) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
@@ -648,7 +656,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     /* UDP with a source port restriction */
     if (iptablesAddForwardMasquerade(driver->iptables,
                                      &network->def->ipAddress,
-                                     &network->def->netmask,
+                                     prefix,
                                      network->def->forwardDev,
                                      "udp") < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
@@ -660,7 +668,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     /* TCP with a source port restriction */
     if (iptablesAddForwardMasquerade(driver->iptables,
                                      &network->def->ipAddress,
-                                     &network->def->netmask,
+                                     prefix,
                                      network->def->forwardDev,
                                      "tcp") < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
@@ -674,25 +682,25 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
  masqerr5:
     iptablesRemoveForwardMasquerade(driver->iptables,
                                     &network->def->ipAddress,
-                                    &network->def->netmask,
+                                    prefix,
                                     network->def->forwardDev,
                                     "udp");
  masqerr4:
     iptablesRemoveForwardMasquerade(driver->iptables,
                                     &network->def->ipAddress,
-                                    &network->def->netmask,
+                                    prefix,
                                     network->def->forwardDev,
                                     NULL);
  masqerr3:
     iptablesRemoveForwardAllowRelatedIn(driver->iptables,
                                         &network->def->ipAddress,
-                                        &network->def->netmask,
+                                        prefix,
                                         network->def->bridge,
                                         network->def->forwardDev);
  masqerr2:
     iptablesRemoveForwardAllowOut(driver->iptables,
                                   &network->def->ipAddress,
-                                  &network->def->netmask,
+                                  prefix,
                                   network->def->bridge,
                                   network->def->forwardDev);
  masqerr1:
@@ -702,11 +710,19 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 static int
 networkAddRoutingIptablesRules(struct network_driver *driver,
                                virNetworkObjPtr network) {
+    int prefix = virNetworkDefPrefix(network->def);
+
+    if (prefix < 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid prefix or netmask for '%s'"),
+                           network->def->bridge);
+        goto routeerr1;
+    }
 
     /* allow routing packets from the bridge interface */
     if (iptablesAddForwardAllowOut(driver->iptables,
                                    &network->def->ipAddress,
-                                   &network->def->netmask,
+                                   prefix,
                                    network->def->bridge,
                                    network->def->forwardDev) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
@@ -718,7 +734,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
     /* allow routing packets to the bridge interface */
     if (iptablesAddForwardAllowIn(driver->iptables,
                                   &network->def->ipAddress,
-                                  &network->def->netmask,
+                                  prefix,
                                   network->def->bridge,
                                   network->def->forwardDev) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
@@ -733,7 +749,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
  routeerr2:
     iptablesRemoveForwardAllowOut(driver->iptables,
                                   &network->def->ipAddress,
-                                  &network->def->netmask,
+                                  prefix,
                                   network->def->bridge,
                                   network->def->forwardDev);
  routeerr1:
@@ -869,40 +885,50 @@ networkRemoveIptablesRules(struct network_driver *driver,
                                            network->def->bridge, 68);
     }
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE) {
+        int prefix = virNetworkDefPrefix(network->def);
+
+        if (prefix < 0) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid prefix or netmask for '%s'"),
+                               network->def->bridge);
+            goto error;
+        }
+
         if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
             iptablesRemoveForwardMasquerade(driver->iptables,
                                             &network->def->ipAddress,
-                                            &network->def->netmask,
+                                            prefix,
                                             network->def->forwardDev,
                                             "tcp");
             iptablesRemoveForwardMasquerade(driver->iptables,
                                             &network->def->ipAddress,
-                                            &network->def->netmask,
+                                            prefix,
                                             network->def->forwardDev,
                                             "udp");
             iptablesRemoveForwardMasquerade(driver->iptables,
                                             &network->def->ipAddress,
-                                            &network->def->netmask,
+                                            prefix,
                                             network->def->forwardDev,
                                             NULL);
             iptablesRemoveForwardAllowRelatedIn(driver->iptables,
                                                 &network->def->ipAddress,
-                                                &network->def->netmask,
+                                                prefix,
                                                 network->def->bridge,
                                                 network->def->forwardDev);
         } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)
             iptablesRemoveForwardAllowIn(driver->iptables,
                                          &network->def->ipAddress,
-                                         &network->def->netmask,
+                                         prefix,
                                          network->def->bridge,
                                          network->def->forwardDev);
 
         iptablesRemoveForwardAllowOut(driver->iptables,
                                       &network->def->ipAddress,
-                                      &network->def->netmask,
+                                      prefix,
                                       network->def->bridge,
                                       network->def->forwardDev);
     }
+error:
     iptablesRemoveForwardAllowCross(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
@@ -1006,17 +1032,23 @@ static int networkCheckRouteCollision(virNetworkObjPtr network)
 {
     int ret = -1, len;
     unsigned int net_dest;
+    virSocketAddr netmask;
     char *cur, *buf = NULL;
     enum {MAX_ROUTE_SIZE = 1024*64};
 
-    if (!VIR_SOCKET_IS_FAMILY(&network->def->ipAddress, AF_INET) ||
-        !VIR_SOCKET_IS_FAMILY(&network->def->netmask, AF_INET)) {
+    if (!VIR_SOCKET_IS_FAMILY(&network->def->ipAddress, AF_INET)) {
         /* Only support collision check for IPv4 */
         return 0;
     }
 
+    if (virNetworkDefNetmask(network->def, &netmask) < 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to get netmask of '%s'"),
+                           network->def->bridge);
+    }
+
     net_dest = (network->def->ipAddress.data.inet4.sin_addr.s_addr &
-                network->def->netmask.data.inet4.sin_addr.s_addr);
+                netmask.data.inet4.sin_addr.s_addr);
 
     /* Read whole routing table into memory */
     if ((len = virFileReadAll(PROC_NET_ROUTE, MAX_ROUTE_SIZE, &buf)) < 0)
@@ -1069,7 +1101,7 @@ static int networkCheckRouteCollision(virNetworkObjPtr network)
         addr_val &= mask_val;
 
         if ((net_dest == addr_val) &&
-            (network->def->netmask.data.inet4.sin_addr.s_addr == mask_val)) {
+            (netmask.data.inet4.sin_addr.s_addr == mask_val)) {
             networkReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Network is already in use by interface %s"),
                                iface);
@@ -1125,9 +1157,18 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
         goto err_delbr;
     }
 
-    if (VIR_SOCKET_HAS_ADDR(&network->def->netmask) &&
-        (err = brSetInetNetmask(driver->brctl, network->def->bridge,
-                                &network->def->netmask))) {
+    virSocketAddr netmask;
+
+    if (virNetworkDefNetmask(network->def, &netmask) < 0) {
+
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("bridge  '%s' has an invalid netmask or IP address"),
+                           network->def->bridge);
+        goto err_delbr;
+    }
+
+    if ((err = brSetInetNetmask(driver->brctl, network->def->bridge,
+                                &netmask))) {
         virReportSystemError(err,
                              _("cannot set netmask on bridge '%s'"),
                              network->def->bridge);
