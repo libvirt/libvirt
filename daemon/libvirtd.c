@@ -2403,6 +2403,10 @@ cleanup:
         server->workers[i].hasThread = 0;
     }
     VIR_FREE(server->workers);
+    for (i = 0; i < server->nclients; i++)
+        qemudFreeClient(server->clients[i]);
+    server->nclients = 0;
+    VIR_SHRINK_N(server->clients, server->nclients_max, server->nclients_max);
 
     virMutexUnlock(&server->lock);
     return NULL;
