@@ -1642,7 +1642,8 @@ qemudPhysIfaceConnect(virConnectPtr conn,
                       struct qemud_driver *driver,
                       virDomainNetDefPtr net,
                       unsigned long long qemuCmdFlags,
-                      const unsigned char *vmuuid)
+                      const unsigned char *vmuuid,
+                      enum virVMOperationType vmop)
 {
     int rc;
 #if WITH_MACVTAP
@@ -1656,7 +1657,8 @@ qemudPhysIfaceConnect(virConnectPtr conn,
 
     rc = openMacvtapTap(net->ifname, net->mac, net->data.direct.linkdev,
                         net->data.direct.mode, vnet_hdr, vmuuid,
-                        &net->data.direct.virtPortProfile, &res_ifname);
+                        &net->data.direct.virtPortProfile, &res_ifname,
+                        vmop);
     if (rc >= 0) {
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
@@ -3953,7 +3955,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           int **vmfds,
                           int *nvmfds,
                           const char *migrateFrom,
-                          virDomainSnapshotObjPtr current_snapshot)
+                          virDomainSnapshotObjPtr current_snapshot,
+                          enum virVMOperationType vmop)
 {
     int i;
     char memory[50];
@@ -4796,7 +4799,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 int tapfd = qemudPhysIfaceConnect(conn, driver, net,
                                                   qemuCmdFlags,
-                                                  def->uuid);
+                                                  def->uuid,
+                                                  vmop);
                 if (tapfd < 0)
                     goto error;
 

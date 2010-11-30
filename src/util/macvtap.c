@@ -77,9 +77,21 @@
 # define LLDPAD_PID_FILE  "/var/run/lldpad.pid"
 
 
+VIR_ENUM_IMPL(virVMOperation, VIR_VM_OP_LAST,
+    "create",
+    "save",
+    "restore",
+    "destroy",
+    "migrate out",
+    "migrate in start",
+    "migrate in finish",
+    "no-op")
+
+
 enum virVirtualPortOp {
     ASSOCIATE = 0x1,
     DISASSOCIATE = 0x2,
+    PREASSOCIATE = 0x3,
 };
 
 
@@ -551,7 +563,8 @@ openMacvtapTap(const char *tgifname,
                int vnet_hdr,
                const unsigned char *vmuuid,
                virVirtualPortProfileParamsPtr virtPortProfile,
-               char **res_ifname)
+               char **res_ifname,
+               enum virVMOperationType vmOp)
 {
     const char *type = "macvtap";
     int c, rc;
@@ -562,6 +575,8 @@ openMacvtapTap(const char *tgifname,
     int ifindex;
 
     *res_ifname = NULL;
+
+    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
 
     if (tgifname) {
         if(ifaceGetIndex(false, tgifname, &ifindex) == 0) {
@@ -601,7 +616,7 @@ create_name:
                                  macaddress,
                                  linkdev,
                                  virtPortProfile,
-                                 vmuuid) != 0) {
+                                 vmuuid, vmOp) != 0) {
         rc = -1;
         goto link_del_exit;
     }
@@ -634,7 +649,8 @@ disassociate_exit:
     vpDisassociatePortProfileId(cr_ifname,
                                 macaddress,
                                 linkdev,
-                                virtPortProfile);
+                                virtPortProfile,
+                                vmOp);
 
 link_del_exit:
     link_del(cr_ifname);
@@ -662,7 +678,8 @@ delMacvtap(const char *ifname,
     if (ifname) {
         vpDisassociatePortProfileId(ifname, macaddr,
                                     linkdev,
-                                    virtPortProfile);
+                                    virtPortProfile,
+                                    VIR_VM_OP_DESTROY);
         link_del(ifname);
     }
 }
@@ -1320,6 +1337,9 @@ doPortProfileOp8021Qbg(const char *ifname,
     portVsi.vsi_type_id[0] = virtPort->u.virtPort8021Qbg.typeID;
 
     switch (virtPortOp) {
+    case PREASSOCIATE:
+        op = PORT_REQUEST_PREASSOCIATE;
+        break;
     case ASSOCIATE:
         op = PORT_REQUEST_ASSOCIATE;
         break;
@@ -1484,6 +1504,7 @@ err_exit:
  * @macvtap_ifname: The name of the macvtap device
  * @virtPort: pointer to the object holding port profile parameters
  * @vmuuid : the UUID of the virtual machine
+ * @vmOp : The VM operation (i.e., create, no-op)
  *
  * Associate a port on a swtich with a profile. This function
  * may notify a kernel driver or an external daemon to run
@@ -1499,12 +1520,18 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
                          const unsigned char *macvtap_macaddr,
                          const char *linkdev,
                          const virVirtualPortProfileParamsPtr virtPort,
-                         const unsigned char *vmuuid)
+                         const unsigned char *vmuuid,
+                         enum virVMOperationType vmOp)
 {
     int rc = 0;
 
     VIR_DEBUG("Associating port profile '%p' on link device '%s'",
               virtPort, macvtap_ifname);
+
+    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
+
+    if (vmOp == VIR_VM_OP_NO_OP)
+        return 0;
 
     switch (virtPort->virtPortType) {
     case VIR_VIRTUALPORT_NONE:
@@ -1513,10 +1540,16 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
 
     case VIR_VIRTUALPORT_8021QBG:
         rc = doPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
-                                    virtPort, ASSOCIATE);
+                                    virtPort,
+                                    (vmOp == VIR_VM_OP_MIGRATE_IN_START)
+                                      ? PREASSOCIATE
+                                      : ASSOCIATE);
         break;
 
     case VIR_VIRTUALPORT_8021QBH:
+        /* avoid associating twice */
+        if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
+            break;
         rc = doPortProfileOp8021Qbh(linkdev, virtPort,
                                     vmuuid,
                                     ASSOCIATE);
@@ -1542,12 +1575,15 @@ int
 vpDisassociatePortProfileId(const char *macvtap_ifname,
                             const unsigned char *macvtap_macaddr,
                             const char *linkdev,
-                            const virVirtualPortProfileParamsPtr virtPort)
+                            const virVirtualPortProfileParamsPtr virtPort,
+                            enum virVMOperationType vmOp)
 {
     int rc = 0;
 
     VIR_DEBUG("Disassociating port profile id '%p' on link device '%s' ",
               virtPort, macvtap_ifname);
+
+    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
 
     switch (virtPort->virtPortType) {
     case VIR_VIRTUALPORT_NONE:
@@ -1560,6 +1596,9 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
         break;
 
     case VIR_VIRTUALPORT_8021QBH:
+        /* avoid disassociating twice */
+        if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
+            break;
         rc = doPortProfileOp8021Qbh(linkdev, virtPort,
                                     NULL,
                                     DISASSOCIATE);

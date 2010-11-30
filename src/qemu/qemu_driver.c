@@ -163,7 +163,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               const char *migrateFrom,
                               bool start_paused,
                               int stdin_fd,
-                              const char *stdin_path);
+                              const char *stdin_path,
+                              enum virVMOperationType vmop);
 
 static void qemudShutdownVMDaemon(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
@@ -3864,7 +3865,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               const char *migrateFrom,
                               bool start_paused,
                               int stdin_fd,
-                              const char *stdin_path) {
+                              const char *stdin_path,
+                              enum virVMOperationType vmop) {
     const char **argv = NULL, **tmp;
     const char **progenv = NULL;
     int i, ret, runflags;
@@ -4065,7 +4067,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                               priv->monJSON, qemuCmdFlags, &argv, &progenv,
                               &vmfds, &nvmfds, migrateFrom,
-                              vm->current_snapshot) < 0)
+                              vm->current_snapshot, vmop) < 0)
         goto cleanup;
 
     if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
@@ -4879,7 +4881,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 
     if (qemudStartVMDaemon(conn, driver, vm, NULL,
                            (flags & VIR_DOMAIN_START_PAUSED) != 0,
-                           -1, NULL) < 0) {
+                           -1, NULL, VIR_VM_OP_CREATE) < 0) {
         qemuDomainStartAudit(vm, "booted", false);
         if (qemuDomainObjEndJob(vm) > 0)
             virDomainRemoveInactive(&driver->domains,
@@ -7015,7 +7017,8 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     }
 
     /* Set the migration source and start it up. */
-    ret = qemudStartVMDaemon(conn, driver, vm, "stdio", true, fd, path);
+    ret = qemudStartVMDaemon(conn, driver, vm, "stdio", true, fd, path,
+                             VIR_VM_OP_RESTORE);
 
     if (intermediate_pid != -1) {
         /* Wait for intermediate process to exit */
@@ -7334,14 +7337,15 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     if (!def)
         goto cleanup;
 
-    /* Since we're just exporting args, we can't do bridge/network
-     * setups, since libvirt will normally create TAP devices
+    /* Since we're just exporting args, we can't do bridge/network/direct
+     * setups, since libvirt will normally create TAP/macvtap devices
      * directly. We convert those configs into generic 'ethernet'
      * config and assume the user has suitable 'ifup-qemu' scripts
      */
     for (i = 0 ; i < def->nnets ; i++) {
         virDomainNetDefPtr net = def->nets[i];
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
+            net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
             VIR_FREE(net->data.network.name);
 
             memset(net, 0, sizeof *net);
@@ -7397,7 +7401,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                               &monConfig, 0, qemuCmdFlags,
                               &retargv, &retenv,
                               NULL, NULL, /* Don't want it to create TAP devices */
-                              NULL, NULL) < 0) {
+                              NULL, NULL,
+                              VIR_VM_OP_NO_OP) < 0) {
         goto cleanup;
     }
 
@@ -7484,7 +7489,8 @@ static int qemudDomainObjStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    ret = qemudStartVMDaemon(conn, driver, vm, NULL, start_paused, -1, NULL);
+    ret = qemudStartVMDaemon(conn, driver, vm, NULL, start_paused, -1, NULL,
+                             VIR_VM_OP_CREATE);
     qemuDomainStartAudit(vm, "booted", ret >= 0);
     if (ret >= 0) {
         virDomainEventPtr event =
@@ -8327,7 +8333,8 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 
         if ((tapfd = qemudPhysIfaceConnect(conn, driver, net,
                                            qemuCmdFlags,
-                                           vm->def->uuid)) < 0)
+                                           vm->def->uuid,
+                                           VIR_VM_OP_CREATE)) < 0)
             return -1;
     }
 
@@ -11001,7 +11008,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
      * -incoming unix:/path/to/file or exec:nc -U /path/to/file
      */
     internalret = qemudStartVMDaemon(dconn, driver, vm, migrateFrom, true,
-                                     -1, NULL);
+                                     -1, NULL, VIR_VM_OP_MIGRATE_IN_START);
     VIR_FREE(migrateFrom);
     if (internalret < 0) {
         qemuDomainStartAudit(vm, "migrated", false);
@@ -11247,7 +11254,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
      */
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
     if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom, true,
-                            -1, NULL) < 0) {
+                            -1, NULL, VIR_VM_OP_MIGRATE_IN_START) < 0) {
         qemuDomainStartAudit(vm, "migrated", false);
         /* Note that we don't set an error here because qemudStartVMDaemon
          * should have already done that.
@@ -11862,6 +11869,41 @@ cleanup:
     return ret;
 }
 
+static void
+qemudVPAssociatePortProfiles(virDomainDefPtr def) {
+    int i;
+    int last_good_net = -1;
+    virDomainNetDefPtr net;
+
+    for (i = 0; i < def->nnets; i++) {
+        net = def->nets[i];
+        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            if (vpAssociatePortProfileId(net->ifname,
+                                         net->mac,
+                                         net->data.direct.linkdev,
+                                         &net->data.direct.virtPortProfile,
+                                         def->uuid,
+                                         VIR_VM_OP_MIGRATE_IN_FINISH) != 0)
+                goto err_exit;
+        }
+        last_good_net = i;
+    }
+
+    return;
+
+err_exit:
+    for (i = 0; i < last_good_net; i++) {
+        net = def->nets[i];
+        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            vpDisassociatePortProfileId(net->ifname,
+                                        net->mac,
+                                        net->data.direct.linkdev,
+                                        &net->data.direct.virtPortProfile,
+                                        VIR_VM_OP_MIGRATE_IN_FINISH);
+        }
+    }
+}
+
 /* Finish is the third and final step, and it runs on the destination host. */
 static virDomainPtr
 qemudDomainMigrateFinish2 (virConnectPtr dconn,
@@ -11921,6 +11963,8 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                             _("guest unexpectedly quit"));
             goto cleanup;
         }
+
+        qemudVPAssociatePortProfiles(vm->def);
 
         if (flags & VIR_MIGRATE_PERSIST_DEST) {
             if (vm->persistent)
@@ -12814,7 +12858,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
 
             rc = qemudStartVMDaemon(snapshot->domain->conn, driver, vm, NULL,
-                                    false, -1, NULL);
+                                    false, -1, NULL, VIR_VM_OP_CREATE);
             qemuDomainStartAudit(vm, "from-snapshot", rc >= 0);
             if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
                 goto endjob;

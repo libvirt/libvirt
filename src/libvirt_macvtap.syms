@@ -1,5 +1,9 @@
 #
 
 # macvtap.h
-openMacvtapTap;
 delMacvtap;
+openMacvtapTap;
+virVMOperationTypeFromString;
+virVMOperationTypeToString;
+vpAssociatePortProfileId;
+vpDisassociatePortProfileId;

@@ -40,6 +40,7 @@
 # include "cpu_conf.h"
 # include "driver.h"
 # include "bitmap.h"
+# include "macvtap.h"
 
 # define qemudDebug(fmt, ...) do {} while(0)
 
@@ -238,7 +239,8 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          int **vmfds,
                                          int *nvmfds,
                                          const char *migrateFrom,
-                                         virDomainSnapshotObjPtr current_snapshot)
+                                         virDomainSnapshotObjPtr current_snapshot,
+                                         enum virVMOperationType vmop)
     ATTRIBUTE_NONNULL(1);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
@@ -317,7 +319,8 @@ int qemudPhysIfaceConnect(virConnectPtr conn,
                           struct qemud_driver *driver,
                           virDomainNetDefPtr net,
                           unsigned long long qemuCmdFlags,
-                          const unsigned char *vmuuid);
+                          const unsigned char *vmuuid,
+                          enum virVMOperationType vmop);
 
 int         qemudProbeMachineTypes      (const char *binary,
                                          virCapsGuestMachinePtr **machines,
