@@ -326,6 +326,7 @@ virDomainConfVMNWFilterTeardown;
 # ebtables.h
 ebtablesAddForwardAllowIn;
 ebtablesAddForwardPolicyReject;
+ebtablesContextFree;
 ebtablesContextNew;
 ebtablesRemoveForwardAllowIn;
 

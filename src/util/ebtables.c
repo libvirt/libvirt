@@ -300,6 +300,8 @@ ebtablesContextNew(const char *driver)
 void
 ebtablesContextFree(ebtablesContext *ctx)
 {
+    if (!ctx)
+        return;
     if (ctx->input_filter)
         ebtRulesFree(ctx->input_filter);
     if (ctx->forward_filter)

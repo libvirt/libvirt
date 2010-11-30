@@ -2069,10 +2069,9 @@ qemudShutdown(void) {
 
     virSysinfoDefFree(qemu_driver->hostsysinfo);
 
-    VIR_FREE(qemu_driver->securityDriverName);
-    VIR_FREE(qemu_driver->logDir);
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
+    VIR_FREE(qemu_driver->logDir);
     VIR_FREE(qemu_driver->stateDir);
     VIR_FREE(qemu_driver->libDir);
     VIR_FREE(qemu_driver->cacheDir);
@@ -2082,9 +2081,16 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->vncListen);
     VIR_FREE(qemu_driver->vncPassword);
     VIR_FREE(qemu_driver->vncSASLdir);
-    VIR_FREE(qemu_driver->saveImageFormat);
+    VIR_FREE(qemu_driver->spiceTLSx509certdir);
+    VIR_FREE(qemu_driver->spiceListen);
+    VIR_FREE(qemu_driver->spicePassword);
     VIR_FREE(qemu_driver->hugetlbfs_mount);
     VIR_FREE(qemu_driver->hugepage_path);
+    VIR_FREE(qemu_driver->securityDriverName);
+    VIR_FREE(qemu_driver->saveImageFormat);
+    VIR_FREE(qemu_driver->dumpImageFormat);
+
+    ebtablesContextFree(qemu_driver->ebtables);
 
     if (qemu_driver->cgroupDeviceACL) {
         for (i = 0 ; qemu_driver->cgroupDeviceACL[i] != NULL ; i++)
