@@ -470,19 +470,14 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         def->delay = 0;
 
     ipAddress = virXPathString("string(./ip[1]/@address)", ctxt);
-    netmask = virXPathString("string(./ip[1]/@netmask)", ctxt);
-    if (ipAddress &&
-        netmask) {
+    if (ipAddress) {
         xmlNodePtr ip;
 
         if (virSocketParseAddr(ipAddress, &def->ipAddress, AF_UNSPEC) < 0)
             goto error;
-        if (virSocketParseAddr(netmask, &def->netmask, AF_UNSPEC) < 0)
-            goto error;
 
         /* XXX someday we want IPv6, so will need to relax this */
-        if (!VIR_SOCKET_IS_FAMILY(&def->ipAddress, AF_INET) ||
-            !VIR_SOCKET_IS_FAMILY(&def->netmask, AF_INET)) {
+        if (!VIR_SOCKET_IS_FAMILY(&def->ipAddress, AF_INET)) {
             virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                   "%s", _("Only IPv4 addresses are supported"));
             goto error;
@@ -493,18 +488,25 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
     }
     VIR_FREE(ipAddress);
+
+    netmask = virXPathString("string(./ip[1]/@netmask)", ctxt);
+    if (netmask) {
+
+        if (virSocketParseAddr(netmask, &def->netmask, AF_UNSPEC) < 0)
+            goto error;
+
+        /* XXX someday we want IPv6, so will need to relax this */
+        if (!VIR_SOCKET_IS_FAMILY(&def->netmask, AF_INET)) {
+            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                  "%s", _("Only IPv4 addresses are supported"));
+            goto error;
+        }
+    }
     VIR_FREE(netmask);
 
 
     /* IPv4 forwarding setup */
     if (virXPathBoolean("count(./forward) > 0", ctxt)) {
-        if (def->ipAddress.data.sa.sa_family != AF_INET ||
-            def->netmask.data.sa.sa_family != AF_INET) {
-            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("Forwarding requested, but no IPv4 address/netmask provided"));
-            goto error;
-        }
-
         tmp = virXPathString("string(./forward[1]/@mode)", ctxt);
         if (tmp) {
             if ((def->forwardType = virNetworkForwardTypeFromString(tmp)) < 0) {
