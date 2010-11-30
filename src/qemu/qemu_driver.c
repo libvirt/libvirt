@@ -6057,6 +6057,34 @@ cleanup:
     return ret;
 }
 
+static enum qemud_save_formats
+getCompressionType(struct qemud_driver *driver)
+{
+    int compress = QEMUD_SAVE_FORMAT_RAW;
+
+    /*
+     * We reuse "save" flag for "dump" here. Then, we can support the same
+     * format in "save" and "dump".
+     */
+    if (driver->dumpImageFormat) {
+        compress = qemudSaveCompressionTypeFromString(driver->dumpImageFormat);
+        if (compress < 0) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                            _("Invalid dump image format specified in "
+                              "configuration file, using raw"));
+            return QEMUD_SAVE_FORMAT_RAW;
+        }
+        if (!qemudCompressProgramAvailable(compress)) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("Compression program for dump image format "
+                                    "in configuration file isn't available, "
+                                    "using raw"));
+            return QEMUD_SAVE_FORMAT_RAW;
+        }
+    }
+    return compress;
+}
+
 static int qemudDomainCoreDump(virDomainPtr dom,
                                const char *path,
                                int flags ATTRIBUTE_UNUSED) {
@@ -6065,28 +6093,10 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     int resume = 0, paused = 0;
     int ret = -1, fd = -1;
     virDomainEventPtr event = NULL;
-    int compress;
+    enum qemud_save_formats compress;
     qemuDomainObjPrivatePtr priv;
-    /*
-     * We reuse "save" flag for "dump" here. Then, we can support the same
-     * format in "save" and "dump".
-     */
-    compress = QEMUD_SAVE_FORMAT_RAW;
-    if (driver->dumpImageFormat) {
-        compress = qemudSaveCompressionTypeFromString(driver->dumpImageFormat);
-        if (compress < 0) {
-           qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Invalid dump image format specified in "
-                             "configuration file"));
-           return -1;
-        }
-        if (!qemudCompressProgramAvailable(compress)) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("Compression program for dump image format "
-                                    "in configuration file isn't available"));
-            return -1;
-        }
-    }
+
+    compress = getCompressionType(driver);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
