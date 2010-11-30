@@ -89,7 +89,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (qemudBuildCommandLine(conn, &driver,
                               vmdef, &monitor_chr, 0, flags,
                               &argv, &qenv,
-                              NULL, NULL, migrateFrom, NULL) < 0)
+                              NULL, NULL, migrateFrom, NULL,
+                              VIR_VM_OP_CREATE) < 0)
         goto fail;
 
     if (!!virGetLastError() != expectError) {

@@ -375,6 +375,11 @@ BuildRequires: libcurl-devel
 %if %{with_audit}
 BuildRequires: audit-libs-devel
 %endif
+%if %{with_dtrace}
+# we need /usr/sbin/dtrace
+BuildRequires: systemtap-sdt-devel
+%endif
+
 
 # Fedora build root suckage
 BuildRequires: gawk
@@ -925,6 +930,15 @@ fi
 %endif
 
 %changelog
+* Tue Nov 30 2010 Daniel Veillard <veillard@redhat.com> - 0.8.6-1
+- Add support for iSCSI target auto-discovery
+- QED: Basic support for QED images
+- remote console support
+- support for SPICE graphics
+- sysinfo and VMBIOS support
+- virsh qemu-monitor-command
+- various improvements and bug fixes
+
 * Fri Oct 29 2010 Daniel Veillard <veillard@redhat.com> - 0.8.5-1
 - Enable JSON and netdev features in QEMU >= 0.13
 - framework for auditing integration
