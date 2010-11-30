@@ -3083,6 +3083,10 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    /* Set error logging priority to debug, so client errors don't
+     * show up as errors in the daemon log */
+    virErrorSetLogPriority(VIR_LOG_DEBUG);
+
     while (1) {
         int optidx = 0;
         int c;

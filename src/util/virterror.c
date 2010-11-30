@@ -26,6 +26,7 @@ virThreadLocal virLastErr;
 
 virErrorFunc virErrorHandler = NULL;     /* global error handler */
 void *virUserData = NULL;        /* associated data */
+static int virErrorLogPriority = -1;
 
 /*
  * Macro used to format the message as a string in virRaiseError
@@ -62,6 +63,18 @@ void *virUserData = NULL;        /* associated data */
         }							\
         str = larger;						\
     }}								\
+}
+
+static virLogPriority virErrorLevelPriority(virErrorLevel level) {
+    switch (level) {
+        case VIR_ERR_NONE:
+            return(VIR_LOG_INFO);
+        case VIR_ERR_WARNING:
+            return(VIR_LOG_WARN);
+        case VIR_ERR_ERROR:
+            return(VIR_LOG_ERROR);
+    }
+    return(VIR_LOG_ERROR);
 }
 
 static const char *virErrorDomainName(virErrorDomain domain) {
@@ -676,6 +689,7 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virErrorPtr to;
     char *str;
+    int priority;
 
     /*
      * All errors are recorded in thread local storage
@@ -703,8 +717,14 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
     /*
      * Hook up the error or warning to the logging facility
      * XXXX should we include filename as 'category' instead of domain name ?
+     *
+     * When an explicit error log priority is set then use it, otherwise
+     * translate the error level to the log priority. This is used by libvirtd
+     * to log client errors at debug priority.
      */
-    virLogMessage(virErrorDomainName(domain), VIR_LOG_INFO,
+    priority = virErrorLogPriority == -1 ? virErrorLevelPriority(level)
+                                         : virErrorLogPriority;
+    virLogMessage(virErrorDomainName(domain), priority,
                   funcname, linenr, 1, "%s", str);
 
     /*
@@ -1318,4 +1338,10 @@ void virReportOOMErrorFull(int domcode,
     virRaiseErrorFull(NULL, filename, funcname, linenr,
                       domcode, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
                       virerr, NULL, NULL, -1, -1, virerr, NULL);
+}
+
+void
+virErrorSetLogPriority(int priority)
+{
+    virErrorLogPriority = priority;
 }
