@@ -64,6 +64,10 @@ local-checks-to-skip =			\
   sc_makefile_check			\
   sc_useless_cpp_parens
 
+# Files that should never cause syntax check failures.
+VC_LIST_ALWAYS_EXCLUDE_REGEX = ^docs/news.html.in$$
+
+# Functions like free() that are no-ops on NULL arguments.
 useless_free_options =				\
   --name=VIR_FREE				\
   --name=sexpr_free				\
