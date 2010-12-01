@@ -504,6 +504,11 @@ virLogStartup;
 virLogUnlock;
 
 
+# macvtap.h
+virVMOperationTypeFromString;
+virVMOperationTypeToString;
+
+
 # memory.h
 virAlloc;
 virAllocN;

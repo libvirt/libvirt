@@ -11879,6 +11879,7 @@ cleanup:
     return ret;
 }
 
+#if WITH_MACVTAP
 static void
 qemudVPAssociatePortProfiles(virDomainDefPtr def) {
     int i;
@@ -11913,6 +11914,10 @@ err_exit:
         }
     }
 }
+#else /* !WITH_MACVTAP */
+static void
+qemudVPAssociatePortProfiles(virDomainDefPtr def ATTRIBUTE_UNUSED) { }
+#endif /* WITH_MACVTAP */
 
 /* Finish is the third and final step, and it runs on the destination host. */
 static virDomainPtr

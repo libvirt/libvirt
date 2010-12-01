@@ -1,9 +1,10 @@
 #
+# These symbols are dependent on WITH_MACVTAP.
+#
+
 
 # macvtap.h
 delMacvtap;
 openMacvtapTap;
-virVMOperationTypeFromString;
-virVMOperationTypeToString;
 vpAssociatePortProfileId;
 vpDisassociatePortProfileId;

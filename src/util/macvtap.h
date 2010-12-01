@@ -57,11 +57,6 @@ struct _virVirtualPortProfileParams {
     } u;
 };
 
-
-# if defined(WITH_MACVTAP)
-
-#  include "internal.h"
-
 enum virVMOperationType {
     VIR_VM_OP_CREATE,
     VIR_VM_OP_SAVE,
@@ -74,6 +69,10 @@ enum virVMOperationType {
 
     VIR_VM_OP_LAST
 };
+
+# if WITH_MACVTAP
+
+#  include "internal.h"
 
 int openMacvtapTap(const char *ifname,
                    const unsigned char *macaddress,
@@ -90,11 +89,9 @@ void delMacvtap(const char *ifname,
                 const char *linkdev,
                 virVirtualPortProfileParamsPtr virtPortProfile);
 
-# endif /* WITH_MACVTAP */
-
-# define MACVTAP_MODE_PRIVATE_STR  "private"
-# define MACVTAP_MODE_VEPA_STR     "vepa"
-# define MACVTAP_MODE_BRIDGE_STR   "bridge"
+#  define MACVTAP_MODE_PRIVATE_STR  "private"
+#  define MACVTAP_MODE_VEPA_STR     "vepa"
+#  define MACVTAP_MODE_BRIDGE_STR   "bridge"
 
 int vpAssociatePortProfileId(const char *macvtap_ifname,
                              const unsigned char *macvtap_macaddr,
@@ -108,6 +105,8 @@ int vpDisassociatePortProfileId(const char *macvtap_ifname,
                                 const char *linkdev,
                                 const virVirtualPortProfileParamsPtr virtPort,
                                 enum virVMOperationType vmOp);
+
+# endif /* WITH_MACVTAP */
 
 VIR_ENUM_DECL(virVirtualPort)
 VIR_ENUM_DECL(virVMOperation)
