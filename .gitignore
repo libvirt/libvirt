@@ -50,10 +50,12 @@
 /po/
 /proxy/
 /tests/*.log
+/tests/cputest
 /tests/nwfilterxml2xmltest
 /update.log
 Makefile
 Makefile.in
+TAGS
 coverage
 cscope.files
 cscope.out
@@ -61,4 +63,3 @@ results.log
 stamp-h
 stamp-h.in
 stamp-h1
-TAGS
