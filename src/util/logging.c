@@ -980,8 +980,8 @@ void virLogSetFromEnv(void) {
         virLogParseDefaultPriority(debugEnv);
     debugEnv = getenv("LIBVIRT_LOG_FILTERS");
     if (debugEnv && *debugEnv)
-        virLogParseFilters(strdup(debugEnv));
+        virLogParseFilters(debugEnv);
     debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
     if (debugEnv && *debugEnv)
-        virLogParseOutputs(strdup(debugEnv));
+        virLogParseOutputs(debugEnv);
 }
