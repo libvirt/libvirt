@@ -472,6 +472,7 @@ void virDomainEventFree(virDomainEventPtr event)
         return;
 
     switch (event->eventID) {
+    case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
     case VIR_DOMAIN_EVENT_ID_IO_ERROR:
         VIR_FREE(event->data.ioError.srcPath);
         VIR_FREE(event->data.ioError.devAlias);
