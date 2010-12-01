@@ -3407,7 +3407,7 @@ static int qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
             VIR_DEBUG("Ignoring EACCES for %s", path);
         } else {
             virReportSystemError(-rc,
-                                 _("Unable to allow access for disk path %s"),
+                                 _("Unable to deny access for disk path %s"),
                                  path);
             return -1;
         }
