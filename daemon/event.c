@@ -576,13 +576,14 @@ int virEventRunOnce(void) {
  retry:
     EVENT_DEBUG("Poll on %d handles %p timeout %d", nfds, fds, timeout);
     ret = poll(fds, nfds, timeout);
-    EVENT_DEBUG("Poll got %d event", ret);
     if (ret < 0) {
+        EVENT_DEBUG("Poll got error event %d", errno);
         if (errno == EINTR) {
             goto retry;
         }
         goto error_unlocked;
     }
+    EVENT_DEBUG("Poll got %d event(s)", ret);
 
     virMutexLock(&eventLoop.lock);
     if (virEventDispatchTimeouts() < 0)
