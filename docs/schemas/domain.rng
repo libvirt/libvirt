@@ -1745,6 +1745,8 @@
             <ref name="cpuModel"/>
             <optional>
               <ref name="cpuVendor"/>
+            </optional>
+            <optional>
               <ref name="cpuTopology"/>
             </optional>
             <zeroOrMore>
