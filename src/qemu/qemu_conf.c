@@ -1689,6 +1689,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
     (void)qemuCmdFlags;
     (void)driver;
     (void)vmuuid;
+    (void)vmop;
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("No support for macvtap device"));
     rc = -1;
