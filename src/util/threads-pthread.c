@@ -26,6 +26,8 @@
 # include <sys/syscall.h>
 #endif
 
+#include "memory.h"
+
 
 /* Nothing special required for pthreads */
 int virThreadInitialize(void)
@@ -143,6 +145,7 @@ static void *virThreadHelper(void *data)
 {
     struct virThreadArgs *args = data;
     args->func(args->opaque);
+    VIR_FREE(args);
     return NULL;
 }
 
@@ -151,17 +154,25 @@ int virThreadCreate(virThreadPtr thread,
                     virThreadFunc func,
                     void *opaque)
 {
-    struct virThreadArgs args = { func, opaque };
+    struct virThreadArgs *args;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
+    if (VIR_ALLOC(args) < 0)
+        return -1;
+
+    args->func = func;
+    args->opaque = opaque;
+
     if (!joinable)
         pthread_attr_setdetachstate(&attr, 1);
 
-    int ret = pthread_create(&thread->thread, &attr, virThreadHelper, &args);
+    int ret = pthread_create(&thread->thread, &attr, virThreadHelper, args);
     if (ret != 0) {
+        VIR_FREE(args);
         errno = ret;
         return -1;
     }
+    /* New thread owns 'args' in success case, so don't free */
     return 0;
 }
 

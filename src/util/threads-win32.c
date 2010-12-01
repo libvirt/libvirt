@@ -230,6 +230,8 @@ static void virThreadHelperDaemon(void *data)
 
     TlsSetValue(selfkey, NULL);
     CloseHandle(self.thread);
+
+    VIR_FREE(args);
 }
 
 static unsigned int __stdcall virThreadHelperJoinable(void *data)
@@ -249,6 +251,8 @@ static unsigned int __stdcall virThreadHelperJoinable(void *data)
 
     TlsSetValue(selfkey, NULL);
     CloseHandle(self.thread);
+
+    VIR_FREE(args);
     return 0;
 }
 
@@ -257,17 +261,24 @@ int virThreadCreate(virThreadPtr thread,
                     virThreadFunc func,
                     void *opaque)
 {
-    struct virThreadArgs args = { func, opaque };
+    struct virThreadArgs *args;
+
+    if (VIR_ALLOC(args) < 0)
+        return -1;
+
+    args->func = func;
+    args->opaque = opaque;
+
     thread->joinable = joinable;
     if (joinable) {
         thread->thread = (HANDLE)_beginthreadex(NULL, 0,
                                                 virThreadHelperJoinable,
-                                                &args, 0, NULL);
+                                                args, 0, NULL);
         if (thread->thread == 0)
             return -1;
     } else {
         thread->thread = (HANDLE)_beginthread(virThreadHelperDaemon,
-                                              0, &args);
+                                              0, args);
         if (thread->thread == (HANDLE)-1L)
             return -1;
     }
