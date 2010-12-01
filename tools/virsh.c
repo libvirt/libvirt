@@ -11694,7 +11694,7 @@ vshUsage(void)
                       "    -q | --quiet            quiet mode\n"
                       "    -t | --timing           print timing information\n"
                       "    -l | --log <file>       output logging to file\n"
-                      "    -v | --version[=short]  program version\n\n"
+                      "    -v | --version[=short]  program version\n"
                       "    -V | --version=long     version and full options\n\n"
                       "  commands (non interactive mode):\n\n"), progname, progname);
 
