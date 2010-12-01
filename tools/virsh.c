@@ -562,13 +562,15 @@ vshReconnect(vshControl *ctl) {
  */
 static const vshCmdInfo info_help[] = {
     {"help", N_("print help")},
-    {"desc", N_("Prints global help or command specific help.")},
+    {"desc", N_("Prints global help, command specific help, or help for a\n"
+                "    group of related commands")},
 
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_help[] = {
-    {"command", VSH_OT_DATA, 0, N_("name of command")},
+    {"command", VSH_OT_DATA, 0, N_("Prints global help or command specific help.")},
+    {"group", VSH_OT_DATA, 0, N_("Prints global help or help for a group of related commands.")},
     {NULL, 0, 0, NULL}
 };
 
@@ -577,7 +579,12 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
  {
     const vshCmdDef *c;
     const vshCmdGrp *g;
-    const char *name = vshCommandOptString(cmd, "command", NULL);
+    const char *name;
+
+    name = vshCommandOptString(cmd, "command", NULL);
+
+    if (!name)
+        name = vshCommandOptString(cmd, "group", NULL);
 
     if (!name) {
         const vshCmdGrp *grp;
@@ -596,8 +603,8 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "\n");
         }
 
-         return TRUE;
-     }
+        return TRUE;
+    }
 
     if ((c = vshCmddefSearch(name))) {
         return vshCmddefHelp(ctl, name);
