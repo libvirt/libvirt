@@ -2970,7 +2970,7 @@ static int qemudNextFreePort(struct qemud_driver *driver,
                              int startPort) {
     int i;
 
-    for (i = startPort ; i < 65535 ; i++) {
+    for (i = startPort ; i < QEMU_VNC_PORT_MAX; i++) {
         int fd;
         int reuse = 1;
         struct sockaddr_in addr;
@@ -3945,7 +3945,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (vm->def->ngraphics == 1) {
         if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             vm->def->graphics[0]->data.vnc.autoport) {
-            int port = qemudNextFreePort(driver, 5900);
+            int port = qemudNextFreePort(driver, QEMU_VNC_PORT_MIN);
             if (port < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Unable to find an unused VNC port"));
@@ -3954,7 +3954,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
             vm->def->graphics[0]->data.vnc.port = port;
         } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
                    vm->def->graphics[0]->data.spice.autoport) {
-            int port = qemudNextFreePort(driver, 5900);
+            int port = qemudNextFreePort(driver, QEMU_VNC_PORT_MIN);
             int tlsPort = -1;
             if (port < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7386,7 +7386,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     for (i = 0 ; i < def->ngraphics ; i++) {
         if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             def->graphics[i]->data.vnc.autoport)
-            def->graphics[i]->data.vnc.port = 5900;
+            def->graphics[i]->data.vnc.port = QEMU_VNC_PORT_MIN;
     }
     emulator = def->emulator;
 
