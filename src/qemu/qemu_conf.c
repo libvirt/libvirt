@@ -3622,16 +3622,16 @@ static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
 
     /* 0:Vendor */
     if (def->bios_vendor)
-        virBufferVSprintf(&buf, ",vendor=\"%s\"", def->bios_vendor);
+        virBufferVSprintf(&buf, ",vendor=%s", def->bios_vendor);
     /* 0:BIOS Version */
     if (def->bios_version)
-        virBufferVSprintf(&buf, ",version=\"%s\"", def->bios_version);
+        virBufferVSprintf(&buf, ",version=%s", def->bios_version);
     /* 0:BIOS Release Date */
     if (def->bios_date)
-        virBufferVSprintf(&buf, ",date=\"%s\"", def->bios_date);
+        virBufferVSprintf(&buf, ",date=%s", def->bios_date);
     /* 0:System BIOS Major Release and 0:System BIOS Minor Release */
     if (def->bios_release)
-        virBufferVSprintf(&buf, ",release=\"%s\"", def->bios_release);
+        virBufferVSprintf(&buf, ",release=%s", def->bios_release);
 
     if (virBufferError(&buf)) {
         virReportOOMError();
@@ -3658,23 +3658,23 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def)
 
     /* 1:Manufacturer */
     if (def->system_manufacturer)
-        virBufferVSprintf(&buf, ",manufacturer=\"%s\"",
+        virBufferVSprintf(&buf, ",manufacturer=%s",
                           def->system_manufacturer);
      /* 1:Product Name */
     if (def->system_product)
-        virBufferVSprintf(&buf, ",product=\"%s\"", def->system_product);
+        virBufferVSprintf(&buf, ",product=%s", def->system_product);
     /* 1:Version */
     if (def->system_version)
-        virBufferVSprintf(&buf, ",version=\"%s\"", def->system_version);
+        virBufferVSprintf(&buf, ",version=%s", def->system_version);
     /* 1:Serial Number */
     if (def->system_serial)
-        virBufferVSprintf(&buf, ",serial=\"%s\"", def->system_serial);
+        virBufferVSprintf(&buf, ",serial=%s", def->system_serial);
     /* 1:UUID */
     if (def->system_uuid)
-        virBufferVSprintf(&buf, ",uuid=\"%s\"", def->system_uuid);
+        virBufferVSprintf(&buf, ",uuid=%s", def->system_uuid);
     /* 1:SKU Number */
     if (def->system_sku)
-        virBufferVSprintf(&buf, ",sku=\"%s\"", def->system_sku);
+        virBufferVSprintf(&buf, ",sku=%s", def->system_sku);
 
     if (virBufferError(&buf)) {
         virReportOOMError();
