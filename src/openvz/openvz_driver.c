@@ -1387,17 +1387,17 @@ static int openvzListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
     int veid;
     pid_t pid;
     int outfd = -1;
-    int errfd = -1;
     int ret;
     char buf[32];
     char *endptr;
     const char *cmd[] = {VZLIST, "-ovpsid", "-H" , NULL};
 
     ret = virExec(cmd, NULL, NULL,
-                  &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
+                  &pid, -1, &outfd, NULL, VIR_EXEC_NONE);
     if (ret == -1) {
         openvzError(VIR_ERR_INTERNAL_ERROR,
                     _("Could not exec %s"), VZLIST);
+        VIR_FORCE_CLOSE(outfd);
         return -1;
     }
 
@@ -1415,6 +1415,10 @@ static int openvzListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
     waitpid(pid, NULL, 0);
 
+    if (VIR_CLOSE(outfd) < 0) {
+        virReportSystemError(errno, "%s", _("failed to close file"));
+        return -1;
+    }
     return got;
 }
 
@@ -1432,7 +1436,7 @@ static int openvzNumDomains(virConnectPtr conn) {
 static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     char **const names, int nnames) {
     int got = 0;
-    int veid, outfd = -1, errfd = -1, ret;
+    int veid, outfd = -1, ret;
     pid_t pid;
     char vpsname[32];
     char buf[32];
@@ -1441,11 +1445,11 @@ static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* the -S options lists only stopped domains */
     ret = virExec(cmd, NULL, NULL,
-                  &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
+                  &pid, -1, &outfd, NULL, VIR_EXEC_NONE);
     if (ret == -1) {
         openvzError(VIR_ERR_INTERNAL_ERROR,
                     _("Could not exec %s"), VZLIST);
-        return -1;
+        goto out;
     }
 
     while (got < nnames) {
@@ -1459,14 +1463,19 @@ static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
         snprintf(vpsname, sizeof(vpsname), "%d", veid);
         if (!(names[got] = strdup(vpsname)))
-            goto no_memory;
+            virReportOOMError();
+            goto out;
         got ++;
     }
     waitpid(pid, NULL, 0);
+    if (VIR_CLOSE(outfd) < 0) {
+        virReportSystemError(errno, "%s", _("failed to close file"));
+        goto out;
+    }
     return got;
 
-no_memory:
-    virReportOOMError();
+out:
+    VIR_FORCE_CLOSE(outfd);
     for ( ; got >= 0 ; got--)
         VIR_FREE(names[got]);
     return -1;
