@@ -1188,7 +1188,7 @@ else
 EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
 endif
 
-noinst_LTLIBRARIES += libvirt-net-rpc.la
+noinst_LTLIBRARIES += libvirt-net-rpc.la libvirt-net-rpc-server.la
 
 libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \
@@ -1214,6 +1214,21 @@ libvirt_net_rpc_la_LDFLAGS = \
 			$(MINGW_EXTRA_LDFLAGS)
 libvirt_net_rpc_la_LIBADD = \
 			$(CYGWIN_EXTRA_LIBADD)
+
+libvirt_net_rpc_server_la_SOURCES = \
+	rpc/virnetserverprogram.h rpc/virnetserverprogram.c \
+	rpc/virnetserverservice.h rpc/virnetserverservice.c \
+	rpc/virnetserverclient.h rpc/virnetserverclient.c \
+	rpc/virnetserver.h rpc/virnetserver.c
+libvirt_net_rpc_server_la_CFLAGS = \
+			$(AM_CFLAGS)
+libvirt_net_rpc_server_la_LDFLAGS = \
+			$(AM_LDFLAGS) \
+			$(CYGWIN_EXTRA_LDFLAGS) \
+			$(MINGW_EXTRA_LDFLAGS)
+libvirt_net_rpc_server_la_LIBADD = \
+			$(CYGWIN_EXTRA_LIBADD)
+
 
 libexec_PROGRAMS =
 
