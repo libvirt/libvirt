@@ -1326,7 +1326,7 @@ elsif ($opt_k) {
         }
 
         if ($call->{streamflag} ne "none") {
-            print "    struct private_stream_data *privst = NULL;\n";
+            print "    virNetClientStreamPtr netst = NULL;\n";
         }
 
         print "\n";
@@ -1334,11 +1334,16 @@ elsif ($opt_k) {
 
         if ($call->{streamflag} ne "none") {
             print "\n";
-            print "    if (!(privst = remoteStreamOpen(st, REMOTE_PROC_$call->{UC_NAME}, priv->counter)))\n";
+            print "    if (!(netst = virNetClientStreamNew(priv->remoteProgram, REMOTE_PROC_$call->{UC_NAME}, priv->counter)))\n";
             print "       goto done;\n";
             print "\n";
+            print "    if (virNetClientAddStream(priv->client, netst) < 0) {";
+            print "       virNetClientStreamFree(netst);\n";
+            print "       goto done;\n";
+            print "    }";
+            print "\n";
             print "    st->driver = &remoteStreamDrv;\n";
-            print "    st->privateData = privst;\n";
+            print "    st->privateData = netst;\n";
         }
 
         if ($call->{ProcName} eq "SupportsFeature") {
@@ -1403,7 +1408,8 @@ elsif ($opt_k) {
         print "             (xdrproc_t)xdr_$call->{ret}, (char *)$call_ret) == -1) {\n";
 
         if ($call->{streamflag} ne "none") {
-            print "        remoteStreamRelease(st);\n";
+            print "        virNetClientRemoveStream(priv->client, netst);\n";
+            print "        virNetClientStreamFree(netst);\n";
         }
 
         print "        goto done;\n";
