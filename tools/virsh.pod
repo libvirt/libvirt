@@ -115,10 +115,41 @@ The following commands are generic i.e. not specific to a domain.
 
 =over 4
 
-=item B<help> optional I<command>
+=item B<help> optional I<command-or-group>
 
-This prints a small synopsis about all commands available for B<virsh>
-B<help> I<command> will print out a detailed help message on that command.
+This lists each of the virsh commands.  When used without options, all
+commands are listed, one per line, grouped into related categories,
+displaying the keyword for each group.
+
+To display only commands for a specific group, give the keyword for that
+group as an option.  For example:
+
+ virsh # help host
+
+  Host and Hypervisor (help keyword 'host'):
+     capabilities                   capabilities
+     connect                        (re)connect to hypervisor
+     freecell                       NUMA free memory
+     hostname                       print the hypervisor hostname
+     qemu-monitor-command           Qemu Monitor Command
+     uri                            print the hypervisor canonical URI
+
+To display detailed information for a specific command, give its name as the
+option instead.  For example:
+
+ virsh # help list
+   NAME
+     list - list domains
+
+   SYNOPSIS
+     list [--inactive] [--all]
+
+   DESCRIPTION
+     Returns list of domains.
+
+   OPTIONS
+     --inactive       list inactive domains
+     --all            list inactive & active domains
 
 =item B<quit>, B<exit>
 
