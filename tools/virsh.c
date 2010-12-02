@@ -8668,11 +8668,16 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         virBufferVSprintf(&buf, " device='%s'", type);
     virBufferAddLit(&buf, ">\n");
 
-    virBufferVSprintf(&buf, "  <driver name='%s'",
-                      (driver) ? driver : "phy");
+    if (driver || subdriver)
+        virBufferVSprintf(&buf, "  <driver");
+
+    if (driver)
+        virBufferVSprintf(&buf, " name='%s'", driver);
     if (subdriver)
         virBufferVSprintf(&buf, " type='%s'", subdriver);
-    virBufferAddLit(&buf, "/>\n");
+
+    if (driver || subdriver)
+        virBufferAddLit(&buf, "/>\n");
 
     virBufferVSprintf(&buf, "  <source %s='%s'/>\n",
                       (isFile) ? "file" : "dev",
