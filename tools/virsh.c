@@ -9962,10 +9962,6 @@ static const vshCmdDef domManagementCmds[] = {
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"echo", cmdEcho, opts_echo, info_echo},
     {"edit", cmdEdit, opts_edit, info_edit},
-    {"find-storage-pool-sources-as", cmdPoolDiscoverSourcesAs,
-     opts_find_storage_pool_sources_as, info_find_storage_pool_sources_as},
-    {"find-storage-pool-sources", cmdPoolDiscoverSources,
-     opts_find_storage_pool_sources, info_find_storage_pool_sources},
     {"freecell", cmdFreecell, opts_freecell, info_freecell},
     {"hostname", cmdHostname, NULL, info_hostname},
     {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave},
@@ -10008,6 +10004,10 @@ static const vshCmdDef domMonitoringCmds[] = {
 };
 
 static const vshCmdDef storagePoolCmds[] = {
+    {"find-storage-pool-sources-as", cmdPoolDiscoverSourcesAs,
+     opts_find_storage_pool_sources_as, info_find_storage_pool_sources_as},
+    {"find-storage-pool-sources", cmdPoolDiscoverSources,
+     opts_find_storage_pool_sources, info_find_storage_pool_sources},
     {"pool-autostart", cmdPoolAutostart, opts_pool_autostart, info_pool_autostart},
     {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build},
     {"pool-create-as", cmdPoolCreateAs, opts_pool_X_as, info_pool_create_as},
