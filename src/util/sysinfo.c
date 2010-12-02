@@ -68,6 +68,7 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
     VIR_FREE(def->system_serial);
     VIR_FREE(def->system_uuid);
     VIR_FREE(def->system_sku);
+    VIR_FREE(def->system_family);
     VIR_FREE(def);
 }
 
@@ -215,6 +216,12 @@ virSysinfoRead(void) {
         cur += 12;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->system_sku = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+    }
+    if ((cur = strstr(base, "Family: ")) != NULL) {
+        cur += 8;
+        eol = strchr(cur, '\n');
+        if ((eol) && ((ret->system_family = strndup(cur, eol - cur)) == NULL))
                 goto no_memory;
     }
 

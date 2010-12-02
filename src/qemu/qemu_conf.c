@@ -3651,7 +3651,8 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def)
 
     if ((def->system_manufacturer == NULL) && (def->system_sku == NULL) &&
         (def->system_product == NULL) && (def->system_uuid == NULL) &&
-        (def->system_version == NULL) && (def->system_serial == NULL))
+        (def->system_version == NULL) && (def->system_serial == NULL) &&
+        (def->system_family == NULL))
         return(NULL);
 
     virBufferAddLit(&buf, "type=1");
@@ -3675,6 +3676,9 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def)
     /* 1:SKU Number */
     if (def->system_sku)
         virBufferVSprintf(&buf, ",sku=%s", def->system_sku);
+    /* 1:Family */
+    if (def->system_family)
+        virBufferVSprintf(&buf, ",family=%s", def->system_family);
 
     if (virBufferError(&buf)) {
         virReportOOMError();

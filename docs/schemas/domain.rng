@@ -1875,6 +1875,7 @@
       <value>serial</value>
       <value>uuid</value>
       <value>sku</value>
+      <value>family</value>
     </choice>
   </define>
 

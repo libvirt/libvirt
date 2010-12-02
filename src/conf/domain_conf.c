@@ -3625,6 +3625,8 @@ virSysinfoParseXML(const xmlNodePtr node,
         virXPathString("string(system/entry[@name='uuid'])", ctxt);
     def->system_sku =
         virXPathString("string(system/entry[@name='sku'])", ctxt);
+    def->system_family =
+        virXPathString("string(system/entry[@name='family'])", ctxt);
 
 cleanup:
     VIR_FREE(type);
@@ -6425,7 +6427,8 @@ virDomainSysinfoDefFormat(virBufferPtr buf,
     }
     if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
         (def->system_version != NULL) || (def->system_serial != NULL) ||
-        (def->system_uuid != NULL) || (def->system_sku != NULL)) {
+        (def->system_uuid != NULL) || (def->system_sku != NULL) ||
+        (def->system_family != NULL)) {
         virBufferAddLit(buf, "    <system>\n");
         if (def->system_manufacturer != NULL)
             virBufferEscapeString(buf,
@@ -6451,6 +6454,10 @@ virDomainSysinfoDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf,
                                   "      <entry name='sku'>%s</entry>\n",
                                   def->system_sku);
+        if (def->system_family != NULL)
+            virBufferEscapeString(buf,
+                                  "      <entry name='family'>%s</entry>\n",
+                                  def->system_family);
         virBufferAddLit(buf, "    </system>\n");
     }
 

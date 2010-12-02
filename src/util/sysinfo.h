@@ -49,6 +49,7 @@ struct _virSysinfoDef {
     char *system_serial;
     char *system_uuid;
     char *system_sku;
+    char *system_family;
 };
 
 virSysinfoDefPtr virSysinfoRead(void);
