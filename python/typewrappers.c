@@ -16,6 +16,26 @@
 
 #include "typewrappers.h"
 
+#ifndef Py_CAPSULE_H
+typedef void(*PyCapsule_Destructor)(void *, void *);
+#endif
+
+static PyObject *
+libvirt_buildPyObject(void *cobj,
+                      const char *name,
+                      PyCapsule_Destructor destr)
+{
+    PyObject *ret;
+
+#ifdef Py_CAPSULE_H
+    ret = PyCapsule_New(cobj, name, destr);
+#else
+    ret = PyCObject_FromVoidPtrAndDesc(cobj, (void *) name, destr);
+#endif /* _TEST_CAPSULE */
+
+    return ret;
+}
+
 PyObject *
 libvirt_intWrap(int val)
 {
@@ -105,9 +125,8 @@ libvirt_virDomainPtrWrap(virDomainPtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virDomainPtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virDomainPtr", NULL);
     return (ret);
 }
 
@@ -120,9 +139,8 @@ libvirt_virNetworkPtrWrap(virNetworkPtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virNetworkPtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virNetworkPtr", NULL);
     return (ret);
 }
 
@@ -135,9 +153,8 @@ libvirt_virInterfacePtrWrap(virInterfacePtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virInterfacePtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virInterfacePtr", NULL);
     return (ret);
 }
 
@@ -150,9 +167,8 @@ libvirt_virStoragePoolPtrWrap(virStoragePoolPtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virStoragePoolPtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virStoragePoolPtr", NULL);
     return (ret);
 }
 
@@ -165,9 +181,8 @@ libvirt_virStorageVolPtrWrap(virStorageVolPtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virStorageVolPtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virStorageVolPtr", NULL);
     return (ret);
 }
 
@@ -180,9 +195,8 @@ libvirt_virConnectPtrWrap(virConnectPtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virConnectPtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virConnectPtr", NULL);
     return (ret);
 }
 
@@ -195,9 +209,8 @@ libvirt_virNodeDevicePtrWrap(virNodeDevicePtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virNodeDevicePtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virNodeDevicePtr", NULL);
     return (ret);
 }
 
@@ -210,7 +223,8 @@ libvirt_virSecretPtrWrap(virSecretPtr node)
         Py_INCREF(Py_None);
         return Py_None;
     }
-    ret = PyCObject_FromVoidPtrAndDesc(node, (char *) "virSecretPtr", NULL);
+
+    ret = libvirt_buildPyObject(node, "virSecretPtr", NULL);
     return (ret);
 }
 
@@ -223,7 +237,8 @@ libvirt_virNWFilterPtrWrap(virNWFilterPtr node)
         Py_INCREF(Py_None);
         return Py_None;
     }
-    ret = PyCObject_FromVoidPtrAndDesc(node, (char *) "virNWFilterPtr", NULL);
+
+    ret = libvirt_buildPyObject(node, "virNWFilterPtr", NULL);
     return (ret);
 }
 
@@ -236,7 +251,8 @@ libvirt_virStreamPtrWrap(virStreamPtr node)
         Py_INCREF(Py_None);
         return Py_None;
     }
-    ret = PyCObject_FromVoidPtrAndDesc(node, (char *) "virStreamPtr", NULL);
+
+    ret = libvirt_buildPyObject(node, "virStreamPtr", NULL);
     return (ret);
 }
 
@@ -249,9 +265,8 @@ libvirt_virDomainSnapshotPtrWrap(virDomainSnapshotPtr node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virDomainSnapshotPtr",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virDomainSnapshotPtr", NULL);
     return (ret);
 }
 
@@ -265,9 +280,8 @@ libvirt_virEventHandleCallbackWrap(virEventHandleCallback node)
         printf("%s: WARNING - Wrapping None\n", __func__);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virEventHandleCallback",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virEventHandleCallback", NULL);
     return (ret);
 }
 
@@ -281,9 +295,8 @@ libvirt_virEventTimeoutCallbackWrap(virEventTimeoutCallback node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virEventTimeoutCallback",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virEventTimeoutCallback", NULL);
     return (ret);
 }
 
@@ -296,9 +309,8 @@ libvirt_virFreeCallbackWrap(virFreeCallback node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virFreeCallback",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "virFreeCallback", NULL);
     return (ret);
 }
 
@@ -311,8 +323,7 @@ libvirt_virVoidPtrWrap(void* node)
         Py_INCREF(Py_None);
         return (Py_None);
     }
-    ret =
-        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "void*",
-                                     NULL);
+
+    ret = libvirt_buildPyObject(node, "void*", NULL);
     return (ret);
 }
