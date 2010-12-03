@@ -36,6 +36,7 @@
 #include "conf/domain_conf.h"
 #include "logging.h"
 #include "memory.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSINFO
 
@@ -94,12 +95,9 @@ virSysinfoRead(void) {
 virSysinfoDefPtr
 virSysinfoRead(void) {
     char *path, *cur, *eol, *base;
-    int pid, outfd = -1, errfd = -1;
     virSysinfoDefPtr ret = NULL;
-    const char *argv[] = { NULL, "-q", "-t", "0,1", NULL };
-    int res, waitret, exitstatus;
     char *outbuf = NULL;
-    char *errbuf = NULL;
+    virCommandPtr cmd;
 
     path = virFindFileInPath(SYSINFO_SMBIOS_DECODER);
     if (path == NULL) {
@@ -108,43 +106,14 @@ virSysinfoRead(void) {
                              SYSINFO_SMBIOS_DECODER);
         return NULL;
     }
-    argv[0] = path;
 
-    res = virExec(argv, NULL, NULL, &pid, -1, &outfd, &errfd,
-                  VIR_EXEC_NONE | VIR_EXEC_NONBLOCK);
-    if (res < 0) {
+    cmd = virCommandNewArgList(path, "-q", "-t", "0,1", NULL);
+    VIR_FREE(path);
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    if (virCommandRun(cmd, NULL) < 0) {
         virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
                              _("Failed to execute command %s"),
                              path);
-        res = 1;
-        goto cleanup;
-    }
-
-    /*
-     * we are interested in the output, capture it and errors too
-     */
-    if (virPipeReadUntilEOF(outfd, errfd, &outbuf, &errbuf) < 0) {
-        virReportSystemError(errno, _("cannot wait for '%s'"), path);
-        while (waitpid(pid, &exitstatus, 0) == -1 && errno == EINTR)
-            ;
-        goto cleanup;
-    }
-
-    if (outbuf)
-        VIR_DEBUG("Command stdout: %s", outbuf);
-    if (errbuf)
-        VIR_DEBUG("Command stderr: %s", errbuf);
-
-    while ((waitret = waitpid(pid, &exitstatus, 0) == -1) &&
-           (errno == EINTR));
-    if (waitret == -1) {
-        virReportSystemError(errno, _("Failed to wait for '%s'"), path);
-        goto cleanup;
-    }
-    if (exitstatus != 0) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("command %s failed with error code %d:%s"),
-                             path, exitstatus, errbuf);
         goto cleanup;
     }
 
@@ -227,8 +196,7 @@ virSysinfoRead(void) {
 
 cleanup:
     VIR_FREE(outbuf);
-    VIR_FREE(errbuf);
-    VIR_FREE(path);
+    virCommandFree(cmd);
 
     return ret;
 
