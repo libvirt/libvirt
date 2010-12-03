@@ -365,9 +365,15 @@
 </pre>
 
     <p>
-      Once the command has finished executing, these buffers
-      will contain the output. It is the callers responsibility
-      to free these buffers.
+      Once the command has finished executing, these buffers will
+      contain the output.  Allocation is guaranteed if virCommandRun
+      or virCommandWait succeed (if there was no output, then the
+      buffer will contain an allocated empty string); if the command
+      failed, then the buffers usually contain a best-effort
+      allocation of collected information (however, on an
+      out-of-memory condition, the buffer may still be NULL).  The
+      caller is responsible for freeing registered buffers, since the
+      buffers are designed to persist beyond virCommandFree.
     </p>
 
     <h3><a name="directory">Setting working directory</a></h3>

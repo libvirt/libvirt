@@ -533,11 +533,15 @@ virCommandSetInputBuffer(virCommandPtr cmd, const char *inbuf)
 
 
 /*
- * Capture the child's stdout to a string buffer
+ * Capture the child's stdout to a string buffer.  *outbuf is
+ * guaranteed to be allocated after successful virCommandRun or
+ * virCommandWait, and is best-effort allocated after failed
+ * virCommandRun; caller is responsible for freeing *outbuf.
  */
 void
 virCommandSetOutputBuffer(virCommandPtr cmd, char **outbuf)
 {
+    *outbuf = NULL;
     if (!cmd || cmd->has_error)
         return;
 
@@ -553,11 +557,15 @@ virCommandSetOutputBuffer(virCommandPtr cmd, char **outbuf)
 
 
 /*
- * Capture the child's stderr to a string buffer
+ * Capture the child's stderr to a string buffer.  *errbuf is
+ * guaranteed to be allocated after successful virCommandRun or
+ * virCommandWait, and is best-effort allocated after failed
+ * virCommandRun; caller is responsible for freeing *errbuf.
  */
 void
 virCommandSetErrorBuffer(virCommandPtr cmd, char **errbuf)
 {
+    *errbuf = NULL;
     if (!cmd || cmd->has_error)
         return;
 
@@ -747,6 +755,7 @@ virCommandProcessIO(virCommandPtr cmd)
     int infd = -1, outfd = -1, errfd = -1;
     size_t inlen = 0, outlen = 0, errlen = 0;
     size_t inoff = 0;
+    int ret = 0;
 
     /* With an input buffer, feed data to child
      * via pipe */
@@ -755,12 +764,27 @@ virCommandProcessIO(virCommandPtr cmd)
         infd = cmd->inpipe;
     }
 
-    /* With out/err buffer, the outfd/errfd
-     * have been filled with an FD for us */
-    if (cmd->outbuf)
+    /* With out/err buffer, the outfd/errfd have been filled with an
+     * FD for us.  Guarantee an allocated string with partial results
+     * even if we encounter a later failure, as well as freeing any
+     * results accumulated over a prior run of the same command.  */
+    if (cmd->outbuf) {
         outfd = cmd->outfd;
-    if (cmd->errbuf)
+        if (VIR_REALLOC_N(*cmd->outbuf, 1) < 0) {
+            virReportOOMError();
+            ret = -1;
+        }
+    }
+    if (cmd->errbuf) {
         errfd = cmd->errfd;
+        if (VIR_REALLOC_N(*cmd->errbuf, 1) < 0) {
+            virReportOOMError();
+            ret = -1;
+        }
+    }
+    if (ret == -1)
+        goto cleanup;
+    ret = -1;
 
     for (;;) {
         int i;
@@ -791,7 +815,7 @@ virCommandProcessIO(virCommandPtr cmd)
                 continue;
             virReportSystemError(errno, "%s",
                                  _("unable to poll on child"));
-            return -1;
+            goto cleanup;
         }
 
         for (i = 0; i < nfds ; i++) {
@@ -815,7 +839,7 @@ virCommandProcessIO(virCommandPtr cmd)
                         errno != EAGAIN) {
                         virReportSystemError(errno, "%s",
                                              _("unable to write to child input"));
-                        return -1;
+                        goto cleanup;
                     }
                 } else if (done == 0) {
                     if (fds[i].fd == outfd)
@@ -825,11 +849,10 @@ virCommandProcessIO(virCommandPtr cmd)
                 } else {
                     if (VIR_REALLOC_N(*buf, *len + done + 1) < 0) {
                         virReportOOMError();
-                        return -1;
+                        goto cleanup;
                     }
                     memcpy(*buf + *len, data, done);
                     *len += done;
-                    (*buf)[*len] = '\0';
                 }
             } else {
                 int done;
@@ -841,7 +864,7 @@ virCommandProcessIO(virCommandPtr cmd)
                         errno != EAGAIN) {
                         virReportSystemError(errno, "%s",
                                              _("unable to write to child input"));
-                        return -1;
+                        goto cleanup;
                     }
                 } else {
                     inoff += done;
@@ -856,7 +879,13 @@ virCommandProcessIO(virCommandPtr cmd)
         }
     }
 
-    return 0;
+    ret = 0;
+cleanup:
+    if (*cmd->outbuf)
+        (*cmd->outbuf)[outlen] = '\0';
+    if (*cmd->errbuf)
+        (*cmd->errbuf)[errlen] = '\0';
+    return ret;
 }
 
 

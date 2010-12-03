@@ -610,6 +610,63 @@ cleanup:
     return ret;
 }
 
+/*
+ * Test string handling when no output is present.
+ */
+static int test17(const void *unused ATTRIBUTE_UNUSED)
+{
+    virCommandPtr cmd = virCommandNew("/bin/true");
+    int ret = -1;
+    char *outbuf;
+    char *errbuf;
+
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    if (outbuf != NULL) {
+        puts("buffer not sanitized at registration");
+        goto cleanup;
+    }
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+
+    if (!outbuf || *outbuf) {
+        puts("output buffer is not an allocated empty string");
+        goto cleanup;
+    }
+    VIR_FREE(outbuf);
+    if ((outbuf = strdup("should not be leaked")) == NULL) {
+        puts("test framework failure");
+        goto cleanup;
+    }
+
+    virCommandSetErrorBuffer(cmd, &errbuf);
+    if (errbuf != NULL) {
+        puts("buffer not sanitized at registration");
+        goto cleanup;
+    }
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+
+    if (!outbuf || *outbuf || !errbuf || *errbuf) {
+        puts("output buffers are not allocated empty strings");
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(outbuf);
+    VIR_FREE(errbuf);
+    return ret;
+}
+
 static int
 mymain(int argc, char **argv)
 {
@@ -673,6 +730,7 @@ mymain(int argc, char **argv)
     DO_TEST(test14);
     DO_TEST(test15);
     DO_TEST(test16);
+    DO_TEST(test17);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
