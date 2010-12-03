@@ -3645,15 +3645,15 @@ error:
     return(NULL);
 }
 
-static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def)
+static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def, bool skip_uuid)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if ((def->system_manufacturer == NULL) && (def->system_sku == NULL) &&
-        (def->system_product == NULL) && (def->system_uuid == NULL) &&
-        (def->system_version == NULL) && (def->system_serial == NULL) &&
-        (def->system_family == NULL))
-        return(NULL);
+        (def->system_product == NULL) && (def->system_version == NULL) &&
+        (def->system_serial == NULL) && (def->system_family == NULL) &&
+        (def->system_uuid == NULL || skip_uuid))
+        return NULL;
 
     virBufferAddLit(&buf, "type=1");
 
@@ -3671,7 +3671,7 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def)
     if (def->system_serial)
         virBufferVSprintf(&buf, ",serial=%s", def->system_serial);
     /* 1:UUID */
-    if (def->system_uuid)
+    if (def->system_uuid && !skip_uuid)
         virBufferVSprintf(&buf, ",uuid=%s", def->system_uuid);
     /* 1:SKU Number */
     if (def->system_sku)
@@ -4173,6 +4173,7 @@ qemudBuildCommandLine(virConnectPtr conn,
     if ((def->os.smbios_mode != VIR_DOMAIN_SMBIOS_NONE) &&
         (def->os.smbios_mode != VIR_DOMAIN_SMBIOS_EMULATE)) {
         virSysinfoDefPtr source = NULL;
+        bool skip_uuid = false;
 
         if (!(qemuCmdFlags & QEMUD_CMD_FLAG_SMBIOS_TYPE)) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4189,6 +4190,8 @@ qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
             source = driver->hostsysinfo;
+            /* Host and guest uuid must differ, by definition of UUID. */
+            skip_uuid = true;
         } else if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_SYSINFO) {
             if (def->sysinfo == NULL) {
                 qemuReportError(VIR_ERR_XML_ERROR,
@@ -4197,6 +4200,7 @@ qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
             source = def->sysinfo;
+            /* domain_conf guaranteed that system_uuid matches guest uuid. */
         }
         if (source != NULL) {
             char *smbioscmd;
@@ -4206,7 +4210,7 @@ qemudBuildCommandLine(virConnectPtr conn,
                 virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
                 VIR_FREE(smbioscmd);
             }
-            smbioscmd = qemuBuildSmbiosSystemStr(source);
+            smbioscmd = qemuBuildSmbiosSystemStr(source, skip_uuid);
             if (smbioscmd != NULL) {
                 virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
                 VIR_FREE(smbioscmd);

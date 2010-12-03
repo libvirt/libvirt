@@ -4498,6 +4498,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     long id = -1;
     virDomainDefPtr def;
     unsigned long count;
+    bool uuid_generated = false;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -4529,7 +4530,9 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
     }
 
-    /* Extract domain uuid */
+    /* Extract domain uuid. If both uuid and sysinfo/system/entry/uuid
+     * exist, they must match; and if only the latter exists, it can
+     * also serve as the uuid. */
     tmp = virXPathString("string(./uuid[1])", ctxt);
     if (!tmp) {
         if (virUUIDGenerate(def->uuid)) {
@@ -4537,6 +4540,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                  "%s", _("Failed to generate UUID"));
             goto error;
         }
+        uuid_generated = true;
     } else {
         if (virUUIDParse(tmp, def->uuid) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5279,6 +5283,22 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         if (def->sysinfo == NULL)
             goto error;
+        if (def->sysinfo->system_uuid != NULL) {
+            unsigned char uuidbuf[VIR_UUID_BUFLEN];
+            if (virUUIDParse(def->sysinfo->system_uuid, uuidbuf) < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     "%s", _("malformed uuid element"));
+                goto error;
+            }
+            if (uuid_generated)
+                memcpy(def->uuid, uuidbuf, VIR_UUID_BUFLEN);
+            else if (memcmp(def->uuid, uuidbuf, VIR_UUID_BUFLEN) != 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("UUID mismatch between <uuid> and "
+                                       "<sysinfo>"));
+                goto error;
+            }
+        }
     }
     tmp = virXPathString("string(./os/smbios/@mode)", ctxt);
     if (tmp) {
