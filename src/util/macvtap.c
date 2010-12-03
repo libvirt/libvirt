@@ -27,12 +27,13 @@
 
 #include <config.h>
 
+#include <stdint.h>
+
 #if WITH_MACVTAP || WITH_VIRTUALPORT
 
 # include <stdio.h>
 # include <errno.h>
 # include <fcntl.h>
-# include <stdint.h>
 # include <c-ctype.h>
 # include <sys/socket.h>
 # include <sys/ioctl.h>
@@ -44,10 +45,15 @@
 
 # include <netlink/msg.h>
 
-# include "util.h"
+#endif /* WITH_MACVTAP || WITH_VIRTUALPORT */
+
+#include "util.h"
+#include "macvtap.h"
+
+#if WITH_MACVTAP || WITH_VIRTUALPORT
+
 # include "memory.h"
 # include "logging.h"
-# include "macvtap.h"
 # include "interface.h"
 # include "conf/domain_conf.h"
 # include "virterror_internal.h"
@@ -75,17 +81,6 @@
 
 
 # define LLDPAD_PID_FILE  "/var/run/lldpad.pid"
-
-
-VIR_ENUM_IMPL(virVMOperation, VIR_VM_OP_LAST,
-    "create",
-    "save",
-    "restore",
-    "destroy",
-    "migrate out",
-    "migrate in start",
-    "migrate in finish",
-    "no-op")
 
 
 enum virVirtualPortOp {
@@ -1609,3 +1604,13 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
 }
 
 #endif /* WITH_MACVTAP || WITH_VIRTUALPORT */
+
+VIR_ENUM_IMPL(virVMOperation, VIR_VM_OP_LAST,
+    "create",
+    "save",
+    "restore",
+    "destroy",
+    "migrate out",
+    "migrate in start",
+    "migrate in finish",
+    "no-op")
