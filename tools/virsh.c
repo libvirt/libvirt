@@ -732,7 +732,7 @@ static const vshCmdOptDef opts_console[] = {
 };
 
 static int
-cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *devname)
+cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *name)
 {
     int ret = FALSE;
     virDomainInfo dominfo;
@@ -749,7 +749,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *devname)
 
     vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
     vshPrintExtra(ctl, "%s", _("Escape character is ^]\n"));
-    if (vshRunConsole(dom, devname) == 0)
+    if (vshRunConsole(dom, name) == 0)
         ret = TRUE;
 
  cleanup:
@@ -762,7 +762,7 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int ret;
-    const char *devname;
+    const char *name;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
@@ -770,9 +770,9 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
-    devname = vshCommandOptString(cmd, "devname", NULL);
+    name = vshCommandOptString(cmd, "devname", NULL);
 
-    ret = cmdRunConsole(ctl, dom, devname);
+    ret = cmdRunConsole(ctl, dom, name);
 
     virDomainFree(dom);
     return ret;
