@@ -1605,7 +1605,10 @@ virDrvSupportsFeature (virConnectPtr conn, int feature)
         return (-1);
     }
 
-    ret = VIR_DRV_SUPPORTS_FEATURE (conn->driver, conn, feature);
+    if (!conn->driver->supports_feature)
+        ret = 0;
+    else
+        ret = conn->driver->supports_feature(conn, feature);
 
     if (ret < 0)
         virDispatchError(conn);
