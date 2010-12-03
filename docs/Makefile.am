@@ -117,6 +117,7 @@ todo:
 internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
+	  $(MKDIR_P) "$(builddir)/internals"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
 	  $(XSLTPROC) --stringparam pagename $$name --nonet --html \
 	    $(top_srcdir)/docs/subsite.xsl $< > $@ \
