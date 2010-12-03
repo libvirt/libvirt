@@ -569,8 +569,7 @@ static const vshCmdInfo info_help[] = {
 };
 
 static const vshCmdOptDef opts_help[] = {
-    {"command", VSH_OT_DATA, 0, N_("Prints global help or command specific help.")},
-    {"group", VSH_OT_DATA, 0, N_("Prints global help or help for a group of related commands.")},
+    {"command", VSH_OT_DATA, 0, N_("Prints global help, command specific help, or help for a group of related commands")},
     {NULL, 0, 0, NULL}
 };
 
@@ -582,9 +581,6 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
     const char *name;
 
     name = vshCommandOptString(cmd, "command", NULL);
-
-    if (!name)
-        name = vshCommandOptString(cmd, "group", NULL);
 
     if (!name) {
         const vshCmdGrp *grp;
