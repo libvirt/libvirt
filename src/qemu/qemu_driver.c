@@ -11625,21 +11625,35 @@ static int doPeer2PeerMigrate(virDomainPtr dom,
     int ret = -1;
     virConnectPtr dconn = NULL;
     char *dom_xml;
+    bool p2p;
 
     /* the order of operations is important here; we make sure the
      * destination side is completely setup before we touch the source
      */
 
+    qemuDomainObjEnterRemoteWithDriver(driver, vm);
     dconn = virConnectOpen(uri);
+    qemuDomainObjExitRemoteWithDriver(driver, vm);
     if (dconn == NULL) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("Failed to connect to remote libvirt URI %s"), uri);
         return -1;
     }
-    if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                  VIR_DRV_FEATURE_MIGRATION_P2P)) {
+
+    qemuDomainObjEnterRemoteWithDriver(driver, vm);
+    p2p = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                   VIR_DRV_FEATURE_MIGRATION_P2P);
+    qemuDomainObjExitRemoteWithDriver(driver, vm);
+    if (!p2p) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("Destination libvirt does not support peer-to-peer migration protocol"));
+        goto cleanup;
+    }
+
+    /* domain may have been stopped while we were talking to remote daemon */
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
         goto cleanup;
     }
 
