@@ -97,7 +97,8 @@ int main(int argc, char **argv) {
 
     fprintf(log, "DAEMON:%s\n", getppid() == 1 ? "yes" : "no");
     char cwd[1024];
-    getcwd(cwd, sizeof(cwd));
+    if (!getcwd(cwd, sizeof(cwd)))
+        return EXIT_FAILURE;
     if (strlen(cwd) > strlen("/commanddata") &&
         STREQ(cwd + strlen(cwd) - strlen("/commanddata"), "/commanddata"))
         strcpy(cwd, ".../commanddata");
