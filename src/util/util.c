@@ -1125,20 +1125,23 @@ int virFileReadAll(const char *path, int maxlen, char **buf)
     return len;
 }
 
-/* Truncate @path and write @str to it.
+/* Truncate @path and write @str to it.  If @mode is 0, ensure that
+   @path exists; otherwise, use @mode if @path must be created.
    Return 0 for success, nonzero for failure.
    Be careful to preserve any errno value upon failure. */
-int virFileWriteStr(const char *path, const char *str)
+int virFileWriteStr(const char *path, const char *str, mode_t mode)
 {
     int fd;
 
-    if ((fd = open(path, O_WRONLY|O_TRUNC)) == -1)
+    if (mode)
+        fd = open(path, O_WRONLY|O_TRUNC|O_CREAT, mode);
+    else
+        fd = open(path, O_WRONLY|O_TRUNC);
+    if (fd == -1)
         return -1;
 
     if (safewrite(fd, str, strlen(str)) < 0) {
-        int saved_errno = errno;
         VIR_FORCE_CLOSE(fd);
-        errno = saved_errno;
         return -1;
     }
 

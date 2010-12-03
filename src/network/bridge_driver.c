@@ -1024,7 +1024,7 @@ networkReloadIptablesRules(struct network_driver *driver)
 static int
 networkEnableIpForwarding(void)
 {
-    return virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n");
+    return virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n", 0);
 }
 
 #define SYSCTL_PATH "/proc/sys"
@@ -1045,7 +1045,7 @@ static int networkDisableIPV6(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    if (virFileWriteStr(field, "1") < 0) {
+    if (virFileWriteStr(field, "1", 0) < 0) {
         virReportSystemError(errno,
                              _("cannot enable %s"), field);
         goto cleanup;
@@ -1057,7 +1057,7 @@ static int networkDisableIPV6(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    if (virFileWriteStr(field, "0") < 0) {
+    if (virFileWriteStr(field, "0", 0) < 0) {
         virReportSystemError(errno,
                              _("cannot disable %s"), field);
         goto cleanup;
@@ -1069,7 +1069,7 @@ static int networkDisableIPV6(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    if (virFileWriteStr(field, "1") < 0) {
+    if (virFileWriteStr(field, "1", 0) < 0) {
         virReportSystemError(errno,
                              _("cannot enable %s"), field);
         goto cleanup;

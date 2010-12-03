@@ -288,7 +288,7 @@ static int virCgroupSetValueStr(virCgroupPtr group,
         return rc;
 
     VIR_DEBUG("Set value '%s' to '%s'", keypath, value);
-    rc = virFileWriteStr(keypath, value);
+    rc = virFileWriteStr(keypath, value, 0);
     if (rc < 0) {
         DEBUG("Failed to write value '%s': %m", value);
         rc = -errno;

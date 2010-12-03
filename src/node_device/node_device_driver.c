@@ -454,7 +454,7 @@ nodeDeviceVportCreateDelete(const int parent_host,
         goto cleanup;
     }
 
-    if (virFileWriteStr(operation_path, vport_name) == -1) {
+    if (virFileWriteStr(operation_path, vport_name, 0) == -1) {
         virReportSystemError(errno,
                              _("Write of '%s' to '%s' during "
                                "vport create/delete failed"),

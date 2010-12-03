@@ -97,7 +97,8 @@ int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
 
 int virFileReadAll(const char *path, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
 
-int virFileWriteStr(const char *path, const char *str) ATTRIBUTE_RETURN_CHECK;
+int virFileWriteStr(const char *path, const char *str, mode_t mode)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virFileMatchesNameSuffix(const char *file,
                              const char *name,
