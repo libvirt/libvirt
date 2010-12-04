@@ -4091,7 +4091,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     VIR_WARN("Executing %s", vm->def->emulator);
     virCommandSetPreExecHook(cmd, qemudSecurityHook, &hookData);
-    virCommandSetInputFD(cmd, stdin_fd);
+
+    if (stdin_fd != -1)
+        virCommandSetInputFD(cmd, stdin_fd);
+
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
     virCommandNonblockingFDs(cmd);
