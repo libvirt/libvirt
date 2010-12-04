@@ -51,7 +51,13 @@ int virThreadCreate(virThreadPtr thread,
 void virThreadSelf(virThreadPtr thread);
 bool virThreadIsSelf(virThreadPtr thread);
 void virThreadJoin(virThreadPtr thread);
+
+/* These next two functions are for debugging only, since they are not
+ * guaranteed to give unique values for distinct threads on all
+ * architectures, nor are the two functions guaranteed to give the same
+ * value for the same thread. */
 int virThreadSelfID(void);
+int virThreadID(virThreadPtr thread);
 
 int virMutexInit(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
 int virMutexInitRecursive(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;

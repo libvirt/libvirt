@@ -653,7 +653,8 @@ static int virEventInterruptLocked(void)
 
     if (!eventLoop.running ||
         virThreadIsSelf(&eventLoop.leader)) {
-        VIR_DEBUG("Skip interrupt, %d %d", eventLoop.running, (int)eventLoop.leader.thread);
+        VIR_DEBUG("Skip interrupt, %d %d", eventLoop.running,
+                  virThreadID(&eventLoop.leader));
         return 0;
     }
 

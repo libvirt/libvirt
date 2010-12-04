@@ -299,9 +299,16 @@ bool virThreadIsSelf(virThreadPtr thread)
     return self.thread == thread->thread ? true : false;
 }
 
+/* For debugging use only; see comments in threads-pthread.c.  */
 int virThreadSelfID(void)
 {
     return (int)GetCurrentThreadId();
+}
+
+/* For debugging use only; see comments in threads-pthread.c.  */
+int virThreadID(virThreadPtr thread)
+{
+    return (int)thread->thread;
 }
 
 

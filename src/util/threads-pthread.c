@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <inttypes.h>
 #if HAVE_SYS_SYSCALL_H
 # include <sys/syscall.h>
 #endif
@@ -186,6 +187,8 @@ bool virThreadIsSelf(virThreadPtr thread)
     return pthread_equal(pthread_self(), thread->thread) ? true : false;
 }
 
+/* For debugging use only; this result is not guaranteed unique on BSD
+ * systems when pthread_t is a 64-bit pointer.  */
 int virThreadSelfID(void)
 {
 #if defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)
@@ -195,6 +198,14 @@ int virThreadSelfID(void)
 #else
     return (int)pthread_self();
 #endif
+}
+
+/* For debugging use only; this result is not guaranteed unique on BSD
+ * systems when pthread_t is a 64-bit pointer, nor does it match the
+ * thread id of virThreadSelfID on Linux.  */
+int virThreadID(virThreadPtr thread)
+{
+    return (int)(uintptr_t)thread->thread;
 }
 
 void virThreadJoin(virThreadPtr thread)

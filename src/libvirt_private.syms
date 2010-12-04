@@ -773,6 +773,7 @@ virMutexInitRecursive;
 virMutexLock;
 virMutexUnlock;
 virThreadCreate;
+virThreadID;
 virThreadIsSelf;
 virThreadJoin;
 virThreadSelf;
