@@ -6847,10 +6847,10 @@ static int qemudDomainSaveImageClose(int fd, pid_t read_pid, int *status)
 
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
 qemudDomainSaveImageOpen(struct qemud_driver *driver,
-                                    const char *path,
-                                    virDomainDefPtr *ret_def,
-                                    struct qemud_save_header *ret_header,
-                                    pid_t *ret_read_pid)
+                         const char *path,
+                         virDomainDefPtr *ret_def,
+                         struct qemud_save_header *ret_header,
+                         pid_t *ret_read_pid)
 {
     int fd;
     pid_t read_pid = -1;
@@ -7905,11 +7905,11 @@ static int qemudDomainAttachPciControllerDevice(struct qemud_driver *driver,
             goto cleanup;
         if (qemuAssignDeviceControllerAlias(controller) < 0)
             goto cleanup;
-    }
 
-    if (!(devstr = qemuBuildControllerDevStr(controller))) {
-        virReportOOMError();
-        goto cleanup;
+        if (!(devstr = qemuBuildControllerDevStr(controller))) {
+            virReportOOMError();
+            goto cleanup;
+        }
     }
 
     if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0) {
