@@ -177,7 +177,7 @@ suspend_guest()
     virsh_pid=$!
     while true; do
         sleep 1
-        kill -0 $virsh_pid >&/dev/null || break
+        kill -0 $virsh_pid >/dev/null 2>&1 || break
         progress=$(run_virsh_c $uri domjobinfo $guest 2>/dev/null | \
                    awk '/^Data processed:/{print $3, $4}')
         if [ -n "$progress" ]; then
