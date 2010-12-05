@@ -6,7 +6,8 @@
 # Provides: libvirt-guests
 # Required-Start: libvirtd
 # Required-Stop: libvirtd
-# Default-Start: 3 4 5
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
 # Short-Description: suspend/resume libvirt guests on shutdown/boot
 # Description: This is a script for suspending active libvirt guests
 #              on shutdown and resuming them on next boot
