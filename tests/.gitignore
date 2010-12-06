@@ -1,6 +1,7 @@
 *.exe
 .deps
 .libs
+ssh
 commandhelper
 commandhelper.log
 commandhelper.pid
@@ -31,6 +32,7 @@ storagepoolxml2xmltest
 storagevolxml2xmltest
 virbuftest
 virnetmessagetest
+virnetsockettest
 virshtest
 vmx2xmltest
 xencapstest

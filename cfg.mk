@@ -126,6 +126,7 @@ useless_free_options =				\
   --name=virJSONValueFree			\
   --name=virLastErrFreeData			\
   --name=virNetMessageFree                      \
+  --name=virNetSocketFree                       \
   --name=virNWFilterDefFree			\
   --name=virNWFilterEntryFree			\
   --name=virNWFilterHashTableFree		\
@@ -594,7 +595,7 @@ syntax-check: $(top_srcdir)/HACKING
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.c$$
 
-_src1=libvirt|fdstream|qemu/qemu_monitor|util/(command|util)|xen/xend_internal
+_src1=libvirt|fdstream|qemu/qemu_monitor|util/(command|util)|xen/xend_internal|rpc/virnetsocket
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/console)\.c$$
 

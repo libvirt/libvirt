@@ -70,6 +70,7 @@ src/qemu/qemu_process.c
 src/remote/remote_client_bodies.h
 src/remote/remote_driver.c
 src/rpc/virnetmessage.c
+src/rpc/virnetsocket.c
 src/secret/secret_driver.c
 src/security/security_apparmor.c
 src/security/security_dac.c

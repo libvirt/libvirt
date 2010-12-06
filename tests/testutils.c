@@ -571,9 +571,11 @@ int virtTestMain(int argc,
         return 1;
 
     virLogSetFromEnv();
-    if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
-                           0, 0, NULL, 0) < 0)
-        return 1;
+    if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
+        if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
+                               0, 0, NULL, 0) < 0)
+            return 1;
+    }
 
 #if TEST_OOM
     if ((oomStr = getenv("VIR_TEST_OOM")) != NULL) {

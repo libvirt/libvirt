@@ -78,7 +78,11 @@ EXTRA_DIST =		\
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
 	commandtest commandhelper seclabeltest \
-	hashtest virnetmessagetest
+	hashtest virnetmessagetest virnetsockettest ssh
+
+# This is a fake SSH we use from virnetsockettest
+ssh_SOURCES = ssh.c
+ssh_LDADD = $(COVERAGE_LDFLAGS)
 
 if WITH_XEN
 check_PROGRAMS += xml2sexprtest sexpr2xmltest \
@@ -185,6 +189,7 @@ TESTS = virshtest \
 	seclabeltest \
 	hashtest \
 	virnetmessagetest \
+	virnetsockettest \
 	$(test_scripts)
 
 if WITH_XEN
@@ -229,7 +234,7 @@ TESTS += interfacexml2xmltest
 
 TESTS += cputest
 
-path_add = $$abs_top_builddir/daemon$(PATH_SEPARATOR)$$abs_top_builddir/tools
+path_add = $$abs_top_builddir/daemon$(PATH_SEPARATOR)$$abs_top_builddir/tools$(PATH_SEPARATOR)$$abs_top_builddir/tests
 
 # NB, automake < 1.10 does not provide the real
 # abs_top_{src/build}dir or builddir variables, so don't rely
@@ -405,6 +410,11 @@ virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c
 virnetmessagetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""
 virnetmessagetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+
+virnetsockettest_SOURCES = \
+	virnetsockettest.c testutils.h testutils.c
+virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""
+virnetsockettest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 
 seclabeltest_SOURCES = \
