@@ -1191,6 +1191,7 @@ endif
 noinst_LTLIBRARIES += libvirt-net-rpc.la
 
 libvirt_net_rpc_la_SOURCES = \
+	rpc/virnetmessage.h rpc/virnetmessage.c \
 	rpc/virnetprotocol.h rpc/virnetprotocol.c
 libvirt_net_rpc_la_CFLAGS = \
 			$(AM_CFLAGS)

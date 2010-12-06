@@ -78,7 +78,7 @@ EXTRA_DIST =		\
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
 	commandtest commandhelper seclabeltest \
-	hashtest
+	hashtest virnetmessagetest
 
 if WITH_XEN
 check_PROGRAMS += xml2sexprtest sexpr2xmltest \
@@ -184,6 +184,7 @@ TESTS = virshtest \
 	commandtest \
 	seclabeltest \
 	hashtest \
+	virnetmessagetest \
 	$(test_scripts)
 
 if WITH_XEN
@@ -399,6 +400,12 @@ commandhelper_SOURCES = \
 	commandhelper.c
 commandhelper_CFLAGS = -Dabs_builddir="\"`pwd`\""
 commandhelper_LDADD = $(LDADDS)
+
+virnetmessagetest_SOURCES = \
+	virnetmessagetest.c testutils.h testutils.c
+virnetmessagetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""
+virnetmessagetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+
 
 seclabeltest_SOURCES = \
 	seclabeltest.c

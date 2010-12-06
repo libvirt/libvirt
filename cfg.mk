@@ -125,6 +125,7 @@ useless_free_options =				\
   --name=virInterfaceProtocolDefFree		\
   --name=virJSONValueFree			\
   --name=virLastErrFreeData			\
+  --name=virNetMessageFree                      \
   --name=virNWFilterDefFree			\
   --name=virNWFilterEntryFree			\
   --name=virNWFilterHashTableFree		\

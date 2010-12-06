@@ -30,6 +30,7 @@ statstest
 storagepoolxml2xmltest
 storagevolxml2xmltest
 virbuftest
+virnetmessagetest
 virshtest
 vmx2xmltest
 xencapstest

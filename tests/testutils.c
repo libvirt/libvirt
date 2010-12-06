@@ -370,6 +370,70 @@ int virtTestDifference(FILE *stream,
     return 0;
 }
 
+/**
+ * @param stream: output stream write to differences to
+ * @param expect: expected output text
+ * @param actual: actual output text
+ *
+ * Display expected and actual output text, trimmed to
+ * first and last characters at which differences occur
+ */
+int virtTestDifferenceBin(FILE *stream,
+                          const char *expect,
+                          const char *actual,
+                          size_t length)
+{
+    size_t start = 0, end = length;
+    ssize_t i;
+
+    if (!virTestGetDebug())
+        return 0;
+
+    if (virTestGetDebug() < 2) {
+        /* Skip to first character where they differ */
+        for (i = 0 ; i < length ; i++) {
+            if (expect[i] != actual[i]) {
+                start = i;
+                break;
+            }
+        }
+
+        /* Work backwards to last character where they differ */
+        for (i = (length -1) ; i >= 0 ; i--) {
+            if (expect[i] != actual[i]) {
+                end = i;
+                break;
+            }
+        }
+    }
+    /* Round to nearest boundary of 4, except that last world can be short */
+    start -= (start % 4);
+    end += 4 - (end % 4);
+    if (end >= length)
+        end = length - 1;
+
+    /* Show the trimmed differences */
+    fprintf(stream, "\nExpect [ Region %d-%d", (int)start, (int)end);
+    for (i = start; i < end ; i++) {
+        if ((i % 4) == 0)
+            fprintf(stream, "\n    ");
+        fprintf(stream, "0x%02x, ", ((int)expect[i])&0xff);
+    }
+    fprintf(stream, "]\n");
+    fprintf(stream, "Actual [ Region %d-%d", (int)start, (int)end);
+    for (i = start; i < end ; i++) {
+        if ((i % 4) == 0)
+            fprintf(stream, "\n    ");
+        fprintf(stream, "0x%02x, ", ((int)actual[i])&0xff);
+    }
+    fprintf(stream, "]\n");
+
+    /* Pad to line up with test name ... in virTestRun */
+    fprintf(stream, "                                                                      ... ");
+
+    return 0;
+}
+
 #if TEST_OOM
 static void
 virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,

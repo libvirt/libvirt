@@ -36,6 +36,10 @@ int virtTestClearLineRegex(const char *pattern,
 int virtTestDifference(FILE *stream,
                        const char *expect,
                        const char *actual);
+int virtTestDifferenceBin(FILE *stream,
+                          const char *expect,
+                          const char *actual,
+                          size_t length);
 
 unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);
