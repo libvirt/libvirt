@@ -544,19 +544,26 @@ cleanup:
 static int test15(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    char *cwd = NULL;
+    int ret = -1;
 
-    virCommandSetWorkingDirectory(cmd, abs_builddir "/commanddata");
+    if (virAsprintf(&cwd, "%s/commanddata", abs_srcdir) < 0)
+        goto cleanup;
+    virCommandSetWorkingDirectory(cmd, cwd);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
-        virCommandFree(cmd);
-        return -1;
+        goto cleanup;
     }
 
+    ret = checkoutput("test15");
+
+cleanup:
+    VIR_FREE(cwd);
     virCommandFree(cmd);
 
-    return checkoutput("test15");
+    return ret;
 }
 
 /*
