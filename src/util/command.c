@@ -292,9 +292,6 @@ virCommandAddEnvPair(virCommandPtr cmd, const char *name, const char *value)
 void
 virCommandAddEnvString(virCommandPtr cmd, const char *str)
 {
-    if (!cmd || cmd->has_error)
-        return;
-
     char *env;
 
     if (!cmd || cmd->has_error)
@@ -710,13 +707,13 @@ virCommandToString(virCommandPtr cmd)
 
     /* Cannot assume virCommandRun will be called; so report the error
      * now.  If virCommandRun is called, it will report the same error. */
-    if (!cmd || cmd->has_error == -1) {
-        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("invalid use of command API"));
+    if (!cmd ||cmd->has_error == ENOMEM) {
+        virReportOOMError();
         return NULL;
     }
-    if (cmd->has_error == ENOMEM) {
-        virReportOOMError();
+    if (cmd->has_error) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("invalid use of command API"));
         return NULL;
     }
 
@@ -876,13 +873,13 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     char *errbuf = NULL;
     int infd[2];
 
-    if (!cmd || cmd->has_error == -1) {
-        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("invalid use of command API"));
+    if (!cmd ||cmd->has_error == ENOMEM) {
+        virReportOOMError();
         return -1;
     }
-    if (cmd->has_error == ENOMEM) {
-        virReportOOMError();
+    if (cmd->has_error) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("invalid use of command API"));
         return -1;
     }
 
@@ -994,13 +991,13 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     char *str;
     int i;
 
-    if (!cmd || cmd->has_error == -1) {
-        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("invalid use of command API"));
+    if (!cmd || cmd->has_error == ENOMEM) {
+        virReportOOMError();
         return -1;
     }
-    if (cmd->has_error == ENOMEM) {
-        virReportOOMError();
+    if (cmd->has_error) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("invalid use of command API"));
         return -1;
     }
 
@@ -1065,13 +1062,13 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
     int ret;
     int status;
 
-    if (!cmd || cmd->has_error == -1) {
-        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("invalid use of command API"));
+    if (!cmd ||cmd->has_error == ENOMEM) {
+        virReportOOMError();
         return -1;
     }
-    if (cmd->has_error == ENOMEM) {
-        virReportOOMError();
+    if (cmd->has_error) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("invalid use of command API"));
         return -1;
     }
 
