@@ -3710,9 +3710,9 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         now += def->data.adjustment;
         gmtime_r(&now, &nowbits);
 
-        virBufferVSprintf(&buf, "base=%d-%d-%dT%d:%d:%d",
+        virBufferVSprintf(&buf, "base=%d-%02d-%02dT%02d:%02d:%02d",
                           nowbits.tm_year + 1900,
-                          nowbits.tm_mon,
+                          nowbits.tm_mon + 1,
                           nowbits.tm_mday,
                           nowbits.tm_hour,
                           nowbits.tm_min,
