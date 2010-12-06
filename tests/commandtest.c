@@ -102,17 +102,15 @@ cleanup:
 static int test0(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd;
-    char *log;
     int ret = -1;
 
-    free(virtTestLogContentAndReset());
     cmd = virCommandNew(abs_builddir "/commandhelper-doesnotexist");
     if (virCommandRun(cmd, NULL) == 0)
         goto cleanup;
-    if ((log = virtTestLogContentAndReset()) == NULL)
+
+    if (virGetLastError() == NULL)
         goto cleanup;
-    if (strstr(log, ": error :") == NULL)
-        goto cleanup;
+
     virResetLastError();
     ret = 0;
 
