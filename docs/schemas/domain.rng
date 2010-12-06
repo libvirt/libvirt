@@ -612,6 +612,37 @@
             <ref name="diskspec"/>
           </interleave>
         </group>
+        <group>
+          <attribute name="type">
+            <value>network</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="source">
+                <attribute name="protocol">
+                  <choice>
+                    <value>nbd</value>
+                    <value>rbd</value>
+                    <value>sheepdog</value>
+                  </choice>
+                </attribute>
+                <attribute name="name"/>
+                <zeroOrMore>
+                  <element name="host">
+                    <attribute name="name">
+                      <ref name="genericName"/>
+                    </attribute>
+                    <attribute name="port">
+                      <ref name="unsignedInt"/>
+                    </attribute>
+                  </element>
+                </zeroOrMore>
+                <empty/>
+              </element>
+            </optional>
+            <ref name="diskspec"/>
+          </interleave>
+        </group>
         <ref name="diskspec"/>
       </choice>
     </element>

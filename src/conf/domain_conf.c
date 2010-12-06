@@ -112,7 +112,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
               "file",
-              "dir")
+              "dir",
+              "network")
 
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
@@ -140,6 +141,11 @@ VIR_ENUM_IMPL(virDomainDiskErrorPolicy, VIR_DOMAIN_DISK_ERROR_POLICY_LAST,
               "stop",
               "ignore",
               "enospace")
+
+VIR_ENUM_IMPL(virDomainDiskProtocol, VIR_DOMAIN_DISK_PROTOCOL_LAST,
+              "nbd",
+              "rbd",
+              "sheepdog")
 
 VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "ide",
@@ -508,6 +514,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
 
     VIR_FREE(def->serial);
     VIR_FREE(def->src);
+    VIR_FREE(def->hosts);
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
     VIR_FREE(def->driverType);
@@ -1574,13 +1581,16 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                          xmlNodePtr node,
                          int flags) {
     virDomainDiskDefPtr def;
-    xmlNodePtr cur;
+    xmlNodePtr cur, host;
     char *type = NULL;
     char *device = NULL;
     char *driverName = NULL;
     char *driverType = NULL;
     char *source = NULL;
     char *target = NULL;
+    char *protocol = NULL;
+    virDomainDiskHostDefPtr hosts = NULL;
+    int nhosts = 0;
     char *bus = NULL;
     char *cachetag = NULL;
     char *error_policy = NULL;
@@ -1607,7 +1617,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if ((source == NULL) &&
+            if ((source == NULL && hosts == NULL) &&
                 (xmlStrEqual(cur->name, BAD_CAST "source"))) {
 
                 switch (def->type) {
@@ -1619,6 +1629,49 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                     break;
                 case VIR_DOMAIN_DISK_TYPE_DIR:
                     source = virXMLPropString(cur, "dir");
+                    break;
+                case VIR_DOMAIN_DISK_TYPE_NETWORK:
+                    protocol = virXMLPropString(cur, "protocol");
+                    if (protocol == NULL) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             "%s", _("missing protocol type"));
+                        goto error;
+                    }
+                    def->protocol = virDomainDiskProtocolTypeFromString(protocol);
+                    if (def->protocol < 0) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("unknown protocol type '%s'"),
+                                             protocol);
+                        goto error;
+                    }
+                    source = virXMLPropString(cur, "name");
+                    host = cur->children;
+                    while (host != NULL) {
+                        if (host->type == XML_ELEMENT_NODE &&
+                            xmlStrEqual(host->name, BAD_CAST "host")) {
+                            if (VIR_REALLOC_N(hosts, nhosts + 1) < 0) {
+                                virReportOOMError();
+                                goto error;
+                            }
+                            hosts[nhosts].name = NULL;
+                            hosts[nhosts].port = NULL;
+                            nhosts++;
+
+                            hosts[nhosts - 1].name = virXMLPropString(host, "name");
+                            if (!hosts[nhosts - 1].name) {
+                                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                                     "%s", _("missing name for host"));
+                                goto error;
+                            }
+                            hosts[nhosts - 1].port = virXMLPropString(host, "port");
+                            if (!hosts[nhosts - 1].port) {
+                                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                                     "%s", _("missing port for host"));
+                                goto error;
+                            }
+                        }
+                        host = host->next;
+                    }
                     break;
                 default:
                     virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1685,7 +1738,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
     /* Only CDROM and Floppy devices are allowed missing source path
      * to indicate no media present */
-    if (source == NULL &&
+    if (source == NULL && hosts == NULL &&
         def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
         def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
         virDomainReportError(VIR_ERR_NO_SOURCE,
@@ -1791,6 +1844,10 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     source = NULL;
     def->dst = target;
     target = NULL;
+    def->hosts = hosts;
+    hosts = NULL;
+    def->nhosts = nhosts;
+    nhosts = 0;
     def->driverName = driverName;
     driverName = NULL;
     def->driverType = driverType;
@@ -1819,6 +1876,13 @@ cleanup:
     VIR_FREE(type);
     VIR_FREE(target);
     VIR_FREE(source);
+    while (nhosts > 0) {
+        VIR_FREE(hosts[nhosts - 1].name);
+        VIR_FREE(hosts[nhosts - 1].port);
+        nhosts--;
+    }
+    VIR_FREE(hosts);
+    VIR_FREE(protocol);
     VIR_FREE(device);
     VIR_FREE(driverType);
     VIR_FREE(driverName);
@@ -5909,7 +5973,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferVSprintf(buf, "/>\n");
     }
 
-    if (def->src) {
+    if (def->src || def->nhosts > 0) {
         switch (def->type) {
         case VIR_DOMAIN_DISK_TYPE_FILE:
             virBufferEscapeString(buf, "      <source file='%s'/>\n",
@@ -5922,6 +5986,27 @@ virDomainDiskDefFormat(virBufferPtr buf,
         case VIR_DOMAIN_DISK_TYPE_DIR:
             virBufferEscapeString(buf, "      <source dir='%s'/>\n",
                                   def->src);
+            break;
+        case VIR_DOMAIN_DISK_TYPE_NETWORK:
+            virBufferVSprintf(buf, "      <source protocol='%s'",
+                              virDomainDiskProtocolTypeToString(def->protocol));
+            if (def->src) {
+                virBufferEscapeString(buf, " name='%s'", def->src);
+            }
+            if (def->nhosts == 0) {
+                virBufferVSprintf(buf, "/>\n");
+            } else {
+                int i;
+
+                virBufferVSprintf(buf, ">\n");
+                for (i = 0; i < def->nhosts; i++) {
+                    virBufferEscapeString(buf, "        <host name='%s'",
+                                          def->hosts[i].name);
+                    virBufferEscapeString(buf, " port='%s'/>\n",
+                                          def->hosts[i].port);
+                }
+                virBufferVSprintf(buf, "      </source>\n");
+            }
             break;
         default:
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,

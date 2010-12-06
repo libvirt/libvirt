@@ -2742,7 +2742,9 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         break;
     }
 
-    if (disk->src) {
+    /* disk->src is NULL when we use nbd disks */
+    if (disk->src || (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+                      disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_NBD)) {
         if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
             /* QEMU only supports magic FAT format for now */
             if (disk->driverType &&
@@ -2761,6 +2763,31 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
                 virBufferVSprintf(&opt, "file=fat:floppy:%s,", disk->src);
             else
                 virBufferVSprintf(&opt, "file=fat:%s,", disk->src);
+        } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+            switch (disk->protocol) {
+            case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+                if (disk->nhosts != 1) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("NBD accepts only one host"));
+                    goto error;
+                }
+                virBufferVSprintf(&opt, "file=nbd:%s:%s,",
+                                  disk->hosts->name, disk->hosts->port);
+                break;
+            case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+                /* TODO: set monitor hostnames */
+                virBufferVSprintf(&opt, "file=rbd:%s,", disk->src);
+                break;
+            case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+                if (disk->nhosts == 0)
+                    virBufferVSprintf(&opt, "file=sheepdog:%s,", disk->src);
+                else
+                    /* only one host is supported now */
+                    virBufferVSprintf(&opt, "file=sheepdog:%s:%s:%s,",
+                                      disk->hosts->name, disk->hosts->port,
+                                      disk->src);
+                break;
+            }
         } else {
             virBufferVSprintf(&opt, "file=%s,", disk->src);
         }
@@ -4660,6 +4687,30 @@ qemudBuildCommandLine(virConnectPtr conn,
                     snprintf(file, PATH_MAX, "fat:floppy:%s", disk->src);
                 else
                     snprintf(file, PATH_MAX, "fat:%s", disk->src);
+            } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+                switch (disk->protocol) {
+                case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+                    if (disk->nhosts != 1) {
+                        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                        _("NBD accepts only one host"));
+                        goto error;
+                    }
+                    snprintf(file, PATH_MAX, "nbd:%s:%s,",
+                             disk->hosts->name, disk->hosts->port);
+                    break;
+                case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+                    snprintf(file, PATH_MAX, "rbd:%s,", disk->src);
+                    break;
+                case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+                    if (disk->nhosts == 0)
+                        snprintf(file, PATH_MAX, "sheepdog:%s,", disk->src);
+                    else
+                        /* only one host is supported now */
+                        snprintf(file, PATH_MAX, "sheepdog:%s:%s:%s,",
+                                 disk->hosts->name, disk->hosts->port,
+                                 disk->src);
+                    break;
+                }
             } else {
                 snprintf(file, PATH_MAX, "%s", disk->src);
             }
@@ -5677,7 +5728,91 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                 values[i] = NULL;
                 if (STRPREFIX(def->src, "/dev/"))
                     def->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-                else
+                else if (STRPREFIX(def->src, "nbd:")) {
+                    char *host, *port;
+
+                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    host = def->src + strlen("nbd:");
+                    port = strchr(host, ':');
+                    if (!port) {
+                        def = NULL;
+                        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                        _("cannot parse nbd filename '%s'"), def->src);
+                        goto cleanup;
+                    }
+                    *port++ = '\0';
+                    if (VIR_ALLOC(def->hosts) < 0) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                    def->nhosts = 1;
+                    def->hosts->name = strdup(host);
+                    if (!def->hosts->name) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                    def->hosts->port = strdup(port);
+                    if (!def->hosts->port) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+
+                    VIR_FREE(def->src);
+                    def->src = NULL;
+                } else if (STRPREFIX(def->src, "rbd:")) {
+                    char *p = def->src;
+
+                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->src = strdup(p + strlen("rbd:"));
+                    if (!def->src) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+
+                    VIR_FREE(p);
+                } else if (STRPREFIX(def->src, "sheepdog:")) {
+                    char *p = def->src;
+                    char *port, *vdi;
+
+                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->src = strdup(p + strlen("sheepdog:"));
+                    if (!def->src) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+
+                    /* def->src must be [vdiname] or [host]:[port]:[vdiname] */
+                    port = strchr(def->src, ':');
+                    if (port) {
+                        *port++ = '\0';
+                        vdi = strchr(port, ':');
+                        if (!vdi) {
+                            def = NULL;
+                            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                            _("cannot parse sheepdog filename '%s'"), p);
+                            goto cleanup;
+                        }
+                        *vdi++ = '\0';
+                        if (VIR_ALLOC(def->hosts) < 0) {
+                            virReportOOMError();
+                            goto cleanup;
+                        }
+                        def->nhosts = 1;
+                        def->hosts->name = def->src;
+                        def->hosts->port = strdup(port);
+                        if (!def->hosts->port) {
+                            virReportOOMError();
+                            goto cleanup;
+                        }
+                        def->src = strdup(vdi);
+                        if (!def->src) {
+                            virReportOOMError();
+                            goto cleanup;
+                        }
+                    }
+
+                    VIR_FREE(p);
+                } else
                     def->type = VIR_DOMAIN_DISK_TYPE_FILE;
             } else {
                 def->type = VIR_DOMAIN_DISK_TYPE_FILE;
@@ -6614,7 +6749,19 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
 
             if (STRPREFIX(val, "/dev/"))
                 disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-            else
+            else if (STRPREFIX(val, "nbd:")) {
+                disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
+                val += strlen("nbd:");
+            } else if (STRPREFIX(val, "rbd:")) {
+                disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
+                val += strlen("rbd:");
+            } else if (STRPREFIX(val, "sheepdog:")) {
+                disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
+                val += strlen("sheepdog:");
+            } else
                 disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
@@ -6634,7 +6781,73 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 disk->dst = strdup(arg + 1);
             }
             disk->src = strdup(val);
-            if (!disk->src ||
+
+            if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+                char *host, *port;
+
+                switch (disk->protocol) {
+                case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+                    host = disk->src;
+                    port = strchr(host, ':');
+                    if (!port) {
+                        def = NULL;
+                        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                        _("cannot parse nbd filename '%s'"), disk->src);
+                        goto error;
+                    }
+                    *port++ = '\0';
+                    if (VIR_ALLOC(disk->hosts) < 0) {
+                        virReportOOMError();
+                        goto error;
+                    }
+                    disk->nhosts = 1;
+                    disk->hosts->name = host;
+                    disk->hosts->port = strdup(port);
+                    if (!disk->hosts->port) {
+                        virReportOOMError();
+                        goto error;
+                    }
+                    disk->src = NULL;
+                    break;
+                case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+                    /* TODO: set monitor hostnames */
+                    break;
+                case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+                    /* disk->src must be [vdiname] or [host]:[port]:[vdiname] */
+                    port = strchr(disk->src, ':');
+                    if (port) {
+                        char *vdi;
+
+                        *port++ = '\0';
+                        vdi = strchr(port, ':');
+                        if (!vdi) {
+                            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                            _("cannot parse sheepdog filename '%s'"), val);
+                            goto error;
+                        }
+                        *vdi++ = '\0';
+                        if (VIR_ALLOC(disk->hosts) < 0) {
+                            virReportOOMError();
+                            goto error;
+                        }
+                        disk->nhosts = 1;
+                        disk->hosts->name = disk->src;
+                        disk->hosts->port = strdup(port);
+                        if (!disk->hosts->port) {
+                            virReportOOMError();
+                            goto error;
+                        }
+                        disk->src = strdup(vdi);
+                        if (!disk->src) {
+                            virReportOOMError();
+                            goto error;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!(disk->src || disk->nhosts > 0) ||
                 !disk->dst) {
                 virDomainDiskDefFree(disk);
                 goto no_memory;
