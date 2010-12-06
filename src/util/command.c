@@ -931,8 +931,8 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         ret = -1;
 
     VIR_DEBUG("Result stdout: '%s' stderr: '%s'",
-              NULLSTR(*cmd->outbuf),
-              NULLSTR(*cmd->errbuf));
+              cmd->outbuf ? NULLSTR(*cmd->outbuf) : "(null)",
+              cmd->errbuf ? NULLSTR(*cmd->errbuf) : "(null)");
 
     /* Reset any capturing, in case caller runs
      * this identical command again */
