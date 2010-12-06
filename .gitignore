@@ -53,6 +53,7 @@
 /src/libvirt_iohelper
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
+/src/rpc/virnetprotocol.[ch]
 /tests/*.log
 /tests/cputest
 /tests/hashtest

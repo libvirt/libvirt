@@ -571,13 +571,11 @@ $(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 
 endif WITH_REMOTE
 
-$(srcdir)/remote/%_protocol.c: $(srcdir)/remote/%_protocol.x \
-		$(srcdir)/remote/%_protocol.h $(srcdir)/remote/rpcgen_fix.pl
+%protocol.c: %protocol.x %protocol.h $(srcdir)/remote/rpcgen_fix.pl
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -c \
 	       $< $@
 
-$(srcdir)/remote/%_protocol.h: $(srcdir)/remote/%_protocol.x \
-		$(srcdir)/remote/rpcgen_fix.pl
+%protocol.h: %protocol.x $(srcdir)/remote/rpcgen_fix.pl
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -h \
 	       $< $@
 
@@ -1189,6 +1187,19 @@ sanlock_la_LIBADD = -lsanlock
 else
 EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
 endif
+
+noinst_LTLIBRARIES += libvirt-net-rpc.la
+
+libvirt_net_rpc_la_SOURCES = \
+	rpc/virnetprotocol.h rpc/virnetprotocol.c
+libvirt_net_rpc_la_CFLAGS = \
+			$(AM_CFLAGS)
+libvirt_net_rpc_la_LDFLAGS = \
+			$(AM_LDFLAGS) \
+			$(CYGWIN_EXTRA_LDFLAGS) \
+			$(MINGW_EXTRA_LDFLAGS)
+libvirt_net_rpc_la_LIBADD = \
+			$(CYGWIN_EXTRA_LIBADD)
 
 libexec_PROGRAMS =
 
