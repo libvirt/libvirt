@@ -700,6 +700,17 @@ method CancelTask
 end
 
 
+method CopyVirtualDisk_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this:VirtualDiskManager       r
+    String                                   sourceName                     r
+    ManagedObjectReference                   sourceDatacenter               o
+    String                                   destName                       r
+    ManagedObjectReference                   destDatacenter                 o
+    VirtualDiskSpec                          destSpec                       o
+    Boolean                                  force                          o
+end
+
+
 method CreateFilter returns ManagedObjectReference r
     ManagedObjectReference                   _this:PropertyCollector        r
     PropertyFilterSpec                       spec                           r
