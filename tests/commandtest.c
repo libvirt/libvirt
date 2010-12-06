@@ -154,6 +154,7 @@ static int test2(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -165,6 +166,7 @@ static int test2(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -183,6 +185,7 @@ static int test3(const void *unused ATTRIBUTE_UNUSED)
     int newfd1 = dup(STDERR_FILENO);
     int newfd2 = dup(STDERR_FILENO);
     int newfd3 = dup(STDERR_FILENO);
+    int ret = -1;
 
     virCommandPreserveFD(cmd, newfd1);
     virCommandTransferFD(cmd, newfd3);
@@ -190,21 +193,23 @@ static int test3(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
-        return -1;
+        goto cleanup;
     }
 
     if (fcntl(newfd1, F_GETFL) < 0 ||
         fcntl(newfd2, F_GETFL) < 0 ||
         fcntl(newfd3, F_GETFL) >= 0) {
         puts("fds in wrong state");
-        return -1;
+        goto cleanup;
     }
 
+    ret = checkoutput("test3");
+
+cleanup:
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(newfd1);
     VIR_FORCE_CLOSE(newfd2);
-
-    return checkoutput("test3");
+    return ret;
 }
 
 
@@ -216,8 +221,12 @@ static int test3(const void *unused ATTRIBUTE_UNUSED)
 static int test4(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
-    pid_t pid;
     char *pidfile = virFilePid(abs_builddir, "commandhelper");
+    pid_t pid;
+    int ret = -1;
+
+    if (!pidfile)
+        goto cleanup;
 
     virCommandSetPidFile(cmd, pidfile);
     virCommandDaemonize(cmd);
@@ -225,21 +234,22 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
-        return -1;
+        goto cleanup;
     }
 
     if (virFileReadPid(abs_builddir, "commandhelper", &pid) != 0) {
         printf("cannot read pidfile\n");
-        return -1;
+        goto cleanup;
     }
     while (kill(pid, 0) != -1)
         usleep(100*1000);
 
+    ret = checkoutput("test4");
+
+cleanup:
     virCommandFree(cmd);
-
     VIR_FREE(pidfile);
-
-    return checkoutput("test4");
+    return ret;
 }
 
 
@@ -256,6 +266,7 @@ static int test5(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -279,6 +290,7 @@ static int test6(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -303,6 +315,7 @@ static int test7(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -325,6 +338,7 @@ static int test8(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -351,6 +365,7 @@ static int test9(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -376,6 +391,7 @@ static int test10(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -399,6 +415,7 @@ static int test11(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -420,6 +437,7 @@ static int test12(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -447,22 +465,23 @@ static int test13(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
-        return -1;
+        goto cleanup;
     }
+    if (!outactual)
+        goto cleanup;
 
     virCommandFree(cmd);
+    cmd = NULL;
 
     if (!STREQ(outactual, outexpect)) {
         virtTestDifference(stderr, outactual, outexpect);
         goto cleanup;
     }
 
-    if (checkoutput("test13") < 0)
-        goto cleanup;
-
-    ret = 0;
+    ret = checkoutput("test13");
 
 cleanup:
+    virCommandFree(cmd);
     VIR_FREE(outactual);
     return ret;
 }
@@ -491,10 +510,13 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
-        return -1;
+        goto cleanup;
     }
+    if (!outactual || !erractual)
+        goto cleanup;
 
     virCommandFree(cmd);
+    cmd = NULL;
 
     if (!STREQ(outactual, outexpect)) {
         virtTestDifference(stderr, outactual, outexpect);
@@ -505,12 +527,10 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (checkoutput("test14") < 0)
-        goto cleanup;
-
-    ret = 0;
+    ret = checkoutput("test14");
 
 cleanup:
+    virCommandFree(cmd);
     VIR_FREE(outactual);
     VIR_FREE(erractual);
     return ret;
@@ -530,6 +550,7 @@ static int test15(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);
+        virCommandFree(cmd);
         return -1;
     }
 
@@ -555,7 +576,7 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
     if ((outactual = virCommandToString(cmd)) == NULL) {
         virErrorPtr err = virGetLastError();
         printf("Cannot convert to string: %s\n", err->message);
-        return -1;
+        goto cleanup;
     }
     if ((fd = open(abs_builddir "/commandhelper.log",
                    O_CREAT | O_TRUNC | O_WRONLY, 0600)) < 0) {
@@ -568,18 +589,15 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    virCommandFree(cmd);
-
-    if (checkoutput("test16") < 0)
-        goto cleanup;
-
     if (!STREQ(outactual, outexpect)) {
         virtTestDifference(stderr, outactual, outexpect);
         goto cleanup;
     }
-    ret = 0;
+
+    ret = checkoutput("test16");
 
 cleanup:
+    virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(outactual);
     return ret;
