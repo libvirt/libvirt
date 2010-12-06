@@ -25,6 +25,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 
 #include "command.h"
@@ -872,6 +873,9 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     char *outbuf = NULL;
     char *errbuf = NULL;
     int infd[2];
+    struct stat st;
+    bool string_io;
+    bool async_io = false;
 
     if (!cmd ||cmd->has_error == ENOMEM) {
         virReportOOMError();
@@ -881,6 +885,35 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("invalid use of command API"));
         return -1;
+    }
+
+    /* Avoid deadlock, by requiring that any open fd not under our
+     * control must be visiting a regular file, or that we are
+     * daemonized and no string io is required.  */
+    string_io = cmd->inbuf || cmd->outbuf || cmd->errbuf;
+    if (cmd->infd != -1 &&
+        (fstat(cmd->infd, &st) < 0 || !S_ISREG(st.st_mode)))
+        async_io = true;
+    if (cmd->outfdptr && cmd->outfdptr != &cmd->outfd &&
+        (*cmd->outfdptr == -1 ||
+         fstat(*cmd->outfdptr, &st) < 0 || !S_ISREG(st.st_mode)))
+        async_io = true;
+    if (cmd->errfdptr && cmd->errfdptr != &cmd->errfd &&
+        (*cmd->errfdptr == -1 ||
+         fstat(*cmd->errfdptr, &st) < 0 || !S_ISREG(st.st_mode)))
+        async_io = true;
+    if (async_io) {
+        if (!(cmd->flags & VIR_EXEC_DAEMON) || string_io) {
+            virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot mix caller fds with blocking execution"));
+            return -1;
+        }
+    } else {
+        if ((cmd->flags & VIR_EXEC_DAEMON) && string_io) {
+            virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot mix string I/O with daemon"));
+            return -1;
+        }
     }
 
     /* If we have an input buffer, we need
@@ -921,7 +954,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         return -1;
     }
 
-    if (cmd->inbuf || cmd->outbuf || cmd->errbuf)
+    if (string_io)
         ret = virCommandProcessIO(cmd);
 
     if (virCommandWait(cmd, exitstatus) < 0)
@@ -998,6 +1031,15 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     if (cmd->has_error) {
         virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("invalid use of command API"));
+        return -1;
+    }
+
+    /* Buffer management can only be requested via virCommandRun.  */
+    if ((cmd->inbuf && cmd->infd == -1) ||
+        (cmd->outbuf && cmd->outfdptr != &cmd->outfd) ||
+        (cmd->errbuf && cmd->errfdptr != &cmd->errfd)) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("cannot mix string I/O with asynchronous command"));
         return -1;
     }
 

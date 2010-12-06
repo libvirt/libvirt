@@ -250,7 +250,7 @@
       allow an open file handle to be passed into the child, while
       controlling whether that handle remains open in the parent or
       guaranteeing that the handle will be closed in the parent after
-      either virCommandRun or virCommandFree.
+      virCommandRun, virCommandRunAsync, or virCommandFree.
     </p>
 
 <pre>
@@ -266,9 +266,16 @@
       With this, both file descriptors sharedfd and childfd in the
       current process remain open as the same file descriptors in the
       child. Meanwhile, after the child is spawned, sharedfd remains
-      open in the parent, while childfd is closed.  For stdin/out/err
-      it is usually necessary to map a file handle. To attach file
-      descriptor 7 in the current process to stdin in the child:
+      open in the parent, while childfd is closed.
+    </p>
+
+    <p>
+      For stdin/out/err it is sometimes necessary to map a file
+      handle.  If a mapped file handle is a pipe fed or consumed by
+      the caller, then the caller should use virCommandDaemonize or
+      virCommandRunAsync rather than virCommandRun to avoid deadlock
+      (mapping a regular file is okay with virCommandRun).  To attach
+      file descriptor 7 in the current process to stdin in the child:
     </p>
 
 <pre>
@@ -322,11 +329,21 @@
     <h3><a name="buffers">Feeding &amp; capturing strings to/from the child</a></h3>
 
     <p>
-      Often dealing with file handles for stdin/out/err
-      is unnecessarily complex. It is possible to specify
-      a string buffer to act as the data source for the
-      child's stdin, if there are no embedded NUL bytes,
-      and if the command will be run with virCommandRun:
+      Often dealing with file handles for stdin/out/err is
+      unnecessarily complex; an alternative is to let virCommandRun
+      perform the I/O and interact via string buffers. Use of a buffer
+      only works with virCommandRun, and cannot be mixed with pipe
+      file descriptors.  That is, the choice is generally between
+      managing all I/O in the caller (any fds not specified are tied
+      to /dev/null), or letting virCommandRun manage all I/O via
+      strings (unspecified stdin is tied to /dev/null, and unspecified
+      output streams get logged but are otherwise discarded).
+    </p>
+
+    <p>
+      It is possible to specify a string buffer to act as the data
+      source for the child's stdin, if there are no embedded NUL
+      bytes, and if the command will be run with virCommandRun:
     </p>
 
 <pre>
