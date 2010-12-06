@@ -49,6 +49,58 @@ verify(MD5_DIGEST_SIZE == VIR_UUID_BUFLEN);
 
 
 
+static int
+esxStoragePoolLookupType(esxVI_Context *ctx, const char *poolName,
+                         int *poolType)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_DatastoreInfo *datastoreInfo = NULL;
+
+    if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
+        esxVI_LookupDatastoreByName(ctx, poolName, propertyNameList, &datastore,
+                                    esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "info")) {
+            if (esxVI_DatastoreInfo_CastFromAnyType(dynamicProperty->val,
+                                                    &datastoreInfo) < 0) {
+                goto cleanup;
+            }
+
+            break;
+        }
+    }
+
+    if (esxVI_LocalDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+        *poolType = VIR_STORAGE_POOL_DIR;
+    } else if (esxVI_NasDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+        *poolType = VIR_STORAGE_POOL_NETFS;
+    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+        *poolType = VIR_STORAGE_POOL_FS;
+    } else {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("DatastoreInfo has unexpected type"));
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&datastore);
+    esxVI_DatastoreInfo_Free(&datastoreInfo);
+
+    return result;
+}
+
+
+
 static virDrvOpenStatus
 esxStorageOpen(virConnectPtr conn,
                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -908,10 +960,6 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->storagePrivateData;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datastore = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
-    esxVI_DatastoreInfo *datastoreInfo = NULL;
     virStoragePoolDef poolDef;
     virStorageVolDefPtr def = NULL;
     char *tmp;
@@ -938,36 +986,8 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
         return NULL;
     }
 
-    /* Lookup storage pool type */
-    if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
-        esxVI_LookupDatastoreByName(priv->primary, pool->name,
-                                    propertyNameList, &datastore,
-                                    esxVI_Occurrence_RequiredItem) < 0) {
-        goto cleanup;
-    }
-
-    for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "info")) {
-            if (esxVI_DatastoreInfo_CastFromAnyType(dynamicProperty->val,
-                                                    &datastoreInfo) < 0) {
-                goto cleanup;
-            }
-
-            break;
-        }
-    }
-
-    if (esxVI_LocalDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
-        poolDef.type = VIR_STORAGE_POOL_DIR;
-    } else if (esxVI_NasDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
-        poolDef.type = VIR_STORAGE_POOL_NETFS;
-    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
-        poolDef.type = VIR_STORAGE_POOL_FS;
-    } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("DatastoreInfo has unexpected type"));
-        goto cleanup;
+    if (esxStoragePoolLookupType(priv->primary, pool->name, &poolDef.type) < 0) {
+        return NULL;
     }
 
     /* Parse config */
@@ -1140,9 +1160,6 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
         virtualDiskSpec->adapterType = NULL;
     }
 
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datastore);
-    esxVI_DatastoreInfo_Free(&datastoreInfo);
     virStorageVolDefFree(def);
     VIR_FREE(unescapedDatastorePath);
     VIR_FREE(unescapedDirectoryName);
@@ -1216,10 +1233,6 @@ static char *
 esxStorageVolumeDumpXML(virStorageVolPtr volume, unsigned int flags)
 {
     esxPrivate *priv = volume->conn->storagePrivateData;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datastore = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
-    esxVI_DatastoreInfo *datastoreInfo = NULL;
     virStoragePoolDef pool;
     char *datastorePath = NULL;
     esxVI_FileInfo *fileInfo = NULL;
@@ -1238,36 +1251,8 @@ esxStorageVolumeDumpXML(virStorageVolPtr volume, unsigned int flags)
         return NULL;
     }
 
-    /* Lookup storage pool type */
-    if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
-        esxVI_LookupDatastoreByName(priv->primary, volume->pool,
-                                    propertyNameList, &datastore,
-                                    esxVI_Occurrence_RequiredItem) < 0) {
-        goto cleanup;
-    }
-
-    for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "info")) {
-            if (esxVI_DatastoreInfo_CastFromAnyType(dynamicProperty->val,
-                                                    &datastoreInfo) < 0) {
-                goto cleanup;
-            }
-
-            break;
-        }
-    }
-
-    if (esxVI_LocalDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
-        pool.type = VIR_STORAGE_POOL_DIR;
-    } else if (esxVI_NasDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
-        pool.type = VIR_STORAGE_POOL_NETFS;
-    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
-        pool.type = VIR_STORAGE_POOL_FS;
-    } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("DatastoreInfo has unexpected type"));
-        goto cleanup;
+    if (esxStoragePoolLookupType(priv->primary, volume->pool, &pool.type) < 0) {
+        return NULL;
     }
 
     /* Lookup file info */
@@ -1320,9 +1305,6 @@ esxStorageVolumeDumpXML(virStorageVolPtr volume, unsigned int flags)
     xml = virStorageVolDefFormat(&pool, &def);
 
   cleanup:
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datastore);
-    esxVI_DatastoreInfo_Free(&datastoreInfo);
     VIR_FREE(datastorePath);
     esxVI_FileInfo_Free(&fileInfo);
     VIR_FREE(def.key);
