@@ -50,7 +50,8 @@ static char *progname;
 static char *abs_srcdir;
 
 
-static int checkoutput(const char *testname) {
+static int checkoutput(const char *testname)
+{
     int ret = -1;
     char cwd[1024];
     char *expectname = NULL;
@@ -82,7 +83,6 @@ static int checkoutput(const char *testname) {
         goto cleanup;
     }
 
-
     ret = 0;
 
 cleanup:
@@ -99,7 +99,8 @@ cleanup:
  * Only stdin/out/err open
  * No slot for return status must log error.
  */
-static int test0(const void *unused ATTRIBUTE_UNUSED) {
+static int test0(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd;
     char *log;
     int ret = -1;
@@ -125,7 +126,8 @@ cleanup:
  * Only stdin/out/err open
  * Capturing return status must not log error.
  */
-static int test1(const void *unused ATTRIBUTE_UNUSED) {
+static int test1(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd;
     int ret = -1;
     int status;
@@ -146,7 +148,8 @@ cleanup:
  * Run program (twice), no args, inherit all ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test2(const void *unused ATTRIBUTE_UNUSED) {
+static int test2(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     int ret;
 
@@ -176,7 +179,8 @@ static int test2(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, no args, inherit all ENV, keep CWD.
  * stdin/out/err + two extra FD open
  */
-static int test3(const void *unused ATTRIBUTE_UNUSED) {
+static int test3(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     int newfd1 = dup(STDERR_FILENO);
     int newfd2 = dup(STDERR_FILENO);
@@ -211,7 +215,8 @@ static int test3(const void *unused ATTRIBUTE_UNUSED) {
  * Only stdin/out/err open.
  * Daemonized
  */
-static int test4(const void *unused ATTRIBUTE_UNUSED) {
+static int test4(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     pid_t pid;
     char *pidfile = virFilePid(abs_builddir, "commandhelper");
@@ -244,7 +249,8 @@ static int test4(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, no args, inherit filtered ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test5(const void *unused ATTRIBUTE_UNUSED) {
+static int test5(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPassCommon(cmd);
@@ -265,7 +271,8 @@ static int test5(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, no args, inherit filtered ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test6(const void *unused ATTRIBUTE_UNUSED) {
+static int test6(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPass(cmd, "DISPLAY");
@@ -287,7 +294,8 @@ static int test6(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, no args, inherit filtered ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test7(const void *unused ATTRIBUTE_UNUSED) {
+static int test7(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPassCommon(cmd);
@@ -309,7 +317,8 @@ static int test7(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, no args, inherit filtered ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test8(const void *unused ATTRIBUTE_UNUSED) {
+static int test8(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvString(cmd, "LANG=C");
@@ -331,7 +340,8 @@ static int test8(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, some args, inherit all ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test9(const void *unused ATTRIBUTE_UNUSED) {
+static int test9(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     const char* const args[] = { "arg1", "arg2", NULL };
 
@@ -356,7 +366,8 @@ static int test9(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, some args, inherit all ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test10(const void *unused ATTRIBUTE_UNUSED) {
+static int test10(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     const char *const args[] = {
         "-version", "-log=bar.log", NULL,
@@ -379,7 +390,8 @@ static int test10(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, some args, inherit all ENV, keep CWD.
  * Only stdin/out/err open
  */
-static int test11(const void *unused ATTRIBUTE_UNUSED) {
+static int test11(const void *unused ATTRIBUTE_UNUSED)
+{
     const char *args[] = {
         abs_builddir "/commandhelper",
         "-version", "-log=bar.log", NULL,
@@ -401,7 +413,8 @@ static int test11(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, no args, inherit all ENV, keep CWD.
  * Only stdin/out/err open. Set stdin data
  */
-static int test12(const void *unused ATTRIBUTE_UNUSED) {
+static int test12(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandSetInputBuffer(cmd, "Hello World\n");
@@ -421,7 +434,8 @@ static int test12(const void *unused ATTRIBUTE_UNUSED) {
  * Run program, no args, inherit all ENV, keep CWD.
  * Only stdin/out/err open. Set stdin data
  */
-static int test13(const void *unused ATTRIBUTE_UNUSED) {
+static int test13(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     char *outactual = NULL;
     const char *outexpect = "BEGIN STDOUT\n"
@@ -459,7 +473,8 @@ cleanup:
  * Run program, no args, inherit all ENV, keep CWD.
  * Only stdin/out/err open. Set stdin data
  */
-static int test14(const void *unused ATTRIBUTE_UNUSED) {
+static int test14(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     char *outactual = NULL;
     const char *outexpect = "BEGIN STDOUT\n"
@@ -508,7 +523,8 @@ cleanup:
  * Run program, no args, inherit all ENV, change CWD.
  * Only stdin/out/err open
  */
-static int test15(const void *unused ATTRIBUTE_UNUSED) {
+static int test15(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandSetWorkingDirectory(cmd, abs_builddir "/commanddata");
@@ -527,7 +543,8 @@ static int test15(const void *unused ATTRIBUTE_UNUSED) {
 /*
  * Don't run program; rather, log what would be run.
  */
-static int test16(const void *unused ATTRIBUTE_UNUSED) {
+static int test16(const void *unused ATTRIBUTE_UNUSED)
+{
     virCommandPtr cmd = virCommandNew("/bin/true");
     char *outactual = NULL;
     const char *outexpect = "A=B /bin/true C";
