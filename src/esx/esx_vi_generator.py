@@ -1139,6 +1139,7 @@ predefined_objects = ["AnyType",
                       "Long",
                       "String",
                       "DateTime",
+                      "MethodFault",
                       "ManagedObjectReference"]
 
 
@@ -1172,6 +1173,7 @@ additional_object_features = { "DatastoreHostMount"         : Object.FEATURE__DE
 
 
 removed_object_features = { "DynamicProperty"            : Object.FEATURE__SERIALIZE,
+                            "LocalizedMethodFault"       : Object.FEATURE__SERIALIZE,
                             "ObjectContent"              : Object.FEATURE__SERIALIZE,
                             "ObjectUpdate"               : Object.FEATURE__SERIALIZE,
                             "PropertyChange"             : Object.FEATURE__SERIALIZE,

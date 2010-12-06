@@ -429,7 +429,8 @@ int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                                 const unsigned char *virtualMachineUuid,
                                 esxVI_Occurrence virtualMachineOccurrence,
                                 esxVI_Boolean autoAnswer,
-                                esxVI_TaskInfoState *finalState);
+                                esxVI_TaskInfoState *finalState,
+                                char **errorMessage);
 
 int esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
                              esxVI_HostCpuIdInfo *hostCpuIdInfo);

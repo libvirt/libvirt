@@ -926,6 +926,7 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     esxVI_FileBackedVirtualDiskSpec *virtualDiskSpec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
+    char *taskInfoErrorMessage = NULL;
     char *uuid_string = NULL;
     char *key = NULL;
 
@@ -1092,12 +1093,14 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
                esxVI_VirtualDiskSpec_DynamicCast(virtualDiskSpec), &task) < 0 ||
             esxVI_WaitForTaskCompletion(priv->primary, task, NULL,
                                         esxVI_Occurrence_None,
-                                        priv->autoAnswer, &taskInfoState) < 0) {
+                                        priv->autoAnswer, &taskInfoState,
+                                        &taskInfoErrorMessage) < 0) {
             goto cleanup;
         }
 
         if (taskInfoState != esxVI_TaskInfoState_Success) {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create volume"));
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Could not create volume: %s"),
+                      taskInfoErrorMessage);
             goto cleanup;
         }
 
@@ -1151,6 +1154,7 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     esxVI_FileInfo_Free(&fileInfo);
     esxVI_FileBackedVirtualDiskSpec_Free(&virtualDiskSpec);
     esxVI_ManagedObjectReference_Free(&task);
+    VIR_FREE(taskInfoErrorMessage);
     VIR_FREE(uuid_string);
     VIR_FREE(key);
 

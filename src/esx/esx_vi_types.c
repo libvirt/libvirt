@@ -701,6 +701,9 @@ esxVI_Type_ToString(esxVI_Type type)
       case esxVI_Type_Fault:
         return "Fault";
 
+      case esxVI_Type_MethodFault:
+        return "MethodFault";
+
       case esxVI_Type_ManagedObjectReference:
         return "ManagedObjectReference";
 
@@ -741,6 +744,8 @@ esxVI_Type_FromString(const char *type)
         return esxVI_Type_DateTime;
     } else if (STREQ(type, "Fault")) {
         return esxVI_Type_Fault;
+    } else if (STREQ(type, "MethodFault")) {
+        return esxVI_Type_MethodFault;
     } else if (STREQ(type, "ManagedObjectReference")) {
         return esxVI_Type_ManagedObjectReference;
     } else if (STREQ(type, "Datacenter")) {
@@ -750,7 +755,6 @@ esxVI_Type_FromString(const char *type)
     } else if (STREQ(type, "HostSystem")) {
         return esxVI_Type_HostSystem;
     }
-
 
 #include "esx_vi_types.generated.typefromstring"
 
@@ -1443,6 +1447,51 @@ ESX_VI__TEMPLATE__DESERIALIZE(Fault,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, faultstring);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(detail); /* FIXME */
 })
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: MethodFault
+ */
+
+/* esxVI_MethodFault_Alloc */
+ESX_VI__TEMPLATE__ALLOC(MethodFault);
+
+/* esxVI_MethodFault_Free */
+ESX_VI__TEMPLATE__FREE(MethodFault,
+{
+    VIR_FREE(item->_actualType);
+})
+
+int
+esxVI_MethodFault_Deserialize(xmlNodePtr node, esxVI_MethodFault **methodFault)
+{
+    if (methodFault == NULL || *methodFault != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_MethodFault_Alloc(methodFault) < 0) {
+        return -1;
+    }
+
+    (*methodFault)->_actualType =
+      (char *)xmlGetNsProp(node, BAD_CAST "type",
+                           BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
+
+    if ((*methodFault)->_actualType == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("MethodFault is missing 'type' property"));
+        goto failure;
+    }
+
+    return 0;
+
+  failure:
+    esxVI_MethodFault_Free(methodFault);
+
+    return -1;
+}
 
 
 

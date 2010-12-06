@@ -48,6 +48,7 @@ typedef struct _esxVI_DateTime esxVI_DateTime;
  */
 
 typedef struct _esxVI_Fault esxVI_Fault;
+typedef struct _esxVI_MethodFault esxVI_MethodFault;
 typedef struct _esxVI_ManagedObjectReference esxVI_ManagedObjectReference;
 typedef struct _esxVI_Datacenter esxVI_Datacenter;
 typedef struct _esxVI_ComputeResource esxVI_ComputeResource;
@@ -71,6 +72,7 @@ enum _esxVI_Type {
     esxVI_Type_Long,
     esxVI_Type_DateTime,
     esxVI_Type_Fault,
+    esxVI_Type_MethodFault,
     esxVI_Type_ManagedObjectReference,
     esxVI_Type_Datacenter,
     esxVI_Type_ComputeResource,
@@ -275,6 +277,29 @@ int esxVI_Fault_Alloc(esxVI_Fault **fault);
 void esxVI_Fault_Free(esxVI_Fault **fault);
 int esxVI_Fault_Validate(esxVI_Fault *fault);
 int esxVI_Fault_Deserialize(xmlNodePtr node, esxVI_Fault **fault);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: MethodFault
+ */
+
+/*
+ * FIXME: This is just a minimal implementation of the MethodFault type.
+ *        A complete implementation would require to implement dozens of
+ *        extending types too.
+ */
+struct _esxVI_MethodFault {
+    esxVI_MethodFault *_unused;                            /* optional */
+    esxVI_Type _type;                                      /* required */
+
+    char *_actualType;                                     /* required */
+};
+
+int esxVI_MethodFault_Alloc(esxVI_MethodFault **methodfault);
+void esxVI_MethodFault_Free(esxVI_MethodFault **methodFault);
+int esxVI_MethodFault_Deserialize(xmlNodePtr node,
+                                  esxVI_MethodFault **methodFault);
 
 
 

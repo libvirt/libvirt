@@ -311,6 +311,12 @@ object LocalDatastoreInfo extends DatastoreInfo
 end
 
 
+object LocalizedMethodFault
+    MethodFault                              fault                          r
+    String                                   localizedMessage               o
+end
+
+
 object NasDatastoreInfo extends DatastoreInfo
     HostNasVolume                            nas                            o
 end
@@ -494,7 +500,7 @@ object TaskInfo
     TaskInfoState                            state                          r
     Boolean                                  cancelled                      r
     Boolean                                  cancelable                     r
-    LocalizedMethodFault                     error                          i
+    LocalizedMethodFault                     error                          o
     AnyType                                  result                         o
     Int                                      progress                       o
     TaskReason                               reason                         i

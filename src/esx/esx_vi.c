@@ -3009,6 +3009,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     esxVI_FloppyImageFileQuery *floppyImageFileQuery = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
+    char *taskInfoErrorMessage = NULL;
     esxVI_TaskInfo *taskInfo = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
 
@@ -3128,13 +3129,15 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                                    datastorePathWithoutFileName, searchSpec,
                                    &task) < 0 ||
         esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
-                                    esxVI_Boolean_False, &taskInfoState) < 0) {
+                                    esxVI_Boolean_False, &taskInfoState,
+                                    &taskInfoErrorMessage) < 0) {
         goto cleanup;
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     _("Could not serach in datastore '%s'"), datastoreName);
+                     _("Could not search in datastore '%s': %s"),
+                     datastoreName, taskInfoErrorMessage);
         goto cleanup;
     }
 
@@ -3179,6 +3182,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
     esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
     esxVI_ManagedObjectReference_Free(&task);
+    VIR_FREE(taskInfoErrorMessage);
     esxVI_TaskInfo_Free(&taskInfo);
     esxVI_HostDatastoreBrowserSearchResults_Free(&searchResults);
 
@@ -3203,6 +3207,7 @@ esxVI_LookupDatastoreContentByDatastoreName
     char *datastorePath = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
+    char *taskInfoErrorMessage = NULL;
     esxVI_TaskInfo *taskInfo = NULL;
 
     if (searchResultsList == NULL || *searchResultsList != NULL) {
@@ -3269,13 +3274,15 @@ esxVI_LookupDatastoreContentByDatastoreName
                                              datastorePath, searchSpec,
                                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
-                                    esxVI_Boolean_False, &taskInfoState) < 0) {
+                                    esxVI_Boolean_False, &taskInfoState,
+                                    &taskInfoErrorMessage) < 0) {
         goto cleanup;
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     _("Could not serach in datastore '%s'"), datastoreName);
+                     _("Could not serach in datastore '%s': %s"),
+                     datastoreName, taskInfoErrorMessage);
         goto cleanup;
     }
 
@@ -3294,6 +3301,7 @@ esxVI_LookupDatastoreContentByDatastoreName
     esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
     VIR_FREE(datastorePath);
     esxVI_ManagedObjectReference_Free(&task);
+    VIR_FREE(taskInfoErrorMessage);
     esxVI_TaskInfo_Free(&taskInfo);
 
     return result;
@@ -3472,7 +3480,8 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                             const unsigned char *virtualMachineUuid,
                             esxVI_Occurrence virtualMachineOccurrence,
                             esxVI_Boolean autoAnswer,
-                            esxVI_TaskInfoState *finalState)
+                            esxVI_TaskInfoState *finalState,
+                            char **errorMessage)
 {
     int result = -1;
     esxVI_ObjectSpec *objectSpec = NULL;
@@ -3488,6 +3497,11 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
     esxVI_TaskInfoState state = esxVI_TaskInfoState_Undefined;
     esxVI_Boolean blocked = esxVI_Boolean_Undefined;
     esxVI_TaskInfo *taskInfo = NULL;
+
+    if (errorMessage == NULL || *errorMessage != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
 
     version = strdup("");
 
@@ -3607,6 +3621,35 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 
     if (esxVI_TaskInfoState_CastFromAnyType(propertyValue, finalState) < 0) {
         goto cleanup;
+    }
+
+    if (*finalState != esxVI_TaskInfoState_Success) {
+        if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo)) {
+            goto cleanup;
+        }
+
+        if (taskInfo->error == NULL) {
+            *errorMessage = strdup(_("Unknown error"));
+
+            if (*errorMessage == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        } else if (taskInfo->error->localizedMessage == NULL) {
+            *errorMessage = strdup(taskInfo->error->fault->_actualType);
+
+            if (*errorMessage == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        } else {
+            if (virAsprintf(errorMessage, "%s - %s",
+                            taskInfo->error->fault->_actualType,
+                            taskInfo->error->localizedMessage) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
     }
 
     result = 0;
