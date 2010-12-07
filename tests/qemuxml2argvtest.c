@@ -302,6 +302,12 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
     DO_TEST("disk-drive-cache-v2-none", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-network-nbd", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-network-rbd", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-network-sheepdog", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
     DO_TEST("disk-usb", 0, false);
     DO_TEST("disk-usb-device", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
