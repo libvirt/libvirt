@@ -39,7 +39,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_SYSINFO
 
-#define virSmbiosReportError(code, ...)                              \
+#define virSmbiosReportError(code, ...)                               \
     virReportErrorHelper(NULL, VIR_FROM_SYSINFO, code, __FILE__,      \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
@@ -88,7 +88,7 @@ virSysinfoRead(void) {
      */
     virReportSystemError(ENOSYS, "%s",
                  _("Host sysinfo extraction not supported on this platform"));
-    return(NULL);
+    return NULL;
 }
 #else
 virSysinfoDefPtr
@@ -104,9 +104,9 @@ virSysinfoRead(void) {
     path = virFindFileInPath(SYSINFO_SMBIOS_DECODER);
     if (path == NULL) {
         virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to find path for %s binary"),
+                             _("Failed to find path for %s binary"),
                              SYSINFO_SMBIOS_DECODER);
-        return(NULL);
+        return NULL;
     }
     argv[0] = path;
 
@@ -114,7 +114,7 @@ virSysinfoRead(void) {
                   VIR_EXEC_NONE | VIR_EXEC_NONBLOCK);
     if (res < 0) {
         virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to execute command %s"),
+                             _("Failed to execute command %s"),
                              path);
         res = 1;
         goto cleanup;
@@ -143,7 +143,7 @@ virSysinfoRead(void) {
     }
     if (exitstatus != 0) {
         virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("command %s failed with error code %d:%s"),
+                             _("command %s failed with error code %d:%s"),
                              path, exitstatus, errbuf);
         goto cleanup;
     }
@@ -159,25 +159,25 @@ virSysinfoRead(void) {
         cur += 8;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->bios_vendor = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->bios_version = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "Release Date: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->bios_date = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "BIOS Revision: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->bios_release = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((base = strstr(outbuf, "System Information")) == NULL)
         goto cleanup;
@@ -186,43 +186,43 @@ virSysinfoRead(void) {
         eol = strchr(cur, '\n');
         if ((eol) &&
             ((ret->system_manufacturer = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "Product Name: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->system_product = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->system_version = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "Serial Number: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->system_serial = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "UUID: ")) != NULL) {
         cur += 6;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->system_uuid = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "SKU Number: ")) != NULL) {
         cur += 12;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->system_sku = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
     if ((cur = strstr(base, "Family: ")) != NULL) {
         cur += 8;
         eol = strchr(cur, '\n');
         if ((eol) && ((ret->system_family = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            goto no_memory;
     }
 
 cleanup:
@@ -230,11 +230,10 @@ cleanup:
     VIR_FREE(errbuf);
     VIR_FREE(path);
 
-    return(ret);
+    return ret;
 
 no_memory:
     virReportOOMError();
-
 
     virSysinfoDefFree(ret);
     ret = NULL;
