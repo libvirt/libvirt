@@ -1454,12 +1454,12 @@ int qemudParseHelpStr(const char *qemu,
 
     *flags = qemudComputeCmdFlags(help, *version, *is_kvm, *kvm_version);
 
-    qemudDebug("Version %u.%u.%u, cooked version %u, flags %u",
-               major, minor, micro, *version, *flags);
+    VIR_DEBUG("Version %u.%u.%u, cooked version %u, flags 0x%llx",
+              major, minor, micro, *version, *flags);
     if (*kvm_version)
-        qemudDebug("KVM version %d detected", *kvm_version);
+        VIR_DEBUG("KVM version %d detected", *kvm_version);
     else if (*is_kvm)
-        qemudDebug("qemu-kvm version %u.%u.%u detected", major, minor, micro);
+        VIR_DEBUG("qemu-kvm version %u.%u.%u detected", major, minor, micro);
 
     return 0;
 

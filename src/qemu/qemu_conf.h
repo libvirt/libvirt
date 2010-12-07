@@ -44,8 +44,6 @@
 # include "macvtap.h"
 # include "command.h"
 
-# define qemudDebug(fmt, ...) do {} while(0)
-
 # define QEMUD_CPUMASK_LEN CPU_SETSIZE
 
 /* Internal flags to keep track of qemu command line capabilities */
