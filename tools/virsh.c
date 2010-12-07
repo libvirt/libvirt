@@ -10062,7 +10062,6 @@ static const vshCmdDef nodedevCmds[] = {
     {"nodedev-list", cmdNodeListDevices, opts_node_list_devices, info_node_list_devices},
     {"nodedev-reattach", cmdNodeDeviceReAttach, opts_node_device_reattach, info_node_device_reattach},
     {"nodedev-reset", cmdNodeDeviceReset, opts_node_device_reset, info_node_device_reset},
-    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
     {NULL, NULL, NULL, NULL}
 };
 
@@ -10127,6 +10126,7 @@ static const vshCmdDef hostAndHypervisorCmds[] = {
     {"connect", cmdConnect, opts_connect, info_connect},
     {"freecell", cmdFreecell, opts_freecell, info_freecell},
     {"hostname", cmdHostname, NULL, info_hostname},
+    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
     {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command, info_qemu_monitor_command},
     {"uri", cmdURI, NULL, info_uri},
     {NULL, NULL, NULL, NULL}
