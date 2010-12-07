@@ -4026,6 +4026,8 @@ qemudBuildCommandLine(virConnectPtr conn,
     int last_good_net = -1;
     bool hasHwVirt = false;
     virCommandPtr cmd;
+    bool has_rbd_hosts = false;
+    virBuffer rbd_hosts = VIR_BUFFER_INITIALIZER;
 
     uname_normalize(&ut);
 
@@ -4566,6 +4568,7 @@ qemudBuildCommandLine(virConnectPtr conn,
             int bootable = 0;
             virDomainDiskDefPtr disk = def->disks[i];
             int withDeviceArg = 0;
+            int j;
 
             /* Unless we have -device, then USB disks need special
                handling */
@@ -4615,6 +4618,27 @@ qemudBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, optstr);
             VIR_FREE(optstr);
 
+            if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+                disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+                for (j = 0 ; j < disk->nhosts ; j++) {
+                    if (!has_rbd_hosts) {
+                        virBufferAddLit(&rbd_hosts, "-m ");
+                        has_rbd_hosts = true;
+                    } else {
+                        virBufferAddLit(&rbd_hosts, ",");
+                    }
+                    virDomainDiskHostDefPtr host = &disk->hosts[j];
+                    if (host->port) {
+                        virBufferVSprintf(&rbd_hosts, "%s:%s",
+                                          host->name,
+                                          host->port);
+                    } else {
+                        virBufferVSprintf(&rbd_hosts, "%s",
+                                          host->name);
+                    }
+                }
+            }
+
             if (withDeviceArg) {
                 if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
                     virCommandAddArg(cmd, "-global");
@@ -4637,6 +4661,7 @@ qemudBuildCommandLine(virConnectPtr conn,
             char dev[NAME_MAX];
             char file[PATH_MAX];
             virDomainDiskDefPtr disk = def->disks[i];
+            int j;
 
             if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -4700,6 +4725,23 @@ qemudBuildCommandLine(virConnectPtr conn,
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_RBD:
                     snprintf(file, PATH_MAX, "rbd:%s,", disk->src);
+                    for (j = 0 ; j < disk->nhosts ; j++) {
+                        if (!has_rbd_hosts) {
+                            virBufferAddLit(&rbd_hosts, "-m ");
+                            has_rbd_hosts = true;
+                        } else {
+                            virBufferAddLit(&rbd_hosts, ",");
+                        }
+                        virDomainDiskHostDefPtr host = &disk->hosts[j];
+                        if (host->port) {
+                            virBufferVSprintf(&rbd_hosts, "%s:%s",
+                                              host->name,
+                                              host->port);
+                        } else {
+                            virBufferVSprintf(&rbd_hosts, "%s",
+                                              host->name);
+                        }
+                    }
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
                     if (disk->nhosts == 0)
@@ -4718,6 +4760,13 @@ qemudBuildCommandLine(virConnectPtr conn,
             virCommandAddArgList(cmd, dev, file, NULL);
         }
     }
+
+    if (virBufferError(&rbd_hosts)) {
+        virBufferFreeAndReset(&rbd_hosts);
+        goto no_memory;
+    }
+    if (has_rbd_hosts)
+        virCommandAddEnvPair(cmd, "CEPH_ARGS", virBufferContentAndReset(&rbd_hosts));
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_FSDEV) {
         for (i = 0 ; i < def->nfss ; i++) {
@@ -5488,6 +5537,7 @@ static int qemuStringToArgvEnv(const char *args,
     int envend;
     int i;
     const char *curr = args;
+    const char *start;
     const char **progenv = NULL;
     const char **progargv = NULL;
 
@@ -5495,14 +5545,22 @@ static int qemuStringToArgvEnv(const char *args,
     while (curr && *curr != '\0') {
         char *arg;
         const char *next;
-        if (*curr == '\'') {
-            curr++;
-            next = strchr(curr, '\'');
-        } else if (*curr == '"') {
-            curr++;
-            next = strchr(curr, '"');
+
+        start = curr;
+        /* accept a space in CEPH_ARGS */
+        if (STRPREFIX(curr, "CEPH_ARGS=-m ")) {
+            start += strlen("CEPH_ARGS=-m ");
+        }
+        if (*start == '\'') {
+            if (start == curr)
+                curr++;
+            next = strchr(start + 1, '\'');
+        } else if (*start == '"') {
+            if (start == curr)
+                curr++;
+            next = strchr(start + 1, '"');
         } else {
-            next = strchr(curr, ' ');
+            next = strchr(start, ' ');
         }
         if (!next)
             next = strchr(curr, '\n');
@@ -5732,6 +5790,7 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                     char *host, *port;
 
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
                     host = def->src + strlen("nbd:");
                     port = strchr(host, ':');
                     if (!port) {
@@ -5763,6 +5822,7 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                     char *p = def->src;
 
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
                     def->src = strdup(p + strlen("rbd:"));
                     if (!def->src) {
                         virReportOOMError();
@@ -5775,6 +5835,7 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                     char *port, *vdi;
 
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
                     def->src = strdup(p + strlen("sheepdog:"));
                     if (!def->src) {
                         virReportOOMError();
@@ -5890,7 +5951,8 @@ qemuParseCommandLineDisk(virCapsPtr caps,
     }
 
     if (!def->src &&
-        def->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+        def->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+        def->type != VIR_DOMAIN_DISK_TYPE_NETWORK) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("missing file parameter in drive '%s'"), val);
         virDomainDiskDefFree(def);
@@ -6810,7 +6872,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                     disk->src = NULL;
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-                    /* TODO: set monitor hostnames */
+                    /* handled later since the hosts for all disks are in CEPH_ARGS */
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
                     /* disk->src must be [vdiname] or [host]:[port]:[vdiname] */
@@ -7137,6 +7199,69 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     }
 
 #undef WANT_VALUE
+    if (def->ndisks > 0) {
+        const char *ceph_args = qemuFindEnv(progenv, "CEPH_ARGS");
+        if (ceph_args) {
+            char *hosts, *port, *saveptr, *token;
+            virDomainDiskDefPtr first_rbd_disk = NULL;
+            for (i = 0 ; i < def->ndisks ; i++) {
+                virDomainDiskDefPtr disk = def->disks[i];
+                if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+                    disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+                    first_rbd_disk = disk;
+                    break;
+                }
+            }
+
+            if (!first_rbd_disk) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("CEPH_ARGS was set without an rbd disk"));
+                goto error;
+            }
+
+            /* CEPH_ARGS should be: -m host1[:port1][,host2[:port2]]... */
+            if (!STRPREFIX(ceph_args, "-m ")) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("could not parse CEPH_ARGS '%s'"), ceph_args);
+                goto error;
+            }
+            hosts = strdup(strchr(ceph_args, ' ') + 1);
+            if (!hosts)
+                goto no_memory;
+            first_rbd_disk->nhosts = 0;
+            token = strtok_r(hosts, ",", &saveptr);
+            while (token != NULL) {
+                if (VIR_REALLOC_N(first_rbd_disk->hosts, first_rbd_disk->nhosts + 1) < 0) {
+                    VIR_FREE(hosts);
+                    goto no_memory;
+                }
+                port = strchr(token, ':');
+                if (port) {
+                    *port++ = '\0';
+                    port = strdup(port);
+                    if (!port) {
+                        VIR_FREE(hosts);
+                        goto no_memory;
+                    }
+                }
+                first_rbd_disk->hosts[first_rbd_disk->nhosts].port = port;
+                first_rbd_disk->hosts[first_rbd_disk->nhosts].name = strdup(token);
+                if (!first_rbd_disk->hosts[first_rbd_disk->nhosts].name) {
+                    VIR_FREE(hosts);
+                    goto no_memory;
+                }
+                first_rbd_disk->nhosts++;
+                token = strtok_r(NULL, ",", &saveptr);
+            }
+            VIR_FREE(hosts);
+
+            if (first_rbd_disk->nhosts == 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("found no rbd hosts in CEPH_ARGS '%s'"), ceph_args);
+                goto error;
+            }
+        }
+    }
 
     if (!nographics && def->ngraphics == 0) {
         virDomainGraphicsDefPtr sdl;

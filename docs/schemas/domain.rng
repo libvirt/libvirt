@@ -626,11 +626,13 @@
                     <value>sheepdog</value>
                   </choice>
                 </attribute>
-                <attribute name="name"/>
+                <optional>
+                  <attribute name="name"/>
+                </optional>
                 <zeroOrMore>
                   <element name="host">
                     <attribute name="name">
-                      <ref name="genericName"/>
+                      <ref name="hostName"/>
                     </attribute>
                     <attribute name="port">
                       <ref name="unsignedInt"/>
@@ -2022,6 +2024,11 @@
     <data type="unsignedShort">
       <param name="pattern">[0-9]+</param>
       <param name="minInclusive">1</param>
+    </data>
+  </define>
+  <define name="hostName">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9\.\-]+</param>
     </data>
   </define>
   <define name="PortNumber">

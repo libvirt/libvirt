@@ -509,19 +509,32 @@ void virDomainInputDefFree(virDomainInputDefPtr def)
 
 void virDomainDiskDefFree(virDomainDiskDefPtr def)
 {
+    unsigned int i;
+
     if (!def)
         return;
 
     VIR_FREE(def->serial);
     VIR_FREE(def->src);
-    VIR_FREE(def->hosts);
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
     VIR_FREE(def->driverType);
     virStorageEncryptionFree(def->encryption);
     virDomainDeviceInfoClear(&def->info);
 
+    for (i = 0 ; i < def->nhosts ; i++)
+        virDomainDiskHostDefFree(&def->hosts[i]);
+
     VIR_FREE(def);
+}
+
+void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->name);
+    VIR_FREE(def->port);
 }
 
 void virDomainControllerDefFree(virDomainControllerDefPtr def)
@@ -1644,7 +1657,12 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                                              protocol);
                         goto error;
                     }
-                    source = virXMLPropString(cur, "name");
+                    if (!(source = virXMLPropString(cur, "name")) &&
+                        def->protocol != VIR_DOMAIN_DISK_PROTOCOL_NBD) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("missing name for disk source"));
+                        goto error;
+                    }
                     host = cur->children;
                     while (host != NULL) {
                         if (host->type == XML_ELEMENT_NODE &&
@@ -1877,8 +1895,7 @@ cleanup:
     VIR_FREE(target);
     VIR_FREE(source);
     while (nhosts > 0) {
-        VIR_FREE(hosts[nhosts - 1].name);
-        VIR_FREE(hosts[nhosts - 1].port);
+        virDomainDiskHostDefFree(&hosts[nhosts - 1]);
         nhosts--;
     }
     VIR_FREE(hosts);
