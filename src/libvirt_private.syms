@@ -760,6 +760,12 @@ virSysinfoDefFree;
 virSysinfoRead;
 
 
+# threadpool.h
+virThreadPoolFree;
+virThreadPoolNew;
+virThreadPoolSendJob;
+
+
 # threads.h
 virCondBroadcast;
 virCondDestroy;

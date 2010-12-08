@@ -128,6 +128,7 @@ useless_free_options =				\
   --name=virStoragePoolObjFree			\
   --name=virStoragePoolSourceFree		\
   --name=virStorageVolDefFree			\
+  --name=virThreadPoolFree			\
   --name=xmlFree				\
   --name=xmlXPathFreeContext			\
   --name=xmlXPathFreeObject
