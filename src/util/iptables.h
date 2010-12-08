@@ -30,16 +30,20 @@ iptablesContext *iptablesContextNew              (void);
 void             iptablesContextFree             (iptablesContext *ctx);
 
 int              iptablesAddTcpInput             (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface,
                                                   int port);
 int              iptablesRemoveTcpInput          (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface,
                                                   int port);
 
 int              iptablesAddUdpInput             (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface,
                                                   int port);
 int              iptablesRemoveUdpInput          (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface,
                                                   int port);
 
@@ -77,18 +81,24 @@ int              iptablesRemoveForwardAllowIn    (iptablesContext *ctx,
                                                   const char *physdev);
 
 int              iptablesAddForwardAllowCross    (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface);
 int              iptablesRemoveForwardAllowCross (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface);
 
 int              iptablesAddForwardRejectOut     (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface);
 int              iptablesRemoveForwardRejectOut  (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface);
 
 int              iptablesAddForwardRejectIn      (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface);
 int              iptablesRemoveForwardRejectIn   (iptablesContext *ctx,
+                                                  int family,
                                                   const char *iface);
 
 int              iptablesAddForwardMasquerade    (iptablesContext *ctx,

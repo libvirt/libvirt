@@ -842,14 +842,16 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* allow DHCP requests through to dnsmasq */
 
-    if (iptablesAddTcpInput(driver->iptables, network->def->bridge, 67) < 0) {
+    if (iptablesAddTcpInput(driver->iptables, AF_INET,
+                            network->def->bridge, 67) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow DHCP requests from '%s'"),
                            network->def->bridge);
         goto err1;
     }
 
-    if (iptablesAddUdpInput(driver->iptables, network->def->bridge, 67) < 0) {
+    if (iptablesAddUdpInput(driver->iptables, AF_INET,
+                            network->def->bridge, 67) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow DHCP requests from '%s'"),
                            network->def->bridge);
@@ -871,14 +873,16 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
     }
 
     /* allow DNS requests through to dnsmasq */
-    if (iptablesAddTcpInput(driver->iptables, network->def->bridge, 53) < 0) {
+    if (iptablesAddTcpInput(driver->iptables, AF_INET,
+                            network->def->bridge, 53) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow DNS requests from '%s'"),
                            network->def->bridge);
         goto err3;
     }
 
-    if (iptablesAddUdpInput(driver->iptables, network->def->bridge, 53) < 0) {
+    if (iptablesAddUdpInput(driver->iptables, AF_INET,
+                            network->def->bridge, 53) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow DNS requests from '%s'"),
                            network->def->bridge);
@@ -887,7 +891,8 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* allow TFTP requests through to dnsmasq if necessary */
     if (ipv4def && ipv4def->tftproot &&
-        iptablesAddUdpInput(driver->iptables, network->def->bridge, 69) < 0) {
+        iptablesAddUdpInput(driver->iptables, AF_INET,
+                            network->def->bridge, 69) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow TFTP requests from '%s'"),
                            network->def->bridge);
@@ -896,14 +901,16 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* Catch all rules to block forwarding to/from bridges */
 
-    if (iptablesAddForwardRejectOut(driver->iptables, network->def->bridge) < 0) {
+    if (iptablesAddForwardRejectOut(driver->iptables, AF_INET,
+                                    network->def->bridge) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to block outbound traffic from '%s'"),
                            network->def->bridge);
         goto err6;
     }
 
-    if (iptablesAddForwardRejectIn(driver->iptables, network->def->bridge) < 0) {
+    if (iptablesAddForwardRejectIn(driver->iptables, AF_INET,
+                                   network->def->bridge) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to block inbound traffic to '%s'"),
                            network->def->bridge);
@@ -911,7 +918,8 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
     }
 
     /* Allow traffic between guests on the same bridge */
-    if (iptablesAddForwardAllowCross(driver->iptables, network->def->bridge) < 0) {
+    if (iptablesAddForwardAllowCross(driver->iptables, AF_INET,
+                                     network->def->bridge) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow cross bridge traffic on '%s'"),
                            network->def->bridge);
@@ -922,21 +930,21 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* unwind in reverse order from the point of failure */
 err8:
-    iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
+    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET, network->def->bridge);
 err7:
-    iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
+    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET, network->def->bridge);
 err6:
     if (ipv4def && ipv4def->tftproot) {
-        iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
+        iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 69);
     }
 err5:
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
+    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 53);
 err4:
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
+    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 53);
 err3:
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
+    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 67);
 err2:
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
+    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 67);
 err1:
     return -1;
 }
@@ -955,20 +963,20 @@ networkRemoveGeneralIptablesRules(struct network_driver *driver,
             break;
     }
 
-    iptablesRemoveForwardAllowCross(driver->iptables, network->def->bridge);
-    iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
-    iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
+    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET, network->def->bridge);
+    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET, network->def->bridge);
+    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET, network->def->bridge);
     if (ipv4def && ipv4def->tftproot) {
-        iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
+        iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 69);
     }
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
+    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 53);
+    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 53);
     if (ipv4def && (ipv4def->nranges || ipv4def->nhosts)) {
         iptablesRemoveOutputFixUdpChecksum(driver->iptables,
                                            network->def->bridge, 68);
     }
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
+    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 67);
+    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 67);
 }
 
 static int
