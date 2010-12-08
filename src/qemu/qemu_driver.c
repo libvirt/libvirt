@@ -178,13 +178,11 @@ static int doStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm)
 static int
 qemudLogFD(struct qemud_driver *driver, const char* name, bool append)
 {
-    char logfile[PATH_MAX];
+    char *logfile;
     mode_t logmode;
-    int ret, fd = -1;
+    int fd = -1;
 
-    if ((ret = snprintf(logfile, sizeof(logfile), "%s/%s.log",
-                        driver->logDir, name))
-        < 0 || ret >= sizeof(logfile)) {
+    if (virAsprintf(&logfile, "%s/%s.log", driver->logDir, name) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -200,8 +198,10 @@ qemudLogFD(struct qemud_driver *driver, const char* name, bool append)
         virReportSystemError(errno,
                              _("failed to create logfile %s"),
                              logfile);
+        VIR_FREE(logfile);
         return -1;
     }
+    VIR_FREE(logfile);
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
@@ -215,29 +215,29 @@ qemudLogFD(struct qemud_driver *driver, const char* name, bool append)
 static int
 qemudLogReadFD(const char* logDir, const char* name, off_t pos)
 {
-    char logfile[PATH_MAX];
+    char *logfile;
     mode_t logmode = O_RDONLY;
-    int ret, fd = -1;
+    int fd = -1;
 
-    if ((ret = snprintf(logfile, sizeof(logfile), "%s/%s.log", logDir, name))
-        < 0 || ret >= sizeof(logfile)) {
+    if (virAsprintf(&logfile, "%s/%s.log", logDir, name) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("failed to build logfile name %s/%s.log"),
                         logDir, name);
         return -1;
     }
 
-
     if ((fd = open(logfile, logmode)) < 0) {
         virReportSystemError(errno,
                              _("failed to create logfile %s"),
                              logfile);
+        VIR_FREE(logfile);
         return -1;
     }
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
         VIR_FORCE_CLOSE(fd);
+        VIR_FREE(logfile);
         return -1;
     }
     if (pos < 0 || lseek(fd, pos, SEEK_SET) < 0) {
@@ -246,6 +246,7 @@ qemudLogReadFD(const char* logDir, const char* name, off_t pos)
                              (long long) pos, logfile);
         VIR_FORCE_CLOSE(fd);
     }
+    VIR_FREE(logfile);
     return fd;
 }
 
@@ -1178,7 +1179,7 @@ cleanup:
 static int
 qemudStartup(int privileged) {
     char *base = NULL;
-    char driverConf[PATH_MAX];
+    char *driverConf = NULL;
     int rc;
     virConnectPtr conn = NULL;
 
@@ -1318,14 +1319,9 @@ qemudStartup(int privileged) {
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or
      * /etc/libvirt/qemu/... (system).
      */
-    if (snprintf (driverConf, sizeof(driverConf), "%s/qemu.conf", base) == -1)
-        goto out_of_memory;
-    driverConf[sizeof(driverConf)-1] = '\0';
-
-    if (virAsprintf(&qemu_driver->configDir, "%s/qemu", base) == -1)
-        goto out_of_memory;
-
-    if (virAsprintf(&qemu_driver->autostartDir, "%s/qemu/autostart", base) == -1)
+    if (virAsprintf(&driverConf, "%s/qemu.conf", base) < 0 ||
+        virAsprintf(&qemu_driver->configDir, "%s/qemu", base) < 0 ||
+        virAsprintf(&qemu_driver->autostartDir, "%s/qemu/autostart", base) < 0)
         goto out_of_memory;
 
     VIR_FREE(base);
@@ -1340,6 +1336,7 @@ qemudStartup(int privileged) {
     if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
         goto error;
     }
+    VIR_FREE(driverConf);
 
     if (qemudSecurityInit(qemu_driver) < 0)
         goto error;
@@ -1456,6 +1453,7 @@ error:
     if (conn)
         virConnectClose(conn);
     VIR_FREE(base);
+    VIR_FREE(driverConf);
     qemudShutdown();
     return -1;
 }
@@ -3300,21 +3298,22 @@ cleanup:
 }
 
 
-static int qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid, int tid) {
-    char proc[PATH_MAX];
+static int
+qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid,
+                    int tid)
+{
+    char *proc;
     FILE *pidinfo;
     unsigned long long usertime, systime;
     int cpu;
     int ret;
 
     if (tid)
-        ret = snprintf(proc, sizeof(proc), "/proc/%d/task/%d/stat", pid, tid);
+        ret = virAsprintf(&proc, "/proc/%d/task/%d/stat", pid, tid);
     else
-        ret = snprintf(proc, sizeof(proc), "/proc/%d/stat", pid);
-    if (ret >= (int)sizeof(proc)) {
-        errno = E2BIG;
+        ret = virAsprintf(&proc, "/proc/%d/stat", pid);
+    if (ret < 0)
         return -1;
-    }
 
     if (!(pidinfo = fopen(proc, "r"))) {
         /* VM probably shut down, so fake 0 */
@@ -3322,8 +3321,10 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pi
             *cpuTime = 0;
         if (lastCpu)
             *lastCpu = 0;
+        VIR_FREE(proc);
         return 0;
     }
+    VIR_FREE(proc);
 
     /* See 'man proc' for information about what all these fields are. We're
      * only interested in a very few of them */
