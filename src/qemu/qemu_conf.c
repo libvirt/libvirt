@@ -386,6 +386,17 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
+    p = virConfGetValue (conf, "auto_dump_path");
+    CHECK_TYPE ("auto_dump_path", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->autoDumpPath);
+        if (!(driver->autoDumpPath = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
      p = virConfGetValue (conf, "hugetlbfs_mount");
      CHECK_TYPE ("hugetlbfs_mount", VIR_CONF_STRING);
      if (p && p->str) {
@@ -5276,7 +5287,10 @@ qemudBuildCommandLine(virConnectPtr conn,
         virCommandAddArg(cmd, optstr);
         VIR_FREE(optstr);
 
-        const char *action = virDomainWatchdogActionTypeToString(watchdog->action);
+        int act = watchdog->action;
+        if (act == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
+            act = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
+        const char *action = virDomainWatchdogActionTypeToString(act);
         if (!action) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             "%s", _("invalid watchdog action"));

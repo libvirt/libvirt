@@ -85,6 +85,7 @@
 #include "files.h"
 #include "fdstream.h"
 #include "configmake.h"
+#include "threadpool.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -137,6 +138,14 @@ struct _qemuDomainObjPrivate {
     qemuDomainPCIAddressSetPtr pciaddrs;
     int persistentAddrs;
 };
+
+struct watchdogEvent
+{
+    virDomainObjPtr vm;
+    int action;
+};
+
+static void processWatchdogEvent(void *data, void *opaque);
 
 static int qemudShutdown(void);
 
@@ -1225,6 +1234,17 @@ qemuHandleDomainWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
             VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
     }
+
+    if (vm->def->watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
+        struct watchdogEvent *wdEvent;
+        if (VIR_ALLOC(wdEvent) == 0) {
+            wdEvent->action = VIR_DOMAIN_WATCHDOG_ACTION_DUMP;
+            wdEvent->vm = vm;
+            ignore_value(virThreadPoolSendJob(driver->workerPool, wdEvent));
+        } else
+            virReportOOMError();
+    }
+
     virDomainObjUnlock(vm);
 
     if (watchdogEvent || lifecycleEvent) {
@@ -1808,6 +1828,9 @@ qemudStartup(int privileged) {
         if (virAsprintf(&qemu_driver->snapshotDir,
                         "%s/lib/libvirt/qemu/snapshot", LOCALSTATEDIR) == -1)
             goto out_of_memory;
+        if (virAsprintf(&qemu_driver->autoDumpPath,
+                        "%s/lib/libvirt/qemu/dump", LOCALSTATEDIR) == -1)
+            goto out_of_memory;
     } else {
         uid_t uid = geteuid();
         char *userdir = virGetUserDirectory(uid);
@@ -1835,6 +1858,8 @@ qemudStartup(int privileged) {
         if (virAsprintf(&qemu_driver->saveDir, "%s/qemu/save", base) == -1)
             goto out_of_memory;
         if (virAsprintf(&qemu_driver->snapshotDir, "%s/qemu/snapshot", base) == -1)
+            goto out_of_memory;
+        if (virAsprintf(&qemu_driver->autoDumpPath, "%s/qemu/dump", base) == -1)
             goto out_of_memory;
     }
 
@@ -1866,6 +1891,12 @@ qemudStartup(int privileged) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
                   qemu_driver->snapshotDir, virStrerror(errno, ebuf, sizeof ebuf));
+        goto error;
+    }
+    if (virFileMakePath(qemu_driver->autoDumpPath) != 0) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create dump dir '%s': %s"),
+                  qemu_driver->autoDumpPath, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
 
@@ -1993,6 +2024,10 @@ qemudStartup(int privileged) {
 
     qemudAutostartConfigs(qemu_driver);
 
+    qemu_driver->workerPool = virThreadPoolNew(0, 1, processWatchdogEvent, qemu_driver);
+    if (!qemu_driver->workerPool)
+        goto error;
+
     if (conn)
         virConnectClose(conn);
 
@@ -2099,6 +2134,7 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->cacheDir);
     VIR_FREE(qemu_driver->saveDir);
     VIR_FREE(qemu_driver->snapshotDir);
+    VIR_FREE(qemu_driver->autoDumpPath);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
     VIR_FREE(qemu_driver->vncListen);
     VIR_FREE(qemu_driver->vncPassword);
@@ -2134,6 +2170,7 @@ qemudShutdown(void) {
 
     qemuDriverUnlock(qemu_driver);
     virMutexDestroy(&qemu_driver->lock);
+    virThreadPoolFree(qemu_driver->workerPool);
     VIR_FREE(qemu_driver);
 
     return 0;
@@ -6230,6 +6267,65 @@ cleanup:
     return ret;
 }
 
+static void processWatchdogEvent(void *data, void *opaque)
+{
+    int ret;
+    struct watchdogEvent *wdEvent = data;
+    struct qemud_driver *driver = opaque;
+
+    switch (wdEvent->action) {
+    case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
+        {
+            char *dumpfile;
+            int i;
+
+            qemuDomainObjPrivatePtr priv = wdEvent->vm->privateData;
+
+            i = virAsprintf(&dumpfile, "%s/%s-%u",
+                            driver->autoDumpPath,
+                            wdEvent->vm->def->name,
+                            (unsigned int)time(NULL));
+
+            qemuDriverLock(driver);
+            virDomainObjLock(wdEvent->vm);
+
+            if (qemuDomainObjBeginJobWithDriver(driver, wdEvent->vm) < 0)
+                break;
+
+            if (!virDomainObjIsActive(wdEvent->vm)) {
+                qemuReportError(VIR_ERR_OPERATION_INVALID,
+                                "%s", _("domain is not running"));
+                break;
+            }
+
+            ret = doCoreDump(driver,
+                             wdEvent->vm,
+                             dumpfile,
+                             getCompressionType(driver));
+            if (ret < 0)
+                qemuReportError(VIR_ERR_OPERATION_FAILED,
+                                "%s", _("Dump failed"));
+
+            qemuDomainObjEnterMonitorWithDriver(driver, wdEvent->vm);
+            ret = qemuMonitorStartCPUs(priv->mon, NULL);
+            qemuDomainObjExitMonitorWithDriver(driver, wdEvent->vm);
+
+            if (ret < 0)
+                qemuReportError(VIR_ERR_OPERATION_FAILED,
+                                "%s", _("Resuming after dump failed"));
+
+            if (qemuDomainObjEndJob(wdEvent->vm) > 0)
+                virDomainObjUnlock(wdEvent->vm);
+
+            qemuDriverUnlock(driver);
+
+            VIR_FREE(dumpfile);
+        }
+        break;
+    }
+
+    VIR_FREE(wdEvent);
+}
 
 static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
 {

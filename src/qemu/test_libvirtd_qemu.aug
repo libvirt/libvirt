@@ -96,6 +96,8 @@ save_image_format = \"gzip\"
 
 dump_image_format = \"gzip\"
 
+auto_dump_path = \"/var/lib/libvirt/qemu/dump\"
+
 hugetlbfs_mount = \"/dev/hugepages\"
 
 set_process_name = 1
@@ -212,6 +214,8 @@ allow_disk_format_probing = 1
 { "save_image_format" = "gzip" }
 { "#empty" }
 { "dump_image_format" = "gzip" }
+{ "#empty" }
+{ "auto_dump_path" = "/var/lib/libvirt/qemu/dump" }
 { "#empty" }
 { "hugetlbfs_mount" = "/dev/hugepages" }
 { "#empty" }

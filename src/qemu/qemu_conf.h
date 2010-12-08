@@ -43,6 +43,7 @@
 # include "bitmap.h"
 # include "macvtap.h"
 # include "command.h"
+# include "threadpool.h"
 
 # define QEMUD_CPUMASK_LEN CPU_SETSIZE
 
@@ -107,6 +108,8 @@ enum qemud_cmd_flags {
 /* Main driver state */
 struct qemud_driver {
     virMutex lock;
+
+    virThreadPoolPtr workerPool;
 
     int privileged;
 
@@ -174,6 +177,8 @@ struct qemud_driver {
 
     char *saveImageFormat;
     char *dumpImageFormat;
+
+    char *autoDumpPath;
 
     pciDeviceList *activePciHostdevs;
 

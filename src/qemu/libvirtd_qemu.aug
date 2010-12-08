@@ -37,6 +37,7 @@ module Libvirtd_qemu =
                  | str_array_entry "cgroup_device_acl"
                  | str_entry "save_image_format"
                  | str_entry "dump_image_format"
+                 | str_entry "auto_dump_path"
                  | str_entry "hugetlbfs_mount"
                  | bool_entry "relaxed_acs_check"
                  | bool_entry "vnc_allow_host_audio"
