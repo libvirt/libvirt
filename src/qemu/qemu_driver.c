@@ -6030,6 +6030,78 @@ cleanup:
     return ret;
 }
 
+static int doCoreDump(struct qemud_driver *driver,
+                      virDomainObjPtr vm,
+                      const char *path,
+                      enum qemud_save_formats compress)
+{
+    int fd = -1;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    priv = vm->privateData;
+
+    /* Create an empty file with appropriate ownership.  */
+    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("failed to create '%s'"), path);
+        goto cleanup;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno,
+                             _("unable to save file %s"),
+                             path);
+        goto cleanup;
+    }
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSavedStateLabel &&
+        driver->securityDriver->domainSetSavedStateLabel(driver->securityDriver,
+                                                         vm, path) == -1)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (compress == QEMUD_SAVE_FORMAT_RAW) {
+        const char *args[] = {
+            "cat",
+            NULL,
+        };
+        ret = qemuMonitorMigrateToFile(priv->mon,
+                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                       args, path, 0);
+    } else {
+        const char *prog = qemudSaveCompressionTypeToString(compress);
+        const char *args[] = {
+            prog,
+            "-c",
+            NULL,
+        };
+        ret = qemuMonitorMigrateToFile(priv->mon,
+                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                       args, path, 0);
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (ret < 0)
+        goto cleanup;
+
+    ret = qemuDomainWaitForMigrationComplete(driver, vm);
+
+    if (ret < 0)
+        goto cleanup;
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSavedStateLabel &&
+        driver->securityDriver->domainRestoreSavedStateLabel(driver->securityDriver,
+                                                             vm, path) == -1)
+        goto cleanup;
+
+cleanup:
+    if (ret != 0)
+        unlink(path);
+    return ret;
+}
+
 static enum qemud_save_formats
 getCompressionType(struct qemud_driver *driver)
 {
@@ -6064,12 +6136,9 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int resume = 0, paused = 0;
-    int ret = -1, fd = -1;
+    int ret = -1;
     virDomainEventPtr event = NULL;
-    enum qemud_save_formats compress;
     qemuDomainObjPrivatePtr priv;
-
-    compress = getCompressionType(driver);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6091,26 +6160,6 @@ static int qemudDomainCoreDump(virDomainPtr dom,
                         "%s", _("domain is not running"));
         goto endjob;
     }
-
-    /* Create an empty file with appropriate ownership.  */
-    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to create '%s'"), path);
-        goto endjob;
-    }
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno,
-                             _("unable to save file %s"),
-                             path);
-        goto endjob;
-    }
-
-    if (driver->securityDriver &&
-        driver->securityDriver->domainSetSavedStateLabel &&
-        driver->securityDriver->domainSetSavedStateLabel(driver->securityDriver,
-                                                         vm, path) == -1)
-        goto endjob;
 
     /* Migrate will always stop the VM, so the resume condition is
        independent of whether the stop command is issued.  */
@@ -6135,42 +6184,11 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         }
     }
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (compress == QEMUD_SAVE_FORMAT_RAW) {
-        const char *args[] = {
-            "cat",
-            NULL,
-        };
-        ret = qemuMonitorMigrateToFile(priv->mon,
-                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                       args, path, 0);
-    } else {
-        const char *prog = qemudSaveCompressionTypeToString(compress);
-        const char *args[] = {
-            prog,
-            "-c",
-            NULL,
-        };
-        ret = qemuMonitorMigrateToFile(priv->mon,
-                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                       args, path, 0);
-    }
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
-    if (ret < 0)
-        goto endjob;
-
-    ret = qemuDomainWaitForMigrationComplete(driver, vm);
-
+    ret = doCoreDump(driver, vm, path, getCompressionType(driver));
     if (ret < 0)
         goto endjob;
 
     paused = 1;
-
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSavedStateLabel &&
-        driver->securityDriver->domainRestoreSavedStateLabel(driver->securityDriver,
-                                                             vm, path) == -1)
-        goto endjob;
 
 endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
@@ -6204,8 +6222,6 @@ endjob:
     }
 
 cleanup:
-    if (ret != 0)
-        unlink(path);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
