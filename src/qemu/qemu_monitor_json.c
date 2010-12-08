@@ -2239,15 +2239,15 @@ int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONDriveUnplug(qemuMonitorPtr mon,
-                             const char *drivestr)
+int qemuMonitorJSONDriveDel(qemuMonitorPtr mon,
+                            const char *drivestr)
 {
     int ret;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
-    DEBUG("JSONDriveUnplug drivestr=%s", drivestr);
-    cmd = qemuMonitorJSONMakeCommand("drive_unplug",
+    DEBUG("JSONDriveDel drivestr=%s", drivestr);
+    cmd = qemuMonitorJSONMakeCommand("drive_del",
                                      "s:id", drivestr,
                                      NULL);
     if (!cmd)
@@ -2256,14 +2256,19 @@ int qemuMonitorJSONDriveUnplug(qemuMonitorPtr mon,
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
 
     if (ret == 0) {
-        /* See if drive_unplug isn't supported */
+        /* See if drive_del isn't supported */
         if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-            VIR_ERROR0(_("unplugging disk is not supported.  "
+            VIR_ERROR0(_("deleting disk is not supported.  "
                         "This may leak data if disk is reassigned"));
             ret = 1;
             goto cleanup;
+        } else if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
+            /* NB: device not found errors mean the drive was
+             * auto-deleted and we ignore the error */
+            ret = 0;
+        } else {
+            ret = qemuMonitorJSONCheckError(cmd, reply);
         }
-        ret = qemuMonitorJSONCheckError(cmd, reply);
     }
 
 cleanup:

@@ -379,7 +379,7 @@ int qemuMonitorDelDevice(qemuMonitorPtr mon,
 int qemuMonitorAddDrive(qemuMonitorPtr mon,
                         const char *drivestr);
 
-int qemuMonitorDriveUnplug(qemuMonitorPtr mon,
+int qemuMonitorDriveDel(qemuMonitorPtr mon,
                         const char *drivestr);
 
 int qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,

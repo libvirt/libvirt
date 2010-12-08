@@ -1774,8 +1774,8 @@ int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorDriveUnplug(qemuMonitorPtr mon,
-                         const char *drivestr)
+int qemuMonitorDriveDel(qemuMonitorPtr mon,
+                        const char *drivestr)
 {
     DEBUG("mon=%p drivestr=%s", mon, drivestr);
     int ret;
@@ -1787,9 +1787,9 @@ int qemuMonitorDriveUnplug(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONDriveUnplug(mon, drivestr);
+        ret = qemuMonitorJSONDriveDel(mon, drivestr);
     else
-        ret = qemuMonitorTextDriveUnplug(mon, drivestr);
+        ret = qemuMonitorTextDriveDel(mon, drivestr);
     return ret;
 }
 
