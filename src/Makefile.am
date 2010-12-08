@@ -486,7 +486,7 @@ libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
 endif
 libvirt_driver_remote_la_CFLAGS =				\
 		$(GNUTLS_CFLAGS)				\
-		$(SASL_CFLAGS)					\
+		$(SASL_CFLAGS) $(XDR_CFLAGS)			\
 		-I@top_srcdir@/src/conf				\
 		$(AM_CFLAGS)
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)

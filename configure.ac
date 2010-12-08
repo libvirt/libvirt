@@ -339,6 +339,26 @@ if test x"$with_remote" = x"yes" || test x"$with_libvirtd" = x"yes"; then
 
     dnl check for cygwin's variation in xdr function names
     AC_CHECK_FUNCS([xdr_u_int64_t],[],[],[#include <rpc/xdr.h>])
+
+    dnl Cygwin requires -I/usr/include/tirpc for <rpc/rpc.h>
+    old_CFLAGS=$CFLAGS
+    AC_CACHE_CHECK([where to find <rpc/rpc.h>], [lv_cv_xdr_cflags], [
+      for add_CFLAGS in '' '-I/usr/include/tirpc' 'missing'; do
+        if test x"$add_CFLAGS" = xmissing; then
+          lv_cv_xdr_cflags=missing; break
+        fi
+        CFLAGS="$old_CFLAGS $add_CFLAGS"
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <rpc/rpc.h>
+        ]])], [lv_cv_xdr_cflags=${add_CFLAGS:-none}; break])
+      done
+    ])
+    CFLAGS=$old_CFLAGS
+    case $lv_cv_xdr_cflags in
+      none) XDR_CFLAGS= ;;
+      missing) AC_MSG_ERROR([Unable to find <rpc/rpc.h>]) ;;
+      *) XDR_CFLAGS=$lv_cv_xdr_cflags ;;
+    esac
+    AC_SUBST([XDR_CFLAGS])
 fi
 
 
@@ -359,12 +379,9 @@ AC_DEFINE_UNQUOTED([VBOX_XPCOMC_DIR], ["$vbox_xpcomc_dir"],
 
 if test "x$with_vbox" = "xyes"; then
     AC_SEARCH_LIBS([dlopen], [dl],,)
-    case $ac_cv_search_dlopen in
-      no*) DLOPEN_LIBS=
-           case "$host" in
-             *-*-mingw* | *-*-msvc*) ;;
-             *) AC_MSG_ERROR([Unable to find dlopen()]) ;;
-           esac ;;
+    case $ac_cv_search_dlopen:$host_os in
+      'none required'* | *:mingw* | *:msvc*) DLOPEN_LIBS= ;;
+      no*) AC_MSG_ERROR([Unable to find dlopen()]) ;;
       *) DLOPEN_LIBS=$ac_cv_search_dlopen ;;
     esac
     AC_SUBST([DLOPEN_LIBS])
@@ -2437,6 +2454,11 @@ if test "$with_vbox" = "yes" && test -n "$MSCOM_LIBS" ; then
 AC_MSG_NOTICE([   mscom: $MSCOM_LIBS])
 else
 AC_MSG_NOTICE([   mscom: no])
+fi
+if test "$with_remote" = "yes" || test "$with_libvirtd" = "yes" ; then
+AC_MSG_NOTICE([     xdr: $XDR_CFLAGS])
+else
+AC_MSG_NOTICE([     xdr: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
