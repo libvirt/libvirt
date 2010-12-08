@@ -964,10 +964,12 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     if (!cmd->outfdptr) {
         cmd->outfdptr = &cmd->outfd;
         cmd->outbuf = &outbuf;
+        string_io = true;
     }
     if (!cmd->errfdptr) {
         cmd->errfdptr = &cmd->errfd;
         cmd->errbuf = &errbuf;
+        string_io = true;
     }
 
     if (virCommandRunAsync(cmd, NULL) < 0) {
@@ -1009,6 +1011,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
         cmd->outfdptr = NULL;
         cmd->outbuf = NULL;
+        VIR_FREE(outbuf);
     }
     if (cmd->errbuf == &errbuf) {
         int tmpfd = cmd->errfd;
@@ -1016,6 +1019,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
         cmd->errfdptr = NULL;
         cmd->errbuf = NULL;
+        VIR_FREE(errbuf);
     }
 
     return ret;
