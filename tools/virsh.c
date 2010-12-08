@@ -2894,8 +2894,9 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
  * "memtune" command
  */
 static const vshCmdInfo info_memtune[] = {
-    {"help", N_("Get/Set memory paramters")},
-    {"desc", N_("Get/Set the current memory paramters for the guest domain.\n" \
+    {"help", N_("Get or set memory parameters")},
+    {"desc", N_("Get or set the current memory parameters for a guest" \
+                " domain.\n" \
                 "    To get the memory parameters use following command: \n\n" \
                 "    virsh # memtune <domain>")},
     {NULL, NULL}
