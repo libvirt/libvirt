@@ -1575,7 +1575,7 @@ storageVolumeZeroSparseFile(virStorageVolDefPtr vol,
         virReportSystemError(errno,
                              _("Failed to truncate volume with "
                                "path '%s' to %ju bytes"),
-                             vol->target.path, (intmax_t)size);
+                             vol->target.path, (uintmax_t)size);
     }
 
 out:
@@ -1597,13 +1597,13 @@ storageWipeExtent(virStorageVolDefPtr vol,
     size_t write_size = 0;
 
     VIR_DEBUG("extent logical start: %ju len: %ju",
-              (intmax_t)extent_start, (intmax_t)extent_length);
+              (uintmax_t)extent_start, (uintmax_t)extent_length);
 
     if ((ret = lseek(fd, extent_start, SEEK_SET)) < 0) {
         virReportSystemError(errno,
                              _("Failed to seek to position %ju in volume "
                                "with path '%s'"),
-                             (intmax_t)extent_start, vol->target.path);
+                             (uintmax_t)extent_start, vol->target.path);
         goto out;
     }
 
