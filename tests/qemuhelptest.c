@@ -173,7 +173,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_ENABLE_KVM |
             QEMUD_CMD_FLAG_SDL |
             QEMUD_CMD_FLAG_RTC_TD_HACK |
-            QEMUD_CMD_FLAG_NO_HPET,
+            QEMUD_CMD_FLAG_NO_HPET |
+            QEMUD_CMD_FLAG_VGA_NONE,
             10005, 0,  0);
     DO_TEST("qemu-kvm-0.10.5",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -198,7 +199,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_NO_KVM_PIT |
             QEMUD_CMD_FLAG_TDF |
-            QEMUD_CMD_FLAG_NESTING,
+            QEMUD_CMD_FLAG_NESTING |
+            QEMUD_CMD_FLAG_VGA_NONE,
             10005, 1,  0);
     DO_TEST("kvm-86",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -223,7 +225,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NO_KVM_PIT |
             QEMUD_CMD_FLAG_TDF |
             QEMUD_CMD_FLAG_NESTING |
-            QEMUD_CMD_FLAG_SMBIOS_TYPE,
+            QEMUD_CMD_FLAG_SMBIOS_TYPE |
+            QEMUD_CMD_FLAG_VGA_NONE,
             10050, 1,  0);
     DO_TEST("qemu-kvm-0.11.0-rc2",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -253,7 +256,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_BOOT_MENU |
             QEMUD_CMD_FLAG_NESTING |
             QEMUD_CMD_FLAG_NAME_PROCESS |
-            QEMUD_CMD_FLAG_SMBIOS_TYPE,
+            QEMUD_CMD_FLAG_SMBIOS_TYPE |
+            QEMUD_CMD_FLAG_VGA_NONE,
             10092, 1,  0);
     DO_TEST("qemu-0.12.1",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -281,7 +285,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_BOOT_MENU |
             QEMUD_CMD_FLAG_NAME_PROCESS |
-            QEMUD_CMD_FLAG_SMBIOS_TYPE,
+            QEMUD_CMD_FLAG_SMBIOS_TYPE |
+            QEMUD_CMD_FLAG_VGA_NONE,
             12001, 0,  0);
     DO_TEST("qemu-kvm-0.12.3",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -316,7 +321,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_BOOT_MENU |
             QEMUD_CMD_FLAG_NESTING |
             QEMUD_CMD_FLAG_NAME_PROCESS |
-            QEMUD_CMD_FLAG_SMBIOS_TYPE,
+            QEMUD_CMD_FLAG_SMBIOS_TYPE |
+            QEMUD_CMD_FLAG_VGA_NONE,
             12003, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

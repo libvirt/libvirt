@@ -1220,6 +1220,7 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
                                                unsigned int kvm_version)
 {
     unsigned long long flags = 0;
+    const char *p;
 
     if (strstr(help, "-no-kqemu"))
         flags |= QEMUD_CMD_FLAG_KQEMU;
@@ -1252,11 +1253,15 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         if (strstr(help, "readonly="))
             flags |= QEMUD_CMD_FLAG_DRIVE_READONLY;
     }
-    if (strstr(help, "-vga") && !strstr(help, "-std-vga")) {
+    if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
+        const char *nl = strstr(p, "\n");
+
         flags |= QEMUD_CMD_FLAG_VGA;
 
-        if (strstr(help, "|qxl"))
+        if (strstr(p, "|qxl"))
             flags |= QEMUD_CMD_FLAG_VGA_QXL;
+        if ((p = strstr(p, "|none")) && p < nl)
+            flags |= QEMUD_CMD_FLAG_VGA_NONE;
     }
     if (strstr(help, "-spice"))
         flags |= QEMUD_CMD_FLAG_SPICE;
@@ -5192,7 +5197,8 @@ qemudBuildCommandLine(virConnectPtr conn,
     } else {
         /* If we have -device, then we set -nodefault already */
         if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
-            (qemuCmdFlags & QEMUD_CMD_FLAG_VGA))
+            (qemuCmdFlags & QEMUD_CMD_FLAG_VGA) &&
+            (qemuCmdFlags & QEMUD_CMD_FLAG_VGA_NONE))
             virCommandAddArgList(cmd, "-vga", "none", NULL);
     }
 
