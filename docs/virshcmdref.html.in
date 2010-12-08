@@ -49,21 +49,21 @@
     <ul>
       <li>
         Standard HTML format, multiple pages
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0-html-multi-page.tar.gz">.tar.gz</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0-html-multi-page.tar.bz2">.tar.bz2</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0-html-multi-page.zip">.zip</a>)
+        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1-html-multi-page.tar.gz">.tar.gz</a>)
+        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1-html-multi-page.tar.bz2">.tar.bz2</a>)
+        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1-html-multi-page.zip">.zip</a>)
       </li>
       <li>
         HTML format, one long page
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0-html-single.tar.gz">.tar.gz</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0-html-single.tar.bz2">.tar.bz2</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0-html-single.zip">.zip</a>)
+        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1-html-single.tar.gz">.tar.gz</a>)
+        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1-html-single.tar.bz2">.tar.bz2</a>)
+        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1-html-single.zip">.zip</a>)
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0.pdf">PDF format</a>
+        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1.pdf">PDF format</a>
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-0.epub">ePub format</a>
+        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.6-1.epub">ePub format</a>
       </li>
     </ul>
 
