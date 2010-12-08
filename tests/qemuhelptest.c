@@ -288,6 +288,44 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_SMBIOS_TYPE |
             QEMUD_CMD_FLAG_VGA_NONE,
             12001, 0,  0);
+    DO_TEST("qemu-kvm-0.12.1.2-rhel60",
+            QEMUD_CMD_FLAG_VNC_COLON |
+            QEMUD_CMD_FLAG_NO_REBOOT |
+            QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT |
+            QEMUD_CMD_FLAG_NAME |
+            QEMUD_CMD_FLAG_UUID |
+            QEMUD_CMD_FLAG_VNET_HDR |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC |
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
+            QEMUD_CMD_FLAG_KVM |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_DRIVE_SERIAL |
+            QEMUD_CMD_FLAG_DRIVE_READONLY |
+            QEMUD_CMD_FLAG_VGA |
+            QEMUD_CMD_FLAG_0_10 |
+            QEMUD_CMD_FLAG_PCIDEVICE |
+            QEMUD_CMD_FLAG_MEM_PATH |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX |
+            QEMUD_CMD_FLAG_CHARDEV |
+            QEMUD_CMD_FLAG_ENABLE_KVM |
+            QEMUD_CMD_FLAG_BALLOON |
+            QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_SMP_TOPOLOGY |
+            QEMUD_CMD_FLAG_RTC |
+            QEMUD_CMD_FLAG_VNET_HOST |
+            QEMUD_CMD_FLAG_NO_KVM_PIT |
+            QEMUD_CMD_FLAG_TDF |
+            QEMUD_CMD_FLAG_NODEFCONFIG |
+            QEMUD_CMD_FLAG_BOOT_MENU |
+            QEMUD_CMD_FLAG_NESTING |
+            QEMUD_CMD_FLAG_NAME_PROCESS |
+            QEMUD_CMD_FLAG_SMBIOS_TYPE |
+            QEMUD_CMD_FLAG_VGA_QXL |
+            QEMUD_CMD_FLAG_SPICE |
+            QEMUD_CMD_FLAG_VGA_NONE,
+            12001, 1,  0);
     DO_TEST("qemu-kvm-0.12.3",
             QEMUD_CMD_FLAG_VNC_COLON |
             QEMUD_CMD_FLAG_NO_REBOOT |
