@@ -365,10 +365,10 @@ int vshRunConsole(virDomainPtr dom, const char *devname)
     }
 
     /* Restore original signal handlers */
-    signal(SIGQUIT, old_sigpipe);
-    signal(SIGQUIT, old_sighup);
-    signal(SIGQUIT, old_sigint);
-    signal(SIGQUIT, old_sigterm);
+    signal(SIGPIPE, old_sigpipe);
+    signal(SIGHUP, old_sighup);
+    signal(SIGINT, old_sigint);
+    signal(SIGTERM, old_sigterm);
     signal(SIGQUIT, old_sigquit);
 
 resettty:
