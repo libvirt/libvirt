@@ -1071,6 +1071,45 @@
       sub-element.
     </p>
 
+    <h4><a name="elementsLease">Device leases</a></h4>
+
+    <p>
+      When using a lock manager, it may be desirable to record device leases
+      against a VM. The lock manager will ensure the VM won't start unless
+      the leases can be acquired.
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    ...
+    &lt;lease&gt;
+      &lt;lockspace&gt;somearea&lt;/lockspace&gt;
+      &lt;key&gt;somekey&lt;/key&gt;
+      &lt;target path='/some/lease/path' offset='1024'/&gt;
+    &lt;/lease&gt;
+    ...
+  &lt;/devices&gt;
+  ...</pre>
+
+    <dl>
+      <dt>lockspace</dt>
+      <dd>This is an arbitrary string, identifying the lockspace
+        within which the key is held. Lock managers may impose
+        extra restrictions on the format, or length of the lockspace
+        name.</dd>
+      <dt>key</dt>
+      <dd>This is an arbitrary string, uniquely identifying the
+        lease to be acquired. Lock managers may impose extra
+        restrictions on the format, or length of the key.
+      </dd>
+      <dt>target</dt>
+      <dd>This is the fully qualified path of the file associated
+        with the lockspace. The offset specifies where the lease
+        is stored within the file. If the lock manager does not
+        require a offset, just pass 0.
+      </dd>
+    </dl>
 
     <h4><a name="elementsUSB">USB and PCI devices</a></h4>
 

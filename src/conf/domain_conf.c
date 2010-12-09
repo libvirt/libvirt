@@ -102,6 +102,7 @@ VIR_ENUM_IMPL(virDomainLifecycleCrash, VIR_DOMAIN_LIFECYCLE_CRASH_LAST,
 
 VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "disk",
+              "lease",
               "filesystem",
               "interface",
               "input",
@@ -642,6 +643,18 @@ void virDomainInputDefFree(virDomainInputDefPtr def)
     VIR_FREE(def);
 }
 
+static void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->lockspace);
+    VIR_FREE(def->key);
+    VIR_FREE(def->path);
+
+    VIR_FREE(def);
+}
+
 void virDomainDiskDefFree(virDomainDiskDefPtr def)
 {
     unsigned int i;
@@ -903,6 +916,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_DISK:
         virDomainDiskDefFree(def->data.disk);
         break;
+    case VIR_DOMAIN_DEVICE_LEASE:
+        virDomainLeaseDefFree(def->data.lease);
+        break;
     case VIR_DOMAIN_DEVICE_NET:
         virDomainNetDefFree(def->data.net);
         break;
@@ -976,6 +992,10 @@ void virDomainDefFree(virDomainDefPtr def)
 
     if (!def)
         return;
+
+    for (i = 0 ; i < def->nleases ; i++)
+        virDomainLeaseDefFree(def->leases[i]);
+    VIR_FREE(def->leases);
 
     for (i = 0 ; i < def->ngraphics ; i++)
         virDomainGraphicsDefFree(def->graphics[i]);
@@ -1880,6 +1900,79 @@ virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
 
     return 0;
 }
+
+/* Parse the XML definition for a lease
+ */
+static virDomainLeaseDefPtr
+virDomainLeaseDefParseXML(xmlNodePtr node)
+{
+    virDomainLeaseDefPtr def;
+    xmlNodePtr cur;
+    char *lockspace = NULL;
+    char *key = NULL;
+    char *path = NULL;
+    char *offset = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if ((key == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "key"))) {
+                key = (char *)xmlNodeGetContent(cur);
+            } else if ((lockspace == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "lockspace"))) {
+                lockspace = (char *)xmlNodeGetContent(cur);
+            } else if ((path == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "target"))) {
+                path = virXMLPropString(cur, "path");
+                offset = virXMLPropString(cur, "offset");
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (!key) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("Missing 'key' element for lease"));
+        goto error;
+    }
+    if (!path) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("Missing 'target' element for lease"));
+        goto error;
+    }
+
+    if (offset &&
+        virStrToLong_ull(offset, NULL, 10, &def->offset) < 0) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("Malformed lease target offset %s"), offset);
+        goto error;
+    }
+
+    def->key = key;
+    def->lockspace = lockspace;
+    def->path = path;
+    path = key = lockspace = NULL;
+
+cleanup:
+    VIR_FREE(lockspace);
+    VIR_FREE(key);
+    VIR_FREE(path);
+    VIR_FREE(offset);
+
+    return def;
+
+ error:
+    virDomainLeaseDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
 
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
@@ -4986,6 +5079,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
         if (!(dev->data.disk = virDomainDiskDefParseXML(caps, node,
                                                         NULL, flags)))
             goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "lease")) {
+        dev->type = VIR_DOMAIN_DEVICE_LEASE;
+        if (!(dev->data.lease = virDomainLeaseDefParseXML(node)))
+            goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "filesystem")) {
         dev->type = VIR_DOMAIN_DEVICE_FS;
         if (!(dev->data.fs = virDomainFSDefParseXML(node, flags)))
@@ -5900,6 +5997,23 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
 
         virDomainControllerInsertPreAlloced(def, controller);
+    }
+    VIR_FREE(nodes);
+
+    /* analysis of the resource leases */
+    if ((n = virXPathNodeSet("./devices/lease", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract device leases"));
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->leases, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
+        virDomainLeaseDefPtr lease = virDomainLeaseDefParseXML(nodes[i]);
+        if (!lease)
+            goto error;
+
+        def->leases[def->nleases++] = lease;
     }
     VIR_FREE(nodes);
 
@@ -7953,6 +8067,22 @@ virDomainLifecycleDefFormat(virBufferPtr buf,
 
 
 static int
+virDomainLeaseDefFormat(virBufferPtr buf,
+                        virDomainLeaseDefPtr def)
+{
+    virBufferAddLit(buf, "    <lease>\n");
+    virBufferEscapeString(buf, "      <lockspace>%s</lockspace>\n", def->lockspace);
+    virBufferEscapeString(buf, "      <key>%s</key>\n", def->key);
+    virBufferEscapeString(buf, "      <target path='%s'", def->path);
+    if (def->offset)
+        virBufferAsprintf(buf, " offset='%llu'", def->offset);
+    virBufferAddLit(buf, "/>\n");
+    virBufferAddLit(buf, "    </lease>\n");
+
+    return 0;
+}
+
+static int
 virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
                        int flags)
@@ -9363,6 +9493,10 @@ char *virDomainDefFormat(virDomainDefPtr def,
 
     for (n = 0 ; n < def->ncontrollers ; n++)
         if (virDomainControllerDefFormat(&buf, def->controllers[n], flags) < 0)
+            goto cleanup;
+
+    for (n = 0 ; n < def->nleases ; n++)
+        if (virDomainLeaseDefFormat(&buf, def->leases[n]) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nfss ; n++)

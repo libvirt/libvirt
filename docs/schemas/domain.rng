@@ -586,6 +586,29 @@
       <ref name="address"/>
     </optional>
   </define>
+
+  <define name="lease">
+    <element name="lease">
+      <interleave>
+        <element name="lockspace">
+          <text/>
+        </element>
+        <element name="key">
+          <text/>
+        </element>
+        <element name="target">
+          <attribute name="path">
+            <text/>
+          </attribute>
+          <optional>
+            <attribute name="offset">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+        </element>
+      </interleave>
+    </element>
+  </define>
   <!--
       A disk description can be either of type file or block
       The name of the attribute on the source element depends on the type
@@ -1962,6 +1985,7 @@
           <choice>
             <ref name="disk"/>
             <ref name="controller"/>
+            <ref name="lease"/>
             <ref name="filesystem"/>
             <ref name="interface"/>
             <ref name="input"/>

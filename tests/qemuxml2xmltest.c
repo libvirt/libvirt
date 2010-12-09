@@ -181,6 +181,7 @@ mymain(void)
     DO_TEST("cputune");
 
     DO_TEST("smp");
+    DO_TEST("lease");
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");

@@ -123,6 +123,15 @@ struct _virDomainDeviceInfo {
     } addr;
 };
 
+typedef struct _virDomainLeaseDef virDomainLeaseDef;
+typedef virDomainLeaseDef *virDomainLeaseDefPtr;
+struct _virDomainLeaseDef {
+    char *lockspace;
+    char *key;
+    char *path;
+    unsigned long long offset;
+};
+
 
 /* Two types of disk backends */
 enum virDomainDiskType {
@@ -825,6 +834,7 @@ enum virDomainSmbiosMode {
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_DISK,
+    VIR_DOMAIN_DEVICE_LEASE,
     VIR_DOMAIN_DEVICE_FS,
     VIR_DOMAIN_DEVICE_NET,
     VIR_DOMAIN_DEVICE_INPUT,
@@ -845,6 +855,7 @@ struct _virDomainDeviceDef {
     union {
         virDomainDiskDefPtr disk;
         virDomainControllerDefPtr controller;
+        virDomainLeaseDefPtr lease;
         virDomainFSDefPtr fs;
         virDomainNetDefPtr net;
         virDomainInputDefPtr input;
@@ -1184,6 +1195,9 @@ struct _virDomainDef {
 
     int nchannels;
     virDomainChrDefPtr *channels;
+
+    int nleases;
+    virDomainLeaseDefPtr *leases;
 
     /* Only 1 */
     virDomainChrDefPtr console;
