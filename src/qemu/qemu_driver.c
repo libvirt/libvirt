@@ -129,6 +129,7 @@ struct _qemuDomainObjPrivate {
     virDomainChrDefPtr monConfig;
     int monJSON;
     int monitor_warned;
+    bool gotShutdown;
 
     int nvcpupids;
     int *vcpupids;
@@ -919,10 +920,18 @@ qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                      int hasError) {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
+    qemuDomainObjPrivatePtr priv;
 
     VIR_DEBUG("Received EOF on %p '%s'", vm, vm->def->name);
 
     virDomainObjLock(vm);
+
+    priv = vm->privateData;
+    if (!hasError && priv->monJSON && !priv->gotShutdown) {
+        VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
+                  "assuming the domain crashed", vm->def->name);
+        hasError = 1;
+    }
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
@@ -1114,6 +1123,18 @@ qemuHandleDomainReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         qemuDomainEventQueue(driver, event);
         qemuDriverUnlock(driver);
     }
+
+    return 0;
+}
+
+
+static int
+qemuHandleDomainShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                         virDomainObjPtr vm)
+{
+    virDomainObjLock(vm);
+    ((qemuDomainObjPrivatePtr) vm->privateData)->gotShutdown = true;
+    virDomainObjUnlock(vm);
 
     return 0;
 }
@@ -1382,6 +1403,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuHandleMonitorDestroy,
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
+    .domainShutdown = qemuHandleDomainShutdown,
     .domainStop = qemuHandleDomainStop,
     .domainReset = qemuHandleDomainReset,
     .domainRTCChange = qemuHandleDomainRTCChange,
@@ -3997,6 +4019,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         priv->monJSON = 0;
 
     priv->monitor_warned = 0;
+    priv->gotShutdown = false;
 
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
         virReportSystemError(ret,
