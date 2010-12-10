@@ -521,20 +521,25 @@ cleanup:
 }
 
 static int
-dhcpStartDhcpDaemon(virNetworkObjPtr network,
-                    virNetworkIpDefPtr ipdef)
+networkStartDhcpDaemon(virNetworkObjPtr network)
 {
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
-    int ret = -1, err;
+    int ret = -1, err, ii;
+    virNetworkIpDefPtr ipdef;
 
     network->dnsmasqPid = -1;
 
-    if (!VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET)) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("cannot start dhcp daemon without IPv4 address for server"));
-        goto cleanup;
+    /* Look for first IPv4 address that has dhcp defined. */
+    /* We support dhcp config on 1 IPv4 interface only. */
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+         ii++) {
+        if (ipdef->nranges || ipdef->nhosts)
+            break;
     }
+    if (!ipdef)
+        return 0;
 
     if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
         virReportSystemError(err,
@@ -583,8 +588,8 @@ cleanup:
 
 static int
 networkAddMasqueradingIptablesRules(struct network_driver *driver,
-                                      virNetworkObjPtr network,
-                                      virNetworkIpDefPtr ipdef)
+                                    virNetworkObjPtr network,
+                                    virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
 
@@ -607,7 +612,9 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
         goto masqerr1;
     }
 
-    /* allow forwarding packets to the bridge interface if they are part of an existing connection */
+    /* allow forwarding packets to the bridge interface if they are
+     * part of an existing connection
+     */
     if (iptablesAddForwardAllowRelatedIn(driver->iptables,
                                          &ipdef->address,
                                          prefix,
@@ -708,10 +715,48 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     return -1;
 }
 
+static void
+networkRemoveMasqueradingIptablesRules(struct network_driver *driver,
+                                       virNetworkObjPtr network,
+                                       virNetworkIpDefPtr ipdef)
+{
+    int prefix = virNetworkIpDefPrefix(ipdef);
+
+    if (prefix >= 0) {
+        iptablesRemoveForwardMasquerade(driver->iptables,
+                                        &ipdef->address,
+                                        prefix,
+                                        network->def->forwardDev,
+                                        "tcp");
+        iptablesRemoveForwardMasquerade(driver->iptables,
+                                        &ipdef->address,
+                                        prefix,
+                                        network->def->forwardDev,
+                                        "udp");
+        iptablesRemoveForwardMasquerade(driver->iptables,
+                                        &ipdef->address,
+                                        prefix,
+                                        network->def->forwardDev,
+                                        NULL);
+
+        iptablesRemoveForwardAllowRelatedIn(driver->iptables,
+                                            &ipdef->address,
+                                            prefix,
+                                            network->def->bridge,
+                                            network->def->forwardDev);
+        iptablesRemoveForwardAllowOut(driver->iptables,
+                                      &ipdef->address,
+                                      prefix,
+                                      network->def->bridge,
+                                      network->def->forwardDev);
+    }
+}
+
 static int
 networkAddRoutingIptablesRules(struct network_driver *driver,
                                virNetworkObjPtr network,
-                               virNetworkIpDefPtr ipdef) {
+                               virNetworkIpDefPtr ipdef)
+{
     int prefix = virNetworkIpDefPrefix(ipdef);
 
     if (prefix < 0) {
@@ -747,23 +792,56 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
 
     return 0;
 
-
- routeerr2:
+routeerr2:
     iptablesRemoveForwardAllowOut(driver->iptables,
                                   &ipdef->address,
                                   prefix,
                                   network->def->bridge,
                                   network->def->forwardDev);
- routeerr1:
+routeerr1:
     return -1;
 }
 
+static void
+networkRemoveRoutingIptablesRules(struct network_driver *driver,
+                                  virNetworkObjPtr network,
+                                  virNetworkIpDefPtr ipdef)
+{
+    int prefix = virNetworkIpDefPrefix(ipdef);
+
+    if (prefix >= 0) {
+        iptablesRemoveForwardAllowIn(driver->iptables,
+                                     &ipdef->address,
+                                     prefix,
+                                     network->def->bridge,
+                                     network->def->forwardDev);
+
+        iptablesRemoveForwardAllowOut(driver->iptables,
+                                      &ipdef->address,
+                                      prefix,
+                                      network->def->bridge,
+                                      network->def->forwardDev);
+    }
+}
+
 static int
-networkAddIptablesRules(struct network_driver *driver,
-                        virNetworkObjPtr network,
-                        virNetworkIpDefPtr ipdef) {
+networkAddGeneralIptablesRules(struct network_driver *driver,
+                               virNetworkObjPtr network)
+{
+    int ii;
+    virNetworkIpDefPtr ipv4def;
+
+    /* First look for first IPv4 address that has dhcp or tftpboot defined. */
+    /* We support dhcp config on 1 IPv4 interface only. */
+    for (ii = 0;
+         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+         ii++) {
+        if (ipv4def->nranges || ipv4def->nhosts || ipv4def->tftproot)
+            break;
+    }
 
     /* allow DHCP requests through to dnsmasq */
+
     if (iptablesAddTcpInput(driver->iptables, network->def->bridge, 67) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow DHCP requests from '%s'"),
@@ -776,6 +854,20 @@ networkAddIptablesRules(struct network_driver *driver,
                            _("failed to add iptables rule to allow DHCP requests from '%s'"),
                            network->def->bridge);
         goto err2;
+    }
+
+    /* If we are doing local DHCP service on this network, attempt to
+     * add a rule that will fixup the checksum of DHCP response
+     * packets back to the guests (but report failure without
+     * aborting, since not all iptables implementations support it).
+     */
+
+    if (ipv4def && (ipv4def->nranges || ipv4def->nhosts) &&
+        (iptablesAddOutputFixUdpChecksum(driver->iptables,
+                                         network->def->bridge, 68) < 0)) {
+        VIR_WARN("Could not add rule to fixup DHCP response checksums "
+                 "on network '%s'.", network->def->name);
+        VIR_WARN0("May need to update iptables package & kernel to support CHECKSUM rule.");
     }
 
     /* allow DNS requests through to dnsmasq */
@@ -793,15 +885,14 @@ networkAddIptablesRules(struct network_driver *driver,
         goto err4;
     }
 
-    /* allow TFTP requests through to dnsmasq */
-    if (ipdef && ipdef->tftproot &&
+    /* allow TFTP requests through to dnsmasq if necessary */
+    if (ipv4def && ipv4def->tftproot &&
         iptablesAddUdpInput(driver->iptables, network->def->bridge, 69) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow TFTP requests from '%s'"),
                            network->def->bridge);
-        goto err4tftp;
+        goto err5;
     }
-
 
     /* Catch all rules to block forwarding to/from bridges */
 
@@ -809,14 +900,14 @@ networkAddIptablesRules(struct network_driver *driver,
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to block outbound traffic from '%s'"),
                            network->def->bridge);
-        goto err5;
+        goto err6;
     }
 
     if (iptablesAddForwardRejectIn(driver->iptables, network->def->bridge) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to block inbound traffic to '%s'"),
                            network->def->bridge);
-        goto err6;
+        goto err7;
     }
 
     /* Allow traffic between guests on the same bridge */
@@ -824,127 +915,137 @@ networkAddIptablesRules(struct network_driver *driver,
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow cross bridge traffic on '%s'"),
                            network->def->bridge);
-        goto err7;
-    }
-
-    if (ipdef) {
-        /* If masquerading is enabled, set up the rules*/
-        if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT &&
-            networkAddMasqueradingIptablesRules(driver, network, ipdef) < 0)
-            goto err8;
-        /* else if routing is enabled, set up the rules*/
-        else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE &&
-                 networkAddRoutingIptablesRules(driver, network, ipdef) < 0)
-            goto err8;
-
-        /* If we are doing local DHCP service on this network, attempt to
-         * add a rule that will fixup the checksum of DHCP response
-         * packets back to the guests (but report failure without
-         * aborting, since not all iptables implementations support it).
-         */
-
-        if (ipdef && (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET) ||
-                      ipdef->nranges) &&
-            (iptablesAddOutputFixUdpChecksum(driver->iptables,
-                                             network->def->bridge, 68) < 0)) {
-            VIR_WARN("Could not add rule to fixup DHCP response checksums "
-                     "on network '%s'.", network->def->name);
-            VIR_WARN0("May need to update iptables package & kernel to support CHECKSUM rule.");
-        }
+        goto err8;
     }
 
     return 0;
 
- err8:
-    iptablesRemoveForwardAllowCross(driver->iptables,
-                                    network->def->bridge);
- err7:
-    iptablesRemoveForwardRejectIn(driver->iptables,
-                                  network->def->bridge);
- err6:
-    iptablesRemoveForwardRejectOut(driver->iptables,
-                                   network->def->bridge);
- err5:
-    if (ipdef && ipdef->tftproot) {
+    /* unwind in reverse order from the point of failure */
+err8:
+    iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
+err7:
+    iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
+err6:
+    if (ipv4def && ipv4def->tftproot) {
         iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
     }
- err4tftp:
+err5:
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
- err4:
+err4:
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
- err3:
+err3:
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
- err2:
+err2:
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
- err1:
+err1:
     return -1;
 }
 
 static void
-networkRemoveIptablesRules(struct network_driver *driver,
-                           virNetworkObjPtr network,
-                           virNetworkIpDefPtr ipdef) {
+networkRemoveGeneralIptablesRules(struct network_driver *driver,
+                                  virNetworkObjPtr network)
+{
+    int ii;
+    virNetworkIpDefPtr ipv4def;
 
-    if (ipdef && (VIR_SOCKET_HAS_ADDR(&ipdef->address) ||
-                  ipdef->nranges)) {
-        iptablesRemoveOutputFixUdpChecksum(driver->iptables,
-                                           network->def->bridge, 68);
+    for (ii = 0;
+         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+         ii++) {
+        if (ipv4def->nranges || ipv4def->nhosts || ipv4def->tftproot)
+            break;
     }
-    if (ipdef && network->def->forwardType != VIR_NETWORK_FORWARD_NONE) {
-        int prefix = virNetworkIpDefPrefix(ipdef);
 
-        if (prefix < 0) {
-            networkReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid prefix or netmask for '%s'"),
-                               network->def->bridge);
-            goto error;
-        }
-
-        if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
-            iptablesRemoveForwardMasquerade(driver->iptables,
-                                            &ipdef->address,
-                                            prefix,
-                                            network->def->forwardDev,
-                                            "tcp");
-            iptablesRemoveForwardMasquerade(driver->iptables,
-                                            &ipdef->address,
-                                            prefix,
-                                            network->def->forwardDev,
-                                            "udp");
-            iptablesRemoveForwardMasquerade(driver->iptables,
-                                            &ipdef->address,
-                                            prefix,
-                                            network->def->forwardDev,
-                                            NULL);
-            iptablesRemoveForwardAllowRelatedIn(driver->iptables,
-                                                &ipdef->address,
-                                                prefix,
-                                                network->def->bridge,
-                                                network->def->forwardDev);
-        } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
-            iptablesRemoveForwardAllowIn(driver->iptables,
-                                         &ipdef->address,
-                                         prefix,
-                                         network->def->bridge,
-                                         network->def->forwardDev);
-        }
-
-        iptablesRemoveForwardAllowOut(driver->iptables,
-                                      &ipdef->address,
-                                      prefix,
-                                      network->def->bridge,
-                                      network->def->forwardDev);
-    }
-error:
     iptablesRemoveForwardAllowCross(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
-    if (ipdef && ipdef->tftproot)
+    if (ipv4def && ipv4def->tftproot) {
         iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
+    }
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
+    if (ipv4def && (ipv4def->nranges || ipv4def->nhosts)) {
+        iptablesRemoveOutputFixUdpChecksum(driver->iptables,
+                                           network->def->bridge, 68);
+    }
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
+}
+
+static int
+networkAddIpSpecificIptablesRules(struct network_driver *driver,
+                                  virNetworkObjPtr network,
+                                  virNetworkIpDefPtr ipdef)
+{
+    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT &&
+        networkAddMasqueradingIptablesRules(driver, network, ipdef) < 0)
+       return -1;
+    if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE &&
+        networkAddRoutingIptablesRules(driver, network, ipdef) < 0)
+       return -1;
+
+    return 0;
+}
+
+static void
+networkRemoveIpSpecificIptablesRules(struct network_driver *driver,
+                                     virNetworkObjPtr network,
+                                     virNetworkIpDefPtr ipdef)
+{
+    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT)
+        networkRemoveMasqueradingIptablesRules(driver, network, ipdef);
+    else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)
+        networkRemoveRoutingIptablesRules(driver, network, ipdef);
+}
+
+/* Add all rules for all ip addresses (and general rules) on a network */
+static int
+networkAddIptablesRules(struct network_driver *driver,
+                        virNetworkObjPtr network)
+{
+    int ii;
+    virNetworkIpDefPtr ipdef;
+
+    /* Add "once per network" rules */
+    if (networkAddGeneralIptablesRules(driver, network) < 0)
+        return -1;
+
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+         ii++) {
+        /* Add address-specific iptables rules */
+        if (networkAddIpSpecificIptablesRules(driver, network, ipdef) < 0) {
+            goto err;
+        }
+    }
+    return 0;
+
+err:
+    /* The final failed call to networkAddIpSpecificIptablesRules will
+     * have removed any rules it created, but we need to remove those
+     * added for previous IP addresses.
+     */
+    while ((--ii >= 0) &&
+           (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii))) {
+        networkRemoveIpSpecificIptablesRules(driver, network, ipdef);
+    }
+    networkRemoveGeneralIptablesRules(driver, network);
+    return -1;
+}
+
+/* Remove all rules for all ip addresses (and general rules) on a network */
+static void
+networkRemoveIptablesRules(struct network_driver *driver,
+                           virNetworkObjPtr network)
+{
+    int ii;
+    virNetworkIpDefPtr ipdef;
+
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+         ii++) {
+        networkRemoveIpSpecificIptablesRules(driver, network, ipdef);
+    }
+    networkRemoveGeneralIptablesRules(driver, network);
 }
 
 static void
@@ -956,22 +1057,12 @@ networkReloadIptablesRules(struct network_driver *driver)
 
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
-
         if (virNetworkObjIsActive(driver->networks.objs[i])) {
-           virNetworkIpDefPtr ipv4def;
-
-           /* Find the one allowed IPv4 ip address in the definition */
-           /* Even if none is found, we still call the functions below */
-           ipv4def = virNetworkDefGetIpByIndex(driver->networks.objs[i]->def,
-                                               AF_INET, 0);
-           networkRemoveIptablesRules(driver, driver->networks.objs[i],
-                                      ipv4def);
-           if (networkAddIptablesRules(driver, driver->networks.objs[i],
-                                       ipv4def) < 0) {
-               /* failed to add but already logged */
-           }
+            networkRemoveIptablesRules(driver, driver->networks.objs[i]);
+            if (networkAddIptablesRules(driver, driver->networks.objs[i]) < 0) {
+                /* failed to add but already logged */
+            }
         }
-
         virNetworkObjUnlock(driver->networks.objs[i]);
     }
 }
@@ -1043,32 +1134,16 @@ cleanup:
  *      other scenarios where we can ruin host network connectivity.
  * XXX: Using a proper library is preferred over parsing /proc
  */
-static int networkCheckRouteCollision(virNetworkObjPtr network,
-                                      virNetworkIpDefPtr ipdef)
+static int
+networkCheckRouteCollision(virNetworkObjPtr network)
 {
-    int ret = -1, len;
-    unsigned int net_dest;
-    virSocketAddr netmask;
+    int ret = 0, len;
     char *cur, *buf = NULL;
     enum {MAX_ROUTE_SIZE = 1024*64};
 
-    if (!VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET)) {
-        /* Only support collision check for IPv4 */
-        return 0;
-    }
-
-    if (virNetworkIpDefNetmask(ipdef, &netmask) < 0) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to get netmask of '%s'"),
-                           network->def->bridge);
-    }
-
-    net_dest = (ipdef->address.data.inet4.sin_addr.s_addr &
-                netmask.data.inet4.sin_addr.s_addr);
-
     /* Read whole routing table into memory */
     if ((len = virFileReadAll(PROC_NET_ROUTE, MAX_ROUTE_SIZE, &buf)) < 0)
-        goto error;
+        goto out;
 
     /* Dropping the last character shouldn't hurt */
     if (len > 0)
@@ -1087,7 +1162,8 @@ static int networkCheckRouteCollision(virNetworkObjPtr network,
     while (cur) {
         char iface[17], dest[128], mask[128];
         unsigned int addr_val, mask_val;
-        int num;
+        virNetworkIpDefPtr ipdef;
+        int num, ii;
 
         /* NUL-terminate the line, so sscanf doesn't go beyond a newline.  */
         char *nl = strchr(cur, '\n');
@@ -1116,28 +1192,71 @@ static int networkCheckRouteCollision(virNetworkObjPtr network,
 
         addr_val &= mask_val;
 
-        if ((net_dest == addr_val) &&
-            (netmask.data.inet4.sin_addr.s_addr == mask_val)) {
-            networkReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Network is already in use by interface %s"),
-                               iface);
-            goto error;
+        for (ii = 0;
+             (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+             ii++) {
+
+            unsigned int net_dest;
+            virSocketAddr netmask;
+
+            if (virNetworkIpDefNetmask(ipdef, &netmask) < 0) {
+                VIR_WARN("Failed to get netmask of '%s'",
+                         network->def->bridge);
+                continue;
+            }
+
+            net_dest = (ipdef->address.data.inet4.sin_addr.s_addr &
+                        netmask.data.inet4.sin_addr.s_addr);
+
+            if ((net_dest == addr_val) &&
+                (netmask.data.inet4.sin_addr.s_addr == mask_val)) {
+                networkReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Network is already in use by interface %s"),
+                                   iface);
+                ret = -1;
+                goto out;
+            }
         }
     }
 
 out:
-    ret = 0;
-error:
     VIR_FREE(buf);
     return ret;
 }
 
-static int networkStartNetworkDaemon(struct network_driver *driver,
-                                     virNetworkObjPtr network)
+static int
+networkAddAddrToBridge(struct network_driver *driver,
+                       virNetworkObjPtr network,
+                       virNetworkIpDefPtr ipdef)
 {
-    int err;
-    virErrorPtr save_err;
-    virNetworkIpDefPtr ipv4def;
+    int prefix = virNetworkIpDefPrefix(ipdef);
+
+    if (prefix < 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("bridge '%s' has an invalid netmask or IP address"),
+                           network->def->bridge);
+        return -1;
+    }
+
+    if (brAddInetAddress(driver->brctl, network->def->bridge,
+                         &ipdef->address, prefix) < 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot set IP address on bridge '%s'"),
+                           network->def->bridge);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+networkStartNetworkDaemon(struct network_driver *driver,
+                          virNetworkObjPtr network)
+{
+    int ii, err;
+    bool v4present = false;
+    virErrorPtr save_err = NULL;
+    virNetworkIpDefPtr ipdef;
 
     if (virNetworkObjIsActive(network)) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1145,13 +1264,11 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
         return -1;
     }
 
-    /* find the one allowed IPv4 ip address in the definition */
-    ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
-
-    /* Check to see if network collides with an existing route */
-    if (ipv4def && networkCheckRouteCollision(network, ipv4def) < 0)
+    /* Check to see if any network IP collides with an existing route */
+    if (networkCheckRouteCollision(network) < 0)
         return -1;
 
+    /* Create and configure the bridge device */
     if ((err = brAddBridge(driver->brctl, network->def->bridge))) {
         virReportSystemError(err,
                              _("cannot create bridge '%s'"),
@@ -1159,15 +1276,13 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
         return -1;
     }
 
-    if (networkDisableIPV6(network) < 0)
-        goto err_delbr;
-
+    /* Set bridge options */
     if ((err = brSetForwardDelay(driver->brctl, network->def->bridge,
                                  network->def->delay))) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot set forward delay on bridge '%s'"),
                            network->def->bridge);
-        goto err_delbr;
+        goto err1;
     }
 
     if ((err = brSetEnableSTP(driver->brctl, network->def->bridge,
@@ -1175,90 +1290,95 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot set STP '%s' on bridge '%s'"),
                            network->def->stp ? "on" : "off", network->def->bridge);
-        goto err_delbr;
+        goto err1;
     }
 
-    if (ipv4def) {
-        int prefix = virNetworkIpDefPrefix(ipv4def);
+    /* Disable IPv6 on the bridge */
+    if (networkDisableIPV6(network) < 0)
+        goto err1;
 
-        if (prefix < 0) {
-            networkReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("bridge '%s' has an invalid netmask or IP address"),
-                               network->def->bridge);
-            goto err_delbr;
-        }
+    /* Add "once per network" rules */
+    if (networkAddIptablesRules(driver, network) < 0)
+        goto err1;
 
-        if ((err = brAddInetAddress(driver->brctl, network->def->bridge,
-                                    &ipv4def->address, prefix))) {
-            networkReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot set IP address on bridge '%s'"),
-                               network->def->bridge);
-            goto err_delbr;
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+         ii++) {
+        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET))
+            v4present = true;
+
+        /* Add the IP address/netmask to the bridge */
+        if (networkAddAddrToBridge(driver, network, ipdef) < 0) {
+            goto err2;
         }
     }
 
+    /* Bring up the bridge interface */
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 1))) {
         virReportSystemError(err,
                              _("failed to bring the bridge '%s' up"),
                              network->def->bridge);
-        goto err_delbr;
+        goto err2;
     }
 
-    if (ipv4def && networkAddIptablesRules(driver, network, ipv4def) < 0)
-        goto err_delbr1;
-
+    /* If forwardType != NONE, turn on global IP forwarding */
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
         networkEnableIpForwarding() < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to enable IP forwarding"));
-        goto err_delbr2;
+        goto err3;
     }
 
-    /*
-     * Start the dhcp daemon for the 1st (and only supported) ipv4
-     * address.
-     */
-    if (ipv4def && dhcpStartDhcpDaemon(network, ipv4def) < 0)
-        goto err_delbr2;
+
+    /* start dnsmasq if there are any IPv4 addresses */
+    if (v4present && networkStartDhcpDaemon(network) < 0)
+        goto err3;
 
     /* Persist the live configuration now we have bridge info  */
     if (virNetworkSaveConfig(NETWORK_STATE_DIR, network->def) < 0) {
-        goto err_kill;
+        goto err4;
     }
 
     network->active = 1;
 
     return 0;
 
- err_kill:
+ err4:
+    if (!save_err)
+        save_err = virSaveLastError();
+
     if (network->dnsmasqPid > 0) {
         kill(network->dnsmasqPid, SIGTERM);
         network->dnsmasqPid = -1;
     }
 
- err_delbr2:
-    save_err = virSaveLastError();
-    if (ipv4def)
-        networkRemoveIptablesRules(driver, network, ipv4def);
-    if (save_err) {
-        virSetError(save_err);
-        virFreeError(save_err);
-    }
-
- err_delbr1:
+ err3:
+    if (!save_err)
+        save_err = virSaveLastError();
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         char ebuf[1024];
         VIR_WARN("Failed to bring down bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
- err_delbr:
+ err2:
+    if (!save_err)
+        save_err = virSaveLastError();
+    networkRemoveIptablesRules(driver, network);
+
+ err1:
+    if (!save_err)
+        save_err = virSaveLastError();
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
         char ebuf[1024];
         VIR_WARN("Failed to delete bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
+    if (save_err) {
+        virSetError(save_err);
+        virFreeError(save_err);
+    }
     return -1;
 }
 
@@ -1268,7 +1388,6 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
 {
     int err;
     char *stateFile;
-    virNetworkIpDefPtr ipv4def;
 
     VIR_INFO(_("Shutting down network '%s'"), network->def->name);
 
@@ -1285,16 +1404,13 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
     if (network->dnsmasqPid > 0)
         kill(network->dnsmasqPid, SIGTERM);
 
-    /* find the one allowed IPv4 ip address in the definition */
-    ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
-    if (ipv4def)
-        networkRemoveIptablesRules(driver, network, ipv4def);
-
     char ebuf[1024];
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         VIR_WARN("Failed to bring down bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
+
+    networkRemoveIptablesRules(driver, network);
 
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
         VIR_WARN("Failed to delete bridge '%s' : %s",
@@ -1552,10 +1668,11 @@ cleanup:
 
 static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
-    virNetworkIpDefPtr ipv4def;
+    virNetworkIpDefPtr ipdef, ipv4def = NULL;
     virNetworkDefPtr def;
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
+    int ii;
 
     networkDriverLock(driver);
 
@@ -1583,10 +1700,33 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
-    /* we only support dhcp on one IPv4 address per defined network */
-    ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
+    /* we only support dhcp on one IPv4 address per defined network, and currently
+     * don't support IPv6.
+     */
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+         ii++) {
+        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET)) {
+            if (ipdef->nranges || ipdef->nhosts) {
+                if (ipv4def) {
+                    networkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       "%s", _("Multiple dhcp sections found. dhcp is supported only for a single IPv4 address on each network"));
+                    goto cleanup;
+                } else {
+                    ipv4def = ipdef;
+                }
+            }
+        } else {
+            /* we currently only support IPv4 */
+            networkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported address family '%s' (%d) in network definition"),
+                               ipdef->family ? ipdef->family : "unspecified",
+                               VIR_SOCKET_FAMILY(&ipdef->address));
+            goto cleanup;
 
-    if (ipv4def && ipv4def->nhosts > 0) {
+        }
+    }
+    if (ipv4def) {
         dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
         if (dctx == NULL)
             goto cleanup;
@@ -1609,7 +1749,7 @@ static int networkUndefine(virNetworkPtr net) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     virNetworkIpDefPtr ipv4def;
-    int ret = -1;
+    int ret = -1, ii;
 
     networkDriverLock(driver);
 
@@ -1631,10 +1771,14 @@ static int networkUndefine(virNetworkPtr net) {
                                network) < 0)
         goto cleanup;
 
-    /* find the one allowed IPv4 ip address in the definition */
-    ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
-
-    if (ipv4def && ipv4def->nhosts > 0) {
+    /* we only support dhcp on one IPv4 address per defined network */
+    for (ii = 0;
+         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+         ii++) {
+        if (ipv4def->nranges || ipv4def->nhosts)
+            break;
+    }
+    if (ipv4def) {
         dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
         if (dctx == NULL)
             goto cleanup;
