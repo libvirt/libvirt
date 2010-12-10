@@ -315,6 +315,31 @@ virCommandAddEnvString(virCommandPtr cmd, const char *str)
 
 
 /*
+ * Convert a buffer containing preformatted name=value into an
+ * environment variable of the child.
+ * Correctly transfers memory errors or contents from buf to cmd.
+ */
+void
+virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
+{
+    if (!cmd || cmd->has_error) {
+        virBufferFreeAndReset(buf);
+        return;
+    }
+
+    /* env plus trailing NULL. */
+    if (virBufferError(buf) ||
+        VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
+        cmd->has_error = ENOMEM;
+        virBufferFreeAndReset(buf);
+        return;
+    }
+
+    cmd->env[cmd->nenv++] = virBufferContentAndReset(buf);
+}
+
+
+/*
  * Pass an environment variable to the child
  * using current process' value
  */
@@ -377,6 +402,30 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
     }
 
     cmd->args[cmd->nargs++] = arg;
+}
+
+
+/*
+ * Convert a buffer into a command line argument to the child.
+ * Correctly transfers memory errors or contents from buf to cmd.
+ */
+void
+virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
+{
+    if (!cmd || cmd->has_error) {
+        virBufferFreeAndReset(buf);
+        return;
+    }
+
+    /* Arg plus trailing NULL. */
+    if (virBufferError(buf) ||
+        VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1) < 0) {
+        cmd->has_error = ENOMEM;
+        virBufferFreeAndReset(buf);
+        return;
+    }
+
+    cmd->args[cmd->nargs++] = virBufferContentAndReset(buf);
 }
 
 

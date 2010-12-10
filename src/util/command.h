@@ -24,6 +24,7 @@
 
 # include "internal.h"
 # include "util.h"
+# include "buf.h"
 
 typedef struct _virCommand virCommand;
 typedef virCommand *virCommandPtr;
@@ -110,6 +111,15 @@ void virCommandAddEnvPair(virCommandPtr cmd,
  */
 void virCommandAddEnvString(virCommandPtr cmd,
                             const char *str) ATTRIBUTE_NONNULL(2);
+
+/*
+ * Convert a buffer containing preformatted name=value into an
+ * environment variable of the child.
+ * Correctly transfers memory errors or contents from buf to cmd.
+ */
+void virCommandAddEnvBuffer(virCommandPtr cmd,
+                            virBufferPtr buf);
+
 /*
  * Pass an environment variable to the child
  * using current process' value
@@ -127,6 +137,13 @@ void virCommandAddEnvPassCommon(virCommandPtr cmd);
  */
 void virCommandAddArg(virCommandPtr cmd,
                       const char *val) ATTRIBUTE_NONNULL(2);
+
+/*
+ * Convert a buffer into a command line argument to the child.
+ * Correctly transfers memory errors or contents from buf to cmd.
+ */
+void virCommandAddArgBuffer(virCommandPtr cmd,
+                            virBufferPtr buf);
 
 /*
  * Add a command line argument created by a printf-style format

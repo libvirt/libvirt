@@ -4466,7 +4466,6 @@ qemudBuildCommandLine(virConnectPtr conn,
         }
         if (def->os.nBootDevs) {
             virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
-            char *bootstr;
             virCommandAddArg(cmd, "-boot");
 
             boot[def->os.nBootDevs] = '\0';
@@ -4481,14 +4480,7 @@ qemudBuildCommandLine(virConnectPtr conn,
                 virBufferVSprintf(&boot_buf, "%s", boot);
             }
 
-            if (virBufferError(&boot_buf)) {
-                virReportOOMError();
-                goto error;
-            }
-
-            bootstr = virBufferContentAndReset(&boot_buf);
-            virCommandAddArg(cmd, bootstr);
-            VIR_FREE(bootstr);
+            virCommandAddArgBuffer(cmd, &boot_buf);
         }
 
         if (def->os.kernel)
@@ -4622,7 +4614,7 @@ qemudBuildCommandLine(virConnectPtr conn,
                 disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
                 for (j = 0 ; j < disk->nhosts ; j++) {
                     if (!has_rbd_hosts) {
-                        virBufferAddLit(&rbd_hosts, "-m ");
+                        virBufferAddLit(&rbd_hosts, "CEPH_ARGS=-m ");
                         has_rbd_hosts = true;
                     } else {
                         virBufferAddLit(&rbd_hosts, ",");
@@ -4727,7 +4719,7 @@ qemudBuildCommandLine(virConnectPtr conn,
                     snprintf(file, PATH_MAX, "rbd:%s,", disk->src);
                     for (j = 0 ; j < disk->nhosts ; j++) {
                         if (!has_rbd_hosts) {
-                            virBufferAddLit(&rbd_hosts, "-m ");
+                            virBufferAddLit(&rbd_hosts, "CEPH_ARGS=-m ");
                             has_rbd_hosts = true;
                         } else {
                             virBufferAddLit(&rbd_hosts, ",");
@@ -4761,12 +4753,8 @@ qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (virBufferError(&rbd_hosts)) {
-        virBufferFreeAndReset(&rbd_hosts);
-        goto no_memory;
-    }
     if (has_rbd_hosts)
-        virCommandAddEnvPair(cmd, "CEPH_ARGS", virBufferContentAndReset(&rbd_hosts));
+        virCommandAddEnvBuffer(cmd, &rbd_hosts);
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_FSDEV) {
         for (i = 0 ; i < def->nfss ; i++) {
@@ -5079,7 +5067,6 @@ qemudBuildCommandLine(virConnectPtr conn,
     if ((def->ngraphics == 1) &&
         def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
-        char *optstr;
 
         if (qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
             if (def->graphics[0]->data.vnc.listenAddr)
@@ -5118,15 +5105,9 @@ qemudBuildCommandLine(virConnectPtr conn,
             virBufferVSprintf(&opt, "%d",
                               def->graphics[0]->data.vnc.port - 5900);
         }
-        if (virBufferError(&opt)) {
-            virBufferFreeAndReset(&opt);
-            goto no_memory;
-        }
 
-        optstr = virBufferContentAndReset(&opt);
-
-        virCommandAddArgList(cmd, "-vnc", optstr, NULL);
-        VIR_FREE(optstr);
+        virCommandAddArg(cmd, "-vnc");
+        virCommandAddArgBuffer(cmd, &opt);
         if (def->graphics[0]->data.vnc.keymap) {
             virCommandAddArgList(cmd, "-k", def->graphics[0]->data.vnc.keymap,
                                  NULL);
@@ -5168,7 +5149,6 @@ qemudBuildCommandLine(virConnectPtr conn,
     } else if ((def->ngraphics == 1) &&
                def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
-        char *optstr;
 
         if (!(qemuCmdFlags & QEMUD_CMD_FLAG_SPICE)) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5211,13 +5191,8 @@ qemudBuildCommandLine(virConnectPtr conn,
             }
         }
 
-        if (virBufferError(&opt))
-            goto no_memory;
-
-        optstr = virBufferContentAndReset(&opt);
-
-        virCommandAddArgList(cmd, "-spice", optstr, NULL);
-        VIR_FREE(optstr);
+        virCommandAddArg(cmd, "-spice");
+        virCommandAddArgBuffer(cmd, &opt);
         if (def->graphics[0]->data.spice.keymap)
             virCommandAddArgList(cmd, "-k",
                                  def->graphics[0]->data.spice.keymap, NULL);
@@ -5516,6 +5491,7 @@ qemudBuildCommandLine(virConnectPtr conn,
  error:
     for (i = 0; i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);
+    virBufferFreeAndReset(&rbd_hosts);
     virCommandFree(cmd);
     return NULL;
 }

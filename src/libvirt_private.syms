@@ -85,10 +85,12 @@ virCgroupSetSwapHardLimit;
 
 # command.h
 virCommandAddArg;
+virCommandAddArgBuffer;
 virCommandAddArgFormat;
 virCommandAddArgList;
 virCommandAddArgPair;
 virCommandAddArgSet;
+virCommandAddEnvBuffer;
 virCommandAddEnvPair;
 virCommandAddEnvPass;
 virCommandAddEnvPassCommon;
