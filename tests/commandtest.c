@@ -688,6 +688,12 @@ mymain(int argc, char **argv)
     if (chdir("/tmp") < 0)
         return(EXIT_FAILURE);
 
+    /* Kill off any inherited fds that might interfere with our
+     * testing.  */
+    close(3);
+    close(4);
+    close(5);
+
     virInitialize();
 
     const char *const newenv[] = {
