@@ -615,9 +615,9 @@ exclude_file_name_regexp--sc_avoid_write = \
 exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
-  ^daemon/remote_generator\.pl$$
+  ^src/rpc/gendispatch\.pl$$
 
-exclude_file_name_regexp--sc_po_check = ^(docs/|daemon/remote_generator\.pl$$)
+exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
   ^(include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virterror\.c)$$
@@ -645,7 +645,7 @@ exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/util\.c$$
 exclude_file_name_regexp--sc_prohibit_gettext_noop = ^docs/
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
-  ^daemon/remote_generator\.pl$$
+  ^src/rpc/gendispatch\.pl$$
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|docs|tests)/|tools/(virsh|console)\.c$$)

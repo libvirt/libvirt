@@ -174,14 +174,14 @@ REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
 QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
 REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL)
 
-$(srcdir)/remote/remote_client_bodies.h: $(REMOTE_PROTOCOL) \
-		$(top_srcdir)/daemon/remote_generator.pl
-	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl \
+$(srcdir)/remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+		$(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl \
 	  -c -k remote $(REMOTE_PROTOCOL) > $@
 
-$(srcdir)/remote/qemu_client_bodies.h: $(QEMU_PROTOCOL) \
-		$(top_srcdir)/daemon/remote_generator.pl
-	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl \
+$(srcdir)/remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+		$(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl \
 	  -k qemu $(QEMU_PROTOCOL) > $@
 
 REMOTE_DRIVER_SOURCES =						\
@@ -190,8 +190,7 @@ REMOTE_DRIVER_SOURCES =						\
 		$(REMOTE_DRIVER_GENERATED)
 
 EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
-		$(REMOTE_DRIVER_GENERATED) \
-		remote/rpcgen_fix.pl
+		$(REMOTE_DRIVER_GENERATED)
 
 # Ensure that we don't change the struct or member names or member ordering
 # in remote_protocol.x  The embedded perl below needs a few comments, and
@@ -572,12 +571,12 @@ $(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 endif WITH_REMOTE
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/remote/rpcgen_fix.pl
-	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -c \
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
 	       $< $@
 
-%protocol.h: %protocol.x $(srcdir)/remote/rpcgen_fix.pl
-	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -h \
-	       $< $@
+%protocol.h: %protocol.x $(srcdir)/rpc/genprotocol.pl
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
+               $< $@
 
 if WITH_XEN
 if WITH_DRIVER_MODULES
@@ -1189,6 +1188,11 @@ EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
 endif
 
 noinst_LTLIBRARIES += libvirt-net-rpc.la libvirt-net-rpc-server.la libvirt-net-rpc-client.la
+
+EXTRA_DIST += \
+       rpc/virnetprotocol.x \
+       rpc/gendispatch.pl \
+       rpc/genprotocol.pl
 
 libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \

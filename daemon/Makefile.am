@@ -28,7 +28,6 @@ AVAHI_SOURCES =						\
 
 DISTCLEANFILES =
 EXTRA_DIST =						\
-	remote_generator.pl				\
 	remote_dispatch_bodies.h			\
 	qemu_dispatch_bodies.h				\
 	libvirtd.conf					\
@@ -56,54 +55,54 @@ BUILT_SOURCES =
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
 
-$(srcdir)/remote_dispatch_prototypes.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/remote_dispatch_prototypes.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -p remote \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -p remote \
 	  $(REMOTE_PROTOCOL) > $@
 
-$(srcdir)/remote_dispatch_table.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/remote_dispatch_table.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -t remote \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -t remote \
 	  $(REMOTE_PROTOCOL) > $@
 
-$(srcdir)/remote_dispatch_args.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/remote_dispatch_args.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -a remote \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -a remote \
 	  $(REMOTE_PROTOCOL) > $@
 
-$(srcdir)/remote_dispatch_ret.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/remote_dispatch_ret.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -r remote \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -r remote \
 	  $(REMOTE_PROTOCOL) > $@
 
-$(srcdir)/remote_dispatch_bodies.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/remote_dispatch_bodies.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -b remote \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -b remote \
 	  $(REMOTE_PROTOCOL) > $@
 
-$(srcdir)/qemu_dispatch_prototypes.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/qemu_dispatch_prototypes.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -p qemu \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -p qemu \
 	  $(QEMU_PROTOCOL) > $@
 
-$(srcdir)/qemu_dispatch_table.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/qemu_dispatch_table.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -t qemu \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -t qemu \
 	  $(QEMU_PROTOCOL) > $@
 
-$(srcdir)/qemu_dispatch_args.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/qemu_dispatch_args.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -a qemu \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -a qemu \
 	  $(QEMU_PROTOCOL) > $@
 
-$(srcdir)/qemu_dispatch_ret.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/qemu_dispatch_ret.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -r qemu \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -r qemu \
 	  $(QEMU_PROTOCOL) > $@
 
-$(srcdir)/qemu_dispatch_bodies.h: $(srcdir)/remote_generator.pl \
+$(srcdir)/qemu_dispatch_bodies.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -b qemu \
+	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -b qemu \
 	  $(QEMU_PROTOCOL) > $@
 
 if WITH_LIBVIRTD
