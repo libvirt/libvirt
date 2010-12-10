@@ -1195,11 +1195,20 @@ libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetprotocol.h rpc/virnetprotocol.c \
 	rpc/virnetsocket.h rpc/virnetsocket.c \
 	rpc/virnettlscontext.h rpc/virnettlscontext.c
+if HAVE_SASL
+libvirt_net_rpc_la_SOURCES += \
+	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
+else
+EXTRA_DIST += \
+	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
+endif
 libvirt_net_rpc_la_CFLAGS = \
 			$(GNUTLS_CFLAGS) \
+			$(SASL_CFLAGS) \
 			$(AM_CFLAGS)
 libvirt_net_rpc_la_LDFLAGS = \
 			$(GNUTLS_LIBS) \
+			$(SASL_LIBS) \
 			$(AM_LDFLAGS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)
