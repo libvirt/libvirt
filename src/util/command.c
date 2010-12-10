@@ -1198,6 +1198,7 @@ virCommandFree(virCommandPtr cmd)
         }
     }
 
+    VIR_FREE(cmd->inbuf);
     VIR_FORCE_CLOSE(cmd->outfd);
     VIR_FORCE_CLOSE(cmd->errfd);
 
