@@ -86,11 +86,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
-#ifdef WIN32
-# define pipe(fds) _pipe(fds,4096, _O_BINARY)
-#endif
-
-
 static int inside_daemon = 0;
 
 struct remote_thread_call;

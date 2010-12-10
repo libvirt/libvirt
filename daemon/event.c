@@ -621,12 +621,6 @@ static void virEventHandleWakeup(int watch ATTRIBUTE_UNUSED,
     virMutexUnlock(&eventLoop.lock);
 }
 
-#ifdef WIN32
-static inline int pipe(int fd[2]) {
-    return _pipe(fd, 4096, 0);
-}
-#endif
-
 int virEventInit(void)
 {
     if (virMutexInit(&eventLoop.lock) < 0)
