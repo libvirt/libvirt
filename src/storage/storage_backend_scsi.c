@@ -455,6 +455,7 @@ processLU(virStoragePoolObjPtr pool,
     VIR_FREE(type_path);
 
 out:
+    VIR_FREE(block_device);
     return retval;
 }
 
