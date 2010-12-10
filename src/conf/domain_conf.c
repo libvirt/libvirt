@@ -524,6 +524,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
 
     for (i = 0 ; i < def->nhosts ; i++)
         virDomainDiskHostDefFree(&def->hosts[i]);
+    VIR_FREE(def->hosts);
 
     VIR_FREE(def);
 }
@@ -1420,6 +1421,7 @@ virDomainDeviceVirtioSerialAddressParseXML(
 cleanup:
     VIR_FREE(controller);
     VIR_FREE(bus);
+    VIR_FREE(port);
     return ret;
 }
 
@@ -3491,6 +3493,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
                     if (!name || !mode) {
                         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                              _("spice channel missing name/mode"));
+                        VIR_FREE(name);
+                        VIR_FREE(mode);
                         goto error;
                     }
 
@@ -3498,14 +3502,20 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
                         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                              _("unknown spice channel name %s"),
                                              name);
+                        VIR_FREE(name);
+                        VIR_FREE(mode);
                         goto error;
                     }
                     if ((modeval = virDomainGraphicsSpiceChannelModeTypeFromString(mode)) < 0) {
                         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                              _("unknown spice channel mode %s"),
                                              mode);
+                        VIR_FREE(name);
+                        VIR_FREE(mode);
                         goto error;
                     }
+                    VIR_FREE(name);
+                    VIR_FREE(mode);
 
                     def->data.spice.channels[nameval] = modeval;
                 }
