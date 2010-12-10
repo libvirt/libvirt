@@ -51,6 +51,7 @@
 #include "event.h"
 #include "buf.h"
 #include "util.h"
+#include "command.h"
 #include "memory.h"
 #include "uuid.h"
 #include "iptables.h"
@@ -390,25 +391,15 @@ networkSaveDnsmasqHostsfile(virNetworkObjPtr network,
 static int
 networkBuildDnsmasqArgv(virNetworkObjPtr network,
                         const char *pidfile,
-                        const char ***argv) {
-    int i, len, r;
+                        virCommandPtr cmd) {
+    int r, ret = -1;
     int nbleases = 0;
-    char *pidfileArg;
-    char buf[1024];
-    unsigned int ranges;
-    char *ipAddr;
+    char *bridgeaddr;
 
+    if (!(bridgeaddr = virSocketFormatAddr(&network->def->ipAddress)))
+        goto cleanup;
     /*
-     * For static-only DHCP, i.e. with no range but at least one host element,
-     * we have to add a special --dhcp-range option to enable the service in
-     * dnsmasq.
-     */
-    ranges = network->def->nranges;
-    if (!ranges && network->def->nhosts)
-        ranges = 1;
-
-    /*
-     * NB, be careful about syntax for dnsmasq options in long format
+     * NB, be careful about syntax for dnsmasq options in long format.
      *
      * If the flag has a mandatory argument, it can be given using
      * either syntax:
@@ -422,66 +413,23 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
      *     --foo=bar
      *
      * It is hard to determine whether a flag is optional or not,
-     * without reading the dnsmasq source :-( The manpages is not
-     * very explicit on this
+     * without reading the dnsmasq source :-( The manpage is not
+     * very explicit on this.
      */
-
-    len =
-        1 + /* dnsmasq */
-        1 + /* --strict-order */
-        1 + /* --bind-interfaces */
-        (network->def->domain?2:0) + /* --domain name */
-        2 + /* --pid-file /var/run/libvirt/network/$NAME.pid */
-        2 + /* --conf-file "" */
-        /*2 + *//* --interface virbr0 */
-        2 + /* --except-interface lo */
-        2 + /* --listen-address 10.0.0.1 */
-        (2 * ranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
-        /* --dhcp-lease-max=xxx if needed */
-        (network->def->nranges ? 1 : 0) +
-        /* --dhcp-no-override if needed */
-        (ranges ? 1 : 0) +
-        /* --dhcp-hostsfile=/var/lib/dnsmasq/$NAME.hostsfile */
-        (network->def->nhosts > 0 ? 1 : 0) +
-        /* --enable-tftp --tftp-root /srv/tftp */
-        (network->def->tftproot ? 3 : 0) +
-        /* --dhcp-boot pxeboot.img[,,12.34.56.78] */
-        (network->def->bootfile ? 2 : 0) +
-        1;  /* NULL */
-
-    if (VIR_ALLOC_N(*argv, len) < 0)
-        goto no_memory;
-
-#define APPEND_ARG(v, n, s) do {     \
-        if (!((v)[(n)] = strdup(s))) \
-            goto no_memory;          \
-    } while (0)
-
-#define APPEND_ARG_LIT(v, n, s) \
-        (v)[(n)] = s
-
-    i = 0;
-
-    APPEND_ARG(*argv, i++, DNSMASQ);
 
     /*
      * Needed to ensure dnsmasq uses same algorithm for processing
      * multiple namedriver entries in /etc/resolv.conf as GLibC.
      */
-    APPEND_ARG(*argv, i++, "--strict-order");
-    APPEND_ARG(*argv, i++, "--bind-interfaces");
+    virCommandAddArgList(cmd, "--strict-order", "--bind-interfaces", NULL);
 
-    if (network->def->domain) {
-       APPEND_ARG(*argv, i++, "--domain");
-       APPEND_ARG(*argv, i++, network->def->domain);
-    }
+    if (network->def->domain)
+        virCommandAddArgList(cmd, "--domain", network->def->domain, NULL);
 
-    if (virAsprintf(&pidfileArg, "--pid-file=%s", pidfile) < 0)
-        goto no_memory;
-    APPEND_ARG_LIT(*argv, i++, pidfileArg);
+    virCommandAddArgPair(cmd, "--pid-file", pidfile);
 
-    APPEND_ARG(*argv, i++, "--conf-file=");
-    APPEND_ARG(*argv, i++, "");
+    /* *no* conf file */
+    virCommandAddArgList(cmd, "--conf-file=", "", NULL);
 
     /*
      * XXX does not actually work, due to some kind of
@@ -489,166 +437,139 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
      * interface. A sleep(10) makes it work, but that's
      * clearly not practical
      *
-     * APPEND_ARG(*argv, i++, "--interface");
-     * APPEND_ARG(*argv, i++, network->def->bridge);
+     * virCommandAddArg(cmd, "--interface");
+     * virCommandAddArg(cmd, network->def->bridge);
      */
-    APPEND_ARG(*argv, i++, "--listen-address");
-    if (!(ipAddr = virSocketFormatAddr(&network->def->ipAddress)))
-        goto error;
-    APPEND_ARG_LIT(*argv, i++, ipAddr);
-
-    APPEND_ARG(*argv, i++, "--except-interface");
-    APPEND_ARG(*argv, i++, "lo");
+    virCommandAddArgList(cmd,
+                         "--listen-address", bridgeaddr,
+                         "--except-interface", "lo",
+                         NULL);
 
     for (r = 0 ; r < network->def->nranges ; r++) {
         char *saddr = virSocketFormatAddr(&network->def->ranges[r].start);
         if (!saddr)
-            goto error;
+            goto cleanup;
         char *eaddr = virSocketFormatAddr(&network->def->ranges[r].end);
         if (!eaddr) {
             VIR_FREE(saddr);
-            goto error;
+            goto cleanup;
         }
-        char *range;
-        int rc = virAsprintf(&range, "%s,%s", saddr, eaddr);
+        virCommandAddArg(cmd, "--dhcp-range");
+        virCommandAddArgFormat(cmd, "%s,%s", saddr, eaddr);
         VIR_FREE(saddr);
         VIR_FREE(eaddr);
-        if (rc < 0)
-            goto no_memory;
-        APPEND_ARG(*argv, i++, "--dhcp-range");
-        APPEND_ARG_LIT(*argv, i++, range);
         nbleases += virSocketGetRange(&network->def->ranges[r].start,
                                       &network->def->ranges[r].end);
     }
 
+    /*
+     * For static-only DHCP, i.e. with no range but at least one host element,
+     * we have to add a special --dhcp-range option to enable the service in
+     * dnsmasq.
+     */
     if (!network->def->nranges && network->def->nhosts) {
-        char *ipaddr = virSocketFormatAddr(&network->def->ipAddress);
-        if (!ipaddr)
-            goto error;
-        char *range;
-        int rc = virAsprintf(&range, "%s,static", ipaddr);
-        VIR_FREE(ipaddr);
-        if (rc < 0)
-            goto no_memory;
-
-        APPEND_ARG(*argv, i++, "--dhcp-range");
-        APPEND_ARG_LIT(*argv, i++, range);
+        virCommandAddArg(cmd, "--dhcp-range");
+        virCommandAddArgFormat(cmd, "%s,static", bridgeaddr);
     }
 
     if (network->def->nranges > 0) {
-        snprintf(buf, sizeof(buf), "--dhcp-lease-max=%d", nbleases);
-        APPEND_ARG(*argv, i++, buf);
+        virCommandAddArgFormat(cmd, "--dhcp-lease-max=%d", nbleases);
     }
 
-    if (ranges)
-        APPEND_ARG(*argv, i++, "--dhcp-no-override");
+    if (network->def->nranges || network->def->nhosts)
+        virCommandAddArg(cmd, "--dhcp-no-override");
 
     if (network->def->nhosts > 0) {
-        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
-        char *hostsfileArg;
-
-        if (dctx == NULL)
-            goto no_memory;
-
-        if (networkSaveDnsmasqHostsfile(network, dctx, false)) {
-            if (virAsprintf(&hostsfileArg, "--dhcp-hostsfile=%s", dctx->hostsfile->path) < 0) {
-                dnsmasqContextFree(dctx);
-                goto no_memory;
-            }
-            APPEND_ARG_LIT(*argv, i++, hostsfileArg);
+        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name,
+                                                 DNSMASQ_STATE_DIR);
+        if (dctx == NULL) {
+            virReportOOMError();
+            goto cleanup;
         }
 
+        if (networkSaveDnsmasqHostsfile(network, dctx, false)) {
+            virCommandAddArgPair(cmd, "--dhcp-hostsfile",
+                                 dctx->hostsfile->path);
+        }
         dnsmasqContextFree(dctx);
     }
 
     if (network->def->tftproot) {
-        APPEND_ARG(*argv, i++, "--enable-tftp");
-        APPEND_ARG(*argv, i++, "--tftp-root");
-        APPEND_ARG(*argv, i++, network->def->tftproot);
+        virCommandAddArgList(cmd, "--enable-tftp",
+                             "--tftp-root", network->def->tftproot,
+                             NULL);
     }
     if (network->def->bootfile) {
-        char *ipaddr = NULL;
+
+        virCommandAddArg(cmd, "--dhcp-boot");
         if (VIR_SOCKET_HAS_ADDR(&network->def->bootserver)) {
-            if (!(ipaddr = virSocketFormatAddr(&network->def->bootserver)))
-                goto error;
+            char *bootserver = virSocketFormatAddr(&network->def->bootserver);
+
+            if (!bootserver)
+                goto cleanup;
+            virCommandAddArgFormat(cmd, "%s%s%s",
+                               network->def->bootfile, ",,", bootserver);
+            VIR_FREE(bootserver);
+        } else {
+            virCommandAddArg(cmd, network->def->bootfile);
         }
-        char *boot;
-        int rc = virAsprintf(&boot, "%s%s%s",
-                             network->def->bootfile,
-                             ipaddr ? ",," : "",
-                             ipaddr ? ipaddr : "");
-        VIR_FREE(ipaddr);
-        if (rc < 0)
-            goto no_memory;
-
-        APPEND_ARG(*argv, i++, "--dhcp-boot");
-        APPEND_ARG_LIT(*argv, i++, boot);
     }
 
-#undef APPEND_ARG
-
-    return 0;
-
- no_memory:
-    virReportOOMError();
-  error:
-    if (*argv) {
-        for (i = 0; (*argv)[i]; i++)
-            VIR_FREE((*argv)[i]);
-        VIR_FREE(*argv);
-    }
-    return -1;
+    ret = 0;
+cleanup:
+    VIR_FREE(bridgeaddr);
+    return ret;
 }
 
 
 static int
 dhcpStartDhcpDaemon(virNetworkObjPtr network)
 {
-    const char **argv;
-    char *pidfile;
-    int ret = -1, i, err;
+    virCommandPtr cmd = NULL;
+    char *pidfile = NULL;
+    int ret = -1, err;
 
     network->dnsmasqPid = -1;
 
     if (!VIR_SOCKET_IS_FAMILY(&network->def->ipAddress, AF_INET)) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("cannot start dhcp daemon without IPv4 address for server"));
-        return -1;
+        goto cleanup;
     }
 
     if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
         virReportSystemError(err,
                              _("cannot create directory %s"),
                              NETWORK_PID_DIR);
-        return -1;
+        goto cleanup;
     }
     if ((err = virFileMakePath(NETWORK_STATE_DIR)) != 0) {
         virReportSystemError(err,
                              _("cannot create directory %s"),
                              NETWORK_STATE_DIR);
-        return -1;
+        goto cleanup;
     }
 
     if (!(pidfile = virFilePid(NETWORK_PID_DIR, network->def->name))) {
         virReportOOMError();
-        return -1;
+        goto cleanup;
     }
 
-    argv = NULL;
-    if (networkBuildDnsmasqArgv(network, pidfile, &argv) < 0) {
+    cmd = virCommandNew(DNSMASQ);
+    if (networkBuildDnsmasqArgv(network, pidfile, cmd) < 0) {
         VIR_FREE(pidfile);
-        return -1;
+        goto cleanup;
     }
 
-    if (virRun(argv, NULL) < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     /*
-     * There really is no race here - when dnsmasq daemonizes,
-     * its leader process stays around until its child has
-     * actually written its pidfile. So by time virRun exits
-     * it has waitpid'd and guaranteed the proess has started
-     * and written a pid
+     * There really is no race here - when dnsmasq daemonizes, its
+     * leader process stays around until its child has actually
+     * written its pidfile. So by time virCommandRun exits it has
+     * waitpid'd and guaranteed the proess has started and written a
+     * pid
      */
 
     if (virFileReadPid(NETWORK_PID_DIR, network->def->name,
@@ -656,13 +577,9 @@ dhcpStartDhcpDaemon(virNetworkObjPtr network)
         goto cleanup;
 
     ret = 0;
-
 cleanup:
     VIR_FREE(pidfile);
-    for (i = 0; argv[i]; i++)
-        VIR_FREE(argv[i]);
-    VIR_FREE(argv);
-
+    virCommandFree(cmd);
     return ret;
 }
 
