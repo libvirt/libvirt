@@ -86,7 +86,7 @@ static int checkoutput(const char *testname)
     ret = 0;
 
 cleanup:
-    unlink(actuallog);
+    unlink(actualname);
     VIR_FREE(actuallog);
     VIR_FREE(actualname);
     VIR_FREE(expectlog);
@@ -248,6 +248,7 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
 
 cleanup:
     virCommandFree(cmd);
+    unlink(pidfile);
     VIR_FREE(pidfile);
     return ret;
 }
@@ -706,12 +707,6 @@ mymain(int argc, char **argv)
     if (virtTestRun("Command Exec " #NAME " test",                    \
                     1, NAME, NULL) < 0)                               \
         ret = -1
-
-    char *actualname;
-    if (virAsprintf(&actualname, "%s/commandhelper.log", abs_builddir) < 0)
-        return EXIT_FAILURE;
-    unlink(actualname);
-    VIR_FREE(actualname);
 
     DO_TEST(test0);
     DO_TEST(test1);

@@ -2254,6 +2254,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           tests/xmconfigdata/Makefile \
           tests/xencapsdata/Makefile \
           tests/confdata/Makefile \
+          tests/commanddata/Makefile \
           examples/apparmor/Makefile \
           examples/domain-events/events-c/Makefile \
           examples/domsuspend/Makefile \
