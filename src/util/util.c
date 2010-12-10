@@ -913,6 +913,28 @@ virExec(const char *const*argv ATTRIBUTE_UNUSED,
 }
 
 int
+virExecWithHook(const char *const*argv ATTRIBUTE_UNUSED,
+                const char *const*envp ATTRIBUTE_UNUSED,
+                const fd_set *keepfd ATTRIBUTE_UNUSED,
+                pid_t *retpid ATTRIBUTE_UNUSED,
+                int infd ATTRIBUTE_UNUSED,
+                int *outfd ATTRIBUTE_UNUSED,
+                int *errfd ATTRIBUTE_UNUSED,
+                int flags ATTRIBUTE_UNUSED,
+                virExecHook hook ATTRIBUTE_UNUSED,
+                void *data ATTRIBUTE_UNUSED,
+                char *pidfile ATTRIBUTE_UNUSED)
+{
+    /* XXX: Some day we can implement pieces of virCommand/virExec on
+     * top of _spawn() or CreateProcess(), but we can't implement
+     * everything, since mingw completely lacks fork(), so we cannot
+     * run hook code in the child.  */
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virExec is not implemented for WIN32"));
+    return -1;
+}
+
+int
 virExecDaemonize(const char *const*argv ATTRIBUTE_UNUSED,
                  const char *const*envp ATTRIBUTE_UNUSED,
                  const fd_set *keepfd ATTRIBUTE_UNUSED,

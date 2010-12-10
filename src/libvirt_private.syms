@@ -811,6 +811,7 @@ virEventAddHandle;
 virEventRemoveHandle;
 virExec;
 virExecDaemonize;
+virExecWithHook;
 virFileAbsPath;
 virFileDeletePid;
 virFileExists;
