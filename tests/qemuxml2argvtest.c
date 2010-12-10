@@ -405,6 +405,7 @@ mymain(int argc, char **argv)
     DO_TEST("watchdog", 0, false);
     DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("watchdog-dump", 0, false);
     DO_TEST("balloon-device", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
     DO_TEST("balloon-device-auto", QEMUD_CMD_FLAG_DEVICE |

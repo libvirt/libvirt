@@ -1687,13 +1687,19 @@ qemu-kvm -net nic,model=? /dev/null
           <li>'poweroff' &mdash; forcefully power off the guest</li>
           <li>'pause' &mdash; pause the guest</li>
           <li>'none' &mdash; do nothing</li>
+          <li>'dump' &mdash; automatically dump the guest
+            <span class="since">Since 0.8.7</span></li>
         </ul>
         <p>
-        Note that the 'shutdown' action requires that the guest
+        Note 1: the 'shutdown' action requires that the guest
         is responsive to ACPI signals.  In the sort of situations
         where the watchdog has expired, guests are usually unable
         to respond to ACPI signals.  Therefore using 'shutdown'
         is not recommended.
+        </p>
+        <p>
+        Note 2: the directory to save dump files can be configured
+        by <code>auto_dump_path</code> in file /etc/libvirt/qemu.conf.
         </p>
       </dd>
     </dl>
