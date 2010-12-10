@@ -26,6 +26,10 @@
 
 # include "network.h"
 # include "command.h"
+# include "virnettlscontext.h"
+# ifdef HAVE_SASL
+#  include "virnetsaslcontext.h"
+# endif
 
 typedef struct _virNetSocket virNetSocket;
 typedef virNetSocket *virNetSocketPtr;
@@ -83,6 +87,13 @@ int virNetSocketSetBlocking(virNetSocketPtr sock,
 ssize_t virNetSocketRead(virNetSocketPtr sock, char *buf, size_t len);
 ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len);
 
+void virNetSocketSetTLSSession(virNetSocketPtr sock,
+                               virNetTLSSessionPtr sess);
+# ifdef HAVE_SASL
+void virNetSocketSetSASLSession(virNetSocketPtr sock,
+                                virNetSASLSessionPtr sess);
+# endif
+bool virNetSocketHasCachedData(virNetSocketPtr sock);
 void virNetSocketFree(virNetSocketPtr sock);
 
 const char *virNetSocketLocalAddrString(virNetSocketPtr sock);
