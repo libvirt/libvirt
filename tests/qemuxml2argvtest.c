@@ -86,8 +86,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     monitor_chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
     monitor_chr.data.nix.listen = 1;
-    if (!(monitor_chr.info.alias = strdup("monitor")))
-        goto fail;
+    monitor_chr.info.alias = (char *)"monitor";
 
     flags = QEMUD_CMD_FLAG_VNC_COLON |
         QEMUD_CMD_FLAG_NO_REBOOT |
