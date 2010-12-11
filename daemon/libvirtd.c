@@ -1410,7 +1410,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         /* Client is running as root, so disable auth */
         if (uid == 0) {
             VIR_INFO(_("Turn off polkit auth for privileged client pid %d from %s"),
-                     pid, addrstr);
+                     pid, client->addrstr);
             client->auth = REMOTE_AUTH_NONE;
         }
     }
@@ -1451,7 +1451,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         } else {
             PROBE(CLIENT_TLS_FAIL, "fd=%d", client->fd);
             VIR_ERROR(_("TLS handshake failed for client %s: %s"),
-                      addrstr, gnutls_strerror (ret));
+                      client->addrstr, gnutls_strerror (ret));
             goto error;
         }
     }
@@ -2283,6 +2283,7 @@ static void qemudFreeClient(struct qemud_client *client) {
     if (client->conn)
         virConnectClose(client->conn);
     virMutexDestroy(&client->lock);
+    VIR_FREE(client->addrstr);
     VIR_FREE(client);
 }
 
