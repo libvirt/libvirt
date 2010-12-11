@@ -157,9 +157,15 @@ int virThreadCreate(virThreadPtr thread,
 {
     struct virThreadArgs *args;
     pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    if (VIR_ALLOC(args) < 0)
-        return -1;
+    int ret = -1;
+    int err;
+
+    if ((err = pthread_attr_init(&attr)) != 0)
+        goto cleanup;
+    if (VIR_ALLOC(args) < 0) {
+        err = ENOMEM;
+        goto cleanup;
+    }
 
     args->func = func;
     args->opaque = opaque;
@@ -167,14 +173,19 @@ int virThreadCreate(virThreadPtr thread,
     if (!joinable)
         pthread_attr_setdetachstate(&attr, 1);
 
-    int ret = pthread_create(&thread->thread, &attr, virThreadHelper, args);
-    if (ret != 0) {
+    err = pthread_create(&thread->thread, &attr, virThreadHelper, args);
+    if (err != 0) {
         VIR_FREE(args);
-        errno = ret;
-        return -1;
+        goto cleanup;
     }
     /* New thread owns 'args' in success case, so don't free */
-    return 0;
+
+    ret = 0;
+cleanup:
+    pthread_attr_destroy(&attr);
+    if (ret < 0)
+        errno = err;
+    return ret;
 }
 
 void virThreadSelf(virThreadPtr thread)

@@ -1600,15 +1600,20 @@ static void *qemudWorker(void *data)
     }
 }
 
-static int qemudStartWorker(struct qemud_server *server,
-                            struct qemud_worker *worker) {
+static int
+qemudStartWorker(struct qemud_server *server,
+                 struct qemud_worker *worker)
+{
     pthread_attr_t attr;
-    pthread_attr_init(&attr);
+    int ret = -1;
+
+    if (pthread_attr_init(&attr) != 0)
+        return -1;
     /* We want to join workers, so don't detach them */
     /*pthread_attr_setdetachstate(&attr, 1);*/
 
     if (worker->hasThread)
-        return -1;
+        goto cleanup;
 
     worker->server = server;
     worker->hasThread = 1;
@@ -1621,10 +1626,13 @@ static int qemudStartWorker(struct qemud_server *server,
                        worker) != 0) {
         worker->hasThread = 0;
         worker->server = NULL;
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+cleanup:
+    pthread_attr_destroy(&attr);
+    return ret;
 }
 
 
@@ -2414,9 +2422,14 @@ cleanup:
 }
 
 
-static int qemudStartEventLoop(struct qemud_server *server) {
+static int
+qemudStartEventLoop(struct qemud_server *server)
+{
     pthread_attr_t attr;
-    pthread_attr_init(&attr);
+    int ret = -1;
+
+    if (pthread_attr_init(&attr) != 0)
+        return -1;
     /* We want to join the eventloop, so don't detach it */
     /*pthread_attr_setdetachstate(&attr, 1);*/
 
@@ -2424,11 +2437,14 @@ static int qemudStartEventLoop(struct qemud_server *server) {
                        &attr,
                        qemudRunLoop,
                        server) != 0)
-        return -1;
+        goto cleanup;
 
     server->hasEventThread = 1;
 
-    return 0;
+    ret = 0;
+cleanup:
+    pthread_attr_destroy(&attr);
+    return ret;
 }
 
 
