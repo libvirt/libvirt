@@ -3175,6 +3175,13 @@ int main(int argc, char **argv) {
 
     if (godaemon) {
         char ebuf[1024];
+
+        if (chdir("/") < 0) {
+            VIR_ERROR(_("cannot change to root directory: %s"),
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
+            goto error;
+        }
+
         if ((statuswrite = daemonForkIntoBackground()) < 0) {
             VIR_ERROR(_("Failed to fork as daemon: %s"),
                       virStrerror(errno, ebuf, sizeof ebuf));
