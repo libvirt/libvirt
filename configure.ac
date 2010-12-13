@@ -73,7 +73,7 @@ VERSION_SCRIPT_FLAGS=-Wl,--version-script=
 LIBVIRT_COMPILE_WARNINGS([maximum])
 
 AC_MSG_CHECKING([for CPUID instruction])
-AC_COMPILE_IFELSE(AC_LANG_PROGRAM(
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
   [[
     #include <stdint.h>
   ]],
@@ -83,7 +83,7 @@ AC_COMPILE_IFELSE(AC_LANG_PROGRAM(
         "cpuid"
         : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
         : "a" (eax));
-  ]]),
+  ]])],
   [have_cpuid=yes],
   [have_cpuid=no])
 if test "x$have_cpuid" = xyes; then
