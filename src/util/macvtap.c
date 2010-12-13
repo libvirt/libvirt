@@ -1031,19 +1031,8 @@ doPortProfileOpSetLink(bool nltarget_kernel,
         nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
         goto buffer_too_small;
 
-    if (macaddr && vlanid >= 0) {
+    if (macaddr || vlanid >= 0) {
         struct nlattr *vfinfolist, *vfinfo;
-        struct ifla_vf_mac ifla_vf_mac = {
-            .vf = vf,
-            .mac = { 0, },
-        };
-        struct ifla_vf_vlan ifla_vf_vlan = {
-            .vf = vf,
-            .vlan = vlanid,
-            .qos = 0,
-        };
-
-        memcpy(ifla_vf_mac.mac, macaddr, 6);
 
         if (!(vfinfolist = nla_nest_start(nl_msg, IFLA_VFINFO_LIST)))
             goto buffer_too_small;
@@ -1051,13 +1040,30 @@ doPortProfileOpSetLink(bool nltarget_kernel,
         if (!(vfinfo = nla_nest_start(nl_msg, IFLA_VF_INFO)))
             goto buffer_too_small;
 
-        if (!nla_put(nl_msg, IFLA_VF_MAC, sizeof(ifla_vf_mac),
-                     &ifla_vf_mac) < 0)
-            goto buffer_too_small;
+        if (macaddr) {
+            struct ifla_vf_mac ifla_vf_mac = {
+                .vf = vf,
+                .mac = { 0, },
+            };
 
-        if (!nla_put(nl_msg, IFLA_VF_VLAN, sizeof(ifla_vf_vlan),
-                     &ifla_vf_vlan) < 0)
-            goto buffer_too_small;
+            memcpy(ifla_vf_mac.mac, macaddr, 6);
+
+            if (!nla_put(nl_msg, IFLA_VF_MAC, sizeof(ifla_vf_mac),
+                &ifla_vf_mac) < 0)
+                goto buffer_too_small;
+        }
+
+        if (vlanid >= 0) {
+            struct ifla_vf_vlan ifla_vf_vlan = {
+                .vf = vf,
+                .vlan = vlanid,
+                .qos = 0,
+            };
+
+            if (!nla_put(nl_msg, IFLA_VF_VLAN, sizeof(ifla_vf_vlan),
+                &ifla_vf_vlan) < 0)
+                goto buffer_too_small;
+        }
 
         nla_nest_end(nl_msg, vfinfo);
         nla_nest_end(nl_msg, vfinfolist);
@@ -1402,6 +1408,7 @@ getPhysfn(const char *linkdev,
 
 static int
 doPortProfileOp8021Qbh(const char *ifname,
+                       const unsigned char *macaddr,
                        const virVirtualPortProfileParamsPtr virtPort,
                        const unsigned char *vm_uuid,
                        enum virVirtualPortOp virtPortOp)
@@ -1411,6 +1418,7 @@ doPortProfileOp8021Qbh(const char *ifname,
 # ifndef IFLA_VF_PORT_MAX
 
     (void)ifname;
+    (void)macaddr;
     (void)virtPort;
     (void)vm_uuid;
     (void)virtPortOp;
@@ -1426,7 +1434,6 @@ doPortProfileOp8021Qbh(const char *ifname,
     bool nltarget_kernel = true;
     int ifindex;
     int vlanid = -1;
-    const unsigned char *macaddr = NULL;
 
     rc = getPhysfn(ifname, &vf, &physfndev);
     if (rc)
@@ -1456,7 +1463,7 @@ doPortProfileOp8021Qbh(const char *ifname,
             /* Association timed out, disassociate */
             doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
                                   NULL,
-                                  0,
+                                  vlanid,
                                   NULL,
                                   NULL,
                                   NULL,
@@ -1470,7 +1477,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     case DISASSOCIATE:
         rc = doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
                                    NULL,
-                                   0,
+                                   vlanid,
                                    NULL,
                                    NULL,
                                    NULL,
@@ -1545,9 +1552,8 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
         /* avoid associating twice */
         if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
             break;
-        rc = doPortProfileOp8021Qbh(linkdev, virtPort,
-                                    vmuuid,
-                                    ASSOCIATE);
+        rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+                                    virtPort, vmuuid, ASSOCIATE);
         break;
     }
 
@@ -1594,9 +1600,8 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
         /* avoid disassociating twice */
         if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
             break;
-        rc = doPortProfileOp8021Qbh(linkdev, virtPort,
-                                    NULL,
-                                    DISASSOCIATE);
+        rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+                                    virtPort, NULL, DISASSOCIATE);
         break;
     }
 
