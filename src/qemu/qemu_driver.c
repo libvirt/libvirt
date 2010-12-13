@@ -104,6 +104,8 @@ enum qemuDomainJob {
     QEMU_JOB_UNSPECIFIED,
     QEMU_JOB_MIGRATION_OUT,
     QEMU_JOB_MIGRATION_IN,
+    QEMU_JOB_SAVE,
+    QEMU_JOB_DUMP,
 };
 
 enum qemuDomainJobSignals {
@@ -5389,21 +5391,37 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
         struct timeval now;
         int rc;
+        const char *job;
+
+        switch (priv->jobActive) {
+            case QEMU_JOB_MIGRATION_OUT:
+                job = _("migration job");
+                break;
+            case QEMU_JOB_SAVE:
+                job = _("domain save job");
+                break;
+            case QEMU_JOB_DUMP:
+                job = _("domain core dump job");
+                break;
+            default:
+                job = _("job");
+        }
+
 
         if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("guest unexpectedly quit during migration"));
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s: %s",
+                            job, _("guest unexpectedly quit"));
             goto cleanup;
         }
 
         if (priv->jobSignals & QEMU_JOB_SIGNAL_CANCEL) {
             priv->jobSignals ^= QEMU_JOB_SIGNAL_CANCEL;
-            VIR_DEBUG0("Cancelling migration at client request");
+            VIR_DEBUG0("Cancelling job at client request");
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             rc = qemuMonitorMigrateCancel(priv->mon);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0) {
-                VIR_WARN0("Unable to cancel migration");
+                VIR_WARN0("Unable to cancel job");
             }
         } else if (priv->jobSignals & QEMU_JOB_SIGNAL_SUSPEND) {
             priv->jobSignals ^= QEMU_JOB_SIGNAL_SUSPEND;
@@ -5427,8 +5445,8 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
          * guest to die
          */
         if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("guest unexpectedly quit during migration"));
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s: %s",
+                            job, _("guest unexpectedly quit"));
             goto cleanup;
         }
 
@@ -5459,7 +5477,7 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
         case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
             priv->jobInfo.type = VIR_DOMAIN_JOB_NONE;
             qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("Migration is not active"));
+                            "%s: %s", job, _("is not active"));
             break;
 
         case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
@@ -5480,13 +5498,13 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
         case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
             priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
             qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("Migration unexpectedly failed"));
+                            "%s: %s", job, _("unexpectedly failed"));
             break;
 
         case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
             priv->jobInfo.type = VIR_DOMAIN_JOB_CANCELLED;
             qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("Migration was cancelled by client"));
+                            "%s: %s", job, _("canceled by client"));
             break;
         }
 
@@ -5605,6 +5623,8 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                         "%s", _("domain is not running"));
         goto endjob;
     }
+
+    priv->jobActive = QEMU_JOB_SAVE;
 
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
     priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
@@ -6197,6 +6217,8 @@ static int qemudDomainCoreDump(virDomainPtr dom,
                         "%s", _("domain is not running"));
         goto endjob;
     }
+
+    priv->jobActive = QEMU_JOB_DUMP;
 
     /* Migrate will always stop the VM, so the resume condition is
        independent of whether the stop command is issued.  */
