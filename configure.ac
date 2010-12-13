@@ -1194,20 +1194,22 @@ LIBPCAP_FOUND="no"
 
 AC_ARG_WITH([libpcap], AC_HELP_STRING([--with-libpcap=@<:@PFX@:>@], [libpcap location]))
 if test "$with_qemu" = "yes"; then
-    if test "x$with_libpcap" != "xno" ; then
-        if test "x$with_libpcap" != "x" ; then
-            LIBPCAP_CONFIG=$with_libpcap/bin/$LIBPCAP_CONFIG
-        fi
-        AC_MSG_CHECKING(libpcap $LIBPCAP_CONFIG >= $LIBPCAP_REQUIRED )
-        if ! $LIBPCAP_CONFIG --libs > /dev/null 2>&1 ; then
-	    AC_MSG_RESULT(no)
-	else
-            LIBPCAP_LIBS="`$LIBPCAP_CONFIG --libs`"
-            LIBPCAP_CFLAGS="`$LIBPCAP_CONFIG --cflags`"
-            LIBPCAP_FOUND="yes"
-            AC_MSG_RESULT(yes)
-        fi
+  AS_CASE(["x$with_libpcap"],
+    [xno], [LIBPCAP_CONFIG=""],
+    [x|xyes], [LIBPCAP_CONFIG="pcap-config"],
+    [LIBPCAP_CONFIG="$with_libpcap/bin/pcap-config"]
+  )
+  AS_IF([test "x$LIBPCAP_CONFIG" != "x"], [
+    AC_MSG_CHECKING(libpcap $LIBPCAP_CONFIG >= $LIBPCAP_REQUIRED )
+    if ! $LIBPCAP_CONFIG --libs > /dev/null 2>&1 ; then
+      AC_MSG_RESULT(no)
+    else
+      LIBPCAP_LIBS="`$LIBPCAP_CONFIG --libs`"
+      LIBPCAP_CFLAGS="`$LIBPCAP_CONFIG --cflags`"
+      LIBPCAP_FOUND="yes"
+      AC_MSG_RESULT(yes)
     fi
+  ])
 fi
 
 if test "x$LIBPCAP_FOUND" = "xyes"; then
@@ -2406,7 +2408,7 @@ AC_MSG_NOTICE([  xmlrpc: $XMLRPC_CFLAGS $XMLRPC_LIBS])
 else
 AC_MSG_NOTICE([  xmlrpc: no])
 fi
-if test "$with_qemu" = "yes" ; then
+if test "$with_qemu" = "yes" && test "$LIBPCAP_FOUND" != "no"; then
 AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
 else
 AC_MSG_NOTICE([    pcap: no])
