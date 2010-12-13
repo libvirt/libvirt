@@ -617,7 +617,7 @@ __virExec(const char *const*argv,
 
         if (chdir("/") < 0) {
             virReportSystemError(errno,
-                                 "%s", _("cannot change to root directory: %s"));
+                                 "%s", _("cannot change to root directory"));
             goto fork_error;
         }
 
