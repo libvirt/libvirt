@@ -550,7 +550,8 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
         qemuMonitorUpdateWatch(mon);
 
-        if (events & VIR_EVENT_HANDLE_HANGUP) {
+        if (events & (VIR_EVENT_HANDLE_HANGUP |
+                      VIR_EVENT_HANDLE_ERROR)) {
             /* If IO process resulted in EOF & we have a message,
              * then wakeup that waiter */
             if (mon->msg && !mon->msg->finished) {
