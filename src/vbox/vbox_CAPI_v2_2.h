@@ -55,6 +55,12 @@
 #  include <stddef.h>
 #  include "wchar.h"
 
+#  ifdef WIN32
+#   define PR_COM_METHOD __stdcall
+#  else
+#   define PR_COM_METHOD
+#  endif
+
 #  if defined(WIN32)
 
 #   define PR_EXPORT(__type) extern __declspec(dllexport) __type
@@ -349,7 +355,7 @@ struct nsISupports_vtbl {
    *                          instance, NS_NOINTERFACE if it is not.
    * NS_ERROR_INVALID_POINTER if aInstancePtr is NULL.
    */
-  nsresult (*QueryInterface)(nsISupports *pThis, const nsID *iid, void **resultp);
+  nsresult PR_COM_METHOD (*QueryInterface)(nsISupports *pThis, const nsID *iid, void **resultp);
   /**
    * Increases the reference count for this interface.
    * The associated instance will not be deleted unless
@@ -357,7 +363,7 @@ struct nsISupports_vtbl {
    *
    * @return The resulting reference count.
    */
-  nsresult (*AddRef)(nsISupports *pThis);
+  nsresult PR_COM_METHOD (*AddRef)(nsISupports *pThis);
 
   /**
    * Decreases the reference count for this interface.
@@ -366,8 +372,7 @@ struct nsISupports_vtbl {
    *
    * @return The resulting reference count.
    */
-  nsresult (*Release)(nsISupports *pThis);
-
+  nsresult PR_COM_METHOD (*Release)(nsISupports *pThis);
 };
 
 struct nsISupports {
@@ -387,34 +392,34 @@ struct nsIException_vtbl {
   struct nsISupports_vtbl nsisupports;
 
   /* readonly attribute string message; */
-  nsresult (*GetMessage)(nsIException *pThis, PRUnichar * *aMessage);
+  nsresult PR_COM_METHOD (*GetMessage)(nsIException *pThis, PRUnichar * *aMessage);
 
-  /* readonly attribute nsresult (*result; */
-  nsresult (*GetResult)(nsIException *pThis, nsresult *aResult);
+  /* readonly attribute nsresult PR_COM_METHOD (*result; */
+  nsresult PR_COM_METHOD (*GetResult)(nsIException *pThis, nsresult *aResult);
 
   /* readonly attribute string name; */
-  nsresult (*GetName)(nsIException *pThis, PRUnichar * *aName);
+  nsresult PR_COM_METHOD (*GetName)(nsIException *pThis, PRUnichar * *aName);
 
   /* readonly attribute string filename; */
-  nsresult (*GetFilename)(nsIException *pThis, PRUnichar * *aFilename);
+  nsresult PR_COM_METHOD (*GetFilename)(nsIException *pThis, PRUnichar * *aFilename);
 
   /* readonly attribute PRUint32 lineNumber; */
-  nsresult (*GetLineNumber)(nsIException *pThis, PRUint32 *aLineNumber);
+  nsresult PR_COM_METHOD (*GetLineNumber)(nsIException *pThis, PRUint32 *aLineNumber);
 
   /* readonly attribute PRUint32 columnNumber; */
-  nsresult (*GetColumnNumber)(nsIException *pThis, PRUint32 *aColumnNumber);
+  nsresult PR_COM_METHOD (*GetColumnNumber)(nsIException *pThis, PRUint32 *aColumnNumber);
 
   /* readonly attribute nsIStackFrame location; */
-  nsresult (*GetLocation)(nsIException *pThis, nsIStackFrame * *aLocation);
+  nsresult PR_COM_METHOD (*GetLocation)(nsIException *pThis, nsIStackFrame * *aLocation);
 
   /* readonly attribute nsIException inner; */
-  nsresult (*GetInner)(nsIException *pThis, nsIException * *aInner);
+  nsresult PR_COM_METHOD (*GetInner)(nsIException *pThis, nsIException * *aInner);
 
   /* readonly attribute nsISupports data; */
-  nsresult (*GetData)(nsIException *pThis, nsISupports * *aData);
+  nsresult PR_COM_METHOD (*GetData)(nsIException *pThis, nsISupports * *aData);
 
   /* string toString (); */
-  nsresult (*ToString)(nsIException *pThis, PRUnichar **_retval);
+  nsresult PR_COM_METHOD (*ToString)(nsIException *pThis, PRUnichar **_retval);
 };
 
 struct nsIException {
@@ -434,28 +439,28 @@ struct nsIStackFrame_vtbl {
   struct nsISupports_vtbl nsisupports;
 
   /* readonly attribute PRUint32 language; */
-  nsresult (*GetLanguage)(nsIStackFrame *pThis, PRUint32 *aLanguage);
+  nsresult PR_COM_METHOD (*GetLanguage)(nsIStackFrame *pThis, PRUint32 *aLanguage);
 
   /* readonly attribute string languageName; */
-  nsresult (*GetLanguageName)(nsIStackFrame *pThis, PRUnichar * *aLanguageName);
+  nsresult PR_COM_METHOD (*GetLanguageName)(nsIStackFrame *pThis, PRUnichar * *aLanguageName);
 
   /* readonly attribute string filename; */
-  nsresult (*GetFilename)(nsIStackFrame *pThis, PRUnichar * *aFilename);
+  nsresult PR_COM_METHOD (*GetFilename)(nsIStackFrame *pThis, PRUnichar * *aFilename);
 
   /* readonly attribute string name; */
-  nsresult (*GetName)(nsIStackFrame *pThis, PRUnichar * *aName);
+  nsresult PR_COM_METHOD (*GetName)(nsIStackFrame *pThis, PRUnichar * *aName);
 
   /* readonly attribute PRInt32 lineNumber; */
-  nsresult (*GetLineNumber)(nsIStackFrame *pThis, PRInt32 *aLineNumber);
+  nsresult PR_COM_METHOD (*GetLineNumber)(nsIStackFrame *pThis, PRInt32 *aLineNumber);
 
   /* readonly attribute string sourceLine; */
-  nsresult (*GetSourceLine)(nsIStackFrame *pThis, PRUnichar * *aSourceLine);
+  nsresult PR_COM_METHOD (*GetSourceLine)(nsIStackFrame *pThis, PRUnichar * *aSourceLine);
 
   /* readonly attribute nsIStackFrame caller; */
-  nsresult (*GetCaller)(nsIStackFrame *pThis, nsIStackFrame * *aCaller);
+  nsresult PR_COM_METHOD (*GetCaller)(nsIStackFrame *pThis, nsIStackFrame * *aCaller);
 
   /* string toString (); */
-  nsresult (*ToString)(nsIStackFrame *pThis, PRUnichar **_retval);
+  nsresult PR_COM_METHOD (*ToString)(nsIStackFrame *pThis, PRUnichar **_retval);
 };
 
 struct nsIStackFrame {
@@ -1389,15 +1394,15 @@ struct IVirtualBoxErrorInfo_vtbl
 {
     struct nsIException_vtbl nsiexception;
 
-    nsresult (*GetResultCode)(IVirtualBoxErrorInfo *pThis, nsresult *resultCode);
+    nsresult PR_COM_METHOD (*GetResultCode)(IVirtualBoxErrorInfo *pThis, nsresult *resultCode);
 
-    nsresult (*GetInterfaceID)(IVirtualBoxErrorInfo *pThis, nsID * *interfaceID);
+    nsresult PR_COM_METHOD (*GetInterfaceID)(IVirtualBoxErrorInfo *pThis, nsID * *interfaceID);
 
-    nsresult (*GetComponent)(IVirtualBoxErrorInfo *pThis, PRUnichar * *component);
+    nsresult PR_COM_METHOD (*GetComponent)(IVirtualBoxErrorInfo *pThis, PRUnichar * *component);
 
-    nsresult (*GetText)(IVirtualBoxErrorInfo *pThis, PRUnichar * *text);
+    nsresult PR_COM_METHOD (*GetText)(IVirtualBoxErrorInfo *pThis, PRUnichar * *text);
 
-    nsresult (*GetNext)(IVirtualBoxErrorInfo *pThis, IVirtualBoxErrorInfo * *next);
+    nsresult PR_COM_METHOD (*GetNext)(IVirtualBoxErrorInfo *pThis, IVirtualBoxErrorInfo * *next);
 
 };
 
@@ -1418,18 +1423,18 @@ struct IVirtualBoxCallback_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*OnMachineStateChange)(
+    nsresult PR_COM_METHOD (*OnMachineStateChange)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         PRUint32 state
     );
 
-    nsresult (*OnMachineDataChange)(
+    nsresult PR_COM_METHOD (*OnMachineDataChange)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId
     );
 
-    nsresult (*OnExtraDataCanChange)(
+    nsresult PR_COM_METHOD (*OnExtraDataCanChange)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         PRUnichar * key,
@@ -1438,51 +1443,51 @@ struct IVirtualBoxCallback_vtbl
         PRBool * allowChange
     );
 
-    nsresult (*OnExtraDataChange)(
+    nsresult PR_COM_METHOD (*OnExtraDataChange)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         PRUnichar * key,
         PRUnichar * value
     );
 
-    nsresult (*OnMediaRegistered)(
+    nsresult PR_COM_METHOD (*OnMediaRegistered)(
         IVirtualBoxCallback *pThis,
         const nsID * mediaId,
         PRUint32 mediaType,
         PRBool registered
     );
 
-    nsresult (*OnMachineRegistered)(
+    nsresult PR_COM_METHOD (*OnMachineRegistered)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         PRBool registered
     );
 
-    nsresult (*OnSessionStateChange)(
+    nsresult PR_COM_METHOD (*OnSessionStateChange)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         PRUint32 state
     );
 
-    nsresult (*OnSnapshotTaken)(
+    nsresult PR_COM_METHOD (*OnSnapshotTaken)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         const nsID * snapshotId
     );
 
-    nsresult (*OnSnapshotDiscarded)(
+    nsresult PR_COM_METHOD (*OnSnapshotDiscarded)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         const nsID * snapshotId
     );
 
-    nsresult (*OnSnapshotChange)(
+    nsresult PR_COM_METHOD (*OnSnapshotChange)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         const nsID * snapshotId
     );
 
-    nsresult (*OnGuestPropertyChange)(
+    nsresult PR_COM_METHOD (*OnGuestPropertyChange)(
         IVirtualBoxCallback *pThis,
         const nsID * machineId,
         PRUnichar * name,
@@ -1509,20 +1514,20 @@ struct IDHCPServer_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetEnabled)(IDHCPServer *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(IDHCPServer *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(IDHCPServer *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(IDHCPServer *pThis, PRBool enabled);
 
-    nsresult (*GetIPAddress)(IDHCPServer *pThis, PRUnichar * *IPAddress);
+    nsresult PR_COM_METHOD (*GetIPAddress)(IDHCPServer *pThis, PRUnichar * *IPAddress);
 
-    nsresult (*GetNetworkMask)(IDHCPServer *pThis, PRUnichar * *networkMask);
+    nsresult PR_COM_METHOD (*GetNetworkMask)(IDHCPServer *pThis, PRUnichar * *networkMask);
 
-    nsresult (*GetNetworkName)(IDHCPServer *pThis, PRUnichar * *networkName);
+    nsresult PR_COM_METHOD (*GetNetworkName)(IDHCPServer *pThis, PRUnichar * *networkName);
 
-    nsresult (*GetLowerIP)(IDHCPServer *pThis, PRUnichar * *lowerIP);
+    nsresult PR_COM_METHOD (*GetLowerIP)(IDHCPServer *pThis, PRUnichar * *lowerIP);
 
-    nsresult (*GetUpperIP)(IDHCPServer *pThis, PRUnichar * *upperIP);
+    nsresult PR_COM_METHOD (*GetUpperIP)(IDHCPServer *pThis, PRUnichar * *upperIP);
 
-    nsresult (*SetConfiguration)(
+    nsresult PR_COM_METHOD (*SetConfiguration)(
         IDHCPServer *pThis,
         PRUnichar * IPAddress,
         PRUnichar * networkMask,
@@ -1530,14 +1535,14 @@ struct IDHCPServer_vtbl
         PRUnichar * ToIPAddress
     );
 
-    nsresult (*Start)(
+    nsresult PR_COM_METHOD (*Start)(
         IDHCPServer *pThis,
         PRUnichar * networkName,
         PRUnichar * trunkName,
         PRUnichar * trunkType
     );
 
-    nsresult (*Stop)(IDHCPServer *pThis );
+    nsresult PR_COM_METHOD (*Stop)(IDHCPServer *pThis );
 
 };
 
@@ -1558,43 +1563,43 @@ struct IVirtualBox_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetVersion)(IVirtualBox *pThis, PRUnichar * *version);
+    nsresult PR_COM_METHOD (*GetVersion)(IVirtualBox *pThis, PRUnichar * *version);
 
-    nsresult (*GetRevision)(IVirtualBox *pThis, PRUint32 *revision);
+    nsresult PR_COM_METHOD (*GetRevision)(IVirtualBox *pThis, PRUint32 *revision);
 
-    nsresult (*GetPackageType)(IVirtualBox *pThis, PRUnichar * *packageType);
+    nsresult PR_COM_METHOD (*GetPackageType)(IVirtualBox *pThis, PRUnichar * *packageType);
 
-    nsresult (*GetHomeFolder)(IVirtualBox *pThis, PRUnichar * *homeFolder);
+    nsresult PR_COM_METHOD (*GetHomeFolder)(IVirtualBox *pThis, PRUnichar * *homeFolder);
 
-    nsresult (*GetSettingsFilePath)(IVirtualBox *pThis, PRUnichar * *settingsFilePath);
+    nsresult PR_COM_METHOD (*GetSettingsFilePath)(IVirtualBox *pThis, PRUnichar * *settingsFilePath);
 
-    nsresult (*GetSettingsFileVersion)(IVirtualBox *pThis, PRUnichar * *settingsFileVersion);
+    nsresult PR_COM_METHOD (*GetSettingsFileVersion)(IVirtualBox *pThis, PRUnichar * *settingsFileVersion);
 
-    nsresult (*GetSettingsFormatVersion)(IVirtualBox *pThis, PRUnichar * *settingsFormatVersion);
+    nsresult PR_COM_METHOD (*GetSettingsFormatVersion)(IVirtualBox *pThis, PRUnichar * *settingsFormatVersion);
 
-    nsresult (*GetHost)(IVirtualBox *pThis, IHost * *host);
+    nsresult PR_COM_METHOD (*GetHost)(IVirtualBox *pThis, IHost * *host);
 
-    nsresult (*GetSystemProperties)(IVirtualBox *pThis, ISystemProperties * *systemProperties);
+    nsresult PR_COM_METHOD (*GetSystemProperties)(IVirtualBox *pThis, ISystemProperties * *systemProperties);
 
-    nsresult (*GetMachines)(IVirtualBox *pThis, PRUint32 *machinesSize, IMachine * **machines);
+    nsresult PR_COM_METHOD (*GetMachines)(IVirtualBox *pThis, PRUint32 *machinesSize, IMachine * **machines);
 
-    nsresult (*GetHardDisks)(IVirtualBox *pThis, PRUint32 *hardDisksSize, IHardDisk * **hardDisks);
+    nsresult PR_COM_METHOD (*GetHardDisks)(IVirtualBox *pThis, PRUint32 *hardDisksSize, IHardDisk * **hardDisks);
 
-    nsresult (*GetDVDImages)(IVirtualBox *pThis, PRUint32 *DVDImagesSize, IDVDImage * **DVDImages);
+    nsresult PR_COM_METHOD (*GetDVDImages)(IVirtualBox *pThis, PRUint32 *DVDImagesSize, IDVDImage * **DVDImages);
 
-    nsresult (*GetFloppyImages)(IVirtualBox *pThis, PRUint32 *floppyImagesSize, IFloppyImage * **floppyImages);
+    nsresult PR_COM_METHOD (*GetFloppyImages)(IVirtualBox *pThis, PRUint32 *floppyImagesSize, IFloppyImage * **floppyImages);
 
-    nsresult (*GetProgressOperations)(IVirtualBox *pThis, PRUint32 *progressOperationsSize, IProgress * **progressOperations);
+    nsresult PR_COM_METHOD (*GetProgressOperations)(IVirtualBox *pThis, PRUint32 *progressOperationsSize, IProgress * **progressOperations);
 
-    nsresult (*GetGuestOSTypes)(IVirtualBox *pThis, PRUint32 *guestOSTypesSize, IGuestOSType * **guestOSTypes);
+    nsresult PR_COM_METHOD (*GetGuestOSTypes)(IVirtualBox *pThis, PRUint32 *guestOSTypesSize, IGuestOSType * **guestOSTypes);
 
-    nsresult (*GetSharedFolders)(IVirtualBox *pThis, PRUint32 *sharedFoldersSize, ISharedFolder * **sharedFolders);
+    nsresult PR_COM_METHOD (*GetSharedFolders)(IVirtualBox *pThis, PRUint32 *sharedFoldersSize, ISharedFolder * **sharedFolders);
 
-    nsresult (*GetPerformanceCollector)(IVirtualBox *pThis, IPerformanceCollector * *performanceCollector);
+    nsresult PR_COM_METHOD (*GetPerformanceCollector)(IVirtualBox *pThis, IPerformanceCollector * *performanceCollector);
 
-    nsresult (*GetDHCPServers)(IVirtualBox *pThis, PRUint32 *DHCPServersSize, IDHCPServer * **DHCPServers);
+    nsresult PR_COM_METHOD (*GetDHCPServers)(IVirtualBox *pThis, PRUint32 *DHCPServersSize, IDHCPServer * **DHCPServers);
 
-    nsresult (*CreateMachine)(
+    nsresult PR_COM_METHOD (*CreateMachine)(
         IVirtualBox *pThis,
         PRUnichar * name,
         PRUnichar * osTypeId,
@@ -1603,7 +1608,7 @@ struct IVirtualBox_vtbl
         IMachine * * machine
     );
 
-    nsresult (*CreateLegacyMachine)(
+    nsresult PR_COM_METHOD (*CreateLegacyMachine)(
         IVirtualBox *pThis,
         PRUnichar * name,
         PRUnichar * osTypeId,
@@ -1612,148 +1617,148 @@ struct IVirtualBox_vtbl
         IMachine * * machine
     );
 
-    nsresult (*OpenMachine)(
+    nsresult PR_COM_METHOD (*OpenMachine)(
         IVirtualBox *pThis,
         PRUnichar * settingsFile,
         IMachine * * machine
     );
 
-    nsresult (*RegisterMachine)(
+    nsresult PR_COM_METHOD (*RegisterMachine)(
         IVirtualBox *pThis,
         IMachine * machine
     );
 
-    nsresult (*GetMachine)(
+    nsresult PR_COM_METHOD (*GetMachine)(
         IVirtualBox *pThis,
         const nsID * id,
         IMachine * * machine
     );
 
-    nsresult (*FindMachine)(
+    nsresult PR_COM_METHOD (*FindMachine)(
         IVirtualBox *pThis,
         PRUnichar * name,
         IMachine * * machine
     );
 
-    nsresult (*UnregisterMachine)(
+    nsresult PR_COM_METHOD (*UnregisterMachine)(
         IVirtualBox *pThis,
         const nsID * id,
         IMachine * * machine
     );
 
-    nsresult (*CreateAppliance)(
+    nsresult PR_COM_METHOD (*CreateAppliance)(
         IVirtualBox *pThis,
         IAppliance * * appliance
     );
 
-    nsresult (*CreateHardDisk)(
+    nsresult PR_COM_METHOD (*CreateHardDisk)(
         IVirtualBox *pThis,
         PRUnichar * format,
         PRUnichar * location,
         IHardDisk * * hardDisk
     );
 
-    nsresult (*OpenHardDisk)(
+    nsresult PR_COM_METHOD (*OpenHardDisk)(
         IVirtualBox *pThis,
         PRUnichar * location,
         PRUint32 accessMode,
         IHardDisk * * hardDisk
     );
 
-    nsresult (*GetHardDisk)(
+    nsresult PR_COM_METHOD (*GetHardDisk)(
         IVirtualBox *pThis,
         const nsID * id,
         IHardDisk * * hardDisk
     );
 
-    nsresult (*FindHardDisk)(
+    nsresult PR_COM_METHOD (*FindHardDisk)(
         IVirtualBox *pThis,
         PRUnichar * location,
         IHardDisk * * hardDisk
     );
 
-    nsresult (*OpenDVDImage)(
+    nsresult PR_COM_METHOD (*OpenDVDImage)(
         IVirtualBox *pThis,
         PRUnichar * location,
         const nsID * id,
         IDVDImage * * image
     );
 
-    nsresult (*GetDVDImage)(
+    nsresult PR_COM_METHOD (*GetDVDImage)(
         IVirtualBox *pThis,
         const nsID * id,
         IDVDImage * * image
     );
 
-    nsresult (*FindDVDImage)(
+    nsresult PR_COM_METHOD (*FindDVDImage)(
         IVirtualBox *pThis,
         PRUnichar * location,
         IDVDImage * * image
     );
 
-    nsresult (*OpenFloppyImage)(
+    nsresult PR_COM_METHOD (*OpenFloppyImage)(
         IVirtualBox *pThis,
         PRUnichar * location,
         const nsID * id,
         IFloppyImage * * image
     );
 
-    nsresult (*GetFloppyImage)(
+    nsresult PR_COM_METHOD (*GetFloppyImage)(
         IVirtualBox *pThis,
         const nsID * id,
         IFloppyImage * * image
     );
 
-    nsresult (*FindFloppyImage)(
+    nsresult PR_COM_METHOD (*FindFloppyImage)(
         IVirtualBox *pThis,
         PRUnichar * location,
         IFloppyImage * * image
     );
 
-    nsresult (*GetGuestOSType)(
+    nsresult PR_COM_METHOD (*GetGuestOSType)(
         IVirtualBox *pThis,
         PRUnichar * id,
         IGuestOSType * * type
     );
 
-    nsresult (*CreateSharedFolder)(
+    nsresult PR_COM_METHOD (*CreateSharedFolder)(
         IVirtualBox *pThis,
         PRUnichar * name,
         PRUnichar * hostPath,
         PRBool writable
     );
 
-    nsresult (*RemoveSharedFolder)(
+    nsresult PR_COM_METHOD (*RemoveSharedFolder)(
         IVirtualBox *pThis,
         PRUnichar * name
     );
 
-    nsresult (*GetNextExtraDataKey)(
+    nsresult PR_COM_METHOD (*GetNextExtraDataKey)(
         IVirtualBox *pThis,
         PRUnichar * key,
         PRUnichar * * nextKey,
         PRUnichar * * nextValue
     );
 
-    nsresult (*GetExtraData)(
+    nsresult PR_COM_METHOD (*GetExtraData)(
         IVirtualBox *pThis,
         PRUnichar * key,
         PRUnichar * * value
     );
 
-    nsresult (*SetExtraData)(
+    nsresult PR_COM_METHOD (*SetExtraData)(
         IVirtualBox *pThis,
         PRUnichar * key,
         PRUnichar * value
     );
 
-    nsresult (*OpenSession)(
+    nsresult PR_COM_METHOD (*OpenSession)(
         IVirtualBox *pThis,
         ISession * session,
         const nsID * machineId
     );
 
-    nsresult (*OpenRemoteSession)(
+    nsresult PR_COM_METHOD (*OpenRemoteSession)(
         IVirtualBox *pThis,
         ISession * session,
         const nsID * machineId,
@@ -1762,23 +1767,23 @@ struct IVirtualBox_vtbl
         IProgress * * progress
     );
 
-    nsresult (*OpenExistingSession)(
+    nsresult PR_COM_METHOD (*OpenExistingSession)(
         IVirtualBox *pThis,
         ISession * session,
         const nsID * machineId
     );
 
-    nsresult (*RegisterCallback)(
+    nsresult PR_COM_METHOD (*RegisterCallback)(
         IVirtualBox *pThis,
         IVirtualBoxCallback * callback
     );
 
-    nsresult (*UnregisterCallback)(
+    nsresult PR_COM_METHOD (*UnregisterCallback)(
         IVirtualBox *pThis,
         IVirtualBoxCallback * callback
     );
 
-    nsresult (*WaitForPropertyChange)(
+    nsresult PR_COM_METHOD (*WaitForPropertyChange)(
         IVirtualBox *pThis,
         PRUnichar * what,
         PRUint32 timeout,
@@ -1786,26 +1791,26 @@ struct IVirtualBox_vtbl
         PRUnichar * * values
     );
 
-    nsresult (*SaveSettings)(IVirtualBox *pThis );
+    nsresult PR_COM_METHOD (*SaveSettings)(IVirtualBox *pThis );
 
-    nsresult (*SaveSettingsWithBackup)(
+    nsresult PR_COM_METHOD (*SaveSettingsWithBackup)(
         IVirtualBox *pThis,
         PRUnichar * * bakFileName
     );
 
-    nsresult (*CreateDHCPServer)(
+    nsresult PR_COM_METHOD (*CreateDHCPServer)(
         IVirtualBox *pThis,
         PRUnichar * name,
         IDHCPServer * * server
     );
 
-    nsresult (*FindDHCPServerByNetworkName)(
+    nsresult PR_COM_METHOD (*FindDHCPServerByNetworkName)(
         IVirtualBox *pThis,
         PRUnichar * name,
         IDHCPServer * * server
     );
 
-    nsresult (*RemoveDHCPServer)(
+    nsresult PR_COM_METHOD (*RemoveDHCPServer)(
         IVirtualBox *pThis,
         IDHCPServer * server
     );
@@ -1829,32 +1834,32 @@ struct IAppliance_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetPath)(IAppliance *pThis, PRUnichar * *path);
+    nsresult PR_COM_METHOD (*GetPath)(IAppliance *pThis, PRUnichar * *path);
 
-    nsresult (*GetDisks)(IAppliance *pThis, PRUint32 *disksSize, PRUnichar * **disks);
+    nsresult PR_COM_METHOD (*GetDisks)(IAppliance *pThis, PRUint32 *disksSize, PRUnichar * **disks);
 
-    nsresult (*GetVirtualSystemDescriptions)(IAppliance *pThis, PRUint32 *virtualSystemDescriptionsSize, IVirtualSystemDescription * **virtualSystemDescriptions);
+    nsresult PR_COM_METHOD (*GetVirtualSystemDescriptions)(IAppliance *pThis, PRUint32 *virtualSystemDescriptionsSize, IVirtualSystemDescription * **virtualSystemDescriptions);
 
-    nsresult (*Read)(
+    nsresult PR_COM_METHOD (*Read)(
         IAppliance *pThis,
         PRUnichar * file
     );
 
-    nsresult (*Interpret)(IAppliance *pThis );
+    nsresult PR_COM_METHOD (*Interpret)(IAppliance *pThis );
 
-    nsresult (*ImportMachines)(
+    nsresult PR_COM_METHOD (*ImportMachines)(
         IAppliance *pThis,
         IProgress * * aProgress
     );
 
-    nsresult (*Write)(
+    nsresult PR_COM_METHOD (*Write)(
         IAppliance *pThis,
         PRUnichar * format,
         PRUnichar * path,
         IProgress * * aProgress
     );
 
-    nsresult (*GetWarnings)(
+    nsresult PR_COM_METHOD (*GetWarnings)(
         IAppliance *pThis,
         PRUint32 *aWarningsSize,
         PRUnichar *** aWarnings
@@ -1879,9 +1884,9 @@ struct IVirtualSystemDescription_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetCount)(IVirtualSystemDescription *pThis, PRUint32 *count);
+    nsresult PR_COM_METHOD (*GetCount)(IVirtualSystemDescription *pThis, PRUint32 *count);
 
-    nsresult (*GetDescription)(
+    nsresult PR_COM_METHOD (*GetDescription)(
         IVirtualSystemDescription *pThis,
         PRUint32 *aTypesSize,
         PRUint32* aTypes,
@@ -1895,7 +1900,7 @@ struct IVirtualSystemDescription_vtbl
         PRUnichar *** aExtraConfigValues
     );
 
-    nsresult (*GetDescriptionByType)(
+    nsresult PR_COM_METHOD (*GetDescriptionByType)(
         IVirtualSystemDescription *pThis,
         PRUint32 aType,
         PRUint32 *aTypesSize,
@@ -1910,7 +1915,7 @@ struct IVirtualSystemDescription_vtbl
         PRUnichar *** aExtraConfigValues
     );
 
-    nsresult (*GetValuesByType)(
+    nsresult PR_COM_METHOD (*GetValuesByType)(
         IVirtualSystemDescription *pThis,
         PRUint32 aType,
         PRUint32 aWhich,
@@ -1918,7 +1923,7 @@ struct IVirtualSystemDescription_vtbl
         PRUnichar *** aValues
     );
 
-    nsresult (*SetFinalValues)(
+    nsresult PR_COM_METHOD (*SetFinalValues)(
         IVirtualSystemDescription *pThis,
         PRUint32 aEnabledSize,
         PRBool* aEnabled,
@@ -1928,7 +1933,7 @@ struct IVirtualSystemDescription_vtbl
         PRUnichar ** aExtraConfigValues
     );
 
-    nsresult (*AddDescription)(
+    nsresult PR_COM_METHOD (*AddDescription)(
         IVirtualSystemDescription *pThis,
         PRUint32 aType,
         PRUnichar * aVboxValue,
@@ -1954,64 +1959,64 @@ struct IInternalMachineControl_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*UpdateState)(
+    nsresult PR_COM_METHOD (*UpdateState)(
         IInternalMachineControl *pThis,
         PRUint32 state
     );
 
-    nsresult (*GetIPCId)(
+    nsresult PR_COM_METHOD (*GetIPCId)(
         IInternalMachineControl *pThis,
         PRUnichar * * id
     );
 
-    nsresult (*RunUSBDeviceFilters)(
+    nsresult PR_COM_METHOD (*RunUSBDeviceFilters)(
         IInternalMachineControl *pThis,
         IUSBDevice * device,
         PRBool * matched,
         PRUint32 * maskedInterfaces
     );
 
-    nsresult (*CaptureUSBDevice)(
+    nsresult PR_COM_METHOD (*CaptureUSBDevice)(
         IInternalMachineControl *pThis,
         const nsID * id
     );
 
-    nsresult (*DetachUSBDevice)(
+    nsresult PR_COM_METHOD (*DetachUSBDevice)(
         IInternalMachineControl *pThis,
         const nsID * id,
         PRBool done
     );
 
-    nsresult (*AutoCaptureUSBDevices)(IInternalMachineControl *pThis );
+    nsresult PR_COM_METHOD (*AutoCaptureUSBDevices)(IInternalMachineControl *pThis );
 
-    nsresult (*DetachAllUSBDevices)(
+    nsresult PR_COM_METHOD (*DetachAllUSBDevices)(
         IInternalMachineControl *pThis,
         PRBool done
     );
 
-    nsresult (*OnSessionEnd)(
+    nsresult PR_COM_METHOD (*OnSessionEnd)(
         IInternalMachineControl *pThis,
         ISession * session,
         IProgress * * progress
     );
 
-    nsresult (*BeginSavingState)(
+    nsresult PR_COM_METHOD (*BeginSavingState)(
         IInternalMachineControl *pThis,
         IProgress * progress,
         PRUnichar * * stateFilePath
     );
 
-    nsresult (*EndSavingState)(
+    nsresult PR_COM_METHOD (*EndSavingState)(
         IInternalMachineControl *pThis,
         PRBool success
     );
 
-    nsresult (*AdoptSavedState)(
+    nsresult PR_COM_METHOD (*AdoptSavedState)(
         IInternalMachineControl *pThis,
         PRUnichar * savedStateFile
     );
 
-    nsresult (*BeginTakingSnapshot)(
+    nsresult PR_COM_METHOD (*BeginTakingSnapshot)(
         IInternalMachineControl *pThis,
         IConsole * initiator,
         PRUnichar * name,
@@ -2021,12 +2026,12 @@ struct IInternalMachineControl_vtbl
         IProgress * * serverProgress
     );
 
-    nsresult (*EndTakingSnapshot)(
+    nsresult PR_COM_METHOD (*EndTakingSnapshot)(
         IInternalMachineControl *pThis,
         PRBool success
     );
 
-    nsresult (*DiscardSnapshot)(
+    nsresult PR_COM_METHOD (*DiscardSnapshot)(
         IInternalMachineControl *pThis,
         IConsole * initiator,
         const nsID * id,
@@ -2034,21 +2039,21 @@ struct IInternalMachineControl_vtbl
         IProgress * * progress
     );
 
-    nsresult (*DiscardCurrentState)(
+    nsresult PR_COM_METHOD (*DiscardCurrentState)(
         IInternalMachineControl *pThis,
         IConsole * initiator,
         PRUint32 * machineState,
         IProgress * * progress
     );
 
-    nsresult (*DiscardCurrentSnapshotAndState)(
+    nsresult PR_COM_METHOD (*DiscardCurrentSnapshotAndState)(
         IInternalMachineControl *pThis,
         IConsole * initiator,
         PRUint32 * machineState,
         IProgress * * progress
     );
 
-    nsresult (*PullGuestProperties)(
+    nsresult PR_COM_METHOD (*PullGuestProperties)(
         IInternalMachineControl *pThis,
         PRUint32 *nameSize,
         PRUnichar *** name,
@@ -2060,7 +2065,7 @@ struct IInternalMachineControl_vtbl
         PRUnichar *** flags
     );
 
-    nsresult (*PushGuestProperties)(
+    nsresult PR_COM_METHOD (*PushGuestProperties)(
         IInternalMachineControl *pThis,
         PRUint32 nameSize,
         PRUnichar ** name,
@@ -2072,7 +2077,7 @@ struct IInternalMachineControl_vtbl
         PRUnichar ** flags
     );
 
-    nsresult (*PushGuestProperty)(
+    nsresult PR_COM_METHOD (*PushGuestProperty)(
         IInternalMachineControl *pThis,
         PRUnichar * name,
         PRUnichar * value,
@@ -2080,7 +2085,7 @@ struct IInternalMachineControl_vtbl
         PRUnichar * flags
     );
 
-    nsresult (*LockMedia)(IInternalMachineControl *pThis );
+    nsresult PR_COM_METHOD (*LockMedia)(IInternalMachineControl *pThis );
 
 };
 
@@ -2101,32 +2106,32 @@ struct IBIOSSettings_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetLogoFadeIn)(IBIOSSettings *pThis, PRBool *logoFadeIn);
-    nsresult (*SetLogoFadeIn)(IBIOSSettings *pThis, PRBool logoFadeIn);
+    nsresult PR_COM_METHOD (*GetLogoFadeIn)(IBIOSSettings *pThis, PRBool *logoFadeIn);
+    nsresult PR_COM_METHOD (*SetLogoFadeIn)(IBIOSSettings *pThis, PRBool logoFadeIn);
 
-    nsresult (*GetLogoFadeOut)(IBIOSSettings *pThis, PRBool *logoFadeOut);
-    nsresult (*SetLogoFadeOut)(IBIOSSettings *pThis, PRBool logoFadeOut);
+    nsresult PR_COM_METHOD (*GetLogoFadeOut)(IBIOSSettings *pThis, PRBool *logoFadeOut);
+    nsresult PR_COM_METHOD (*SetLogoFadeOut)(IBIOSSettings *pThis, PRBool logoFadeOut);
 
-    nsresult (*GetLogoDisplayTime)(IBIOSSettings *pThis, PRUint32 *logoDisplayTime);
-    nsresult (*SetLogoDisplayTime)(IBIOSSettings *pThis, PRUint32 logoDisplayTime);
+    nsresult PR_COM_METHOD (*GetLogoDisplayTime)(IBIOSSettings *pThis, PRUint32 *logoDisplayTime);
+    nsresult PR_COM_METHOD (*SetLogoDisplayTime)(IBIOSSettings *pThis, PRUint32 logoDisplayTime);
 
-    nsresult (*GetLogoImagePath)(IBIOSSettings *pThis, PRUnichar * *logoImagePath);
-    nsresult (*SetLogoImagePath)(IBIOSSettings *pThis, PRUnichar * logoImagePath);
+    nsresult PR_COM_METHOD (*GetLogoImagePath)(IBIOSSettings *pThis, PRUnichar * *logoImagePath);
+    nsresult PR_COM_METHOD (*SetLogoImagePath)(IBIOSSettings *pThis, PRUnichar * logoImagePath);
 
-    nsresult (*GetBootMenuMode)(IBIOSSettings *pThis, PRUint32 *bootMenuMode);
-    nsresult (*SetBootMenuMode)(IBIOSSettings *pThis, PRUint32 bootMenuMode);
+    nsresult PR_COM_METHOD (*GetBootMenuMode)(IBIOSSettings *pThis, PRUint32 *bootMenuMode);
+    nsresult PR_COM_METHOD (*SetBootMenuMode)(IBIOSSettings *pThis, PRUint32 bootMenuMode);
 
-    nsresult (*GetACPIEnabled)(IBIOSSettings *pThis, PRBool *ACPIEnabled);
-    nsresult (*SetACPIEnabled)(IBIOSSettings *pThis, PRBool ACPIEnabled);
+    nsresult PR_COM_METHOD (*GetACPIEnabled)(IBIOSSettings *pThis, PRBool *ACPIEnabled);
+    nsresult PR_COM_METHOD (*SetACPIEnabled)(IBIOSSettings *pThis, PRBool ACPIEnabled);
 
-    nsresult (*GetIOAPICEnabled)(IBIOSSettings *pThis, PRBool *IOAPICEnabled);
-    nsresult (*SetIOAPICEnabled)(IBIOSSettings *pThis, PRBool IOAPICEnabled);
+    nsresult PR_COM_METHOD (*GetIOAPICEnabled)(IBIOSSettings *pThis, PRBool *IOAPICEnabled);
+    nsresult PR_COM_METHOD (*SetIOAPICEnabled)(IBIOSSettings *pThis, PRBool IOAPICEnabled);
 
-    nsresult (*GetTimeOffset)(IBIOSSettings *pThis, PRInt64 *timeOffset);
-    nsresult (*SetTimeOffset)(IBIOSSettings *pThis, PRInt64 timeOffset);
+    nsresult PR_COM_METHOD (*GetTimeOffset)(IBIOSSettings *pThis, PRInt64 *timeOffset);
+    nsresult PR_COM_METHOD (*SetTimeOffset)(IBIOSSettings *pThis, PRInt64 timeOffset);
 
-    nsresult (*GetPXEDebugEnabled)(IBIOSSettings *pThis, PRBool *PXEDebugEnabled);
-    nsresult (*SetPXEDebugEnabled)(IBIOSSettings *pThis, PRBool PXEDebugEnabled);
+    nsresult PR_COM_METHOD (*GetPXEDebugEnabled)(IBIOSSettings *pThis, PRBool *PXEDebugEnabled);
+    nsresult PR_COM_METHOD (*SetPXEDebugEnabled)(IBIOSSettings *pThis, PRBool PXEDebugEnabled);
 
 };
 
@@ -2147,125 +2152,125 @@ struct IMachine_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetParent)(IMachine *pThis, IVirtualBox * *parent);
+    nsresult PR_COM_METHOD (*GetParent)(IMachine *pThis, IVirtualBox * *parent);
 
-    nsresult (*GetAccessible)(IMachine *pThis, PRBool *accessible);
+    nsresult PR_COM_METHOD (*GetAccessible)(IMachine *pThis, PRBool *accessible);
 
-    nsresult (*GetAccessError)(IMachine *pThis, IVirtualBoxErrorInfo * *accessError);
+    nsresult PR_COM_METHOD (*GetAccessError)(IMachine *pThis, IVirtualBoxErrorInfo * *accessError);
 
-    nsresult (*GetName)(IMachine *pThis, PRUnichar * *name);
-    nsresult (*SetName)(IMachine *pThis, PRUnichar * name);
+    nsresult PR_COM_METHOD (*GetName)(IMachine *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*SetName)(IMachine *pThis, PRUnichar * name);
 
-    nsresult (*GetDescription)(IMachine *pThis, PRUnichar * *description);
-    nsresult (*SetDescription)(IMachine *pThis, PRUnichar * description);
+    nsresult PR_COM_METHOD (*GetDescription)(IMachine *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*SetDescription)(IMachine *pThis, PRUnichar * description);
 
-    nsresult (*GetId)(IMachine *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IMachine *pThis, nsID * *id);
 
-    nsresult (*GetOSTypeId)(IMachine *pThis, PRUnichar * *OSTypeId);
-    nsresult (*SetOSTypeId)(IMachine *pThis, PRUnichar * OSTypeId);
+    nsresult PR_COM_METHOD (*GetOSTypeId)(IMachine *pThis, PRUnichar * *OSTypeId);
+    nsresult PR_COM_METHOD (*SetOSTypeId)(IMachine *pThis, PRUnichar * OSTypeId);
 
-    nsresult (*GetHardwareVersion)(IMachine *pThis, PRUnichar * *HardwareVersion);
-    nsresult (*SetHardwareVersion)(IMachine *pThis, PRUnichar * HardwareVersion);
+    nsresult PR_COM_METHOD (*GetHardwareVersion)(IMachine *pThis, PRUnichar * *HardwareVersion);
+    nsresult PR_COM_METHOD (*SetHardwareVersion)(IMachine *pThis, PRUnichar * HardwareVersion);
 
-    nsresult (*GetCPUCount)(IMachine *pThis, PRUint32 *CPUCount);
-    nsresult (*SetCPUCount)(IMachine *pThis, PRUint32 CPUCount);
+    nsresult PR_COM_METHOD (*GetCPUCount)(IMachine *pThis, PRUint32 *CPUCount);
+    nsresult PR_COM_METHOD (*SetCPUCount)(IMachine *pThis, PRUint32 CPUCount);
 
-    nsresult (*GetMemorySize)(IMachine *pThis, PRUint32 *memorySize);
-    nsresult (*SetMemorySize)(IMachine *pThis, PRUint32 memorySize);
+    nsresult PR_COM_METHOD (*GetMemorySize)(IMachine *pThis, PRUint32 *memorySize);
+    nsresult PR_COM_METHOD (*SetMemorySize)(IMachine *pThis, PRUint32 memorySize);
 
-    nsresult (*GetMemoryBalloonSize)(IMachine *pThis, PRUint32 *memoryBalloonSize);
-    nsresult (*SetMemoryBalloonSize)(IMachine *pThis, PRUint32 memoryBalloonSize);
+    nsresult PR_COM_METHOD (*GetMemoryBalloonSize)(IMachine *pThis, PRUint32 *memoryBalloonSize);
+    nsresult PR_COM_METHOD (*SetMemoryBalloonSize)(IMachine *pThis, PRUint32 memoryBalloonSize);
 
-    nsresult (*GetStatisticsUpdateInterval)(IMachine *pThis, PRUint32 *statisticsUpdateInterval);
-    nsresult (*SetStatisticsUpdateInterval)(IMachine *pThis, PRUint32 statisticsUpdateInterval);
+    nsresult PR_COM_METHOD (*GetStatisticsUpdateInterval)(IMachine *pThis, PRUint32 *statisticsUpdateInterval);
+    nsresult PR_COM_METHOD (*SetStatisticsUpdateInterval)(IMachine *pThis, PRUint32 statisticsUpdateInterval);
 
-    nsresult (*GetVRAMSize)(IMachine *pThis, PRUint32 *VRAMSize);
-    nsresult (*SetVRAMSize)(IMachine *pThis, PRUint32 VRAMSize);
+    nsresult PR_COM_METHOD (*GetVRAMSize)(IMachine *pThis, PRUint32 *VRAMSize);
+    nsresult PR_COM_METHOD (*SetVRAMSize)(IMachine *pThis, PRUint32 VRAMSize);
 
-    nsresult (*GetAccelerate3DEnabled)(IMachine *pThis, PRBool *accelerate3DEnabled);
-    nsresult (*SetAccelerate3DEnabled)(IMachine *pThis, PRBool accelerate3DEnabled);
+    nsresult PR_COM_METHOD (*GetAccelerate3DEnabled)(IMachine *pThis, PRBool *accelerate3DEnabled);
+    nsresult PR_COM_METHOD (*SetAccelerate3DEnabled)(IMachine *pThis, PRBool accelerate3DEnabled);
 
-    nsresult (*GetMonitorCount)(IMachine *pThis, PRUint32 *monitorCount);
-    nsresult (*SetMonitorCount)(IMachine *pThis, PRUint32 monitorCount);
+    nsresult PR_COM_METHOD (*GetMonitorCount)(IMachine *pThis, PRUint32 *monitorCount);
+    nsresult PR_COM_METHOD (*SetMonitorCount)(IMachine *pThis, PRUint32 monitorCount);
 
-    nsresult (*GetBIOSSettings)(IMachine *pThis, IBIOSSettings * *BIOSSettings);
+    nsresult PR_COM_METHOD (*GetBIOSSettings)(IMachine *pThis, IBIOSSettings * *BIOSSettings);
 
-    nsresult (*GetHWVirtExEnabled)(IMachine *pThis, PRUint32 *HWVirtExEnabled);
-    nsresult (*SetHWVirtExEnabled)(IMachine *pThis, PRUint32 HWVirtExEnabled);
+    nsresult PR_COM_METHOD (*GetHWVirtExEnabled)(IMachine *pThis, PRUint32 *HWVirtExEnabled);
+    nsresult PR_COM_METHOD (*SetHWVirtExEnabled)(IMachine *pThis, PRUint32 HWVirtExEnabled);
 
-    nsresult (*GetHWVirtExNestedPagingEnabled)(IMachine *pThis, PRBool *HWVirtExNestedPagingEnabled);
-    nsresult (*SetHWVirtExNestedPagingEnabled)(IMachine *pThis, PRBool HWVirtExNestedPagingEnabled);
+    nsresult PR_COM_METHOD (*GetHWVirtExNestedPagingEnabled)(IMachine *pThis, PRBool *HWVirtExNestedPagingEnabled);
+    nsresult PR_COM_METHOD (*SetHWVirtExNestedPagingEnabled)(IMachine *pThis, PRBool HWVirtExNestedPagingEnabled);
 
-    nsresult (*GetHWVirtExVPIDEnabled)(IMachine *pThis, PRBool *HWVirtExVPIDEnabled);
-    nsresult (*SetHWVirtExVPIDEnabled)(IMachine *pThis, PRBool HWVirtExVPIDEnabled);
+    nsresult PR_COM_METHOD (*GetHWVirtExVPIDEnabled)(IMachine *pThis, PRBool *HWVirtExVPIDEnabled);
+    nsresult PR_COM_METHOD (*SetHWVirtExVPIDEnabled)(IMachine *pThis, PRBool HWVirtExVPIDEnabled);
 
-    nsresult (*GetPAEEnabled)(IMachine *pThis, PRBool *PAEEnabled);
-    nsresult (*SetPAEEnabled)(IMachine *pThis, PRBool PAEEnabled);
+    nsresult PR_COM_METHOD (*GetPAEEnabled)(IMachine *pThis, PRBool *PAEEnabled);
+    nsresult PR_COM_METHOD (*SetPAEEnabled)(IMachine *pThis, PRBool PAEEnabled);
 
-    nsresult (*GetSnapshotFolder)(IMachine *pThis, PRUnichar * *snapshotFolder);
-    nsresult (*SetSnapshotFolder)(IMachine *pThis, PRUnichar * snapshotFolder);
+    nsresult PR_COM_METHOD (*GetSnapshotFolder)(IMachine *pThis, PRUnichar * *snapshotFolder);
+    nsresult PR_COM_METHOD (*SetSnapshotFolder)(IMachine *pThis, PRUnichar * snapshotFolder);
 
-    nsresult (*GetVRDPServer)(IMachine *pThis, IVRDPServer * *VRDPServer);
+    nsresult PR_COM_METHOD (*GetVRDPServer)(IMachine *pThis, IVRDPServer * *VRDPServer);
 
-    nsresult (*GetHardDiskAttachments)(IMachine *pThis, PRUint32 *hardDiskAttachmentsSize, IHardDiskAttachment * **hardDiskAttachments);
+    nsresult PR_COM_METHOD (*GetHardDiskAttachments)(IMachine *pThis, PRUint32 *hardDiskAttachmentsSize, IHardDiskAttachment * **hardDiskAttachments);
 
-    nsresult (*GetDVDDrive)(IMachine *pThis, IDVDDrive * *DVDDrive);
+    nsresult PR_COM_METHOD (*GetDVDDrive)(IMachine *pThis, IDVDDrive * *DVDDrive);
 
-    nsresult (*GetFloppyDrive)(IMachine *pThis, IFloppyDrive * *floppyDrive);
+    nsresult PR_COM_METHOD (*GetFloppyDrive)(IMachine *pThis, IFloppyDrive * *floppyDrive);
 
-    nsresult (*GetUSBController)(IMachine *pThis, IUSBController * *USBController);
+    nsresult PR_COM_METHOD (*GetUSBController)(IMachine *pThis, IUSBController * *USBController);
 
-    nsresult (*GetAudioAdapter)(IMachine *pThis, IAudioAdapter * *audioAdapter);
+    nsresult PR_COM_METHOD (*GetAudioAdapter)(IMachine *pThis, IAudioAdapter * *audioAdapter);
 
-    nsresult (*GetStorageControllers)(IMachine *pThis, PRUint32 *storageControllersSize, IStorageController * **storageControllers);
+    nsresult PR_COM_METHOD (*GetStorageControllers)(IMachine *pThis, PRUint32 *storageControllersSize, IStorageController * **storageControllers);
 
-    nsresult (*GetSettingsFilePath)(IMachine *pThis, PRUnichar * *settingsFilePath);
+    nsresult PR_COM_METHOD (*GetSettingsFilePath)(IMachine *pThis, PRUnichar * *settingsFilePath);
 
-    nsresult (*GetSettingsFileVersion)(IMachine *pThis, PRUnichar * *settingsFileVersion);
+    nsresult PR_COM_METHOD (*GetSettingsFileVersion)(IMachine *pThis, PRUnichar * *settingsFileVersion);
 
-    nsresult (*GetSettingsModified)(IMachine *pThis, PRBool *settingsModified);
+    nsresult PR_COM_METHOD (*GetSettingsModified)(IMachine *pThis, PRBool *settingsModified);
 
-    nsresult (*GetSessionState)(IMachine *pThis, PRUint32 *sessionState);
+    nsresult PR_COM_METHOD (*GetSessionState)(IMachine *pThis, PRUint32 *sessionState);
 
-    nsresult (*GetSessionType)(IMachine *pThis, PRUnichar * *sessionType);
+    nsresult PR_COM_METHOD (*GetSessionType)(IMachine *pThis, PRUnichar * *sessionType);
 
-    nsresult (*GetSessionPid)(IMachine *pThis, PRUint32 *sessionPid);
+    nsresult PR_COM_METHOD (*GetSessionPid)(IMachine *pThis, PRUint32 *sessionPid);
 
-    nsresult (*GetState)(IMachine *pThis, PRUint32 *state);
+    nsresult PR_COM_METHOD (*GetState)(IMachine *pThis, PRUint32 *state);
 
-    nsresult (*GetLastStateChange)(IMachine *pThis, PRInt64 *lastStateChange);
+    nsresult PR_COM_METHOD (*GetLastStateChange)(IMachine *pThis, PRInt64 *lastStateChange);
 
-    nsresult (*GetStateFilePath)(IMachine *pThis, PRUnichar * *stateFilePath);
+    nsresult PR_COM_METHOD (*GetStateFilePath)(IMachine *pThis, PRUnichar * *stateFilePath);
 
-    nsresult (*GetLogFolder)(IMachine *pThis, PRUnichar * *logFolder);
+    nsresult PR_COM_METHOD (*GetLogFolder)(IMachine *pThis, PRUnichar * *logFolder);
 
-    nsresult (*GetCurrentSnapshot)(IMachine *pThis, ISnapshot * *currentSnapshot);
+    nsresult PR_COM_METHOD (*GetCurrentSnapshot)(IMachine *pThis, ISnapshot * *currentSnapshot);
 
-    nsresult (*GetSnapshotCount)(IMachine *pThis, PRUint32 *snapshotCount);
+    nsresult PR_COM_METHOD (*GetSnapshotCount)(IMachine *pThis, PRUint32 *snapshotCount);
 
-    nsresult (*GetCurrentStateModified)(IMachine *pThis, PRBool *currentStateModified);
+    nsresult PR_COM_METHOD (*GetCurrentStateModified)(IMachine *pThis, PRBool *currentStateModified);
 
-    nsresult (*GetSharedFolders)(IMachine *pThis, PRUint32 *sharedFoldersSize, ISharedFolder * **sharedFolders);
+    nsresult PR_COM_METHOD (*GetSharedFolders)(IMachine *pThis, PRUint32 *sharedFoldersSize, ISharedFolder * **sharedFolders);
 
-    nsresult (*GetClipboardMode)(IMachine *pThis, PRUint32 *clipboardMode);
-    nsresult (*SetClipboardMode)(IMachine *pThis, PRUint32 clipboardMode);
+    nsresult PR_COM_METHOD (*GetClipboardMode)(IMachine *pThis, PRUint32 *clipboardMode);
+    nsresult PR_COM_METHOD (*SetClipboardMode)(IMachine *pThis, PRUint32 clipboardMode);
 
-    nsresult (*GetGuestPropertyNotificationPatterns)(IMachine *pThis, PRUnichar * *guestPropertyNotificationPatterns);
-    nsresult (*SetGuestPropertyNotificationPatterns)(IMachine *pThis, PRUnichar * guestPropertyNotificationPatterns);
+    nsresult PR_COM_METHOD (*GetGuestPropertyNotificationPatterns)(IMachine *pThis, PRUnichar * *guestPropertyNotificationPatterns);
+    nsresult PR_COM_METHOD (*SetGuestPropertyNotificationPatterns)(IMachine *pThis, PRUnichar * guestPropertyNotificationPatterns);
 
-    nsresult (*SetBootOrder)(
+    nsresult PR_COM_METHOD (*SetBootOrder)(
         IMachine *pThis,
         PRUint32 position,
         PRUint32 device
     );
 
-    nsresult (*GetBootOrder)(
+    nsresult PR_COM_METHOD (*GetBootOrder)(
         IMachine *pThis,
         PRUint32 position,
         PRUint32 * device
     );
 
-    nsresult (*AttachHardDisk)(
+    nsresult PR_COM_METHOD (*AttachHardDisk)(
         IMachine *pThis,
         const nsID * id,
         PRUnichar * name,
@@ -2273,7 +2278,7 @@ struct IMachine_vtbl
         PRInt32 device
     );
 
-    nsresult (*GetHardDisk)(
+    nsresult PR_COM_METHOD (*GetHardDisk)(
         IMachine *pThis,
         PRUnichar * name,
         PRInt32 controllerPort,
@@ -2281,132 +2286,132 @@ struct IMachine_vtbl
         IHardDisk * * hardDisk
     );
 
-    nsresult (*DetachHardDisk)(
+    nsresult PR_COM_METHOD (*DetachHardDisk)(
         IMachine *pThis,
         PRUnichar * name,
         PRInt32 controllerPort,
         PRInt32 device
     );
 
-    nsresult (*GetHardDiskAttachmentsOfController)(
+    nsresult PR_COM_METHOD (*GetHardDiskAttachmentsOfController)(
         IMachine *pThis,
         PRUnichar * name,
         PRUint32 *hardDiskAttachmentsSize,
         IHardDiskAttachment *** hardDiskAttachments
     );
 
-    nsresult (*GetNetworkAdapter)(
+    nsresult PR_COM_METHOD (*GetNetworkAdapter)(
         IMachine *pThis,
         PRUint32 slot,
         INetworkAdapter * * adapter
     );
 
-    nsresult (*AddStorageController)(
+    nsresult PR_COM_METHOD (*AddStorageController)(
         IMachine *pThis,
         PRUnichar * name,
         PRUint32 connectionType,
         IStorageController * * controller
     );
 
-    nsresult (*GetStorageControllerByName)(
+    nsresult PR_COM_METHOD (*GetStorageControllerByName)(
         IMachine *pThis,
         PRUnichar * name,
         IStorageController * * storageController
     );
 
-    nsresult (*RemoveStorageController)(
+    nsresult PR_COM_METHOD (*RemoveStorageController)(
         IMachine *pThis,
         PRUnichar * name
     );
 
-    nsresult (*GetSerialPort)(
+    nsresult PR_COM_METHOD (*GetSerialPort)(
         IMachine *pThis,
         PRUint32 slot,
         ISerialPort * * port
     );
 
-    nsresult (*GetParallelPort)(
+    nsresult PR_COM_METHOD (*GetParallelPort)(
         IMachine *pThis,
         PRUint32 slot,
         IParallelPort * * port
     );
 
-    nsresult (*GetNextExtraDataKey)(
+    nsresult PR_COM_METHOD (*GetNextExtraDataKey)(
         IMachine *pThis,
         PRUnichar * key,
         PRUnichar * * nextKey,
         PRUnichar * * nextValue
     );
 
-    nsresult (*GetExtraData)(
+    nsresult PR_COM_METHOD (*GetExtraData)(
         IMachine *pThis,
         PRUnichar * key,
         PRUnichar * * value
     );
 
-    nsresult (*SetExtraData)(
+    nsresult PR_COM_METHOD (*SetExtraData)(
         IMachine *pThis,
         PRUnichar * key,
         PRUnichar * value
     );
 
-    nsresult (*SaveSettings)(IMachine *pThis );
+    nsresult PR_COM_METHOD (*SaveSettings)(IMachine *pThis );
 
-    nsresult (*SaveSettingsWithBackup)(
+    nsresult PR_COM_METHOD (*SaveSettingsWithBackup)(
         IMachine *pThis,
         PRUnichar * * bakFileName
     );
 
-    nsresult (*DiscardSettings)(IMachine *pThis );
+    nsresult PR_COM_METHOD (*DiscardSettings)(IMachine *pThis );
 
-    nsresult (*DeleteSettings)(IMachine *pThis );
+    nsresult PR_COM_METHOD (*DeleteSettings)(IMachine *pThis );
 
-    nsresult (*Export)(
+    nsresult PR_COM_METHOD (*Export)(
         IMachine *pThis,
         IAppliance * aAppliance,
         IVirtualSystemDescription * * aDescription
     );
 
-    nsresult (*GetSnapshot)(
+    nsresult PR_COM_METHOD (*GetSnapshot)(
         IMachine *pThis,
         const nsID * id,
         ISnapshot * * snapshot
     );
 
-    nsresult (*FindSnapshot)(
+    nsresult PR_COM_METHOD (*FindSnapshot)(
         IMachine *pThis,
         PRUnichar * name,
         ISnapshot * * snapshot
     );
 
-    nsresult (*SetCurrentSnapshot)(
+    nsresult PR_COM_METHOD (*SetCurrentSnapshot)(
         IMachine *pThis,
         const nsID * id
     );
 
-    nsresult (*CreateSharedFolder)(
+    nsresult PR_COM_METHOD (*CreateSharedFolder)(
         IMachine *pThis,
         PRUnichar * name,
         PRUnichar * hostPath,
         PRBool writable
     );
 
-    nsresult (*RemoveSharedFolder)(
+    nsresult PR_COM_METHOD (*RemoveSharedFolder)(
         IMachine *pThis,
         PRUnichar * name
     );
 
-    nsresult (*CanShowConsoleWindow)(
+    nsresult PR_COM_METHOD (*CanShowConsoleWindow)(
         IMachine *pThis,
         PRBool * canShow
     );
 
-    nsresult (*ShowConsoleWindow)(
+    nsresult PR_COM_METHOD (*ShowConsoleWindow)(
         IMachine *pThis,
         PRUint64 * winId
     );
 
-    nsresult (*GetGuestProperty)(
+    nsresult PR_COM_METHOD (*GetGuestProperty)(
         IMachine *pThis,
         PRUnichar * name,
         PRUnichar * * value,
@@ -2414,32 +2419,32 @@ struct IMachine_vtbl
         PRUnichar * * flags
     );
 
-    nsresult (*GetGuestPropertyValue)(
+    nsresult PR_COM_METHOD (*GetGuestPropertyValue)(
         IMachine *pThis,
         PRUnichar * property,
         PRUnichar * * value
     );
 
-    nsresult (*GetGuestPropertyTimestamp)(
+    nsresult PR_COM_METHOD (*GetGuestPropertyTimestamp)(
         IMachine *pThis,
         PRUnichar * property,
         PRUint64 * value
     );
 
-    nsresult (*SetGuestProperty)(
+    nsresult PR_COM_METHOD (*SetGuestProperty)(
         IMachine *pThis,
         PRUnichar * property,
         PRUnichar * value,
         PRUnichar * flags
     );
 
-    nsresult (*SetGuestPropertyValue)(
+    nsresult PR_COM_METHOD (*SetGuestPropertyValue)(
         IMachine *pThis,
         PRUnichar * property,
         PRUnichar * value
     );
 
-    nsresult (*EnumerateGuestProperties)(
+    nsresult PR_COM_METHOD (*EnumerateGuestProperties)(
         IMachine *pThis,
         PRUnichar * patterns,
         PRUint32 *nameSize,
@@ -2471,7 +2476,7 @@ struct IConsoleCallback_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*OnMousePointerShapeChange)(
+    nsresult PR_COM_METHOD (*OnMousePointerShapeChange)(
         IConsoleCallback *pThis,
         PRBool visible,
         PRBool alpha,
@@ -2482,76 +2487,76 @@ struct IConsoleCallback_vtbl
         PRUint8 * shape
     );
 
-    nsresult (*OnMouseCapabilityChange)(
+    nsresult PR_COM_METHOD (*OnMouseCapabilityChange)(
         IConsoleCallback *pThis,
         PRBool supportsAbsolute,
         PRBool needsHostCursor
     );
 
-    nsresult (*OnKeyboardLedsChange)(
+    nsresult PR_COM_METHOD (*OnKeyboardLedsChange)(
         IConsoleCallback *pThis,
         PRBool numLock,
         PRBool capsLock,
         PRBool scrollLock
     );
 
-    nsresult (*OnStateChange)(
+    nsresult PR_COM_METHOD (*OnStateChange)(
         IConsoleCallback *pThis,
         PRUint32 state
     );
 
-    nsresult (*OnAdditionsStateChange)(IConsoleCallback *pThis );
+    nsresult PR_COM_METHOD (*OnAdditionsStateChange)(IConsoleCallback *pThis );
 
-    nsresult (*OnDVDDriveChange)(IConsoleCallback *pThis );
+    nsresult PR_COM_METHOD (*OnDVDDriveChange)(IConsoleCallback *pThis );
 
-    nsresult (*OnFloppyDriveChange)(IConsoleCallback *pThis );
+    nsresult PR_COM_METHOD (*OnFloppyDriveChange)(IConsoleCallback *pThis );
 
-    nsresult (*OnNetworkAdapterChange)(
+    nsresult PR_COM_METHOD (*OnNetworkAdapterChange)(
         IConsoleCallback *pThis,
         INetworkAdapter * networkAdapter
     );
 
-    nsresult (*OnSerialPortChange)(
+    nsresult PR_COM_METHOD (*OnSerialPortChange)(
         IConsoleCallback *pThis,
         ISerialPort * serialPort
     );
 
-    nsresult (*OnParallelPortChange)(
+    nsresult PR_COM_METHOD (*OnParallelPortChange)(
         IConsoleCallback *pThis,
         IParallelPort * parallelPort
     );
 
-    nsresult (*OnStorageControllerChange)(IConsoleCallback *pThis );
+    nsresult PR_COM_METHOD (*OnStorageControllerChange)(IConsoleCallback *pThis );
 
-    nsresult (*OnVRDPServerChange)(IConsoleCallback *pThis );
+    nsresult PR_COM_METHOD (*OnVRDPServerChange)(IConsoleCallback *pThis );
 
-    nsresult (*OnUSBControllerChange)(IConsoleCallback *pThis );
+    nsresult PR_COM_METHOD (*OnUSBControllerChange)(IConsoleCallback *pThis );
 
-    nsresult (*OnUSBDeviceStateChange)(
+    nsresult PR_COM_METHOD (*OnUSBDeviceStateChange)(
         IConsoleCallback *pThis,
         IUSBDevice * device,
         PRBool attached,
         IVirtualBoxErrorInfo * error
     );
 
-    nsresult (*OnSharedFolderChange)(
+    nsresult PR_COM_METHOD (*OnSharedFolderChange)(
         IConsoleCallback *pThis,
         PRUint32 scope
     );
 
-    nsresult (*OnRuntimeError)(
+    nsresult PR_COM_METHOD (*OnRuntimeError)(
         IConsoleCallback *pThis,
         PRBool fatal,
         PRUnichar * id,
         PRUnichar * message
     );
 
-    nsresult (*OnCanShowWindow)(
+    nsresult PR_COM_METHOD (*OnCanShowWindow)(
         IConsoleCallback *pThis,
         PRBool * canShow
     );
 
-    nsresult (*OnShowWindow)(
+    nsresult PR_COM_METHOD (*OnShowWindow)(
         IConsoleCallback *pThis,
         PRUint64 * winId
     );
@@ -2575,33 +2580,33 @@ struct IRemoteDisplayInfo_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetActive)(IRemoteDisplayInfo *pThis, PRBool *active);
+    nsresult PR_COM_METHOD (*GetActive)(IRemoteDisplayInfo *pThis, PRBool *active);
 
-    nsresult (*GetNumberOfClients)(IRemoteDisplayInfo *pThis, PRUint32 *numberOfClients);
+    nsresult PR_COM_METHOD (*GetNumberOfClients)(IRemoteDisplayInfo *pThis, PRUint32 *numberOfClients);
 
-    nsresult (*GetBeginTime)(IRemoteDisplayInfo *pThis, PRInt64 *beginTime);
+    nsresult PR_COM_METHOD (*GetBeginTime)(IRemoteDisplayInfo *pThis, PRInt64 *beginTime);
 
-    nsresult (*GetEndTime)(IRemoteDisplayInfo *pThis, PRInt64 *endTime);
+    nsresult PR_COM_METHOD (*GetEndTime)(IRemoteDisplayInfo *pThis, PRInt64 *endTime);
 
-    nsresult (*GetBytesSent)(IRemoteDisplayInfo *pThis, PRUint64 *bytesSent);
+    nsresult PR_COM_METHOD (*GetBytesSent)(IRemoteDisplayInfo *pThis, PRUint64 *bytesSent);
 
-    nsresult (*GetBytesSentTotal)(IRemoteDisplayInfo *pThis, PRUint64 *bytesSentTotal);
+    nsresult PR_COM_METHOD (*GetBytesSentTotal)(IRemoteDisplayInfo *pThis, PRUint64 *bytesSentTotal);
 
-    nsresult (*GetBytesReceived)(IRemoteDisplayInfo *pThis, PRUint64 *bytesReceived);
+    nsresult PR_COM_METHOD (*GetBytesReceived)(IRemoteDisplayInfo *pThis, PRUint64 *bytesReceived);
 
-    nsresult (*GetBytesReceivedTotal)(IRemoteDisplayInfo *pThis, PRUint64 *bytesReceivedTotal);
+    nsresult PR_COM_METHOD (*GetBytesReceivedTotal)(IRemoteDisplayInfo *pThis, PRUint64 *bytesReceivedTotal);
 
-    nsresult (*GetUser)(IRemoteDisplayInfo *pThis, PRUnichar * *user);
+    nsresult PR_COM_METHOD (*GetUser)(IRemoteDisplayInfo *pThis, PRUnichar * *user);
 
-    nsresult (*GetDomain)(IRemoteDisplayInfo *pThis, PRUnichar * *domain);
+    nsresult PR_COM_METHOD (*GetDomain)(IRemoteDisplayInfo *pThis, PRUnichar * *domain);
 
-    nsresult (*GetClientName)(IRemoteDisplayInfo *pThis, PRUnichar * *clientName);
+    nsresult PR_COM_METHOD (*GetClientName)(IRemoteDisplayInfo *pThis, PRUnichar * *clientName);
 
-    nsresult (*GetClientIP)(IRemoteDisplayInfo *pThis, PRUnichar * *clientIP);
+    nsresult PR_COM_METHOD (*GetClientIP)(IRemoteDisplayInfo *pThis, PRUnichar * *clientIP);
 
-    nsresult (*GetClientVersion)(IRemoteDisplayInfo *pThis, PRUint32 *clientVersion);
+    nsresult PR_COM_METHOD (*GetClientVersion)(IRemoteDisplayInfo *pThis, PRUint32 *clientVersion);
 
-    nsresult (*GetEncryptionStyle)(IRemoteDisplayInfo *pThis, PRUint32 *encryptionStyle);
+    nsresult PR_COM_METHOD (*GetEncryptionStyle)(IRemoteDisplayInfo *pThis, PRUint32 *encryptionStyle);
 
 };
 
@@ -2622,147 +2627,147 @@ struct IConsole_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetMachine)(IConsole *pThis, IMachine * *machine);
+    nsresult PR_COM_METHOD (*GetMachine)(IConsole *pThis, IMachine * *machine);
 
-    nsresult (*GetState)(IConsole *pThis, PRUint32 *state);
+    nsresult PR_COM_METHOD (*GetState)(IConsole *pThis, PRUint32 *state);
 
-    nsresult (*GetGuest)(IConsole *pThis, IGuest * *guest);
+    nsresult PR_COM_METHOD (*GetGuest)(IConsole *pThis, IGuest * *guest);
 
-    nsresult (*GetKeyboard)(IConsole *pThis, IKeyboard * *keyboard);
+    nsresult PR_COM_METHOD (*GetKeyboard)(IConsole *pThis, IKeyboard * *keyboard);
 
-    nsresult (*GetMouse)(IConsole *pThis, IMouse * *mouse);
+    nsresult PR_COM_METHOD (*GetMouse)(IConsole *pThis, IMouse * *mouse);
 
-    nsresult (*GetDisplay)(IConsole *pThis, IDisplay * *display);
+    nsresult PR_COM_METHOD (*GetDisplay)(IConsole *pThis, IDisplay * *display);
 
-    nsresult (*GetDebugger)(IConsole *pThis, IMachineDebugger * *debugger);
+    nsresult PR_COM_METHOD (*GetDebugger)(IConsole *pThis, IMachineDebugger * *debugger);
 
-    nsresult (*GetUSBDevices)(IConsole *pThis, PRUint32 *USBDevicesSize, IUSBDevice * **USBDevices);
+    nsresult PR_COM_METHOD (*GetUSBDevices)(IConsole *pThis, PRUint32 *USBDevicesSize, IUSBDevice * **USBDevices);
 
-    nsresult (*GetRemoteUSBDevices)(IConsole *pThis, PRUint32 *remoteUSBDevicesSize, IHostUSBDevice * **remoteUSBDevices);
+    nsresult PR_COM_METHOD (*GetRemoteUSBDevices)(IConsole *pThis, PRUint32 *remoteUSBDevicesSize, IHostUSBDevice * **remoteUSBDevices);
 
-    nsresult (*GetSharedFolders)(IConsole *pThis, PRUint32 *sharedFoldersSize, ISharedFolder * **sharedFolders);
+    nsresult PR_COM_METHOD (*GetSharedFolders)(IConsole *pThis, PRUint32 *sharedFoldersSize, ISharedFolder * **sharedFolders);
 
-    nsresult (*GetRemoteDisplayInfo)(IConsole *pThis, IRemoteDisplayInfo * *remoteDisplayInfo);
+    nsresult PR_COM_METHOD (*GetRemoteDisplayInfo)(IConsole *pThis, IRemoteDisplayInfo * *remoteDisplayInfo);
 
-    nsresult (*PowerUp)(
+    nsresult PR_COM_METHOD (*PowerUp)(
         IConsole *pThis,
         IProgress * * progress
     );
 
-    nsresult (*PowerUpPaused)(
+    nsresult PR_COM_METHOD (*PowerUpPaused)(
         IConsole *pThis,
         IProgress * * progress
     );
 
-    nsresult (*PowerDown)(IConsole *pThis );
+    nsresult PR_COM_METHOD (*PowerDown)(IConsole *pThis );
 
-    nsresult (*PowerDownAsync)(
+    nsresult PR_COM_METHOD (*PowerDownAsync)(
         IConsole *pThis,
         IProgress * * progress
     );
 
-    nsresult (*Reset)(IConsole *pThis );
+    nsresult PR_COM_METHOD (*Reset)(IConsole *pThis );
 
-    nsresult (*Pause)(IConsole *pThis );
+    nsresult PR_COM_METHOD (*Pause)(IConsole *pThis );
 
-    nsresult (*Resume)(IConsole *pThis );
+    nsresult PR_COM_METHOD (*Resume)(IConsole *pThis );
 
-    nsresult (*PowerButton)(IConsole *pThis );
+    nsresult PR_COM_METHOD (*PowerButton)(IConsole *pThis );
 
-    nsresult (*SleepButton)(IConsole *pThis );
+    nsresult PR_COM_METHOD (*SleepButton)(IConsole *pThis );
 
-    nsresult (*GetPowerButtonHandled)(
+    nsresult PR_COM_METHOD (*GetPowerButtonHandled)(
         IConsole *pThis,
         PRBool * handled
     );
 
-    nsresult (*GetGuestEnteredACPIMode)(
+    nsresult PR_COM_METHOD (*GetGuestEnteredACPIMode)(
         IConsole *pThis,
         PRBool * entered
     );
 
-    nsresult (*SaveState)(
+    nsresult PR_COM_METHOD (*SaveState)(
         IConsole *pThis,
         IProgress * * progress
     );
 
-    nsresult (*AdoptSavedState)(
+    nsresult PR_COM_METHOD (*AdoptSavedState)(
         IConsole *pThis,
         PRUnichar * savedStateFile
     );
 
-    nsresult (*DiscardSavedState)(IConsole *pThis );
+    nsresult PR_COM_METHOD (*DiscardSavedState)(IConsole *pThis );
 
-    nsresult (*GetDeviceActivity)(
+    nsresult PR_COM_METHOD (*GetDeviceActivity)(
         IConsole *pThis,
         PRUint32 type,
         PRUint32 * activity
     );
 
-    nsresult (*AttachUSBDevice)(
+    nsresult PR_COM_METHOD (*AttachUSBDevice)(
         IConsole *pThis,
         const nsID * id
     );
 
-    nsresult (*DetachUSBDevice)(
+    nsresult PR_COM_METHOD (*DetachUSBDevice)(
         IConsole *pThis,
         const nsID * id,
         IUSBDevice * * device
     );
 
-    nsresult (*FindUSBDeviceByAddress)(
+    nsresult PR_COM_METHOD (*FindUSBDeviceByAddress)(
         IConsole *pThis,
         PRUnichar * name,
         IUSBDevice * * device
     );
 
-    nsresult (*FindUSBDeviceById)(
+    nsresult PR_COM_METHOD (*FindUSBDeviceById)(
         IConsole *pThis,
         const nsID * id,
         IUSBDevice * * device
     );
 
-    nsresult (*CreateSharedFolder)(
+    nsresult PR_COM_METHOD (*CreateSharedFolder)(
         IConsole *pThis,
         PRUnichar * name,
         PRUnichar * hostPath,
         PRBool writable
     );
 
-    nsresult (*RemoveSharedFolder)(
+    nsresult PR_COM_METHOD (*RemoveSharedFolder)(
         IConsole *pThis,
         PRUnichar * name
     );
 
-    nsresult (*TakeSnapshot)(
+    nsresult PR_COM_METHOD (*TakeSnapshot)(
         IConsole *pThis,
         PRUnichar * name,
         PRUnichar * description,
         IProgress * * progress
     );
 
-    nsresult (*DiscardSnapshot)(
+    nsresult PR_COM_METHOD (*DiscardSnapshot)(
         IConsole *pThis,
         const nsID * id,
         IProgress * * progress
     );
 
-    nsresult (*DiscardCurrentState)(
+    nsresult PR_COM_METHOD (*DiscardCurrentState)(
         IConsole *pThis,
         IProgress * * progress
     );
 
-    nsresult (*DiscardCurrentSnapshotAndState)(
+    nsresult PR_COM_METHOD (*DiscardCurrentSnapshotAndState)(
         IConsole *pThis,
         IProgress * * progress
     );
 
-    nsresult (*RegisterCallback)(
+    nsresult PR_COM_METHOD (*RegisterCallback)(
         IConsole *pThis,
         IConsoleCallback * callback
     );
 
-    nsresult (*UnregisterCallback)(
+    nsresult PR_COM_METHOD (*UnregisterCallback)(
         IConsole *pThis,
         IConsoleCallback * callback
     );
@@ -2786,11 +2791,11 @@ struct IHostDVDDrive_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetName)(IHostDVDDrive *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*GetName)(IHostDVDDrive *pThis, PRUnichar * *name);
 
-    nsresult (*GetDescription)(IHostDVDDrive *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*GetDescription)(IHostDVDDrive *pThis, PRUnichar * *description);
 
-    nsresult (*GetUdi)(IHostDVDDrive *pThis, PRUnichar * *udi);
+    nsresult PR_COM_METHOD (*GetUdi)(IHostDVDDrive *pThis, PRUnichar * *udi);
 
 };
 
@@ -2811,11 +2816,11 @@ struct IHostFloppyDrive_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetName)(IHostFloppyDrive *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*GetName)(IHostFloppyDrive *pThis, PRUnichar * *name);
 
-    nsresult (*GetDescription)(IHostFloppyDrive *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*GetDescription)(IHostFloppyDrive *pThis, PRUnichar * *description);
 
-    nsresult (*GetUdi)(IHostFloppyDrive *pThis, PRUnichar * *udi);
+    nsresult PR_COM_METHOD (*GetUdi)(IHostFloppyDrive *pThis, PRUnichar * *udi);
 
 };
 
@@ -2836,47 +2841,47 @@ struct IHostNetworkInterface_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetName)(IHostNetworkInterface *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*GetName)(IHostNetworkInterface *pThis, PRUnichar * *name);
 
-    nsresult (*GetId)(IHostNetworkInterface *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IHostNetworkInterface *pThis, nsID * *id);
 
-    nsresult (*GetNetworkName)(IHostNetworkInterface *pThis, PRUnichar * *networkName);
+    nsresult PR_COM_METHOD (*GetNetworkName)(IHostNetworkInterface *pThis, PRUnichar * *networkName);
 
-    nsresult (*GetDhcpEnabled)(IHostNetworkInterface *pThis, PRBool *dhcpEnabled);
+    nsresult PR_COM_METHOD (*GetDhcpEnabled)(IHostNetworkInterface *pThis, PRBool *dhcpEnabled);
 
-    nsresult (*GetIPAddress)(IHostNetworkInterface *pThis, PRUnichar * *IPAddress);
+    nsresult PR_COM_METHOD (*GetIPAddress)(IHostNetworkInterface *pThis, PRUnichar * *IPAddress);
 
-    nsresult (*GetNetworkMask)(IHostNetworkInterface *pThis, PRUnichar * *networkMask);
+    nsresult PR_COM_METHOD (*GetNetworkMask)(IHostNetworkInterface *pThis, PRUnichar * *networkMask);
 
-    nsresult (*GetIPV6Supported)(IHostNetworkInterface *pThis, PRBool *IPV6Supported);
+    nsresult PR_COM_METHOD (*GetIPV6Supported)(IHostNetworkInterface *pThis, PRBool *IPV6Supported);
 
-    nsresult (*GetIPV6Address)(IHostNetworkInterface *pThis, PRUnichar * *IPV6Address);
+    nsresult PR_COM_METHOD (*GetIPV6Address)(IHostNetworkInterface *pThis, PRUnichar * *IPV6Address);
 
-    nsresult (*GetIPV6NetworkMaskPrefixLength)(IHostNetworkInterface *pThis, PRUint32 *IPV6NetworkMaskPrefixLength);
+    nsresult PR_COM_METHOD (*GetIPV6NetworkMaskPrefixLength)(IHostNetworkInterface *pThis, PRUint32 *IPV6NetworkMaskPrefixLength);
 
-    nsresult (*GetHardwareAddress)(IHostNetworkInterface *pThis, PRUnichar * *hardwareAddress);
+    nsresult PR_COM_METHOD (*GetHardwareAddress)(IHostNetworkInterface *pThis, PRUnichar * *hardwareAddress);
 
-    nsresult (*GetMediumType)(IHostNetworkInterface *pThis, PRUint32 *mediumType);
+    nsresult PR_COM_METHOD (*GetMediumType)(IHostNetworkInterface *pThis, PRUint32 *mediumType);
 
-    nsresult (*GetStatus)(IHostNetworkInterface *pThis, PRUint32 *status);
+    nsresult PR_COM_METHOD (*GetStatus)(IHostNetworkInterface *pThis, PRUint32 *status);
 
-    nsresult (*GetInterfaceType)(IHostNetworkInterface *pThis, PRUint32 *interfaceType);
+    nsresult PR_COM_METHOD (*GetInterfaceType)(IHostNetworkInterface *pThis, PRUint32 *interfaceType);
 
-    nsresult (*EnableStaticIpConfig)(
+    nsresult PR_COM_METHOD (*EnableStaticIpConfig)(
         IHostNetworkInterface *pThis,
         PRUnichar * IPAddress,
         PRUnichar * networkMask
     );
 
-    nsresult (*EnableStaticIpConfigV6)(
+    nsresult PR_COM_METHOD (*EnableStaticIpConfigV6)(
         IHostNetworkInterface *pThis,
         PRUnichar * IPV6Address,
         PRUint32 IPV6NetworkMaskPrefixLength
     );
 
-    nsresult (*EnableDynamicIpConfig)(IHostNetworkInterface *pThis );
+    nsresult PR_COM_METHOD (*EnableDynamicIpConfig)(IHostNetworkInterface *pThis );
 
-    nsresult (*DhcpRediscover)(IHostNetworkInterface *pThis );
+    nsresult PR_COM_METHOD (*DhcpRediscover)(IHostNetworkInterface *pThis );
 
 };
 
@@ -2897,104 +2902,104 @@ struct IHost_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetDVDDrives)(IHost *pThis, PRUint32 *DVDDrivesSize, IHostDVDDrive * **DVDDrives);
+    nsresult PR_COM_METHOD (*GetDVDDrives)(IHost *pThis, PRUint32 *DVDDrivesSize, IHostDVDDrive * **DVDDrives);
 
-    nsresult (*GetFloppyDrives)(IHost *pThis, PRUint32 *floppyDrivesSize, IHostFloppyDrive * **floppyDrives);
+    nsresult PR_COM_METHOD (*GetFloppyDrives)(IHost *pThis, PRUint32 *floppyDrivesSize, IHostFloppyDrive * **floppyDrives);
 
-    nsresult (*GetUSBDevices)(IHost *pThis, PRUint32 *USBDevicesSize, IHostUSBDevice * **USBDevices);
+    nsresult PR_COM_METHOD (*GetUSBDevices)(IHost *pThis, PRUint32 *USBDevicesSize, IHostUSBDevice * **USBDevices);
 
-    nsresult (*GetUSBDeviceFilters)(IHost *pThis, PRUint32 *USBDeviceFiltersSize, IHostUSBDeviceFilter * **USBDeviceFilters);
+    nsresult PR_COM_METHOD (*GetUSBDeviceFilters)(IHost *pThis, PRUint32 *USBDeviceFiltersSize, IHostUSBDeviceFilter * **USBDeviceFilters);
 
-    nsresult (*GetNetworkInterfaces)(IHost *pThis, PRUint32 *networkInterfacesSize, IHostNetworkInterface * **networkInterfaces);
+    nsresult PR_COM_METHOD (*GetNetworkInterfaces)(IHost *pThis, PRUint32 *networkInterfacesSize, IHostNetworkInterface * **networkInterfaces);
 
-    nsresult (*GetProcessorCount)(IHost *pThis, PRUint32 *processorCount);
+    nsresult PR_COM_METHOD (*GetProcessorCount)(IHost *pThis, PRUint32 *processorCount);
 
-    nsresult (*GetProcessorOnlineCount)(IHost *pThis, PRUint32 *processorOnlineCount);
+    nsresult PR_COM_METHOD (*GetProcessorOnlineCount)(IHost *pThis, PRUint32 *processorOnlineCount);
 
-    nsresult (*GetMemorySize)(IHost *pThis, PRUint32 *memorySize);
+    nsresult PR_COM_METHOD (*GetMemorySize)(IHost *pThis, PRUint32 *memorySize);
 
-    nsresult (*GetMemoryAvailable)(IHost *pThis, PRUint32 *memoryAvailable);
+    nsresult PR_COM_METHOD (*GetMemoryAvailable)(IHost *pThis, PRUint32 *memoryAvailable);
 
-    nsresult (*GetOperatingSystem)(IHost *pThis, PRUnichar * *operatingSystem);
+    nsresult PR_COM_METHOD (*GetOperatingSystem)(IHost *pThis, PRUnichar * *operatingSystem);
 
-    nsresult (*GetOSVersion)(IHost *pThis, PRUnichar * *OSVersion);
+    nsresult PR_COM_METHOD (*GetOSVersion)(IHost *pThis, PRUnichar * *OSVersion);
 
-    nsresult (*GetUTCTime)(IHost *pThis, PRInt64 *UTCTime);
+    nsresult PR_COM_METHOD (*GetUTCTime)(IHost *pThis, PRInt64 *UTCTime);
 
-    nsresult (*GetProcessorSpeed)(
+    nsresult PR_COM_METHOD (*GetProcessorSpeed)(
         IHost *pThis,
         PRUint32 cpuId,
         PRUint32 * speed
     );
 
-    nsresult (*GetProcessorFeature)(
+    nsresult PR_COM_METHOD (*GetProcessorFeature)(
         IHost *pThis,
         PRUint32 feature,
         PRBool * supported
     );
 
-    nsresult (*GetProcessorDescription)(
+    nsresult PR_COM_METHOD (*GetProcessorDescription)(
         IHost *pThis,
         PRUint32 cpuId,
         PRUnichar * * description
     );
 
-    nsresult (*CreateUSBDeviceFilter)(
+    nsresult PR_COM_METHOD (*CreateUSBDeviceFilter)(
         IHost *pThis,
         PRUnichar * name,
         IHostUSBDeviceFilter * * filter
     );
 
-    nsresult (*InsertUSBDeviceFilter)(
+    nsresult PR_COM_METHOD (*InsertUSBDeviceFilter)(
         IHost *pThis,
         PRUint32 position,
         IHostUSBDeviceFilter * filter
     );
 
-    nsresult (*RemoveUSBDeviceFilter)(
+    nsresult PR_COM_METHOD (*RemoveUSBDeviceFilter)(
         IHost *pThis,
         PRUint32 position,
         IHostUSBDeviceFilter * * filter
     );
 
-    nsresult (*FindHostDVDDrive)(
+    nsresult PR_COM_METHOD (*FindHostDVDDrive)(
         IHost *pThis,
         PRUnichar * name,
         IHostDVDDrive * * drive
     );
 
-    nsresult (*FindHostFloppyDrive)(
+    nsresult PR_COM_METHOD (*FindHostFloppyDrive)(
         IHost *pThis,
         PRUnichar * name,
         IHostFloppyDrive * * drive
     );
 
-    nsresult (*FindHostNetworkInterfaceByName)(
+    nsresult PR_COM_METHOD (*FindHostNetworkInterfaceByName)(
         IHost *pThis,
         PRUnichar * name,
         IHostNetworkInterface * * networkInterface
     );
 
-    nsresult (*FindHostNetworkInterfaceById)(
+    nsresult PR_COM_METHOD (*FindHostNetworkInterfaceById)(
         IHost *pThis,
         const nsID * id,
         IHostNetworkInterface * * networkInterface
     );
 
-    nsresult (*FindHostNetworkInterfacesOfType)(
+    nsresult PR_COM_METHOD (*FindHostNetworkInterfacesOfType)(
         IHost *pThis,
         PRUint32 type,
         PRUint32 *networkInterfacesSize,
         IHostNetworkInterface *** networkInterfaces
     );
 
-    nsresult (*FindUSBDeviceById)(
+    nsresult PR_COM_METHOD (*FindUSBDeviceById)(
         IHost *pThis,
         const nsID * id,
         IHostUSBDevice * * device
     );
 
-    nsresult (*FindUSBDeviceByAddress)(
+    nsresult PR_COM_METHOD (*FindUSBDeviceByAddress)(
         IHost *pThis,
         PRUnichar * name,
         IHostUSBDevice * * device
@@ -3019,50 +3024,50 @@ struct ISystemProperties_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetMinGuestRAM)(ISystemProperties *pThis, PRUint32 *minGuestRAM);
+    nsresult PR_COM_METHOD (*GetMinGuestRAM)(ISystemProperties *pThis, PRUint32 *minGuestRAM);
 
-    nsresult (*GetMaxGuestRAM)(ISystemProperties *pThis, PRUint32 *maxGuestRAM);
+    nsresult PR_COM_METHOD (*GetMaxGuestRAM)(ISystemProperties *pThis, PRUint32 *maxGuestRAM);
 
-    nsresult (*GetMinGuestVRAM)(ISystemProperties *pThis, PRUint32 *minGuestVRAM);
+    nsresult PR_COM_METHOD (*GetMinGuestVRAM)(ISystemProperties *pThis, PRUint32 *minGuestVRAM);
 
-    nsresult (*GetMaxGuestVRAM)(ISystemProperties *pThis, PRUint32 *maxGuestVRAM);
+    nsresult PR_COM_METHOD (*GetMaxGuestVRAM)(ISystemProperties *pThis, PRUint32 *maxGuestVRAM);
 
-    nsresult (*GetMinGuestCPUCount)(ISystemProperties *pThis, PRUint32 *minGuestCPUCount);
+    nsresult PR_COM_METHOD (*GetMinGuestCPUCount)(ISystemProperties *pThis, PRUint32 *minGuestCPUCount);
 
-    nsresult (*GetMaxGuestCPUCount)(ISystemProperties *pThis, PRUint32 *maxGuestCPUCount);
+    nsresult PR_COM_METHOD (*GetMaxGuestCPUCount)(ISystemProperties *pThis, PRUint32 *maxGuestCPUCount);
 
-    nsresult (*GetMaxVDISize)(ISystemProperties *pThis, PRUint64 *maxVDISize);
+    nsresult PR_COM_METHOD (*GetMaxVDISize)(ISystemProperties *pThis, PRUint64 *maxVDISize);
 
-    nsresult (*GetNetworkAdapterCount)(ISystemProperties *pThis, PRUint32 *networkAdapterCount);
+    nsresult PR_COM_METHOD (*GetNetworkAdapterCount)(ISystemProperties *pThis, PRUint32 *networkAdapterCount);
 
-    nsresult (*GetSerialPortCount)(ISystemProperties *pThis, PRUint32 *serialPortCount);
+    nsresult PR_COM_METHOD (*GetSerialPortCount)(ISystemProperties *pThis, PRUint32 *serialPortCount);
 
-    nsresult (*GetParallelPortCount)(ISystemProperties *pThis, PRUint32 *parallelPortCount);
+    nsresult PR_COM_METHOD (*GetParallelPortCount)(ISystemProperties *pThis, PRUint32 *parallelPortCount);
 
-    nsresult (*GetMaxBootPosition)(ISystemProperties *pThis, PRUint32 *maxBootPosition);
+    nsresult PR_COM_METHOD (*GetMaxBootPosition)(ISystemProperties *pThis, PRUint32 *maxBootPosition);
 
-    nsresult (*GetDefaultMachineFolder)(ISystemProperties *pThis, PRUnichar * *defaultMachineFolder);
-    nsresult (*SetDefaultMachineFolder)(ISystemProperties *pThis, PRUnichar * defaultMachineFolder);
+    nsresult PR_COM_METHOD (*GetDefaultMachineFolder)(ISystemProperties *pThis, PRUnichar * *defaultMachineFolder);
+    nsresult PR_COM_METHOD (*SetDefaultMachineFolder)(ISystemProperties *pThis, PRUnichar * defaultMachineFolder);
 
-    nsresult (*GetDefaultHardDiskFolder)(ISystemProperties *pThis, PRUnichar * *defaultHardDiskFolder);
-    nsresult (*SetDefaultHardDiskFolder)(ISystemProperties *pThis, PRUnichar * defaultHardDiskFolder);
+    nsresult PR_COM_METHOD (*GetDefaultHardDiskFolder)(ISystemProperties *pThis, PRUnichar * *defaultHardDiskFolder);
+    nsresult PR_COM_METHOD (*SetDefaultHardDiskFolder)(ISystemProperties *pThis, PRUnichar * defaultHardDiskFolder);
 
-    nsresult (*GetHardDiskFormats)(ISystemProperties *pThis, PRUint32 *hardDiskFormatsSize, IHardDiskFormat * **hardDiskFormats);
+    nsresult PR_COM_METHOD (*GetHardDiskFormats)(ISystemProperties *pThis, PRUint32 *hardDiskFormatsSize, IHardDiskFormat * **hardDiskFormats);
 
-    nsresult (*GetDefaultHardDiskFormat)(ISystemProperties *pThis, PRUnichar * *defaultHardDiskFormat);
-    nsresult (*SetDefaultHardDiskFormat)(ISystemProperties *pThis, PRUnichar * defaultHardDiskFormat);
+    nsresult PR_COM_METHOD (*GetDefaultHardDiskFormat)(ISystemProperties *pThis, PRUnichar * *defaultHardDiskFormat);
+    nsresult PR_COM_METHOD (*SetDefaultHardDiskFormat)(ISystemProperties *pThis, PRUnichar * defaultHardDiskFormat);
 
-    nsresult (*GetRemoteDisplayAuthLibrary)(ISystemProperties *pThis, PRUnichar * *remoteDisplayAuthLibrary);
-    nsresult (*SetRemoteDisplayAuthLibrary)(ISystemProperties *pThis, PRUnichar * remoteDisplayAuthLibrary);
+    nsresult PR_COM_METHOD (*GetRemoteDisplayAuthLibrary)(ISystemProperties *pThis, PRUnichar * *remoteDisplayAuthLibrary);
+    nsresult PR_COM_METHOD (*SetRemoteDisplayAuthLibrary)(ISystemProperties *pThis, PRUnichar * remoteDisplayAuthLibrary);
 
-    nsresult (*GetWebServiceAuthLibrary)(ISystemProperties *pThis, PRUnichar * *webServiceAuthLibrary);
-    nsresult (*SetWebServiceAuthLibrary)(ISystemProperties *pThis, PRUnichar * webServiceAuthLibrary);
+    nsresult PR_COM_METHOD (*GetWebServiceAuthLibrary)(ISystemProperties *pThis, PRUnichar * *webServiceAuthLibrary);
+    nsresult PR_COM_METHOD (*SetWebServiceAuthLibrary)(ISystemProperties *pThis, PRUnichar * webServiceAuthLibrary);
 
-    nsresult (*GetHWVirtExEnabled)(ISystemProperties *pThis, PRBool *HWVirtExEnabled);
-    nsresult (*SetHWVirtExEnabled)(ISystemProperties *pThis, PRBool HWVirtExEnabled);
+    nsresult PR_COM_METHOD (*GetHWVirtExEnabled)(ISystemProperties *pThis, PRBool *HWVirtExEnabled);
+    nsresult PR_COM_METHOD (*SetHWVirtExEnabled)(ISystemProperties *pThis, PRBool HWVirtExEnabled);
 
-    nsresult (*GetLogHistoryCount)(ISystemProperties *pThis, PRUint32 *LogHistoryCount);
-    nsresult (*SetLogHistoryCount)(ISystemProperties *pThis, PRUint32 LogHistoryCount);
+    nsresult PR_COM_METHOD (*GetLogHistoryCount)(ISystemProperties *pThis, PRUint32 *LogHistoryCount);
+    nsresult PR_COM_METHOD (*SetLogHistoryCount)(ISystemProperties *pThis, PRUint32 LogHistoryCount);
 
 };
 
@@ -3083,27 +3088,27 @@ struct IGuestOSType_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetFamilyId)(IGuestOSType *pThis, PRUnichar * *familyId);
+    nsresult PR_COM_METHOD (*GetFamilyId)(IGuestOSType *pThis, PRUnichar * *familyId);
 
-    nsresult (*GetFamilyDescription)(IGuestOSType *pThis, PRUnichar * *familyDescription);
+    nsresult PR_COM_METHOD (*GetFamilyDescription)(IGuestOSType *pThis, PRUnichar * *familyDescription);
 
-    nsresult (*GetId)(IGuestOSType *pThis, PRUnichar * *id);
+    nsresult PR_COM_METHOD (*GetId)(IGuestOSType *pThis, PRUnichar * *id);
 
-    nsresult (*GetDescription)(IGuestOSType *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*GetDescription)(IGuestOSType *pThis, PRUnichar * *description);
 
-    nsresult (*GetIs64Bit)(IGuestOSType *pThis, PRBool *is64Bit);
+    nsresult PR_COM_METHOD (*GetIs64Bit)(IGuestOSType *pThis, PRBool *is64Bit);
 
-    nsresult (*GetRecommendedIOAPIC)(IGuestOSType *pThis, PRBool *recommendedIOAPIC);
+    nsresult PR_COM_METHOD (*GetRecommendedIOAPIC)(IGuestOSType *pThis, PRBool *recommendedIOAPIC);
 
-    nsresult (*GetRecommendedVirtEx)(IGuestOSType *pThis, PRBool *recommendedVirtEx);
+    nsresult PR_COM_METHOD (*GetRecommendedVirtEx)(IGuestOSType *pThis, PRBool *recommendedVirtEx);
 
-    nsresult (*GetRecommendedRAM)(IGuestOSType *pThis, PRUint32 *recommendedRAM);
+    nsresult PR_COM_METHOD (*GetRecommendedRAM)(IGuestOSType *pThis, PRUint32 *recommendedRAM);
 
-    nsresult (*GetRecommendedVRAM)(IGuestOSType *pThis, PRUint32 *recommendedVRAM);
+    nsresult PR_COM_METHOD (*GetRecommendedVRAM)(IGuestOSType *pThis, PRUint32 *recommendedVRAM);
 
-    nsresult (*GetRecommendedHDD)(IGuestOSType *pThis, PRUint32 *recommendedHDD);
+    nsresult PR_COM_METHOD (*GetRecommendedHDD)(IGuestOSType *pThis, PRUint32 *recommendedHDD);
 
-    nsresult (*GetAdapterType)(IGuestOSType *pThis, PRUint32 *adapterType);
+    nsresult PR_COM_METHOD (*GetAdapterType)(IGuestOSType *pThis, PRUint32 *adapterType);
 
 };
 
@@ -3124,23 +3129,23 @@ struct IGuest_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetOSTypeId)(IGuest *pThis, PRUnichar * *OSTypeId);
+    nsresult PR_COM_METHOD (*GetOSTypeId)(IGuest *pThis, PRUnichar * *OSTypeId);
 
-    nsresult (*GetAdditionsActive)(IGuest *pThis, PRBool *additionsActive);
+    nsresult PR_COM_METHOD (*GetAdditionsActive)(IGuest *pThis, PRBool *additionsActive);
 
-    nsresult (*GetAdditionsVersion)(IGuest *pThis, PRUnichar * *additionsVersion);
+    nsresult PR_COM_METHOD (*GetAdditionsVersion)(IGuest *pThis, PRUnichar * *additionsVersion);
 
-    nsresult (*GetSupportsSeamless)(IGuest *pThis, PRBool *supportsSeamless);
+    nsresult PR_COM_METHOD (*GetSupportsSeamless)(IGuest *pThis, PRBool *supportsSeamless);
 
-    nsresult (*GetSupportsGraphics)(IGuest *pThis, PRBool *supportsGraphics);
+    nsresult PR_COM_METHOD (*GetSupportsGraphics)(IGuest *pThis, PRBool *supportsGraphics);
 
-    nsresult (*GetMemoryBalloonSize)(IGuest *pThis, PRUint32 *memoryBalloonSize);
-    nsresult (*SetMemoryBalloonSize)(IGuest *pThis, PRUint32 memoryBalloonSize);
+    nsresult PR_COM_METHOD (*GetMemoryBalloonSize)(IGuest *pThis, PRUint32 *memoryBalloonSize);
+    nsresult PR_COM_METHOD (*SetMemoryBalloonSize)(IGuest *pThis, PRUint32 memoryBalloonSize);
 
-    nsresult (*GetStatisticsUpdateInterval)(IGuest *pThis, PRUint32 *statisticsUpdateInterval);
-    nsresult (*SetStatisticsUpdateInterval)(IGuest *pThis, PRUint32 statisticsUpdateInterval);
+    nsresult PR_COM_METHOD (*GetStatisticsUpdateInterval)(IGuest *pThis, PRUint32 *statisticsUpdateInterval);
+    nsresult PR_COM_METHOD (*SetStatisticsUpdateInterval)(IGuest *pThis, PRUint32 statisticsUpdateInterval);
 
-    nsresult (*SetCredentials)(
+    nsresult PR_COM_METHOD (*SetCredentials)(
         IGuest *pThis,
         PRUnichar * userName,
         PRUnichar * password,
@@ -3148,7 +3153,7 @@ struct IGuest_vtbl
         PRBool allowInteractiveLogon
     );
 
-    nsresult (*GetStatistic)(
+    nsresult PR_COM_METHOD (*GetStatistic)(
         IGuest *pThis,
         PRUint32 cpuId,
         PRUint32 statistic,
@@ -3174,46 +3179,46 @@ struct IProgress_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetId)(IProgress *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IProgress *pThis, nsID * *id);
 
-    nsresult (*GetDescription)(IProgress *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*GetDescription)(IProgress *pThis, PRUnichar * *description);
 
-    nsresult (*GetInitiator)(IProgress *pThis, nsISupports * *initiator);
+    nsresult PR_COM_METHOD (*GetInitiator)(IProgress *pThis, nsISupports * *initiator);
 
-    nsresult (*GetCancelable)(IProgress *pThis, PRBool *cancelable);
+    nsresult PR_COM_METHOD (*GetCancelable)(IProgress *pThis, PRBool *cancelable);
 
-    nsresult (*GetPercent)(IProgress *pThis, PRUint32 *percent);
+    nsresult PR_COM_METHOD (*GetPercent)(IProgress *pThis, PRUint32 *percent);
 
-    nsresult (*GetTimeRemaining)(IProgress *pThis, PRInt32 *timeRemaining);
+    nsresult PR_COM_METHOD (*GetTimeRemaining)(IProgress *pThis, PRInt32 *timeRemaining);
 
-    nsresult (*GetCompleted)(IProgress *pThis, PRBool *completed);
+    nsresult PR_COM_METHOD (*GetCompleted)(IProgress *pThis, PRBool *completed);
 
-    nsresult (*GetCanceled)(IProgress *pThis, PRBool *canceled);
+    nsresult PR_COM_METHOD (*GetCanceled)(IProgress *pThis, PRBool *canceled);
 
-    nsresult (*GetResultCode)(IProgress *pThis, nsresult *resultCode);
+    nsresult PR_COM_METHOD (*GetResultCode)(IProgress *pThis, nsresult *resultCode);
 
-    nsresult (*GetErrorInfo)(IProgress *pThis, IVirtualBoxErrorInfo * *errorInfo);
+    nsresult PR_COM_METHOD (*GetErrorInfo)(IProgress *pThis, IVirtualBoxErrorInfo * *errorInfo);
 
-    nsresult (*GetOperationCount)(IProgress *pThis, PRUint32 *operationCount);
+    nsresult PR_COM_METHOD (*GetOperationCount)(IProgress *pThis, PRUint32 *operationCount);
 
-    nsresult (*GetOperation)(IProgress *pThis, PRUint32 *operation);
+    nsresult PR_COM_METHOD (*GetOperation)(IProgress *pThis, PRUint32 *operation);
 
-    nsresult (*GetOperationDescription)(IProgress *pThis, PRUnichar * *operationDescription);
+    nsresult PR_COM_METHOD (*GetOperationDescription)(IProgress *pThis, PRUnichar * *operationDescription);
 
-    nsresult (*GetOperationPercent)(IProgress *pThis, PRUint32 *operationPercent);
+    nsresult PR_COM_METHOD (*GetOperationPercent)(IProgress *pThis, PRUint32 *operationPercent);
 
-    nsresult (*WaitForCompletion)(
+    nsresult PR_COM_METHOD (*WaitForCompletion)(
         IProgress *pThis,
         PRInt32 timeout
     );
 
-    nsresult (*WaitForOperationCompletion)(
+    nsresult PR_COM_METHOD (*WaitForOperationCompletion)(
         IProgress *pThis,
         PRUint32 operation,
         PRInt32 timeout
     );
 
-    nsresult (*Cancel)(IProgress *pThis );
+    nsresult PR_COM_METHOD (*Cancel)(IProgress *pThis );
 
 };
 
@@ -3234,23 +3239,23 @@ struct ISnapshot_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetId)(ISnapshot *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(ISnapshot *pThis, nsID * *id);
 
-    nsresult (*GetName)(ISnapshot *pThis, PRUnichar * *name);
-    nsresult (*SetName)(ISnapshot *pThis, PRUnichar * name);
+    nsresult PR_COM_METHOD (*GetName)(ISnapshot *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*SetName)(ISnapshot *pThis, PRUnichar * name);
 
-    nsresult (*GetDescription)(ISnapshot *pThis, PRUnichar * *description);
-    nsresult (*SetDescription)(ISnapshot *pThis, PRUnichar * description);
+    nsresult PR_COM_METHOD (*GetDescription)(ISnapshot *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*SetDescription)(ISnapshot *pThis, PRUnichar * description);
 
-    nsresult (*GetTimeStamp)(ISnapshot *pThis, PRInt64 *timeStamp);
+    nsresult PR_COM_METHOD (*GetTimeStamp)(ISnapshot *pThis, PRInt64 *timeStamp);
 
-    nsresult (*GetOnline)(ISnapshot *pThis, PRBool *online);
+    nsresult PR_COM_METHOD (*GetOnline)(ISnapshot *pThis, PRBool *online);
 
-    nsresult (*GetMachine)(ISnapshot *pThis, IMachine * *machine);
+    nsresult PR_COM_METHOD (*GetMachine)(ISnapshot *pThis, IMachine * *machine);
 
-    nsresult (*GetParent)(ISnapshot *pThis, ISnapshot * *parent);
+    nsresult PR_COM_METHOD (*GetParent)(ISnapshot *pThis, ISnapshot * *parent);
 
-    nsresult (*GetChildren)(ISnapshot *pThis, PRUint32 *childrenSize, ISnapshot * **children);
+    nsresult PR_COM_METHOD (*GetChildren)(ISnapshot *pThis, PRUint32 *childrenSize, ISnapshot * **children);
 
 };
 
@@ -3271,52 +3276,52 @@ struct IMedium_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetId)(IMedium *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IMedium *pThis, nsID * *id);
 
-    nsresult (*GetDescription)(IMedium *pThis, PRUnichar * *description);
-    nsresult (*SetDescription)(IMedium *pThis, PRUnichar * description);
+    nsresult PR_COM_METHOD (*GetDescription)(IMedium *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*SetDescription)(IMedium *pThis, PRUnichar * description);
 
-    nsresult (*GetState)(IMedium *pThis, PRUint32 *state);
+    nsresult PR_COM_METHOD (*GetState)(IMedium *pThis, PRUint32 *state);
 
-    nsresult (*GetLocation)(IMedium *pThis, PRUnichar * *location);
-    nsresult (*SetLocation)(IMedium *pThis, PRUnichar * location);
+    nsresult PR_COM_METHOD (*GetLocation)(IMedium *pThis, PRUnichar * *location);
+    nsresult PR_COM_METHOD (*SetLocation)(IMedium *pThis, PRUnichar * location);
 
-    nsresult (*GetName)(IMedium *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*GetName)(IMedium *pThis, PRUnichar * *name);
 
-    nsresult (*GetSize)(IMedium *pThis, PRUint64 *size);
+    nsresult PR_COM_METHOD (*GetSize)(IMedium *pThis, PRUint64 *size);
 
-    nsresult (*GetLastAccessError)(IMedium *pThis, PRUnichar * *lastAccessError);
+    nsresult PR_COM_METHOD (*GetLastAccessError)(IMedium *pThis, PRUnichar * *lastAccessError);
 
-    nsresult (*GetMachineIds)(IMedium *pThis, PRUint32 *machineIdsSize, nsID * **machineIds);
+    nsresult PR_COM_METHOD (*GetMachineIds)(IMedium *pThis, PRUint32 *machineIdsSize, nsID * **machineIds);
 
-    nsresult (*GetSnapshotIds)(
+    nsresult PR_COM_METHOD (*GetSnapshotIds)(
         IMedium *pThis,
         const nsID * machineId,
         PRUint32 *snapshotIdsSize,
         nsID *** snapshotIds
     );
 
-    nsresult (*LockRead)(
+    nsresult PR_COM_METHOD (*LockRead)(
         IMedium *pThis,
         PRUint32 * state
     );
 
-    nsresult (*UnlockRead)(
+    nsresult PR_COM_METHOD (*UnlockRead)(
         IMedium *pThis,
         PRUint32 * state
     );
 
-    nsresult (*LockWrite)(
+    nsresult PR_COM_METHOD (*LockWrite)(
         IMedium *pThis,
         PRUint32 * state
     );
 
-    nsresult (*UnlockWrite)(
+    nsresult PR_COM_METHOD (*UnlockWrite)(
         IMedium *pThis,
         PRUint32 * state
     );
 
-    nsresult (*Close)(IMedium *pThis );
+    nsresult PR_COM_METHOD (*Close)(IMedium *pThis );
 
 };
 
@@ -3337,13 +3342,13 @@ struct IHardDiskAttachment_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetHardDisk)(IHardDiskAttachment *pThis, IHardDisk * *hardDisk);
+    nsresult PR_COM_METHOD (*GetHardDisk)(IHardDiskAttachment *pThis, IHardDisk * *hardDisk);
 
-    nsresult (*GetController)(IHardDiskAttachment *pThis, PRUnichar * *controller);
+    nsresult PR_COM_METHOD (*GetController)(IHardDiskAttachment *pThis, PRUnichar * *controller);
 
-    nsresult (*GetPort)(IHardDiskAttachment *pThis, PRInt32 *port);
+    nsresult PR_COM_METHOD (*GetPort)(IHardDiskAttachment *pThis, PRInt32 *port);
 
-    nsresult (*GetDevice)(IHardDiskAttachment *pThis, PRInt32 *device);
+    nsresult PR_COM_METHOD (*GetDevice)(IHardDiskAttachment *pThis, PRInt32 *device);
 
 };
 
@@ -3364,37 +3369,37 @@ struct IHardDisk_vtbl
 {
     struct IMedium_vtbl imedium;
 
-    nsresult (*GetFormat)(IHardDisk *pThis, PRUnichar * *format);
+    nsresult PR_COM_METHOD (*GetFormat)(IHardDisk *pThis, PRUnichar * *format);
 
-    nsresult (*GetType)(IHardDisk *pThis, PRUint32 *type);
-    nsresult (*SetType)(IHardDisk *pThis, PRUint32 type);
+    nsresult PR_COM_METHOD (*GetType)(IHardDisk *pThis, PRUint32 *type);
+    nsresult PR_COM_METHOD (*SetType)(IHardDisk *pThis, PRUint32 type);
 
-    nsresult (*GetParent)(IHardDisk *pThis, IHardDisk * *parent);
+    nsresult PR_COM_METHOD (*GetParent)(IHardDisk *pThis, IHardDisk * *parent);
 
-    nsresult (*GetChildren)(IHardDisk *pThis, PRUint32 *childrenSize, IHardDisk * **children);
+    nsresult PR_COM_METHOD (*GetChildren)(IHardDisk *pThis, PRUint32 *childrenSize, IHardDisk * **children);
 
-    nsresult (*GetRoot)(IHardDisk *pThis, IHardDisk * *root);
+    nsresult PR_COM_METHOD (*GetRoot)(IHardDisk *pThis, IHardDisk * *root);
 
-    nsresult (*GetReadOnly)(IHardDisk *pThis, PRBool *readOnly);
+    nsresult PR_COM_METHOD (*GetReadOnly)(IHardDisk *pThis, PRBool *readOnly);
 
-    nsresult (*GetLogicalSize)(IHardDisk *pThis, PRUint64 *logicalSize);
+    nsresult PR_COM_METHOD (*GetLogicalSize)(IHardDisk *pThis, PRUint64 *logicalSize);
 
-    nsresult (*GetAutoReset)(IHardDisk *pThis, PRBool *autoReset);
-    nsresult (*SetAutoReset)(IHardDisk *pThis, PRBool autoReset);
+    nsresult PR_COM_METHOD (*GetAutoReset)(IHardDisk *pThis, PRBool *autoReset);
+    nsresult PR_COM_METHOD (*SetAutoReset)(IHardDisk *pThis, PRBool autoReset);
 
-    nsresult (*GetProperty)(
+    nsresult PR_COM_METHOD (*GetProperty)(
         IHardDisk *pThis,
         PRUnichar * name,
         PRUnichar * * value
     );
 
-    nsresult (*SetProperty)(
+    nsresult PR_COM_METHOD (*SetProperty)(
         IHardDisk *pThis,
         PRUnichar * name,
         PRUnichar * value
     );
 
-    nsresult (*GetProperties)(
+    nsresult PR_COM_METHOD (*GetProperties)(
         IHardDisk *pThis,
         PRUnichar * names,
         PRUint32 *returnNamesSize,
@@ -3403,7 +3408,7 @@ struct IHardDisk_vtbl
         PRUnichar *** returnValues
     );
 
-    nsresult (*SetProperties)(
+    nsresult PR_COM_METHOD (*SetProperties)(
         IHardDisk *pThis,
         PRUint32 namesSize,
         PRUnichar ** names,
@@ -3411,32 +3416,32 @@ struct IHardDisk_vtbl
         PRUnichar ** values
     );
 
-    nsresult (*CreateBaseStorage)(
+    nsresult PR_COM_METHOD (*CreateBaseStorage)(
         IHardDisk *pThis,
         PRUint64 logicalSize,
         PRUint32 variant,
         IProgress * * progress
     );
 
-    nsresult (*DeleteStorage)(
+    nsresult PR_COM_METHOD (*DeleteStorage)(
         IHardDisk *pThis,
         IProgress * * progress
     );
 
-    nsresult (*CreateDiffStorage)(
+    nsresult PR_COM_METHOD (*CreateDiffStorage)(
         IHardDisk *pThis,
         IHardDisk * target,
         PRUint32 variant,
         IProgress * * progress
     );
 
-    nsresult (*MergeTo)(
+    nsresult PR_COM_METHOD (*MergeTo)(
         IHardDisk *pThis,
         const nsID * targetId,
         IProgress * * progress
     );
 
-    nsresult (*CloneTo)(
+    nsresult PR_COM_METHOD (*CloneTo)(
         IHardDisk *pThis,
         IHardDisk * target,
         PRUint32 variant,
@@ -3444,12 +3449,12 @@ struct IHardDisk_vtbl
         IProgress * * progress
     );
 
-    nsresult (*Compact)(
+    nsresult PR_COM_METHOD (*Compact)(
         IHardDisk *pThis,
         IProgress * * progress
     );
 
-    nsresult (*Reset)(
+    nsresult PR_COM_METHOD (*Reset)(
         IHardDisk *pThis,
         IProgress * * progress
     );
@@ -3473,15 +3478,15 @@ struct IHardDiskFormat_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetId)(IHardDiskFormat *pThis, PRUnichar * *id);
+    nsresult PR_COM_METHOD (*GetId)(IHardDiskFormat *pThis, PRUnichar * *id);
 
-    nsresult (*GetName)(IHardDiskFormat *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*GetName)(IHardDiskFormat *pThis, PRUnichar * *name);
 
-    nsresult (*GetFileExtensions)(IHardDiskFormat *pThis, PRUint32 *fileExtensionsSize, PRUnichar * **fileExtensions);
+    nsresult PR_COM_METHOD (*GetFileExtensions)(IHardDiskFormat *pThis, PRUint32 *fileExtensionsSize, PRUnichar * **fileExtensions);
 
-    nsresult (*GetCapabilities)(IHardDiskFormat *pThis, PRUint32 *capabilities);
+    nsresult PR_COM_METHOD (*GetCapabilities)(IHardDiskFormat *pThis, PRUint32 *capabilities);
 
-    nsresult (*DescribeProperties)(
+    nsresult PR_COM_METHOD (*DescribeProperties)(
         IHardDiskFormat *pThis,
         PRUint32 *namesSize,
         PRUnichar *** names,
@@ -3552,29 +3557,29 @@ struct IDVDDrive_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetState)(IDVDDrive *pThis, PRUint32 *state);
+    nsresult PR_COM_METHOD (*GetState)(IDVDDrive *pThis, PRUint32 *state);
 
-    nsresult (*GetPassthrough)(IDVDDrive *pThis, PRBool *passthrough);
-    nsresult (*SetPassthrough)(IDVDDrive *pThis, PRBool passthrough);
+    nsresult PR_COM_METHOD (*GetPassthrough)(IDVDDrive *pThis, PRBool *passthrough);
+    nsresult PR_COM_METHOD (*SetPassthrough)(IDVDDrive *pThis, PRBool passthrough);
 
-    nsresult (*MountImage)(
+    nsresult PR_COM_METHOD (*MountImage)(
         IDVDDrive *pThis,
         const nsID * imageId
     );
 
-    nsresult (*CaptureHostDrive)(
+    nsresult PR_COM_METHOD (*CaptureHostDrive)(
         IDVDDrive *pThis,
         IHostDVDDrive * drive
     );
 
-    nsresult (*Unmount)(IDVDDrive *pThis );
+    nsresult PR_COM_METHOD (*Unmount)(IDVDDrive *pThis );
 
-    nsresult (*GetImage)(
+    nsresult PR_COM_METHOD (*GetImage)(
         IDVDDrive *pThis,
         IDVDImage * * image
     );
 
-    nsresult (*GetHostDrive)(
+    nsresult PR_COM_METHOD (*GetHostDrive)(
         IDVDDrive *pThis,
         IHostDVDDrive * * drive
     );
@@ -3598,29 +3603,29 @@ struct IFloppyDrive_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetEnabled)(IFloppyDrive *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(IFloppyDrive *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(IFloppyDrive *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(IFloppyDrive *pThis, PRBool enabled);
 
-    nsresult (*GetState)(IFloppyDrive *pThis, PRUint32 *state);
+    nsresult PR_COM_METHOD (*GetState)(IFloppyDrive *pThis, PRUint32 *state);
 
-    nsresult (*MountImage)(
+    nsresult PR_COM_METHOD (*MountImage)(
         IFloppyDrive *pThis,
         const nsID * imageId
     );
 
-    nsresult (*CaptureHostDrive)(
+    nsresult PR_COM_METHOD (*CaptureHostDrive)(
         IFloppyDrive *pThis,
         IHostFloppyDrive * drive
     );
 
-    nsresult (*Unmount)(IFloppyDrive *pThis );
+    nsresult PR_COM_METHOD (*Unmount)(IFloppyDrive *pThis );
 
-    nsresult (*GetImage)(
+    nsresult PR_COM_METHOD (*GetImage)(
         IFloppyDrive *pThis,
         IFloppyImage * * image
     );
 
-    nsresult (*GetHostDrive)(
+    nsresult PR_COM_METHOD (*GetHostDrive)(
         IFloppyDrive *pThis,
         IHostFloppyDrive * * drive
     );
@@ -3644,19 +3649,19 @@ struct IKeyboard_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*PutScancode)(
+    nsresult PR_COM_METHOD (*PutScancode)(
         IKeyboard *pThis,
         PRInt32 scancode
     );
 
-    nsresult (*PutScancodes)(
+    nsresult PR_COM_METHOD (*PutScancodes)(
         IKeyboard *pThis,
         PRUint32 scancodesSize,
         PRInt32* scancodes,
         PRUint32 * codesStored
     );
 
-    nsresult (*PutCAD)(IKeyboard *pThis );
+    nsresult PR_COM_METHOD (*PutCAD)(IKeyboard *pThis );
 
 };
 
@@ -3677,9 +3682,9 @@ struct IMouse_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetAbsoluteSupported)(IMouse *pThis, PRBool *absoluteSupported);
+    nsresult PR_COM_METHOD (*GetAbsoluteSupported)(IMouse *pThis, PRBool *absoluteSupported);
 
-    nsresult (*PutMouseEvent)(
+    nsresult PR_COM_METHOD (*PutMouseEvent)(
         IMouse *pThis,
         PRInt32 dx,
         PRInt32 dy,
@@ -3687,7 +3692,7 @@ struct IMouse_vtbl
         PRInt32 buttonState
     );
 
-    nsresult (*PutMouseEventAbsolute)(
+    nsresult PR_COM_METHOD (*PutMouseEventAbsolute)(
         IMouse *pThis,
         PRInt32 x,
         PRInt32 y,
@@ -3714,31 +3719,31 @@ struct IFramebuffer_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetAddress)(IFramebuffer *pThis, PRUint8 * *address);
+    nsresult PR_COM_METHOD (*GetAddress)(IFramebuffer *pThis, PRUint8 * *address);
 
-    nsresult (*GetWidth)(IFramebuffer *pThis, PRUint32 *width);
+    nsresult PR_COM_METHOD (*GetWidth)(IFramebuffer *pThis, PRUint32 *width);
 
-    nsresult (*GetHeight)(IFramebuffer *pThis, PRUint32 *height);
+    nsresult PR_COM_METHOD (*GetHeight)(IFramebuffer *pThis, PRUint32 *height);
 
-    nsresult (*GetBitsPerPixel)(IFramebuffer *pThis, PRUint32 *bitsPerPixel);
+    nsresult PR_COM_METHOD (*GetBitsPerPixel)(IFramebuffer *pThis, PRUint32 *bitsPerPixel);
 
-    nsresult (*GetBytesPerLine)(IFramebuffer *pThis, PRUint32 *bytesPerLine);
+    nsresult PR_COM_METHOD (*GetBytesPerLine)(IFramebuffer *pThis, PRUint32 *bytesPerLine);
 
-    nsresult (*GetPixelFormat)(IFramebuffer *pThis, PRUint32 *pixelFormat);
+    nsresult PR_COM_METHOD (*GetPixelFormat)(IFramebuffer *pThis, PRUint32 *pixelFormat);
 
-    nsresult (*GetUsesGuestVRAM)(IFramebuffer *pThis, PRBool *usesGuestVRAM);
+    nsresult PR_COM_METHOD (*GetUsesGuestVRAM)(IFramebuffer *pThis, PRBool *usesGuestVRAM);
 
-    nsresult (*GetHeightReduction)(IFramebuffer *pThis, PRUint32 *heightReduction);
+    nsresult PR_COM_METHOD (*GetHeightReduction)(IFramebuffer *pThis, PRUint32 *heightReduction);
 
-    nsresult (*GetOverlay)(IFramebuffer *pThis, IFramebufferOverlay * *overlay);
+    nsresult PR_COM_METHOD (*GetOverlay)(IFramebuffer *pThis, IFramebufferOverlay * *overlay);
 
-    nsresult (*GetWinId)(IFramebuffer *pThis, PRUint64 *winId);
+    nsresult PR_COM_METHOD (*GetWinId)(IFramebuffer *pThis, PRUint64 *winId);
 
-    nsresult (*Lock)(IFramebuffer *pThis );
+    nsresult PR_COM_METHOD (*Lock)(IFramebuffer *pThis );
 
-    nsresult (*Unlock)(IFramebuffer *pThis );
+    nsresult PR_COM_METHOD (*Unlock)(IFramebuffer *pThis );
 
-    nsresult (*NotifyUpdate)(
+    nsresult PR_COM_METHOD (*NotifyUpdate)(
         IFramebuffer *pThis,
         PRUint32 x,
         PRUint32 y,
@@ -3747,7 +3752,7 @@ struct IFramebuffer_vtbl
         PRBool * finished
     );
 
-    nsresult (*RequestResize)(
+    nsresult PR_COM_METHOD (*RequestResize)(
         IFramebuffer *pThis,
         PRUint32 screenId,
         PRUint32 pixelFormat,
@@ -3759,13 +3764,13 @@ struct IFramebuffer_vtbl
         PRBool * finished
     );
 
-    nsresult (*OperationSupported)(
+    nsresult PR_COM_METHOD (*OperationSupported)(
         IFramebuffer *pThis,
         PRUint32 operation,
         PRBool * supported
     );
 
-    nsresult (*VideoModeSupported)(
+    nsresult PR_COM_METHOD (*VideoModeSupported)(
         IFramebuffer *pThis,
         PRUint32 width,
         PRUint32 height,
@@ -3773,7 +3778,7 @@ struct IFramebuffer_vtbl
         PRBool * supported
     );
 
-    nsresult (*SolidFill)(
+    nsresult PR_COM_METHOD (*SolidFill)(
         IFramebuffer *pThis,
         PRUint32 x,
         PRUint32 y,
@@ -3783,7 +3788,7 @@ struct IFramebuffer_vtbl
         PRBool * handled
     );
 
-    nsresult (*CopyScreenBits)(
+    nsresult PR_COM_METHOD (*CopyScreenBits)(
         IFramebuffer *pThis,
         PRUint32 xDst,
         PRUint32 yDst,
@@ -3794,14 +3799,14 @@ struct IFramebuffer_vtbl
         PRBool * handled
     );
 
-    nsresult (*GetVisibleRegion)(
+    nsresult PR_COM_METHOD (*GetVisibleRegion)(
         IFramebuffer *pThis,
         PRUint8 * rectangles,
         PRUint32 count,
         PRUint32 * countCopied
     );
 
-    nsresult (*SetVisibleRegion)(
+    nsresult PR_COM_METHOD (*SetVisibleRegion)(
         IFramebuffer *pThis,
         PRUint8 * rectangles,
         PRUint32 count
@@ -3826,17 +3831,17 @@ struct IFramebufferOverlay_vtbl
 {
     struct IFramebuffer_vtbl iframebuffer;
 
-    nsresult (*GetX)(IFramebufferOverlay *pThis, PRUint32 *x);
+    nsresult PR_COM_METHOD (*GetX)(IFramebufferOverlay *pThis, PRUint32 *x);
 
-    nsresult (*GetY)(IFramebufferOverlay *pThis, PRUint32 *y);
+    nsresult PR_COM_METHOD (*GetY)(IFramebufferOverlay *pThis, PRUint32 *y);
 
-    nsresult (*GetVisible)(IFramebufferOverlay *pThis, PRBool *visible);
-    nsresult (*SetVisible)(IFramebufferOverlay *pThis, PRBool visible);
+    nsresult PR_COM_METHOD (*GetVisible)(IFramebufferOverlay *pThis, PRBool *visible);
+    nsresult PR_COM_METHOD (*SetVisible)(IFramebufferOverlay *pThis, PRBool visible);
 
-    nsresult (*GetAlpha)(IFramebufferOverlay *pThis, PRUint32 *alpha);
-    nsresult (*SetAlpha)(IFramebufferOverlay *pThis, PRUint32 alpha);
+    nsresult PR_COM_METHOD (*GetAlpha)(IFramebufferOverlay *pThis, PRUint32 *alpha);
+    nsresult PR_COM_METHOD (*SetAlpha)(IFramebufferOverlay *pThis, PRUint32 alpha);
 
-    nsresult (*Move)(
+    nsresult PR_COM_METHOD (*Move)(
         IFramebufferOverlay *pThis,
         PRUint32 x,
         PRUint32 y
@@ -3861,36 +3866,36 @@ struct IDisplay_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetWidth)(IDisplay *pThis, PRUint32 *width);
+    nsresult PR_COM_METHOD (*GetWidth)(IDisplay *pThis, PRUint32 *width);
 
-    nsresult (*GetHeight)(IDisplay *pThis, PRUint32 *height);
+    nsresult PR_COM_METHOD (*GetHeight)(IDisplay *pThis, PRUint32 *height);
 
-    nsresult (*GetBitsPerPixel)(IDisplay *pThis, PRUint32 *bitsPerPixel);
+    nsresult PR_COM_METHOD (*GetBitsPerPixel)(IDisplay *pThis, PRUint32 *bitsPerPixel);
 
-    nsresult (*SetupInternalFramebuffer)(
+    nsresult PR_COM_METHOD (*SetupInternalFramebuffer)(
         IDisplay *pThis,
         PRUint32 depth
     );
 
-    nsresult (*LockFramebuffer)(
+    nsresult PR_COM_METHOD (*LockFramebuffer)(
         IDisplay *pThis,
         PRUint8 * * address
     );
 
-    nsresult (*UnlockFramebuffer)(IDisplay *pThis );
+    nsresult PR_COM_METHOD (*UnlockFramebuffer)(IDisplay *pThis );
 
-    nsresult (*RegisterExternalFramebuffer)(
+    nsresult PR_COM_METHOD (*RegisterExternalFramebuffer)(
         IDisplay *pThis,
         IFramebuffer * framebuffer
     );
 
-    nsresult (*SetFramebuffer)(
+    nsresult PR_COM_METHOD (*SetFramebuffer)(
         IDisplay *pThis,
         PRUint32 screenId,
         IFramebuffer * framebuffer
     );
 
-    nsresult (*GetFramebuffer)(
+    nsresult PR_COM_METHOD (*GetFramebuffer)(
         IDisplay *pThis,
         PRUint32 screenId,
         IFramebuffer * * framebuffer,
@@ -3898,7 +3903,7 @@ struct IDisplay_vtbl
         PRInt32 * yOrigin
     );
 
-    nsresult (*SetVideoModeHint)(
+    nsresult PR_COM_METHOD (*SetVideoModeHint)(
         IDisplay *pThis,
         PRUint32 width,
         PRUint32 height,
@@ -3906,19 +3911,19 @@ struct IDisplay_vtbl
         PRUint32 display
     );
 
-    nsresult (*SetSeamlessMode)(
+    nsresult PR_COM_METHOD (*SetSeamlessMode)(
         IDisplay *pThis,
         PRBool enabled
     );
 
-    nsresult (*TakeScreenShot)(
+    nsresult PR_COM_METHOD (*TakeScreenShot)(
         IDisplay *pThis,
         PRUint8 * address,
         PRUint32 width,
         PRUint32 height
     );
 
-    nsresult (*DrawToScreen)(
+    nsresult PR_COM_METHOD (*DrawToScreen)(
         IDisplay *pThis,
         PRUint8 * address,
         PRUint32 x,
@@ -3927,14 +3932,14 @@ struct IDisplay_vtbl
         PRUint32 height
     );
 
-    nsresult (*InvalidateAndUpdate)(IDisplay *pThis );
+    nsresult PR_COM_METHOD (*InvalidateAndUpdate)(IDisplay *pThis );
 
-    nsresult (*ResizeCompleted)(
+    nsresult PR_COM_METHOD (*ResizeCompleted)(
         IDisplay *pThis,
         PRUint32 screenId
     );
 
-    nsresult (*UpdateCompleted)(IDisplay *pThis );
+    nsresult PR_COM_METHOD (*UpdateCompleted)(IDisplay *pThis );
 
 };
 
@@ -3955,49 +3960,49 @@ struct INetworkAdapter_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetAdapterType)(INetworkAdapter *pThis, PRUint32 *adapterType);
-    nsresult (*SetAdapterType)(INetworkAdapter *pThis, PRUint32 adapterType);
+    nsresult PR_COM_METHOD (*GetAdapterType)(INetworkAdapter *pThis, PRUint32 *adapterType);
+    nsresult PR_COM_METHOD (*SetAdapterType)(INetworkAdapter *pThis, PRUint32 adapterType);
 
-    nsresult (*GetSlot)(INetworkAdapter *pThis, PRUint32 *slot);
+    nsresult PR_COM_METHOD (*GetSlot)(INetworkAdapter *pThis, PRUint32 *slot);
 
-    nsresult (*GetEnabled)(INetworkAdapter *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(INetworkAdapter *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(INetworkAdapter *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(INetworkAdapter *pThis, PRBool enabled);
 
-    nsresult (*GetMACAddress)(INetworkAdapter *pThis, PRUnichar * *MACAddress);
-    nsresult (*SetMACAddress)(INetworkAdapter *pThis, PRUnichar * MACAddress);
+    nsresult PR_COM_METHOD (*GetMACAddress)(INetworkAdapter *pThis, PRUnichar * *MACAddress);
+    nsresult PR_COM_METHOD (*SetMACAddress)(INetworkAdapter *pThis, PRUnichar * MACAddress);
 
-    nsresult (*GetAttachmentType)(INetworkAdapter *pThis, PRUint32 *attachmentType);
+    nsresult PR_COM_METHOD (*GetAttachmentType)(INetworkAdapter *pThis, PRUint32 *attachmentType);
 
-    nsresult (*GetHostInterface)(INetworkAdapter *pThis, PRUnichar * *hostInterface);
-    nsresult (*SetHostInterface)(INetworkAdapter *pThis, PRUnichar * hostInterface);
+    nsresult PR_COM_METHOD (*GetHostInterface)(INetworkAdapter *pThis, PRUnichar * *hostInterface);
+    nsresult PR_COM_METHOD (*SetHostInterface)(INetworkAdapter *pThis, PRUnichar * hostInterface);
 
-    nsresult (*GetInternalNetwork)(INetworkAdapter *pThis, PRUnichar * *internalNetwork);
-    nsresult (*SetInternalNetwork)(INetworkAdapter *pThis, PRUnichar * internalNetwork);
+    nsresult PR_COM_METHOD (*GetInternalNetwork)(INetworkAdapter *pThis, PRUnichar * *internalNetwork);
+    nsresult PR_COM_METHOD (*SetInternalNetwork)(INetworkAdapter *pThis, PRUnichar * internalNetwork);
 
-    nsresult (*GetNATNetwork)(INetworkAdapter *pThis, PRUnichar * *NATNetwork);
-    nsresult (*SetNATNetwork)(INetworkAdapter *pThis, PRUnichar * NATNetwork);
+    nsresult PR_COM_METHOD (*GetNATNetwork)(INetworkAdapter *pThis, PRUnichar * *NATNetwork);
+    nsresult PR_COM_METHOD (*SetNATNetwork)(INetworkAdapter *pThis, PRUnichar * NATNetwork);
 
-    nsresult (*GetCableConnected)(INetworkAdapter *pThis, PRBool *cableConnected);
-    nsresult (*SetCableConnected)(INetworkAdapter *pThis, PRBool cableConnected);
+    nsresult PR_COM_METHOD (*GetCableConnected)(INetworkAdapter *pThis, PRBool *cableConnected);
+    nsresult PR_COM_METHOD (*SetCableConnected)(INetworkAdapter *pThis, PRBool cableConnected);
 
-    nsresult (*GetLineSpeed)(INetworkAdapter *pThis, PRUint32 *lineSpeed);
-    nsresult (*SetLineSpeed)(INetworkAdapter *pThis, PRUint32 lineSpeed);
+    nsresult PR_COM_METHOD (*GetLineSpeed)(INetworkAdapter *pThis, PRUint32 *lineSpeed);
+    nsresult PR_COM_METHOD (*SetLineSpeed)(INetworkAdapter *pThis, PRUint32 lineSpeed);
 
-    nsresult (*GetTraceEnabled)(INetworkAdapter *pThis, PRBool *traceEnabled);
-    nsresult (*SetTraceEnabled)(INetworkAdapter *pThis, PRBool traceEnabled);
+    nsresult PR_COM_METHOD (*GetTraceEnabled)(INetworkAdapter *pThis, PRBool *traceEnabled);
+    nsresult PR_COM_METHOD (*SetTraceEnabled)(INetworkAdapter *pThis, PRBool traceEnabled);
 
-    nsresult (*GetTraceFile)(INetworkAdapter *pThis, PRUnichar * *traceFile);
-    nsresult (*SetTraceFile)(INetworkAdapter *pThis, PRUnichar * traceFile);
+    nsresult PR_COM_METHOD (*GetTraceFile)(INetworkAdapter *pThis, PRUnichar * *traceFile);
+    nsresult PR_COM_METHOD (*SetTraceFile)(INetworkAdapter *pThis, PRUnichar * traceFile);
 
-    nsresult (*AttachToNAT)(INetworkAdapter *pThis );
+    nsresult PR_COM_METHOD (*AttachToNAT)(INetworkAdapter *pThis );
 
-    nsresult (*AttachToBridgedInterface)(INetworkAdapter *pThis );
+    nsresult PR_COM_METHOD (*AttachToBridgedInterface)(INetworkAdapter *pThis );
 
-    nsresult (*AttachToInternalNetwork)(INetworkAdapter *pThis );
+    nsresult PR_COM_METHOD (*AttachToInternalNetwork)(INetworkAdapter *pThis );
 
-    nsresult (*AttachToHostOnlyInterface)(INetworkAdapter *pThis );
+    nsresult PR_COM_METHOD (*AttachToHostOnlyInterface)(INetworkAdapter *pThis );
 
-    nsresult (*Detach)(INetworkAdapter *pThis );
+    nsresult PR_COM_METHOD (*Detach)(INetworkAdapter *pThis );
 
 };
 
@@ -4018,25 +4023,25 @@ struct ISerialPort_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetSlot)(ISerialPort *pThis, PRUint32 *slot);
+    nsresult PR_COM_METHOD (*GetSlot)(ISerialPort *pThis, PRUint32 *slot);
 
-    nsresult (*GetEnabled)(ISerialPort *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(ISerialPort *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(ISerialPort *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(ISerialPort *pThis, PRBool enabled);
 
-    nsresult (*GetIOBase)(ISerialPort *pThis, PRUint32 *IOBase);
-    nsresult (*SetIOBase)(ISerialPort *pThis, PRUint32 IOBase);
+    nsresult PR_COM_METHOD (*GetIOBase)(ISerialPort *pThis, PRUint32 *IOBase);
+    nsresult PR_COM_METHOD (*SetIOBase)(ISerialPort *pThis, PRUint32 IOBase);
 
-    nsresult (*GetIRQ)(ISerialPort *pThis, PRUint32 *IRQ);
-    nsresult (*SetIRQ)(ISerialPort *pThis, PRUint32 IRQ);
+    nsresult PR_COM_METHOD (*GetIRQ)(ISerialPort *pThis, PRUint32 *IRQ);
+    nsresult PR_COM_METHOD (*SetIRQ)(ISerialPort *pThis, PRUint32 IRQ);
 
-    nsresult (*GetHostMode)(ISerialPort *pThis, PRUint32 *hostMode);
-    nsresult (*SetHostMode)(ISerialPort *pThis, PRUint32 hostMode);
+    nsresult PR_COM_METHOD (*GetHostMode)(ISerialPort *pThis, PRUint32 *hostMode);
+    nsresult PR_COM_METHOD (*SetHostMode)(ISerialPort *pThis, PRUint32 hostMode);
 
-    nsresult (*GetServer)(ISerialPort *pThis, PRBool *server);
-    nsresult (*SetServer)(ISerialPort *pThis, PRBool server);
+    nsresult PR_COM_METHOD (*GetServer)(ISerialPort *pThis, PRBool *server);
+    nsresult PR_COM_METHOD (*SetServer)(ISerialPort *pThis, PRBool server);
 
-    nsresult (*GetPath)(ISerialPort *pThis, PRUnichar * *path);
-    nsresult (*SetPath)(ISerialPort *pThis, PRUnichar * path);
+    nsresult PR_COM_METHOD (*GetPath)(ISerialPort *pThis, PRUnichar * *path);
+    nsresult PR_COM_METHOD (*SetPath)(ISerialPort *pThis, PRUnichar * path);
 
 };
 
@@ -4057,19 +4062,19 @@ struct IParallelPort_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetSlot)(IParallelPort *pThis, PRUint32 *slot);
+    nsresult PR_COM_METHOD (*GetSlot)(IParallelPort *pThis, PRUint32 *slot);
 
-    nsresult (*GetEnabled)(IParallelPort *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(IParallelPort *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(IParallelPort *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(IParallelPort *pThis, PRBool enabled);
 
-    nsresult (*GetIOBase)(IParallelPort *pThis, PRUint32 *IOBase);
-    nsresult (*SetIOBase)(IParallelPort *pThis, PRUint32 IOBase);
+    nsresult PR_COM_METHOD (*GetIOBase)(IParallelPort *pThis, PRUint32 *IOBase);
+    nsresult PR_COM_METHOD (*SetIOBase)(IParallelPort *pThis, PRUint32 IOBase);
 
-    nsresult (*GetIRQ)(IParallelPort *pThis, PRUint32 *IRQ);
-    nsresult (*SetIRQ)(IParallelPort *pThis, PRUint32 IRQ);
+    nsresult PR_COM_METHOD (*GetIRQ)(IParallelPort *pThis, PRUint32 *IRQ);
+    nsresult PR_COM_METHOD (*SetIRQ)(IParallelPort *pThis, PRUint32 IRQ);
 
-    nsresult (*GetPath)(IParallelPort *pThis, PRUnichar * *path);
-    nsresult (*SetPath)(IParallelPort *pThis, PRUnichar * path);
+    nsresult PR_COM_METHOD (*GetPath)(IParallelPort *pThis, PRUnichar * *path);
+    nsresult PR_COM_METHOD (*SetPath)(IParallelPort *pThis, PRUnichar * path);
 
 };
 
@@ -4090,55 +4095,55 @@ struct IMachineDebugger_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetSinglestep)(IMachineDebugger *pThis, PRBool *singlestep);
-    nsresult (*SetSinglestep)(IMachineDebugger *pThis, PRBool singlestep);
+    nsresult PR_COM_METHOD (*GetSinglestep)(IMachineDebugger *pThis, PRBool *singlestep);
+    nsresult PR_COM_METHOD (*SetSinglestep)(IMachineDebugger *pThis, PRBool singlestep);
 
-    nsresult (*GetRecompileUser)(IMachineDebugger *pThis, PRBool *recompileUser);
-    nsresult (*SetRecompileUser)(IMachineDebugger *pThis, PRBool recompileUser);
+    nsresult PR_COM_METHOD (*GetRecompileUser)(IMachineDebugger *pThis, PRBool *recompileUser);
+    nsresult PR_COM_METHOD (*SetRecompileUser)(IMachineDebugger *pThis, PRBool recompileUser);
 
-    nsresult (*GetRecompileSupervisor)(IMachineDebugger *pThis, PRBool *recompileSupervisor);
-    nsresult (*SetRecompileSupervisor)(IMachineDebugger *pThis, PRBool recompileSupervisor);
+    nsresult PR_COM_METHOD (*GetRecompileSupervisor)(IMachineDebugger *pThis, PRBool *recompileSupervisor);
+    nsresult PR_COM_METHOD (*SetRecompileSupervisor)(IMachineDebugger *pThis, PRBool recompileSupervisor);
 
-    nsresult (*GetPATMEnabled)(IMachineDebugger *pThis, PRBool *PATMEnabled);
-    nsresult (*SetPATMEnabled)(IMachineDebugger *pThis, PRBool PATMEnabled);
+    nsresult PR_COM_METHOD (*GetPATMEnabled)(IMachineDebugger *pThis, PRBool *PATMEnabled);
+    nsresult PR_COM_METHOD (*SetPATMEnabled)(IMachineDebugger *pThis, PRBool PATMEnabled);
 
-    nsresult (*GetCSAMEnabled)(IMachineDebugger *pThis, PRBool *CSAMEnabled);
-    nsresult (*SetCSAMEnabled)(IMachineDebugger *pThis, PRBool CSAMEnabled);
+    nsresult PR_COM_METHOD (*GetCSAMEnabled)(IMachineDebugger *pThis, PRBool *CSAMEnabled);
+    nsresult PR_COM_METHOD (*SetCSAMEnabled)(IMachineDebugger *pThis, PRBool CSAMEnabled);
 
-    nsresult (*GetLogEnabled)(IMachineDebugger *pThis, PRBool *logEnabled);
-    nsresult (*SetLogEnabled)(IMachineDebugger *pThis, PRBool logEnabled);
+    nsresult PR_COM_METHOD (*GetLogEnabled)(IMachineDebugger *pThis, PRBool *logEnabled);
+    nsresult PR_COM_METHOD (*SetLogEnabled)(IMachineDebugger *pThis, PRBool logEnabled);
 
-    nsresult (*GetHWVirtExEnabled)(IMachineDebugger *pThis, PRBool *HWVirtExEnabled);
+    nsresult PR_COM_METHOD (*GetHWVirtExEnabled)(IMachineDebugger *pThis, PRBool *HWVirtExEnabled);
 
-    nsresult (*GetHWVirtExNestedPagingEnabled)(IMachineDebugger *pThis, PRBool *HWVirtExNestedPagingEnabled);
+    nsresult PR_COM_METHOD (*GetHWVirtExNestedPagingEnabled)(IMachineDebugger *pThis, PRBool *HWVirtExNestedPagingEnabled);
 
-    nsresult (*GetHWVirtExVPIDEnabled)(IMachineDebugger *pThis, PRBool *HWVirtExVPIDEnabled);
+    nsresult PR_COM_METHOD (*GetHWVirtExVPIDEnabled)(IMachineDebugger *pThis, PRBool *HWVirtExVPIDEnabled);
 
-    nsresult (*GetPAEEnabled)(IMachineDebugger *pThis, PRBool *PAEEnabled);
+    nsresult PR_COM_METHOD (*GetPAEEnabled)(IMachineDebugger *pThis, PRBool *PAEEnabled);
 
-    nsresult (*GetVirtualTimeRate)(IMachineDebugger *pThis, PRUint32 *virtualTimeRate);
-    nsresult (*SetVirtualTimeRate)(IMachineDebugger *pThis, PRUint32 virtualTimeRate);
+    nsresult PR_COM_METHOD (*GetVirtualTimeRate)(IMachineDebugger *pThis, PRUint32 *virtualTimeRate);
+    nsresult PR_COM_METHOD (*SetVirtualTimeRate)(IMachineDebugger *pThis, PRUint32 virtualTimeRate);
 
-    nsresult (*GetVM)(IMachineDebugger *pThis, PRUint64 *VM);
+    nsresult PR_COM_METHOD (*GetVM)(IMachineDebugger *pThis, PRUint64 *VM);
 
-    nsresult (*ResetStats)(
+    nsresult PR_COM_METHOD (*ResetStats)(
         IMachineDebugger *pThis,
         PRUnichar * pattern
     );
 
-    nsresult (*DumpStats)(
+    nsresult PR_COM_METHOD (*DumpStats)(
         IMachineDebugger *pThis,
         PRUnichar * pattern
     );
 
-    nsresult (*GetStats)(
+    nsresult PR_COM_METHOD (*GetStats)(
         IMachineDebugger *pThis,
         PRUnichar * pattern,
         PRBool withDescriptions,
         PRUnichar * * stats
     );
 
-    nsresult (*InjectNMI)(IMachineDebugger *pThis );
+    nsresult PR_COM_METHOD (*InjectNMI)(IMachineDebugger *pThis );
 
 };
 
@@ -4159,29 +4164,29 @@ struct IUSBController_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetEnabled)(IUSBController *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(IUSBController *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(IUSBController *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(IUSBController *pThis, PRBool enabled);
 
-    nsresult (*GetEnabledEhci)(IUSBController *pThis, PRBool *enabledEhci);
-    nsresult (*SetEnabledEhci)(IUSBController *pThis, PRBool enabledEhci);
+    nsresult PR_COM_METHOD (*GetEnabledEhci)(IUSBController *pThis, PRBool *enabledEhci);
+    nsresult PR_COM_METHOD (*SetEnabledEhci)(IUSBController *pThis, PRBool enabledEhci);
 
-    nsresult (*GetUSBStandard)(IUSBController *pThis, PRUint16 *USBStandard);
+    nsresult PR_COM_METHOD (*GetUSBStandard)(IUSBController *pThis, PRUint16 *USBStandard);
 
-    nsresult (*GetDeviceFilters)(IUSBController *pThis, PRUint32 *deviceFiltersSize, IUSBDeviceFilter * **deviceFilters);
+    nsresult PR_COM_METHOD (*GetDeviceFilters)(IUSBController *pThis, PRUint32 *deviceFiltersSize, IUSBDeviceFilter * **deviceFilters);
 
-    nsresult (*CreateDeviceFilter)(
+    nsresult PR_COM_METHOD (*CreateDeviceFilter)(
         IUSBController *pThis,
         PRUnichar * name,
         IUSBDeviceFilter * * filter
     );
 
-    nsresult (*InsertDeviceFilter)(
+    nsresult PR_COM_METHOD (*InsertDeviceFilter)(
         IUSBController *pThis,
         PRUint32 position,
         IUSBDeviceFilter * filter
     );
 
-    nsresult (*RemoveDeviceFilter)(
+    nsresult PR_COM_METHOD (*RemoveDeviceFilter)(
         IUSBController *pThis,
         PRUint32 position,
         IUSBDeviceFilter * * filter
@@ -4206,29 +4211,29 @@ struct IUSBDevice_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetId)(IUSBDevice *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IUSBDevice *pThis, nsID * *id);
 
-    nsresult (*GetVendorId)(IUSBDevice *pThis, PRUint16 *vendorId);
+    nsresult PR_COM_METHOD (*GetVendorId)(IUSBDevice *pThis, PRUint16 *vendorId);
 
-    nsresult (*GetProductId)(IUSBDevice *pThis, PRUint16 *productId);
+    nsresult PR_COM_METHOD (*GetProductId)(IUSBDevice *pThis, PRUint16 *productId);
 
-    nsresult (*GetRevision)(IUSBDevice *pThis, PRUint16 *revision);
+    nsresult PR_COM_METHOD (*GetRevision)(IUSBDevice *pThis, PRUint16 *revision);
 
-    nsresult (*GetManufacturer)(IUSBDevice *pThis, PRUnichar * *manufacturer);
+    nsresult PR_COM_METHOD (*GetManufacturer)(IUSBDevice *pThis, PRUnichar * *manufacturer);
 
-    nsresult (*GetProduct)(IUSBDevice *pThis, PRUnichar * *product);
+    nsresult PR_COM_METHOD (*GetProduct)(IUSBDevice *pThis, PRUnichar * *product);
 
-    nsresult (*GetSerialNumber)(IUSBDevice *pThis, PRUnichar * *serialNumber);
+    nsresult PR_COM_METHOD (*GetSerialNumber)(IUSBDevice *pThis, PRUnichar * *serialNumber);
 
-    nsresult (*GetAddress)(IUSBDevice *pThis, PRUnichar * *address);
+    nsresult PR_COM_METHOD (*GetAddress)(IUSBDevice *pThis, PRUnichar * *address);
 
-    nsresult (*GetPort)(IUSBDevice *pThis, PRUint16 *port);
+    nsresult PR_COM_METHOD (*GetPort)(IUSBDevice *pThis, PRUint16 *port);
 
-    nsresult (*GetVersion)(IUSBDevice *pThis, PRUint16 *version);
+    nsresult PR_COM_METHOD (*GetVersion)(IUSBDevice *pThis, PRUint16 *version);
 
-    nsresult (*GetPortVersion)(IUSBDevice *pThis, PRUint16 *portVersion);
+    nsresult PR_COM_METHOD (*GetPortVersion)(IUSBDevice *pThis, PRUint16 *portVersion);
 
-    nsresult (*GetRemote)(IUSBDevice *pThis, PRBool *remote);
+    nsresult PR_COM_METHOD (*GetRemote)(IUSBDevice *pThis, PRBool *remote);
 
 };
 
@@ -4249,38 +4254,38 @@ struct IUSBDeviceFilter_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetName)(IUSBDeviceFilter *pThis, PRUnichar * *name);
-    nsresult (*SetName)(IUSBDeviceFilter *pThis, PRUnichar * name);
+    nsresult PR_COM_METHOD (*GetName)(IUSBDeviceFilter *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*SetName)(IUSBDeviceFilter *pThis, PRUnichar * name);
 
-    nsresult (*GetActive)(IUSBDeviceFilter *pThis, PRBool *active);
-    nsresult (*SetActive)(IUSBDeviceFilter *pThis, PRBool active);
+    nsresult PR_COM_METHOD (*GetActive)(IUSBDeviceFilter *pThis, PRBool *active);
+    nsresult PR_COM_METHOD (*SetActive)(IUSBDeviceFilter *pThis, PRBool active);
 
-    nsresult (*GetVendorId)(IUSBDeviceFilter *pThis, PRUnichar * *vendorId);
-    nsresult (*SetVendorId)(IUSBDeviceFilter *pThis, PRUnichar * vendorId);
+    nsresult PR_COM_METHOD (*GetVendorId)(IUSBDeviceFilter *pThis, PRUnichar * *vendorId);
+    nsresult PR_COM_METHOD (*SetVendorId)(IUSBDeviceFilter *pThis, PRUnichar * vendorId);
 
-    nsresult (*GetProductId)(IUSBDeviceFilter *pThis, PRUnichar * *productId);
-    nsresult (*SetProductId)(IUSBDeviceFilter *pThis, PRUnichar * productId);
+    nsresult PR_COM_METHOD (*GetProductId)(IUSBDeviceFilter *pThis, PRUnichar * *productId);
+    nsresult PR_COM_METHOD (*SetProductId)(IUSBDeviceFilter *pThis, PRUnichar * productId);
 
-    nsresult (*GetRevision)(IUSBDeviceFilter *pThis, PRUnichar * *revision);
-    nsresult (*SetRevision)(IUSBDeviceFilter *pThis, PRUnichar * revision);
+    nsresult PR_COM_METHOD (*GetRevision)(IUSBDeviceFilter *pThis, PRUnichar * *revision);
+    nsresult PR_COM_METHOD (*SetRevision)(IUSBDeviceFilter *pThis, PRUnichar * revision);
 
-    nsresult (*GetManufacturer)(IUSBDeviceFilter *pThis, PRUnichar * *manufacturer);
-    nsresult (*SetManufacturer)(IUSBDeviceFilter *pThis, PRUnichar * manufacturer);
+    nsresult PR_COM_METHOD (*GetManufacturer)(IUSBDeviceFilter *pThis, PRUnichar * *manufacturer);
+    nsresult PR_COM_METHOD (*SetManufacturer)(IUSBDeviceFilter *pThis, PRUnichar * manufacturer);
 
-    nsresult (*GetProduct)(IUSBDeviceFilter *pThis, PRUnichar * *product);
-    nsresult (*SetProduct)(IUSBDeviceFilter *pThis, PRUnichar * product);
+    nsresult PR_COM_METHOD (*GetProduct)(IUSBDeviceFilter *pThis, PRUnichar * *product);
+    nsresult PR_COM_METHOD (*SetProduct)(IUSBDeviceFilter *pThis, PRUnichar * product);
 
-    nsresult (*GetSerialNumber)(IUSBDeviceFilter *pThis, PRUnichar * *serialNumber);
-    nsresult (*SetSerialNumber)(IUSBDeviceFilter *pThis, PRUnichar * serialNumber);
+    nsresult PR_COM_METHOD (*GetSerialNumber)(IUSBDeviceFilter *pThis, PRUnichar * *serialNumber);
+    nsresult PR_COM_METHOD (*SetSerialNumber)(IUSBDeviceFilter *pThis, PRUnichar * serialNumber);
 
-    nsresult (*GetPort)(IUSBDeviceFilter *pThis, PRUnichar * *port);
-    nsresult (*SetPort)(IUSBDeviceFilter *pThis, PRUnichar * port);
+    nsresult PR_COM_METHOD (*GetPort)(IUSBDeviceFilter *pThis, PRUnichar * *port);
+    nsresult PR_COM_METHOD (*SetPort)(IUSBDeviceFilter *pThis, PRUnichar * port);
 
-    nsresult (*GetRemote)(IUSBDeviceFilter *pThis, PRUnichar * *remote);
-    nsresult (*SetRemote)(IUSBDeviceFilter *pThis, PRUnichar * remote);
+    nsresult PR_COM_METHOD (*GetRemote)(IUSBDeviceFilter *pThis, PRUnichar * *remote);
+    nsresult PR_COM_METHOD (*SetRemote)(IUSBDeviceFilter *pThis, PRUnichar * remote);
 
-    nsresult (*GetMaskedInterfaces)(IUSBDeviceFilter *pThis, PRUint32 *maskedInterfaces);
-    nsresult (*SetMaskedInterfaces)(IUSBDeviceFilter *pThis, PRUint32 maskedInterfaces);
+    nsresult PR_COM_METHOD (*GetMaskedInterfaces)(IUSBDeviceFilter *pThis, PRUint32 *maskedInterfaces);
+    nsresult PR_COM_METHOD (*SetMaskedInterfaces)(IUSBDeviceFilter *pThis, PRUint32 maskedInterfaces);
 
 };
 
@@ -4301,7 +4306,7 @@ struct IHostUSBDevice_vtbl
 {
     struct IUSBDevice_vtbl iusbdevice;
 
-    nsresult (*GetState)(IHostUSBDevice *pThis, PRUint32 *state);
+    nsresult PR_COM_METHOD (*GetState)(IHostUSBDevice *pThis, PRUint32 *state);
 
 };
 
@@ -4322,8 +4327,8 @@ struct IHostUSBDeviceFilter_vtbl
 {
     struct IUSBDeviceFilter_vtbl iusbdevicefilter;
 
-    nsresult (*GetAction)(IHostUSBDeviceFilter *pThis, PRUint32 *action);
-    nsresult (*SetAction)(IHostUSBDeviceFilter *pThis, PRUint32 action);
+    nsresult PR_COM_METHOD (*GetAction)(IHostUSBDeviceFilter *pThis, PRUint32 *action);
+    nsresult PR_COM_METHOD (*SetAction)(IHostUSBDeviceFilter *pThis, PRUint32 action);
 
 };
 
@@ -4344,14 +4349,14 @@ struct IAudioAdapter_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetEnabled)(IAudioAdapter *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(IAudioAdapter *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(IAudioAdapter *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(IAudioAdapter *pThis, PRBool enabled);
 
-    nsresult (*GetAudioController)(IAudioAdapter *pThis, PRUint32 *audioController);
-    nsresult (*SetAudioController)(IAudioAdapter *pThis, PRUint32 audioController);
+    nsresult PR_COM_METHOD (*GetAudioController)(IAudioAdapter *pThis, PRUint32 *audioController);
+    nsresult PR_COM_METHOD (*SetAudioController)(IAudioAdapter *pThis, PRUint32 audioController);
 
-    nsresult (*GetAudioDriver)(IAudioAdapter *pThis, PRUint32 *audioDriver);
-    nsresult (*SetAudioDriver)(IAudioAdapter *pThis, PRUint32 audioDriver);
+    nsresult PR_COM_METHOD (*GetAudioDriver)(IAudioAdapter *pThis, PRUint32 *audioDriver);
+    nsresult PR_COM_METHOD (*SetAudioDriver)(IAudioAdapter *pThis, PRUint32 audioDriver);
 
 };
 
@@ -4372,26 +4377,26 @@ struct IVRDPServer_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetEnabled)(IVRDPServer *pThis, PRBool *enabled);
-    nsresult (*SetEnabled)(IVRDPServer *pThis, PRBool enabled);
+    nsresult PR_COM_METHOD (*GetEnabled)(IVRDPServer *pThis, PRBool *enabled);
+    nsresult PR_COM_METHOD (*SetEnabled)(IVRDPServer *pThis, PRBool enabled);
 
-    nsresult (*GetPort)(IVRDPServer *pThis, PRUint32 *port);
-    nsresult (*SetPort)(IVRDPServer *pThis, PRUint32 port);
+    nsresult PR_COM_METHOD (*GetPort)(IVRDPServer *pThis, PRUint32 *port);
+    nsresult PR_COM_METHOD (*SetPort)(IVRDPServer *pThis, PRUint32 port);
 
-    nsresult (*GetNetAddress)(IVRDPServer *pThis, PRUnichar * *netAddress);
-    nsresult (*SetNetAddress)(IVRDPServer *pThis, PRUnichar * netAddress);
+    nsresult PR_COM_METHOD (*GetNetAddress)(IVRDPServer *pThis, PRUnichar * *netAddress);
+    nsresult PR_COM_METHOD (*SetNetAddress)(IVRDPServer *pThis, PRUnichar * netAddress);
 
-    nsresult (*GetAuthType)(IVRDPServer *pThis, PRUint32 *authType);
-    nsresult (*SetAuthType)(IVRDPServer *pThis, PRUint32 authType);
+    nsresult PR_COM_METHOD (*GetAuthType)(IVRDPServer *pThis, PRUint32 *authType);
+    nsresult PR_COM_METHOD (*SetAuthType)(IVRDPServer *pThis, PRUint32 authType);
 
-    nsresult (*GetAuthTimeout)(IVRDPServer *pThis, PRUint32 *authTimeout);
-    nsresult (*SetAuthTimeout)(IVRDPServer *pThis, PRUint32 authTimeout);
+    nsresult PR_COM_METHOD (*GetAuthTimeout)(IVRDPServer *pThis, PRUint32 *authTimeout);
+    nsresult PR_COM_METHOD (*SetAuthTimeout)(IVRDPServer *pThis, PRUint32 authTimeout);
 
-    nsresult (*GetAllowMultiConnection)(IVRDPServer *pThis, PRBool *allowMultiConnection);
-    nsresult (*SetAllowMultiConnection)(IVRDPServer *pThis, PRBool allowMultiConnection);
+    nsresult PR_COM_METHOD (*GetAllowMultiConnection)(IVRDPServer *pThis, PRBool *allowMultiConnection);
+    nsresult PR_COM_METHOD (*SetAllowMultiConnection)(IVRDPServer *pThis, PRBool allowMultiConnection);
 
-    nsresult (*GetReuseSingleConnection)(IVRDPServer *pThis, PRBool *reuseSingleConnection);
-    nsresult (*SetReuseSingleConnection)(IVRDPServer *pThis, PRBool reuseSingleConnection);
+    nsresult PR_COM_METHOD (*GetReuseSingleConnection)(IVRDPServer *pThis, PRBool *reuseSingleConnection);
+    nsresult PR_COM_METHOD (*SetReuseSingleConnection)(IVRDPServer *pThis, PRBool reuseSingleConnection);
 
 };
 
@@ -4412,15 +4417,15 @@ struct ISharedFolder_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetName)(ISharedFolder *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*GetName)(ISharedFolder *pThis, PRUnichar * *name);
 
-    nsresult (*GetHostPath)(ISharedFolder *pThis, PRUnichar * *hostPath);
+    nsresult PR_COM_METHOD (*GetHostPath)(ISharedFolder *pThis, PRUnichar * *hostPath);
 
-    nsresult (*GetAccessible)(ISharedFolder *pThis, PRBool *accessible);
+    nsresult PR_COM_METHOD (*GetAccessible)(ISharedFolder *pThis, PRBool *accessible);
 
-    nsresult (*GetWritable)(ISharedFolder *pThis, PRBool *writable);
+    nsresult PR_COM_METHOD (*GetWritable)(ISharedFolder *pThis, PRBool *writable);
 
-    nsresult (*GetLastAccessError)(ISharedFolder *pThis, PRUnichar * *lastAccessError);
+    nsresult PR_COM_METHOD (*GetLastAccessError)(ISharedFolder *pThis, PRUnichar * *lastAccessError);
 
 };
 
@@ -4441,85 +4446,85 @@ struct IInternalSessionControl_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetPID)(
+    nsresult PR_COM_METHOD (*GetPID)(
         IInternalSessionControl *pThis,
         PRUint32 * pid
     );
 
-    nsresult (*GetRemoteConsole)(
+    nsresult PR_COM_METHOD (*GetRemoteConsole)(
         IInternalSessionControl *pThis,
         IConsole * * console
     );
 
-    nsresult (*AssignMachine)(
+    nsresult PR_COM_METHOD (*AssignMachine)(
         IInternalSessionControl *pThis,
         IMachine * machine
     );
 
-    nsresult (*AssignRemoteMachine)(
+    nsresult PR_COM_METHOD (*AssignRemoteMachine)(
         IInternalSessionControl *pThis,
         IMachine * machine,
         IConsole * console
     );
 
-    nsresult (*UpdateMachineState)(
+    nsresult PR_COM_METHOD (*UpdateMachineState)(
         IInternalSessionControl *pThis,
         PRUint32 aMachineState
     );
 
-    nsresult (*Uninitialize)(IInternalSessionControl *pThis );
+    nsresult PR_COM_METHOD (*Uninitialize)(IInternalSessionControl *pThis );
 
-    nsresult (*OnDVDDriveChange)(IInternalSessionControl *pThis );
+    nsresult PR_COM_METHOD (*OnDVDDriveChange)(IInternalSessionControl *pThis );
 
-    nsresult (*OnFloppyDriveChange)(IInternalSessionControl *pThis );
+    nsresult PR_COM_METHOD (*OnFloppyDriveChange)(IInternalSessionControl *pThis );
 
-    nsresult (*OnNetworkAdapterChange)(
+    nsresult PR_COM_METHOD (*OnNetworkAdapterChange)(
         IInternalSessionControl *pThis,
         INetworkAdapter * networkAdapter
     );
 
-    nsresult (*OnSerialPortChange)(
+    nsresult PR_COM_METHOD (*OnSerialPortChange)(
         IInternalSessionControl *pThis,
         ISerialPort * serialPort
     );
 
-    nsresult (*OnParallelPortChange)(
+    nsresult PR_COM_METHOD (*OnParallelPortChange)(
         IInternalSessionControl *pThis,
         IParallelPort * parallelPort
     );
 
-    nsresult (*OnStorageControllerChange)(IInternalSessionControl *pThis );
+    nsresult PR_COM_METHOD (*OnStorageControllerChange)(IInternalSessionControl *pThis );
 
-    nsresult (*OnVRDPServerChange)(IInternalSessionControl *pThis );
+    nsresult PR_COM_METHOD (*OnVRDPServerChange)(IInternalSessionControl *pThis );
 
-    nsresult (*OnUSBControllerChange)(IInternalSessionControl *pThis );
+    nsresult PR_COM_METHOD (*OnUSBControllerChange)(IInternalSessionControl *pThis );
 
-    nsresult (*OnSharedFolderChange)(
+    nsresult PR_COM_METHOD (*OnSharedFolderChange)(
         IInternalSessionControl *pThis,
         PRBool global
     );
 
-    nsresult (*OnUSBDeviceAttach)(
+    nsresult PR_COM_METHOD (*OnUSBDeviceAttach)(
         IInternalSessionControl *pThis,
         IUSBDevice * device,
         IVirtualBoxErrorInfo * error,
         PRUint32 maskedInterfaces
     );
 
-    nsresult (*OnUSBDeviceDetach)(
+    nsresult PR_COM_METHOD (*OnUSBDeviceDetach)(
         IInternalSessionControl *pThis,
         const nsID * id,
         IVirtualBoxErrorInfo * error
     );
 
-    nsresult (*OnShowWindow)(
+    nsresult PR_COM_METHOD (*OnShowWindow)(
         IInternalSessionControl *pThis,
         PRBool check,
         PRBool * canShow,
         PRUint64 * winId
     );
 
-    nsresult (*AccessGuestProperty)(
+    nsresult PR_COM_METHOD (*AccessGuestProperty)(
         IInternalSessionControl *pThis,
         PRUnichar * name,
         PRUnichar * value,
@@ -4530,7 +4535,7 @@ struct IInternalSessionControl_vtbl
         PRUnichar * * retFlags
     );
 
-    nsresult (*EnumerateGuestProperties)(
+    nsresult PR_COM_METHOD (*EnumerateGuestProperties)(
         IInternalSessionControl *pThis,
         PRUnichar * patterns,
         PRUint32 *keySize,
@@ -4562,15 +4567,15 @@ struct ISession_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetState)(ISession *pThis, PRUint32 *state);
+    nsresult PR_COM_METHOD (*GetState)(ISession *pThis, PRUint32 *state);
 
-    nsresult (*GetType)(ISession *pThis, PRUint32 *type);
+    nsresult PR_COM_METHOD (*GetType)(ISession *pThis, PRUint32 *type);
 
-    nsresult (*GetMachine)(ISession *pThis, IMachine * *machine);
+    nsresult PR_COM_METHOD (*GetMachine)(ISession *pThis, IMachine * *machine);
 
-    nsresult (*GetConsole)(ISession *pThis, IConsole * *console);
+    nsresult PR_COM_METHOD (*GetConsole)(ISession *pThis, IConsole * *console);
 
-    nsresult (*Close)(ISession *pThis );
+    nsresult PR_COM_METHOD (*Close)(ISession *pThis );
 
 };
 
@@ -4591,32 +4596,32 @@ struct IStorageController_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetName)(IStorageController *pThis, PRUnichar * *name);
+    nsresult PR_COM_METHOD (*GetName)(IStorageController *pThis, PRUnichar * *name);
 
-    nsresult (*GetMaxDevicesPerPortCount)(IStorageController *pThis, PRUint32 *maxDevicesPerPortCount);
+    nsresult PR_COM_METHOD (*GetMaxDevicesPerPortCount)(IStorageController *pThis, PRUint32 *maxDevicesPerPortCount);
 
-    nsresult (*GetMinPortCount)(IStorageController *pThis, PRUint32 *minPortCount);
+    nsresult PR_COM_METHOD (*GetMinPortCount)(IStorageController *pThis, PRUint32 *minPortCount);
 
-    nsresult (*GetMaxPortCount)(IStorageController *pThis, PRUint32 *maxPortCount);
+    nsresult PR_COM_METHOD (*GetMaxPortCount)(IStorageController *pThis, PRUint32 *maxPortCount);
 
-    nsresult (*GetInstance)(IStorageController *pThis, PRUint32 *instance);
-    nsresult (*SetInstance)(IStorageController *pThis, PRUint32 instance);
+    nsresult PR_COM_METHOD (*GetInstance)(IStorageController *pThis, PRUint32 *instance);
+    nsresult PR_COM_METHOD (*SetInstance)(IStorageController *pThis, PRUint32 instance);
 
-    nsresult (*GetPortCount)(IStorageController *pThis, PRUint32 *portCount);
-    nsresult (*SetPortCount)(IStorageController *pThis, PRUint32 portCount);
+    nsresult PR_COM_METHOD (*GetPortCount)(IStorageController *pThis, PRUint32 *portCount);
+    nsresult PR_COM_METHOD (*SetPortCount)(IStorageController *pThis, PRUint32 portCount);
 
-    nsresult (*GetBus)(IStorageController *pThis, PRUint32 *bus);
+    nsresult PR_COM_METHOD (*GetBus)(IStorageController *pThis, PRUint32 *bus);
 
-    nsresult (*GetControllerType)(IStorageController *pThis, PRUint32 *controllerType);
-    nsresult (*SetControllerType)(IStorageController *pThis, PRUint32 controllerType);
+    nsresult PR_COM_METHOD (*GetControllerType)(IStorageController *pThis, PRUint32 *controllerType);
+    nsresult PR_COM_METHOD (*SetControllerType)(IStorageController *pThis, PRUint32 controllerType);
 
-    nsresult (*GetIDEEmulationPort)(
+    nsresult PR_COM_METHOD (*GetIDEEmulationPort)(
         IStorageController *pThis,
         PRInt32 devicePosition,
         PRInt32 * portNumber
     );
 
-    nsresult (*SetIDEEmulationPort)(
+    nsresult PR_COM_METHOD (*SetIDEEmulationPort)(
         IStorageController *pThis,
         PRInt32 devicePosition,
         PRInt32 portNumber
@@ -4641,21 +4646,21 @@ struct IPerformanceMetric_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetMetricName)(IPerformanceMetric *pThis, PRUnichar * *metricName);
+    nsresult PR_COM_METHOD (*GetMetricName)(IPerformanceMetric *pThis, PRUnichar * *metricName);
 
-    nsresult (*GetObject)(IPerformanceMetric *pThis, nsISupports * *object);
+    nsresult PR_COM_METHOD (*GetObject)(IPerformanceMetric *pThis, nsISupports * *object);
 
-    nsresult (*GetDescription)(IPerformanceMetric *pThis, PRUnichar * *description);
+    nsresult PR_COM_METHOD (*GetDescription)(IPerformanceMetric *pThis, PRUnichar * *description);
 
-    nsresult (*GetPeriod)(IPerformanceMetric *pThis, PRUint32 *period);
+    nsresult PR_COM_METHOD (*GetPeriod)(IPerformanceMetric *pThis, PRUint32 *period);
 
-    nsresult (*GetCount)(IPerformanceMetric *pThis, PRUint32 *count);
+    nsresult PR_COM_METHOD (*GetCount)(IPerformanceMetric *pThis, PRUint32 *count);
 
-    nsresult (*GetUnit)(IPerformanceMetric *pThis, PRUnichar * *unit);
+    nsresult PR_COM_METHOD (*GetUnit)(IPerformanceMetric *pThis, PRUnichar * *unit);
 
-    nsresult (*GetMinimumValue)(IPerformanceMetric *pThis, PRInt32 *minimumValue);
+    nsresult PR_COM_METHOD (*GetMinimumValue)(IPerformanceMetric *pThis, PRInt32 *minimumValue);
 
-    nsresult (*GetMaximumValue)(IPerformanceMetric *pThis, PRInt32 *maximumValue);
+    nsresult PR_COM_METHOD (*GetMaximumValue)(IPerformanceMetric *pThis, PRInt32 *maximumValue);
 
 };
 
@@ -4676,9 +4681,9 @@ struct IPerformanceCollector_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult (*GetMetricNames)(IPerformanceCollector *pThis, PRUint32 *metricNamesSize, PRUnichar * **metricNames);
+    nsresult PR_COM_METHOD (*GetMetricNames)(IPerformanceCollector *pThis, PRUint32 *metricNamesSize, PRUnichar * **metricNames);
 
-    nsresult (*GetMetrics)(
+    nsresult PR_COM_METHOD (*GetMetrics)(
         IPerformanceCollector *pThis,
         PRUint32 metricNamesSize,
         PRUnichar ** metricNames,
@@ -4688,7 +4693,7 @@ struct IPerformanceCollector_vtbl
         IPerformanceMetric *** metrics
     );
 
-    nsresult (*SetupMetrics)(
+    nsresult PR_COM_METHOD (*SetupMetrics)(
         IPerformanceCollector *pThis,
         PRUint32 metricNamesSize,
         PRUnichar ** metricNames,
@@ -4700,7 +4705,7 @@ struct IPerformanceCollector_vtbl
         IPerformanceMetric *** affectedMetrics
     );
 
-    nsresult (*EnableMetrics)(
+    nsresult PR_COM_METHOD (*EnableMetrics)(
         IPerformanceCollector *pThis,
         PRUint32 metricNamesSize,
         PRUnichar ** metricNames,
@@ -4710,7 +4715,7 @@ struct IPerformanceCollector_vtbl
         IPerformanceMetric *** affectedMetrics
     );
 
-    nsresult (*DisableMetrics)(
+    nsresult PR_COM_METHOD (*DisableMetrics)(
         IPerformanceCollector *pThis,
         PRUint32 metricNamesSize,
         PRUnichar ** metricNames,
@@ -4720,7 +4725,7 @@ struct IPerformanceCollector_vtbl
         IPerformanceMetric *** affectedMetrics
     );
 
-    nsresult (*QueryMetricsData)(
+    nsresult PR_COM_METHOD (*QueryMetricsData)(
         IPerformanceCollector *pThis,
         PRUint32 metricNamesSize,
         PRUnichar ** metricNames,

@@ -6245,9 +6245,10 @@ cleanup:
 #else /* !(VBOX_API_VERSION == 2002) */
 
 /* Functions needed for Callbacks */
-static  nsresult vboxCallbackOnMachineStateChange (IVirtualBoxCallback *pThis,
-                                                   PRUnichar * machineId,
-                                                   PRUint32 state) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnMachineStateChange(IVirtualBoxCallback *pThis,
+                                 PRUnichar *machineId, PRUint32 state)
+{
     virDomainPtr dom = NULL;
     int event        = 0;
     int detail       = 0;
@@ -6318,20 +6319,23 @@ static  nsresult vboxCallbackOnMachineStateChange (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnMachineDataChange (IVirtualBoxCallback *pThis,
-                                                 PRUnichar * machineId) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnMachineDataChange(IVirtualBoxCallback *pThis,
+                                PRUnichar *machineId)
+{
     DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
 
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnExtraDataCanChange (IVirtualBoxCallback *pThis,
-                                                  PRUnichar * machineId,
-                                                  PRUnichar * key,
-                                                  PRUnichar * value,
-                                                  PRUnichar * * error ATTRIBUTE_UNUSED,
-                                                  PRBool * allowChange) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnExtraDataCanChange(IVirtualBoxCallback *pThis,
+                                 PRUnichar *machineId, PRUnichar *key,
+                                 PRUnichar *value,
+                                 PRUnichar **error ATTRIBUTE_UNUSED,
+                                 PRBool *allowChange)
+{
     DEBUG("IVirtualBoxCallback: %p, allowChange: %s", pThis, *allowChange ? "true" : "false");
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("key", key);
@@ -6340,10 +6344,10 @@ static nsresult vboxCallbackOnExtraDataCanChange (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnExtraDataChange (IVirtualBoxCallback *pThis,
-                                               PRUnichar * machineId,
-                                               PRUnichar * key,
-                                               PRUnichar * value) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnExtraDataChange(IVirtualBoxCallback *pThis, PRUnichar *machineId,
+                              PRUnichar *key, PRUnichar *value)
+{
     DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("key", key);
@@ -6353,10 +6357,10 @@ static nsresult vboxCallbackOnExtraDataChange (IVirtualBoxCallback *pThis,
 }
 
 # if VBOX_API_VERSION < 3001
-static nsresult vboxCallbackOnMediaRegistered (IVirtualBoxCallback *pThis,
-                                               PRUnichar * mediaId,
-                                               PRUint32 mediaType,
-                                               PRBool registered) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnMediaRegistered(IVirtualBoxCallback *pThis, PRUnichar *mediaId,
+                              PRUint32 mediaType, PRBool registered)
+{
     DEBUG("IVirtualBoxCallback: %p, registered: %s", pThis, registered ? "true" : "false");
     DEBUG("mediaType: %d", mediaType);
     DEBUGPRUnichar("mediaId", mediaId);
@@ -6366,9 +6370,10 @@ static nsresult vboxCallbackOnMediaRegistered (IVirtualBoxCallback *pThis,
 # else  /* VBOX_API_VERSION >= 3001 */
 # endif /* VBOX_API_VERSION >= 3001 */
 
-static nsresult vboxCallbackOnMachineRegistered (IVirtualBoxCallback *pThis,
-                                                 PRUnichar * machineId,
-                                                 PRBool registered) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis,
+                                PRUnichar *machineId, PRBool registered)
+{
     virDomainPtr dom = NULL;
     int event        = 0;
     int detail       = 0;
@@ -6424,18 +6429,20 @@ static nsresult vboxCallbackOnMachineRegistered (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnSessionStateChange (IVirtualBoxCallback *pThis,
-                                                  PRUnichar * machineId,
-                                                  PRUint32 state) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnSessionStateChange(IVirtualBoxCallback *pThis,
+                                 PRUnichar *machineId, PRUint32 state)
+{
     DEBUG("IVirtualBoxCallback: %p, state: %d", pThis, state);
     DEBUGPRUnichar("machineId", machineId);
 
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnSnapshotTaken (IVirtualBoxCallback *pThis,
-                                             PRUnichar * machineId,
-                                             PRUnichar * snapshotId) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnSnapshotTaken(IVirtualBoxCallback *pThis, PRUnichar *machineId,
+                            PRUnichar *snapshotId)
+{
     DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("snapshotId", snapshotId);
@@ -6443,9 +6450,10 @@ static nsresult vboxCallbackOnSnapshotTaken (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnSnapshotDiscarded (IVirtualBoxCallback *pThis,
-                                                 PRUnichar * machineId,
-                                                 PRUnichar * snapshotId) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnSnapshotDiscarded(IVirtualBoxCallback *pThis, PRUnichar *machineId,
+                                PRUnichar *snapshotId)
+{
     DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("snapshotId", snapshotId);
@@ -6453,9 +6461,10 @@ static nsresult vboxCallbackOnSnapshotDiscarded (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnSnapshotChange (IVirtualBoxCallback *pThis,
-                                              PRUnichar * machineId,
-                                              PRUnichar * snapshotId) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnSnapshotChange(IVirtualBoxCallback *pThis, PRUnichar *machineId,
+                             PRUnichar *snapshotId)
+{
     DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("snapshotId", snapshotId);
@@ -6463,11 +6472,11 @@ static nsresult vboxCallbackOnSnapshotChange (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-static nsresult vboxCallbackOnGuestPropertyChange (IVirtualBoxCallback *pThis,
-                                                   PRUnichar * machineId,
-                                                   PRUnichar * name,
-                                                   PRUnichar * value,
-                                                   PRUnichar * flags) {
+static nsresult PR_COM_METHOD
+vboxCallbackOnGuestPropertyChange(IVirtualBoxCallback *pThis,
+                                  PRUnichar *machineId, PRUnichar *name,
+                                  PRUnichar *value, PRUnichar *flags)
+{
     DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("name", name);
@@ -6477,7 +6486,9 @@ static nsresult vboxCallbackOnGuestPropertyChange (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-static nsresult vboxCallbackAddRef(nsISupports *pThis) {
+static nsresult PR_COM_METHOD
+vboxCallbackAddRef(nsISupports *pThis)
+{
     nsresult c;
 
     c = ++g_pVBoxGlobalData->vboxCallBackRefCount;
@@ -6487,7 +6498,9 @@ static nsresult vboxCallbackAddRef(nsISupports *pThis) {
     return c;
 }
 
-static nsresult vboxCallbackRelease(nsISupports *pThis) {
+static nsresult PR_COM_METHOD
+vboxCallbackRelease(nsISupports *pThis)
+{
     nsresult c;
 
     c = --g_pVBoxGlobalData->vboxCallBackRefCount;
@@ -6502,7 +6515,9 @@ static nsresult vboxCallbackRelease(nsISupports *pThis) {
     return c;
 }
 
-static nsresult vboxCallbackQueryInterface(nsISupports *pThis, const nsID *iid, void **resultp) {
+static nsresult PR_COM_METHOD
+vboxCallbackQueryInterface(nsISupports *pThis, const nsID *iid, void **resultp)
+{
     IVirtualBoxCallback *that = (IVirtualBoxCallback *)pThis;
     static const nsID ivirtualboxCallbackUUID = IVIRTUALBOXCALLBACK_IID;
     static const nsID isupportIID = NS_ISUPPORTS_IID;
