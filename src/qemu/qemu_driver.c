@@ -96,6 +96,8 @@
 
 #define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
 
+#define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
+
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
  * information, not merely actions */
@@ -376,8 +378,7 @@ static int qemuDomainObjBeginJob(virDomainObjPtr obj)
                              _("cannot get time of day"));
         return -1;
     }
-    then = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
-    then += QEMU_JOB_WAIT_TIME;
+    then = timeval_to_ms(now) + QEMU_JOB_WAIT_TIME;
 
     virDomainObjRef(obj);
 
@@ -396,7 +397,7 @@ static int qemuDomainObjBeginJob(virDomainObjPtr obj)
     priv->jobActive = QEMU_JOB_UNSPECIFIED;
     priv->jobSignals = 0;
     memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
-    priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    priv->jobStart = timeval_to_ms(now);
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
     return 0;
@@ -422,8 +423,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                              _("cannot get time of day"));
         return -1;
     }
-    then = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
-    then += QEMU_JOB_WAIT_TIME;
+    then = timeval_to_ms(now) + QEMU_JOB_WAIT_TIME;
 
     virDomainObjRef(obj);
     qemuDriverUnlock(driver);
@@ -444,7 +444,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
     priv->jobActive = QEMU_JOB_UNSPECIFIED;
     priv->jobSignals = 0;
     memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
-    priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    priv->jobStart = timeval_to_ms(now);
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
     virDomainObjUnlock(obj);
@@ -5469,9 +5469,7 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
                                  _("cannot get time of day"));
             goto cleanup;
         }
-        priv->jobInfo.timeElapsed =
-            ((now.tv_sec * 1000ull) + (now.tv_usec / 1000)) -
-            priv->jobStart;
+        priv->jobInfo.timeElapsed = timeval_to_ms(now) - priv->jobStart;
 
         switch (status) {
         case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
@@ -11154,7 +11152,7 @@ endjob:
         virDomainObjIsActive(vm)) {
         priv->jobActive = QEMU_JOB_MIGRATION_IN;
         priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
-        priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+        priv->jobStart = timeval_to_ms(now);
     }
 
 cleanup:
@@ -11382,7 +11380,7 @@ endjob:
         virDomainObjIsActive(vm)) {
         priv->jobActive = QEMU_JOB_MIGRATION_IN;
         priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
-        priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+        priv->jobStart = timeval_to_ms(now);
     }
 
 cleanup:
@@ -12371,9 +12369,7 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
                                      _("cannot get time of day"));
                 goto cleanup;
             }
-            info->timeElapsed =
-                ((now.tv_sec * 1000ull) + (now.tv_usec / 1000)) -
-                priv->jobStart;
+            info->timeElapsed = timeval_to_ms(now) - priv->jobStart;
         } else {
             memset(info, 0, sizeof(*info));
             info->type = VIR_DOMAIN_JOB_NONE;
