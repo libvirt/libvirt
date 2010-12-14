@@ -585,28 +585,28 @@ cleanup:
 static int
 networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                     virNetworkObjPtr network) {
-    int err;
+
     /* allow forwarding packets from the bridge interface */
-    if ((err = iptablesAddForwardAllowOut(driver->iptables,
-                                          &network->def->ipAddress,
-                                          &network->def->netmask,
-                                          network->def->bridge,
-                                          network->def->forwardDev))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow forwarding from '%s'"),
-                             network->def->bridge);
+    if (iptablesAddForwardAllowOut(driver->iptables,
+                                   &network->def->ipAddress,
+                                   &network->def->netmask,
+                                   network->def->bridge,
+                                   network->def->forwardDev) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow forwarding from '%s'"),
+                           network->def->bridge);
         goto masqerr1;
     }
 
     /* allow forwarding packets to the bridge interface if they are part of an existing connection */
-    if ((err = iptablesAddForwardAllowRelatedIn(driver->iptables,
-                                                &network->def->ipAddress,
-                                                &network->def->netmask,
-                                                network->def->bridge,
-                                                network->def->forwardDev))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow forwarding to '%s'"),
-                             network->def->bridge);
+    if (iptablesAddForwardAllowRelatedIn(driver->iptables,
+                                         &network->def->ipAddress,
+                                         &network->def->netmask,
+                                         network->def->bridge,
+                                         network->def->forwardDev) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow forwarding to '%s'"),
+                           network->def->bridge);
         goto masqerr2;
     }
 
@@ -634,38 +634,38 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
      */
 
     /* First the generic masquerade rule for other protocols */
-    if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            &network->def->ipAddress,
-                                            &network->def->netmask,
-                                            network->def->forwardDev,
-                                            NULL))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to enable masquerading to '%s'"),
-                             network->def->forwardDev ? network->def->forwardDev : NULL);
+    if (iptablesAddForwardMasquerade(driver->iptables,
+                                     &network->def->ipAddress,
+                                     &network->def->netmask,
+                                     network->def->forwardDev,
+                                     NULL) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to enable masquerading to '%s'"),
+                           network->def->forwardDev ? network->def->forwardDev : NULL);
         goto masqerr3;
     }
 
     /* UDP with a source port restriction */
-    if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            &network->def->ipAddress,
-                                            &network->def->netmask,
-                                            network->def->forwardDev,
-                                            "udp"))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to enable UDP masquerading to '%s'"),
-                             network->def->forwardDev ? network->def->forwardDev : NULL);
+    if (iptablesAddForwardMasquerade(driver->iptables,
+                                     &network->def->ipAddress,
+                                     &network->def->netmask,
+                                     network->def->forwardDev,
+                                     "udp") < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to enable UDP masquerading to '%s'"),
+                           network->def->forwardDev ? network->def->forwardDev : NULL);
         goto masqerr4;
     }
 
     /* TCP with a source port restriction */
-    if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            &network->def->ipAddress,
-                                            &network->def->netmask,
-                                            network->def->forwardDev,
-                                            "tcp"))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to enable TCP masquerading to '%s'"),
-                             network->def->forwardDev ? network->def->forwardDev : NULL);
+    if (iptablesAddForwardMasquerade(driver->iptables,
+                                     &network->def->ipAddress,
+                                     &network->def->netmask,
+                                     network->def->forwardDev,
+                                     "tcp") < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to enable TCP masquerading to '%s'"),
+                           network->def->forwardDev ? network->def->forwardDev : NULL);
         goto masqerr5;
     }
 
@@ -702,28 +702,28 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 static int
 networkAddRoutingIptablesRules(struct network_driver *driver,
                                virNetworkObjPtr network) {
-    int err;
+
     /* allow routing packets from the bridge interface */
-    if ((err = iptablesAddForwardAllowOut(driver->iptables,
-                                          &network->def->ipAddress,
-                                          &network->def->netmask,
-                                          network->def->bridge,
-                                          network->def->forwardDev))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow routing from '%s'"),
-                             network->def->bridge);
+    if (iptablesAddForwardAllowOut(driver->iptables,
+                                   &network->def->ipAddress,
+                                   &network->def->netmask,
+                                   network->def->bridge,
+                                   network->def->forwardDev) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow routing from '%s'"),
+                           network->def->bridge);
         goto routeerr1;
     }
 
     /* allow routing packets to the bridge interface */
-    if ((err = iptablesAddForwardAllowIn(driver->iptables,
-                                         &network->def->ipAddress,
-                                         &network->def->netmask,
-                                         network->def->bridge,
-                                         network->def->forwardDev))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow routing to '%s'"),
-                             network->def->bridge);
+    if (iptablesAddForwardAllowIn(driver->iptables,
+                                  &network->def->ipAddress,
+                                  &network->def->netmask,
+                                  network->def->bridge,
+                                  network->def->forwardDev) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow routing to '%s'"),
+                           network->def->bridge);
         goto routeerr2;
     }
 
@@ -743,69 +743,68 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
 static int
 networkAddIptablesRules(struct network_driver *driver,
                         virNetworkObjPtr network) {
-    int err;
 
     /* allow DHCP requests through to dnsmasq */
-    if ((err = iptablesAddTcpInput(driver->iptables, network->def->bridge, 67))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow DHCP requests from '%s'"),
-                             network->def->bridge);
+    if (iptablesAddTcpInput(driver->iptables, network->def->bridge, 67) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow DHCP requests from '%s'"),
+                           network->def->bridge);
         goto err1;
     }
 
-    if ((err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 67))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow DHCP requests from '%s'"),
-                             network->def->bridge);
+    if (iptablesAddUdpInput(driver->iptables, network->def->bridge, 67) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow DHCP requests from '%s'"),
+                           network->def->bridge);
         goto err2;
     }
 
     /* allow DNS requests through to dnsmasq */
-    if ((err = iptablesAddTcpInput(driver->iptables, network->def->bridge, 53))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow DNS requests from '%s'"),
-                             network->def->bridge);
+    if (iptablesAddTcpInput(driver->iptables, network->def->bridge, 53) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow DNS requests from '%s'"),
+                           network->def->bridge);
         goto err3;
     }
 
-    if ((err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 53))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow DNS requests from '%s'"),
-                             network->def->bridge);
+    if (iptablesAddUdpInput(driver->iptables, network->def->bridge, 53) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow DNS requests from '%s'"),
+                           network->def->bridge);
         goto err4;
     }
 
     /* allow TFTP requests through to dnsmasq */
     if (network->def->tftproot &&
-        (err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 69))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow TFTP requests from '%s'"),
-                             network->def->bridge);
+        iptablesAddUdpInput(driver->iptables, network->def->bridge, 69) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow TFTP requests from '%s'"),
+                           network->def->bridge);
         goto err4tftp;
     }
 
 
     /* Catch all rules to block forwarding to/from bridges */
 
-    if ((err = iptablesAddForwardRejectOut(driver->iptables, network->def->bridge))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to block outbound traffic from '%s'"),
-                             network->def->bridge);
+    if (iptablesAddForwardRejectOut(driver->iptables, network->def->bridge) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to block outbound traffic from '%s'"),
+                           network->def->bridge);
         goto err5;
     }
 
-    if ((err = iptablesAddForwardRejectIn(driver->iptables, network->def->bridge))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to block inbound traffic to '%s'"),
-                             network->def->bridge);
+    if (iptablesAddForwardRejectIn(driver->iptables, network->def->bridge) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to block inbound traffic to '%s'"),
+                           network->def->bridge);
         goto err6;
     }
 
     /* Allow traffic between guests on the same bridge */
-    if ((err = iptablesAddForwardAllowCross(driver->iptables, network->def->bridge))) {
-        virReportSystemError(err,
-                             _("failed to add iptables rule to allow cross bridge traffic on '%s'"),
-                             network->def->bridge);
+    if (iptablesAddForwardAllowCross(driver->iptables, network->def->bridge) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to allow cross bridge traffic on '%s'"),
+                           network->def->bridge);
         goto err7;
     }
 
@@ -828,7 +827,7 @@ networkAddIptablesRules(struct network_driver *driver,
     if ((VIR_SOCKET_HAS_ADDR(&network->def->ipAddress) ||
          network->def->nranges) &&
         (iptablesAddOutputFixUdpChecksum(driver->iptables,
-                                         network->def->bridge, 68) != 0)) {
+                                         network->def->bridge, 68) < 0)) {
         VIR_WARN("Could not add rule to fixup DHCP response checksums "
                  "on network '%s'.", network->def->name);
         VIR_WARN0("May need to update iptables package & kernel to support CHECKSUM rule.");
