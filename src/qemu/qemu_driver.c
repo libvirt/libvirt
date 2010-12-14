@@ -579,6 +579,22 @@ static void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
     virDomainObjUnref(obj);
 }
 
+static int doStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm)
+{
+    int ret;
+    int oldState = vm->state;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    vm->state = VIR_DOMAIN_PAUSED;
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorStopCPUs(priv->mon);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (ret < 0) {
+        vm->state = oldState;
+    }
+    return ret;
+}
+
 void qemuDomainDefNamespaceFree(void *nsdata)
 {
     qemuDomainCmdlineDefPtr cmd = nsdata;
@@ -4968,15 +4984,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
             goto endjob;
         }
         if (vm->state != VIR_DOMAIN_PAUSED) {
-            int rc;
-            int state = vm->state;
-
-            vm->state = VIR_DOMAIN_PAUSED;
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            rc = qemuMonitorStopCPUs(priv->mon);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0) {
-                vm->state = state;
+            if (doStopCPUs(driver, vm) < 0) {
                 goto endjob;
             }
             event = virDomainEventNewFromObj(vm,
@@ -5350,15 +5358,9 @@ static int
 qemuDomainMigrateOffline(struct qemud_driver *driver,
                          virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int state = vm->state;
     int ret;
 
-    vm->state = VIR_DOMAIN_PAUSED;
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorStopCPUs(priv->mon);
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
-
+    ret = doStopCPUs(driver, vm);
     if (ret == 0) {
         virDomainEventPtr event;
 
@@ -5367,8 +5369,7 @@ qemuDomainMigrateOffline(struct qemud_driver *driver,
                                          VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED);
         if (event)
             qemuDomainEventQueue(driver, event);
-    } else
-        vm->state = state;
+    }
 
     return ret;
 }
@@ -5630,14 +5631,8 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     /* Pause */
     if (vm->state == VIR_DOMAIN_RUNNING) {
         header.was_running = 1;
-        vm->state = VIR_DOMAIN_PAUSED;
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStopCPUs(priv->mon) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            vm->state = VIR_DOMAIN_RUNNING;
+        if (doStopCPUs(driver, vm) < 0)
             goto endjob;
-        }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
 
         if (!virDomainObjIsActive(vm)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -6224,14 +6219,8 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
     /* Pause domain for non-live dump */
     if (!(flags & VIR_DUMP_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
-        vm->state = VIR_DOMAIN_PAUSED;
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStopCPUs(priv->mon) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            vm->state = VIR_DOMAIN_RUNNING;
+        if (doStopCPUs(driver, vm) < 0)
             goto endjob;
-        }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
         paused = 1;
 
         if (!virDomainObjIsActive(vm)) {
@@ -12980,16 +12969,9 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* qemu unconditionally starts the domain running again after
              * loadvm, so let's pause it to keep consistency
              */
-            int state = vm->state;
-            priv = vm->privateData;
-            vm->state = VIR_DOMAIN_PAUSED;
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            rc = qemuMonitorStopCPUs(priv->mon);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0) {
-                vm->state = state;
+            rc = doStopCPUs(driver, vm);
+            if (rc < 0)
                 goto endjob;
-            }
         }
 
         event = virDomainEventNewFromObj(vm,
