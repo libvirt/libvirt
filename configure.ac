@@ -1211,11 +1211,11 @@ LIBPCAP_FOUND="no"
 
 AC_ARG_WITH([libpcap], AC_HELP_STRING([--with-libpcap=@<:@PFX@:>@], [libpcap location]))
 if test "$with_qemu" = "yes"; then
-  AS_CASE(["x$with_libpcap"],
-    [xno], [LIBPCAP_CONFIG=""],
-    [x|xyes], [LIBPCAP_CONFIG="pcap-config"],
-    [LIBPCAP_CONFIG="$with_libpcap/bin/pcap-config"]
-  )
+  case $with_libpcap in
+    no)     LIBPCAP_CONFIG= ;;
+    ''|yes) LIBPCAP_CONFIG="pcap-config" ;;
+    *)      LIBPCAP_CONFIG="$with_libpcap/bin/pcap-config" ;;
+  esac
   AS_IF([test "x$LIBPCAP_CONFIG" != "x"], [
     AC_MSG_CHECKING(libpcap $LIBPCAP_CONFIG >= $LIBPCAP_REQUIRED )
     if ! $LIBPCAP_CONFIG --libs > /dev/null 2>&1 ; then
