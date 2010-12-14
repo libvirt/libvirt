@@ -38,8 +38,9 @@
 #include "datatypes.h"
 #include "logging.h"
 #include "vbox_driver.h"
-#include "vbox_XPCOMCGlue.h"
+#include "vbox_glue.h"
 #include "virterror_internal.h"
+#include "util.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
@@ -82,8 +83,7 @@ int vboxRegister(void) {
     storageDriver = &vbox22StorageDriver;
 
     /* Init the glue and get the API version. */
-    if (VBoxCGlueInit() == 0) {
-        uVersion = g_pVBoxFuncs->pfnGetVersion();
+    if (VBoxCGlueInit(&uVersion) == 0) {
         DEBUG("VBoxCGlueInit found API version: %d.%d.%d (%u)",
               uVersion / 1000000,
               uVersion % 1000000 / 1000,

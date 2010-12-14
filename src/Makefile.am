@@ -259,14 +259,17 @@ VMWARE_DRIVER_SOURCES = 					\
 		vmware/vmware_conf.c vmware/vmware_conf.h
 
 VBOX_DRIVER_SOURCES =						\
-        vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h		\
+        vbox/vbox_glue.c vbox/vbox_glue.h			\
         vbox/vbox_driver.c vbox/vbox_driver.h			\
         vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h			\
         vbox/vbox_V3_0.c vbox/vbox_CAPI_v3_0.h			\
         vbox/vbox_V3_1.c vbox/vbox_CAPI_v3_1.h			\
         vbox/vbox_V3_2.c vbox/vbox_CAPI_v3_2.h
 
-VBOX_DRIVER_EXTRA_DIST = vbox/vbox_tmpl.c vbox/README
+VBOX_DRIVER_EXTRA_DIST = 					\
+		vbox/vbox_tmpl.c vbox/README			\
+		vbox/vbox_MSCOMGlue.c vbox/vbox_MSCOMGlue.h	\
+		vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h
 
 QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_capabilities.c qemu/qemu_capabilities.h\
@@ -634,7 +637,7 @@ libvirt_la_BUILT_LIBADD += libvirt_driver_vbox.la
 endif
 libvirt_driver_vbox_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
-libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS)
+libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS) $(MSCOM_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)

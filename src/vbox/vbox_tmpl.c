@@ -34,12 +34,11 @@
 
 #include <config.h>
 
-#include <dlfcn.h>
 #include <sys/utsname.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "internal.h"
-
 #include "datatypes.h"
 #include "domain_conf.h"
 #include "network_conf.h"
@@ -68,7 +67,7 @@
 #endif
 
 /* Include this *last* or we'll get the wrong vbox_CAPI_*.h. */
-#include "vbox_XPCOMCGlue.h"
+#include "vbox_glue.h"
 
 
 #define VIR_FROM_THIS                   VIR_FROM_VBOX
@@ -705,10 +704,9 @@ no_memory:
     return NULL;
 }
 
-static int vboxInitialize(vboxGlobalData *data) {
-
-    /* Get the API table for out version, g_pVBoxFuncs is for the oldest
-       version of the API that we support so we cannot use that. */
+static int
+vboxInitialize(vboxGlobalData *data)
+{
     data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);
 
     if (data->pFuncs == NULL)

@@ -358,12 +358,23 @@ AC_DEFINE_UNQUOTED([VBOX_XPCOMC_DIR], ["$vbox_xpcomc_dir"],
                    [Location of directory containing VirtualBox XPCOMC library])
 
 if test "x$with_vbox" = "xyes"; then
-    AC_SEARCH_LIBS([dlopen], [dl], [], [AC_MSG_ERROR([Unable to find dlopen()])])
+    AC_SEARCH_LIBS([dlopen], [dl],,)
     case $ac_cv_search_dlopen in
-      no*) DLOPEN_LIBS= ;;
+      no*) DLOPEN_LIBS=
+           case "$host" in
+             *-*-mingw* | *-*-msvc*) ;;
+             *) AC_MSG_ERROR([Unable to find dlopen()]) ;;
+           esac ;;
       *) DLOPEN_LIBS=$ac_cv_search_dlopen ;;
     esac
     AC_SUBST([DLOPEN_LIBS])
+
+    case "$host" in
+      *-*-mingw* | *-*-msvc*) MSCOM_LIBS="-lole32 -loleaut32" ;;
+      *) MSCOM_LIBS= ;;
+    esac
+    AC_SUBST([MSCOM_LIBS])
+
     AC_DEFINE_UNQUOTED([WITH_VBOX], 1, [whether VirtualBox driver is enabled])
 fi
 AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
@@ -2418,6 +2429,11 @@ if test "$with_macvtap" = "yes" ; then
 AC_MSG_NOTICE([      nl: $LIBNL_CFLAGS $LIBNL_LIBS])
 else
 AC_MSG_NOTICE([      nl: no])
+fi
+if test "$with_vbox" = "yes" && test -n "$MSCOM_LIBS" ; then
+AC_MSG_NOTICE([   mscom: $MSCOM_LIBS])
+else
+AC_MSG_NOTICE([   mscom: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])

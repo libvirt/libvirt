@@ -103,6 +103,7 @@ src/util/util.c
 src/util/virtaudit.c
 src/util/virterror.c
 src/util/xml.c
+src/vbox/vbox_MSCOMGlue.c
 src/vbox/vbox_XPCOMCGlue.c
 src/vbox/vbox_driver.c
 src/vbox/vbox_tmpl.c

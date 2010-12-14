@@ -32,12 +32,10 @@
 /* This has to be the oldest version we support. */
 # include "vbox_CAPI_v2_2.h"
 
-/** Pointer to the VBoxXPCOMC function table. */
-extern PCVBOXXPCOM g_pVBoxFuncs;
 /** Pointer to VBoxGetXPCOMCFunctions for the loaded VBoxXPCOMC so/dylib/dll. */
 extern PFNVBOXGETXPCOMCFUNCTIONS g_pfnGetFunctions;
 
-int VBoxCGlueInit(void);
+int VBoxCGlueInit(unsigned int *version);
 void VBoxCGlueTerm(void);
 
 #endif
