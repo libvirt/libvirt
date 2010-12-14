@@ -306,6 +306,9 @@ if test x"$with_rhel5_api" = x"yes"; then
    AC_DEFINE([WITH_RHEL5_API], [1], [whether building for the RHEL-5 API])
 fi
 
+AC_PATH_PROG([IP_PATH], [ip], /sbin/ip, [/usr/sbin:$PATH])
+AC_DEFINE_UNQUOTED([IP_PATH], "$IP_PATH", [path to ip binary])
+
 AC_PATH_PROG([IPTABLES_PATH], [iptables], /sbin/iptables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([IPTABLES_PATH], "$IPTABLES_PATH", [path to iptables binary])
 

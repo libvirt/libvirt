@@ -83,12 +83,14 @@ int     brGetInterfaceUp        (brControl *ctl,
                                  const char *ifname,
                                  int *up);
 
-int     brSetInetAddress        (brControl *ctl,
+int     brAddInetAddress        (brControl *ctl,
                                  const char *ifname,
-                                 virSocketAddr *addr);
-int     brSetInetNetmask        (brControl *ctl,
+                                 virSocketAddr *addr,
+                                 unsigned int prefix);
+int     brDelInetAddress        (brControl *ctl,
                                  const char *ifname,
-                                 virSocketAddr *addr);
+                                 virSocketAddr *addr,
+                                 unsigned int prefix);
 
 int     brSetForwardDelay       (brControl *ctl,
                                  const char *bridge,

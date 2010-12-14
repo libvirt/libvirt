@@ -1142,37 +1142,39 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
     if (networkDisableIPV6(network) < 0)
         goto err_delbr;
 
-    if (brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay) < 0)
-        goto err_delbr;
-
-    if (brSetEnableSTP(driver->brctl, network->def->bridge, network->def->stp ? 1 : 0) < 0)
-        goto err_delbr;
-
-    if (VIR_SOCKET_HAS_ADDR(&network->def->ipAddress) &&
-        (err = brSetInetAddress(driver->brctl, network->def->bridge,
-                                &network->def->ipAddress))) {
-        virReportSystemError(err,
-                             _("cannot set IP address on bridge '%s'"),
-                             network->def->bridge);
-        goto err_delbr;
-    }
-
-    virSocketAddr netmask;
-
-    if (virNetworkDefNetmask(network->def, &netmask) < 0) {
-
+    if ((err = brSetForwardDelay(driver->brctl, network->def->bridge,
+                                 network->def->delay))) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("bridge  '%s' has an invalid netmask or IP address"),
+                           _("cannot set forward delay on bridge '%s'"),
                            network->def->bridge);
         goto err_delbr;
     }
 
-    if ((err = brSetInetNetmask(driver->brctl, network->def->bridge,
-                                &netmask))) {
-        virReportSystemError(err,
-                             _("cannot set netmask on bridge '%s'"),
-                             network->def->bridge);
+    if ((err = brSetEnableSTP(driver->brctl, network->def->bridge,
+                              network->def->stp ? 1 : 0))) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot set STP '%s' on bridge '%s'"),
+                           network->def->stp ? "on" : "off", network->def->bridge);
         goto err_delbr;
+    }
+
+    if (VIR_SOCKET_HAS_ADDR(&network->def->ipAddress)) {
+        int prefix = virNetworkDefPrefix(network->def);
+
+        if (prefix < 0) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("bridge '%s' has an invalid netmask or IP address"),
+                               network->def->bridge);
+            goto err_delbr;
+        }
+
+        if ((err = brAddInetAddress(driver->brctl, network->def->bridge,
+                                    &network->def->ipAddress, prefix))) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot set IP address on bridge '%s'"),
+                               network->def->bridge);
+            goto err_delbr;
+        }
     }
 
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 1))) {
