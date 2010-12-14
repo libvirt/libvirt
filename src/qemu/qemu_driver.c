@@ -579,6 +579,21 @@ static void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
     virDomainObjUnref(obj);
 }
 
+static int doStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm, virConnectPtr conn)
+{
+    int ret;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorStartCPUs(priv->mon, conn);
+    if (ret == 0) {
+        vm->state = VIR_DOMAIN_RUNNING;
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    return ret;
+}
+
 static int doStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm)
 {
     int ret;
@@ -4245,19 +4260,18 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (!start_paused) {
         DEBUG0("Starting domain CPUs");
         /* Allow the CPUS to start executing */
-        if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
+        if (doStartCPUs(driver, vm, conn) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("resume operation failed"));
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
             goto cleanup;
         }
     }
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 
     DEBUG0("Writing domain status to disk");
@@ -5037,17 +5051,12 @@ static int qemudDomainResume(virDomainPtr dom) {
         goto endjob;
     }
     if (vm->state == VIR_DOMAIN_PAUSED) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        if (doStartCPUs(driver, vm, dom->conn) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("resume operation failed"));
             goto endjob;
         }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        vm->state = VIR_DOMAIN_RUNNING;
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
@@ -5861,13 +5870,9 @@ endjob:
     if (vm) {
         if (ret != 0) {
             if (header.was_running && virDomainObjIsActive(vm)) {
-                qemuDomainObjEnterMonitorWithDriver(driver, vm);
-                rc = qemuMonitorStartCPUs(priv->mon, dom->conn);
-                qemuDomainObjExitMonitorWithDriver(driver, vm);
+                rc = doStartCPUs(driver, vm, dom->conn);
                 if (rc < 0)
                     VIR_WARN0("Unable to resume guest CPUs after save failure");
-                else
-                    vm->state = VIR_DOMAIN_RUNNING;
             }
 
             if (cgroup != NULL) {
@@ -6249,14 +6254,11 @@ endjob:
        will support synchronous operations so we always get here after
        the migration is complete.  */
     else if (resume && paused && virDomainObjIsActive(vm)) {
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
+        if (doStartCPUs(driver, vm, dom->conn) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("resuming after dump failed"));
         }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        vm->state = VIR_DOMAIN_RUNNING;
     }
 
     if (qemuDomainObjEndJob(vm) == 0)
@@ -6288,8 +6290,6 @@ static void processWatchdogEvent(void *data, void *opaque)
             char *dumpfile;
             int i;
 
-            qemuDomainObjPrivatePtr priv = wdEvent->vm->privateData;
-
             i = virAsprintf(&dumpfile, "%s/%s-%u",
                             driver->autoDumpPath,
                             wdEvent->vm->def->name,
@@ -6315,9 +6315,7 @@ static void processWatchdogEvent(void *data, void *opaque)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("Dump failed"));
 
-            qemuDomainObjEnterMonitorWithDriver(driver, wdEvent->vm);
-            ret = qemuMonitorStartCPUs(priv->mon, NULL);
-            qemuDomainObjExitMonitorWithDriver(driver, wdEvent->vm);
+            ret = doStartCPUs(driver, wdEvent->vm, NULL);
 
             if (ret < 0)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -7172,17 +7170,12 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
 
     /* If it was running before, resume it now. */
     if (header->was_running) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
+        if (doStartCPUs(driver, vm, conn) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("failed to resume domain"));
-            qemuDomainObjExitMonitorWithDriver(driver,vm);
             goto out;
         }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        vm->state = VIR_DOMAIN_RUNNING;
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto out;
@@ -11936,8 +11929,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
 endjob:
     if (resume && vm->state == VIR_DOMAIN_PAUSED) {
         /* we got here through some sort of failure; start the domain again */
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
+        if (doStartCPUs(driver, vm, dom->conn) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
@@ -11945,9 +11937,7 @@ endjob:
             VIR_ERROR(_("Failed to resume guest %s after failure"),
                       vm->def->name);
         }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-        vm->state = VIR_DOMAIN_RUNNING;
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
@@ -12103,17 +12093,12 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
              * >= 0.10.6 to work properly.  This isn't strictly necessary on
              * older qemu's, but it also doesn't hurt anything there
              */
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            if (qemuMonitorStartCPUs(priv->mon, dconn) < 0) {
+            if (doStartCPUs(driver, vm, dconn) < 0) {
                 if (virGetLastError() == NULL)
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     "%s", _("resume operation failed"));
-                qemuDomainObjExitMonitorWithDriver(driver, vm);
                 goto endjob;
             }
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-            vm->state = VIR_DOMAIN_RUNNING;
         }
 
         event = virDomainEventNewFromObj(vm,
