@@ -1563,6 +1563,16 @@ struct IVirtualBox_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
+#  ifdef WIN32
+    /* The MSCOM implementation has some additional methods here.
+     * So add them here to get correct binary layout of the object.
+     * In API version 2.2 this affects IVirtualBox and ISession only. */
+    nsresult PR_COM_METHOD (*GetTypeInfoCount)(IVirtualBox *pThis);
+    nsresult PR_COM_METHOD (*GetTypeInfo)(IVirtualBox *pThis);
+    nsresult PR_COM_METHOD (*GetIDsOfNames)(IVirtualBox *pThis);
+    nsresult PR_COM_METHOD (*Invoke)(IVirtualBox *pThis);
+#  endif
+
     nsresult PR_COM_METHOD (*GetVersion)(IVirtualBox *pThis, PRUnichar * *version);
 
     nsresult PR_COM_METHOD (*GetRevision)(IVirtualBox *pThis, PRUint32 *revision);
@@ -4566,6 +4576,16 @@ struct IInternalSessionControl
 struct ISession_vtbl
 {
     struct nsISupports_vtbl nsisupports;
+
+#  ifdef WIN32
+    /* The MSCOM implementation has some additional methods here.
+     * So add them here to get correct binary layout of the object.
+     * In API version 2.2 this affects IVirtualBox and ISession only. */
+    nsresult PR_COM_METHOD (*GetTypeInfoCount)(ISession *pThis);
+    nsresult PR_COM_METHOD (*GetTypeInfo)(ISession *pThis);
+    nsresult PR_COM_METHOD (*GetIDsOfNames)(ISession *pThis);
+    nsresult PR_COM_METHOD (*Invoke)(ISession *pThis);
+#  endif
 
     nsresult PR_COM_METHOD (*GetState)(ISession *pThis, PRUint32 *state);
 

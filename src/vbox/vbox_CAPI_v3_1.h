@@ -716,6 +716,15 @@ struct nsISupports_vtbl {
    */
   nsresult PR_COM_METHOD (*Release)(nsISupports *pThis);
 
+#  ifdef WIN32
+  /* The MSCOM implementation has some additional methods here.
+   * So add them here to get correct binary layout of the object.
+   * In API version 3.x this affects all types. */
+  nsresult PR_COM_METHOD (*GetTypeInfoCount)(nsISupports *pThis);
+  nsresult PR_COM_METHOD (*GetTypeInfo)(nsISupports *pThis);
+  nsresult PR_COM_METHOD (*GetIDsOfNames)(nsISupports *pThis);
+  nsresult PR_COM_METHOD (*Invoke)(nsISupports *pThis);
+#  endif
 };
 
 struct nsISupports {
