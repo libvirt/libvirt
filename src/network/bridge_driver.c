@@ -373,7 +373,7 @@ networkSaveDnsmasqHostsfile(virNetworkObjPtr network,
     unsigned int i;
 
     if (! force && virFileExists(dctx->hostsfile->path))
-        return 1;
+        return 0;
 
     for (i = 0 ; i < network->def->nhosts ; i++) {
         virNetworkDHCPHostDefPtr host = &(network->def->hosts[i]);
@@ -382,9 +382,9 @@ networkSaveDnsmasqHostsfile(virNetworkObjPtr network,
     }
 
     if (dnsmasqSave(dctx) < 0)
-        return 0;
+        return -1;
 
-    return 1;
+    return 0;
 }
 
 
@@ -487,7 +487,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             goto cleanup;
         }
 
-        if (networkSaveDnsmasqHostsfile(network, dctx, false)) {
+        if (networkSaveDnsmasqHostsfile(network, dctx, false) < 0) {
             virCommandAddArgPair(cmd, "--dhcp-hostsfile",
                                  dctx->hostsfile->path);
         }
@@ -669,7 +669,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
         goto masqerr5;
     }
 
-    return 1;
+    return 0;
 
  masqerr5:
     iptablesRemoveForwardMasquerade(driver->iptables,
@@ -696,7 +696,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                   network->def->bridge,
                                   network->def->forwardDev);
  masqerr1:
-    return 0;
+    return -1;
 }
 
 static int
@@ -727,7 +727,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
         goto routeerr2;
     }
 
-    return 1;
+    return 0;
 
 
  routeerr2:
@@ -737,7 +737,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
                                   network->def->bridge,
                                   network->def->forwardDev);
  routeerr1:
-    return 0;
+    return -1;
 }
 
 static int
@@ -811,11 +811,11 @@ networkAddIptablesRules(struct network_driver *driver,
 
     /* If masquerading is enabled, set up the rules*/
     if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT &&
-        !networkAddMasqueradingIptablesRules(driver, network))
+        networkAddMasqueradingIptablesRules(driver, network) < 0)
         goto err8;
     /* else if routing is enabled, set up the rules*/
     else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE &&
-             !networkAddRoutingIptablesRules(driver, network))
+             networkAddRoutingIptablesRules(driver, network) < 0)
         goto err8;
 
     /* If we are doing local DHCP service on this network, attempt to
@@ -833,7 +833,7 @@ networkAddIptablesRules(struct network_driver *driver,
         VIR_WARN0("May need to update iptables package & kernel to support CHECKSUM rule.");
     }
 
-    return 1;
+    return 0;
 
  err8:
     iptablesRemoveForwardAllowCross(driver->iptables,
@@ -857,7 +857,7 @@ networkAddIptablesRules(struct network_driver *driver,
  err2:
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
  err1:
-    return 0;
+    return -1;
 }
 
 static void
@@ -926,7 +926,7 @@ networkReloadIptablesRules(struct network_driver *driver)
 
         if (virNetworkObjIsActive(driver->networks.objs[i])) {
             networkRemoveIptablesRules(driver, driver->networks.objs[i]);
-            if (!networkAddIptablesRules(driver, driver->networks.objs[i])) {
+            if (networkAddIptablesRules(driver, driver->networks.objs[i]) < 0) {
                 /* failed to add but already logged */
             }
         }
@@ -1141,7 +1141,7 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
         goto err_delbr;
     }
 
-    if (!networkAddIptablesRules(driver, network))
+    if (networkAddIptablesRules(driver, network) < 0)
         goto err_delbr1;
 
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
