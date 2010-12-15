@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
             fprintf(log, "FD:%d\n", i);
     }
 
-    fprintf(log, "DAEMON:%s\n", getppid() == 1 ? "yes" : "no");
+    fprintf(log, "DAEMON:%s\n", getpgrp() == getsid(0) ? "yes" : "no");
     char cwd[1024];
     if (!getcwd(cwd, sizeof(cwd)))
         return EXIT_FAILURE;
