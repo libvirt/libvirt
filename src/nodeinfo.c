@@ -61,7 +61,8 @@
 
 /* NB, this is not static as we need to call it from the testsuite */
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                             virNodeInfoPtr nodeinfo);
+                             virNodeInfoPtr nodeinfo,
+                             bool need_hyperthreads);
 
 /* Return the positive decimal contents of the given
  * CPU_SYS_PATH/cpu%u/FILE, or -1 on error.  If MISSING_OK and the
@@ -167,7 +168,8 @@ static int parse_socket(unsigned int cpu)
 }
 
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                             virNodeInfoPtr nodeinfo)
+                             virNodeInfoPtr nodeinfo,
+                             bool need_hyperthreads)
 {
     char line[1024];
     DIR *cpudir = NULL;
@@ -243,6 +245,9 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                         "%s", _("no cpus found"));
         return -1;
     }
+
+    if (!need_hyperthreads)
+        return 0;
 
     /* OK, we've parsed what we can out of /proc/cpuinfo.  Get the socket
      * and thread information from /sys
@@ -338,7 +343,7 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
                              _("cannot open %s"), CPUINFO_PATH);
         return -1;
     }
-    ret = linuxNodeInfoCPUPopulate(cpuinfo, nodeinfo);
+    ret = linuxNodeInfoCPUPopulate(cpuinfo, nodeinfo, true);
     VIR_FORCE_FCLOSE(cpuinfo);
     if (ret < 0)
         return -1;
