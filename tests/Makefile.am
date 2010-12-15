@@ -209,12 +209,12 @@ TESTS += cputest
 path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/daemon$(PATH_SEPARATOR)$$abs_top_builddir/tools
 
 # NB, automake < 1.10 does not provide the real
-# abs_top_{src/build}dir variables, so don't rely
+# abs_top_{src/build}dir or builddir variables, so don't rely
 # on them here. Fake them with 'pwd'
 TESTS_ENVIRONMENT =				\
   abs_top_builddir=`cd '$(top_builddir)'; pwd`	\
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
-  abs_builddir=`cd '$(builddir)'; pwd`		\
+  abs_builddir=`pwd`				\
   abs_srcdir=`cd '$(srcdir)'; pwd`		\
   CONFIG_HEADER="`cd '$(top_builddir)'; pwd`/config.h"	\
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
@@ -356,12 +356,12 @@ nodeinfotest_LDADD = $(LDADDS)
 
 commandtest_SOURCES = \
 	commandtest.c testutils.h testutils.c
-commandtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""
+commandtest_CFLAGS = -Dabs_builddir="\"`pwd`\""
 commandtest_LDADD = $(LDADDS)
 
 commandhelper_SOURCES = \
 	commandhelper.c
-commandhelper_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""
+commandhelper_CFLAGS = -Dabs_builddir="\"`pwd`\""
 commandhelper_LDADD = $(LDADDS)
 
 if WITH_SECDRIVER_SELINUX
