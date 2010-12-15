@@ -14,11 +14,13 @@
  */
 #include <config.h>
 #include <selinux/selinux.h>
-#include <selinux/label.h>
 #include <selinux/context.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#if HAVE_SELINUX_LABEL_H
+# include <selinux/label.h>
+#endif
 
 #include "security_driver.h"
 #include "security_selinux.h"
@@ -355,6 +357,25 @@ SELinuxSetFilecon(const char *path, char *tcon)
     return 0;
 }
 
+/* Set fcon to the appropriate label for path and mode, or return -1.  */
+static int
+getContext(const char *newpath, mode_t mode, security_context_t *fcon)
+{
+#if HAVE_SELINUX_LABEL_H
+    struct selabel_handle *handle = selabel_open(SELABEL_CTX_FILE, NULL, 0);
+    int ret;
+
+    if (handle == NULL)
+        return -1;
+
+    ret = selabel_lookup(handle, fcon, newpath, mode);
+    selabel_close(handle);
+    return ret;
+#else
+    return matchpathcon(newpath, mode, fcon);
+#endif
+}
+
 
 /* This method shouldn't raise errors, since they'll overwrite
  * errors that the caller(s) are already dealing with */
@@ -363,7 +384,6 @@ SELinuxRestoreSecurityFileLabel(const char *path)
 {
     struct stat buf;
     security_context_t fcon = NULL;
-    struct selabel_handle *handle = NULL;
     int rc = -1;
     char *newpath = NULL;
     char ebuf[1024];
@@ -382,16 +402,13 @@ SELinuxRestoreSecurityFileLabel(const char *path)
         goto err;
     }
 
-    if ((handle = selabel_open(SELABEL_CTX_FILE, NULL, 0)) == NULL ||
-        selabel_lookup(handle, &fcon, newpath, buf.st_mode) < 0) {
+    if (getContext(newpath, buf.st_mode, &fcon) < 0) {
         VIR_WARN("cannot lookup default selinux label for %s", newpath);
     } else {
         rc = SELinuxSetFilecon(newpath, fcon);
     }
 
 err:
-    if (handle)
-        selabel_close(handle);
     freecon(fcon);
     VIR_FREE(newpath);
     return rc;

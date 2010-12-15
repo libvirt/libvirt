@@ -1023,6 +1023,9 @@ fi
 if test "$with_selinux" = "yes"; then
   SELINUX_LIBS="-lselinux"
   AC_DEFINE_UNQUOTED([HAVE_SELINUX], 1, [whether basic SELinux functionality is available])
+  dnl We prefer to use <selinux/label.h> and selabel_open, but can fall
+  dnl back to matchpathcon for the sake of RHEL 5's version of libselinux.
+  AC_CHECK_HEADERS([selinux/label.h])
 fi
 AM_CONDITIONAL([HAVE_SELINUX], [test "$with_selinux" != "no"])
 AC_SUBST([SELINUX_CFLAGS])
