@@ -150,6 +150,8 @@ struct _qemuDomainCmdlineDef {
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
+void qemuDriverLock(struct qemud_driver *driver);
+void qemuDriverUnlock(struct qemud_driver *driver);
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename);
 

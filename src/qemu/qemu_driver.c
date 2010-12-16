@@ -109,15 +109,6 @@ static void processWatchdogEvent(void *data, void *opaque);
 
 static int qemudShutdown(void);
 
-static void qemuDriverLock(struct qemud_driver *driver)
-{
-    virMutexLock(&driver->lock);
-}
-static void qemuDriverUnlock(struct qemud_driver *driver)
-{
-    virMutexUnlock(&driver->lock);
-}
-
 static void qemuDomainEventFlush(int timer, void *opaque);
 static void qemuDomainEventQueue(struct qemud_driver *driver,
                                  virDomainEventPtr event);

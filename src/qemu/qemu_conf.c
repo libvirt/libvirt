@@ -60,6 +60,16 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+void qemuDriverLock(struct qemud_driver *driver)
+{
+    virMutexLock(&driver->lock);
+}
+void qemuDriverUnlock(struct qemud_driver *driver)
+{
+    virMutexUnlock(&driver->lock);
+}
+
+
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {
     virConfPtr conf;
