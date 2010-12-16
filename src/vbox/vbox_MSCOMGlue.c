@@ -646,3 +646,110 @@ void
 VBoxCGlueTerm(void)
 {
 }
+
+
+
+/*
+ * In MSCOM an array is represented by a SAFEARRAY pointer. To access the items
+ * in the array the SafeArrayAccessData function is used to lock the array and
+ * get its contents. When the items aren't needed anymore the
+ * SafeArrayUnaccessData function is used to unlock the array. The pointer
+ * retuned by SafeArrayAccessData function becomes invalid. Finally the
+ * SafeArrayDestroy function is called to destroy the array, it also releases
+ * or frees all items in the array according to their type.
+ */
+
+typedef HRESULT __stdcall (*SafeArrayGetter)(void *self, SAFEARRAY **array);
+typedef HRESULT __stdcall (*SafeArrayGetterWithArg)(void *self, void *arg, SAFEARRAY **array);
+
+/*
+ * Call the getter with self as first argument and fill the array with the
+ * returned items.
+ */
+nsresult
+vboxArrayGet(vboxArray *array, void *self, void *getter)
+{
+    HRESULT hrc;
+    SAFEARRAY *safeArray = NULL;
+    void **items = NULL;
+
+    array->items = NULL;
+    array->count = 0;
+    array->handle = NULL;
+
+    hrc = ((SafeArrayGetter)getter)(self, &safeArray);
+
+    if (FAILED(hrc)) {
+        return hrc;
+    }
+
+    hrc = SafeArrayAccessData(safeArray, (void **)&items);
+
+    if (FAILED(hrc)) {
+        SafeArrayDestroy(safeArray);
+        return hrc;
+    }
+
+    array->items = items;
+    array->count = safeArray->rgsabound[0].cElements;
+    array->handle = safeArray;
+
+    return hrc;
+}
+
+/*
+ * Call the getter with self as first argument and arg as second argument
+ * and fill the array with the returned items.
+ */
+nsresult
+vboxArrayGetWithArg(vboxArray *array, void *self, void *getter, void *arg)
+{
+    HRESULT hrc;
+    SAFEARRAY *safeArray = NULL;
+    void **items = NULL;
+
+    array->items = NULL;
+    array->count = 0;
+    array->handle = NULL;
+
+    hrc = ((SafeArrayGetterWithArg)getter)(self, arg, &safeArray);
+
+    if (FAILED(hrc)) {
+        return hrc;
+    }
+
+    hrc = SafeArrayAccessData(safeArray, (void **)&items);
+
+    if (FAILED(hrc)) {
+        SafeArrayDestroy(safeArray);
+        return hrc;
+    }
+
+    array->items = items;
+    array->count = safeArray->rgsabound[0].cElements;
+    array->handle = safeArray;
+
+    return hrc;
+}
+
+/*
+ * Release all items in the array and reset it.
+ *
+ * SafeArrayDestroy is aware of the item's type and calls release or free
+ * for each item according to its type. Therefore, vboxArrayUnalloc and
+ * vboxArrayRelease are the same for MSCOM.
+ */
+void
+vboxArrayRelease(vboxArray *array)
+{
+    if (array->handle == NULL) {
+        return;
+    }
+
+    SafeArrayUnaccessData(array->handle);
+    SafeArrayDestroy(array->handle);
+
+    array->items = NULL;
+    array->count = 0;
+    array->handle = NULL;
+}

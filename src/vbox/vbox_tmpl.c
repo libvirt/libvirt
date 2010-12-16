@@ -77,6 +77,8 @@
 #define VBOX_UTF16_TO_UTF8(arg1, arg2)  data->pFuncs->pfnUtf16ToUtf8(arg1, arg2)
 #define VBOX_UTF8_TO_UTF16(arg1, arg2)  data->pFuncs->pfnUtf8ToUtf16(arg1, arg2)
 
+#define VBOX_ADDREF(arg) (arg)->vtbl->nsisupports.AddRef((nsISupports *)(arg))
+
 #define VBOX_RELEASE(arg) \
 if(arg)\
     (arg)->vtbl->nsisupports.Release((nsISupports *)(arg))
@@ -942,26 +944,21 @@ static char *vboxGetCapabilities(virConnectPtr conn) {
 
 static int vboxListDomains(virConnectPtr conn, int *ids, int nids) {
     VBOX_OBJECT_CHECK(conn, int, -1);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     PRUint32 state;
     nsresult rc;
     int i, j;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of Domains, rc=%08x"),(unsigned)rc);
         goto cleanup;
     }
 
-    if (machineCnt == 0) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    for (i = 0,j = 0; (i < machineCnt) && (j < nids); ++i) {
-        IMachine *machine = machines[i];
+    ret = 0;
+    for (i = 0, j = 0; (i < machines.count) && (j < nids); ++i) {
+        IMachine *machine = machines.items[i];
 
         if (machine) {
             PRBool isAccessible = PR_FALSE;
@@ -976,37 +973,29 @@ static int vboxListDomains(virConnectPtr conn, int *ids, int nids) {
             }
         }
     }
-    ret++;
 
 cleanup:
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
     return ret;
 }
 
 static int vboxNumOfDomains(virConnectPtr conn) {
     VBOX_OBJECT_CHECK(conn, int, -1);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     PRUint32 state;
     nsresult rc;
     int i;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get number of Domains, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
-    if (machineCnt == 0) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    /* Do the cleanup as required by GetMachines() */
-    for (i = 0; i < machineCnt; ++i) {
-        IMachine *machine = machines[i];
+    ret = 0;
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
 
         if (machine) {
             PRBool isAccessible = PR_FALSE;
@@ -1019,11 +1008,9 @@ static int vboxNumOfDomains(virConnectPtr conn) {
             }
         }
     }
-    ret++;
 
 cleanup:
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
     return ret;
 }
 
@@ -1056,13 +1043,11 @@ static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
 
 static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID *iid         = NULL;
     unsigned char iidl[VIR_UUID_BUFLEN];
     PRUint32 state;
     nsresult rc;
-    int i;
 
     /* Internal vbox IDs start from 0, the public libvirt ID
      * starts from 1, so refuse id==0, and adjust the rest*/
@@ -1073,28 +1058,30 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
     }
     id = id - 1;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return NULL;
     }
 
-    if (id < machineCnt) {
-        if (machines[id]) {
+    if (id < machines.count) {
+        IMachine *machine = machines.items[id];
+
+        if (machine) {
             PRBool isAccessible = PR_FALSE;
-            machines[id]->vtbl->GetAccessible(machines[id], &isAccessible);
+            machine->vtbl->GetAccessible(machine, &isAccessible);
             if (isAccessible) {
-                machines[id]->vtbl->GetState(machines[id], &state);
+                machine->vtbl->GetState(machine, &state);
                 if (   (state >= MachineState_FirstOnline)
                     && (state <= MachineState_LastOnline) ) {
                     PRUnichar *machineNameUtf16 = NULL;
                     char      *machineNameUtf8  = NULL;
 
-                    machines[id]->vtbl->GetName(machines[id], &machineNameUtf16);
+                    machine->vtbl->GetName(machine, &machineNameUtf16);
                     VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineNameUtf8);
 
-                    machines[id]->vtbl->GetId(machines[id], &iid);
+                    machine->vtbl->GetId(machine, &iid);
                     vboxIIDToUUID(iidl, iid);
                     vboxIIDUnalloc(iid);
 
@@ -1116,17 +1103,14 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
         }
     }
 
-    /* Do the cleanup as required by GetMachines() */
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
 
     return ret;
 }
 
 static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid) {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID *iid         = NULL;
     char      *machineNameUtf8  = NULL;
     PRUnichar *machineNameUtf16 = NULL;
@@ -1134,15 +1118,15 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
     int i, matched = 0;
     nsresult rc;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return NULL;
     }
 
-    for (i = 0; i < machineCnt; ++i) {
-        IMachine *machine = machines[i];
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
         PRBool isAccessible = PR_FALSE;
 
         if (!machine)
@@ -1189,16 +1173,14 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
     /* Do the cleanup and take care you dont leak any memory */
     VBOX_UTF8_FREE(machineNameUtf8);
     VBOX_COM_UNALLOC_MEM(machineNameUtf16);
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
 
     return ret;
 }
 
 static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name) {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID *iid         = NULL;
     char      *machineNameUtf8  = NULL;
     PRUnichar *machineNameUtf16 = NULL;
@@ -1206,15 +1188,15 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
     int i, matched = 0;
     nsresult rc;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return NULL;
     }
 
-    for (i = 0; i < machineCnt; ++i) {
-        IMachine *machine = machines[i];
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
         PRBool isAccessible = PR_FALSE;
 
         if (!machine)
@@ -1264,9 +1246,7 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
         }
     }
 
-    /* Do the cleanup and take care you dont leak any memory */
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
 
     return ret;
 }
@@ -1274,8 +1254,7 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
 
 static int vboxDomainIsActive(virDomainPtr dom) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID *iid         = NULL;
     char      *machineNameUtf8  = NULL;
     PRUnichar *machineNameUtf16 = NULL;
@@ -1283,15 +1262,15 @@ static int vboxDomainIsActive(virDomainPtr dom) {
     int i, matched = 0;
     nsresult rc;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return ret;
     }
 
-    for (i = 0; i < machineCnt; ++i) {
-        IMachine *machine = machines[i];
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
         PRBool isAccessible = PR_FALSE;
 
         if (!machine)
@@ -1332,8 +1311,7 @@ static int vboxDomainIsActive(virDomainPtr dom) {
     /* Do the cleanup and take care you dont leak any memory */
     VBOX_UTF8_FREE(machineNameUtf8);
     VBOX_COM_UNALLOC_MEM(machineNameUtf16);
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
 
     return ret;
 }
@@ -1718,14 +1696,13 @@ cleanup:
 
 static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     char *machineName    = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     nsresult rc;
     int i = 0;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of machines, rc=%08x"), (unsigned)rc);
@@ -1733,8 +1710,8 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
     }
 
     info->nrVirtCpu = 0;
-    for (i = 0; i < machineCnt; ++i) {
-        IMachine *machine = machines[i];
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
         PRBool isAccessible = PR_FALSE;
 
         if (!machine)
@@ -1815,9 +1792,7 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
 
     }
 
-    /* Do the cleanup and take care you dont leak any memory */
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
 
 cleanup:
     return ret;
@@ -2034,8 +2009,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
             PRUnichar    *hddBusUtf16           = NULL;
             IFloppyDrive *floppyDrive           = NULL;
 #else  /* VBOX_API_VERSION >= 3001 */
-            PRUint32      mediumAttachSize      = 0;
-            IMediumAttachment **mediumAttachments = NULL;
+            vboxArray mediumAttachments         = VBOX_ARRAY_INITIALIZER;
 #endif /* VBOX_API_VERSION >= 3001 */
             IVRDPServer *VRDPServer             = NULL;
             IAudioAdapter *audioAdapter         = NULL;
@@ -2436,11 +2410,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
             PRUint32   maxPortPerInst[StorageBus_Floppy + 1] = {};
             PRUint32   maxSlotPerPort[StorageBus_Floppy + 1] = {};
             def->ndisks = 0;
-            machine->vtbl->GetMediumAttachments(machine, &mediumAttachSize, &mediumAttachments);
+            vboxArrayGet(&mediumAttachments, machine, machine->vtbl->GetMediumAttachments);
 
             /* get the number of attachments */
-            for (i = 0; i < mediumAttachSize; i++) {
-                IMediumAttachment *imediumattach = mediumAttachments[i];
+            for (i = 0; i < mediumAttachments.count; i++) {
+                IMediumAttachment *imediumattach = mediumAttachments.items[i];
                 if (imediumattach) {
                     IMedium *medium = NULL;
 
@@ -2470,8 +2444,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 error = !vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort);
 
             /* get the attachment details here */
-            for (i = 0; i < mediumAttachSize && diskCount < def->ndisks && !error; i++) {
-                IMediumAttachment *imediumattach = mediumAttachments[i];
+            for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks && !error; i++) {
+                IMediumAttachment *imediumattach = mediumAttachments.items[i];
                 IStorageController *storageController = NULL;
                 PRUnichar *storageControllerName = NULL;
                 PRUint32   deviceType     = DeviceType_Null;
@@ -2569,9 +2543,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 diskCount++;
             }
 
-            /* free the memory */
-            for (i = 0; i < mediumAttachSize; i++)
-                VBOX_RELEASE(mediumAttachments[i]);
+            vboxArrayRelease(&mediumAttachments);
 
             /* cleanup on error */
             if (error) {
@@ -3013,23 +2985,22 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                 USBController->vtbl->GetEnabled(USBController, &enabled);
                 if (enabled) {
-                    PRUint32 deviceFiltersNum        = 0;
-                    IUSBDeviceFilter **deviceFilters = NULL;
+                    vboxArray deviceFilters = VBOX_ARRAY_INITIALIZER;
 
-                    USBController->vtbl->GetDeviceFilters(USBController,
-                                                          &deviceFiltersNum,
-                                                          &deviceFilters);
+                    vboxArrayGet(&deviceFilters, USBController,
+                                 USBController->vtbl->GetDeviceFilters);
 
-                    if (deviceFiltersNum > 0) {
+                    if (deviceFilters.count > 0) {
 
                         /* check if the filters are active and then only
                          * alloc mem and set def->nhostdevs
                          */
 
-                        for(i = 0; i < deviceFiltersNum; i++) {
+                        for(i = 0; i < deviceFilters.count; i++) {
                             PRBool active = PR_FALSE;
+                            IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
 
-                            deviceFilters[i]->vtbl->GetActive(deviceFilters[i], &active);
+                            deviceFilter->vtbl->GetActive(deviceFilter, &active);
                             if (active) {
                                 def->nhostdevs++;
                             }
@@ -3039,10 +3010,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             /* Alloc mem needed for the filters now */
                             if (VIR_ALLOC_N(def->hostdevs, def->nhostdevs) >= 0) {
 
-                                for(i = 0; (USBFilterCount < def->nhostdevs) || (i < deviceFiltersNum); i++) {
+                                for(i = 0; (USBFilterCount < def->nhostdevs) || (i < deviceFilters.count); i++) {
                                     PRBool active = PR_FALSE;
+                                    IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
 
-                                    deviceFilters[i]->vtbl->GetActive(deviceFilters[i], &active);
+                                    deviceFilter->vtbl->GetActive(deviceFilter, &active);
                                     if (active) {
                                         if (VIR_ALLOC(def->hostdevs[USBFilterCount]) >= 0) {
                                             PRUnichar *vendorIdUtf16  = NULL;
@@ -3058,8 +3030,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                             def->hostdevs[USBFilterCount]->source.subsys.type =
                                                 VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
 
-                                            deviceFilters[i]->vtbl->GetVendorId(deviceFilters[i], &vendorIdUtf16);
-                                            deviceFilters[i]->vtbl->GetProductId(deviceFilters[i], &productIdUtf16);
+                                            deviceFilter->vtbl->GetVendorId(deviceFilter, &vendorIdUtf16);
+                                            deviceFilter->vtbl->GetProductId(deviceFilter, &productIdUtf16);
 
                                             VBOX_UTF16_TO_UTF8(vendorIdUtf16, &vendorIdUtf8);
                                             VBOX_UTF16_TO_UTF8(productIdUtf16, &productIdUtf8);
@@ -3087,8 +3059,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                     }
 
                     /* Cleanup */
-                    for(i = 0; i < deviceFiltersNum; i++)
-                        VBOX_RELEASE(deviceFilters[i]);
+                    vboxArrayRelease(&deviceFilters);
                 }
                 VBOX_RELEASE(USBController);
             }
@@ -3113,15 +3084,14 @@ cleanup:
 
 static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int maxnames) {
     VBOX_OBJECT_CHECK(conn, int, -1);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     char *machineName    = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     PRUint32 state;
     nsresult rc;
     int i, j;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of Defined Domains, rc=%08x"),
@@ -3129,13 +3099,9 @@ static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int m
         goto cleanup;
     }
 
-    if (machineCnt == 0) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    for (i = 0,j = 0; (i < machineCnt) && (j < maxnames); i++) {
-        IMachine *machine = machines[i];
+    ret = 0;
+    for (i = 0, j = 0; (i < machines.count) && (j < maxnames); i++) {
+        IMachine *machine = machines.items[i];
 
         if (machine) {
             PRBool isAccessible = PR_FALSE;
@@ -3158,25 +3124,22 @@ static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int m
             }
         }
     }
-    ret++;
 
 cleanup:
     VBOX_UTF8_FREE(machineName);
     VBOX_UTF16_FREE(machineNameUtf16);
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
     return ret;
 }
 
 static int vboxNumOfDefinedDomains(virConnectPtr conn) {
     VBOX_OBJECT_CHECK(conn, int, -1);
-    IMachine **machines  = NULL;
-    PRUint32 machineCnt  = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     PRUint32 state       = MachineState_Null;
     nsresult rc;
     int i;
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get number of Defined Domains, rc=%08x"),
@@ -3184,14 +3147,9 @@ static int vboxNumOfDefinedDomains(virConnectPtr conn) {
         goto cleanup;
     }
 
-    if (machineCnt == 0) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    /* Do the cleanup as required by GetMachines() */
-    for (i = 0; i < machineCnt; ++i) {
-        IMachine *machine = machines[i];
+    ret = 0;
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
 
         if (machine) {
             PRBool isAccessible = PR_FALSE;
@@ -3205,11 +3163,9 @@ static int vboxNumOfDefinedDomains(virConnectPtr conn) {
             }
         }
     }
-    ret++;
 
 cleanup:
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
     return ret;
 }
 
@@ -3387,8 +3343,7 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine, vboxIID *iid)
 
 static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine **machines    = NULL;
-    PRUint32 machineCnt    = 0;
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
     unsigned char iidl[VIR_UUID_BUFLEN] = {0};
     nsresult rc;
     int i = 0;
@@ -3401,15 +3356,15 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
         goto cleanup;
     }
 
-    rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
-    for (i = 0; i < machineCnt; ++i) {
-        IMachine *machine = machines[i];
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
         PRBool isAccessible = PR_FALSE;
 
         if (!machine)
@@ -3446,8 +3401,7 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
     }
 
     /* Do the cleanup and take care you dont leak any memory */
-    for (i = 0; i < machineCnt; ++i)
-        VBOX_RELEASE(machines[i]);
+    vboxArrayRelease(&machines);
 
 cleanup:
     return ret;
@@ -4795,31 +4749,27 @@ static int vboxDomainUndefine(virDomainPtr dom) {
                 /* get all the controller first, then the attachments and
                  * remove them all so that the machine can be undefined
                  */
-                PRUint32 strCtlSize = 0;
-                IStorageController **aStrCtls = NULL;
+                vboxArray storageControllers = VBOX_ARRAY_INITIALIZER;
                 int i = 0, j = 0;
 
-                machine->vtbl->GetStorageControllers(machine,
-                                                     &strCtlSize,
-                                                     &aStrCtls);
+                vboxArrayGet(&storageControllers, machine,
+                             machine->vtbl->GetStorageControllers);
 
-                for (i = 0; i < strCtlSize; i++) {
-                    IStorageController *strCtl = aStrCtls[i];
+                for (i = 0; i < storageControllers.count; i++) {
+                    IStorageController *strCtl = storageControllers.items[i];
                     PRUnichar *strCtlName = NULL;
-                    PRUint32   medAttSize = 0;
-                    IMediumAttachment **aMedAtts = NULL;
+                    vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
 
                     if (!strCtl)
                         continue;
 
                     strCtl->vtbl->GetName(strCtl, &strCtlName);
-                    machine->vtbl->GetMediumAttachmentsOfController(machine,
-                                                                    strCtlName,
-                                                                    &medAttSize,
-                                                                    &aMedAtts);
+                    vboxArrayGetWithArg(&mediumAttachments, machine,
+                                        machine->vtbl->GetMediumAttachmentsOfController,
+                                        strCtlName);
 
-                    for (j = 0; j < medAttSize; j++) {
-                        IMediumAttachment *medAtt = aMedAtts[j];
+                    for (j = 0; j < mediumAttachments.count; j++) {
+                        IMediumAttachment *medAtt = mediumAttachments.items[j];
                         PRInt32 port = ~0U;
                         PRInt32 device = ~0U;
 
@@ -4835,14 +4785,15 @@ static int vboxDomainUndefine(virDomainPtr dom) {
                                                         port,
                                                         device);
                         }
-
-                        VBOX_RELEASE(medAtt);
                     }
 
-                    VBOX_RELEASE(strCtl);
+                    vboxArrayRelease(&storageControllers);
+
                     machine->vtbl->RemoveStorageController(machine, strCtlName);
                     VBOX_UTF16_FREE(strCtlName);
                 }
+
+                vboxArrayRelease(&storageControllers);
 #endif /* VBOX_API_VERSION >= 3001 */
 
                 machine->vtbl->SaveSettings(machine);
@@ -5288,8 +5239,7 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
     /* BFS walk through snapshot tree */
     top = 1;
     for (next = 0; next < count; next++) {
-        PRUint32 childrenCount = 0;
-        ISnapshot **children = NULL;
+        vboxArray children = VBOX_ARRAY_INITIALIZER;
         unsigned int i;
 
         if (!list[next]) {
@@ -5298,23 +5248,27 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
             goto error;
         }
 
-        rc = list[next]->vtbl->GetChildren(list[next], &childrenCount,
-                                           &children);
+        rc = vboxArrayGet(&children, list[next],
+                               list[next]->vtbl->GetChildren);
         if (NS_FAILED(rc)) {
             vboxError(VIR_ERR_INTERNAL_ERROR,
                       "%s", _("could not get children snapshots"));
             goto error;
         }
-        for (i = 0; i < childrenCount; i++) {
-            if (!children[i])
+        for (i = 0; i < children.count; i++) {
+            ISnapshot *child = children.items[i];
+            if (!child)
                 continue;
             if (top == count) {
                 vboxError(VIR_ERR_INTERNAL_ERROR,
                           _("unexpected number of snapshots > %u"), count);
+                vboxArrayRelease(&children);
                 goto error;
             }
-            list[top++] = children[i];
+            VBOX_ADDREF(child);
+            list[top++] = child;
         }
+        vboxArrayRelease(&children);
     }
 
 out:
@@ -6137,31 +6091,27 @@ vboxDomainSnapshotDeleteTree(vboxGlobalData *data,
                              IConsole *console,
                              ISnapshot *snapshot)
 {
-    PRUint32 childrenCount = 0;
-    ISnapshot **children = NULL;
+    vboxArray children = VBOX_ARRAY_INITIALIZER;
     int ret = -1;
     nsresult rc;
     unsigned int i;
 
-    rc = snapshot->vtbl->GetChildren(snapshot, &childrenCount, &children);
+    rc = vboxArrayGet(&children, snapshot, snapshot->vtbl->GetChildren);
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
                   _("could not get children snapshots"));
         goto cleanup;
     }
 
-    if (childrenCount > 0) {
-        for (i = 0; i < childrenCount; i++) {
-            if (vboxDomainSnapshotDeleteTree(data, console, children[i]))
-                goto cleanup;
-        }
+    for (i = 0; i < children.count; i++) {
+        if (vboxDomainSnapshotDeleteTree(data, console, children.items[i]))
+            goto cleanup;
     }
 
     ret = vboxDomainSnapshotDeleteSingle(data, console, snapshot);
 
 cleanup:
-    for (i = 0; i < childrenCount; i++)
-        VBOX_RELEASE(children[i]);
+    vboxArrayRelease(&children);
     return ret;
 }
 
@@ -6829,29 +6779,30 @@ static int vboxNetworkClose(virConnectPtr conn) {
 
 static int vboxNumOfNetworks(virConnectPtr conn) {
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
-    PRUint32 networkInterfacesSize = 0;
-    IHostNetworkInterface **networkInterfaces = NULL;
+    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
     int i = 0;
 
-    host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+    vboxArrayGet(&networkInterfaces, host, host->vtbl->GetNetworkInterfaces);
 
-    for (i = 0; i < networkInterfacesSize; i++) {
-        if (networkInterfaces[i]) {
+    for (i = 0; i < networkInterfaces.count; i++) {
+        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
+
+        if (networkInterface) {
             PRUint32 interfaceType = 0;
 
-            networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+            networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
             if (interfaceType == HostNetworkInterfaceType_HostOnly) {
                 PRUint32 status = HostNetworkInterfaceStatus_Unknown;
 
-                networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+                networkInterface->vtbl->GetStatus(networkInterface, &status);
 
                 if (status == HostNetworkInterfaceStatus_Up)
                     ret++;
             }
-
-            VBOX_RELEASE(networkInterfaces[i]);
         }
     }
+
+    vboxArrayRelease(&networkInterfaces);
 
     VBOX_RELEASE(host);
 
@@ -6861,28 +6812,29 @@ static int vboxNumOfNetworks(virConnectPtr conn) {
 
 static int vboxListNetworks(virConnectPtr conn, char **const names, int nnames) {
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
-    PRUint32 networkInterfacesSize = 0;
-    IHostNetworkInterface **networkInterfaces = NULL;
+    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
     int i = 0;
 
-    host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+    vboxArrayGet(&networkInterfaces, host, host->vtbl->GetNetworkInterfaces);
 
-    for (i = 0; (ret < nnames) && (i < networkInterfacesSize); i++) {
-        if (networkInterfaces[i]) {
+    for (i = 0; (ret < nnames) && (i < networkInterfaces.count); i++) {
+        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
+
+        if (networkInterface) {
             PRUint32 interfaceType = 0;
 
-            networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+            networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
 
             if (interfaceType == HostNetworkInterfaceType_HostOnly) {
                 PRUint32 status = HostNetworkInterfaceStatus_Unknown;
 
-                networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+                networkInterface->vtbl->GetStatus(networkInterface, &status);
 
                 if (status == HostNetworkInterfaceStatus_Up) {
                     char *nameUtf8       = NULL;
                     PRUnichar *nameUtf16 = NULL;
 
-                    networkInterfaces[i]->vtbl->GetName(networkInterfaces[i], &nameUtf16);
+                    networkInterface->vtbl->GetName(networkInterface, &nameUtf16);
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
                     DEBUG("nnames[%d]: %s", ret, nameUtf8);
@@ -6900,8 +6852,7 @@ static int vboxListNetworks(virConnectPtr conn, char **const names, int nnames) 
         }
     }
 
-    for (i = 0; i < networkInterfacesSize; i++)
-        VBOX_RELEASE(networkInterfaces[i]);
+    vboxArrayRelease(&networkInterfaces);
 
     VBOX_RELEASE(host);
 
@@ -6910,29 +6861,30 @@ static int vboxListNetworks(virConnectPtr conn, char **const names, int nnames) 
 
 static int vboxNumOfDefinedNetworks(virConnectPtr conn) {
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
-    PRUint32 networkInterfacesSize = 0;
-    IHostNetworkInterface **networkInterfaces = NULL;
+    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
     int i = 0;
 
-    host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+    vboxArrayGet(&networkInterfaces, host, host->vtbl->GetNetworkInterfaces);
 
-    for (i = 0; i < networkInterfacesSize; i++) {
-        if (networkInterfaces[i]) {
+    for (i = 0; i < networkInterfaces.count; i++) {
+        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
+
+        if (networkInterface) {
             PRUint32 interfaceType = 0;
 
-            networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+            networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
             if (interfaceType == HostNetworkInterfaceType_HostOnly) {
                 PRUint32 status = HostNetworkInterfaceStatus_Unknown;
 
-                networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+                networkInterface->vtbl->GetStatus(networkInterface, &status);
 
                 if (status == HostNetworkInterfaceStatus_Down)
                     ret++;
             }
-
-            VBOX_RELEASE(networkInterfaces[i]);
         }
     }
+
+    vboxArrayRelease(&networkInterfaces);
 
     VBOX_RELEASE(host);
 
@@ -6942,28 +6894,29 @@ static int vboxNumOfDefinedNetworks(virConnectPtr conn) {
 
 static int vboxListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
-    PRUint32 networkInterfacesSize = 0;
-    IHostNetworkInterface **networkInterfaces = NULL;
+    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
     int i = 0;
 
-    host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+    vboxArrayGet(&networkInterfaces, host, host->vtbl->GetNetworkInterfaces);
 
-    for (i = 0; (ret < nnames) && (i < networkInterfacesSize); i++) {
-        if (networkInterfaces[i]) {
+    for (i = 0; (ret < nnames) && (i < networkInterfaces.count); i++) {
+        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
+
+        if (networkInterface) {
             PRUint32 interfaceType = 0;
 
-            networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+            networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
 
             if (interfaceType == HostNetworkInterfaceType_HostOnly) {
                 PRUint32 status = HostNetworkInterfaceStatus_Unknown;
 
-                networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+                networkInterface->vtbl->GetStatus(networkInterface, &status);
 
                 if (status == HostNetworkInterfaceStatus_Down) {
                     char *nameUtf8       = NULL;
                     PRUnichar *nameUtf16 = NULL;
 
-                    networkInterfaces[i]->vtbl->GetName(networkInterfaces[i], &nameUtf16);
+                    networkInterface->vtbl->GetName(networkInterface, &nameUtf16);
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
                     DEBUG("nnames[%d]: %s", ret, nameUtf8);
@@ -6981,8 +6934,7 @@ static int vboxListDefinedNetworks(virConnectPtr conn, char **const names, int n
         }
     }
 
-    for (i = 0; i < networkInterfacesSize; i++)
-        VBOX_RELEASE(networkInterfaces[i]);
+    vboxArrayRelease(&networkInterfaces);
 
     VBOX_RELEASE(host);
 
@@ -7667,54 +7619,48 @@ static virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const c
 
 static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool) {
     VBOX_OBJECT_CHECK(pool->conn, int, -1);
-    IHardDisk **hardDisks       = NULL;
-    PRUint32 hardDiskCount      = 0;
+    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     PRUint32 hardDiskAccessible = 0;
     nsresult rc;
     int i;
 
-    rc = data->vboxObj->vtbl->GetHardDisks(data->vboxObj, &hardDiskCount, &hardDisks);
+    rc = vboxArrayGet(&hardDisks, data->vboxObj, data->vboxObj->vtbl->GetHardDisks);
     if (NS_SUCCEEDED(rc)) {
-        for (i = 0; i < hardDiskCount; ++i) {
-            IHardDisk *hardDisk = hardDisks[i];
+        for (i = 0; i < hardDisks.count; ++i) {
+            IHardDisk *hardDisk = hardDisks.items[i];
             if (hardDisk) {
                 PRUint32 hddstate;
 
                 VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
                 if (hddstate != MediaState_Inaccessible)
                     hardDiskAccessible++;
-
-                VBOX_MEDIUM_RELEASE(hardDisk);
             }
         }
-        hardDiskCount = 0;
+
+        vboxArrayRelease(&hardDisks);
+
+        ret = hardDiskAccessible;
     } else {
-        hardDiskCount = -1;
+        ret = -1;
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("could not get number of volumes in the pool: %s, rc=%08x"),
                   pool->name, (unsigned)rc);
     }
-
-    if (hardDiskAccessible)
-        ret = hardDiskAccessible;
-    else
-        ret = hardDiskCount;
 
     return ret;
 }
 
 static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames) {
     VBOX_OBJECT_CHECK(pool->conn, int, -1);
-    IHardDisk **hardDisks  = NULL;
-    PRUint32 hardDiskCount = 0;
+    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     PRUint32 numActive     = 0;
     nsresult rc;
     int i;
 
-    rc = data->vboxObj->vtbl->GetHardDisks(data->vboxObj, &hardDiskCount, &hardDisks);
+    rc = vboxArrayGet(&hardDisks, data->vboxObj, data->vboxObj->vtbl->GetHardDisks);
     if (NS_SUCCEEDED(rc)) {
-        for (i = 0; i < hardDiskCount && numActive < nnames; ++i) {
-            IHardDisk *hardDisk = hardDisks[i];
+        for (i = 0; i < hardDisks.count && numActive < nnames; ++i) {
+            IHardDisk *hardDisk = hardDisks.items[i];
 
             if (hardDisk) {
                 PRUint32 hddstate;
@@ -7740,39 +7686,35 @@ static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names
                         VBOX_UTF8_FREE(nameUtf8);
                     }
                 }
-                VBOX_MEDIUM_RELEASE(hardDisk);
             }
         }
-        hardDiskCount = 0;
+
+        vboxArrayRelease(&hardDisks);
+
+        ret = numActive;
     } else {
-        hardDiskCount = -1;
+        ret = -1;
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("could not get the volume list in the pool: %s, rc=%08x"),
                   pool->name, (unsigned)rc);
     }
-
-    if (numActive)
-        ret = numActive;
-    else
-        ret = hardDiskCount;
 
     return ret;
 }
 
 static virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name) {
     VBOX_OBJECT_CHECK(pool->conn, virStorageVolPtr, NULL);
-    IHardDisk **hardDisks        = NULL;
-    PRUint32 hardDiskCount       = 0;
+    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     nsresult rc;
     int i;
 
     if(!name)
         return ret;
 
-    rc = data->vboxObj->vtbl->GetHardDisks(data->vboxObj, &hardDiskCount, &hardDisks);
+    rc = vboxArrayGet(&hardDisks, data->vboxObj, data->vboxObj->vtbl->GetHardDisks);
     if (NS_SUCCEEDED(rc)) {
-        for (i = 0; i < hardDiskCount; ++i) {
-            IHardDisk *hardDisk = hardDisks[i];
+        for (i = 0; i < hardDisks.count; ++i) {
+            IHardDisk *hardDisk = hardDisks.items[i];
 
             if (hardDisk) {
                 PRUint32 hddstate;
@@ -7821,8 +7763,7 @@ static virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const
             }
         }
 
-        for (i = 0; i < hardDiskCount; ++i)
-            VBOX_MEDIUM_RELEASE(hardDisks[i]);
+        vboxArrayRelease(&hardDisks);
     }
 
     return ret;
@@ -8081,28 +8022,36 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
         VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
         if (hddstate != MediaState_Inaccessible) {
             PRUint32  machineIdsSize = 0;
-            vboxIID **machineIds     = NULL;
+            vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
 
-            VBOX_MEDIUM_FUNC_ARG2(hardDisk, GetMachineIds, &machineIdsSize, &machineIds);
+#if VBOX_API_VERSION < 3001
+            vboxArrayGet(&machineIds, hardDisk, hardDisk->vtbl->imedium.GetMachineIds);
+#else  /* VBOX_API_VERSION >= 3001 */
+            vboxArrayGet(&machineIds, hardDisk, hardDisk->vtbl->GetMachineIds);
+#endif /* VBOX_API_VERSION >= 3001 */
 
-            for (i = 0; i < machineIdsSize; i++) {
+            machineIdsSize = machineIds.count;
+
+            for (i = 0; i < machineIds.count; i++) {
                 IMachine *machine = NULL;
+                vboxIID *machineId = machineIds.items[i];
 
-                rc = data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession, machineIds[i]);
+                rc = data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession, machineId);
                 if (NS_SUCCEEDED(rc)) {
 
                     rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
                     if (NS_SUCCEEDED(rc)) {
-                        PRUint32 hddAttachSize = 0;
-                        IHardDiskAttachment **hddAttachments = NULL;
+                        vboxArray hddAttachments = VBOX_ARRAY_INITIALIZER;
 
 #if VBOX_API_VERSION < 3001
-                        machine->vtbl->GetHardDiskAttachments(machine, &hddAttachSize, &hddAttachments);
+                        vboxArrayGet(&hddAttachments, machine,
+                                     machine->vtbl->GetHardDiskAttachments);
 #else  /* VBOX_API_VERSION >= 3001 */
-                        machine->vtbl->GetMediumAttachments(machine, &hddAttachSize, &hddAttachments);
+                        vboxArrayGet(&hddAttachments, machine,
+                                     machine->vtbl->GetMediumAttachments);
 #endif /* VBOX_API_VERSION >= 3001 */
-                        for (j = 0; j < hddAttachSize; j++) {
-                            IHardDiskAttachment *hddAttachment = hddAttachments[j];
+                        for (j = 0; j < hddAttachments.count; j++) {
+                            IHardDiskAttachment *hddAttachment = hddAttachments.items[j];
 
                             if (hddAttachment) {
                                 IHardDisk *hdd = NULL;
@@ -8154,18 +8103,16 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
                                     }
                                     VBOX_MEDIUM_RELEASE(hdd);
                                 }
-                                VBOX_RELEASE(hddAttachment);
                             }
                         }
+                        vboxArrayRelease(&hddAttachments);
                         VBOX_RELEASE(machine);
                     }
                     data->vboxSession->vtbl->Close(data->vboxSession);
                 }
             }
 
-            for (i = 0; i < machineIdsSize; i++)
-                if (machineIds[i])
-                    vboxIIDUnalloc(machineIds[i]);
+            vboxArrayUnalloc(&machineIds);
 
             if (machineIdsSize == 0 || machineIdsSize == deregister) {
                 IProgress *progress = NULL;

@@ -30,4 +30,19 @@ extern PFNVBOXGETXPCOMCFUNCTIONS g_pfnGetFunctions;
 int VBoxCGlueInit(unsigned int *version);
 void VBoxCGlueTerm(void);
 
+typedef struct _vboxArray vboxArray;
+
+struct _vboxArray {
+    void **items;
+    size_t count;
+    void *handle;
+};
+
+# define VBOX_ARRAY_INITIALIZER { NULL, 0, NULL }
+
+nsresult vboxArrayGet(vboxArray *array, void *self, void *getter);
+nsresult vboxArrayGetWithArg(vboxArray *array, void *self, void *getter, void *arg);
+void vboxArrayRelease(vboxArray *array);
+# define vboxArrayUnalloc vboxArrayRelease
+
 #endif /* __VBOX_MSCOMGLUE_H__ */

@@ -253,3 +253,118 @@ VBoxCGlueTerm(void)
     pVBoxFuncs_v2_2 = NULL;
     g_pfnGetFunctions = NULL;
 }
+
+
+
+/*
+ * In XPCOM an array is represented by 1) a pointer to an array of pointers
+ * that point to the items and 2) an unsigned int representing the number of
+ * items in the array. When the items aren't needed anymore they are released
+ * or freed according to their type.
+ */
+
+typedef nsresult (*ArrayGetter)(void *self, PRUint32 *count, void ***items);
+typedef nsresult (*ArrayGetterWithArg)(void *self, void *arg, PRUint32 *count, void ***items);
+
+/*
+ * Call the getter with self as first argument and fill the array with the
+ * returned items.
+ */
+nsresult
+vboxArrayGet(vboxArray *array, void *self, void *getter)
+{
+    nsresult nsrc;
+    void **items = NULL;
+    PRUint32 count = 0;
+
+    array->items = NULL;
+    array->count = 0;
+
+    nsrc = ((ArrayGetter)getter)(self, &count, &items);
+
+    if (NS_FAILED(nsrc)) {
+        return nsrc;
+    }
+
+    array->items = items;
+    array->count = count;
+
+    return nsrc;
+}
+
+/*
+ * Call the getter with self as first argument and arg as second argument
+ * and fill the array with the returned items.
+ */
+nsresult
+vboxArrayGetWithArg(vboxArray *array, void *self, void *getter, void *arg)
+{
+    nsresult nsrc;
+    void **items = NULL;
+    PRUint32 count = 0;
+
+    array->items = NULL;
+    array->count = 0;
+
+    nsrc = ((ArrayGetterWithArg)getter)(self, arg, &count, &items);
+
+    if (NS_FAILED(nsrc)) {
+        return nsrc;
+    }
+
+    array->items = items;
+    array->count = count;
+
+    return nsrc;
+}
+
+/*
+ * Release all items in the array and reset it.
+ */
+void
+vboxArrayRelease(vboxArray *array)
+{
+    int i;
+    nsISupports *supports;
+
+    if (array->items == NULL) {
+        return;
+    }
+
+    for (i = 0; i < array->count; ++i) {
+        supports = array->items[i];
+
+        if (supports != NULL) {
+            supports->vtbl->Release(supports);
+        }
+    }
+
+    array->items = NULL;
+    array->count = 0;
+}
+
+
+/*
+ * Unalloc all items in the array and reset it.
+ */
+void
+vboxArrayUnalloc(vboxArray *array)
+{
+    int i;
+    void *item;
+
+    if (array->items == NULL) {
+        return;
+    }
+
+    for (i = 0; i < array->count; ++i) {
+        item = array->items[i];
+
+        if (item != NULL) {
+            pVBoxFuncs_v2_2->pfnComUnallocMem(item);
+        }
+    }
+
+    array->items = NULL;
+    array->count = 0;
+}
