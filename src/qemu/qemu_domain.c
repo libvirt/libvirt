@@ -30,11 +30,16 @@
 #include "virterror_internal.h"
 #include "c-ctype.h"
 
+#include <sys/time.h>
+
 #include <libxml/xpathInternals.h>
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 #define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
+
+#define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
+
 
 static void *qemuDomainObjPrivateAlloc(void)
 {
@@ -371,4 +376,229 @@ void qemuDomainSetNamespaceHooks(virCapsPtr caps)
     caps->ns.free = qemuDomainDefNamespaceFree;
     caps->ns.format = qemuDomainDefNamespaceFormatXML;
     caps->ns.href = qemuDomainDefNamespaceHref;
+}
+
+/*
+ * obj must be locked before calling, qemud_driver must NOT be locked
+ *
+ * This must be called by anything that will change the VM state
+ * in any way, or anything that will use the QEMU monitor.
+ *
+ * Upon successful return, the object will have its ref count increased,
+ * successful calls must be followed by EndJob eventually
+ */
+
+/* Give up waiting for mutex after 30 seconds */
+#define QEMU_JOB_WAIT_TIME (1000ull * 30)
+
+int qemuDomainObjBeginJob(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    struct timeval now;
+    unsigned long long then;
+
+    if (gettimeofday(&now, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
+    then = timeval_to_ms(now) + QEMU_JOB_WAIT_TIME;
+
+    virDomainObjRef(obj);
+
+    while (priv->jobActive) {
+        if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
+            virDomainObjUnref(obj);
+            if (errno == ETIMEDOUT)
+                qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
+                                "%s", _("cannot acquire state change lock"));
+            else
+                virReportSystemError(errno,
+                                     "%s", _("cannot acquire job mutex"));
+            return -1;
+        }
+    }
+    priv->jobActive = QEMU_JOB_UNSPECIFIED;
+    priv->jobSignals = 0;
+    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
+    priv->jobStart = timeval_to_ms(now);
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+
+    return 0;
+}
+
+/*
+ * obj must be locked before calling, qemud_driver must be locked
+ *
+ * This must be called by anything that will change the VM state
+ * in any way, or anything that will use the QEMU monitor.
+ */
+int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
+                                    virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    struct timeval now;
+    unsigned long long then;
+
+    if (gettimeofday(&now, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
+    then = timeval_to_ms(now) + QEMU_JOB_WAIT_TIME;
+
+    virDomainObjRef(obj);
+    qemuDriverUnlock(driver);
+
+    while (priv->jobActive) {
+        if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
+            virDomainObjUnref(obj);
+            if (errno == ETIMEDOUT)
+                qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
+                                "%s", _("cannot acquire state change lock"));
+            else
+                virReportSystemError(errno,
+                                     "%s", _("cannot acquire job mutex"));
+            qemuDriverLock(driver);
+            return -1;
+        }
+    }
+    priv->jobActive = QEMU_JOB_UNSPECIFIED;
+    priv->jobSignals = 0;
+    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
+    priv->jobStart = timeval_to_ms(now);
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+
+    virDomainObjUnlock(obj);
+    qemuDriverLock(driver);
+    virDomainObjLock(obj);
+
+    return 0;
+}
+
+/*
+ * obj must be locked before calling, qemud_driver does not matter
+ *
+ * To be called after completing the work associated with the
+ * earlier qemuDomainBeginJob() call
+ *
+ * Returns remaining refcount on 'obj', maybe 0 to indicated it
+ * was deleted
+ */
+int qemuDomainObjEndJob(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    priv->jobActive = QEMU_JOB_NONE;
+    priv->jobSignals = 0;
+    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
+    priv->jobStart = 0;
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+    virCondSignal(&priv->jobCond);
+
+    return virDomainObjUnref(obj);
+}
+
+
+/*
+ * obj must be locked before calling, qemud_driver must be unlocked
+ *
+ * To be called immediately before any QEMU monitor API call
+ * Must have already called qemuDomainObjBeginJob(), and checked
+ * that the VM is still active.
+ *
+ * To be followed with qemuDomainObjExitMonitor() once complete
+ */
+void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    qemuMonitorLock(priv->mon);
+    qemuMonitorRef(priv->mon);
+    virDomainObjUnlock(obj);
+}
+
+
+/* obj must NOT be locked before calling, qemud_driver must be unlocked
+ *
+ * Should be paired with an earlier qemuDomainObjEnterMonitor() call
+ */
+void qemuDomainObjExitMonitor(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    int refs;
+
+    refs = qemuMonitorUnref(priv->mon);
+
+    if (refs > 0)
+        qemuMonitorUnlock(priv->mon);
+
+    virDomainObjLock(obj);
+
+    if (refs == 0) {
+        virDomainObjUnref(obj);
+        priv->mon = NULL;
+    }
+}
+
+
+/*
+ * obj must be locked before calling, qemud_driver must be locked
+ *
+ * To be called immediately before any QEMU monitor API call
+ * Must have already called qemuDomainObjBeginJob().
+ *
+ * To be followed with qemuDomainObjExitMonitorWithDriver() once complete
+ */
+void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
+                                         virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    qemuMonitorLock(priv->mon);
+    qemuMonitorRef(priv->mon);
+    virDomainObjUnlock(obj);
+    qemuDriverUnlock(driver);
+}
+
+
+/* obj must NOT be locked before calling, qemud_driver must be unlocked,
+ * and will be locked after returning
+ *
+ * Should be paired with an earlier qemuDomainObjEnterMonitorWithDriver() call
+ */
+void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
+                                        virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    int refs;
+
+    refs = qemuMonitorUnref(priv->mon);
+
+    if (refs > 0)
+        qemuMonitorUnlock(priv->mon);
+
+    qemuDriverLock(driver);
+    virDomainObjLock(obj);
+
+    if (refs == 0) {
+        virDomainObjUnref(obj);
+        priv->mon = NULL;
+    }
+}
+
+void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
+                                        virDomainObjPtr obj)
+{
+    virDomainObjRef(obj);
+    virDomainObjUnlock(obj);
+    qemuDriverUnlock(driver);
+}
+
+void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
+                                       virDomainObjPtr obj)
+{
+    qemuDriverLock(driver);
+    virDomainObjLock(obj);
+    virDomainObjUnref(obj);
 }

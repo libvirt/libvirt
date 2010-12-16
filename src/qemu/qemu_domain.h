@@ -27,6 +27,7 @@
 # include "threads.h"
 # include "domain_conf.h"
 # include "qemu_monitor.h"
+# include "qemu_conf.h"
 
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
@@ -79,5 +80,20 @@ struct _qemuDomainObjPrivate {
 
 void qemuDomainSetPrivateDataHooks(virCapsPtr caps);
 void qemuDomainSetNamespaceHooks(virCapsPtr caps);
+
+int qemuDomainObjBeginJob(virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
+                                    virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjEndJob(virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
+void qemuDomainObjEnterMonitor(virDomainObjPtr obj);
+void qemuDomainObjExitMonitor(virDomainObjPtr obj);
+void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
+                                         virDomainObjPtr obj);
+void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
+                                        virDomainObjPtr obj);
+void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
+                                        virDomainObjPtr obj);
+void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
+                                       virDomainObjPtr obj);
 
 #endif /* __QEMU_DOMAIN_H__ */
