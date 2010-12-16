@@ -52,6 +52,7 @@ src/openvz/openvz_driver.c
 src/phyp/phyp_driver.c
 src/qemu/qemu_bridge_filter.c
 src/qemu/qemu_capabilities.c
+src/qemu/qemu_cgroup.c
 src/qemu/qemu_command.c
 src/qemu/qemu_conf.c
 src/qemu/qemu_domain.c
