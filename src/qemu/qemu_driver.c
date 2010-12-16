@@ -54,6 +54,7 @@
 #include "datatypes.h"
 #include "qemu_driver.h"
 #include "qemu_conf.h"
+#include "qemu_capabilities.h"
 #include "qemu_monitor.h"
 #include "qemu_bridge_filter.h"
 #include "c-ctype.h"
@@ -1553,9 +1554,9 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     /* XXX we should be persisting the original flags in the XML
      * not re-detecting them, since the binary may have changed
      * since launch time */
-    if (qemudExtractVersionInfo(obj->def->emulator,
-                                NULL,
-                                &qemuCmdFlags) >= 0 &&
+    if (qemuCapsExtractVersionInfo(obj->def->emulator,
+                                   NULL,
+                                   &qemuCmdFlags) >= 0 &&
         (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
         priv->persistentAddrs = 1;
 
@@ -1644,7 +1645,7 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
     virCapsPtr caps;
 
     /* Basic host arch / guest machine capabilities */
-    if (!(caps = qemudCapsInit(oldcaps))) {
+    if (!(caps = qemuCapsInit(oldcaps))) {
         virReportOOMError();
         return NULL;
     }
@@ -3118,9 +3119,9 @@ qemuAssignPCIAddresses(virDomainDefPtr def)
     unsigned long long qemuCmdFlags = 0;
     qemuDomainPCIAddressSetPtr addrs = NULL;
 
-    if (qemudExtractVersionInfo(def->emulator,
-                                NULL,
-                                &qemuCmdFlags) < 0)
+    if (qemuCapsExtractVersionInfo(def->emulator,
+                                   NULL,
+                                   &qemuCmdFlags) < 0)
         goto cleanup;
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
@@ -4063,9 +4064,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
 
     DEBUG0("Determining emulator version");
-    if (qemudExtractVersionInfo(vm->def->emulator,
-                                NULL,
-                                &qemuCmdFlags) < 0)
+    if (qemuCapsExtractVersionInfo(vm->def->emulator,
+                                   NULL,
+                                   &qemuCmdFlags) < 0)
         goto cleanup;
 
     DEBUG0("Setting up domain cgroup (if required)");
@@ -4851,10 +4852,10 @@ static int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
     int ret = -1;
 
     qemuDriverLock(driver);
-    if (qemudExtractVersion(driver) < 0)
+    if (qemuCapsExtractVersion(driver->caps, &driver->qemuVersion) < 0)
         goto cleanup;
 
-    *version = qemu_driver->qemuVersion;
+    *version = driver->qemuVersion;
     ret = 0;
 
 cleanup:
@@ -7465,9 +7466,9 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             def->graphics[i]->data.vnc.port = QEMU_VNC_PORT_MIN;
     }
 
-    if (qemudExtractVersionInfo(def->emulator,
-                                NULL,
-                                &qemuCmdFlags) < 0)
+    if (qemuCapsExtractVersionInfo(def->emulator,
+                                   NULL,
+                                   &qemuCmdFlags) < 0)
         goto cleanup;
 
     if (qemuPrepareMonitorChr(driver, &monConfig, def->name) < 0)
@@ -7637,7 +7638,7 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
     virCapsGuestMachinePtr *machines = NULL;
     int i, nmachines = 0;
 
-    if (qemudProbeMachineTypes(def->emulator, &machines, &nmachines) < 0) {
+    if (qemuCapsProbeMachineTypes(def->emulator, &machines, &nmachines) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -8826,9 +8827,9 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     if (dev == NULL)
         goto endjob;
 
-    if (qemudExtractVersionInfo(vm->def->emulator,
-                                NULL,
-                                &qemuCmdFlags) < 0)
+    if (qemuCapsExtractVersionInfo(vm->def->emulator,
+                                   NULL,
+                                   &qemuCmdFlags) < 0)
         goto endjob;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
@@ -9073,9 +9074,9 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (dev == NULL)
         goto endjob;
 
-    if (qemudExtractVersionInfo(vm->def->emulator,
-                                NULL,
-                                &qemuCmdFlags) < 0)
+    if (qemuCapsExtractVersionInfo(vm->def->emulator,
+                                   NULL,
+                                   &qemuCmdFlags) < 0)
         goto endjob;
 
     switch (dev->type) {
@@ -9793,9 +9794,9 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     if (dev == NULL)
         goto endjob;
 
-    if (qemudExtractVersionInfo(vm->def->emulator,
-                                NULL,
-                                &qemuCmdFlags) < 0)
+    if (qemuCapsExtractVersionInfo(vm->def->emulator,
+                                   NULL,
+                                   &qemuCmdFlags) < 0)
         goto endjob;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
@@ -11060,7 +11061,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     unlink(unixfile);
 
     /* check that this qemu version supports the interactive exec */
-    if (qemudExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
+    if (qemuCapsExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Cannot determine QEMU argv syntax %s"),
                         vm->def->emulator);
@@ -11571,7 +11572,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     }
 
     /* check that this qemu version supports the unix migration */
-    if (qemudExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
+    if (qemuCapsExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Cannot extract Qemu version from '%s'"),
                         vm->def->emulator);
