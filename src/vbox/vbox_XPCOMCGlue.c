@@ -339,6 +339,8 @@ vboxArrayRelease(vboxArray *array)
         }
     }
 
+    pVBoxFuncs_v2_2->pfnComUnallocMem(array->items);
+
     array->items = NULL;
     array->count = 0;
 }
@@ -364,6 +366,8 @@ vboxArrayUnalloc(vboxArray *array)
             pVBoxFuncs_v2_2->pfnComUnallocMem(item);
         }
     }
+
+    pVBoxFuncs_v2_2->pfnComUnallocMem(array->items);
 
     array->items = NULL;
     array->count = 0;
