@@ -51,13 +51,4 @@
 
 int qemuRegister(void);
 
-void qemuDomainDefNamespaceFree(void *nsdata);
-int qemuDomainDefNamespaceParse(xmlDocPtr xml,
-                                xmlNodePtr root,
-                                xmlXPathContextPtr ctxt,
-                                void **data);
-int qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
-                                    void *nsdata);
-const char *qemuDomainDefNamespaceHref(void);
-
 #endif /* QEMUD_DRIVER_H */

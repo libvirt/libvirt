@@ -130,9 +130,6 @@ struct qemud_driver {
     virSysinfoDefPtr hostsysinfo;
 };
 
-typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
-typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
-
 typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;
 typedef qemuDomainCmdlineDef *qemuDomainCmdlineDefPtr;
 struct _qemuDomainCmdlineDef {

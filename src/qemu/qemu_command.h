@@ -28,6 +28,7 @@
 # include "command.h"
 # include "capabilities.h"
 # include "qemu_conf.h"
+# include "qemu_domain.h"
 
 /* Config type for XML import/export conversions */
 # define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"

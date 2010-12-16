@@ -54,6 +54,7 @@ src/qemu/qemu_bridge_filter.c
 src/qemu/qemu_capabilities.c
 src/qemu/qemu_command.c
 src/qemu/qemu_conf.c
+src/qemu/qemu_domain.c
 src/qemu/qemu_driver.c
 src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
