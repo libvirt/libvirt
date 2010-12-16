@@ -95,31 +95,33 @@
                 <attribute name="root"><text/></attribute>
               </element>
             </optional>
-            <!-- Define the range(s) of IP addresses that the DHCP
-                 server should hand out -->
-            <element name="dhcp">
-              <zeroOrMore>
-                <element name="range">
-                  <attribute name="start"><ref name="ipv4-addr"/></attribute>
-                  <attribute name="end"><ref name="ipv4-addr"/></attribute>
-                </element>
-              </zeroOrMore>
-              <zeroOrMore>
-                <element name="host">
-                  <attribute name="mac"><ref name="mac-addr"/></attribute>
-                  <attribute name="name"><text/></attribute>
-                  <attribute name="ip"><text/></attribute>
-                </element>
-              </zeroOrMore>
-              <optional>
-                <element name="bootp">
-                  <attribute name="file"><text/></attribute>
-                  <optional>
-                    <attribute name="server"><text/></attribute>
-                  </optional>
-                </element>
-              </optional>
-            </element>
+            <optional>
+              <!-- Define the range(s) of IP addresses that the DHCP
+                   server should hand out -->
+              <element name="dhcp">
+                <zeroOrMore>
+                  <element name="range">
+                    <attribute name="start"><ref name="ipv4-addr"/></attribute>
+                    <attribute name="end"><ref name="ipv4-addr"/></attribute>
+                  </element>
+                </zeroOrMore>
+                <zeroOrMore>
+                  <element name="host">
+                    <attribute name="mac"><ref name="mac-addr"/></attribute>
+                    <attribute name="name"><text/></attribute>
+                    <attribute name="ip"><ref name="ipv4-addr"/></attribute>
+                  </element>
+                </zeroOrMore>
+                <optional>
+                  <element name="bootp">
+                    <attribute name="file"><text/></attribute>
+                    <optional>
+                      <attribute name="server"><text/></attribute>
+                    </optional>
+                  </element>
+                </optional>
+              </element>
+            </optional>
           </element>
         </optional>
       </interleave>
