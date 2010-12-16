@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "qemu_monitor_text.h"
-#include "qemu_conf.h"
+#include "qemu_command.h"
 #include "c-ctype.h"
 #include "memory.h"
 #include "logging.h"

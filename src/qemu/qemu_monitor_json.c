@@ -32,7 +32,7 @@
 #include <sys/time.h>
 
 #include "qemu_monitor_json.h"
-#include "qemu_conf.h"
+#include "qemu_command.h"
 #include "memory.h"
 #include "logging.h"
 #include "driver.h"

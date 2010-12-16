@@ -55,6 +55,7 @@
 #include "qemu_driver.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
+#include "qemu_command.h"
 #include "qemu_monitor.h"
 #include "qemu_bridge_filter.h"
 #include "c-ctype.h"
@@ -4134,10 +4135,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Building emulator command line");
     vm->def->id = driver->nextvmid++;
-    if (!(cmd = qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
-                                      priv->monJSON != 0, qemuCmdFlags,
-                                      migrateFrom,
-                                      vm->current_snapshot, vmop)))
+    if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
+                                     priv->monJSON != 0, qemuCmdFlags,
+                                     migrateFrom,
+                                     vm->current_snapshot, vmop)))
         goto cleanup;
 
     if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
@@ -7474,9 +7475,9 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     if (qemuPrepareMonitorChr(driver, &monConfig, def->name) < 0)
         goto cleanup;
 
-    if (!(cmd = qemudBuildCommandLine(conn, driver, def,
-                                      &monConfig, false, qemuCmdFlags,
-                                      NULL, NULL, VIR_VM_OP_NO_OP)))
+    if (!(cmd = qemuBuildCommandLine(conn, driver, def,
+                                     &monConfig, false, qemuCmdFlags,
+                                     NULL, NULL, VIR_VM_OP_NO_OP)))
         goto cleanup;
 
     ret = virCommandToString(cmd);
@@ -8368,7 +8369,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
             return -1;
         }
 
-        if ((tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags)) < 0)
+        if ((tapfd = qemuNetworkIfaceConnect(conn, driver, net, qemuCmdFlags)) < 0)
             return -1;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
@@ -8379,10 +8380,10 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
             return -1;
         }
 
-        if ((tapfd = qemudPhysIfaceConnect(conn, driver, net,
-                                           qemuCmdFlags,
-                                           vm->def->uuid,
-                                           VIR_VM_OP_CREATE)) < 0)
+        if ((tapfd = qemuPhysIfaceConnect(conn, driver, net,
+                                          qemuCmdFlags,
+                                          vm->def->uuid,
+                                          VIR_VM_OP_CREATE)) < 0)
             return -1;
     }
 
@@ -8593,7 +8594,7 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &hostdev->info) < 0)
             goto error;
         if (qemuCmdFlags & QEMUD_CMD_FLAG_PCI_CONFIGFD) {
-            configfd = qemudOpenPCIConfig(hostdev);
+            configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {
                 if (virAsprintf(&configfd_name, "fd-%s",
                                 hostdev->info.alias) < 0) {
