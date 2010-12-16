@@ -57,6 +57,7 @@
 #include "qemu_command.h"
 #include "qemu_monitor.h"
 #include "qemu_bridge_filter.h"
+#include "qemu_audit.h"
 #include "c-ctype.h"
 #include "event.h"
 #include "buf.h"
@@ -82,7 +83,6 @@
 #include "domain_nwfilter.h"
 #include "hooks.h"
 #include "storage_file.h"
-#include "virtaudit.h"
 #include "files.h"
 #include "fdstream.h"
 #include "configmake.h"
@@ -138,9 +138,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 static void qemudShutdownVMDaemon(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   int migrated);
-
-static void qemuDomainStartAudit(virDomainObjPtr vm, const char *reason, bool success);
-static void qemuDomainStopAudit(virDomainObjPtr vm, const char *reason);
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
@@ -3441,142 +3438,6 @@ static int qemuDomainSnapshotSetActive(virDomainObjPtr vm,
 static int qemuDomainSnapshotSetInactive(virDomainObjPtr vm,
                                          char *snapshotDir);
 
-static void qemuDomainDiskAudit(virDomainObjPtr vm,
-                                virDomainDiskDefPtr oldDef,
-                                virDomainDiskDefPtr newDef,
-                                const char *reason,
-                                bool success)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname;
-    char *oldsrc = NULL;
-    char *newsrc = NULL;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
-        return;
-    }
-
-    if (!(oldsrc = virAuditEncode("old-disk",
-                                  oldDef && oldDef->src ?
-                                  oldDef->src : "?"))) {
-        VIR_WARN0("OOM while encoding audit message");
-        goto cleanup;
-    }
-    if (!(newsrc = virAuditEncode("new-disk",
-                                  newDef && newDef->src ?
-                                  newDef->src : "?"))) {
-        VIR_WARN0("OOM while encoding audit message");
-        goto cleanup;
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "resrc=disk reason=%s %s uuid=%s %s %s",
-              reason, vmname, uuidstr,
-              oldsrc, newsrc);
-
-cleanup:
-    VIR_FREE(vmname);
-    VIR_FREE(oldsrc);
-    VIR_FREE(newsrc);
-}
-
-
-static void qemuDomainNetAudit(virDomainObjPtr vm,
-                               virDomainNetDefPtr oldDef,
-                               virDomainNetDefPtr newDef,
-                               const char *reason,
-                               bool success)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char newMacstr[VIR_MAC_STRING_BUFLEN];
-    char oldMacstr[VIR_MAC_STRING_BUFLEN];
-    char *vmname;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    if (oldDef)
-        virFormatMacAddr(oldDef->mac, oldMacstr);
-    if (newDef)
-        virFormatMacAddr(newDef->mac, newMacstr);
-    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
-        return;
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "resrc=net reason=%s %s uuid=%s old-net='%s' new-net='%s'",
-              reason, vmname, uuidstr,
-              oldDef ? oldMacstr : "?",
-              newDef ? newMacstr : "?");
-
-    VIR_FREE(vmname);
-}
-
-
-static void qemuDomainLifecycleAudit(virDomainObjPtr vm,
-                                     const char *op,
-                                     const char *reason,
-                                     bool success)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-
-    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
-        return;
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, success,
-              "op=%s reason=%s %s uuid=%s", op, reason, vmname, uuidstr);
-
-    VIR_FREE(vmname);
-}
-
-static void qemuDomainStartAudit(virDomainObjPtr vm, const char *reason, bool success)
-{
-    int i;
-
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        if (disk->src) /* Skips CDROM without media initially inserted */
-            qemuDomainDiskAudit(vm, NULL, disk, "start", true);
-    }
-
-    for (i = 0 ; i < vm->def->nnets ; i++) {
-        virDomainNetDefPtr net = vm->def->nets[i];
-        qemuDomainNetAudit(vm, NULL, net, "start", true);
-    }
-
-    qemuDomainLifecycleAudit(vm, "start", reason, success);
-}
-
-static void qemuDomainStopAudit(virDomainObjPtr vm, const char *reason)
-{
-    qemuDomainLifecycleAudit(vm, "stop", reason, true);
-}
-
-static void qemuDomainSecurityLabelAudit(virDomainObjPtr vm, bool success)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
-        return;
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_ID, success,
-              "%s uuid=%s vm-ctx=%s img-ctx=%s",
-              vmname, uuidstr,
-              VIR_AUDIT_STR(vm->def->seclabel.label),
-              VIR_AUDIT_STR(vm->def->seclabel.imagelabel));
-
-    VIR_FREE(vmname);
-}
 
 #define START_POSTFIX ": starting up\n"
 #define SHUTDOWN_POSTFIX ": shutting down\n"

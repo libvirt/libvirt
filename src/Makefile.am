@@ -270,6 +270,7 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_capabilities.c qemu/qemu_capabilities.h\
 		qemu/qemu_command.c qemu/qemu_command.h		\
 		qemu/qemu_domain.c qemu/qemu_domain.h		\
+		qemu/qemu_audit.c qemu/qemu_audit.h		\
 		qemu/qemu_conf.c qemu/qemu_conf.h		\
 		qemu/qemu_monitor.c qemu/qemu_monitor.h		\
 		qemu/qemu_monitor_text.c			\
