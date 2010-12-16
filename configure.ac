@@ -2251,12 +2251,6 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           daemon/Makefile \
           tools/Makefile \
           tests/Makefile \
-          tests/xml2sexprdata/Makefile \
-          tests/sexpr2xmldata/Makefile \
-          tests/xmconfigdata/Makefile \
-          tests/xencapsdata/Makefile \
-          tests/confdata/Makefile \
-          tests/commanddata/Makefile \
           examples/apparmor/Makefile \
           examples/domain-events/events-c/Makefile \
           examples/domsuspend/Makefile \

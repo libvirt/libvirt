@@ -2,9 +2,6 @@
 
 SHELL = $(PREFERABLY_POSIX_SHELL)
 
-SUBDIRS = commanddata confdata sexpr2xmldata \
-  xml2sexprdata xmconfigdata xencapsdata
-
 INCLUDES = \
 	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
 	-I$(top_builddir)/include \
@@ -39,38 +36,44 @@ LDADDS = \
         $(COVERAGE_LDFLAGS)
 
 EXTRA_DIST =		\
-        oomtrace.pl     \
-	test-lib.sh	\
+	capabilityschemadata \
+	capabilityschematest \
+	commanddata \
+	confdata \
+	cputestdata \
+	domainschemadata \
+	domainschematest \
+	domainsnapshotschematest \
+	domainsnapshotxml2xmlin \
+	domainsnapshotxml2xmlout \
+	interfaceschemadata \
+	networkschematest \
+	networkxml2xmlin \
+	networkxml2xmlout \
+	nodedevschemadata \
+	nodedevschematest \
+	nodeinfodata     \
+	nwfilterschematest \
+	nwfilterxml2xmlin \
+	nwfilterxml2xmlout \
+	oomtrace.pl \
+	qemuhelpdata \
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
-	nodeinfodata     \
 	schematestutils.sh \
-	capabilityschematest \
-	capabilityschemadata \
-	networkschematest \
-	networkxml2xmlout \
-	networkxml2xmlin \
-	domainschematest \
-	domainschemadata \
-	interfaceschemadata \
+	sexpr2xmldata \
 	storagepoolschematest \
-	storagepoolxml2xmlout \
 	storagepoolxml2xmlin \
+	storagepoolxml2xmlout \
 	storagevolschematest \
-	storagevolxml2xmlout \
 	storagevolxml2xmlin \
-	nodedevschematest \
-	nodedevschemadata \
+	storagevolxml2xmlout \
+	test-lib.sh	\
 	vmx2xmldata \
-	xml2vmxdata \
-	nwfilterxml2xmlout \
-	nwfilterxml2xmlin \
-	nwfilterschematest \
-	domainsnapshotschematest \
-	domainsnapshotxml2xmlout \
-	domainsnapshotxml2xmlin \
-	qemuhelpdata \
-	cputestdata
+	xencapsdata \
+	xmconfigdata \
+	xml2sexprdata \
+	xml2vmxdata
 
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
