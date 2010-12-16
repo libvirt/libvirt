@@ -85,8 +85,13 @@
       </dd>
       <dt><code>forward</code></dt>
       <dd>Inclusion of the <code>forward</code> element indicates that
-        the virtual network is to be connected to the physical LAN. If
-        no attributes are set, NAT forwarding will be used for connectivity.
+        the virtual network is to be connected to the physical
+        LAN. the <code>mode</code> attribute determines the method of
+        forwarding; possible selections are 'nat' and 'route'. If mode
+        is not specified, NAT forwarding will be used for
+        connectivity.  If a network has any IPv6 addresses defined,
+        even if <code>mode</code> is given as 'nat', the IPv6 traffic
+        will be forwarded using routing, since IPv6 has no concept of NAT.
         Firewall rules will allow forwarding to any other network device whether
         ethernet, wireless, dialup, or VPN. If the <code>dev</code> attribute
         is set, the firewall rules will restrict forwarding to the named
@@ -118,21 +123,37 @@
     <dl>
       <dt><code>ip</code></dt>
       <dd>The <code>address</code> attribute defines an IPv4 address in
-        dotted-decimal format, that will be configured on the bridge
+        dotted-decimal format, or an IPv6 address in standard
+        colon-separated hexadecimal format, that will be configured on
+        the bridge
         device associated with the virtual network. To the guests this
-        address will be their default route. The <code>netmask</code>
+        address will be their default route. For IPv4 addresses, the <code>netmask</code>
         attribute defines the significant bits of the network address,
-        again specified in dotted-decimal format.  <span class="since">Since 0.3.0</span>
+        again specified in dotted-decimal format.  For IPv6 addresses,
+        and as an alternate method for IPv4 addresses, you can specify
+        the significant bits of the network address with the <code>prefix</code>
+        attribute, which is an integer (for example, <code>netmask='255.255.255.0'</code>
+        could also be given as <code>prefix='24'</code>. The <code>family</code>
+        attribute is used to specify the type of address - 'ipv4' or 'ipv6'; if no
+        <code>family</code> is given, 'ipv4' is assumed. A network can have more than
+        one of each family of address defined, but only a single address can have a
+        <code>dhcp</code> or <code>tftp</code> element. <span class="since">Since 0.3.0;
+        IPv6, multiple addresses on a single network, <code>family</code>, and
+        <code>prefix</code> since 0.8.7</span>
       </dd><dt><code>tftp</code></dt><dd>Immediately within
         the <code>ip</code> element there is an optional <code>tftp</code>
         element. The presence of this element and of its attribute
         <code>root</code> enables TFTP services.  The attribute specifies
-        the path to the root directory served via TFTP.
+        the path to the root directory served via TFTP. <code>tftp</code> is not
+        supported for IPv6 addresses, can only be specified on a single IPv4 address
+        per network.
         <span class="since">Since 0.7.1</span>
       </dd><dt><code>dhcp</code></dt><dd>Also within the <code>ip</code> element there is an
         optional <code>dhcp</code> element. The presence of this element
         enables DHCP services on the virtual network. It will further
-        contain one or more <code>range</code> elements.
+        contain one or more <code>range</code> elements. The
+        <code>dhcp</code> element is not supported for IPv6, and
+        is only supported on a single IP address per network for IPv4.
         <span class="since">Since 0.3.0</span>
       </dd>
       <dt><code>range</code></dt>

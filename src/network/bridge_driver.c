@@ -824,6 +824,65 @@ networkRemoveRoutingIptablesRules(struct network_driver *driver,
     }
 }
 
+/* Add all once/network rules required for IPv6 (if any IPv6 addresses are defined) */
+static int
+networkAddGeneralIp6tablesRules(struct network_driver *driver,
+                               virNetworkObjPtr network)
+{
+
+    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0))
+        return 0;
+
+    /* Catch all rules to block forwarding to/from bridges */
+
+    if (iptablesAddForwardRejectOut(driver->iptables, AF_INET6,
+                                    network->def->bridge) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add ip6tables rule to block outbound traffic from '%s'"),
+                           network->def->bridge);
+        goto err1;
+    }
+
+    if (iptablesAddForwardRejectIn(driver->iptables, AF_INET6,
+                                   network->def->bridge) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add ip6tables rule to block inbound traffic to '%s'"),
+                           network->def->bridge);
+        goto err2;
+    }
+
+    /* Allow traffic between guests on the same bridge */
+    if (iptablesAddForwardAllowCross(driver->iptables, AF_INET6,
+                                     network->def->bridge) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add ip6tables rule to allow cross bridge traffic on '%s'"),
+                           network->def->bridge);
+        goto err3;
+    }
+
+    return 0;
+
+    /* unwind in reverse order from the point of failure */
+err3:
+    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET6, network->def->bridge);
+err2:
+    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET6, network->def->bridge);
+err1:
+    return -1;
+}
+
+static void
+networkRemoveGeneralIp6tablesRules(struct network_driver *driver,
+                                  virNetworkObjPtr network)
+{
+    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0))
+        return;
+
+    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET6, network->def->bridge);
+    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET6, network->def->bridge);
+    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET6, network->def->bridge);
+}
+
 static int
 networkAddGeneralIptablesRules(struct network_driver *driver,
                                virNetworkObjPtr network)
@@ -926,9 +985,16 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
         goto err8;
     }
 
+    /* add IPv6 general rules, if needed */
+    if (networkAddGeneralIp6tablesRules(driver, network) < 0) {
+        goto err9;
+    }
+
     return 0;
 
     /* unwind in reverse order from the point of failure */
+err9:
+    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET, network->def->bridge);
 err8:
     iptablesRemoveForwardRejectIn(driver->iptables, AF_INET, network->def->bridge);
 err7:
@@ -955,6 +1021,8 @@ networkRemoveGeneralIptablesRules(struct network_driver *driver,
 {
     int ii;
     virNetworkIpDefPtr ipv4def;
+
+    networkRemoveGeneralIp6tablesRules(driver, network);
 
     for (ii = 0;
          (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
@@ -984,13 +1052,18 @@ networkAddIpSpecificIptablesRules(struct network_driver *driver,
                                   virNetworkObjPtr network,
                                   virNetworkIpDefPtr ipdef)
 {
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT &&
-        networkAddMasqueradingIptablesRules(driver, network, ipdef) < 0)
-       return -1;
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE &&
-        networkAddRoutingIptablesRules(driver, network, ipdef) < 0)
-       return -1;
+    /* NB: in the case of IPv6, routing rules are added when the
+     * forward mode is NAT. This is because IPv6 has no NAT.
+     */
 
+    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
+        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET))
+            return networkAddMasqueradingIptablesRules(driver, network, ipdef);
+        else if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6))
+            return networkAddRoutingIptablesRules(driver, network, ipdef);
+    } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
+        return networkAddRoutingIptablesRules(driver, network, ipdef);
+    }
     return 0;
 }
 
@@ -999,10 +1072,14 @@ networkRemoveIpSpecificIptablesRules(struct network_driver *driver,
                                      virNetworkObjPtr network,
                                      virNetworkIpDefPtr ipdef)
 {
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT)
-        networkRemoveMasqueradingIptablesRules(driver, network, ipdef);
-    else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)
+    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
+        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET))
+            networkRemoveMasqueradingIptablesRules(driver, network, ipdef);
+        else if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6))
+            networkRemoveRoutingIptablesRules(driver, network, ipdef);
+    } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
         networkRemoveRoutingIptablesRules(driver, network, ipdef);
+    }
 }
 
 /* Add all rules for all ip addresses (and general rules) on a network */
@@ -1084,30 +1161,47 @@ networkEnableIpForwarding(void)
 
 #define SYSCTL_PATH "/proc/sys"
 
-static int networkDisableIPV6(virNetworkObjPtr network)
+static int
+networkSetIPv6Sysctls(virNetworkObjPtr network)
 {
     char *field = NULL;
     int ret = -1;
 
-    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/disable_ipv6", network->def->bridge) < 0) {
-        virReportOOMError();
-        goto cleanup;
+    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
+        /* Only set disable_ipv6 if there are no ipv6 addresses defined for
+         * the network.
+         */
+        if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/disable_ipv6",
+                        network->def->bridge) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (access(field, W_OK) < 0 && errno == ENOENT) {
+            VIR_DEBUG("ipv6 appears to already be disabled on %s",
+                      network->def->bridge);
+            ret = 0;
+            goto cleanup;
+        }
+
+        if (virFileWriteStr(field, "1", 0) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot write to %s to disable IPv6 on bridge %s"),
+                                 field, network->def->bridge);
+            goto cleanup;
+        }
+        VIR_FREE(field);
     }
 
-    if (access(field, W_OK) < 0 && errno == ENOENT) {
-        VIR_DEBUG("ipv6 appears to already be disabled on %s", network->def->bridge);
-        ret = 0;
-        goto cleanup;
-    }
+    /* The rest of the ipv6 sysctl tunables should always be set,
+     * whether or not we're using ipv6 on this bridge.
+     */
 
-    if (virFileWriteStr(field, "1", 0) < 0) {
-        virReportSystemError(errno,
-                             _("cannot enable %s"), field);
-        goto cleanup;
-    }
-    VIR_FREE(field);
-
-    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/accept_ra", network->def->bridge) < 0) {
+    /* Prevent guests from hijacking the host network by sending out
+     * their own router advertisements.
+     */
+    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/accept_ra",
+                    network->def->bridge) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1119,7 +1213,11 @@ static int networkDisableIPV6(virNetworkObjPtr network)
     }
     VIR_FREE(field);
 
-    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/autoconf", network->def->bridge) < 0) {
+    /* All interfaces used as a gateway (which is what this is, by
+     * definition), must always have autoconf=0.
+     */
+    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/autoconf",
+                    network->def->bridge) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1262,7 +1360,7 @@ networkStartNetworkDaemon(struct network_driver *driver,
                           virNetworkObjPtr network)
 {
     int ii, err;
-    bool v4present = false;
+    bool v4present = false, v6present = false;
     virErrorPtr save_err = NULL;
     virNetworkIpDefPtr ipdef;
 
@@ -1301,8 +1399,10 @@ networkStartNetworkDaemon(struct network_driver *driver,
         goto err1;
     }
 
-    /* Disable IPv6 on the bridge */
-    if (networkDisableIPV6(network) < 0)
+    /* Disable IPv6 on the bridge if there are no IPv6 addresses
+     * defined, and set other IPv6 sysctl tunables appropriately.
+     */
+    if (networkSetIPv6Sysctls(network) < 0)
         goto err1;
 
     /* Add "once per network" rules */
@@ -1314,6 +1414,8 @@ networkStartNetworkDaemon(struct network_driver *driver,
          ii++) {
         if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET))
             v4present = true;
+        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6))
+            v6present = true;
 
         /* Add the IP address/netmask to the bridge */
         if (networkAddAddrToBridge(driver, network, ipdef) < 0) {
@@ -1708,9 +1810,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
-    /* we only support dhcp on one IPv4 address per defined network, and currently
-     * don't support IPv6.
-     */
+    /* We only support dhcp on one IPv4 address per defined network */
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
          ii++) {
@@ -1724,14 +1824,6 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
                     ipv4def = ipdef;
                 }
             }
-        } else {
-            /* we currently only support IPv4 */
-            networkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported address family '%s' (%d) in network definition"),
-                               ipdef->family ? ipdef->family : "unspecified",
-                               VIR_SOCKET_FAMILY(&ipdef->address));
-            goto cleanup;
-
         }
     }
     if (ipv4def) {
@@ -1756,7 +1848,8 @@ cleanup:
 static int networkUndefine(virNetworkPtr net) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
-    virNetworkIpDefPtr ipv4def;
+    virNetworkIpDefPtr ipdef;
+    bool dhcp_present = false, v6present = false;
     int ret = -1, ii;
 
     networkDriverLock(driver);
@@ -1781,12 +1874,17 @@ static int networkUndefine(virNetworkPtr net) {
 
     /* we only support dhcp on one IPv4 address per defined network */
     for (ii = 0;
-         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
          ii++) {
-        if (ipv4def->nranges || ipv4def->nhosts)
-            break;
+        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET)) {
+            if (ipdef->nranges || ipdef->nhosts)
+                dhcp_present = true;
+        } else if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6)) {
+            v6present = true;
+        }
     }
-    if (ipv4def) {
+
+    if (dhcp_present) {
         dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
         if (dctx == NULL)
             goto cleanup;
