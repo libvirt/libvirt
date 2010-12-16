@@ -57,6 +57,7 @@ src/qemu/qemu_command.c
 src/qemu/qemu_conf.c
 src/qemu/qemu_domain.c
 src/qemu/qemu_driver.c
+src/qemu/qemu_hostdev.c
 src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
 src/qemu/qemu_monitor_text.c
