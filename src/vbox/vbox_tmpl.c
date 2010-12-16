@@ -3112,13 +3112,17 @@ static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int m
                     || (state > MachineState_LastOnline) ) {
                     machine->vtbl->GetName(machine, &machineNameUtf16);
                     VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineName);
-                    if (!(names[j++] = strdup(machineName))) {
+                    names[j] = strdup(machineName);
+                    VBOX_UTF16_FREE(machineNameUtf16);
+                    VBOX_UTF8_FREE(machineName);
+                    if (!names[j]) {
                         virReportOOMError();
                         for ( ; j >= 0 ; j--)
                             VIR_FREE(names[j]);
                         ret = -1;
                         goto cleanup;
                     }
+                    j++;
                     ret++;
                 }
             }
@@ -3126,8 +3130,6 @@ static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int m
     }
 
 cleanup:
-    VBOX_UTF8_FREE(machineName);
-    VBOX_UTF16_FREE(machineNameUtf16);
     vboxArrayRelease(&machines);
     return ret;
 }
