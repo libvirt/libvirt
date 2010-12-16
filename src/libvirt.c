@@ -3297,7 +3297,7 @@ error:
  * @flags: currently unused, pass 0
  *
  * Reads a domain XML configuration document, and generates
- * generates a native configuration file describing the domain.
+ * a native configuration file describing the domain.
  * The format of the native data is hypervisor dependant.
  *
  * Returns a 0 terminated UTF-8 encoded native config datafile, or NULL in case of error.
