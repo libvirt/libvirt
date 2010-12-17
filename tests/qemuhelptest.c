@@ -6,7 +6,7 @@
 # include <stdlib.h>
 
 # include "testutils.h"
-# include "qemu/qemu_conf.h"
+# include "qemu/qemu_capabilities.h"
 
 # define MAX_HELP_OUTPUT_SIZE 1024*64
 
@@ -50,8 +50,8 @@ static int testHelpStrParsing(const void *data)
     if (virtTestLoadFile(path, &help, MAX_HELP_OUTPUT_SIZE) < 0)
         return -1;
 
-    if (qemudParseHelpStr("QEMU", help, &flags,
-                          &version, &is_kvm, &kvm_version) == -1)
+    if (qemuCapsParseHelpStr("QEMU", help, &flags,
+                             &version, &is_kvm, &kvm_version) == -1)
         return -1;
 
     if (flags != info->flags) {

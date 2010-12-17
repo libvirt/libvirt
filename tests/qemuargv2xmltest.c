@@ -13,7 +13,7 @@
 
 # include "internal.h"
 # include "testutils.h"
-# include "qemu/qemu_conf.h"
+# include "qemu/qemu_command.h"
 
 # include "testutilsqemu.h"
 

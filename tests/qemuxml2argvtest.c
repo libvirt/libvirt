@@ -13,7 +13,8 @@
 
 # include "internal.h"
 # include "testutils.h"
-# include "qemu/qemu_conf.h"
+# include "qemu/qemu_capabilities.h"
+# include "qemu/qemu_command.h"
 # include "datatypes.h"
 # include "cpu/cpu_map.h"
 
@@ -110,9 +111,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
     free(virtTestLogContentAndReset());
     virResetLastError();
 
-    if (!(cmd = qemudBuildCommandLine(conn, &driver,
-                                      vmdef, &monitor_chr, false, flags,
-                                      migrateFrom, NULL, VIR_VM_OP_CREATE)))
+    if (!(cmd = qemuBuildCommandLine(conn, &driver,
+                                     vmdef, &monitor_chr, false, flags,
+                                     migrateFrom, NULL, VIR_VM_OP_CREATE)))
         goto fail;
 
     if (!!virGetLastError() != expectError) {
