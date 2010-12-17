@@ -271,7 +271,7 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_command.c qemu/qemu_command.h		\
 		qemu/qemu_domain.c qemu/qemu_domain.h		\
 		qemu/qemu_audit.c qemu/qemu_audit.h		\
-		qemu/qemu_cgroup.c qemu/qemu_cgroup.c		\
+		qemu/qemu_cgroup.c qemu/qemu_cgroup.h		\
 		qemu/qemu_hostdev.c qemu/qemu_hostdev.h		\
 		qemu/qemu_hotplug.c qemu/qemu_hotplug.h		\
 		qemu/qemu_conf.c qemu/qemu_conf.h		\
