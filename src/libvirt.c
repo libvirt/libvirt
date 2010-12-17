@@ -54,6 +54,9 @@
 # ifdef WITH_OPENVZ
 #  include "openvz/openvz_driver.h"
 # endif
+# ifdef WITH_VMWARE
+#  include "vmware/vmware_driver.h"
+# endif
 # ifdef WITH_PHYP
 #  include "phyp/phyp_driver.h"
 # endif
@@ -365,6 +368,9 @@ virInitialize(void)
 # ifdef WITH_OPENVZ
     virDriverLoadModule("openvz");
 # endif
+# ifdef WITH_VMWARE
+    virDriverLoadModule("vmware");
+# endif
 # ifdef WITH_VBOX
     virDriverLoadModule("vbox");
 # endif
@@ -386,6 +392,9 @@ virInitialize(void)
 # endif
 # ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
+# endif
+# ifdef WITH_VMWARE
+    if (vmwareRegister() == -1) return -1;
 # endif
 # ifdef WITH_PHYP
     if (phypRegister() == -1) return -1;
@@ -1118,6 +1127,10 @@ virGetVersion(unsigned long *libVer, const char *type,
 # endif
 # if WITH_OPENVZ
         if (STRCASEEQ(type, "OpenVZ"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+# endif
+# if WITH_VMWARE
+        if (STRCASEEQ(type, "VMware"))
             *typeVer = LIBVIR_VERSION_NUMBER;
 # endif
 # if WITH_VBOX

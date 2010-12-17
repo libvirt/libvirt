@@ -219,8 +219,6 @@ check-local: remote_protocol-structs
 TEST_DRIVER_SOURCES =						\
 		test/test_driver.c test/test_driver.h
 
-
-
 # Now the Hypervisor specific drivers
 XEN_DRIVER_SOURCES =						\
 		xen/sexpr.c xen/sexpr.h				\
@@ -255,6 +253,10 @@ PHYP_DRIVER_SOURCES =						\
 OPENVZ_DRIVER_SOURCES =						\
 		openvz/openvz_conf.c openvz/openvz_conf.h	\
 		openvz/openvz_driver.c openvz/openvz_driver.h
+
+VMWARE_DRIVER_SOURCES = 					\
+		vmware/vmware_driver.c vmware/vmware.h		\
+		vmware/vmware_conf.c vmware/vmware_conf.h
 
 VBOX_DRIVER_SOURCES =						\
         vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h		\
@@ -606,6 +608,21 @@ libvirt_driver_openvz_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_openvz_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
 libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
+endif
+
+if WITH_VMWARE
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_vmware.la
+else
+noinst_LTLIBRARIES += libvirt_driver_vmware.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_vmware.la
+endif
+libvirt_driver_vmware_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
+if WITH_DRIVER_MODULES
+libvirt_driver_vmware_la_LDFLAGS = -module -avoid-version
+endif
+libvirt_driver_vmware_la_SOURCES = $(VMWARE_DRIVER_SOURCES)
 endif
 
 if WITH_VBOX
@@ -960,7 +977,8 @@ EXTRA_DIST +=							\
 		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
 		$(SECURITY_DRIVER_APPARMOR_SOURCES)		\
 		$(SECRET_DRIVER_SOURCES)			\
-		$(VBOX_DRIVER_EXTRA_DIST)
+		$(VBOX_DRIVER_EXTRA_DIST)			\
+		$(VMWARE_DRIVER_SOURCES)
 
 check-local: augeas-check
 

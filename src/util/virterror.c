@@ -134,6 +134,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_OPENVZ:
             dom = "OpenVZ ";
             break;
+        case VIR_FROM_VMWARE:
+            dom = "VMware ";
+            break;
         case VIR_FROM_XENXM:
             dom = "Xen XM ";
             break;

@@ -52,6 +52,7 @@ typedef enum {
     VIR_FROM_TEST,	/* Error from test driver */
     VIR_FROM_REMOTE,	/* Error from remote driver */
     VIR_FROM_OPENVZ,    /* Error from OpenVZ driver */
+    VIR_FROM_VMWARE,    /* Error from VMware driver */
     VIR_FROM_XENXM,	/* Error at Xen XM layer */
     VIR_FROM_STATS_LINUX,/* Error in the Linux Stats code */
     VIR_FROM_LXC,       /* Error from Linux Container driver */
