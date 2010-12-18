@@ -29,7 +29,8 @@ localstatedir=@localstatedir@
 libvirtd=@sbindir@/libvirtd
 
 # Source function library.
-. "$sysconfdir"/rc.d/init.d/functions
+test ! -r "$sysconfdir"/rc.d/init.d/functions ||
+  . "$sysconfdir"/rc.d/init.d/functions
 
 URIS=default
 ON_BOOT=start
