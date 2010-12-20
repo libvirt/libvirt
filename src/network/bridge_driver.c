@@ -557,7 +557,6 @@ dhcpStartDhcpDaemon(virNetworkObjPtr network)
 
     cmd = virCommandNew(DNSMASQ);
     if (networkBuildDnsmasqArgv(network, pidfile, cmd) < 0) {
-        VIR_FREE(pidfile);
         goto cleanup;
     }
 
