@@ -538,7 +538,7 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
         goto cleanup;
     }
 
-    /* Lookup ComputeResource */
+    /* Lookup (Cluster)ComputeResource */
     esxVI_String_Free(&propertyNameList);
 
     if (esxVI_String_AppendValueListToList(&propertyNameList,
@@ -699,7 +699,7 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
         goto cleanup;
     }
 
-    /* Lookup ComputeResource */
+    /* Lookup (Cluster)ComputeResource */
     esxVI_String_Free(&propertyNameList);
 
     if (esxVI_String_AppendValueListToList(&propertyNameList,
@@ -1654,7 +1654,8 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
 
     if (STRNEQ(root->type, type)) {
         if (STREQ(root->type, "Folder")) {
-            if (STREQ(type, "Datacenter") || STREQ(type, "ComputeResource")) {
+            if (STREQ(type, "Datacenter") || STREQ(type, "ComputeResource") ||
+                STREQ(type, "ClusterComputeResource")) {
                 objectSpec->selectSet = ctx->selectSet_folderToChildEntity;
             } else {
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1662,7 +1663,8 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                              type, root->type);
                 goto cleanup;
             }
-        } else if (STREQ(root->type, "ComputeResource")) {
+        } else if (STREQ(root->type, "ComputeResource") ||
+                   STREQ(root->type, "ClusterComputeResource")) {
             if (STREQ(type, "HostSystem")) {
                 objectSpec->selectSet = ctx->selectSet_computeResourceToHost;
             } else if (STREQ(type, "Datacenter")) {
@@ -1674,7 +1676,8 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                 goto cleanup;
             }
         } else if (STREQ(root->type, "HostSystem")) {
-            if (STREQ(type, "ComputeResource")) {
+            if (STREQ(type, "ComputeResource") ||
+                STREQ(type, "ClusterComputeResource")) {
                 objectSpec->selectSet = ctx->selectSet_hostSystemToParent;
             } else if (STREQ(type, "VirtualMachine")) {
                 objectSpec->selectSet = ctx->selectSet_hostSystemToVm;
