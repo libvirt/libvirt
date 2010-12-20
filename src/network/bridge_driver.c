@@ -65,6 +65,7 @@
 #define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"
 
 #define DNSMASQ_STATE_DIR LOCALSTATEDIR "/lib/libvirt/dnsmasq"
+#define RADVD_STATE_DIR LOCALSTATEDIR "/lib/libvirt/radvd"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
@@ -107,6 +108,25 @@ static void networkReloadIptablesRules(struct network_driver *driver);
 
 static struct network_driver *driverState = NULL;
 
+static char *
+networkRadvdPidfileBasename(const char *netname)
+{
+    /* this is simple but we want to be sure it's consistently done */
+    char *pidfilebase;
+
+    virAsprintf(&pidfilebase, "%s-radvd", netname);
+    return pidfilebase;
+}
+
+static char *
+networkRadvdConfigFileName(const char *netname)
+{
+    char *configfile;
+
+    virAsprintf(&configfile, RADVD_STATE_DIR "/%s-radvd.conf",
+                netname);
+    return configfile;
+}
 
 static void
 networkFindActiveConfigs(struct network_driver *driver) {
@@ -144,26 +164,43 @@ networkFindActiveConfigs(struct network_driver *driver) {
             brHasBridge(driver->brctl, obj->def->bridge) == 0) {
             obj->active = 1;
 
-            /* Finally try and read dnsmasq pid if any */
-            if (obj->def->ips && (obj->def->nips > 0) &&
-                virFileReadPid(NETWORK_PID_DIR, obj->def->name,
-                               &obj->dnsmasqPid) == 0) {
+            /* Try and read dnsmasq/radvd pids if any */
+            if (obj->def->ips && (obj->def->nips > 0)) {
+                char *pidpath, *radvdpidbase;
 
-                /* Check its still alive */
-                if (kill(obj->dnsmasqPid, 0) != 0)
-                    obj->dnsmasqPid = -1;
+                if (virFileReadPid(NETWORK_PID_DIR, obj->def->name,
+                                   &obj->dnsmasqPid) == 0) {
+                    /* Check that it's still alive */
+                    if (kill(obj->dnsmasqPid, 0) != 0)
+                        obj->dnsmasqPid = -1;
+                    if (virAsprintf(&pidpath, "/proc/%d/exe", obj->dnsmasqPid) < 0) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                    if (virFileLinkPointsTo(pidpath, DNSMASQ) == 0)
+                        obj->dnsmasqPid = -1;
+                    VIR_FREE(pidpath);
+                }
 
-#ifdef __linux__
-                char *pidpath;
-
-                if (virAsprintf(&pidpath, "/proc/%d/exe", obj->dnsmasqPid) < 0) {
+                if (!(radvdpidbase = networkRadvdPidfileBasename(obj->def->name))) {
                     virReportOOMError();
                     goto cleanup;
                 }
-                if (virFileLinkPointsTo(pidpath, DNSMASQ) == 0)
-                    obj->dnsmasqPid = -1;
-                VIR_FREE(pidpath);
-#endif
+                if (virFileReadPid(NETWORK_PID_DIR, radvdpidbase,
+                                   &obj->radvdPid) == 0) {
+                    /* Check that it's still alive */
+                    if (kill(obj->radvdPid, 0) != 0)
+                        obj->radvdPid = -1;
+                    if (virAsprintf(&pidpath, "/proc/%d/exe", obj->radvdPid) < 0) {
+                        virReportOOMError();
+                        VIR_FREE(radvdpidbase);
+                        goto cleanup;
+                    }
+                    if (virFileLinkPointsTo(pidpath, RADVD) == 0)
+                        obj->radvdPid = -1;
+                    VIR_FREE(pidpath);
+                }
+                VIR_FREE(radvdpidbase);
             }
         }
 
@@ -583,6 +620,136 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
 cleanup:
     VIR_FREE(pidfile);
     virCommandFree(cmd);
+    return ret;
+}
+
+static int
+networkStartRadvd(virNetworkObjPtr network)
+{
+    char *pidfile = NULL;
+    char *radvdpidbase = NULL;
+    virBuffer configbuf = VIR_BUFFER_INITIALIZER;;
+    char *configstr = NULL;
+    char *configfile = NULL;
+    virCommandPtr cmd = NULL;
+    int ret = -1, err, ii;
+    virNetworkIpDefPtr ipdef;
+
+    network->radvdPid = -1;
+
+    if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
+        virReportSystemError(err,
+                             _("cannot create directory %s"),
+                             NETWORK_PID_DIR);
+        goto cleanup;
+    }
+    if ((err = virFileMakePath(RADVD_STATE_DIR)) != 0) {
+        virReportSystemError(err,
+                             _("cannot create directory %s"),
+                             RADVD_STATE_DIR);
+        goto cleanup;
+    }
+
+    /* construct pidfile name */
+    if (!(radvdpidbase = networkRadvdPidfileBasename(network->def->name))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (!(pidfile = virFilePid(NETWORK_PID_DIR, radvdpidbase))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* create radvd config file appropriate for this network */
+    virBufferVSprintf(&configbuf, "interface %s\n"
+                      "{\n"
+                      "  AdvSendAdvert on;\n"
+                      "  AdvManagedFlag off;\n"
+                      "  AdvOtherConfigFlag off;\n"
+                      "\n",
+                      network->def->bridge);
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
+         ii++) {
+        int prefix;
+        char *netaddr;
+
+        prefix = virNetworkIpDefPrefix(ipdef);
+        if (prefix < 0) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("bridge  '%s' has an invalid prefix"),
+                               network->def->bridge);
+            goto cleanup;
+        }
+        if (!(netaddr = virSocketFormatAddr(&ipdef->address)))
+            goto cleanup;
+        virBufferVSprintf(&configbuf,
+                          "  prefix %s/%d\n"
+                          "  {\n"
+                          "    AdvOnLink on;\n"
+                          "    AdvAutonomous on;\n"
+                          "    AdvRouterAddr off;\n"
+                          "  };\n",
+                          netaddr, prefix);
+        VIR_FREE(netaddr);
+    }
+
+    virBufferAddLit(&configbuf, "};\n");
+
+    if (virBufferError(&configbuf)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (!(configstr = virBufferContentAndReset(&configbuf))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* construct the filename */
+    if (!(configfile = networkRadvdConfigFileName(network->def->name))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    /* write the file */
+    if (virFileWriteStr(configfile, configstr, 0600) < 0) {
+        virReportSystemError(errno,
+                             _("couldn't write radvd config file '%s'"),
+                             configfile);
+        goto cleanup;
+    }
+
+    /* prevent radvd from daemonizing itself with "--debug 1", and use
+     * a dummy pidfile name - virCommand will create the pidfile we
+     * want to use (this is necessary because radvd's internal
+     * daemonization and pidfile creation causes a race, and the
+     * virFileReadPid() below will fail if we use them).
+     * Unfortunately, it isn't possible to tell radvd to not create
+     * its own pidfile, so we just let it do so, with a slightly
+     * different name. Unused, but harmless.
+     */
+    cmd = virCommandNewArgList(RADVD, "--debug", "1",
+                               "--config", configfile,
+                               "--pidfile", NULL);
+    virCommandAddArgFormat(cmd, "%s-bin", pidfile);
+
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandDaemonize(cmd);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (virFileReadPid(NETWORK_PID_DIR, radvdpidbase,
+                       &network->radvdPid) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(configfile);
+    VIR_FREE(configstr);
+    virBufferFreeAndReset(&configbuf);
+    VIR_FREE(radvdpidbase);
+    VIR_FREE(pidfile);
     return ret;
 }
 
@@ -1154,9 +1321,14 @@ networkReloadIptablesRules(struct network_driver *driver)
 
 /* Enable IP Forwarding. Return 0 for success, -1 for failure. */
 static int
-networkEnableIpForwarding(void)
+networkEnableIpForwarding(bool enableIPv4, bool enableIPv6)
 {
-    return virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n", 0);
+    int ret = 0;
+    if (enableIPv4)
+        ret = virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n", 0);
+    if (enableIPv6 && ret == 0)
+        ret = virFileWriteStr("/proc/sys/net/ipv6/conf/all/forwarding", "1\n", 0);
+    return ret;
 }
 
 #define SYSCTL_PATH "/proc/sys"
@@ -1433,7 +1605,7 @@ networkStartNetworkDaemon(struct network_driver *driver,
 
     /* If forwardType != NONE, turn on global IP forwarding */
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
-        networkEnableIpForwarding() < 0) {
+        networkEnableIpForwarding(v4present, v6present) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to enable IP forwarding"));
         goto err3;
@@ -1444,14 +1616,27 @@ networkStartNetworkDaemon(struct network_driver *driver,
     if (v4present && networkStartDhcpDaemon(network) < 0)
         goto err3;
 
+    /* start radvd if there are any ipv6 addresses */
+    if (v6present && networkStartRadvd(network) < 0)
+        goto err4;
+
     /* Persist the live configuration now we have bridge info  */
     if (virNetworkSaveConfig(NETWORK_STATE_DIR, network->def) < 0) {
-        goto err4;
+        goto err5;
     }
 
     network->active = 1;
 
     return 0;
+
+ err5:
+    if (!save_err)
+        save_err = virSaveLastError();
+
+    if (network->radvdPid > 0) {
+        kill(network->radvdPid, SIGTERM);
+        network->radvdPid = -1;
+    }
 
  err4:
     if (!save_err)
@@ -1511,6 +1696,19 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
     unlink(stateFile);
     VIR_FREE(stateFile);
 
+    if (network->radvdPid > 0) {
+        char *radvdpidbase;
+
+        kill(network->radvdPid, SIGTERM);
+        /* attempt to delete the pidfile we created */
+        if (!(radvdpidbase = networkRadvdPidfileBasename(network->def->name))) {
+            virReportOOMError();
+        } else {
+            virFileDeletePid(NETWORK_PID_DIR, radvdpidbase);
+            VIR_FREE(radvdpidbase);
+        }
+    }
+
     if (network->dnsmasqPid > 0)
         kill(network->dnsmasqPid, SIGTERM);
 
@@ -1531,8 +1729,13 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
     if (network->dnsmasqPid > 0 &&
         (kill(network->dnsmasqPid, 0) == 0))
         kill(network->dnsmasqPid, SIGKILL);
-
     network->dnsmasqPid = -1;
+
+    if (network->radvdPid > 0 &&
+        (kill(network->radvdPid, 0) == 0))
+        kill(network->radvdPid, SIGKILL);
+    network->radvdPid = -1;
+
     network->active = 0;
 
     if (network->newDef) {
@@ -1891,6 +2094,27 @@ static int networkUndefine(virNetworkPtr net) {
 
         dnsmasqDelete(dctx);
         dnsmasqContextFree(dctx);
+    }
+
+    if (v6present) {
+        char *configfile = networkRadvdConfigFileName(network->def->name);
+
+        if (!configfile) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        unlink(configfile);
+        VIR_FREE(configfile);
+
+        char *radvdpidbase = networkRadvdPidfileBasename(network->def->name);
+
+        if (!(radvdpidbase)) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        virFileDeletePid(NETWORK_PID_DIR, radvdpidbase);
+        VIR_FREE(radvdpidbase);
+
     }
 
     virNetworkRemoveInactive(&driver->networks,

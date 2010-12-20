@@ -106,6 +106,7 @@ struct _virNetworkObj {
     virMutex lock;
 
     pid_t dnsmasqPid;
+    pid_t radvdPid;
     unsigned int active : 1;
     unsigned int autostart : 1;
     unsigned int persistent : 1;

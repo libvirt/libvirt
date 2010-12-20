@@ -135,6 +135,8 @@ dnl detect them, in which case we'll search for the program
 dnl along the $PATH at runtime and fail if it's not there.
 AC_PATH_PROG([DNSMASQ], [dnsmasq], [dnsmasq],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG([RADVD], [radvd], [radvd],
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([BRCTL], [brctl], [brctl],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([UDEVADM], [udevadm], [],
@@ -146,6 +148,8 @@ AC_PATH_PROG([MODPROBE], [modprobe], [],
 
 AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
         [Location or name of the dnsmasq program])
+AC_DEFINE_UNQUOTED([RADVD],["$RADVD"],
+        [Location or name of the radvd program])
 AC_DEFINE_UNQUOTED([BRCTL],["$BRCTL"],
         [Location or name of the brctl program (see bridge-utils)])
 if test -n "$UDEVADM"; then
