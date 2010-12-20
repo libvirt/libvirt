@@ -255,7 +255,7 @@ OPENVZ_DRIVER_SOURCES =						\
 		openvz/openvz_driver.c openvz/openvz_driver.h
 
 VMWARE_DRIVER_SOURCES = 					\
-		vmware/vmware_driver.c vmware/vmware.h		\
+		vmware/vmware_driver.c vmware/vmware_driver.h	\
 		vmware/vmware_conf.c vmware/vmware_conf.h
 
 VBOX_DRIVER_SOURCES =						\
