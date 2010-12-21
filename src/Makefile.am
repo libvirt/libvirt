@@ -633,6 +633,7 @@ endif
 libvirt_driver_vmware_la_CFLAGS = \
 		-I@top_srcdir@/src/conf -I@top_srcdir@/src/vmx
 if WITH_DRIVER_MODULES
+libvirt_driver_vmware_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_vmware_la_LDFLAGS = -module -avoid-version
 endif
 libvirt_driver_vmware_la_SOURCES = $(VMWARE_DRIVER_SOURCES)
