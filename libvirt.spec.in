@@ -43,6 +43,7 @@
 # Then the hypervisor drivers that talk a native remote protocol
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
+%define with_vmware        0%{!?_without_vmware:1}
 
 # Then the secondary host drivers
 %define with_network       0%{!?_without_network:%{server_drivers}}
@@ -86,7 +87,7 @@
 %endif
 
 # RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor, ESX,
-# or libxenserver (xenapi)
+# VMWare, or libxenserver (xenapi)
 %if 0%{?rhel}
 %define with_openvz 0
 %define with_vbox 0
@@ -94,6 +95,7 @@
 %define with_one 0
 %define with_phyp 0
 %define with_esx 0
+%define with_vmware 0
 %define with_xenapi 0
 %endif
 
@@ -478,6 +480,10 @@ of recent versions of Linux (and other OSes).
 %define _without_esx --without-esx
 %endif
 
+%if ! %{with_vmware}
+%define _without_vmware --without-vmware
+%endif
+
 %if ! %{with_polkit}
 %define _without_polkit --without-polkit
 %endif
@@ -585,6 +591,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_one} \
            %{?_without_phyp} \
            %{?_without_esx} \
+           %{?_without_vmware} \
            %{?_without_network} \
            %{?_with_rhel5_api} \
            %{?_without_storage_fs} \
