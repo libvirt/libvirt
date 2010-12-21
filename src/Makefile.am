@@ -1066,7 +1066,8 @@ EXTRA_DIST += \
   libvirt_linux.syms		\
   libvirt_macvtap.syms		\
   libvirt_daemon.syms		\
-  libvirt_nwfilter.syms
+  libvirt_nwfilter.syms	\
+  libvirt_vmx.syms
 
 BUILT_SOURCES += libvirt.syms libvirt.def libvirt_qemu.def
 
