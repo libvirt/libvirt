@@ -651,7 +651,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
                 goto cleanup;
             else {
                 /* Silently ignore non-regular files,
-                 * eg '.' '..', 'lost+found' */
+                 * eg '.' '..', 'lost+found', dangling symbolic link */
                 virStorageVolDefFree(vol);
                 vol = NULL;
                 continue;

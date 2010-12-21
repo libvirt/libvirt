@@ -977,7 +977,8 @@ virStorageBackendForType(int type) {
 /*
  * Allows caller to silently ignore files with improper mode
  *
- * Returns -1 on error, -2 if file mode is unexpected.
+ * Returns -1 on error, -2 if file mode is unexpected or the
+ * volume is a dangling symbolic link.
  */
 int
 virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
@@ -986,6 +987,12 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
     struct stat sb;
 
     if ((fd = open(path, O_RDONLY|O_NONBLOCK|O_NOCTTY)) < 0) {
+        if ((errno == ENOENT || errno == ELOOP) &&
+            lstat(path, &sb) == 0) {
+            VIR_WARN("ignoring dangling symlink '%s'", path);
+            return -2;
+        }
+
         virReportSystemError(errno,
                              _("cannot open volume '%s'"),
                              path);
