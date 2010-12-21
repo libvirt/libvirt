@@ -9,9 +9,9 @@ ICON_FILES = \
 	virsh_win_icon.rc
 
 EXTRA_DIST = \
-	$(ICON_FILES) 					\
-	virt-xml-validate.in 				\
-	virt-pki-validate.in 				\
+	$(ICON_FILES)					\
+	virt-xml-validate.in				\
+	virt-pki-validate.in				\
 	virsh.pod					\
 	libvirt-guests.init.in				\
 	libvirt-guests.sysconf

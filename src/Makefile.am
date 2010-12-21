@@ -254,7 +254,7 @@ OPENVZ_DRIVER_SOURCES =						\
 		openvz/openvz_conf.c openvz/openvz_conf.h	\
 		openvz/openvz_driver.c openvz/openvz_driver.h
 
-VMWARE_DRIVER_SOURCES = 					\
+VMWARE_DRIVER_SOURCES =						\
 		vmware/vmware_driver.c vmware/vmware_driver.h	\
 		vmware/vmware_conf.c vmware/vmware_conf.h
 
@@ -266,7 +266,7 @@ VBOX_DRIVER_SOURCES =						\
         vbox/vbox_V3_1.c vbox/vbox_CAPI_v3_1.h			\
         vbox/vbox_V3_2.c vbox/vbox_CAPI_v3_2.h
 
-VBOX_DRIVER_EXTRA_DIST = 					\
+VBOX_DRIVER_EXTRA_DIST =					\
 		vbox/vbox_tmpl.c vbox/README			\
 		vbox/vbox_MSCOMGlue.c vbox/vbox_MSCOMGlue.h	\
 		vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h

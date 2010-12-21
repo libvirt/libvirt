@@ -90,8 +90,8 @@ libvirtd_CFLAGS = \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
 	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\""
 
-libvirtd_LDFLAGS = 					\
-	$(WARN_CFLAGS) 					\
+libvirtd_LDFLAGS =					\
+	$(WARN_CFLAGS)					\
 	$(COVERAGE_LDFLAGS)
 
 libvirtd_LDADD =					\

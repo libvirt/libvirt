@@ -200,7 +200,7 @@
  *
  * macro to flag unimplemented blocks
  */
-# define TODO 								\
+# define TODO								\
     fprintf(stderr, "Unimplemented block at %s:%d\n",			\
             __FILE__, __LINE__);
 

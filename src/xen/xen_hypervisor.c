@@ -647,7 +647,7 @@ typedef struct xen_v2d5_setvcpumap xen_v2d5_getvcpumap;
 /*
  * from V2 we get the available heap information
  */
-#define XEN_V2_OP_GETAVAILHEAP  	9
+#define XEN_V2_OP_GETAVAILHEAP		9
 
 /*
  * from V2 we get the scheduler parameter

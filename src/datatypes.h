@@ -1,7 +1,7 @@
 /*
  * datatypes.h: management of structs for public data types
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@
  * magic value used to protect the API when pointers to connection structures
  * are passed down by the uers.
  */
-# define VIR_CONNECT_MAGIC 	0x4F23DEAD
+# define VIR_CONNECT_MAGIC	0x4F23DEAD
 # define VIR_IS_CONNECT(obj)	((obj) && (obj)->magic==VIR_CONNECT_MAGIC)
 
 
