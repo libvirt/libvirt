@@ -1,0 +1,23 @@
+#
+# These symbols are dependent upon --with-esx via WITH_ESX or --with-vmware via WITH_VMWARE.
+#
+
+# vmx.h
+virVMXConvertToUTF8;
+virVMXEscapeHex;
+virVMXFormatCDROM;
+virVMXFormatConfig;
+virVMXFormatEthernet;
+virVMXFormatFloppy;
+virVMXFormatHardDisk;
+virVMXFormatParallel;
+virVMXFormatSerial;
+virVMXFormatVNC;
+virVMXParseConfig;
+virVMXParseDisk;
+virVMXParseEthernet;
+virVMXParseParallel;
+virVMXParseSCSIController;
+virVMXParseSerial;
+virVMXParseVNC;
+virVMXUnescapeHex;

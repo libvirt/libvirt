@@ -27,10 +27,10 @@
 #include "dirname.h"
 #include "memory.h"
 #include "nodeinfo.h"
-#include "util/files.h"
+#include "files.h"
 #include "uuid.h"
 #include "virterror_internal.h"
-#include "../esx/esx_vmx.h"
+#include "vmx.h"
 
 #include "vmware_conf.h"
 
@@ -137,13 +137,13 @@ vmwareLoadDomains(struct vmware_driver *driver)
     char *directoryName = NULL;
     char *fileName = NULL;
     int ret = -1;
-    esxVMX_Context ctx;
+    virVMXContext ctx;
     char *outbuf = NULL;
     char *str;
     char *saveptr = NULL;
     virCommandPtr cmd;
 
-    ctx.parseFileName = esxCopyVMXFileName;
+    ctx.parseFileName = vmwareCopyVMXFileName;
 
     cmd = virCommandNewArgList(VMRUN, "-T",
                                driver->type == TYPE_PLAYER ? "player" : "ws",
@@ -162,8 +162,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
             goto cleanup;
 
         if ((vmdef =
-             esxVMX_ParseConfig(&ctx, driver->caps, vmx,
-                                esxVI_ProductVersion_ESX4x)) == NULL) {
+             virVMXParseConfig(&ctx, driver->caps, vmx)) == NULL) {
             goto cleanup;
         }
 
@@ -487,7 +486,7 @@ cleanup:
 }
 
 char *
-esxCopyVMXFileName(const char *datastorePath, void *opaque ATTRIBUTE_UNUSED)
+vmwareCopyVMXFileName(const char *datastorePath, void *opaque ATTRIBUTE_UNUSED)
 {
     char *path = strdup(datastorePath);
 

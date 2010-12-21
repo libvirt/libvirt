@@ -21,15 +21,17 @@
 
 #include <fcntl.h>
 
+#include "internal.h"
+#include "virterror_internal.h"
+#include "datatypes.h"
 #include "files.h"
 #include "memory.h"
 #include "uuid.h"
-
-#include "../esx/esx_vmx.h"
+#include "vmx.h"
 #include "vmware_conf.h"
 #include "vmware_driver.h"
 
-const char *vmw_types[] = { "player", "ws" };
+static const char *vmw_types[] = { "player", "ws" };
 
 static void
 vmwareDriverLock(struct vmware_driver *driver)
@@ -244,9 +246,9 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
     char *fileName = NULL;
     char *vmxPath = NULL;
     vmwareDomainPtr pDomain = NULL;
-    esxVMX_Context ctx;
+    virVMXContext ctx;
 
-    ctx.formatFileName = esxCopyVMXFileName;
+    ctx.formatFileName = vmwareCopyVMXFileName;
 
     vmwareDriverLock(driver);
     if ((vmdef = virDomainDefParseString(driver->caps, xml,
@@ -257,8 +259,7 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
 
     /* generate vmx file */
-    vmx = esxVMX_FormatConfig(&ctx, driver->caps, vmdef,
-                              esxVI_ProductVersion_ESX4x);
+    vmx = virVMXFormatConfig(&ctx, driver->caps, vmdef, 7);
     if (vmx == NULL)
         goto cleanup;
 
@@ -497,9 +498,9 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     char *vmx = NULL;
     char *vmxPath = NULL;
     vmwareDomainPtr pDomain = NULL;
-    esxVMX_Context ctx;
+    virVMXContext ctx;
 
-    ctx.formatFileName = esxCopyVMXFileName;
+    ctx.formatFileName = vmwareCopyVMXFileName;
 
     vmwareDriverLock(driver);
 
@@ -511,8 +512,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
 
     /* generate vmx file */
-    vmx = esxVMX_FormatConfig(&ctx, driver->caps, vmdef,
-                              esxVI_ProductVersion_ESX4x);
+    vmx = virVMXFormatConfig(&ctx, driver->caps, vmdef, 7);
     if (vmx == NULL)
         goto cleanup;
 

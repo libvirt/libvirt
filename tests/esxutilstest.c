@@ -10,6 +10,7 @@
 # include "memory.h"
 # include "testutils.h"
 # include "util.h"
+# include "vmx/vmx.h"
 # include "esx/esx_util.h"
 # include "esx/esx_vi_types.h"
 
@@ -303,8 +304,8 @@ testConvertWindows1252ToUTF8(const void *data ATTRIBUTE_UNUSED)
     for (i = 0; i < ARRAY_CARDINALITY(windows1252ToUTF8); ++i) {
         VIR_FREE(utf8);
 
-        utf8 = esxUtil_ConvertToUTF8("Windows-1252",
-                                     windows1252ToUTF8[i].windows1252);
+        utf8 = virVMXConvertToUTF8("Windows-1252",
+                                   windows1252ToUTF8[i].windows1252);
 
         if (utf8 == NULL) {
             return -1;

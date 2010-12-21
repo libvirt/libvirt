@@ -25,7 +25,6 @@ src/esx/esx_util.c
 src/esx/esx_vi.c
 src/esx/esx_vi_methods.c
 src/esx/esx_vi_types.c
-src/esx/esx_vmx.c
 src/fdstream.c
 src/interface/netcf_driver.c
 src/internal.h
@@ -109,6 +108,7 @@ src/vbox/vbox_driver.c
 src/vbox/vbox_tmpl.c
 src/vmware/vmware_conf.c
 src/vmware/vmware_driver.c
+src/vmx/vmx.c
 src/xen/xen_driver.c
 src/xen/xen_hypervisor.c
 src/xen/xen_inotify.c

@@ -31,6 +31,7 @@
 #include "logging.h"
 #include "util.h"
 #include "uuid.h"
+#include "vmx.h"
 #include "xml.h"
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
@@ -2048,7 +2049,7 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
                     goto failure;
                 }
 
-                if (esxUtil_UnescapeHexPercent(*name) < 0) {
+                if (virVMXUnescapeHexPercent(*name) < 0) {
                     ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
                                  _("Domain name contains invalid escape sequence"));
                     goto failure;
@@ -3722,4 +3723,41 @@ esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
     }
 
     return 0;
+}
+
+
+
+int
+esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersion)
+{
+    /*
+     * virtualHW.version compatibility matrix:
+     *
+     *              4 7    API
+     *   ESX 3.5    +      2.5
+     *   ESX 4.0    + +    4.0
+     *   ESX 4.1    + +    4.1
+     *   GSX 2.0    + +    2.5
+     */
+    switch (productVersion) {
+      case esxVI_ProductVersion_ESX35:
+      case esxVI_ProductVersion_VPX25:
+        return 4;
+
+      case esxVI_ProductVersion_GSX20:
+      case esxVI_ProductVersion_ESX40:
+      case esxVI_ProductVersion_ESX41:
+      case esxVI_ProductVersion_VPX40:
+      case esxVI_ProductVersion_VPX41:
+        return 7;
+
+      case esxVI_ProductVersion_ESX4x:
+      case esxVI_ProductVersion_VPX4x:
+        return 7;
+
+      default:
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Unexpected product version"));
+        return -1;
+    }
 }

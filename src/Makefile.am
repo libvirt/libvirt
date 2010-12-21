@@ -322,8 +322,7 @@ ESX_DRIVER_SOURCES =						\
 		esx/esx_util.c esx/esx_util.h			\
 		esx/esx_vi.c esx/esx_vi.h			\
 		esx/esx_vi_methods.c esx/esx_vi_methods.h	\
-		esx/esx_vi_types.c esx/esx_vi_types.h		\
-		esx/esx_vmx.c esx/esx_vmx.h
+		esx/esx_vi_types.c esx/esx_vi_types.h
 
 ESX_DRIVER_GENERATED =							\
 		esx/esx_vi_methods.generated.c				\
@@ -418,6 +417,9 @@ CPU_SOURCES =							\
 		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h	\
 		cpu/cpu_map.h cpu/cpu_map.c
 
+VMX_SOURCES =							\
+		vmx/vmx.c vmx/vmx.h
+
 pkgdata_DATA =	cpu/cpu_map.xml
 
 EXTRA_DIST +=	$(pkgdata_DATA)
@@ -450,6 +452,14 @@ libvirt_la_BUILT_LIBADD += libvirt_cpu.la
 libvirt_cpu_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 libvirt_cpu_la_SOURCES = $(CPU_SOURCES)
+
+if WITH_VMX
+noinst_LTLIBRARIES += libvirt_vmx.la
+libvirt_la_BUILT_LIBADD += libvirt_vmx.la
+libvirt_vmx_la_CFLAGS = \
+		-I@top_srcdir@/src/conf $(AM_CFLAGS)
+libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
+endif
 
 
 noinst_LTLIBRARIES += libvirt_driver.la
@@ -621,7 +631,7 @@ noinst_LTLIBRARIES += libvirt_driver_vmware.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_vmware.la
 endif
 libvirt_driver_vmware_la_CFLAGS = \
-		-I@top_srcdir@/src/conf
+		-I@top_srcdir@/src/conf -I@top_srcdir@/src/vmx
 if WITH_DRIVER_MODULES
 libvirt_driver_vmware_la_LDFLAGS = -module -avoid-version
 endif
@@ -768,7 +778,7 @@ noinst_LTLIBRARIES += libvirt_driver_esx.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_esx.la
 endif
 libvirt_driver_esx_la_CFLAGS = $(LIBCURL_CFLAGS) \
-		-I@top_srcdir@/src/conf $(AM_CFLAGS)
+		-I@top_srcdir@/src/conf -I@top_srcdir@/src/vmx $(AM_CFLAGS)
 libvirt_driver_esx_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_esx_la_LIBADD = $(LIBCURL_LIBS)
 if WITH_DRIVER_MODULES
@@ -1041,6 +1051,10 @@ endif
 
 if WITH_NWFILTER
 USED_SYM_FILES += libvirt_nwfilter.syms
+endif
+
+if WITH_VMX
+USED_SYM_FILES += libvirt_vmx.syms
 endif
 
 EXTRA_DIST += \

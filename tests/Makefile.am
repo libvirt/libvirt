@@ -91,7 +91,11 @@ check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
 endif
 
 if WITH_ESX
-check_PROGRAMS += esxutilstest vmx2xmltest xml2vmxtest
+check_PROGRAMS += esxutilstest
+endif
+
+if WITH_VMX
+check_PROGRAMS += vmx2xmltest xml2vmxtest
 endif
 
 if WITH_SECDRIVER_SELINUX
@@ -180,7 +184,11 @@ TESTS += nwfilterxml2xmltest
 endif
 
 if WITH_ESX
-TESTS += esxutilstest vmx2xmltest xml2vmxtest
+TESTS += esxutilstest
+endif
+
+if WITH_VMX
+TESTS += vmx2xmltest xml2vmxtest
 endif
 
 if WITH_SECDRIVER_SELINUX
@@ -292,18 +300,22 @@ esxutilstest_SOURCES = \
 	esxutilstest.c \
 	testutils.c testutils.h
 esxutilstest_LDADD = ../src/libvirt_driver_esx.la $(LDADDS)
+else
+EXTRA_DIST += esxutilstest.c
+endif
 
+if WITH_VMX
 vmx2xmltest_SOURCES = \
 	vmx2xmltest.c \
 	testutils.c testutils.h
-vmx2xmltest_LDADD = ../src/libvirt_driver_esx.la $(LDADDS)
+vmx2xmltest_LDADD = ../src/libvirt_vmx.la $(LDADDS)
 
 xml2vmxtest_SOURCES = \
 	xml2vmxtest.c \
 	testutils.c testutils.h
-xml2vmxtest_LDADD = ../src/libvirt_driver_esx.la $(LDADDS)
+xml2vmxtest_LDADD = ../src/libvirt_vmx.la $(LDADDS)
 else
-EXTRA_DIST += esxutilstest.c vmx2xmltest.c xml2vmxtest.c
+EXTRA_DIST += vmx2xmltest.c xml2vmxtest.c
 endif
 
 networkxml2xmltest_SOURCES = \

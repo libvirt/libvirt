@@ -24,7 +24,6 @@
 
 #include <config.h>
 
-#include <c-ctype.h>
 #include <netdb.h>
 
 #include "internal.h"
@@ -34,6 +33,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"
+#include "vmx.h"
 #include "esx_private.h"
 #include "esx_util.h"
 
@@ -415,198 +415,6 @@ esxUtil_ResolveHostname(const char *hostname,
 
 
 int
-esxUtil_GetConfigString(virConfPtr conf, const char *name, char **string,
-                        bool optional)
-{
-    virConfValuePtr value;
-
-    *string = NULL;
-    value = virConfGetValue(conf, name);
-
-    if (value == NULL) {
-        if (optional) {
-            return 0;
-        }
-
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Missing essential config entry '%s'"), name);
-        return -1;
-    }
-
-    if (value->type != VIR_CONF_STRING) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Config entry '%s' must be a string"), name);
-        return -1;
-    }
-
-    if (value->str == NULL) {
-        if (optional) {
-            return 0;
-        }
-
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Missing essential config entry '%s'"), name);
-        return -1;
-    }
-
-    *string = strdup(value->str);
-
-    if (*string == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
-}
-
-
-
-int
-esxUtil_GetConfigUUID(virConfPtr conf, const char *name, unsigned char *uuid,
-                      bool optional)
-{
-    virConfValuePtr value;
-
-    value = virConfGetValue(conf, name);
-
-    if (value == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
-
-    if (value->type != VIR_CONF_STRING) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Config entry '%s' must be a string"), name);
-        return -1;
-    }
-
-    if (value->str == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
-
-    if (virUUIDParse(value->str, uuid) < 0) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not parse UUID from string '%s'"), value->str);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-
-int
-esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
-                      long long default_, bool optional)
-{
-    virConfValuePtr value;
-
-    *number = default_;
-    value = virConfGetValue(conf, name);
-
-    if (value == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
-
-    if (value->type == VIR_CONF_STRING) {
-        if (value->str == NULL) {
-            if (optional) {
-                return 0;
-            } else {
-                ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          _("Missing essential config entry '%s'"), name);
-                return -1;
-            }
-        }
-
-        if (STREQ(value->str, "unlimited")) {
-            *number = -1;
-        } else if (virStrToLong_ll(value->str, NULL, 10, number) < 0) {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Config entry '%s' must represent an integer value"),
-                      name);
-            return -1;
-        }
-    } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Config entry '%s' must be a string"), name);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-
-int
-esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
-                         bool default_, bool optional)
-{
-    virConfValuePtr value;
-
-    *boolean_ = default_;
-    value = virConfGetValue(conf, name);
-
-    if (value == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
-
-    if (value->type == VIR_CONF_STRING) {
-        if (value->str == NULL) {
-            if (optional) {
-                return 0;
-            } else {
-                ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          _("Missing essential config entry '%s'"), name);
-                return -1;
-            }
-        }
-
-        if (STRCASEEQ(value->str, "true")) {
-            *boolean_ = 1;
-        } else if (STRCASEEQ(value->str, "false")) {
-            *boolean_ = 0;
-        } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Config entry '%s' must represent a boolean value "
-                        "(true|false)"), name);
-            return -1;
-        }
-    } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Config entry '%s' must be a string"), name);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-
-int
 esxUtil_ReformatUuid(const char *input, char *output)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -619,81 +427,6 @@ esxUtil_ReformatUuid(const char *input, char *output)
     }
 
     virUUIDFormat(uuid, output);
-
-    return 0;
-}
-
-
-
-char *
-esxUtil_EscapeHex(const char *string, char escape, const char *special)
-{
-    char *escaped = NULL;
-    size_t length = 1; /* 1 byte for termination */
-    const char *tmp1 = string;
-    char *tmp2;
-
-    /* Calculate length of escaped string */
-    while (*tmp1 != '\0') {
-        if (*tmp1 == escape || strspn(tmp1, special) > 0) {
-            length += 2;
-        }
-
-        ++tmp1;
-        ++length;
-    }
-
-    if (VIR_ALLOC_N(escaped, length) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    tmp1 = string; /* reading from this one */
-    tmp2 = escaped; /* writing to this one */
-
-    /* Escape to 'cXX' where c is the escape char and X is a hex digit */
-    while (*tmp1 != '\0') {
-        if (*tmp1 == escape || strspn(tmp1, special) > 0) {
-            *tmp2++ = escape;
-
-            snprintf(tmp2, 3, "%02x", (unsigned int)*tmp1);
-
-            tmp2 += 2;
-        } else {
-            *tmp2++ = *tmp1;
-        }
-
-        ++tmp1;
-    }
-
-    *tmp2 = '\0';
-
-    return escaped;
-}
-
-
-
-int
-esxUtil_UnescapeHex(char *string, char escape)
-{
-    char *tmp1 = string; /* reading from this one */
-    char *tmp2 = string; /* writing to this one */
-
-    /* Unescape from 'cXX' where c is the escape char and X is a hex digit */
-    while (*tmp1 != '\0') {
-        if (*tmp1 == escape) {
-            if (!c_isxdigit(tmp1[1]) || !c_isxdigit(tmp1[2])) {
-                return -1;
-            }
-
-            *tmp2++ = virHexToBin(tmp1[1]) * 16 + virHexToBin(tmp1[2]);
-            tmp1 += 3;
-        } else {
-            *tmp2++ = *tmp1++;
-        }
-    }
-
-    *tmp2 = '\0';
 
     return 0;
 }
@@ -805,7 +538,7 @@ esxUtil_EscapeDatastoreItem(const char *string)
 
     esxUtil_ReplaceSpecialWindowsPathChars(replaced);
 
-    escaped1 = esxUtil_EscapeHexPercent(replaced);
+    escaped1 = virVMXEscapeHexPercent(replaced);
 
     if (escaped1 == NULL) {
         goto cleanup;
@@ -818,42 +551,4 @@ esxUtil_EscapeDatastoreItem(const char *string)
     VIR_FREE(escaped1);
 
     return escaped2;
-}
-
-
-
-char *
-esxUtil_ConvertToUTF8(const char *encoding, const char *string)
-{
-    char *result = NULL;
-    xmlCharEncodingHandlerPtr handler;
-    xmlBufferPtr input;
-    xmlBufferPtr utf8;
-
-    handler = xmlFindCharEncodingHandler(encoding);
-
-    if (handler == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("libxml2 doesn't handle %s encoding"), encoding);
-        return NULL;
-    }
-
-    input = xmlBufferCreateStatic((char *)string, strlen(string));
-    utf8 = xmlBufferCreate();
-
-    if (xmlCharEncInFunc(handler, utf8, input) < 0) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not convert from %s to UTF-8 encoding"), encoding);
-        goto cleanup;
-    }
-
-    result = (char *)utf8->content;
-    utf8->content = NULL;
-
-  cleanup:
-    xmlCharEncCloseFunc(handler);
-    xmlBufferFree(input);
-    xmlBufferFree(utf8);
-
-    return result;
 }

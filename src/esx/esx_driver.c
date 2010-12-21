@@ -31,6 +31,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"
+#include "vmx.h"
 #include "esx_driver.h"
 #include "esx_interface_driver.h"
 #include "esx_network_driver.h"
@@ -42,7 +43,6 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
-#include "esx_vmx.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
@@ -88,7 +88,7 @@ struct _esxVMX_Data {
  * Firstly this functions checks if the given file name contains a separator.
  * If it doesn't then the referenced file is in the same directory as the .vmx
  * file. The datastore name and directory of the .vmx file are passed to this
- * function via the opaque paramater by the caller of esxVMX_ParseConfig.
+ * function via the opaque parameter by the caller of virVMXParseConfig.
  *
  * Otherwise query for all known datastores and their mount directories. Then
  * try to find a datastore with a mount directory that is a prefix to the given
@@ -584,10 +584,6 @@ esxCapsInit(esxPrivate *priv)
         goto failure;
     }
 
-    /*
-     * FIXME: Maybe distinguish betwen ESX and GSX here, see
-     * esxVMX_ParseConfig() and VIR_DOMAIN_VIRT_VMWARE
-     */
     if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
                                       NULL) == NULL) {
         goto failure;
@@ -602,10 +598,6 @@ esxCapsInit(esxPrivate *priv)
             goto failure;
         }
 
-        /*
-         * FIXME: Maybe distinguish betwen ESX and GSX here, see
-         * esxVMX_ParseConfig() and VIR_DOMAIN_VIRT_VMWARE
-         */
         if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
                                           NULL) == NULL) {
             goto failure;
@@ -2570,7 +2562,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *vmx = NULL;
-    esxVMX_Context ctx;
+    virVMXContext ctx;
     esxVMX_Data data;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
@@ -2637,8 +2629,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
 
-    def = esxVMX_ParseConfig(&ctx, priv->caps, vmx,
-                             priv->primary->productVersion);
+    def = virVMXParseConfig(&ctx, priv->caps, vmx);
 
     if (def != NULL) {
         if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
@@ -2674,7 +2665,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
                        unsigned int flags ATTRIBUTE_UNUSED)
 {
     esxPrivate *priv = conn->privateData;
-    esxVMX_Context ctx;
+    virVMXContext ctx;
     esxVMX_Data data;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
@@ -2693,8 +2684,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
 
-    def = esxVMX_ParseConfig(&ctx, priv->caps, nativeConfig,
-                             priv->primary->productVersion);
+    def = virVMXParseConfig(&ctx, priv->caps, nativeConfig);
 
     if (def != NULL) {
         xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
@@ -2713,7 +2703,8 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
                      unsigned int flags ATTRIBUTE_UNUSED)
 {
     esxPrivate *priv = conn->privateData;
-    esxVMX_Context ctx;
+    int virtualHW_version;
+    virVMXContext ctx;
     esxVMX_Data data;
     virDomainDefPtr def = NULL;
     char *vmx = NULL;
@@ -2721,6 +2712,13 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
                   _("Unsupported config format '%s'"), nativeFormat);
+        return NULL;
+    }
+
+    virtualHW_version = esxVI_ProductVersionToDefaultVirtualHWVersion
+                          (priv->primary->productVersion);
+
+    if (virtualHW_version < 0) {
         return NULL;
     }
 
@@ -2738,8 +2736,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
 
-    vmx = esxVMX_FormatConfig(&ctx, priv->caps, def,
-                              priv->primary->productVersion);
+    vmx = virVMXFormatConfig(&ctx, priv->caps, def, virtualHW_version);
 
     virDomainDefFree(def);
 
@@ -2922,7 +2919,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     int i;
     virDomainDiskDefPtr disk = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
-    esxVMX_Context ctx;
+    int virtualHW_version;
+    virVMXContext ctx;
     esxVMX_Data data;
     char *datastoreName = NULL;
     char *directoryName = NULL;
@@ -2973,6 +2971,13 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     }
 
     /* Build VMX from domain XML */
+    virtualHW_version = esxVI_ProductVersionToDefaultVirtualHWVersion
+                          (priv->primary->productVersion);
+
+    if (virtualHW_version < 0) {
+        goto cleanup;
+    }
+
     data.ctx = priv->primary;
     data.datastorePathWithoutFileName = NULL;
 
@@ -2981,8 +2986,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
 
-    vmx = esxVMX_FormatConfig(&ctx, priv->caps, def,
-                              priv->primary->productVersion);
+    vmx = virVMXFormatConfig(&ctx, priv->caps, def, virtualHW_version);
 
     if (vmx == NULL) {
         goto cleanup;

@@ -78,6 +78,6 @@ int vmwareMakePath(char *srcDir, char *srcName, char *srcExt,
 
 int vmwareExtractPid(const char * vmxPath);
 
-char * esxCopyVMXFileName(const char *datastorePath, void *opaque);
+char *vmwareCopyVMXFileName(const char *datastorePath, void *opaque);
 
 #endif

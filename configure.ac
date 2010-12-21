@@ -1776,6 +1776,15 @@ if test "$with_esx" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_ESX], [test "$with_esx" = "yes"])
 
+with_vmx=yes
+if test "$with_esx" != "yes" && test "$with_vmware" != "yes"; then
+  with_vmx=no
+fi
+if test "$with_vmx" = "yes" ; then
+  AC_DEFINE_UNQUOTED([WITH_VMX], 1, [whether VMware VMX config handling is enabled])
+fi
+AM_CONDITIONAL([WITH_VMX], [test "$with_vmx" = "yes"])
+
 if test "$with_xenapi" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_XENAPI], 1, [whether XenAPI driver is enabled])
 fi

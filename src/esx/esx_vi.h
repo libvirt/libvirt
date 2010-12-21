@@ -435,4 +435,6 @@ int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 int esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
                              esxVI_HostCpuIdInfo *hostCpuIdInfo);
 
+int esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersion);
+
 #endif /* __ESX_VI_H__ */

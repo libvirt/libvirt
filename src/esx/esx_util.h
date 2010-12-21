@@ -27,7 +27,6 @@
 # include <libxml/uri.h>
 
 # include "internal.h"
-# include "conf.h"
 
 typedef struct _esxUtil_ParsedUri esxUtil_ParsedUri;
 
@@ -57,38 +56,12 @@ int esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
 int esxUtil_ResolveHostname(const char *hostname,
                             char *ipAddress, size_t ipAddress_length);
 
-int esxUtil_GetConfigString(virConfPtr conf, const char *name, char **string,
-                            bool optional);
-
-int esxUtil_GetConfigUUID(virConfPtr conf, const char *name,
-                          unsigned char *uuid, bool optional);
-
-int esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
-                          long long default_, bool optional);
-
-int esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
-                             bool default_, bool optional);
-
 int esxUtil_ReformatUuid(const char *input, char *output);
-
-char *esxUtil_EscapeHex(const char *string, char escape, const char *special);
-
-# define esxUtil_EscapeHexPipe(_string) esxUtil_EscapeHex(_string, '|', "\"")
-
-# define esxUtil_EscapeHexPercent(_string) esxUtil_EscapeHex(_string, '%', "/\\")
-
-int esxUtil_UnescapeHex(char *string, char escape);
-
-# define esxUtil_UnescapeHexPipe(_string) esxUtil_UnescapeHex(_string, '|')
-
-# define esxUtil_UnescapeHexPercent(_string) esxUtil_UnescapeHex(_string, '%')
 
 char *esxUtil_EscapeBase64(const char *string);
 
 void esxUtil_ReplaceSpecialWindowsPathChars(char *string);
 
 char *esxUtil_EscapeDatastoreItem(const char *string);
-
-char *esxUtil_ConvertToUTF8(const char *encoding, const char *string);
 
 #endif /* __ESX_UTIL_H__ */
