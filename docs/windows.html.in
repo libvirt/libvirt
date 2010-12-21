@@ -3,20 +3,233 @@
   <body>
     <h1 >Windows support</h1>
 
+    <ul id="toc"></ul>
+
     <p>
-      Libvirt can be compiled on Windows
-      using the free <a href="http://www.mingw.org/">MinGW compiler</a>.
-      You can also cross-compile to a Windows target
-      from a Fedora machine using the packages available
-      <a href="http://hg.et.redhat.com/misc/fedora-mingw--devel/">from
-      the Fedora MinGW project</a>
-      (which includes a working libvirt specfile).
+      Libvirt is known to work as a client (not server) on Windows XP
+      (32-bit), and Windows 7 (64-bit).  Other Windows variants likely work
+      as well but we either haven't tested or received reports for them.
+    </p>
+
+    <h2><a name="installer">Experimental installation package</a></h2>
+
+    <p>
+      A windows installation package is in development.  An experimental
+      version is available here:
+    </p>
+
+    <a href="http://libvirt.org/sources/win32_experimental/Libvirt-0.8.6-2.exe">http://libvirt.org/sources/win32_experimental/Libvirt-0.8.6-2.exe</a>
+
+    <p>
+      <b>It is not production ready.</b>
     </p>
 
     <p>
-      Libvirt can only be built as a client on Windows
-      allowing remote access to systems libvirt servers.
-      Configure libvirt like this:
+      This version includes the libvirt development headers and libraries
+      for compiling against, the virsh shell with its needed dependencies,
+      and untested Python bindings.
+    </p>
+
+    <h3><a name="caveats">Caveats</h3>
+
+    <ul>
+      <li>
+        This installer just repackages the files compiled using Matthias
+        Bolte's msys_setup scripting (described below).
+      </li>
+      <li>
+        This is a .exe installer, created using NSIS.  We're looking into
+        something to create .msi installers as well.
+      </li>
+      <li>
+        The script for the NSIS installer is available online
+        <a href="https://github.com/justinclift/nsis_libvirt_installer">here</a>.
+      </li>
+    </ul>
+
+    <h3><a name="knowninstallerprobs">Existing problems with this installer we know about</a>
+
+    <p>
+      These are problems we know about, and need to be fixed in subsequent
+      versions of the installer (assistance welcomed):
+    </p>
+
+    <ul>
+      <li>
+        New versions install over other libvirt versions
+        <br /><br />
+        If a version of this installer has installed libvirt on the system
+        already, this installer will automatically suggest the same
+        installation location, then overwrite the version already there
+        without checking.
+        <br /><br />
+        This is fairly non-optimal, and should be fixed.  What should
+        probably happen, is for this installer to detect an existing
+        installation then offer to either uninstall it first or ask for a
+        new installation location.
+        <br /><br />
+      </li>
+
+      <li>
+        Start menu shortcuts aren't being removed at uninstall time
+        <br /><br />
+        Not sure why yet.  Needs to be investigated.
+        <br /><br />
+      </li>
+
+      <li>
+        Libvirt dll files should be added to path
+        <br /><br />
+        At the moment, anything that needs to use the libvirt dll files
+        (i.e. the C# bindings) won't automatically find them.  This can be
+        worked around by copying the dll files into the same directory as
+        whatever needs them, but is probably not an optimal approach.
+        There might be a better way and needs to be investigated.
+      </li>
+    </ul>
+
+    <h2><a name="conntypes">Connection types</h2>
+
+    <p>
+      These connection types are known to work:
+    </p>
+
+    <ul>
+      <li>QEMU with TLS (qemu+tls://)</li>
+      <li>QEMU with direct TCP (qemu+tcp://)</li>
+      <li>VMware ESX (esx://)</li>
+      <li>VMware VPX (vpx://)</li>
+    </ul>
+
+    <p>
+      These connection types are known not to work:
+    </p>
+
+    <ul>
+      <li>QEMU with SSH (qemu+ssh://)</li>
+    </ul>
+
+    <p>
+      All other connection types may or may not work, and haven't been
+      tested.
+    </p>
+
+    <p>
+      Please let us know either the results (either way) if you do.
+    </p>
+
+    <p>
+      <b>WARNING - The qemu+tcp:// connection type passes all traffic
+      without encryption.  This is a security hazard, and should <i>not</i>
+      be used in security sensitive environments.</b>
+    </p>
+
+    <h2><a name="esx">Connecting to VMware ESX/vSphere</h2>
+
+    <p>
+      Details on the capabilities and connection string syntax used for
+      connecting to VMware ESX and vSphere can be found online here:<br />
+    </p>
+
+    <a href="http://libvirt.org/drvesx.html">http://libvirt.org/drvesx.html</a>
+
+    <h2><a name="tlscerts">TLS Certificates</h2>
+
+    <p>
+      TLS certificates are needed prior to connecting to either QEMU
+      instances with TLS, or connecting to VMware ESX/vSphere.
+    </p>
+
+    <p>
+      Information on generating TLS certificates can be found here:
+    </p>
+
+    <a href="http://wiki.libvirt.org/page/TLSSetup">http://wiki.libvirt.org/page/TLSSetup</a>
+
+    <p>
+      These instructions are for *nix, and have not yet been adapted for
+      Windows.  You'll need to figure out the Windows equivalents until
+      that's done (sorry).  If you can help us out with this, that would be
+      really welcome.
+    </p>
+
+    <p>
+      The locations of the TLS certificates and key file are hard coded,
+      rather than being configurable.
+    </p>
+
+    <p>
+      The Certificate Authority (CA) certificate file must be placed in:
+    </p>
+
+    <ul>
+      <li>%APPDATA%\libvirt\pki\CA\cacert.pem</li>
+    </ul>
+
+    <p>
+      The Client certificate file must be placed in:
+    </p>
+
+    <ul>
+      <li>%APPDATA%\libvirt\pki\libvirt\clientcert.pem</li>
+    </ul>
+
+    <p>
+      The Client key file must be placed in:
+    </p>
+
+    <ul>
+      <li>%APPDATA%\libvirt\pki\libvirt\private\clientkey.pem</li>
+    </ul>
+
+    <p>
+      On an example Windows 7 x64 system here, this resolves to these paths:
+    </p>
+
+    <ul>
+      <li>C:\Users\someuser\AppData\Roaming\libvirt\pki\CA\cacert.pem</li>
+      <li>C:\Users\someuser\AppData\Roaming\libvirt\pki\libvirt\clientcert.pem</li>
+      <li>C:\Users\someuser\AppData\Roaming\libvirt\pki\libvirt\private\clientkey.pem</li>
+    </ul>
+
+    <h2><a name="feedback">Feedback</h2>
+
+    <p>
+      Feedback and suggestions on changes to make and what else to include
+      <a href="contact.html">are desired</a>.
+    </p>
+
+    <h2><a name="compiling">Compiling yourself</a></h2>
+
+    <p>
+      Libvirt can be compiled on Windows using the free
+      <a href="http://www.mingw.org/">MinGW compiler</a>.
+    </p>
+
+    <h3><a name="msys_setup">MSYS Build script</a></h3>
+
+    <p>
+      The easiest way is to use the <b>msys_setup</b> script, developed by
+      Matthias Bolte.  This is actively developed and kept current with
+      libvirt releases:
+    </p>
+
+    <a href="https://github.com/photron/msys_setup">https://github.com/photron/msys_setup</a>
+
+    <h3><a name="cross-compile">Cross compiling</a></h3>
+
+    <p>
+      You can also cross-compile to a Windows target from a Fedora machine
+      using the packages available
+      <a href="http://hg.et.redhat.com/misc/fedora-mingw--devel/">from the Fedora MinGW project</a>
+      (which includes a working libvirt specfile).
+    </p>
+
+    <h3><a name="configure">By hand</a></h3>
+
+    <p>
+      Use these options when following the instructions on the
+      <a href="compiling.html">Compiling</a> page.
     </p>
 
 <pre>
@@ -32,9 +245,5 @@
   --without-libvirtd
 </pre>
 
-    <p>
-      We intend to supply Windows binaries on this page
-      later, but at the moment you have to compile from source.
-    </p>
   </body>
 </html>

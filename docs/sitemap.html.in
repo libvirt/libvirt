@@ -21,11 +21,21 @@
       <li>
         <a href="downloads.html">Downloads</a>
         <span>Get the latest source releases, binary builds and get access to the source repository</span>
+        <ul>
+          <li>
+            <a href="windows.html">Windows</a>
+            <span>Downloads for Windows</span>
+          </li>
+        </ul>
       </li>
       <li>
         <a href="docs.html">Documentation</a>
         <span>Information for users, administrators and developers</span>
         <ul>
+          <li>
+            <a href="compiling.html">Compiling</a>
+            <span>How to compile libvirt</span>
+          </li>
           <li>
             <a href="deployment.html">Deployment</a>
             <span>Information about deploying and using libvirt</span>

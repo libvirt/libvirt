@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1><a name="installation">libvirt Installation</a></h1>
+
+    <ul id="toc"></ul>
+
+    <h2><a name="compiling">Compiling a release tarball</a></h2>
+
+    <p>
+      libvirt uses the standard configure/make/install steps:
+    </p>
+
+    <pre>
+      $ gunzip -c libvirt-x.x.x.tar.gz | tar xvf -
+      $ cd libvirt-x.x.x
+      $ ./configure</pre>
+
+    <p>
+      The <i>configure</i> script can be given options to change its default
+      behaviour.
+    </p>
+
+    <p>
+      To get the complete list of the options it can take, pass it the
+      <i>--help</i> option like this:
+    </p>
+
+    <pre>
+      $ ./configure <i>--help</i></pre>
+
+    <p>
+      When you have determined which options you want to use (if any),
+      continue the process.
+    </p>
+
+    <p>
+      Note the use of <b>sudo</b> with the <i>make install</i> command
+      below.  Using sudo is only required when installing to a location your
+      user does not have write access to.  Installing to a system location
+      is a good example of this.
+    </p>
+
+    <p>
+      If you are installing to a location that your user <i>does</i> have write
+      access to, then you can instead run the <i>make install</i> command
+      without putting <b>sudo</b> before it.
+    </p>
+
+    <pre>
+      $ ./configure <i>[possible options]</i>
+      $ make
+      $ <b>sudo</b> <i>make install</i></pre>
+
+    <p>
+      At this point you <b>may</b> have to run ldconfig or a similar utility
+      to update your list of installed shared libs.
+    </p>
+
+    <h2><a name="building">Building from a GIT checkout</a></h2>
+
+    <p>
+      The libvirt build process uses GNU autotools, so after obtaining a
+      checkout it is necessary to generate the configure script and Makefile.in
+      templates using the <code>autogen.sh</code> command, passing the extra
+      arguments as for configure. As an example, to do a complete build and
+      install it into your home directory run:
+    </p>
+
+    <pre>
+      $ ./autogen.sh --prefix=$HOME/usr --enable-compile-warnings=error
+      $ make
+      $ <b>sudo</b> make install</pre>
+  </body>
+</html>
