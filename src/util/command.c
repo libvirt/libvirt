@@ -1008,17 +1008,21 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     }
 
     /* If caller hasn't requested capture of stdout/err, then capture
-     * it ourselves so we can log it.
+     * it ourselves so we can log it.  But the intermediate child for
+     * a daemon has no expected output, and we don't want our
+     * capturing pipes passed on to the daemon grandchild.
      */
-    if (!cmd->outfdptr) {
-        cmd->outfdptr = &cmd->outfd;
-        cmd->outbuf = &outbuf;
-        string_io = true;
-    }
-    if (!cmd->errfdptr) {
-        cmd->errfdptr = &cmd->errfd;
-        cmd->errbuf = &errbuf;
-        string_io = true;
+    if (!(cmd->flags & VIR_EXEC_DAEMON)) {
+        if (!cmd->outfdptr) {
+            cmd->outfdptr = &cmd->outfd;
+            cmd->outbuf = &outbuf;
+            string_io = true;
+        }
+        if (!cmd->errfdptr) {
+            cmd->errfdptr = &cmd->errfd;
+            cmd->errbuf = &errbuf;
+            string_io = true;
+        }
     }
 
     if (virCommandRunAsync(cmd, NULL) < 0) {

@@ -668,6 +668,47 @@ cleanup:
     return ret;
 }
 
+/*
+ * Run long-running daemon, to ensure no hang.
+ */
+static int test18(const void *unused ATTRIBUTE_UNUSED)
+{
+    virCommandPtr cmd = virCommandNewArgList("sleep", "100", NULL);
+    char *pidfile = virFilePid(abs_builddir, "commandhelper");
+    pid_t pid;
+    int ret = -1;
+
+    if (!pidfile)
+        goto cleanup;
+
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandDaemonize(cmd);
+
+    alarm(5);
+    if (virCommandRun(cmd, NULL) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+    alarm(0);
+
+    if (virFileReadPid(abs_builddir, "commandhelper", &pid) != 0) {
+        printf("cannot read pidfile\n");
+        goto cleanup;
+    }
+    while (kill(pid, SIGINT) != -1)
+        usleep(100*1000);
+
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
+    unlink(pidfile);
+    VIR_FREE(pidfile);
+    return ret;
+}
+
+
 static int
 mymain(int argc, char **argv)
 {
@@ -732,6 +773,7 @@ mymain(int argc, char **argv)
     DO_TEST(test15);
     DO_TEST(test16);
     DO_TEST(test17);
+    DO_TEST(test18);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
