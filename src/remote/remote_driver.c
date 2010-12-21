@@ -10371,8 +10371,38 @@ remoteIO(virConnectPtr conn,
         return -1;
 
 cleanup:
-    DEBUG("All done with our call %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
+    DEBUG("All done with our call %d %p %p", thiscall->proc_nr,
+          priv->waitDispatch, thiscall);
     if (thiscall->mode == REMOTE_MODE_ERROR) {
+        /* Interop for virErrorNumber glitch in 0.8.0, if server is
+         * 0.7.1 through 0.7.7; see comments in virterror.h. */
+        switch (thiscall->err.code) {
+        case VIR_WAR_NO_NWFILTER:
+            /* no way to tell old VIR_WAR_NO_SECRET apart from
+             * VIR_WAR_NO_NWFILTER, but both are very similar
+             * warnings, so ignore the difference */
+            break;
+        case VIR_ERR_INVALID_NWFILTER:
+        case VIR_ERR_NO_NWFILTER:
+        case VIR_ERR_BUILD_FIREWALL:
+            /* server was trying to pass VIR_ERR_INVALID_SECRET,
+             * VIR_ERR_NO_SECRET, or VIR_ERR_CONFIG_UNSUPPORTED */
+            if (thiscall->err.domain != VIR_FROM_NWFILTER)
+                thiscall->err.code += 4;
+            break;
+        case VIR_WAR_NO_SECRET:
+            if (thiscall->err.domain == VIR_FROM_QEMU)
+                thiscall->err.code = VIR_ERR_OPERATION_TIMEOUT;
+            break;
+        case VIR_ERR_INVALID_SECRET:
+            if (thiscall->err.domain == VIR_FROM_XEN)
+                thiscall->err.code = VIR_ERR_MIGRATE_PERSIST_FAILED;
+            break;
+        default:
+            /* Nothing to alter. */
+            break;
+        }
+
         /* See if caller asked us to keep quiet about missing RPCs
          * eg for interop with older servers */
         if (flags & REMOTE_CALL_QUIET_MISSING_RPC &&
