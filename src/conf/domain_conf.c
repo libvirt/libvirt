@@ -8353,7 +8353,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     size_t depth = 0;
     char *nextpath = NULL;
 
-    if (!disk->src)
+    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
     if (disk->driverType) {

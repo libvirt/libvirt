@@ -436,7 +436,7 @@ SELinuxRestoreSecurityImageLabelInt(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
     if (disk->readonly || disk->shared)
         return 0;
 
-    if (!disk->src)
+    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
     /* If we have a shared FS & doing migrated, we must not

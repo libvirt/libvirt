@@ -619,7 +619,7 @@ AppArmorSetSecurityImageLabel(virSecurityDriverPtr drv,
     if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
-    if (!disk->src)
+    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
     if (secdef->imagelabel) {
