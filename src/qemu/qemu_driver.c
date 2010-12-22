@@ -2491,6 +2491,19 @@ static int qemudNextFreePort(struct qemud_driver *driver,
 }
 
 
+static void
+qemuReturnPort(struct qemud_driver *driver,
+                int port)
+{
+    if (port < QEMU_VNC_PORT_MIN)
+        return;
+
+    if (virBitmapClearBit(driver->reservedVNCPorts,
+                          port - QEMU_VNC_PORT_MIN) < 0)
+        VIR_DEBUG("Could not mark port %d as unused", port);
+}
+
+
 static int
 qemuAssignPCIAddresses(virDomainDefPtr def)
 {
@@ -2696,6 +2709,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                 if (tlsPort < 0) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     "%s", _("Unable to find an unused SPICE TLS port"));
+                    qemuReturnPort(driver, port);
                     goto cleanup;
                 }
             }
@@ -3099,14 +3113,14 @@ retry:
     */
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics[0]->data.vnc.autoport &&
-        vm->def->graphics[0]->data.vnc.port >= QEMU_VNC_PORT_MIN) {
-        if (virBitmapClearBit(driver->reservedVNCPorts,
-                              vm->def->graphics[0]->data.vnc.port - \
-                              QEMU_VNC_PORT_MIN) < 0) {
-            VIR_DEBUG("virBitmapClearBit failed on bit %d",
-                      vm->def->graphics[0]->data.vnc.port - QEMU_VNC_PORT_MIN);
-       }
+        vm->def->graphics[0]->data.vnc.autoport) {
+        qemuReturnPort(driver, vm->def->graphics[0]->data.vnc.port);
+    }
+    if ((vm->def->ngraphics == 1) &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+        vm->def->graphics[0]->data.spice.autoport) {
+        qemuReturnPort(driver, vm->def->graphics[0]->data.spice.port);
+        qemuReturnPort(driver, vm->def->graphics[0]->data.spice.tlsPort);
     }
 
     vm->pid = -1;
