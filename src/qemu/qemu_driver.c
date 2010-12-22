@@ -2607,10 +2607,10 @@ qemuPrepareMonitorChr(struct qemud_driver *driver,
     return 0;
 }
 
-static int qemuDomainSnapshotSetActive(virDomainObjPtr vm,
-                                       char *snapshotDir);
-static int qemuDomainSnapshotSetInactive(virDomainObjPtr vm,
-                                         char *snapshotDir);
+static int qemuDomainSnapshotSetCurrentActive(virDomainObjPtr vm,
+                                              char *snapshotDir);
+static int qemuDomainSnapshotSetCurrentInactive(virDomainObjPtr vm,
+                                                char *snapshotDir);
 
 
 #define START_POSTFIX ": starting up\n"
@@ -2807,7 +2807,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                                      vm->current_snapshot, vmop)))
         goto cleanup;
 
-    if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
+    if (qemuDomainSnapshotSetCurrentInactive(vm, driver->snapshotDir) < 0)
         goto cleanup;
 
     /* now that we know it is about to start call the hook if present */
@@ -9472,8 +9472,9 @@ static char *qemuFindQemuImgBinary(void)
     return ret;
 }
 
-static int qemuDomainSnapshotWriteSnapshotMetadata(virDomainObjPtr vm,
-                                                   char *snapshotDir)
+static int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
+                                           virDomainSnapshotObjPtr snapshot,
+                                           char *snapshotDir)
 {
     int fd = -1;
     char *newxml = NULL;
@@ -9484,7 +9485,7 @@ static int qemuDomainSnapshotWriteSnapshotMetadata(virDomainObjPtr vm,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(vm->def->uuid, uuidstr);
-    newxml = virDomainSnapshotDefFormat(uuidstr, vm->current_snapshot->def, 1);
+    newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def, 1);
     if (newxml == NULL) {
         virReportOOMError();
         return -1;
@@ -9501,8 +9502,7 @@ static int qemuDomainSnapshotWriteSnapshotMetadata(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir,
-                    vm->current_snapshot->def->name) < 0) {
+    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, snapshot->def->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -9528,25 +9528,27 @@ cleanup:
     return ret;
 }
 
-static int qemuDomainSnapshotSetActive(virDomainObjPtr vm,
-                                       char *snapshotDir)
+static int qemuDomainSnapshotSetCurrentActive(virDomainObjPtr vm,
+                                              char *snapshotDir)
 {
     if (vm->current_snapshot) {
         vm->current_snapshot->def->active = 1;
 
-        return qemuDomainSnapshotWriteSnapshotMetadata(vm, snapshotDir);
+        return qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+                                               snapshotDir);
     }
 
     return 0;
 }
 
-static int qemuDomainSnapshotSetInactive(virDomainObjPtr vm,
-                                         char *snapshotDir)
+static int qemuDomainSnapshotSetCurrentInactive(virDomainObjPtr vm,
+                                                char *snapshotDir)
 {
     if (vm->current_snapshot) {
         vm->current_snapshot->def->active = 0;
 
-        return qemuDomainSnapshotWriteSnapshotMetadata(vm, snapshotDir);
+        return qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+                                               snapshotDir);
     }
 
     return 0;
@@ -9686,8 +9688,9 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     /* Now we set the new current_snapshot for the domain */
     vm->current_snapshot = snap;
 
-    if (qemuDomainSnapshotWriteSnapshotMetadata(vm, driver->snapshotDir) < 0)
-        /* qemuDomainSnapshotWriteSnapshotMetadata set the error */
+    if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+                                        driver->snapshotDir) < 0)
+        /* qemuDomainSnapshotWriteMetadata set the error */
         goto cleanup;
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
@@ -9941,13 +9944,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
         }
         else {
-            if (qemuDomainSnapshotSetActive(vm, driver->snapshotDir) < 0)
+            if (qemuDomainSnapshotSetCurrentActive(vm, driver->snapshotDir) < 0)
                 goto endjob;
 
             rc = qemudStartVMDaemon(snapshot->domain->conn, driver, vm, NULL,
                                     false, -1, NULL, VIR_VM_OP_CREATE);
             qemuDomainStartAudit(vm, "from-snapshot", rc >= 0);
-            if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
+            if (qemuDomainSnapshotSetCurrentInactive(vm, driver->snapshotDir) < 0)
                 goto endjob;
             if (rc < 0)
                 goto endjob;
@@ -9991,7 +9994,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             }
         }
 
-        if (qemuDomainSnapshotSetActive(vm, driver->snapshotDir) < 0)
+        if (qemuDomainSnapshotSetCurrentActive(vm, driver->snapshotDir) < 0)
             goto endjob;
     }
 
@@ -10128,6 +10131,43 @@ static void qemuDomainSnapshotDiscardChildren(void *payload,
     }
 }
 
+struct snap_reparent {
+    struct qemud_driver *driver;
+    virDomainSnapshotObjPtr snap;
+    virDomainObjPtr vm;
+    int err;
+};
+
+static void
+qemuDomainSnapshotReparentChildren(void *payload,
+                                   const char *name ATTRIBUTE_UNUSED,
+                                   void *data)
+{
+    virDomainSnapshotObjPtr snap = payload;
+    struct snap_reparent *rep = data;
+
+    if (rep->err < 0) {
+        return;
+    }
+
+    if (snap->def->parent && STREQ(snap->def->parent, rep->snap->def->name)) {
+        VIR_FREE(snap->def->parent);
+
+        if (rep->snap->def->parent != NULL) {
+            snap->def->parent = strdup(rep->snap->def->parent);
+
+            if (snap->def->parent == NULL) {
+                virReportOOMError();
+                rep->err = -1;
+                return;
+            }
+        }
+
+        rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap,
+                                                   rep->driver->snapshotDir);
+    }
+}
+
 static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                                     unsigned int flags)
 {
@@ -10137,6 +10177,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     struct snap_remove rem;
+    struct snap_reparent rep;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
 
@@ -10168,6 +10209,15 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         virHashForEach(vm->snapshots.objs, qemuDomainSnapshotDiscardChildren,
                        &rem);
         if (rem.err < 0)
+            goto endjob;
+    } else {
+        rep.driver = driver;
+        rep.snap = snap;
+        rep.vm = vm;
+        rep.err = 0;
+        virHashForEach(vm->snapshots.objs, qemuDomainSnapshotReparentChildren,
+                       &rep);
+        if (rep.err < 0)
             goto endjob;
     }
 
