@@ -2,6 +2,8 @@
   <body>
     <h1>OpenVZ container driver</h1>
 
+    <ul id="toc"></ul>
+
     <p>
     The OpenVZ driver for libvirt allows use and management of container
     based virtualization on a Linux host OS. Prior to using the OpenVZ
@@ -11,11 +13,11 @@
     undue trouble.
     </p>
 
-    <h2>Connections to OpenVZ driver</h2>
+    <h2><a name="connections">Connections to OpenVZ driver</a></h2>
 
     <p>
     The libvirt OpenVZ driver is a single-instance privileged driver,
-    with a driver name of 'openvz'. Some example conection URIs for
+    with a driver name of 'openvz'. Some example connection URIs for
     the libvirt driver are:
     </p>
 
@@ -27,7 +29,7 @@ openvz+tcp://example.com/system      (remote access, SASl/Kerberos)
 openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
 </pre>
 
-    <h2>Notes on bridged networking</h2>
+    <h2><a name="notes">Notes on bridged networking</a></h2>
 
     <p>
     Bridged networking enables a guest domain (ie container) to have its
@@ -36,7 +38,7 @@ openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
     the host OS.
     </p>
 
-    <h3>Host network devices</h3>
+    <h3><a name="host">Host network devices</a></h3>
 
     <p>
     One or more of the physical devices must be attached to a bridge. The
@@ -47,7 +49,7 @@ openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
     physical device "eth0", or a bonding device "bond0".
     </p>
 
-    <h3>OpenVZ tools configuration</h3>
+    <h3><a name="tools">OpenVZ tools configuration</a></h3>
 
     <p>
     OpenVZ releases later than 3.0.23 ship with a standard network device
@@ -72,7 +74,7 @@ EXTERNAL_SCRIPT="/usr/sbin/vznetaddbr"
     </p>
 
 
-    <h2>Example guest domain XML configuration</h2>
+    <h2><a name="example">Example guest domain XML configuration</a></h2>
 
     <p>
     The current libvirt OpenVZ driver has a restriction that the
