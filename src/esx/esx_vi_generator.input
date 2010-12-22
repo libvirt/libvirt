@@ -735,6 +735,13 @@ method CreateVirtualDisk_Task returns ManagedObjectReference r
 end
 
 
+method DeleteVirtualDisk_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this:VirtualDiskManager       r
+    String                                   name                           r
+    ManagedObjectReference                   datacenter                     o
+end
+
+
 method DestroyPropertyFilter
     ManagedObjectReference                   _this                          r
 end

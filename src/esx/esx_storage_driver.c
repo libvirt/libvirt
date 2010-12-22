@@ -1377,6 +1377,54 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
 
 
 static int
+esxStorageVolumeDelete(virStorageVolPtr volume, unsigned int flags)
+{
+    int result = -1;
+    esxPrivate *priv = volume->conn->storagePrivateData;
+    char *datastorePath = NULL;
+    esxVI_ManagedObjectReference *task = NULL;
+    esxVI_TaskInfoState taskInfoState;
+    char *taskInfoErrorMessage = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (esxVI_DeleteVirtualDisk_Task(priv->primary, datastorePath,
+                                     priv->primary->datacenter->_reference,
+                                     &task) < 0 ||
+        esxVI_WaitForTaskCompletion(priv->primary, task, NULL,
+                                    esxVI_Occurrence_None, priv->autoAnswer,
+                                    &taskInfoState, &taskInfoErrorMessage) < 0) {
+        goto cleanup;
+    }
+
+    if (taskInfoState != esxVI_TaskInfoState_Success) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Could not delete volume: %s"),
+                  taskInfoErrorMessage);
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    VIR_FREE(datastorePath);
+    esxVI_ManagedObjectReference_Free(&task);
+    VIR_FREE(taskInfoErrorMessage);
+
+    return result;
+}
+
+
+
+static int
 esxStorageVolumeGetInfo(virStorageVolPtr volume, virStorageVolInfoPtr info)
 {
     int result = -1;
@@ -1574,7 +1622,7 @@ static virStorageDriver esxStorageDriver = {
     esxStorageVolumeLookupByPath,          /* volLookupByPath */
     esxStorageVolumeCreateXML,             /* volCreateXML */
     esxStorageVolumeCreateXMLFrom,         /* volCreateXMLFrom */
-    NULL,                                  /* volDelete */
+    esxStorageVolumeDelete,                /* volDelete */
     NULL,                                  /* volWipe */
     esxStorageVolumeGetInfo,               /* volGetInfo */
     esxStorageVolumeDumpXML,               /* volGetXMLDesc */
