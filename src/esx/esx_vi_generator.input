@@ -916,3 +916,10 @@ method WaitForUpdates returns UpdateSet r
     ManagedObjectReference                   _this:PropertyCollector        r
     String                                   version                        o
 end
+
+
+method ZeroFillVirtualDisk_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this:VirtualDiskManager       r
+    String                                   name                           r
+    ManagedObjectReference                   datacenter                     o
+end
