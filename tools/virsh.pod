@@ -731,12 +731,14 @@ I<type> can be either I<network> to indicate a physical network device or I<brid
 It is recommended to use the I<mac> option to distinguish between the interfaces
 if more than one are present on the domain.
 
-=item B<update-device> I<domain-id> I<file> optional I<--persistent>
+=item B<update-device> I<domain-id> I<file> optional I<--persistent> I<--force>
 
-Update the characteristics of a device associated with I<domain-id>,
-based on the device definition in an XML I<file>.  If the I<--persistent>
-option is used, the changes will affect the next boot of the domain.
-See the documentation to learn about libvirt XML format for a device.
+Update the characteristics of a device associated with I<domain-id>, based on
+the device definition in an XML I<file>.  If the I<--persistent> option is
+used, the changes will affect the next boot of the domain. The I<--force>
+option can be used to force device update, e.g., to eject a CD-ROM even if it
+is locked/mounted in the domain. See the documentation to learn about libvirt
+XML format for a device.
 
 =back
 

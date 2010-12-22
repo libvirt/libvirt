@@ -8293,6 +8293,7 @@ static const vshCmdOptDef opts_update_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, N_("XML file")},
     {"persistent", VSH_OT_BOOL, 0, N_("persist device update")},
+    {"force",  VSH_OT_BOOL, 0, N_("force device update")},
     {NULL, 0, 0, NULL}
 };
 
@@ -8331,6 +8332,10 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
     } else {
         flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
     }
+
+    if (vshCommandOptBool(cmd, "force"))
+        flags |= VIR_DOMAIN_DEVICE_MODIFY_FORCE;
+
     ret = virDomainUpdateDeviceFlags(dom, buffer, flags);
     VIR_FREE(buffer);
 
