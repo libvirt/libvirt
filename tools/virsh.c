@@ -10935,8 +10935,10 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
 
             if (tk == VSH_TK_ERROR)
                 goto syntaxError;
-            if (tk != VSH_TK_ARG)
+            if (tk != VSH_TK_ARG) {
+                VIR_FREE(tkdata);
                 break;
+            }
 
             if (cmd == NULL) {
                 /* first token must be command name */
