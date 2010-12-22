@@ -1511,9 +1511,10 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
      * <> redirection to avoid truncating a regular file.  */
     if (virAsprintf(&dest, "exec:" VIR_WRAPPER_SHELL_PREFIX "%s | "
                     "{ dd bs=%llu seek=%llu if=/dev/null && "
-                    "dd bs=%llu; } 1<>%s" VIR_WRAPPER_SHELL_SUFFIX,
+                    "dd ibs=%llu obs=%llu; } 1<>%s" VIR_WRAPPER_SHELL_SUFFIX,
                     argstr, QEMU_MONITOR_MIGRATE_TO_FILE_BS,
                     offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS,
+                    QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
                     QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
                     safe_target) < 0) {
         virReportOOMError();
