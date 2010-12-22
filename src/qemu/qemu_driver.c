@@ -2777,7 +2777,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     vm->def->id = driver->nextvmid++;
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                                      priv->monJSON != 0, qemuCmdFlags,
-                                     migrateFrom,
+                                     migrateFrom, stdin_fd,
                                      vm->current_snapshot, vmop)))
         goto cleanup;
 
@@ -2826,9 +2826,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     VIR_WARN("Executing %s", vm->def->emulator);
     virCommandSetPreExecHook(cmd, qemudSecurityHook, &hookData);
-
-    if (stdin_fd != -1)
-        virCommandSetInputFD(cmd, stdin_fd);
 
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
@@ -6091,7 +6088,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
 
     if (!(cmd = qemuBuildCommandLine(conn, driver, def,
                                      &monConfig, false, qemuCmdFlags,
-                                     NULL, NULL, VIR_VM_OP_NO_OP)))
+                                     NULL, -1, NULL, VIR_VM_OP_NO_OP)))
         goto cleanup;
 
     ret = virCommandToString(cmd);

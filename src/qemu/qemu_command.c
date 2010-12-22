@@ -2503,6 +2503,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      bool monitor_json,
                      unsigned long long qemuCmdFlags,
                      const char *migrateFrom,
+                     int migrateFd,
                      virDomainSnapshotObjPtr current_snapshot,
                      enum virVMOperationType vmop)
 {
@@ -2529,33 +2530,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         return NULL;
 
     virUUIDFormat(def->uuid, uuid);
-
-    /* Migration is very annoying due to wildly varying syntax & capabilities
-     * over time of KVM / QEMU codebases
-     */
-    if (migrateFrom) {
-        if (STRPREFIX(migrateFrom, "tcp")) {
-            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP)) {
-                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                "%s", _("TCP migration is not supported with this QEMU binary"));
-                return NULL;
-            }
-        } else if (STREQ(migrateFrom, "stdio")) {
-            if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
-                migrateFrom = "exec:cat";
-            } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO)) {
-                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                "%s", _("STDIO migration is not supported with this QEMU binary"));
-                return NULL;
-            }
-        } else if (STRPREFIX(migrateFrom, "exec")) {
-            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC)) {
-                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                "%s", _("STDIO migration is not supported with this QEMU binary"));
-                return NULL;
-            }
-        }
-    }
 
     emulator = def->emulator;
 
@@ -3956,8 +3930,58 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (migrateFrom)
-        virCommandAddArgList(cmd, "-incoming", migrateFrom, NULL);
+    /* Migration is very annoying due to wildly varying syntax &
+     * capabilities over time of KVM / QEMU codebases.
+     */
+    if (migrateFrom) {
+        virCommandAddArg(cmd, "-incoming");
+        if (STRPREFIX(migrateFrom, "tcp")) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                "%s", _("TCP migration is not supported with "
+                                        "this QEMU binary"));
+                goto error;
+            }
+            virCommandAddArg(cmd, migrateFrom);
+        } else if (STREQ(migrateFrom, "stdio")) {
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_FD) {
+                virCommandAddArgFormat(cmd, "fd:%d", migrateFd);
+                virCommandPreserveFD(cmd, migrateFd);
+            } else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
+                virCommandAddArg(cmd, "exec:cat");
+                virCommandSetInputFD(cmd, migrateFd);
+            } else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO) {
+                virCommandAddArg(cmd, migrateFrom);
+                virCommandSetInputFD(cmd, migrateFd);
+            } else {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                "%s", _("STDIO migration is not supported "
+                                        "with this QEMU binary"));
+                goto error;
+            }
+        } else if (STRPREFIX(migrateFrom, "exec")) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                "%s", _("EXEC migration is not supported "
+                                        "with this QEMU binary"));
+                goto error;
+            }
+            virCommandAddArg(cmd, migrateFrom);
+        } else if (STRPREFIX(migrateFrom, "fd")) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_FD)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                "%s", _("FD migration is not supported "
+                                        "with this QEMU binary"));
+                goto error;
+            }
+            virCommandAddArg(cmd, migrateFrom);
+            virCommandPreserveFD(cmd, migrateFd);
+        } else {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("unknown migration protocol"));
+            goto error;
+        }
+    }
 
     /* QEMU changed its default behavior to not include the virtio balloon
      * device.  Explicitly request it to ensure it will be present.

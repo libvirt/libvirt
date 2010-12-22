@@ -44,6 +44,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    bool monitor_json,
                                    unsigned long long qemuCmdFlags,
                                    const char *migrateFrom,
+                                   int migrateFd,
                                    virDomainSnapshotObjPtr current_snapshot,
                                    enum virVMOperationType vmop)
     ATTRIBUTE_NONNULL(1);

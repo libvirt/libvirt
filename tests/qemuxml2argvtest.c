@@ -31,6 +31,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
                                      unsigned long long extraFlags,
                                      const char *migrateFrom,
+                                     int migrateFd,
                                      bool expectError) {
     char argvData[MAX_FILE];
     char *expectargv = &(argvData[0]);
@@ -112,7 +113,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
                                      vmdef, &monitor_chr, false, flags,
-                                     migrateFrom, NULL, VIR_VM_OP_CREATE)))
+                                     migrateFrom, migrateFd, NULL,
+                                     VIR_VM_OP_CREATE)))
         goto fail;
 
     if (!!virGetLastError() != expectError) {
@@ -160,6 +162,7 @@ struct testInfo {
     const char *name;
     unsigned long long extraFlags;
     const char *migrateFrom;
+    int migrateFd;
     bool expectError;
 };
 
@@ -172,7 +175,8 @@ static int testCompareXMLToArgvHelper(const void *data) {
     snprintf(args, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
              abs_srcdir, info->name);
     return testCompareXMLToArgvFiles(xml, args, info->extraFlags,
-                                     info->migrateFrom, info->expectError);
+                                     info->migrateFrom, info->migrateFd,
+                                     info->expectError);
 }
 
 
@@ -217,10 +221,10 @@ mymain(int argc, char **argv)
     if (cpuMapOverride(map) < 0)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, extraFlags, migrateFrom, expectError)       \
+# define DO_TEST_FULL(name, extraFlags, migrateFrom, migrateFd, expectError) \
     do {                                                                \
         const struct testInfo info = {                                  \
-            name, extraFlags, migrateFrom, expectError                  \
+            name, extraFlags, migrateFrom, migrateFd, expectError       \
         };                                                              \
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
                         1, testCompareXMLToArgvHelper, &info) < 0)      \
@@ -228,7 +232,7 @@ mymain(int argc, char **argv)
     } while (0)
 
 # define DO_TEST(name, extraFlags, expectError)                         \
-        DO_TEST_FULL(name, extraFlags, NULL, expectError)
+    DO_TEST_FULL(name, extraFlags, NULL, -1, expectError)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -424,10 +428,18 @@ mymain(int argc, char **argv)
     DO_TEST("hostdev-pci-address-device", QEMUD_CMD_FLAG_PCIDEVICE |
             QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
 
-    DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio", false);
-    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "stdio", false);
-    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "exec:cat", false);
-    DO_TEST_FULL("migrate", QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP, "tcp:10.0.0.1:5000", false);
+    DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio", 7,
+                 false);
+    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "stdio", 7,
+                 false);
+    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "exec:cat", 7,
+                 false);
+    DO_TEST_FULL("restore-v2-fd", QEMUD_CMD_FLAG_MIGRATE_QEMU_FD, "stdio", 7,
+                 false);
+    DO_TEST_FULL("restore-v2-fd", QEMUD_CMD_FLAG_MIGRATE_QEMU_FD, "fd:7", 7,
+                 false);
+    DO_TEST_FULL("migrate", QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP,
+                 "tcp:10.0.0.1:5000", -1, false);
 
     DO_TEST("qemu-ns", 0, false);
 
