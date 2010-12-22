@@ -943,6 +943,8 @@ qemuCapsComputeCmdFlags(const char *help,
      * Handling of -incoming arg with varying features
      *  -incoming tcp    (kvm >= 79, qemu >= 0.10.0)
      *  -incoming exec   (kvm >= 80, qemu >= 0.10.0)
+     *  -incoming unix   (qemu >= 0.12.0)
+     *  -incoming fd     (qemu >= 0.12.0)
      *  -incoming stdio  (all earlier kvm)
      *
      * NB, there was a pre-kvm-79 'tcp' support, but it
@@ -952,8 +954,10 @@ qemuCapsComputeCmdFlags(const char *help,
     if (version >= 10000) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
-        if (version >= 12000)
+        if (version >= 12000) {
             flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX;
+            flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_FD;
+        }
     } else if (kvm_version >= 79) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
         if (kvm_version >= 80)

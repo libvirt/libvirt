@@ -82,6 +82,7 @@ enum qemuCapsFlags {
     QEMUD_CMD_FLAG_VGA_QXL       = (1LL << 45), /* The 'qxl' arg for '-vga' */
     QEMUD_CMD_FLAG_SPICE         = (1LL << 46), /* Is -spice avail */
     QEMUD_CMD_FLAG_VGA_NONE      = (1LL << 47), /* The 'none' arg for '-vga' */
+    QEMUD_CMD_FLAG_MIGRATE_QEMU_FD = (1LL << 48), /* -incoming fd:n */
 };
 
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
