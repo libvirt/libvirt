@@ -73,6 +73,7 @@ virBitmapPtr virBitmapAlloc(size_t size)
         return NULL;
     }
 
+    bitmap->size = size;
     return bitmap;
 }
 
