@@ -93,6 +93,8 @@ int virPipeReadUntilEOF(int outfd, int errfd,
                         char **outbuf, char **errbuf);
 int virFork(pid_t *pid);
 
+int virSetUIDGID(uid_t uid, gid_t gid);
+
 int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
 
 int virFileReadAll(const char *path, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;

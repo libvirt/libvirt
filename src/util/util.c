@@ -2811,6 +2811,61 @@ int virGetGroupID(const char *name,
     return 0;
 }
 
+
+/* Set the real and effective uid and gid to the given values, and call
+ * initgroups so that the process has all the assumed group membership of
+ * that uid. return 0 on success, -1 on failure.
+ */
+int
+virSetUIDGID(uid_t uid, gid_t gid)
+{
+    if (gid > 0) {
+        if (setregid(gid, gid) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot change to '%d' group"), gid);
+            return -1;
+        }
+    }
+
+    if (uid > 0) {
+# ifdef HAVE_INITGROUPS
+        struct passwd pwd, *pwd_result;
+        char *buf = NULL;
+        size_t bufsize;
+
+        bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+        if (bufsize == -1)
+            bufsize = 16384;
+
+        if (VIR_ALLOC_N(buf, bufsize) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+        getpwuid_r(uid, &pwd, buf, bufsize, &pwd_result);
+        if (!pwd_result) {
+            virReportSystemError(errno,
+                                 _("cannot getpwuid_r(%d)"), uid);
+            VIR_FREE(buf);
+            return -1;
+        }
+        if (initgroups(pwd.pw_name, pwd.pw_gid) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot initgroups(\"%s\", %d)"),
+                                 pwd.pw_name, pwd.pw_gid);
+            VIR_FREE(buf);
+            return -1;
+        }
+        VIR_FREE(buf);
+# endif
+        if (setreuid(uid, uid) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot change to uid to '%d'"), uid);
+            return -1;
+        }
+    }
+    return 0;
+}
+
 #else /* HAVE_GETPWUID_R */
 
 char *
@@ -2848,6 +2903,15 @@ int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
                  "%s", _("virGetGroupID is not available"));
 
     return 0;
+}
+
+int
+virSetUIDGID(uid_t uid ATTRIBUTE_UNUSED,
+             gid_t gid ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virSetUIDGID is not available"));
+    return -1;
 }
 #endif /* HAVE_GETPWUID_R */
 

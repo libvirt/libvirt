@@ -859,6 +859,7 @@ virRun;
 virRunWithHook;
 virSetCloseExec;
 virSetNonBlock;
+virSetUIDGID;
 virSkipSpaces;
 virStrToDouble;
 virStrToLong_i;

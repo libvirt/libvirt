@@ -93,7 +93,7 @@ AC_MSG_RESULT([$have_cpuid])
 
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS_ONCE([cfmakeraw regexec sched_getaffinity getuid getgid \
+AC_CHECK_FUNCS_ONCE([cfmakeraw regexec sched_getaffinity getuid getgid initgroups \
  posix_fallocate mmap])
 
 dnl Availability of various not common threadsafe functions
