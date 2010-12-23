@@ -68,6 +68,7 @@
 %define with_libnl         0%{!?_without_libnl:0}
 %define with_audit         0%{!?_without_audit:0}
 %define with_dtrace        0%{!?_without_dtrace:0}
+%define with_cgconfig      0%{!?_without_cgconfig:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -167,6 +168,13 @@
 
 %if 0%{?fedora} >= 13 || 0%{?rhel} >= 6
 %define with_dtrace 1
+%endif
+
+# Pull in cgroups config system
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
+%if %{with_qemu} || %{with_lxc}
+%define with_cgconfig 0%{!?_without_cgconfig:1}
+%endif
 %endif
 
 # Force QEMU to run as non-root
@@ -270,6 +278,9 @@ Requires: parted
 %if %{with_storage_mpath}
 # For multipath support
 Requires: device-mapper
+%endif
+%if %{with_cgconfig}
+Requires: libcgroup
 %endif
 %if %{with_xen}
 BuildRequires: xen-devel
@@ -722,6 +733,12 @@ then
          < %{_datadir}/libvirt/networks/default.xml \
          > %{_sysconfdir}/libvirt/qemu/networks/default.xml
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+fi
+%endif
+
+%if %{with_cgconfig}
+if [ "$1" -eq "1" ]; then
+/sbin/chkconfig cgconfig on
 fi
 %endif
 
