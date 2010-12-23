@@ -192,6 +192,10 @@
                 <a href="drvesx.html">VMware ESX</a>
                 <span>Driver for VMware ESX</span>
               </li>
+              <li>
+                <a href="drvvmware.html">VMware Workstation / Player</a>
+                <span>Driver for VMware Workstation / Player</span>
+              </li>
             </ul>
           </li>
           <li>

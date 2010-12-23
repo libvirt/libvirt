@@ -1,6 +1,6 @@
 <html>
     <body>
-        <h1>VMware Workstation/Player hypervisors driver</h1>
+        <h1>VMware Workstation / Player hypervisors driver</h1>
         <p>
         The libvirt VMware Workstation driver should be able to manage any Workstation and
         Player version supported by the VMware VIX API. See the compatibility list
@@ -15,10 +15,12 @@
     <p>
     The libvirt VMware driver provides per-user drivers (the "session" instance).
     Two uris are available:
+    </p>
     <ul>
       <li>"vmwareplayer" for VMware Player</li>
       <li>"vmwarews" for VMware Workstation</li>
     </ul>
+    <p>
     Some example connection URIs for the driver are:
     </p>
 
