@@ -430,12 +430,12 @@ old_CFLAGS="$CFLAGS"
 LIBXENSERVER_LIBS=""
 LIBXENSERVER_CFLAGS=""
 dnl search for the XenServer library
+fail=0
 if test "$with_xenapi" != "no" ; then
     if test "$with_xenapi" != "yes" && test "$with_xenapi" != "check" ; then
         LIBXENSERVER_CFLAGS="-I$with_xenapi/include"
         LIBXENSERVER_LIBS="-L$with_xenapi"
     fi
-    fail=0
     CFLAGS="$CFLAGS $LIBXENSERVER_CFLAGS"
     LIBS="$LIBS $LIBXENSERVER_LIBS"
     AC_CHECK_LIB([xenserver], [xen_vm_start], [
