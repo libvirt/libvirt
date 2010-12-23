@@ -350,7 +350,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -437,7 +437,7 @@ static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -481,7 +481,7 @@ static int openvzDomainSuspend(virDomainPtr dom) {
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -521,7 +521,7 @@ static int openvzDomainResume(virDomainPtr dom) {
   openvzDriverUnlock(driver);
 
   if (!vm) {
-      openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+      openvzError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching uuid"));
       goto cleanup;
   }
@@ -561,7 +561,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -599,7 +599,7 @@ static int openvzDomainReboot(virDomainPtr dom,
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1026,7 +1026,7 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching id"));
         goto cleanup;
     }
@@ -1073,7 +1073,7 @@ openvzDomainUndefine(virDomainPtr dom)
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1117,7 +1117,7 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1149,7 +1149,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1242,7 +1242,7 @@ static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
                     _("no domain with matching uuid"));
         goto cleanup;
     }

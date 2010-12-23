@@ -1453,7 +1453,7 @@ static int vboxDomainSuspend(virDomainPtr dom) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN,
+        vboxError(VIR_ERR_NO_DOMAIN,
                   _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1505,7 +1505,7 @@ static int vboxDomainResume(virDomainPtr dom) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN,
+        vboxError(VIR_ERR_NO_DOMAIN,
                   _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1556,7 +1556,7 @@ static int vboxDomainShutdown(virDomainPtr dom) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN,
+        vboxError(VIR_ERR_NO_DOMAIN,
                   _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1606,7 +1606,7 @@ static int vboxDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSE
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN,
+        vboxError(VIR_ERR_NO_DOMAIN,
                   _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1652,7 +1652,7 @@ static int vboxDomainDestroy(virDomainPtr dom) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN,
+        vboxError(VIR_ERR_NO_DOMAIN,
                   _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1722,7 +1722,7 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN,
+        vboxError(VIR_ERR_NO_DOMAIN,
                   _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1950,11 +1950,11 @@ vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             }
             VBOX_RELEASE(machine);
         } else {
-            vboxError(VIR_ERR_INVALID_DOMAIN,
+            vboxError(VIR_ERR_NO_DOMAIN,
                       _("no domain with matching id %d"), dom->id);
         }
     } else {
-        vboxError(VIR_ERR_INVALID_DOMAIN,
+        vboxError(VIR_ERR_NO_DOMAIN,
                   _("can't open session to the domain with id %d"), dom->id);
     }
     data->vboxSession->vtbl->Close(data->vboxSession);
@@ -4863,7 +4863,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -5068,7 +5068,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -5340,7 +5340,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -5445,7 +5445,7 @@ vboxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -5549,7 +5549,7 @@ vboxDomainSnapshotNum(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -5589,7 +5589,7 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -5652,7 +5652,7 @@ vboxDomainSnapshotLookupByName(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -5684,7 +5684,7 @@ vboxDomainHasCurrentSnapshot(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -5724,7 +5724,7 @@ vboxDomainSnapshotCurrent(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -5893,7 +5893,7 @@ vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }
@@ -6050,7 +6050,7 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INVALID_DOMAIN, "%s",
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
                   _("no domain with matching UUID"));
         goto cleanup;
     }

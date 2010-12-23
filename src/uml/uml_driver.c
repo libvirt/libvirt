@@ -1310,7 +1310,7 @@ static int umlDomainShutdown(virDomainPtr dom) {
     vm = virDomainFindByID(&driver->domains, dom->id);
     umlDriverUnlock(driver);
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN,
+        umlReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1340,7 +1340,7 @@ static int umlDomainDestroy(virDomainPtr dom) {
     umlDriverLock(driver);
     vm = virDomainFindByID(&driver->domains, dom->id);
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN,
+        umlReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
@@ -1370,7 +1370,7 @@ static char *umlDomainGetOSType(virDomainPtr dom) {
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     umlDriverUnlock(driver);
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1398,7 +1398,7 @@ static unsigned long umlDomainGetMaxMemory(virDomainPtr dom) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         virUUIDFormat(dom->uuid, uuidstr);
-        umlReportError(VIR_ERR_INVALID_DOMAIN,
+        umlReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -1423,7 +1423,7 @@ static int umlDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         virUUIDFormat(dom->uuid, uuidstr);
-        umlReportError(VIR_ERR_INVALID_DOMAIN,
+        umlReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -1456,7 +1456,7 @@ static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         virUUIDFormat(dom->uuid, uuidstr);
-        umlReportError(VIR_ERR_INVALID_DOMAIN,
+        umlReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -1493,7 +1493,7 @@ static int umlDomainGetInfo(virDomainPtr dom,
     umlDriverUnlock(driver);
 
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1533,7 +1533,7 @@ static char *umlDomainDumpXML(virDomainPtr dom,
     umlDriverUnlock(driver);
 
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1584,7 +1584,7 @@ static int umlDomainStartWithFlags(virDomainPtr dom, unsigned int flags) {
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1650,7 +1650,7 @@ static int umlDomainUndefine(virDomainPtr dom) {
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1922,7 +1922,7 @@ static int umlDomainGetAutostart(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -1948,7 +1948,7 @@ static int umlDomainSetAutostart(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -2022,7 +2022,7 @@ umlDomainBlockPeek(virDomainPtr dom,
     umlDriverUnlock(driver);
 
     if (!vm) {
-        umlReportError(VIR_ERR_INVALID_DOMAIN, "%s",
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }

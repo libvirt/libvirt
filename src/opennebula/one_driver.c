@@ -285,7 +285,7 @@ static int oneDomainUndefine(virDomainPtr dom)
     oneDriverLock(driver);
     vm =virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        oneError(VIR_ERR_INVALID_DOMAIN, "%s",
+        oneError(VIR_ERR_NO_DOMAIN, "%s",
                  _("no domain with matching uuid"));
         goto return_point;
     }
@@ -316,7 +316,7 @@ static int oneDomainGetInfo(virDomainPtr dom,
     oneDriverUnlock(driver);
 
     if (!vm) {
-        oneError(VIR_ERR_INVALID_DOMAIN, "%s",
+        oneError(VIR_ERR_NO_DOMAIN, "%s",
                  _("no domain with matching uuid"));
         return -1;
     }
@@ -391,7 +391,7 @@ static char *oneGetOSType(virDomainPtr dom)
     vm =virDomainFindByUUID(&driver->domains, dom->uuid);
     oneDriverUnlock(driver);
     if (!vm) {
-        oneError(VIR_ERR_INVALID_DOMAIN, "%s",
+        oneError(VIR_ERR_NO_DOMAIN, "%s",
                  _("no domain with matching uuid"));
         goto cleanup;
     }
@@ -420,7 +420,7 @@ static int oneDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
     vm = virDomainFindByName(&driver->domains, dom->name);
 
     if (!vm) {
-        oneError(VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_NO_DOMAIN,
                  _("no domain named %s"), dom->name);
         goto return_point;
     }
@@ -507,7 +507,7 @@ static int oneDomainShutdown(virDomainPtr dom)
 
     oneDriverLock(driver);
     if (!(vm=virDomainFindByID(&driver->domains, dom->id))) {
-        oneError(VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_NO_DOMAIN,
                  _("no domain with id %d"), dom->id);
         goto return_point;
     }
@@ -542,7 +542,7 @@ static int oneDomainDestroy(virDomainPtr dom)
     oneDriverLock(driver);
     vm= virDomainFindByID(&driver->domains, dom->id);
     if (!vm) {
-        oneError(VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_NO_DOMAIN,
                  _("no domain with id %d"), dom->id);
         goto return_point;
     }
@@ -591,7 +591,7 @@ static int oneDomainSuspend(virDomainPtr dom)
         oneError(VIR_ERR_OPERATION_INVALID, "%s",
                  _("domain is not running"));
     } else {
-        oneError(VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_NO_DOMAIN,
                  _("no domain with matching id %d"), dom->id);
     }
 
@@ -624,7 +624,7 @@ static int oneDomainResume(virDomainPtr dom)
         oneError(VIR_ERR_OPERATION_INVALID, "%s",
                  _("domain is not paused"));
     } else {
-        oneError(VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_NO_DOMAIN,
                  _("no domain with matching id %d"), dom->id);
     }
 
