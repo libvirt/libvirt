@@ -27,6 +27,7 @@
       <li><strong><a href="drvuml.html">UML</a></strong> - User Mode Linux</li>
       <li><strong><a href="drvvbox.html">VirtualBox</a></strong></li>
       <li><strong><a href="drvesx.html">VMware ESX</a></strong></li>
+      <li><strong><a href="drvvmware.html">VMware Workstation/Player</a></strong></li>
       <li><strong><a href="drvxen.html">Xen</a></strong></li>
     </ul>
 

@@ -59,6 +59,9 @@
         The <a href="http://www.vmware.com/">VMware ESX and GSX</a> hypervisors
       </li>
       <li>
+        The <a href="http://www.vmware.com/">VMware Workstation and Player</a> hypervisors
+      </li>
+      <li>
         Storage on IDE/SCSI/USB disks, FibreChannel, LVM, iSCSI, NFS and filesystems
       </li>
     </ul>
