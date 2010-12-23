@@ -57,8 +57,12 @@
 
 #  ifdef WIN32
 #   define PR_COM_METHOD __stdcall
+#   define PR_IID_IN_TYPE GUID
+#   define PR_IID_OUT_TYPE GUID *
 #  else
 #   define PR_COM_METHOD
+#   define PR_IID_IN_TYPE const nsID *
+#   define PR_IID_OUT_TYPE nsID **
 #  endif
 
 #  if defined(WIN32)
@@ -355,7 +359,7 @@ struct nsISupports_vtbl {
    *                          instance, NS_NOINTERFACE if it is not.
    * NS_ERROR_INVALID_POINTER if aInstancePtr is NULL.
    */
-  nsresult PR_COM_METHOD (*QueryInterface)(nsISupports *pThis, const nsID *iid, void **resultp);
+  nsresult PR_COM_METHOD (*QueryInterface)(nsISupports *pThis, PR_IID_IN_TYPE iid, void **resultp);
   /**
    * Increases the reference count for this interface.
    * The associated instance will not be deleted unless
@@ -1396,7 +1400,7 @@ struct IVirtualBoxErrorInfo_vtbl
 
     nsresult PR_COM_METHOD (*GetResultCode)(IVirtualBoxErrorInfo *pThis, nsresult *resultCode);
 
-    nsresult PR_COM_METHOD (*GetInterfaceID)(IVirtualBoxErrorInfo *pThis, nsID * *interfaceID);
+    nsresult PR_COM_METHOD (*GetInterfaceID)(IVirtualBoxErrorInfo *pThis, PR_IID_OUT_TYPE interfaceID);
 
     nsresult PR_COM_METHOD (*GetComponent)(IVirtualBoxErrorInfo *pThis, PRUnichar * *component);
 
@@ -1425,18 +1429,18 @@ struct IVirtualBoxCallback_vtbl
 
     nsresult PR_COM_METHOD (*OnMachineStateChange)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRUint32 state
     );
 
     nsresult PR_COM_METHOD (*OnMachineDataChange)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId
+        PR_IID_IN_TYPE machineId
     );
 
     nsresult PR_COM_METHOD (*OnExtraDataCanChange)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRUnichar * key,
         PRUnichar * value,
         PRUnichar * * error,
@@ -1445,51 +1449,51 @@ struct IVirtualBoxCallback_vtbl
 
     nsresult PR_COM_METHOD (*OnExtraDataChange)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRUnichar * key,
         PRUnichar * value
     );
 
     nsresult PR_COM_METHOD (*OnMediaRegistered)(
         IVirtualBoxCallback *pThis,
-        const nsID * mediaId,
+        PR_IID_IN_TYPE mediaId,
         PRUint32 mediaType,
         PRBool registered
     );
 
     nsresult PR_COM_METHOD (*OnMachineRegistered)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRBool registered
     );
 
     nsresult PR_COM_METHOD (*OnSessionStateChange)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRUint32 state
     );
 
     nsresult PR_COM_METHOD (*OnSnapshotTaken)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
-        const nsID * snapshotId
+        PR_IID_IN_TYPE machineId,
+        PR_IID_IN_TYPE snapshotId
     );
 
     nsresult PR_COM_METHOD (*OnSnapshotDiscarded)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
-        const nsID * snapshotId
+        PR_IID_IN_TYPE machineId,
+        PR_IID_IN_TYPE snapshotId
     );
 
     nsresult PR_COM_METHOD (*OnSnapshotChange)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
-        const nsID * snapshotId
+        PR_IID_IN_TYPE machineId,
+        PR_IID_IN_TYPE snapshotId
     );
 
     nsresult PR_COM_METHOD (*OnGuestPropertyChange)(
         IVirtualBoxCallback *pThis,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRUnichar * name,
         PRUnichar * value,
         PRUnichar * flags
@@ -1614,7 +1618,7 @@ struct IVirtualBox_vtbl
         PRUnichar * name,
         PRUnichar * osTypeId,
         PRUnichar * baseFolder,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IMachine * * machine
     );
 
@@ -1623,7 +1627,7 @@ struct IVirtualBox_vtbl
         PRUnichar * name,
         PRUnichar * osTypeId,
         PRUnichar * settingsFile,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IMachine * * machine
     );
 
@@ -1640,7 +1644,7 @@ struct IVirtualBox_vtbl
 
     nsresult PR_COM_METHOD (*GetMachine)(
         IVirtualBox *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IMachine * * machine
     );
 
@@ -1652,7 +1656,7 @@ struct IVirtualBox_vtbl
 
     nsresult PR_COM_METHOD (*UnregisterMachine)(
         IVirtualBox *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IMachine * * machine
     );
 
@@ -1677,7 +1681,7 @@ struct IVirtualBox_vtbl
 
     nsresult PR_COM_METHOD (*GetHardDisk)(
         IVirtualBox *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IHardDisk * * hardDisk
     );
 
@@ -1690,13 +1694,13 @@ struct IVirtualBox_vtbl
     nsresult PR_COM_METHOD (*OpenDVDImage)(
         IVirtualBox *pThis,
         PRUnichar * location,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IDVDImage * * image
     );
 
     nsresult PR_COM_METHOD (*GetDVDImage)(
         IVirtualBox *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IDVDImage * * image
     );
 
@@ -1709,13 +1713,13 @@ struct IVirtualBox_vtbl
     nsresult PR_COM_METHOD (*OpenFloppyImage)(
         IVirtualBox *pThis,
         PRUnichar * location,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IFloppyImage * * image
     );
 
     nsresult PR_COM_METHOD (*GetFloppyImage)(
         IVirtualBox *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IFloppyImage * * image
     );
 
@@ -1765,13 +1769,13 @@ struct IVirtualBox_vtbl
     nsresult PR_COM_METHOD (*OpenSession)(
         IVirtualBox *pThis,
         ISession * session,
-        const nsID * machineId
+        PR_IID_IN_TYPE machineId
     );
 
     nsresult PR_COM_METHOD (*OpenRemoteSession)(
         IVirtualBox *pThis,
         ISession * session,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRUnichar * type,
         PRUnichar * environment,
         IProgress * * progress
@@ -1780,7 +1784,7 @@ struct IVirtualBox_vtbl
     nsresult PR_COM_METHOD (*OpenExistingSession)(
         IVirtualBox *pThis,
         ISession * session,
-        const nsID * machineId
+        PR_IID_IN_TYPE machineId
     );
 
     nsresult PR_COM_METHOD (*RegisterCallback)(
@@ -1988,12 +1992,12 @@ struct IInternalMachineControl_vtbl
 
     nsresult PR_COM_METHOD (*CaptureUSBDevice)(
         IInternalMachineControl *pThis,
-        const nsID * id
+        PR_IID_IN_TYPE id
     );
 
     nsresult PR_COM_METHOD (*DetachUSBDevice)(
         IInternalMachineControl *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         PRBool done
     );
 
@@ -2044,7 +2048,7 @@ struct IInternalMachineControl_vtbl
     nsresult PR_COM_METHOD (*DiscardSnapshot)(
         IInternalMachineControl *pThis,
         IConsole * initiator,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         PRUint32 * machineState,
         IProgress * * progress
     );
@@ -2174,7 +2178,7 @@ struct IMachine_vtbl
     nsresult PR_COM_METHOD (*GetDescription)(IMachine *pThis, PRUnichar * *description);
     nsresult PR_COM_METHOD (*SetDescription)(IMachine *pThis, PRUnichar * description);
 
-    nsresult PR_COM_METHOD (*GetId)(IMachine *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IMachine *pThis, PR_IID_OUT_TYPE id);
 
     nsresult PR_COM_METHOD (*GetOSTypeId)(IMachine *pThis, PRUnichar * *OSTypeId);
     nsresult PR_COM_METHOD (*SetOSTypeId)(IMachine *pThis, PRUnichar * OSTypeId);
@@ -2282,7 +2286,7 @@ struct IMachine_vtbl
 
     nsresult PR_COM_METHOD (*AttachHardDisk)(
         IMachine *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         PRUnichar * name,
         PRInt32 controllerPort,
         PRInt32 device
@@ -2384,7 +2388,7 @@ struct IMachine_vtbl
 
     nsresult PR_COM_METHOD (*GetSnapshot)(
         IMachine *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         ISnapshot * * snapshot
     );
 
@@ -2396,7 +2400,7 @@ struct IMachine_vtbl
 
     nsresult PR_COM_METHOD (*SetCurrentSnapshot)(
         IMachine *pThis,
-        const nsID * id
+        PR_IID_IN_TYPE id
     );
 
     nsresult PR_COM_METHOD (*CreateSharedFolder)(
@@ -2716,12 +2720,12 @@ struct IConsole_vtbl
 
     nsresult PR_COM_METHOD (*AttachUSBDevice)(
         IConsole *pThis,
-        const nsID * id
+        PR_IID_IN_TYPE id
     );
 
     nsresult PR_COM_METHOD (*DetachUSBDevice)(
         IConsole *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IUSBDevice * * device
     );
 
@@ -2733,7 +2737,7 @@ struct IConsole_vtbl
 
     nsresult PR_COM_METHOD (*FindUSBDeviceById)(
         IConsole *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IUSBDevice * * device
     );
 
@@ -2758,7 +2762,7 @@ struct IConsole_vtbl
 
     nsresult PR_COM_METHOD (*DiscardSnapshot)(
         IConsole *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IProgress * * progress
     );
 
@@ -2853,7 +2857,7 @@ struct IHostNetworkInterface_vtbl
 
     nsresult PR_COM_METHOD (*GetName)(IHostNetworkInterface *pThis, PRUnichar * *name);
 
-    nsresult PR_COM_METHOD (*GetId)(IHostNetworkInterface *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IHostNetworkInterface *pThis, PR_IID_OUT_TYPE id);
 
     nsresult PR_COM_METHOD (*GetNetworkName)(IHostNetworkInterface *pThis, PRUnichar * *networkName);
 
@@ -2992,7 +2996,7 @@ struct IHost_vtbl
 
     nsresult PR_COM_METHOD (*FindHostNetworkInterfaceById)(
         IHost *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IHostNetworkInterface * * networkInterface
     );
 
@@ -3005,7 +3009,7 @@ struct IHost_vtbl
 
     nsresult PR_COM_METHOD (*FindUSBDeviceById)(
         IHost *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IHostUSBDevice * * device
     );
 
@@ -3189,7 +3193,7 @@ struct IProgress_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult PR_COM_METHOD (*GetId)(IProgress *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IProgress *pThis, PR_IID_OUT_TYPE id);
 
     nsresult PR_COM_METHOD (*GetDescription)(IProgress *pThis, PRUnichar * *description);
 
@@ -3249,7 +3253,7 @@ struct ISnapshot_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult PR_COM_METHOD (*GetId)(ISnapshot *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(ISnapshot *pThis, PR_IID_OUT_TYPE id);
 
     nsresult PR_COM_METHOD (*GetName)(ISnapshot *pThis, PRUnichar * *name);
     nsresult PR_COM_METHOD (*SetName)(ISnapshot *pThis, PRUnichar * name);
@@ -3286,7 +3290,7 @@ struct IMedium_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult PR_COM_METHOD (*GetId)(IMedium *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IMedium *pThis, PR_IID_OUT_TYPE id);
 
     nsresult PR_COM_METHOD (*GetDescription)(IMedium *pThis, PRUnichar * *description);
     nsresult PR_COM_METHOD (*SetDescription)(IMedium *pThis, PRUnichar * description);
@@ -3302,11 +3306,11 @@ struct IMedium_vtbl
 
     nsresult PR_COM_METHOD (*GetLastAccessError)(IMedium *pThis, PRUnichar * *lastAccessError);
 
-    nsresult PR_COM_METHOD (*GetMachineIds)(IMedium *pThis, PRUint32 *machineIdsSize, nsID * **machineIds);
+    nsresult PR_COM_METHOD (*GetMachineIds)(IMedium *pThis, PRUint32 *machineIdsSize, PR_IID_OUT_TYPE *machineIds);
 
     nsresult PR_COM_METHOD (*GetSnapshotIds)(
         IMedium *pThis,
-        const nsID * machineId,
+        PR_IID_IN_TYPE machineId,
         PRUint32 *snapshotIdsSize,
         nsID *** snapshotIds
     );
@@ -3447,7 +3451,7 @@ struct IHardDisk_vtbl
 
     nsresult PR_COM_METHOD (*MergeTo)(
         IHardDisk *pThis,
-        const nsID * targetId,
+        PR_IID_IN_TYPE targetId,
         IProgress * * progress
     );
 
@@ -3574,7 +3578,7 @@ struct IDVDDrive_vtbl
 
     nsresult PR_COM_METHOD (*MountImage)(
         IDVDDrive *pThis,
-        const nsID * imageId
+        PR_IID_IN_TYPE imageId
     );
 
     nsresult PR_COM_METHOD (*CaptureHostDrive)(
@@ -3620,7 +3624,7 @@ struct IFloppyDrive_vtbl
 
     nsresult PR_COM_METHOD (*MountImage)(
         IFloppyDrive *pThis,
-        const nsID * imageId
+        PR_IID_IN_TYPE imageId
     );
 
     nsresult PR_COM_METHOD (*CaptureHostDrive)(
@@ -4221,7 +4225,7 @@ struct IUSBDevice_vtbl
 {
     struct nsISupports_vtbl nsisupports;
 
-    nsresult PR_COM_METHOD (*GetId)(IUSBDevice *pThis, nsID * *id);
+    nsresult PR_COM_METHOD (*GetId)(IUSBDevice *pThis, PR_IID_OUT_TYPE id);
 
     nsresult PR_COM_METHOD (*GetVendorId)(IUSBDevice *pThis, PRUint16 *vendorId);
 
@@ -4523,7 +4527,7 @@ struct IInternalSessionControl_vtbl
 
     nsresult PR_COM_METHOD (*OnUSBDeviceDetach)(
         IInternalSessionControl *pThis,
-        const nsID * id,
+        PR_IID_IN_TYPE id,
         IVirtualBoxErrorInfo * error
     );
 
