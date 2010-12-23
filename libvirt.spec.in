@@ -87,7 +87,7 @@
 %define with_numactl 0
 %endif
 
-# RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor, ESX,
+# RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor,
 # VMWare, or libxenserver (xenapi)
 %if 0%{?rhel}
 %define with_openvz 0
@@ -95,7 +95,6 @@
 %define with_uml 0
 %define with_one 0
 %define with_phyp 0
-%define with_esx 0
 %define with_vmware 0
 %define with_xenapi 0
 %endif
