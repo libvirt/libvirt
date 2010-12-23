@@ -306,6 +306,9 @@ int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t co
  */
 void virFree(void *ptrptr)
 {
+    int save_errno = errno;
+
     free(*(void**)ptrptr);
     *(void**)ptrptr = NULL;
+    errno = save_errno;
 }

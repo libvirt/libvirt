@@ -690,6 +690,7 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
                   int int2,
                   const char *fmt, ...)
 {
+    int save_errno = errno;
     virErrorPtr to;
     char *str;
     int priority;
@@ -700,13 +701,17 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
      * to the per-connection error object when necessary
      */
     to = virLastErrorObject();
-    if (!to)
+    if (!to) {
+        errno = save_errno;
         return; /* Hit OOM allocating thread error object, sod all we can do now */
+    }
 
     virResetError(to);
 
-    if (code == VIR_ERR_OK)
+    if (code == VIR_ERR_OK) {
+        errno = save_errno;
         return;
+    }
 
     /*
      * formats the message
@@ -749,6 +754,8 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
         to->str3 = strdup(str3);
     to->int1 = int1;
     to->int2 = int2;
+
+    errno = save_errno;
 }
 
 /**
@@ -1216,6 +1223,7 @@ void virReportErrorHelper(virConnectPtr conn,
                           size_t linenr,
                           const char *fmt, ...)
 {
+    int save_errno = errno;
     va_list args;
     char errorMessage[1024];
     const char *virerr;
@@ -1233,7 +1241,7 @@ void virReportErrorHelper(virConnectPtr conn,
                       domcode, errcode, VIR_ERR_ERROR,
                       virerr, errorMessage, NULL,
                       -1, -1, virerr, errorMessage);
-
+    errno = save_errno;
 }
 
 /**
@@ -1249,13 +1257,16 @@ void virReportErrorHelper(virConnectPtr conn,
  */
 const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
 {
+    int save_errno = errno;
+    const char *ret;
+
 #ifdef HAVE_STRERROR_R
 # ifdef __USE_GNU
     /* Annoying linux specific API contract */
-    return strerror_r(theerrno, errBuf, errBufLen);
+    ret = strerror_r(theerrno, errBuf, errBufLen);
 # else
     strerror_r(theerrno, errBuf, errBufLen);
-    return errBuf;
+    ret = errBuf;
 # endif
 #else
     /* Mingw lacks strerror_r and its strerror is definitely not
@@ -1264,9 +1275,11 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
      * header files for debug purposes
      */
     int n = snprintf(errBuf, errBufLen, "errno=%d", theerrno);
-    return (0 < n && n < errBufLen
-            ? errBuf : _("internal error: buffer too small"));
+    ret = (0 < n && n < errBufLen
+           ? errBuf : _("internal error: buffer too small"));
 #endif
+    errno = save_errno;
+    return ret;
 }
 
 /**
@@ -1288,6 +1301,7 @@ void virReportSystemErrorFull(int domcode,
                               size_t linenr,
                               const char *fmt, ...)
 {
+    int save_errno = errno;
     char strerror_buf[1024];
     char msgDetailBuf[1024];
 
@@ -1318,6 +1332,7 @@ void virReportSystemErrorFull(int domcode,
     virRaiseErrorFull(NULL, filename, funcname, linenr,
                       domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
                       msg, msgDetail, NULL, -1, -1, msg, msgDetail);
+    errno = save_errno;
 }
 
 /**
