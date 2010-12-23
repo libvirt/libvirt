@@ -239,11 +239,10 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
 {
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
-    char *migrateFrom;
     virDomainEventPtr event = NULL;
     int ret = -1;
     int internalret;
-    char *unixfile = NULL;
+    int dataFD[2] = { -1, -1 };
     virBitmapPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
@@ -289,12 +288,12 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
 
-    if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.dest.%s",
-                    driver->libDir, vm->def->name) < 0) {
-        virReportOOMError();
+    if (pipe(dataFD) < 0 ||
+        virSetCloseExec(dataFD[0]) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot create pipe for tunnelled migration"));
         goto endjob;
     }
-    unlink(unixfile);
 
     /* check that this qemu version supports the interactive exec */
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
@@ -304,25 +303,11 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                         vm->def->emulator);
         goto endjob;
     }
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX))
-        internalret = virAsprintf(&migrateFrom, "unix:%s", unixfile);
-    else if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC))
-        internalret = virAsprintf(&migrateFrom, "exec:nc -U -l %s", unixfile);
-    else {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("Destination qemu is too old to support tunnelled migration"));
-        goto endjob;
-    }
-    if (internalret < 0) {
-        virReportOOMError();
-        goto endjob;
-    }
     /* Start the QEMU daemon, with the same command-line arguments plus
-     * -incoming unix:/path/to/file or exec:nc -U /path/to/file
+     * -incoming stdin (which qemu_command might convert to exec:cat or fd:n)
      */
-    internalret = qemuProcessStart(dconn, driver, vm, migrateFrom, true,
-                                   -1, NULL, VIR_VM_OP_MIGRATE_IN_START);
-    VIR_FREE(migrateFrom);
+    internalret = qemuProcessStart(dconn, driver, vm, "stdin", true, dataFD[1],
+                                   NULL, VIR_VM_OP_MIGRATE_IN_START);
     if (internalret < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
@@ -335,9 +320,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
         goto endjob;
     }
 
-    if (virFDStreamConnectUNIX(st,
-                               unixfile,
-                               false) < 0) {
+    if (virFDStreamOpen(st, dataFD[0]) < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
         qemuProcessStop(driver, vm, 0);
         if (!vm->persistent) {
@@ -345,9 +328,8 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                 virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
         }
-        virReportSystemError(errno,
-                             _("cannot open unix socket '%s' for tunnelled migration"),
-                             unixfile);
+        virReportSystemError(errno, "%s",
+                             _("cannot pass pipe for tunnelled migration"));
         goto endjob;
     }
 
@@ -378,9 +360,8 @@ endjob:
 cleanup:
     qemuCapsFree(qemuCaps);
     virDomainDefFree(def);
-    if (unixfile)
-        unlink(unixfile);
-    VIR_FREE(unixfile);
+    VIR_FORCE_CLOSE(dataFD[0]);
+    VIR_FORCE_CLOSE(dataFD[1]);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
