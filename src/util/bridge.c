@@ -676,7 +676,7 @@ brAddInetAddress(brControl *ctl ATTRIBUTE_UNUSED,
                  virSocketAddr *addr,
                  unsigned int prefix)
 {
-    virCommandPtr cmd;
+    virCommandPtr cmd = NULL;
     char *addrstr;
     int ret = -1;
 
@@ -715,7 +715,7 @@ brDelInetAddress(brControl *ctl ATTRIBUTE_UNUSED,
                  virSocketAddr *addr,
                  unsigned int prefix)
 {
-    virCommandPtr cmd;
+    virCommandPtr cmd = NULL;
     char *addrstr;
     int ret = -1;
 
