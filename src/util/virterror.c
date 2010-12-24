@@ -1250,7 +1250,7 @@ void virReportErrorHelper(virConnectPtr conn,
  * @errBuf: the buffer to save the error to
  * @errBufLen: the buffer length
  *
- * Generate an erro string for the given errno
+ * Generate an error string for the given errno
  *
  * Returns a pointer to the error string, possibly indicating that the
  *         error is unknown
@@ -1260,24 +1260,8 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
     int save_errno = errno;
     const char *ret;
 
-#ifdef HAVE_STRERROR_R
-# ifdef __USE_GNU
-    /* Annoying linux specific API contract */
-    ret = strerror_r(theerrno, errBuf, errBufLen);
-# else
     strerror_r(theerrno, errBuf, errBufLen);
     ret = errBuf;
-# endif
-#else
-    /* Mingw lacks strerror_r and its strerror is definitely not
-     * threadsafe, so safest option is to just print the raw errno
-     * value - we can at least reliably & safely look it up in the
-     * header files for debug purposes
-     */
-    int n = snprintf(errBuf, errBufLen, "errno=%d", theerrno);
-    ret = (0 < n && n < errBufLen
-           ? errBuf : _("internal error: buffer too small"));
-#endif
     errno = save_errno;
     return ret;
 }

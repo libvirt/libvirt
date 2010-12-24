@@ -497,16 +497,21 @@ out:
  */
 static int disconnected = 0; /* we may have been disconnected */
 
-#ifdef SIGPIPE
+/* Gnulib doesn't guarantee SA_SIGINFO support.  */
+#ifndef SA_SIGINFO
+# define SA_SIGINFO 0
+#endif
+
 /*
  * vshCatchDisconnect:
  *
  * We get here when a SIGPIPE is being raised, we can't do much in the
  * handler, just save the fact it was raised
  */
-static void vshCatchDisconnect(int sig, siginfo_t * siginfo,
-                               void* context ATTRIBUTE_UNUSED) {
-    if ((sig == SIGPIPE) || (siginfo->si_signo == SIGPIPE))
+static void vshCatchDisconnect(int sig, siginfo_t *siginfo,
+                               void *context ATTRIBUTE_UNUSED) {
+    if ((sig == SIGPIPE) ||
+        (SA_SIGINFO && siginfo->si_signo == SIGPIPE))
         disconnected++;
 }
 
@@ -526,10 +531,6 @@ vshSetupSignals(void) {
 
     sigaction(SIGPIPE, &sig_action, NULL);
 }
-#else
-static void
-vshSetupSignals(void) {}
-#endif
 
 /*
  * vshReconnect:

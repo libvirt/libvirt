@@ -49,11 +49,11 @@ dnl Checks for C compiler.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
+AM_PROG_CC_STDC
 
 gl_EARLY
 gl_INIT
 
-AM_PROG_CC_STDC
 AC_TYPE_UID_T
 
 dnl Make sure we have an ANSI compiler
@@ -93,12 +93,11 @@ fi
 AC_MSG_RESULT([$have_cpuid])
 
 
-dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS_ONCE([cfmakeraw regexec sched_getaffinity getuid getgid initgroups \
- posix_fallocate mmap])
-
-dnl Availability of various not common threadsafe functions
-AC_CHECK_FUNCS_ONCE([strerror_r getmntent_r getgrnam_r getpwuid_r])
+dnl Availability of various common functions (non-fatal if missing),
+dnl and various less common threadsafe functions
+AC_CHECK_FUNCS_ONCE([cfmakeraw regexec sched_getaffinity getuid getgid \
+ initgroups posix_fallocate mmap \
+ getmntent_r getgrnam_r getpwuid_r])
 
 dnl Availability of pthread functions (if missing, win32 threading is
 dnl assumed).  Because of $LIB_PTHREAD, we cannot use AC_CHECK_FUNCS_ONCE.
