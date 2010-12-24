@@ -195,6 +195,12 @@
 %endif
 
 
+# there's no use compiling the network driver without
+# the libvirt daemon
+%if ! %{with_libvirtd}
+%define with_network 0
+%endif
+
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: @VERSION@
@@ -677,6 +683,8 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version}
 
 %if ! %{with_libvirtd}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter
+mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version}/html \
+   $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-devel-%{version}/
 %endif
 
 %if ! %{with_qemu}
