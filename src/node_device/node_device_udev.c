@@ -419,11 +419,11 @@ out:
 static int udevProcessPCI(struct udev_device *device,
                           virNodeDeviceDefPtr def)
 {
-    const char *devpath = NULL;
+    const char *syspath = NULL;
     union _virNodeDevCapData *data = &def->caps->data;
     int ret = -1;
 
-    devpath = udev_device_get_devpath(device);
+    syspath = udev_device_get_syspath(device);
 
     if (udevGetUintProperty(device,
                             "PCI_CLASS",
@@ -432,7 +432,7 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     }
 
-    char *p = strrchr(devpath, '/');
+    char *p = strrchr(syspath, '/');
 
     if ((p == NULL) || (udevStrToLong_ui(p+1,
                                          &p,
@@ -486,6 +486,9 @@ static int udevProcessPCI(struct udev_device *device,
     if (udevGenerateDeviceName(device, def, NULL) != 0) {
         goto out;
     }
+
+    get_physical_function(syspath, data);
+    get_virtual_functions(syspath, data);
 
     ret = 0;
 
