@@ -628,23 +628,45 @@
         ...
       &lt;/serial&gt;
     &lt;/disk&gt;
+      ...
+    &lt;disk type='network'&gt;
+      &lt;driver name="qemu" type="raw"/&gt;
+      &lt;source protocol="sheepdog" name="image_name"&gt;
+        &lt;host name="hostname" port="7000"/&gt;
+      &lt;/source&gt;
+      &lt;target dev="hdb" bus="ide"/&gt;
+    &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
 
     <dl>
       <dt><code>disk</code></dt>
       <dd>The <code>disk</code> element is the main container for describing
-        disks. The <code>type</code> attribute is either "file" or "block"
+        disks. The <code>type</code> attribute is either "file",
+        "block", "dir", or "network"
         and refers to the underlying source for the disk. The optional
         <code>device</code> attribute indicates how the disk is to be exposed
         to the guest OS. Possible values for this attribute are "floppy", "disk"
         and "cdrom", defaulting to "disk".
-        <span class="since">Since 0.0.3; "device" attribute since 0.1.4</span></dd>
+        <span class="since">Since 0.0.3; "device" attribute since 0.1.4;
+        "network" attribute since 0.8.7</span></dd>
       <dt><code>source</code></dt>
-      <dd>If the disk <code>type</code> is "file", then the <code>file</code> attribute
-        specifies the fully-qualified path to the file holding the disk. If the disk
-        <code>type</code> is "block", then the <code>dev</code> attribute specifies
-        the path to the host device to serve as the disk. <span class="since">Since 0.0.3</span></dd>
+      <dd>If the disk <code>type</code> is "file", then the
+        the <code>file</code> attribute specifies the fully-qualified
+        path to the file holding the disk. If the disk
+        <code>type</code> is "block", then the <code>dev</code>
+        attribute specifies the path to the host device to serve as
+        the disk. If the disk <code>type</code> is "network", then
+        the <code>protocol</code> attribute specifies the protocol to
+        access to the requested image; possible values are "nbd",
+        "rbd", and "sheepdog".  If the <code>protocol</code> attribute
+        is "rbd" or "sheepdog", an additional
+        attribute <code>name</code> is mandatory to specify which
+        image to be used.  When the disk <code>type</code> is
+        "network", the <code>source</code> may have zero or
+        more <code>host</code> sub-elements used to specify the hosts
+        to connect.
+        <span class="since">Since 0.0.3</span></dd>
       <dt><code>target</code></dt>
       <dd>The <code>target</code> element controls the bus / device under which the
         disk is exposed to the guest OS. The <code>dev</code> attribute indicates
@@ -679,6 +701,33 @@
       <dd>If present, this specify serial number of virtual hard drive.
           For example, it may look as <code>&lt;serial&gt;WD-WMAP9A966149&lt;/serial&gt;</code>.
           <span class="since">Since 0.7.1</span>
+      </dd>
+      <dt><code>host</code></dt>
+      <dd>The <code>host</code> element has two attributes "name" and "port",
+        which specify the hostname and the port number. The meaning of this
+        element and the number of the elements depend on the protocol attribute.
+        <table class="top_table">
+          <tr>
+            <th> Protocol </th>
+            <th> Meaning </th>
+            <th> Number of hosts </th>
+          </tr>
+          <tr>
+            <td> nbd </td>
+            <td> a server running nbd-server </td>
+            <td> only one </td>
+          </tr>
+          <tr>
+            <td> rbd </td>
+            <td> monitor servers of RBD </td>
+            <td> one or more </td>
+          </tr>
+          <tr>
+            <td> sheepdog </td>
+            <td> one of the sheepdog servers (default is localhost:7000) </td>
+            <td> zero or one </td>
+          </tr>
+        </table>
       </dd>
     </dl>
 
