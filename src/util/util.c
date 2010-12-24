@@ -570,7 +570,7 @@ __virExec(const char *const*argv,
             i != null &&
             i != childout &&
             i != childerr &&
-            (!keepfd || (i < FD_SETSIZE && !FD_ISSET(i, keepfd)))) {
+            (!keepfd || i >= FD_SETSIZE || !FD_ISSET(i, keepfd))) {
             tmpfd = i;
             VIR_FORCE_CLOSE(tmpfd);
         }
