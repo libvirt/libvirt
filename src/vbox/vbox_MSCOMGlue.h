@@ -41,7 +41,8 @@ struct _vboxArray {
 # define VBOX_ARRAY_INITIALIZER { NULL, 0, NULL }
 
 nsresult vboxArrayGet(vboxArray *array, void *self, void *getter);
-nsresult vboxArrayGetWithArg(vboxArray *array, void *self, void *getter, void *arg);
+nsresult vboxArrayGetWithPtrArg(vboxArray *array, void *self, void *getter, void *arg);
+nsresult vboxArrayGetWithUintArg(vboxArray *array, void *self, void *getter, PRUint32 arg);
 void vboxArrayRelease(vboxArray *array);
 # define vboxArrayUnalloc vboxArrayRelease
 

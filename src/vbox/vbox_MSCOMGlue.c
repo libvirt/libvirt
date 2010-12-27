@@ -660,24 +660,17 @@ VBoxCGlueTerm(void)
  */
 
 typedef HRESULT __stdcall (*SafeArrayGetter)(void *self, SAFEARRAY **array);
-typedef HRESULT __stdcall (*SafeArrayGetterWithArg)(void *self, void *arg, SAFEARRAY **array);
+typedef HRESULT __stdcall (*SafeArrayGetterWithPtrArg)(void *self, void *arg, SAFEARRAY **array);
+typedef HRESULT __stdcall (*SafeArrayGetterWithUintArg)(void *self, PRUint32 arg, SAFEARRAY **array);
 
-/*
- * Call the getter with self as first argument and fill the array with the
- * returned items.
- */
-nsresult
-vboxArrayGet(vboxArray *array, void *self, void *getter)
+static nsresult
+vboxArrayGetHelper(vboxArray *array, HRESULT hrc, SAFEARRAY *safeArray)
 {
-    HRESULT hrc;
-    SAFEARRAY *safeArray = NULL;
     void **items = NULL;
 
     array->items = NULL;
     array->count = 0;
     array->handle = NULL;
-
-    hrc = ((SafeArrayGetter)getter)(self, &safeArray);
 
     if (FAILED(hrc)) {
         return hrc;
@@ -698,38 +691,48 @@ vboxArrayGet(vboxArray *array, void *self, void *getter)
 }
 
 /*
+ * Call the getter with self as first argument and fill the array with the
+ * returned items.
+ */
+nsresult
+vboxArrayGet(vboxArray *array, void *self, void *getter)
+{
+    HRESULT hrc;
+    SAFEARRAY *safeArray = NULL;
+
+    hrc = ((SafeArrayGetter)getter)(self, &safeArray);
+
+    return vboxArrayGetHelper(array, hrc, safeArray);
+}
+
+/*
  * Call the getter with self as first argument and arg as second argument
  * and fill the array with the returned items.
  */
 nsresult
-vboxArrayGetWithArg(vboxArray *array, void *self, void *getter, void *arg)
+vboxArrayGetWithPtrArg(vboxArray *array, void *self, void *getter, void *arg)
 {
     HRESULT hrc;
     SAFEARRAY *safeArray = NULL;
-    void **items = NULL;
 
-    array->items = NULL;
-    array->count = 0;
-    array->handle = NULL;
+    hrc = ((SafeArrayGetterWithPtrArg)getter)(self, arg, &safeArray);
 
-    hrc = ((SafeArrayGetterWithArg)getter)(self, arg, &safeArray);
+    return vboxArrayGetHelper(array, hrc, safeArray);
+}
 
-    if (FAILED(hrc)) {
-        return hrc;
-    }
+/*
+ * Call the getter with self as first argument and arg as second argument
+ * and fill the array with the returned items.
+ */
+nsresult
+vboxArrayGetWithUintArg(vboxArray *array, void *self, void *getter, PRUint32 arg)
+{
+    HRESULT hrc;
+    SAFEARRAY *safeArray = NULL;
 
-    hrc = SafeArrayAccessData(safeArray, (void **)&items);
+    hrc = ((SafeArrayGetterWithUintArg)getter)(self, arg, &safeArray);
 
-    if (FAILED(hrc)) {
-        SafeArrayDestroy(safeArray);
-        return hrc;
-    }
-
-    array->items = items;
-    array->count = safeArray->rgsabound[0].cElements;
-    array->handle = safeArray;
-
-    return hrc;
+    return vboxArrayGetHelper(array, hrc, safeArray);
 }
 
 /*

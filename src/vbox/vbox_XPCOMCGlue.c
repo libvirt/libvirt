@@ -264,23 +264,14 @@ VBoxCGlueTerm(void)
  */
 
 typedef nsresult (*ArrayGetter)(void *self, PRUint32 *count, void ***items);
-typedef nsresult (*ArrayGetterWithArg)(void *self, void *arg, PRUint32 *count, void ***items);
+typedef nsresult (*ArrayGetterWithPtrArg)(void *self, void *arg, PRUint32 *count, void ***items);
+typedef nsresult (*ArrayGetterWithUintArg)(void *self, PRUint32 arg, PRUint32 *count, void ***items);
 
-/*
- * Call the getter with self as first argument and fill the array with the
- * returned items.
- */
-nsresult
-vboxArrayGet(vboxArray *array, void *self, void *getter)
+static nsresult
+vboxArrayGetHelper(vboxArray *array, nsresult nsrc, void **items, PRUint32 count)
 {
-    nsresult nsrc;
-    void **items = NULL;
-    PRUint32 count = 0;
-
     array->items = NULL;
     array->count = 0;
-
-    nsrc = ((ArrayGetter)getter)(self, &count, &items);
 
     if (NS_FAILED(nsrc)) {
         return nsrc;
@@ -293,29 +284,51 @@ vboxArrayGet(vboxArray *array, void *self, void *getter)
 }
 
 /*
- * Call the getter with self as first argument and arg as second argument
- * and fill the array with the returned items.
+ * Call the getter with self as first argument and fill the array with the
+ * returned items.
  */
 nsresult
-vboxArrayGetWithArg(vboxArray *array, void *self, void *getter, void *arg)
+vboxArrayGet(vboxArray *array, void *self, void *getter)
 {
     nsresult nsrc;
     void **items = NULL;
     PRUint32 count = 0;
 
-    array->items = NULL;
-    array->count = 0;
+    nsrc = ((ArrayGetter)getter)(self, &count, &items);
 
-    nsrc = ((ArrayGetterWithArg)getter)(self, arg, &count, &items);
+    return vboxArrayGetHelper(array, nsrc, items, count);
+}
 
-    if (NS_FAILED(nsrc)) {
-        return nsrc;
-    }
+/*
+ * Call the getter with self as first argument and arg as second argument
+ * and fill the array with the returned items.
+ */
+nsresult
+vboxArrayGetWithPtrArg(vboxArray *array, void *self, void *getter, void *arg)
+{
+    nsresult nsrc;
+    void **items = NULL;
+    PRUint32 count = 0;
 
-    array->items = items;
-    array->count = count;
+    nsrc = ((ArrayGetterWithPtrArg)getter)(self, arg, &count, &items);
 
-    return nsrc;
+    return vboxArrayGetHelper(array, nsrc, items, count);
+}
+
+/*
+ * Call the getter with self as first argument and arg as second argument
+ * and fill the array with the returned items.
+ */
+nsresult
+vboxArrayGetWithUintArg(vboxArray *array, void *self, void *getter, PRUint32 arg)
+{
+    nsresult nsrc;
+    void **items = NULL;
+    PRUint32 count = 0;
+
+    nsrc = ((ArrayGetterWithUintArg)getter)(self, arg, &count, &items);
+
+    return vboxArrayGetHelper(array, nsrc, items, count);
 }
 
 /*
@@ -344,7 +357,6 @@ vboxArrayRelease(vboxArray *array)
     array->items = NULL;
     array->count = 0;
 }
-
 
 /*
  * Unalloc all items in the array and reset it.
