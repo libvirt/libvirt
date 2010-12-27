@@ -42,7 +42,6 @@ void virThreadPoolFree(virThreadPoolPtr pool);
 
 int virThreadPoolSendJob(virThreadPoolPtr pool,
                          void *jobdata) ATTRIBUTE_NONNULL(1)
-                                        ATTRIBUTE_NONNULL(2)
                                         ATTRIBUTE_RETURN_CHECK;
 
 #endif
