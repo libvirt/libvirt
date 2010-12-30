@@ -2225,7 +2225,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 if (VIR_ALLOC_N(def->videos, def->nvideos) >= 0) {
                     if (VIR_ALLOC(def->videos[0]) >= 0) {
                         /* the default is: vram is 8MB, One monitor, 3dAccel Off */
-                        PRUint32 VRAMSize          = 8 * 1024;
+                        PRUint32 VRAMSize          = 8;
                         PRUint32 monitorCount      = 1;
                         PRBool accelerate3DEnabled = PR_FALSE;
                         PRBool accelerate2DEnabled = PR_FALSE;
@@ -2238,7 +2238,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 #endif /* VBOX_API_VERSION >= 3001 */
 
                         def->videos[0]->type            = VIR_DOMAIN_VIDEO_TYPE_VBOX;
-                        def->videos[0]->vram            = VRAMSize;
+                        def->videos[0]->vram            = VRAMSize * 1024;
                         def->videos[0]->heads           = monitorCount;
                         if (VIR_ALLOC(def->videos[0]->accel) >= 0) {
                             def->videos[0]->accel->support3d = accelerate3DEnabled;
@@ -4397,7 +4397,7 @@ vboxAttachVideo(virDomainDefPtr def, IMachine *machine)
 {
     if ((def->nvideos == 1) &&
         (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_VBOX)) {
-        machine->vtbl->SetVRAMSize(machine, def->videos[0]->vram);
+        machine->vtbl->SetVRAMSize(machine, def->videos[0]->vram / 1024);
         machine->vtbl->SetMonitorCount(machine, def->videos[0]->heads);
         if (def->videos[0]->accel) {
             machine->vtbl->SetAccelerate3DEnabled(machine,
