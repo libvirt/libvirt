@@ -284,7 +284,8 @@ int esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                                     esxVI_ManagedObjectReference *root,
                                     const char *type,
                                     esxVI_String *propertyNameList,
-                                    esxVI_ObjectContent **objectContentList);
+                                    esxVI_ObjectContent **objectContentList,
+                                    esxVI_Occurrence occurrence);
 
 int esxVI_GetManagedEntityStatus
       (esxVI_ObjectContent *objectContent, const char *propertyName,

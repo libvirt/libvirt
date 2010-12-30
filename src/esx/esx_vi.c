@@ -499,13 +499,8 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
                                            "hostFolder\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->service->rootFolder,
                                         "Datacenter", propertyNameList,
-                                        &datacenterList) < 0) {
-        goto cleanup;
-    }
-
-    if (datacenterList == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve datacenter list"));
+                                        &datacenterList,
+                                        esxVI_Occurrence_RequiredList) < 0) {
         goto cleanup;
     }
 
@@ -548,13 +543,8 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
                                            "resourcePool\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->datacenter->hostFolder,
                                         "ComputeResource", propertyNameList,
-                                        &computeResourceList) < 0) {
-        goto cleanup;
-    }
-
-    if (computeResourceList == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve compute resource list"));
+                                        &computeResourceList,
+                                        esxVI_Occurrence_RequiredList) < 0) {
         goto cleanup;
     }
 
@@ -610,13 +600,8 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
                                            "configManager\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->computeResource->_reference,
                                         "HostSystem", propertyNameList,
-                                        &hostSystemList) < 0) {
-        goto cleanup;
-    }
-
-    if (hostSystemList == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve host system list"));
+                                        &hostSystemList,
+                                        esxVI_Occurrence_RequiredList) < 0) {
         goto cleanup;
     }
 
@@ -687,17 +672,9 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
                        &managedObjectReference) < 0 ||
         esxVI_LookupObjectContentByType(ctx, managedObjectReference,
                                         "HostSystem", propertyNameList,
-                                        &hostSystem) < 0) {
-        goto cleanup;
-    }
-
-    if (hostSystem == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve host system"));
-        goto cleanup;
-    }
-
-    if (esxVI_HostSystem_CastFromObjectContent(hostSystem,
+                                        &hostSystem,
+                                        esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_HostSystem_CastFromObjectContent(hostSystem,
                                                &ctx->hostSystem) < 0) {
         goto cleanup;
     }
@@ -711,17 +688,9 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
                                            "resourcePool\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, hostSystem->obj,
                                         "ComputeResource", propertyNameList,
-                                        &computeResource) < 0) {
-        goto cleanup;
-    }
-
-    if (computeResource == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve compute resource of host system"));
-        goto cleanup;
-    }
-
-    if (esxVI_ComputeResource_CastFromObjectContent(computeResource,
+                                        &computeResource,
+                                        esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_ComputeResource_CastFromObjectContent(computeResource,
                                                     &ctx->computeResource) < 0) {
         goto cleanup;
     }
@@ -735,17 +704,9 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
                                            "hostFolder\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, computeResource->obj,
                                         "Datacenter", propertyNameList,
-                                        &datacenter) < 0) {
-        goto cleanup;
-    }
-
-    if (datacenter == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve datacenter of compute resource"));
-        goto cleanup;
-    }
-
-    if (esxVI_Datacenter_CastFromObjectContent(datacenter,
+                                        &datacenter,
+                                        esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_Datacenter_CastFromObjectContent(datacenter,
                                                &ctx->datacenter) < 0) {
         goto cleanup;
     }
@@ -1586,7 +1547,8 @@ esxVI_EnsureSession(esxVI_Context *ctx)
                                            "currentSession") < 0 ||
             esxVI_LookupObjectContentByType(ctx, ctx->service->sessionManager,
                                             "SessionManager", propertyNameList,
-                                            &sessionManager) < 0) {
+                                            &sessionManager,
+                                            esxVI_Occurrence_RequiredItem) < 0) {
             goto cleanup;
         }
 
@@ -1636,7 +1598,8 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                                 esxVI_ManagedObjectReference *root,
                                 const char *type,
                                 esxVI_String *propertyNameList,
-                                esxVI_ObjectContent **objectContentList)
+                                esxVI_ObjectContent **objectContentList,
+                                esxVI_Occurrence occurrence)
 {
     int result = -1;
     esxVI_ObjectSpec *objectSpec = NULL;
@@ -1710,12 +1673,41 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
         esxVI_PropertySpec_AppendToList(&propertyFilterSpec->propSet,
                                         propertySpec) < 0 ||
         esxVI_ObjectSpec_AppendToList(&propertyFilterSpec->objectSet,
-                                      objectSpec) < 0) {
+                                      objectSpec) < 0 ||
+        esxVI_RetrieveProperties(ctx, propertyFilterSpec,
+                                 objectContentList) < 0) {
         goto cleanup;
     }
 
-    result = esxVI_RetrieveProperties(ctx, propertyFilterSpec,
-                                      objectContentList);
+    if (objectContentList == NULL) {
+        switch (occurrence) {
+          case esxVI_Occurrence_OptionalItem:
+          case esxVI_Occurrence_OptionalList:
+            result = 0;
+            break;
+
+          case esxVI_Occurrence_RequiredItem:
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                         _("Could not lookup '%s' from '%s'"),
+                         type, root->type);
+            break;
+
+          case esxVI_Occurrence_RequiredList:
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                         _("Could not lookup '%s' list from '%s'"),
+                         type, root->type);
+            break;
+
+          default:
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Invalid occurrence value"));
+            break;
+        }
+
+        goto cleanup;
+    }
+
+    result = 0;
 
   cleanup:
     /*
@@ -2276,7 +2268,8 @@ esxVI_LookupHostSystemProperties(esxVI_Context *ctx,
 {
     return esxVI_LookupObjectContentByType(ctx, ctx->hostSystem->_reference,
                                            "HostSystem", propertyNameList,
-                                           hostSystem);
+                                           hostSystem,
+                                           esxVI_Occurrence_RequiredItem);
 }
 
 
@@ -2290,7 +2283,8 @@ esxVI_LookupVirtualMachineList(esxVI_Context *ctx,
      *        for cluster support */
     return esxVI_LookupObjectContentByType(ctx, ctx->hostSystem->_reference,
                                            "VirtualMachine", propertyNameList,
-                                           virtualMachineList);
+                                           virtualMachineList,
+                                           esxVI_Occurrence_OptionalList);
 }
 
 
@@ -2332,7 +2326,8 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
 
     if (esxVI_LookupObjectContentByType(ctx, managedObjectReference,
                                         "VirtualMachine", propertyNameList,
-                                        virtualMachine) < 0) {
+                                        virtualMachine,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
@@ -2475,7 +2470,8 @@ esxVI_LookupDatastoreList(esxVI_Context *ctx, esxVI_String *propertyNameList,
      *        support */
     return esxVI_LookupObjectContentByType(ctx, ctx->hostSystem->_reference,
                                            "Datastore", propertyNameList,
-                                           datastoreList);
+                                           datastoreList,
+                                           esxVI_Occurrence_OptionalList);
 }
 
 
@@ -2654,7 +2650,8 @@ esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
 
     if (esxVI_String_AppendValueToList(&propertyNameList, "host") < 0 ||
         esxVI_LookupObjectContentByType(ctx, datastore, "Datastore",
-                                        propertyNameList, &objectContent) < 0) {
+                                        propertyNameList, &objectContent,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
@@ -2719,7 +2716,8 @@ esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
 
     if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
         esxVI_LookupObjectContentByType(ctx, task, "Task", propertyNameList,
-                                        &objectContent) < 0) {
+                                        &objectContent,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
@@ -3400,13 +3398,7 @@ esxVI_LookupAutoStartDefaults(esxVI_Context *ctx,
         esxVI_LookupObjectContentByType
           (ctx, ctx->hostSystem->configManager->autoStartManager,
            "HostAutoStartManager", propertyNameList,
-           &hostAutoStartManager) < 0) {
-        goto cleanup;
-    }
-
-    if (hostAutoStartManager == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve the HostAutoStartManager object"));
+           &hostAutoStartManager, esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
@@ -3463,13 +3455,7 @@ esxVI_LookupAutoStartPowerInfoList(esxVI_Context *ctx,
         esxVI_LookupObjectContentByType
           (ctx, ctx->hostSystem->configManager->autoStartManager,
            "HostAutoStartManager", propertyNameList,
-           &hostAutoStartManager) < 0) {
-        goto cleanup;
-    }
-
-    if (hostAutoStartManager == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not retrieve the HostAutoStartManager object"));
+           &hostAutoStartManager, esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
