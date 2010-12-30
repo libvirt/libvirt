@@ -1812,7 +1812,7 @@ esxVI_GetVirtualMachineQuestionInfo
 
 int
 esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
-                 esxVI_Boolean *value, esxVI_Occurrence occurence)
+                 esxVI_Boolean *value, esxVI_Occurrence occurrence)
 {
     esxVI_DynamicProperty *dynamicProperty;
 
@@ -1835,7 +1835,7 @@ esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
     }
 
     if (*value == esxVI_Boolean_Undefined &&
-        occurence == esxVI_Occurrence_RequiredItem) {
+        occurrence == esxVI_Occurrence_RequiredItem) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("Missing '%s' property"), propertyName);
         return -1;
@@ -1844,9 +1844,11 @@ esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
     return 0;
 }
 
+
+
 int
 esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
-              esxVI_Long **value, esxVI_Occurrence occurence)
+              esxVI_Long **value, esxVI_Occurrence occurrence)
 {
     esxVI_DynamicProperty *dynamicProperty;
 
@@ -1866,7 +1868,7 @@ esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
         }
     }
 
-    if (*value == NULL && occurence == esxVI_Occurrence_RequiredItem) {
+    if (*value == NULL && occurrence == esxVI_Occurrence_RequiredItem) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("Missing '%s' property"), propertyName);
         return -1;
@@ -1880,7 +1882,7 @@ esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
 int
 esxVI_GetStringValue(esxVI_ObjectContent *objectContent,
                      const char *propertyName,
-                     char **value, esxVI_Occurrence occurence)
+                     char **value, esxVI_Occurrence occurrence)
 {
     esxVI_DynamicProperty *dynamicProperty;
 
@@ -1902,7 +1904,7 @@ esxVI_GetStringValue(esxVI_ObjectContent *objectContent,
         }
     }
 
-    if (*value == NULL && occurence == esxVI_Occurrence_RequiredItem) {
+    if (*value == NULL && occurrence == esxVI_Occurrence_RequiredItem) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("Missing '%s' property"), propertyName);
         return -1;
@@ -1917,7 +1919,7 @@ int
 esxVI_GetManagedObjectReference(esxVI_ObjectContent *objectContent,
                                 const char *propertyName,
                                 esxVI_ManagedObjectReference **value,
-                                esxVI_Occurrence occurence)
+                                esxVI_Occurrence occurrence)
 {
     esxVI_DynamicProperty *dynamicProperty;
 
@@ -1938,7 +1940,7 @@ esxVI_GetManagedObjectReference(esxVI_ObjectContent *objectContent,
         }
     }
 
-    if (*value == NULL && occurence == esxVI_Occurrence_RequiredItem) {
+    if (*value == NULL && occurrence == esxVI_Occurrence_RequiredItem) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("Missing '%s' property"), propertyName);
         return -1;
@@ -2265,9 +2267,10 @@ esxVI_GetSnapshotTreeBySnapshot
 
 
 
-int esxVI_LookupHostSystemProperties(esxVI_Context *ctx,
-                                     esxVI_String *propertyNameList,
-                                     esxVI_ObjectContent **hostSystem)
+int
+esxVI_LookupHostSystemProperties(esxVI_Context *ctx,
+                                 esxVI_String *propertyNameList,
+                                 esxVI_ObjectContent **hostSystem)
 {
     return esxVI_LookupObjectContentByType(ctx, ctx->hostSystem->_reference,
                                            "HostSystem", propertyNameList,

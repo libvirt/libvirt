@@ -300,19 +300,19 @@ int esxVI_GetVirtualMachineQuestionInfo
 
 int esxVI_GetBoolean(esxVI_ObjectContent *objectContent,
                      const char *propertyName,
-                     esxVI_Boolean *value, esxVI_Occurrence occurence);
+                     esxVI_Boolean *value, esxVI_Occurrence occurrence);
 
 int esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
-                  esxVI_Long **value, esxVI_Occurrence occurence);
+                  esxVI_Long **value, esxVI_Occurrence occurrence);
 
 int esxVI_GetStringValue(esxVI_ObjectContent *objectContent,
                          const char *propertyName,
-                         char **value, esxVI_Occurrence occurence);
+                         char **value, esxVI_Occurrence occurrence);
 
 int esxVI_GetManagedObjectReference(esxVI_ObjectContent *objectContent,
                                     const char *propertyName,
                                     esxVI_ManagedObjectReference **value,
-                                    esxVI_Occurrence occurence);
+                                    esxVI_Occurrence occurrence);
 
 int esxVI_LookupNumberOfDomainsByPowerState
       (esxVI_Context *ctx, esxVI_VirtualMachinePowerState powerState,

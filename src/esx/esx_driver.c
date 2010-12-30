@@ -2475,11 +2475,13 @@ esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
 }
 
 
+
 static int
 esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
     return esxDomainSetVcpusFlags(domain, nvcpus, VIR_DOMAIN_VCPU_LIVE);
 }
+
 
 
 static int
@@ -2540,12 +2542,16 @@ esxDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     return priv->maxVcpus;
 }
 
+
+
 static int
 esxDomainGetMaxVcpus(virDomainPtr domain)
 {
     return esxDomainGetVcpusFlags(domain, (VIR_DOMAIN_VCPU_LIVE |
                                            VIR_DOMAIN_VCPU_MAXIMUM));
 }
+
+
 
 static char *
 esxDomainDumpXML(virDomainPtr domain, int flags)
@@ -3809,11 +3815,15 @@ esxDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
     return 1;
 }
 
+
+
 static int
 esxDomainIsUpdated(virDomainPtr domain ATTRIBUTE_UNUSED)
 {
     return 0;
 }
+
+
 
 static virDomainSnapshotPtr
 esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
