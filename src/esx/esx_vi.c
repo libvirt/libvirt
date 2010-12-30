@@ -606,7 +606,8 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
     esxVI_String_Free(&propertyNameList);
 
     if (esxVI_String_AppendValueListToList(&propertyNameList,
-                                           "name\0") < 0 ||
+                                           "name\0"
+                                           "configManager\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->computeResource->_reference,
                                         "HostSystem", propertyNameList,
                                         &hostSystemList) < 0) {
@@ -680,7 +681,8 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
 
     /* Lookup HostSystem */
     if (esxVI_String_AppendValueListToList(&propertyNameList,
-                                           "name\0") < 0 ||
+                                           "name\0"
+                                           "configManager\0") < 0 ||
         esxVI_FindByIp(ctx, NULL, hostSystemIpAddress, esxVI_Boolean_False,
                        &managedObjectReference) < 0 ||
         esxVI_LookupObjectContentByType(ctx, managedObjectReference,
@@ -3368,6 +3370,126 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
   cleanup:
     esxVI_FileInfo_Free(&fileInfo);
     VIR_FREE(uuid_string);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupAutoStartDefaults(esxVI_Context *ctx,
+                              esxVI_AutoStartDefaults **defaults)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostAutoStartManager = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (defaults == NULL || *defaults != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    /*
+     * Lookup HostAutoStartManagerConfig from the HostAutoStartManager because
+     * for some reason this is much faster than looking up the same info from
+     * the HostSystem config.
+     */
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "config.defaults") < 0 ||
+        esxVI_LookupObjectContentByType
+          (ctx, ctx->hostSystem->configManager->autoStartManager,
+           "HostAutoStartManager", propertyNameList,
+           &hostAutoStartManager) < 0) {
+        goto cleanup;
+    }
+
+    if (hostAutoStartManager == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not retrieve the HostAutoStartManager object"));
+        goto cleanup;
+    }
+
+    for (dynamicProperty = hostAutoStartManager->propSet;
+         dynamicProperty != NULL; dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "config.defaults")) {
+            if (esxVI_AutoStartDefaults_CastFromAnyType(dynamicProperty->val,
+                                                        defaults) < 0) {
+                goto cleanup;
+            }
+
+            break;
+        }
+    }
+
+    if (*defaults == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not retrieve the AutoStartDefaults object"));
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostAutoStartManager);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupAutoStartPowerInfoList(esxVI_Context *ctx,
+                                   esxVI_AutoStartPowerInfo **powerInfoList)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostAutoStartManager = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (powerInfoList == NULL || *powerInfoList != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    /*
+     * Lookup HostAutoStartManagerConfig from the HostAutoStartManager because
+     * for some reason this is much faster than looking up the same info from
+     * the HostSystem config.
+     */
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "config.powerInfo") < 0 ||
+        esxVI_LookupObjectContentByType
+          (ctx, ctx->hostSystem->configManager->autoStartManager,
+           "HostAutoStartManager", propertyNameList,
+           &hostAutoStartManager) < 0) {
+        goto cleanup;
+    }
+
+    if (hostAutoStartManager == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not retrieve the HostAutoStartManager object"));
+        goto cleanup;
+    }
+
+    for (dynamicProperty = hostAutoStartManager->propSet;
+         dynamicProperty != NULL; dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "config.powerInfo")) {
+            if (esxVI_AutoStartPowerInfo_CastListFromAnyType
+                  (dynamicProperty->val, powerInfoList) < 0) {
+                goto cleanup;
+            }
+
+            break;
+        }
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostAutoStartManager);
 
     return result;
 }

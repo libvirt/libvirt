@@ -418,6 +418,12 @@ int esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
                                                 const char *datastorePath,
                                                 char **key);
 
+int esxVI_LookupAutoStartDefaults(esxVI_Context *ctx,
+                                  esxVI_AutoStartDefaults **defaults);
+
+int esxVI_LookupAutoStartPowerInfoList(esxVI_Context *ctx,
+                                       esxVI_AutoStartPowerInfo **powerInfoList);
+
 int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx,
        esxVI_ManagedObjectReference *virtualMachine,

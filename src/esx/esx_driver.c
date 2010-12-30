@@ -3199,6 +3199,185 @@ esxDomainUndefine(virDomainPtr domain)
 
 
 
+static int
+esxDomainGetAutostart(virDomainPtr domain, int *autostart)
+{
+    int result = -1;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_AutoStartDefaults *defaults = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostAutoStartManager = NULL;
+    esxVI_AutoStartPowerInfo *powerInfo = NULL;
+    esxVI_AutoStartPowerInfo *powerInfoList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+
+    *autostart = 0;
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    /* Check general autostart config */
+    if (esxVI_LookupAutoStartDefaults(priv->primary, &defaults) < 0) {
+        goto cleanup;
+    }
+
+    if (defaults->enabled != esxVI_Boolean_True) {
+        /* Autostart is disabled in general, exit early here */
+        result = 0;
+        goto cleanup;
+    }
+
+    /* Check specific autostart config */
+    if (esxVI_LookupAutoStartPowerInfoList(priv->primary, &powerInfoList) < 0) {
+        goto cleanup;
+    }
+
+    if (powerInfoList == NULL) {
+        /* powerInfo list is empty, exit early here */
+        result = 0;
+        goto cleanup;
+    }
+
+    if (esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         NULL, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    for (powerInfo = powerInfoList; powerInfo != NULL;
+         powerInfo = powerInfo->_next) {
+        if (STREQ(powerInfo->key->value, virtualMachine->obj->value)) {
+            if (STRCASEEQ(powerInfo->startAction, "powerOn")) {
+                *autostart = 1;
+            }
+
+            break;
+        }
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostAutoStartManager);
+    esxVI_AutoStartDefaults_Free(&defaults);
+    esxVI_AutoStartPowerInfo_Free(&powerInfoList);
+    esxVI_ObjectContent_Free(&virtualMachine);
+
+    return result;
+}
+
+
+
+static int
+esxDomainSetAutostart(virDomainPtr domain, int autostart)
+{
+    int result = -1;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_HostAutoStartManagerConfig *spec = NULL;
+    esxVI_AutoStartDefaults *defaults = NULL;
+    esxVI_AutoStartPowerInfo *powerInfoList = NULL;
+    esxVI_AutoStartPowerInfo *powerInfo = NULL;
+    esxVI_AutoStartPowerInfo *newPowerInfo = NULL;
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    if (esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         NULL, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_HostAutoStartManagerConfig_Alloc(&spec) < 0) {
+        goto cleanup;
+    }
+
+    if (autostart) {
+        /*
+         * There is a general autostart option that affects the autostart
+         * behavior of all domains. If it's disabled then no domain does
+         * autostart. If it's enabled then the autostart behavior depends on
+         * the per-domain autostart config.
+         */
+        if (esxVI_LookupAutoStartDefaults(priv->primary, &defaults) < 0) {
+            goto cleanup;
+        }
+
+        if (defaults->enabled != esxVI_Boolean_True) {
+            /*
+             * Autostart is disabled in general. Check if no other domain is
+             * in the list of autostarted domains, so it's safe to enable the
+             * general autostart option without affecting the autostart
+             * behavior of other domains.
+             */
+            if (esxVI_LookupAutoStartPowerInfoList(priv->primary,
+                                                   &powerInfoList) < 0) {
+                goto cleanup;
+            }
+
+            for (powerInfo = powerInfoList; powerInfo != NULL;
+                 powerInfo = powerInfo->_next) {
+                if (STRNEQ(powerInfo->key->value, virtualMachine->obj->value)) {
+                    ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                              _("Cannot enable general autostart option "
+                                "without affecting other domains"));
+                    goto cleanup;
+                }
+            }
+
+            /* Enable autostart in general */
+            if (esxVI_AutoStartDefaults_Alloc(&spec->defaults) < 0) {
+                goto cleanup;
+            }
+
+            spec->defaults->enabled = esxVI_Boolean_True;
+        }
+    }
+
+    if (esxVI_AutoStartPowerInfo_Alloc(&newPowerInfo) < 0 ||
+        esxVI_Int_Alloc(&newPowerInfo->startOrder) < 0 ||
+        esxVI_Int_Alloc(&newPowerInfo->startDelay) < 0 ||
+        esxVI_Int_Alloc(&newPowerInfo->stopDelay) < 0 ||
+        esxVI_AutoStartPowerInfo_AppendToList(&spec->powerInfo,
+                                              newPowerInfo) < 0) {
+        goto cleanup;
+    }
+
+    newPowerInfo->key = virtualMachine->obj;
+    newPowerInfo->startOrder->value = -1; /* no specific start order */
+    newPowerInfo->startDelay->value = -1; /* use system default */
+    newPowerInfo->waitForHeartbeat = esxVI_AutoStartWaitHeartbeatSetting_SystemDefault;
+    newPowerInfo->startAction = autostart ? (char *)"powerOn" : (char *)"none";
+    newPowerInfo->stopDelay->value = -1; /* use system default */
+    newPowerInfo->stopAction = (char *)"none";
+
+    if (esxVI_ReconfigureAutostart
+          (priv->primary,
+           priv->primary->hostSystem->configManager->autoStartManager,
+           spec) < 0) {
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    if (newPowerInfo != NULL) {
+        newPowerInfo->key = NULL;
+        newPowerInfo->startAction = NULL;
+        newPowerInfo->stopAction = NULL;
+    }
+
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_HostAutoStartManagerConfig_Free(&spec);
+    esxVI_AutoStartDefaults_Free(&defaults);
+    esxVI_AutoStartPowerInfo_Free(&powerInfoList);
+
+    return result;
+}
+
+
+
 /*
  * The scheduler interface exposes basically the CPU ResourceAllocationInfo:
  *
@@ -4406,8 +4585,8 @@ static virDriver esxDriver = {
     NULL,                            /* domainDetachDevice */
     NULL,                            /* domainDetachDeviceFlags */
     NULL,                            /* domainUpdateDeviceFlags */
-    NULL,                            /* domainGetAutostart */
-    NULL,                            /* domainSetAutostart */
+    esxDomainGetAutostart,           /* domainGetAutostart */
+    esxDomainSetAutostart,           /* domainSetAutostart */
     esxDomainGetSchedulerType,       /* domainGetSchedulerType */
     esxDomainGetSchedulerParameters, /* domainGetSchedulerParameters */
     esxDomainSetSchedulerParameters, /* domainSetSchedulerParameters */

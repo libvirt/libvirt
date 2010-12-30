@@ -51,6 +51,13 @@
 # Enumerations
 #
 
+enum AutoStartWaitHeartbeatSetting
+    yes
+    no
+    systemDefault
+end
+
+
 enum ManagedEntityStatus
     gray
     green
@@ -137,6 +144,26 @@ object AboutInfo
     String                                   productLineId                  r
     String                                   apiType                        r
     String                                   apiVersion                     r
+end
+
+
+object AutoStartDefaults
+    Boolean                                  enabled                        o
+    Int                                      startDelay                     o
+    Int                                      stopDelay                      o
+    Boolean                                  waitForHeartbeat               o
+    String                                   stopAction                     o
+end
+
+
+object AutoStartPowerInfo
+    ManagedObjectReference                   key                            r
+    Int                                      startOrder                     r
+    Int                                      startDelay                     r
+    AutoStartWaitHeartbeatSetting            waitForHeartbeat               r
+    String                                   startAction                    r
+    Int                                      stopDelay                      r
+    String                                   stopAction                     r
 end
 
 
@@ -231,6 +258,33 @@ end
 
 
 object FolderFileQuery extends FileQuery
+end
+
+
+object HostAutoStartManagerConfig
+    AutoStartDefaults                        defaults                       o
+    AutoStartPowerInfo                       powerInfo                      ol
+end
+
+
+object HostConfigManager
+    ManagedObjectReference                   cpuScheduler                   o
+    ManagedObjectReference                   datastoreSystem                o
+    ManagedObjectReference                   memoryManager                  o
+    ManagedObjectReference                   storageSystem                  o
+    ManagedObjectReference                   networkSystem                  o
+    ManagedObjectReference                   vmotionSystem                  o
+    ManagedObjectReference                   serviceSystem                  o
+    ManagedObjectReference                   firewallSystem                 o
+    ManagedObjectReference                   advancedOption                 o
+    ManagedObjectReference                   diagnosticSystem               o
+    ManagedObjectReference                   autoStartManager               o
+    ManagedObjectReference                   snmpSystem                     o
+    ManagedObjectReference                   dateTimeSystem                 o
+    ManagedObjectReference                   patchManager                   o
+    ManagedObjectReference                   bootDeviceSystem               o
+    ManagedObjectReference                   firmwareSystem                 o
+    ManagedObjectReference                   healthStatusSystem             o
 end
 
 
@@ -840,6 +894,12 @@ end
 method ReconfigVM_Task returns ManagedObjectReference r
     ManagedObjectReference                   _this                          r
     VirtualMachineConfigSpec                 spec                           r
+end
+
+
+method ReconfigureAutostart
+    ManagedObjectReference                   _this                          r
+    HostAutoStartManagerConfig               spec                           r
 end
 
 

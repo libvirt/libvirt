@@ -1815,6 +1815,7 @@ ESX_VI__TEMPLATE__VALIDATE(HostSystem,
     ESX_VI__TEMPLATE__PROPERTY__REQUIRE(name);
 
     /* HostSystem */
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(configManager);
 })
 
 int
@@ -1849,6 +1850,11 @@ esxVI_HostSystem_CastFromObjectContent(esxVI_ObjectContent *objectContent,
 
             if ((*hostSystem)->name == NULL) {
                 virReportOOMError();
+                goto failure;
+            }
+        } else if (STREQ(dynamicProperty->name, "configManager")) {
+            if (esxVI_HostConfigManager_CastFromAnyType
+                  (dynamicProperty->val, &(*hostSystem)->configManager) < 0) {
                 goto failure;
             }
         }

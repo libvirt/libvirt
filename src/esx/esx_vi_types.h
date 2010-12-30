@@ -412,6 +412,7 @@ struct _esxVI_HostSystem {
     char *name;                                            /* required */
 
     /* HostSystem */
+    esxVI_HostConfigManager *configManager;                /* required */
 };
 
 int esxVI_HostSystem_Alloc(esxVI_HostSystem **hostSystem);
