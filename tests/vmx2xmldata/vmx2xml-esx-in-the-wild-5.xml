@@ -33,5 +33,8 @@
       <source bridge='VM-LAN'/>
       <model type='e1000'/>
     </interface>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

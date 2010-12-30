@@ -17,5 +17,8 @@
       <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <controller type='fdc' index='0'/>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

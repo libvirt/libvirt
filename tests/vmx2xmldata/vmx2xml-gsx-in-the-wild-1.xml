@@ -23,5 +23,8 @@
       <source bridge='net1'/>
       <target dev='/dev/vmnet1'/>
     </interface>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

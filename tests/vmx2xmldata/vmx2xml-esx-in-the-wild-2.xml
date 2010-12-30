@@ -52,5 +52,8 @@
       <source bridge='VM Network'/>
       <model type='vlance'/>
     </interface>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

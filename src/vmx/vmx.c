@@ -326,6 +326,16 @@ def->nets[0]...
 
 
 ################################################################################
+## video #######################################################################
+
+def->videos[0]...
+->type = _VIDEO_TYPE_VMVGA
+->vram = <value kilobyte>         <=>   svga.vramSize = "<value byte>"
+->heads = 1
+
+
+
+################################################################################
 ## serials #####################################################################
 
                                         serial[0..3] -> <port>
@@ -1636,6 +1646,20 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     /* def:inputs */
     /* FIXME */
 
+    /* def:videos */
+    if (VIR_ALLOC_N(def->videos, 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    def->nvideos = 0;
+
+    if (virVMXParseSVGA(conf, &def->videos[def->nvideos]) < 0) {
+        goto cleanup;
+    }
+
+    def->nvideos = 1;
+
     /* def:sounds */
     /* FIXME */
 
@@ -2765,6 +2789,45 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
 
 
 
+int
+virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
+{
+    int result = -1;
+    long long svga_vramSize = 0;
+
+    if (def == NULL || *def != NULL) {
+        VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (VIR_ALLOC(*def) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    (*def)->type = VIR_DOMAIN_VIDEO_TYPE_VMVGA;
+
+    /* vmx:vramSize */
+    if (virVMXGetConfigLong(conf, "svga.vramSize", &svga_vramSize,
+                            4 * 1024 * 1024, true) < 0) {
+        goto cleanup;
+    }
+
+    (*def)->vram = svga_vramSize / 1024; /* Scale from bytes to kilobytes */
+
+    result = 0;
+
+  cleanup:
+    if (result < 0) {
+        virDomainVideoDefFree(*def);
+        *def = NULL;
+    }
+
+    return result;
+}
+
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Domain XML -> VMX
  */
@@ -3063,6 +3126,19 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
 
     /* def:sounds */
     /* FIXME */
+
+    /* def:videos */
+    if (def->nvideos > 0) {
+        if (def->nvideos > 1) {
+            VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("No support for multiple video devices"));
+            goto cleanup;
+        }
+
+        if (virVMXFormatSVGA(def->videos[0], &buffer) < 0) {
+            goto cleanup;
+        }
+    }
 
     /* def:hostdevs */
     /* FIXME */
@@ -3642,6 +3718,40 @@ virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
                   virDomainChrTypeToString(def->type));
         return -1;
     }
+
+    return 0;
+}
+
+
+
+int
+virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
+{
+    if (def->type != VIR_DOMAIN_VIDEO_TYPE_VMVGA) {
+        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Unsupported video device type '%s'"),
+                  virDomainVideoTypeToString(def->type));
+        return -1;
+    }
+
+    /*
+     * For Windows guests the VRAM size should be a multiple of 64 kilobyte.
+     * See http://kb.vmware.com/kb/1003 and http://kb.vmware.com/kb/1001558
+     */
+    if (def->vram % 64 != 0) {
+        VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Video device VRAM size must be a multiple of 64 kilobyte"));
+        return -1;
+    }
+
+    if (def->heads > 1) {
+        VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Multi-head video devices are unsupported"));
+        return -1;
+    }
+
+    virBufferVSprintf(buffer, "svga.vramSize = \"%lld\"\n",
+                      def->vram * 1024LL); /* Scale from kilobytes to bytes */
 
     return 0;
 }

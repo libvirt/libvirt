@@ -296,6 +296,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("smbios", "smbios", 4);
 
+    DO_TEST("svga", "svga", 4);
+
     virCapabilitiesFree(caps);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

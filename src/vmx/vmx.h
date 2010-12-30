@@ -100,6 +100,8 @@ int virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
 int virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
                         virDomainChrDefPtr *def);
 
+int virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def);
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -128,5 +130,7 @@ int virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
 
 int virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
                          virBufferPtr buffer);
+
+int virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer);
 
 #endif /* __VIR_VMX_H__ */

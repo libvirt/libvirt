@@ -19,5 +19,8 @@
       <source path='serial0.pipe'/>
       <target type='serial' port='0'/>
     </console>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

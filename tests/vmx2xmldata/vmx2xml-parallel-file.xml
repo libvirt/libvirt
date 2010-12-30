@@ -15,5 +15,8 @@
       <source path='[datastore] directory/parallel0.file'/>
       <target port='0'/>
     </parallel>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

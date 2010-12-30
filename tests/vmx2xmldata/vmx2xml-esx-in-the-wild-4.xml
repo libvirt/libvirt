@@ -38,5 +38,8 @@
       <source path='[498076b2-02796c1a-ef5b-000ae484a6a3] virtMonServ1/serial1.file'/>
       <target type='serial' port='0'/>
     </console>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

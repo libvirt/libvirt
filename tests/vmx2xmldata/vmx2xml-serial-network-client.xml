@@ -21,5 +21,8 @@
       <protocol type='raw'/>
       <target type='serial' port='0'/>
     </console>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>

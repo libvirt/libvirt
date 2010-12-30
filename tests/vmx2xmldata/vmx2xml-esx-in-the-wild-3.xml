@@ -34,5 +34,8 @@
       <mac address='00:0c:29:f5:c3:0c'/>
       <source bridge='VM Network'/>
     </interface>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
   </devices>
 </domain>
