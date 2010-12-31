@@ -558,6 +558,8 @@ virShrinkN;
 
 
 # network.h
+virSocketAddrBroadcast;
+virSocketAddrBroadcastByPrefix;
 virSocketAddrIsNetmask;
 virSocketAddrMask;
 virSocketAddrMaskByPrefix;
