@@ -298,23 +298,35 @@ int virSocketAddrIsNetmask(virSocketAddrPtr netmask) {
  * Returns 0 in case of success, or -1 on error.
  */
 int
-virSocketAddrMask(virSocketAddrPtr addr, const virSocketAddrPtr netmask)
+virSocketAddrMask(const virSocketAddrPtr addr,
+                  const virSocketAddrPtr netmask,
+                  virSocketAddrPtr       network)
 {
-    if (addr->data.stor.ss_family != netmask->data.stor.ss_family)
+    if (addr->data.stor.ss_family != netmask->data.stor.ss_family) {
+        network->data.stor.ss_family = AF_UNSPEC;
         return -1;
+    }
 
     if (addr->data.stor.ss_family == AF_INET) {
-        addr->data.inet4.sin_addr.s_addr
-            &= netmask->data.inet4.sin_addr.s_addr;
+        network->data.inet4.sin_addr.s_addr
+            = (addr->data.inet4.sin_addr.s_addr
+               & netmask->data.inet4.sin_addr.s_addr);
+        network->data.stor.ss_family = AF_INET;
+        network->len = addr->len;
         return 0;
     }
     if (addr->data.stor.ss_family == AF_INET6) {
         int ii;
-        for (ii = 0; ii < 16; ii++)
-            addr->data.inet6.sin6_addr.s6_addr[ii]
-                &= netmask->data.inet6.sin6_addr.s6_addr[ii];
+        for (ii = 0; ii < 16; ii++) {
+            network->data.inet6.sin6_addr.s6_addr[ii]
+                = (addr->data.inet6.sin6_addr.s6_addr[ii]
+                   & netmask->data.inet6.sin6_addr.s6_addr[ii]);
+        }
+        network->data.stor.ss_family = AF_INET6;
+        network->len = addr->len;
         return 0;
     }
+    network->data.stor.ss_family = AF_UNSPEC;
     return -1;
 }
 
@@ -329,15 +341,19 @@ virSocketAddrMask(virSocketAddrPtr addr, const virSocketAddrPtr netmask)
  * Returns 0 in case of success, or -1 on error.
  */
 int
-virSocketAddrMaskByPrefix(virSocketAddrPtr addr, unsigned int prefix)
+virSocketAddrMaskByPrefix(const virSocketAddrPtr addr,
+                          unsigned int           prefix,
+                          virSocketAddrPtr       network)
 {
     virSocketAddr netmask;
 
     if (virSocketAddrPrefixToNetmask(prefix, &netmask,
-                                     addr->data.stor.ss_family) < 0)
+                                     addr->data.stor.ss_family) < 0) {
+        network->data.stor.ss_family = AF_UNSPEC;
         return -1;
+    }
 
-    return virSocketAddrMask(addr, &netmask);
+    return virSocketAddrMask(addr, &netmask, network);
 }
 
 /**

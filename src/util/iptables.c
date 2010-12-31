@@ -298,8 +298,7 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
         return NULL;
     }
 
-    network = *netaddr;
-    if (virSocketAddrMaskByPrefix(&network, prefix) < 0) {
+    if (virSocketAddrMaskByPrefix(netaddr, prefix, &network) < 0) {
         iptablesError(VIR_ERR_INTERNAL_ERROR, "%s",
                       _("Failure to mask address"));
         return NULL;

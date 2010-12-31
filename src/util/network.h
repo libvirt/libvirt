@@ -73,10 +73,12 @@ int virSocketAddrIsNetmask(virSocketAddrPtr netmask);
 int virSocketCheckNetmask (virSocketAddrPtr addr1,
                            virSocketAddrPtr addr2,
                            virSocketAddrPtr netmask);
-int virSocketAddrMask     (virSocketAddrPtr addr,
-                           const virSocketAddrPtr netmask);
-int virSocketAddrMaskByPrefix(virSocketAddrPtr addr,
-                              unsigned int prefix);
+int virSocketAddrMask     (const virSocketAddrPtr addr,
+                           const virSocketAddrPtr netmask,
+                           virSocketAddrPtr       network);
+int virSocketAddrMaskByPrefix(const virSocketAddrPtr addr,
+                              unsigned int           prefix,
+                              virSocketAddrPtr       network);
 int virSocketAddrBroadcast(const virSocketAddrPtr addr,
                            const virSocketAddrPtr netmask,
                            virSocketAddrPtr       broadcast);
