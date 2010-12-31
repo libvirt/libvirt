@@ -677,14 +677,23 @@ brAddInetAddress(brControl *ctl ATTRIBUTE_UNUSED,
                  unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
-    char *addrstr;
+    char *addrstr = NULL, *bcaststr = NULL;
+    virSocketAddr broadcast;
     int ret = -1;
 
     if (!(addrstr = virSocketFormatAddr(addr)))
         goto cleanup;
+    /* format up a broadcast address if this is IPv4 */
+    if ((VIR_SOCKET_IS_FAMILY(addr, AF_INET)) &&
+        ((virSocketAddrBroadcastByPrefix(addr, prefix, &broadcast) < 0) ||
+         !(bcaststr = virSocketFormatAddr(&broadcast)))) {
+        goto cleanup;
+    }
     cmd = virCommandNew(IP_PATH);
     virCommandAddArgList(cmd, "addr", "add", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
+    if (bcaststr)
+        virCommandAddArgList(cmd, "broadcast", bcaststr, NULL);
     virCommandAddArgList(cmd, "dev", ifname, NULL);
 
     if (virCommandRun(cmd, NULL) < 0)
@@ -693,6 +702,7 @@ brAddInetAddress(brControl *ctl ATTRIBUTE_UNUSED,
     ret = 0;
 cleanup:
     VIR_FREE(addrstr);
+    VIR_FREE(bcaststr);
     virCommandFree(cmd);
     return ret;
 }
