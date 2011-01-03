@@ -1,7 +1,7 @@
 /*
  * utils.c: common, generic utility functions
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
@@ -2822,7 +2822,8 @@ virSetUIDGID(uid_t uid, gid_t gid)
     if (gid > 0) {
         if (setregid(gid, gid) < 0) {
             virReportSystemError(errno,
-                                 _("cannot change to '%d' group"), gid);
+                                 _("cannot change to '%d' group"),
+                                 (unsigned int) gid);
             return -1;
         }
     }
@@ -2844,14 +2845,15 @@ virSetUIDGID(uid_t uid, gid_t gid)
         getpwuid_r(uid, &pwd, buf, bufsize, &pwd_result);
         if (!pwd_result) {
             virReportSystemError(errno,
-                                 _("cannot getpwuid_r(%d)"), uid);
+                                 _("cannot getpwuid_r(%d)"),
+                                 (unsigned int) uid);
             VIR_FREE(buf);
             return -1;
         }
         if (initgroups(pwd.pw_name, pwd.pw_gid) < 0) {
             virReportSystemError(errno,
                                  _("cannot initgroups(\"%s\", %d)"),
-                                 pwd.pw_name, pwd.pw_gid);
+                                 pwd.pw_name, (unsigned int) pwd.pw_gid);
             VIR_FREE(buf);
             return -1;
         }
@@ -2859,7 +2861,8 @@ virSetUIDGID(uid_t uid, gid_t gid)
 # endif
         if (setreuid(uid, uid) < 0) {
             virReportSystemError(errno,
-                                 _("cannot change to uid to '%d'"), uid);
+                                 _("cannot change to uid to '%d'"),
+                                 (unsigned int) uid);
             return -1;
         }
     }
