@@ -963,6 +963,13 @@ fi
 %endif
 
 %changelog
+* Tue Jan  4 2011 Daniel Veillard <veillard@redhat.com> - 0.8.7-1
+- Preliminary support for VirtualBox 4.0
+- IPv6 support
+- Add VMware Workstation and Player driver driver
+- Add network disk support
+- Various improvements and bug fixes
+
 * Tue Nov 30 2010 Daniel Veillard <veillard@redhat.com> - 0.8.6-1
 - Add support for iSCSI target auto-discovery
 - QED: Basic support for QED images

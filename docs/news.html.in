@@ -8,212 +8,430 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>0.8.7: Jan 4 2011</h3>
+    <ul>
+      <li>Features:<br/>
+      Preliminary support for VirtualBox 4.0 (Matthias Bolte),<br/>
+      IPv6 support (Laine Stump),<br/>
+      Add VMware Workstation and Player driver (Jean-Baptiste Rouault),<br/>
+      Add network disk support (MORITA Kazutaka and Josh Durgin)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      esx: Fix "occurence" typo (again),<br/> (Matthias Bolte)
+      update docs for network disks (MORITA Kazutaka),<br/>
+      docs: Make VMware Workstation / Player page appear in the menu (Matthias Bolte),<br/>
+      Add info about VMware driver to the libvirt website (Jean-Baptiste Rouault),<br/>
+      docs: fixed typo, added table of contents (Justin Clift),<br/>
+      docs: added compiling page and significantly expanded windows page (Justin Clift),<br/>
+      docs: Add additional indentation to level 3 menu items (Matthias Bolte),<br/>
+      maint: doc fix (Eric Blake),<br/>
+      Update documentation of watchdog dump option and add test data for it (Hu Tao),<br/>
+      virsh: fix a typo in the memtune help description (Justin Clift),<br/>
+      docs: updated virsh command reference download links to new version (Justin Clift),<br/>
+      Moved the nodeinfo command to the 'host' help keyword group (Justin Clift),<br/>
+      man pages: update the description for the virsh help command (Justin Clift),<br/>
+      virsh: move two commands from domain group to storage pool group (Osier Yang),<br/>
+      virCommand: docs for usage of new command APIs (Daniel P. Berrange),<br/>
+      virsh: update help for "virsh help help" (Osier Yang),<br/>
+      virsh: remove a badly placed line break in virsh -h output (Justin Clift),<br/>
+      virsh: Categorize commands into groups for virsh help (Osier Yang)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      vbox: Handle different IID representation in Version 2.2 on Windows (Matthias Bolte),<br/>
+      build: make building on cygwin easier (Eric Blake),<br/>
+      build: improve testsuite results with older automake (Eric Blake),<br/>
+      build: allow older libselinux again (Eric Blake),<br/>
+      build: allow autoconf 2.59 again (Eric Blake),<br/>
+      build: allow mingw compilation with virCommand (Eric Blake),<br/>
+      build: quote AC_LANG_PROGRAM to avoid warnings with autoconf 2.68 (Diego Elio Pettenò),<br/>
+      build: properly handle ./configure --with-libpcap (Diego Elio Pettenò),<br/>
+      build: avoid shadowing devname(),<br/> on BSD systems (Eric Blake)
+      Fix undefined symbol errors when macvtap support is disabled (Matthias Bolte),<br/>
+      Fix warning when macvtap support is disabled (Jean-Baptiste Rouault)<br/>
+      </li>
+
+      <li>Bug fixes:<br/>
+      virExec: fix logic bug (Eric Blake),<br/>
+      Set broadcast address for IPv4 addresses on virtual network bridges (Laine Stump),<br/>
+      Fix misuse of VIR_ERR_INVALID_DOMAIN (Matthias Bolte),<br/>
+      build: fix building error when building without libvirtd (Wen Congyang),<br/>
+      spec: Enable ESX driver on RHEL (Jiri Denemark),<br/>
+      bridge: Fix uninitialized variable (Jiri Denemark),<br/>
+      make the dhcp element optional in network.rng (Laine Stump),<br/>
+      fix syntax error in configure.ac (Wen Congyang),<br/>
+      qemu: Reparent children when deleting a snapshot (Matthias Bolte),<br/>
+      Set bitmap size when allocating a bitmap (Jim Fehlig),<br/>
+      qemu: Return SPICE ports on domain shutdown (Jiri Denemark),<br/>
+      virterror: avoid API breakage with vmware (Eric Blake),<br/>
+      Fix memory leak in virsh (Hu Tao),<br/>
+      Distribute libvirt_vmx.syms (Matthias Bolte),<br/>
+      vmware: Fix undefine symbol with loadable drivers enabled (Matthias Bolte),<br/>
+      esx: Fix cluster resource lookup when connecting to a vCenter (Matthias Bolte),<br/>
+      command: avoid hanging on daemon processes (Eric Blake),<br/>
+      storage: Ignore dangling symbolic link for filesystem pool (Osier Yang),<br/>
+      Skip file-based security checks for network disks (Josh Durgin),<br/>
+      tests: avoid data race (Eric Blake),<br/>
+      bridge_driver: avoid double call to VIR_FREE (Paweł Krześniak),<br/>
+      vbox: Don't leak domain names in vboxListDefinedDomains (Matthias Bolte),<br/>
+      vbox: Don't leak arrays from XPCOM (Matthias Bolte),<br/>
+      build: fix typo that broke 'make dist' (Eric Blake),<br/>
+      util: Fix logical error in virReportSystemErrorFull (Jiri Denemark),<br/>
+      util: Fix error message in __virExec (Jiri Denemark),<br/>
+      daemon: Change CWD to / before daemonizing (Jiri Denemark),<br/>
+      daemon, threads: plug a memory leak (Eric Blake),<br/>
+      daemon: plug a memory leak (Eric Blake),<br/>
+      conf: plug memory leaks (Eric Blake),<br/>
+      tests: plug memory leaks (Eric Blake),<br/>
+      virExec: avoid undefined behavior (Eric Blake),<br/>
+      command: plug memory leak (Eric Blake),<br/>
+      build: distribute commandtest files (Eric Blake),<br/>
+      spec: do not start libvirt-guests if that service is off (Dan Kenigsberg),<br/>
+      correct the signal's name (Wen Congyang),<br/>
+      command: avoid memory leak (Eric Blake),<br/>
+      qemu: call drive_del in DetachPciDiskDevice (Ryan Harper),<br/>
+      qemu: call drive_unplug in DetachPciDiskDevice (Ryan Harper),<br/>
+      qemud: fix memory leak in io error events (Anthony Liguori),<br/>
+      qemu: Enable disabled debug messages (Jiri Denemark),<br/>
+      qemu: Use -vga none only if it is supported (Jiri Denemark),<br/>
+      openvz: avoid potential buffer overflow (Eric Blake),<br/>
+      tests: fix leaks in commandtest (Eric Blake),<br/>
+      uuid: require smbios uuid and domain uuid to match (Eric Blake),<br/>
+      qemu: avoid adding "" in smbios arguments (Eric Blake),<br/>
+      Fix funny off-by-one error in clock-variable (Dan Kenigsberg),<br/>
+      syntax error "Bad fd number" when stopping libvirt-guests (Laurent Léonard),<br/>
+      util: Fix bug which will cause libvirtd crash (Osier Yang),<br/>
+      qemu: Fix a possible deadlock in p2p migration (Jiri Denemark),<br/>
+      qemu: Don't try to set input FD to -1 (Matthias Bolte),<br/>
+      Fix memory leak in logging setup (Daniel P. Berrange),<br/>
+      schemas: Fix cpu element schema (Jiri Denemark),<br/>
+      virsh: Remove using phy as default disk driver in cmdAttachDisk (Osier Yang),<br/>
+      OpenVZ: drop fd leackage (Guido Günther),<br/>
+      qemu: plug memory leak (Eric Blake),<br/>
+      libvirtd: avoid memory leak on shutdown (Eric Blake),<br/>
+      Fix flaw in thread creation APIs (Daniel P. Berrange)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      build: avoid compilation warnings (Eric Blake),<br/>
+      Improve virSocketAddrMask[ByPrefix] API (Laine Stump),<br/>
+      Utility functions to produce an IPv4 broadcast address (Laine Stump),<br/>
+      qemu: add -incoming fd:n capability checking (Eric Blake),<br/>
+      spec: Automatically turn on cgconfig service (Daniel P. Berrange),<br/>
+      Replace setuid/setgid/initgroups with virSetUIDGID(),<br/> (Laine Stump)
+      new virSetUIDGID(),<br/> utility function (Laine Stump)
+      Preserve errno across calls to error reporting functions &amp; VIR_FREE (Laine Stump),<br/>
+      Run radvd for virtual networks with IPv6 addresses (Laine Stump),<br/>
+      Turn on IPv6 support in the bridge_driver.c virtual network driver (Laine Stump),<br/>
+      Update iptables.c to also support ip6tables. (Laine Stump),<br/>
+      Support multiple IP addresses on one network in bridge_driver.c (Laine Stump),<br/>
+      Change virtual network XML parsing/formatting to support IPv6 (Laine Stump),<br/>
+      Replace brSetInetAddress/brSetInetNetmask with brAddInetAddress (Laine Stump),<br/>
+      Make virtual network netmasks optional (Laine Stump),<br/>
+      Pass prefix rather than netmask into iptables functions (Laine Stump),<br/>
+      Consistently return 0 on success, -1 on failure in bridge_driver.c (Laine Stump),<br/>
+      Fix logging of failed iptables commands (Laine Stump),<br/>
+      New virNetworkDef utility functions (Laine Stump),<br/>
+      New virSocketAddr utility functions (Laine Stump),<br/>
+      virsh: Add --force option to update-device (Jiri Denemark),<br/>
+      esx: Add support for storage volume wiping (Matthias Bolte),<br/>
+      esx: Add support for storage volume deletion (Matthias Bolte),<br/>
+      maint: avoid space-tab (Eric Blake),<br/>
+      build: skip vmware driver when building for RHEL (Eric Blake),<br/>
+      tests: avoid spurious failure of nodeinfotest (Eric Blake),<br/>
+      libvirt-guests: avoid sourcing failure (Eric Blake),<br/>
+      vbox: Handle different array representations of XPCOM and MSCOM (Matthias Bolte),<br/>
+      vbox: Add glue layer for MSCOM on Windows (Matthias Bolte),<br/>
+      vbox: Match struct layout of the MSCOM implementation on Windows (Matthias Bolte),<br/>
+      vbox: Use stdcall convention for all COM methods on Windows (Matthias Bolte),<br/>
+      maint: improve tests distribution (Eric Blake),<br/>
+      Update QEMU test cases for new file locations &amp; API renames (Daniel P. Berrange),<br/>
+      Move QEMU hotplug helper code out of the QEMU driver (Daniel P. Berrange),<br/>
+      Move QEMU domain lock / job helper code to separate file (Daniel P. Berrange),<br/>
+      Move QEMU driver lock helpers to a separate file (Daniel P. Berrange),<br/>
+      Move QEMU hostdev helper code out of the QEMU driver (Daniel P. Berrange),<br/>
+      Move QEMU cgroup helper code out of the QEMU driver (Daniel P. Berrange),<br/>
+      Move QEMU audit helper code out of the QEMU driver (Daniel P. Berrange),<br/>
+      Move QEMU private data &amp; namespace code into separate file (Daniel P. Berrange),<br/>
+      Move QEMU command line management into a separate file (Daniel P. Berrange),<br/>
+      Move QEMU capabilities management into a separate file (Daniel P. Berrange),<br/>
+      Add a new function doStartCPUs (Hu Tao),<br/>
+      Add a new function doStopCPUs (Hu Tao),<br/>
+      Add a macro timeval_to_ms to compute micro seconds from timeval (Hu Tao),<br/>
+      cpu: Unify CPUID data structures (Jiri Denemark),<br/>
+      esx: Add support for storage volume cloning (Matthias Bolte),<br/>
+      selinux: avoid memory overhead of matchpathcon (Eric Blake),<br/>
+      tests: test Fedora 14 qemu-kvm -help parsing (Eric Blake),<br/>
+      tests: test RHEL 6.0 qemu-kvm -help parsing (Eric Blake),<br/>
+      sysinfo: convert to virCommand (Eric Blake),<br/>
+      build: update gnulib for pipe on mingw (Eric Blake),<br/>
+      test: fix commandtest under autobuild.sh (Eric Blake),<br/>
+      qemu: Introduce two new job types (Osier Yang),<br/>
+      qemu: Add RBD support and some network disk fixes (Josh Durgin),<br/>
+      Missing "Default-Stop" field in LSB comment in libvirt-guests (Laurent Léonard),<br/>
+      802.1Qbh: Add support for IFLA_VF_MAC (Roopa Prabhu),<br/>
+      command: ease use with virBuffer, and fix qemu leak (Eric Blake),<br/>
+      Convert dhcpStartDhcpDaemon from virRun to virCommand (Laine Stump),<br/>
+      esx: Refactor storage pool type lookup into a function (Matthias Bolte),<br/>
+      esx: Improve error reporting for failed tasks (Matthias Bolte),<br/>
+      tests: Add tests for network disks (Josh Durgin),<br/>
+      Add a watchdog action `dump' (Hu Tao),<br/>
+      Add a new function doCoreDump (Hu Tao),<br/>
+      threadpool impl (Hu Tao),<br/>
+      qemu: Distinguish between domain shutdown and crash (Jiri Denemark),<br/>
+      qemu: Only build devstr when needs (attach PCI controller),<br/> (Osier Yang)
+      configure: improve misleading libnl missing error message (Justin Clift),<br/>
+      maint: update to latest gnulib (Eric Blake),<br/>
+      openvz: convert popen to virCommand (Eric Blake),<br/>
+      command: improve behavior on no output (Eric Blake),<br/>
+      command: enforce fd vs. buffer considerations (Eric Blake),<br/>
+      tests: Fix commandtest in VPATH build (Jiri Denemark),<br/>
+      command: improve allocation failure reporting (Eric Blake),<br/>
+      tests: Fix detection of expected error (Jiri Denemark),<br/>
+      tests: Fix code formating in commandtest (Jiri Denemark),<br/>
+      smbios: allow (),<br/> in smbios strings (Eric Blake)
+      smbios: support system family (Eric Blake),<br/>
+      threads: add virThreadID for debugging use (Eric Blake),<br/>
+      tests: Don't ignore return value of getcwd(),<br/> (Jiri Denemark)
+      build: Fix internal docs generation in VPATH builds (Jiri Denemark),<br/>
+      Change return value of VIR_DRV_SUPPORTS_FEATURE to bool (Jiri Denemark),<br/>
+      Implement virVMOperationType{To|From}String independent from WITH_MACVTAP (Matthias Bolte),<br/>
+      Create file in virFileWriteStr(),<br/> if it doesn't exist (Jean-Baptiste Rouault)
+      Remove bogus includes (Daniel P. Berrange),<br/>
+      uml: convert to virCommand (Daniel P. Berrange),<br/>
+      qemu: convert to virCommand (Eric Blake),<br/>
+      Port hooks and iptables code to new command execution APIs (Daniel P. Berrange),<br/>
+      Introduce new APIs for spawning processes (Daniel P. Berrange),<br/>
+      util: add virVasprintf (Eric Blake),<br/>
+      util: fix saferead type (Eric Blake),<br/>
+      Tweak daemon event debug to include errno (Daniel P. Berrange),<br/>
+      tests: Add tests for CPU selection in qemu driver (Jiri Denemark),<br/>
+      tests: Support for faking emulator in qemuxml2argv (Jiri Denemark),<br/>
+      maint: update .gitignore (Eric Blake),<br/>
+      qemu: Use macro for max and min vnc port instead of number (Osier Yang),<br/>
+      tests: Add unit tests for internal CPU APIs (Jiri Denemark),<br/>
+      cpu: Add support for overriding path to CPU map XML file (Jiri Denemark),<br/>
+      Fall back to QEMUD_SAVE_FORMAT_RAW if compression method fails. (Hu Tao)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      esx: Move VMX handling code out of the driver directory (Matthias Bolte),<br/>
+      qemu: use virAsprintf instead of PATH_MAX (Eric Blake),<br/>
+      build: fix typo that broke 'make dist' (Wen Congyang),<br/>
+      sysinfo: formatting cleanups (Eric Blake),<br/>
+      virsh: Remove redundant commands in group domain (Osier Yang),<br/>
+      virsh: Remove redundant optional option for cmdHelp (Osier Yang),<br/>
+      qemu: Fix typo in qemuTeardownDiskPathDeny (Osier Yang),<br/>
+      maint: allow 'make syntax-check' to run again (Eric Blake)<br/>
+      </li>
+    </ul>
     <h3>0.8.6: Nov 30 2010</h3>
     <ul>
       <li> Features:<br/>
-      new API virDomainIsUpdated (Osier Yang)<br/>,
-      Add support for iSCSI target auto-discovery (Daniel P. Berrange)<br/>,
-      QED: Basic support for QED images (Adam Litke)<br/>,
-      Introduce a virDomainOpenConsole API (Daniel P. Berrange)<br/>,
-      Support for SPICE graphics (Daniel P. Berrange)<br/>,
-      Add a sysinfo and SMBIOS support (Daniel Veillard)<br/>,
+      new API virDomainIsUpdated (Osier Yang),<br/>
+      Add support for iSCSI target auto-discovery (Daniel P. Berrange),<br/>
+      QED: Basic support for QED images (Adam Litke),<br/>
+      Introduce a virDomainOpenConsole API (Daniel P. Berrange),<br/>
+      Support for SPICE graphics (Daniel P. Berrange),<br/>
+      Add a sysinfo and SMBIOS support (Daniel Veillard),<br/>
       Implement virsh qemu-monitor-command. (Chris Lalancette)<br/>
       </li>
       <li> Documentation:<br/>
-      updated c# bindings with arnauds latest changes (Justin Clift)<br/>,
-      Fix spelling of virBufferVSprintf (Jiri Denemark)<br/>,
-      Fix broken XML entity for '&gt;' (Philipp Hahn)<br/>,
-      removed outdated reference to virt-mem (Justin Clift)<br/>,
-      Add doc for missed options of migrate (Osier Yang)<br/>,
-      add doc for missed parameters of attach-disk (Osier Yang)<br/>,
-      update virsh manual (Osier Yang)<br/>,
-      updated virsh command reference with libvirt.org links (Justin Clift)<br/>,
-      Generate HACKING from docs/hacking.html.in (Matthias Bolte)<br/>,
-      Prepare hacking.html.in to generate HACKING from it (Matthias Bolte)<br/>,
-      updated csharp pages with latest info (Justin Clift)<br/>,
-      trivial typo fix (Justin Clift)<br/>,
-      added virsh command reference page. (Justin Clift)<br/>,
-      rpm: Fix summary wording (Cole Robinson)<br/>,
-      Augment bug reporting documentation (Daniel Veillard)<br/>,
-      virsh: fix incorrect help text mentioning non-existent network 'id' (Justin Clift)<br/>,
-      Fix off-by-1 in todo page generator (Daniel P. Berrange)<br/>,
-      Fix comment for video tag in domain RNG schema (Daniel P. Berrange)<br/>,
+      updated c# bindings with arnauds latest changes (Justin Clift),<br/>
+      Fix spelling of virBufferVSprintf (Jiri Denemark),<br/>
+      Fix broken XML entity for '&gt;' (Philipp Hahn),<br/>
+      removed outdated reference to virt-mem (Justin Clift),<br/>
+      Add doc for missed options of migrate (Osier Yang),<br/>
+      add doc for missed parameters of attach-disk (Osier Yang),<br/>
+      update virsh manual (Osier Yang),<br/>
+      updated virsh command reference with libvirt.org links (Justin Clift),<br/>
+      Generate HACKING from docs/hacking.html.in (Matthias Bolte),<br/>
+      Prepare hacking.html.in to generate HACKING from it (Matthias Bolte),<br/>
+      updated csharp pages with latest info (Justin Clift),<br/>
+      trivial typo fix (Justin Clift),<br/>
+      added virsh command reference page. (Justin Clift),<br/>
+      rpm: Fix summary wording (Cole Robinson),<br/>
+      Augment bug reporting documentation (Daniel Veillard),<br/>
+      virsh: fix incorrect help text mentioning non-existent network 'id' (Justin Clift),<br/>
+      Fix off-by-1 in todo page generator (Daniel P. Berrange),<br/>
+      Fix comment for video tag in domain RNG schema (Daniel P. Berrange),<br/>
       fix typo (Eric Blake)<br/>
       </li>
       <li> Portability:<br/>
-      remote: Fix TLS transport on Windows (Matthias Bolte)<br/>,
-      Rename 'remove' param to 'toremove' to avoid clash with stdio.h (Daniel P. Berrange)<br/>,
-      virt-aa-helper: Fix several compile errors (Matthias Bolte)<br/>,
-      maint: improve i18n on non-Linux (Eric Blake)<br/>,
-      nwfilter: use /bin/sh rather than requiring bash (Eric Blake)<br/>,
-      Use python discovered through env instead of hardcoding a path (Matthias Bolte)<br/>,
-      esx: Avoid warnings about breaking strict-aliasing rules on FreeBSD (Matthias Bolte)<br/>,
-      Make sure struct sockaddr_in is defined on FreeBSD (Matthias Bolte)<br/>,
-      configure: Disable FS storage driver if mntent.h is not available (Matthias Bolte)<br/>,
-      daemon: Include stdlib.h in dispatch.c (Matthias Bolte)<br/>,
-      xen: work with xen 4.0.1 headers (Eric Blake)<br/>,
-      Fix build with polkit 0 (Jim Fehlig)<br/>,
-      xen: work with ia64 MAX_VIRT_CPUS of 64 (Eric Blake)<br/>,
-      build: cleanup declaration of xen tests. (Diego Elio Pettenò)<br/>,
+      remote: Fix TLS transport on Windows (Matthias Bolte),<br/>
+      Rename 'remove' param to 'toremove' to avoid clash with stdio.h (Daniel P. Berrange),<br/>
+      virt-aa-helper: Fix several compile errors (Matthias Bolte),<br/>
+      maint: improve i18n on non-Linux (Eric Blake),<br/>
+      nwfilter: use /bin/sh rather than requiring bash (Eric Blake),<br/>
+      Use python discovered through env instead of hardcoding a path (Matthias Bolte),<br/>
+      esx: Avoid warnings about breaking strict-aliasing rules on FreeBSD (Matthias Bolte),<br/>
+      Make sure struct sockaddr_in is defined on FreeBSD (Matthias Bolte),<br/>
+      configure: Disable FS storage driver if mntent.h is not available (Matthias Bolte),<br/>
+      daemon: Include stdlib.h in dispatch.c (Matthias Bolte),<br/>
+      xen: work with xen 4.0.1 headers (Eric Blake),<br/>
+      Fix build with polkit 0 (Jim Fehlig),<br/>
+      xen: work with ia64 MAX_VIRT_CPUS of 64 (Eric Blake),<br/>
+      build: cleanup declaration of xen tests. (Diego Elio Pettenò),<br/>
       qemu: check compression program availability of virsh save and dump (KAMEZAWA Hiroyuki)<br/>
       </li>
       <li> Bug Fixes:<br/>
-      correct the arguments of migrate_speed (Wen Congyang)<br/>,
-      Fix memory leaks in audit &amp; VirtualBox code (Daniel P. Berrange)<br/>,
-      Fix host CPU counting on unusual NUMA topologies (Jiri Denemark)<br/>,
-      security, storage: plug memory leaks for security_context_t (Eric Blake)<br/>,
-      network: plug memory leak (Eric Blake)<br/>,
-      qemu: plug memory leak (Eric Blake)<br/>,
-      Always close drivers when a virConnectPtr is released (Matthias Bolte)<br/>,
-      libvirtd: fix bug when shrinking number of clients (Eric Blake)<br/>,
-      Fix 32-bit int truncation in QED header check (Daniel P. Berrange)<br/>,
-      Fix error handling in virsh when listing storage volumes (Daniel P. Berrange)<br/>,
-      Fix parsing of port attribute in storage XML configuration (Daniel P. Berrange)<br/>,
-      Don't catch SIGCHLD in libvirtd (Daniel P. Berrange)<br/>,
-      Ensure logfile isn't truncated by shutdown message. (Daniel P. Berrange)<br/>,
-      xend: Escape reserved sexpr characters (Cole Robinson)<br/>,
-      xend: urlencode: Properly escape '&amp;' (Cole Robinson)<br/>,
-      conf: Fix parsing python style triple quotes (Cole Robinson)<br/>,
-      nwfilter: re-order lock grabbed by IP addr. learn thread (Stefan Berger)<br/>,
-      virExec: fix bug in setting up child stderr/out with /dev/null (Daniel P. Berrange)<br/>,
-      Fix a failure to restore SELinux label for character devices (Daniel Veillard)<br/>,
-      nwfilter: also purge ip(6)tables rules before detecting IP address (Stefan Berger)<br/>,
-      Fix ipv4-addr definition in interface.rng (Laine Stump)<br/>,
-      remote_driver.c: fix non-literal format strings w/o args (Laine Stump)<br/>,
-      ignore SELinuxSetFilecon error in SELinuxSetSecurityFileLabel if on nfs (Laine Stump)<br/>,
-      Fix reference counting bug in virsh console (Daniel P. Berrange)<br/>,
-      Fix busy-wait loop on closed file descriptor (Daniel P. Berrange)<br/>,
-      Fix LXC container console device setup (Daniel P. Berrange)<br/>,
-      rpm: fix /var/lib/libvirt permissions (Eric Blake)<br/>,
-      xencapstest: Don't fail when Xen is installed (Matthias Bolte)<br/>,
-      virsh: fix non-literal string format (Laine Stump)<br/>,
-      Fix syntax-check error in domain.rng (Matthias Bolte)<br/>,
-      qemu: Fix non-literal format string (Jiri Denemark)<br/>,
-      macvtap: libvirtd forgot macvtap dev name when restarted (Stefan Berger)<br/>,
-      tests: fix daemon-conf testing failure (Osier Yang)<br/>,
-      Fix virPipeReadUntilEOF on more than 1024 bytes of data (Daniel Veillard)<br/>,
-      Misc error handling fixes in text mode monitor commands (Daniel P. Berrange)<br/>,
-      Ignore open failures when relabelling disk images (Daniel P. Berrange)<br/>,
-      Treat failure to relabel stdin_path as non-fatal on NFS (Daniel P. Berrange)<br/>,
-      qemu: add the USB devices to the cgroup whitelist (Diego Elio Pettenò)<br/>,
+      correct the arguments of migrate_speed (Wen Congyang),<br/>
+      Fix memory leaks in audit &amp; VirtualBox code (Daniel P. Berrange),<br/>
+      Fix host CPU counting on unusual NUMA topologies (Jiri Denemark),<br/>
+      security, storage: plug memory leaks for security_context_t (Eric Blake),<br/>
+      network: plug memory leak (Eric Blake),<br/>
+      qemu: plug memory leak (Eric Blake),<br/>
+      Always close drivers when a virConnectPtr is released (Matthias Bolte),<br/>
+      libvirtd: fix bug when shrinking number of clients (Eric Blake),<br/>
+      Fix 32-bit int truncation in QED header check (Daniel P. Berrange),<br/>
+      Fix error handling in virsh when listing storage volumes (Daniel P. Berrange),<br/>
+      Fix parsing of port attribute in storage XML configuration (Daniel P. Berrange),<br/>
+      Don't catch SIGCHLD in libvirtd (Daniel P. Berrange),<br/>
+      Ensure logfile isn't truncated by shutdown message. (Daniel P. Berrange),<br/>
+      xend: Escape reserved sexpr characters (Cole Robinson),<br/>
+      xend: urlencode: Properly escape '&amp;' (Cole Robinson),<br/>
+      conf: Fix parsing python style triple quotes (Cole Robinson),<br/>
+      nwfilter: re-order lock grabbed by IP addr. learn thread (Stefan Berger),<br/>
+      virExec: fix bug in setting up child stderr/out with /dev/null (Daniel P. Berrange),<br/>
+      Fix a failure to restore SELinux label for character devices (Daniel Veillard),<br/>
+      nwfilter: also purge ip(6)tables rules before detecting IP address (Stefan Berger),<br/>
+      Fix ipv4-addr definition in interface.rng (Laine Stump),<br/>
+      remote_driver.c: fix non-literal format strings w/o args (Laine Stump),<br/>
+      ignore SELinuxSetFilecon error in SELinuxSetSecurityFileLabel if on nfs (Laine Stump),<br/>
+      Fix reference counting bug in virsh console (Daniel P. Berrange),<br/>
+      Fix busy-wait loop on closed file descriptor (Daniel P. Berrange),<br/>
+      Fix LXC container console device setup (Daniel P. Berrange),<br/>
+      rpm: fix /var/lib/libvirt permissions (Eric Blake),<br/>
+      xencapstest: Don't fail when Xen is installed (Matthias Bolte),<br/>
+      virsh: fix non-literal string format (Laine Stump),<br/>
+      Fix syntax-check error in domain.rng (Matthias Bolte),<br/>
+      qemu: Fix non-literal format string (Jiri Denemark),<br/>
+      macvtap: libvirtd forgot macvtap dev name when restarted (Stefan Berger),<br/>
+      tests: fix daemon-conf testing failure (Osier Yang),<br/>
+      Fix virPipeReadUntilEOF on more than 1024 bytes of data (Daniel Veillard),<br/>
+      Misc error handling fixes in text mode monitor commands (Daniel P. Berrange),<br/>
+      Ignore open failures when relabelling disk images (Daniel P. Berrange),<br/>
+      Treat failure to relabel stdin_path as non-fatal on NFS (Daniel P. Berrange),<br/>
+      qemu: add the USB devices to the cgroup whitelist (Diego Elio Pettenò),<br/>
       802.1Qbg: use pre-associate state at beginning of inc. migr (Stefan Berger)<br/>
       </li>
       <li> Improvements:<br/>
-      Log client errors in libvirtd at debug priority<br/>,
-      maint: prohibit most uses of xmlGetProp (Eric Blake)<br/>,
-      maint: ensure syntax check exceptions are distributed (Eric Blake)<br/>,
-      Implementations of virDomainIsUpdated for drivers except qemu (Osier Yang)<br/>,
-      implement callback function for qemu driver (Osier Yang)<br/>,
-      implement the remote protocol (Osier Yang)<br/>,
-      implement public API virDomainIsUpdated (Osier Yang)<br/>,
-      define internal driver API (Osier Yang)<br/>,
-      tests: Fix dispatching internal error reports (Cole Robinson)<br/>,
-      Improve SCSI volume name generation (Daniel P. Berrange)<br/>,
-      Fix error codes returned when a storage pool is inactive (Daniel P. Berrange)<br/>,
-      Check whether pools are already active upon libvirtd startup (Daniel P. Berrange)<br/>,
-      Allow iSCSI IQN to be set with find-storage-pool-sources-as command (Daniel P. Berrange)<br/>,
-      Switch the virsh XML generation to use virBuffer instead of virAsprintf (Daniel P. Berrange)<br/>,
-      Stop iSCSI targets automatically logging back in after logout (Daniel P. Berrange)<br/>,
-      Refactor iSCSI driver code to facilitate future changes (Daniel P. Berrange)<br/>,
-      Ensure virExec preserves logging environment (Daniel P. Berrange)<br/>,
-      Include a thread identifier in log messages (Daniel P. Berrange)<br/>,
-      qemu: setvcpus: Save config changes to disk (Cole Robinson)<br/>,
-      qemu: setvcpus: Simplify altering the persistent config (Cole Robinson)<br/>,
-      qemu: setvcpus: Fix maxvcpus check (Cole Robinson)<br/>,
-      conf: domain: Improve vcpus validation reporting (Cole Robinson)<br/>,
-      Make state driver device hotplug/update actually transient (Cole Robinson)<br/>,
-      domain_conf: Add virDomainObjSetDefTransient (Cole Robinson)<br/>,
-      buf: Simplify virBufferEscapeString (Cole Robinson)<br/>,
-      conf: Convert ParseString to use STRPREFIX (Cole Robinson)<br/>,
-      schemas: domain: Add more valid file path chars (Cole Robinson)<br/>,
-      qed: Minor updates to QED support patches (Adam Litke)<br/>,
-      Support for probing qed image metadata (Adam Litke)<br/>,
-      storage_file: Add a new flag to mark backing files that are safe to probe (Adam Litke)<br/>,
-      Allow probing of image formats without version information (Adam Litke)<br/>,
-      maint: tighten strncmp syntax check (Eric Blake)<br/>,
-      capabilities, cpu: use new array API (Eric Blake)<br/>,
-      memory: make it easier to avoid quadratic scaling of arrays (Eric Blake)<br/>,
-      memory: make it safer to expand arrays (Eric Blake)<br/>,
-      build: fix autobuild failures on gcov upgrade (Eric Blake)<br/>,
-      virt-aa-helper: translate error messages (Eric Blake)<br/>,
-      maint: update to latest gnulib (Eric Blake)<br/>,
-      deprecate fclose() and introduce VIR_{FORCE_}FCLOSE() (Stefan Berger)<br/>,
-      qemu: record timestamp in qemu domain log (Osier Yang)<br/>,
-      virsh: add net-info command (Osier Yang)<br/>,
-      interface.rng: Make miimon and arpmon optional for bond interfaces (Laine Stump)<br/>,
-      macvtap: convert send / recv function to use libnl (Stefan Berger)<br/>,
-      configure: Remove bashism and replace 'test ==' with 'test =' (Matthias Bolte)<br/>,
-      virsh: Fix compile error in VPATH build (Matthias Bolte)<br/>,
-      qemu: Remove unnecessary quoting from the process name argument (John Morrissey)<br/>,
-      phyp: Don't do a flags check in the storage driver (Matthias Bolte)<br/>,
-      qemu: Add qemu-system-s390x to the emulators list (Matthias Bolte)<br/>,
-      macvtap: convert nl msg construction to use libnl (Stefan Berger)<br/>,
-      Do a better job of validating IP and MAC addresses in network.rng (Laine Stump)<br/>,
-      virt-aa-helper should require uuid in XML (Jamie Strandboge)<br/>,
-      esx: Support SMBIOS host mode (Matthias Bolte)<br/>,
-      Wire up virDomainOpenConsole for LXC, Xen and UML (Daniel P. Berrange)<br/>,
-      Re-write virsh console to use streams (Daniel P. Berrange)<br/>,
-      Convert daemon/events.c to use virMutex and virThread (Daniel P. Berrange)<br/>,
-      Introduce portability APIs for creating threads (Daniel P. Berrange)<br/>,
-      Support virDomainOpenConsole with QEMU (Daniel P. Berrange)<br/>,
-      Add a generic internal API for handling any FD based stream (Daniel P. Berrange)<br/>,
-      Lower logging level in remote driver streams (Daniel P. Berrange)<br/>,
-      Remote driver client and server for virDomainOpenConsole (Daniel P. Berrange)<br/>,
-      Support callbacks on virStream APIs in remote driver client (Daniel P. Berrange)<br/>,
-      virsh: supply long option for -V (Eric Blake)<br/>,
-      qemu: Add flag to force a CDROM eject (Cole Robinson)<br/>,
-      Allow non-file disk backingStores (Adam Litke)<br/>,
-      bye to close(), welcome to VIR_(FORCE_)CLOSE() (Stefan Berger)<br/>,
-      esx: Add support for memtune/min_guarantee (Matthias Bolte)<br/>,
-      schema: Move timer element inside clock (Jiri Denemark)<br/>,
-      Misc test case fixes for SPICE (Daniel P. Berrange)<br/>,
-      virsh: Add .xml suffix to tmp files used in *edit commands (Jiri Denemark)<br/>,
-      Support SPICE channel security options (Daniel P. Berrange)<br/>,
-      Support multiple QXL video cards (Daniel P. Berrange)<br/>,
-      Define XML syntax for password expiry (Daniel P. Berrange)<br/>,
-      Add SPICE support for QEMU driver configuration file (Daniel P. Berrange)<br/>,
-      Support automatic port number allocation for SPICE (Daniel P. Berrange)<br/>,
-      Implement QEMU/KVM QXL video card support in QEMU driver (Daniel P. Berrange)<br/>,
-      Add a graphics type for SPICE protocol (Daniel P. Berrange)<br/>,
-      Add a QXL graphics card type to domain XML schema (Daniel P. Berrange)<br/>,
-      Show compiled in options in virsh -V (Daniel Veillard)<br/>,
-      lxc: Exit on first error in lxcDomainGetMemoryParameters (Matthias Bolte)<br/>,
-      Allow virDomainGetMemoryParameters on read-only connections (Matthias Bolte)<br/>,
-      Add a new test for sysinfo and smbios handling (Daniel Veillard)<br/>,
-      Add sysinfo/smbios support to the QEmu driver (Daniel Veillard)<br/>,
-      Read the host sysinfo for the QEmu driver (Daniel Veillard)<br/>,
-      Add smbios element to schema and configuration to HVM os (Daniel Veillard)<br/>,
-      Sysinfo parsing and saving to/from configuration files (Daniel Veillard)<br/>,
-      Sysinfo extension to relax-ng schemas (Daniel Veillard)<br/>,
-      Change calling conventions in remote driver client internals (Daniel P. Berrange)<br/>,
-      util: Add helper function to build timestamp string (Osier Yang)<br/>,
-      misc: encode the Emacs suggstions from HACKING into a .dir-locals.el file (Diego Elio Pettenò)<br/>,
-      add compression support for "virsh dump" (KAMEZAWA Hiroyuki)<br/>,
-      qemu_driver: add virCgroupMounted (Lai Jiangshan)<br/>,
-      OpenVZ: Fix some overwritten error codes (Guido Günther)<br/>,
+      Log client errors in libvirtd at debug priority,<br/>
+      maint: prohibit most uses of xmlGetProp (Eric Blake),<br/>
+      maint: ensure syntax check exceptions are distributed (Eric Blake),<br/>
+      Implementations of virDomainIsUpdated for drivers except qemu (Osier Yang),<br/>
+      implement callback function for qemu driver (Osier Yang),<br/>
+      implement the remote protocol (Osier Yang),<br/>
+      implement public API virDomainIsUpdated (Osier Yang),<br/>
+      define internal driver API (Osier Yang),<br/>
+      tests: Fix dispatching internal error reports (Cole Robinson),<br/>
+      Improve SCSI volume name generation (Daniel P. Berrange),<br/>
+      Fix error codes returned when a storage pool is inactive (Daniel P. Berrange),<br/>
+      Check whether pools are already active upon libvirtd startup (Daniel P. Berrange),<br/>
+      Allow iSCSI IQN to be set with find-storage-pool-sources-as command (Daniel P. Berrange),<br/>
+      Switch the virsh XML generation to use virBuffer instead of virAsprintf (Daniel P. Berrange),<br/>
+      Stop iSCSI targets automatically logging back in after logout (Daniel P. Berrange),<br/>
+      Refactor iSCSI driver code to facilitate future changes (Daniel P. Berrange),<br/>
+      Ensure virExec preserves logging environment (Daniel P. Berrange),<br/>
+      Include a thread identifier in log messages (Daniel P. Berrange),<br/>
+      qemu: setvcpus: Save config changes to disk (Cole Robinson),<br/>
+      qemu: setvcpus: Simplify altering the persistent config (Cole Robinson),<br/>
+      qemu: setvcpus: Fix maxvcpus check (Cole Robinson),<br/>
+      conf: domain: Improve vcpus validation reporting (Cole Robinson),<br/>
+      Make state driver device hotplug/update actually transient (Cole Robinson),<br/>
+      domain_conf: Add virDomainObjSetDefTransient (Cole Robinson),<br/>
+      buf: Simplify virBufferEscapeString (Cole Robinson),<br/>
+      conf: Convert ParseString to use STRPREFIX (Cole Robinson),<br/>
+      schemas: domain: Add more valid file path chars (Cole Robinson),<br/>
+      qed: Minor updates to QED support patches (Adam Litke),<br/>
+      Support for probing qed image metadata (Adam Litke),<br/>
+      storage_file: Add a new flag to mark backing files that are safe to probe (Adam Litke),<br/>
+      Allow probing of image formats without version information (Adam Litke),<br/>
+      maint: tighten strncmp syntax check (Eric Blake),<br/>
+      capabilities, cpu: use new array API (Eric Blake),<br/>
+      memory: make it easier to avoid quadratic scaling of arrays (Eric Blake),<br/>
+      memory: make it safer to expand arrays (Eric Blake),<br/>
+      build: fix autobuild failures on gcov upgrade (Eric Blake),<br/>
+      virt-aa-helper: translate error messages (Eric Blake),<br/>
+      maint: update to latest gnulib (Eric Blake),<br/>
+      deprecate fclose() and introduce VIR_{FORCE_}FCLOSE() (Stefan Berger),<br/>
+      qemu: record timestamp in qemu domain log (Osier Yang),<br/>
+      virsh: add net-info command (Osier Yang),<br/>
+      interface.rng: Make miimon and arpmon optional for bond interfaces (Laine Stump),<br/>
+      macvtap: convert send / recv function to use libnl (Stefan Berger),<br/>
+      configure: Remove bashism and replace 'test ==' with 'test =' (Matthias Bolte),<br/>
+      virsh: Fix compile error in VPATH build (Matthias Bolte),<br/>
+      qemu: Remove unnecessary quoting from the process name argument (John Morrissey),<br/>
+      phyp: Don't do a flags check in the storage driver (Matthias Bolte),<br/>
+      qemu: Add qemu-system-s390x to the emulators list (Matthias Bolte),<br/>
+      macvtap: convert nl msg construction to use libnl (Stefan Berger),<br/>
+      Do a better job of validating IP and MAC addresses in network.rng (Laine Stump),<br/>
+      virt-aa-helper should require uuid in XML (Jamie Strandboge),<br/>
+      esx: Support SMBIOS host mode (Matthias Bolte),<br/>
+      Wire up virDomainOpenConsole for LXC, Xen and UML (Daniel P. Berrange),<br/>
+      Re-write virsh console to use streams (Daniel P. Berrange),<br/>
+      Convert daemon/events.c to use virMutex and virThread (Daniel P. Berrange),<br/>
+      Introduce portability APIs for creating threads (Daniel P. Berrange),<br/>
+      Support virDomainOpenConsole with QEMU (Daniel P. Berrange),<br/>
+      Add a generic internal API for handling any FD based stream (Daniel P. Berrange),<br/>
+      Lower logging level in remote driver streams (Daniel P. Berrange),<br/>
+      Remote driver client and server for virDomainOpenConsole (Daniel P. Berrange),<br/>
+      Support callbacks on virStream APIs in remote driver client (Daniel P. Berrange),<br/>
+      virsh: supply long option for -V (Eric Blake),<br/>
+      qemu: Add flag to force a CDROM eject (Cole Robinson),<br/>
+      Allow non-file disk backingStores (Adam Litke),<br/>
+      bye to close(), welcome to VIR_(FORCE_)CLOSE() (Stefan Berger),<br/>
+      esx: Add support for memtune/min_guarantee (Matthias Bolte),<br/>
+      schema: Move timer element inside clock (Jiri Denemark),<br/>
+      Misc test case fixes for SPICE (Daniel P. Berrange),<br/>
+      virsh: Add .xml suffix to tmp files used in *edit commands (Jiri Denemark),<br/>
+      Support SPICE channel security options (Daniel P. Berrange),<br/>
+      Support multiple QXL video cards (Daniel P. Berrange),<br/>
+      Define XML syntax for password expiry (Daniel P. Berrange),<br/>
+      Add SPICE support for QEMU driver configuration file (Daniel P. Berrange),<br/>
+      Support automatic port number allocation for SPICE (Daniel P. Berrange),<br/>
+      Implement QEMU/KVM QXL video card support in QEMU driver (Daniel P. Berrange),<br/>
+      Add a graphics type for SPICE protocol (Daniel P. Berrange),<br/>
+      Add a QXL graphics card type to domain XML schema (Daniel P. Berrange),<br/>
+      Show compiled in options in virsh -V (Daniel Veillard),<br/>
+      lxc: Exit on first error in lxcDomainGetMemoryParameters (Matthias Bolte),<br/>
+      Allow virDomainGetMemoryParameters on read-only connections (Matthias Bolte),<br/>
+      Add a new test for sysinfo and smbios handling (Daniel Veillard),<br/>
+      Add sysinfo/smbios support to the QEmu driver (Daniel Veillard),<br/>
+      Read the host sysinfo for the QEmu driver (Daniel Veillard),<br/>
+      Add smbios element to schema and configuration to HVM os (Daniel Veillard),<br/>
+      Sysinfo parsing and saving to/from configuration files (Daniel Veillard),<br/>
+      Sysinfo extension to relax-ng schemas (Daniel Veillard),<br/>
+      Change calling conventions in remote driver client internals (Daniel P. Berrange),<br/>
+      util: Add helper function to build timestamp string (Osier Yang),<br/>
+      misc: encode the Emacs suggstions from HACKING into a .dir-locals.el file (Diego Elio Pettenò),<br/>
+      add compression support for "virsh dump" (KAMEZAWA Hiroyuki),<br/>
+      qemu_driver: add virCgroupMounted (Lai Jiangshan),<br/>
+      OpenVZ: Fix some overwritten error codes (Guido Günther),<br/>
       OpenVZ: take veid from vmdef-name when defining new domains (Guido Günther)<br/>
       </li>
       <li> Cleanups:<br/>
-      tests: Fix detection of expected errors (Jiri Denemark)<br/>,
-      Remove bogus check for Xen in example program (Daniel P. Berrange)<br/>,
-      build: enforce files.h usage (Eric Blake)<br/>,
-      maint: sort exports (Eric Blake)<br/>,
-      Remove bogus port handling code in virsh (Daniel P. Berrange)<br/>,
-      Remove trailing ':' from timestamp (Daniel P. Berrange)<br/>,
-      Log all errors at level INFO to stop polluting syslog (Daniel P. Berrange)<br/>,
-      daemon: use safer memory growth macros (Eric Blake)<br/>,
-      maint: avoid remaining sprintf uses (Eric Blake)<br/>,
-      maint: use gnulib configmake rather than open-coding things (Eric Blake)<br/>,
-      replace last instances of close() (Stefan Berger)<br/>,
-      daemon: fix indention problem in daemon/libvirt.c (Osier Yang)<br/>,
-      qemu: fix typos in qemu_monitor_text.c (Osier Yang)<br/>,
-      re-indent network.rng following structural change (Laine Stump)<br/>,
-      Put network.rng contents inside grammar for uniformity with other RNGs (Laine Stump)<br/>,
-      maint: Commit .gitignore sorting done by bootstrap (Jiri Denemark)<br/>,
-      xen-proxy: Remove it entirely and use libvirtd instead (Matthias Bolte)<br/>,
-      qemu: Remove redundant slash in save directory path (Matthias Bolte)<br/>,
-      virterror: supply missing spaces (Eric Blake)<br/>,
-      Fix several warnings about a non-literal format string (Jiri Denemark)<br/>,
+      tests: Fix detection of expected errors (Jiri Denemark),<br/>
+      Remove bogus check for Xen in example program (Daniel P. Berrange),<br/>
+      build: enforce files.h usage (Eric Blake),<br/>
+      maint: sort exports (Eric Blake),<br/>
+      Remove bogus port handling code in virsh (Daniel P. Berrange),<br/>
+      Remove trailing ':' from timestamp (Daniel P. Berrange),<br/>
+      Log all errors at level INFO to stop polluting syslog (Daniel P. Berrange),<br/>
+      daemon: use safer memory growth macros (Eric Blake),<br/>
+      maint: avoid remaining sprintf uses (Eric Blake),<br/>
+      maint: use gnulib configmake rather than open-coding things (Eric Blake),<br/>
+      replace last instances of close() (Stefan Berger),<br/>
+      daemon: fix indention problem in daemon/libvirt.c (Osier Yang),<br/>
+      qemu: fix typos in qemu_monitor_text.c (Osier Yang),<br/>
+      re-indent network.rng following structural change (Laine Stump),<br/>
+      Put network.rng contents inside grammar for uniformity with other RNGs (Laine Stump),<br/>
+      maint: Commit .gitignore sorting done by bootstrap (Jiri Denemark),<br/>
+      xen-proxy: Remove it entirely and use libvirtd instead (Matthias Bolte),<br/>
+      qemu: Remove redundant slash in save directory path (Matthias Bolte),<br/>
+      virterror: supply missing spaces (Eric Blake),<br/>
+      Fix several warnings about a non-literal format string (Jiri Denemark),<br/>
       build: avoid compiler warning in xen code (Eric Blake)<br/>
       </li>
     </ul>
