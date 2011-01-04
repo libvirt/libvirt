@@ -24,20 +24,27 @@
 #               See http://libvirt.org
 #
 
-sysconfdir=@sysconfdir@
-localstatedir=@localstatedir@
-libvirtd=@sbindir@/libvirtd
+sysconfdir="@sysconfdir@"
+localstatedir="@localstatedir@"
+libvirtd="@sbindir@"/libvirtd
 
 # Source function library.
 test ! -r "$sysconfdir"/rc.d/init.d/functions ||
-  . "$sysconfdir"/rc.d/init.d/functions
+    . "$sysconfdir"/rc.d/init.d/functions
+
+# Source gettext library.
+# Make sure this file is recognized as having translations: _("dummy")
+. "@bindir@"/gettext.sh
+
+export TEXTDOMAIN="@PACKAGE@" TEXTDOMAINDIR="@localedir@"
 
 URIS=default
 ON_BOOT=start
 ON_SHUTDOWN=suspend
 SHUTDOWN_TIMEOUT=0
 
-test -f "$sysconfdir"/sysconfig/libvirt-guests && . "$sysconfdir"/sysconfig/libvirt-guests
+test -f "$sysconfdir"/sysconfig/libvirt-guests &&
+    . "$sysconfdir"/sysconfig/libvirt-guests
 
 LISTFILE="$localstatedir"/lib/libvirt/libvirt-guests
 VAR_SUBSYS_LIBVIRT_GUESTS="$localstatedir"/lock/subsys/libvirt-guests
@@ -129,7 +136,8 @@ start() {
     [ -f "$LISTFILE" ] || { started; return 0; }
 
     if [ "x$ON_BOOT" != xstart ]; then
-        echo $"libvirt-guests is configured not to start any guests on boot"
+        gettext "libvirt-guests is configured not to start any guests on boot"
+        echo
         rm -f "$LISTFILE"
         started
         return 0
@@ -144,20 +152,20 @@ start() {
             fi
         done
         if ! $configured; then
-            echo $"Ignoring guests on $uri URI"
+            eval_gettext "Ignoring guests on \$uri URI"; echo
             continue
         fi
 
-        echo $"Resuming guests on $uri URI..."
+        eval_gettext "Resuming guests on \$uri URI..."; echo
         for guest in $list; do
             name=$(guest_name $uri $guest)
-            echo -n $"Resuming guest $name: "
+            eval_gettext "Resuming guest \$name: "
             if guest_is_on $uri $guest; then
                 if $guest_running; then
-                    echo $"already active"
+                    gettext "already active"; echo
                 else
                     retval run_virsh $uri start "$name" >/dev/null && \
-                    echo $"done"
+                    gettext "done"; echo
                 fi
             fi
         done
@@ -173,8 +181,8 @@ suspend_guest()
     guest=$2
 
     name=$(guest_name $uri $guest)
-    label=$"Suspending $name: "
-    echo -n "$label"
+    label=$(eval_gettext "Suspending \$name: ")
+    printf %s "$label"
     run_virsh $uri managedsave $guest >/dev/null &
     virsh_pid=$!
     while true; do
@@ -188,7 +196,7 @@ suspend_guest()
             printf '\r%s%-12s ' "$label" "..."
         fi
     done
-    retval wait $virsh_pid && printf '\r%s%-12s\n' "$label" $"done"
+    retval wait $virsh_pid && printf '\r%s%-12s\n' "$label" "$(gettext "done")"
 }
 
 shutdown_guest()
@@ -197,13 +205,13 @@ shutdown_guest()
     guest=$2
 
     name=$(guest_name $uri $guest)
-    label=$"Shutting down $name: "
-    echo -n "$label"
+    label=$(eval_gettext "Shutting down \$name: ")
+    printf %s "$label"
     retval run_virsh $uri shutdown $guest >/dev/null || return
     timeout=$SHUTDOWN_TIMEOUT
     while [ $timeout -gt 0 ]; do
         sleep 1
-        timeout=$[timeout - 1]
+        timeout=$((timeout - 1))
         guest_is_on $uri $guest || return
         $guest_running || break
         printf '\r%s%-12d ' "$label" $timeout
@@ -211,9 +219,10 @@ shutdown_guest()
 
     if guest_is_on $uri $guest; then
         if $guest_running; then
-            printf '\r%s%-12s\n' "$label" $"failed to shutdown in time"
+            printf '\r%s%-12s\n' "$label" \
+                "$(gettext "failed to shutdown in time")"
         else
-            printf '\r%s%-12s\n' "$label" $"done"
+            printf '\r%s%-12s\n' "$label" "$(gettext "done")"
         fi
     fi
 }
@@ -226,7 +235,8 @@ stop() {
     if [ "x$ON_SHUTDOWN" = xshutdown ]; then
         suspending=false
         if [ $SHUTDOWN_TIMEOUT -le 0 ]; then
-            echo $"Shutdown action requested but SHUTDOWN_TIMEOUT was not set"
+            gettext "Shutdown action requested but SHUTDOWN_TIMEOUT was not set"
+            echo
             RETVAL=6
             return
         fi
@@ -234,10 +244,10 @@ stop() {
 
     : >"$LISTFILE"
     for uri in $URIS; do
-        echo -n $"Running guests on $uri URI: "
+        eval_gettext "Running guests on \$uri URI: "
 
         if [ "x$uri" = xdefault ] && [ ! -x "$libvirtd" ]; then
-            echo $"libvirtd not installed; skipping this URI."
+            gettext "libvirtd not installed; skipping this URI."; echo
             continue
         fi
 
@@ -246,11 +256,11 @@ stop() {
             empty=true
             for uuid in $list; do
                 $empty || printf ", "
-                echo -n $(guest_name $uri $uuid)
+                printf %s "$(guest_name $uri $uuid)"
                 empty=false
             done
             if $empty; then
-                echo $"no running guests."
+                gettext "no running guests."; echo
             else
                 echo
                 echo $uri $list >>"$LISTFILE"
@@ -260,9 +270,9 @@ stop() {
 
     while read uri list; do
         if $suspending; then
-            echo $"Suspending guests on $uri URI..."
+            eval_gettext "Suspending guests on \$uri URI..."; echo
         else
-            echo $"Shutting down guests on $uri URI..."
+            eval_gettext "Shutting down guests on \$uri URI..."; echo
         fi
 
         for guest in $list; do
@@ -290,13 +300,13 @@ gueststatus() {
 # since there is no external daemon process matching this init script.
 rh_status() {
     if [ -f "$LISTFILE" ]; then
-        echo $"stopped, with saved guests"
+        gettext "stopped, with saved guests"; echo
         RETVAL=3
     else
         if [ -f "$VAR_SUBSYS_LIBVIRT_GUESTS" ]; then
-            echo $"started"
+            gettext "started"; echo
         else
-            echo $"stopped, with no saved guests"
+            gettext "stopped, with no saved guests"; echo
         fi
         RETVAL=0
     fi
@@ -305,7 +315,9 @@ rh_status() {
 # usage [val]
 # Display usage string, then exit with VAL (defaults to 2).
 usage() {
-    echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|gueststatus|shutdown}"
+    program_name=$0
+    eval_gettext "Usage: \$program_name {start|stop|status|restart|"\
+"condrestart|try-restart|reload|force-reload|gueststatus|shutdown}"; echo
     exit ${1-2}
 }
 

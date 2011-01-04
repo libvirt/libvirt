@@ -146,9 +146,12 @@ BUILT_SOURCES += libvirt-guests.init
 
 libvirt-guests.init: libvirt-guests.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed					\
-	    -e s!\@localstatedir\@!@localstatedir@!g	\
-	    -e s!\@sbindir\@!@sbindir@!g		\
-	    -e s!\@sysconfdir\@!@sysconfdir@!g		\
+	    -e 's!\@PACKAGE\@!$(PACKAGE)!g'		\
+	    -e 's!\@bindir\@!$(bindir)!g'		\
+	    -e 's!\@localedir\@!$(localedir)!g'		\
+	    -e 's!\@localstatedir\@!$(localstatedir)!g'	\
+	    -e 's!\@sbindir\@!$(sbindir)!g'		\
+	    -e 's!\@sysconfdir\@!$(sysconfdir)!g'	\
 	    < $< > $@-t &&				\
 	    chmod a+x $@-t &&				\
 	    mv $@-t $@
