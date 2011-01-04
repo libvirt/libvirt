@@ -2624,7 +2624,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               enum virVMOperationType vmop) {
     int ret;
     unsigned long long qemuCmdFlags;
-    int pos = -1;
+    off_t pos = -1;
     char ebuf[1024];
     char *pidfile = NULL;
     int logfile = -1;
