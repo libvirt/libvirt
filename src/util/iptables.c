@@ -761,10 +761,19 @@ iptablesForwardMasquerade(iptablesContext *ctx,
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
+    if (!VIR_SOCKET_IS_FAMILY(netaddr, AF_INET)) {
+        /* Higher level code *should* guaranteee it's impossible to get here. */
+        iptablesError(VIR_ERR_INTERNAL_ERROR,
+                      _("Attempted to NAT '%s'. NAT is only supported for IPv4."),
+                      networkstr);
+        VIR_FREE(networkstr);
+        return -1;
+    }
+
     if (protocol && protocol[0]) {
         if (physdev && physdev[0]) {
             ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        VIR_SOCKET_FAMILY(netaddr),
+                                        AF_INET,
                                         action,
                                         "--source", networkstr,
                                         "-p", protocol,
@@ -775,7 +784,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
                                         NULL);
         } else {
             ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        VIR_SOCKET_FAMILY(netaddr),
+                                        AF_INET,
                                         action,
                                         "--source", networkstr,
                                         "-p", protocol,
@@ -787,7 +796,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
     } else {
         if (physdev && physdev[0]) {
             ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        VIR_SOCKET_FAMILY(netaddr),
+                                        AF_INET,
                                         action,
                                         "--source", networkstr,
                                         "!", "--destination", networkstr,
@@ -796,7 +805,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
                                         NULL);
         } else {
             ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        VIR_SOCKET_FAMILY(netaddr),
+                                        AF_INET,
                                         action,
                                         "--source", networkstr,
                                         "!", "--destination", networkstr,
