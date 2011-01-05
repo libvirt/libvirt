@@ -10557,9 +10557,9 @@ remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
     priv->domainEvents->count = 0;
     priv->domainEvents->events = NULL;
 
+    virEventUpdateTimeout(priv->eventFlushTimer, -1);
     virDomainEventQueueDispatch(&tempQueue, priv->callbackList,
                                 remoteDomainEventDispatchFunc, priv);
-    virEventUpdateTimeout(priv->eventFlushTimer, -1);
 
     /* Purge any deleted callbacks */
     virDomainEventCallbackListPurgeMarked(priv->callbackList);
