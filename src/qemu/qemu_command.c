@@ -5621,7 +5621,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     if (def->ndisks > 0) {
         const char *ceph_args = qemuFindEnv(progenv, "CEPH_ARGS");
         if (ceph_args) {
-            char *hosts, *port, *saveptr, *token;
+            char *hosts, *port, *saveptr = NULL, *token;
             virDomainDiskDefPtr first_rbd_disk = NULL;
             for (i = 0 ; i < def->ndisks ; i++) {
                 virDomainDiskDefPtr disk = def->disks[i];
