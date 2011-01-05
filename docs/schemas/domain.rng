@@ -1748,7 +1748,7 @@
     </element>
   </define>
   <!--
-      A set of optional features: PAE, APIC and ACPI support
+      A set of optional features: PAE, APIC, ACPI, and HAP support
     -->
   <define name="features">
     <optional>
@@ -1766,6 +1766,11 @@
           </optional>
           <optional>
             <element name="acpi">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="hap">
               <empty/>
             </element>
           </optional>

@@ -437,6 +437,7 @@
     &lt;pae/&gt;
     &lt;acpi/&gt;
     &lt;apic/&gt;
+    &lt;hap/&gt;
   &lt;/features&gt;
   ...</pre>
 
@@ -455,6 +456,10 @@
       <dt><code>acpi</code></dt>
       <dd>ACPI is useful for power management, for example, with
         KVM guests it is required for graceful shutdown to work.
+      </dd>
+      <dt><code>hap</code></dt>
+      <dd>Enable use of Hardware Assisted Paging if available in
+        the hardware.
       </dd>
     </dl>
 
