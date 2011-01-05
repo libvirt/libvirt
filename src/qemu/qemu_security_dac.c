@@ -533,7 +533,7 @@ qemuSecurityDACRestoreSavedStateLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
                                       virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                       const char *savefile)
 {
-    if (!driver->privileged)
+    if (!driver->privileged || !driver->dynamicOwnership)
         return 0;
 
     return qemuSecurityDACRestoreSecurityFileLabel(savefile);
