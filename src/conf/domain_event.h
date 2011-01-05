@@ -182,7 +182,8 @@ void virDomainEventStateFree(virDomainEventStatePtr state);
 virDomainEventStatePtr
 virDomainEventStateNew(virEventTimeoutCallback timeout_cb,
                        void *timeout_opaque,
-                       virFreeCallback timeout_free)
+                       virFreeCallback timeout_free,
+                       bool requireTimer)
     ATTRIBUTE_NONNULL(1);
 
 typedef void (*virDomainEventDispatchFunc)(virConnectPtr conn,
@@ -204,5 +205,26 @@ void virDomainEventQueueDispatch(virDomainEventQueuePtr queue,
                                  virDomainEventCallbackListPtr cbs,
                                  virDomainEventDispatchFunc dispatch,
                                  void *opaque);
+
+
+void
+virDomainEventStateQueue(virDomainEventStatePtr state,
+                         virDomainEventPtr event)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void
+virDomainEventStateFlush(virDomainEventStatePtr state,
+                         virDomainEventDispatchFunc dispatchFunc,
+                         void *opaque)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int
+virDomainEventStateDeregister(virConnectPtr conn,
+                              virDomainEventStatePtr state,
+                              virConnectDomainEventCallback callback)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+int
+virDomainEventStateDeregisterAny(virConnectPtr conn,
+                                 virDomainEventStatePtr state,
+                                 int callbackID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif
