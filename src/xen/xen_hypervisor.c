@@ -2321,6 +2321,16 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
                                                 hv_minor > 0 ?
                                                 0 : 1)) == NULL)
                 goto no_memory;
+
+            /* Xen 3.3.x and beyond supports enabling/disabling
+             * hardware assisted paging.  Default is off.
+             */
+            if ((hv_major == 3 && hv_minor >= 3) || (hv_major > 3))
+                if (virCapabilitiesAddGuestFeature(guest,
+                                                   "hap",
+                                                   0,
+                                                   1) == NULL)
+                    goto no_memory;
         }
     }
 
