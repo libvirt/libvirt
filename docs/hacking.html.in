@@ -209,11 +209,13 @@
     <p>
       However, there is one exception in the other direction, when even a
       one-line block should have braces.  That occurs when that one-line,
-      brace-less block is an <code>else</code> block, and the corresponding
-      <code>then</code> block <b>does</b> use braces.  In that case, either
-      put braces around the <code>else</code> block, or negate the
-      <code>if</code>-condition and swap the bodies, putting the
-      one-line block first and making the longer, multi-line block be the
+      brace-less block is an <code>if</code> or <code>else</code>
+      block, and the counterpart block <b>does</b> use braces.  In
+      that case, put braces around both blocks.  Also, if
+      the <code>else</code> block is much shorter than
+      the <code>if</code> block, consider negating the
+      <code>if</code>-condition and swapping the bodies, putting the
+      short block first and making the longer, multi-line block be the
       <code>else</code> block.
     </p>
 
@@ -223,19 +225,11 @@
       ...
   }
   else
-      x = y;    // BAD: braceless "else" with braced "then"
-</pre>
+      x = y;    // BAD: braceless "else" with braced "then",
+                // and short block last
 
-    <p>
-      This is preferred, especially when the multi-line body is more than a
-      few lines long, because it is easier to read and grasp the semantics of
-      an if-then-else block when the simpler block occurs first, rather than
-      after the more involved block:
-    </p>
-
-<pre>
-  if (!expr)
-    x = y; // putting the smaller block first is more readable
+  if (expr)
+      x = y;    // BAD: braceless "if" with braced "else"
   else {
       ...
       ...
@@ -243,11 +237,29 @@
 </pre>
 
     <p>
-      If you'd rather not negate the condition, then at least add braces:
+      Keeping braces consistent and putting the short block first is
+      preferred, especially when the multi-line body is more than a
+      few lines long, because it is easier to read and grasp the semantics of
+      an if-then-else block when the simpler block occurs first, rather than
+      after the more involved block:
     </p>
 
 <pre>
-  if (expr) {
+  if (!expr) {
+    x = y; // putting the smaller block first is more readable
+  } else {
+      ...
+      ...
+  }
+</pre>
+
+    <p>
+      But if negating a complex condition is too ugly, then at least
+      add braces:
+    </p>
+
+<pre>
+  if (complex expr not worth negating) {
       ...
       ...
   } else {
