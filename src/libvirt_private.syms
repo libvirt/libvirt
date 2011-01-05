@@ -389,6 +389,8 @@ virDomainEventRTCChangeNewFromObj;
 virDomainEventRebootNew;
 virDomainEventRebootNewFromDom;
 virDomainEventRebootNewFromObj;
+virDomainEventStateFree;
+virDomainEventStateNew;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 

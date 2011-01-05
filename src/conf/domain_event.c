@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include "domain_event.h"
+#include "event.h"
 #include "logging.h"
 #include "datatypes.h"
 #include "memory.h"
@@ -505,6 +506,25 @@ void virDomainEventFree(virDomainEventPtr event)
     VIR_FREE(event);
 }
 
+/**
+ * virDomainEventQueueFree:
+ * @queue: pointer to the queue
+ *
+ * Free the memory in the queue. We process this like a list here
+ */
+void
+virDomainEventQueueFree(virDomainEventQueuePtr queue)
+{
+    int i;
+    if (!queue)
+        return;
+
+    for (i = 0; i < queue->count ; i++) {
+        virDomainEventFree(queue->events[i]);
+    }
+    VIR_FREE(queue->events);
+    VIR_FREE(queue);
+}
 
 virDomainEventQueuePtr virDomainEventQueueNew(void)
 {
@@ -516,6 +536,60 @@ virDomainEventQueuePtr virDomainEventQueueNew(void)
     }
 
     return ret;
+}
+
+/**
+ * virDomainEventStateFree:
+ * @list: virDomainEventStatePtr to free
+ *
+ * Free a virDomainEventStatePtr and its members, and unregister the timer.
+ */
+void
+virDomainEventStateFree(virDomainEventStatePtr state)
+{
+    if (!state)
+        return;
+
+    virDomainEventCallbackListFree(state->callbacks);
+    virDomainEventQueueFree(state->queue);
+
+    if (state->timer != -1)
+        virEventRemoveTimeout(state->timer);
+}
+
+virDomainEventStatePtr
+virDomainEventStateNew(virEventTimeoutCallback timeout_cb,
+                       void *timeout_opaque,
+                       virFreeCallback timeout_free)
+{
+    virDomainEventStatePtr state = NULL;
+
+    if (VIR_ALLOC(state) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (VIR_ALLOC(state->callbacks) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (!(state->queue = virDomainEventQueueNew())) {
+        goto error;
+    }
+
+    if ((state->timer = virEventAddTimeout(-1,
+                                           timeout_cb,
+                                           timeout_opaque,
+                                           timeout_free)) < 0) {
+        goto error;
+    }
+
+    return state;
+
+error:
+    virDomainEventStateFree(state);
+    return NULL;
 }
 
 static virDomainEventPtr virDomainEventNewInternal(int eventID,
@@ -782,26 +856,6 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
-
-/**
- * virDomainEventQueueFree:
- * @queue: pointer to the queue
- *
- * Free the memory in the queue. We process this like a list here
- */
-void
-virDomainEventQueueFree(virDomainEventQueuePtr queue)
-{
-    int i;
-    if (!queue)
-        return;
-
-    for (i = 0; i < queue->count ; i++) {
-        virDomainEventFree(queue->events[i]);
-    }
-    VIR_FREE(queue->events);
-    VIR_FREE(queue);
-}
 
 /**
  * virDomainEventQueuePop:

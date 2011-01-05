@@ -25,6 +25,7 @@
 #ifndef __DOMAIN_EVENT_H__
 # define __DOMAIN_EVENT_H__
 
+# include "event.h"
 # include "domain_conf.h"
 
 typedef struct _virDomainEventCallback virDomainEventCallback;
@@ -37,6 +38,33 @@ struct _virDomainEventCallbackList {
 };
 typedef struct _virDomainEventCallbackList virDomainEventCallbackList;
 typedef virDomainEventCallbackList *virDomainEventCallbackListPtr;
+
+/**
+ * Dispatching domain events that come in while
+ * in a call / response rpc
+ */
+typedef struct _virDomainEvent virDomainEvent;
+typedef virDomainEvent *virDomainEventPtr;
+
+struct _virDomainEventQueue {
+    unsigned int count;
+    virDomainEventPtr *events;
+};
+typedef struct _virDomainEventQueue virDomainEventQueue;
+typedef virDomainEventQueue *virDomainEventQueuePtr;
+
+struct _virDomainEventState {
+    /* The list of domain event callbacks */
+    virDomainEventCallbackListPtr callbacks;
+    /* The queue of domain events */
+    virDomainEventQueuePtr queue;
+    /* Timer for flushing events queue */
+    int timer;
+    /* Flag if we're in process of dispatching */
+    bool isDispatching;
+};
+typedef struct _virDomainEventState virDomainEventState;
+typedef virDomainEventState *virDomainEventStatePtr;
 
 void virDomainEventCallbackListFree(virDomainEventCallbackListPtr list);
 
@@ -90,20 +118,6 @@ int virDomainEventCallbackListEventID(virConnectPtr conn,
                                       virDomainEventCallbackListPtr cbList,
                                       int callbackID)
     ATTRIBUTE_NONNULL(1);
-
-/**
- * Dispatching domain events that come in while
- * in a call / response rpc
- */
-typedef struct _virDomainEvent virDomainEvent;
-typedef virDomainEvent *virDomainEventPtr;
-
-struct _virDomainEventQueue {
-    unsigned int count;
-    virDomainEventPtr *events;
-};
-typedef struct _virDomainEventQueue virDomainEventQueue;
-typedef virDomainEventQueue *virDomainEventQueuePtr;
 
 virDomainEventQueuePtr virDomainEventQueueNew(void);
 
@@ -164,6 +178,12 @@ virDomainEventQueuePop(virDomainEventQueuePtr evtQueue);
 
 void virDomainEventFree(virDomainEventPtr event);
 void virDomainEventQueueFree(virDomainEventQueuePtr queue);
+void virDomainEventStateFree(virDomainEventStatePtr state);
+virDomainEventStatePtr
+virDomainEventStateNew(virEventTimeoutCallback timeout_cb,
+                       void *timeout_opaque,
+                       virFreeCallback timeout_free)
+    ATTRIBUTE_NONNULL(1);
 
 typedef void (*virDomainEventDispatchFunc)(virConnectPtr conn,
                                            virDomainEventPtr event,
