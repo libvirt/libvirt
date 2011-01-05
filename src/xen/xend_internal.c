@@ -2210,6 +2210,8 @@ xenDaemonParseSxpr(virConnectPtr conn,
             def->features |= (1 << VIR_DOMAIN_FEATURE_APIC);
         if (sexpr_int(root, "domain/image/hvm/pae"))
             def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
+        if (sexpr_int(root, "domain/image/hvm/hap"))
+            def->features |= (1 << VIR_DOMAIN_FEATURE_HAP);
 
         /* Old XenD only allows localtime here for HVM */
         if (sexpr_int(root, "domain/image/hvm/localtime"))
@@ -5923,6 +5925,8 @@ xenDaemonFormatSxpr(virConnectPtr conn,
                 virBufferAddLit(&buf, "(apic 1)");
             if (def->features & (1 << VIR_DOMAIN_FEATURE_PAE))
                 virBufferAddLit(&buf, "(pae 1)");
+            if (def->features & (1 << VIR_DOMAIN_FEATURE_HAP))
+                virBufferAddLit(&buf, "(hap 1)");
 
             virBufferAddLit(&buf, "(usb 1)");
 

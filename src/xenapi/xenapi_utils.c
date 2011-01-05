@@ -529,6 +529,8 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
             allocStringMap(&strings, (char *)"apic", (char *)"true");
         if (def->features & (1 << VIR_DOMAIN_FEATURE_PAE))
             allocStringMap(&strings, (char *)"pae", (char *)"true");
+        if (def->features & (1 << VIR_DOMAIN_FEATURE_HAP))
+            allocStringMap(&strings, (char *)"hap", (char *)"true");
     }
     if (strings != NULL)
         (*record)->platform = strings;
