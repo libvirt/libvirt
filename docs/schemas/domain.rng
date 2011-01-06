@@ -1448,7 +1448,14 @@
     <optional>
       <element name="protocol">
         <optional>
-          <attribute name="type"/>
+          <attribute name="type">
+            <choice>
+              <value>raw</value>
+              <value>telnet</value>
+              <value>telnets</value>
+              <value>tls</value>
+            </choice>
+          </attribute>
         </optional>
       </element>
     </optional>
