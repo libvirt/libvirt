@@ -159,7 +159,8 @@ static int lxcClose(virConnectPtr conn)
     lxc_driver_t *driver = conn->privateData;
 
     lxcDriverLock(driver);
-    virDomainEventCallbackListRemoveConn(conn, driver->domainEventCallbacks);
+    virDomainEventCallbackListRemoveConn(conn,
+                                         driver->domainEventState->callbacks);
     lxcDriverUnlock(driver);
 
     conn->privateData = NULL;
@@ -1648,7 +1649,8 @@ lxcDomainEventRegister(virConnectPtr conn,
     int ret;
 
     lxcDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn, driver->domainEventCallbacks,
+    ret = virDomainEventCallbackListAdd(conn,
+                                        driver->domainEventState->callbacks,
                                         callback, opaque, freecb);
     lxcDriverUnlock(driver);
 
@@ -1664,12 +1666,9 @@ lxcDomainEventDeregister(virConnectPtr conn,
     int ret;
 
     lxcDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDelete(conn, driver->domainEventCallbacks,
-                                                   callback);
-    else
-        ret = virDomainEventCallbackListRemove(conn, driver->domainEventCallbacks,
-                                               callback);
+    ret = virDomainEventStateDeregister(conn,
+                                        driver->domainEventState,
+                                        callback);
     lxcDriverUnlock(driver);
 
     return ret;
@@ -1689,7 +1688,7 @@ lxcDomainEventRegisterAny(virConnectPtr conn,
 
     lxcDriverLock(driver);
     ret = virDomainEventCallbackListAddID(conn,
-                                          driver->domainEventCallbacks,
+                                          driver->domainEventState->callbacks,
                                           dom, eventID,
                                           callback, opaque, freecb);
     lxcDriverUnlock(driver);
@@ -1706,12 +1705,9 @@ lxcDomainEventDeregisterAny(virConnectPtr conn,
     int ret;
 
     lxcDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDeleteID(conn, driver->domainEventCallbacks,
-                                                     callbackID);
-    else
-        ret = virDomainEventCallbackListRemoveID(conn, driver->domainEventCallbacks,
-                                                 callbackID);
+    ret = virDomainEventStateDeregisterAny(conn,
+                                           driver->domainEventState,
+                                           callbackID);
     lxcDriverUnlock(driver);
 
     return ret;
@@ -1736,28 +1732,11 @@ static void lxcDomainEventDispatchFunc(virConnectPtr conn,
 static void lxcDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
     lxc_driver_t *driver = opaque;
-    virDomainEventQueue tempQueue;
 
     lxcDriverLock(driver);
-
-    driver->domainEventDispatching = 1;
-
-    /* Copy the queue, so we're reentrant safe */
-    tempQueue.count = driver->domainEventQueue->count;
-    tempQueue.events = driver->domainEventQueue->events;
-    driver->domainEventQueue->count = 0;
-    driver->domainEventQueue->events = NULL;
-
-    virEventUpdateTimeout(driver->domainEventTimer, -1);
-    virDomainEventQueueDispatch(&tempQueue,
-                                driver->domainEventCallbacks,
-                                lxcDomainEventDispatchFunc,
-                                driver);
-
-    /* Purge any deleted callbacks */
-    virDomainEventCallbackListPurgeMarked(driver->domainEventCallbacks);
-
-    driver->domainEventDispatching = 0;
+    virDomainEventStateFlush(driver->domainEventState,
+                             lxcDomainEventDispatchFunc,
+                             driver);
     lxcDriverUnlock(driver);
 }
 
@@ -1766,11 +1745,7 @@ static void lxcDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 static void lxcDomainEventQueue(lxc_driver_t *driver,
                                  virDomainEventPtr event)
 {
-    if (virDomainEventQueuePush(driver->domainEventQueue,
-                                event) < 0)
-        virDomainEventFree(event);
-    if (lxc_driver->domainEventQueue->count == 1)
-        virEventUpdateTimeout(driver->domainEventTimer, 0);
+    virDomainEventStateQueue(driver->domainEventState, event);
 }
 
 /**
@@ -1985,13 +1960,11 @@ static int lxcStartup(int privileged)
     if (virDomainObjListInit(&lxc_driver->domains) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(lxc_driver->domainEventCallbacks) < 0)
-        goto cleanup;
-    if (!(lxc_driver->domainEventQueue = virDomainEventQueueNew()))
-        goto cleanup;
-
-    if ((lxc_driver->domainEventTimer =
-         virEventAddTimeout(-1, lxcDomainEventFlush, lxc_driver, NULL)) < 0)
+    lxc_driver->domainEventState = virDomainEventStateNew(lxcDomainEventFlush,
+                                                          lxc_driver,
+                                                          NULL,
+                                                          true);
+    if (!lxc_driver->domainEventState)
         goto cleanup;
 
     lxc_driver->log_libvirtd = 0; /* by default log to container logfile */
@@ -2083,12 +2056,7 @@ static int lxcShutdown(void)
 
     lxcDriverLock(lxc_driver);
     virDomainObjListDeinit(&lxc_driver->domains);
-
-    virDomainEventCallbackListFree(lxc_driver->domainEventCallbacks);
-    virDomainEventQueueFree(lxc_driver->domainEventQueue);
-
-    if (lxc_driver->domainEventTimer != -1)
-        virEventRemoveTimeout(lxc_driver->domainEventTimer);
+    virDomainEventStateFree(lxc_driver->domainEventState);
 
     virCapabilitiesFree(lxc_driver->caps);
     VIR_FREE(lxc_driver->configDir);
