@@ -892,7 +892,7 @@
 
     <p>
       Each controller has a mandatory attribute <code>type</code>,
-      which must be one of "ide", "fdc", "scsi", "sata", or
+      which must be one of "ide", "fdc", "scsi", "sata", "ccid", or
       "virtio-serial", and a mandatory attribute <code>index</code>
       which is the decimal integer describing in which order the bus
       controller is encountered (for use in <code>controller</code>
@@ -990,6 +990,99 @@
       PCI domain, with hexadecimal values 0 to ffff, but it is currently
       not used by qemu.</dd>
     </dl>
+
+    <h4><a name="elementsSmartcard">Smartcard devices</a></h4>
+
+    <p>
+      A virtual smartcard device can be supplied to the guest via the
+      <code>smartcard</code> element. A USB smartcard reader device on
+      the host cannot be used on a guest with simple device
+      passthrough, since it will then not be available on the host,
+      possibly locking the host computer when it is "removed".
+      Therefore, some hypervisors provide a specialized virtual device
+      that can present a smartcard interface to the guest, with
+      several modes for describing how credentials are obtained from
+      the host or even a from a channel created to a third-party
+      smartcard provider. <span class="since">Since 0.8.8</span>
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;smartcard mode='host'/&gt;
+    &lt;smartcard mode='host-certificates'&gt;
+      &lt;certificate&gt;cert1&lt;/certificate&gt;
+      &lt;certificate&gt;cert2&lt;/certificate&gt;
+      &lt;certificate&gt;cert3&lt;/certificate&gt;
+      &lt;database&gt;/etc/pki/nssdb/&lt;/database&gt;
+    &lt;/smartcard&gt;
+    &lt;smartcard mode='passthrough' type='tcp'&gt;
+      &lt;source mode='bind' host='127.0.0.1' service='2001'/&gt;
+      &lt;protocol type='raw'/&gt;
+      &lt;address type='ccid' controller='0' slot='0'/&gt;
+    &lt;/smartcard&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+
+    <p>
+      The <code>&lt;smartcard&gt;</code> element has a mandatory
+      attribute <code>mode</code>.  The following modes are supported;
+      in each mode, the guest sees a device on its USB bus that
+      behaves like a physical USB CCID (Chip/Smart Card Interface
+      Device) card.
+    </p>
+
+    <dl>
+      <dt><code>mode='host'</code></dt>
+      <dd>The simplest operation, where the hypervisor relays all
+      requests from the guest into direct access to the host's
+      smartcard via NSS.  No other attributes or sub-elements are
+      required.  See below about the use of an
+      optional <code>&lt;address&gt;</code> sub-element.</dd>
+
+      <dt><code>mode='host-certificates'</code></dt>
+      <dd>Rather than requiring a smartcard to be plugged into the
+      host, it is possible to provide three NSS certificate names
+      residing in a database on the host.  These certificates can be
+      generated via the command <code>certutil -d /etc/pki/nssdb -x -t
+      CT,CT,CT -S -s CN=cert1 -n cert1</code>, and the resulting three
+      certificate names must be supplied as the content of each of
+      three <code>&lt;certificate&gt;</code> sub-elements.  An
+      additional sub-element <code>&lt;database&gt;</code> can specify
+      the absolute path to an alternate directory (matching
+      the <code>-d</code> option of the <code>certutil</code> command
+      when creating the certificates); if not present, it defaults to
+      /etc/pki/nssdb.</dd>
+
+      <dt><code>mode='passthrough'</code></dt>
+      <dd>Rather than having the hypervisor directly communicate with
+      the host, it is possible to tunnel all requests through a
+      secondary character device to a third-party provider (which may
+      in turn be talking to a smartcard or using three certificate
+      files).  In this mode of operation, an additional
+      attribute <code>type</code> is required, matching one of the
+      supported <a href="#elementsConsole">serial device</a> types, to
+      describe the host side of the tunnel; <code>type='tcp'</code> is
+      typical.  Further sub-elements, such
+      as <code>&lt;source&gt;</code>, are required according to the
+      given type, although a <code>&lt;target&gt;</code> sub-element
+      is not required (since the consumer of the character device is
+      the hypervisor itself, rather than a device visible in the
+      guest).</dd>
+    </dl>
+
+    <p>
+      Each mode supports an optional
+      sub-element <code>&lt;address&gt;</code>, which fine-tunes the
+      correlation between the smartcard and a ccid bus controller.
+      If present, the element must have an attribute
+      of <code>type='ccid'</code> as well as a <code>bus</code>
+      attribute listing the index of the bus that the smartcard
+      utilizes.  An optional <code>slot</code> attribute lists which
+      slot within the bus.  For now, qemu only supports at most one
+      smartcard, with an address of bus=0 slot=0.
+    </p>
 
     <h4><a name="elementsNICS">Network interfaces</a></h4>
 

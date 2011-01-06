@@ -749,6 +749,7 @@
                 <value>ide</value>
                 <value>scsi</value>
                 <value>sata</value>
+                <value>ccid</value>
               </choice>
             </attribute>
           </optional>
@@ -1632,6 +1633,51 @@
       </interleave>
     </element>
   </define>
+  <define name="smartcard">
+    <element name="smartcard">
+      <choice>
+        <group>
+          <attribute name="mode">
+            <value>host</value>
+          </attribute>
+          <!-- might need to add optional database element here later -->
+        </group>
+        <group>
+          <attribute name="mode">
+            <value>host-certificates</value>
+          </attribute>
+          <ref name='certificate'/>
+          <ref name='certificate'/>
+          <ref name='certificate'/>
+          <optional>
+            <element name="database">
+              <ref name="absDirPath"/>
+            </element>
+          </optional>
+        </group>
+        <group>
+          <attribute name="mode">
+            <value>passthrough</value>
+          </attribute>
+          <ref name="qemucdevSrcType"/>
+          <interleave>
+            <ref name="qemucdevSrcDef"/>
+            <optional>
+              <ref name="qemucdevTgtDef"/>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+      <optional>
+        <ref name="address"/>
+      </optional>
+    </element>
+  </define>
+  <define name="certificate">
+    <element name="certificate">
+      <text/>
+    </element>
+  </define>
   <define name="input">
     <element name="input">
       <attribute name="type">
@@ -1768,8 +1814,21 @@
       </attribute>
     </optional>
   </define>
+  <define name="ccidaddress">
+    <attribute name="controller">
+      <ref name="driveController"/>
+    </attribute>
+    <optional>
+      <attribute name="slot">
+        <ref name="driveUnit"/>
+      </attribute>
+    </optional>
+  </define>
   <!--
       Devices attached to a domain.
+      Sub-elements such as <alias> are not documented here, as they
+      can only exist when generated for a live domain and are ignored
+      when defining a domain.
     -->
   <define name="devices">
     <element name="devices">
@@ -1792,6 +1851,7 @@
             <ref name="parallel"/>
             <ref name="serial"/>
             <ref name="channel"/>
+            <ref name="smartcard"/>
           </choice>
         </zeroOrMore>
         <optional>
@@ -2020,6 +2080,12 @@
             <value>virtio-serial</value>
           </attribute>
           <ref name="virtioserialaddress"/>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>ccid</value>
+          </attribute>
+          <ref name="ccidaddress"/>
         </group>
       </choice>
     </element>
