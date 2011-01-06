@@ -1,7 +1,7 @@
 /*
  * commandhelper.c: Auxiliary program for commandtest
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -81,7 +81,10 @@ int main(int argc, char **argv) {
     qsort(newenv, n, sizeof(newenv[0]), envsort);
 
     for (i = 0 ; i < n ; i++) {
-        fprintf(log, "ENV:%s\n", newenv[i]);
+        /* Ignore the variables used to instruct the loader into
+         * behaving differently, as they could throw the tests off. */
+        if (!STRPREFIX(newenv[i], "LD_"))
+            fprintf(log, "ENV:%s\n", newenv[i]);
     }
 
     for (i = 0 ; i < sysconf(_SC_OPEN_MAX) ; i++) {
