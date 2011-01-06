@@ -118,5 +118,5 @@ src/xen/xs_internal.c
 src/xenapi/xenapi_driver.c
 src/xenapi/xenapi_utils.c
 tools/console.c
-tools/libvirt-guests.init.in
+tools/libvirt-guests.init.sh
 tools/virsh.c
