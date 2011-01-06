@@ -524,7 +524,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             goto cleanup;
         }
 
-        if (networkSaveDnsmasqHostsfile(ipdef, dctx, false) < 0) {
+        if (networkSaveDnsmasqHostsfile(ipdef, dctx, false) == 0) {
             virCommandAddArgPair(cmd, "--dhcp-hostsfile",
                                  dctx->hostsfile->path);
         }
