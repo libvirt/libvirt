@@ -2,7 +2,7 @@
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005-2006, 2008-2010 Red Hat, Inc.
+ * Copyright (C) 2005-2006, 2008-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -312,6 +312,24 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
+/* Helper macro to print debugging information about a domain DOM,
+ * followed by a literal string FMT and any other printf arguments.
+ */
+#define VIR_DOMAIN_DEBUG(dom, fmt, ...)                   \
+    char _uuidstr[VIR_UUID_STRING_BUFLEN];                \
+    const char *_domname = NULL;                          \
+                                                          \
+    if (!VIR_IS_DOMAIN(dom)) {                            \
+        memset(_uuidstr, 0, sizeof(_uuidstr));            \
+    } else {                                              \
+        virUUIDFormat((dom)->uuid, _uuidstr);             \
+        _domname = (dom)->name;                           \
+    }                                                     \
+                                                          \
+    DEBUG("dom=%p, (VM: name=%s, uuid=%s), " fmt,         \
+          dom, NULLSTR(_domname), _uuidstr, __VA_ARGS__)
+
+#define VIR_DOMAIN_DEBUG0(dom) VIR_DOMAIN_DEBUG(dom, "%s", "")
 
 /**
  * virInitialize:
@@ -1961,7 +1979,7 @@ error:
 virConnectPtr
 virDomainGetConnect (virDomainPtr dom)
 {
-    DEBUG("dom=%p", dom);
+    VIR_DOMAIN_DEBUG0(dom);
 
     virResetLastError();
 
@@ -2100,7 +2118,10 @@ error:
 virDomainPtr
 virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    DEBUG("conn=%p, uuid=%s", conn, uuid);
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(uuid, uuidstr);
+
+    DEBUG("conn=%p, uuid=%s", conn, uuidstr);
 
     virResetLastError();
 
@@ -2227,7 +2248,7 @@ virDomainDestroy(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    DEBUG("domain=%p", domain);
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2270,7 +2291,7 @@ error:
 int
 virDomainFree(virDomainPtr domain)
 {
-    DEBUG("domain=%p", domain);
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2312,7 +2333,7 @@ virDomainRef(virDomainPtr domain)
         return(-1);
     }
     virMutexLock(&domain->conn->lock);
-    DEBUG("domain=%p refs=%d", domain, domain->refs);
+    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain->refs);
     domain->refs++;
     virMutexUnlock(&domain->conn->lock);
     return 0;
@@ -2335,7 +2356,8 @@ int
 virDomainSuspend(virDomainPtr domain)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2380,7 +2402,8 @@ int
 virDomainResume(virDomainPtr domain)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2428,7 +2451,8 @@ virDomainSave(virDomainPtr domain, const char *to)
 {
     char filepath[4096];
     virConnectPtr conn;
-    DEBUG("domain=%p, to=%s", domain, to);
+
+    VIR_DOMAIN_DEBUG(domain, "to=%s", to);
 
     virResetLastError();
 
@@ -2570,7 +2594,8 @@ virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
 {
     char filepath[4096];
     virConnectPtr conn;
-    DEBUG("domain=%p, to=%s, flags=%d", domain, to, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "to=%s, flags=%d", to, flags);
 
     virResetLastError();
 
@@ -2647,7 +2672,8 @@ int
 virDomainShutdown(virDomainPtr domain)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2693,7 +2719,8 @@ int
 virDomainReboot(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, flags=%u", domain, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%u", flags);
 
     virResetLastError();
 
@@ -2760,7 +2787,7 @@ virDomainGetName(virDomainPtr domain)
 int
 virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
 {
-    DEBUG("domain=%p, uuid=%p", domain, uuid);
+    VIR_DOMAIN_DEBUG(domain, "uuid=%p", uuid);
 
     virResetLastError();
 
@@ -2794,7 +2821,8 @@ int
 virDomainGetUUIDString(virDomainPtr domain, char *buf)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
-    DEBUG("domain=%p, buf=%p", domain, buf);
+
+    VIR_DOMAIN_DEBUG(domain, "buf=%p", buf);
 
     virResetLastError();
 
@@ -2830,7 +2858,7 @@ error:
 unsigned int
 virDomainGetID(virDomainPtr domain)
 {
-    DEBUG("domain=%p", domain);
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2855,7 +2883,8 @@ char *
 virDomainGetOSType(virDomainPtr domain)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2896,7 +2925,8 @@ unsigned long
 virDomainGetMaxMemory(virDomainPtr domain)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -2942,7 +2972,8 @@ int
 virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, memory=%lu", domain, memory);
+
+    VIR_DOMAIN_DEBUG(domain, "memory=%lu", memory);
 
     virResetLastError();
 
@@ -2995,7 +3026,8 @@ int
 virDomainSetMemory(virDomainPtr domain, unsigned long memory)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, memory=%lu", domain, memory);
+
+    VIR_DOMAIN_DEBUG(domain, "memory=%lu", memory);
 
     virResetLastError();
 
@@ -3049,7 +3081,9 @@ virDomainSetMemoryParameters(virDomainPtr domain,
                              int nparams, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, params=%p, nparams=%d, flags=%u", domain, params, nparams, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%u",
+                     params, nparams, flags);
 
     virResetLastError();
 
@@ -3123,7 +3157,9 @@ virDomainGetMemoryParameters(virDomainPtr domain,
                              int *nparams, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, params=%p, nparams=%d, flags=%u", domain, params, (nparams)?*nparams:-1, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%u",
+                     params, (nparams) ? *nparams : -1, flags);
 
     virResetLastError();
 
@@ -3167,7 +3203,8 @@ int
 virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, info=%p", domain, info);
+
+    VIR_DOMAIN_DEBUG(domain, "info=%p", info);
 
     virResetLastError();
 
@@ -3215,7 +3252,8 @@ char *
 virDomainGetXMLDesc(virDomainPtr domain, int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, flags=%d", domain, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%d", flags);
 
     virResetLastError();
 
@@ -3662,8 +3700,9 @@ virDomainMigrate (virDomainPtr domain,
                   unsigned long bandwidth)
 {
     virDomainPtr ddomain = NULL;
-    DEBUG("domain=%p, dconn=%p, flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
-          domain, dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
+
+    VIR_DOMAIN_DEBUG(domain, "dconn=%p, flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
+                     dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
 
     virResetLastError();
 
@@ -3811,8 +3850,8 @@ virDomainMigrateToURI (virDomainPtr domain,
                        const char *dname,
                        unsigned long bandwidth)
 {
-    DEBUG("domain=%p, duri=%p, flags=%lu, dname=%s, bandwidth=%lu",
-          domain, NULLSTR(duri), flags, NULLSTR(dname), bandwidth);
+    VIR_DOMAIN_DEBUG(domain, "duri=%p, flags=%lu, dname=%s, bandwidth=%lu",
+                     NULLSTR(duri), flags, NULLSTR(dname), bandwidth);
 
     virResetLastError();
 
@@ -3924,9 +3963,10 @@ virDomainMigratePerform (virDomainPtr domain,
                            unsigned long bandwidth)
 {
     virConnectPtr conn;
-    VIR_DEBUG("domain=%p, cookie=%p, cookielen=%d, uri=%s, flags=%lu, "
-              "dname=%s, bandwidth=%lu", domain, cookie, cookielen, uri, flags,
-              NULLSTR(dname), bandwidth);
+
+    VIR_DOMAIN_DEBUG(domain, "cookie=%p, cookielen=%d, uri=%s, flags=%lu, "
+                     "dname=%s, bandwidth=%lu", cookie, cookielen, uri, flags,
+                     NULLSTR(dname), bandwidth);
 
     virResetLastError();
 
@@ -4290,7 +4330,8 @@ virDomainGetSchedulerType(virDomainPtr domain, int *nparams)
 {
     virConnectPtr conn;
     char *schedtype;
-    DEBUG("domain=%p, nparams=%p", domain, nparams);
+
+    VIR_DOMAIN_DEBUG(domain, "nparams=%p", nparams);
 
     virResetLastError();
 
@@ -4335,7 +4376,8 @@ virDomainGetSchedulerParameters(virDomainPtr domain,
                                 virSchedParameterPtr params, int *nparams)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, params=%p, nparams=%p", domain, params, nparams);
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%p", params, nparams);
 
     virResetLastError();
 
@@ -4378,7 +4420,8 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
                                 virSchedParameterPtr params, int nparams)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, params=%p, nparams=%d", domain, params, nparams);
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d", params, nparams);
 
     virResetLastError();
 
@@ -4438,7 +4481,8 @@ virDomainBlockStats (virDomainPtr dom, const char *path,
 {
     virConnectPtr conn;
     struct _virDomainBlockStats stats2 = { -1, -1, -1, -1, -1 };
-    DEBUG("domain=%p, path=%s, stats=%p, size=%zi", dom, path, stats, size);
+
+    VIR_DOMAIN_DEBUG(dom, "path=%s, stats=%p, size=%zi", path, stats, size);
 
     virResetLastError();
 
@@ -4496,7 +4540,9 @@ virDomainInterfaceStats (virDomainPtr dom, const char *path,
     virConnectPtr conn;
     struct _virDomainInterfaceStats stats2 = { -1, -1, -1, -1,
                                                -1, -1, -1, -1 };
-    DEBUG("domain=%p, path=%s, stats=%p, size=%zi", dom, path, stats, size);
+
+    VIR_DOMAIN_DEBUG(dom, "path=%s, stats=%p, size=%zi",
+                     path, stats, size);
 
     virResetLastError();
 
@@ -4561,7 +4607,8 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
 {
     virConnectPtr conn;
     unsigned long nr_stats_ret = 0;
-    DEBUG("domain=%p, stats=%p, nr_stats=%u", dom, stats, nr_stats);
+
+    VIR_DOMAIN_DEBUG(dom, "stats=%p, nr_stats=%u", stats, nr_stats);
 
     if (flags != 0) {
         virLibDomainError (dom, VIR_ERR_INVALID_ARG,
@@ -4645,8 +4692,9 @@ virDomainBlockPeek (virDomainPtr dom,
                     unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, path=%s, offset=%lld, size=%zi, buffer=%p",
-          dom, path, offset, size, buffer);
+
+    VIR_DOMAIN_DEBUG(dom, "path=%s, offset=%lld, size=%zi, buffer=%p",
+                     path, offset, size, buffer);
 
     virResetLastError();
 
@@ -4736,8 +4784,9 @@ virDomainMemoryPeek (virDomainPtr dom,
                      unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG ("domain=%p, start=%lld, size=%zi, buffer=%p, flags=%d",
-           dom, start, size, buffer, flags);
+
+    VIR_DOMAIN_DEBUG(dom, "start=%lld, size=%zi, buffer=%p, flags=%d",
+                     start, size, buffer, flags);
 
     virResetLastError();
 
@@ -4821,7 +4870,8 @@ int
 virDomainGetBlockInfo(virDomainPtr domain, const char *path, virDomainBlockInfoPtr info, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, info=%p flags=%u", domain, info, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "info=%p flags=%u", info, flags);
 
     virResetLastError();
 
@@ -4919,7 +4969,8 @@ error:
 int
 virDomainUndefine(virDomainPtr domain) {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -5041,7 +5092,8 @@ error:
 int
 virDomainCreate(virDomainPtr domain) {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -5084,7 +5136,8 @@ error:
 int
 virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
     virConnectPtr conn;
-    DEBUG("domain=%p, flags=%d", domain, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%d", flags);
 
     virResetLastError();
 
@@ -5130,7 +5183,8 @@ virDomainGetAutostart(virDomainPtr domain,
                       int *autostart)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, autostart=%p", domain, autostart);
+
+    VIR_DOMAIN_DEBUG(domain, "autostart=%p", autostart);
 
     virResetLastError();
 
@@ -5176,7 +5230,8 @@ virDomainSetAutostart(virDomainPtr domain,
                       int autostart)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, autostart=%d", domain, autostart);
+
+    VIR_DOMAIN_DEBUG(domain, "autostart=%d", autostart);
 
     virResetLastError();
 
@@ -5230,7 +5285,8 @@ int
 virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, nvcpus=%u", domain, nvcpus);
+
+    VIR_DOMAIN_DEBUG(domain, "nvcpus=%u", nvcpus);
 
     virResetLastError();
 
@@ -5296,7 +5352,8 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
                        unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, nvcpus=%u, flags=%u", domain, nvcpus, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "nvcpus=%u, flags=%u", nvcpus, flags);
 
     virResetLastError();
 
@@ -5359,7 +5416,8 @@ int
 virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, flags=%u", domain, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%u", flags);
 
     virResetLastError();
 
@@ -5417,7 +5475,9 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
                  unsigned char *cpumap, int maplen)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, vcpu=%u, cpumap=%p, maplen=%d", domain, vcpu, cpumap, maplen);
+
+    VIR_DOMAIN_DEBUG(domain, "vcpu=%u, cpumap=%p, maplen=%d",
+                     vcpu, cpumap, maplen);
 
     virResetLastError();
 
@@ -5480,7 +5540,9 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                   unsigned char *cpumaps, int maplen)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, info=%p, maxinfo=%d, cpumaps=%p, maplen=%d", domain, info, maxinfo, cpumaps, maplen);
+
+    VIR_DOMAIN_DEBUG(domain, "info=%p, maxinfo=%d, cpumaps=%p, maplen=%d",
+                     info, maxinfo, cpumaps, maplen);
 
     virResetLastError();
 
@@ -5536,7 +5598,8 @@ int
 virDomainGetMaxVcpus(virDomainPtr domain)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -5665,7 +5728,8 @@ int
 virDomainAttachDevice(virDomainPtr domain, const char *xml)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, xml=%s", domain, xml);
+
+    VIR_DOMAIN_DEBUG(domain, "xml=%s", xml);
 
     virResetLastError();
 
@@ -5724,7 +5788,8 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
                            const char *xml, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, xml=%s, flags=%d", domain, xml, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "xml=%s, flags=%d", xml, flags);
 
     virResetLastError();
 
@@ -5767,7 +5832,8 @@ int
 virDomainDetachDevice(virDomainPtr domain, const char *xml)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, xml=%s", domain, xml);
+
+    VIR_DOMAIN_DEBUG(domain, "xml=%s", xml);
 
     virResetLastError();
 
@@ -5822,7 +5888,8 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
                            const char *xml, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, xml=%s, flags=%d", domain, xml, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "xml=%s, flags=%d", xml, flags);
 
     virResetLastError();
 
@@ -5880,7 +5947,8 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
                            const char *xml, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, xml=%s, flags=%d", domain, xml, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "xml=%s, flags=%d", xml, flags);
 
     virResetLastError();
 
@@ -6206,7 +6274,10 @@ error:
 virNetworkPtr
 virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    DEBUG("conn=%p, uuid=%s", conn, uuid);
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(uuid, uuidstr);
+
+    DEBUG("conn=%p, uuid=%s", conn, uuidstr);
 
     virResetLastError();
 
@@ -11431,7 +11502,7 @@ error:
  */
 int virDomainIsPersistent(virDomainPtr dom)
 {
-    DEBUG("dom=%p", dom);
+    VIR_DOMAIN_DEBUG0(dom);
 
     virResetLastError();
 
@@ -11464,7 +11535,7 @@ error:
  */
 int virDomainIsUpdated(virDomainPtr dom)
 {
-    DEBUG("dom=%p", dom);
+    VIR_DOMAIN_DEBUG0(dom);
 
     virResetLastError();
 
@@ -12353,7 +12424,8 @@ int
 virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, info=%p", domain, info);
+
+    VIR_DOMAIN_DEBUG(domain, "info=%p", info);
 
     virResetLastError();
 
@@ -12402,7 +12474,7 @@ virDomainAbortJob(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    DEBUG("domain=%p", domain);
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -12453,7 +12525,7 @@ virDomainMigrateSetMaxDowntime(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    DEBUG("domain=%p, downtime=%llu, flags=%u", domain, downtime, flags);
+    VIR_DOMAIN_DEBUG(domain, "downtime=%llu, flags=%u", downtime, flags);
 
     virResetLastError();
 
@@ -12522,7 +12594,9 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
                                  void *opaque,
                                  virFreeCallback freecb)
 {
-    DEBUG("conn=%p dom=%p, eventID=%d, cb=%p, opaque=%p, freecb=%p", conn, dom, eventID, cb, opaque, freecb);
+    VIR_DOMAIN_DEBUG(dom, "conn=%p, eventID=%d, cb=%p, opaque=%p, freecb=%p",
+                     conn, eventID, cb, opaque, freecb);
+
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -12615,7 +12689,7 @@ int virDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("dom=%p, flags=%u", dom, flags);
+    VIR_DOMAIN_DEBUG(dom, "flags=%u", flags);
 
     virResetLastError();
 
@@ -12663,7 +12737,7 @@ int virDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("dom=%p, flags=%u", dom, flags);
+    VIR_DOMAIN_DEBUG(dom, "flags=%u", flags);
 
     virResetLastError();
 
@@ -12704,7 +12778,7 @@ int virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("dom=%p, flags=%u", dom, flags);
+    VIR_DOMAIN_DEBUG(dom, "flags=%u", flags);
 
     virResetLastError();
 
@@ -12754,7 +12828,7 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    DEBUG("domain=%p, xmlDesc=%s, flags=%u", domain, xmlDesc, flags);
+    VIR_DOMAIN_DEBUG(domain, "xmlDesc=%s, flags=%u", xmlDesc, flags);
 
     virResetLastError();
 
@@ -12845,7 +12919,8 @@ int
 virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p", domain);
+
+    VIR_DOMAIN_DEBUG0(domain);
 
     virResetLastError();
 
@@ -12888,8 +12963,8 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
 {
     virConnectPtr conn;
 
-    DEBUG("domain=%p, names=%p, nameslen=%d, flags=%u",
-          domain, names, nameslen, flags);
+    VIR_DOMAIN_DEBUG(domain, "names=%p, nameslen=%d, flags=%u",
+                     names, nameslen, flags);
 
     virResetLastError();
 
@@ -12938,7 +13013,8 @@ virDomainSnapshotLookupByName(virDomainPtr domain,
                               unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, name=%s, flags=%u", domain, name, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "name=%s, flags=%u", name, flags);
 
     virResetLastError();
 
@@ -12982,7 +13058,8 @@ int
 virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, flags=%u", domain, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%u", flags);
 
     virResetLastError();
 
@@ -13023,7 +13100,8 @@ virDomainSnapshotCurrent(virDomainPtr domain,
                          unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, flags=%u", domain, flags);
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%u", flags);
 
     virResetLastError();
 
@@ -13187,7 +13265,9 @@ int virDomainOpenConsole(virDomainPtr dom,
                          unsigned int flags)
 {
     virConnectPtr conn;
-    DEBUG("dom=%p devname=%s, st=%p flags=%u", dom, NULLSTR(devname), st, flags);
+
+    VIR_DOMAIN_DEBUG(dom, "devname=%s, st=%p, flags=%u",
+                     NULLSTR(devname), st, flags);
 
     virResetLastError();
 
