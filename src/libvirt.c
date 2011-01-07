@@ -79,7 +79,7 @@
  * - use reference counting to guarantee coherent pointer state ?
  */
 
-#define MAX_DRIVERS 10
+#define MAX_DRIVERS 20
 
 static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int virDriverTabCount = 0;
@@ -523,7 +523,9 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
     }
 
     if (virNetworkDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return(-1);
     }
 
@@ -554,7 +556,9 @@ virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
     }
 
     if (virInterfaceDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return(-1);
     }
 
@@ -585,7 +589,9 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
     }
 
     if (virStorageDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return(-1);
     }
 
@@ -616,7 +622,9 @@ virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
     }
 
     if (virDeviceMonitorTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return(-1);
     }
 
@@ -647,7 +655,9 @@ virRegisterSecretDriver(virSecretDriverPtr driver)
     }
 
     if (virSecretDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return(-1);
     }
 
@@ -678,7 +688,9 @@ virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
     }
 
     if (virNWFilterDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return -1;
     }
 
@@ -712,7 +724,9 @@ virRegisterDriver(virDriverPtr driver)
     }
 
     if (virDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return(-1);
     }
 
@@ -750,7 +764,9 @@ virRegisterStateDriver(virStateDriverPtr driver)
     }
 
     if (virStateDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                        _("Too many drivers, cannot register %s"),
+                        driver->name);
         return(-1);
     }
 
