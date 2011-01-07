@@ -542,7 +542,6 @@ static int qemudListenUnix(struct qemud_server *server,
                            char *path, int readonly, int auth) {
     struct qemud_socket *sock;
     mode_t oldmask;
-    gid_t oldgrp;
     char ebuf[1024];
 
     if (VIR_ALLOC(sock) < 0) {
@@ -579,21 +578,21 @@ static int qemudListenUnix(struct qemud_server *server,
     if (sock->addr.data.un.sun_path[0] == '@')
         sock->addr.data.un.sun_path[0] = '\0';
 
-    oldgrp = getgid();
     oldmask = umask(readonly ? ~unix_sock_ro_mask : ~unix_sock_rw_mask);
-    if (server->privileged && setgid(unix_sock_gid)) {
-        VIR_ERROR(_("Failed to set group ID to %d"), unix_sock_gid);
-        goto cleanup;
-    }
-
     if (bind(sock->fd, &sock->addr.data.sa, sock->addr.len) < 0) {
         VIR_ERROR(_("Failed to bind socket to '%s': %s"),
                   path, virStrerror(errno, ebuf, sizeof ebuf));
         goto cleanup;
     }
     umask(oldmask);
-    if (server->privileged && setgid(oldgrp)) {
-        VIR_ERROR(_("Failed to restore group ID to %d"), oldgrp);
+
+    /* chown() doesn't work for abstract sockets but we use them only
+     * if libvirtd runs unprivileged
+     */
+    if (server->privileged && chown(path, -1, unix_sock_gid)) {
+        VIR_ERROR(_("Failed to change group ID of '%s' to %d: %s"),
+                  path, unix_sock_gid,
+                  virStrerror(errno, ebuf, sizeof ebuf));
         goto cleanup;
     }
 
