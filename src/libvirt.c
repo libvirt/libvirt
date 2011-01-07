@@ -468,284 +468,40 @@ DllMain (HINSTANCE instance ATTRIBUTE_UNUSED,
 }
 #endif
 
-
-/**
- * virLibConnError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibConnError(virConnectPtr conn, virErrorNumber error, const char *info)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibConnWarning:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibConnWarning(virConnectPtr conn, virErrorNumber error, const char *info)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_WARNING,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibDomainError:
- * @domain: the domain if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibDomainError(virDomainPtr domain, virErrorNumber error,
-                  const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_DOMAIN) {
-        conn = domain->conn;
-    }
-    virRaiseError(conn, domain, NULL, VIR_FROM_DOM, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibNetworkError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibNetworkError(virNetworkPtr network, virErrorNumber error,
-                   const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_NETWORK) {
-        conn = network->conn;
-    }
-    virRaiseError(conn, NULL, network, VIR_FROM_NET, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibInterfaceError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibInterfaceError(virInterfacePtr iface, virErrorNumber error,
-                   const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_INTERFACE) {
-        conn = iface->conn;
-    }
-    virRaiseError(conn, NULL, NULL, VIR_FROM_INTERFACE, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibStoragePoolError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibStoragePoolError(virStoragePoolPtr pool, virErrorNumber error,
-                       const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_STORAGE_POOL)
-        conn = pool->conn;
-
-    virRaiseError(conn, NULL, NULL, VIR_FROM_STORAGE, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibStorageVolError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibStorageVolError(virStorageVolPtr vol, virErrorNumber error,
-                      const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_STORAGE_VOL)
-        conn = vol->conn;
-
-    virRaiseError(conn, NULL, NULL, VIR_FROM_STORAGE, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibNodeDeviceError:
- * @dev: the device if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the node device level
- */
-static void
-virLibNodeDeviceError(virNodeDevicePtr dev, virErrorNumber error,
-                      const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_NODE_DEVICE)
-        conn = dev->conn;
-
-    virRaiseError(conn, NULL, NULL, VIR_FROM_NODEDEV, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-#define virLibStreamError(conn, code, ...)                      \
-    virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,   \
+#define virLibConnError(code, ...)                                \
+    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,     \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibDomainError(code, ...)                              \
+    virReportErrorHelper(NULL, VIR_FROM_DOM, code, __FILE__,      \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibNetworkError(code, ...)                             \
+    virReportErrorHelper(NULL, VIR_FROM_NETWORK, code, __FILE__,  \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibStoragePoolError(code, ...)                         \
+    virReportErrorHelper(NULL, VIR_FROM_STORAGE, code, __FILE__,  \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibStorageVolError(code, ...)                          \
+    virReportErrorHelper(NULL, VIR_FROM_STORAGE, code, __FILE__,  \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibInterfaceError(code, ...)                           \
+    virReportErrorHelper(NULL, VIR_FROM_INTERFACE, code, __FILE__,\
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibNodeDeviceError(code, ...)                          \
+    virReportErrorHelper(NULL, VIR_FROM_NODEDEV, code, __FILE__,  \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibSecretError(code, ...)                              \
+    virReportErrorHelper(NULL, VIR_FROM_SECRET, code, __FILE__,   \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibStreamError(code, ...)                              \
+    virReportErrorHelper(NULL, VIR_FROM_STREAMS, code, __FILE__,  \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibNWFilterError(code, ...)                            \
+    virReportErrorHelper(NULL, VIR_FROM_NWFILTER, code, __FILE__, \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+#define virLibDomainSnapshotError(code, ...)                            \
+    virReportErrorHelper(NULL, VIR_FROM_DOMAIN_SNAPSHOT, code, __FILE__, \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/**
- * virLibSecretError:
- * @secret: the secret if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the secret level
- */
-static void
-virLibSecretError(virSecretPtr secret, virErrorNumber error, const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_SECRET)
-        conn = secret->conn;
-
-    virRaiseError(conn, NULL, NULL, VIR_FROM_SECRET, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibNWFilterError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibNWFilterError(virNWFilterPtr nwfilter, virErrorNumber error,
-                    const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_NWFILTER)
-        conn = nwfilter->conn;
-
-    virRaiseError(conn, NULL, NULL, VIR_FROM_NWFILTER, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
-
-/**
- * virLibDomainSnapshotError:
- * @snapshot: the snapshot if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the domain snapshot level
- */
-static void
-virLibDomainSnapshotError(virDomainSnapshotPtr snapshot, virErrorNumber error, const char *info)
-{
-    virConnectPtr conn = NULL;
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    if (error != VIR_ERR_INVALID_DOMAIN_SNAPSHOT)
-        conn = snapshot->domain->conn;
-
-    virRaiseError(conn, NULL, NULL, VIR_FROM_DOMAIN_SNAPSHOT, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
 
 /**
  * virRegisterNetworkDriver:
@@ -762,12 +518,12 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
       return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (virNetworkDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
@@ -793,12 +549,12 @@ virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
       return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (virInterfaceDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
@@ -824,12 +580,12 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
       return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (virStorageDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
@@ -855,12 +611,12 @@ virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
       return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (virDeviceMonitorTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
@@ -886,12 +642,12 @@ virRegisterSecretDriver(virSecretDriverPtr driver)
       return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (virSecretDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
@@ -917,12 +673,12 @@ virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
       return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return -1;
     }
 
     if (virNWFilterDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return -1;
     }
 
@@ -945,23 +701,24 @@ virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
 int
 virRegisterDriver(virDriverPtr driver)
 {
+    DEBUG("driver=%p name=%s", driver, driver ? NULLSTR(driver->name) : "(null)");
+
     if (virInitialize() < 0)
-      return -1;
+        return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (virDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (driver->no < 0) {
-        virLibConnError
-            (NULL, VIR_ERR_INVALID_ARG,
-             "virRegisterDriver: tried to register an internal Xen driver");
+        virLibConnError(VIR_ERR_INVALID_ARG,
+                        _("Tried to register an internal Xen driver"));
         return -1;
     }
 
@@ -988,12 +745,12 @@ virRegisterStateDriver(virStateDriverPtr driver)
       return -1;
 
     if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
     if (virStateDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
@@ -1176,7 +933,7 @@ virGetVersion(unsigned long *libVer, const char *type,
             *typeVer = remoteVersion();
 # endif
         if (*typeVer == 0) {
-            virLibConnError(NULL, VIR_ERR_NO_SUPPORT, type);
+            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             goto error;
         }
 #endif /* WITH_DRIVER_MODULES */
@@ -1230,8 +987,8 @@ do_open (const char *name,
 
         ret->uri = xmlParseURI (name);
         if (!ret->uri) {
-            virLibConnError (ret, VIR_ERR_INVALID_ARG,
-                             _("could not parse connection URI"));
+            virLibConnError(VIR_ERR_INVALID_ARG,
+                            _("could not parse connection URI"));
             goto failed;
         }
 
@@ -1302,7 +1059,9 @@ do_open (const char *name,
 
     if (!ret->driver) {
         /* If we reach here, then all drivers declined the connection. */
-        virLibConnError (NULL, VIR_ERR_NO_CONNECT, name);
+        virLibConnError(VIR_ERR_NO_CONNECT,
+                        _("No connection for URI %s"),
+                        NULLSTR(name));
         goto failed;
     }
 
@@ -1314,10 +1073,6 @@ do_open (const char *name,
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
-            if (STREQ(virNetworkDriverTab[i]->name, "remote")) {
-                virLibConnWarning (NULL, VIR_WAR_NO_NETWORK,
-                                   "Is the daemon running ?");
-            }
             break;
         } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->networkDriver = virNetworkDriverTab[i];
@@ -1333,10 +1088,6 @@ do_open (const char *name,
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
-            if (STREQ(virInterfaceDriverTab[i]->name, "remote")) {
-                virLibConnWarning (NULL, VIR_WAR_NO_INTERFACE,
-                                   "Is the daemon running ?");
-            }
             break;
         } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->interfaceDriver = virInterfaceDriverTab[i];
@@ -1353,10 +1104,6 @@ do_open (const char *name,
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
-            if (STREQ(virStorageDriverTab[i]->name, "remote")) {
-                virLibConnWarning (NULL, VIR_WAR_NO_STORAGE,
-                                   "Is the daemon running ?");
-            }
             break;
          } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->storageDriver = virStorageDriverTab[i];
@@ -1373,17 +1120,6 @@ do_open (const char *name,
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
-            if (STREQ(virDeviceMonitorTab[i]->name, "remote")) {
-                virLibConnWarning (NULL, VIR_WAR_NO_NODE,
-                                   "Is the libvirtd daemon running ?");
-            } else {
-                char *msg;
-                if (virAsprintf(&msg, "Is the %s daemon running?",
-                                virDeviceMonitorTab[i]->name) > 0) {
-                    virLibConnWarning (NULL, VIR_WAR_NO_NODE, msg);
-                    VIR_FREE(msg);
-                }
-            }
             break;
         } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->deviceMonitor = virDeviceMonitorTab[i];
@@ -1400,10 +1136,6 @@ do_open (const char *name,
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
-            if (STREQ(virSecretDriverTab[i]->name, "remote")) {
-                virLibConnWarning (NULL, VIR_WAR_NO_SECRET,
-                                   "Is the daemon running ?");
-            }
             break;
          } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->secretDriver = virSecretDriverTab[i];
@@ -1420,10 +1152,6 @@ do_open (const char *name,
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
-            if (STREQ(virNWFilterDriverTab[i]->name, "remote")) {
-                virLibConnWarning (NULL, VIR_WAR_NO_NWFILTER,
-                                   _("Is the daemon running ?"));
-            }
             break;
          } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->nwfilterDriver = virNWFilterDriverTab[i];
@@ -1572,7 +1300,7 @@ virConnectClose(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         goto error;
     }
 
@@ -1607,7 +1335,7 @@ int
 virConnectRef(virConnectPtr conn)
 {
     if ((!VIR_IS_CONNECT(conn))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -1631,7 +1359,7 @@ virDrvSupportsFeature (virConnectPtr conn, int feature)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -1667,7 +1395,7 @@ virConnectGetType(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -1700,13 +1428,13 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (hvVer == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -1717,7 +1445,7 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -1744,13 +1472,13 @@ virConnectGetLibVersion(virConnectPtr conn, unsigned long *libVer)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (libVer == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -1789,7 +1517,7 @@ virConnectGetHostname (virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -1801,7 +1529,7 @@ virConnectGetHostname (virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -1832,7 +1560,7 @@ virConnectGetURI (virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -1869,7 +1597,7 @@ virConnectGetMaxVcpus(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -1881,7 +1609,7 @@ virConnectGetMaxVcpus(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -1905,13 +1633,13 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if ((ids == NULL) || (maxids < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -1922,7 +1650,7 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -1944,7 +1672,7 @@ virConnectNumOfDomains(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -1956,7 +1684,7 @@ virConnectNumOfDomains(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -1984,7 +1712,7 @@ virDomainGetConnect (virDomainPtr dom)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
-        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -2015,16 +1743,16 @@ virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (xmlDesc == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -2036,7 +1764,7 @@ virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return NULL;
@@ -2081,12 +1809,12 @@ virDomainLookupByID(virConnectPtr conn, int id)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (id < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2098,7 +1826,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -2126,12 +1854,12 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuid == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2143,7 +1871,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -2169,17 +1897,17 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuidstr == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2208,12 +1936,12 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (name == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2225,7 +1953,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
         return dom;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -2253,14 +1981,14 @@ virDomainDestroy(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -2272,7 +2000,7 @@ virDomainDestroy(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -2296,7 +2024,7 @@ virDomainFree(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -2328,7 +2056,7 @@ int
 virDomainRef(virDomainPtr domain)
 {
     if ((!VIR_IS_CONNECTED_DOMAIN(domain))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -2362,12 +2090,12 @@ virDomainSuspend(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -2381,7 +2109,7 @@ virDomainSuspend(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2408,12 +2136,12 @@ virDomainResume(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -2427,7 +2155,7 @@ virDomainResume(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2457,17 +2185,17 @@ virDomainSave(virDomainPtr domain, const char *to)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
     if (to == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2499,7 +2227,7 @@ virDomainSave(virDomainPtr domain, const char *to)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2524,16 +2252,16 @@ virDomainRestore(virConnectPtr conn, const char *from)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (from == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2546,14 +2274,14 @@ virDomainRestore(virConnectPtr conn, const char *from)
 
         t = strlen(from);
         if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL) {
-            virLibConnError(conn, VIR_ERR_SYSTEM_ERROR,
+            virLibConnError(VIR_ERR_SYSTEM_ERROR,
                             _("cannot get working directory"));
             goto error;
         }
         len = strlen(filepath);
         /* that should be covered by getcwd() semantic, but be 100% sure */
         if (len > sizeof(filepath) - (t + 3)) {
-            virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
                             _("path too long"));
             goto error;
         }
@@ -2570,7 +2298,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -2600,17 +2328,17 @@ virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
     if (to == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2623,14 +2351,14 @@ virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
 
         t = strlen(to);
         if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL) {
-            virLibDomainError(domain, VIR_ERR_SYSTEM_ERROR,
+            virLibDomainError(VIR_ERR_SYSTEM_ERROR,
                               _("cannot get current directory"));
             goto error;
         }
         len = strlen(filepath);
         /* that should be covered by getcwd() semantic, but be 100% sure */
         if (len > sizeof(filepath) - (t + 3)) {
-            virLibDomainError(domain, VIR_ERR_INTERNAL_ERROR,
+            virLibDomainError(VIR_ERR_INTERNAL_ERROR,
                               _("path too long"));
             goto error;
         }
@@ -2648,7 +2376,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2678,12 +2406,12 @@ virDomainShutdown(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -2697,7 +2425,7 @@ virDomainShutdown(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2725,12 +2453,12 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -2744,7 +2472,7 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2768,7 +2496,7 @@ virDomainGetName(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -2792,12 +2520,12 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (uuid == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(domain->conn);
         return (-1);
     }
@@ -2827,12 +2555,12 @@ virDomainGetUUIDString(virDomainPtr domain, char *buf)
     virResetLastError();
 
     if (!VIR_IS_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (buf == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -2863,7 +2591,7 @@ virDomainGetID(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return ((unsigned int) -1);
     }
@@ -2889,7 +2617,7 @@ virDomainGetOSType(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -2904,7 +2632,7 @@ virDomainGetOSType(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2931,7 +2659,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (0);
     }
@@ -2946,7 +2674,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -2978,16 +2706,16 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (memory < 4096) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -3000,7 +2728,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -3032,16 +2760,16 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (memory < 4096) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -3055,7 +2783,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -3088,16 +2816,16 @@ virDomainSetMemoryParameters(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if ((nparams <= 0) || (params == NULL)) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -3110,7 +2838,7 @@ virDomainSetMemoryParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -3164,12 +2892,12 @@ virDomainGetMemoryParameters(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if ((nparams == NULL) || (*nparams < 0)) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -3181,7 +2909,7 @@ virDomainGetMemoryParameters(virDomainPtr domain,
             goto error;
         return ret;
     }
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -3209,12 +2937,12 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (info == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -3230,7 +2958,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -3258,7 +2986,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -3266,7 +2994,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
     conn = domain->conn;
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED,
+        virLibConnError(VIR_ERR_OPERATION_DENIED,
                         _("virDomainGetXMLDesc with secure flag"));
         goto error;
     }
@@ -3281,7 +3009,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -3312,13 +3040,13 @@ char *virConnectDomainXMLFromNative(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
 
     if (nativeFormat == NULL || nativeConfig == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -3333,7 +3061,7 @@ char *virConnectDomainXMLFromNative(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -3364,13 +3092,13 @@ char *virConnectDomainXMLToNative(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
 
     if (nativeFormat == NULL || domainXml == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -3385,7 +3113,7 @@ char *virConnectDomainXMLToNative(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -3429,7 +3157,7 @@ virDomainMigrateVersion1 (virDomainPtr domain,
         goto done;
 
     if (uri == NULL && uri_out == NULL) {
-        virLibConnError (domain->conn, VIR_ERR_INTERNAL_ERROR,
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
                          _("domainMigratePrepare did not set uri"));
         goto done;
     }
@@ -3495,7 +3223,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
      * and pass it to Prepare2.
      */
     if (!domain->conn->driver->domainDumpXML) {
-        virLibConnError (domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
         virDispatchError(domain->conn);
         return NULL;
     }
@@ -3518,7 +3246,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
         goto done;
 
     if (uri == NULL && uri_out == NULL) {
-        virLibConnError (domain->conn, VIR_ERR_INTERNAL_ERROR,
+        virLibConnError(VIR_ERR_INTERNAL_ERROR,
                          _("domainMigratePrepare2 did not set uri"));
         virDispatchError(domain->conn);
         goto done;
@@ -3574,20 +3302,20 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
     xmlURIPtr tempuri = NULL;
 
     if (!domain->conn->driver->domainMigratePerform) {
-        virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
         virDispatchError(domain->conn);
         return -1;
     }
 
     tempuri = xmlParseURI(uri);
     if (!tempuri) {
-        virLibConnError (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(domain->conn);
         return -1;
     }
 
     if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
-        virLibConnError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(domain->conn);
         xmlFreeURI(tempuri);
         return -1;
@@ -3625,7 +3353,7 @@ virDomainMigrateDirect (virDomainPtr domain,
                         unsigned long bandwidth)
 {
     if (!domain->conn->driver->domainMigratePerform) {
-        virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
         virDispatchError(domain->conn);
         return -1;
     }
@@ -3725,23 +3453,23 @@ virDomainMigrate (virDomainPtr domain,
 
     /* First checkout the source */
     if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     /* Now checkout the destination */
     if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(domain->conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         goto error;
     }
     if (dconn->flags & VIR_CONNECT_RO) {
         /* NB, deliberately report error against source object, not dest */
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -3764,12 +3492,12 @@ virDomainMigrate (virDomainPtr domain,
             ddomain = virDomainLookupByName (dconn, dname ? dname : domain->name);
         } else {
             /* This driver does not support peer to peer migration */
-            virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             goto error;
         }
     } else {
         if (flags & VIR_MIGRATE_TUNNELLED) {
-            virLibConnError(domain->conn, VIR_ERR_OPERATION_INVALID,
+            virLibConnError(VIR_ERR_OPERATION_INVALID,
                             _("cannot perform tunnelled migration without using peer2peer flag"));
             goto error;
         }
@@ -3787,7 +3515,7 @@ virDomainMigrate (virDomainPtr domain,
             ddomain = virDomainMigrateVersion2(domain, dconn, flags, dname, uri, bandwidth);
         else {
             /* This driver does not support any migration method */
-            virLibConnError(domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             goto error;
         }
     }
@@ -3874,17 +3602,17 @@ virDomainMigrateToURI (virDomainPtr domain,
 
     /* First checkout the source */
     if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     if (duri == NULL) {
-        virLibConnError (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -3895,7 +3623,7 @@ virDomainMigrateToURI (virDomainPtr domain,
                 goto error;
         } else {
             /* No peer to peer migration supported */
-            virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             goto error;
         }
     } else {
@@ -3905,7 +3633,7 @@ virDomainMigrateToURI (virDomainPtr domain,
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
-            virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             goto error;
         }
     }
@@ -3939,13 +3667,13 @@ virDomainMigratePrepare (virConnectPtr dconn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT (dconn)) {
-        virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -3959,7 +3687,7 @@ virDomainMigratePrepare (virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError (dconn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dconn);
@@ -3988,14 +3716,14 @@ virDomainMigratePerform (virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
-        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     conn = domain->conn;
 
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -4009,7 +3737,7 @@ virDomainMigratePerform (virDomainPtr domain,
         return ret;
     }
 
-    virLibDomainError (domain, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -4035,13 +3763,13 @@ virDomainMigrateFinish (virConnectPtr dconn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT (dconn)) {
-        virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
 
     if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -4055,7 +3783,7 @@ virDomainMigrateFinish (virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError (dconn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dconn);
@@ -4086,13 +3814,13 @@ virDomainMigratePrepare2 (virConnectPtr dconn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT (dconn)) {
-        virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -4107,7 +3835,7 @@ virDomainMigratePrepare2 (virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError (dconn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dconn);
@@ -4134,13 +3862,13 @@ virDomainMigrateFinish2 (virConnectPtr dconn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT (dconn)) {
-        virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
 
     if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -4155,7 +3883,7 @@ virDomainMigrateFinish2 (virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError (dconn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dconn);
@@ -4183,18 +3911,18 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     if (conn != st->conn) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -4207,7 +3935,7 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
         return rv;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -4232,12 +3960,12 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (info == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -4249,7 +3977,7 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -4274,7 +4002,7 @@ virConnectGetCapabilities (virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT (conn)) {
-        virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -4288,7 +4016,7 @@ virConnectGetCapabilities (virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -4313,7 +4041,7 @@ virNodeGetFreeMemory(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT (conn)) {
-        virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return 0;
     }
@@ -4326,7 +4054,7 @@ virNodeGetFreeMemory(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -4353,7 +4081,7 @@ virDomainGetSchedulerType(virDomainPtr domain, int *nparams)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -4366,7 +4094,7 @@ virDomainGetSchedulerType(virDomainPtr domain, int *nparams)
         return schedtype;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -4399,7 +4127,7 @@ virDomainGetSchedulerParameters(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -4413,7 +4141,7 @@ virDomainGetSchedulerParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -4443,12 +4171,12 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -4461,7 +4189,7 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -4504,12 +4232,12 @@ virDomainBlockStats (virDomainPtr dom, const char *path,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
-        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (!path || !stats || size > sizeof stats2) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = dom->conn;
@@ -4522,7 +4250,7 @@ virDomainBlockStats (virDomainPtr dom, const char *path,
         return 0;
     }
 
-    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dom->conn);
@@ -4564,12 +4292,12 @@ virDomainInterfaceStats (virDomainPtr dom, const char *path,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
-        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (!path || !stats || size > sizeof stats2) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = dom->conn;
@@ -4582,7 +4310,7 @@ virDomainInterfaceStats (virDomainPtr dom, const char *path,
         return 0;
     }
 
-    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dom->conn);
@@ -4628,7 +4356,7 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
     VIR_DOMAIN_DEBUG(dom, "stats=%p, nr_stats=%u", stats, nr_stats);
 
     if (flags != 0) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+        virLibDomainError(VIR_ERR_INVALID_ARG,
                            _("flags must be zero"));
         goto error;
     }
@@ -4636,7 +4364,7 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
-        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -4654,7 +4382,7 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
         return nr_stats_ret;
     }
 
-    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dom->conn);
@@ -4716,32 +4444,32 @@ virDomainBlockPeek (virDomainPtr dom,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
-        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     conn = dom->conn;
 
     if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     if (!path) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+        virLibDomainError(VIR_ERR_INVALID_ARG,
                            _("path is NULL"));
         goto error;
     }
 
     if (flags != 0) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+        virLibDomainError(VIR_ERR_INVALID_ARG,
                            _("flags must be zero"));
         goto error;
     }
 
     /* Allow size == 0 as an access test. */
     if (size > 0 && !buffer) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+        virLibDomainError(VIR_ERR_INVALID_ARG,
                            _("buffer is NULL"));
         goto error;
     }
@@ -4755,7 +4483,7 @@ virDomainBlockPeek (virDomainPtr dom,
         return ret;
     }
 
-    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dom->conn);
@@ -4808,14 +4536,14 @@ virDomainMemoryPeek (virDomainPtr dom,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
-        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     conn = dom->conn;
 
     if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -4843,14 +4571,14 @@ virDomainMemoryPeek (virDomainPtr dom,
      */
 
     if (flags != VIR_MEMORY_VIRTUAL && flags != VIR_MEMORY_PHYSICAL) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+        virLibDomainError(VIR_ERR_INVALID_ARG,
                      _("flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"));
         goto error;
     }
 
     /* Allow size == 0 as an access test. */
     if (size > 0 && !buffer) {
-        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+        virLibDomainError(VIR_ERR_INVALID_ARG,
                            _("buffer is NULL but size is non-zero"));
         goto error;
     }
@@ -4864,7 +4592,7 @@ virDomainMemoryPeek (virDomainPtr dom,
         return ret;
     }
 
-    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dom->conn);
@@ -4893,12 +4621,12 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *path, virDomainBlockInfoP
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (info == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -4914,7 +4642,7 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *path, virDomainBlockInfoP
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -4947,16 +4675,16 @@ virDomainDefineXML(virConnectPtr conn, const char *xml) {
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (xml == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -4968,7 +4696,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml) {
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -4992,13 +4720,13 @@ virDomainUndefine(virDomainPtr domain) {
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -5010,7 +4738,7 @@ virDomainUndefine(virDomainPtr domain) {
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5033,7 +4761,7 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -5046,7 +4774,7 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -5072,13 +4800,13 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -5090,7 +4818,7 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -5115,13 +4843,13 @@ virDomainCreate(virDomainPtr domain) {
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -5133,7 +4861,7 @@ virDomainCreate(virDomainPtr domain) {
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5159,13 +4887,13 @@ virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -5177,7 +4905,7 @@ virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5206,12 +4934,12 @@ virDomainGetAutostart(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (!autostart) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -5225,7 +4953,7 @@ virDomainGetAutostart(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5253,7 +4981,7 @@ virDomainSetAutostart(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -5261,7 +4989,7 @@ virDomainSetAutostart(virDomainPtr domain,
     conn = domain->conn;
 
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -5273,7 +5001,7 @@ virDomainSetAutostart(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5308,17 +5036,17 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     if (nvcpus < 1) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5331,7 +5059,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5375,19 +5103,19 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     /* Perform some argument validation common to all implementations.  */
     if (nvcpus < 1 || (unsigned short) nvcpus != nvcpus ||
         (flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5400,7 +5128,7 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5439,14 +5167,14 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     /* Exactly one of these two flags should be set.  */
     if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5459,7 +5187,7 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5499,17 +5227,17 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     if ((vcpu > 32000) || (cpumap == NULL) || (maplen < 1)) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
        goto error;
     }
 
@@ -5523,7 +5251,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5564,12 +5292,12 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if ((info == NULL) || (maxinfo < 1)) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -5577,7 +5305,7 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
        try to memcpy anything into a NULL pointer.  */
     if ((cpumaps == NULL && maplen != 0)
         || (cpumaps && maplen <= 0)) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -5592,7 +5320,7 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5621,7 +5349,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -5636,7 +5364,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5662,13 +5390,13 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
     VIR_DOMAIN_DEBUG(domain, "seclabel=%p", seclabel);
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (seclabel == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -5682,7 +5410,7 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5706,13 +5434,13 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
     DEBUG("conn=%p secmodel=%p", conn, secmodel);
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (secmodel == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -5724,7 +5452,7 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -5755,12 +5483,12 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5773,7 +5501,7 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
        return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5815,11 +5543,11 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5832,7 +5560,7 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5859,12 +5587,12 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5877,7 +5605,7 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
          return ret;
      }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5915,11 +5643,11 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5932,7 +5660,7 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5974,11 +5702,11 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -5991,7 +5719,7 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -6026,13 +5754,13 @@ virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((freeMems == NULL) || (maxCells <= 0) || (startCell < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6044,7 +5772,7 @@ virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6073,7 +5801,7 @@ virNetworkGetConnect (virNetworkPtr net)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK (net)) {
-        virLibNetworkError (NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -6096,7 +5824,7 @@ virConnectNumOfNetworks(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -6109,7 +5837,7 @@ virConnectNumOfNetworks(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6134,13 +5862,13 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6152,7 +5880,7 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6175,7 +5903,7 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -6188,7 +5916,7 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6214,13 +5942,13 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6233,7 +5961,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6258,12 +5986,12 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (name == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto  error;
     }
 
@@ -6275,7 +6003,7 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6303,12 +6031,12 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuid == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6320,7 +6048,7 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6346,17 +6074,17 @@ virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuidstr == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6385,16 +6113,16 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (xmlDesc == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -6406,7 +6134,7 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6430,16 +6158,16 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (xml == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6451,7 +6179,7 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -6474,13 +6202,13 @@ virNetworkUndefine(virNetworkPtr network) {
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = network->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(network, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -6492,7 +6220,7 @@ virNetworkUndefine(virNetworkPtr network) {
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(network->conn);
@@ -6517,13 +6245,13 @@ virNetworkCreate(virNetworkPtr network)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = network->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(network, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -6535,7 +6263,7 @@ virNetworkCreate(virNetworkPtr network)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(network->conn);
@@ -6562,14 +6290,14 @@ virNetworkDestroy(virNetworkPtr network)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = network->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(network, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -6581,7 +6309,7 @@ virNetworkDestroy(virNetworkPtr network)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(network->conn);
@@ -6605,7 +6333,7 @@ virNetworkFree(virNetworkPtr network)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -6637,7 +6365,7 @@ int
 virNetworkRef(virNetworkPtr network)
 {
     if ((!VIR_IS_CONNECTED_NETWORK(network))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -6665,7 +6393,7 @@ virNetworkGetName(virNetworkPtr network)
     virResetLastError();
 
     if (!VIR_IS_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -6689,12 +6417,12 @@ virNetworkGetUUID(virNetworkPtr network, unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (uuid == NULL) {
-        virLibNetworkError(network, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6726,12 +6454,12 @@ virNetworkGetUUIDString(virNetworkPtr network, char *buf)
     virResetLastError();
 
     if (!VIR_IS_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (buf == NULL) {
-        virLibNetworkError(network, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6766,12 +6494,12 @@ virNetworkGetXMLDesc(virNetworkPtr network, int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (flags != 0) {
-        virLibNetworkError(network, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6785,7 +6513,7 @@ virNetworkGetXMLDesc(virNetworkPtr network, int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(network->conn);
@@ -6811,7 +6539,7 @@ virNetworkGetBridgeName(virNetworkPtr network)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -6826,7 +6554,7 @@ virNetworkGetBridgeName(virNetworkPtr network)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(network->conn);
@@ -6854,12 +6582,12 @@ virNetworkGetAutostart(virNetworkPtr network,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (!autostart) {
-        virLibNetworkError(network, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -6873,7 +6601,7 @@ virNetworkGetAutostart(virNetworkPtr network,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(network->conn);
@@ -6900,13 +6628,13 @@ virNetworkSetAutostart(virNetworkPtr network,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if (network->conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(network, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -6920,7 +6648,7 @@ virNetworkSetAutostart(virNetworkPtr network,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(network->conn);
@@ -6949,7 +6677,7 @@ virInterfaceGetConnect (virInterfacePtr iface)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_INTERFACE (iface)) {
-        virLibInterfaceError (NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -6972,7 +6700,7 @@ virConnectNumOfInterfaces(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -6985,7 +6713,7 @@ virConnectNumOfInterfaces(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7011,13 +6739,13 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7029,7 +6757,7 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7052,7 +6780,7 @@ virConnectNumOfDefinedInterfaces(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -7065,7 +6793,7 @@ virConnectNumOfDefinedInterfaces(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7093,13 +6821,13 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7111,7 +6839,7 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7136,12 +6864,12 @@ virInterfaceLookupByName(virConnectPtr conn, const char *name)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (name == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto  error;
     }
 
@@ -7153,7 +6881,7 @@ virInterfaceLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7178,12 +6906,12 @@ virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (macstr == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto  error;
     }
 
@@ -7195,7 +6923,7 @@ virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7219,7 +6947,7 @@ virInterfaceGetName(virInterfacePtr iface)
     virResetLastError();
 
     if (!VIR_IS_INTERFACE(iface)) {
-        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -7245,7 +6973,7 @@ virInterfaceGetMACString(virInterfacePtr iface)
     virResetLastError();
 
     if (!VIR_IS_INTERFACE(iface)) {
-        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -7279,12 +7007,12 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if ((flags & ~VIR_INTERFACE_XML_INACTIVE) != 0) {
-        virLibInterfaceError(iface, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7298,7 +7026,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(iface->conn);
@@ -7323,16 +7051,16 @@ virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (xml == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7344,7 +7072,7 @@ virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7368,13 +7096,13 @@ virInterfaceUndefine(virInterfacePtr iface) {
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = iface->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(iface, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -7386,7 +7114,7 @@ virInterfaceUndefine(virInterfacePtr iface) {
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(iface->conn);
@@ -7411,13 +7139,13 @@ virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = iface->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(iface, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -7429,7 +7157,7 @@ virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(iface->conn);
@@ -7456,14 +7184,14 @@ virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = iface->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(iface, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -7475,7 +7203,7 @@ virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(iface->conn);
@@ -7503,7 +7231,7 @@ int
 virInterfaceRef(virInterfacePtr iface)
 {
     if ((!VIR_IS_CONNECTED_INTERFACE(iface))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -7531,7 +7259,7 @@ virInterfaceFree(virInterfacePtr iface)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -7565,7 +7293,7 @@ virStoragePoolGetConnect (virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL (pool)) {
-        virLibStoragePoolError (NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -7588,7 +7316,7 @@ virConnectNumOfStoragePools	(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -7601,7 +7329,7 @@ virConnectNumOfStoragePools	(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7630,13 +7358,13 @@ virConnectListStoragePools	(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7648,7 +7376,7 @@ virConnectListStoragePools	(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7672,7 +7400,7 @@ virConnectNumOfDefinedStoragePools(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -7685,7 +7413,7 @@ virConnectNumOfDefinedStoragePools(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7715,13 +7443,13 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7733,7 +7461,7 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7773,17 +7501,17 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
     if (type == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -7795,7 +7523,7 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7821,12 +7549,12 @@ virStoragePoolLookupByName(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (name == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7838,7 +7566,7 @@ virStoragePoolLookupByName(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7864,12 +7592,12 @@ virStoragePoolLookupByUUID(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuid == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7881,7 +7609,7 @@ virStoragePoolLookupByUUID(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -7908,17 +7636,17 @@ virStoragePoolLookupByUUIDString(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuidstr == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -7946,7 +7674,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -7959,7 +7687,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
         return ret;
     }
 
-    virLibConnError (vol->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(vol->conn);
@@ -7988,16 +7716,16 @@ virStoragePoolCreateXML(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (xmlDesc == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8009,7 +7737,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -8037,16 +7765,16 @@ virStoragePoolDefineXML(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (xml == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8058,7 +7786,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -8084,13 +7812,13 @@ virStoragePoolBuild(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = pool->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8102,7 +7830,7 @@ virStoragePoolBuild(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8127,13 +7855,13 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = pool->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8145,7 +7873,7 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8172,13 +7900,13 @@ virStoragePoolCreate(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     conn = pool->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8190,7 +7918,7 @@ virStoragePoolCreate(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8219,14 +7947,14 @@ virStoragePoolDestroy(virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = pool->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8238,7 +7966,7 @@ virStoragePoolDestroy(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8266,14 +7994,14 @@ virStoragePoolDelete(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = pool->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8285,7 +8013,7 @@ virStoragePoolDelete(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8310,7 +8038,7 @@ virStoragePoolFree(virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -8344,7 +8072,7 @@ int
 virStoragePoolRef(virStoragePoolPtr pool)
 {
     if ((!VIR_IS_CONNECTED_STORAGE_POOL(pool))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -8376,14 +8104,14 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = pool->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8395,7 +8123,7 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8419,7 +8147,7 @@ virStoragePoolGetName(virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -8445,12 +8173,12 @@ virStoragePoolGetUUID(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (uuid == NULL) {
-        virLibStoragePoolError(pool, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8482,12 +8210,12 @@ virStoragePoolGetUUIDString(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (buf == NULL) {
-        virLibStoragePoolError(pool, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8523,12 +8251,12 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (info == NULL) {
-        virLibStoragePoolError(pool, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8544,7 +8272,7 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8573,12 +8301,12 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (flags != 0) {
-        virLibStoragePoolError(pool, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8592,7 +8320,7 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8620,12 +8348,12 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (!autostart) {
-        virLibStoragePoolError(pool, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8639,7 +8367,7 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8666,13 +8394,13 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if (pool->conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -8686,7 +8414,7 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8710,7 +8438,7 @@ virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -8723,7 +8451,7 @@ virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError (pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8752,13 +8480,13 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8770,7 +8498,7 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8800,7 +8528,7 @@ virStorageVolGetConnect (virStorageVolPtr vol)
     virResetLastError();
 
     if (!VIR_IS_STORAGE_VOL (vol)) {
-        virLibStoragePoolError (NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -8827,12 +8555,12 @@ virStorageVolLookupByName(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (name == NULL) {
-        virLibConnError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8844,7 +8572,7 @@ virStorageVolLookupByName(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -8872,12 +8600,12 @@ virStorageVolLookupByKey(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (key == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8889,7 +8617,7 @@ virStorageVolLookupByKey(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -8915,12 +8643,12 @@ virStorageVolLookupByPath(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (path == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -8932,7 +8660,7 @@ virStorageVolLookupByPath(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -8957,7 +8685,7 @@ virStorageVolGetName(virStorageVolPtr vol)
     virResetLastError();
 
     if (!VIR_IS_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -8983,7 +8711,7 @@ virStorageVolGetKey(virStorageVolPtr vol)
     virResetLastError();
 
     if (!VIR_IS_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -9013,13 +8741,13 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
 
     if (pool->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(pool->conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -9031,7 +8759,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -9064,19 +8792,19 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
 
     if (!VIR_IS_STORAGE_VOL(clonevol)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         goto error;
     }
 
     if (pool->conn->flags & VIR_CONNECT_RO ||
         clonevol->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(pool->conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -9090,7 +8818,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError (pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(pool->conn);
@@ -9117,14 +8845,14 @@ virStorageVolDelete(virStorageVolPtr vol,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = vol->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStorageVolError(vol, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -9136,7 +8864,7 @@ virStorageVolDelete(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(vol->conn);
@@ -9163,14 +8891,14 @@ virStorageVolWipe(virStorageVolPtr vol,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = vol->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibStorageVolError(vol, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -9183,7 +8911,7 @@ virStorageVolWipe(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(vol->conn);
@@ -9208,7 +8936,7 @@ virStorageVolFree(virStorageVolPtr vol)
     virResetLastError();
 
     if (!VIR_IS_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -9241,7 +8969,7 @@ int
 virStorageVolRef(virStorageVolPtr vol)
 {
     if ((!VIR_IS_CONNECTED_STORAGE_VOL(vol))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -9272,12 +9000,12 @@ virStorageVolGetInfo(virStorageVolPtr vol,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (info == NULL) {
-        virLibStorageVolError(vol, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -9293,7 +9021,7 @@ virStorageVolGetInfo(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(vol->conn);
@@ -9321,12 +9049,12 @@ virStorageVolGetXMLDesc(virStorageVolPtr vol,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (flags != 0) {
-        virLibStorageVolError(vol, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -9340,7 +9068,7 @@ virStorageVolGetXMLDesc(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(vol->conn);
@@ -9369,7 +9097,7 @@ virStorageVolGetPath(virStorageVolPtr vol)
     virResetLastError();
 
     if (!VIR_IS_STORAGE_VOL(vol)) {
-        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -9384,7 +9112,7 @@ virStorageVolGetPath(virStorageVolPtr vol)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(vol->conn);
@@ -9413,12 +9141,12 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (flags != 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -9430,7 +9158,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -9465,12 +9193,12 @@ virNodeListDevices(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if ((flags != 0) || (names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -9482,7 +9210,7 @@ virNodeListDevices(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -9506,13 +9234,13 @@ virNodeDevicePtr virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
 
     if (name == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -9524,7 +9252,7 @@ virNodeDevicePtr virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -9549,7 +9277,7 @@ char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -9562,7 +9290,7 @@ char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dev->conn);
@@ -9583,7 +9311,7 @@ const char *virNodeDeviceGetName(virNodeDevicePtr dev)
     DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -9607,7 +9335,7 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -9616,7 +9344,7 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
         if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceGetParent) {
             dev->parent = dev->conn->deviceMonitor->deviceGetParent (dev);
         } else {
-            virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             virDispatchError(dev->conn);
             return NULL;
         }
@@ -9639,7 +9367,7 @@ int virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -9652,7 +9380,7 @@ int virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dev->conn);
@@ -9679,7 +9407,7 @@ int virNodeDeviceListCaps(virNodeDevicePtr dev,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -9692,7 +9420,7 @@ int virNodeDeviceListCaps(virNodeDevicePtr dev,
         return ret;
     }
 
-    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dev->conn);
@@ -9716,7 +9444,7 @@ int virNodeDeviceFree(virNodeDevicePtr dev)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -9749,7 +9477,7 @@ int
 virNodeDeviceRef(virNodeDevicePtr dev)
 {
     if ((!VIR_IS_CONNECTED_NODE_DEVICE(dev))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -9787,7 +9515,7 @@ virNodeDeviceDettach(virNodeDevicePtr dev)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -9800,7 +9528,7 @@ virNodeDeviceDettach(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError(dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dev->conn);
@@ -9830,7 +9558,7 @@ virNodeDeviceReAttach(virNodeDevicePtr dev)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -9843,7 +9571,7 @@ virNodeDeviceReAttach(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError(dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dev->conn);
@@ -9875,7 +9603,7 @@ virNodeDeviceReset(virNodeDevicePtr dev)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -9888,7 +9616,7 @@ virNodeDeviceReset(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError(dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dev->conn);
@@ -9917,18 +9645,18 @@ virNodeDeviceCreateXML(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
 
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     if (xmlDesc == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -9940,7 +9668,7 @@ virNodeDeviceCreateXML(virConnectPtr conn,
         return dev;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -9965,13 +9693,13 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if (dev->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(dev->conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -9985,7 +9713,7 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
         return 0;
     }
 
-    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(dev->conn);
@@ -10030,12 +9758,12 @@ virConnectDomainEventRegister(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (cb == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10047,7 +9775,7 @@ virConnectDomainEventRegister(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -10076,12 +9804,12 @@ virConnectDomainEventDeregister(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (cb == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     if ((conn->driver) && (conn->driver->domainEventDeregister)) {
@@ -10092,7 +9820,7 @@ virConnectDomainEventDeregister(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -10118,7 +9846,7 @@ virSecretGetConnect (virSecretPtr secret)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET (secret)) {
-        virLibSecretError (NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -10141,7 +9869,7 @@ virConnectNumOfSecrets(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -10156,7 +9884,7 @@ virConnectNumOfSecrets(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10181,12 +9909,12 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (uuids == NULL || maxuuids < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10199,7 +9927,7 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10225,12 +9953,12 @@ virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuid == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10243,7 +9971,7 @@ virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10270,17 +9998,17 @@ virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuidstr == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10315,12 +10043,12 @@ virSecretLookupByUsage(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (usageID == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10333,7 +10061,7 @@ virSecretLookupByUsage(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10364,16 +10092,16 @@ virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (xml == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10386,7 +10114,7 @@ virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10411,12 +10139,12 @@ virSecretGetUUID(virSecretPtr secret, unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (uuid == NULL) {
-        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(secret->conn);
         return -1;
     }
@@ -10445,12 +10173,12 @@ virSecretGetUUIDString(virSecretPtr secret, char *buf)
     virResetLastError();
 
     if (!VIR_IS_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (buf == NULL) {
-        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10486,7 +10214,7 @@ virSecretGetUsageType(virSecretPtr secret)
     virResetLastError();
 
     if (!VIR_IS_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -10517,7 +10245,7 @@ virSecretGetUsageID(virSecretPtr secret)
     virResetLastError();
 
     if (!VIR_IS_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -10545,7 +10273,7 @@ virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -10560,7 +10288,7 @@ virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10590,17 +10318,17 @@ virSecretSetValue(virSecretPtr secret, const unsigned char *value,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     conn = secret->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibSecretError(secret, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibSecretError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (value == NULL) {
-        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10613,7 +10341,7 @@ virSecretSetValue(virSecretPtr secret, const unsigned char *value,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10641,17 +10369,17 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
     conn = secret->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibSecretError(secret, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibSecretError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
     if (value_size == NULL) {
-        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10666,7 +10394,7 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10692,13 +10420,13 @@ virSecretUndefine(virSecretPtr secret)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     conn = secret->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibSecretError(secret, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibSecretError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -10711,7 +10439,7 @@ virSecretUndefine(virSecretPtr secret)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -10738,7 +10466,7 @@ int
 virSecretRef(virSecretPtr secret)
 {
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -10765,7 +10493,7 @@ virSecretFree(virSecretPtr secret)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -10807,7 +10535,7 @@ virStreamNew(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -10835,7 +10563,7 @@ int
 virStreamRef(virStreamPtr stream)
 {
     if ((!VIR_IS_CONNECTED_STREAM(stream))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return(-1);
     }
@@ -10920,7 +10648,7 @@ int virStreamSend(virStreamPtr stream,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -10936,7 +10664,7 @@ int virStreamSend(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError(stream->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(stream->conn);
@@ -11015,7 +10743,7 @@ int virStreamRecv(virStreamPtr stream,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11031,7 +10759,7 @@ int virStreamRecv(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError(stream->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(stream->conn);
@@ -11091,13 +10819,13 @@ int virStreamSendAll(virStreamPtr stream,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
-        virLibConnError(NULL, VIR_ERR_OPERATION_INVALID,
+        virLibConnError(VIR_ERR_OPERATION_INVALID,
                         _("data sources cannot be used for non-blocking streams"));
         goto cleanup;
     }
@@ -11188,13 +10916,13 @@ int virStreamRecvAll(virStreamPtr stream,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
-        virLibConnError(NULL, VIR_ERR_OPERATION_INVALID,
+        virLibConnError(VIR_ERR_OPERATION_INVALID,
                         _("data sinks cannot be used for non-blocking streams"));
         goto cleanup;
     }
@@ -11260,7 +10988,7 @@ int virStreamEventAddCallback(virStreamPtr stream,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11274,7 +11002,7 @@ int virStreamEventAddCallback(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError(stream->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(stream->conn);
@@ -11302,7 +11030,7 @@ int virStreamEventUpdateCallback(virStreamPtr stream,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11316,7 +11044,7 @@ int virStreamEventUpdateCallback(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError (stream->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(stream->conn);
@@ -11338,7 +11066,7 @@ int virStreamEventRemoveCallback(virStreamPtr stream)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11352,7 +11080,7 @@ int virStreamEventRemoveCallback(virStreamPtr stream)
         return ret;
     }
 
-    virLibConnError (stream->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(stream->conn);
@@ -11381,7 +11109,7 @@ int virStreamFinish(virStreamPtr stream)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11395,7 +11123,7 @@ int virStreamFinish(virStreamPtr stream)
         return ret;
     }
 
-    virLibConnError (stream->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(stream->conn);
@@ -11422,7 +11150,7 @@ int virStreamAbort(virStreamPtr stream)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11436,7 +11164,7 @@ int virStreamAbort(virStreamPtr stream)
         return ret;
     }
 
-    virLibConnError (stream->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(stream->conn);
@@ -11464,7 +11192,7 @@ int virStreamFree(virStreamPtr stream)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11494,7 +11222,7 @@ int virDomainIsActive(virDomainPtr dom)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11506,7 +11234,7 @@ int virDomainIsActive(virDomainPtr dom)
         return ret;
     }
 
-    virLibConnError(dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(dom->conn);
     return -1;
@@ -11528,7 +11256,7 @@ int virDomainIsPersistent(virDomainPtr dom)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11540,7 +11268,7 @@ int virDomainIsPersistent(virDomainPtr dom)
         return ret;
     }
 
-    virLibConnError(dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(dom->conn);
     return -1;
@@ -11561,7 +11289,7 @@ int virDomainIsUpdated(virDomainPtr dom)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11573,7 +11301,7 @@ int virDomainIsUpdated(virDomainPtr dom)
         return ret;
     }
 
-    virLibConnError(dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(dom->conn);
     return -1;
@@ -11594,7 +11322,7 @@ int virNetworkIsActive(virNetworkPtr net)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(net)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11606,7 +11334,7 @@ int virNetworkIsActive(virNetworkPtr net)
         return ret;
     }
 
-    virLibConnError(net->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(net->conn);
     return -1;
@@ -11629,7 +11357,7 @@ int virNetworkIsPersistent(virNetworkPtr net)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NETWORK(net)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11641,7 +11369,7 @@ int virNetworkIsPersistent(virNetworkPtr net)
         return ret;
     }
 
-    virLibConnError(net->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(net->conn);
     return -1;
@@ -11663,7 +11391,7 @@ int virStoragePoolIsActive(virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11675,7 +11403,7 @@ int virStoragePoolIsActive(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError(pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(pool->conn);
     return -1;
@@ -11698,7 +11426,7 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -11710,7 +11438,7 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError(pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(pool->conn);
     return -1;
@@ -11734,7 +11462,7 @@ virConnectNumOfNWFilters(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -11747,7 +11475,7 @@ virConnectNumOfNWFilters(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -11773,13 +11501,13 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     if ((names == NULL) || (maxnames < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -11791,7 +11519,7 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -11817,12 +11545,12 @@ virNWFilterLookupByName(virConnectPtr conn, const char *name)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (name == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto  error;
     }
 
@@ -11834,7 +11562,7 @@ virNWFilterLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -11859,12 +11587,12 @@ virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuid == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -11876,7 +11604,7 @@ virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -11902,17 +11630,17 @@ virNWFilterLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (uuidstr == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -11940,7 +11668,7 @@ virNWFilterFree(virNWFilterPtr nwfilter)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
-        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -11968,7 +11696,7 @@ virNWFilterGetName(virNWFilterPtr nwfilter)
     virResetLastError();
 
     if (!VIR_IS_NWFILTER(nwfilter)) {
-        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -11992,12 +11720,12 @@ virNWFilterGetUUID(virNWFilterPtr nwfilter, unsigned char *uuid)
     virResetLastError();
 
     if (!VIR_IS_NWFILTER(nwfilter)) {
-        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (uuid == NULL) {
-        virLibNWFilterError(nwfilter, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -12029,12 +11757,12 @@ virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
     virResetLastError();
 
     if (!VIR_IS_NWFILTER(nwfilter)) {
-        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
     if (buf == NULL) {
-        virLibNWFilterError(nwfilter, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -12068,16 +11796,16 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (xmlDesc == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -12089,7 +11817,7 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -12116,14 +11844,14 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
-        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     conn = nwfilter->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibNWFilterError(nwfilter, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -12135,7 +11863,7 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(nwfilter->conn);
@@ -12163,12 +11891,12 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
-        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
     if (flags != 0) {
-        virLibNWFilterError(nwfilter, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibNWFilterError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -12182,7 +11910,7 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(nwfilter->conn);
@@ -12211,7 +11939,7 @@ int
 virNWFilterRef(virNWFilterPtr nwfilter)
 {
     if ((!VIR_IS_CONNECTED_NWFILTER(nwfilter))) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -12238,7 +11966,7 @@ int virInterfaceIsActive(virInterfacePtr iface)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -12250,7 +11978,7 @@ int virInterfaceIsActive(virInterfacePtr iface)
         return ret;
     }
 
-    virLibConnError(iface->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(iface->conn);
     return -1;
@@ -12272,7 +12000,7 @@ int virConnectIsEncrypted(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -12284,7 +12012,7 @@ int virConnectIsEncrypted(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -12309,7 +12037,7 @@ int virConnectIsSecure(virConnectPtr conn)
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
@@ -12321,7 +12049,7 @@ int virConnectIsSecure(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -12348,12 +12076,12 @@ virConnectCompareCPU(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return VIR_CPU_COMPARE_ERROR;
     }
     if (xmlDesc == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -12366,7 +12094,7 @@ virConnectCompareCPU(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -12405,12 +12133,12 @@ virConnectBaselineCPU(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
     if (xmlCPUs == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -12423,7 +12151,7 @@ virConnectBaselineCPU(virConnectPtr conn,
         return cpu;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -12451,12 +12179,12 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (info == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -12472,7 +12200,7 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -12500,14 +12228,14 @@ virDomainAbortJob(virDomainPtr domain)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
 
     conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -12519,7 +12247,7 @@ virDomainAbortJob(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -12551,14 +12279,14 @@ virDomainMigrateSetMaxDowntime(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -12568,7 +12296,7 @@ virDomainMigrateSetMaxDowntime(virDomainPtr domain,
         return 0;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -12621,18 +12349,18 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (dom != NULL &&
         !(VIR_IS_CONNECTED_DOMAIN(dom) && dom->conn == conn)) {
-        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(conn);
         return (-1);
     }
     if (eventID < 0 || eventID >= VIR_DOMAIN_EVENT_ID_LAST || cb == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -12644,7 +12372,7 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -12669,12 +12397,12 @@ virConnectDomainEventDeregisterAny(virConnectPtr conn,
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return (-1);
     }
     if (callbackID < 0) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     if ((conn->driver) && (conn->driver->domainEventDeregisterAny)) {
@@ -12685,7 +12413,7 @@ virConnectDomainEventDeregisterAny(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -12715,14 +12443,14 @@ int virDomainManagedSave(virDomainPtr dom, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     conn = dom->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -12735,7 +12463,7 @@ int virDomainManagedSave(virDomainPtr dom, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -12763,7 +12491,7 @@ int virDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -12779,7 +12507,7 @@ int virDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -12804,14 +12532,14 @@ int virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     conn = dom->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -12824,7 +12552,7 @@ int virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
@@ -12854,14 +12582,14 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
 
     conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -12873,7 +12601,7 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return NULL;
@@ -12899,7 +12627,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virResetLastError();
 
     if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
                                   __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
@@ -12908,7 +12636,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     conn = snapshot->domain->conn;
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(conn, VIR_ERR_OPERATION_DENIED,
+        virLibConnError(VIR_ERR_OPERATION_DENIED,
                         _("virDomainSnapshotGetXMLDesc with secure flag"));
         goto error;
     }
@@ -12921,7 +12649,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return NULL;
@@ -12946,7 +12674,7 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -12959,7 +12687,7 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -12990,7 +12718,7 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -12998,7 +12726,7 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     conn = domain->conn;
 
     if ((names == NULL) || (nameslen < 0)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -13010,7 +12738,7 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -13040,7 +12768,7 @@ virDomainSnapshotLookupByName(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -13048,7 +12776,7 @@ virDomainSnapshotLookupByName(virDomainPtr domain,
     conn = domain->conn;
 
     if (name == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -13060,7 +12788,7 @@ virDomainSnapshotLookupByName(virDomainPtr domain,
         return dom;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return NULL;
@@ -13085,7 +12813,7 @@ virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -13099,7 +12827,7 @@ virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -13127,7 +12855,7 @@ virDomainSnapshotCurrent(virDomainPtr domain,
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return (NULL);
     }
@@ -13142,7 +12870,7 @@ virDomainSnapshotCurrent(virDomainPtr domain,
         return snap;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return NULL;
@@ -13168,7 +12896,7 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virResetLastError();
 
     if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
                                   __FUNCTION__);
         virDispatchError(NULL);
         return -1;
@@ -13183,7 +12911,7 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -13214,7 +12942,7 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     virResetLastError();
 
     if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
                                   __FUNCTION__);
         virDispatchError(NULL);
         return -1;
@@ -13229,7 +12957,7 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;
@@ -13252,7 +12980,7 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
     virResetLastError();
 
     if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
                                   __FUNCTION__);
         virDispatchError(NULL);
         return -1;
@@ -13293,14 +13021,14 @@ int virDomainOpenConsole(virDomainPtr dom,
     virResetLastError();
 
     if (!VIR_IS_DOMAIN(dom)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
     conn = dom->conn;
     if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
@@ -13312,7 +13040,7 @@ int virDomainOpenConsole(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
