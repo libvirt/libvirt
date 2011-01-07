@@ -392,7 +392,7 @@ done:
 
 static int
 virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
-                              virDomainChrDefPtr dev)
+                              virDomainChrSourceDefPtr dev)
 
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
@@ -430,7 +430,7 @@ done:
 
 static int
 virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                  virDomainChrDefPtr dev)
+                                  virDomainChrSourceDefPtr dev)
 {
     char *in = NULL, *out = NULL;
     int ret = -1;
@@ -472,7 +472,7 @@ virSecurityDACRestoreChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecurityDACRestoreChardevLabel(mgr, dev);
+    return virSecurityDACRestoreChardevLabel(mgr, &dev->source);
 }
 
 
@@ -531,7 +531,7 @@ virSecurityDACSetChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecurityDACSetChardevLabel(mgr, dev);
+    return virSecurityDACSetChardevLabel(mgr, &dev->source);
 }
 
 

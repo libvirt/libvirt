@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -625,20 +625,20 @@ qemuMonitorOpen(virDomainObjPtr vm,
     mon->cb = cb;
     qemuMonitorLock(mon);
 
-    switch (config->type) {
+    switch (config->source.type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         mon->hasSendFD = 1;
-        mon->fd = qemuMonitorOpenUnix(config->data.nix.path);
+        mon->fd = qemuMonitorOpenUnix(config->source.data.nix.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        mon->fd = qemuMonitorOpenPty(config->data.file.path);
+        mon->fd = qemuMonitorOpenPty(config->source.data.file.path);
         break;
 
     default:
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unable to handle monitor type: %s"),
-                        virDomainChrTypeToString(config->type));
+                        virDomainChrTypeToString(config->source.type));
         goto cleanup;
     }
 

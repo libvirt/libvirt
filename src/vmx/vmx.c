@@ -2,7 +2,7 @@
 /*
  * vmx.c: VMware VMX parsing/formatting functions
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -401,7 +401,7 @@ def->serials[0]...
 ->data.tcp.service = <service>                                                  # e.g. "telnet://0.0.0.0:42001"
 ->data.tcp.protocol = <protocol>
 
-->data.tcp.listen = 1             <=>   serial0.network.endPoint = "server"     # defaults to "server"
+->data.tcp.listen = true          <=>   serial0.network.endPoint = "server"     # defaults to "server"
 
 ???                               <=>   serial0.vspc = "foobar"                 # defaults to <not present>, FIXME: not representable
 ???                               <=>   serial0.tryNoRxLoss = "false"           # defaults to "false", FIXME: not representable
@@ -416,7 +416,7 @@ def->serials[0]...
 ->data.tcp.service = <service>                                                  # e.g. "telnet://192.168.0.17:42001"
 ->data.tcp.protocol = <protocol>
 
-->data.tcp.listen = 0             <=>   serial0.network.endPoint = "client"     # defaults to "server"
+->data.tcp.listen = false         <=>   serial0.network.endPoint = "client"     # defaults to "server"
 
 ???                               <=>   serial0.vspc = "foobar"                 # defaults to <not present>, FIXME: not representable
 ???                               <=>   serial0.tryNoRxLoss = "false"           # defaults to "false", FIXME: not representable
@@ -2556,16 +2556,17 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
     /* Setup virDomainChrDef */
     if (STRCASEEQ(fileType, "device")) {
         (*def)->target.port = port;
-        (*def)->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        (*def)->data.file.path = fileName;
+        (*def)->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+        (*def)->source.data.file.path = fileName;
 
         fileName = NULL;
     } else if (STRCASEEQ(fileType, "file")) {
         (*def)->target.port = port;
-        (*def)->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        (*def)->data.file.path = ctx->parseFileName(fileName, ctx->opaque);
+        (*def)->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+        (*def)->source.data.file.path = ctx->parseFileName(fileName,
+                                                           ctx->opaque);
 
-        if ((*def)->data.file.path == NULL) {
+        if ((*def)->source.data.file.path == NULL) {
             goto cleanup;
         }
     } else if (STRCASEEQ(fileType, "pipe")) {
@@ -2574,13 +2575,13 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
          *        not representable in domain XML form
          */
         (*def)->target.port = port;
-        (*def)->type = VIR_DOMAIN_CHR_TYPE_PIPE;
-        (*def)->data.file.path = fileName;
+        (*def)->source.type = VIR_DOMAIN_CHR_TYPE_PIPE;
+        (*def)->source.data.file.path = fileName;
 
         fileName = NULL;
     } else if (STRCASEEQ(fileType, "network")) {
         (*def)->target.port = port;
-        (*def)->type = VIR_DOMAIN_CHR_TYPE_TCP;
+        (*def)->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
 
         parsedUri = xmlParseURI(fileName);
 
@@ -2596,14 +2597,15 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
             goto cleanup;
         }
 
-        (*def)->data.tcp.host = strdup(parsedUri->server);
+        (*def)->source.data.tcp.host = strdup(parsedUri->server);
 
-        if ((*def)->data.tcp.host == NULL) {
+        if ((*def)->source.data.tcp.host == NULL) {
             virReportOOMError();
             goto cleanup;
         }
 
-        if (virAsprintf(&(*def)->data.tcp.service, "%d", parsedUri->port) < 0) {
+        if (virAsprintf(&(*def)->source.data.tcp.service, "%d",
+                        parsedUri->port) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -2613,16 +2615,18 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
             STRCASEEQ(parsedUri->scheme, "tcp") ||
             STRCASEEQ(parsedUri->scheme, "tcp4") ||
             STRCASEEQ(parsedUri->scheme, "tcp6")) {
-            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW;
+            (*def)->source.data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW;
         } else if (STRCASEEQ(parsedUri->scheme, "telnet")) {
-            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+            (*def)->source.data.tcp.protocol
+                = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         } else if (STRCASEEQ(parsedUri->scheme, "telnets")) {
-            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNETS;
+            (*def)->source.data.tcp.protocol
+                = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNETS;
         } else if (STRCASEEQ(parsedUri->scheme, "ssl") ||
                    STRCASEEQ(parsedUri->scheme, "tcp+ssl") ||
                    STRCASEEQ(parsedUri->scheme, "tcp4+ssl") ||
                    STRCASEEQ(parsedUri->scheme, "tcp6+ssl")) {
-            (*def)->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TLS;
+            (*def)->source.data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TLS;
         } else {
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("VMX entry '%s' contains unsupported scheme '%s'"),
@@ -2631,9 +2635,9 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         }
 
         if (network_endPoint == NULL || STRCASEEQ(network_endPoint, "server")) {
-            (*def)->data.tcp.listen = 1;
+            (*def)->source.data.tcp.listen = true;
         } else if (STRCASEEQ(network_endPoint, "client")) {
-            (*def)->data.tcp.listen = 0;
+            (*def)->source.data.tcp.listen = false;
         } else {
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting VMX entry '%s' to be 'server' or 'client' "
@@ -2746,16 +2750,17 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
     /* Setup virDomainChrDef */
     if (STRCASEEQ(fileType, "device")) {
         (*def)->target.port = port;
-        (*def)->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        (*def)->data.file.path = fileName;
+        (*def)->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+        (*def)->source.data.file.path = fileName;
 
         fileName = NULL;
     } else if (STRCASEEQ(fileType, "file")) {
         (*def)->target.port = port;
-        (*def)->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        (*def)->data.file.path = ctx->parseFileName(fileName, ctx->opaque);
+        (*def)->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+        (*def)->source.data.file.path = ctx->parseFileName(fileName,
+                                                           ctx->opaque);
 
-        if ((*def)->data.file.path == NULL) {
+        if ((*def)->source.data.file.path == NULL) {
             goto cleanup;
         }
     } else {
@@ -3582,19 +3587,19 @@ virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
     virBufferVSprintf(buffer, "serial%d.present = \"true\"\n", def->target.port);
 
     /* def:type -> vmx:fileType and def:data.file.path -> vmx:fileName */
-    switch (def->type) {
+    switch (def->source.type) {
       case VIR_DOMAIN_CHR_TYPE_DEV:
         virBufferVSprintf(buffer, "serial%d.fileType = \"device\"\n",
                           def->target.port);
         virBufferVSprintf(buffer, "serial%d.fileName = \"%s\"\n",
-                          def->target.port, def->data.file.path);
+                          def->target.port, def->source.data.file.path);
         break;
 
       case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferVSprintf(buffer, "serial%d.fileType = \"file\"\n",
                           def->target.port);
 
-        fileName = ctx->formatFileName(def->data.file.path, ctx->opaque);
+        fileName = ctx->formatFileName(def->source.data.file.path, ctx->opaque);
 
         if (fileName == NULL) {
             return -1;
@@ -3616,11 +3621,11 @@ virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
         virBufferVSprintf(buffer, "serial%d.tryNoRxLoss = \"false\"\n",
                           def->target.port);
         virBufferVSprintf(buffer, "serial%d.fileName = \"%s\"\n",
-                          def->target.port, def->data.file.path);
+                          def->target.port, def->source.data.file.path);
         break;
 
       case VIR_DOMAIN_CHR_TYPE_TCP:
-        switch (def->data.tcp.protocol) {
+        switch (def->source.data.tcp.protocol) {
           case VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW:
             protocol = "tcp";
             break;
@@ -3640,24 +3645,25 @@ virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
           default:
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Unsupported character device TCP protocol '%s'"),
-                      virDomainChrTcpProtocolTypeToString(def->data.tcp.protocol));
+                      virDomainChrTcpProtocolTypeToString(
+                          def->source.data.tcp.protocol));
             return -1;
         }
 
         virBufferVSprintf(buffer, "serial%d.fileType = \"network\"\n",
                           def->target.port);
         virBufferVSprintf(buffer, "serial%d.fileName = \"%s://%s:%s\"\n",
-                          def->target.port, protocol, def->data.tcp.host,
-                          def->data.tcp.service);
+                          def->target.port, protocol, def->source.data.tcp.host,
+                          def->source.data.tcp.service);
         virBufferVSprintf(buffer, "serial%d.network.endPoint = \"%s\"\n",
                           def->target.port,
-                          def->data.tcp.listen ? "server" : "client");
+                          def->source.data.tcp.listen ? "server" : "client");
         break;
 
       default:
         VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Unsupported character device type '%s'"),
-                  virDomainChrTypeToString(def->type));
+                  virDomainChrTypeToString(def->source.type));
         return -1;
     }
 
@@ -3688,19 +3694,19 @@ virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
                       def->target.port);
 
     /* def:type -> vmx:fileType and def:data.file.path -> vmx:fileName */
-    switch (def->type) {
+    switch (def->source.type) {
       case VIR_DOMAIN_CHR_TYPE_DEV:
         virBufferVSprintf(buffer, "parallel%d.fileType = \"device\"\n",
                           def->target.port);
         virBufferVSprintf(buffer, "parallel%d.fileName = \"%s\"\n",
-                          def->target.port, def->data.file.path);
+                          def->target.port, def->source.data.file.path);
         break;
 
       case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferVSprintf(buffer, "parallel%d.fileType = \"file\"\n",
                           def->target.port);
 
-        fileName = ctx->formatFileName(def->data.file.path, ctx->opaque);
+        fileName = ctx->formatFileName(def->source.data.file.path, ctx->opaque);
 
         if (fileName == NULL) {
             return -1;
@@ -3715,7 +3721,7 @@ virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
       default:
         VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Unsupported character device type '%s'"),
-                  virDomainChrTypeToString(def->type));
+                  virDomainChrTypeToString(def->source.type));
         return -1;
     }
 

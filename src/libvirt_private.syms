@@ -192,6 +192,7 @@ virDomainChrConsoleTargetTypeFromString;
 virDomainChrConsoleTargetTypeToString;
 virDomainChrDefForeach;
 virDomainChrDefFree;
+virDomainChrSourceDefFree;
 virDomainChrTcpProtocolTypeFromString;
 virDomainChrTcpProtocolTypeToString;
 virDomainChrTypeFromString;

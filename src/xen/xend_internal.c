@@ -1,7 +1,7 @@
 /*
  * xend_internal.c: access to Xen though the Xen Daemon interface
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
  *  This file is subject to the terms and conditions of the GNU Lesser General
@@ -1217,7 +1217,7 @@ xenDaemonParseSxprChar(const char *value,
     prefix = value;
 
     if (value[0] == '/') {
-        def->type = VIR_DOMAIN_CHR_TYPE_DEV;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
     } else {
         if ((tmp = strchr(value, ':')) != NULL) {
             *tmp = '\0';
@@ -1225,10 +1225,10 @@ xenDaemonParseSxprChar(const char *value,
         }
 
         if (STRPREFIX(prefix, "telnet")) {
-            def->type = VIR_DOMAIN_CHR_TYPE_TCP;
-            def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+            def->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
+            def->source.data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         } else {
-            if ((def->type = virDomainChrTypeFromString(prefix)) < 0) {
+            if ((def->source.type = virDomainChrTypeFromString(prefix)) < 0) {
                 virXendError(VIR_ERR_INTERNAL_ERROR,
                              _("unknown chr device type '%s'"), prefix);
                 goto error;
@@ -1237,16 +1237,16 @@ xenDaemonParseSxprChar(const char *value,
     }
 
     /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
-    switch (def->type) {
+    switch (def->source.type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
         if (tty != NULL &&
-            !(def->data.file.path = strdup(tty)))
+            !(def->source.data.file.path = strdup(tty)))
             goto no_memory;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (!(def->data.file.path = strdup(value)))
+        if (!(def->source.data.file.path = strdup(value)))
             goto no_memory;
         break;
 
@@ -1262,19 +1262,21 @@ xenDaemonParseSxprChar(const char *value,
         }
 
         if (offset != value &&
-            (def->data.tcp.host = strndup(value, offset - value)) == NULL)
+            (def->source.data.tcp.host = strndup(value,
+                                                 offset - value)) == NULL)
             goto no_memory;
 
         offset2 = strchr(offset, ',');
         if (offset2 == NULL)
-            def->data.tcp.service = strdup(offset+1);
+            def->source.data.tcp.service = strdup(offset+1);
         else
-            def->data.tcp.service = strndup(offset+1, offset2-(offset+1));
-        if (def->data.tcp.service == NULL)
+            def->source.data.tcp.service = strndup(offset+1,
+                                                   offset2-(offset+1));
+        if (def->source.data.tcp.service == NULL)
             goto no_memory;
 
         if (offset2 && strstr(offset2, ",server"))
-            def->data.tcp.listen = 1;
+            def->source.data.tcp.listen = true;
     }
     break;
 
@@ -1290,12 +1292,14 @@ xenDaemonParseSxprChar(const char *value,
         }
 
         if (offset != value &&
-            (def->data.udp.connectHost = strndup(value, offset - value)) == NULL)
+            (def->source.data.udp.connectHost
+             = strndup(value, offset - value)) == NULL)
             goto no_memory;
 
         offset2 = strchr(offset, '@');
         if (offset2 != NULL) {
-            if ((def->data.udp.connectService = strndup(offset + 1, offset2-(offset+1))) == NULL)
+            if ((def->source.data.udp.connectService
+                 = strndup(offset + 1, offset2-(offset+1))) == NULL)
                 goto no_memory;
 
             offset3 = strchr(offset2, ':');
@@ -1306,13 +1310,16 @@ xenDaemonParseSxprChar(const char *value,
             }
 
             if (offset3 > (offset2 + 1) &&
-                (def->data.udp.bindHost = strndup(offset2 + 1, offset3 - (offset2+1))) == NULL)
+                (def->source.data.udp.bindHost
+                 = strndup(offset2 + 1, offset3 - (offset2+1))) == NULL)
                 goto no_memory;
 
-            if ((def->data.udp.bindService = strdup(offset3 + 1)) == NULL)
+            if ((def->source.data.udp.bindService
+                 = strdup(offset3 + 1)) == NULL)
                 goto no_memory;
         } else {
-            if ((def->data.udp.connectService = strdup(offset + 1)) == NULL)
+            if ((def->source.data.udp.connectService
+                 = strdup(offset + 1)) == NULL)
                 goto no_memory;
         }
     }
@@ -1322,15 +1329,15 @@ xenDaemonParseSxprChar(const char *value,
     {
         const char *offset = strchr(value, ',');
         if (offset)
-            def->data.nix.path = strndup(value, (offset - value));
+            def->source.data.nix.path = strndup(value, (offset - value));
         else
-            def->data.nix.path = strdup(value);
-        if (def->data.nix.path == NULL)
+            def->source.data.nix.path = strdup(value);
+        if (def->source.data.nix.path == NULL)
             goto no_memory;
 
         if (offset != NULL &&
             strstr(offset, ",server") != NULL)
-            def->data.nix.listen = 1;
+            def->source.data.nix.listen = true;
     }
     break;
     }
@@ -5289,7 +5296,7 @@ int
 xenDaemonFormatSxprChr(virDomainChrDefPtr def,
                        virBufferPtr buf)
 {
-    const char *type = virDomainChrTypeToString(def->type);
+    const char *type = virDomainChrTypeToString(def->source.type);
 
     if (!type) {
         virXendError(VIR_ERR_INTERNAL_ERROR,
@@ -5297,7 +5304,7 @@ xenDaemonFormatSxprChr(virDomainChrDefPtr def,
         return -1;
     }
 
-    switch (def->type) {
+    switch (def->source.type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_VC:
@@ -5308,34 +5315,42 @@ xenDaemonFormatSxprChr(virDomainChrDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         virBufferVSprintf(buf, "%s:", type);
-        virBufferEscapeSexpr(buf, "%s", def->data.file.path);
+        virBufferEscapeSexpr(buf, "%s", def->source.data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferEscapeSexpr(buf, "%s", def->data.file.path);
+        virBufferEscapeSexpr(buf, "%s", def->source.data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         virBufferVSprintf(buf, "%s:%s:%s%s",
-                          (def->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW ?
+                          (def->source.data.tcp.protocol
+                           == VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW ?
                            "tcp" : "telnet"),
-                          (def->data.tcp.host ? def->data.tcp.host : ""),
-                          (def->data.tcp.service ? def->data.tcp.service : ""),
-                          (def->data.tcp.listen ? ",server,nowait" : ""));
+                          (def->source.data.tcp.host ?
+                           def->source.data.tcp.host : ""),
+                          (def->source.data.tcp.service ?
+                           def->source.data.tcp.service : ""),
+                          (def->source.data.tcp.listen ?
+                           ",server,nowait" : ""));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         virBufferVSprintf(buf, "%s:%s:%s@%s:%s", type,
-                          (def->data.udp.connectHost ? def->data.udp.connectHost : ""),
-                          (def->data.udp.connectService ? def->data.udp.connectService : ""),
-                          (def->data.udp.bindHost ? def->data.udp.bindHost : ""),
-                          (def->data.udp.bindService ? def->data.udp.bindService : ""));
+                          (def->source.data.udp.connectHost ?
+                           def->source.data.udp.connectHost : ""),
+                          (def->source.data.udp.connectService ?
+                           def->source.data.udp.connectService : ""),
+                          (def->source.data.udp.bindHost ?
+                           def->source.data.udp.bindHost : ""),
+                          (def->source.data.udp.bindService ?
+                           def->source.data.udp.bindService : ""));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferVSprintf(buf, "%s:", type);
-        virBufferEscapeSexpr(buf, "%s", def->data.nix.path);
-        if (def->data.nix.listen)
+        virBufferEscapeSexpr(buf, "%s", def->source.data.nix.path);
+        if (def->source.data.nix.listen)
             virBufferAddLit(buf, ",server,nowait");
         break;
     }

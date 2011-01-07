@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -614,28 +614,9 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def);
 }
 
-void virDomainChrDefFree(virDomainChrDefPtr def)
+static void ATTRIBUTE_NONNULL(1)
+virDomainChrSourceDefClear(virDomainChrSourceDefPtr def)
 {
-    if (!def)
-        return;
-
-    switch (def->deviceType) {
-    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
-        switch (def->targetType) {
-        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-            VIR_FREE(def->target.addr);
-            break;
-
-        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-            VIR_FREE(def->target.name);
-            break;
-        }
-        break;
-
-    default:
-        break;
-    }
-
     switch (def->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
@@ -660,7 +641,41 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
         VIR_FREE(def->data.nix.path);
         break;
     }
+}
 
+void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainChrSourceDefClear(def);
+
+    VIR_FREE(def);
+}
+
+void virDomainChrDefFree(virDomainChrDefPtr def)
+{
+    if (!def)
+        return;
+
+    switch (def->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+        switch (def->targetType) {
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
+            VIR_FREE(def->target.addr);
+            break;
+
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
+            VIR_FREE(def->target.name);
+            break;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    virDomainChrSourceDefClear(&def->source);
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
@@ -2761,51 +2776,15 @@ error:
     return ret;
 }
 
-
-/* Parse the XML definition for a character device
- * @param node XML nodeset to parse for net definition
- *
- * The XML we're dealing with looks like
- *
- * <serial type="pty">
- *   <source path="/dev/pts/3"/>
- *   <target port="1"/>
- * </serial>
- *
- * <serial type="dev">
- *   <source path="/dev/ttyS0"/>
- *   <target port="1"/>
- * </serial>
- *
- * <serial type="tcp">
- *   <source mode="connect" host="0.0.0.0" service="2445"/>
- *   <target port="1"/>
- * </serial>
- *
- * <serial type="tcp">
- *   <source mode="bind" host="0.0.0.0" service="2445"/>
- *   <target port="1"/>
- *   <protocol type='raw'/>
- * </serial>
- *
- * <serial type="udp">
- *   <source mode="bind" host="0.0.0.0" service="2445"/>
- *   <source mode="connect" host="0.0.0.0" service="2445"/>
- *   <target port="1"/>
- * </serial>
- *
- * <serial type="unix">
- *   <source mode="bind" path="/tmp/foo"/>
- *   <target port="1"/>
- * </serial>
- *
- */
-static virDomainChrDefPtr
-virDomainChrDefParseXML(virCapsPtr caps,
-                        xmlNodePtr node,
-                        int flags) {
-    xmlNodePtr cur;
-    char *type = NULL;
+/* Parse the source half of the XML definition for a character device,
+ * where node is the first element of node->children of the parent
+ * element.  def->type must already be valid.  Return -1 on failure,
+ * otherwise the number of ignored children (this intentionally skips
+ * <target>, which is used by <serial> but not <smartcard>). */
+static int
+virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
+                              xmlNodePtr cur)
+{
     char *bindHost = NULL;
     char *bindService = NULL;
     char *connectHost = NULL;
@@ -2813,32 +2792,8 @@ virDomainChrDefParseXML(virCapsPtr caps,
     char *path = NULL;
     char *mode = NULL;
     char *protocol = NULL;
-    const char *nodeName;
-    virDomainChrDefPtr def;
+    int remaining = 0;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    type = virXMLPropString(node, "type");
-    if (type == NULL) {
-        def->type = VIR_DOMAIN_CHR_TYPE_PTY;
-    } else if ((def->type = virDomainChrTypeFromString(type)) < 0) {
-        virDomainReportError(VIR_ERR_XML_ERROR,
-                             _("unknown type presented to host for character device: %s"),
-                             type);
-        goto error;
-    }
-
-    nodeName = (const char *) node->name;
-    if ((def->deviceType = virDomainChrDeviceTypeFromString(nodeName)) < 0) {
-        virDomainReportError(VIR_ERR_XML_ERROR,
-                             _("unknown character device type: %s"),
-                             nodeName);
-    }
-
-    cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "source")) {
@@ -2883,10 +2838,8 @@ virDomainChrDefParseXML(virCapsPtr caps,
             } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
                 if (protocol == NULL)
                     protocol = virXMLPropString(cur, "type");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
-                if (virDomainChrDefParseTargetXML(caps, def, cur, flags) < 0) {
-                    goto error;
-                }
+            } else {
+                remaining++;
             }
         }
         cur = cur->next;
@@ -2937,7 +2890,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
             connectHost = NULL;
             def->data.tcp.service = connectService;
             connectService = NULL;
-            def->data.tcp.listen = 0;
+            def->data.tcp.listen = false;
         } else {
             if (bindHost == NULL) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2954,7 +2907,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
             bindHost = NULL;
             def->data.tcp.service = bindService;
             bindService = NULL;
-            def->data.tcp.listen = 1;
+            def->data.tcp.listen = true;
         }
 
         if (protocol == NULL)
@@ -2993,29 +2946,123 @@ virDomainChrDefParseXML(virCapsPtr caps,
             goto error;
         }
 
-        if (mode != NULL &&
-            STRNEQ(mode, "connect"))
-            def->data.nix.listen = 1;
-        else
-            def->data.nix.listen = 0;
+        def->data.nix.listen = mode != NULL && STRNEQ(mode, "connect");
 
         def->data.nix.path = path;
         path = NULL;
         break;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
-        goto error;
-
 cleanup:
     VIR_FREE(mode);
     VIR_FREE(protocol);
-    VIR_FREE(type);
     VIR_FREE(bindHost);
     VIR_FREE(bindService);
     VIR_FREE(connectHost);
     VIR_FREE(connectService);
     VIR_FREE(path);
+
+    return remaining;
+
+error:
+    virDomainChrSourceDefClear(def);
+    remaining = -1;
+    goto cleanup;
+}
+
+/* Parse the XML definition for a character device
+ * @param node XML nodeset to parse for net definition
+ *
+ * The XML we're dealing with looks like
+ *
+ * <serial type="pty">
+ *   <source path="/dev/pts/3"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="dev">
+ *   <source path="/dev/ttyS0"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="tcp">
+ *   <source mode="connect" host="0.0.0.0" service="2445"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="tcp">
+ *   <source mode="bind" host="0.0.0.0" service="2445"/>
+ *   <target port="1"/>
+ *   <protocol type='raw'/>
+ * </serial>
+ *
+ * <serial type="udp">
+ *   <source mode="bind" host="0.0.0.0" service="2445"/>
+ *   <source mode="connect" host="0.0.0.0" service="2445"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="unix">
+ *   <source mode="bind" path="/tmp/foo"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ */
+static virDomainChrDefPtr
+virDomainChrDefParseXML(virCapsPtr caps,
+                        xmlNodePtr node,
+                        int flags) {
+    xmlNodePtr cur;
+    char *type = NULL;
+    const char *nodeName;
+    virDomainChrDefPtr def;
+    int remaining;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    type = virXMLPropString(node, "type");
+    if (type == NULL) {
+        def->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+    } else if ((def->source.type = virDomainChrTypeFromString(type)) < 0) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unknown type presented to host for character device: %s"),
+                             type);
+        goto error;
+    }
+
+    nodeName = (const char *) node->name;
+    if ((def->deviceType = virDomainChrDeviceTypeFromString(nodeName)) < 0) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unknown character device type: %s"),
+                             nodeName);
+    }
+
+    cur = node->children;
+    remaining = virDomainChrSourceDefParseXML(&def->source, cur);
+    if (remaining < 0)
+        goto error;
+    if (remaining) {
+        while (cur != NULL) {
+            if (cur->type == XML_ELEMENT_NODE) {
+                if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+                    if (virDomainChrDefParseTargetXML(caps, def, cur,
+                                                      flags) < 0) {
+                        goto error;
+                    }
+                }
+            }
+            cur = cur->next;
+        }
+    }
+
+    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(type);
 
     return def;
 
@@ -6300,17 +6347,15 @@ virDomainNetDefFormat(virBufferPtr buf,
 }
 
 
+/* Assumes that "<device" has already been generated, and starts
+ * output at " type='type'>". */
 static int
-virDomainChrDefFormat(virBufferPtr buf,
-                      virDomainChrDefPtr def,
-                      int flags)
+virDomainChrSourceDefFormat(virBufferPtr buf,
+                            virDomainChrSourceDefPtr def,
+                            bool tty_compat,
+                            int flags)
 {
     const char *type = virDomainChrTypeToString(def->type);
-    const char *elementName = virDomainChrDeviceTypeToString(def->deviceType);
-    const char *targetType = virDomainChrTargetTypeToString(def->deviceType,
-                                                            def->targetType);
-
-    int ret = 0;
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -6318,21 +6363,9 @@ virDomainChrDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    if (!elementName) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("unexpected char device type %d"),
-                             def->deviceType);
-        return -1;
-    }
-
     /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
-    virBufferVSprintf(buf, "    <%s type='%s'",
-                      elementName, type);
-    if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-        def->target.port == 0 &&
-        def->type == VIR_DOMAIN_CHR_TYPE_PTY &&
-        !(flags & VIR_DOMAIN_XML_INACTIVE) &&
-        def->data.file.path) {
+    virBufferVSprintf(buf, " type='%s'", type);
+    if (tty_compat) {
         virBufferEscapeString(buf, " tty='%s'",
                               def->data.file.path);
     }
@@ -6350,7 +6383,8 @@ virDomainChrDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
-            (def->data.file.path && !(flags & VIR_DOMAIN_XML_INACTIVE))) {
+            (def->data.file.path &&
+             !(flags & VIR_DOMAIN_XML_INACTIVE))) {
             virBufferEscapeString(buf, "      <source path='%s'/>\n",
                                   def->data.file.path);
         }
@@ -6359,7 +6393,9 @@ virDomainChrDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CHR_TYPE_UDP:
         if (def->data.udp.bindService &&
             def->data.udp.bindHost) {
-            virBufferVSprintf(buf, "      <source mode='bind' host='%s' service='%s'/>\n",
+            virBufferVSprintf(buf,
+                              "      <source mode='bind' host='%s' "
+                              "service='%s'/>\n",
                               def->data.udp.bindHost,
                               def->data.udp.bindService);
         } else if (def->data.udp.bindHost) {
@@ -6372,25 +6408,30 @@ virDomainChrDefFormat(virBufferPtr buf,
 
         if (def->data.udp.connectService &&
             def->data.udp.connectHost) {
-            virBufferVSprintf(buf, "      <source mode='connect' host='%s' service='%s'/>\n",
+            virBufferVSprintf(buf,
+                              "      <source mode='connect' host='%s' "
+                              "service='%s'/>\n",
                               def->data.udp.connectHost,
                               def->data.udp.connectService);
         } else if (def->data.udp.connectHost) {
             virBufferVSprintf(buf, "      <source mode='connect' host='%s'/>\n",
                               def->data.udp.connectHost);
         } else if (def->data.udp.connectService) {
-            virBufferVSprintf(buf, "      <source mode='connect' service='%s'/>\n",
+            virBufferVSprintf(buf,
+                              "      <source mode='connect' service='%s'/>\n",
                               def->data.udp.connectService);
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        virBufferVSprintf(buf, "      <source mode='%s' host='%s' service='%s'/>\n",
+        virBufferVSprintf(buf,
+                          "      <source mode='%s' host='%s' service='%s'/>\n",
                           def->data.tcp.listen ? "bind" : "connect",
                           def->data.tcp.host,
                           def->data.tcp.service);
         virBufferVSprintf(buf, "      <protocol type='%s'/>\n",
-                          virDomainChrTcpProtocolTypeToString(def->data.tcp.protocol));
+                          virDomainChrTcpProtocolTypeToString(
+                              def->data.tcp.protocol));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -6400,6 +6441,37 @@ virDomainChrDefFormat(virBufferPtr buf,
                               def->data.nix.path);
         break;
     }
+
+    return 0;
+}
+
+static int
+virDomainChrDefFormat(virBufferPtr buf,
+                      virDomainChrDefPtr def,
+                      int flags)
+{
+    const char *elementName = virDomainChrDeviceTypeToString(def->deviceType);
+    const char *targetType = virDomainChrTargetTypeToString(def->deviceType,
+                                                            def->targetType);
+    bool tty_compat;
+
+    int ret = 0;
+
+    if (!elementName) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected char device type %d"),
+                             def->deviceType);
+        return -1;
+    }
+
+    virBufferVSprintf(buf, "    <%s", elementName);
+    tty_compat = (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+                  def->target.port == 0 &&
+                  def->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
+                  !(flags & VIR_DOMAIN_XML_INACTIVE) &&
+                  def->source.data.file.path);
+    if (virDomainChrSourceDefFormat(buf, &def->source, tty_compat, flags) < 0)
+        return -1;
 
     /* Format <target> block */
     switch (def->deviceType) {

@@ -1,7 +1,7 @@
 /*
  * uml_conf.c: UML driver configuration
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -312,7 +312,7 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
 {
     char *ret = NULL;
 
-    switch (def->type) {
+    switch (def->source.type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
         if (virAsprintf(&ret, "%s%d=null", dev, def->target.port) < 0) {
             virReportOOMError();
@@ -329,7 +329,7 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
         if (virAsprintf(&ret, "%s%d=tty:%s", dev, def->target.port,
-                        def->data.file.path) < 0) {
+                        def->source.data.file.path) < 0) {
             virReportOOMError();
             return NULL;
         }
@@ -343,14 +343,14 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (def->data.tcp.listen != 1) {
+        if (def->source.data.tcp.listen != 1) {
             umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("only TCP listen is supported for chr device"));
             return NULL;
         }
 
         if (virAsprintf(&ret, "%s%d=port:%s", dev, def->target.port,
-                        def->data.tcp.service) < 0) {
+                        def->source.data.tcp.service) < 0) {
             virReportOOMError();
             return NULL;
         }
@@ -360,11 +360,11 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
          {
             int fd_out;
 
-            if ((fd_out = open(def->data.file.path,
+            if ((fd_out = open(def->source.data.file.path,
                                O_WRONLY | O_APPEND | O_CREAT, 0660)) < 0) {
                 virReportSystemError(errno,
                                      _("failed to open chardev file: %s"),
-                                     def->data.file.path);
+                                     def->source.data.file.path);
                 return NULL;
             }
             if (virAsprintf(&ret, "%s%d=null,fd:%d", dev, def->target.port, fd_out) < 0) {
@@ -384,7 +384,7 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
     default:
         umlReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported chr device type %d"), def->type);
+                       _("unsupported chr device type %d"), def->source.type);
         break;
     }
 

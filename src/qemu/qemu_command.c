@@ -1,7 +1,7 @@
 /*
  * qemu_command.c: QEMU command generation
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1896,45 +1896,48 @@ qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
 
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
-char *
-qemuBuildChrChardevStr(virDomainChrDefPtr dev)
+static char *
+qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
 
     switch(dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        virBufferVSprintf(&buf, "null,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "null,id=%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        virBufferVSprintf(&buf, "vc,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "vc,id=%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferVSprintf(&buf, "pty,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "pty,id=%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferVSprintf(&buf, "tty,id=%s,path=%s", dev->info.alias, dev->data.file.path);
+        virBufferVSprintf(&buf, "tty,id=%s,path=%s", alias,
+                          dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        virBufferVSprintf(&buf, "file,id=%s,path=%s", dev->info.alias, dev->data.file.path);
+        virBufferVSprintf(&buf, "file,id=%s,path=%s", alias,
+                          dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferVSprintf(&buf, "pipe,id=%s,path=%s", dev->info.alias, dev->data.file.path);
+        virBufferVSprintf(&buf, "pipe,id=%s,path=%s", alias,
+                          dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        virBufferVSprintf(&buf, "stdio,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "stdio,id=%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         virBufferVSprintf(&buf,
                           "udp,id=%s,host=%s,port=%s,localaddr=%s,localport=%s",
-                          dev->info.alias,
+                          alias,
                           dev->data.udp.connectHost,
                           dev->data.udp.connectService,
                           dev->data.udp.bindHost,
@@ -1945,7 +1948,7 @@ qemuBuildChrChardevStr(virDomainChrDefPtr dev)
         telnet = dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         virBufferVSprintf(&buf,
                           "socket,id=%s,host=%s,port=%s%s%s",
-                          dev->info.alias,
+                          alias,
                           dev->data.tcp.host,
                           dev->data.tcp.service,
                           telnet ? ",telnet" : "",
@@ -1955,7 +1958,7 @@ qemuBuildChrChardevStr(virDomainChrDefPtr dev)
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferVSprintf(&buf,
                           "socket,id=%s,path=%s%s",
-                          dev->info.alias,
+                          alias,
                           dev->data.nix.path,
                           dev->data.nix.listen ? ",server,nowait" : "");
         break;
@@ -1974,8 +1977,8 @@ error:
 }
 
 
-char *
-qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix)
+static char *
+qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2731,7 +2734,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) {
 
             virCommandAddArg(cmd, "-chardev");
-            if (!(chrdev = qemuBuildChrChardevStr(monitor_chr)))
+            if (!(chrdev = qemuBuildChrChardevStr(&monitor_chr->source,
+                                                  monitor_chr->info.alias)))
                 goto error;
             virCommandAddArg(cmd, chrdev);
             VIR_FREE(chrdev);
@@ -2745,7 +2749,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 prefix = "control,";
 
             virCommandAddArg(cmd, "-monitor");
-            if (!(chrdev = qemuBuildChrArgStr(monitor_chr, prefix)))
+            if (!(chrdev = qemuBuildChrArgStr(&monitor_chr->source, prefix)))
                 goto error;
             virCommandAddArg(cmd, chrdev);
             VIR_FREE(chrdev);
@@ -3342,7 +3346,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) &&
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 virCommandAddArg(cmd, "-chardev");
-                if (!(devstr = qemuBuildChrChardevStr(serial)))
+                if (!(devstr = qemuBuildChrChardevStr(&serial->source,
+                                                      serial->info.alias)))
                     goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
@@ -3352,7 +3357,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                        serial->info.alias);
             } else {
                 virCommandAddArg(cmd, "-serial");
-                if (!(devstr = qemuBuildChrArgStr(serial, NULL)))
+                if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
                     goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
@@ -3373,7 +3378,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) &&
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 virCommandAddArg(cmd, "-chardev");
-                if (!(devstr = qemuBuildChrChardevStr(parallel)))
+                if (!(devstr = qemuBuildChrChardevStr(&parallel->source,
+                                                      parallel->info.alias)))
                     goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
@@ -3383,7 +3389,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                        parallel->info.alias);
             } else {
                 virCommandAddArg(cmd, "-parallel");
-                if (!(devstr = qemuBuildChrArgStr(parallel, NULL)))
+                if (!(devstr = qemuBuildChrArgStr(&parallel->source, NULL)))
                       goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
@@ -3405,7 +3411,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
 
             virCommandAddArg(cmd, "-chardev");
-            if (!(devstr = qemuBuildChrChardevStr(channel)))
+            if (!(devstr = qemuBuildChrChardevStr(&channel->source,
+                                                  channel->info.alias)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -3431,7 +3438,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
 
             virCommandAddArg(cmd, "-chardev");
-            if (!(devstr = qemuBuildChrChardevStr(channel)))
+            if (!(devstr = qemuBuildChrChardevStr(&channel->source,
+                                                  channel->info.alias)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -3459,7 +3467,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
 
             virCommandAddArg(cmd, "-chardev");
-            if (!(devstr = qemuBuildChrChardevStr(console)))
+            if (!(devstr = qemuBuildChrChardevStr(&console->source,
+                                                  console->info.alias)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -4774,75 +4783,75 @@ qemuParseCommandLineChr(const char *val)
         goto no_memory;
 
     if (STREQ(val, "null")) {
-        def->type = VIR_DOMAIN_CHR_TYPE_NULL;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_NULL;
     } else if (STREQ(val, "vc")) {
-        def->type = VIR_DOMAIN_CHR_TYPE_VC;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_VC;
     } else if (STREQ(val, "pty")) {
-        def->type = VIR_DOMAIN_CHR_TYPE_PTY;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
     } else if (STRPREFIX(val, "file:")) {
-        def->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        def->data.file.path = strdup(val+strlen("file:"));
-        if (!def->data.file.path)
+        def->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+        def->source.data.file.path = strdup(val+strlen("file:"));
+        if (!def->source.data.file.path)
             goto no_memory;
     } else if (STRPREFIX(val, "pipe:")) {
-        def->type = VIR_DOMAIN_CHR_TYPE_PIPE;
-        def->data.file.path = strdup(val+strlen("pipe:"));
-        if (!def->data.file.path)
+        def->source.type = VIR_DOMAIN_CHR_TYPE_PIPE;
+        def->source.data.file.path = strdup(val+strlen("pipe:"));
+        if (!def->source.data.file.path)
             goto no_memory;
     } else if (STREQ(val, "stdio")) {
-        def->type = VIR_DOMAIN_CHR_TYPE_STDIO;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_STDIO;
     } else if (STRPREFIX(val, "udp:")) {
         const char *svc1, *host2, *svc2;
-        def->type = VIR_DOMAIN_CHR_TYPE_UDP;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_UDP;
         val += strlen("udp:");
         svc1 = strchr(val, ':');
         host2 = svc1 ? strchr(svc1, '@') : NULL;
         svc2 = host2 ? strchr(host2, ':') : NULL;
 
         if (svc1)
-            def->data.udp.connectHost = strndup(val, svc1-val);
+            def->source.data.udp.connectHost = strndup(val, svc1-val);
         else
-            def->data.udp.connectHost = strdup(val);
+            def->source.data.udp.connectHost = strdup(val);
 
-        if (!def->data.udp.connectHost)
+        if (!def->source.data.udp.connectHost)
             goto no_memory;
 
         if (svc1) {
             svc1++;
             if (host2)
-                def->data.udp.connectService = strndup(svc1, host2-svc1);
+                def->source.data.udp.connectService = strndup(svc1, host2-svc1);
             else
-                def->data.udp.connectService = strdup(svc1);
+                def->source.data.udp.connectService = strdup(svc1);
 
-            if (!def->data.udp.connectService)
+            if (!def->source.data.udp.connectService)
                 goto no_memory;
         }
 
         if (host2) {
             host2++;
             if (svc2)
-                def->data.udp.bindHost = strndup(host2, svc2-host2);
+                def->source.data.udp.bindHost = strndup(host2, svc2-host2);
             else
-                def->data.udp.bindHost = strdup(host2);
+                def->source.data.udp.bindHost = strdup(host2);
 
-            if (!def->data.udp.bindHost)
+            if (!def->source.data.udp.bindHost)
                 goto no_memory;
         }
         if (svc2) {
             svc2++;
-            def->data.udp.bindService = strdup(svc2);
-            if (!def->data.udp.bindService)
+            def->source.data.udp.bindService = strdup(svc2);
+            if (!def->source.data.udp.bindService)
                 goto no_memory;
         }
     } else if (STRPREFIX(val, "tcp:") ||
                STRPREFIX(val, "telnet:")) {
         const char *opt, *svc;
-        def->type = VIR_DOMAIN_CHR_TYPE_TCP;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
         if (STRPREFIX(val, "tcp:")) {
             val += strlen("tcp:");
         } else {
             val += strlen("telnet:");
-            def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+            def->source.data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         }
         svc = strchr(val, ':');
         if (!svc) {
@@ -4852,38 +4861,38 @@ qemuParseCommandLineChr(const char *val)
         }
         opt = strchr(svc, ',');
         if (opt && strstr(opt, "server"))
-            def->data.tcp.listen = 1;
+            def->source.data.tcp.listen = true;
 
-        def->data.tcp.host = strndup(val, svc-val);
-        if (!def->data.tcp.host)
+        def->source.data.tcp.host = strndup(val, svc-val);
+        if (!def->source.data.tcp.host)
             goto no_memory;
         svc++;
         if (opt) {
-            def->data.tcp.service = strndup(svc, opt-svc);
+            def->source.data.tcp.service = strndup(svc, opt-svc);
         } else {
-            def->data.tcp.service = strdup(svc);
+            def->source.data.tcp.service = strdup(svc);
         }
-        if (!def->data.tcp.service)
+        if (!def->source.data.tcp.service)
             goto no_memory;
     } else if (STRPREFIX(val, "unix:")) {
         const char *opt;
         val += strlen("unix:");
         opt = strchr(val, ',');
-        def->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        def->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
         if (opt) {
             if (strstr(opt, "listen"))
-                def->data.nix.listen = 1;
-            def->data.nix.path = strndup(val, opt-val);
+                def->source.data.nix.listen = true;
+            def->source.data.nix.path = strndup(val, opt-val);
         } else {
-            def->data.nix.path = strdup(val);
+            def->source.data.nix.path = strdup(val);
         }
-        if (!def->data.nix.path)
+        if (!def->source.data.nix.path)
             goto no_memory;
 
     } else if (STRPREFIX(val, "/dev")) {
-        def->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        def->data.file.path = strdup(val);
-        if (!def->data.file.path)
+        def->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+        def->source.data.file.path = strdup(val);
+        if (!def->source.data.file.path)
             goto no_memory;
     } else {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,

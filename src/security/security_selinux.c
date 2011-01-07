@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 Red Hat, Inc.
+ * Copyright (C) 2008-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -676,7 +676,7 @@ done:
 
 static int
 SELinuxSetSecurityChardevLabel(virDomainObjPtr vm,
-                               virDomainChrDefPtr dev)
+                               virDomainChrSourceDefPtr dev)
 
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
@@ -717,7 +717,7 @@ done:
 
 static int
 SELinuxRestoreSecurityChardevLabel(virDomainObjPtr vm,
-                                   virDomainChrDefPtr dev)
+                                   virDomainChrSourceDefPtr dev)
 
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
@@ -765,7 +765,7 @@ SELinuxRestoreSecurityChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     virDomainObjPtr vm = opaque;
 
-    return SELinuxRestoreSecurityChardevLabel(vm, dev);
+    return SELinuxRestoreSecurityChardevLabel(vm, &dev->source);
 }
 
 
@@ -1030,7 +1030,7 @@ SELinuxSetSecurityChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     virDomainObjPtr vm = opaque;
 
-    return SELinuxSetSecurityChardevLabel(vm, dev);
+    return SELinuxSetSecurityChardevLabel(vm, &dev->source);
 }
 
 

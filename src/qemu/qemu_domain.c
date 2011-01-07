@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -75,13 +75,13 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 
     /* priv->monitor_chr is set only for qemu */
     if (priv->monConfig) {
-        switch (priv->monConfig->type) {
+        switch (priv->monConfig->source.type) {
         case VIR_DOMAIN_CHR_TYPE_UNIX:
-            monitorpath = priv->monConfig->data.nix.path;
+            monitorpath = priv->monConfig->source.data.nix.path;
             break;
         default:
         case VIR_DOMAIN_CHR_TYPE_PTY:
-            monitorpath = priv->monConfig->data.file.path;
+            monitorpath = priv->monConfig->source.data.file.path;
             break;
         }
 
@@ -89,7 +89,7 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         if (priv->monJSON)
             virBufferAddLit(buf, " json='1'");
         virBufferVSprintf(buf, " type='%s'/>\n",
-                          virDomainChrTypeToString(priv->monConfig->type));
+                          virDomainChrTypeToString(priv->monConfig->source.type));
     }
 
 
@@ -132,9 +132,9 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 
     tmp = virXPathString("string(./monitor[1]/@type)", ctxt);
     if (tmp)
-        priv->monConfig->type = virDomainChrTypeFromString(tmp);
+        priv->monConfig->source.type = virDomainChrTypeFromString(tmp);
     else
-        priv->monConfig->type = VIR_DOMAIN_CHR_TYPE_PTY;
+        priv->monConfig->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
     VIR_FREE(tmp);
 
     if (virXPathBoolean("count(./monitor[@json = '1']) > 0", ctxt)) {
@@ -143,18 +143,18 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         priv->monJSON = 0;
     }
 
-    switch (priv->monConfig->type) {
+    switch (priv->monConfig->source.type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        priv->monConfig->data.file.path = monitorpath;
+        priv->monConfig->source.data.file.path = monitorpath;
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        priv->monConfig->data.nix.path = monitorpath;
+        priv->monConfig->source.data.nix.path = monitorpath;
         break;
     default:
         VIR_FREE(monitorpath);
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unsupported monitor type '%s'"),
-                        virDomainChrTypeToString(priv->monConfig->type));
+                        virDomainChrTypeToString(priv->monConfig->source.type));
         goto error;
     }
 

@@ -85,6 +85,7 @@ useless_free_options =				\
   --name=virConfFreeList			\
   --name=virConfFreeValue			\
   --name=virDomainChrDefFree			\
+  --name=virDomainChrSourceDefFree		\
   --name=virDomainControllerDefFree		\
   --name=virDomainDefFree			\
   --name=virDomainDeviceDefFree			\

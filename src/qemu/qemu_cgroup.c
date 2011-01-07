@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.c: QEMU cgroup management
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -142,16 +142,16 @@ int qemuSetupChardevCgroup(virDomainDefPtr def,
     virCgroupPtr cgroup = opaque;
     int rc;
 
-    if (dev->type != VIR_DOMAIN_CHR_TYPE_DEV)
+    if (dev->source.type != VIR_DOMAIN_CHR_TYPE_DEV)
         return 0;
 
 
-    VIR_DEBUG("Process path '%s' for disk", dev->data.file.path);
-    rc = virCgroupAllowDevicePath(cgroup, dev->data.file.path);
+    VIR_DEBUG("Process path '%s' for disk", dev->source.data.file.path);
+    rc = virCgroupAllowDevicePath(cgroup, dev->source.data.file.path);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to allow device %s for %s"),
-                             dev->data.file.path, def->name);
+                             dev->source.data.file.path, def->name);
         return -1;
     }
 

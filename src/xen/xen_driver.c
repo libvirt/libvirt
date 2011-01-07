@@ -1,7 +1,7 @@
 /*
  * xen_driver.c: Unified Xen driver.
  *
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -1977,13 +1977,13 @@ xenUnifiedDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (chr->type != VIR_DOMAIN_CHR_TYPE_PTY) {
+    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
         xenUnifiedError(VIR_ERR_INTERNAL_ERROR,
                         _("character device %s is not using a PTY"), devname);
         goto cleanup;
     }
 
-    if (virFDStreamOpenFile(st, chr->data.file.path, O_RDWR) < 0)
+    if (virFDStreamOpenFile(st, chr->source.data.file.path, O_RDWR) < 0)
         goto cleanup;
 
     ret = 0;

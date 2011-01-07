@@ -1,7 +1,7 @@
 /*
  * qemu_command.h: QEMU command generation
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -95,11 +95,6 @@ char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev,
                                  const char *configfd);
 
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
-
-/* Current, best practice */
-char * qemuBuildChrChardevStr(virDomainChrDefPtr dev);
-/* Legacy, pre device support */
-char * qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix);
 
 char * qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev);
 

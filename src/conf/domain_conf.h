@@ -1,7 +1,7 @@
 /*
  * domain_conf.h: domain XML processing
  *
- * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -393,6 +393,35 @@ enum virDomainChrTcpProtocol {
     VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
 };
 
+/* The host side information for a character device.  */
+typedef struct _virDomainChrSourceDef virDomainChrSourceDef;
+typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
+struct _virDomainChrSourceDef {
+    int type; /* virDomainChrType */
+    union {
+        struct {
+            char *path;
+        } file; /* pty, file, pipe, or device */
+        struct {
+            char *host;
+            char *service;
+            bool listen;
+            int protocol;
+        } tcp;
+        struct {
+            char *bindHost;
+            char *bindService;
+            char *connectHost;
+            char *connectService;
+        } udp;
+        struct {
+            char *path;
+            bool listen;
+        } nix;
+    } data;
+};
+
+/* A complete character device, both host and domain views.  */
 typedef struct _virDomainChrDef virDomainChrDef;
 typedef virDomainChrDef *virDomainChrDefPtr;
 struct _virDomainChrDef {
@@ -404,28 +433,7 @@ struct _virDomainChrDef {
         char *name; /* virtio */
     } target;
 
-    int type;
-    union {
-        struct {
-            char *path;
-        } file; /* pty, file, pipe, or device */
-        struct {
-            char *host;
-            char *service;
-            int listen;
-            int protocol;
-        } tcp;
-        struct {
-            char *bindHost;
-            char *bindService;
-            char *connectHost;
-            char *connectService;
-        } udp;
-        struct {
-            char *path;
-            int listen;
-        } nix;
-    } data;
+    virDomainChrSourceDef source;
 
     virDomainDeviceInfo info;
 };
@@ -1077,6 +1085,7 @@ void virDomainControllerDefFree(virDomainControllerDefPtr def);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
+void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
