@@ -2570,20 +2570,13 @@ static int qemudSecurityHook(void *data) {
 
 static int
 qemuPrepareMonitorChr(struct qemud_driver *driver,
-                      virDomainChrDefPtr monConfig,
+                      virDomainChrSourceDefPtr monConfig,
                       const char *vm)
 {
-    monConfig->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_MONITOR;
+    monConfig->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    monConfig->data.nix.listen = true;
 
-    monConfig->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-    monConfig->source.data.nix.listen = true;
-
-    if (!(monConfig->info.alias = strdup("monitor"))) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (virAsprintf(&monConfig->source.data.nix.path, "%s/%s.monitor",
+    if (virAsprintf(&monConfig->data.nix.path, "%s/%s.monitor",
                     driver->libDir, vm) < 0) {
         virReportOOMError();
         return -1;
@@ -3018,9 +3011,9 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
         qemuMonitorClose(priv->mon);
 
     if (priv->monConfig) {
-        if (priv->monConfig->source.type == VIR_DOMAIN_CHR_TYPE_UNIX)
-            unlink(priv->monConfig->source.data.nix.path);
-        virDomainChrDefFree(priv->monConfig);
+        if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)
+            unlink(priv->monConfig->data.nix.path);
+        virDomainChrSourceDefFree(priv->monConfig);
         priv->monConfig = NULL;
     }
 
@@ -6030,7 +6023,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                                    unsigned int flags ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
-    virDomainChrDef monConfig;
+    virDomainChrSourceDef monConfig;
     unsigned long long qemuCmdFlags;
     virCommandPtr cmd = NULL;
     char *ret = NULL;

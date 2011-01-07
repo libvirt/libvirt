@@ -56,7 +56,7 @@ static void qemuDomainObjPrivateFree(void *data)
     qemuDomainObjPrivatePtr priv = data;
 
     qemuDomainPCIAddressSetFree(priv->pciaddrs);
-    virDomainChrDefFree(priv->monConfig);
+    virDomainChrSourceDefFree(priv->monConfig);
     VIR_FREE(priv->vcpupids);
 
     /* This should never be non-NULL if we get here, but just in case... */
@@ -75,13 +75,13 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 
     /* priv->monitor_chr is set only for qemu */
     if (priv->monConfig) {
-        switch (priv->monConfig->source.type) {
+        switch (priv->monConfig->type) {
         case VIR_DOMAIN_CHR_TYPE_UNIX:
-            monitorpath = priv->monConfig->source.data.nix.path;
+            monitorpath = priv->monConfig->data.nix.path;
             break;
         default:
         case VIR_DOMAIN_CHR_TYPE_PTY:
-            monitorpath = priv->monConfig->source.data.file.path;
+            monitorpath = priv->monConfig->data.file.path;
             break;
         }
 
@@ -89,7 +89,7 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         if (priv->monJSON)
             virBufferAddLit(buf, " json='1'");
         virBufferVSprintf(buf, " type='%s'/>\n",
-                          virDomainChrTypeToString(priv->monConfig->source.type));
+                          virDomainChrTypeToString(priv->monConfig->type));
     }
 
 
@@ -118,11 +118,6 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         goto error;
     }
 
-    if (!(priv->monConfig->info.alias = strdup("monitor"))) {
-        virReportOOMError();
-        goto error;
-    }
-
     if (!(monitorpath =
           virXPathString("string(./monitor[1]/@path)", ctxt))) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -132,9 +127,9 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 
     tmp = virXPathString("string(./monitor[1]/@type)", ctxt);
     if (tmp)
-        priv->monConfig->source.type = virDomainChrTypeFromString(tmp);
+        priv->monConfig->type = virDomainChrTypeFromString(tmp);
     else
-        priv->monConfig->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+        priv->monConfig->type = VIR_DOMAIN_CHR_TYPE_PTY;
     VIR_FREE(tmp);
 
     if (virXPathBoolean("count(./monitor[@json = '1']) > 0", ctxt)) {
@@ -143,18 +138,18 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         priv->monJSON = 0;
     }
 
-    switch (priv->monConfig->source.type) {
+    switch (priv->monConfig->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        priv->monConfig->source.data.file.path = monitorpath;
+        priv->monConfig->data.file.path = monitorpath;
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        priv->monConfig->source.data.nix.path = monitorpath;
+        priv->monConfig->data.nix.path = monitorpath;
         break;
     default:
         VIR_FREE(monitorpath);
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unsupported monitor type '%s'"),
-                        virDomainChrTypeToString(priv->monConfig->source.type));
+                        virDomainChrTypeToString(priv->monConfig->type));
         goto error;
     }
 
@@ -185,7 +180,7 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     return 0;
 
 error:
-    virDomainChrDefFree(priv->monConfig);
+    virDomainChrSourceDefFree(priv->monConfig);
     priv->monConfig = NULL;
     VIR_FREE(nodes);
     return -1;

@@ -39,7 +39,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     int ret = -1;
     unsigned long long flags;
     virDomainDefPtr vmdef = NULL;
-    virDomainChrDef monitor_chr;
+    virDomainChrSourceDef monitor_chr;
     virConnectPtr conn;
     char *log = NULL;
     char *emulator = NULL;
@@ -84,10 +84,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
         vmdef->id = -1;
 
     memset(&monitor_chr, 0, sizeof(monitor_chr));
-    monitor_chr.source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-    monitor_chr.source.data.nix.path = (char *)"/tmp/test-monitor";
-    monitor_chr.source.data.nix.listen = true;
-    monitor_chr.info.alias = (char *)"monitor";
+    monitor_chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
+    monitor_chr.data.nix.listen = true;
 
     flags = QEMUD_CMD_FLAG_VNC_COLON |
         QEMUD_CMD_FLAG_NO_REBOOT |

@@ -40,7 +40,7 @@
 virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    struct qemud_driver *driver,
                                    virDomainDefPtr def,
-                                   virDomainChrDefPtr monitor_chr,
+                                   virDomainChrSourceDefPtr monitor_chr,
                                    bool monitor_json,
                                    unsigned long long qemuCmdFlags,
                                    const char *migrateFrom,
