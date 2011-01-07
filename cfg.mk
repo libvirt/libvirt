@@ -1,5 +1,6 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2003-2010 Free Software Foundation, Inc.
+# Copyright (C) 2008-2011 Red Hat, Inc.
+# Copyright (C) 2003-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -250,9 +251,9 @@ sc_prohibit_close:
 # Similar to the gnulib maint.mk rule for sc_prohibit_strcmp
 # Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
 sc_prohibit_strncmp:
-	@grep -nE '! *str''ncmp *\(|\<str''ncmp *\([^)]+\) *=='		\
+	@grep -nE '! *str''ncmp *\(|\<str''ncmp *\(.+\) *[!=]='		\
 	    $$($(VC_LIST_EXCEPT))					\
-	  | grep -vE ':# *define STREQ\(' &&				\
+	  | grep -vE ':# *define STR(N?EQLEN|PREFIX)\(' &&		\
 	  { echo '$(ME): use STREQLEN or STRPREFIX instead of str''ncmp' \
 		1>&2; exit 1; } || :
 

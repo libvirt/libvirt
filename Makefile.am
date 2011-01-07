@@ -33,8 +33,6 @@ syntax_check_exceptions = \
   .x-sc_prohibit_nonreentrant \
   .x-sc_prohibit_readlink \
   .x-sc_prohibit_sprintf \
-  .x-sc_prohibit_strcmp \
-  .x-sc_prohibit_strncmp \
   .x-sc_prohibit_strncpy \
   .x-sc_prohibit_test_minus_ao \
   .x-sc_prohibit_VIR_ERR_NO_MEMORY \
