@@ -3560,7 +3560,11 @@ qemuBuildCommandLine(virConnectPtr conn,
         def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
 
-        if (qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
+        if (def->graphics[0]->data.vnc.socket) {
+            virBufferVSprintf(&opt, "unix:%s",
+                              def->graphics[0]->data.vnc.socket);
+
+        } else if (qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
             if (def->graphics[0]->data.vnc.listenAddr)
                 virBufferAdd(&opt, def->graphics[0]->data.vnc.listenAddr, -1);
             else if (driver->vncListen)
@@ -3569,6 +3573,12 @@ qemuBuildCommandLine(virConnectPtr conn,
             virBufferVSprintf(&opt, ":%d",
                               def->graphics[0]->data.vnc.port - 5900);
 
+        } else {
+            virBufferVSprintf(&opt, "%d",
+                              def->graphics[0]->data.vnc.port - 5900);
+        }
+
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
             if (def->graphics[0]->data.vnc.auth.passwd ||
                 driver->vncPassword)
                 virBufferAddLit(&opt, ",password");
@@ -3593,9 +3603,6 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                 /* TODO: Support ACLs later */
             }
-        } else {
-            virBufferVSprintf(&opt, "%d",
-                              def->graphics[0]->data.vnc.port - 5900);
         }
 
         virCommandAddArg(cmd, "-vnc");
@@ -5296,24 +5303,33 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 goto no_memory;
             vnc->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
 
-            tmp = strchr(val, ':');
-            if (tmp) {
-                char *opts;
-                if (virStrToLong_i(tmp+1, &opts, 10, &vnc->data.vnc.port) < 0) {
-                    VIR_FREE(vnc);
-                    qemuReportError(VIR_ERR_INTERNAL_ERROR,             \
-                                    _("cannot parse VNC port '%s'"), tmp+1);
-                    goto error;
-                }
-                vnc->data.vnc.listenAddr = strndup(val, tmp-val);
-                if (!vnc->data.vnc.listenAddr) {
+            if (STRPREFIX(val, "unix:")) {
+                vnc->data.vnc.socket = strdup(val + 5);
+                if (!vnc->data.vnc.socket) {
                     VIR_FREE(vnc);
                     goto no_memory;
                 }
-                vnc->data.vnc.port += 5900;
-                vnc->data.vnc.autoport = 0;
             } else {
-                vnc->data.vnc.autoport = 1;
+                tmp = strchr(val, ':');
+                if (tmp) {
+                    char *opts;
+                    if (virStrToLong_i(tmp+1, &opts, 10,
+                                       &vnc->data.vnc.port) < 0) {
+                        VIR_FREE(vnc);
+                        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                        _("cannot parse VNC port '%s'"), tmp+1);
+                        goto error;
+                    }
+                    vnc->data.vnc.listenAddr = strndup(val, tmp-val);
+                    if (!vnc->data.vnc.listenAddr) {
+                        VIR_FREE(vnc);
+                        goto no_memory;
+                    }
+                    vnc->data.vnc.port += 5900;
+                    vnc->data.vnc.autoport = 0;
+                } else {
+                    vnc->data.vnc.autoport = 1;
+                }
             }
 
             if (VIR_REALLOC_N(def->graphics, def->ngraphics+1) < 0) {

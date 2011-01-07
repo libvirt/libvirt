@@ -596,6 +596,7 @@ struct _virDomainGraphicsDef {
             unsigned int autoport :1;
             char *listenAddr;
             char *keymap;
+            char *socket;
             virDomainGraphicsAuthDef auth;
         } vnc;
         struct {

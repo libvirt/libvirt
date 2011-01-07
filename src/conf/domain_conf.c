@@ -477,6 +477,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         VIR_FREE(def->data.vnc.listenAddr);
+        VIR_FREE(def->data.vnc.socket);
         VIR_FREE(def->data.vnc.keymap);
         virDomainGraphicsAuthDefClear(&def->data.vnc.auth);
         break;
@@ -3495,6 +3496,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
         }
 
         def->data.vnc.listenAddr = virXMLPropString(node, "listen");
+        def->data.vnc.socket = virXMLPropString(node, "socket");
         def->data.vnc.keymap = virXMLPropString(node, "keymap");
 
         if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth) < 0)
@@ -7081,19 +7083,25 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (def->data.vnc.port &&
-            (!def->data.vnc.autoport || !(flags & VIR_DOMAIN_XML_INACTIVE)))
-            virBufferVSprintf(buf, " port='%d'",
-                              def->data.vnc.port);
-        else if (def->data.vnc.autoport)
-            virBufferAddLit(buf, " port='-1'");
+        if (def->data.vnc.socket) {
+            if (def->data.vnc.socket)
+                virBufferVSprintf(buf, " socket='%s'",
+                                  def->data.vnc.socket);
+        } else {
+            if (def->data.vnc.port &&
+                (!def->data.vnc.autoport || !(flags & VIR_DOMAIN_XML_INACTIVE)))
+                virBufferVSprintf(buf, " port='%d'",
+                                  def->data.vnc.port);
+            else if (def->data.vnc.autoport)
+                virBufferAddLit(buf, " port='-1'");
 
-        virBufferVSprintf(buf, " autoport='%s'",
-                          def->data.vnc.autoport ? "yes" : "no");
+            virBufferVSprintf(buf, " autoport='%s'",
+                              def->data.vnc.autoport ? "yes" : "no");
 
-        if (def->data.vnc.listenAddr)
-            virBufferVSprintf(buf, " listen='%s'",
-                              def->data.vnc.listenAddr);
+            if (def->data.vnc.listenAddr)
+                virBufferVSprintf(buf, " listen='%s'",
+                                  def->data.vnc.listenAddr);
+        }
 
         if (def->data.vnc.keymap)
             virBufferEscapeString(buf, " keymap='%s'",

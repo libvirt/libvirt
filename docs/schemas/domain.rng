@@ -1127,24 +1127,35 @@
           <attribute name="type">
             <value>vnc</value>
           </attribute>
-          <optional>
-            <attribute name="port">
-              <ref name="PortNumber"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="autoport">
-              <choice>
-                <value>yes</value>
-                <value>no</value>
-              </choice>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="listen">
-              <ref name="addrIP"/>
-            </attribute>
-          </optional>
+          <choice>
+            <group>
+              <optional>
+                <attribute name="port">
+                  <ref name="PortNumber"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="autoport">
+                  <choice>
+                    <value>yes</value>
+                    <value>no</value>
+                  </choice>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="listen">
+                  <ref name="addrIP"/>
+                </attribute>
+              </optional>
+            </group>
+            <group>
+              <optional>
+                <attribute name="socket">
+                  <ref name="absFilePath"/>
+                </attribute>
+              </optional>
+            </group>
+          </choice>
           <optional>
             <attribute name="passwd">
               <text/>

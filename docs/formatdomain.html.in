@@ -1350,7 +1350,11 @@ qemu-kvm -net nic,model=? /dev/null
   in clear text. The <code>keymap</code> attribute specifies the keymap
   to use. It is possible to set a limit on the validity of the password
   be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-  assumed to be in UTC. NB, this may not be supported by all hypervisors.
+  assumed to be in UTC. NB, this may not be supported by all hypervisors.<br>
+  <br>
+  Rather than using listen/port, QEMU supports a <code>socket</code>
+  attribute for listening on a unix domain socket path.
+  <span class="since">Since 0.8.8</span>
           </dd>
           <dt><code>"spice"</code></dt>
           <dd>

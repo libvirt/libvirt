@@ -2674,6 +2674,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     if (vm->def->ngraphics == 1) {
         if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            !vm->def->graphics[0]->data.vnc.socket &&
             vm->def->graphics[0]->data.vnc.autoport) {
             int port = qemudNextFreePort(driver, QEMU_VNC_PORT_MIN);
             if (port < 0) {

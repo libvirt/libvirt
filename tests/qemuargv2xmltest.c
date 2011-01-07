@@ -178,6 +178,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-network-sheepdog");
     DO_TEST("disk-usb");
     DO_TEST("graphics-vnc");
+    DO_TEST("graphics-vnc-socket");
 
     driver.vncSASL = 1;
     driver.vncSASLdir = strdup("/root/.sasl2");

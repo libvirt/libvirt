@@ -321,6 +321,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-scsi-device-auto", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
     DO_TEST("graphics-vnc", 0, false);
+    DO_TEST("graphics-vnc-socket", 0, false);
 
     driver.vncSASL = 1;
     driver.vncSASLdir = strdup("/root/.sasl2");
