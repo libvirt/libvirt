@@ -1806,6 +1806,7 @@ ESX_VI__TEMPLATE__FREE(HostSystem,
     VIR_FREE(item->name);
 
     /* HostSystem */
+    esxVI_HostConfigManager_Free(&item->configManager);
 })
 
 /* esxVI_HostSystem_Validate */
