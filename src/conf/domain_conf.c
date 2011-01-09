@@ -2821,10 +2821,14 @@ virDomainChrDefParseXML(virCapsPtr caps,
     }
 
     type = virXMLPropString(node, "type");
-    if (type == NULL)
+    if (type == NULL) {
         def->type = VIR_DOMAIN_CHR_TYPE_PTY;
-    else if ((def->type = virDomainChrTypeFromString(type)) < 0)
-        def->type = VIR_DOMAIN_CHR_TYPE_NULL;
+    } else if ((def->type = virDomainChrTypeFromString(type)) < 0) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unknown type presented to host for character device: %s"),
+                             type);
+        goto error;
+    }
 
     nodeName = (const char *) node->name;
     if ((def->deviceType = virDomainChrDeviceTypeFromString(nodeName)) < 0) {
