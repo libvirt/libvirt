@@ -1265,6 +1265,62 @@ int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,
     return ret;
 }
 
+/* Returns -1 on error, -2 if not supported */
+int qemuMonitorJSONSetPassword(qemuMonitorPtr mon,
+                               const char *protocol,
+                               const char *password,
+                               const char *action_if_connected)
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("set_password",
+                                                     "s:protocol", protocol,
+                                                     "s:password", password,
+                                                     "s:connected", action_if_connected,
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+            ret = -2;
+            goto cleanup;
+        }
+
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
+                                  const char *protocol,
+                                  const char *expire_time)
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("expire_password",
+                                                     "s:protocol", protocol,
+                                                     "s:time", expire_time,
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
 /*
  * Returns: 0 if balloon not supported, +1 if balloon adjust worked
  * or -1 on failure

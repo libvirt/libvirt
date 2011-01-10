@@ -768,6 +768,75 @@ int qemuMonitorTextSetVNCPassword(qemuMonitorPtr mon,
     return 0;
 }
 
+/* Returns -1 on error, -2 if not supported */
+int qemuMonitorTextSetPassword(qemuMonitorPtr mon,
+                               const char *protocol,
+                               const char *password,
+                               const char *action_if_connected)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "set_password %s \"%s\" %s",
+                    protocol, password, action_if_connected) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("setting password failed"));
+        goto cleanup;
+    }
+
+    if (strstr(reply, "unknown command:")) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return ret;
+}
+
+int qemuMonitorTextExpirePassword(qemuMonitorPtr mon,
+                                  const char *protocol,
+                                  const char *expire_time)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "expire_password %s %s",
+                    protocol, expire_time) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("expiring password failed"));
+        goto cleanup;
+    }
+
+    if (strstr(reply, "unknown command:")) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        _("expiring password not supported by this qemu: %s"), reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return ret;
+}
+
 /*
  * Returns: 0 if balloon not supported, +1 if balloon adjust worked
  * or -1 on failure

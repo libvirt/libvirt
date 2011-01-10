@@ -1097,6 +1097,83 @@ int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
     return ret;
 }
 
+static const char* qemuMonitorTypeToProtocol(int type)
+{
+    switch (type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        return "vnc";
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        return "spice";
+    default:
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("unsupported protocol type %s"),
+                        virDomainGraphicsTypeToString(type));
+        return NULL;
+    }
+}
+
+/* Returns -2 if not supported with this monitor connection */
+int qemuMonitorSetPassword(qemuMonitorPtr mon,
+                           int type,
+                           const char *password,
+                           const char *action_if_connected)
+{
+    const char *protocol = qemuMonitorTypeToProtocol(type);
+    int ret;
+
+    if (!protocol)
+        return -1;
+
+    DEBUG("mon=%p, protocol=%s, password=%p, action_if_connected=%s",
+          mon, protocol, password, action_if_connected);
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!password)
+        password = "";
+
+    if (!action_if_connected)
+        action_if_connected = "keep";
+
+    if (mon->json)
+        ret = qemuMonitorJSONSetPassword(mon, protocol, password, action_if_connected);
+    else
+        ret = qemuMonitorTextSetPassword(mon, protocol, password, action_if_connected);
+    return ret;
+}
+
+int qemuMonitorExpirePassword(qemuMonitorPtr mon,
+                              int type,
+                              const char *expire_time)
+{
+    const char *protocol = qemuMonitorTypeToProtocol(type);
+    int ret;
+
+    if (!protocol)
+        return -1;
+
+    DEBUG("mon=%p, protocol=%s, expire_time=%s",
+          mon, protocol, expire_time);
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!expire_time)
+        expire_time = "now";
+
+    if (mon->json)
+        ret = qemuMonitorJSONExpirePassword(mon, protocol, expire_time);
+    else
+        ret = qemuMonitorTextExpirePassword(mon, protocol, expire_time);
+    return ret;
+}
 
 int qemuMonitorSetBalloon(qemuMonitorPtr mon,
                           unsigned long newmem)

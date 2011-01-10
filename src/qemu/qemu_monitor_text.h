@@ -61,6 +61,13 @@ int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon,
 
 int qemuMonitorTextSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password);
+int qemuMonitorTextSetPassword(qemuMonitorPtr mon,
+                               const char *protocol,
+                               const char *password,
+                               const char *action_if_connected);
+int qemuMonitorTextExpirePassword(qemuMonitorPtr mon,
+                                  const char *protocol,
+                                  const char *expire_time);
 int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
                               unsigned long newmem);
 int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online);
