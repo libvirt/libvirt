@@ -356,8 +356,9 @@ vboxLookupVersionInRegistry(void)
         status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName, 0, KEY_READ, &key);
 
         if (status != ERROR_SUCCESS) {
-            VIR_ERROR(_("Could not open registry key '%s' nor '%s'"),
-                      VBOX_REGKEY_ORACLE, VBOX_REGKEY_SUN);
+            /* Both keys aren't there, or we cannot open them. In general this
+             * indicates that VirtualBox is not installed, so we just silently
+             * fail here making vboxRegister() register the dummy driver. */
             return -1;
         }
     }
