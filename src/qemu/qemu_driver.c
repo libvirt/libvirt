@@ -1987,16 +1987,18 @@ qemuInitPasswords(virConnectPtr conn,
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if ((vm->def->ngraphics == 1) &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        (vm->def->graphics[0]->data.vnc.auth.passwd || driver->vncPassword)) {
-
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorSetVNCPassword(priv->mon,
-                                        vm->def->graphics[0]->data.vnc.auth.passwd ?
-                                        vm->def->graphics[0]->data.vnc.auth.passwd :
-                                        driver->vncPassword);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (vm->def->ngraphics == 1) {
+        if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
+                                                    VIR_DOMAIN_GRAPHICS_TYPE_VNC,
+                                                    &vm->def->graphics[0]->data.vnc.auth,
+                                                    driver->vncPassword);
+        } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
+                                                    VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
+                                                    &vm->def->graphics[0]->data.spice.auth,
+                                                    driver->spicePassword);
+        }
     }
 
     if (ret < 0)

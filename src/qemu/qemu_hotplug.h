@@ -70,6 +70,11 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
 int qemuDomainChangeGraphics(struct qemud_driver *driver,
                              virDomainObjPtr vm,
                              virDomainGraphicsDefPtr dev);
+int qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
+                                      virDomainObjPtr vm,
+                                      int type,
+                                      virDomainGraphicsAuthDefPtr auth,
+                                      const char *defaultPasswd);
 int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,

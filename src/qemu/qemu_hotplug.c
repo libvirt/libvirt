@@ -1016,7 +1016,6 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
                          virDomainGraphicsDefPtr dev)
 {
     virDomainGraphicsDefPtr olddev = qemuDomainFindGraphics(vm, dev);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
     if (!olddev) {
@@ -1044,23 +1043,64 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
             return -1;
         }
 
-        if (STRNEQ_NULLABLE(olddev->data.vnc.auth.passwd, dev->data.vnc.auth.passwd)) {
+        /* If a password lifetime was, or is set, then we must always run,
+         * even if new password matches old password */
+        if (olddev->data.vnc.auth.expires ||
+            dev->data.vnc.auth.expires ||
+            STRNEQ_NULLABLE(olddev->data.vnc.auth.passwd, dev->data.vnc.auth.passwd)) {
             VIR_DEBUG("Updating password on VNC server %p %p", dev->data.vnc.auth.passwd, driver->vncPassword);
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            ret = qemuMonitorSetVNCPassword(priv->mon,
-                                            dev->data.vnc.auth.passwd ?
-                                            dev->data.vnc.auth.passwd :
-                                            driver->vncPassword);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            ret = qemuDomainChangeGraphicsPasswords(driver, vm, VIR_DOMAIN_GRAPHICS_TYPE_VNC,
+                                                    &dev->data.vnc.auth, driver->vncPassword);
 
             /* Steal the new dev's  char * reference */
             VIR_FREE(olddev->data.vnc.auth.passwd);
             olddev->data.vnc.auth.passwd = dev->data.vnc.auth.passwd;
             dev->data.vnc.auth.passwd = NULL;
+            olddev->data.vnc.auth.validTo = dev->data.vnc.auth.validTo;
+            olddev->data.vnc.auth.expires = dev->data.vnc.auth.expires;
         } else {
             ret = 0;
         }
         break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        if ((olddev->data.spice.autoport != dev->data.spice.autoport) ||
+            (!dev->data.spice.autoport && (olddev->data.spice.port != dev->data.spice.port)) ||
+            (!dev->data.spice.autoport && (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change port settings on spice graphics"));
+            return -1;
+        }
+        if (STRNEQ_NULLABLE(olddev->data.spice.listenAddr, dev->data.spice.listenAddr)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change listen address setting on spice graphics"));
+            return -1;
+        }
+        if (STRNEQ_NULLABLE(olddev->data.spice.keymap, dev->data.spice.keymap)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change keymap setting on spice graphics"));
+            return -1;
+        }
+
+        /* If a password lifetime was, or is set, then we must always run,
+         * even if new password matches old password */
+        if (olddev->data.spice.auth.expires ||
+            dev->data.spice.auth.expires ||
+            STRNEQ_NULLABLE(olddev->data.spice.auth.passwd, dev->data.spice.auth.passwd)) {
+            VIR_DEBUG("Updating password on SPICE server %p %p", dev->data.spice.auth.passwd, driver->spicePassword);
+            ret = qemuDomainChangeGraphicsPasswords(driver, vm, VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
+                                                    &dev->data.spice.auth, driver->spicePassword);
+
+            /* Steal the new dev's  char * reference */
+            VIR_FREE(olddev->data.spice.auth.passwd);
+            olddev->data.spice.auth.passwd = dev->data.spice.auth.passwd;
+            dev->data.spice.auth.passwd = NULL;
+            olddev->data.spice.auth.validTo = dev->data.spice.auth.validTo;
+            olddev->data.spice.auth.expires = dev->data.spice.auth.expires;
+        } else {
+            VIR_DEBUG0("Not updating since password didn't change");
+            ret = 0;
+        }
 
     default:
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1676,6 +1716,64 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
     if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
                                               vm, dev->data.hostdev) < 0)
         VIR_WARN0("Failed to restore host device labelling");
+
+    return ret;
+}
+
+int
+qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
+                                  virDomainObjPtr vm,
+                                  int type,
+                                  virDomainGraphicsAuthDefPtr auth,
+                                  const char *defaultPasswd)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    time_t now = time(NULL);
+    char expire_time [64];
+    int ret;
+
+    if (!auth->passwd && !driver->vncPassword)
+        return 0;
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorSetPassword(priv->mon,
+                                 type,
+                                 auth->passwd ? auth->passwd : defaultPasswd,
+                                 NULL);
+
+    if (ret == -2) {
+        if (type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Only VNC graphics are supported"));
+            ret = -1;
+        } else {
+            ret = qemuMonitorSetVNCPassword(priv->mon,
+                                            auth->passwd ? auth->passwd : defaultPasswd);
+        }
+    }
+
+    if (auth->expires) {
+        time_t lifetime = auth->validTo - now;
+        if (lifetime <= 0)
+            snprintf(expire_time, sizeof (expire_time), "now");
+        else
+            snprintf(expire_time, sizeof (expire_time), "%lu", (long unsigned)auth->validTo);
+    } else {
+        snprintf(expire_time, sizeof (expire_time), "never");
+    }
+
+    ret = qemuMonitorExpirePassword(priv->mon, type, expire_time);
+
+    if (ret == -2) {
+        /* XXX we could fake this with a timer */
+        if (auth->expires) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Expiry of passwords is not supported"));
+            ret = -1;
+        }
+    }
+
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     return ret;
 }
