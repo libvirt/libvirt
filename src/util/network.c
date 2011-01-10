@@ -1,7 +1,7 @@
 /*
  * network.c: network helper APIs for libvirt
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -291,6 +291,7 @@ int virSocketAddrIsNetmask(virSocketAddrPtr netmask) {
  * virSocketAddrMask:
  * @addr: address that needs to be masked
  * @netmask: the netmask address
+ * @network: where to store the result, can be same as @addr
  *
  * Mask off the host bits of @addr according to @netmask, turning it
  * into a network address.
@@ -311,6 +312,7 @@ virSocketAddrMask(const virSocketAddrPtr addr,
         network->data.inet4.sin_addr.s_addr
             = (addr->data.inet4.sin_addr.s_addr
                & netmask->data.inet4.sin_addr.s_addr);
+        network->data.inet4.sin_port = 0;
         network->data.stor.ss_family = AF_INET;
         network->len = addr->len;
         return 0;
@@ -322,6 +324,7 @@ virSocketAddrMask(const virSocketAddrPtr addr,
                 = (addr->data.inet6.sin6_addr.s6_addr[ii]
                    & netmask->data.inet6.sin6_addr.s6_addr[ii]);
         }
+        network->data.inet6.sin6_port = 0;
         network->data.stor.ss_family = AF_INET6;
         network->len = addr->len;
         return 0;
@@ -334,6 +337,7 @@ virSocketAddrMask(const virSocketAddrPtr addr,
  * virSocketAddrMaskByPrefix:
  * @addr: address that needs to be masked
  * @prefix: prefix (# of 1 bits) of netmask to apply
+ * @network: where to store the result, can be same as @addr
  *
  * Mask off the host bits of @addr according to @prefix, turning it
  * into a network address.
