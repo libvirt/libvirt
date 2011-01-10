@@ -73,6 +73,7 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
@@ -102,6 +103,13 @@ struct _virDomainDeviceVirtioSerialAddress {
     unsigned int port;
 };
 
+typedef struct _virDomainDeviceCcidAddress virDomainDeviceCcidAddress;
+typedef virDomainDeviceCcidAddress *virDomainDeviceCcidAddressPtr;
+struct _virDomainDeviceCcidAddress {
+    unsigned int controller;
+    unsigned int slot;
+};
+
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
@@ -111,6 +119,7 @@ struct _virDomainDeviceInfo {
         virDomainDevicePCIAddress pci;
         virDomainDeviceDriveAddress drive;
         virDomainDeviceVirtioSerialAddress vioserial;
+        virDomainDeviceCcidAddress ccid;
     } addr;
 };
 
@@ -220,6 +229,7 @@ enum virDomainControllerType {
     VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
     VIR_DOMAIN_CONTROLLER_TYPE_SATA,
     VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+    VIR_DOMAIN_CONTROLLER_TYPE_CCID,
 
     VIR_DOMAIN_CONTROLLER_TYPE_LAST
 };
@@ -457,6 +467,33 @@ struct _virDomainChrDef {
     } target;
 
     virDomainChrSourceDef source;
+
+    virDomainDeviceInfo info;
+};
+
+enum virDomainSmartcardType {
+    VIR_DOMAIN_SMARTCARD_TYPE_HOST,
+    VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES,
+    VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH,
+
+    VIR_DOMAIN_SMARTCARD_TYPE_LAST,
+};
+
+# define VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES 3
+# define VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE "/etc/pki/nssdb"
+
+typedef struct _virDomainSmartcardDef virDomainSmartcardDef;
+typedef virDomainSmartcardDef *virDomainSmartcardDefPtr;
+struct _virDomainSmartcardDef {
+    int type; /* virDomainSmartcardType */
+    union {
+        /* no extra data for 'host' */
+        struct {
+            char *file[VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES];
+            char *database;
+        } cert; /* 'host-certificates' */
+        virDomainChrSourceDef passthru; /* 'passthrough' */
+    } data;
 
     virDomainDeviceInfo info;
 };
@@ -1032,6 +1069,9 @@ struct _virDomainDef {
     int nhostdevs;
     virDomainHostdevDefPtr *hostdevs;
 
+    int nsmartcards;
+    virDomainSmartcardDefPtr *smartcards;
+
     int nserials;
     virDomainChrDefPtr *serials;
 
@@ -1110,6 +1150,7 @@ void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
+void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
@@ -1258,6 +1299,15 @@ int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
                                      char **const names,
                                      int maxnames);
 
+typedef int (*virDomainSmartcardDefIterator)(virDomainDefPtr def,
+                                             virDomainSmartcardDefPtr dev,
+                                             void *opaque);
+
+int virDomainSmartcardDefForeach(virDomainDefPtr def,
+                                 bool abortOnError,
+                                 virDomainSmartcardDefIterator iter,
+                                 void *opaque);
+
 typedef int (*virDomainChrDefIterator)(virDomainDefPtr def,
                                        virDomainChrDefPtr dev,
                                        void *opaque);
@@ -1266,7 +1316,6 @@ int virDomainChrDefForeach(virDomainDefPtr def,
                            bool abortOnError,
                            virDomainChrDefIterator iter,
                            void *opaque);
-
 
 typedef int (*virDomainDiskDefPathIterator)(virDomainDiskDefPtr disk,
                                             const char *path,
@@ -1306,6 +1355,7 @@ VIR_ENUM_DECL(virDomainNetBackend)
 VIR_ENUM_DECL(virDomainChrDevice)
 VIR_ENUM_DECL(virDomainChrChannelTarget)
 VIR_ENUM_DECL(virDomainChrConsoleTarget)
+VIR_ENUM_DECL(virDomainSmartcard)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainSoundModel)

@@ -109,7 +109,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
               "pci",
               "drive",
-              "virtio-serial")
+              "virtio-serial",
+              "ccid")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -159,7 +160,8 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "fdc",
               "scsi",
               "sata",
-              "virtio-serial")
+              "virtio-serial",
+              "ccid")
 
 VIR_ENUM_IMPL(virDomainControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
               "auto",
@@ -231,6 +233,11 @@ VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
               "telnet",
               "telnets",
               "tls")
+
+VIR_ENUM_IMPL(virDomainSmartcard, VIR_DOMAIN_SMARTCARD_TYPE_LAST,
+              "host",
+              "host-certificates",
+              "passthrough")
 
 VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "sb16",
@@ -693,6 +700,35 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def)
+{
+    size_t i;
+    if (!def)
+        return;
+
+    switch (def->type) {
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
+        for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++)
+            VIR_FREE(def->data.cert.file[i]);
+        VIR_FREE(def->data.cert.database);
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
+        virDomainChrSourceDefClear(&def->data.passthru);
+        break;
+
+    default:
+        break;
+    }
+
+    virDomainDeviceInfoClear(&def->info);
+
+    VIR_FREE(def);
+}
+
 void virDomainSoundDefFree(virDomainSoundDefPtr def)
 {
     if (!def)
@@ -833,6 +869,10 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0 ; i < def->nnets ; i++)
         virDomainNetDefFree(def->nets[i]);
     VIR_FREE(def->nets);
+
+    for (i = 0 ; i < def->nsmartcards ; i++)
+        virDomainSmartcardDefFree(def->smartcards[i]);
+    VIR_FREE(def->smartcards);
 
     for (i = 0 ; i < def->nserials ; i++)
         virDomainChrDefFree(def->serials[i]);
@@ -1198,6 +1238,9 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
     for (i = 0; i < def->ncontrollers ; i++)
         if (cb(def, &def->controllers[i]->info, opaque) < 0)
             return -1;
+    for (i = 0; i < def->nsmartcards ; i++)
+        if (cb(def, &def->smartcards[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nserials ; i++)
         if (cb(def, &def->serials[i]->info, opaque) < 0)
             return -1;
@@ -1240,16 +1283,11 @@ void virDomainDefClearDeviceAliases(virDomainDefPtr def)
 /* Generate a string representation of a device address
  * @param address Device address to stringify
  */
-static int virDomainDeviceInfoFormat(virBufferPtr buf,
-                                     virDomainDeviceInfoPtr info,
-                                     int flags)
+static int ATTRIBUTE_NONNULL(2)
+virDomainDeviceInfoFormat(virBufferPtr buf,
+                          virDomainDeviceInfoPtr info,
+                          int flags)
 {
-    if (!info) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("missing device information"));
-        return -1;
-    }
-
     if (info->alias &&
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
         virBufferVSprintf(buf, "      <alias name='%s'/>\n", info->alias);
@@ -1283,6 +1321,12 @@ static int virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.vioserial.controller,
                           info->addr.vioserial.bus,
                           info->addr.vioserial.port);
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+        virBufferVSprintf(buf, " controller='%d' slot='%d'",
+                          info->addr.ccid.controller,
+                          info->addr.ccid.slot);
         break;
 
     default:
@@ -1458,6 +1502,40 @@ cleanup:
     return ret;
 }
 
+static int
+virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
+                                   virDomainDeviceCcidAddressPtr addr)
+{
+    char *controller, *slot;
+    int ret = -1;
+
+    memset(addr, 0, sizeof(*addr));
+
+    controller = virXMLPropString(node, "controller");
+    slot = virXMLPropString(node, "slot");
+
+    if (controller &&
+        virStrToLong_ui(controller, NULL, 10, &addr->controller) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'controller' attribute"));
+        goto cleanup;
+    }
+
+    if (slot &&
+        virStrToLong_ui(slot, NULL, 10, &addr->slot) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'slot' attribute"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(controller);
+    VIR_FREE(slot);
+    return ret;
+}
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -1523,6 +1601,11 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
         if (virDomainDeviceVirtioSerialAddressParseXML
                 (address, &info->addr.vioserial) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+        if (virDomainDeviceCcidAddressParseXML(address, &info->addr.ccid) < 0)
             goto cleanup;
         break;
 
@@ -3181,6 +3264,128 @@ cleanup:
 
 error:
     virDomainChrDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
+static virDomainSmartcardDefPtr
+virDomainSmartcardDefParseXML(xmlNodePtr node,
+                              int flags)
+{
+    xmlNodePtr cur;
+    char *mode = NULL;
+    char *type = NULL;
+    virDomainSmartcardDefPtr def;
+    int i;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    mode = virXMLPropString(node, "mode");
+    if (mode == NULL) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("missing smartcard device mode"));
+        goto error;
+    }
+    if ((def->type = virDomainSmartcardTypeFromString(mode)) < 0) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unknown smartcard device mode: %s"),
+                             mode);
+        goto error;
+    }
+
+    switch (def->type) {
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
+        i = 0;
+        cur = node->children;
+        while (cur) {
+            if (cur->type == XML_ELEMENT_NODE &&
+                xmlStrEqual(cur->name, BAD_CAST "certificate")) {
+                if (i == 3) {
+                    virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                         _("host-certificates mode needs "
+                                           "exactly three certificates"));
+                    goto error;
+                }
+                def->data.cert.file[i] = (char *)xmlNodeGetContent(cur);
+                if (!def->data.cert.file[i]) {
+                    virReportOOMError();
+                    goto error;
+                }
+                i++;
+            } else if (cur->type == XML_ELEMENT_NODE &&
+                       xmlStrEqual(cur->name, BAD_CAST "database") &&
+                       !def->data.cert.database) {
+                def->data.cert.database = (char *)xmlNodeGetContent(cur);
+                if (!def->data.cert.database) {
+                    virReportOOMError();
+                    goto error;
+                }
+                if (*def->data.cert.database != '/') {
+                    virDomainReportError(VIR_ERR_XML_ERROR,
+                                         _("expecting absolute path: %s"),
+                                         def->data.cert.database);
+                    goto error;
+                }
+            }
+            cur = cur->next;
+        }
+        if (i < 3) {
+            virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                 _("host-certificates mode needs "
+                                   "exactly three certificates"));
+            goto error;
+        }
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
+        type = virXMLPropString(node, "type");
+        if (type == NULL) {
+            virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                 _("passthrough mode requires a character "
+                                   "device type attribute"));
+            goto error;
+        }
+        if ((def->data.passthru.type = virDomainChrTypeFromString(type)) < 0) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("unknown type presented to host for "
+                                   "character device: %s"), type);
+            goto error;
+        }
+
+        cur = node->children;
+        if (virDomainChrSourceDefParseXML(&def->data.passthru, cur) < 0)
+            goto error;
+        break;
+
+    default:
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("unknown smartcard mode"));
+        goto error;
+    }
+
+    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        goto error;
+    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Controllers must use the 'ccid' address type"));
+        goto error;
+    }
+
+cleanup:
+    VIR_FREE(mode);
+    VIR_FREE(type);
+
+    return def;
+
+error:
+    virDomainSmartcardDefFree(def);
     def = NULL;
     goto cleanup;
 }
@@ -5258,6 +5463,26 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     VIR_FREE(nodes);
 
 
+    /* analysis of the smartcard devices */
+    if ((n = virXPathNodeSet("./devices/smartcard", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract smartcard devices"));
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->smartcards, n) < 0)
+        goto no_memory;
+
+    for (i = 0 ; i < n ; i++) {
+        virDomainSmartcardDefPtr card = virDomainSmartcardDefParseXML(nodes[i],
+                                                                      flags);
+        if (!card)
+            goto error;
+
+        def->smartcards[def->nsmartcards++] = card;
+    }
+    VIR_FREE(nodes);
+
+
     /* analysis of the character devices */
     if ((n = virXPathNodeSet("./devices/parallel", ctxt, &nodes)) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5936,6 +6161,45 @@ static int virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
 }
 
 
+static int
+virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
+{
+    /* Look for any smartcard devs */
+    int i;
+
+    for (i = 0 ; i < def->nsmartcards ; i++) {
+        virDomainSmartcardDefPtr smartcard = def->smartcards[i];
+        int idx = 0;
+
+        if (smartcard->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID) {
+            idx = smartcard->info.addr.ccid.controller;
+        } else if (smartcard->info.type
+                   == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            int j;
+            int max = -1;
+
+            for (j = 0; j < def->nsmartcards; j++) {
+                virDomainDeviceInfoPtr info = &def->smartcards[j]->info;
+                if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID &&
+                    info->addr.ccid.controller == 0 &&
+                    (int) info->addr.ccid.slot > max)
+                    max = info->addr.ccid.slot;
+            }
+            smartcard->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID;
+            smartcard->info.addr.ccid.controller = 0;
+            smartcard->info.addr.ccid.slot = max + 1;
+        }
+
+        if (virDomainDefMaybeAddController(def,
+                                           VIR_DOMAIN_CONTROLLER_TYPE_CCID,
+                                           idx) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * Based on the declared <address/> info for any devices,
  * add neccessary drive controllers which are not already present
@@ -5960,6 +6224,9 @@ int virDomainDefAddImplicitControllers(virDomainDefPtr def)
         return -1;
 
     if (virDomainDefMaybeAddVirtioSerialController(def) < 0)
+        return -1;
+
+    if (virDomainDefMaybeAddSmartcardController(def) < 0)
         return -1;
 
     return 0;
@@ -6738,6 +7005,56 @@ virDomainChrDefFormat(virBufferPtr buf,
                       elementName);
 
     return ret;
+}
+
+static int
+virDomainSmartcardDefFormat(virBufferPtr buf,
+                            virDomainSmartcardDefPtr def,
+                            int flags)
+{
+    const char *mode = virDomainSmartcardTypeToString(def->type);
+    size_t i;
+
+    if (!mode) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected smartcard type %d"), def->type);
+        return -1;
+    }
+
+    virBufferVSprintf(buf, "    <smartcard mode='%s'", mode);
+    switch (def->type) {
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
+        if (!virDomainDeviceInfoIsSet(&def->info)) {
+            virBufferAddLit(buf, "/>\n");
+            return 0;
+        }
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
+        virBufferAddLit(buf, ">\n");
+        for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++)
+            virBufferEscapeString(buf, "      <certificate>%s</certificate>\n",
+                                  def->data.cert.file[i]);
+        if (def->data.cert.database)
+            virBufferEscapeString(buf, "      <database>%s</database>\n",
+                                  def->data.cert.database);
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
+        if (virDomainChrSourceDefFormat(buf, &def->data.passthru, false,
+                                        flags) < 0)
+            return -1;
+        break;
+
+    default:
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected smartcard type %d"), def->type);
+        return -1;
+    }
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
+    virBufferAddLit(buf, "    </smartcard>\n");
+    return 0;
 }
 
 static int
@@ -7544,6 +7861,10 @@ char *virDomainDefFormat(virDomainDefPtr def,
 
     for (n = 0 ; n < def->nnets ; n++)
         if (virDomainNetDefFormat(&buf, def->nets[n], flags) < 0)
+            goto cleanup;
+
+    for (n = 0 ; n < def->nsmartcards ; n++)
+        if (virDomainSmartcardDefFormat(&buf, def->smartcards[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nserials ; n++)
@@ -8612,6 +8933,29 @@ int virDomainChrDefForeach(virDomainDefPtr def,
     if (def->console) {
         if ((iter)(def,
                    def->console,
+                   opaque) < 0)
+            rc = -1;
+
+        if (abortOnError && rc != 0)
+            goto done;
+    }
+
+done:
+    return rc;
+}
+
+
+int virDomainSmartcardDefForeach(virDomainDefPtr def,
+                                 bool abortOnError,
+                                 virDomainSmartcardDefIterator iter,
+                                 void *opaque)
+{
+    int i;
+    int rc = 0;
+
+    for (i = 0 ; i < def->nsmartcards ; i++) {
+        if ((iter)(def,
+                   def->smartcards[i],
                    opaque) < 0)
             rc = -1;
 

@@ -100,6 +100,7 @@ useless_free_options =				\
   --name=virDomainInputDefFree			\
   --name=virDomainNetDefFree			\
   --name=virDomainObjFree			\
+  --name=virDomainSmartcardDefFree		\
   --name=virDomainSnapshotDefFree		\
   --name=virDomainSnapshotObjFree		\
   --name=virDomainSoundDefFree			\
