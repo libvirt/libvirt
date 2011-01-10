@@ -1,7 +1,7 @@
 /*
  * cpu_x86.c: CPU driver for CPUs with x86 compatible CPUID instruction
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -973,6 +973,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         VIR_FREE(name);
 
         model->vendor = ancestor->vendor;
+        x86DataFree(model->data);
         if (!(model->data = x86DataCopy(ancestor->data)))
             goto no_memory;
     }
