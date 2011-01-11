@@ -863,7 +863,7 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
  *  - VirtIO block
  *  - VirtIO balloon
  *  - Host device passthrough
- *  - Watchdog
+ *  - Watchdog (not IB700)
  *
  * Prior to this function being invoked, qemuCollectPCIAddress() will have
  * added all existing PCI addresses from the 'def' to 'addrs'. Thus this
@@ -1017,8 +1017,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
 
-    /* A watchdog */
+    /* A watchdog - skip IB700, it is not a PCI device */
     if (def->watchdog &&
+        def->watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_IB700 &&
         def->watchdog->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->watchdog->info) < 0)
             goto error;
