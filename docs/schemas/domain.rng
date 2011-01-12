@@ -1005,6 +1005,19 @@
         </element>
       </optional>
       <optional>
+        <element name="driver">
+          <optional>
+            <attribute name="name">
+              <choice>
+                <value>qemu</value>
+                <value>vhost</value>
+              </choice>
+            </attribute>
+          </optional>
+          <empty/>
+        </element>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
       <optional>

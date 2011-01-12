@@ -111,9 +111,6 @@ int qemuNetworkIfaceConnect(virConnectPtr conn,
                             unsigned long long qemCmdFlags)
     ATTRIBUTE_NONNULL(1);
 
-int qemuOpenVhostNet(virDomainNetDefPtr net,
-                     unsigned long long qemuCmdFlags);
-
 int qemuPhysIfaceConnect(virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,

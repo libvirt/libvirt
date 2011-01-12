@@ -292,6 +292,14 @@ enum virDomainNetType {
     VIR_DOMAIN_NET_TYPE_LAST,
 };
 
+/* the backend driver used for virtio interfaces */
+enum virDomainNetBackendType {
+    VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT, /* prefer kernel, fall back to user */
+    VIR_DOMAIN_NET_BACKEND_TYPE_QEMU,    /* userland */
+    VIR_DOMAIN_NET_BACKEND_TYPE_VHOST,   /* kernel */
+
+    VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
+};
 
 /* the mode type for macvtap devices */
 enum virDomainNetdevMacvtapType {
@@ -310,6 +318,7 @@ struct _virDomainNetDef {
     enum virDomainNetType type;
     unsigned char mac[VIR_MAC_BUFLEN];
     char *model;
+    enum virDomainNetBackendType backend;
     union {
         struct {
             char *dev;
@@ -1273,6 +1282,7 @@ VIR_ENUM_DECL(virDomainControllerModel)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainFSAccessMode)
 VIR_ENUM_DECL(virDomainNet)
+VIR_ENUM_DECL(virDomainNetBackend)
 VIR_ENUM_DECL(virDomainChrDevice)
 VIR_ENUM_DECL(virDomainChrChannelTarget)
 VIR_ENUM_DECL(virDomainChrConsoleTarget)

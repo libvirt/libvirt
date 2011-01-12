@@ -185,6 +185,11 @@ VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "internal",
               "direct")
 
+VIR_ENUM_IMPL(virDomainNetBackend, VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
+              "default",
+              "qemu",
+              "vhost")
+
 VIR_ENUM_IMPL(virDomainChrChannelTarget,
               VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
               "guestfwd",
@@ -2304,6 +2309,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *address = NULL;
     char *port = NULL;
     char *model = NULL;
+    char *backend = NULL;
     char *filter = NULL;
     char *internal = NULL;
     char *devaddr = NULL;
@@ -2386,6 +2392,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 script = virXMLPropString(cur, "path");
             } else if (xmlStrEqual (cur->name, BAD_CAST "model")) {
                 model = virXMLPropString(cur, "type");
+            } else if (xmlStrEqual (cur->name, BAD_CAST "driver")) {
+                backend = virXMLPropString(cur, "name");
             } else if (xmlStrEqual (cur->name, BAD_CAST "filterref")) {
                 filter = virXMLPropString(cur, "filter");
                 VIR_FREE(filterparams);
@@ -2573,6 +2581,19 @@ virDomainNetDefParseXML(virCapsPtr caps,
         model = NULL;
     }
 
+    if ((backend != NULL) &&
+        (def->model && STREQ(def->model, "virtio"))) {
+        int b;
+        if (((b = virDomainNetBackendTypeFromString(backend)) < 0) ||
+            (b == VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT)) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("Unknown interface <driver name='%s'> "
+                                   "has been specified"),
+                                 backend);
+            goto error;
+        }
+        def->backend = b;
+    }
     if (filter != NULL) {
         switch (def->type) {
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -2599,6 +2620,7 @@ cleanup:
     VIR_FREE(script);
     VIR_FREE(bridge);
     VIR_FREE(model);
+    VIR_FREE(backend);
     VIR_FREE(filter);
     VIR_FREE(type);
     VIR_FREE(internal);
@@ -6318,9 +6340,14 @@ virDomainNetDefFormat(virBufferPtr buf,
     if (def->ifname)
         virBufferEscapeString(buf, "      <target dev='%s'/>\n",
                               def->ifname);
-    if (def->model)
+    if (def->model) {
         virBufferEscapeString(buf, "      <model type='%s'/>\n",
                               def->model);
+        if (STREQ(def->model, "virtio") && def->backend) {
+            virBufferVSprintf(buf, "      <driver name='%s'/>\n",
+                              virDomainNetBackendTypeToString(def->backend));
+        }
+    }
     if (def->filter) {
         virBufferEscapeString(buf, "      <filterref filter='%s'",
                               def->filter);

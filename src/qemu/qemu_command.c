@@ -302,24 +302,58 @@ cleanup:
 }
 
 
-int
+static int
 qemuOpenVhostNet(virDomainNetDefPtr net,
-                 unsigned long long qemuCmdFlags)
+                 unsigned long long qemuCmdFlags,
+                 int *vhostfd)
 {
 
-    /* If qemu supports vhost-net mode (including the -netdev command
-     * option), the nic model is virtio, and we can open
-     * /dev/vhost_net, assume that vhost-net mode is available and
-     * return the fd to /dev/vhost_net. Otherwise, return -1.
-     */
+    *vhostfd = -1;   /* assume we won't use vhost */
 
+    /* If the config says explicitly to not use vhost, return now */
+    if (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU) {
+       return 0;
+    }
+
+    /* If qemu doesn't support vhost-net mode (including the -netdev command
+     * option), don't try to open the device.
+     */
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HOST &&
           qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV &&
-          qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE &&
-          net->model && STREQ(net->model, "virtio")))
-        return -1;
+          qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        if (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            "%s", _("vhost-net is not supported with "
+                                    "this QEMU binary"));
+            return -1;
+        }
+        return 0;
+    }
 
-    return open("/dev/vhost-net", O_RDWR, 0);
+    /* If the nic model isn't virtio, don't try to open. */
+    if (!(net->model && STREQ(net->model, "virtio"))) {
+        if (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            "%s", _("vhost-net is only supported for "
+                                    "virtio network interfaces"));
+            return -1;
+        }
+        return 0;
+    }
+
+    *vhostfd = open("/dev/vhost-net", O_RDWR);
+
+    /* If the config says explicitly to use vhost and we couldn't open it,
+     * report an error.
+     */
+    if ((*vhostfd < 0) &&
+        (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        "%s", _("vhost-net was requested for an interface, "
+                                "but is unavailable"));
+        return -1;
+    }
+    return 0;
 }
 
 
@@ -3281,7 +3315,10 @@ qemuBuildCommandLine(virConnectPtr conn,
                 net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 /* Attempt to use vhost-net mode for these types of
                    network device */
-                int vhostfd = qemuOpenVhostNet(net, qemuCmdFlags);
+                int vhostfd;
+
+                if (qemuOpenVhostNet(net, qemuCmdFlags, &vhostfd) < 0)
+                    goto error;
                 if (vhostfd >= 0) {
                     virCommandTransferFD(cmd, vhostfd);
 
@@ -4626,6 +4663,12 @@ qemuParseCommandLineNet(virCapsPtr caps,
         } else if (STREQ(keywords[i], "model")) {
             def->model = values[i];
             values[i] = NULL;
+        } else if (STREQ(keywords[i], "vhost")) {
+            if ((values[i] == NULL) || STREQ(values[i], "on")) {
+                def->backend = VIR_DOMAIN_NET_BACKEND_TYPE_VHOST;
+            } else if (STREQ(keywords[i], "off")) {
+                def->backend = VIR_DOMAIN_NET_BACKEND_TYPE_QEMU;
+            }
         }
     }
 
