@@ -3560,7 +3560,15 @@ qemuBuildCommandLine(virConnectPtr conn,
         def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
 
-        if (def->graphics[0]->data.vnc.socket) {
+        if (def->graphics[0]->data.vnc.socket ||
+            driver->vncAutoUnixSocket) {
+
+            if (!def->graphics[0]->data.vnc.socket &&
+                virAsprintf(&def->graphics[0]->data.vnc.socket,
+                            "%s/%s.vnc", driver->libDir, def->name) == -1) {
+                goto no_memory;
+            }
+
             virBufferVSprintf(&opt, "unix:%s",
                               def->graphics[0]->data.vnc.socket);
 

@@ -82,6 +82,7 @@ struct qemud_driver {
     char *cacheDir;
     char *saveDir;
     char *snapshotDir;
+    unsigned int vncAutoUnixSocket : 1;
     unsigned int vncTLS : 1;
     unsigned int vncTLSx509verify : 1;
     unsigned int vncSASL : 1;
