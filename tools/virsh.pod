@@ -505,6 +505,19 @@ I<migrateuri> is the migration URI, which usually can be omitted.
 I<dname> is used for renaming the domain to new name during migration, which
 also usually can be omitted.
 
+B<Note>: The I<desturi> parameter for normal migration and peer2peer migration
+has different semantics:
+
+=over 4
+
+=item * normal migration: the I<desturi> is an address of the target host as
+seen from the client machine.
+
+=item * peer2peer migration: the I<desturi> is an address of the target host as
+seen from the source machine.
+
+=back
+
 =item B<migrate-setmaxdowntime> I<domain-id> I<downtime>
 
 Set maximum tolerable downtime for a domain which is being live-migrated to

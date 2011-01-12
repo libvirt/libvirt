@@ -3375,7 +3375,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"copy-storage-all", VSH_OT_BOOL, 0, N_("migration with non-shared storage with full disk copy")},
     {"copy-storage-inc", VSH_OT_BOOL, 0, N_("migration with non-shared storage with incremental copy (same base image shared between source and destination)")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, N_("connection URI of the destination host")},
+    {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")},
     {"migrateuri", VSH_OT_DATA, 0, N_("migration URI, usually can be omitted")},
     {"dname", VSH_OT_DATA, 0, N_("rename to new name during migration (if supported)")},
     {NULL, 0, 0, NULL}
