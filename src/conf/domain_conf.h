@@ -197,6 +197,7 @@ struct _virDomainDiskDef {
     char *serial;
     int cachemode;
     int error_policy;
+    int bootIndex;
     unsigned int readonly : 1;
     unsigned int shared : 1;
     virDomainDeviceInfo info;
@@ -351,6 +352,7 @@ struct _virDomainNetDef {
         unsigned long sndbuf;
     } tune;
     char *ifname;
+    int bootIndex;
     virDomainDeviceInfo info;
     char *filter;
     virNWFilterHashTablePtr filterparams;

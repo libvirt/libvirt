@@ -121,9 +121,9 @@
         </optional>
         <choice>
           <ref name="osbootkernel"/>
-          <oneOrMore>
+          <zeroOrMore>
             <ref name="osbootdev"/>
-          </oneOrMore>
+          </zeroOrMore>
         </choice>
         <optional>
           <element name="bootmenu">
@@ -525,6 +525,9 @@
       <ref name="driver"/>
     </optional>
     <ref name="target"/>
+    <optional>
+      <ref name="deviceBoot"/>
+    </optional>
     <optional>
       <element name="readonly">
         <empty/>
@@ -963,6 +966,7 @@
         - the IP address bound to the interface
         - the name of the script used to set up the binding
         - the target device used
+        - boot order
     -->
   <define name="interface-options">
     <interleave>
@@ -1034,6 +1038,9 @@
             </element>
           </optional>
         </element>
+      </optional>
+      <optional>
+        <ref name="deviceBoot"/>
       </optional>
     </interleave>
   </define>
@@ -2006,6 +2013,15 @@
         </attribute>
       </element>
     </optional>
+  </define>
+
+  <define name="deviceBoot">
+    <element name="boot">
+      <attribute name="order">
+        <ref name="positiveInteger"/>
+      </attribute>
+      <empty/>
+    </element>
   </define>
 
   <!--

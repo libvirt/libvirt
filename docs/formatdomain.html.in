@@ -103,8 +103,11 @@
       <dd>The <code>dev</code> attribute takes one of the values "fd", "hd",
         "cdrom" or "network" and is used to specify the next boot device
         to consider. The <code>boot</code> element can be repeated multiple
-        times to setup a priority list of boot devices to try in turn.
-        <span class="since">Since 0.1.3</span>
+        times to setup a priority list of boot devices to try in turn. The
+        <code>boot</code> element cannot be used if per-device boot elements
+        are used (see <a href="#elementsDisks">disks</a> and
+        <a href="#elementsNICS">network interfaces</a> sections below.
+        <span class="since">Since 0.1.3, per-device boot since 0.8.8</span>
       </dd>
       <dt><code>bootmenu</code></dt>
       <dd> Whether or not to enable an interactive boot menu prompt on guest
@@ -625,6 +628,7 @@
       &lt;driver name="tap" type="aio" cache="default"/&gt;
       &lt;source file='/var/lib/xen/images/fv0'/&gt;
       &lt;target dev='hda' bus='ide'/&gt;
+      &lt;boot order='2'/&gt;
       &lt;encryption type='...'&gt;
         ...
       &lt;/encryption&gt;
@@ -640,6 +644,7 @@
         &lt;host name="hostname" port="7000"/&gt;
       &lt;/source&gt;
       &lt;target dev="hdb" bus="ide"/&gt;
+      &lt;boot order='1'/&gt;
     &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -691,6 +696,14 @@
         attribute provides the sub-type. The optional <code>cache</code> attribute
         controls the cache mechanism, possible values are "default", "none",
         "writethrough" and "writeback". <span class="since">Since 0.1.8</span>
+      </dd>
+      <dt><code>boot</code></dt>
+      <dd>Specifies that the disk is bootable. The <code>order</code>
+        attribute determines the order in which devices will be tried during
+        boot sequence. The per-device <code>boot</code> elements cannot be
+        used together with general boot elements in
+        <a href="#elementsOSBIOS">BIOS bootloader</a> section.
+        <span class="since">Since 0.8.8</span>
       </dd>
       <dt><code>encryption</code></dt>
       <dd>If present, specifies how the volume is encrypted.  See
@@ -813,6 +826,7 @@
       &lt;source bridge='xenbr0'/&gt;
       &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
       &lt;script path='vif-bridge'/&gt;
+      &lt;boot order='1'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -1088,6 +1102,29 @@ qemu-kvm -net nic,model=? /dev/null
         'vif'</i>, which are prefixes reserved by libvirt and certain
         hypervisors. Manually specified targets using these prefixes will be
         ignored.
+    </p>
+
+    <h5><a name="elementsNICSBoot">Specifying boot order</a></h5>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet1'/&gt;
+      <b>&lt;boot order='1'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      For hypervisors which support this, you can set exact NIC which should
+      be used for network boot. The <code>order</code> attribute determines
+      the order in which devices will be tried during boot sequence. The
+      per-device <code>boot</code> elements cannot be used together with
+      general boot elements in
+      <a href="#elementsOSBIOS">BIOS bootloader</a> section.
+      <span class="since">Since 0.8.8</span>
     </p>
 
     <h4><a name="elementsInput">Input devices</a></h4>

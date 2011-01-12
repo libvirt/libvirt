@@ -55,6 +55,7 @@ BIOS you will see</p>
     &lt;/arch&gt;
     &lt;features&gt;
       &lt;cpuselection/&gt;
+      &lt;deviceboot/&gt;
     &lt;/features&gt;
   &lt;/guest&gt;</span>
   ...
