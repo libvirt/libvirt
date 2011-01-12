@@ -1016,17 +1016,22 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
  *
  * @param caps pointer to capabilities info
  * @param domain domain object pointer
+ * @param live if true, run this operation even for an inactive domain.
+ *   this allows freely updated domain->def with runtime defaults before
+ *   starting the VM, which will be discarded on VM shutdown. Any cleanup
+ *   paths need to be sure to handle newDef if the domain is never started.
  * @return 0 on success, -1 on failure
  */
 int
 virDomainObjSetDefTransient(virCapsPtr caps,
-                            virDomainObjPtr domain)
+                            virDomainObjPtr domain,
+                            bool live)
 {
     int ret = -1;
     char *xml = NULL;
     virDomainDefPtr newDef = NULL;
 
-    if (!virDomainObjIsActive(domain))
+    if (!virDomainObjIsActive(domain) && !live)
         return 0;
 
     if (!domain->persistent)
@@ -1061,7 +1066,7 @@ virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainObjPtr domain)
 {
-    if (virDomainObjSetDefTransient(caps, domain) < 0)
+    if (virDomainObjSetDefTransient(caps, domain, false) < 0)
         return NULL;
 
     if (domain->newDef)

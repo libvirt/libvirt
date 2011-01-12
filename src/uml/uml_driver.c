@@ -887,7 +887,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     if (ret < 0)
         goto cleanup;
 
-    ret = virDomainObjSetDefTransient(driver->caps, vm);
+    ret = virDomainObjSetDefTransient(driver->caps, vm, false);
 cleanup:
     virCommandFree(cmd);
 

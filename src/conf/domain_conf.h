@@ -1139,7 +1139,8 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
                            const virDomainDefPtr def,
                            bool live);
 int virDomainObjSetDefTransient(virCapsPtr caps,
-                                virDomainObjPtr domain);
+                                virDomainObjPtr domain,
+                                bool live);
 virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainObjPtr domain);

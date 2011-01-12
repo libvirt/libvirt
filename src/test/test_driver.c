@@ -487,7 +487,7 @@ testDomainStartState(virConnectPtr conn,
     dom->state = VIR_DOMAIN_RUNNING;
     dom->def->id = privconn->nextDomID++;
 
-    if (virDomainObjSetDefTransient(privconn->caps, dom) < 0) {
+    if (virDomainObjSetDefTransient(privconn->caps, dom, false) < 0) {
         goto cleanup;
     }
 

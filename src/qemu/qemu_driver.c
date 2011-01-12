@@ -2633,6 +2633,14 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
+    /* Do this upfront, so any part of the startup process can add
+     * runtime state to vm->def that won't be persisted. This let's us
+     * report implicit runtime defaults in the XML, like vnc listen/socket
+     */
+    DEBUG0("Setting current domain def as transient");
+    if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
+        goto cleanup;
+
     /* Must be run before security labelling */
     DEBUG0("Preparing host devices");
     if (qemuPrepareHostDevices(driver, vm->def) < 0)
@@ -2921,11 +2929,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Writing domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
-        goto cleanup;
-
-    /* Do this last, since it depends on domain being active */
-    DEBUG0("Setting running domain def as transient");
-    if (virDomainObjSetDefTransient(driver->caps, vm) < 0)
         goto cleanup;
 
     virCommandFree(cmd);

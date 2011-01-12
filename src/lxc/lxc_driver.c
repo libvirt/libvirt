@@ -1555,7 +1555,7 @@ static int lxcVmStart(virConnectPtr conn,
     if (virDomainSaveConfig(driver->stateDir, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainObjSetDefTransient(driver->caps, vm) < 0)
+    if (virDomainObjSetDefTransient(driver->caps, vm, false) < 0)
         goto cleanup;
 
     rc = 0;
