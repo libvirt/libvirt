@@ -1255,7 +1255,7 @@ int virFileResolveLink(const char *linkpath,
 }
 
 /*
- * Finds a requested file in the PATH env. e.g.:
+ * Finds a requested executable file in the PATH env. e.g.:
  * "kvm-img" will return "/usr/bin/kvm-img"
  *
  * You must free the result
@@ -1263,19 +1263,18 @@ int virFileResolveLink(const char *linkpath,
 char *virFindFileInPath(const char *file)
 {
     char *path;
-    char pathenv[PATH_MAX];
-    char *penv = pathenv;
+    char *pathiter;
     char *pathseg;
-    char fullpath[PATH_MAX];
+    char *fullpath = NULL;
 
     if (file == NULL)
         return NULL;
 
     /* if we are passed an absolute path (starting with /), return a
-     * copy of that path
+     * copy of that path, after validating that it is executable
      */
-    if (file[0] == '/') {
-        if (virFileExists(file))
+    if (IS_ABSOLUTE_FILE_NAME(file)) {
+        if (virFileIsExecutable(file))
             return strdup(file);
         else
             return NULL;
@@ -1284,27 +1283,45 @@ char *virFindFileInPath(const char *file)
     /* copy PATH env so we can tweak it */
     path = getenv("PATH");
 
-    if (path == NULL || virStrcpyStatic(pathenv, path) == NULL)
+    if (path == NULL || (path = strdup(path)) == NULL)
         return NULL;
 
     /* for each path segment, append the file to search for and test for
      * it. return it if found.
      */
-    while ((pathseg = strsep(&penv, ":")) != NULL) {
-       snprintf(fullpath, PATH_MAX, "%s/%s", pathseg, file);
-       if (virFileExists(fullpath))
-           return strdup(fullpath);
+    pathiter = path;
+    while ((pathseg = strsep(&pathiter, ":")) != NULL) {
+        if (virAsprintf(&fullpath, "%s/%s", pathseg, file) < 0 ||
+            virFileIsExecutable(fullpath))
+            break;
+        VIR_FREE(fullpath);
     }
 
-    return NULL;
+    VIR_FREE(path);
+    return fullpath;
 }
-int virFileExists(const char *path)
-{
-    struct stat st;
 
-    if (stat(path, &st) >= 0)
-        return(1);
-    return(0);
+bool virFileExists(const char *path)
+{
+    return access(path, F_OK) == 0;
+}
+
+/* Check that a file is regular and has executable bits.
+ *
+ * Note: In the presence of ACLs, this may return true for a file that
+ * would actually fail with EACCES for a given user, or false for a
+ * file that the user could actually execute, but setups with ACLs
+ * that weird are unusual. */
+bool
+virFileIsExecutable(const char *file)
+{
+    struct stat sb;
+
+    /* We would also want to check faccessat if we cared about ACLs,
+     * but we don't.  */
+    return (stat(file, &sb) == 0 &&
+            S_ISREG(sb.st_mode) &&
+            (sb.st_mode & 0111) != 0);
 }
 
 #ifndef WIN32

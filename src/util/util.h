@@ -1,8 +1,7 @@
-
 /*
  * utils.h: common, generic utility functions
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  *
@@ -32,6 +31,7 @@
 # include <sys/select.h>
 # include <sys/types.h>
 # include <stdarg.h>
+# include <stdbool.h>
 
 # ifndef MIN
 #  define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -120,7 +120,8 @@ int virFileResolveLink(const char *linkpath,
 
 char *virFindFileInPath(const char *file);
 
-int virFileExists(const char *path);
+bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1);
+bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 
 char *virFileSanitizePath(const char *path);
 

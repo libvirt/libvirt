@@ -845,6 +845,7 @@ virFileDeletePid;
 virFileExists;
 virFileFindMountPoint;
 virFileHasSuffix;
+virFileIsExecutable;
 virFileLinkPointsTo;
 virFileMakePath;
 virFileMatchesNameSuffix;
