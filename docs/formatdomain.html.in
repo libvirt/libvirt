@@ -208,10 +208,10 @@
       <dd>The maximum allocation of memory for the guest at boot time.
         The units for this value are kilobytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>currentMemory</code></dt>
-      <dd>The actual allocation of memory for the guest. This value
+      <dd>The actual allocation of memory for the guest. This value can
         be less than the maximum allocation, to allow for ballooning
         up the guests memory on the fly. If this is omitted, it defaults
-        to the same value as the <code>memory<code> element</dd>
+        to the same value as the <code>memory</code> element</dd>
       <dt><code>memoryBacking</code></dt>
       <dd>The optional <code>memoryBacking</code> element, may have an
         <code>hugepages</code> element set within it. This tells the
