@@ -3568,6 +3568,14 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     } else if ((def->ngraphics == 1) &&
                def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+        if ((qemuCmdFlags & QEMUD_CMD_FLAG_0_10) &&
+            !(qemuCmdFlags & QEMUD_CMD_FLAG_SDL)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("sdl not supported by '%s'"),
+                            def->emulator);
+            goto error;
+        }
+
         if (def->graphics[0]->data.sdl.xauth)
             virCommandAddEnvPair(cmd, "XAUTHORITY",
                                  def->graphics[0]->data.sdl.xauth);
