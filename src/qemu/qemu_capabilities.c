@@ -431,6 +431,7 @@ qemuCapsInitGuest(virCapsPtr caps,
     int nmachines = 0;
     struct stat st;
     unsigned int ncpus;
+    unsigned long long qemuCmdFlags;
     int ret = -1;
 
     /* Check for existance of base emulator, or alternate base
@@ -544,6 +545,11 @@ qemuCapsInitGuest(virCapsPtr caps,
         qemuCapsProbeCPUModels(binary, 0, info->arch, &ncpus, NULL) == 0 &&
         ncpus > 0 &&
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
+        goto error;
+
+    if (qemuCapsExtractVersionInfo(binary, NULL, &qemuCmdFlags) < 0 ||
+        ((qemuCmdFlags & QEMUD_CMD_FLAG_BOOTINDEX) &&
+         !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0)))
         goto error;
 
     if (hvm) {
@@ -1047,6 +1053,7 @@ qemuCapsExtractDeviceStr(const char *qemu,
      * '-device ?'.  */
     cmd = virCommandNewArgList(qemu,
                                "-device", "pci-assign,?",
+                               "-device", "virtio-blk-pci,?",
                                NULL);
     virCommandAddEnvPassCommon(cmd);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
@@ -1070,6 +1077,8 @@ qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
 {
     if (strstr(str, "pci-assign.configfd"))
         *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
+    if (strstr(str, "virtio-blk-pci.bootindex"))
+        *flags |= QEMUD_CMD_FLAG_BOOTINDEX;
 
     return 0;
 }

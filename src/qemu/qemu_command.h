@@ -62,7 +62,8 @@ char * qemuBuildNicStr(virDomainNetDefPtr net,
 
 /* Current, best practice */
 char * qemuBuildNicDevStr(virDomainNetDefPtr net,
-                          int vlan);
+                          int vlan,
+                          unsigned long long qemuCmdFlags);
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
                                unsigned long long qemuCmdFlags);
@@ -75,7 +76,8 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
                      unsigned long long qemuCmdFlags);
 
 /* Current, best practice */
-char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk);
+char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
+                            unsigned long long qemuCmdFlags);
 char * qemuBuildFSDevStr(virDomainFSDefPtr fs);
 /* Current, best practice */
 char * qemuBuildControllerDevStr(virDomainControllerDefPtr def);

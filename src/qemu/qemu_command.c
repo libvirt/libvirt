@@ -1342,7 +1342,8 @@ error:
 
 
 char *
-qemuBuildDriveDevStr(virDomainDiskDefPtr disk)
+qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
+                     unsigned long long qemuCmdFlags)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
@@ -1382,6 +1383,8 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk)
     }
     virBufferVSprintf(&opt, ",drive=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     virBufferVSprintf(&opt, ",id=%s", disk->info.alias);
+    if (disk->bootIndex && (qemuCmdFlags & QEMUD_CMD_FLAG_BOOTINDEX))
+        virBufferVSprintf(&opt, ",bootindex=%d", disk->bootIndex);
 
     if (virBufferError(&opt)) {
         virReportOOMError();
@@ -1538,7 +1541,9 @@ qemuBuildNicStr(virDomainNetDefPtr net,
 
 
 char *
-qemuBuildNicDevStr(virDomainNetDefPtr net, int vlan)
+qemuBuildNicDevStr(virDomainNetDefPtr net,
+                   int vlan,
+                   unsigned long long qemuCmdFlags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *nic;
@@ -1563,6 +1568,8 @@ qemuBuildNicDevStr(virDomainNetDefPtr net, int vlan)
                       net->mac[4], net->mac[5]);
     if (qemuBuildDeviceAddressStr(&buf, &net->info) < 0)
         goto error;
+    if (net->bootIndex && (qemuCmdFlags & QEMUD_CMD_FLAG_BOOTINDEX))
+        virBufferVSprintf(&buf, ",bootindex=%d", net->bootIndex);
 
     if (virBufferError(&buf)) {
         virReportOOMError();
@@ -3125,10 +3132,19 @@ qemuBuildCommandLine(virConnectPtr conn,
                                            disk->info.addr.drive.unit
                                            ? 'B' : 'A',
                                            disk->info.alias);
+
+                    if (disk->bootIndex &&
+                        (qemuCmdFlags & QEMUD_CMD_FLAG_BOOTINDEX)) {
+                        virCommandAddArg(cmd, "-global");
+                        virCommandAddArgFormat(cmd, "isa-fdc.bootindex%c=%d",
+                                               disk->info.addr.drive.unit
+                                               ? 'B' : 'A',
+                                               disk->bootIndex);
+                    }
                 } else {
                     virCommandAddArg(cmd, "-device");
 
-                    if (!(optstr = qemuBuildDriveDevStr(disk)))
+                    if (!(optstr = qemuBuildDriveDevStr(disk, qemuCmdFlags)))
                         goto error;
                     virCommandAddArg(cmd, optstr);
                     VIR_FREE(optstr);
@@ -3352,7 +3368,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
             if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
                 virCommandAddArg(cmd, "-device");
-                if (!(nic = qemuBuildNicDevStr(net, vlan)))
+                if (!(nic = qemuBuildNicDevStr(net, vlan, qemuCmdFlags)))
                     goto error;
                 virCommandAddArg(cmd, nic);
                 VIR_FREE(nic);

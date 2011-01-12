@@ -83,6 +83,7 @@ enum qemuCapsFlags {
     QEMUD_CMD_FLAG_SPICE         = (1LL << 46), /* Is -spice avail */
     QEMUD_CMD_FLAG_VGA_NONE      = (1LL << 47), /* The 'none' arg for '-vga' */
     QEMUD_CMD_FLAG_MIGRATE_QEMU_FD = (1LL << 48), /* -incoming fd:n */
+    QEMUD_CMD_FLAG_BOOTINDEX     = (1LL << 49), /* -device bootindex property */
 };
 
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
