@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.c: QEMU capabilities generation
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@
 #include "cpu/cpu.h"
 #include "domain_conf.h"
 #include "qemu_conf.h"
+#include "command.h"
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -167,52 +168,26 @@ qemuCapsProbeMachineTypes(const char *binary,
                           virCapsGuestMachinePtr **machines,
                           int *nmachines)
 {
-    const char *const qemuarg[] = { binary, "-M", "?", NULL };
-    const char *const qemuenv[] = { "LC_ALL=C", NULL };
     char *output;
-    enum { MAX_MACHINES_OUTPUT_SIZE = 1024*4 };
-    pid_t child;
-    int newstdout = -1, len;
-    int ret = -1, status;
+    int ret = -1;
+    virCommandPtr cmd;
 
-    if (virExec(qemuarg, qemuenv, NULL,
-                &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
-        return -1;
+    cmd = virCommandNewArgList(binary, "-M", "?", NULL);
+    virCommandAddEnvPassCommon(cmd);
+    virCommandSetOutputBuffer(cmd, &output);
+    virCommandClearCaps(cmd);
 
-    len = virFileReadLimFD(newstdout, MAX_MACHINES_OUTPUT_SIZE, &output);
-    if (len < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to read 'qemu -M ?' output"));
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     if (qemuCapsParseMachineTypesStr(output, machines, nmachines) < 0)
-        goto cleanup2;
+        goto cleanup;
 
     ret = 0;
 
-cleanup2:
-    VIR_FREE(output);
 cleanup:
-    if (VIR_CLOSE(newstdout) < 0)
-        ret = -1;
-
-rewait:
-    if (waitpid(child, &status, 0) != child) {
-        if (errno == EINTR)
-            goto rewait;
-
-        VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
-                  WEXITSTATUS(status), (unsigned long)child);
-        ret = -1;
-    }
-    /* Check & log unexpected exit status, but don't fail,
-     * as there's really no need to throw an error if we did
-     * actually read a valid version number above */
-    if (WEXITSTATUS(status) != 0) {
-        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
-                 WEXITSTATUS(status));
-    }
+    VIR_FREE(output);
+    virCommandFree(cmd);
 
     return ret;
 }
@@ -396,21 +371,10 @@ qemuCapsProbeCPUModels(const char *qemu,
                        unsigned int *count,
                        const char ***cpus)
 {
-    const char *const qemuarg[] = {
-        qemu,
-        "-cpu", "?",
-        (qemuCmdFlags & QEMUD_CMD_FLAG_NODEFCONFIG) ? "-nodefconfig" : NULL,
-        NULL
-    };
-    const char *const qemuenv[] = { "LC_ALL=C", NULL };
-    enum { MAX_MACHINES_OUTPUT_SIZE = 1024*4 };
     char *output = NULL;
-    int newstdout = -1;
     int ret = -1;
-    pid_t child;
-    int status;
-    int len;
     qemuCapsParseCPUModels parse;
+    virCommandPtr cmd;
 
     if (count)
         *count = 0;
@@ -424,16 +388,15 @@ qemuCapsProbeCPUModels(const char *qemu,
         return 0;
     }
 
-    if (virExec(qemuarg, qemuenv, NULL,
-                &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
-        return -1;
+    cmd = virCommandNewArgList(qemu, "-cpu", "?", NULL);
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_NODEFCONFIG)
+        virCommandAddArg(cmd, "-nodefconfig");
+    virCommandAddEnvPassCommon(cmd);
+    virCommandSetOutputBuffer(cmd, &output);
+    virCommandClearCaps(cmd);
 
-    len = virFileReadLimFD(newstdout, MAX_MACHINES_OUTPUT_SIZE, &output);
-    if (len < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to read QEMU supported CPU models"));
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     if (parse(output, count, cpus) < 0) {
         virReportOOMError();
@@ -444,25 +407,7 @@ qemuCapsProbeCPUModels(const char *qemu,
 
 cleanup:
     VIR_FREE(output);
-    if (VIR_CLOSE(newstdout) < 0)
-        ret = -1;
-
-rewait:
-    if (waitpid(child, &status, 0) != child) {
-        if (errno == EINTR)
-            goto rewait;
-
-        VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
-                  WEXITSTATUS(status), (unsigned long)child);
-        ret = -1;
-    }
-    /* Check & log unexpected exit status, but don't fail,
-     * as there's really no need to throw an error if we did
-     * actually read a valid version number above */
-    if (WEXITSTATUS(status) != 0) {
-        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
-                 WEXITSTATUS(status));
-    }
+    virCommandFree(cmd);
 
     return ret;
 }
@@ -1091,57 +1036,35 @@ static void
 qemuCapsParsePCIDeviceStrs(const char *qemu,
                            unsigned long long *flags)
 {
-    const char *const qemuarg[] = { qemu, "-device", "pci-assign,?", NULL };
-    const char *const qemuenv[] = { "LC_ALL=C", NULL };
-    pid_t child;
-    int status;
-    int newstderr = -1;
-
-    if (virExec(qemuarg, qemuenv, NULL,
-                &child, -1, NULL, &newstderr, VIR_EXEC_CLEAR_CAPS) < 0)
-        return;
-
     char *pciassign = NULL;
-    enum { MAX_PCI_OUTPUT_SIZE = 1024*4 };
-    int len = virFileReadLimFD(newstderr, MAX_PCI_OUTPUT_SIZE, &pciassign);
-    if (len < 0) {
-        virReportSystemError(errno,
-                             _("Unable to read %s pci-assign device output"),
-                             qemu);
+    virCommandPtr cmd;
+
+    cmd = virCommandNewArgList(qemu, "-device", "pci-assign,?", NULL);
+    virCommandAddEnvPassCommon(cmd);
+    /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
+    virCommandSetErrorBuffer(cmd, &pciassign);
+    virCommandClearCaps(cmd);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     if (strstr(pciassign, "pci-assign.configfd"))
         *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
 
 cleanup:
     VIR_FREE(pciassign);
-    VIR_FORCE_CLOSE(newstderr);
-rewait:
-    if (waitpid(child, &status, 0) != child) {
-        if (errno == EINTR)
-            goto rewait;
-
-        VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
-                  WEXITSTATUS(status), (unsigned long)child);
-    }
-    if (WEXITSTATUS(status) != 0) {
-        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
-                 WEXITSTATUS(status));
-    }
+    virCommandFree(cmd);
 }
 
 int qemuCapsExtractVersionInfo(const char *qemu,
                                unsigned int *retversion,
                                unsigned long long *retflags)
 {
-    const char *const qemuarg[] = { qemu, "-help", NULL };
-    const char *const qemuenv[] = { "LC_ALL=C", NULL };
-    pid_t child;
-    int newstdout = -1;
-    int ret = -1, status;
+    int ret = -1;
     unsigned int version, is_kvm, kvm_version;
     unsigned long long flags = 0;
+    char *help = NULL;
+    virCommandPtr cmd;
 
     if (retflags)
         *retflags = 0;
@@ -1157,22 +1080,17 @@ int qemuCapsExtractVersionInfo(const char *qemu,
         return -1;
     }
 
-    if (virExec(qemuarg, qemuenv, NULL,
-                &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
-        return -1;
+    cmd = virCommandNewArgList(qemu, "-help", NULL);
+    virCommandAddEnvPassCommon(cmd);
+    virCommandSetOutputBuffer(cmd, &help);
+    virCommandClearCaps(cmd);
 
-    char *help = NULL;
-    enum { MAX_HELP_OUTPUT_SIZE = 1024*64 };
-    int len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help);
-    if (len < 0) {
-        virReportSystemError(errno,
-                             _("Unable to read %s help output"), qemu);
-        goto cleanup2;
-    }
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
 
     if (qemuCapsParseHelpStr(qemu, help, &flags,
                              &version, &is_kvm, &kvm_version) == -1)
-        goto cleanup2;
+        goto cleanup;
 
     if (flags & QEMUD_CMD_FLAG_DEVICE)
         qemuCapsParsePCIDeviceStrs(qemu, &flags);
@@ -1184,27 +1102,9 @@ int qemuCapsExtractVersionInfo(const char *qemu,
 
     ret = 0;
 
-cleanup2:
+cleanup:
     VIR_FREE(help);
-    if (VIR_CLOSE(newstdout) < 0)
-        ret = -1;
-
-rewait:
-    if (waitpid(child, &status, 0) != child) {
-        if (errno == EINTR)
-            goto rewait;
-
-        VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
-                  WEXITSTATUS(status), (unsigned long)child);
-        ret = -1;
-    }
-    /* Check & log unexpected exit status, but don't fail,
-     * as there's really no need to throw an error if we did
-     * actually read a valid version number above */
-    if (WEXITSTATUS(status) != 0) {
-        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
-                 WEXITSTATUS(status));
-    }
+    virCommandFree(cmd);
 
     return ret;
 }
