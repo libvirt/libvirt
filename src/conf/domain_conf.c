@@ -4671,6 +4671,61 @@ static char *virDomainDefDefaultEmulator(virDomainDefPtr def,
     return retemu;
 }
 
+static int
+virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
+                         virDomainDefPtr def)
+{
+    xmlNodePtr *nodes = NULL;
+    int i, n;
+    char *bootstr;
+    int ret = -1;
+
+    /* analysis of the boot devices */
+    if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract boot device"));
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n && i < VIR_DOMAIN_BOOT_LAST ; i++) {
+        int val;
+        char *dev = virXMLPropString(nodes[i], "dev");
+        if (!dev) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("missing boot device"));
+            goto cleanup;
+        }
+        if ((val = virDomainBootTypeFromString(dev)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown boot device '%s'"),
+                                 dev);
+            VIR_FREE(dev);
+            goto cleanup;
+        }
+        VIR_FREE(dev);
+        def->os.bootDevs[def->os.nBootDevs++] = val;
+    }
+    if (def->os.nBootDevs == 0) {
+        def->os.nBootDevs = 1;
+        def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
+    }
+
+    bootstr = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
+    if (bootstr) {
+        if (STREQ(bootstr, "yes"))
+            def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_ENABLED;
+        else
+            def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_DISABLED;
+        VIR_FREE(bootstr);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(nodes);
+    return ret;
+}
+
 static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                             xmlDocPtr xml,
                                             xmlNodePtr root,
@@ -5000,47 +5055,9 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         def->os.loader = virXPathString("string(./os/loader[1])", ctxt);
     }
 
-    if (STREQ(def->os.type, "hvm")) {
-        char *bootstr;
-
-        /* analysis of the boot devices */
-        if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("cannot extract boot device"));
-            goto error;
-        }
-        for (i = 0 ; i < n && i < VIR_DOMAIN_BOOT_LAST ; i++) {
-            int val;
-            char *dev = virXMLPropString(nodes[i], "dev");
-            if (!dev) {
-                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                     "%s", _("missing boot device"));
-                goto error;
-            }
-            if ((val = virDomainBootTypeFromString(dev)) < 0) {
-                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                     _("unknown boot device '%s'"),
-                                     dev);
-                VIR_FREE(dev);
-                goto error;
-            }
-            VIR_FREE(dev);
-            def->os.bootDevs[def->os.nBootDevs++] = val;
-        }
-        if (def->os.nBootDevs == 0) {
-            def->os.nBootDevs = 1;
-            def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
-        }
-        VIR_FREE(nodes);
-
-        bootstr = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
-        if (bootstr) {
-            if (STREQ(bootstr, "yes"))
-                def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_ENABLED;
-            else
-                def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_DISABLED;
-            VIR_FREE(bootstr);
-        }
+    if (STREQ(def->os.type, "hvm") &&
+        virDomainDefParseBootXML(ctxt, def) < 0) {
+        goto error;
     }
 
     def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
