@@ -1025,6 +1025,16 @@
           <ref name="filterref-node-attributes"/>
         </element>
       </optional>
+      <optional>
+        <element name="tune">
+          <optional>
+            <!-- size of send buffer for network tap devices -->
+            <element name="sndbuf">
+              <ref name="unsignedInt"/>
+            </element>
+          </optional>
+        </element>
+      </optional>
     </interleave>
   </define>
   <define name="virtualPortProfile">

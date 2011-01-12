@@ -1584,6 +1584,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                     const char *tapfd,
                     const char *vhostfd)
 {
+    bool is_tap = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     switch (net->type) {
@@ -1593,6 +1594,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         virBufferAddLit(&buf, "tap");
         virBufferVSprintf(&buf, "%cfd=%s", type_sep, tapfd);
         type_sep = ',';
+        is_tap = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -1606,6 +1608,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                               net->data.ethernet.script);
             type_sep = ',';
         }
+        is_tap = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -1659,8 +1662,11 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                           type_sep, net->info.alias);
     }
 
-    if (vhostfd && *vhostfd) {
-        virBufferVSprintf(&buf, ",vhost=on,vhostfd=%s", vhostfd);
+    if (is_tap) {
+        if (vhostfd && *vhostfd)
+            virBufferVSprintf(&buf, ",vhost=on,vhostfd=%s", vhostfd);
+        if (net->tune.sndbuf_specified)
+            virBufferVSprintf(&buf, ",sndbuf=%lu", net->tune.sndbuf);
     }
 
     if (virBufferError(&buf)) {
@@ -4669,6 +4675,15 @@ qemuParseCommandLineNet(virCapsPtr caps,
             } else if (STREQ(keywords[i], "off")) {
                 def->backend = VIR_DOMAIN_NET_BACKEND_TYPE_QEMU;
             }
+        } else if (STREQ(keywords[i], "sndbuf") && values[i]) {
+            if (virStrToLong_ul(values[i], NULL, 10, &def->tune.sndbuf) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("cannot parse sndbuf size in '%s'"), val);
+                virDomainNetDefFree(def);
+                def = NULL;
+                goto cleanup;
+            }
+            def->tune.sndbuf_specified = true;
         }
     }
 

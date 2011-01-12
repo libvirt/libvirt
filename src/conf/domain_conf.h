@@ -346,6 +346,10 @@ struct _virDomainNetDef {
             virVirtualPortProfileParams virtPortProfile;
         } direct;
     } data;
+    struct {
+        bool sndbuf_specified;
+        unsigned long sndbuf;
+    } tune;
     char *ifname;
     virDomainDeviceInfo info;
     char *filter;
