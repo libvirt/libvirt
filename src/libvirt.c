@@ -3571,11 +3571,28 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                            const char *uri,
                            unsigned long bandwidth)
 {
+    xmlURIPtr tempuri = NULL;
+
     if (!domain->conn->driver->domainMigratePerform) {
         virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
         virDispatchError(domain->conn);
         return -1;
     }
+
+    tempuri = xmlParseURI(uri);
+    if (!tempuri) {
+        virLibConnError (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virDispatchError(domain->conn);
+        return -1;
+    }
+
+    if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
+        virLibConnError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virDispatchError(domain->conn);
+        xmlFreeURI(tempuri);
+        return -1;
+    }
+    xmlFreeURI(tempuri);
 
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
