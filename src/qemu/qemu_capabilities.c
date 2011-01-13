@@ -1079,6 +1079,11 @@ cleanup:
 int
 qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
 {
+    /* Which devices exist. */
+    if (strstr(str, "name \"hda-duplex\""))
+        *flags |= QEMUD_CMD_FLAG_HDA_DUPLEX;
+
+    /* Features of given devices. */
     if (strstr(str, "pci-assign.configfd"))
         *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
     if (strstr(str, "virtio-blk-pci.bootindex"))

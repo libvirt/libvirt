@@ -1774,11 +1774,13 @@ qemuBuildSoundDevStr(virDomainSoundDefPtr sound)
         goto error;
     }
 
-    /* Hack for 2 wierdly unusal devices name in QEMU */
+    /* Hack for weirdly unusual devices name in QEMU */
     if (STREQ(model, "es1370"))
         model = "ES1370";
     else if (STREQ(model, "ac97"))
         model = "AC97";
+    else if (STREQ(model, "ich6"))
+        model = "intel-hda";
 
     virBufferVSprintf(&buf, "%s", model);
     virBufferVSprintf(&buf, ",id=%s", sound->info.alias);
@@ -1797,6 +1799,29 @@ error:
     return NULL;
 }
 
+static char *
+qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
+                       const char *codec)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int cad = 0;
+
+    virBufferVSprintf(&buf, "%s", codec);
+    virBufferVSprintf(&buf, ",id=%s-codec%d", sound->info.alias, cad);
+    virBufferVSprintf(&buf, ",bus=%s.0", sound->info.alias);
+    virBufferVSprintf(&buf, ",cad=%d", cad);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
 
 static char *
 qemuBuildVideoDevStr(virDomainVideoDefPtr video)
@@ -3817,11 +3842,29 @@ qemuBuildCommandLine(virConnectPtr conn,
                     virCommandAddArgList(cmd, "-soundhw", "pcspk", NULL);
                 } else {
                     virCommandAddArg(cmd, "-device");
-
                     if (!(str = qemuBuildSoundDevStr(sound)))
                         goto error;
 
                     virCommandAddArg(cmd, str);
+
+                    if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
+                        char *codecstr = NULL;
+                        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HDA_DUPLEX)) {
+                            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                    _("this QEMU binary lacks hda support"));
+                            goto error;
+                        }
+
+                        virCommandAddArg(cmd, "-device");
+                        if (!(codecstr = qemuBuildSoundCodecStr(sound,
+                                                            "hda-duplex"))) {
+                            goto error;
+                        }
+
+                        virCommandAddArg(cmd, codecstr);
+                        VIR_FREE(codecstr);
+                    }
+
                     VIR_FREE(str);
                 }
             }
@@ -3840,6 +3883,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                                     "%s", _("invalid sound model"));
                     goto error;
                 }
+
+                if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                    _("this QEMU binary lacks hda support"));
+                    goto error;
+                }
+
                 strncat(modstr, model, size);
                 size -= strlen(model);
                 if (i < (def->nsounds - 1))
@@ -5675,6 +5725,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                     type = VIR_DOMAIN_SOUND_MODEL_ES1370;
                 } else if (STRPREFIX(start, "ac97")) {
                     type = VIR_DOMAIN_SOUND_MODEL_AC97;
+                } else if (STRPREFIX(start, "hda")) {
+                    type = VIR_DOMAIN_SOUND_MODEL_ICH6;
                 }
 
                 if (type != -1) {

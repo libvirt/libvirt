@@ -418,7 +418,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
     DO_TEST("sound", 0, false);
     DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_HDA_DUPLEX, false);
     DO_TEST("fs9p", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_FSDEV, false);
 

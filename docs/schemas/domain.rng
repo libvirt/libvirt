@@ -1530,6 +1530,7 @@
           <value>es1370</value>
           <value>pcspk</value>
           <value>ac97</value>
+          <value>ich6</value>
         </choice>
       </attribute>
       <optional>
