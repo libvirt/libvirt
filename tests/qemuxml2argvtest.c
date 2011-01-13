@@ -408,6 +408,19 @@ mymain(int argc, char **argv)
     DO_TEST("console-virtio", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
 
+    DO_TEST("smartcard-host",
+            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_EMULATED, false);
+    DO_TEST("smartcard-host-certificates",
+            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_EMULATED, false);
+    DO_TEST("smartcard-passthrough-tcp",
+            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_PASSTHRU, false);
+    DO_TEST("smartcard-controller",
+            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_EMULATED, false);
+
     DO_TEST("smbios", QEMUD_CMD_FLAG_SMBIOS_TYPE, false);
 
     DO_TEST("watchdog", 0, false);
