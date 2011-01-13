@@ -3007,8 +3007,11 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
                              params[i].value.l);
                     break;
                 case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
-                    vshPrint(ctl, "%-15s: %llu\n", params[i].field,
-                             params[i].value.ul);
+                    if (params[i].value.ul == VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
+                        vshPrint(ctl, "%-15s: unlimited\n", params[i].field);
+                    else
+                        vshPrint(ctl, "%-15s: %llu kB\n", params[i].field,
+                                 params[i].value.ul);
                     break;
                 case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
                     vshPrint(ctl, "%-15s: %f\n", params[i].field,
@@ -3059,6 +3062,10 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
                         sizeof(temp->field));
                 min_guarantee = 0;
             }
+
+            /* If the user has passed -1, we interpret it as unlimited */
+            if (temp->value.ul == -1)
+                temp->value.ul = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
         }
         if (virDomainSetMemoryParameters(dom, params, nparams, 0) != 0)
             vshError(ctl, "%s", _("Unable to change memory parameters"));

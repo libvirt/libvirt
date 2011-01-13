@@ -40,15 +40,15 @@ int virCgroupForDomain(virCgroupPtr driver,
 
 int virCgroupAddTask(virCgroupPtr group, pid_t pid);
 
-int virCgroupSetMemory(virCgroupPtr group, unsigned long kb);
+int virCgroupSetMemory(virCgroupPtr group, unsigned long long kb);
 int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb);
 
-int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long kb);
-int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long *kb);
-int virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long kb);
-int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long *kb);
-int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long kb);
-int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long *kb);
+int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb);
+int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb);
+int virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb);
+int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb);
+int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long long kb);
+int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long long *kb);
 
 int virCgroupDenyAllDevices(virCgroupPtr group);
 

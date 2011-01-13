@@ -355,8 +355,6 @@ static int virCgroupSetValueU64(virCgroupPtr group,
 }
 
 
-#if 0
-/* This is included for completeness, but not yet used */
 
 static int virCgroupSetValueI64(virCgroupPtr group,
                                 int controller,
@@ -376,6 +374,8 @@ static int virCgroupSetValueI64(virCgroupPtr group,
     return rc;
 }
 
+#if 0
+/* This is included for completeness, but not yet used */
 static int virCgroupGetValueI64(virCgroupPtr group,
                                 int controller,
                                 const char *key,
@@ -858,12 +858,22 @@ int virCgroupForDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
  *
  * Returns: 0 on success
  */
-int virCgroupSetMemory(virCgroupPtr group, unsigned long kb)
+int virCgroupSetMemory(virCgroupPtr group, unsigned long long kb)
 {
-    return virCgroupSetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_MEMORY,
-                                "memory.limit_in_bytes",
-                                kb << 10);
+    unsigned long long maxkb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    if (kb > maxkb)
+        return -EINVAL;
+    else if (kb == maxkb)
+        return virCgroupSetValueI64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.limit_in_bytes",
+                                    -1);
+    else
+        return virCgroupSetValueU64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.limit_in_bytes",
+                                    kb << 10);
 }
 
 /**
@@ -894,7 +904,7 @@ int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
  *
  * Returns: 0 on success
  */
-int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long kb)
+int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb)
 {
     return virCgroupSetMemory(group, kb);
 }
@@ -907,7 +917,7 @@ int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long kb)
  *
  * Returns: 0 on success
  */
-int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long *kb)
+int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
     long long unsigned int limit_in_bytes;
     int ret;
@@ -915,7 +925,7 @@ int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long *kb)
                                VIR_CGROUP_CONTROLLER_MEMORY,
                                "memory.limit_in_bytes", &limit_in_bytes);
     if (ret == 0)
-        *kb = (unsigned long) limit_in_bytes >> 10;
+        *kb = limit_in_bytes >> 10;
     return ret;
 }
 
@@ -927,12 +937,22 @@ int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long *kb)
  *
  * Returns: 0 on success
  */
-int virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long kb)
+int virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb)
 {
-    return virCgroupSetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_MEMORY,
-                                "memory.soft_limit_in_bytes",
-                                kb << 10);
+    unsigned long long maxkb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    if (kb > maxkb)
+        return -EINVAL;
+    else if (kb == maxkb)
+        return virCgroupSetValueI64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.soft_limit_in_bytes",
+                                    -1);
+    else
+        return virCgroupSetValueU64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.soft_limit_in_bytes",
+                                    kb << 10);
 }
 
 
@@ -944,7 +964,7 @@ int virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long kb)
  *
  * Returns: 0 on success
  */
-int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long *kb)
+int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
 {
     long long unsigned int limit_in_bytes;
     int ret;
@@ -952,7 +972,7 @@ int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long *kb)
                                VIR_CGROUP_CONTROLLER_MEMORY,
                                "memory.soft_limit_in_bytes", &limit_in_bytes);
     if (ret == 0)
-        *kb = (unsigned long) limit_in_bytes >> 10;
+        *kb = limit_in_bytes >> 10;
     return ret;
 }
 
@@ -964,12 +984,22 @@ int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long *kb)
  *
  * Returns: 0 on success
  */
-int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long kb)
+int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long long kb)
 {
-    return virCgroupSetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_MEMORY,
-                                "memory.memsw.limit_in_bytes",
-                                kb << 10);
+    unsigned long long maxkb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    if (kb > maxkb)
+        return -EINVAL;
+    else if (kb == maxkb)
+        return virCgroupSetValueI64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.memsw.limit_in_bytes",
+                                    -1);
+    else
+        return virCgroupSetValueU64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.memsw.limit_in_bytes",
+                                    kb << 10);
 }
 
 /**
@@ -980,7 +1010,7 @@ int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long kb)
  *
  * Returns: 0 on success
  */
-int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long *kb)
+int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
     long long unsigned int limit_in_bytes;
     int ret;
@@ -988,7 +1018,7 @@ int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long *kb)
                                VIR_CGROUP_CONTROLLER_MEMORY,
                                "memory.memsw.limit_in_bytes", &limit_in_bytes);
     if (ret == 0)
-        *kb = (unsigned long) limit_in_bytes >> 10;
+        *kb = limit_in_bytes >> 10;
     return ret;
 }
 

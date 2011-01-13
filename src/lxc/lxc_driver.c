@@ -815,7 +815,7 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
     int i;
     virCgroupPtr cgroup = NULL;
     virDomainObjPtr vm = NULL;
-    unsigned long val;
+    unsigned long long val;
     int ret = -1;
     int rc;
 
