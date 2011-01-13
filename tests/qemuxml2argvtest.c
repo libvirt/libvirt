@@ -251,6 +251,8 @@ mymain(int argc, char **argv)
     DO_TEST("boot-floppy", 0, false);
     DO_TEST("boot-multi", QEMUD_CMD_FLAG_BOOT_MENU, false);
     DO_TEST("boot-menu-disable", QEMUD_CMD_FLAG_BOOT_MENU, false);
+    DO_TEST("boot-order", QEMUD_CMD_FLAG_BOOTINDEX |
+            QEMUD_CMD_FLAG_DRIVE | QEMUD_CMD_FLAG_DEVICE, false);
     DO_TEST("bootloader", QEMUD_CMD_FLAG_DOMID, true);
     DO_TEST("clock-utc", 0, false);
     DO_TEST("clock-localtime", 0, false);
