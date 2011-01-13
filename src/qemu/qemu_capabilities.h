@@ -88,6 +88,9 @@ enum qemuCapsFlags {
     QEMUD_CMD_FLAG_DRIVE_AIO     = (1LL << 51), /* -drive aio= supported */
     QEMUD_CMD_FLAG_PCI_MULTIBUS  = (1LL << 52), /* bus=pci.0 vs bus=pci */
     QEMUD_CMD_FLAG_PCI_BOOTINDEX = (1LL << 53), /* pci-assign.bootindex */
+    QEMUD_CMD_FLAG_CCID_EMULATED = (1LL << 54), /* -device ccid-card-emulated */
+    QEMUD_CMD_FLAG_CCID_PASSTHRU = (1LL << 55), /* -device ccid-card-passthru */
+    QEMUD_CMD_FLAG_CHARDEV_SPICEVMC = (1LL << 56), /* -chardev spicevmc */
 };
 
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);

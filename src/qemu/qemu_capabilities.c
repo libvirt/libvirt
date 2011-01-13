@@ -832,8 +832,11 @@ qemuCapsComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_PCIDEVICE;
     if (strstr(help, "-mem-path"))
         flags |= QEMUD_CMD_FLAG_MEM_PATH;
-    if (strstr(help, "-chardev"))
+    if (strstr(help, "-chardev")) {
         flags |= QEMUD_CMD_FLAG_CHARDEV;
+        if (strstr(help, "-chardev spicevmc"))
+            flags |= QEMUD_CMD_FLAG_CHARDEV_SPICEVMC;
+    }
     if (strstr(help, "-balloon"))
         flags |= QEMUD_CMD_FLAG_BALLOON;
     if (strstr(help, "-device")) {
@@ -1052,10 +1055,10 @@ qemuCapsExtractDeviceStr(const char *qemu,
      * the output format makes it possible to distinguish what we
      * need.  With qemu 0.13.0 and later, unrecognized '-device
      * bogus,?' cause an error in isolation, but are silently ignored
-     * in combination with '-device ?'.  Qemu 0.12.x doesn't
+     * in combination with '-device ?'.  Upstream qemu 0.12.x doesn't
      * understand '-device name,?', and always exits with status 1 for
      * the simpler '-device ?', so this function is really only useful
-     * for parsing out features added in 0.13.0 or later.  */
+     * if -help includes "device driver,?".  */
     cmd = virCommandNewArgList(qemu,
                                "-device", "?",
                                "-device", "pci-assign,?",
@@ -1084,6 +1087,10 @@ qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
     /* Which devices exist. */
     if (strstr(str, "name \"hda-duplex\""))
         *flags |= QEMUD_CMD_FLAG_HDA_DUPLEX;
+    if (strstr(str, "name \"ccid-card-emulated\""))
+        *flags |= QEMUD_CMD_FLAG_CCID_EMULATED;
+    if (strstr(str, "name \"ccid-card-passthru\""))
+        *flags |= QEMUD_CMD_FLAG_CCID_PASSTHRU;
 
     /* Features of given devices. */
     if (strstr(str, "pci-assign.configfd"))
@@ -1133,8 +1140,8 @@ int qemuCapsExtractVersionInfo(const char *qemu,
                              &version, &is_kvm, &kvm_version) == -1)
         goto cleanup;
 
-    /* Only call qemuCapsExtractDeviceStr for qemu 0.13.0+, since it
-     * won't set any additional flags for qemu 0.12.x.  */
+    /* qemuCapsExtractDeviceStr will only set additional flags if qemu
+     * understands the 0.13.0+ notion of "-device driver,".  */
     if ((flags & QEMUD_CMD_FLAG_DEVICE) &&
         strstr(help, "-device driver,?") &&
         qemuCapsExtractDeviceStr(qemu, &flags) < 0)
