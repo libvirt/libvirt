@@ -568,12 +568,19 @@ XEN_CREDIT scheduler and are now I<DEPRECATED>.
 
 =item B<setmem> I<domain-id> B<kilobytes>
 
-Change the current memory allocation in the guest domain. This should take
-effect immediately. The memory limit is specified in
-kilobytes.
+Immediately change the current memory allocation for an active guest domain.
 
-For Xen, you can only adjust the memory of a running domain if the
-domain is paravirtualized or running the PV balloon driver.
+Some hypervisors require a larger granularity than kilobytes, and requests
+that are not an even multiple will either be rounded down or rejected.  For
+example, vSphere/ESX rejects the parameter unless the kB argument is evenly
+divisible by 1024 (that is, the kB argument happens to represent megabytes).
+
+For Xen, you can only adjust the memory of a running domain if the domain is
+paravirtualized or running the PV balloon driver.
+
+Note, this command only works on active guest domains.  To change the memory
+allocation for an inactive guest domain, use the virsh B<edit> command to
+update the XML <memory> element.
 
 =item B<setmaxmem> I<domain-id> B<kilobytes>
 
@@ -593,23 +600,31 @@ QEMU/KVM supports I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
 =item B<setvcpus> I<domain-id> I<count> optional I<--maximum> I<--config>
 I<--live>
 
-Change the number of virtual CPUs active in the guest domain. Note that
-I<count> may be limited by host, hypervisor or limit coming from the
-original description of domain.
+Change the number of virtual CPUs active in a guest domain.  By default,
+this command works on active guest domains.  To change the settings for an
+inactive guest domain, use the I<--config> flag.
 
-For Xen, you can only adjust the virtual CPUs of a running domain if
-the domain is paravirtualized.
+The I<count> value may be limited by host, hypervisor, or a limit coming
+from the original description of the guest domain. For Xen, you can only
+adjust the virtual CPUs of a running domain if the domain is paravirtualized.
 
-If I<--config> is specified, the change will only affect the next
-boot of a domain.  If I<--live> is specified, the domain must be
-running, and the change takes place immediately.  Both flags may be
-specified, if supported by the hypervisor.  If neither flag is given,
-then I<--live> is implied and it is up to the hypervisor whether
-I<--config> is also implied.
+If the I<--config> flag is specified, the change is made to the stored XML
+configuration for the guest domain, and will only take effect when the guest
+domain is next started.
 
-If I<--maximum> is specified, then you must use I<--config> and
-avoid I<--live>; this flag controls the maximum limit of vcpus that
-can be hot-plugged the next time the domain is booted.
+If I<--live> is specified, the guest domain must be active, and the change
+takes place immediately.  Both the I<--config> and I<--live> flags may be
+specified together if supported by the hypervisor.
+
+When neither the I<--config> nor I<--live> flags are given, the I<--live>
+flag is assumed and the guest domain must be active.  In this situation it
+is up to the hypervisor whether the I<--config> flag is also assumed, and
+therefore whether the XML configuration is adjusted to make the change
+persistent.
+
+The I<--maximum> flag controls the maximum number of virtual cpus that can
+be hot-plugged the next time the domain is booted.  As such, it must only be
+used with the I<--config> flag, and not with the I<--live> flag.
 
 =item B<shutdown> I<domain-id>
 
