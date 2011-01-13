@@ -7,6 +7,7 @@
 
 # include "testutils.h"
 # include "qemu/qemu_capabilities.h"
+# include "memory.h"
 
 # define MAX_HELP_OUTPUT_SIZE 1024*64
 
@@ -39,50 +40,71 @@ static void printMismatchedFlags(unsigned long long got,
 static int testHelpStrParsing(const void *data)
 {
     const struct testInfo *info = data;
-    char path[PATH_MAX];
+    char *path = NULL;
     char helpStr[MAX_HELP_OUTPUT_SIZE];
     char *help = &(helpStr[0]);
     unsigned int version, is_kvm, kvm_version;
     unsigned long long flags;
+    int ret = -1;
 
-    snprintf(path, PATH_MAX, "%s/qemuhelpdata/%s", abs_srcdir, info->name);
+    if (virAsprintf(&path, "%s/qemuhelpdata/%s", abs_srcdir, info->name) < 0)
+        return -1;
 
     if (virtTestLoadFile(path, &help, MAX_HELP_OUTPUT_SIZE) < 0)
-        return -1;
+        goto cleanup;
 
     if (qemuCapsParseHelpStr("QEMU", help, &flags,
                              &version, &is_kvm, &kvm_version) == -1)
-        return -1;
+        goto cleanup;
+
+    if (info->flags & QEMUD_CMD_FLAG_DEVICE) {
+        VIR_FREE(path);
+        if (virAsprintf(&path, "%s/qemuhelpdata/%s-device", abs_srcdir,
+                        info->name) < 0)
+            goto cleanup;
+
+        if (virtTestLoadFile(path, &help, MAX_HELP_OUTPUT_SIZE) < 0)
+            goto cleanup;
+
+        if (qemuCapsParseDeviceStr(help, &flags) < 0)
+            goto cleanup;
+    }
 
     if (flags != info->flags) {
-        fprintf(stderr, "Computed flags do not match: got 0x%llx, expected 0x%llx\n",
+        fprintf(stderr,
+                "Computed flags do not match: got 0x%llx, expected 0x%llx\n",
                 flags, info->flags);
 
         if (getenv("VIR_TEST_DEBUG"))
             printMismatchedFlags(flags, info->flags);
 
-        return -1;
+        goto cleanup;
     }
 
     if (version != info->version) {
         fprintf(stderr, "Parsed versions do not match: got %u, expected %u\n",
                 version, info->version);
-        return -1;
+        goto cleanup;
     }
 
     if (is_kvm != info->is_kvm) {
-        fprintf(stderr, "Parsed is_kvm flag does not match: got %u, expected %u\n",
+        fprintf(stderr,
+                "Parsed is_kvm flag does not match: got %u, expected %u\n",
                 is_kvm, info->is_kvm);
-        return -1;
+        goto cleanup;
     }
 
     if (kvm_version != info->kvm_version) {
-        fprintf(stderr, "Parsed KVM versions do not match: got %u, expected %u\n",
+        fprintf(stderr,
+                "Parsed KVM versions do not match: got %u, expected %u\n",
                 kvm_version, info->kvm_version);
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    return ret;
 }
 
 static int
@@ -318,6 +340,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_VNET_HOST |
             QEMUD_CMD_FLAG_NO_KVM_PIT |
             QEMUD_CMD_FLAG_TDF |
+            QEMUD_CMD_FLAG_PCI_CONFIGFD |
             QEMUD_CMD_FLAG_NODEFCONFIG |
             QEMUD_CMD_FLAG_BOOT_MENU |
             QEMUD_CMD_FLAG_NESTING |
@@ -399,6 +422,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_NO_KVM_PIT |
             QEMUD_CMD_FLAG_TDF |
+            QEMUD_CMD_FLAG_PCI_CONFIGFD |
             QEMUD_CMD_FLAG_NODEFCONFIG |
             QEMUD_CMD_FLAG_BOOT_MENU |
             QEMUD_CMD_FLAG_FSDEV |

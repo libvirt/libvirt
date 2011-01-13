@@ -1032,28 +1032,46 @@ fail:
     return -1;
 }
 
-static void
-qemuCapsParsePCIDeviceStrs(const char *qemu,
-                           unsigned long long *flags)
+static int
+qemuCapsExtractDeviceStr(const char *qemu,
+                         unsigned long long *flags)
 {
-    char *pciassign = NULL;
+    char *output = NULL;
     virCommandPtr cmd;
+    int ret = -1;
 
-    cmd = virCommandNewArgList(qemu, "-device", "pci-assign,?", NULL);
+    /* Cram together all device-related queries into one invocation;
+     * the output format makes it possible to distinguish what we
+     * need.  Unrecognized '-device bogus,?' cause an error in
+     * isolation, but are silently ignored in combination with
+     * '-device ?'.  */
+    cmd = virCommandNewArgList(qemu,
+                               "-device", "pci-assign,?",
+                               NULL);
     virCommandAddEnvPassCommon(cmd);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
-    virCommandSetErrorBuffer(cmd, &pciassign);
+    virCommandSetErrorBuffer(cmd, &output);
     virCommandClearCaps(cmd);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (strstr(pciassign, "pci-assign.configfd"))
-        *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
+    ret = qemuCapsParseDeviceStr(output, flags);
 
 cleanup:
-    VIR_FREE(pciassign);
+    VIR_FREE(output);
     virCommandFree(cmd);
+    return ret;
+}
+
+
+int
+qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
+{
+    if (strstr(str, "pci-assign.configfd"))
+        *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
+
+    return 0;
 }
 
 int qemuCapsExtractVersionInfo(const char *qemu,
@@ -1092,8 +1110,9 @@ int qemuCapsExtractVersionInfo(const char *qemu,
                              &version, &is_kvm, &kvm_version) == -1)
         goto cleanup;
 
-    if (flags & QEMUD_CMD_FLAG_DEVICE)
-        qemuCapsParsePCIDeviceStrs(qemu, &flags);
+    if ((flags & QEMUD_CMD_FLAG_DEVICE) &&
+        qemuCapsExtractDeviceStr(qemu, &flags) < 0)
+        goto cleanup;
 
     if (retversion)
         *retversion = version;

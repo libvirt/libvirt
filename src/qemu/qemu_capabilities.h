@@ -109,6 +109,8 @@ int qemuCapsParseHelpStr(const char *qemu,
                          unsigned int *version,
                          unsigned int *is_kvm,
                          unsigned int *kvm_version);
+int qemuCapsParseDeviceStr(const char *str,
+                           unsigned long long *qemuCmdFlags);
 
 
 #endif /* __QEMU_CAPABILITIES_H__*/

@@ -1,0 +1,70 @@
+name "pci-bridge", bus PCI
+name "virtio-balloon-pci", bus PCI
+name "virtio-serial-pci", bus PCI, alias "virtio-serial"
+name "virtio-net-pci", bus PCI
+name "virtio-blk-pci", bus PCI
+name "sysbus-ohci", bus System, desc "OHCI USB Controller"
+name "pci-ohci", bus PCI, desc "Apple USB Controller"
+name "rtl8139", bus PCI
+name "e1000", bus PCI, desc "Intel Gigabit Ethernet"
+name "ivshmem", bus PCI
+name "smbus-eeprom", bus I2C
+name "scsi-disk", bus SCSI, desc "virtual scsi disk or cdrom"
+name "scsi-generic", bus SCSI, desc "pass through generic scsi device (/dev/sg*)"
+name "usb-hub", bus USB
+name "usb-host", bus USB
+name "usb-kbd", bus USB
+name "usb-mouse", bus USB
+name "usb-tablet", bus USB
+name "usb-storage", bus USB
+name "usb-wacom-tablet", bus USB, desc "QEMU PenPartner Tablet"
+name "usb-braille", bus USB
+name "usb-serial", bus USB
+name "usb-net", bus USB
+name "usb-bt-dongle", bus USB
+name "virtconsole", bus virtio-serial-bus
+name "virtserialport", bus virtio-serial-bus
+name "isa-serial", bus ISA
+name "isa-parallel", bus ISA
+name "vt82c686b-usb-uhci", bus PCI
+name "piix4-usb-uhci", bus PCI
+name "piix3-usb-uhci", bus PCI
+name "SUNW,fdtwo", bus System
+name "sysbus-fdc", bus System
+name "i6300esb", bus PCI
+name "ne2k_pci", bus PCI
+name "i82801", bus PCI, desc "Intel i82801 Ethernet"
+name "i82562", bus PCI, desc "Intel i82562 Ethernet"
+name "i82559er", bus PCI, desc "Intel i82559ER Ethernet"
+name "i82559c", bus PCI, desc "Intel i82559C Ethernet"
+name "i82559b", bus PCI, desc "Intel i82559B Ethernet"
+name "i82559a", bus PCI, desc "Intel i82559A Ethernet"
+name "i82558b", bus PCI, desc "Intel i82558B Ethernet"
+name "i82558a", bus PCI, desc "Intel i82558A Ethernet"
+name "i82557c", bus PCI, desc "Intel i82557C Ethernet"
+name "i82557b", bus PCI, desc "Intel i82557B Ethernet"
+name "i82557a", bus PCI, desc "Intel i82557A Ethernet"
+name "i82551", bus PCI, desc "Intel i82551 Ethernet"
+name "i82550", bus PCI, desc "Intel i82550 Ethernet"
+name "pcnet", bus PCI
+name "ne2k_isa", bus ISA
+name "ide-drive", bus IDE
+name "isa-ide", bus ISA
+name "lsi53c895a", bus PCI, alias "lsi"
+name "VGA", bus PCI
+name "vmware-svga", bus PCI
+name "sb16", bus ISA, desc "Creative Sound Blaster 16"
+name "ES1370", bus PCI, desc "ENSONIQ AudioPCI ES1370"
+name "AC97", bus PCI, desc "Intel 82801AA AC97 Audio"
+name "cirrus-vga", bus PCI, desc "Cirrus CLGD 54xx VGA"
+name "isa-applesmc", bus ISA
+name "ib700", bus ISA
+name "isa-debugcon", bus ISA
+name "testdev", bus ISA
+name "PIIX4_PM", bus PCI, desc "PM"
+name "qxl", bus PCI, desc "Spice QXL GPU"
+name "spicevmc", bus virtio-serial-bus
+name "pci-assign", bus PCI, desc "pass through host pci devices to the guest"
+pci-assign.host=pci-hostaddr
+pci-assign.iommu=uint32
+pci-assign.configfd=string
