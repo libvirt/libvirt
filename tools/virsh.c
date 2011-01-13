@@ -1,7 +1,7 @@
 /*
  * virsh.c: a shell to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -2765,11 +2765,31 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
             ret = FALSE;
         }
     } else {
+        /* If the --maximum flag was given, we need to ensure only the
+           --config flag is in effect as well */
+        if (maximum) {
+            vshDebug(ctl, 5, "--maximum flag was given\n");
+
+            /* If neither the --config nor --live flags were given, OR
+               if just the --live flag was given, we need to error out
+               warning the user that the --maximum flag can only be used
+               with the --config flag */
+            if (live || !config) {
+
+                /* Warn the user about the invalid flag combination */
+                vshError(ctl, _("--maximum must be used with --config only"));
+                ret = FALSE;
+                goto cleanup;
+            }
+        }
+
+        /* Apply the virtual cpu changes */
         if (virDomainSetVcpusFlags(dom, count, flags) < 0) {
             ret = FALSE;
         }
     }
 
+  cleanup:
     virDomainFree(dom);
     return ret;
 }
