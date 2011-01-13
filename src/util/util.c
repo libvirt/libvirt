@@ -2081,7 +2081,45 @@ virStrToLong_ui(char const *s, char **end_ptr, int base, unsigned int *result)
     return 0;
 }
 
-/* Just like virStrToLong_i, above, but produce an "long long" value.  */
+/* Just like virStrToLong_i, above, but produce a "long" value.  */
+int
+virStrToLong_l(char const *s, char **end_ptr, int base, long *result)
+{
+    long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtol(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned long" value.  */
+int
+virStrToLong_ul(char const *s, char **end_ptr, int base, unsigned long *result)
+{
+    unsigned long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoul(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce a "long long" value.  */
 int
 virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
 {

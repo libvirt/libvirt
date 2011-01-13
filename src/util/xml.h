@@ -21,19 +21,25 @@ char *       virXPathStringLimit(const char *xpath,
 int               virXPathNumber(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  double *value);
+int                  virXPathInt(const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 int *value);
+int                 virXPathUInt(const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 unsigned int *value);
 int                 virXPathLong(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  long *value);
-int                 virXPathULong(const char *xpath,
+int                virXPathULong(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  unsigned long *value);
 int            virXPathULongLong(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  unsigned long long *value);
-int	        virXPathLongLong(const char *xpath,
+int             virXPathLongLong(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  long long *value);
-int		virXPathLongHex	(const char *xpath,
+int              virXPathLongHex(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  long *value);
 int             virXPathULongHex(const char *xpath,

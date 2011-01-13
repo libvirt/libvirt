@@ -1,7 +1,7 @@
 /*
  * xml.c: XML based interfaces for the libvir library
  *
- * Copyright (C) 2005, 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -195,6 +195,35 @@ virXPathLongBase(const char *xpath,
 }
 
 /**
+ * virXPathInt:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ * @value: the returned int value
+ *
+ * Convenience function to evaluate an XPath number
+ *
+ * Returns 0 in case of success in which case @value is set,
+ *         or -1 if the XPath evaluation failed or -2 if the
+ *         value doesn't have an int format.
+ */
+int
+virXPathInt(const char *xpath,
+            xmlXPathContextPtr ctxt,
+            int *value)
+{
+    long tmp;
+    int ret;
+
+    ret = virXPathLongBase(xpath, ctxt, 10, &tmp);
+    if (ret < 0)
+        return ret;
+    if ((int) tmp != tmp)
+        return -2;
+    *value = tmp;
+    return 0;
+}
+
+/**
  * virXPathLong:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
@@ -276,6 +305,35 @@ virXPathULongBase(const char *xpath,
 
     xmlXPathFreeObject(obj);
     return (ret);
+}
+
+/**
+ * virXPathUInt:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ * @value: the returned int value
+ *
+ * Convenience function to evaluate an XPath number
+ *
+ * Returns 0 in case of success in which case @value is set,
+ *         or -1 if the XPath evaluation failed or -2 if the
+ *         value doesn't have an int format.
+ */
+int
+virXPathUInt(const char *xpath,
+             xmlXPathContextPtr ctxt,
+             unsigned int *value)
+{
+    unsigned long tmp;
+    int ret;
+
+    ret = virXPathULongBase(xpath, ctxt, 10, &tmp);
+    if (ret < 0)
+        return ret;
+    if ((unsigned int) tmp != tmp)
+        return -2;
+    *value = tmp;
+    return 0;
 }
 
 /**

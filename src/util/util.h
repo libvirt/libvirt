@@ -188,6 +188,14 @@ int virStrToLong_ui(char const *s,
                     char **end_ptr,
                     int base,
                     unsigned int *result);
+int virStrToLong_l(char const *s,
+                   char **end_ptr,
+                   int base,
+                   long *result);
+int virStrToLong_ul(char const *s,
+                    char **end_ptr,
+                    int base,
+                    unsigned long *result);
 int virStrToLong_ll(char const *s,
                     char **end_ptr,
                     int base,
