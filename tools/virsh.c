@@ -11854,7 +11854,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Miscellaneous:"));
-#ifdef ENABLE_SECDRIVER_APPARMOR
+#ifdef WITH_SECDRIVER_APPARMOR
     vshPrint(ctl, " AppArmor");
 #endif
 #ifdef WITH_SECDRIVER_SELINUX
