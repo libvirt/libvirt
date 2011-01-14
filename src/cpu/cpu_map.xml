@@ -142,6 +142,9 @@
     <feature name='popcnt'> <!-- CPUID_EXT_POPCNT -->
       <cpuid function='0x00000001' ecx='0x00800000'/>
     </feature>
+    <feature name='aes'>
+      <cpuid function='0x00000001' ecx='0x02000000'/>
+    </feature>
     <feature name='hypervisor'> <!-- CPUID_EXT_HYPERVISOR -->
       <cpuid function='0x00000001' ecx='0x80000000'/>
     </feature>
@@ -451,6 +454,12 @@
       <feature name='syscall'/>
       <feature name='nx'/>
       <feature name='lahf_lm'/>
+    </model>
+
+    <model name='Westmere'>
+      <vendor name='Intel'/>
+      <model name='Nehalem'/>
+      <feature name='aes'/>
     </model>
 
     <model name='Opteron_G1'>
