@@ -2413,10 +2413,11 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                                (1 << VIR_DOMAIN_FEATURE_APIC)) ? 1 : 0) < 0)
             goto no_memory;
 
-        if (xenXMConfigSetInt(conf, "hap",
-                              (def->features &
-                               (1 << VIR_DOMAIN_FEATURE_HAP)) ? 1 : 0) < 0)
-            goto no_memory;
+        if (priv->xendConfigVersion >= 3)
+            if (xenXMConfigSetInt(conf, "hap",
+                                  (def->features &
+                                   (1 << VIR_DOMAIN_FEATURE_HAP)) ? 1 : 0) < 0)
+                goto no_memory;
 
         if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
             if (def->clock.data.timezone) {
