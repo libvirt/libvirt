@@ -77,7 +77,7 @@ EXTRA_DIST =		\
 
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
-	commandtest commandhelper
+	commandtest commandhelper seclabeltest
 
 if WITH_XEN
 check_PROGRAMS += xml2sexprtest sexpr2xmltest \
@@ -96,14 +96,6 @@ endif
 
 if WITH_VMX
 check_PROGRAMS += vmx2xmltest xml2vmxtest
-endif
-
-if WITH_SECDRIVER_SELINUX
-check_PROGRAMS += seclabeltest
-endif
-
-if WITH_SECDRIVER_APPARMOR
-check_PROGRAMS += secaatest
 endif
 
 if WITH_CIL
@@ -166,6 +158,7 @@ TESTS = virshtest \
 	virbuftest \
 	sockettest \
 	commandtest \
+	seclabeltest \
 	$(test_scripts)
 
 if WITH_XEN
@@ -189,14 +182,6 @@ endif
 
 if WITH_VMX
 TESTS += vmx2xmltest xml2vmxtest
-endif
-
-if WITH_SECDRIVER_SELINUX
-TESTS += seclabeltest
-endif
-
-if WITH_SECDRIVER_APPARMOR
-TESTS += secaatest
 endif
 
 if WITH_LIBVIRTD
@@ -376,21 +361,9 @@ commandhelper_SOURCES = \
 commandhelper_CFLAGS = -Dabs_builddir="\"`pwd`\""
 commandhelper_LDADD = $(LDADDS)
 
-if WITH_SECDRIVER_SELINUX
 seclabeltest_SOURCES = \
 	seclabeltest.c
 seclabeltest_LDADD = ../src/libvirt_driver_security.la $(LDADDS)
-else
-EXTRA_DIST += seclabeltest.c
-endif
-
-if WITH_SECDRIVER_APPARMOR
-secaatest_SOURCES = \
-	secaatest.c
-secaatest_LDADD = ../src/libvirt_driver_security.la $(LDADDS)
-else
-EXTRA_DIST += secaatest.c
-endif
 
 qparamtest_SOURCES = \
 	qparamtest.c testutils.h testutils.c
