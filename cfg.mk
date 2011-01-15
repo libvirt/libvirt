@@ -116,7 +116,7 @@ useless_free_options =				\
   --name=virNWFilterHashTableFree		\
   --name=virNWFilterIPAddrLearnReqFree		\
   --name=virNWFilterIncludeDefFree		\
-  --name=virNWFilterPoolObjFree			\
+  --name=virNWFilterObjFree			\
   --name=virNWFilterRuleDefFree			\
   --name=virNWFilterRuleInstFree		\
   --name=virNetworkDefFree			\
@@ -194,9 +194,9 @@ useless_free_options =				\
 # y virNWFilterHashTableFree
 # y virNWFilterIPAddrLearnReqFree
 # y virNWFilterIncludeDefFree
-# n virNWFilterPoolFreeName (returns int)
-# y virNWFilterPoolObjFree
-# n virNWFilterPoolObjListFree FIXME
+# n virNWFilterFreeName (returns int)
+# y virNWFilterObjFree
+# n virNWFilterObjListFree FIXME
 # y virNWFilterRuleDefFree
 # n virNWFilterRuleFreeInstanceData (typedef)
 # y virNWFilterRuleInstFree

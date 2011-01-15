@@ -1138,10 +1138,10 @@ typedef virNWFilterPtr
                                                const char *xmlDesc,
                                                unsigned int flags);
 typedef int
-    (*virDrvNWFilterUndefine)                 (virNWFilterPtr pool);
+    (*virDrvNWFilterUndefine)                 (virNWFilterPtr nwfilter);
 
 typedef char *
-    (*virDrvNWFilterGetXMLDesc)              (virNWFilterPtr pool,
+    (*virDrvNWFilterGetXMLDesc)              (virNWFilterPtr nwfilter,
                                               unsigned int flags);
 
 

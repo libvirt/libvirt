@@ -284,7 +284,7 @@ err_exit:
 
 
 /**
- * _virNWFilterPoolInstantiateRec:
+ * _virNWFilterInstantiateRec:
  * @conn: pointer to virConnect object
  * @techdriver: The driver to use for instantiation
  * @filter: The filter to instantiate
@@ -319,7 +319,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
                            enum instCase useNewFilter, bool *foundNewFilter,
                            virNWFilterDriverStatePtr driver)
 {
-    virNWFilterPoolObjPtr obj;
+    virNWFilterObjPtr obj;
     int rc = 0;
     int i;
     virNWFilterRuleInstPtr inst;
@@ -351,8 +351,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
 
         } else if (inc) {
             VIR_DEBUG("Instantiating filter %s", inc->filterref);
-            obj = virNWFilterPoolObjFindByName(&driver->pools,
-                                               inc->filterref);
+            obj = virNWFilterObjFindByName(&driver->nwfilters, inc->filterref);
             if (obj) {
 
                 if (obj->wantRemoved) {
@@ -360,7 +359,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
                                            _("Filter '%s' is in use."),
                                            inc->filterref);
                     rc = 1;
-                    virNWFilterPoolObjUnlock(obj);
+                    virNWFilterObjUnlock(obj);
                     break;
                 }
 
@@ -371,7 +370,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
                 if (!tmpvars) {
                     virReportOOMError();
                     rc = 1;
-                    virNWFilterPoolObjUnlock(obj);
+                    virNWFilterObjUnlock(obj);
                     break;
                 }
 
@@ -401,7 +400,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
 
                 virNWFilterHashTableFree(tmpvars);
 
-                virNWFilterPoolObjUnlock(obj);
+                virNWFilterObjUnlock(obj);
                 if (rc)
                     break;
             } else {
@@ -425,7 +424,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
                                    int useNewFilter,
                                    virNWFilterDriverStatePtr driver)
 {
-    virNWFilterPoolObjPtr obj;
+    virNWFilterObjPtr obj;
     int rc = 0;
     int i, j;
     virNWFilterDefPtr next_filter;
@@ -443,8 +442,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
             }
         } else if (inc) {
             VIR_DEBUG("Following filter %s\n", inc->filterref);
-            obj = virNWFilterPoolObjFindByName(&driver->pools,
-                                               inc->filterref);
+            obj = virNWFilterObjFindByName(&driver->nwfilters, inc->filterref);
             if (obj) {
 
                 if (obj->wantRemoved) {
@@ -452,7 +450,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
                                            _("Filter '%s' is in use."),
                                            inc->filterref);
                     rc = 1;
-                    virNWFilterPoolObjUnlock(obj);
+                    virNWFilterObjUnlock(obj);
                     break;
                 }
 
@@ -463,7 +461,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
                 if (!tmpvars) {
                     virReportOOMError();
                     rc = 1;
-                    virNWFilterPoolObjUnlock(obj);
+                    virNWFilterObjUnlock(obj);
                     break;
                 }
 
@@ -488,7 +486,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
 
                 virNWFilterHashTableFree(tmpvars);
 
-                virNWFilterPoolObjUnlock(obj);
+                virNWFilterObjUnlock(obj);
                 if (rc)
                     break;
             } else {
@@ -700,7 +698,7 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
     int rc;
     const char *drvname = EBIPTABLES_DRIVER_ID;
     virNWFilterTechDriverPtr techdriver;
-    virNWFilterPoolObjPtr obj;
+    virNWFilterObjPtr obj;
     virNWFilterHashTablePtr vars, vars1;
     virNWFilterDefPtr filter;
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
@@ -720,7 +718,7 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
 
     VIR_DEBUG("filter name: %s", filtername);
 
-    obj = virNWFilterPoolObjFindByName(&driver->pools, filtername);
+    obj = virNWFilterObjFindByName(&driver->nwfilters, filtername);
     if (!obj) {
         virNWFilterReportError(VIR_ERR_NO_NWFILTER,
                                _("Could not find filter '%s'"),
@@ -804,7 +802,7 @@ err_exit_vars1:
     virNWFilterHashTableFree(vars1);
 
 err_exit:
-    virNWFilterPoolObjUnlock(obj);
+    virNWFilterObjUnlock(obj);
 
     VIR_FREE(str_ipaddr);
     VIR_FREE(str_macaddr);

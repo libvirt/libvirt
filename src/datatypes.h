@@ -194,8 +194,8 @@ struct _virConnect {
     virHashTablePtr storagePools;/* hash table for known storage pools */
     virHashTablePtr storageVols;/* hash table for known storage vols */
     virHashTablePtr nodeDevices; /* hash table for known node devices */
-    virHashTablePtr secrets;  /* hash taboe for known secrets */
-    virHashTablePtr nwfilterPools; /* hash tables ofr known nw filter pools */
+    virHashTablePtr secrets;  /* hash table for known secrets */
+    virHashTablePtr nwfilters; /* hash table for known nw filters */
     int refs;                 /* reference count */
 };
 
@@ -387,10 +387,10 @@ struct _virNWFilter {
 virNWFilterPtr virGetNWFilter(virConnectPtr conn,
                                   const char *name,
                                   const unsigned char *uuid);
-int virUnrefNWFilter(virNWFilterPtr pool);
+int virUnrefNWFilter(virNWFilterPtr nwfilter);
 
 virDomainSnapshotPtr virGetDomainSnapshot(virDomainPtr domain,
                                           const char *name);
-int virUnrefDomainSnapshot(virDomainSnapshotPtr pool);
+int virUnrefDomainSnapshot(virDomainSnapshotPtr snapshot);
 
 #endif

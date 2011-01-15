@@ -299,7 +299,8 @@ virNWFilterDefFree(virNWFilterDefPtr def) {
 
 
 void
-virNWFilterPoolObjFree(virNWFilterPoolObjPtr obj) {
+virNWFilterObjFree(virNWFilterObjPtr obj)
+{
     if (!obj)
         return;
 
@@ -315,13 +316,13 @@ virNWFilterPoolObjFree(virNWFilterPoolObjPtr obj) {
 
 
 void
-virNWFilterPoolObjListFree(virNWFilterPoolObjListPtr pools)
+virNWFilterObjListFree(virNWFilterObjListPtr nwfilters)
 {
     unsigned int i;
-    for (i = 0 ; i < pools->count ; i++)
-        virNWFilterPoolObjFree(pools->objs[i]);
-    VIR_FREE(pools->objs);
-    pools->count = 0;
+    for (i = 0 ; i < nwfilters->count ; i++)
+        virNWFilterObjFree(nwfilters->objs[i]);
+    VIR_FREE(nwfilters->objs);
+    nwfilters->count = 0;
 }
 
 
@@ -382,31 +383,31 @@ virNWFilterRuleDefAddString(virNWFilterRuleDefPtr nwf,
 
 
 void
-virNWFilterPoolObjRemove(virNWFilterPoolObjListPtr pools,
-                         virNWFilterPoolObjPtr pool)
+virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
+                     virNWFilterObjPtr nwfilter)
 {
     unsigned int i;
 
-    virNWFilterPoolObjUnlock(pool);
+    virNWFilterObjUnlock(nwfilter);
 
-    for (i = 0 ; i < pools->count ; i++) {
-        virNWFilterPoolObjLock(pools->objs[i]);
-        if (pools->objs[i] == pool) {
-            virNWFilterPoolObjUnlock(pools->objs[i]);
-            virNWFilterPoolObjFree(pools->objs[i]);
+    for (i = 0 ; i < nwfilters->count ; i++) {
+        virNWFilterObjLock(nwfilters->objs[i]);
+        if (nwfilters->objs[i] == nwfilter) {
+            virNWFilterObjUnlock(nwfilters->objs[i]);
+            virNWFilterObjFree(nwfilters->objs[i]);
 
-            if (i < (pools->count - 1))
-                memmove(pools->objs + i, pools->objs + i + 1,
-                        sizeof(*(pools->objs)) * (pools->count - (i + 1)));
+            if (i < (nwfilters->count - 1))
+                memmove(nwfilters->objs + i, nwfilters->objs + i + 1,
+                        sizeof(*(nwfilters->objs)) * (nwfilters->count - (i + 1)));
 
-            if (VIR_REALLOC_N(pools->objs, pools->count - 1) < 0) {
+            if (VIR_REALLOC_N(nwfilters->objs, nwfilters->count - 1) < 0) {
                 ; /* Failure to reduce memory allocation isn't fatal */
             }
-            pools->count--;
+            nwfilters->count--;
 
             break;
         }
-        virNWFilterPoolObjUnlock(pools->objs[i]);
+        virNWFilterObjUnlock(nwfilters->objs[i]);
     }
 }
 
@@ -1998,7 +1999,7 @@ virNWFilterDefParseNode(xmlDocPtr xml,
     if (STRNEQ((const char *)root->name, "filter")) {
         virNWFilterReportError(VIR_ERR_XML_ERROR,
                                "%s",
-                               _("unknown root element for nw filter pool"));
+                               _("unknown root element for nw filter"));
         goto cleanup;
     }
 
@@ -2089,34 +2090,33 @@ virNWFilterDefParseFile(virConnectPtr conn,
 }
 
 
-virNWFilterPoolObjPtr
-virNWFilterPoolObjFindByUUID(virNWFilterPoolObjListPtr pools,
-                             const unsigned char *uuid)
+virNWFilterObjPtr
+virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
+                         const unsigned char *uuid)
 {
     unsigned int i;
 
-    for (i = 0 ; i < pools->count ; i++) {
-        virNWFilterPoolObjLock(pools->objs[i]);
-        if (!memcmp(pools->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
-            return pools->objs[i];
-        virNWFilterPoolObjUnlock(pools->objs[i]);
+    for (i = 0 ; i < nwfilters->count ; i++) {
+        virNWFilterObjLock(nwfilters->objs[i]);
+        if (!memcmp(nwfilters->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
+            return nwfilters->objs[i];
+        virNWFilterObjUnlock(nwfilters->objs[i]);
     }
 
     return NULL;
 }
 
 
-virNWFilterPoolObjPtr
-virNWFilterPoolObjFindByName(virNWFilterPoolObjListPtr pools,
-                             const char *name)
+virNWFilterObjPtr
+virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters, const char *name)
 {
     unsigned int i;
 
-    for (i = 0 ; i < pools->count ; i++) {
-        virNWFilterPoolObjLock(pools->objs[i]);
-        if (STREQ(pools->objs[i]->def->name, name))
-            return pools->objs[i];
-        virNWFilterPoolObjUnlock(pools->objs[i]);
+    for (i = 0 ; i < nwfilters->count ; i++) {
+        virNWFilterObjLock(nwfilters->objs[i]);
+        if (STREQ(nwfilters->objs[i]->def->name, name))
+            return nwfilters->objs[i];
+        virNWFilterObjUnlock(nwfilters->objs[i]);
     }
 
     return NULL;
@@ -2197,14 +2197,14 @@ cleanup:
 
 static int
 _virNWFilterDefLoopDetect(virConnectPtr conn,
-                          virNWFilterPoolObjListPtr pools,
+                          virNWFilterObjListPtr nwfilters,
                           virNWFilterDefPtr def,
                           const char *filtername)
 {
     int rc = 0;
     int i;
     virNWFilterEntryPtr entry;
-    virNWFilterPoolObjPtr obj;
+    virNWFilterObjPtr obj;
 
     if (!def)
         return 0;
@@ -2218,14 +2218,13 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
                 break;
             }
 
-            obj = virNWFilterPoolObjFindByName(pools,
-                                               entry->include->filterref);
+            obj = virNWFilterObjFindByName(nwfilters,
+                                           entry->include->filterref);
             if (obj) {
-                rc = _virNWFilterDefLoopDetect(conn,
-                                               pools,
+                rc = _virNWFilterDefLoopDetect(conn, nwfilters,
                                                obj->def, filtername);
 
-                virNWFilterPoolObjUnlock(obj);
+                virNWFilterObjUnlock(obj);
                 if (rc)
                    break;
             }
@@ -2239,7 +2238,7 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
 /*
  * virNWFilterDefLoopDetect:
  * @conn: pointer to virConnect object
- * @pools : the pools to search
+ * @nwfilters : the nwfilters to search
  * @def : the filter definiton that may add a loop and is to be tested
  *
  * Detect a loop introduced through the filters being able to
@@ -2249,10 +2248,10 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
  */
 static int
 virNWFilterDefLoopDetect(virConnectPtr conn,
-                         virNWFilterPoolObjListPtr pools,
+                         virNWFilterObjListPtr nwfilters,
                          virNWFilterDefPtr def)
 {
-    return _virNWFilterDefLoopDetect(conn, pools, def, def->name);
+    return _virNWFilterDefLoopDetect(conn, nwfilters, def, def->name);
 }
 
 int nCallbackDriver;
@@ -2339,104 +2338,104 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
 
 int
 virNWFilterTestUnassignDef(virConnectPtr conn,
-                           virNWFilterPoolObjPtr pool)
+                           virNWFilterObjPtr nwfilter)
 {
     int rc = 0;
 
     virNWFilterLockFilterUpdates();
 
-    pool->wantRemoved = 1;
+    nwfilter->wantRemoved = 1;
     // trigger the update on VMs referencing the filter
     if (virNWFilterTriggerVMFilterRebuild(conn))
         rc = 1;
 
-    pool->wantRemoved = 0;
+    nwfilter->wantRemoved = 0;
     virNWFilterUnlockFilterUpdates();
     return rc;
 }
 
 
-virNWFilterPoolObjPtr
-virNWFilterPoolObjAssignDef(virConnectPtr conn,
-                            virNWFilterPoolObjListPtr pools,
-                            virNWFilterDefPtr def)
+virNWFilterObjPtr
+virNWFilterObjAssignDef(virConnectPtr conn,
+                        virNWFilterObjListPtr nwfilters,
+                        virNWFilterDefPtr def)
 {
-    virNWFilterPoolObjPtr pool;
+    virNWFilterObjPtr nwfilter;
 
-    pool = virNWFilterPoolObjFindByUUID(pools, def->uuid);
+    nwfilter = virNWFilterObjFindByUUID(nwfilters, def->uuid);
 
-    if (pool) {
-        if (!STREQ(def->name, pool->def->name)) {
+    if (nwfilter) {
+        if (!STREQ(def->name, nwfilter->def->name)) {
             virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
-                               _("filter with same UUID but different name "
-                                 "('%s') already exists"),
-                               pool->def->name);
-            virNWFilterPoolObjUnlock(pool);
+                                   _("filter with same UUID but different name "
+                                     "('%s') already exists"),
+                                   nwfilter->def->name);
+            virNWFilterObjUnlock(nwfilter);
             return NULL;
         }
-        virNWFilterPoolObjUnlock(pool);
+        virNWFilterObjUnlock(nwfilter);
     }
 
-    if (virNWFilterDefLoopDetect(conn, pools, def)) {
+    if (virNWFilterDefLoopDetect(conn, nwfilters, def)) {
         virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                               "%s", _("filter would introduce a loop"));
         return NULL;
     }
 
-    if ((pool = virNWFilterPoolObjFindByName(pools, def->name))) {
+    if ((nwfilter = virNWFilterObjFindByName(nwfilters, def->name))) {
         virNWFilterLockFilterUpdates();
-        pool->newDef = def;
+        nwfilter->newDef = def;
         // trigger the update on VMs referencing the filter
         if (virNWFilterTriggerVMFilterRebuild(conn)) {
-            pool->newDef = NULL;
+            nwfilter->newDef = NULL;
             virNWFilterUnlockFilterUpdates();
-            virNWFilterPoolObjUnlock(pool);
+            virNWFilterObjUnlock(nwfilter);
             return NULL;
         }
 
-        virNWFilterDefFree(pool->def);
-        pool->def = def;
-        pool->newDef = NULL;
+        virNWFilterDefFree(nwfilter->def);
+        nwfilter->def = def;
+        nwfilter->newDef = NULL;
         virNWFilterUnlockFilterUpdates();
-        return pool;
+        return nwfilter;
     }
 
-    if (VIR_ALLOC(pool) < 0) {
+    if (VIR_ALLOC(nwfilter) < 0) {
         virReportOOMError();
         return NULL;
     }
 
-    if (virMutexInitRecursive(&pool->lock) < 0) {
+    if (virMutexInitRecursive(&nwfilter->lock) < 0) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("cannot initialize mutex"));
-        VIR_FREE(pool);
+        VIR_FREE(nwfilter);
         return NULL;
     }
-    virNWFilterPoolObjLock(pool);
-    pool->active = 0;
-    pool->def = def;
+    virNWFilterObjLock(nwfilter);
+    nwfilter->active = 0;
+    nwfilter->def = def;
 
-    if (VIR_REALLOC_N(pools->objs, pools->count+1) < 0) {
-        pool->def = NULL;
-        virNWFilterPoolObjUnlock(pool);
-        virNWFilterPoolObjFree(pool);
+    if (VIR_REALLOC_N(nwfilters->objs, nwfilters->count + 1) < 0) {
+        nwfilter->def = NULL;
+        virNWFilterObjUnlock(nwfilter);
+        virNWFilterObjFree(nwfilter);
         virReportOOMError();
         return NULL;
     }
-    pools->objs[pools->count++] = pool;
+    nwfilters->objs[nwfilters->count++] = nwfilter;
 
-    return pool;
+    return nwfilter;
 }
 
 
-static virNWFilterPoolObjPtr
-virNWFilterPoolObjLoad(virConnectPtr conn,
-                       virNWFilterPoolObjListPtr pools,
-                       const char *file,
-                       const char *path)
+static virNWFilterObjPtr
+virNWFilterObjLoad(virConnectPtr conn,
+                   virNWFilterObjListPtr nwfilters,
+                   const char *file,
+                   const char *path)
 {
     virNWFilterDefPtr def;
-    virNWFilterPoolObjPtr pool;
+    virNWFilterObjPtr nwfilter;
 
     if (!(def = virNWFilterDefParseFile(conn, path))) {
         return NULL;
@@ -2444,33 +2443,33 @@ virNWFilterPoolObjLoad(virConnectPtr conn,
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
         virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
-            _("network filter pool config filename '%s' does not match pool name '%s'"),
+            _("network filter config filename '%s' does not match name '%s'"),
             path, def->name);
         virNWFilterDefFree(def);
         return NULL;
     }
 
-    if (!(pool = virNWFilterPoolObjAssignDef(conn, pools, def))) {
+    if (!(nwfilter = virNWFilterObjAssignDef(conn, nwfilters, def))) {
         virNWFilterDefFree(def);
         return NULL;
     }
 
-    VIR_FREE(pool->configFile); // for driver reload
-    pool->configFile = strdup(path);
-    if (pool->configFile == NULL) {
+    VIR_FREE(nwfilter->configFile); // for driver reload
+    nwfilter->configFile = strdup(path);
+    if (nwfilter->configFile == NULL) {
         virReportOOMError();
         virNWFilterDefFree(def);
         return NULL;
     }
 
-    return pool;
+    return nwfilter;
 }
 
 
 int
-virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
-                              virNWFilterPoolObjListPtr pools,
-                              const char *configDir)
+virNWFilterLoadAllConfigs(virConnectPtr conn,
+                          virNWFilterObjListPtr nwfilters,
+                          const char *configDir)
 {
     DIR *dir;
     struct dirent *entry;
@@ -2486,7 +2485,7 @@ virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
 
     while ((entry = readdir(dir))) {
         char path[PATH_MAX];
-        virNWFilterPoolObjPtr pool;
+        virNWFilterObjPtr nwfilter;
 
         if (entry->d_name[0] == '.')
             continue;
@@ -2502,9 +2501,9 @@ virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
             continue;
         }
 
-        pool = virNWFilterPoolObjLoad(conn, pools, entry->d_name, path);
-        if (pool)
-            virNWFilterPoolObjUnlock(pool);
+        nwfilter = virNWFilterObjLoad(conn, nwfilters, entry->d_name, path);
+        if (nwfilter)
+            virNWFilterObjUnlock(nwfilter);
     }
 
     closedir(dir);
@@ -2514,15 +2513,15 @@ virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
 
 
 int
-virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
-                          virNWFilterPoolObjPtr pool,
-                          virNWFilterDefPtr def)
+virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
+                      virNWFilterObjPtr nwfilter,
+                      virNWFilterDefPtr def)
 {
     char *xml;
     int fd = -1, ret = -1;
     ssize_t towrite;
 
-    if (!pool->configFile) {
+    if (!nwfilter->configFile) {
         int err;
         char path[PATH_MAX];
 
@@ -2539,7 +2538,7 @@ virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
                                   "%s", _("cannot construct config file path"));
             return -1;
         }
-        if (!(pool->configFile = strdup(path))) {
+        if (!(nwfilter->configFile = strdup(path))) {
             virReportOOMError();
             return -1;
         }
@@ -2551,12 +2550,12 @@ virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
         return -1;
     }
 
-    if ((fd = open(pool->configFile,
+    if ((fd = open(nwfilter->configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
         virReportSystemError(errno,
                              _("cannot create config file %s"),
-                             pool->configFile);
+                             nwfilter->configFile);
         goto cleanup;
     }
 
@@ -2564,14 +2563,14 @@ virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
     if (safewrite(fd, xml, towrite) != towrite) {
         virReportSystemError(errno,
                              _("cannot write config file %s"),
-                             pool->configFile);
+                             nwfilter->configFile);
         goto cleanup;
     }
 
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot save config file %s"),
-                             pool->configFile);
+                             nwfilter->configFile);
         goto cleanup;
     }
 
@@ -2587,18 +2586,18 @@ virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
 
 
 int
-virNWFilterPoolObjDeleteDef(virNWFilterPoolObjPtr pool)
+virNWFilterObjDeleteDef(virNWFilterObjPtr nwfilter)
 {
-    if (!pool->configFile) {
+    if (!nwfilter->configFile) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("no config file for %s"), pool->def->name);
+                               _("no config file for %s"), nwfilter->def->name);
         return -1;
     }
 
-    if (unlink(pool->configFile) < 0) {
+    if (unlink(nwfilter->configFile) < 0) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot remove config for %s"),
-                               pool->def->name);
+                               nwfilter->def->name);
         return -1;
     }
 
@@ -2900,12 +2899,12 @@ void virNWFilterConfLayerShutdown(void)
 }
 
 
-void virNWFilterPoolObjLock(virNWFilterPoolObjPtr obj)
+void virNWFilterObjLock(virNWFilterObjPtr obj)
 {
     virMutexLock(&obj->lock);
 }
 
-void virNWFilterPoolObjUnlock(virNWFilterPoolObjPtr obj)
+void virNWFilterObjUnlock(virNWFilterObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }

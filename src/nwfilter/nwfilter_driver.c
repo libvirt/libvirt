@@ -105,9 +105,9 @@ nwfilterDriverStartup(int privileged) {
 
     VIR_FREE(base);
 
-    if (virNWFilterPoolLoadAllConfigs(NULL,
-                                      &driverState->pools,
-                                      driverState->configDir) < 0)
+    if (virNWFilterLoadAllConfigs(NULL,
+                                  &driverState->nwfilters,
+                                  driverState->configDir) < 0)
         goto error;
 
     nwfilterDriverUnlock(driverState);
@@ -155,9 +155,9 @@ nwfilterDriverReload(void) {
         nwfilterDriverLock(driverState);
         virNWFilterCallbackDriversLock();
 
-        virNWFilterPoolLoadAllConfigs(conn,
-                                      &driverState->pools,
-                                      driverState->configDir);
+        virNWFilterLoadAllConfigs(conn,
+                                  &driverState->nwfilters,
+                                  driverState->configDir);
 
         virNWFilterCallbackDriversUnlock();
         nwfilterDriverUnlock(driverState);
@@ -171,7 +171,7 @@ nwfilterDriverReload(void) {
 /**
  * virNWFilterActive:
  *
- * Checks if the nwfilter driver is active, i.e. has an active pool
+ * Checks if the nwfilter driver is active, i.e. has an active nwfilter
  *
  * Returns 1 if active, 0 otherwise
  */
@@ -183,7 +183,7 @@ nwfilterDriverActive(void) {
         return 0;
 
     nwfilterDriverLock(driverState);
-    ret = driverState->pools.count ? 1 : 0;
+    ret = driverState->nwfilters.count ? 1 : 0;
     nwfilterDriverUnlock(driverState);
 
     return ret;
@@ -192,7 +192,7 @@ nwfilterDriverActive(void) {
 /**
  * virNWFilterShutdown:
  *
- * Shutdown the nwfilter driver, it will stop all active nwfilter pools
+ * Shutdown the nwfilter driver, it will stop all active nwfilters
  */
 static int
 nwfilterDriverShutdown(void) {
@@ -203,8 +203,8 @@ nwfilterDriverShutdown(void) {
 
     nwfilterDriverLock(driverState);
 
-    /* free inactive pools */
-    virNWFilterPoolObjListFree(&driverState->pools);
+    /* free inactive nwfilters */
+    virNWFilterObjListFree(&driverState->nwfilters);
 
     VIR_FREE(driverState->configDir);
     nwfilterDriverUnlock(driverState);
@@ -219,24 +219,24 @@ static virNWFilterPtr
 nwfilterLookupByUUID(virConnectPtr conn,
                      const unsigned char *uuid) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
-    virNWFilterPoolObjPtr pool;
+    virNWFilterObjPtr nwfilter;
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock(driver);
-    pool = virNWFilterPoolObjFindByUUID(&driver->pools, uuid);
+    nwfilter = virNWFilterObjFindByUUID(&driver->nwfilters, uuid);
     nwfilterDriverUnlock(driver);
 
-    if (!pool) {
+    if (!nwfilter) {
         virNWFilterReportError(VIR_ERR_NO_NWFILTER,
-                               "%s", _("no pool with matching uuid"));
+                               "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
 
-    ret = virGetNWFilter(conn, pool->def->name, pool->def->uuid);
+    ret = virGetNWFilter(conn, nwfilter->def->name, nwfilter->def->uuid);
 
 cleanup:
-    if (pool)
-        virNWFilterPoolObjUnlock(pool);
+    if (nwfilter)
+        virNWFilterObjUnlock(nwfilter);
     return ret;
 }
 
@@ -245,24 +245,24 @@ static virNWFilterPtr
 nwfilterLookupByName(virConnectPtr conn,
                      const char *name) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
-    virNWFilterPoolObjPtr pool;
+    virNWFilterObjPtr nwfilter;
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock(driver);
-    pool = virNWFilterPoolObjFindByName(&driver->pools, name);
+    nwfilter = virNWFilterObjFindByName(&driver->nwfilters, name);
     nwfilterDriverUnlock(driver);
 
-    if (!pool) {
+    if (!nwfilter) {
         virNWFilterReportError(VIR_ERR_NO_NWFILTER,
-                               _("no pool with matching name '%s'"), name);
+                               _("no nwfilter with matching name '%s'"), name);
         goto cleanup;
     }
 
-    ret = virGetNWFilter(conn, pool->def->name, pool->def->uuid);
+    ret = virGetNWFilter(conn, nwfilter->def->name, nwfilter->def->uuid);
 
 cleanup:
-    if (pool)
-        virNWFilterPoolObjUnlock(pool);
+    if (nwfilter)
+        virNWFilterObjUnlock(nwfilter);
     return ret;
 }
 
@@ -289,7 +289,7 @@ nwfilterClose(virConnectPtr conn) {
 static int
 nwfilterNumNWFilters(virConnectPtr conn) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
-    return driver->pools.count;
+    return driver->nwfilters.count;
 }
 
 
@@ -301,15 +301,15 @@ nwfilterListNWFilters(virConnectPtr conn,
     int got = 0, i;
 
     nwfilterDriverLock(driver);
-    for (i = 0 ; i < driver->pools.count && got < nnames ; i++) {
-        virNWFilterPoolObjLock(driver->pools.objs[i]);
-        if (!(names[got] = strdup(driver->pools.objs[i]->def->name))) {
-             virNWFilterPoolObjUnlock(driver->pools.objs[i]);
+    for (i = 0 ; i < driver->nwfilters.count && got < nnames ; i++) {
+        virNWFilterObjLock(driver->nwfilters.objs[i]);
+        if (!(names[got] = strdup(driver->nwfilters.objs[i]->def->name))) {
+             virNWFilterObjUnlock(driver->nwfilters.objs[i]);
              virReportOOMError();
              goto cleanup;
         }
         got++;
-        virNWFilterPoolObjUnlock(driver->pools.objs[i]);
+        virNWFilterObjUnlock(driver->nwfilters.objs[i]);
     }
     nwfilterDriverUnlock(driver);
     return got;
@@ -329,7 +329,7 @@ nwfilterDefine(virConnectPtr conn,
                unsigned int flags ATTRIBUTE_UNUSED) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     virNWFilterDefPtr def;
-    virNWFilterPoolObjPtr pool = NULL;
+    virNWFilterObjPtr nwfilter = NULL;
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock(driver);
@@ -338,22 +338,22 @@ nwfilterDefine(virConnectPtr conn,
     if (!(def = virNWFilterDefParseString(conn, xml)))
         goto cleanup;
 
-    if (!(pool = virNWFilterPoolObjAssignDef(conn, &driver->pools, def)))
+    if (!(nwfilter = virNWFilterObjAssignDef(conn, &driver->nwfilters, def)))
         goto cleanup;
 
-    if (virNWFilterPoolObjSaveDef(driver, pool, def) < 0) {
-        virNWFilterPoolObjRemove(&driver->pools, pool);
+    if (virNWFilterObjSaveDef(driver, nwfilter, def) < 0) {
+        virNWFilterObjRemove(&driver->nwfilters, nwfilter);
         def = NULL;
         goto cleanup;
     }
     def = NULL;
 
-    ret = virGetNWFilter(conn, pool->def->name, pool->def->uuid);
+    ret = virGetNWFilter(conn, nwfilter->def->name, nwfilter->def->uuid);
 
 cleanup:
     virNWFilterDefFree(def);
-    if (pool)
-        virNWFilterPoolObjUnlock(pool);
+    if (nwfilter)
+        virNWFilterObjUnlock(nwfilter);
 
     virNWFilterCallbackDriversUnlock();
     nwfilterDriverUnlock(driver);
@@ -364,38 +364,38 @@ cleanup:
 static int
 nwfilterUndefine(virNWFilterPtr obj) {
     virNWFilterDriverStatePtr driver = obj->conn->nwfilterPrivateData;
-    virNWFilterPoolObjPtr pool;
+    virNWFilterObjPtr nwfilter;
     int ret = -1;
 
     nwfilterDriverLock(driver);
     virNWFilterCallbackDriversLock();
 
-    pool = virNWFilterPoolObjFindByUUID(&driver->pools, obj->uuid);
-    if (!pool) {
+    nwfilter = virNWFilterObjFindByUUID(&driver->nwfilters, obj->uuid);
+    if (!nwfilter) {
         virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
-                               "%s", _("no nwfilter pool with matching uuid"));
+                               "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
 
-    if (virNWFilterTestUnassignDef(obj->conn, pool)) {
+    if (virNWFilterTestUnassignDef(obj->conn, nwfilter)) {
         virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                                "%s",
                                _("nwfilter is in use"));
         goto cleanup;
     }
 
-    if (virNWFilterPoolObjDeleteDef(pool) < 0)
+    if (virNWFilterObjDeleteDef(nwfilter) < 0)
         goto cleanup;
 
-    VIR_FREE(pool->configFile);
+    VIR_FREE(nwfilter->configFile);
 
-    virNWFilterPoolObjRemove(&driver->pools, pool);
-    pool = NULL;
+    virNWFilterObjRemove(&driver->nwfilters, nwfilter);
+    nwfilter = NULL;
     ret = 0;
 
 cleanup:
-    if (pool)
-        virNWFilterPoolObjUnlock(pool);
+    if (nwfilter)
+        virNWFilterObjUnlock(nwfilter);
 
     virNWFilterCallbackDriversUnlock();
     nwfilterDriverUnlock(driver);
@@ -407,26 +407,26 @@ static char *
 nwfilterDumpXML(virNWFilterPtr obj,
                 unsigned int flags) {
     virNWFilterDriverStatePtr driver = obj->conn->nwfilterPrivateData;
-    virNWFilterPoolObjPtr pool;
+    virNWFilterObjPtr nwfilter;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
 
     nwfilterDriverLock(driver);
-    pool = virNWFilterPoolObjFindByUUID(&driver->pools, obj->uuid);
+    nwfilter = virNWFilterObjFindByUUID(&driver->nwfilters, obj->uuid);
     nwfilterDriverUnlock(driver);
 
-    if (!pool) {
+    if (!nwfilter) {
         virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
-                               "%s", _("no nwfilter pool with matching uuid"));
+                               "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
 
-    ret = virNWFilterDefFormat(pool->def);
+    ret = virNWFilterDefFormat(nwfilter->def);
 
 cleanup:
-    if (pool)
-        virNWFilterPoolObjUnlock(pool);
+    if (nwfilter)
+        virNWFilterObjUnlock(nwfilter);
     return ret;
 }
 

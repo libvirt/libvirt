@@ -705,7 +705,7 @@ virLibSecretError(virSecretPtr secret, virErrorNumber error, const char *info)
  * Handle an error at the connection level
  */
 static void
-virLibNWFilterError(virNWFilterPtr pool, virErrorNumber error,
+virLibNWFilterError(virNWFilterPtr nwfilter, virErrorNumber error,
                     const char *info)
 {
     virConnectPtr conn = NULL;
@@ -716,7 +716,7 @@ virLibNWFilterError(virNWFilterPtr pool, virErrorNumber error,
 
     errmsg = virErrorMsg(error, info);
     if (error != VIR_ERR_INVALID_NWFILTER)
-        conn = pool->conn;
+        conn = nwfilter->conn;
 
     virRaiseError(conn, NULL, NULL, VIR_FROM_NWFILTER, error, VIR_ERR_ERROR,
                   errmsg, info, NULL, 0, 0, errmsg, info);

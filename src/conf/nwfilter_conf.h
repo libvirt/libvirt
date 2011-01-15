@@ -441,10 +441,10 @@ struct _virNWFilterDef {
 };
 
 
-typedef struct _virNWFilterPoolObj virNWFilterPoolObj;
-typedef virNWFilterPoolObj *virNWFilterPoolObjPtr;
+typedef struct _virNWFilterObj virNWFilterObj;
+typedef virNWFilterObj *virNWFilterObjPtr;
 
-struct _virNWFilterPoolObj {
+struct _virNWFilterObj {
     virMutex lock;
 
     char *configFile;
@@ -456,11 +456,11 @@ struct _virNWFilterPoolObj {
 };
 
 
-typedef struct _virNWFilterPoolObjList virNWFilterPoolObjList;
-typedef virNWFilterPoolObjList *virNWFilterPoolObjListPtr;
-struct _virNWFilterPoolObjList {
+typedef struct _virNWFilterObjList virNWFilterObjList;
+typedef virNWFilterObjList *virNWFilterObjListPtr;
+struct _virNWFilterObjList {
     unsigned int count;
-    virNWFilterPoolObjPtr *objs;
+    virNWFilterObjPtr *objs;
 };
 
 
@@ -469,7 +469,7 @@ typedef virNWFilterDriverState *virNWFilterDriverStatePtr;
 struct _virNWFilterDriverState {
     virMutex lock;
 
-    virNWFilterPoolObjList pools;
+    virNWFilterObjList nwfilters;
 
     char *configDir;
 };
@@ -583,33 +583,31 @@ struct _virNWFilterTechDriver {
 void virNWFilterRuleDefFree(virNWFilterRuleDefPtr def);
 
 void virNWFilterDefFree(virNWFilterDefPtr def);
-void virNWFilterPoolObjListFree(virNWFilterPoolObjListPtr pools);
-void virNWFilterPoolObjRemove(virNWFilterPoolObjListPtr pools,
-                              virNWFilterPoolObjPtr pool);
+void virNWFilterObjListFree(virNWFilterObjListPtr nwfilters);
+void virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
+                          virNWFilterObjPtr nwfilter);
 
-void virNWFilterPoolObjFree(virNWFilterPoolObjPtr obj);
+void virNWFilterObjFree(virNWFilterObjPtr obj);
 
-virNWFilterPoolObjPtr
-        virNWFilterPoolObjFindByUUID(virNWFilterPoolObjListPtr pools,
-                                     const unsigned char *uuid);
+virNWFilterObjPtr virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
+                                           const unsigned char *uuid);
 
-virNWFilterPoolObjPtr
-        virNWFilterPoolObjFindByName(virNWFilterPoolObjListPtr pools,
-                                     const char *name);
+virNWFilterObjPtr virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
+                                           const char *name);
 
 
-int virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
-                              virNWFilterPoolObjPtr pool,
-                              virNWFilterDefPtr def);
+int virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
+                          virNWFilterObjPtr nwfilter,
+                          virNWFilterDefPtr def);
 
-int virNWFilterPoolObjDeleteDef(virNWFilterPoolObjPtr pool);
+int virNWFilterObjDeleteDef(virNWFilterObjPtr nwfilter);
 
-virNWFilterPoolObjPtr virNWFilterPoolObjAssignDef(virConnectPtr conn,
-                                                  virNWFilterPoolObjListPtr pools,
-                                                  virNWFilterDefPtr def);
+virNWFilterObjPtr virNWFilterObjAssignDef(virConnectPtr conn,
+                                          virNWFilterObjListPtr nwfilters,
+                                          virNWFilterDefPtr def);
 
 int virNWFilterTestUnassignDef(virConnectPtr conn,
-                               virNWFilterPoolObjPtr pool);
+                               virNWFilterObjPtr nwfilter);
 
 virNWFilterDefPtr virNWFilterDefParseNode(xmlDocPtr xml,
                                           xmlNodePtr root);
@@ -623,9 +621,9 @@ int virNWFilterSaveXML(const char *configDir,
 int virNWFilterSaveConfig(const char *configDir,
                           virNWFilterDefPtr def);
 
-int virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
-                                  virNWFilterPoolObjListPtr pools,
-                                  const char *configDir);
+int virNWFilterLoadAllConfigs(virConnectPtr conn,
+                              virNWFilterObjListPtr nwfilters,
+                              const char *configDir);
 
 char *virNWFilterConfigFile(const char *dir,
                             const char *name);
@@ -635,8 +633,8 @@ virNWFilterDefPtr virNWFilterDefParseString(virConnectPtr conn,
 virNWFilterDefPtr virNWFilterDefParseFile(virConnectPtr conn,
                                           const char *filename);
 
-void virNWFilterPoolObjLock(virNWFilterPoolObjPtr obj);
-void virNWFilterPoolObjUnlock(virNWFilterPoolObjPtr obj);
+void virNWFilterObjLock(virNWFilterObjPtr obj);
+void virNWFilterObjUnlock(virNWFilterObjPtr obj);
 
 void virNWFilterLockFilterUpdates(void);
 void virNWFilterUnlockFilterUpdates(void);
