@@ -127,9 +127,9 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
  * Initialization function for the QEmu daemon
  */
 static int
-storageDriverStartup(int privileged) {
+storageDriverStartup(int privileged)
+{
     char *base = NULL;
-    char driverConf[PATH_MAX];
 
     if (VIR_ALLOC(driverState) < 0)
         return -1;
@@ -160,11 +160,6 @@ storageDriverStartup(int privileged) {
     /* Configuration paths are either ~/.libvirt/storage/... (session) or
      * /etc/libvirt/storage/... (system).
      */
-    if (snprintf (driverConf, sizeof(driverConf),
-                  "%s/storage.conf", base) == -1)
-        goto out_of_memory;
-    driverConf[sizeof(driverConf)-1] = '\0';
-
     if (virAsprintf(&driverState->configDir,
                     "%s/storage", base) == -1)
         goto out_of_memory;
@@ -174,13 +169,6 @@ storageDriverStartup(int privileged) {
         goto out_of_memory;
 
     VIR_FREE(base);
-
-    /*
-    if (virStorageLoadDriverConfig(driver, driverConf) < 0) {
-        virStorageDriverShutdown();
-        return -1;
-    }
-    */
 
     if (virStoragePoolLoadAllConfigs(&driverState->pools,
                                      driverState->configDir,

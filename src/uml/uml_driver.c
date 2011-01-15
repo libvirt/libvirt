@@ -342,10 +342,10 @@ cleanup:
  * Initialization function for the Uml daemon
  */
 static int
-umlStartup(int privileged) {
+umlStartup(int privileged)
+{
     uid_t uid = geteuid();
     char *base = NULL;
-    char driverConf[PATH_MAX];
     char *userdir = NULL;
 
     if (VIR_ALLOC(uml_driver) < 0)
@@ -398,10 +398,6 @@ umlStartup(int privileged) {
     /* Configuration paths are either ~/.libvirt/uml/... (session) or
      * /etc/libvirt/uml/... (system).
      */
-    if (snprintf (driverConf, sizeof(driverConf), "%s/uml.conf", base) == -1)
-        goto out_of_memory;
-    driverConf[sizeof(driverConf)-1] = '\0';
-
     if (virAsprintf(&uml_driver->configDir, "%s/uml", base) == -1)
         goto out_of_memory;
 
