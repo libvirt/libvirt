@@ -2491,7 +2491,7 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     }
 
     if (!vm->persistent) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
+        lxcError(VIR_ERR_OPERATION_INVALID,
                  "%s", _("Cannot set autostart for transient domain"));
         goto cleanup;
     }

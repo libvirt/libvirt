@@ -1537,7 +1537,7 @@ networkStartNetworkDaemon(struct network_driver *driver,
     virNetworkIpDefPtr ipdef;
 
     if (virNetworkObjIsActive(network)) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
+        networkReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("network is already active"));
         return -1;
     }

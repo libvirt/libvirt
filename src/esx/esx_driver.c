@@ -1660,7 +1660,6 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
         goto cleanup;
     }
 
-
     if (esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, uuid) < 0 ||
         esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0) {
         goto cleanup;

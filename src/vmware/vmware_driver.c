@@ -622,7 +622,7 @@ vmwareDomainUndefine(virDomainPtr dom)
     }
 
     if (!vm->persistent) {
-        vmwareError(VIR_ERR_INTERNAL_ERROR,
+        vmwareError(VIR_ERR_OPERATION_INVALID,
                     "%s", _("cannot undefine transient domain"));
         goto cleanup;
     }

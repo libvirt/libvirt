@@ -1079,7 +1079,7 @@ openvzDomainUndefine(virDomainPtr dom)
     }
 
     if (virDomainObjIsActive(vm)) {
-        openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
+        openvzError(VIR_ERR_OPERATION_INVALID, "%s",
                     _("cannot delete active domain"));
         goto cleanup;
     }

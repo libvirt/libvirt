@@ -819,7 +819,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     virCommandPtr cmd = NULL;
 
     if (virDomainObjIsActive(vm)) {
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("VM is already active"));
         return -1;
     }
@@ -1462,7 +1462,7 @@ static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     }
 
     if (virDomainObjIsActive(vm)) {
-        umlReportError(VIR_ERR_NO_SUPPORT, "%s",
+        umlReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot set memory of an active domain"));
         goto cleanup;
     }
@@ -1656,13 +1656,13 @@ static int umlDomainUndefine(virDomainPtr dom) {
     }
 
     if (virDomainObjIsActive(vm)) {
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot delete active domain"));
         goto cleanup;
     }
 
     if (!vm->persistent) {
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot undefine transient domain"));
         goto cleanup;
     }
@@ -1954,7 +1954,7 @@ static int umlDomainSetAutostart(virDomainPtr dom,
     }
 
     if (!vm->persistent) {
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot set autostart for transient domain"));
         goto cleanup;
     }

@@ -291,7 +291,7 @@ static int oneDomainUndefine(virDomainPtr dom)
     }
 
     if (!vm->persistent) {
-        oneError(VIR_ERR_INTERNAL_ERROR, "%s",
+        oneError(VIR_ERR_OPERATION_INVALID, "%s",
                  _("cannot undefine transient domain"));
         goto return_point;
     }

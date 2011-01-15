@@ -6401,7 +6401,7 @@ static int qemudDomainUndefine(virDomainPtr dom) {
     }
 
     if (!vm->persistent) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("cannot undefine transient domain"));
         goto cleanup;
     }
@@ -6848,7 +6848,7 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     }
 
     if (!vm->persistent) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("cannot set autostart for transient domain"));
         goto cleanup;
     }
