@@ -696,6 +696,13 @@ typedef enum {
  */
 
 #define VIR_DOMAIN_MEMORY_FIELD_LENGTH 80
+
+/**
+ * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED:
+ *
+ * Macro providing the virMemoryParameter value that indicates "unlimited"
+ */
+
 #define VIR_DOMAIN_MEMORY_PARAM_UNLIMITED (INT64_MAX >> 10)
 
 /**
