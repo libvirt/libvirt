@@ -113,19 +113,16 @@ virStorageVolFreeName(virStorageVolPtr vol, const char *name ATTRIBUTE_UNUSED)
 
 /**
  * virSecretFreeName:
- * @secret_: a secret object
+ * @secret: a secret object
  *
  * Destroy the secret object, this is just used by the secret hash callback.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
-static void
-virSecretFreeName(void *secret_, const char *name ATTRIBUTE_UNUSED)
+static int
+virSecretFreeName(virSecretPtr secret, const char *name ATTRIBUTE_UNUSED)
 {
-    virSecretPtr secret;
-
-    secret = secret_;
-    virUnrefSecret(secret);
+    return virUnrefSecret(secret);
 }
 
 /**
@@ -225,7 +222,7 @@ failed:
         if (ret->nodeDevices != NULL)
             virHashFree(ret->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
         if (ret->secrets != NULL)
-            virHashFree(ret->secrets, virSecretFreeName);
+            virHashFree(ret->secrets, (virHashDeallocator) virSecretFreeName);
         if (ret->nwfilterPools != NULL)
             virHashFree(ret->nwfilterPools, (virHashDeallocator) virNWFilterPoolFreeName);
 
@@ -283,7 +280,7 @@ virReleaseConnect(virConnectPtr conn) {
     if (conn->nodeDevices != NULL)
         virHashFree(conn->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
     if (conn->secrets != NULL)
-        virHashFree(conn->secrets, virSecretFreeName);
+        virHashFree(conn->secrets, (virHashDeallocator) virSecretFreeName);
     if (conn->nwfilterPools != NULL)
         virHashFree(conn->nwfilterPools, (virHashDeallocator) virNWFilterPoolFreeName);
 
