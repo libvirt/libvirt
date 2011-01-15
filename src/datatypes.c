@@ -821,7 +821,7 @@ virUnrefInterface(virInterfacePtr iface) {
  * Lookup if the storage pool is already registered for that connection,
  * if yes return a new pointer to it, if no allocate a new structure,
  * and register it in the table. In any case a corresponding call to
- * virFreeStoragePool() is needed to not leak data.
+ * virUnrefStoragePool() is needed to not leak data.
  *
  * Returns a pointer to the network, or NULL in case of failure
  */
@@ -972,7 +972,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
  * Lookup if the storage vol is already registered for that connection,
  * if yes return a new pointer to it, if no allocate a new structure,
  * and register it in the table. In any case a corresponding call to
- * virFreeStorageVol() is needed to not leak data.
+ * virUnrefStorageVol() is needed to not leak data.
  *
  * Returns a pointer to the storage vol, or NULL in case of failure
  */
@@ -1128,7 +1128,7 @@ virUnrefStorageVol(virStorageVolPtr vol) {
  * Lookup if the device is already registered for that connection,
  * if yes return a new pointer to it, if no allocate a new structure,
  * and register it in the table. In any case a corresponding call to
- * virFreeNodeDevice() is needed to not leak data.
+ * virUnrefNodeDevice() is needed to not leak data.
  *
  * Returns a pointer to the node device, or NULL in case of failure
  */
@@ -1261,7 +1261,7 @@ virUnrefNodeDevice(virNodeDevicePtr dev) {
  *
  * Lookup if the secret is already registered for that connection, if so return
  * a pointer to it, otherwise allocate a new structure, and register it in the
- * table. In any case a corresponding call to virFreeSecret() is needed to not
+ * table. In any case a corresponding call to virUnrefSecret() is needed to not
  * leak data.
  *
  * Returns a pointer to the secret, or NULL in case of failure
