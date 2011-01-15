@@ -157,14 +157,14 @@ printVar(virNWFilterHashTablePtr vars,
     if ((item->flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
         char *val = (char *)virHashLookup(vars->hashTable, item->var);
         if (!val) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot find value for '%s'"),
                                    item->var);
             return 1;
         }
 
         if (!virStrcpy(buf, val, bufsize)) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Buffer to small to print MAC address "
                                    "'%s' into"),
                                    item->var);
@@ -223,7 +223,7 @@ _printDataType(virNWFilterHashTablePtr vars,
     case DATATYPE_MACADDR:
     case DATATYPE_MACMASK:
         if (bufsize < VIR_MAC_STRING_BUFLEN) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for MAC address"));
             return 1;
         }
@@ -235,7 +235,7 @@ _printDataType(virNWFilterHashTablePtr vars,
     case DATATYPE_IPMASK:
         if (snprintf(buf, bufsize, "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint8 type"));
             return 1;
         }
@@ -245,7 +245,7 @@ _printDataType(virNWFilterHashTablePtr vars,
     case DATATYPE_UINT16_HEX:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u16) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint16 type"));
             return 1;
         }
@@ -255,14 +255,14 @@ _printDataType(virNWFilterHashTablePtr vars,
     case DATATYPE_UINT8_HEX:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint8 type"));
             return 1;
         }
     break;
 
     default:
-        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unhandled datatype %x"), item->datatype);
         return 1;
     break;
@@ -2356,7 +2356,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
         if (nettype == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                           _("'%s' protocol not support for net type '%s'"),
                           virNWFilterRuleProtocolTypeToString(rule->prtclType),
                           virDomainNetTypeToString(nettype));
@@ -2380,7 +2380,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
     case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
         if (nettype == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
                           _("'%s' protocol not support for net type '%s'"),
                           virNWFilterRuleProtocolTypeToString(rule->prtclType),
                           virDomainNetTypeToString(nettype));
@@ -2396,7 +2396,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_LAST:
-        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
                                "%s", _("illegal protocol type"));
         rc = 1;
     break;

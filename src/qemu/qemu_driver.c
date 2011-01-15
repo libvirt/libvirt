@@ -467,7 +467,7 @@ getVolumeQcowPassphrase(virConnectPtr conn,
         enc->nsecrets != 1 ||
         enc->secrets[0]->type !=
         VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE) {
-        qemuReportError(VIR_ERR_INVALID_DOMAIN,
+        qemuReportError(VIR_ERR_XML_ERROR,
                         _("invalid <encryption> for volume %s"), disk->src);
         goto cleanup;
     }
@@ -485,7 +485,7 @@ getVolumeQcowPassphrase(virConnectPtr conn,
     if (memchr(data, '\0', size) != NULL) {
         memset(data, 0, size);
         VIR_FREE(data);
-        qemuReportError(VIR_ERR_INVALID_SECRET,
+        qemuReportError(VIR_ERR_XML_ERROR,
                         _("format='qcow' passphrase for %s must not contain a "
                           "'\\0'"), disk->src);
         goto cleanup;

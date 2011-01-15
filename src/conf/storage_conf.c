@@ -1423,7 +1423,7 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        virStorageReportError(VIR_ERR_INVALID_STORAGE_POOL,
+        virStorageReportError(VIR_ERR_XML_ERROR,
                               _("Storage pool config filename '%s' does not match pool name '%s'"),
                               path, def->name);
         virStoragePoolDefFree(def);

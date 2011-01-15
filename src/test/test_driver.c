@@ -4356,7 +4356,7 @@ testStorageVolumeLookupByName(virStoragePoolPtr pool,
     privvol = virStorageVolDefFindByName(privpool, name);
 
     if (!privvol) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"), name);
         goto cleanup;
     }
@@ -4399,7 +4399,7 @@ testStorageVolumeLookupByKey(virConnectPtr conn,
     testDriverUnlock(privconn);
 
     if (!ret)
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching key '%s'"), key);
 
     return ret;
@@ -4433,7 +4433,7 @@ testStorageVolumeLookupByPath(virConnectPtr conn,
     testDriverUnlock(privconn);
 
     if (!ret)
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching path '%s'"), path);
 
     return ret;
@@ -4469,7 +4469,7 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
         goto cleanup;
 
     if (virStorageVolDefFindByName(privpool, privvol->name)) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_OPERATION_FAILED,
                   "%s", _("storage vol already exists"));
         goto cleanup;
     }
@@ -4550,14 +4550,14 @@ testStorageVolumeCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
 
     if (virStorageVolDefFindByName(privpool, privvol->name)) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_OPERATION_FAILED,
                   "%s", _("storage vol already exists"));
         goto cleanup;
     }
 
     origvol = virStorageVolDefFindByName(privpool, clonevol->name);
     if (!origvol) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   clonevol->name);
         goto cleanup;
@@ -4633,7 +4633,7 @@ testStorageVolumeDelete(virStorageVolPtr vol,
     privvol = virStorageVolDefFindByName(privpool, vol->name);
 
     if (privvol == NULL) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
         goto cleanup;
@@ -4711,7 +4711,7 @@ testStorageVolumeGetInfo(virStorageVolPtr vol,
     privvol = virStorageVolDefFindByName(privpool, vol->name);
 
     if (privvol == NULL) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
         goto cleanup;
@@ -4756,7 +4756,7 @@ testStorageVolumeGetXMLDesc(virStorageVolPtr vol,
     privvol = virStorageVolDefFindByName(privpool, vol->name);
 
     if (privvol == NULL) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
         goto cleanup;
@@ -4796,7 +4796,7 @@ testStorageVolumeGetPath(virStorageVolPtr vol) {
     privvol = virStorageVolDefFindByName(privpool, vol->name);
 
     if (privvol == NULL) {
-        testError(VIR_ERR_INVALID_STORAGE_VOL,
+        testError(VIR_ERR_NO_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
         goto cleanup;

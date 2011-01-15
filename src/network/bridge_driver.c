@@ -2059,13 +2059,13 @@ static int networkUndefine(virNetworkPtr net) {
 
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
     if (!network) {
-        networkReportError(VIR_ERR_INVALID_NETWORK,
+        networkReportError(VIR_ERR_NO_NETWORK,
                            "%s", _("no network with matching uuid"));
         goto cleanup;
     }
 
     if (virNetworkObjIsActive(network)) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
+        networkReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("network is still active"));
         goto cleanup;
     }
@@ -2138,7 +2138,7 @@ static int networkStart(virNetworkPtr net) {
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
-        networkReportError(VIR_ERR_INVALID_NETWORK,
+        networkReportError(VIR_ERR_NO_NETWORK,
                            "%s", _("no network with matching uuid"));
         goto cleanup;
     }
@@ -2161,13 +2161,13 @@ static int networkDestroy(virNetworkPtr net) {
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
-        networkReportError(VIR_ERR_INVALID_NETWORK,
+        networkReportError(VIR_ERR_NO_NETWORK,
                            "%s", _("no network with matching uuid"));
         goto cleanup;
     }
 
     if (!virNetworkObjIsActive(network)) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
+        networkReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("network is not active"));
         goto cleanup;
     }
@@ -2196,7 +2196,7 @@ static char *networkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
     networkDriverUnlock(driver);
 
     if (!network) {
-        networkReportError(VIR_ERR_INVALID_NETWORK,
+        networkReportError(VIR_ERR_NO_NETWORK,
                            "%s", _("no network with matching uuid"));
         goto cleanup;
     }
@@ -2219,7 +2219,7 @@ static char *networkGetBridgeName(virNetworkPtr net) {
     networkDriverUnlock(driver);
 
     if (!network) {
-        networkReportError(VIR_ERR_INVALID_NETWORK,
+        networkReportError(VIR_ERR_NO_NETWORK,
                            "%s", _("no network with matching id"));
         goto cleanup;
     }
@@ -2251,7 +2251,7 @@ static int networkGetAutostart(virNetworkPtr net,
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
     networkDriverUnlock(driver);
     if (!network) {
-        networkReportError(VIR_ERR_INVALID_NETWORK,
+        networkReportError(VIR_ERR_NO_NETWORK,
                            "%s", _("no network with matching uuid"));
         goto cleanup;
     }
@@ -2276,13 +2276,13 @@ static int networkSetAutostart(virNetworkPtr net,
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
-        networkReportError(VIR_ERR_INVALID_NETWORK,
+        networkReportError(VIR_ERR_NO_NETWORK,
                            "%s", _("no network with matching uuid"));
         goto cleanup;
     }
 
     if (!network->persistent) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
+        networkReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cannot set autostart for transient network"));
         goto cleanup;
     }

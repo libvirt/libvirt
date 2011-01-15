@@ -2366,7 +2366,7 @@ virNWFilterObjAssignDef(virConnectPtr conn,
 
     if (nwfilter) {
         if (!STREQ(def->name, nwfilter->def->name)) {
-            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
                                    _("filter with same UUID but different name "
                                      "('%s') already exists"),
                                    nwfilter->def->name);
@@ -2377,7 +2377,7 @@ virNWFilterObjAssignDef(virConnectPtr conn,
     }
 
     if (virNWFilterDefLoopDetect(conn, nwfilters, def)) {
-        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
                               "%s", _("filter would introduce a loop"));
         return NULL;
     }
@@ -2442,7 +2442,7 @@ virNWFilterObjLoad(virConnectPtr conn,
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_XML_ERROR,
             _("network filter config filename '%s' does not match name '%s'"),
             path, def->name);
         virNWFilterDefFree(def);

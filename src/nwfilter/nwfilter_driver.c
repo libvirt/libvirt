@@ -372,13 +372,13 @@ nwfilterUndefine(virNWFilterPtr obj) {
 
     nwfilter = virNWFilterObjFindByUUID(&driver->nwfilters, obj->uuid);
     if (!nwfilter) {
-        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
                                "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
 
     if (virNWFilterTestUnassignDef(obj->conn, nwfilter)) {
-        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_OPERATION_INVALID,
                                "%s",
                                _("nwfilter is in use"));
         goto cleanup;
@@ -417,7 +417,7 @@ nwfilterDumpXML(virNWFilterPtr obj,
     nwfilterDriverUnlock(driver);
 
     if (!nwfilter) {
-        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
                                "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
