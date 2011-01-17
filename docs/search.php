@@ -24,7 +24,7 @@
     if (! $query) {
         echo "<h1 align='center'>Search the documentation on Libvir.org</h1>";
     }
-    $scope = $_GET['scope"'];
+    $scope = $_GET['scope'];
     if ($scope == NULL)
         $scope = "any";
     $scope = ltrim ($scope);
@@ -33,7 +33,7 @@
 
 ?>
 <p> The search service indexes the libvirt APIs and documentation as well as the libvir-list@redhat.com mailing-list archives. To use it simply provide a set of keywords:</p>
-<form action="<?php echo "$_SERVER['PHP_SELF']", "?query=", rawurlencode($query) ?>"
+<form action="<?php echo $_SERVER['PHP_SELF'], "?query=", rawurlencode($query) ?>"
       enctype="application/x-www-form-urlencoded" method="get">
   <input name="query" type="text" size="50" value="<?php echo $query?>"/>
   <select name="scope">
