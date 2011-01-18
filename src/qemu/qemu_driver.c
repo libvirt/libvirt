@@ -356,6 +356,12 @@ qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virDomainObjLock(vm);
 
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain %p is not active, ignoring EOF", vm);
+        virDomainObjUnlock(vm);
+        return;
+    }
+
     priv = vm->privateData;
     if (!hasError && priv->monJSON && !priv->gotShutdown) {
         VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
