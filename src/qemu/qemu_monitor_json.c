@@ -1298,6 +1298,7 @@ cleanup:
     return ret;
 }
 
+/* Returns -1 on error, -2 if not supported */
 int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
                                   const char *protocol,
                                   const char *expire_time)
@@ -1313,9 +1314,16 @@ int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (ret == 0) {
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+            ret = -2;
+            goto cleanup;
+        }
 
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

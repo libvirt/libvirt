@@ -803,6 +803,7 @@ cleanup:
     return ret;
 }
 
+/* Returns -1 on error, -2 if not supported */
 int qemuMonitorTextExpirePassword(qemuMonitorPtr mon,
                                   const char *protocol,
                                   const char *expire_time)
@@ -824,8 +825,7 @@ int qemuMonitorTextExpirePassword(qemuMonitorPtr mon,
     }
 
     if (strstr(reply, "unknown command:")) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
-                        _("expiring password not supported by this qemu: %s"), reply);
+        ret = -2;
         goto cleanup;
     }
 

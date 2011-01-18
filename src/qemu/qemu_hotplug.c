@@ -1751,6 +1751,15 @@ qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
                                             auth->passwd ? auth->passwd : defaultPasswd);
         }
     }
+    if (ret != 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        ret = -1;
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        goto cleanup;
+    }
 
     if (auth->expires) {
         time_t lifetime = auth->validTo - now;
@@ -1770,9 +1779,12 @@ qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("Expiry of passwords is not supported"));
             ret = -1;
+        } else {
+            ret = 0;
         }
     }
 
+cleanup:
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     return ret;
