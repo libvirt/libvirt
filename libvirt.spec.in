@@ -775,7 +775,8 @@ fi
 /sbin/ldconfig
 /sbin/chkconfig --add libvirt-guests
 if [ $1 -ge 1 ]; then
-    if /sbin/chkconfig --list libvirt-guests | /bin/grep -q :on ; then
+    level=$(/sbin/runlevel | /bin/cut -d ' ' -f 2)
+    if /sbin/chkconfig --list libvirt-guests | /bin/grep -q $level:on ; then
         # this doesn't do anything but allowing for libvirt-guests to be
         # stopped on the first shutdown
         /sbin/service libvirt-guests start > /dev/null 2>&1 || true
