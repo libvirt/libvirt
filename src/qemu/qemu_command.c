@@ -2949,6 +2949,13 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
 
             virCommandAddArgBuffer(cmd, &boot_buf);
+        } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_BOOTINDEX)) {
+            /* def->os.nBootDevs is guaranteed to be > 0 unless per-device boot
+             * configuration is used
+             */
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("hypervisor lacks deviceboot feature"));
+            goto error;
         }
 
         if (def->os.kernel)
