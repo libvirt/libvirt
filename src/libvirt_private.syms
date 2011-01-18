@@ -658,6 +658,7 @@ virVMOperationTypeToString;
 # memory.h
 virAlloc;
 virAllocN;
+virAllocVar;
 virExpandN;
 virFree;
 virReallocN;

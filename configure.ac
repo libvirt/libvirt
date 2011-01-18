@@ -947,6 +947,56 @@ AC_SUBST([YAJL_CFLAGS])
 AC_SUBST([YAJL_LIBS])
 
 
+dnl SANLOCK https://fedorahosted.org/sanlock/
+AC_ARG_WITH([sanlock],
+  AC_HELP_STRING([--with-sanlock], [use SANLOCK for lock management @<:@default=check@:>@]),
+  [],
+  [with_sanlock=check])
+
+SANLOCK_CFLAGS=
+SANLOCK_LIBS=
+if test "x$with_sanlock" != "xno"; then
+  if test "x$with_sanlock" != "xyes" && test "x$with_sanlock" != "xcheck"; then
+    SANLOCK_CFLAGS="-I$with_sanlock/include"
+    SANLOCK_LIBS="-L$with_sanlock/lib"
+  fi
+  fail=0
+  old_cppflags="$CPPFLAGS"
+  old_libs="$LIBS"
+  CPPFLAGS="$CPPFLAGS $SANLOCK_CFLAGS"
+  LIBS="$LIBS $SANLOCK_LIBS"
+  AC_CHECK_HEADER([sanlock.h],[],[
+    if test "x$with_sanlock" = "xcheck" ; then
+        with_sanlock=no
+    else
+        fail=1
+    fi])
+  if test "x$with_sanlock" != "xno" ; then
+    AC_CHECK_LIB([sanlock], [sanlock_acquire],[
+      SANLOCK_LIBS="$SANLOCK_LIBS -lsanlock"
+      with_sanlock=yes
+    ],[
+      if test "x$with_sanlock" = "xcheck" ; then
+        with_sanlock=no
+      else
+        fail=1
+      fi
+    ])
+  fi
+  test $fail = 1 &&
+    AC_MSG_ERROR([You must install the SANLOCK development package in order to compile libvirt])
+  CPPFLAGS="$old_cppflags"
+  LIBS="$old_libs"
+  if test "x$with_sanlock" = "xyes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_SANLOCK], 1,
+      [whether SANLOCK is available for JSON parsing/formatting])
+  fi
+fi
+AM_CONDITIONAL([HAVE_SANLOCK], [test "x$with_sanlock" = "xyes"])
+AC_SUBST([SANLOCK_CFLAGS])
+AC_SUBST([SANLOCK_LIBS])
+
+
 dnl PolicyKit library
 POLKIT_CFLAGS=
 POLKIT_LIBS=
@@ -2436,6 +2486,11 @@ if test "$with_yajl" != "no" ; then
 AC_MSG_NOTICE([    yajl: $YAJL_CFLAGS $YAJL_LIBS])
 else
 AC_MSG_NOTICE([    yajl: no])
+fi
+if test "$with_sanlock" != "no" ; then
+AC_MSG_NOTICE([ sanlock: $SANLOCK_CFLAGS $SANLOCK_LIBS])
+else
+AC_MSG_NOTICE([ sanlock: no])
 fi
 if test "$with_avahi" = "yes" ; then
 AC_MSG_NOTICE([   avahi: $AVAHI_CFLAGS $AVAHI_LIBS])

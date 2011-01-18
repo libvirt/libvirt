@@ -99,6 +99,9 @@ DRIVER_SOURCES =						\
 		locking/lock_driver_nop.h locking/lock_driver_nop.c \
 		locking/domain_lock.h locking/domain_lock.c
 
+LOCK_DRIVER_SANLOCK_SOURCES = \
+		locking/lock_driver_sanlock.c
+
 
 # XML configuration format handling sources
 # Domain driver generic impl APIs
@@ -1172,6 +1175,19 @@ libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
+
+
+if HAVE_SANLOCK
+lockdriverdir = $(libdir)/libvirt/lock-driver
+lockdriver_LTLIBRARIES = sanlock.la
+
+sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
+sanlock_la_CFLAGS = $(AM_CLFAGS)
+sanlock_la_LDFLAGS = -module -avoid-version
+sanlock_la_LIBADD = -lsanlock
+else
+EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
+endif
 
 libexec_PROGRAMS =
 

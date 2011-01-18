@@ -31,6 +31,7 @@ src/fdstream.c
 src/interface/netcf_driver.c
 src/internal.h
 src/libvirt.c
+src/locking/lock_driver_sanlock.c
 src/locking/lock_manager.c
 src/lxc/lxc_container.c
 src/lxc/lxc_conf.c
