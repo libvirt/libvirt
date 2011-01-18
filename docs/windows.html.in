@@ -18,7 +18,7 @@
       version is available here:
     </p>
 
-    <a href="http://libvirt.org/sources/win32_experimental/Libvirt-0.8.6-2.exe">http://libvirt.org/sources/win32_experimental/Libvirt-0.8.6-2.exe</a>
+    <a href="http://libvirt.org/sources/win32_experimental/Libvirt-0.8.7-2.exe">http://libvirt.org/sources/win32_experimental/Libvirt-0.8.7-2.exe</a>
 
     <p>
       <b>It is not production ready.</b>
@@ -77,15 +77,6 @@
         <br /><br />
       </li>
 
-      <li>
-        Libvirt dll files should be added to path
-        <br /><br />
-        At the moment, anything that needs to use the libvirt dll files
-        (i.e. the C# bindings) won't automatically find them.  This can be
-        worked around by copying the dll files into the same directory as
-        whatever needs them, but is probably not an optimal approach.
-        There might be a better way and needs to be investigated.
-      </li>
     </ul>
 
     <h2><a name="conntypes">Connection types</h2>
@@ -119,6 +110,12 @@
     </p>
 
     <p>
+      <b>Special note</b> - Support for VirtualBox *on windows* was added in
+      libvirt 0.8.7, so reports on success and failure if you're using that
+      would be really helpful and appreciated.
+    </p>
+
+    <p>
       <b>WARNING - The qemu+tcp:// connection type passes all traffic
       without encryption.  This is a security hazard, and should <i>not</i>
       be used in security sensitive environments.</b>
@@ -127,8 +124,9 @@
     <h2><a name="esx">Connecting to VMware ESX/vSphere</h2>
 
     <p>
-      Details on the capabilities and connection string syntax used for
-      connecting to VMware ESX and vSphere can be found online here:<br />
+      Details on the capabilities, certificates, and connection string
+      syntax used for connecting to VMware ESX and vSphere can be found
+      online here:<br />
     </p>
 
     <a href="http://libvirt.org/drvesx.html">http://libvirt.org/drvesx.html</a>
@@ -136,8 +134,9 @@
     <h2><a name="tlscerts">TLS Certificates</h2>
 
     <p>
-      TLS certificates are needed prior to connecting to either QEMU
-      instances with TLS, or connecting to VMware ESX/vSphere.
+      TLS certificates need to have been created and placed in the correct
+      locations, before you will be able to connect to QEMU servers over
+      TLS.
     </p>
 
     <p>
@@ -154,8 +153,8 @@
     </p>
 
     <p>
-      The locations of the TLS certificates and key file are hard coded,
-      rather than being configurable.
+      The locations of the TLS certificates and key file on Windows are hard
+      coded, rather than being configurable.
     </p>
 
     <p>
