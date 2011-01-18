@@ -1048,10 +1048,14 @@ qemuCapsExtractDeviceStr(const char *qemu,
 
     /* Cram together all device-related queries into one invocation;
      * the output format makes it possible to distinguish what we
-     * need.  Unrecognized '-device bogus,?' cause an error in
-     * isolation, but are silently ignored in combination with
-     * '-device ?'.  */
+     * need.  With qemu 0.13.0 and later, unrecognized '-device
+     * bogus,?' cause an error in isolation, but are silently ignored
+     * in combination with '-device ?'.  Qemu 0.12.x doesn't
+     * understand '-device name,?', and always exits with status 1 for
+     * the simpler '-device ?', so this function is really only useful
+     * for parsing out features added in 0.13.0 or later.  */
     cmd = virCommandNewArgList(qemu,
+                               "-device", "?",
                                "-device", "pci-assign,?",
                                "-device", "virtio-blk-pci,?",
                                NULL);
@@ -1119,7 +1123,10 @@ int qemuCapsExtractVersionInfo(const char *qemu,
                              &version, &is_kvm, &kvm_version) == -1)
         goto cleanup;
 
+    /* Only call qemuCapsExtractDeviceStr for qemu 0.13.0+, since it
+     * won't set any additional flags for qemu 0.12.x.  */
     if ((flags & QEMUD_CMD_FLAG_DEVICE) &&
+        strstr(help, "-device driver,?") &&
         qemuCapsExtractDeviceStr(qemu, &flags) < 0)
         goto cleanup;
 
