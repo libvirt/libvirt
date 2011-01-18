@@ -48,7 +48,10 @@
         a globally unique identifier for the virtual machine.
         The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
         If omitted when defining/creating a new machine, a random
-        UUID is generated. <span class="since">Since 0.0.1</span></dd>
+        UUID is generated. It is also possible to provide the UUID
+        via a <a href="#elementsSysinfo"><code>sysinfo</code></a>
+        specification. <span class="since">Since 0.0.1, sysinfo
+        since 0.8.7</span></dd>
 
       <dt><code>description</code></dt>
       <dd>The content of the <code>description</code> element provides a
@@ -81,6 +84,7 @@
     &lt;boot dev='hd'/&gt;
     &lt;boot dev='cdrom'/&gt;
     &lt;bootmenu enable='yes'/&gt;
+    &lt;smbios mode='sysinfo'/&gt;
   &lt;/os&gt;
   ...</pre>
 
@@ -114,6 +118,16 @@
       startup. The <code>enable</code> attribute can be either "yes" or "no".
       If not specified, the hypervisor default is used. <span class="since">
       Since 0.8.3</span>
+      </dd>
+      <dt><code>smbios</code></dt>
+      <dd>How to populate SMBIOS information visible in the guest.
+      The <code>mode</code> attribute must be specified, and is either
+      "emulate" (let the hypervisor generate all values), "host" (copy
+      all of Block 0 and Block 1, except for the UUID, from the host's
+      SMBIOS values), or "sysinfo" (use the values in
+      the <a href="#elementsSysinfo">sysinfo</a> element).  If not
+      specified, the hypervisor default is used. <span class="since">
+      Since 0.8.7</span>
       </dd>
     </dl>
 
@@ -186,6 +200,69 @@
         the kernel (or installer) at boottime. This is often used to
         specify an alternate primary console (eg serial port), or the
         installation media source / kickstart file</dd>
+    </dl>
+
+    <h3><a name="elementsSysinfo">SMBIOS System Information</a></h3>
+
+    <p>
+      Some hypervisors allow control over what system information is
+      presented to the guest (for example, SMBIOS fields can be
+      populated by a hypervisor and inspected via
+      the <code>dmidecode</code> command in the guest).  The
+      optional <code>sysinfo</code> element covers all such categories
+      of information. <span class="since">Since 0.8.7</span>
+    </p>
+
+<pre>
+  ...
+  &lt;os&gt;
+    &lt;smbios mode='sysinfo'/&gt;
+    ...
+  &lt;/os&gt;
+  &lt;sysinfo type='smbios'&gt;
+    &lt;bios&gt;
+      &lt;entry name='vendor'&gt;LENOVO&lt;/entry&gt;
+    &lt;/bios&gt;
+    &lt;system&gt;
+      &lt;entry name='manufacturer'&gt;Fedora&lt;/entry&gt;
+      &lt;entry name='vendor'&gt;Virt-Manager&lt;/entry&gt;
+    &lt;/system&gt;
+  &lt;/sysinfo&gt;
+  ...</pre>
+
+    <p>
+      The <code>sysinfo</code> element has a mandatory
+      attribute <code>type</code> that determine the layout of
+      sub-elements, with supported values of:
+    </p>
+
+    <dl>
+      <dt><code>smbios</code></dt>
+      <dd>Sub-elements call out specific SMBIOS values, which will
+      affect the guest if used in conjunction with
+      the <code>smbios</code> sub-element of
+      the <a href="#elementsOS"><code>os</code></a> element.  Each
+      sub-element of <code>sysinfo</code> names a SMBIOS block, and
+      within those elements can be a list of <code>entry</code>
+      elements that describe a field within the block.  The following
+      blocks and entries are recognized:
+        <dl>
+          <dt><code>bios</code></dt>
+          <dd>
+            This is block 0 of SMBIOS, with entry names drawn from
+            "vendor", "version", "date", and "release".
+          </dd>
+          <dt><code>system</code></dt>
+          <dd>
+            This is block 1 of SMBIOS, with entry names drawn from
+            "manufacturer", "product", "version", "serial", "uuid",
+            "sku", and "family".  If a "uuid" entry is provided
+            alongside a
+            top-level <a href="#elementsMetadata"><code>uuid</code>
+            element</a>, the two values must match.
+          </dd>
+        </dl>
+      </dd>
     </dl>
 
     <h3><a name="elementsResources">Basic resources</a></h3>
