@@ -23,6 +23,18 @@
       <img src="madeWith.png" alt="Made with libvirt"/>
     </p>
 
+    <h2><a name="automatedtesting">Automated compile/testing</a></h2>
+
+    <dl>
+      <dt><a href="http://buildbot.net">BuildBot</a></dt>
+      <dd>
+        BuildBot is a system to automate the compile/test cycle required
+        by most software projects.  CVS commits trigger new builds, run on
+        a variety of client machines.  Build status (pass/fail/etc) are
+        displayed on a web page or through other protocols.
+      </dd>
+    </dl>
+
     <h2><a name="clientserver">Client/Server applications</a></h2>
 
     <dl>
