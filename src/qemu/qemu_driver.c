@@ -6256,10 +6256,8 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
     virCapsGuestMachinePtr *machines = NULL;
     int i, nmachines = 0;
 
-    if (qemuCapsProbeMachineTypes(def->emulator, &machines, &nmachines) < 0) {
-        virReportOOMError();
+    if (qemuCapsProbeMachineTypes(def->emulator, &machines, &nmachines) < 0)
         return -1;
-    }
 
     for (i = 0; i < nmachines; i++) {
         if (!machines[i]->canonical)
