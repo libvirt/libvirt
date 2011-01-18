@@ -309,6 +309,14 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
 int virSecurityManagerVerify(virSecurityManagerPtr mgr,
                              virDomainDefPtr def)
 {
+    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    /* NULL model == dynamic labelling, with whatever driver
+     * is active, so we can short circuit verify check to
+     * avoid drivers de-referencing NULLs by accident
+     */
+    if (!secdef->model)
+        return 0;
+
     if (mgr->drv->domainSecurityVerify)
         return mgr->drv->domainSecurityVerify(mgr, def);
 
