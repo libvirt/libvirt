@@ -21,7 +21,14 @@ if test "x$1" = "x--no-git"; then
 fi
 if test "x$1" = "x--system"; then
     shift
-    EXTRA_ARGS="--prefix=/usr --sysconfdir=/etc --localstatedir=/var"
+    prefix=/usr
+    libdir=$prefix/lib
+    sysconfdir=/etc
+    localstatedir=/var
+    if [ -d /usr/lib64 ]; then
+      libdir=$prefix/lib64
+    fi
+    EXTRA_ARGS="--prefix=$prefix --sysconfdir=$sysconfdir --localstatedir=$localstatedir --libdir=$libdir"
     echo "Running ./configure with $EXTRA_ARGS $@"
 else
     if test -z "$*" && test ! -f "$THEDIR/config.status"; then
