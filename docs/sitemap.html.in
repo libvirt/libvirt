@@ -19,6 +19,10 @@
         </ul>
       </li>
       <li>
+        <a href="apps.html">Applications</a>
+        <span>Applications known to use libvirt</span>
+      </li>
+      <li>
         <a href="downloads.html">Downloads</a>
         <span>Get the latest source releases, binary builds and get access to the source repository</span>
         <ul>
@@ -313,12 +317,6 @@
       <li>
         <a href="relatedlinks.html">Related Links</a>
         <span>Miscellaneous links of interest related to libvirt</span>
-        <ul>
-          <li>
-            <a href="apps.html">Applications</a>
-            <span>Overview of applications using the libvirt APIs</span>
-          </li>
-        </ul>
       </li>
       <li>
         <a href="sitemap.html">Sitemap</a>
