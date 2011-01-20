@@ -23,18 +23,6 @@
       <img src="madeWith.png" alt="Made with libvirt"/>
     </p>
 
-    <h2><a name="automatedtesting">Automated compile/testing</a></h2>
-
-    <dl>
-      <dt><a href="http://buildbot.net">BuildBot</a></dt>
-      <dd>
-        BuildBot is a system to automate the compile/test cycle required
-        by most software projects.  CVS commits trigger new builds, run on
-        a variety of client machines.  Build status (pass/fail/etc) are
-        displayed on a web page or through other protocols.
-      </dd>
-    </dl>
-
     <h2><a name="clientserver">Client/Server applications</a></h2>
 
     <dl>
@@ -103,6 +91,56 @@
         Watch the CPU, memory, network and disk utilization of all
         virtual machines running on a host.
       </dd>
+      <dt>
+        <a href="http://people.redhat.com/~rjones/virt-what/">virt-what</a>
+      </dt>
+      <dd>
+        virt-what is a shell script for detecting if the program is running
+        in a virtual machine.  It prints out a list of facts about the
+        virtual machine, derived from heuristics.
+      </dd>
+    </dl>
+
+    <h2><a name="configmgmt">Configuration Management</a></h2>
+
+    <dl>
+      <dt><a href="https://wiki.lcfg.org/bin/view/LCFG/LcfgLibvirt">LCFG</a></dt>
+      <dd>
+        LCFG is a system for automatically installing and managing the
+        configuration of large numbers of Unix systems.  It is particularly
+        suitable for sites with very diverse and rapidly changing
+        configurations.
+      </dd>
+      <dd>
+        The lcfg-libvirt package adds support for virtualized systems to
+        LCFG, with both Xen and KVM known to work.  Cloning guests is
+        supported, as are the bridged, routed, and isolated modes for
+        Virtual Networking.
+      </dd>
+    </dl>
+
+    <h2><a name="continuousintegration">Continuous Integration</a></h2>
+
+    <dl>
+      <dt><a href="http://buildbot.net/buildbot/docs/current/Libvirt.html">BuildBot</a></dt>
+      <dd>
+        BuildBot is a system to automate the compile/test cycle required
+        by most software projects.  CVS commits trigger new builds, run on
+        a variety of client machines.  Build status (pass/fail/etc) are
+        displayed on a web page or through other protocols.
+      </dd>
+    </dl>
+
+    <dl>
+      <dt><a href="http://wiki.hudson-ci.org/display/HUDSON/Libvirt+Slaves+Plugin">Hudson</a></dt>
+      <dd>
+        This plugin for Hudson adds a way to control guest domains hosted
+        on Xen or QEMU/KVM.  You configure a Hudson Slave,
+        selecting the guest domain and hypervisor.  When you need to build a
+        job on a specific Slave, its guest domain is started, then the job is
+        run.  When the build process is finished, the guest domain is shut
+        down, ready to be used again as required.
+      </dd>
     </dl>
 
     <h2><a name="conversion">Conversion</a></h2>
@@ -133,9 +171,10 @@
         possible.  This conversion requires some Microsoft signed pieces,
         that Red Hat can provide.
       </dd>
-      <dt><a href="http://bazaar.launchpad.net/~ubuntu-virt/virt-goodies/trunk/annotate/head:/vmware2libvirt">vmware2libvirt</a></dt>
+      <dt><a href="https://launchpad.net/virt-goodies">vmware2libvirt</a></dt>
       <dd>
-        A Python script for migrating a vmware image to libvirt.
+        Part of the <i>virt-goodies</i> package, vmware2libvirt is a python
+        script for migrating a vmware image to libvirt.
       </dd>
     </dl>
 
@@ -188,9 +227,9 @@
       </dd>
     </dl>
 
-    <h2><a name="monitoring">Monitoring plugins</a></h2>
+    <h2><a name="monitoring">Monitoring</a></h2>
     <dl>
-      <dt><a href="http://collectd.org/plugins/libvirt.shtml">for collectd</a></dt>
+      <dt><a href="http://collectd.org/plugins/libvirt.shtml">collectd</a></dt>
       <dd>
         The libvirt-plugin is part of <a href="http://collectd.org/">collectd</a>
         and gathers statistics about virtualized guests on a system. This
@@ -199,13 +238,13 @@
         For a full description, please refer to the libvirt section in the
         collectd.conf(5) manual page.
       </dd>
-      <dt><a href="http://honk.sigxcpu.org/projects/libvirt/#munin">for munin</a></dt>
+      <dt><a href="http://honk.sigxcpu.org/projects/libvirt/#munin">Munin</a></dt>
       <dd>
         The plugins provided by Guido G&uuml;nther allow to monitor various things
         like network and block I/O with
         <a href="http://munin.projects.linpro.no/">Munin</a>.
       </dd>
-      <dt><a href="http://et.redhat.com/~rjones/nagios-virt/">nagios-virt</a></dt>
+      <dt><a href="http://et.redhat.com/~rjones/nagios-virt/">Nagios-virt</a></dt>
       <dd>
         Nagios-virt is a configuration tool to add monitoring of your
         virtualised domains to <a href="http://www.nagios.org/">Nagios</a>.
@@ -213,7 +252,26 @@
         your Xen or QEMU/KVM guests, or to integrate with your existing Nagios
         installation.
       </dd>
+      <dt><a href="http://community.zenoss.org/docs/DOC-4687">Zenoss</a></dt>
+      <dd>
+        The Zenoss libvirt Zenpack adds support for monitoring virtualization
+        servers.  It has been tested with KVM, QEMU, VMware ESX, and VMware
+        GSX.
+      </dd>
     </dl>
+
+    <h2><a name="provisioning">Provisioning</a></h2>
+
+    <dl>
+      <dt><a href="http://www.ibm.com/software/tivoli/products/prov-mgr/">Tivoli Provisioning Manager</a></dt>
+      <dd>
+        Part of the IBM Tivoli family, Tivoli Provisioning Manager (TPM) is
+        an IT lifecycle automation product.  It
+        <a href="http://publib.boulder.ibm.com/infocenter/tivihelp/v38r1/index.jsp?topic=/com.ibm.tivoli.tpm.apk.doc/libvirt_package.html">uses libvirt</a>
+        for communication with virtualization hosts and guest domains.
+      </dd>
+    </dl>
+
 
     <h2><a name="web">Web applications</a></h2>
 
