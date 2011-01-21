@@ -14,6 +14,11 @@ test -f src/libvirt.c || {
 
 
 EXTRA_ARGS=
+no_git=
+if test "x$1" = "x--no-git"; then
+  no_git=" $1"
+  shift
+fi
 if test "x$1" = "x--system"; then
     shift
     EXTRA_ARGS="--prefix=/usr --sysconfdir=/etc --localstatedir=/var"
@@ -47,8 +52,8 @@ if test "$t" = "$(cat $curr_status 2>/dev/null)" \
     # good, it's up to date, all we need is autoreconf
     autoreconf -if
 else
-    echo running bootstrap...
-    ./bootstrap && bootstrap_hash > $curr_status \
+    echo running bootstrap$no_git...
+    ./bootstrap$no_git --bootstrap-sync && bootstrap_hash > $curr_status \
       || { echo "Failed to bootstrap, please investigate."; exit 1; }
 fi
 
