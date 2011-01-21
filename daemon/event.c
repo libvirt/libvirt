@@ -479,6 +479,7 @@ static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
  */
 static int virEventCleanupTimeouts(void) {
     int i;
+    size_t gap;
     DEBUG("Cleanup %zu", eventLoop.timeoutsCount);
 
     /* Remove deleted entries, shuffling down remaining
@@ -490,24 +491,27 @@ static int virEventCleanupTimeouts(void) {
             continue;
         }
 
-        EVENT_DEBUG("Purging timeout %d with id %d", i, eventLoop.timeouts[i].timer);
+        EVENT_DEBUG("Purging timeout %d with id %d", i,
+                    eventLoop.timeouts[i].timer);
         if (eventLoop.timeouts[i].ff)
             (eventLoop.timeouts[i].ff)(eventLoop.timeouts[i].opaque);
 
         if ((i+1) < eventLoop.timeoutsCount) {
             memmove(eventLoop.timeouts+i,
                     eventLoop.timeouts+i+1,
-                    sizeof(struct virEventTimeout)*(eventLoop.timeoutsCount-(i+1)));
+                    sizeof(struct virEventTimeout)*(eventLoop.timeoutsCount
+                                                    -(i+1)));
         }
         eventLoop.timeoutsCount--;
     }
 
     /* Release some memory if we've got a big chunk free */
-    if ((eventLoop.timeoutsAlloc - EVENT_ALLOC_EXTENT) > eventLoop.timeoutsCount) {
-        EVENT_DEBUG("Releasing %zu out of %zu timeout slots used, releasing %d",
-                   eventLoop.timeoutsCount, eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
-        VIR_SHRINK_N(eventLoop.timeouts, eventLoop.timeoutsAlloc,
-                     EVENT_ALLOC_EXTENT);
+    gap = eventLoop.timeoutsAlloc - eventLoop.timeoutsCount;
+    if (eventLoop.timeoutsCount == 0 ||
+        (gap > eventLoop.timeoutsCount && gap > EVENT_ALLOC_EXTENT)) {
+        EVENT_DEBUG("Found %zu out of %zu timeout slots used, releasing %zu",
+                    eventLoop.timeoutsCount, eventLoop.timeoutsAlloc, gap);
+        VIR_SHRINK_N(eventLoop.timeouts, eventLoop.timeoutsAlloc, gap);
     }
     return 0;
 }
@@ -518,6 +522,7 @@ static int virEventCleanupTimeouts(void) {
  */
 static int virEventCleanupHandles(void) {
     int i;
+    size_t gap;
     DEBUG("Cleanup %zu", eventLoop.handlesCount);
 
     /* Remove deleted entries, shuffling down remaining
@@ -535,17 +540,19 @@ static int virEventCleanupHandles(void) {
         if ((i+1) < eventLoop.handlesCount) {
             memmove(eventLoop.handles+i,
                     eventLoop.handles+i+1,
-                    sizeof(struct virEventHandle)*(eventLoop.handlesCount-(i+1)));
+                    sizeof(struct virEventHandle)*(eventLoop.handlesCount
+                                                   -(i+1)));
         }
         eventLoop.handlesCount--;
     }
 
     /* Release some memory if we've got a big chunk free */
-    if ((eventLoop.handlesAlloc - EVENT_ALLOC_EXTENT) > eventLoop.handlesCount) {
-        EVENT_DEBUG("Releasing %zu out of %zu handles slots used, releasing %d",
-                   eventLoop.handlesCount, eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
-        VIR_SHRINK_N(eventLoop.handles, eventLoop.handlesAlloc,
-                     EVENT_ALLOC_EXTENT);
+    gap = eventLoop.handlesAlloc - eventLoop.handlesCount;
+    if (eventLoop.handlesCount == 0 ||
+        (gap > eventLoop.handlesCount && gap > EVENT_ALLOC_EXTENT)) {
+        EVENT_DEBUG("Found %zu out of %zu handles slots used, releasing %zu",
+                    eventLoop.handlesCount, eventLoop.handlesAlloc, gap);
+        VIR_SHRINK_N(eventLoop.handles, eventLoop.handlesAlloc, gap);
     }
     return 0;
 }
