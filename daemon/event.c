@@ -1,7 +1,7 @@
 /*
  * event.c: event loop for monitoring file handles
  *
- * Copyright (C) 2007, 2010 Red Hat, Inc.
+ * Copyright (C) 2007, 2010-2011 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -458,14 +458,13 @@ static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
 
         if (fds[n].revents) {
             virEventHandleCallback cb = eventLoop.handles[i].cb;
+            int watch = eventLoop.handles[i].watch;
             void *opaque = eventLoop.handles[i].opaque;
             int hEvents = virPollEventToEventHandleType(fds[n].revents);
             EVENT_DEBUG("Dispatch n=%d f=%d w=%d e=%d %p", i,
-                        fds[n].fd, eventLoop.handles[i].watch,
-                        fds[n].revents, eventLoop.handles[i].opaque);
+                        fds[n].fd, watch, fds[n].revents, opaque);
             virMutexUnlock(&eventLoop.lock);
-            (cb)(eventLoop.handles[i].watch,
-                 fds[n].fd, hEvents, opaque);
+            (cb)(watch, fds[n].fd, hEvents, opaque);
             virMutexLock(&eventLoop.lock);
         }
     }
