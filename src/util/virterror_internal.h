@@ -89,6 +89,5 @@ void virReportOOMErrorFull(int domcode,
 int virSetError(virErrorPtr newerr);
 void virDispatchError(virConnectPtr conn);
 const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen);
-void virErrorSetLogPriority(int priority);
 
 #endif
