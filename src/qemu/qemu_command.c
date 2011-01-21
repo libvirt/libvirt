@@ -3702,9 +3702,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=spice");
 
     } else if ((def->ngraphics == 1)) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("unsupported graphics type '%s'"),
-                    virDomainGraphicsTypeToString(def->graphics[0]->type));
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported graphics type '%s'"),
+                        virDomainGraphicsTypeToString(def->graphics[0]->type));
         goto error;
     }
 
