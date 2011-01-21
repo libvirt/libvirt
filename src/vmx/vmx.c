@@ -918,7 +918,7 @@ virVMXVerifyDiskAddress(virCapsPtr caps, virDomainDiskDefPtr disk)
     memset(&def, 0, sizeof(def));
 
     if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported disk address type '%s'"),
                   virDomainDeviceAddressTypeToString(disk->info.type));
         return -1;
@@ -1009,7 +1009,7 @@ virVMXVerifyDiskAddress(virCapsPtr caps, virDomainDiskDefPtr disk)
             return -1;
         }
     } else {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported bus type '%s'"),
                   virDomainDiskBusTypeToString(disk->bus));
         return -1;
@@ -1985,7 +1985,7 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
                 goto cleanup;
             }
         } else {
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+            VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                       _("Unsupported bus type '%s' for device type '%s'"),
                       virDomainDiskBusTypeToString(busType),
                       virDomainDiskDeviceTypeToString(device));
@@ -2018,14 +2018,14 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
                 goto cleanup;
             }
         } else {
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+            VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                       _("Unsupported bus type '%s' for device type '%s'"),
                       virDomainDiskBusTypeToString(busType),
                       virDomainDiskDeviceTypeToString(device));
             goto cleanup;
         }
     } else {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported device type '%s'"),
                   virDomainDiskDeviceTypeToString(device));
         goto cleanup;
@@ -2201,7 +2201,7 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
             goto cleanup;
         }
     } else {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Unsupported device type '%s'"),
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported device type '%s'"),
                   virDomainDiskDeviceTypeToString(device));
         goto cleanup;
     }
@@ -3045,7 +3045,7 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
             break;
 
           default:
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+            VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                       _("Unsupported graphics type '%s'"),
                       virDomainGraphicsTypeToString(def->graphics[i]->type));
             goto cleanup;
@@ -3102,7 +3102,7 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
             break;
 
           default:
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+            VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                       _("Unsupported disk device type '%s'"),
                       virDomainDiskDeviceTypeToString(def->disks[i]->device));
             goto cleanup;
@@ -3261,14 +3261,14 @@ virVMXFormatHardDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
             return -1;
         }
     } else {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported bus type '%s' for harddisk"),
                   virDomainDiskBusTypeToString(def->bus));
         return -1;
     }
 
     if (def->type != VIR_DOMAIN_DISK_TYPE_FILE) {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("%s harddisk '%s' has unsupported type '%s', expecting '%s'"),
                   busName, def->dst, virDomainDiskTypeToString(def->type),
                   virDomainDiskTypeToString(VIR_DOMAIN_DISK_TYPE_FILE));
@@ -3305,7 +3305,7 @@ virVMXFormatHardDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
             virBufferVSprintf(buffer, "%s%d:%d.writeThrough = \"true\"\n",
                               entryPrefix, controllerOrBus, unit);
         } else if (def->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT) {
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+            VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                       _("%s harddisk '%s' has unsupported cache mode '%s'"),
                       busName, def->dst,
                       virDomainDiskCacheTypeToString(def->cachemode));
@@ -3349,7 +3349,7 @@ virVMXFormatCDROM(virVMXContext *ctx, virDomainDiskDefPtr def,
             return -1;
         }
     } else {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported bus type '%s' for cdrom"),
                   virDomainDiskBusTypeToString(def->bus));
         return -1;
@@ -3390,7 +3390,7 @@ virVMXFormatCDROM(virVMXContext *ctx, virDomainDiskDefPtr def,
                               entryPrefix, controllerOrBus, unit, def->src);
         }
     } else {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("%s cdrom '%s' has unsupported type '%s', expecting '%s' "
                     "or '%s'"), busName, def->dst,
                   virDomainDiskTypeToString(def->type),
@@ -3454,7 +3454,7 @@ virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
                               unit, def->src);
         }
     } else {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Floppy '%s' has unsupported type '%s', expecting '%s' "
                     "or '%s'"), def->dst,
                   virDomainDiskTypeToString(def->type),
@@ -3528,7 +3528,7 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
         break;
 
       default:
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Unsupported net type '%s'"),
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
                   virDomainNetTypeToString(def->type));
         return -1;
     }
@@ -3643,7 +3643,7 @@ virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
             break;
 
           default:
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+            VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                       _("Unsupported character device TCP protocol '%s'"),
                       virDomainChrTcpProtocolTypeToString(
                           def->source.data.tcp.protocol));
@@ -3661,7 +3661,7 @@ virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
         break;
 
       default:
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported character device type '%s'"),
                   virDomainChrTypeToString(def->source.type));
         return -1;
@@ -3719,7 +3719,7 @@ virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
         break;
 
       default:
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported character device type '%s'"),
                   virDomainChrTypeToString(def->source.type));
         return -1;
@@ -3734,7 +3734,7 @@ int
 virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
 {
     if (def->type != VIR_DOMAIN_VIDEO_TYPE_VMVGA) {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported video device type '%s'"),
                   virDomainVideoTypeToString(def->type));
         return -1;
@@ -3751,7 +3751,7 @@ virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
     }
 
     if (def->heads > 1) {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+        VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                   _("Multi-head video devices are unsupported"));
         return -1;
     }
