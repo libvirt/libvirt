@@ -30,7 +30,7 @@
 #include "util.h"
 #include "configmake.h"
 
-#define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/drivers"
+#define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
 /* Make sure ... INTERNAL_CALL can not be set by the caller */
 verify((VIR_SECRET_GET_VALUE_INTERNAL_CALL &

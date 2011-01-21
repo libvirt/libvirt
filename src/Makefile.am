@@ -29,7 +29,7 @@ endif
 
 lib_LTLIBRARIES = libvirt.la libvirt-qemu.la
 
-moddir = $(libdir)/libvirt/drivers
+moddir = $(libdir)/libvirt/connection-driver
 mod_LTLIBRARIES =
 
 confdir = $(sysconfdir)/libvirt
