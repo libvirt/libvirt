@@ -923,6 +923,7 @@ virReportErrorHelper;
 virReportOOMErrorFull;
 virReportSystemErrorFull;
 virSetError;
+virSetErrorLogPriorityFunc;
 virStrerror;
 
 

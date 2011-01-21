@@ -90,4 +90,7 @@ int virSetError(virErrorPtr newerr);
 void virDispatchError(virConnectPtr conn);
 const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen);
 
+typedef int (*virErrorLogPriorityFunc)(virErrorPtr, int);
+void virSetErrorLogPriorityFunc(virErrorLogPriorityFunc func);
+
 #endif

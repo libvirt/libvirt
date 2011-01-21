@@ -26,6 +26,7 @@ virThreadLocal virLastErr;
 
 virErrorFunc virErrorHandler = NULL;     /* global error handler */
 void *virUserData = NULL;        /* associated data */
+virErrorLogPriorityFunc virErrorLogPriorityFilter = NULL;
 
 /*
  * Macro used to format the message as a string in virRaiseError
@@ -722,14 +723,6 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /*
-     * Hook up the error or warning to the logging facility
-     * XXXX should we include filename as 'category' instead of domain name ?
-     */
-    priority = virErrorLevelPriority(level);
-    virLogMessage(virErrorDomainName(domain), priority,
-                  funcname, linenr, 1, "%s", str);
-
-    /*
      * Save the information about the error
      */
     /*
@@ -748,6 +741,18 @@ virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
         to->str3 = strdup(str3);
     to->int1 = int1;
     to->int2 = int2;
+
+    /*
+     * Hook up the error or warning to the logging facility
+     * XXXX should we include filename as 'category' instead of domain name ?
+     */
+    priority = virErrorLevelPriority(level);
+    if (virErrorLogPriorityFilter)
+        priority = virErrorLogPriorityFilter(to, priority);
+    virLogMessage(filename, priority,
+                  funcname, linenr,
+                  virErrorLogPriorityFilter ? 0 : 1,
+                  "%s", str);
 
     errno = save_errno;
 }
@@ -1334,4 +1339,9 @@ void virReportOOMErrorFull(int domcode,
     virRaiseErrorFull(NULL, filename, funcname, linenr,
                       domcode, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
                       virerr, NULL, NULL, -1, -1, virerr, NULL);
+}
+
+void virSetErrorLogPriorityFunc(virErrorLogPriorityFunc func)
+{
+    virErrorLogPriorityFilter = func;
 }

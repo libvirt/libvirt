@@ -825,6 +825,30 @@ static void virshErrorHandler(void *opaque ATTRIBUTE_UNUSED, virErrorPtr err ATT
      * took care of reporting the error */
 }
 
+static int daemonErrorLogFilter(virErrorPtr err, int priority)
+{
+    /* These error codes don't really reflect real errors. They
+     * are expected events that occur when an app tries to check
+     * whether a particular guest already exists. This filters
+     * them to a lower log level to prevent pollution of syslog
+     */
+    switch (err->code) {
+    case VIR_ERR_NO_DOMAIN:
+    case VIR_ERR_NO_NETWORK:
+    case VIR_ERR_NO_STORAGE_POOL:
+    case VIR_ERR_NO_STORAGE_VOL:
+    case VIR_ERR_NO_NODE_DEVICE:
+    case VIR_ERR_NO_INTERFACE:
+    case VIR_ERR_NO_NWFILTER:
+    case VIR_ERR_NO_SECRET:
+    case VIR_ERR_NO_DOMAIN_SNAPSHOT:
+        return VIR_LOG_DEBUG;
+    }
+
+    return priority;
+}
+
+
 static struct qemud_server *qemudInitialize(void) {
     struct qemud_server *server;
 
@@ -3258,6 +3282,7 @@ int main(int argc, char **argv) {
 
     /* Disable error func, now logging is setup */
     virSetErrorFunc(NULL, virshErrorHandler);
+    virSetErrorLogPriorityFunc(daemonErrorLogFilter);
 
     /*
      * Call the daemon startup hook
