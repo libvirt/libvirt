@@ -644,11 +644,33 @@ __virExec(const char *const*argv,
         }
     }
 
-    if (hook)
+    if (hook) {
+        /* virFork reset all signal handlers to the defaults.
+         * This is good for the child process, but our hook
+         * risks running something that generates SIGPIPE,
+         * so we need to temporarily block that again
+         */
+        struct sigaction waxon, waxoff;
+        waxoff.sa_handler = SIG_IGN;
+        waxoff.sa_flags = 0;
+        memset(&waxon, 0, sizeof(waxon));
+        if (sigaction(SIGPIPE, &waxoff, &waxon) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Could not disable SIGPIPE"));
+            goto fork_error;
+        }
+
         if ((hook)(data) != 0) {
             VIR_DEBUG0("Hook function failed.");
             goto fork_error;
         }
+
+        if (sigaction(SIGPIPE, &waxon, NULL) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Could not re-enable SIGPIPE"));
+            goto fork_error;
+        }
+    }
 
     /* The steps above may need todo something privileged, so
      * we delay clearing capabilities until the last minute */
