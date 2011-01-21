@@ -145,28 +145,28 @@ void virLogUnlock(void)
 
 static const char *virLogOutputString(virLogDestination ldest) {
     switch (ldest) {
-        case VIR_LOG_TO_STDERR:
-            return("stderr");
-        case VIR_LOG_TO_SYSLOG:
-            return("syslog");
-        case VIR_LOG_TO_FILE:
-            return("file");
+    case VIR_LOG_TO_STDERR:
+        return "stderr";
+    case VIR_LOG_TO_SYSLOG:
+        return "syslog";
+    case VIR_LOG_TO_FILE:
+        return "file";
     }
-    return("unknown");
+    return "unknown";
 }
 
 static const char *virLogPriorityString(virLogPriority lvl) {
     switch (lvl) {
-        case VIR_LOG_DEBUG:
-            return("debug");
-        case VIR_LOG_INFO:
-            return("info");
-        case VIR_LOG_WARN:
-            return("warning");
-        case VIR_LOG_ERROR:
-            return("error");
+    case VIR_LOG_DEBUG:
+        return "debug";
+    case VIR_LOG_INFO:
+        return "info";
+    case VIR_LOG_WARN:
+        return "warning";
+    case VIR_LOG_ERROR:
+        return "error";
     }
-    return("unknown");
+    return "unknown";
 }
 
 static int virLogInitialized = 0;
@@ -180,7 +180,7 @@ static int virLogInitialized = 0;
  */
 int virLogStartup(void) {
     if (virLogInitialized)
-        return(-1);
+        return -1;
 
     if (virMutexInit(&virLogMutex) < 0)
         return -1;
@@ -192,7 +192,7 @@ int virLogStartup(void) {
     virLogEnd = 0;
     virLogDefaultPriority = VIR_LOG_DEFAULT;
     virLogUnlock();
-    return(0);
+    return 0;
 }
 
 /**
@@ -204,7 +204,7 @@ int virLogStartup(void) {
  */
 int virLogReset(void) {
     if (!virLogInitialized)
-        return(virLogStartup());
+        return virLogStartup();
 
     virLogLock();
     virLogResetFilters();
@@ -214,7 +214,7 @@ int virLogReset(void) {
     virLogEnd = 0;
     virLogDefaultPriority = VIR_LOG_DEFAULT;
     virLogUnlock();
-    return(0);
+    return 0;
 }
 /**
  * virLogShutdown:
@@ -282,7 +282,7 @@ static int virLogDump(void *data, virLogOutputFunc f) {
     int ret = 0, tmp;
 
     if ((virLogLen == 0) || (f == NULL))
-        return(0);
+        return 0;
     virLogLock();
     if (virLogStart + virLogLen < LOG_BUFFER_SIZE) {
 push_end:
@@ -315,7 +315,7 @@ push_end:
     }
 error:
     virLogUnlock();
-    return(ret);
+    return ret;
 }
 #endif
 
@@ -332,12 +332,12 @@ error:
 int virLogSetDefaultPriority(int priority) {
     if ((priority < VIR_LOG_DEBUG) || (priority > VIR_LOG_ERROR)) {
         VIR_WARN0("Ignoring invalid log level setting.");
-        return(-1);
+        return -1;
     }
     if (!virLogInitialized)
         virLogStartup();
     virLogDefaultPriority = priority;
-    return(0);
+    return 0;
 }
 
 /**
@@ -354,7 +354,7 @@ static int virLogResetFilters(void) {
         VIR_FREE(virLogFilters[i].match);
     VIR_FREE(virLogFilters);
     virLogNbFilters = 0;
-    return(i);
+    return i;
 }
 
 /**
@@ -377,7 +377,7 @@ int virLogDefineFilter(const char *match, int priority,
 
     if ((match == NULL) || (priority < VIR_LOG_DEBUG) ||
         (priority > VIR_LOG_ERROR))
-        return(-1);
+        return -1;
 
     virLogLock();
     for (i = 0;i < virLogNbFilters;i++) {
@@ -403,7 +403,7 @@ int virLogDefineFilter(const char *match, int priority,
     virLogNbFilters++;
 cleanup:
     virLogUnlock();
-    return(i);
+    return i;
 }
 
 /**
@@ -428,7 +428,7 @@ static int virLogFiltersCheck(const char *input) {
         }
     }
     virLogUnlock();
-    return(ret);
+    return ret;
 }
 
 /**
@@ -449,7 +449,7 @@ static int virLogResetOutputs(void) {
     VIR_FREE(virLogOutputs);
     i = virLogNbOutputs;
     virLogNbOutputs = 0;
-    return(i);
+    return i;
 }
 
 /**
@@ -474,14 +474,14 @@ int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
     char *ndup = NULL;
 
     if (f == NULL)
-        return(-1);
+        return -1;
 
     if (dest == VIR_LOG_TO_SYSLOG || dest == VIR_LOG_TO_FILE) {
         if (name == NULL)
-            return(-1);
+            return -1;
         ndup = strdup(name);
         if (ndup == NULL)
-            return(-1);
+            return -1;
     }
 
     virLogLock();
@@ -498,7 +498,7 @@ int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
     virLogOutputs[ret].name = ndup;
 cleanup:
     virLogUnlock();
-    return(ret);
+    return ret;
 }
 
 /**
@@ -598,9 +598,9 @@ static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
     int ret;
 
     if (fd < 0)
-        return(-1);
+        return -1;
     ret = safewrite(fd, str, len);
-    return(ret);
+    return ret;
 }
 
 static void virLogCloseFd(void *data) {
@@ -612,8 +612,8 @@ static void virLogCloseFd(void *data) {
 static int virLogAddOutputToStderr(int priority) {
     if (virLogDefineOutput(virLogOutputToFd, NULL, (void *)2L, priority,
                            VIR_LOG_TO_STDERR, NULL, 0) < 0)
-        return(-1);
-    return(0);
+        return -1;
+    return 0;
 }
 
 static int virLogAddOutputToFile(int priority, const char *file) {
@@ -621,13 +621,13 @@ static int virLogAddOutputToFile(int priority, const char *file) {
 
     fd = open(file, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR);
     if (fd < 0)
-        return(-1);
+        return -1;
     if (virLogDefineOutput(virLogOutputToFd, virLogCloseFd, (void *)(long)fd,
                            priority, VIR_LOG_TO_FILE, file, 0) < 0) {
         VIR_FORCE_CLOSE(fd);
-        return(-1);
+        return -1;
     }
-    return(0);
+    return 0;
 }
 
 #if HAVE_SYSLOG_H
@@ -656,7 +656,7 @@ static int virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
             prio = LOG_ERR;
     }
     syslog(prio, "%s", str);
-    return(len);
+    return len;
 }
 
 static char *current_ident = NULL;
@@ -673,16 +673,16 @@ static int virLogAddOutputToSyslog(int priority, const char *ident) {
     VIR_FREE(current_ident);
     current_ident = strdup(ident);
     if (current_ident == NULL)
-        return(-1);
+        return -1;
 
     openlog(current_ident, 0, 0);
     if (virLogDefineOutput(virLogOutputToSyslog, virLogCloseSyslog, NULL,
                            priority, VIR_LOG_TO_SYSLOG, ident, 0) < 0) {
         closelog();
         VIR_FREE(current_ident);
-        return(-1);
+        return -1;
     }
-    return(0);
+    return 0;
 }
 #endif /* HAVE_SYSLOG_H */
 
@@ -722,7 +722,7 @@ int virLogParseOutputs(const char *outputs) {
     int count = 0;
 
     if (cur == NULL)
-        return(-1);
+        return -1;
 
     virSkipSpaces(&cur);
     while (*cur != 0) {
@@ -784,7 +784,7 @@ int virLogParseOutputs(const char *outputs) {
 cleanup:
     if (ret == -1)
         VIR_WARN0("Ignoring invalid log output setting.");
-    return(ret);
+    return ret;
 }
 
 /**
@@ -813,7 +813,7 @@ int virLogParseFilters(const char *filters) {
     int count = 0;
 
     if (cur == NULL)
-        return(-1);
+        return -1;
 
     virSkipSpaces(&cur);
     while (*cur != 0) {
@@ -840,7 +840,7 @@ int virLogParseFilters(const char *filters) {
 cleanup:
     if (ret == -1)
         VIR_WARN0("Ignoring invalid log filter setting.");
-    return(ret);
+    return ret;
 }
 
 /**
@@ -849,7 +849,7 @@ cleanup:
  * Returns the current logging priority level.
  */
 int virLogGetDefaultPriority(void) {
-    return (virLogDefaultPriority);
+    return virLogDefaultPriority;
 }
 
 /**
@@ -924,7 +924,7 @@ char *virLogGetOutputs(void) {
  * Returns the current number of defined log filters.
  */
 int virLogGetNbFilters(void) {
-    return (virLogNbFilters);
+    return virLogNbFilters;
 }
 
 /**
@@ -933,7 +933,7 @@ int virLogGetNbFilters(void) {
  * Returns the current number of defined log outputs.
  */
 int virLogGetNbOutputs(void) {
-    return (virLogNbOutputs);
+    return virLogNbOutputs;
 }
 
 /**
