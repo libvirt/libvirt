@@ -798,6 +798,14 @@ AppArmorRestoreSavedStateLabel(virSecurityManagerPtr mgr,
     return reload_profile(mgr, vm, NULL, false);
 }
 
+static int
+AppArmorSetFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                   virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                   int fd ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 virSecurityDriver virAppArmorSecurityDriver = {
     0,
     SECURITY_APPARMOR_NAME,
@@ -831,4 +839,6 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     AppArmorSetSavedStateLabel,
     AppArmorRestoreSavedStateLabel,
+
+    AppArmorSetFDLabel,
 };

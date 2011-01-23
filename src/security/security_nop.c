@@ -149,6 +149,13 @@ static int virSecurityDomainVerifyNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED
     return 0;
 }
 
+static int virSecurityDomainSetFDLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                          virDomainObjPtr sec ATTRIBUTE_UNUSED,
+                                          int fd ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 virSecurityDriver virSecurityDriverNop = {
     0,
     "none",
@@ -182,4 +189,6 @@ virSecurityDriver virSecurityDriverNop = {
 
     virSecurityDomainSetSavedStateLabelNop,
     virSecurityDomainRestoreSavedStateLabelNop,
+
+    virSecurityDomainSetFDLabelNop,
 };

@@ -371,6 +371,45 @@ SELinuxSetFilecon(const char *path, char *tcon)
     return 0;
 }
 
+static int
+SELinuxFSetFilecon(int fd, char *tcon)
+{
+    security_context_t econ;
+
+    VIR_INFO("Setting SELinux context on fd %d to '%s'", fd, tcon);
+
+    if (fsetfilecon(fd, tcon) < 0) {
+        int fsetfilecon_errno = errno;
+
+        if (fgetfilecon(fd, &econ) >= 0) {
+            if (STREQ(tcon, econ)) {
+                freecon(econ);
+                /* It's alright, there's nothing to change anyway. */
+                return 0;
+            }
+            freecon(econ);
+        }
+
+        /* if the error complaint is related to an image hosted on
+         * an nfs mount, or a usbfs/sysfs filesystem not supporting
+         * labelling, then just ignore it & hope for the best.
+         * The user hopefully set one of the necessary SELinux
+         * virt_use_{nfs,usb,pci}  boolean tunables to allow it...
+         */
+        if (fsetfilecon_errno != EOPNOTSUPP) {
+            virReportSystemError(fsetfilecon_errno,
+                                 _("unable to set security context '%s' on fd %d"),
+                                 tcon, fd);
+            if (security_getenforce() == 1)
+                return -1;
+        } else {
+            VIR_INFO("Setting security context '%s' on fd %d not supported",
+                     tcon, fd);
+        }
+    }
+    return 0;
+}
+
 /* Set fcon to the appropriate label for path and mode, or return -1.  */
 static int
 getContext(const char *newpath, mode_t mode, security_context_t *fcon)
@@ -1087,6 +1126,19 @@ SELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
     return 0;
 }
 
+static int
+SELinuxSetFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                  virDomainObjPtr vm,
+                  int fd)
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    if (secdef->imagelabel == NULL)
+        return 0;
+
+    return SELinuxFSetFilecon(fd, secdef->imagelabel);
+}
+
 virSecurityDriver virSecurityDriverSELinux = {
     0,
     SECURITY_SELINUX_NAME,
@@ -1120,4 +1172,6 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     SELinuxSetSavedStateLabel,
     SELinuxRestoreSavedStateLabel,
+
+    SELinuxSetFDLabel,
 };
