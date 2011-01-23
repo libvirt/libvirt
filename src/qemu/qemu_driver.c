@@ -2667,6 +2667,24 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                                       vm, stdin_path) < 0)
         goto cleanup;
 
+    if (stdin_fd != -1) {
+        /* if there's an fd to migrate from, and it's a pipe, put the
+         * proper security label on it
+         */
+        struct stat stdin_sb;
+
+        DEBUG0("setting security label on pipe used for migration");
+
+        if (fstat(stdin_fd, &stdin_sb) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot stat fd %d"), stdin_fd);
+            goto cleanup;
+        }
+        if (S_ISFIFO(stdin_sb.st_mode) &&
+            virSecurityManagerSetFDLabel(driver->securityManager, vm, stdin_fd) < 0)
+            goto cleanup;
+    }
+
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
     DEBUG0("Ensuring no historical cgroup is lying around");
