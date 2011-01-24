@@ -94,7 +94,9 @@ DRIVER_SOURCES =						\
 		fdstream.c fdstream.h                 \
 		$(NODE_INFO_SOURCES)				\
 		libvirt.c libvirt_internal.h			\
-		locking/lock_manager.c locking/lock_manager.h
+		locking/lock_manager.c locking/lock_manager.h   \
+		locking/lock_driver.h 				\
+		locking/lock_driver_nop.h locking/lock_driver_nop.c
 
 
 # XML configuration format handling sources

@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include "lock_manager.h"
+#include "lock_driver_nop.h"
 #include "virterror_internal.h"
 #include "logging.h"
 #include "util.h"
@@ -123,35 +124,39 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     const char *moddir = getenv("LIBVIRT_LOCK_MANAGER_PLUGIN_DIR");
     char *modfile = NULL;
 
-    if (moddir == NULL)
-        moddir = DEFAULT_LOCK_MANAGER_PLUGIN_DIR;
+    if (STREQ(name, "nop")) {
+        driver = &virLockDriverNop;
+    } else {
+        if (moddir == NULL)
+            moddir = DEFAULT_LOCK_MANAGER_PLUGIN_DIR;
 
-    VIR_DEBUG("Module load %s from %s", name, moddir);
+        VIR_DEBUG("Module load %s from %s", name, moddir);
 
-    if (virAsprintf(&modfile, "%s/%s.so", moddir, name) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
+        if (virAsprintf(&modfile, "%s/%s.so", moddir, name) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
 
-    if (access(modfile, R_OK) < 0) {
-        virReportSystemError(errno,
-                             _("Plugin %s not accessible"),
-                             modfile);
-        goto cleanup;
-    }
+        if (access(modfile, R_OK) < 0) {
+            virReportSystemError(errno,
+                                 _("Plugin %s not accessible"),
+                                 modfile);
+            goto cleanup;
+        }
 
-    handle = dlopen(modfile, RTLD_NOW | RTLD_LOCAL);
-    if (!handle) {
-        virLockError(VIR_ERR_SYSTEM_ERROR,
-                     _("Failed to load plugin %s: %s"),
-                     modfile, dlerror());
-        goto cleanup;
-    }
+        handle = dlopen(modfile, RTLD_NOW | RTLD_LOCAL);
+        if (!handle) {
+            virLockError(VIR_ERR_SYSTEM_ERROR,
+                         _("Failed to load plugin %s: %s"),
+                         modfile, dlerror());
+            goto cleanup;
+        }
 
-    if (!(driver = dlsym(handle, "virLockDriverImpl"))) {
-        virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Missing plugin initialization symbol 'virLockDriverImpl'"));
-        goto cleanup;
+        if (!(driver = dlsym(handle, "virLockDriverImpl"))) {
+            virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Missing plugin initialization symbol 'virLockDriverImpl'"));
+            goto cleanup;
+        }
     }
 
     if (driver->drvInit(VIR_LOCK_MANAGER_VERSION, flags) < 0) {
