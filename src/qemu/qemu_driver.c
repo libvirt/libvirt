@@ -5770,6 +5770,15 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
                              VIR_VM_OP_RESTORE);
 
     if (intermediate_pid != -1) {
+        if (ret < 0) {
+            /* if there was an error setting up qemu, the intermediate process will
+             * wait forever to write to stdout, so we must manually kill it.
+             */
+            VIR_FORCE_CLOSE(intermediatefd);
+            VIR_FORCE_CLOSE(fd);
+            kill(intermediate_pid, SIGTERM);
+        }
+
         /* Wait for intermediate process to exit */
         while (waitpid(intermediate_pid, &childstat, 0) == -1 &&
                errno == EINTR) {
