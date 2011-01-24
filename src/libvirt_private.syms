@@ -414,6 +414,17 @@ virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 
 
+# domain_lock.h
+virDomainLockProcessStart;
+virDomainLockProcessInquire;
+virDomainLockProcessPause;
+virDomainLockProcessResume;
+virDomainLockDiskAttach;
+virDomainLockDiskDetach;
+virDomainLockLeaseAttach;
+virDomainLockLeaseDetach;
+
+
 # domain_nwfilter.h
 virDomainConfNWFilterInstantiate;
 virDomainConfNWFilterRegister;

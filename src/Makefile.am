@@ -96,7 +96,8 @@ DRIVER_SOURCES =						\
 		libvirt.c libvirt_internal.h			\
 		locking/lock_manager.c locking/lock_manager.h   \
 		locking/lock_driver.h 				\
-		locking/lock_driver_nop.h locking/lock_driver_nop.c
+		locking/lock_driver_nop.h locking/lock_driver_nop.c \
+		locking/domain_lock.h locking/domain_lock.c
 
 
 # XML configuration format handling sources
