@@ -5328,7 +5328,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
             chr->info.addr.vioserial.port == 0) {
-            int maxport = -1;
+            int maxport = 0;
             int j;
             for (j = 0 ; j < i ; j++) {
                 virDomainChrDefPtr thischr = def->channels[j];
