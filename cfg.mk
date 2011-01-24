@@ -80,6 +80,7 @@ VC_LIST_ALWAYS_EXCLUDE_REGEX = ^(HACKING|docs/news\.html\.in)$$
 useless_free_options =				\
   --name=VIR_FREE				\
   --name=qemuCapsFree				\
+  --name=qemuMigrationCookieFree                \
   --name=sexpr_free				\
   --name=virBitmapFree                          \
   --name=virCPUDefFree				\

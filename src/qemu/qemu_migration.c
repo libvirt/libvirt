@@ -22,6 +22,8 @@
 #include <config.h>
 
 #include <sys/time.h>
+#include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
 
 #include "qemu_migration.h"
 #include "qemu_monitor.h"
@@ -38,11 +40,271 @@
 #include "files.h"
 #include "datatypes.h"
 #include "fdstream.h"
+#include "uuid.h"
+
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 #define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
 
+typedef struct _qemuMigrationCookie qemuMigrationCookie;
+typedef qemuMigrationCookie *qemuMigrationCookiePtr;
+struct _qemuMigrationCookie {
+    int flags;
+
+    /* Host properties */
+    unsigned char hostuuid[VIR_UUID_BUFLEN];
+    char *hostname;
+
+    /* Guest properties */
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char *name;
+};
+
+
+static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
+{
+    if (!mig)
+        return;
+
+    VIR_FREE(mig->hostname);
+    VIR_FREE(mig->name);
+    VIR_FREE(mig);
+}
+
+
+static qemuMigrationCookiePtr
+qemuMigrationCookieNew(virDomainObjPtr dom)
+{
+    qemuMigrationCookiePtr mig = NULL;
+
+    if (VIR_ALLOC(mig) < 0)
+        goto no_memory;
+
+    if (!(mig->name = strdup(dom->def->name)))
+        goto no_memory;
+    memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
+
+    if (!(mig->hostname = virGetHostname(NULL)))
+        goto no_memory;
+    if (virGetHostUUID(mig->hostuuid) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to obtain host UUID"));
+        goto error;
+    }
+
+    return mig;
+
+no_memory:
+    virReportOOMError();
+error:
+    qemuMigrationCookieFree(mig);
+    return NULL;
+}
+
+
+static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
+                                         qemuMigrationCookiePtr mig)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char hostuuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(mig->uuid, uuidstr);
+    virUUIDFormat(mig->hostuuid, hostuuidstr);
+
+    virBufferAsprintf(buf, "<qemu-migration>\n");
+    virBufferEscapeString(buf, "  <name>%s</name>\n", mig->name);
+    virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->hostname);
+    virBufferAsprintf(buf, "  <hostuuid>%s</hostuuid>\n", hostuuidstr);
+    virBufferAddLit(buf, "</qemu-migration>\n");
+}
+
+
+static char *qemuMigrationCookieXMLFormatStr(qemuMigrationCookiePtr mig)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    qemuMigrationCookieXMLFormat(&buf, mig);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
+
+static int
+qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
+                            xmlXPathContextPtr ctxt,
+                            int flags ATTRIBUTE_UNUSED)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *tmp;
+
+    /* We don't store the uuid, name, hostname, or hostuuid
+     * values. We just compare them to local data to do some
+     * sanity checking on migration operation
+     */
+
+    /* Extract domain name */
+    if (!(tmp = virXPathString("string(./name[1])", ctxt))) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("missing name element in migration data"));
+        goto error;
+    }
+    if (STRNEQ(tmp, mig->name)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Incoming cookie data had unexpected name %s vs %s"),
+                        tmp, mig->name);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    /* Extract domain uuid */
+    tmp = virXPathString("string(./uuid[1])", ctxt);
+    if (!tmp) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("missing uuid element in migration data"));
+        goto error;
+    }
+    virUUIDFormat(mig->uuid, uuidstr);
+    if (STRNEQ(tmp, uuidstr)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Incoming cookie data had unexpected UUID %s vs %s"),
+                        tmp, uuidstr);
+    }
+    VIR_FREE(tmp);
+
+    /* Check & forbid "localhost" migration */
+    if (!(tmp = virXPathString("string(./hostname[1])", ctxt))) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("missing hostname element in migration data"));
+        goto error;
+    }
+    if (STREQ(tmp, mig->hostname)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Attempt to migrate guest to the same host %s"),
+                        tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    if (!(tmp = virXPathString("string(./hostuuid[1])", ctxt))) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("missing hostuuid element in migration data"));
+        goto error;
+    }
+    virUUIDFormat(mig->hostuuid, uuidstr);
+    if (STREQ(tmp, uuidstr)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Attempt to migrate guest to the same host %s"),
+                        tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    return 0;
+
+error:
+    VIR_FREE(tmp);
+    return -1;
+}
+
+
+static int
+qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
+                               const char *xml,
+                               int flags)
+{
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    int ret;
+
+    VIR_DEBUG("xml=%s", NULLSTR(xml));
+
+    if (!(doc = virXMLParseString(xml, "qemumigration.xml")))
+        goto cleanup;
+
+    if ((ctxt = xmlXPathNewContext(doc)) == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ctxt->node = xmlDocGetRootElement(doc);
+
+    ret = qemuMigrationCookieXMLParse(mig, ctxt, flags);
+
+cleanup:
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+
+    return ret;
+}
+
+
+static int
+qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
+                        struct qemud_driver *driver ATTRIBUTE_UNUSED,
+                        virDomainObjPtr dom ATTRIBUTE_UNUSED,
+                        char **cookieout,
+                        int *cookieoutlen,
+                        int flags ATTRIBUTE_UNUSED)
+{
+    if (!cookieout || !cookieoutlen) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("missing migration cookie data"));
+        return -1;
+    }
+
+    *cookieoutlen = 0;
+
+    if (!(*cookieout = qemuMigrationCookieXMLFormatStr(mig)))
+        return -1;
+
+    *cookieoutlen = strlen(*cookieout) + 1;
+
+    VIR_DEBUG("cookielen=%d cookie=%s", *cookieoutlen, *cookieout);
+
+    return 0;
+}
+
+
+static qemuMigrationCookiePtr
+qemuMigrationEatCookie(virDomainObjPtr dom,
+                       const char *cookiein,
+                       int cookieinlen,
+                       int flags)
+{
+    qemuMigrationCookiePtr mig = NULL;
+
+    /* Parse & validate incoming cookie (if any) */
+    if (cookiein && cookieinlen &&
+        cookiein[cookieinlen-1] != '\0') {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Migration cookie was not NULL terminated"));
+        goto error;
+    }
+
+    VIR_DEBUG("cookielen=%d cookie='%s'", cookieinlen, NULLSTR(cookiein));
+
+    if (!(mig = qemuMigrationCookieNew(dom)))
+        return NULL;
+
+    if (cookiein && cookieinlen &&
+        qemuMigrationCookieXMLParseStr(mig,
+                                       cookiein,
+                                       flags) < 0)
+        goto error;
+
+    return mig;
+
+error:
+    qemuMigrationCookieFree(mig);
+    return NULL;
+}
 
 bool
 qemuMigrationIsAllowed(virDomainDefPtr def)
@@ -245,6 +507,10 @@ cleanup:
 int
 qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                            virConnectPtr dconn,
+                           const char *cookiein,
+                           int cookieinlen,
+                           char **cookieout,
+                           int *cookieoutlen,
                            virStreamPtr st,
                            const char *dname,
                            const char *dom_xml)
@@ -257,6 +523,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     int dataFD[2] = { -1, -1 };
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
+    qemuMigrationCookiePtr mig = NULL;
 
     if (gettimeofday(&now, NULL) < 0) {
         virReportSystemError(errno, "%s",
@@ -291,6 +558,9 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     }
     def = NULL;
     priv = vm->privateData;
+
+    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+        goto cleanup;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
@@ -342,6 +612,15 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_MIGRATED);
+
+    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0) {
+        /* We could tear down the whole guest here, but
+         * cookie data is (so far) non-critical, so that
+         * seems a little harsh. We'll just warn for now.
+         */
+        VIR_WARN("Unable to encode migration cookie");
+    }
+
     ret = 0;
 
 endjob:
@@ -369,6 +648,7 @@ cleanup:
         virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
+    qemuMigrationCookieFree(mig);
     return ret;
 }
 
@@ -376,6 +656,10 @@ cleanup:
 int
 qemuMigrationPrepareDirect(struct qemud_driver *driver,
                            virConnectPtr dconn,
+                           const char *cookiein,
+                           int cookieinlen,
+                           char **cookieout,
+                           int *cookieoutlen,
                            const char *uri_in,
                            char **uri_out,
                            const char *dname,
@@ -393,6 +677,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
     int internalret;
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
+    qemuMigrationCookiePtr mig = NULL;
 
     if (gettimeofday(&now, NULL) < 0) {
         virReportSystemError(errno, "%s",
@@ -502,6 +787,9 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
     def = NULL;
     priv = vm->privateData;
 
+    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+        goto cleanup;
+
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
     priv->jobActive = QEMU_JOB_MIGRATION_OUT;
@@ -525,6 +813,14 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
             vm = NULL;
         }
         goto endjob;
+    }
+
+    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0) {
+        /* We could tear down the whole guest here, but
+         * cookie data is (so far) non-critical, so that
+         * seems a little harsh. We'll just warn for now.
+         */
+        VIR_WARN("Unable to encode migration cookie");
     }
 
     qemuAuditDomainStart(vm, "migrated", true);
@@ -559,6 +855,7 @@ cleanup:
         virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
+    qemuMigrationCookieFree(mig);
     return ret;
 }
 
@@ -569,6 +866,10 @@ cleanup:
 static int doNativeMigrate(struct qemud_driver *driver,
                            virDomainObjPtr vm,
                            const char *uri,
+                           const char *cookiein,
+                           int cookieinlen,
+                           char **cookieout,
+                           int *cookieoutlen,
                            unsigned int flags,
                            const char *dname ATTRIBUTE_UNUSED,
                            unsigned long resource)
@@ -577,6 +878,10 @@ static int doNativeMigrate(struct qemud_driver *driver,
     xmlURIPtr uribits = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
+    qemuMigrationCookiePtr mig = NULL;
+
+    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+        goto cleanup;
 
     /* Issue the migrate command. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
@@ -620,9 +925,13 @@ static int doNativeMigrate(struct qemud_driver *driver,
     if (qemuMigrationWaitForCompletion(driver, vm) < 0)
         goto cleanup;
 
+    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0)
+        VIR_WARN("Unable to encode migration cookie");
+
     ret = 0;
 
 cleanup:
+    qemuMigrationCookieFree(mig);
     xmlFreeURI(uribits);
     return ret;
 }
@@ -901,14 +1210,16 @@ static int doNonTunnelMigrate(struct qemud_driver *driver,
     virDomainPtr ddomain = NULL;
     int retval = -1;
     char *uri_out = NULL;
+    char *cookie = NULL;
+    int cookielen = 0;
     int rc;
 
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     /* NB we don't pass 'uri' into this, since that's the libvirtd
      * URI in this context - so we let dest pick it */
     rc = dconn->driver->domainMigratePrepare2(dconn,
-                                              NULL, /* cookie */
-                                              0, /* cookielen */
+                                              &cookie,
+                                              &cookielen,
                                               NULL, /* uri */
                                               &uri_out,
                                               flags, dname,
@@ -933,7 +1244,10 @@ static int doNonTunnelMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (doNativeMigrate(driver, vm, uri_out, flags, dname, resource) < 0)
+    if (doNativeMigrate(driver, vm, uri_out,
+                        cookie, cookielen,
+                        NULL, NULL, /* No out cookie with v2 migration */
+                        flags, dname, resource) < 0)
         goto finish;
 
     retval = 0;
@@ -942,13 +1256,14 @@ finish:
     dname = dname ? dname : vm->def->name;
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     ddomain = dconn->driver->domainMigrateFinish2
-        (dconn, dname, NULL, 0, uri_out, flags, retval);
+        (dconn, dname, cookie, cookielen, uri_out, flags, retval);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
     if (ddomain)
         virUnrefDomain(ddomain);
 
 cleanup:
+    VIR_FREE(cookie);
     return retval;
 }
 
@@ -1024,6 +1339,10 @@ int qemuMigrationPerform(struct qemud_driver *driver,
                          virConnectPtr conn,
                          virDomainObjPtr vm,
                          const char *uri,
+                         const char *cookiein,
+                         int cookieinlen,
+                         char **cookieout,
+                         int *cookieoutlen,
                          unsigned long flags,
                          const char *dname,
                          unsigned long resource)
@@ -1054,11 +1373,19 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     }
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
+        if (cookieinlen) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("received unexpected cookie with P2P migration"));
+            goto endjob;
+        }
+
         if (doPeer2PeerMigrate(driver, vm, uri, flags, dname, resource) < 0)
             /* doPeer2PeerMigrate already set the error, so just get out */
             goto endjob;
     } else {
-        if (doNativeMigrate(driver, vm, uri, flags, dname, resource) < 0)
+        if (doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
+                            cookieout, cookieoutlen,
+                            flags, dname, resource) < 0)
             goto endjob;
     }
 
@@ -1076,6 +1403,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
             virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
     }
+
     ret = 0;
 
 endjob:
@@ -1153,6 +1481,10 @@ virDomainPtr
 qemuMigrationFinish(struct qemud_driver *driver,
                     virConnectPtr dconn,
                     virDomainObjPtr vm,
+                    const char *cookiein,
+                    int cookieinlen,
+                    char **cookieout,
+                    int *cookieoutlen,
                     unsigned long flags,
                     int retcode)
 {
@@ -1160,6 +1492,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
     virDomainEventPtr event = NULL;
     int newVM = 1;
     qemuDomainObjPrivatePtr priv = NULL;
+    qemuMigrationCookiePtr mig = NULL;
 
     priv = vm->privateData;
     if (priv->jobActive != QEMU_JOB_MIGRATION_IN) {
@@ -1169,6 +1502,9 @@ qemuMigrationFinish(struct qemud_driver *driver,
     }
     priv->jobActive = QEMU_JOB_NONE;
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+
+    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+        goto cleanup;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
@@ -1257,6 +1593,9 @@ qemuMigrationFinish(struct qemud_driver *driver,
         }
     }
 
+    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0)
+        VIR_WARN("Unable to encode migration cookie");
+
 endjob:
     if (vm &&
         qemuDomainObjEndJob(vm) == 0)
@@ -1267,6 +1606,7 @@ cleanup:
         virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
+    qemuMigrationCookieFree(mig);
     return dom;
 }
 

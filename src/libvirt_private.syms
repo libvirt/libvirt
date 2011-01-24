@@ -1016,6 +1016,7 @@ virStrerror;
 
 
 # xml.h
+virXMLParseStrHelper;
 virXMLPropString;
 virXPathBoolean;
 virXPathInt;

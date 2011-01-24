@@ -5785,8 +5785,9 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     }
 
     qemuDriverLock(driver);
-    ret = qemuMigrationPrepareTunnel(driver, dconn, st,
-                                     dname, dom_xml);
+    ret = qemuMigrationPrepareTunnel(driver, dconn,
+                                     NULL, 0, NULL, NULL, /* No cookies in v2 */
+                                     st, dname, dom_xml);
     qemuDriverUnlock(driver);
 
 cleanup:
@@ -5799,8 +5800,8 @@ cleanup:
  */
 static int ATTRIBUTE_NONNULL (5)
 qemudDomainMigratePrepare2 (virConnectPtr dconn,
-                            char **cookie ATTRIBUTE_UNUSED,
-                            int *cookielen ATTRIBUTE_UNUSED,
+                            char **cookie,
+                            int *cookielen,
                             const char *uri_in,
                             char **uri_out,
                             unsigned long flags,
@@ -5839,6 +5840,8 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     }
 
     ret = qemuMigrationPrepareDirect(driver, dconn,
+                                     NULL, 0, /* No input cookies in v2 */
+                                     cookie, cookielen,
                                      uri_in, uri_out,
                                      dname, dom_xml);
 
@@ -5882,8 +5885,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
     }
 
     ret = qemuMigrationPerform(driver, dom->conn, vm,
-                               uri, flags,
-                               dname, resource);
+                               uri, cookie, cookielen,
+                               NULL, NULL, /* No output cookies in v2 */
+                               flags, dname, resource);
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -5926,7 +5930,9 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
         goto cleanup;
     }
 
-    dom = qemuMigrationFinish(driver, dconn, vm, flags, retcode);
+    dom = qemuMigrationFinish(driver, dconn, vm,
+                              NULL, 0, NULL, NULL, /* No cookies in v2 */
+                              flags, retcode);
 
 cleanup:
     if (orig_err) {

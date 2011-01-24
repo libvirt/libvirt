@@ -99,7 +99,7 @@ const REMOTE_VCPUINFO_MAX = 2048;
 const REMOTE_CPUMAPS_MAX = 16384;
 
 /* Upper limit on migrate cookie. */
-const REMOTE_MIGRATE_COOKIE_MAX = 256;
+const REMOTE_MIGRATE_COOKIE_MAX = 16384;
 
 /* Upper limit on lists of network names. */
 const REMOTE_NETWORK_NAME_LIST_MAX = 256;
