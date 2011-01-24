@@ -384,6 +384,7 @@ int virFork(pid_t *pid) {
            get sent to stderr where they stand a fighting chance
            of being seen / logged */
         virSetErrorFunc(NULL, NULL);
+        virSetErrorLogPriorityFunc(NULL);
 
         /* Make sure any hook logging is sent to stderr, since child
          * process may close the logfile FDs */
