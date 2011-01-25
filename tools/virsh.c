@@ -3418,6 +3418,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")},
     {"migrateuri", VSH_OT_DATA, 0, N_("migration URI, usually can be omitted")},
     {"dname", VSH_OT_DATA, 0, N_("rename to new name during migration (if supported)")},
+    {"timeout", VSH_OT_INT, 0, N_("force guest to suspend if live migration exceeds timeout (in seconds)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3548,12 +3549,16 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     int ret = -1;
     virThread workerThread;
     struct pollfd pollfd;
+    int found;
     char retchar;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
     virDomainJobInfo jobinfo;
     bool verbose = false;
     sigset_t sigmask, oldsigmask;
+    int timeout;
+    struct timeval start, curr;
+    bool live_flag = false;
 
     vshCtrlData data;
 
@@ -3562,6 +3567,29 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool (cmd, "verbose"))
         verbose = true;
+
+    if (vshCommandOptBool (cmd, "live"))
+        live_flag = TRUE;
+    timeout = vshCommandOptInt(cmd, "timeout", &found);
+    if (found) {
+        if (! live_flag) {
+            vshError(ctl, "%s", _("migrate: Unexpected timeout for offline migration"));
+            goto cleanup;
+        }
+
+        if (timeout < 1) {
+            vshError(ctl, "%s", _("migrate: Invalid timeout"));
+            goto cleanup;
+        }
+
+        /* Ensure that we can multiply by 1000 without overflowing. */
+        if (timeout > INT_MAX / 1000) {
+            vshError(ctl, "%s", _("migrate: Timeout is too big"));
+            goto cleanup;
+        }
+    } else {
+        timeout = 0;
+    }
 
     if (pipe(p) < 0)
         goto cleanup;
@@ -3588,6 +3616,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
 
+    GETTIMEOFDAY(&start);
     while (1) {
 repoll:
         ret = poll(&pollfd, 1, 500);
@@ -3616,6 +3645,15 @@ repoll:
                     goto repoll;
             }
             break;
+        }
+
+        GETTIMEOFDAY(&curr);
+        if ( timeout && ((int)(curr.tv_sec - start.tv_sec)  * 1000 + \
+                         (int)(curr.tv_usec - start.tv_usec) / 1000) > timeout * 1000 ) {
+            /* suspend the domain when migration timeouts. */
+            vshDebug(ctl, 5, "suspend the domain when migration timeouts\n");
+            virDomainSuspend(dom);
+            timeout = 0;
         }
 
         if (verbose) {
