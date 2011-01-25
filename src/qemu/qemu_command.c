@@ -1976,39 +1976,40 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias)
 
     switch(dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        virBufferVSprintf(&buf, "null,id=%s", alias);
+        virBufferVSprintf(&buf, "null,id=char%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        virBufferVSprintf(&buf, "vc,id=%s", alias);
+        virBufferVSprintf(&buf, "vc,id=char%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferVSprintf(&buf, "pty,id=%s", alias);
+        virBufferVSprintf(&buf, "pty,id=char%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferVSprintf(&buf, "tty,id=%s,path=%s", alias,
+        virBufferVSprintf(&buf, "tty,id=char%s,path=%s", alias,
                           dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        virBufferVSprintf(&buf, "file,id=%s,path=%s", alias,
+        virBufferVSprintf(&buf, "file,id=char%s,path=%s", alias,
                           dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferVSprintf(&buf, "pipe,id=%s,path=%s", alias,
+        virBufferVSprintf(&buf, "pipe,id=char%s,path=%s", alias,
                           dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        virBufferVSprintf(&buf, "stdio,id=%s", alias);
+        virBufferVSprintf(&buf, "stdio,id=char%s", alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         virBufferVSprintf(&buf,
-                          "udp,id=%s,host=%s,port=%s,localaddr=%s,localport=%s",
+                          "udp,id=char%s,host=%s,port=%s,localaddr=%s,"
+                          "localport=%s",
                           alias,
                           dev->data.udp.connectHost,
                           dev->data.udp.connectService,
@@ -2019,7 +2020,7 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias)
     case VIR_DOMAIN_CHR_TYPE_TCP:
         telnet = dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         virBufferVSprintf(&buf,
-                          "socket,id=%s,host=%s,port=%s%s%s",
+                          "socket,id=char%s,host=%s,port=%s%s%s",
                           alias,
                           dev->data.tcp.host,
                           dev->data.tcp.service,
@@ -2029,7 +2030,7 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias)
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferVSprintf(&buf,
-                          "socket,id=%s,path=%s%s",
+                          "socket,id=char%s,path=%s%s",
                           alias,
                           dev->data.nix.path,
                           dev->data.nix.listen ? ",server,nowait" : "");
@@ -2156,7 +2157,8 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
                           dev->info.addr.vioserial.port);
     }
 
-    virBufferVSprintf(&buf, ",chardev=%s", dev->info.alias);
+    virBufferVSprintf(&buf, ",chardev=char%s,id=%s",
+                      dev->info.alias, dev->info.alias);
     if (dev->target.name) {
         virBufferVSprintf(&buf, ",name=%s", dev->target.name);
     }
@@ -2786,7 +2788,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             VIR_FREE(chrdev);
 
             virCommandAddArg(cmd, "-mon");
-            virCommandAddArgFormat(cmd, "chardev=monitor,mode=%s",
+            virCommandAddArgFormat(cmd,
+                                   "chardev=charmonitor,id=monitor,mode=%s",
                                    monitor_json ? "control" : "readline");
         } else {
             const char *prefix = NULL;
@@ -3417,8 +3420,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 VIR_FREE(devstr);
 
                 virCommandAddArg(cmd, "-device");
-                virCommandAddArgFormat(cmd, "isa-serial,chardev=%s",
-                                       serial->info.alias);
+                virCommandAddArgFormat(cmd, "isa-serial,chardev=char%s,id=%s",
+                                       serial->info.alias, serial->info.alias);
             } else {
                 virCommandAddArg(cmd, "-serial");
                 if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
@@ -3449,7 +3452,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 VIR_FREE(devstr);
 
                 virCommandAddArg(cmd, "-device");
-                virCommandAddArgFormat(cmd, "isa-parallel,chardev=%s",
+                virCommandAddArgFormat(cmd, "isa-parallel,chardev=char%s,id=%s",
+                                       parallel->info.alias,
                                        parallel->info.alias);
             } else {
                 virCommandAddArg(cmd, "-parallel");
@@ -3488,7 +3492,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             virCommandAddArg(cmd, "-netdev");
             virCommandAddArgFormat(cmd,
-                                   "user,guestfwd=tcp:%s:%i,chardev=%s,id=user-%s",
+                                   "user,guestfwd=tcp:%s:%i,chardev=char%s,id=user-%s",
                                    addr, port, channel->info.alias,
                                    channel->info.alias);
             VIR_FREE(addr);
