@@ -23,7 +23,7 @@ The primary maintainers and people with commit access rights:
   Guido Günther        <agx@sigxcpu.org>
   John Levon           <john.levon@sun.com>
   Matthias Bolte       <matthias.bolte@googlemail.com>
-  Jiri Denemark        <jdenemar@redhat.com>
+  Jiří Denemark        <jdenemar@redhat.com>
   Dave Allan           <dallan@redhat.com>
   Laine Stump          <laine@redhat.com>
   Stefan Berger        <stefanb@us.ibm.com>
@@ -144,6 +144,7 @@ Patches have also been contributed by:
   Paweł Krześniak      <pawel.krzesniak@gmail.com>
   Kay Schubert         <kayegypt@web.de>
   Marc-André Lureau    <marcandre.lureau@redhat.com>
+  Michal Prívozník     <mprivozn@redhat.com>
 
   [....send patches to get your name here....]
 
