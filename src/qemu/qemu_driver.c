@@ -4640,6 +4640,12 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     name = qemuDomainManagedSavePath(driver, vm);
     if (name == NULL)
         goto cleanup;
