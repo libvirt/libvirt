@@ -3413,6 +3413,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"suspend", VSH_OT_BOOL, 0, N_("do not restart the domain on the destination host")},
     {"copy-storage-all", VSH_OT_BOOL, 0, N_("migration with non-shared storage with full disk copy")},
     {"copy-storage-inc", VSH_OT_BOOL, 0, N_("migration with non-shared storage with incremental copy (same base image shared between source and destination)")},
+    {"verbose", VSH_OT_BOOL, 0, N_("display the progress of migration")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")},
     {"migrateuri", VSH_OT_DATA, 0, N_("migration URI, usually can be omitted")},
@@ -3515,6 +3516,30 @@ out_sig:
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
 
+static void
+print_job_progress(unsigned long long remaining, unsigned long long total)
+{
+    int progress;
+
+    if (total == 0)
+        /* migration has not been started */
+        return;
+
+    if (remaining == 0) {
+        /* migration has completed */
+        progress = 100;
+    } else {
+        /* use float to avoid overflow */
+        progress = (int)(100.0 - remaining * 100.0 / total);
+        if (progress >= 100) {
+            /* migration has not completed, do not print [100 %] */
+            progress = 99;
+        }
+    }
+
+    fprintf(stderr, "\rMigration: [%3d %%]", progress);
+}
+
 static int
 cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 {
@@ -3526,11 +3551,17 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     char retchar;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
+    virDomainJobInfo jobinfo;
+    bool verbose = false;
+    sigset_t sigmask, oldsigmask;
 
     vshCtrlData data;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
+
+    if (vshCommandOptBool (cmd, "verbose"))
+        verbose = true;
 
     if (pipe(p) < 0)
         goto cleanup;
@@ -3554,29 +3585,46 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     pollfd.fd = p[0];
     pollfd.events = POLLIN;
     pollfd.revents = 0;
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
 
+    while (1) {
 repoll:
-    ret = poll(&pollfd, 1, -1);
-    if (ret > 0) {
-        if (saferead(p[0], &retchar, sizeof(retchar)) > 0) {
-            if (retchar == '0')
-                ret = TRUE;
-            else
-                ret = FALSE;
-        } else
-            ret = FALSE;
-    } else if (ret < 0) {
-        if (errno == EINTR) {
-            if (intCaught) {
-                virDomainAbortJob(dom);
-                ret = FALSE;
-                intCaught = 0;
+        ret = poll(&pollfd, 1, 500);
+        if (ret > 0) {
+            if (saferead(p[0], &retchar, sizeof(retchar)) > 0) {
+                if (retchar == '0') {
+                    ret = TRUE;
+                    if (verbose) {
+                        /* print [100 %] */
+                        print_job_progress(0, 1);
+                    }
+                } else
+                    ret = FALSE;
             } else
-                goto repoll;
+                ret = FALSE;
+            break;
         }
-    } else {
-        /* timed out */
-        ret = FALSE;
+
+        if (ret < 0) {
+            if (errno == EINTR) {
+                if (intCaught) {
+                    virDomainAbortJob(dom);
+                    ret = FALSE;
+                    intCaught = 0;
+                } else
+                    goto repoll;
+            }
+            break;
+        }
+
+        if (verbose) {
+            pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+            ret = virDomainGetJobInfo(dom, &jobinfo);
+            pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+            if (ret == 0)
+                print_job_progress(jobinfo.dataRemaining, jobinfo.dataTotal);
+        }
     }
 
     sigaction(SIGINT, &old_sig_action, NULL);

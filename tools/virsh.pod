@@ -489,7 +489,8 @@ type attribute for the <domain> element of XML.
 
 =item B<migrate> optional I<--live> I<--p2p> I<--direct> I<--tunnelled>
 I<--persistent> I<--undefinesource> I<--suspend> I<--copy-storage-all>
-I<--copy-storage-inc> I<domain-id> I<desturi> I<migrateuri> I<dname>
+I<--copy-storage-inc> I<--verbose> I<domain-id> I<desturi> I<migrateuri>
+I<dname>
 
 Migrate domain to another host.  Add I<--live> for live migration; I<--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -499,6 +500,7 @@ and I<--suspend> leaves the domain paused on the destination host.
 I<--copy-storage-all> indicates migration with non-shared storage with full
 disk copy, I<--copy-storage-inc> indicates migration with non-shared storage
 with incremental copy (same base image shared between source and destination).
+I<--verbose> displays the progress of migration.
 
 The I<desturi> is the connection URI of the destination host, and
 I<migrateuri> is the migration URI, which usually can be omitted.
