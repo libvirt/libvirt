@@ -31,6 +31,7 @@
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <poll.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -54,6 +55,7 @@
 #include "files.h"
 #include "../daemon/event.h"
 #include "configmake.h"
+#include "threads.h"
 
 static char *progname;
 
@@ -490,6 +492,15 @@ virshReportError(vshControl *ctl)
 out:
     virFreeError(last_error);
     last_error = NULL;
+}
+
+static volatile sig_atomic_t intCaught = 0;
+
+static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
+                        siginfo_t *siginfo ATTRIBUTE_UNUSED,
+                        void *context ATTRIBUTE_UNUSED)
+{
+    intCaught = 1;
 }
 
 /*
@@ -3409,24 +3420,40 @@ static const vshCmdOptDef opts_migrate[] = {
     {NULL, 0, 0, NULL}
 };
 
-static int
-cmdMigrate (vshControl *ctl, const vshCmd *cmd)
+typedef struct __vshCtrlData {
+    vshControl *ctl;
+    const vshCmd *cmd;
+    int writefd;
+} vshCtrlData;
+
+static void
+doMigrate (void *opaque)
 {
+    char ret = '1';
     virDomainPtr dom = NULL;
     const char *desturi;
     const char *migrateuri;
     const char *dname;
-    int flags = 0, found, ret = FALSE;
+    int flags = 0, found;
+    sigset_t sigmask, oldsigmask;
+    vshCtrlData *data = opaque;
+    vshControl *ctl = data->ctl;
+    const vshCmd *cmd = data->cmd;
+
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+    if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
+        goto out_sig;
 
     if (!vshConnectionUsability (ctl, ctl->conn))
-        return FALSE;
+        goto out;
 
     if (!(dom = vshCommandOptDomain (ctl, cmd, NULL)))
-        return FALSE;
+        goto out;
 
     desturi = vshCommandOptString (cmd, "desturi", &found);
     if (!found)
-        goto done;
+        goto out;
 
     migrateuri = vshCommandOptString (cmd, "migrateuri", NULL);
 
@@ -3460,29 +3487,106 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 
         if (migrateuri != NULL) {
             vshError(ctl, "%s", _("migrate: Unexpected migrateuri for peer2peer/direct migration"));
-            goto done;
+            goto out;
         }
 
         if (virDomainMigrateToURI (dom, desturi, flags, dname, 0) == 0)
-            ret = TRUE;
+            ret = '0';
     } else {
         /* For traditional live migration, connect to the destination host directly. */
         virConnectPtr dconn = NULL;
         virDomainPtr ddom = NULL;
 
         dconn = virConnectOpenAuth (desturi, virConnectAuthPtrDefault, 0);
-        if (!dconn) goto done;
+        if (!dconn) goto out;
 
         ddom = virDomainMigrate (dom, dconn, flags, dname, migrateuri, 0);
         if (ddom) {
             virDomainFree(ddom);
-            ret = TRUE;
+            ret = '0';
         }
         virConnectClose (dconn);
     }
 
- done:
+out:
+    pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+out_sig:
     if (dom) virDomainFree (dom);
+    ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
+}
+
+static int
+cmdMigrate (vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    int p[2] = {-1, -1};
+    int ret = -1;
+    virThread workerThread;
+    struct pollfd pollfd;
+    char retchar;
+    struct sigaction sig_action;
+    struct sigaction old_sig_action;
+
+    vshCtrlData data;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    if (pipe(p) < 0)
+        goto cleanup;
+
+    data.ctl = ctl;
+    data.cmd = cmd;
+    data.writefd = p[1];
+
+    if (virThreadCreate(&workerThread,
+                        true,
+                        doMigrate,
+                        &data) < 0)
+        goto cleanup;
+
+    intCaught = 0;
+    sig_action.sa_sigaction = vshCatchInt;
+    sig_action.sa_flags = SA_SIGINFO;
+    sigemptyset(&sig_action.sa_mask);
+    sigaction(SIGINT, &sig_action, &old_sig_action);
+
+    pollfd.fd = p[0];
+    pollfd.events = POLLIN;
+    pollfd.revents = 0;
+
+repoll:
+    ret = poll(&pollfd, 1, -1);
+    if (ret > 0) {
+        if (saferead(p[0], &retchar, sizeof(retchar)) > 0) {
+            if (retchar == '0')
+                ret = TRUE;
+            else
+                ret = FALSE;
+        } else
+            ret = FALSE;
+    } else if (ret < 0) {
+        if (errno == EINTR) {
+            if (intCaught) {
+                virDomainAbortJob(dom);
+                ret = FALSE;
+                intCaught = 0;
+            } else
+                goto repoll;
+        }
+    } else {
+        /* timed out */
+        ret = FALSE;
+    }
+
+    sigaction(SIGINT, &old_sig_action, NULL);
+
+    virThreadJoin(&workerThread);
+
+cleanup:
+    virDomainFree(dom);
+    VIR_FORCE_CLOSE(p[0]);
+    VIR_FORCE_CLOSE(p[1]);
     return ret;
 }
 
