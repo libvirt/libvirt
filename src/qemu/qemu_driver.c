@@ -930,6 +930,10 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
 
     priv = obj->privateData;
 
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted if qemuConnectMonitor() failed */
+    virDomainObjRef(obj);
+
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(driver, obj) < 0)
         goto error;
@@ -961,18 +965,27 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     if (obj->def->id >= driver->nextvmid)
         driver->nextvmid = obj->def->id + 1;
 
-    virDomainObjUnlock(obj);
+    if (virDomainObjUnref(obj) > 0)
+        virDomainObjUnlock(obj);
     return;
 
 error:
-    /* We can't get the monitor back, so must kill the VM
-     * to remove danger of it ending up running twice if
-     * user tries to start it again later */
-    qemudShutdownVMDaemon(driver, obj, 0);
-    if (!obj->persistent)
-        virDomainRemoveInactive(&driver->domains, obj);
-    else
-        virDomainObjUnlock(obj);
+    if (!virDomainObjIsActive(obj)) {
+        if (virDomainObjUnref(obj) > 0)
+            virDomainObjUnlock(obj);
+        return;
+    }
+
+    if (virDomainObjUnref(obj) > 0) {
+        /* We can't get the monitor back, so must kill the VM
+         * to remove danger of it ending up running twice if
+         * user tries to start it again later */
+        qemudShutdownVMDaemon(driver, obj, 0);
+        if (!obj->persistent)
+            virDomainRemoveInactive(&driver->domains, obj);
+        else
+            virDomainObjUnlock(obj);
+    }
 }
 
 /**
