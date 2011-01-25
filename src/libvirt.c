@@ -5560,6 +5560,7 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
         return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
@@ -5660,6 +5661,7 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
         return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
@@ -5719,6 +5721,7 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
         return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
