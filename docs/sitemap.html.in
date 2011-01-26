@@ -30,6 +30,10 @@
             <a href="windows.html">Windows</a>
             <span>Downloads for Windows</span>
           </li>
+          <li>
+            <a href="bindings.html">Language bindings</a>
+            <span>Bindings of the libvirt API for languages other than C</span>
+          </li>
         </ul>
       </li>
       <li>
