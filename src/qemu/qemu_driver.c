@@ -2868,7 +2868,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (driver->clearEmulatorCapabilities)
         virCommandClearCaps(cmd);
 
-    VIR_WARN("Executing %s", vm->def->emulator);
     virCommandSetPreExecHook(cmd, qemudSecurityHook, &hookData);
 
     virCommandSetOutputFD(cmd, &logfile);
@@ -2878,7 +2877,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     virCommandDaemonize(cmd);
 
     ret = virCommandRun(cmd, NULL);
-    VIR_WARN("Executing done %s", vm->def->emulator);
     VIR_FREE(pidfile);
 
     /* wait for qemu process to to show up */
