@@ -580,7 +580,7 @@ paravirtualized or running the PV balloon driver.
 
 Note, this command only works on active guest domains.  To change the memory
 allocation for an inactive guest domain, use the virsh B<edit> command to
-update the XML <memory> element.
+update the XML <currentMemory> element.
 
 =item B<setmaxmem> I<domain-id> B<kilobytes>
 
