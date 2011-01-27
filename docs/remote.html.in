@@ -308,6 +308,21 @@ Note that parameter values must be
         <td colspan="2"/>
         <td> Example: <code>no_tty=1</code> </td>
       </tr>
+      <tr>
+        <td>
+          <code>pkipath</code>
+        </td>
+        <td> tls</td>
+        <td>
+          Specifies x509 certificates path for the client. If any of
+          the CA certificate, client certificate, or client key is
+          missing, the connection will fail with a fatal error.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>pkipath=/tmp/pki/client</code> </td>
+      </tr>
     </table>
     <h3>
       <a name="Remote_certificates">Generating TLS certificates</a>
@@ -372,6 +387,21 @@ next section.
   </td>
       </tr>
     </table>
+    <p>
+      If 'pkipath' is specified in URI, then all the client
+      certificates must be found in the path specified, otherwise the
+      connection will fail with a fatal error. If 'pkipath' is not
+      specified:
+    </p>
+    <ul>
+      <li> For a non-root user, libvirt tries to find the certificates
+        in $HOME/.pki/libvirt. If any of the required certificates can
+        not be found, then the global default locations
+        (/etc/pki/CA/cacert.pem, /etc/pki/libvirt/private/clientkey,
+        /etc/pki/libvirt/clientcert.pem) will be used.
+      </li>
+      <li> For the root user, the global default locations will be used.</li>
+    </ul>
     <h4>
       <a name="Remote_TLS_background">Background to TLS certificates</a>
     </h4>
