@@ -900,8 +900,6 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 error:
-    if (ret < 0)
-        qemuMonitorClose(priv->mon);
 
     return ret;
 }
