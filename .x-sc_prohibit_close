@@ -1,3 +1,9 @@
+# Non-C files:
 ^docs/.*
+^ChangeLog*
 ^HACKING$
-^src/util/files.c$
+*\.py$
+# Wrapper implementation:
+^src/util/files\.c$
+# Only uses close in documentation comments:
+^src/libvirt\.c$

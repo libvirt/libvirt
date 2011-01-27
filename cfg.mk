@@ -241,11 +241,18 @@ sc_avoid_write:
 
 # Avoid functions that can lead to double-close bugs.
 sc_prohibit_close:
-	@prohibit='\<[f]close *\('					\
+	@prohibit='([^>.]|^)\<[fp]?close *\('				\
 	halt='use VIR_{FORCE_}[F]CLOSE instead of [f]close'		\
 	  $(_sc_search_regexp)
 	@prohibit='\<fdopen *\('					\
 	halt='use VIR_FDOPEN instead of fdopen'				\
+	  $(_sc_search_regexp)
+
+# Prefer virCommand for all child processes.
+# XXX - eventually, we want to enhance this to also prohibit virExec.
+sc_prohibit_fork_wrappers:
+	@prohibit='= *\<(fork|popen|system) *\('			\
+	halt='use virCommand for child processes'			\
 	  $(_sc_search_regexp)
 
 # Similar to the gnulib maint.mk rule for sc_prohibit_strcmp

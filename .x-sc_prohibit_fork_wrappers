@@ -1,0 +1,8 @@
+^docs/.*
+^HACKING$
+^src/util/util\.c$
+^tests/testutils\.c$
+# Files that we may want to convert over to virCommand someday...
+^daemon/libvirtd\.c$
+^src/libvirt\.c$
+^src/lxc/lxc_controller\.c$

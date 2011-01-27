@@ -246,7 +246,7 @@ virReleaseConnect(virConnectPtr conn) {
     DEBUG("release connection %p", conn);
 
     /* make sure to release the connection lock before we call the
-     * close() callbacks, otherwise we will deadlock if an error
+     * close callbacks, otherwise we will deadlock if an error
      * is raised by any of the callbacks */
     virMutexUnlock(&conn->lock);
 

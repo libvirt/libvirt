@@ -1,9 +1,9 @@
 /*
  * files.h: safer file handling
  *
+ * Copyright (C) 2010-2011 RedHat, Inc.
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
- * Copyright (C) 2010 RedHat, Inc.
  * Copyright (C) 2010 Eric Blake
  *
  * This library is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ int virFclose(FILE **file, bool preserve_errno) ATTRIBUTE_RETURN_CHECK;
 FILE *virFdopen(int *fdptr, const char *mode) ATTRIBUTE_RETURN_CHECK;
 
 /* For use on normal paths; caller must check return value,
-   and failure sets errno per close(). */
+   and failure sets errno per close. */
 # define VIR_CLOSE(FD) virClose(&(FD), false)
 # define VIR_FCLOSE(FILE) virFclose(&(FILE), false)
 

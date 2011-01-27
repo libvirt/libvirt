@@ -25,6 +25,7 @@ syntax_check_exceptions = \
   .x-sc_prohibit_asprintf \
   .x-sc_prohibit_close \
   .x-sc_prohibit_empty_lines_at_EOF \
+  .x-sc_prohibit_fork_wrappers \
   .x-sc_prohibit_gethostby \
   .x-sc_prohibit_gethostname \
   .x-sc_prohibit_gettext_noop \
