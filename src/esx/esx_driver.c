@@ -2027,7 +2027,9 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
+    esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_VirtualMachinePowerState powerState;
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
@@ -2037,10 +2039,22 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         return -1;
     }
 
-    if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
-          (priv->primary, domain->uuid, NULL, &virtualMachine,
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "runtime.powerState") < 0 ||
+        esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (priv->primary, domain->uuid, propertyNameList, &virtualMachine,
            priv->autoAnswer) < 0 ||
-        esxVI_VirtualMachineConfigSpec_Alloc(&spec) < 0 ||
+        esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0) {
+        goto cleanup;
+    }
+
+    if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not powered off"));
+        goto cleanup;
+    }
+
+    if (esxVI_VirtualMachineConfigSpec_Alloc(&spec) < 0 ||
         esxVI_Long_Alloc(&spec->memoryMB) < 0) {
         goto cleanup;
     }
@@ -2067,6 +2081,7 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     result = 0;
 
   cleanup:
+    esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
