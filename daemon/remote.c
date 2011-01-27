@@ -5693,6 +5693,8 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     msg->async = 1;
     msg->bufferLength = len;
     msg->bufferOffset = 0;
+
+    VIR_DEBUG("Queue event %d %d", procnr, msg->bufferLength);
     qemudClientMessageQueuePush(&client->tx, msg);
     qemudUpdateClientEvent(client);
 

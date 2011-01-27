@@ -9890,6 +9890,7 @@ processCallDispatch(virConnectPtr conn, struct private_data *priv,
         break;
 
     case REMOTE_MESSAGE: /* Async notifications */
+        VIR_DEBUG("Dispatch event %d %d", hdr.proc, priv->bufferLength);
         rv = processCallDispatchMessage(conn, priv, flags & REMOTE_CALL_IN_OPEN,
                                         &hdr, &xdr);
         break;
