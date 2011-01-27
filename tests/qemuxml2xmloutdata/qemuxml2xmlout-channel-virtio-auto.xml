@@ -27,11 +27,11 @@
     <controller type='virtio-serial' index='2'/>
     <channel type='pty'>
       <target type='virtio' name='org.linux-kvm.port.0'/>
-      <address type='virtio-serial' controller='0' bus='0' port='0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
     </channel>
     <channel type='pty'>
       <target type='virtio' name='org.linux-kvm.port.foo'/>
-      <address type='virtio-serial' controller='1' bus='0' port='0'/>
+      <address type='virtio-serial' controller='1' bus='0' port='1'/>
     </channel>
     <channel type='pty'>
       <target type='virtio' name='org.linux-kvm.port.bar'/>
@@ -39,7 +39,7 @@
     </channel>
     <channel type='pty'>
       <target type='virtio' name='org.linux-kvm.port.wizz'/>
-      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+      <address type='virtio-serial' controller='0' bus='0' port='2'/>
     </channel>
     <channel type='pty'>
       <target type='virtio' name='org.linux-kvm.port.ooh'/>
@@ -47,7 +47,7 @@
     </channel>
     <channel type='pty'>
       <target type='virtio' name='org.linux-kvm.port.lla'/>
-      <address type='virtio-serial' controller='2' bus='0' port='0'/>
+      <address type='virtio-serial' controller='2' bus='0' port='1'/>
     </channel>
     <memballoon model='virtio'/>
   </devices>
