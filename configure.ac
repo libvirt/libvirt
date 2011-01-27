@@ -29,6 +29,25 @@ AC_SUBST([LIBVIRT_VERSION])
 AC_SUBST([LIBVIRT_VERSION_INFO])
 AC_SUBST([LIBVIRT_VERSION_NUMBER])
 
+AC_ARG_WITH([packager],
+            [AS_HELP_STRING([--with-packager],
+                            [Extra packager name])],
+            [],[])
+AC_ARG_WITH([packager-version],
+            [AS_HELP_STRING([--with-packager-version],
+                            [Extra packager version])],
+            [],[])
+if test "x$with_packager" != "xno"
+then
+  AC_DEFINE_UNQUOTED([PACKAGER], ["$with_packager"],
+                     [Extra package name])
+fi
+if test "x$with_packager_version" != "xno"
+then
+  AC_DEFINE_UNQUOTED([PACKAGER_VERSION], ["$with_packager_version"],
+                     [Extra package version])
+fi
+
 dnl Required minimum versions of all libs we depend on
 LIBXML_REQUIRED="2.6.0"
 GNUTLS_REQUIRED="1.0.25"

@@ -592,6 +592,13 @@ of recent versions of Linux (and other OSes).
 %define _without_dtrace --without-dtrace
 %endif
 
+%define when  %(date +"%%F-%%T")
+%define where %(hostname)
+%define who   %{?packager}%{!?packager:Unknown}
+%define with_packager --with-packager="%{who}, %{when}, %{where}"
+%define with_packager_version --with-packager-version="%{release}"
+
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -626,6 +633,8 @@ of recent versions of Linux (and other OSes).
            %{?_without_macvtap} \
            %{?_without_audit} \
            %{?_without_dtrace} \
+           %{with_packager} \
+           %{with_packager_version} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \

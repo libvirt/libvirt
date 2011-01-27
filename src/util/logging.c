@@ -108,6 +108,7 @@ static int virLogNbFilters = 0;
  * after filtering, multiple output can be used simultaneously
  */
 struct _virLogOutput {
+    bool logVersion;
     void *data;
     virLogOutputFunc f;
     virLogCloseFunc c;
@@ -490,6 +491,7 @@ int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
         goto cleanup;
     }
     ret = virLogNbOutputs++;
+    virLogOutputs[ret].logVersion = true;
     virLogOutputs[ret].f = f;
     virLogOutputs[ret].c = c;
     virLogOutputs[ret].data = data;
@@ -499,6 +501,55 @@ int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
 cleanup:
     virLogUnlock();
     return ret;
+}
+
+static int
+virLogFormatString(char **msg,
+                   const char *funcname,
+                   long long linenr,
+                   struct tm *time_info,
+                   struct timeval *cur_time,
+                   int priority,
+                   const char *str)
+{
+    int ret;
+    if ((funcname != NULL)) {
+        ret = virAsprintf(msg, "%02d:%02d:%02d.%03d: %d: %s : %s:%lld : %s\n",
+                          time_info->tm_hour, time_info->tm_min,
+                          time_info->tm_sec, (int) cur_time->tv_usec / 1000,
+                          virThreadSelfID(),
+                          virLogPriorityString(priority), funcname, linenr, str);
+    } else {
+        ret = virAsprintf(msg, "%02d:%02d:%02d.%03d: %d: %s : %s\n",
+                          time_info->tm_hour, time_info->tm_min,
+                          time_info->tm_sec, (int) cur_time->tv_usec / 1000,
+                          virThreadSelfID(),
+                          virLogPriorityString(priority), str);
+    }
+    return ret;
+}
+
+static int
+virLogVersionString(char **msg,
+                    struct tm *time_info,
+                    struct timeval *cur_time)
+{
+#ifdef PACKAGER_VERSION
+# ifdef PACKAGER
+#  define LOG_VERSION_STRING \
+    "libvirt version: " VERSION ", package: " PACKAGER_VERSION " (" PACKAGER ")"
+# else
+#  define LOG_VERSION_STRING \
+    "libvirt version: " VERSION ", package: " PACKAGER_VERSION
+# endif
+#else
+# define LOG_VERSION_STRING  \
+    "libvirt version: " VERSION
+#endif
+
+    return virLogFormatString(msg, NULL, 0,
+                              time_info, cur_time,
+                              VIR_LOG_INFO, LOG_VERSION_STRING);
 }
 
 /**
@@ -516,6 +567,7 @@ cleanup:
  */
 void virLogMessage(const char *category, int priority, const char *funcname,
                    long long linenr, int flags, const char *fmt, ...) {
+    static bool logVersionStderr = true;
     char *str = NULL;
     char *msg;
     struct timeval cur_time;
@@ -547,19 +599,9 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     gettimeofday(&cur_time, NULL);
     localtime_r(&cur_time.tv_sec, &time_info);
 
-    if ((funcname != NULL)) {
-        ret = virAsprintf(&msg, "%02d:%02d:%02d.%03d: %d: %s : %s:%lld : %s\n",
-                          time_info.tm_hour, time_info.tm_min,
-                          time_info.tm_sec, (int) cur_time.tv_usec / 1000,
-                          virThreadSelfID(),
-                          virLogPriorityString(priority), funcname, linenr, str);
-    } else {
-        ret = virAsprintf(&msg, "%02d:%02d:%02d.%03d: %d: %s : %s\n",
-                          time_info.tm_hour, time_info.tm_min,
-                          time_info.tm_sec, (int) cur_time.tv_usec / 1000,
-                          virThreadSelfID(),
-                          virLogPriorityString(priority), str);
-    }
+    ret = virLogFormatString(&msg, funcname, linenr,
+                             &time_info, &cur_time,
+                             priority, str);
     VIR_FREE(str);
     if (ret < 0) {
         /* apparently we're running out of memory */
@@ -578,12 +620,31 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     virLogStr(msg, len);
     virLogLock();
     for (i = 0; i < virLogNbOutputs;i++) {
-        if (priority >= virLogOutputs[i].priority)
+        if (priority >= virLogOutputs[i].priority) {
+            if (virLogOutputs[i].logVersion) {
+                char *ver = NULL;
+                if (virLogVersionString(&ver, &time_info, &cur_time) >= 0)
+                    virLogOutputs[i].f(category, VIR_LOG_INFO, __func__, __LINE__,
+                                       ver, strlen(ver),
+                                       virLogOutputs[i].data);
+                VIR_FREE(ver);
+                virLogOutputs[i].logVersion = false;
+            }
             virLogOutputs[i].f(category, priority, funcname, linenr,
                                msg, len, virLogOutputs[i].data);
+        }
     }
-    if ((virLogNbOutputs == 0) && (flags != 1))
+    if ((virLogNbOutputs == 0) && (flags != 1)) {
+        if (logVersionStderr) {
+            char *ver = NULL;
+            if (virLogVersionString(&ver, &time_info, &cur_time) >= 0)
+                ignore_value (safewrite(STDERR_FILENO,
+                                        ver, strlen(ver)));
+            VIR_FREE(ver);
+            logVersionStderr = false;
+        }
         ignore_value (safewrite(STDERR_FILENO, msg, len));
+    }
     virLogUnlock();
 
     VIR_FREE(msg);
