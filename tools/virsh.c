@@ -311,7 +311,7 @@ static virStorageVolPtr vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                                            char **name, int flag);
 
 /* default is lookup by Name and UUID */
-#define vshCommandOptVol(_ctl, _cmd,_optname, _pooloptname, _name)   \
+#define vshCommandOptVol(_ctl, _cmd, _optname, _pooloptname, _name)   \
     vshCommandOptVolBy(_ctl, _cmd, _optname, _pooloptname, _name,     \
                            VSH_BYUUID|VSH_BYNAME)
 
@@ -2273,36 +2273,87 @@ static const vshCmdInfo info_freecell[] = {
 
 static const vshCmdOptDef opts_freecell[] = {
     {"cellno", VSH_OT_INT, 0, N_("NUMA cell number")},
+    {"all", VSH_OT_BOOL, 0, N_("show free memory for all NUMA cells")},
     {NULL, 0, 0, NULL}
 };
 
 static int
 cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 {
+    int func_ret = FALSE;
     int ret;
     int cell, cell_given;
     unsigned long long memory;
+    unsigned long long *nodes = NULL;
+    int all_given;
+    virNodeInfo info;
+
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
 
     cell = vshCommandOptInt(cmd, "cellno", &cell_given);
-    if (!cell_given) {
-        memory = virNodeGetFreeMemory(ctl->conn);
-        if (memory == 0)
-            return FALSE;
-    } else {
-        ret = virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1);
-        if (ret != 1)
-            return FALSE;
+    all_given = vshCommandOptBool(cmd, "all");
+
+    if (all_given && cell_given) {
+        vshError(ctl, "%s", _("--cellno and --all are mutually exclusive. "
+                              "Please choose only one."));
+        goto cleanup;
     }
 
-    if (cell == -1)
-        vshPrint(ctl, "%s: %llu kB\n", _("Total"), (memory/1024));
-    else
-        vshPrint(ctl, "%d: %llu kB\n", cell, (memory/1024));
+    if (all_given) {
+        if (virNodeGetInfo(ctl->conn, &info) < 0) {
+            vshError(ctl, "%s", _("failed to get NUMA nodes count"));
+            goto cleanup;
+        }
 
-    return TRUE;
+        if (!info.nodes) {
+            vshError(ctl, "%s", _("no NUMA nodes present"));
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(nodes, info.nodes) < 0) {
+            vshError(ctl, "%s", _("could not allocate memory"));
+            goto cleanup;
+        }
+
+        ret = virNodeGetCellsFreeMemory(ctl->conn, nodes, 0, info.nodes);
+        if (ret != info.nodes) {
+            vshError(ctl, "%s", _("could not get information about "
+                                  "all NUMA nodes"));
+            goto cleanup;
+        }
+
+        memory = 0;
+        for (cell = 0; cell < info.nodes; cell++) {
+            vshPrint(ctl, "%5d: %10llu kB\n", cell, (nodes[cell]/1024));
+            memory += nodes[cell];
+        }
+
+        vshPrintExtra(ctl, "--------------------\n");
+        vshPrintExtra(ctl, "%5s: %10llu kB\n", _("Total"), memory/1024);
+    } else {
+        if (!cell_given) {
+            memory = virNodeGetFreeMemory(ctl->conn);
+            if (memory == 0)
+                goto cleanup;
+        } else {
+            ret = virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1);
+            if (ret != 1)
+                goto cleanup;
+        }
+
+        if (cell == -1)
+            vshPrint(ctl, "%s: %llu kB\n", _("Total"), (memory/1024));
+        else
+            vshPrint(ctl, "%d: %llu kB\n", cell, (memory/1024));
+    }
+
+    func_ret = TRUE;
+
+cleanup:
+    VIR_FREE(nodes);
+    return func_ret;
 }
 
 /*
