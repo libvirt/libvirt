@@ -2059,8 +2059,9 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         goto cleanup;
     }
 
+    /* max-memory must be a multiple of 4096 kilobyte */
     spec->memoryMB->value =
-      VIR_DIV_UP(memory, 1024); /* Scale from kilobytes to megabytes */
+      VIR_DIV_UP(memory, 4096) * 4; /* Scale from kilobytes to megabytes */
 
     if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
                               &task) < 0 ||
