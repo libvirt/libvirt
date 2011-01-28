@@ -56,6 +56,7 @@
 #include "../daemon/event.h"
 #include "configmake.h"
 #include "threads.h"
+#include "command.h"
 
 static char *progname;
 
@@ -9354,50 +9355,52 @@ static int
 editFile (vshControl *ctl, const char *filename)
 {
     const char *editor;
-    char *command;
-    int command_ret;
+    virCommandPtr cmd;
+    int ret = -1;
+    int outfd = STDOUT_FILENO;
+    int errfd = STDERR_FILENO;
 
     editor = getenv ("VISUAL");
-    if (!editor) editor = getenv ("EDITOR");
-    if (!editor) editor = "vi"; /* could be cruel & default to ed(1) here */
+    if (!editor)
+        editor = getenv ("EDITOR");
+    if (!editor)
+        editor = "vi"; /* could be cruel & default to ed(1) here */
 
     /* Check that filename doesn't contain shell meta-characters, and
      * if it does, refuse to run.  Follow the Unix conventions for
      * EDITOR: the user can intentionally specify command options, so
      * we don't protect any shell metacharacters there.  Lots more
      * than virsh will misbehave if EDITOR has bogus contents (which
-     * is why sudo scrubs it by default).
+     * is why sudo scrubs it by default).  Conversely, if the editor
+     * is safe, we can run it directly rather than wasting a shell.
      */
-    if (strspn (filename, ACCEPTED_CHARS) != strlen (filename)) {
-        vshError(ctl,
-                 _("%s: temporary filename contains shell meta or other "
-                   "unacceptable characters (is $TMPDIR wrong?)"),
-                 filename);
-        return -1;
+    if (strspn (editor, ACCEPTED_CHARS) != strlen (editor)) {
+        if (strspn (filename, ACCEPTED_CHARS) != strlen (filename)) {
+            vshError(ctl,
+                     _("%s: temporary filename contains shell meta or other "
+                       "unacceptable characters (is $TMPDIR wrong?)"),
+                     filename);
+            return -1;
+        }
+        cmd = virCommandNewArgList("sh", "-c", NULL);
+        virCommandAddArgFormat(cmd, "%s %s", editor, filename);
+    } else {
+        cmd = virCommandNewArgList(editor, filename, NULL);
     }
 
-    if (virAsprintf(&command, "%s %s", editor, filename) == -1) {
-        vshError(ctl,
-                 _("virAsprintf: could not create editing command: %s"),
-                 strerror(errno));
-        return -1;
+    virCommandSetInputFD(cmd, STDIN_FILENO);
+    virCommandSetOutputFD(cmd, &outfd);
+    virCommandSetErrorFD(cmd, &errfd);
+    if (virCommandRunAsync(cmd, NULL) < 0 ||
+        virCommandWait(cmd, NULL) < 0) {
+        virshReportError(ctl);
+        goto cleanup;
     }
+    ret = 0;
 
-    command_ret = system (command);
-    if (command_ret == -1) {
-        vshError(ctl,
-                 _("%s: edit command failed: %s"), command, strerror(errno));
-        VIR_FREE(command);
-        return -1;
-    }
-    if (WEXITSTATUS(command_ret) != 0) {
-        vshError(ctl,
-                 _("%s: command exited with non-zero status"), command);
-        VIR_FREE(command);
-        return -1;
-    }
-    VIR_FREE(command);
-    return 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 
 static char *

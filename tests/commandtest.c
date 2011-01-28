@@ -1,7 +1,7 @@
 /*
  * commandtest.c: Test the libCommand API
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -714,6 +714,7 @@ mymain(int argc, char **argv)
 {
     int ret = 0;
     char cwd[PATH_MAX];
+    int fd;
 
     abs_srcdir = getenv("abs_srcdir");
     if (!abs_srcdir)
@@ -731,9 +732,12 @@ mymain(int argc, char **argv)
 
     /* Kill off any inherited fds that might interfere with our
      * testing.  */
-    close(3);
-    close(4);
-    close(5);
+    fd = 3;
+    VIR_FORCE_CLOSE(fd);
+    fd = 4;
+    VIR_FORCE_CLOSE(fd);
+    fd = 5;
+    VIR_FORCE_CLOSE(fd);
 
     virInitialize();
 

@@ -593,14 +593,16 @@ __virExec(const char *const*argv,
         goto fork_error;
     }
 
-    VIR_FORCE_CLOSE(infd);
+    if (infd != STDIN_FILENO)
+        VIR_FORCE_CLOSE(infd);
     VIR_FORCE_CLOSE(null);
-    tmpfd = childout;   /* preserve childout value */
-    VIR_FORCE_CLOSE(tmpfd);
-    if (childerr > 0 &&
+    if (childout > STDERR_FILENO) {
+        tmpfd = childout;   /* preserve childout value */
+        VIR_FORCE_CLOSE(tmpfd);
+    }
+    if (childerr > STDERR_FILENO &&
         childerr != childout) {
         VIR_FORCE_CLOSE(childerr);
-        childout = -1;
     }
 
     /* Initialize full logging for a while */

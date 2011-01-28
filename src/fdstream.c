@@ -1,7 +1,7 @@
 /*
  * fdstream.h: generic streams impl for file descriptors
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -452,7 +452,7 @@ int virFDStreamOpenFile(virStreamPtr st,
     return 0;
 
 error:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return -1;
 }
 
@@ -498,6 +498,6 @@ int virFDStreamCreateFile(virStreamPtr st,
     return 0;
 
 error:
-    close(fd);
+    VIR_FORCE_CLOSE(fd);
     return -1;
 }
