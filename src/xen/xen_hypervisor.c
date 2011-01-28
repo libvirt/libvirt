@@ -2313,7 +2313,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
                                                1, 1) == NULL)
                 goto no_memory;
 
-            // In Xen 3.1.0, APIC is always on and can't be toggled
+            /* In Xen 3.1.0, APIC is always on and can't be toggled */
             if (virCapabilitiesAddGuestFeature(guest,
                                                "apic",
                                                1,

@@ -538,7 +538,7 @@ learnIPAddressThread(void *arg)
             if (memcmp(ether_hdr->ether_shost,
                        req->macaddr,
                        VIR_MAC_BUFLEN) == 0) {
-                // packets from the VM
+                /* packets from the VM */
 
                 if (etherType == ETHERTYPE_IP &&
                     (header.len >= ethHdrSize +
@@ -546,9 +546,9 @@ learnIPAddressThread(void *arg)
                     struct iphdr *iphdr = (struct iphdr*)(packet +
                                                           ethHdrSize);
                     vmaddr = iphdr->saddr;
-                    // skip mcast addresses (224.0.0.0 - 239.255.255.255),
-                    // class E (240.0.0.0 - 255.255.255.255, includes eth.
-                    // bcast) and zero address in DHCP Requests
+                    /* skip mcast addresses (224.0.0.0 - 239.255.255.255),
+                     * class E (240.0.0.0 - 255.255.255.255, includes eth.
+                     * bcast) and zero address in DHCP Requests */
                     if ( (ntohl(vmaddr) & 0xe0000000) == 0xe0000000 ||
                          vmaddr == 0) {
                         vmaddr = 0;
@@ -575,7 +575,7 @@ learnIPAddressThread(void *arg)
             } else if (memcmp(ether_hdr->ether_dhost,
                               req->macaddr,
                               VIR_MAC_BUFLEN) == 0) {
-                // packets to the VM
+                /* packets to the VM */
                 if (etherType == ETHERTYPE_IP &&
                     (header.len >= ethHdrSize +
                                    sizeof(struct iphdr))) {

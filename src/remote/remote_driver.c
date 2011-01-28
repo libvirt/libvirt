@@ -589,7 +589,7 @@ doRemoteOpen (virConnectPtr conn,
 
         /*FALLTHROUGH*/
     case trans_tcp: {
-        // http://people.redhat.com/drepper/userapi-ipv6.html
+        /* http://people.redhat.com/drepper/userapi-ipv6.html */
         struct addrinfo *res, *r;
         struct addrinfo hints;
         int saved_errno = EINVAL;
@@ -656,8 +656,8 @@ doRemoteOpen (virConnectPtr conn,
        tcp_connected:
         freeaddrinfo (res);
 
-        // NB. All versioning is done by the RPC headers, so we don't
-        // need to worry (at this point anyway) about versioning.
+        /* NB. All versioning is done by the RPC headers, so we don't
+         * need to worry (at this point anyway) about versioning. */
         break;
     }
 
@@ -748,8 +748,8 @@ doRemoteOpen (virConnectPtr conn,
         if (command == NULL)
             goto out_of_memory;
 
-        // Generate the final command argv[] array.
-        //   ssh [-p $port] [-l $username] $hostname $netcat -U $sockname [NULL]
+        /* Generate the final command argv[] array.
+         *   ssh [-p $port] [-l $username] $hostname $netcat -U $sockname [NULL] */
         if (VIR_ALLOC_N(cmd_argv, nr_args) < 0)
             goto out_of_memory;
 
@@ -2444,7 +2444,7 @@ remoteDomainSetMemoryParameters (virDomainPtr domain,
 
     do_error = 0;
     for (i = 0; i < nparams; ++i) {
-        // call() will free this:
+        /* call() will free this: */
         args.params.params_val[i].field = strdup (params[i].field);
         if (args.params.params_val[i].field == NULL) {
             virReportOOMError();
@@ -3773,7 +3773,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
 
     do_error = 0;
     for (i = 0; i < nparams; ++i) {
-        // call() will free this:
+        /* call() will free this: */
         args.params.params_val[i].field = strdup (params[i].field);
         if (args.params.params_val[i].field == NULL) {
             virReportOOMError();

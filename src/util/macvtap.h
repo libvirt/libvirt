@@ -47,7 +47,7 @@ struct _virVirtualPortProfileParams {
     union {
         struct {
             uint8_t       managerID;
-            uint32_t      typeID; // 24 bit valid
+            uint32_t      typeID; /* 24 bit valid */
             uint8_t       typeIDVersion;
             unsigned char instanceID[VIR_UUID_BUFLEN];
         } virtPort8021Qbg;

@@ -333,7 +333,7 @@ static int oneDomainGetInfo(virDomainPtr dom,
     } else {
         char vm_info[257];
         c_oneVmInfo(vm->pid,vm_info,256);
-        //State:
+        /* State: */
         char* cptr = strstr(vm_info,"STATE");
         cptr = index(cptr, ':');
         cptr++;
@@ -357,13 +357,13 @@ static int oneDomainGetInfo(virDomainPtr dom,
         default:
             break;
         };
-        //Memory:
+        /* Memory: */
         cptr=strstr(vm_info,"MEMORY");
         cptr=index(cptr,':');
         cptr++;
         vm->def->mem.cur_balloon = atoi(cptr);
 
-        //run time:
+        /* run time: */
         cptr=strstr(vm_info,"START TIME");
         cptr=index(cptr,':');
         cptr++;

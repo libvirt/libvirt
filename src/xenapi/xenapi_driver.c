@@ -1918,7 +1918,6 @@ int
 call_func(const void *data, size_t len, void *user_handle,
           void *result_handle, xen_result_func result_func)
 {
-    //(void)user_handle;
     struct _xenapiPrivate *priv = (struct _xenapiPrivate *)user_handle;
 #ifdef PRINT_XML
     printf("\n\n---Data to server: -----------------------\n");

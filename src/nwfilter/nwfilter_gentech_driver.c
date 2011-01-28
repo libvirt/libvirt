@@ -363,7 +363,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
                     break;
                 }
 
-                // create a temporary hashmap for depth-first tree traversal
+                /* create a temporary hashmap for depth-first tree traversal */
                 virNWFilterHashTablePtr tmpvars =
                                       virNWFilterCreateVarsFrom(inc->params,
                                                                 vars);
@@ -433,7 +433,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
         virNWFilterRuleDefPtr    rule = filter->filterEntries[i]->rule;
         virNWFilterIncludeDefPtr inc  = filter->filterEntries[i]->include;
         if (rule) {
-            // check all variables of this rule
+            /* check all variables of this rule */
             for (j = 0; j < rule->nvars; j++) {
                 if (!virHashLookup(vars->hashTable, rule->vars[j])) {
                     virNWFilterHashTablePut(missing_vars, rule->vars[j],
@@ -454,7 +454,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
                     break;
                 }
 
-                // create a temporary hashmap for depth-first tree traversal
+                /* create a temporary hashmap for depth-first tree traversal */
                 virNWFilterHashTablePtr tmpvars =
                                       virNWFilterCreateVarsFrom(inc->params,
                                                                 vars);
@@ -879,10 +879,10 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                         true,
                                         &foundNewFilter);
     if (rc) {
-        //something went wrong... 'DOWN' the interface
+        /* something went wrong... 'DOWN' the interface */
         if (ifaceCheck(false, ifname, NULL, ifindex) != 0 ||
             ifaceDown(ifname)) {
-            // assuming interface disappeared...
+            /* assuming interface disappeared... */
             _virNWFilterTeardownFilter(ifname);
         }
     }
@@ -1033,7 +1033,7 @@ virNWFilterDomainFWUpdateCB(void *payload,
                                                                  net,
                                                                  &skipIface);
                     if (cb->err == 0 && skipIface == true) {
-                        // filter tree unchanged -- no update needed
+                        /* filter tree unchanged -- no update needed */
                         cb->err = virHashAddEntry(cb->skipInterfaces,
                                                   net->ifname,
                                                   (void *)~0);

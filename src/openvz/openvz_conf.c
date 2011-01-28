@@ -287,7 +287,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                 } else if (STRPREFIX(p, "mac=")) {
                     p += 4;
                     len = next - p;
-                    if (len != 17) { //should be 17
+                    if (len != 17) { /* should be 17 */
                         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                                     _("Wrong length MAC address"));
                         goto error;

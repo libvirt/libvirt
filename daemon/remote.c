@@ -790,7 +790,7 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
         goto oom;
 
     for (i = 0; i < nparams; ++i) {
-        // remoteDispatchClientRequest will free this:
+        /* remoteDispatchClientRequest will free this: */
         ret->params.params_val[i].field = strdup (params[i].field);
         if (ret->params.params_val[i].field == NULL)
             goto oom;
@@ -2511,7 +2511,7 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
         goto oom;
 
     for (i = 0; i < nparams; ++i) {
-        // remoteDispatchClientRequest will free this:
+        /* remoteDispatchClientRequest will free this: */
         ret->params.params_val[i].field = strdup(params[i].field);
         if (ret->params.params_val[i].field == NULL)
             goto oom;

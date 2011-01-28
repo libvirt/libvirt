@@ -1078,11 +1078,11 @@ int xenStoreDomainGetUUID(virConnectPtr conn,
 
     snprintf(prop, 199, "/local/domain/%d/vm", id);
     prop[199] = 0;
-    // This will return something like
-    // /vm/00000000-0000-0000-0000-000000000000
+    /* This will return something like
+     * /vm/00000000-0000-0000-0000-000000000000 */
     uuidstr = xs_read(priv->xshandle, 0, prop, &len);
 
-    // remove "/vm/"
+    /* remove "/vm/" */
     ret = virUUIDParse(uuidstr + 4, uuid);
 
     VIR_FREE(uuidstr);
@@ -1305,7 +1305,7 @@ retry:
     }
     nread = xenStoreDoListDomains(conn, priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
-        // mismatch. retry this read
+        /* mismatch. retry this read */
         VIR_FREE(new_domids);
         goto retry;
     }
@@ -1388,7 +1388,7 @@ retry:
     }
     nread = xenStoreDoListDomains(conn, priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
-        // mismatch. retry this read
+        /* mismatch. retry this read */
         VIR_FREE(new_domids);
         goto retry;
     }

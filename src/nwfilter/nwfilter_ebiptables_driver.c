@@ -997,7 +997,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
     if (HAS_ENTRY_ITEM(&ipHdr->dataConnlimitAbove)) {
         if (directionIn) {
-            // only support for limit in outgoing dir.
+            /* only support for limit in outgoing dir. */
             *skipRule = true;
         } else {
             if (printDataType(vars,
@@ -3320,7 +3320,7 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
         ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_IPV6_IDX, 1);
 
-    // keep arp,rarp as last
+    /* keep arp,rarp as last */
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
         ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_ARP_IDX, 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
@@ -3503,7 +3503,7 @@ ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     int cli_status;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    // switch to new iptables user defined chains
+    /* switch to new iptables user defined chains */
     if (iptables_cmd_path) {
         iptablesUnlinkRootChains(iptables_cmd_path, &buf, ifname);
         iptablesRemoveRootChains(iptables_cmd_path, &buf, ifname);

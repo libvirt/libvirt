@@ -191,7 +191,7 @@ char* xmlOneTemplate(virDomainDefPtr def)
     }
     /* set Disks & NICS */
     for (i=0 ; i < def->ndisks ; i++) {
-        // missing source is only allowed at cdrom and floppy
+        /* missing source is only allowed at cdrom and floppy */
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
             virBufferVSprintf(&buf, "DISK=[ type = disk,\n"
                               "\tsource = \"%s\",\n",
@@ -269,7 +269,7 @@ char* xmlOneTemplate(virDomainDefPtr def)
             virBufferAddLit(&buf," ]\n");
 
         }
-        else //graphics.type==VIR_DOMAIN_GRAPHICS_TYPE_SDL
+        else /* graphics.type==VIR_DOMAIN_GRAPHICS_TYPE_SDL */
             virBufferAddLit(&buf,"GRAPHICS = [\n  type = \"sdl\" ]\n");
 
     }

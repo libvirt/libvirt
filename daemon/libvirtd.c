@@ -614,7 +614,7 @@ static int qemudListenUnix(struct qemud_server *server,
     return -1;
 }
 
-// See: http://people.redhat.com/drepper/userapi-ipv6.html
+/* See: http://people.redhat.com/drepper/userapi-ipv6.html */
 static int
 remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const char *service)
 {
@@ -1152,7 +1152,7 @@ remoteCheckDN (const char *dname)
     /* Print the client's DN. */
     DEBUG(_("remoteCheckDN: failed: client DN is %s"), dname);
 
-    return 0; // Not found.
+    return 0; /* Not found. */
 }
 
 static int

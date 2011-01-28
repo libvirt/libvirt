@@ -1097,7 +1097,7 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
         controller = def->controllers[i];
 
         if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            // skip non-SCSI controllers
+            /* skip non-SCSI controllers */
             continue;
         }
 
@@ -1114,7 +1114,7 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
         }
 
         if (! controllerHasDisksAttached) {
-            // skip SCSI controllers without attached disks
+            /* skip SCSI controllers without attached disks */
             continue;
         }
 
@@ -1122,8 +1122,8 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
             ctx->autodetectSCSIControllerModel != NULL) {
             count = 0;
 
-            // try to autodetect the SCSI controller model by collecting
-            // SCSI controller model of all disks attached to this controller
+            /* try to autodetect the SCSI controller model by collecting
+             * SCSI controller model of all disks attached to this controller */
             for (k = 0; k < def->ndisks; ++k) {
                 disk = def->disks[k];
 
@@ -1139,8 +1139,8 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
                 }
             }
 
-            // autodetection fails when the disks attached to one controller
-            // have inconsistent SCSI controller models
+            /* autodetection fails when the disks attached to one controller
+             * have inconsistent SCSI controller models */
             for (k = 0; k < count; ++k) {
                 if (autodetectedModels[k] != autodetectedModels[0]) {
                     VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1379,7 +1379,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     def->maxvcpus = def->vcpus = numvcpus;
 
     /* vmx:sched.cpu.affinity -> def:cpumask */
-    // VirtualMachine:config.cpuAffinity.affinitySet
+    /* NOTE: maps to VirtualMachine:config.cpuAffinity.affinitySet */
     if (virVMXGetConfigString(conf, "sched.cpu.affinity", &sched_cpu_affinity,
                               true) < 0) {
         goto cleanup;
@@ -1855,21 +1855,6 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 }
 
 
-
-/*
-struct _virDomainDiskDef {
-    int type;               // partly done
-    int device;             // done
-    int bus;                // done
-    char *src;              // done
-    char *dst;              // done
-    char *driverName;       // done
-    char *driverType;
-    int cachemode;          // done
-    unsigned int readonly : 1;
-    unsigned int shared : 1;
-    int slotnum;
-};*/
 
 int
 virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,

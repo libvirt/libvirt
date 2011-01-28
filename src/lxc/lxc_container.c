@@ -281,7 +281,7 @@ error_out:
 }
 
 
-//_syscall2(int, pivot_root, char *, newroot, const char *, oldroot)
+/*_syscall2(int, pivot_root, char *, newroot, const char *, oldroot)*/
 extern int pivot_root(const char * new_root,const char * put_old);
 
 static int lxcContainerChildMountSort(const void *a, const void *b)
@@ -526,7 +526,7 @@ static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
         char *src;
         if (STREQ(vmDef->fss[i]->dst, "/"))
             continue;
-        // XXX fix
+        /* XXX fix */
         if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
             continue;
 
@@ -650,7 +650,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
         return -1;
     }
     for (i = 0 ; i < vmDef->nfss ; i++) {
-        // XXX fix to support other mount types
+        /* XXX fix to support other mount types */
         if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
             continue;
 

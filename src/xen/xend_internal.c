@@ -795,7 +795,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
     priv->addrlen = 0;
     memset(&priv->addr, 0, sizeof(priv->addr));
 
-    // http://people.redhat.com/drepper/userapi-ipv6.html
+    /* http://people.redhat.com/drepper/userapi-ipv6.html */
     memset (&hints, 0, sizeof hints);
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_ADDRCONFIG;
@@ -1895,7 +1895,7 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                 port = xenStoreDomainGetVNCPort(conn, def->id);
                 xenUnifiedUnlock(priv);
 
-                // Didn't find port entry in xenstore
+                /* Didn't find port entry in xenstore */
                 if (port == -1) {
                     const char *str = sexpr_node(node, "device/vfb/vncdisplay");
                     int val;
@@ -3215,7 +3215,7 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags, const char *cpus)
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id < 0 && priv->xendConfigVersion < 3) {
-        // fall-through to the next driver to handle
+        /* fall-through to the next driver to handle */
         return(NULL);
     }
 
@@ -4380,7 +4380,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
             goto error;
         }
 
-        // Change the autostart value in place, then define the new sexpr
+        /* Change the autostart value in place, then define the new sexpr */
         VIR_FREE(autonode->u.s.car->u.value);
         autonode->u.s.car->u.value = (autostart ? strdup("start")
                                                 : strdup("ignore"));

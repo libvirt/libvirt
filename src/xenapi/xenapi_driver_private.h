@@ -27,7 +27,7 @@
 # include <xen/api/xen_common.h>
 # include "virterror_internal.h"
 
-//# define PRINT_XML
+/*# define PRINT_XML*/
 # define VIR_FROM_THIS VIR_FROM_XENAPI
 # define LIBVIRT_MODELNAME_LEN  (32)
 # define xenapiSessionErrorHandler(conn, errNum, buf) \

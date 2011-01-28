@@ -84,7 +84,7 @@ enum virNWFilterEntryItemFlags {
 # define ENTRY_GET_NEG_SIGN(data) \
   ((((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_IS_NEG) ? "!" : "")
 
-// datatypes appearing in rule attributes
+/* datatypes appearing in rule attributes */
 enum attrDatatype {
     DATATYPE_UINT16           = (1 << 0),
     DATATYPE_UINT8            = (1 << 1),

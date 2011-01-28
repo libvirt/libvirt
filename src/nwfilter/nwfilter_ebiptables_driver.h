@@ -36,7 +36,7 @@ typedef ebiptablesRuleInst *ebiptablesRuleInstPtr;
 struct _ebiptablesRuleInst {
     char *commandTemplate;
     enum virNWFilterChainSuffixType neededProtocolChain;
-    char chainprefix;    // I for incoming, O for outgoing
+    char chainprefix;    /* I for incoming, O for outgoing */
     unsigned int priority;
     enum RuleType ruleType;
 };

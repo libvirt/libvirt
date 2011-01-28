@@ -428,11 +428,11 @@ typedef bool (*valueFormatter)(virBufferPtr buf,
 typedef struct _virXMLAttr2Struct virXMLAttr2Struct;
 struct _virXMLAttr2Struct
 {
-    const char *name;           // attribute name
+    const char *name;           /* attribute name */
     enum attrDatatype datatype;
-    int dataIdx;		// offset of the hasXYZ boolean
-    valueValidator validator;   // beyond-standard checkers
-    valueFormatter formatter;   // beyond-standard formatter
+    int dataIdx;                /* offset of the hasXYZ boolean */
+    valueValidator validator;   /* beyond-standard checkers */
+    valueFormatter formatter;   /* beyond-standard formatter */
     size_t maxstrlen;
 };
 
@@ -1494,7 +1494,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
                         case DATATYPE_STRING:
                             if (!validator) {
-                                // not supported
+                                /* not supported */
                                 rc = -1;
                                 break;
                             }
@@ -2314,7 +2314,7 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
     err = cb.err;
 
     if (err) {
-        cb.step = STEP_TEAR_NEW; // rollback
+        cb.step = STEP_TEAR_NEW; /* rollback */
         cb.err = 0;
 
         for (i = 0; i < nCallbackDriver; i++)
@@ -2322,7 +2322,7 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
                                                  virNWFilterDomainFWUpdateCB,
                                                  &cb);
     } else {
-        cb.step = STEP_TEAR_OLD; // switch over
+        cb.step = STEP_TEAR_OLD; /* switch over */
 
         for (i = 0; i < nCallbackDriver; i++)
             callbackDrvArray[i]->vmFilterRebuild(conn,
@@ -2345,7 +2345,7 @@ virNWFilterTestUnassignDef(virConnectPtr conn,
     virNWFilterLockFilterUpdates();
 
     nwfilter->wantRemoved = 1;
-    // trigger the update on VMs referencing the filter
+    /* trigger the update on VMs referencing the filter */
     if (virNWFilterTriggerVMFilterRebuild(conn))
         rc = 1;
 
@@ -2385,7 +2385,7 @@ virNWFilterObjAssignDef(virConnectPtr conn,
     if ((nwfilter = virNWFilterObjFindByName(nwfilters, def->name))) {
         virNWFilterLockFilterUpdates();
         nwfilter->newDef = def;
-        // trigger the update on VMs referencing the filter
+        /* trigger the update on VMs referencing the filter */
         if (virNWFilterTriggerVMFilterRebuild(conn)) {
             nwfilter->newDef = NULL;
             virNWFilterUnlockFilterUpdates();
@@ -2454,7 +2454,7 @@ virNWFilterObjLoad(virConnectPtr conn,
         return NULL;
     }
 
-    VIR_FREE(nwfilter->configFile); // for driver reload
+    VIR_FREE(nwfilter->configFile); /* for driver reload */
     nwfilter->configFile = strdup(path);
     if (nwfilter->configFile == NULL) {
         virReportOOMError();
@@ -2685,7 +2685,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                    asHex = true;
                case DATATYPE_IPMASK:
                case DATATYPE_IPV6MASK:
-                   // display all masks in CIDR format
+                   /* display all masks in CIDR format */
                case DATATYPE_UINT8:
                    virBufferVSprintf(buf, asHex ? "0x%x" : "%d",
                                      item->u.u8);

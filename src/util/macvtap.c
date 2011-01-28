@@ -436,7 +436,7 @@ int openTap(const char *ifname,
     }
 
     while (1) {
-        // may need to wait for udev to be done
+        /* may need to wait for udev to be done */
         tapfd = open(tapname, O_RDWR);
         if (tapfd < 0 && retries > 0) {
             retries--;
@@ -1232,7 +1232,7 @@ doPortProfileOpCommon(bool nltarget_kernel,
             status == PORT_VDP_RESPONSE_SUCCESS) {
             break;
         } else if (status == PORT_PROFILE_RESPONSE_INPROGRESS) {
-            // keep trying...
+            /* keep trying... */
         } else {
             virReportSystemError(EINVAL,
                     _("error %d during port-profile setlink on "
@@ -1384,11 +1384,11 @@ getPhysfn(const char *linkdev,
 
     if (virtfn) {
 
-        // XXX: if linkdev is SR-IOV VF, then set vf = VF index
-        // XXX: and set linkdev = PF device
-        // XXX: need to use get_physical_function_linux() or
-        // XXX: something like that to get PF
-        // XXX: device and figure out VF index
+        /* XXX: if linkdev is SR-IOV VF, then set vf = VF index */
+        /* XXX: and set linkdev = PF device */
+        /* XXX: need to use get_physical_function_linux() or */
+        /* XXX: something like that to get PF */
+        /* XXX: device and figure out VF index */
 
         rc = 1;
 

@@ -538,7 +538,7 @@ static int testOpenDefault(virConnectPtr conn) {
 
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
-    // Numa setup
+    /* Numa setup */
     privconn->numCells = 2;
     for (u = 0; u < 2; ++u) {
         privconn->cells[u].numCpus = 8;
