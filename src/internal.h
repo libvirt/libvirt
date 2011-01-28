@@ -231,4 +231,7 @@
         }                                                               \
     } while (0)
 
+/* divide value by size, rounding up */
+# define VIR_DIV_UP(value, size) (((value) + (size) - 1) / (size))
+
 #endif                          /* __VIR_INTERNAL_H__ */

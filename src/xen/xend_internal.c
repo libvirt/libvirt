@@ -3111,7 +3111,7 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     if (domain->id < 0 && priv->xendConfigVersion < 3)
         return(-1);
 
-    snprintf(buf, sizeof(buf), "%lu", memory >> 10);
+    snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
     return xend_op(domain->conn, domain->name, "op", "maxmem_set", "memory",
                    buf, NULL);
 }
@@ -3148,7 +3148,7 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
     if (domain->id < 0 && priv->xendConfigVersion < 3)
         return(-1);
 
-    snprintf(buf, sizeof(buf), "%lu", memory >> 10);
+    snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
     return xend_op(domain->conn, domain->name, "op", "mem_target_set",
                    "target", buf, NULL);
 }
@@ -5778,7 +5778,8 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferAddLit(&buf, "(vm ");
     virBufferEscapeSexpr(&buf, "(name '%s')", def->name);
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
-                      def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
+                      VIR_DIV_UP(def->mem.cur_balloon, 1024),
+                      VIR_DIV_UP(def->mem.max_balloon, 1024));
     virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */

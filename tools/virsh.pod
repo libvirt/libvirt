@@ -576,9 +576,9 @@ XEN_CREDIT scheduler and are now I<DEPRECATED>.
 Immediately change the current memory allocation for an active guest domain.
 
 Some hypervisors require a larger granularity than kilobytes, and requests
-that are not an even multiple will either be rounded down or rejected.  For
-example, vSphere/ESX rejects the parameter unless the kB argument is evenly
-divisible by 1024 (that is, the kB argument happens to represent megabytes).
+that are not an even multiple will be rounded up.  For example, vSphere/ESX
+rounds the parameter up unless the kB argument is evenly divisible by 1024
+(that is, the kB argument happens to represent megabytes).
 
 For Xen, you can only adjust the memory of a running domain if the domain is
 paravirtualized or running the PV balloon driver.
@@ -594,11 +594,11 @@ Change the maximum memory allocation limit for an inactive guest domain.
 This command works for at least the Xen and vSphere/ESX hypervisors,
 but not for QEMU/KVM.
 
-Some hypervisors require a larger granularity than kilobytes, rounding down
-or rejecting requests that are not an even multiple of the desired amount.
-vSphere/ESX is one of these, requiring the parameter to be evenly divisible
-by 4MB.  For vSphere/ESX, 263168 (257MB) would be rejected because it's not
-a multiple of 4MB, while 266240 (260MB) is valid.
+Some hypervisors require a larger granularity than kilobytes, rounding up
+requests that are not an even multiple of the desired amount.  vSphere/ESX
+is one of these, requiring the parameter to be evenly divisible by 4MB.  For
+vSphere/ESX, 263168 (257MB) would be rounded up because it's not a multiple
+of 4MB, while 266240 (260MB) is valid without rounding.
 
 Note, to change the maximum memory allocation for a QEMU/KVM guest domain,
 use the virsh B<edit> command instead to update its XML <memory> element.

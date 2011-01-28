@@ -2818,7 +2818,7 @@ virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
         goto cleanup;
     }
 
-    (*def)->vram = svga_vramSize / 1024; /* Scale from bytes to kilobytes */
+    (*def)->vram = VIR_DIV_UP(svga_vramSize, 1024); /* Scale from bytes to kilobytes */
 
     result = 0;
 
@@ -2849,6 +2849,7 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
     char *preliminaryDisplayName = NULL;
     char *displayName = NULL;
     char *annotation = NULL;
+    unsigned long max_balloon;
     bool scsi_present[4] = { false, false, false, false };
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     bool floppy_present[2] = { false, false };
@@ -2940,46 +2941,24 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
     }
 
     /* def:mem.max_balloon -> vmx:memsize */
-    if (def->mem.max_balloon <= 0 || def->mem.max_balloon % 4096 != 0) {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Expecting domain XML entry 'memory' to be an unsigned "
-                    "integer (multiple of 4096) but found %lld"),
-                  (unsigned long long)def->mem.max_balloon);
-        goto cleanup;
-    }
+    /* max-memory must be a multiple of 4096 kilobyte */
+    max_balloon = VIR_DIV_UP(def->mem.max_balloon, 4096) * 4096;
 
-    /* Scale from kilobytes to megabytes */
-    virBufferVSprintf(&buffer, "memsize = \"%d\"\n",
-                      (int)(def->mem.max_balloon / 1024));
+    virBufferVSprintf(&buffer, "memsize = \"%lu\"\n",
+                      max_balloon / 1024); /* Scale from kilobytes to megabytes */
 
     /* def:mem.cur_balloon -> vmx:sched.mem.max */
-    if (def->mem.cur_balloon < def->mem.max_balloon) {
-        if (def->mem.cur_balloon <= 0 || def->mem.cur_balloon % 1024 != 0) {
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Expecting domain XML entry 'currentMemory' to be an "
-                        "unsigned integer (multiple of 1024) but found %llu"),
-                      (unsigned long long)def->mem.cur_balloon);
-            goto cleanup;
-        }
-
-        /* Scale from kilobytes to megabytes */
-        virBufferVSprintf(&buffer, "sched.mem.max = \"%d\"\n",
-                          (int)(def->mem.cur_balloon / 1024));
+    if (def->mem.cur_balloon < max_balloon) {
+        virBufferVSprintf(&buffer, "sched.mem.max = \"%lu\"\n",
+                          VIR_DIV_UP(def->mem.cur_balloon,
+                                     1024)); /* Scale from kilobytes to megabytes */
     }
 
     /* def:mem.min_guarantee -> vmx:sched.mem.minsize */
     if (def->mem.min_guarantee > 0) {
-        if (def->mem.min_guarantee % 1024 != 0) {
-            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Expecting domain XML entry 'memtune/min_guarantee' to "
-                        "be an unsigned integer (multiple of 1024) but found %llu"),
-                      (unsigned long long)def->mem.min_guarantee);
-            goto cleanup;
-        }
-
-        /* Scale from kilobytes to megabytes */
-        virBufferVSprintf(&buffer, "sched.mem.minsize = \"%d\"\n",
-                          (int)(def->mem.min_guarantee / 1024));
+        virBufferVSprintf(&buffer, "sched.mem.minsize = \"%lu\"\n",
+                          VIR_DIV_UP(def->mem.min_guarantee,
+                                     1024)); /* Scale from kilobytes to megabytes */
     }
 
     /* def:maxvcpus -> vmx:numvcpus */
@@ -3733,6 +3712,8 @@ virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
 int
 virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
 {
+    unsigned long long vram;
+
     if (def->type != VIR_DOMAIN_VIDEO_TYPE_VMVGA) {
         VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
                   _("Unsupported video device type '%s'"),
@@ -3744,11 +3725,7 @@ virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
      * For Windows guests the VRAM size should be a multiple of 64 kilobyte.
      * See http://kb.vmware.com/kb/1003 and http://kb.vmware.com/kb/1001558
      */
-    if (def->vram % 64 != 0) {
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Video device VRAM size must be a multiple of 64 kilobyte"));
-        return -1;
-    }
+    vram = VIR_DIV_UP(def->vram, 64) * 64;
 
     if (def->heads > 1) {
         VMX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -3757,7 +3734,7 @@ virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
     }
 
     virBufferVSprintf(buffer, "svga.vramSize = \"%lld\"\n",
-                      def->vram * 1024LL); /* Scale from kilobytes to bytes */
+                      vram * 1024); /* kilobyte to byte */
 
     return 0;
 }

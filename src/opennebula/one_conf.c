@@ -175,7 +175,7 @@ char* xmlOneTemplate(virDomainDefPtr def)
                       "by libvirt\nNAME = %s\nCPU = %d\nMEMORY = %ld\n",
                       def->name,
                       def->maxvcpus,
-                      (def->mem.max_balloon)/1024);
+                      VIR_DIV_UP(def->mem.max_balloon, 1024));
 
     /*Optional Booting OpenNebula Information:*/
     if (def->os.kernel) {

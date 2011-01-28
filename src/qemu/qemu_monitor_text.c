@@ -852,7 +852,7 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
      * 'newmem' is in KB, QEMU monitor works in MB, and we all wish
      * we just worked in bytes with unsigned long long everywhere.
      */
-    if (virAsprintf(&cmd, "balloon %lu", (newmem / 1024)) < 0) {
+    if (virAsprintf(&cmd, "balloon %lu", VIR_DIV_UP(newmem, 1024)) < 0) {
         virReportOOMError();
         return -1;
     }

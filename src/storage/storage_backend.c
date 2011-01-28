@@ -725,7 +725,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     }
 
     /* Size in KB */
-    if (virAsprintf(&size, "%lluK", vol->capacity / 1024) < 0) {
+    if (virAsprintf(&size, "%lluK", VIR_DIV_UP(vol->capacity, 1024)) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -870,7 +870,8 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /* Size in MB - yes different units to qemu-img :-( */
-    if (virAsprintf(&size, "%llu", vol->capacity / 1024 / 1024) < 0) {
+    if (virAsprintf(&size, "%llu",
+                    VIR_DIV_UP(vol->capacity, (1024 * 1024))) < 0) {
         virReportOOMError();
         return -1;
     }

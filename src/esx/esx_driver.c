@@ -2060,7 +2060,7 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     }
 
     spec->memoryMB->value =
-      memory / 1024; /* Scale from kilobytes to megabytes */
+      VIR_DIV_UP(memory, 1024); /* Scale from kilobytes to megabytes */
 
     if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
                               &task) < 0 ||
@@ -2117,7 +2117,7 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
     }
 
     spec->memoryAllocation->limit->value =
-      memory / 1024; /* Scale from kilobytes to megabytes */
+      VIR_DIV_UP(memory, 1024); /* Scale from kilobytes to megabytes */
 
     if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
                               &task) < 0 ||
@@ -4448,7 +4448,7 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
             }
 
             spec->memoryAllocation->reservation->value =
-              params[i].value.ul / 1024; /* Scale from kilobytes to megabytes */
+              VIR_DIV_UP(params[i].value.ul, 1024); /* Scale from kilobytes to megabytes */
         } else {
             ESX_ERROR(VIR_ERR_INVALID_ARG, _("Unknown field '%s'"),
                       params[i].field);

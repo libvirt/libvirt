@@ -1784,7 +1784,8 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory) {
             rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
             if (NS_SUCCEEDED(rc) && machine) {
 
-                rc = machine->vtbl->SetMemorySize(machine, memory / 1024);
+                rc = machine->vtbl->SetMemorySize(machine,
+                                                  VIR_DIV_UP(memory, 1024));
                 if (NS_SUCCEEDED(rc)) {
                     machine->vtbl->SaveSettings(machine);
                     ret = 0;
@@ -4398,7 +4399,8 @@ vboxAttachVideo(virDomainDefPtr def, IMachine *machine)
 {
     if ((def->nvideos == 1) &&
         (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_VBOX)) {
-        machine->vtbl->SetVRAMSize(machine, def->videos[0]->vram / 1024);
+        machine->vtbl->SetVRAMSize(machine,
+                                   VIR_DIV_UP(def->videos[0]->vram, 1024));
         machine->vtbl->SetMonitorCount(machine, def->videos[0]->heads);
         if (def->videos[0]->accel) {
             machine->vtbl->SetAccelerate3DEnabled(machine,
@@ -4771,7 +4773,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
-    rc = machine->vtbl->SetMemorySize(machine, def->mem.cur_balloon / 1024);
+    rc = machine->vtbl->SetMemorySize(machine,
+                                      VIR_DIV_UP(def->mem.cur_balloon, 1024));
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("could not set the memory size of the domain to: %lu Kb, "
@@ -8072,7 +8075,7 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
         rc = data->vboxObj->vtbl->CreateHardDisk(data->vboxObj, hddFormatUtf16, hddNameUtf16, &hardDisk);
         if (NS_SUCCEEDED(rc)) {
             IProgress *progress    = NULL;
-            PRUint64   logicalSize = def->capacity / 1024 / 1024;
+            PRUint64   logicalSize = VIR_DIV_UP(def->capacity, 1024 * 1024);
             PRUint32   variant     = HardDiskVariant_Standard;
 
             if (def->capacity == def->allocation)

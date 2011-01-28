@@ -1106,7 +1106,8 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
          */
         virtualDiskSpec->adapterType = (char *)"busLogic";
 
-        virtualDiskSpec->capacityKb->value = def->capacity / 1024; /* Scale from byte to kilobyte */
+        virtualDiskSpec->capacityKb->value =
+          VIR_DIV_UP(def->capacity, 1024); /* Scale from byte to kilobyte */
 
         if (esxVI_CreateVirtualDisk_Task
               (priv->primary, datastorePath, priv->primary->datacenter->_reference,

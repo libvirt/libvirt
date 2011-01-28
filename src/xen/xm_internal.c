@@ -2336,10 +2336,10 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     if (xenXMConfigSetString(conf, "uuid", uuid) < 0)
         goto no_memory;
 
-    if (xenXMConfigSetInt(conf, "maxmem", def->mem.max_balloon / 1024) < 0)
+    if (xenXMConfigSetInt(conf, "maxmem", VIR_DIV_UP(def->mem.max_balloon, 1024)) < 0)
         goto no_memory;
 
-    if (xenXMConfigSetInt(conf, "memory", def->mem.cur_balloon / 1024) < 0)
+    if (xenXMConfigSetInt(conf, "memory", VIR_DIV_UP(def->mem.cur_balloon, 1024)) < 0)
         goto no_memory;
 
     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
