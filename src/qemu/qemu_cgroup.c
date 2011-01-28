@@ -331,7 +331,7 @@ int qemuRemoveCgroup(struct qemud_driver *driver,
     if (rc != 0) {
         if (!quiet)
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s\n"),
+                            _("Unable to find cgroup for %s"),
                             vm->def->name);
         return rc;
     }

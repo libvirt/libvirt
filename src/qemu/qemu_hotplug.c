@@ -895,7 +895,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
 
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s\n"),
+                            _("Unable to find cgroup for %s"),
                             vm->def->name);
             goto error;
         }
@@ -1150,7 +1150,7 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s\n"),
+                            _("Unable to find cgroup for %s"),
                             vm->def->name);
             goto cleanup;
         }
@@ -1247,7 +1247,7 @@ int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s\n"),
+                            _("Unable to find cgroup for %s"),
                             vm->def->name);
             goto cleanup;
         }

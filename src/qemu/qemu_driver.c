@@ -2887,7 +2887,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (ret == 0) {
         if (virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Domain %s didn't show up\n"), vm->def->name);
+                            _("Domain %s didn't show up"), vm->def->name);
             ret = -1;
         }
 #if 0
@@ -3986,7 +3986,8 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         info->cpuTime = 0;
     } else {
         if (qemudGetProcessInfo(&(info->cpuTime), NULL, vm->pid, 0) < 0) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED, ("cannot read cputime for domain"));
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                            _("cannot read cputime for domain"));
             goto cleanup;
         }
     }
@@ -4097,7 +4098,7 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
 
 
         if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s: %s",
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
                             job, _("guest unexpectedly quit"));
             goto cleanup;
         }
@@ -4133,7 +4134,7 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
          * guest to die
          */
         if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s: %s",
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
                             job, _("guest unexpectedly quit"));
             goto cleanup;
         }
@@ -4163,7 +4164,7 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
         case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
             priv->jobInfo.type = VIR_DOMAIN_JOB_NONE;
             qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s: %s", job, _("is not active"));
+                            _("%s: %s"), job, _("is not active"));
             break;
 
         case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
@@ -4184,13 +4185,13 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
         case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
             priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
             qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s: %s", job, _("unexpectedly failed"));
+                            _("%s: %s"), job, _("unexpectedly failed"));
             break;
 
         case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
             priv->jobInfo.type = VIR_DOMAIN_JOB_CANCELLED;
             qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s: %s", job, _("canceled by client"));
+                            _("%s: %s"), job, _("canceled by client"));
             break;
         }
 
@@ -4466,7 +4467,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s\n"),
+                            _("Unable to find cgroup for %s"),
                             vm->def->name);
             goto endjob;
         }
@@ -6525,7 +6526,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
             if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to find cgroup for %s\n"),
+                                _("Unable to find cgroup for %s"),
                                 vm->def->name);
                 goto endjob;
             }
@@ -6696,7 +6697,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
             if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to find cgroup for %s\n"),
+                                _("Unable to find cgroup for %s"),
                                 vm->def->name);
                 goto endjob;
             }
