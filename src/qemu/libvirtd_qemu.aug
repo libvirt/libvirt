@@ -23,6 +23,7 @@ module Libvirtd_qemu =
 
    (* Config entry grouped by function - same order as example config *)
    let vnc_entry = str_entry "vnc_listen"
+                 | bool_entry "vnc_auto_unix_socket"
                  | bool_entry "vnc_tls"
                  | str_entry "vnc_tls_x509_cert_dir"
                  | bool_entry "vnc_tls_x509_verify"

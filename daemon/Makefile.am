@@ -301,8 +301,9 @@ libvirtd.init: libvirtd.init.in $(top_builddir)/config.status
 	    mv $@-t $@
 
 check-local:
-	test -x '$(AUGPARSE)' \
-	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug || :
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	  '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug; \
+	fi
 
 else
 

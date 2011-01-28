@@ -271,9 +271,6 @@ log_filters=\"a\"
 
 # Auditing:
 audit_level = 2
-
-# VNC socket
-vnc_auto_unix_socket = 1
 "
 
    test Libvirtd.lns get conf =
@@ -552,6 +549,3 @@ vnc_auto_unix_socket = 1
 	{ "#empty" }
         { "#comment" = "Auditing:" }
         { "audit_level" = "2" }
-        { "#empty" }
-        { "#comment" = "VNC socket:" }
-        { "vnc_auto_unix_socket" = "1" }
