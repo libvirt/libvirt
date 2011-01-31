@@ -29,6 +29,7 @@ The primary maintainers and people with commit access rights:
   Stefan Berger        <stefanb@us.ibm.com>
   Eric Blake           <eblake@redhat.com>
   Justin Clift         <jclift@redhat.com>
+  Osier Yang           <jyang@redhat.com>
 
 Patches have also been contributed by:
 
@@ -133,7 +134,6 @@ Patches have also been contributed by:
   Lai Jiangshan        <laijs@cn.fujitsu.com>
   Harsh Prateek Bora   <harsh@linux.vnet.ibm.com>
   John Morrissey       <jwm@horde.net>
-  Osier Yang           <jyang@redhat.com>
   Kamezawa Hiroyuki    <kamezawa.hiroyu@jp.fujitsu.com>
   Wen Congyang         <wency@cn.fujitsu.com>
   Hu Tao               <hutao@cn.fujitsu.com>
