@@ -1703,17 +1703,18 @@ AC_SUBST([DEVMAPPER_LIBS])
 
 LIBPARTED_CFLAGS=
 LIBPARTED_LIBS=
-if test "$with_storage_disk" = "yes" || test "$with_storage_disk" = "check"; then
+if test "$with_storage_disk" = "yes" ||
+   test "$with_storage_disk" = "check"; then
   AC_PATH_PROG([PARTED], [parted], [], [$PATH:/sbin:/usr/sbin])
   if test -z "$PARTED" ; then
-    with_storage_disk=no
     PARTED_FOUND=no
   else
     PARTED_FOUND=yes
   fi
 
-  if test "$with_storage_disk" != "no" && test "x$PKG_CONFIG" != "x" ; then
-    PKG_CHECK_MODULES(LIBPARTED, libparted >= $PARTED_REQUIRED, [], [PARTED_FOUND=no])
+  if test "$PARTED_FOUND" = "yes" && test "x$PKG_CONFIG" != "x" ; then
+    PKG_CHECK_MODULES([LIBPARTED], [libparted >= $PARTED_REQUIRED], [],
+      [PARTED_FOUND=no])
   fi
   if test "$PARTED_FOUND" = "no"; then
     # RHEL-5 vintage parted is missing pkg-config files
@@ -1739,8 +1740,10 @@ if test "$with_storage_disk" = "yes" || test "$with_storage_disk" = "check"; the
   fi
 
   if test "$with_storage_disk" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_STORAGE_DISK], 1, [whether Disk backend for storage driver is enabled])
-    AC_DEFINE_UNQUOTED([PARTED],["$PARTED"], [Location or name of the parted program])
+    AC_DEFINE_UNQUOTED([WITH_STORAGE_DISK], 1,
+      [whether Disk backend for storage driver is enabled])
+    AC_DEFINE_UNQUOTED([PARTED],["$PARTED"],
+      [Location or name of the parted program])
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
