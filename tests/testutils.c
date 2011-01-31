@@ -1,7 +1,7 @@
 /*
  * testutils.c: basic test utils
  *
- * Copyright (C) 2005-2010 Red Hat, Inc.
+ * Copyright (C) 2005-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -44,7 +44,7 @@
 
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
 #define DIFF_MSEC(T, U)                                 \
-    ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 +	\
+    ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
       ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
 
 #include "files.h"
@@ -173,12 +173,14 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
 /* Read FILE into buffer BUF of length BUFLEN.
    Upon any failure, or if FILE appears to contain more than BUFLEN bytes,
    diagnose it and return -1, but don't bother trying to preserve errno.
-   Otherwise, return the number of bytes read (and copied into BUF).  */
+   Otherwise, return the number of bytes copied into BUF. */
 int virtTestLoadFile(const char *file,
                      char **buf,
                      int buflen) {
     FILE *fp = fopen(file, "r");
     struct stat st;
+    char *tmp = *buf;
+    int len, tmplen = buflen;
 
     if (!fp) {
         fprintf (stderr, "%s: failed to open: %s\n", file, strerror(errno));
@@ -197,17 +199,29 @@ int virtTestLoadFile(const char *file,
         return -1;
     }
 
+    (*buf)[0] = '\0';
     if (st.st_size) {
-        if (fread(*buf, st.st_size, 1, fp) != 1) {
+        /* read the file line by line */
+        while (fgets(tmp, tmplen, fp) != NULL) {
+            len = strlen(tmp);
+            /* remove trailing backslash-newline pair */
+            if (len >= 2 && tmp[len-2] == '\\' && tmp[len-1] == '\n') {
+                len -= 2;
+                tmp[len] = '\0';
+            }
+            /* advance the temporary buffer pointer */
+            tmp += len;
+            tmplen -= len;
+        }
+        if (ferror(fp)) {
             fprintf (stderr, "%s: read failed: %s\n", file, strerror(errno));
             VIR_FORCE_FCLOSE(fp);
             return -1;
         }
     }
-    (*buf)[st.st_size] = '\0';
 
     VIR_FORCE_FCLOSE(fp);
-    return st.st_size;
+    return strlen(*buf);
 }
 
 #ifndef WIN32
