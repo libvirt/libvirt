@@ -8014,7 +8014,8 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     if (!(def = virDomainDefParseString(driver->caps, dom_xml,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("failed to parse XML"));
+                        "%s", _("failed to parse XML, libvirt version may be "
+                                "different between source and destination host"));
         goto cleanup;
     }
 
