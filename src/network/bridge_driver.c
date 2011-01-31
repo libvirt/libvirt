@@ -432,6 +432,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     int r, ret = -1;
     int nbleases = 0;
     char *bridgeaddr;
+    int ii;
+    virNetworkIpDefPtr tmpipdef;
 
     if (!(bridgeaddr = virSocketFormatAddr(&ipdef->address)))
         goto cleanup;
@@ -468,19 +470,27 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     /* *no* conf file */
     virCommandAddArgList(cmd, "--conf-file=", "", NULL);
 
-    /*
-     * XXX does not actually work, due to some kind of
-     * race condition setting up ipv6 addresses on the
-     * interface. A sleep(10) makes it work, but that's
-     * clearly not practical
-     *
-     * virCommandAddArg(cmd, "--interface");
-     * virCommandAddArg(cmd, ipdef->bridge);
-     */
     virCommandAddArgList(cmd,
-                         "--listen-address", bridgeaddr,
                          "--except-interface", "lo",
                          NULL);
+
+    /*
+     * --interface does not actually work with dnsmasq < 2.47,
+     * due to DAD for ipv6 addresses on the interface.
+     *
+     * virCommandAddArgList(cmd, "--interface", ipdef->bridge, NULL);
+     *
+     * So listen on all defined IPv[46] addresses
+     */
+    for (ii = 0;
+         (tmpipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+         ii++) {
+        char *ipaddr = virSocketFormatAddr(&tmpipdef->address);
+        if (!ipaddr)
+            goto cleanup;
+        virCommandAddArgList(cmd, "--listen-address", ipaddr, NULL);
+        VIR_FREE(ipaddr);
+    }
 
     for (r = 0 ; r < ipdef->nranges ; r++) {
         char *saddr = virSocketFormatAddr(&ipdef->ranges[r].start);
@@ -1027,9 +1037,30 @@ networkAddGeneralIp6tablesRules(struct network_driver *driver,
         goto err3;
     }
 
+    /* allow DNS over IPv6 */
+    if (iptablesAddTcpInput(driver->iptables, AF_INET6,
+                            network->def->bridge, 53) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add ip6tables rule to allow DNS requests from '%s'"),
+                           network->def->bridge);
+        goto err4;
+    }
+
+    if (iptablesAddUdpInput(driver->iptables, AF_INET6,
+                            network->def->bridge, 53) < 0) {
+        networkReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add ip6tables rule to allow DNS requests from '%s'"),
+                           network->def->bridge);
+        goto err5;
+    }
+
     return 0;
 
     /* unwind in reverse order from the point of failure */
+err5:
+    iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+err4:
+    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET6, network->def->bridge);
 err3:
     iptablesRemoveForwardRejectIn(driver->iptables, AF_INET6, network->def->bridge);
 err2:
