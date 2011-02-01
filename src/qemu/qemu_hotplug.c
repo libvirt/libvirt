@@ -259,7 +259,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
         if (qemuAssignDeviceControllerAlias(controller) < 0)
             goto cleanup;
 
-        if (!(devstr = qemuBuildControllerDevStr(controller))) {
+        if (!(devstr = qemuBuildControllerDevStr(controller, qemuCmdFlags))) {
             goto cleanup;
         }
     }
@@ -823,7 +823,8 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
             goto error;
         }
 
-        if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev, configfd_name)))
+        if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev, configfd_name,
+                                                 qemuCmdFlags)))
             goto error;
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);

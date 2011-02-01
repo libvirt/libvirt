@@ -79,23 +79,29 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
 /* Current, best practice */
 char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
                             unsigned long long qemuCmdFlags);
-char * qemuBuildFSDevStr(virDomainFSDefPtr fs);
+char * qemuBuildFSDevStr(virDomainFSDefPtr fs,
+                         unsigned long long qemuCmdFlags);
 /* Current, best practice */
-char * qemuBuildControllerDevStr(virDomainControllerDefPtr def);
+char * qemuBuildControllerDevStr(virDomainControllerDefPtr def,
+                                 unsigned long long qemuCmdFlags);
 
-char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev);
+char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev,
+                               unsigned long long qemuCmdFlags);
 
-char * qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev);
+char * qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev,
+                                 unsigned long long qemuCmdFlags);
 
 char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev);
 
-char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound);
+char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound,
+                            unsigned long long qemuCmdFlags);
 
 /* Legacy, pre device support */
 char * qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */
 char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev,
-                                 const char *configfd);
+                                 const char *configfd,
+                                 unsigned long long qemuCmdFlags);
 
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
