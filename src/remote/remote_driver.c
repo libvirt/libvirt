@@ -10180,6 +10180,14 @@ remoteIOEventLoop(virConnectPtr conn,
 #ifdef HAVE_PTHREAD_SIGMASK
         sigset_t oldmask, blockedsigs;
 #endif
+        int timeout = -1;
+
+        /* If we have existing SASL decoded data we
+         * don't want to sleep in the poll(), just
+         * check if any other FDs are also ready
+         */
+        if (priv->saslDecoded)
+            timeout = 0;
 
         fds[0].events = fds[0].revents = 0;
         fds[1].events = fds[1].revents = 0;
@@ -10215,7 +10223,7 @@ remoteIOEventLoop(virConnectPtr conn,
 #endif
 
     repoll:
-        ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
+        ret = poll(fds, ARRAY_CARDINALITY(fds), timeout);
         if (ret < 0 && errno == EAGAIN)
             goto repoll;
 
@@ -10224,6 +10232,12 @@ remoteIOEventLoop(virConnectPtr conn,
 #endif
 
         remoteDriverLock(priv);
+
+        /* If we have existing SASL decoded data, pretend
+         * the socket became readable so we consume it
+         */
+        if (priv->saslDecoded)
+            fds[0].revents |= POLLIN;
 
         if (fds[1].revents) {
             ssize_t s;
