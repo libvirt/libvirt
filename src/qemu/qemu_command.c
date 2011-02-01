@@ -4067,6 +4067,14 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
             virCommandAddArg(cmd, migrateFrom);
             virCommandPreserveFD(cmd, migrateFd);
+        } else if (STRPREFIX(migrateFrom, "unix")) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                "%s", _("UNIX migration is not supported "
+                                        "with this QEMU binary"));
+                goto error;
+            }
+            virCommandAddArg(cmd, migrateFrom);
         } else {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             "%s", _("unknown migration protocol"));
