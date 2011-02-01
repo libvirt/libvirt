@@ -76,6 +76,7 @@ static virStorageVolPtr get_nonnull_storage_vol(virConnectPtr conn, remote_nonnu
 static virSecretPtr get_nonnull_secret(virConnectPtr conn, remote_nonnull_secret secret);
 static virNWFilterPtr get_nonnull_nwfilter(virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
 static virDomainSnapshotPtr get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot);
+static int make_domain(remote_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface(remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
@@ -3079,6 +3080,305 @@ cleanup:
 #include "qemu_dispatch_bodies.h"
 
 
+static int
+remoteDispatchDomainMigrateBegin3(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
+                                  remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                  remote_error *rerr,
+                                  remote_domain_migrate_begin3_args *args,
+                                  remote_domain_migrate_begin3_ret *ret)
+{
+    char *xml = NULL;
+    virDomainPtr dom = NULL;
+    char *dname;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    if (!(xml = virDomainMigrateBegin3(dom,
+                                       &cookieout, &cookieoutlen,
+                                       args->flags, dname, args->resource)))
+        goto cleanup;
+
+    /* remoteDispatchClientRequest will free cookie and
+     * the xml string if there is one.
+     */
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+    ret->xml = xml;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainMigratePrepare3(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
+                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                    remote_error *rerr,
+                                    remote_domain_migrate_prepare3_args *args,
+                                    remote_domain_migrate_prepare3_ret *ret)
+{
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    char *uri_in;
+    char **uri_out;
+    char *dname;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    /* Wacky world of XDR ... */
+    if (VIR_ALLOC(uri_out) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virDomainMigratePrepare3(conn,
+                                 args->cookie_in.cookie_in_val,
+                                 args->cookie_in.cookie_in_len,
+                                 &cookieout, &cookieoutlen,
+                                 uri_in, uri_out,
+                                 args->flags, dname, args->resource,
+                                 args->dom_xml) < 0)
+        goto cleanup;
+
+    /* remoteDispatchClientRequest will free cookie, uri_out and
+     * the string if there is one.
+     */
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+    ret->uri_out = *uri_out == NULL ? NULL : uri_out;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0) {
+        remoteDispatchError(rerr);
+        VIR_FREE(uri_out);
+    }
+    return rv;
+}
+
+static int
+remoteDispatchDomainMigratePrepareTunnel3(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                          struct qemud_client *client,
+                                          virConnectPtr conn,
+                                          remote_message_header *hdr,
+                                          remote_error *rerr,
+                                          remote_domain_migrate_prepare_tunnel3_args *args,
+                                          remote_domain_migrate_prepare_tunnel3_ret *ret)
+{
+    char *dname;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    struct qemud_client_stream *stream = NULL;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    if (!(stream = remoteCreateClientStream(conn, hdr))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virDomainMigratePrepareTunnel3(conn, stream->st,
+                                       args->cookie_in.cookie_in_val,
+                                       args->cookie_in.cookie_in_len,
+                                       &cookieout, &cookieoutlen,
+                                       args->flags, dname, args->resource,
+                                       args->dom_xml) < 0)
+        goto cleanup;
+
+    if (remoteAddClientStream(client, stream, 0) < 0)
+        goto cleanup;
+
+    /* remoteDispatchClientRequest will free cookie
+     */
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0) {
+        remoteDispatchError(rerr);
+        VIR_FREE(cookieout);
+    }
+    if (stream && rv < 0) {
+        virStreamAbort(stream->st);
+        remoteFreeClientStream(client, stream);
+    }
+    return rv;
+}
+
+static int
+remoteDispatchDomainMigratePerform3(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
+                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                    remote_error *rerr,
+                                    remote_domain_migrate_perform3_args *args,
+                                    remote_domain_migrate_perform3_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    char *dname;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    if (virDomainMigratePerform3(dom,
+                                 args->cookie_in.cookie_in_val,
+                                 args->cookie_in.cookie_in_len,
+                                 &cookieout, &cookieoutlen,
+                                 args->uri,
+                                 args->flags, dname, args->resource) < 0)
+        goto cleanup;
+
+    /* remoteDispatchClientRequest will free cookie
+     */
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainMigrateFinish3(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
+                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                   remote_error *rerr,
+                                   remote_domain_migrate_finish3_args *args,
+                                   remote_domain_migrate_finish3_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (virDomainMigrateFinish3(conn, args->dname,
+                                args->cookie_in.cookie_in_val,
+                                args->cookie_in.cookie_in_len,
+                                &cookieout, &cookieoutlen,
+                                args->uri,
+                                args->flags,
+                                args->cancelled,
+                                &dom) < 0)
+        goto cleanup;
+
+    if (dom &&
+        make_domain(&ret->ddom, dom) < 0)
+        goto cleanup;
+
+    /* remoteDispatchClientRequest will free cookie
+     */
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0) {
+        remoteDispatchError(rerr);
+        VIR_FREE(cookieout);
+    }
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainMigrateConfirm3(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
+                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                    remote_error *rerr,
+                                    remote_domain_migrate_confirm3_args *args,
+                                    void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom = NULL;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainMigrateConfirm3(dom,
+                                 args->cookie_in.cookie_in_val,
+                                 args->cookie_in.cookie_in_len,
+                                 args->flags, args->cancelled) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
@@ -3144,6 +3444,21 @@ get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot sna
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
+static int
+make_domain(remote_domain *dom_dst, virDomainPtr dom_src)
+{
+    remote_domain rdom;
+    if (VIR_ALLOC(rdom) < 0)
+        return -1;
+
+    rdom->id = dom_src->id;
+    rdom->name = strdup(dom_src->name);
+    memcpy(rdom->uuid, dom_src->uuid, VIR_UUID_BUFLEN);
+
+    *dom_dst = rdom;
+    return 0;
+}
+
 static void
 make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
 {

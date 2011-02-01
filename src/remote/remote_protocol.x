@@ -1965,6 +1965,76 @@ struct remote_domain_get_state_ret {
     int reason;
 };
 
+struct remote_domain_migrate_begin3_args {
+    remote_nonnull_domain dom;
+    unsigned hyper flags;
+    remote_string dname;
+    unsigned hyper resource;
+};
+
+struct remote_domain_migrate_begin3_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_nonnull_string xml;
+};
+
+struct remote_domain_migrate_prepare3_args {
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_string uri_in;
+    unsigned hyper flags;
+    remote_string dname;
+    unsigned hyper resource;
+    remote_nonnull_string dom_xml;
+};
+
+struct remote_domain_migrate_prepare3_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_string uri_out;
+};
+
+struct remote_domain_migrate_prepare_tunnel3_args {
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    unsigned hyper flags;
+    remote_string dname;
+    unsigned hyper resource;
+    remote_nonnull_string dom_xml;
+};
+
+struct remote_domain_migrate_prepare_tunnel3_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+};
+
+struct remote_domain_migrate_perform3_args {
+    remote_nonnull_domain dom;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_nonnull_string uri;
+    unsigned hyper flags;
+    remote_string dname;
+    unsigned hyper resource;
+};
+
+struct remote_domain_migrate_perform3_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+};
+
+struct remote_domain_migrate_finish3_args {
+    remote_nonnull_string dname;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_nonnull_string uri;
+    unsigned hyper flags;
+    int cancelled;
+};
+
+struct remote_domain_migrate_finish3_ret {
+    remote_domain ddom;
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+};
+
+struct remote_domain_migrate_confirm3_args {
+    remote_nonnull_domain dom;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    unsigned hyper flags;
+    int cancelled;
+};
 
 /*----- Protocol. -----*/
 
@@ -2208,7 +2278,13 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_INJECT_NMI = 210, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_SCREENSHOT = 211, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_GET_STATE = 212 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_STATE = 212, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_BEGIN3 = 213, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE3 = 214, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3 = 215, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3 = 216, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_FINISH3 = 217, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3 = 218 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
