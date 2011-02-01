@@ -1349,7 +1349,7 @@ doPortProfileOp8021Qbg(const char *ifname,
         break;
     default:
         macvtapError(VIR_ERR_INTERNAL_ERROR,
-                     _("operation type %d not supported"), op);
+                     _("operation type %d not supported"), virtPortOp);
         rc = 1;
         goto err_exit;
     }
