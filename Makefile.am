@@ -51,6 +51,7 @@ EXTRA_DIST = \
   autobuild.sh \
   Makefile.nonreentrant \
   autogen.sh \
+  cfg.mk \
   examples/domain-events/events-python \
   $(syntax_check_exceptions) \
   $(XML_EXAMPLES)
