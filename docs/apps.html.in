@@ -132,10 +132,10 @@
     </dl>
 
     <dl>
-      <dt><a href="http://wiki.hudson-ci.org/display/HUDSON/Libvirt+Slaves+Plugin">Hudson</a></dt>
+      <dt><a href="http://wiki.jenkins-ci.org/display/JENKINS/Libvirt+Slaves+Plugin">Jenkins</a></dt>
       <dd>
-        This plugin for Hudson adds a way to control guest domains hosted
-        on Xen or QEMU/KVM.  You configure a Hudson Slave,
+        This plugin for Jenkins adds a way to control guest domains hosted
+        on Xen or QEMU/KVM.  You configure a Jenkins Slave,
         selecting the guest domain and hypervisor.  When you need to build a
         job on a specific Slave, its guest domain is started, then the job is
         run.  When the build process is finished, the guest domain is shut
