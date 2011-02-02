@@ -10242,8 +10242,9 @@ static int qemuDomainMonitorCommand(virDomainPtr domain, const char *cmd,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
+    bool hmp;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10269,10 +10270,12 @@ static int qemuDomainMonitorCommand(virDomainPtr domain, const char *cmd,
         priv->monitor_warned = 1;
     }
 
+    hmp = !!(flags & VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP);
+
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorArbitraryCommand(priv->mon, cmd, result);
+    ret = qemuMonitorArbitraryCommand(priv->mon, cmd, result, hmp);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (qemuDomainObjEndJob(vm) == 0) {
         vm = NULL;

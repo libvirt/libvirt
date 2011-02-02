@@ -397,7 +397,10 @@ int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
-int qemuMonitorArbitraryCommand(qemuMonitorPtr mon, const char *cmd, char **reply);
+int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
+                                const char *cmd,
+                                char **reply,
+                                bool hmp);
 
 /**
  * When running two dd process and using <> redirection, we need a

@@ -2007,14 +2007,17 @@ int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     return ret;
 }
 
-int qemuMonitorArbitraryCommand(qemuMonitorPtr mon, const char *cmd, char **reply)
+int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
+                                const char *cmd,
+                                char **reply,
+                                bool hmp)
 {
     int ret;
 
-    DEBUG("mon=%p, cmd=%s, reply=%p", mon, cmd, reply);
+    DEBUG("mon=%p, cmd=%s, reply=%p, hmp=%d", mon, cmd, reply, hmp);
 
     if (mon->json)
-        ret = qemuMonitorJSONArbitraryCommand(mon, cmd, reply);
+        ret = qemuMonitorJSONArbitraryCommand(mon, cmd, reply, hmp);
     else
         ret = qemuMonitorTextArbitraryCommand(mon, cmd, reply);
     return ret;

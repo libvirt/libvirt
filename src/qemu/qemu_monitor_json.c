@@ -2457,22 +2457,44 @@ int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 
 int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     const char *cmd_str,
-                                    char **reply_str)
+                                    char **reply_str,
+                                    bool hmp)
 {
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     int ret = -1;
 
-    cmd = virJSONValueFromString(cmd_str);
+    if (!hmp) {
+        cmd = virJSONValueFromString(cmd_str);
+    } else {
+        cmd = qemuMonitorJSONMakeCommand("human-monitor-command",
+                                         "s:command-line", cmd_str,
+                                         NULL);
+    }
+
     if (!cmd)
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    *reply_str = virJSONValueToString(reply);
-    if (!(*reply_str))
+    if (!hmp) {
+        if (!(*reply_str = virJSONValueToString(reply)))
+            goto cleanup;
+    } else if (qemuMonitorJSONCheckError(cmd, reply)) {
         goto cleanup;
+    } else {
+        const char *data;
+        if (!(data = virJSONValueObjectGetString(reply, "return"))) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("human monitor command was missing return data"));
+            goto cleanup;
+        }
+        if (!(*reply_str = strdup(data))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
 
     ret = 0;
 

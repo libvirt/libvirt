@@ -1253,10 +1253,13 @@ problems to the libvirt developers; the reports will be ignored.
 
 =over 4
 
-=item B<qemu-monitor-command> I<domain> I<command>
+=item B<qemu-monitor-command> I<domain> I<command> optional I<--hmp>
 
 Send an arbitrary monitor command I<command> to domain I<domain> through the
-qemu monitor.  The results of the command will be printed on stdout.
+qemu monitor.  The results of the command will be printed on stdout.  If
+I<--hmp> is passed, the command is considered to be a human monitor command
+and libvirt will automatically convert it into QMP if needed.  In that case
+the result will also be converted back from QMP.
 
 =back
 

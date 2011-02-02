@@ -10176,6 +10176,7 @@ static const vshCmdInfo info_qemu_monitor_command[] = {
 static const vshCmdOptDef opts_qemu_monitor_command[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"cmd", VSH_OT_DATA, VSH_OFLAG_REQ, N_("command")},
+    {"hmp", VSH_OT_BOOL, 0, N_("command is in human monitor protocol")},
     {NULL, 0, 0, NULL}
 };
 
@@ -10186,6 +10187,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     int ret = FALSE;
     char *monitor_cmd;
     char *result = NULL;
+    unsigned int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -10200,7 +10202,10 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, 0) < 0)
+    if (vshCommandOptBool(cmd, "hmp"))
+        flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
+
+    if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
         goto cleanup;
 
     printf("%s\n", result);
