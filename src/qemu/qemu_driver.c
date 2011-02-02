@@ -2991,6 +2991,11 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     VIR_DEBUG("Shutting down VM '%s' pid=%d migrated=%d",
               vm->def->name, vm->pid, migrated);
 
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("VM '%s' not active", vm->def->name);
+        return;
+    }
+
     if ((logfile = qemudLogFD(driver, vm->def->name, true)) < 0) {
         /* To not break the normal domain shutdown process, skip the
          * timestamp log writing if failed on opening log file. */
