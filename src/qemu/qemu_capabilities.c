@@ -172,6 +172,15 @@ qemuCapsProbeMachineTypes(const char *binary,
     int ret = -1;
     virCommandPtr cmd;
 
+    /* Make sure the binary we are about to try exec'ing exists.
+     * Technically we could catch the exec() failure, but that's
+     * in a sub-process so it's hard to feed back a useful error.
+     */
+    if (access(binary, X_OK) < 0) {
+        virReportSystemError(errno, _("Cannot find QEMU binary %s"), binary);
+        return -1;
+    }
+
     cmd = virCommandNewArgList(binary, "-M", "?", NULL);
     virCommandAddEnvPassCommon(cmd);
     virCommandSetOutputBuffer(cmd, &output);
