@@ -10186,8 +10186,10 @@ remoteIOEventLoop(virConnectPtr conn,
          * don't want to sleep in the poll(), just
          * check if any other FDs are also ready
          */
+#if HAVE_SASL
         if (priv->saslDecoded)
             timeout = 0;
+#endif
 
         fds[0].events = fds[0].revents = 0;
         fds[1].events = fds[1].revents = 0;
@@ -10236,8 +10238,10 @@ remoteIOEventLoop(virConnectPtr conn,
         /* If we have existing SASL decoded data, pretend
          * the socket became readable so we consume it
          */
+#if HAVE_SASL
         if (priv->saslDecoded)
             fds[0].revents |= POLLIN;
+#endif
 
         if (fds[1].revents) {
             ssize_t s;
