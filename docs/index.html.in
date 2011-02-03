@@ -38,7 +38,7 @@
         on Linux and Solaris hosts.
       </li>
       <li>
-        The <a href="http://bellard.org/qemu/">QEMU</a> emulator
+        The <a href="http://wiki.qemu.org/Index.html">QEMU</a> emulator
       </li>
       <li>
         The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
