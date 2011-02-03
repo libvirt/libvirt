@@ -1088,8 +1088,11 @@ qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
     /* Features of given devices. */
     if (strstr(str, "pci-assign.configfd"))
         *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
-    if (strstr(str, "virtio-blk-pci.bootindex"))
+    if (strstr(str, "virtio-blk-pci.bootindex")) {
         *flags |= QEMUD_CMD_FLAG_BOOTINDEX;
+        if (strstr(str, "pci-assign.bootindex"))
+            *flags |= QEMUD_CMD_FLAG_PCI_BOOTINDEX;
+    }
 
     return 0;
 }

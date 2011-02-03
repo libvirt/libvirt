@@ -1917,6 +1917,8 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
     virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
     if (configfd && *configfd)
         virBufferVSprintf(&buf, ",configfd=%s", configfd);
+    if (dev->bootIndex)
+        virBufferVSprintf(&buf, ",bootindex=%d", dev->bootIndex);
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCmdFlags) < 0)
         goto error;
 
@@ -3979,6 +3981,21 @@ qemuBuildCommandLine(virConnectPtr conn,
     for (i = 0 ; i < def->nhostdevs ; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         char *devstr;
+
+        if (hostdev->bootIndex) {
+            if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+                hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("booting from assigned devices is only"
+                                  " supported for PCI devices"));
+                goto error;
+            } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_PCI_BOOTINDEX)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("booting from assigned PCI devices is not"
+                                  " supported with this version of qemu"));
+                goto error;
+            }
+        }
 
         /* USB */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
