@@ -1606,16 +1606,43 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *nic;
+    bool usingVirtio = false;
 
     if (!net->model) {
         nic = "rtl8139";
     } else if (STREQ(net->model, "virtio")) {
         nic = "virtio-net-pci";
+        usingVirtio = true;
     } else {
         nic = net->model;
     }
 
     virBufferAdd(&buf, nic, strlen(nic));
+    if (usingVirtio && net->driver.virtio.txmode) {
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_VIRTIO_TX_ALG) {
+            virBufferAddLit(&buf, ",tx=");
+            switch (net->driver.virtio.txmode) {
+                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD:
+                    virBufferAddLit(&buf, "bh");
+                    break;
+
+                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER:
+                    virBufferAddLit(&buf, "timer");
+                    break;
+                default:
+                    /* this should never happen, if it does, we need
+                     * to add another case to this switch.
+                     */
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("unrecognized virtio-net-pci 'tx' option"));
+                    goto error;
+            }
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("virtio-net-pci 'tx' option not supported in this QEMU binary"));
+            goto error;
+        }
+    }
     if (vlan == -1)
         virBufferVSprintf(&buf, ",netdev=host%s", net->info.alias);
     else

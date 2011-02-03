@@ -1378,6 +1378,56 @@ qemu-kvm -net nic,model=? /dev/null
       ne2k_isa i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
     </p>
 
+    <h5><a name="elementsDriverBackendOptions">Setting NIC driver-specific options</a></h5>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet1'/&gt;
+      &lt;model type='virtio'/&gt;
+      <b>&lt;driver txmode='iothread'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      Some NICs may have tunable driver-specific options. These are
+      set as attributes of the <code>driver</code> sub-element of the
+      interface definition. Currently the following attributes are
+      available for the <code>"virtio"</code> NIC driver:
+    </p>
+
+    <dl>
+      <dt><code>txmode</code></dt>
+      <dd>
+        The <code>txmode</code> attribute specifies how to handle
+        transmission of packets when the transmit buffer is full. The
+        value can be either 'iothread' or 'timer'.
+        <span class="since">Since 0.8.8 (QEMU and KVM only)</span><br><br>
+
+        If set to 'iothread', packet tx is all done in an iothread in
+        the bottom half of the driver (this option translates into
+        adding "tx=bh" to the qemu commandline -device virtio-net-pci
+        option).<br><br>
+
+        If set to 'timer', tx work is done in qemu, and if there is
+        more tx data than can be sent at the present time, a timer is
+        set before qemu moves on to do other things; when the timer
+        fires, another attempt is made to send more data.<br><br>
+
+        The resulting difference, according to the qemu developer who
+        added the option is: "bh makes tx more asynchronous and reduces
+        latency, but potentially causes more processor bandwidth
+        contention since the cpu doing the tx isn't necessarily the
+        cpu where the guest generated the packets."<br><br>
+
+        <b>In general you should leave this option alone, unless you
+        are very certain you know what you are doing.</b>
+      </dd>
+    </dl>
+
     <h5><a name="elementsNICSTargetOverride">Overriding the target element</a></h5>
 
 <pre>

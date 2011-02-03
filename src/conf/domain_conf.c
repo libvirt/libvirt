@@ -198,6 +198,11 @@ VIR_ENUM_IMPL(virDomainNetBackend, VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
               "qemu",
               "vhost")
 
+VIR_ENUM_IMPL(virDomainNetVirtioTxMode, VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
+              "default",
+              "iothread",
+              "timer")
+
 VIR_ENUM_IMPL(virDomainChrChannelTarget,
               VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
               "guestfwd",
@@ -2477,6 +2482,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *port = NULL;
     char *model = NULL;
     char *backend = NULL;
+    char *txmode = NULL;
     char *filter = NULL;
     char *internal = NULL;
     char *devaddr = NULL;
@@ -2565,6 +2571,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 model = virXMLPropString(cur, "type");
             } else if (xmlStrEqual (cur->name, BAD_CAST "driver")) {
                 backend = virXMLPropString(cur, "name");
+                txmode = virXMLPropString(cur, "txmode");
             } else if (xmlStrEqual (cur->name, BAD_CAST "filterref")) {
                 filter = virXMLPropString(cur, "filter");
                 VIR_FREE(filterparams);
@@ -2769,6 +2776,18 @@ virDomainNetDefParseXML(virCapsPtr caps,
             }
             def->driver.virtio.name = name;
         }
+        if (txmode != NULL) {
+            int m;
+            if (((m = virDomainNetVirtioTxModeTypeFromString(txmode)) < 0) ||
+                (m == VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT)) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Unknown interface <driver txmode='%s'> "
+                                       "has been specified"),
+                                     txmode);
+                goto error;
+            }
+            def->driver.virtio.txmode = m;
+        }
     }
 
     if (filter != NULL) {
@@ -2808,6 +2827,7 @@ cleanup:
     VIR_FREE(bridge);
     VIR_FREE(model);
     VIR_FREE(backend);
+    VIR_FREE(txmode);
     VIR_FREE(filter);
     VIR_FREE(type);
     VIR_FREE(internal);
@@ -6813,11 +6833,15 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "      <model type='%s'/>\n",
                               def->model);
         if (STREQ(def->model, "virtio") &&
-            def->driver.virtio.name) {
+            (def->driver.virtio.name || def->driver.virtio.txmode)) {
             virBufferAddLit(buf, "      <driver");
             if (def->driver.virtio.name) {
                 virBufferVSprintf(buf, " name='%s'",
                                   virDomainNetBackendTypeToString(def->driver.virtio.name));
+            }
+            if (def->driver.virtio.txmode) {
+                virBufferVSprintf(buf, " txmode='%s'",
+                                  virDomainNetVirtioTxModeTypeToString(def->driver.virtio.txmode));
             }
             virBufferAddLit(buf, "/>\n");
         }

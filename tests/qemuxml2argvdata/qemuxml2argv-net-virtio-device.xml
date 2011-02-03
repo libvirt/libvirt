@@ -17,10 +17,13 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='ide' index='0'/>
     <interface type='user'>
       <mac address='00:11:22:33:44:55'/>
       <model type='virtio'/>
+      <driver txmode='iothread'/>
     </interface>
     <memballoon model='virtio'/>
   </devices>

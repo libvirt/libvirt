@@ -321,6 +321,15 @@ enum virDomainNetBackendType {
     VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
 };
 
+/* the TX algorithm used for virtio interfaces */
+enum virDomainNetVirtioTxModeType {
+    VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT, /* default for this version of qemu */
+    VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD,
+    VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER,
+
+    VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
+};
+
 /* the mode type for macvtap devices */
 enum virDomainNetdevMacvtapType {
     VIR_DOMAIN_NETDEV_MACVTAP_MODE_VEPA,
@@ -341,6 +350,7 @@ struct _virDomainNetDef {
     union {
         struct {
             enum virDomainNetBackendType name; /* which driver backend to use */
+            enum virDomainNetVirtioTxModeType txmode;
         } virtio;
     } driver;
     union {
@@ -1371,6 +1381,7 @@ VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainFSAccessMode)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainNetBackend)
+VIR_ENUM_DECL(virDomainNetVirtioTxMode)
 VIR_ENUM_DECL(virDomainChrDevice)
 VIR_ENUM_DECL(virDomainChrChannelTarget)
 VIR_ENUM_DECL(virDomainChrConsoleTarget)

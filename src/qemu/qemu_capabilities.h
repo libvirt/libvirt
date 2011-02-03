@@ -92,6 +92,7 @@ enum qemuCapsFlags {
     QEMUD_CMD_FLAG_CCID_PASSTHRU = (1LL << 55), /* -device ccid-card-passthru */
     QEMUD_CMD_FLAG_CHARDEV_SPICEVMC = (1LL << 56), /* newer -chardev spicevmc */
     QEMUD_CMD_FLAG_DEVICE_SPICEVMC = (1LL << 57), /* older -device spicevmc*/
+    QEMUD_CMD_FLAG_VIRTIO_TX_ALG = (1LL << 58), /* -device virtio-net-pci,tx=string */
 };
 
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);

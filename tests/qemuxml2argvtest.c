@@ -365,7 +365,7 @@ mymain(int argc, char **argv)
     DO_TEST("net-user", 0, false);
     DO_TEST("net-virtio", 0, false);
     DO_TEST("net-virtio-device", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_VIRTIO_TX_ALG, false);
     DO_TEST("net-virtio-netdev", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NETDEV | QEMUD_CMD_FLAG_NODEFCONFIG, false);
     DO_TEST("net-eth", 0, false);

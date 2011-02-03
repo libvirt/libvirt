@@ -1074,6 +1074,7 @@ qemuCapsExtractDeviceStr(const char *qemu,
                                "-device", "?",
                                "-device", "pci-assign,?",
                                "-device", "virtio-blk-pci,?",
+                               "-device", "virtio-net-pci,?",
                                NULL);
     virCommandAddEnvPassCommon(cmd);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
@@ -1115,6 +1116,8 @@ qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
         if (strstr(str, "pci-assign.bootindex"))
             *flags |= QEMUD_CMD_FLAG_PCI_BOOTINDEX;
     }
+    if (strstr(str, "virtio-net-pci.tx="))
+        *flags |= QEMUD_CMD_FLAG_VIRTIO_TX_ALG;
 
     return 0;
 }

@@ -480,7 +480,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_HDA_DUPLEX |
             QEMUD_CMD_FLAG_DRIVE_AIO |
             QEMUD_CMD_FLAG_CCID_PASSTHRU |
-            QEMUD_CMD_FLAG_CHARDEV_SPICEVMC,
+            QEMUD_CMD_FLAG_CHARDEV_SPICEVMC |
+            QEMUD_CMD_FLAG_VIRTIO_TX_ALG,
             12001, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
