@@ -57,7 +57,7 @@ int virExpandN(void *ptrptr, size_t size, size_t *count, size_t add)
 int virResizeN(void *ptrptr, size_t size, size_t *alloc, size_t count,
                size_t desired)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
-void virShrinkN(void *ptrptr, size_t size, size_t *count, size_t remove)
+void virShrinkN(void *ptrptr, size_t size, size_t *count, size_t toremove)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int virAllocVar(void *ptrptr,
                 size_t struct_size,
