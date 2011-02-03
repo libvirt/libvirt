@@ -32,6 +32,11 @@ int qemuMigrationSetOffline(struct qemud_driver *driver,
 
 int qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm);
 
+char *qemuMigrationBegin(struct qemud_driver *driver,
+                         virDomainObjPtr vm,
+                         char **cookieout,
+                         int *cookieoutlen);
+
 int qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                                virConnectPtr dconn,
                                const char *cookiein,
@@ -63,7 +68,8 @@ int qemuMigrationPerform(struct qemud_driver *driver,
                          int *cookieoutlen,
                          unsigned long flags,
                          const char *dname,
-                         unsigned long resource);
+                         unsigned long resource,
+                         bool killOnFinish);
 
 virDomainPtr qemuMigrationFinish(struct qemud_driver *driver,
                                  virConnectPtr dconn,
@@ -74,6 +80,15 @@ virDomainPtr qemuMigrationFinish(struct qemud_driver *driver,
                                  int *cookieoutlen,
                                  unsigned long flags,
                                  int retcode);
+
+int qemuMigrationConfirm(struct qemud_driver *driver,
+                         virConnectPtr conn,
+                         virDomainObjPtr vm,
+                         const char *cookiein,
+                         int cookieinlen,
+                         unsigned int flags,
+                         int retcode,
+                         bool skipJob);
 
 
 int qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,

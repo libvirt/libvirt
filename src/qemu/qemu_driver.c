@@ -865,6 +865,7 @@ qemudSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
 {
     switch (feature) {
     case VIR_DRV_FEATURE_MIGRATION_V2:
+    case VIR_DRV_FEATURE_MIGRATION_V3:
     case VIR_DRV_FEATURE_MIGRATION_P2P:
         return 1;
     default:
@@ -5750,7 +5751,9 @@ qemuDomainEventDeregisterAny(virConnectPtr conn,
 }
 
 
-/* Migration support. */
+/*******************************************************************
+ * Migration Protocol Version 2
+ *******************************************************************/
 
 /* Prepare is the first step, and it runs on the destination host.
  *
@@ -5767,6 +5770,15 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
 {
     struct qemud_driver *driver = dconn->privateData;
     int ret = -1;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
 
     if (!dom_xml) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5887,7 +5899,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     ret = qemuMigrationPerform(driver, dom->conn, vm,
                                uri, cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
-                               flags, dname, resource);
+                               flags, dname, resource, true);
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -5941,6 +5953,294 @@ cleanup:
     }
     qemuDriverUnlock(driver);
     return dom;
+}
+
+
+/*******************************************************************
+ * Migration Protocol Version 3
+ *******************************************************************/
+
+static char *
+qemuDomainMigrateBegin3(virDomainPtr domain,
+                        char **cookieout,
+                        int *cookieoutlen,
+                        unsigned long flags,
+                        const char *dname ATTRIBUTE_UNUSED,
+                        unsigned long resource ATTRIBUTE_UNUSED)
+{
+    struct qemud_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm;
+    char *xml = NULL;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, NULL);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    xml = qemuMigrationBegin(driver, vm,
+                             cookieout, cookieoutlen);
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return xml;
+}
+
+static int
+qemuDomainMigratePrepare3(virConnectPtr dconn,
+                          const char *cookiein,
+                          int cookieinlen,
+                          char **cookieout,
+                          int *cookieoutlen,
+                          const char *uri_in,
+                          char **uri_out,
+                          unsigned long flags,
+                          const char *dname,
+                          unsigned long resource ATTRIBUTE_UNUSED,
+                          const char *dom_xml)
+{
+    struct qemud_driver *driver = dconn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
+
+    *uri_out = NULL;
+
+    qemuDriverLock(driver);
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        /* this is a logical error; we never should have gotten here with
+         * VIR_MIGRATE_TUNNELLED set
+         */
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Tunnelled migration requested but invalid RPC method called"));
+        goto cleanup;
+    }
+
+    if (!dom_xml) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("no domain XML passed"));
+        goto cleanup;
+    }
+
+    ret = qemuMigrationPrepareDirect(driver, dconn,
+                                     cookiein, cookieinlen,
+                                     cookieout, cookieoutlen,
+                                     uri_in, uri_out,
+                                     dname, dom_xml);
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+
+static int
+qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
+                                virStreamPtr st,
+                                const char *cookiein,
+                                int cookieinlen,
+                                char **cookieout,
+                                int *cookieoutlen,
+                                unsigned long flags,
+                                const char *dname,
+                                unsigned long resource ATTRIBUTE_UNUSED,
+                                const char *dom_xml)
+{
+    struct qemud_driver *driver = dconn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
+
+    if (!dom_xml) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("no domain XML passed"));
+        goto cleanup;
+    }
+    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("PrepareTunnel called but no TUNNELLED flag set"));
+        goto cleanup;
+    }
+    if (st == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("tunnelled migration requested but NULL stream passed"));
+        goto cleanup;
+    }
+
+    qemuDriverLock(driver);
+    ret = qemuMigrationPrepareTunnel(driver, dconn,
+                                     cookiein, cookieinlen,
+                                     cookieout, cookieoutlen,
+                                     st, dname, dom_xml);
+    qemuDriverUnlock(driver);
+
+cleanup:
+    return ret;
+}
+
+
+static int
+qemuDomainMigratePerform3(virDomainPtr dom,
+                          const char *cookiein,
+                          int cookieinlen,
+                          char **cookieout,
+                          int *cookieoutlen,
+                          const char *uri,
+                          unsigned long flags,
+                          const char *dname,
+                          unsigned long resource)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    ret = qemuMigrationPerform(driver, dom->conn, vm,
+                               uri, cookiein, cookieinlen,
+                               cookieout, cookieoutlen,
+                               flags, dname, resource, false);
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+
+static int
+qemuDomainMigrateFinish3(virConnectPtr dconn,
+                         const char *dname,
+                         const char *cookiein,
+                         int cookieinlen,
+                         char **cookieout,
+                         int *cookieoutlen,
+                         const char *uri ATTRIBUTE_UNUSED,
+                         unsigned long flags,
+                         int cancelled,
+                         virDomainPtr *newdom)
+{
+    struct qemud_driver *driver = dconn->privateData;
+    virDomainObjPtr vm;
+    virErrorPtr orig_err;
+    int ret = -1;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
+
+    /* Migration failed. Save the current error so nothing squashes it */
+    orig_err = virSaveLastError();
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByName(&driver->domains, dname);
+    if (!vm) {
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching name '%s'"), dname);
+        goto cleanup;
+    }
+
+    *newdom = qemuMigrationFinish(driver, dconn, vm,
+                                  cookiein, cookieinlen,
+                                  cookieout, cookieoutlen,
+                                  flags, cancelled);
+
+    ret = 0;
+
+cleanup:
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
+qemuDomainMigrateConfirm3(virDomainPtr domain,
+                          const char *cookiein,
+                          int cookieinlen,
+                          unsigned long flags,
+                          int cancelled)
+{
+    struct qemud_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    ret = qemuMigrationConfirm(driver, domain->conn, vm,
+                               cookiein, cookieinlen,
+                               flags, cancelled, false);
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
 }
 
 
@@ -7369,6 +7669,12 @@ static virDriver qemuDriver = {
     .qemuDomainMonitorCommand = qemuDomainMonitorCommand, /* 0.8.3 */
     .domainOpenConsole = qemuDomainOpenConsole, /* 0.8.6 */
     .domainInjectNMI = qemuDomainInjectNMI, /* 0.9.2 */
+    .domainMigrateBegin3 = qemuDomainMigrateBegin3, /* 0.9.2 */
+    .domainMigratePrepare3 = qemuDomainMigratePrepare3, /* 0.9.2 */
+    .domainMigratePrepareTunnel3 = qemuDomainMigratePrepareTunnel3, /* 0.9.2 */
+    .domainMigratePerform3 = qemuDomainMigratePerform3, /* 0.9.2 */
+    .domainMigrateFinish3 = qemuDomainMigrateFinish3, /* 0.9.2 */
+    .domainMigrateConfirm3 = qemuDomainMigrateConfirm3, /* 0.9.2 */
 };
 
 
