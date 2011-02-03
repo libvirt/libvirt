@@ -311,7 +311,7 @@ qemuOpenVhostNet(virDomainNetDefPtr net,
     *vhostfd = -1;   /* assume we won't use vhost */
 
     /* If the config says explicitly to not use vhost, return now */
-    if (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU) {
+    if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU) {
        return 0;
     }
 
@@ -321,7 +321,7 @@ qemuOpenVhostNet(virDomainNetDefPtr net,
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HOST &&
           qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV &&
           qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-        if (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+        if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             "%s", _("vhost-net is not supported with "
                                     "this QEMU binary"));
@@ -332,7 +332,7 @@ qemuOpenVhostNet(virDomainNetDefPtr net,
 
     /* If the nic model isn't virtio, don't try to open. */
     if (!(net->model && STREQ(net->model, "virtio"))) {
-        if (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+        if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             "%s", _("vhost-net is only supported for "
                                     "virtio network interfaces"));
@@ -347,7 +347,7 @@ qemuOpenVhostNet(virDomainNetDefPtr net,
      * report an error.
      */
     if ((*vhostfd < 0) &&
-        (net->backend == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST)) {
+        (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST)) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         "%s", _("vhost-net was requested for an interface, "
                                 "but is unavailable"));
@@ -5038,9 +5038,9 @@ qemuParseCommandLineNet(virCapsPtr caps,
             values[i] = NULL;
         } else if (STREQ(keywords[i], "vhost")) {
             if ((values[i] == NULL) || STREQ(values[i], "on")) {
-                def->backend = VIR_DOMAIN_NET_BACKEND_TYPE_VHOST;
+                def->driver.virtio.name = VIR_DOMAIN_NET_BACKEND_TYPE_VHOST;
             } else if (STREQ(keywords[i], "off")) {
-                def->backend = VIR_DOMAIN_NET_BACKEND_TYPE_QEMU;
+                def->driver.virtio.name = VIR_DOMAIN_NET_BACKEND_TYPE_QEMU;
             }
         } else if (STREQ(keywords[i], "sndbuf") && values[i]) {
             if (virStrToLong_ul(values[i], NULL, 10, &def->tune.sndbuf) < 0) {

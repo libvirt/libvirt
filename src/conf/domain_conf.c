@@ -2756,19 +2756,21 @@ virDomainNetDefParseXML(virCapsPtr caps,
         model = NULL;
     }
 
-    if ((backend != NULL) &&
-        (def->model && STREQ(def->model, "virtio"))) {
-        int b;
-        if (((b = virDomainNetBackendTypeFromString(backend)) < 0) ||
-            (b == VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT)) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("Unknown interface <driver name='%s'> "
-                                   "has been specified"),
-                                 backend);
-            goto error;
+    if (def->model && STREQ(def->model, "virtio")) {
+        if (backend != NULL) {
+            int name;
+            if (((name = virDomainNetBackendTypeFromString(backend)) < 0) ||
+                (name == VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT)) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Unknown interface <driver name='%s'> "
+                                       "has been specified"),
+                                     backend);
+                goto error;
+            }
+            def->driver.virtio.name = name;
         }
-        def->backend = b;
     }
+
     if (filter != NULL) {
         switch (def->type) {
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -6810,9 +6812,14 @@ virDomainNetDefFormat(virBufferPtr buf,
     if (def->model) {
         virBufferEscapeString(buf, "      <model type='%s'/>\n",
                               def->model);
-        if (STREQ(def->model, "virtio") && def->backend) {
-            virBufferVSprintf(buf, "      <driver name='%s'/>\n",
-                              virDomainNetBackendTypeToString(def->backend));
+        if (STREQ(def->model, "virtio") &&
+            def->driver.virtio.name) {
+            virBufferAddLit(buf, "      <driver");
+            if (def->driver.virtio.name) {
+                virBufferVSprintf(buf, " name='%s'",
+                                  virDomainNetBackendTypeToString(def->driver.virtio.name));
+            }
+            virBufferAddLit(buf, "/>\n");
         }
     }
     if (def->filter) {

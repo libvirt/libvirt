@@ -338,7 +338,11 @@ struct _virDomainNetDef {
     enum virDomainNetType type;
     unsigned char mac[VIR_MAC_BUFLEN];
     char *model;
-    enum virDomainNetBackendType backend;
+    union {
+        struct {
+            enum virDomainNetBackendType name; /* which driver backend to use */
+        } virtio;
+    } driver;
     union {
         struct {
             char *dev;
