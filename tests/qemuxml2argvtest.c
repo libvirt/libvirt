@@ -407,6 +407,9 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
     DO_TEST("console-virtio", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("channel-spicevmc", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_SPICE |
+            QEMUD_CMD_FLAG_CHARDEV_SPICEVMC, false);
 
     DO_TEST("smartcard-host",
             QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |

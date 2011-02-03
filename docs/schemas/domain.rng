@@ -1475,6 +1475,7 @@
         <value>stdio</value>
         <value>vc</value>
         <value>pty</value>
+        <value>spicevmc</value>
       </choice>
     </attribute>
   </define>
@@ -1611,7 +1612,7 @@
   <define name="virtioTarget">
     <element name="target">
       <attribute name="type">
-          <value>virtio</value>
+        <value>virtio</value>
       </attribute>
       <optional>
         <attribute name="name"/>

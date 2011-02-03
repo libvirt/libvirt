@@ -2006,7 +2006,8 @@ qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static char *
-qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias)
+qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
+                       unsigned long long qemuCmdFlags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
@@ -2072,6 +2073,21 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias)
                           dev->data.nix.path,
                           dev->data.nix.listen ? ",server,nowait" : "");
         break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV_SPICEVMC)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("spicevmc not supported in this QEMU binary"));
+            goto error;
+        }
+        virBufferVSprintf(&buf, "spicevmc,id=char%s,name=vdagent", alias);
+        break;
+
+    default:
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported chardev '%s'"),
+                        virDomainChrTypeToString(dev->type));
+        goto error;
     }
 
     if (virBufferError(&buf)) {
@@ -2196,6 +2212,14 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
 
     virBufferVSprintf(&buf, ",chardev=char%s,id=%s",
                       dev->info.alias, dev->info.alias);
+    if (dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+        dev->target.name &&
+        STRNEQ(dev->target.name, "com.redhat.spice.0")) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("Unsupported spicevmc target name '%s'"),
+                        dev->target.name);
+        goto error;
+    }
     if (dev->target.name) {
         virBufferVSprintf(&buf, ",name=%s", dev->target.name);
     }
@@ -2825,7 +2849,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) {
 
             virCommandAddArg(cmd, "-chardev");
-            if (!(chrdev = qemuBuildChrChardevStr(monitor_chr, "monitor")))
+            if (!(chrdev = qemuBuildChrChardevStr(monitor_chr, "monitor",
+                                                  qemuCmdFlags)))
                 goto error;
             virCommandAddArg(cmd, chrdev);
             VIR_FREE(chrdev);
@@ -3523,7 +3548,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&smartcard->data.passthru,
-                                                  smartcard->info.alias))) {
+                                                  smartcard->info.alias,
+                                                  qemuCmdFlags))) {
                 virBufferFreeAndReset(&opt);
                 goto error;
             }
@@ -3560,7 +3586,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 virCommandAddArg(cmd, "-chardev");
                 if (!(devstr = qemuBuildChrChardevStr(&serial->source,
-                                                      serial->info.alias)))
+                                                      serial->info.alias,
+                                                      qemuCmdFlags)))
                     goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
@@ -3592,7 +3619,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 virCommandAddArg(cmd, "-chardev");
                 if (!(devstr = qemuBuildChrChardevStr(&parallel->source,
-                                                      parallel->info.alias)))
+                                                      parallel->info.alias,
+                                                      qemuCmdFlags)))
                     goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
@@ -3626,7 +3654,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&channel->source,
-                                                  channel->info.alias)))
+                                                  channel->info.alias,
+                                                  qemuCmdFlags)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -3653,7 +3682,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&channel->source,
-                                                  channel->info.alias)))
+                                                  channel->info.alias,
+                                                  qemuCmdFlags)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -3682,7 +3712,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&console->source,
-                                                  console->info.alias)))
+                                                  console->info.alias,
+                                                  qemuCmdFlags)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);

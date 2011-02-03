@@ -1734,6 +1734,9 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;channel type='pty'&gt;
       &lt;target type='virtio' name='arbitrary.virtio.serial.port.name'/&gt;
     &lt;/channel&gt;
+    &lt;channel type='spicevmc'&gt;
+      &lt;target type='virtio' name='com.redhat.spice.0'/&gt;
+    &lt;/channel&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -1759,6 +1762,20 @@ qemu-kvm -net nic,model=? /dev/null
         optional element <code>address</code> can tie the channel to a
         particular <code>type='virtio-serial'</code> controller.
         <span class="since">Since 0.7.7</span></dd>
+
+      <dt><code>spicevmc</code></dt>
+      <dd>Paravirtualized SPICE channel. The domain must also have a
+        SPICE server as a <a href="#elementsGraphics">graphics
+        device</a>, at which point the host piggy-backs messages
+        across the <code>main</code> channel.  The <code>target</code>
+        element must be present, with
+        attribute <code>type='virtio'</code>; an optional
+        attribute <code>name</code> controls how the guest will have
+        access to the channel, and defaults
+        to <code>name='com.redhat.spice.0'</code>.  The
+        optional <code>address</code> element can tie the channel to a
+        particular <code>type='virtio-serial'</code> controller.
+        <span class="since">Since 0.8.8</span></dd>
     </dl>
 
     <h5><a name="elementsCharHostInterface">Host interface</a></h5>

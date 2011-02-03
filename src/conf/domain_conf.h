@@ -413,6 +413,7 @@ enum virDomainChrType {
     VIR_DOMAIN_CHR_TYPE_UDP,
     VIR_DOMAIN_CHR_TYPE_TCP,
     VIR_DOMAIN_CHR_TYPE_UNIX,
+    VIR_DOMAIN_CHR_TYPE_SPICEVMC,
 
     VIR_DOMAIN_CHR_TYPE_LAST,
 };
@@ -432,6 +433,7 @@ typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
 struct _virDomainChrSourceDef {
     int type; /* virDomainChrType */
     union {
+        /* no <source> for null, vc, stdio, spicevmc */
         struct {
             char *path;
         } file; /* pty, file, pipe, or device */

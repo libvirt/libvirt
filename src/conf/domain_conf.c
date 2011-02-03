@@ -226,7 +226,8 @@ VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "stdio",
               "udp",
               "tcp",
-              "unix")
+              "unix",
+              "spicevmc")
 
 VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
               "raw",
@@ -3065,6 +3066,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
         /* Nada */
         break;
 
@@ -3254,6 +3256,13 @@ virDomainChrDefParseXML(virCapsPtr caps,
         }
     }
 
+    if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+        def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                             _("spicevmc device type only supports virtio"));
+        goto error;
+    }
+
     if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
         goto error;
 
@@ -3361,6 +3370,12 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
         cur = node->children;
         if (virDomainChrSourceDefParseXML(&def->data.passthru, cur) < 0)
             goto error;
+
+        if (def->data.passthru.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                 _("smartcard spicevmc device not supported"));
+            goto error;
+        }
         break;
 
     default:
@@ -6843,6 +6858,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
         /* nada */
         break;
 
