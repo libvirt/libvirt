@@ -1693,6 +1693,9 @@
         </element>
       </group>
       <optional>
+        <ref name="deviceBoot"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>

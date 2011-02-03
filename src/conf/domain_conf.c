@@ -4247,7 +4247,9 @@ out:
 
 static virDomainHostdevDefPtr
 virDomainHostdevDefParseXML(const xmlNodePtr node,
-                            int flags) {
+                            virBitmapPtr bootMap,
+                            int flags)
+{
 
     xmlNodePtr cur;
     virDomainHostdevDefPtr def;
@@ -4308,6 +4310,10 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
                 /* address is parsed as part of virDomainDeviceInfoParseXML */
             } else if (xmlStrEqual(cur->name, BAD_CAST "alias")) {
                 /* alias is parsed as part of virDomainDeviceInfoParseXML */
+            } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
+                if (virDomainDeviceBootParseXML(cur, &def->bootIndex,
+                                                bootMap))
+                    goto error;
             } else {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("unknown node %s"), cur->name);
@@ -4507,7 +4513,8 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "hostdev")) {
         dev->type = VIR_DOMAIN_DEVICE_HOSTDEV;
-        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(node, flags)))
+        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(node, NULL,
+                                                              flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "controller")) {
         dev->type = VIR_DOMAIN_DEVICE_CONTROLLER;
@@ -4767,7 +4774,8 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     unsigned long deviceBoot;
 
     if (virXPathULong("count(./devices/disk[boot]"
-                      "|./devices/interface[boot])", ctxt, &deviceBoot) < 0) {
+                      "|./devices/interface[boot]"
+                      "|./devices/hostdev[boot])", ctxt, &deviceBoot) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("cannot count boot devices"));
         goto cleanup;
@@ -5506,6 +5514,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainHostdevDefPtr hostdev = virDomainHostdevDefParseXML(nodes[i],
+                                                                     bootMap,
                                                                      flags);
         if (!hostdev)
             goto error;
@@ -7279,6 +7288,9 @@ virDomainHostdevDefFormat(virBufferPtr buf,
     }
 
     virBufferAddLit(buf, "      </source>\n");
+
+    if (def->bootIndex)
+        virBufferVSprintf(buf, "      <boot order='%d'/>\n", def->bootIndex);
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;

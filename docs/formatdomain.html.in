@@ -109,8 +109,9 @@
         to consider. The <code>boot</code> element can be repeated multiple
         times to setup a priority list of boot devices to try in turn. The
         <code>boot</code> element cannot be used if per-device boot elements
-        are used (see <a href="#elementsDisks">disks</a> and
-        <a href="#elementsNICS">network interfaces</a> sections below.
+        are used (see <a href="#elementsDisks">disks</a>,
+        <a href="#elementsNICS">network interfaces</a>, and
+        <a href="#elementsUSB">USB and PCI devices</a> sections below).
         <span class="since">Since 0.1.3, per-device boot since 0.8.8</span>
       </dd>
       <dt><code>bootmenu</code></dt>
@@ -929,6 +930,7 @@
         &lt;vendor id='0x1234'/&gt;
         &lt;product id='0xbeef'/&gt;
       &lt;/source&gt;
+      &lt;boot order='2'/&gt;
     &lt;/hostdev&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -942,6 +944,7 @@
       &lt;source&gt;
         &lt;address bus='0x06' slot='0x02' function='0x0'/&gt;
       &lt;/source&gt;
+      &lt;boot order='1'/&gt;
     &lt;/hostdev&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -964,6 +967,13 @@
       <code>id</code> attribute that specifies the USB vendor and product id.
       The ids can be given in decimal, hexadecimal (starting with 0x) or
       octal (starting with 0) form.</dd>
+      <dt><code>boot</code></dt>
+      <dd>Specifies that the device is bootable. The <code>order</code>
+      attribute determines the order in which devices will be tried during
+      boot sequence. The per-device <code>boot</code> elements cannot be
+      used together with general boot elements in
+      <a href="#elementsOSBIOS">BIOS bootloader</a> section.
+      <span class="since">Since 0.8.8</span></dd>
       <dt><code>address</code></dt>
       <dd>The <code>address</code> element for USB devices has a
       <code>bus</code> and <code>device</code> attribute to specify the
