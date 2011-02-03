@@ -1048,8 +1048,8 @@ doPortProfileOpSetLink(bool nltarget_kernel,
 
             memcpy(ifla_vf_mac.mac, macaddr, 6);
 
-            if (!nla_put(nl_msg, IFLA_VF_MAC, sizeof(ifla_vf_mac),
-                &ifla_vf_mac) < 0)
+            if (nla_put(nl_msg, IFLA_VF_MAC, sizeof(ifla_vf_mac),
+                        &ifla_vf_mac) < 0)
                 goto buffer_too_small;
         }
 
@@ -1060,8 +1060,8 @@ doPortProfileOpSetLink(bool nltarget_kernel,
                 .qos = 0,
             };
 
-            if (!nla_put(nl_msg, IFLA_VF_VLAN, sizeof(ifla_vf_vlan),
-                &ifla_vf_vlan) < 0)
+            if (nla_put(nl_msg, IFLA_VF_VLAN, sizeof(ifla_vf_vlan),
+                        &ifla_vf_vlan) < 0)
                 goto buffer_too_small;
         }
 
