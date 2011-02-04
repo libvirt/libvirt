@@ -351,7 +351,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_SPICE |
             QEMUD_CMD_FLAG_VGA_NONE |
             QEMUD_CMD_FLAG_MIGRATE_QEMU_FD |
-            QEMUD_CMD_FLAG_DRIVE_AIO,
+            QEMUD_CMD_FLAG_DRIVE_AIO |
+            QEMUD_CMD_FLAG_DEVICE_SPICEVMC,
             12001, 1,  0);
     DO_TEST("qemu-kvm-0.12.3",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -435,7 +436,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_SPICE |
             QEMUD_CMD_FLAG_VGA_NONE |
             QEMUD_CMD_FLAG_MIGRATE_QEMU_FD |
-            QEMUD_CMD_FLAG_DRIVE_AIO,
+            QEMUD_CMD_FLAG_DRIVE_AIO |
+            QEMUD_CMD_FLAG_DEVICE_SPICEVMC,
             13000, 1,  0);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61",
             QEMUD_CMD_FLAG_VNC_COLON |

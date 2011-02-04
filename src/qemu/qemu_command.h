@@ -105,8 +105,6 @@ char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev,
 
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
-char * qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev);
-
 /* Legacy, pre device support */
 char * qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */

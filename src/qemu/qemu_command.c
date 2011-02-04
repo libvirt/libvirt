@@ -2183,12 +2183,16 @@ error:
 }
 
 
-char *
-qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
+static char *
+qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
+                                unsigned long long qemuCmdFlags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)
         virBufferAddLit(&buf, "virtconsole");
+    else if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE_SPICEVMC) &&
+             dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
+        virBufferAddLit(&buf, "spicevmc");
     else
         virBufferAddLit(&buf, "virtserialport");
 
@@ -2211,8 +2215,6 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
                           dev->info.addr.vioserial.port);
     }
 
-    virBufferVSprintf(&buf, ",chardev=char%s,id=%s",
-                      dev->info.alias, dev->info.alias);
     if (dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
         dev->target.name &&
         STRNEQ(dev->target.name, "com.redhat.spice.0")) {
@@ -2221,8 +2223,15 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
                         dev->target.name);
         goto error;
     }
-    if (dev->target.name) {
-        virBufferVSprintf(&buf, ",name=%s", dev->target.name);
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE_SPICEVMC) &&
+        dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+        virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+    } else {
+        virBufferVSprintf(&buf, ",chardev=char%s,id=%s",
+                          dev->info.alias, dev->info.alias);
+        if (dev->target.name) {
+            virBufferVSprintf(&buf, ",name=%s", dev->target.name);
+        }
     }
     if (virBufferError(&buf)) {
         virReportOOMError();
@@ -3681,16 +3690,25 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            virCommandAddArg(cmd, "-chardev");
-            if (!(devstr = qemuBuildChrChardevStr(&channel->source,
-                                                  channel->info.alias,
-                                                  qemuCmdFlags)))
-                goto error;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
+            if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE_SPICEVMC) &&
+                channel->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+                /* spicevmc was originally introduced via a -device
+                 * with a backend internal to qemu; although we prefer
+                 * the newer -chardev interface.  */
+                ;
+            } else {
+                virCommandAddArg(cmd, "-chardev");
+                if (!(devstr = qemuBuildChrChardevStr(&channel->source,
+                                                      channel->info.alias,
+                                                      qemuCmdFlags)))
+                    goto error;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            }
 
             virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildVirtioSerialPortDevStr(channel)))
+            if (!(devstr = qemuBuildVirtioSerialPortDevStr(channel,
+                                                           qemuCmdFlags)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -3720,7 +3738,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             VIR_FREE(devstr);
 
             virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildVirtioSerialPortDevStr(console)))
+            if (!(devstr = qemuBuildVirtioSerialPortDevStr(console,
+                                                           qemuCmdFlags)))
                 goto error;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);

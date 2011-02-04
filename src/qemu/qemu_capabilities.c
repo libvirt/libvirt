@@ -1091,6 +1091,10 @@ qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
         *flags |= QEMUD_CMD_FLAG_CCID_EMULATED;
     if (strstr(str, "name \"ccid-card-passthru\""))
         *flags |= QEMUD_CMD_FLAG_CCID_PASSTHRU;
+    /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
+    if (!(*flags & QEMUD_CMD_FLAG_CHARDEV_SPICEVMC) &&
+        strstr(str, "name \"spicevmc\""))
+        *flags |= QEMUD_CMD_FLAG_DEVICE_SPICEVMC;
 
     /* Features of given devices. */
     if (strstr(str, "pci-assign.configfd"))
