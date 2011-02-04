@@ -235,6 +235,10 @@ VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
               "telnets",
               "tls")
 
+VIR_ENUM_IMPL(virDomainChrSpicevmc, VIR_DOMAIN_CHR_SPICEVMC_LAST,
+              "vdagent",
+              "smartcard")
+
 VIR_ENUM_IMPL(virDomainSmartcard, VIR_DOMAIN_SMARTCARD_TYPE_LAST,
               "host",
               "host-certificates",
@@ -304,7 +308,8 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelName,
               "inputs",
               "cursor",
               "playback",
-              "record");
+              "record",
+              "smartcard");
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelMode,
               VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_LAST,
@@ -3256,11 +3261,15 @@ virDomainChrDefParseXML(virCapsPtr caps,
         }
     }
 
-    if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
-        def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
-        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                             _("spicevmc device type only supports virtio"));
-        goto error;
+    if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+        if (def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                 _("spicevmc device type only supports "
+                                   "virtio"));
+            goto error;
+        } else {
+            def->source.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_VDAGENT;
+        }
     }
 
     if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
@@ -3372,10 +3381,10 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
             goto error;
 
         if (def->data.passthru.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
-            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                 _("smartcard spicevmc device not supported"));
-            goto error;
+            def->data.passthru.data.spicevmc
+                = VIR_DOMAIN_CHR_SPICEVMC_SMARTCARD;
         }
+
         break;
 
     default:

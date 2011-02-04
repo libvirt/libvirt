@@ -420,6 +420,10 @@ mymain(int argc, char **argv)
     DO_TEST("smartcard-passthrough-tcp",
             QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_PASSTHRU, false);
+    DO_TEST("smartcard-passthrough-spicevmc",
+            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_PASSTHRU |
+            QEMUD_CMD_FLAG_CHARDEV_SPICEVMC, false);
     DO_TEST("smartcard-controller",
             QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_EMULATED, false);

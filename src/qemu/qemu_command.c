@@ -2080,7 +2080,8 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
                             _("spicevmc not supported in this QEMU binary"));
             goto error;
         }
-        virBufferVSprintf(&buf, "spicevmc,id=char%s,name=vdagent", alias);
+        virBufferVSprintf(&buf, "spicevmc,id=char%s,name=%s", alias,
+                          virDomainChrSpicevmcTypeToString(dev->data.spicevmc));
         break;
 
     default:

@@ -1226,6 +1226,7 @@
                   <value>cursor</value>
                   <value>playback</value>
                   <value>record</value>
+                  <value>smartcard</value>
                 </choice>
               </attribute>
               <attribute name="mode">

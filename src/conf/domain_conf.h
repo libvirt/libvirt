@@ -427,13 +427,20 @@ enum virDomainChrTcpProtocol {
     VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
 };
 
+enum virDomainChrSpicevmcName {
+    VIR_DOMAIN_CHR_SPICEVMC_VDAGENT,
+    VIR_DOMAIN_CHR_SPICEVMC_SMARTCARD,
+
+    VIR_DOMAIN_CHR_SPICEVMC_LAST,
+};
+
 /* The host side information for a character device.  */
 typedef struct _virDomainChrSourceDef virDomainChrSourceDef;
 typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
 struct _virDomainChrSourceDef {
     int type; /* virDomainChrType */
     union {
-        /* no <source> for null, vc, stdio, spicevmc */
+        /* no <source> for null, vc, stdio */
         struct {
             char *path;
         } file; /* pty, file, pipe, or device */
@@ -453,6 +460,7 @@ struct _virDomainChrSourceDef {
             char *path;
             bool listen;
         } nix;
+        int spicevmc;
     } data;
 };
 
@@ -623,6 +631,7 @@ enum virDomainGraphicsSpiceChannelName {
     VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_CURSOR,
     VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_PLAYBACK,
     VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_RECORD,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_SMARTCARD,
 
     VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST
 };
@@ -1360,6 +1369,7 @@ VIR_ENUM_DECL(virDomainChrConsoleTarget)
 VIR_ENUM_DECL(virDomainSmartcard)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainChrTcpProtocol)
+VIR_ENUM_DECL(virDomainChrSpicevmc)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainSysinfo)
