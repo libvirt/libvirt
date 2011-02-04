@@ -322,13 +322,13 @@ sc_prohibit_ctype_h:
 	halt="don't use ctype.h; instead, use c-ctype.h"		\
 	  $(_sc_search_regexp)
 
-# Ensure that no C source file or rng schema uses TABs for
+# Ensure that no C source file, docs, or rng schema uses TABs for
 # indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
 # files in gnulib, since they're imported.
 sc_TAB_in_indentation:
 	@prohibit='^ *	'						\
-	in_vc_files='(\.(rng|[ch](\.in)?)|(daemon|tools)/.*\.in)$$'	\
-	halt='use spaces, not TAB, for indentation in C, sh, and RNG schemas' \
+	in_vc_files='(\.(rng|[ch](\.in)?|html.in)|(daemon|tools)/.*\.in)$$' \
+	halt='use leading spaces, not TAB, in C, sh, html, and RNG schemas' \
 	  $(_sc_search_regexp)
 
 ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\

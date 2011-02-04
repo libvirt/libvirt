@@ -5,4 +5,7 @@
             (c-indent-level . 4)
             (c-basic-offset . 4)
             ))
+ (html-mode . (
+	       (indent-tabs-mode . nil)
+	       ))
  )

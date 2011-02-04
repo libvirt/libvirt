@@ -317,20 +317,20 @@
         omitted, it defaults to the OS provided defaults.</dd>
       <dt><code>hard_limit</code></dt>
       <dd> The optional <code>hard_limit</code> element is the maximum memory
-	the guest can use. The units for this value are kilobytes (i.e. blocks
-	of 1024 bytes)</dd>
+        the guest can use. The units for this value are kilobytes (i.e. blocks
+        of 1024 bytes)</dd>
       <dt><code>soft_limit</code></dt>
       <dd> The optional <code>soft_limit</code> element is the memory limit to
-	enforce during memory contention. The units for this value are
-	kilobytes (i.e. blocks of 1024 bytes)</dd>
+        enforce during memory contention. The units for this value are
+        kilobytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>swap_hard_limit</code></dt>
       <dd> The optional <code>swap_hard_limit</code> element is the maximum
-	swap the guest can use. The units for this value are kilobytes
-	(i.e. blocks of 1024 bytes)</dd>
+        swap the guest can use. The units for this value are kilobytes
+        (i.e. blocks of 1024 bytes)</dd>
       <dt><code>min_guarantee</code></dt>
       <dd> The optional <code>min_guarantee</code> element is the guaranteed
-	minimum memory allocation for the guest. The units for this value are
-	kilobytes (i.e. blocks of 1024 bytes)</dd>
+        minimum memory allocation for the guest. The units for this value are
+        kilobytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>vcpu</code></dt>
       <dd>The content of this element defines the maximum number of virtual
         CPUs allocated for the guest OS, which must be between 1 and
@@ -400,8 +400,8 @@
             match the specification.</dd>
         </dl>
 
-	<span class="since">Since 0.8.5</span> the <code>match</code>
-	attribute can be omitted and will default to <code>exact</code>.
+        <span class="since">Since 0.8.5</span> the <code>match</code>
+        attribute can be omitted and will default to <code>exact</code>.
       </dd>
 
       <dt><code>model</code></dt>
@@ -449,8 +449,8 @@
             CPU.</dd>
         </dl>
 
-	<span class="since">Since 0.8.5</span> the <code>policy</code>
-	attribute can be omitted and will default to <code>require</code>.
+        <span class="since">Since 0.8.5</span> the <code>policy</code>
+        attribute can be omitted and will default to <code>require</code>.
       </dd>
     </dl>
 
@@ -579,101 +579,101 @@
     <dl>
       <dt><code>clock</code></dt>
       <dd>
-	<p>The <code>offset</code> attribute takes four possible
-	  values, allowing fine grained control over how the guest
-	  clock is synchronized to the host. NB, not all hypervisors
-	  support all modes.</p>
-	<dl>
-	  <dt><code>utc</code></dt>
-	  <dd>
-	    The guest clock will always be synchronized to UTC when
-	    booted</dd>
-	  <dt><code>localtime</code></dt>
-	  <dd>
-	    The guest clock will be synchronized to the host's configured
-	    timezone when booted, if any.
-	  </dd>
-	  <dt><code>timezone</code></dt>
-	  <dd>
-	    The guest clock will be synchronized to the requested timezone
-	    using the <code>timezone</code> attribute.
-	    <span class="since">Since 0.7.7</span>
-	  </dd>
-	  <dt><code>variable</code></dt>
-	  <dd>
-	    The guest clock will have an arbitrary offset applied
-	    relative to UTC. The delta relative to UTC is specified
-	    in seconds, using the <code>adjustment</code> attribute.
-	    The guest is free to adjust the RTC over time an expect
-	    that it will be honoured at next reboot. This is in
-	    contrast to 'utc' mode, where the RTC adjustments are
-	    lost at each reboot. <span class="since">Since 0.7.7</span>
-	  </dd>
-	</dl>
-	<p>
-	  A <code>clock</code> may have zero or more
-	  <code>timer</code>sub-elements. <span class="since">Since
-	  0.8.0</span>
-	</p>
+        <p>The <code>offset</code> attribute takes four possible
+          values, allowing fine grained control over how the guest
+          clock is synchronized to the host. NB, not all hypervisors
+          support all modes.</p>
+        <dl>
+          <dt><code>utc</code></dt>
+          <dd>
+            The guest clock will always be synchronized to UTC when
+            booted</dd>
+          <dt><code>localtime</code></dt>
+          <dd>
+            The guest clock will be synchronized to the host's configured
+            timezone when booted, if any.
+          </dd>
+          <dt><code>timezone</code></dt>
+          <dd>
+            The guest clock will be synchronized to the requested timezone
+            using the <code>timezone</code> attribute.
+            <span class="since">Since 0.7.7</span>
+          </dd>
+          <dt><code>variable</code></dt>
+          <dd>
+            The guest clock will have an arbitrary offset applied
+            relative to UTC. The delta relative to UTC is specified
+            in seconds, using the <code>adjustment</code> attribute.
+            The guest is free to adjust the RTC over time an expect
+            that it will be honoured at next reboot. This is in
+            contrast to 'utc' mode, where the RTC adjustments are
+            lost at each reboot. <span class="since">Since 0.7.7</span>
+          </dd>
+        </dl>
+        <p>
+          A <code>clock</code> may have zero or more
+          <code>timer</code>sub-elements. <span class="since">Since
+          0.8.0</span>
+        </p>
       </dd>
       <dt><code>timer</code></dt>
       <dd>
-	<p>
-	  Each timer element requires a <code>name</code> attribute,
-	  and has other optional attributes that depend on
-	  the <code>name</code> specified.  Various hypervisors
-	  support different combinations of attributes.
-	</p>
-	<dl>
-	  <dt><code>name</code></dt>
-	  <dd>
-	    The <code>name</code> attribute selects which timer is
-	    being modified, and can be one of "platform", "pit",
-	    "rtc", "hpet", or "tsc".
-	  </dd>
-	  <dt><code>track</code></dt>
-	  <dd>
-	    The <code>track</code> attribute specifies what the timer
-	    tracks, and can be "boot", "guest", or "wall".
-	    Only valid for <code>name="rtc"</code>
-	    or <code>name="platform"</code>.
-	  </dd>
-	  <dt><code>tickpolicy</code></dt>
-	  <dd>
-	    The <code>tickpolicy</code> attribute determines how
-	    missed ticks in the guest are handled, and can be "delay",
-	    "catchup", "merge", or "discard".  If the policy is
-	    "catchup", there can be further details in
-	    the <code>catchup</code> sub-element.
-	    <dl>
-	      <dt><code>catchup</code></dt>
-	      <dd>
-		The <code>catchup</code> element has three optional
-		attributes, each a positive integer.  The attributes
-		are <code>threshold</code>, <code>slew</code>,
-		and <code>limit</code>.
-	      </dd>
-	    </dl>
-	  </dd>
-	  <dt><code>frequency</code></dt>
-	  <dd>
-	    The <code>frequency</code> attribute is an unsigned
-	    integer specifying the frequency at
-	    which <code>name="tsc"</code> runs.
-	  </dd>
-	  <dt><code>mode</code></dt>
-	  <dd>
-	    The <code>mode</code> attribute controls how
-	    the <code>name="tsc"</code> timer is managed, and can be
-	    "auto", "native", "emulate", "paravirt", or "smpsafe".
-	    Other timers are always emulated.
-	  </dd>
-	  <dt><code>present</code></dt>
-	  <dd>
-	    The <code>present</code> attribute can be "yes" or "no" to
-	    specify whether a particular timer is available to the guest.
-	  </dd>
-	</dl>
+        <p>
+          Each timer element requires a <code>name</code> attribute,
+          and has other optional attributes that depend on
+          the <code>name</code> specified.  Various hypervisors
+          support different combinations of attributes.
+        </p>
+        <dl>
+          <dt><code>name</code></dt>
+          <dd>
+            The <code>name</code> attribute selects which timer is
+            being modified, and can be one of "platform", "pit",
+            "rtc", "hpet", or "tsc".
+          </dd>
+          <dt><code>track</code></dt>
+          <dd>
+            The <code>track</code> attribute specifies what the timer
+            tracks, and can be "boot", "guest", or "wall".
+            Only valid for <code>name="rtc"</code>
+            or <code>name="platform"</code>.
+          </dd>
+          <dt><code>tickpolicy</code></dt>
+          <dd>
+            The <code>tickpolicy</code> attribute determines how
+            missed ticks in the guest are handled, and can be "delay",
+            "catchup", "merge", or "discard".  If the policy is
+            "catchup", there can be further details in
+            the <code>catchup</code> sub-element.
+            <dl>
+              <dt><code>catchup</code></dt>
+              <dd>
+                The <code>catchup</code> element has three optional
+                attributes, each a positive integer.  The attributes
+                are <code>threshold</code>, <code>slew</code>,
+                and <code>limit</code>.
+              </dd>
+            </dl>
+          </dd>
+          <dt><code>frequency</code></dt>
+          <dd>
+            The <code>frequency</code> attribute is an unsigned
+            integer specifying the frequency at
+            which <code>name="tsc"</code> runs.
+          </dd>
+          <dt><code>mode</code></dt>
+          <dd>
+            The <code>mode</code> attribute controls how
+            the <code>name="tsc"</code> timer is managed, and can be
+            "auto", "native", "emulate", "paravirt", or "smpsafe".
+            Other timers are always emulated.
+          </dd>
+          <dt><code>present</code></dt>
+          <dd>
+            The <code>present</code> attribute can be "yes" or "no" to
+            specify whether a particular timer is available to the guest.
+          </dd>
+        </dl>
       </dd>
     </dl>
 
@@ -1503,7 +1503,7 @@ qemu-kvm -net nic,model=? /dev/null
           </dd>
           <dt><code>"spice"</code></dt>
           <dd>
-	    <p>
+            <p>
   Starts a SPICE server. The <code>port</code> attribute specifies the TCP
   port number (with -1 as legacy syntax indicating that it should be
   auto-allocated), while <code>tlsPort</code> gives an alternative
@@ -1515,8 +1515,8 @@ qemu-kvm -net nic,model=? /dev/null
   to use. It is possible to set a limit on the validity of the password
   be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
   assumed to be in UTC. NB, this may not be supported by all hypervisors.
-	    </p>
-	    <p>
+            </p>
+            <p>
   When SPICE has both a normal and TLS secured TCP port configured, it
   can be desirable to restrict what channels can be run on each port.
   This is achieved by adding one or more &lt;channel&gt; elements inside
@@ -1524,8 +1524,8 @@ qemu-kvm -net nic,model=? /dev/null
   <code>main</code>, <code>display</code>, <code>inputs</code>,
   <code>cursor</code>, <code>playback</code>, <code>record</code>;
   and <span class="since">since 0.8.8</span>: <code>smartcard</code>.
-	    </p>
-	    <pre>
+            </p>
+            <pre>
   &lt;graphics type='spice' port='-1' tlsPort='-1' autoport='yes'&gt;
     &lt;channel name='main' mode='secure'/&gt;
     &lt;channel name='record' mode='insecure'/&gt;
@@ -1582,7 +1582,7 @@ qemu-kvm -net nic,model=? /dev/null
       <dd>
         The <code>model</code> element has a mandatory <code>type</code>
         attribute which takes the value "vga", "cirrus", "vmvga", "qxl",
-	"xen" or "vbox", depending on the hypervisor features available.
+        "xen" or "vbox", depending on the hypervisor features available.
         You can also provide the amount of video memory in kilobytes using
         <code>vram</code> and the number of screen with <code>heads</code>.
       </dd>
@@ -2180,8 +2180,8 @@ qemu-kvm -net nic,model=? /dev/null
       <dd>
         <p>
           The required <code>model</code> attribute specifies what type
-	  of balloon device is provided. Valid values are specific to
-	  the virtualization platform
+          of balloon device is provided. Valid values are specific to
+          the virtualization platform
         </p>
         <ul>
           <li>'virtio' &mdash; default with QEMU/KVM</li>

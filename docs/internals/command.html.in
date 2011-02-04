@@ -20,27 +20,27 @@
 
     <ul>
       <li><code>fork+exec</code>: The lowest &amp; most flexible
-	level, but very hard to use correctly / safely. It
-	is easy to leak file descriptors, have unexpected
-	signal handler behaviour and not handle edge cases.
-	Furthermore, it is not portable to mingw.
-	</li>
+        level, but very hard to use correctly / safely. It
+        is easy to leak file descriptors, have unexpected
+        signal handler behaviour and not handle edge cases.
+        Furthermore, it is not portable to mingw.
+        </li>
       <li><code>system</code>: Convenient if you don't care
-	about capturing command output, but has the serious
-	downside that the command string is interpreted by
-	the shell. This makes it very dangerous to use, because
-	improperly validated user input can lead to exploits
-	via shell meta characters.
+        about capturing command output, but has the serious
+        downside that the command string is interpreted by
+        the shell. This makes it very dangerous to use, because
+        improperly validated user input can lead to exploits
+        via shell meta characters.
       </li>
       <li><code>popen</code>: Inherits the flaws of
-	<code>system</code>, and has no option for bi-directional
-	communication.
+        <code>system</code>, and has no option for bi-directional
+        communication.
       </li>
       <li><code>posix_spawn</code>: A half-way house between
-	simplicity of system() and the flexibility of fork+exec.
-	It does not allow for a couple of important features
-	though, such as running a hook between the fork+exec
-	stage, or closing all open file descriptors.</li>
+        simplicity of system() and the flexibility of fork+exec.
+        It does not allow for a couple of important features
+        though, such as running a hook between the fork+exec
+        stage, or closing all open file descriptors.</li>
     </ul>
 
     <p>
