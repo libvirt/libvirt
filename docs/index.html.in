@@ -41,7 +41,7 @@
         The <a href="http://wiki.qemu.org/Index.html">QEMU</a> emulator
       </li>
       <li>
-        The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
+        The <a href="http://www.linux-kvm.org/">KVM</a> Linux hypervisor
       </li>
       <li>
         The <a href="http://lxc.sourceforge.net/">LXC</a> Linux container system
