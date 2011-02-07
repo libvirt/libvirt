@@ -7148,75 +7148,12 @@ static int
 virDomainSysinfoDefFormat(virBufferPtr buf,
                           virSysinfoDefPtr def)
 {
-    const char *type = virDomainSysinfoTypeToString(def->type);
+    char *format = virSysinfoFormat(def, "  ");
 
-    if (!type) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("unexpected sysinfo type model %d"),
-                             def->type);
+    if (!format)
         return -1;
-    }
-
-    virBufferVSprintf(buf, "  <sysinfo type='%s'>\n", type);
-    if ((def->bios_vendor != NULL) || (def->bios_version != NULL) ||
-        (def->bios_date != NULL) || (def->bios_release != NULL)) {
-        virBufferAddLit(buf, "    <bios>\n");
-        if (def->bios_vendor != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='vendor'>%s</entry>\n",
-                                  def->bios_vendor);
-        if (def->bios_version != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='version'>%s</entry>\n",
-                                  def->bios_version);
-        if (def->bios_date != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='date'>%s</entry>\n",
-                                  def->bios_date);
-        if (def->bios_release != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='release'>%s</entry>\n",
-                                  def->bios_release);
-        virBufferAddLit(buf, "    </bios>\n");
-    }
-    if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
-        (def->system_version != NULL) || (def->system_serial != NULL) ||
-        (def->system_uuid != NULL) || (def->system_sku != NULL) ||
-        (def->system_family != NULL)) {
-        virBufferAddLit(buf, "    <system>\n");
-        if (def->system_manufacturer != NULL)
-            virBufferEscapeString(buf,
-                          "      <entry name='manufacturer'>%s</entry>\n",
-                                  def->system_manufacturer);
-        if (def->system_product != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='product'>%s</entry>\n",
-                                  def->system_product);
-        if (def->system_version != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='version'>%s</entry>\n",
-                                  def->system_version);
-        if (def->system_serial != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='serial'>%s</entry>\n",
-                                  def->system_serial);
-        if (def->system_uuid != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='uuid'>%s</entry>\n",
-                                  def->system_uuid);
-        if (def->system_sku != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='sku'>%s</entry>\n",
-                                  def->system_sku);
-        if (def->system_family != NULL)
-            virBufferEscapeString(buf,
-                                  "      <entry name='family'>%s</entry>\n",
-                                  def->system_family);
-        virBufferAddLit(buf, "    </system>\n");
-    }
-
-    virBufferAddLit(buf, "  </sysinfo>\n");
-
+    virBufferAdd(buf, format, strlen(format));
+    VIR_FREE(format);
     return 0;
 }
 

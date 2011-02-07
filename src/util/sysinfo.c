@@ -1,7 +1,7 @@
 /*
  * sysinfo.c: get SMBIOS/sysinfo information from the host
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard
  *
  * This library is free software; you can redistribute it and/or
@@ -91,7 +91,18 @@ virSysinfoRead(void) {
                  _("Host sysinfo extraction not supported on this platform"));
     return NULL;
 }
-#else
+
+char *
+virSysinfoFormat(virSysinfoDefPtr def ATTRIBUTE_UNUSED,
+                 const char *prefix ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                 _("Host sysinfo extraction not supported on this platform"));
+    return NULL;
+}
+
+#else /* !WIN32 */
+
 virSysinfoDefPtr
 virSysinfoRead(void) {
     char *path, *cur, *eol, *base;
@@ -207,4 +218,112 @@ no_memory:
     ret = NULL;
     goto cleanup;
 }
-#endif
+
+/**
+ * virSysinfoFormat:
+ * @def: structure to convert to xml string
+ * @prefix: string to prefix before each line of xml
+ *
+ * This returns the XML description of the sysinfo, or NULL after
+ * generating an error message.
+ */
+char *
+virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
+{
+    const char *type = virDomainSysinfoTypeToString(def->type);
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t len = strlen(prefix);
+
+    if (!type) {
+        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected sysinfo type model %d"),
+                             def->type);
+        return NULL;
+    }
+
+    virBufferVSprintf(&buf, "%s<sysinfo type='%s'>\n", prefix, type);
+    if ((def->bios_vendor != NULL) || (def->bios_version != NULL) ||
+        (def->bios_date != NULL) || (def->bios_release != NULL)) {
+        virBufferVSprintf(&buf, "%s  <bios>\n", prefix);
+        if (def->bios_vendor != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='vendor'>%s</entry>\n",
+                                  def->bios_vendor);
+        }
+        if (def->bios_version != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='version'>%s</entry>\n",
+                                  def->bios_version);
+        }
+        if (def->bios_date != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='date'>%s</entry>\n",
+                                  def->bios_date);
+        }
+        if (def->bios_release != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='release'>%s</entry>\n",
+                                  def->bios_release);
+        }
+        virBufferVSprintf(&buf, "%s  </bios>\n", prefix);
+    }
+    if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
+        (def->system_version != NULL) || (def->system_serial != NULL) ||
+        (def->system_uuid != NULL) || (def->system_sku != NULL) ||
+        (def->system_family != NULL)) {
+        virBufferVSprintf(&buf, "%s  <system>\n", prefix);
+        if (def->system_manufacturer != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='manufacturer'>%s</entry>\n",
+                                  def->system_manufacturer);
+        }
+        if (def->system_product != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='product'>%s</entry>\n",
+                                  def->system_product);
+        }
+        if (def->system_version != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='version'>%s</entry>\n",
+                                  def->system_version);
+        }
+        if (def->system_serial != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='serial'>%s</entry>\n",
+                                  def->system_serial);
+        }
+        if (def->system_uuid != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='uuid'>%s</entry>\n",
+                                  def->system_uuid);
+        }
+        if (def->system_sku != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='sku'>%s</entry>\n",
+                                  def->system_sku);
+        }
+        if (def->system_family != NULL) {
+            virBufferAdd(&buf, prefix, len);
+            virBufferEscapeString(&buf,
+                                  "    <entry name='family'>%s</entry>\n",
+                                  def->system_family);
+        }
+        virBufferVSprintf(&buf, "%s  </system>\n", prefix);
+    }
+
+    virBufferVSprintf(&buf, "%s</sysinfo>\n", prefix);
+
+    return virBufferContentAndReset(&buf);
+}
+
+#endif /* !WIN32 */

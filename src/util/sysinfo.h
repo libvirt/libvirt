@@ -1,7 +1,7 @@
 /*
  * sysinfo.h: structure and entry points for sysinfo support
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard
  *
  * This library is free software; you can redistribute it and/or
@@ -55,5 +55,8 @@ struct _virSysinfoDef {
 virSysinfoDefPtr virSysinfoRead(void);
 
 void virSysinfoDefFree(virSysinfoDefPtr def);
+
+char *virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif /* __VIR_SYSINFOS_H__ */
