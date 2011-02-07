@@ -8223,7 +8223,7 @@ cmdNodeDeviceReset (vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
- * "hostkey" command
+ * "hostname" command
  */
 static const vshCmdInfo info_hostname[] = {
     {"help", N_("print the hypervisor hostname")},
@@ -8276,6 +8276,36 @@ cmdURI (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     vshPrint (ctl, "%s\n", uri);
     VIR_FREE(uri);
+
+    return TRUE;
+}
+
+/*
+ * "sysinfo" command
+ */
+static const vshCmdInfo info_sysinfo[] = {
+    {"help", N_("print the hypervisor sysinfo")},
+    {"desc",
+     N_("output an XML string for the hypervisor sysinfo, if available")},
+    {NULL, NULL}
+};
+
+static int
+cmdSysinfo (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    char *sysinfo;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return FALSE;
+
+    sysinfo = virConnectGetSysinfo (ctl->conn, 0);
+    if (sysinfo == NULL) {
+        vshError(ctl, "%s", _("failed to get sysinfo"));
+        return FALSE;
+    }
+
+    vshPrint (ctl, "%s", sysinfo);
+    VIR_FREE(sysinfo);
 
     return TRUE;
 }
@@ -10417,6 +10447,7 @@ static const vshCmdDef hostAndHypervisorCmds[] = {
     {"hostname", cmdHostname, NULL, info_hostname},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
     {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command, info_qemu_monitor_command},
+    {"sysinfo", cmdSysinfo, NULL, info_sysinfo},
     {"uri", cmdURI, NULL, info_uri},
     {NULL, NULL, NULL, NULL}
 };

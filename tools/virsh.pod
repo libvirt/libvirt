@@ -132,6 +132,7 @@ group as an option.  For example:
      freecell                       NUMA free memory
      hostname                       print the hypervisor hostname
      qemu-monitor-command           Qemu Monitor Command
+     sysinfo                        print the hypervisor sysinfo
      uri                            print the hypervisor canonical URI
 
 To display detailed information for a specific command, give its name as the
@@ -226,6 +227,10 @@ Prints the hypervisor canonical URI, can be useful in shell mode.
 =item B<hostname>
 
 Print the hypervisor hostname.
+
+=item B<sysinfo>
+
+Print the XML representation of the hypervisor sysinfo, if available.
 
 =item B<nodeinfo>
 
