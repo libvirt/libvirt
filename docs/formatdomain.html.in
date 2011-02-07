@@ -125,7 +125,10 @@
       The <code>mode</code> attribute must be specified, and is either
       "emulate" (let the hypervisor generate all values), "host" (copy
       all of Block 0 and Block 1, except for the UUID, from the host's
-      SMBIOS values), or "sysinfo" (use the values in
+      SMBIOS values;
+      the <a href="html/libvirt-libvirt.html#virConnectGetSysinfo">
+      <code>virConnectGetSysinfo</code></a> call can be
+      used to see what values are copied), or "sysinfo" (use the values in
       the <a href="#elementsSysinfo">sysinfo</a> element).  If not
       specified, the hypervisor default is used. <span class="since">
       Since 0.8.7</span>

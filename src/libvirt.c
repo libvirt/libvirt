@@ -776,7 +776,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
 
 /**
  * virStateInitialize:
- * @privileged: set to 1 if running with root priviledge, 0 otherwise
+ * @privileged: set to 1 if running with root privilege, 0 otherwise
  *
  * Initialize all virtualization drivers.
  *
@@ -1587,6 +1587,46 @@ virConnectGetURI (virConnectPtr conn)
         goto error;
     }
     return name;
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virConnectGetSysinfo:
+ * @conn: pointer to a hypervisor connection
+ * @flags: callers should always pass 0
+ *
+ * This returns the XML description of the sysinfo details for the
+ * host on which the hypervisor is running, in the same format as the
+ * <sysinfo> element of a domain XML.  This information is generally
+ * available only for hypervisors running with root privileges.
+ *
+ * Returns the XML string which must be freed by the caller, or
+ * NULL if there was an error.
+ */
+char *
+virConnectGetSysinfo (virConnectPtr conn, unsigned int flags)
+{
+    DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+
+    if (conn->driver->getSysinfo) {
+        char *ret = conn->driver->getSysinfo (conn, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(conn);
