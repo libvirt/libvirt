@@ -3275,6 +3275,22 @@ static int kvmGetMaxVCPUs(void) {
 }
 
 
+static char *
+qemuGetSysinfo(virConnectPtr conn, unsigned int flags)
+{
+    struct qemud_driver *driver = conn->privateData;
+
+    virCheckFlags(0, NULL);
+
+    if (!driver->hostsysinfo) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("Host SMBIOS information is not available"));
+        return NULL;
+    }
+
+    return virSysinfoFormat(driver->hostsysinfo, "");
+}
+
 static int qemudGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type) {
     if (!type)
         return 16;
@@ -10375,7 +10391,7 @@ static virDriver qemuDriver = {
     qemudGetVersion, /* version */
     NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
-    NULL, /* getSysinfo */
+    qemuGetSysinfo, /* getSysinfo */
     qemudGetMaxVCPUs, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     qemudGetCapabilities, /* getCapabilities */
