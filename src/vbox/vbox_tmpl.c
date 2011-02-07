@@ -8537,6 +8537,7 @@ virDriver NAME(Driver) = {
     vboxGetVersion, /* version */
     NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
+    NULL, /* getSysinfo */
     vboxGetMaxVcpus, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     vboxGetCapabilities, /* getCapabilities */

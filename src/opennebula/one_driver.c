@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
  * Complutense de Madrid (dsa-research.org)
  *
@@ -732,6 +732,7 @@ static virDriver oneDriver = {
     oneVersion, /* version */
     NULL, /* libvirtVersion (impl. in libvirt.c) */
     NULL, /* getHostname */
+    NULL, /* getSysinfo */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     oneGetCapabilities, /* getCapabilities */

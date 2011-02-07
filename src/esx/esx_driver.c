@@ -2,7 +2,7 @@
 /*
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
@@ -4557,6 +4557,7 @@ static virDriver esxDriver = {
     esxGetVersion,                   /* version */
     NULL,                            /* libvirtVersion (impl. in libvirt.c) */
     esxGetHostname,                  /* hostname */
+    NULL,                            /* getSysinfo */
     NULL,                            /* getMaxVcpus */
     esxNodeGetInfo,                  /* nodeGetInfo */
     esxGetCapabilities,              /* getCapabilities */

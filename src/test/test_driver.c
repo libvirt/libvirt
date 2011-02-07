@@ -1,7 +1,7 @@
 /*
  * test.c: A "mock" hypervisor for use by application unit tests
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -5346,6 +5346,7 @@ static virDriver testDriver = {
     testGetVersion, /* version */
     NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
+    NULL, /* getSysinfo */
     testGetMaxVCPUs, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */
     testGetCapabilities, /* getCapabilities */

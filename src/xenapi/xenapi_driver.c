@@ -1,5 +1,6 @@
 /*
  * xenapi_driver.c: Xen API driver.
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -1783,6 +1784,7 @@ static virDriver xenapiDriver = {
     xenapiGetVersion, /* version */
     NULL, /*getlibvirtVersion */
     xenapiGetHostname, /* getHostname */
+    NULL, /* getSysinfo */
     xenapiGetMaxVcpus, /* getMaxVcpus */
     xenapiNodeGetInfo, /* nodeGetInfo */
     xenapiGetCapabilities, /* getCapabilities */

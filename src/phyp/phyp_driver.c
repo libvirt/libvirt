@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright IBM Corp. 2009
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
@@ -3954,6 +3954,7 @@ static virDriver phypDriver = {
     NULL,                       /* version */
     NULL,                       /* libvirtVersion (impl. in libvirt.c) */
     NULL,                       /* getHostname */
+    NULL,                       /* getSysinfo */
     NULL,                       /* getMaxVcpus */
     NULL,                       /* nodeGetInfo */
     phypConnectGetCapabilities, /* getCapabilities */

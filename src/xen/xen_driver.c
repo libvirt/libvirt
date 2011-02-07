@@ -2004,6 +2004,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedGetVersion, /* version */
     NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
+    NULL, /* getSysinfo */
     xenUnifiedGetMaxVcpus, /* getMaxVcpus */
     xenUnifiedNodeGetInfo, /* nodeGetInfo */
     xenUnifiedGetCapabilities, /* getCapabilities */

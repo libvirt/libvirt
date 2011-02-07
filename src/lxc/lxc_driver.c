@@ -2833,6 +2833,7 @@ static virDriver lxcDriver = {
     lxcVersion, /* version */
     NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
+    NULL, /* getSysinfo */
     NULL, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     lxcGetCapabilities, /* getCapabilities */

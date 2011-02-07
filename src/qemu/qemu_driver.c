@@ -10375,6 +10375,7 @@ static virDriver qemuDriver = {
     qemudGetVersion, /* version */
     NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
+    NULL, /* getSysinfo */
     qemudGetMaxVCPUs, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     qemudGetCapabilities, /* getCapabilities */
