@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              virtualized domains
  *
- * Copy:  Copyright (C) 2005,2006,2010 Red Hat, Inc.
+ * Copy:  Copyright (C) 2005-2006, 2010-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -575,6 +575,8 @@ int                     virConnectGetLibVersion (virConnectPtr conn,
                                                  unsigned long *libVer);
 char *                  virConnectGetHostname   (virConnectPtr conn);
 char *                  virConnectGetURI        (virConnectPtr conn);
+char *                  virConnectGetSysinfo    (virConnectPtr conn,
+                                                 unsigned int flags);
 
 
 /*
