@@ -730,6 +730,14 @@ static int remoteDispatchGetMaxVcpus(
     remote_error *err,
     remote_get_max_vcpus_args *args,
     remote_get_max_vcpus_ret *ret);
+static int remoteDispatchGetSysinfo(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_get_sysinfo_args *args,
+    remote_get_sysinfo_ret *ret);
 static int remoteDispatchGetType(
     struct qemud_server *server,
     struct qemud_client *client,

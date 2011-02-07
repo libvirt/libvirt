@@ -242,6 +242,16 @@ struct remote_get_hostname_ret {
 };
 typedef struct remote_get_hostname_ret remote_get_hostname_ret;
 
+struct remote_get_sysinfo_args {
+        u_int flags;
+};
+typedef struct remote_get_sysinfo_args remote_get_sysinfo_args;
+
+struct remote_get_sysinfo_ret {
+        remote_nonnull_string sysinfo;
+};
+typedef struct remote_get_sysinfo_ret remote_get_sysinfo_ret;
+
 struct remote_get_uri_ret {
         remote_nonnull_string uri;
 };
@@ -2320,6 +2330,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200,
         REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201,
         REMOTE_PROC_DOMAIN_IS_UPDATED = 202,
+        REMOTE_PROC_GET_SYSINFO = 203,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2384,6 +2395,8 @@ extern  bool_t xdr_remote_get_type_ret (XDR *, remote_get_type_ret*);
 extern  bool_t xdr_remote_get_version_ret (XDR *, remote_get_version_ret*);
 extern  bool_t xdr_remote_get_lib_version_ret (XDR *, remote_get_lib_version_ret*);
 extern  bool_t xdr_remote_get_hostname_ret (XDR *, remote_get_hostname_ret*);
+extern  bool_t xdr_remote_get_sysinfo_args (XDR *, remote_get_sysinfo_args*);
+extern  bool_t xdr_remote_get_sysinfo_ret (XDR *, remote_get_sysinfo_ret*);
 extern  bool_t xdr_remote_get_uri_ret (XDR *, remote_get_uri_ret*);
 extern  bool_t xdr_remote_get_max_vcpus_args (XDR *, remote_get_max_vcpus_args*);
 extern  bool_t xdr_remote_get_max_vcpus_ret (XDR *, remote_get_max_vcpus_ret*);
@@ -2730,6 +2743,8 @@ extern bool_t xdr_remote_get_type_ret ();
 extern bool_t xdr_remote_get_version_ret ();
 extern bool_t xdr_remote_get_lib_version_ret ();
 extern bool_t xdr_remote_get_hostname_ret ();
+extern bool_t xdr_remote_get_sysinfo_args ();
+extern bool_t xdr_remote_get_sysinfo_ret ();
 extern bool_t xdr_remote_get_uri_ret ();
 extern bool_t xdr_remote_get_max_vcpus_args ();
 extern bool_t xdr_remote_get_max_vcpus_ret ();

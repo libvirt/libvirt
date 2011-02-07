@@ -1017,3 +1017,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_is_updated_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_is_updated_ret,
 },
+{   /* GetSysinfo => 203 */
+    .fn = (dispatch_fn) remoteDispatchGetSysinfo,
+    .args_filter = (xdrproc_t) xdr_remote_get_sysinfo_args,
+    .ret_filter = (xdrproc_t) xdr_remote_get_sysinfo_ret,
+},

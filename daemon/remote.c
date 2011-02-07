@@ -1,7 +1,7 @@
 /*
  * remote.c: handlers for RPC method calls
  *
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -581,6 +581,29 @@ remoteDispatchGetUri (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->uri = uri;
+    return 0;
+}
+
+static int
+remoteDispatchGetSysinfo (struct qemud_server *server ATTRIBUTE_UNUSED,
+                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                          virConnectPtr conn,
+                          remote_message_header *hdr ATTRIBUTE_UNUSED,
+                          remote_error *rerr,
+                          remote_get_sysinfo_args *args,
+                          remote_get_sysinfo_ret *ret)
+{
+    unsigned int flags;
+    char *sysinfo;
+
+    flags = args->flags;
+    sysinfo = virConnectGetSysinfo (conn, flags);
+    if (sysinfo == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    ret->sysinfo = sysinfo;
     return 0;
 }
 

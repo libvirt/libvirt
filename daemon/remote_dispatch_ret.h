@@ -138,3 +138,4 @@
     remote_domain_get_memory_parameters_ret val_remote_domain_get_memory_parameters_ret;
     remote_domain_get_vcpus_flags_ret val_remote_domain_get_vcpus_flags_ret;
     remote_domain_is_updated_ret val_remote_domain_is_updated_ret;
+    remote_get_sysinfo_ret val_remote_get_sysinfo_ret;

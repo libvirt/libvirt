@@ -420,6 +420,24 @@ xdr_remote_get_hostname_ret (XDR *xdrs, remote_get_hostname_ret *objp)
 }
 
 bool_t
+xdr_remote_get_sysinfo_args (XDR *xdrs, remote_get_sysinfo_args *objp)
+{
+
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_get_sysinfo_ret (XDR *xdrs, remote_get_sysinfo_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->sysinfo))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_get_uri_ret (XDR *xdrs, remote_get_uri_ret *objp)
 {
 

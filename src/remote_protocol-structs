@@ -107,6 +107,12 @@ struct remote_get_lib_version_ret {
 struct remote_get_hostname_ret {
 	remote_nonnull_string      hostname;
 };
+struct remote_get_sysinfo_args {
+	u_int                      flags;
+};
+struct remote_get_sysinfo_ret {
+	remote_nonnull_string      sysinfo;
+};
 struct remote_get_uri_ret {
 	remote_nonnull_string      uri;
 };

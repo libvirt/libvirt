@@ -171,3 +171,4 @@
     remote_domain_get_vcpus_flags_args val_remote_domain_get_vcpus_flags_args;
     remote_domain_open_console_args val_remote_domain_open_console_args;
     remote_domain_is_updated_args val_remote_domain_is_updated_args;
+    remote_get_sysinfo_args val_remote_get_sysinfo_args;

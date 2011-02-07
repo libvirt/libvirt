@@ -3,7 +3,7 @@
  *   remote_internal driver and libvirtd.  This protocol is
  *   internal and may change at any time.
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -377,6 +377,14 @@ struct remote_get_lib_version_ret {
 
 struct remote_get_hostname_ret {
     remote_nonnull_string hostname;
+};
+
+struct remote_get_sysinfo_args {
+    unsigned int flags;
+};
+
+struct remote_get_sysinfo_ret {
+    remote_nonnull_string sysinfo;
 };
 
 struct remote_get_uri_ret {
@@ -2094,7 +2102,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200,
 
     REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201,
-    REMOTE_PROC_DOMAIN_IS_UPDATED = 202
+    REMOTE_PROC_DOMAIN_IS_UPDATED = 202,
+    REMOTE_PROC_GET_SYSINFO = 203
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -1748,6 +1748,31 @@ done:
     return rv;
 }
 
+static char *
+remoteGetSysinfo (virConnectPtr conn, unsigned int flags)
+{
+    char *rv = NULL;
+    remote_get_sysinfo_args args;
+    remote_get_sysinfo_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    memset (&ret, 0, sizeof ret);
+    args.flags = flags;
+    if (call (conn, priv, 0, REMOTE_PROC_GET_SYSINFO,
+              (xdrproc_t) xdr_remote_get_sysinfo_args, (char *) &args,
+              (xdrproc_t) xdr_remote_get_sysinfo_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Caller frees this. */
+    rv = ret.sysinfo;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static int remoteIsSecure(virConnectPtr conn)
 {
     int rv = -1;
@@ -10823,7 +10848,7 @@ static virDriver remote_driver = {
     remoteGetVersion, /* version */
     remoteGetLibVersion, /* libvirtVersion */
     remoteGetHostname, /* getHostname */
-    NULL, /* getSysinfo */
+    remoteGetSysinfo, /* getSysinfo */
     remoteGetMaxVcpus, /* getMaxVcpus */
     remoteNodeGetInfo, /* nodeGetInfo */
     remoteGetCapabilities, /* getCapabilities */
