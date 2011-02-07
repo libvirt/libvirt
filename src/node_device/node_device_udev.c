@@ -363,17 +363,9 @@ static int udevTranslatePCIIds(unsigned int vendor,
                                char **vendor_string,
                                char **product_string)
 {
-    int ret = -1, pciret;
+    int ret = -1;
     struct pci_id_match m;
     const char *vendor_name = NULL, *device_name = NULL;
-
-    if ((pciret = pci_system_init()) != 0) {
-        char ebuf[256];
-        VIR_INFO("Failed to initialize libpciaccess: %s",
-                 virStrerror(pciret, ebuf, sizeof ebuf));
-        ret = 0;
-        goto out;
-    }
 
     m.vendor_id = vendor;
     m.device_id = product;
@@ -405,9 +397,6 @@ static int udevTranslatePCIIds(unsigned int vendor,
             goto out;
         }
     }
-
-    /* pci_system_cleanup returns void */
-    pci_system_cleanup();
 
     ret = 0;
 
@@ -1426,6 +1415,9 @@ static int udevDeviceMonitorShutdown(void)
         ret = -1;
     }
 
+    /* pci_system_cleanup returns void */
+    pci_system_cleanup();
+
     return ret;
 }
 
@@ -1593,6 +1585,15 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
     int ret = 0;
+    int pciret;
+
+    if ((pciret = pci_system_init()) != 0) {
+        char ebuf[256];
+        VIR_INFO("Failed to initialize libpciaccess: %s",
+                 virStrerror(pciret, ebuf, sizeof ebuf));
+        ret = -1;
+        goto out;
+    }
 
     if (VIR_ALLOC(priv) < 0) {
         virReportOOMError();
