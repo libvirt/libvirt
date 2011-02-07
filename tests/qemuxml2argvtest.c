@@ -79,7 +79,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto fail;
     }
 
-    if (extraFlags & QEMUD_CMD_FLAG_DOMID)
+    if (extraFlags & QEMU_CAPS_DOMID)
         vmdef->id = 6;
     else
         vmdef->id = -1;
@@ -89,14 +89,14 @@ static int testCompareXMLToArgvFiles(const char *xml,
     monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
     monitor_chr.data.nix.listen = true;
 
-    flags = QEMUD_CMD_FLAG_VNC_COLON |
-        QEMUD_CMD_FLAG_NO_REBOOT |
+    flags = QEMU_CAPS_VNC_COLON |
+        QEMU_CAPS_NO_REBOOT |
         extraFlags;
 
     if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
         goto fail;
 
-    if (flags & QEMUD_CMD_FLAG_DEVICE) {
+    if (flags & QEMU_CAPS_DEVICE) {
         qemuDomainPCIAddressSetPtr pciaddrs;
         if (!(pciaddrs = qemuDomainPCIAddressSetCreate(vmdef)))
             goto fail;
@@ -112,12 +112,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virResetLastError();
 
     /* We do not call qemuCapsExtractVersionInfo() before calling
-     * qemuBuildCommandLine(), so we should set QEMUD_CMD_FLAG_PCI_MULTIBUS for
+     * qemuBuildCommandLine(), so we should set QEMU_CAPS_PCI_MULTIBUS for
      * x86_64 and i686 architectures here.
      */
     if (STREQLEN(vmdef->os.arch, "x86_64", 6) ||
         STREQLEN(vmdef->os.arch, "i686", 4)) {
-        flags |= QEMUD_CMD_FLAG_PCI_MULTIBUS;
+        flags |= QEMU_CAPS_PCI_MULTIBUS;
     }
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
@@ -256,87 +256,87 @@ mymain(int argc, char **argv)
     unsetenv("QEMU_AUDIO_DRV");
     unsetenv("SDL_AUDIODRIVER");
 
-    DO_TEST("minimal", QEMUD_CMD_FLAG_NAME, false);
+    DO_TEST("minimal", QEMU_CAPS_NAME, false);
     DO_TEST("machine-aliases1", 0, false);
     DO_TEST("machine-aliases2", 0, true);
     DO_TEST("boot-cdrom", 0, false);
     DO_TEST("boot-network", 0, false);
     DO_TEST("boot-floppy", 0, false);
-    DO_TEST("boot-multi", QEMUD_CMD_FLAG_BOOT_MENU, false);
-    DO_TEST("boot-menu-disable", QEMUD_CMD_FLAG_BOOT_MENU, false);
-    DO_TEST("boot-order", QEMUD_CMD_FLAG_BOOTINDEX |
-            QEMUD_CMD_FLAG_DRIVE | QEMUD_CMD_FLAG_DEVICE, false);
-    DO_TEST("bootloader", QEMUD_CMD_FLAG_DOMID, true);
+    DO_TEST("boot-multi", QEMU_CAPS_BOOT_MENU, false);
+    DO_TEST("boot-menu-disable", QEMU_CAPS_BOOT_MENU, false);
+    DO_TEST("boot-order", QEMU_CAPS_BOOTINDEX |
+            QEMU_CAPS_DRIVE | QEMU_CAPS_DEVICE, false);
+    DO_TEST("bootloader", QEMU_CAPS_DOMID, true);
     DO_TEST("clock-utc", 0, false);
     DO_TEST("clock-localtime", 0, false);
     /*
      * Can't be enabled since the absolute timestamp changes every time
-    DO_TEST("clock-variable", QEMUD_CMD_FLAG_RTC, false);
+    DO_TEST("clock-variable", QEMU_CAPS_RTC, false);
     */
-    DO_TEST("clock-france", QEMUD_CMD_FLAG_RTC, false);
+    DO_TEST("clock-france", QEMU_CAPS_RTC, false);
 
-    DO_TEST("hugepages", QEMUD_CMD_FLAG_MEM_PATH, false);
+    DO_TEST("hugepages", QEMU_CAPS_MEM_PATH, false);
     DO_TEST("disk-cdrom", 0, false);
-    DO_TEST("disk-cdrom-empty", QEMUD_CMD_FLAG_DRIVE, false);
+    DO_TEST("disk-cdrom-empty", QEMU_CAPS_DRIVE, false);
     DO_TEST("disk-floppy", 0, false);
     DO_TEST("disk-many", 0, false);
-    DO_TEST("disk-virtio", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT, false);
-    DO_TEST("disk-xenvbd", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT, false);
-    DO_TEST("disk-drive-boot-disk", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT, false);
-    DO_TEST("disk-drive-boot-cdrom", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT, false);
-    DO_TEST("floppy-drive-fat", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-fat", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-readonly-disk", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_READONLY | QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("disk-drive-readonly-no-device", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_READONLY | QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT | QEMUD_CMD_FLAG_DRIVE_SERIAL, false);
-    DO_TEST("disk-drive-cache-v1-wt", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-cache-v1-wb", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-cache-v1-none", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-error-policy-stop", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_MONITOR_JSON |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-cache-v2-wt", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-cache-v2-wb", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-cache-v2-none", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-network-nbd", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-network-rbd", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
-    DO_TEST("disk-drive-network-sheepdog", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
+    DO_TEST("disk-virtio", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_BOOT, false);
+    DO_TEST("disk-xenvbd", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_BOOT, false);
+    DO_TEST("disk-drive-boot-disk", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_BOOT, false);
+    DO_TEST("disk-drive-boot-cdrom", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_BOOT, false);
+    DO_TEST("floppy-drive-fat", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_BOOT | QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-fat", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_BOOT | QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-readonly-disk", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_READONLY | QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("disk-drive-readonly-no-device", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_READONLY | QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("disk-drive-fmt-qcow", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_BOOT | QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-shared", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_FORMAT | QEMU_CAPS_DRIVE_SERIAL, false);
+    DO_TEST("disk-drive-cache-v1-wt", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-cache-v1-wb", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-cache-v1-none", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-error-policy-stop", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_MONITOR_JSON |
+            QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-cache-v2-wt", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_CACHE_V2 | QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-cache-v2-wb", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_CACHE_V2 | QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-cache-v2-none", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_CACHE_V2 | QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-network-nbd", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-network-rbd", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_FORMAT, false);
+    DO_TEST("disk-drive-network-sheepdog", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DRIVE_FORMAT, false);
     DO_TEST("disk-usb", 0, false);
-    DO_TEST("disk-usb-device", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("disk-scsi-device", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("disk-scsi-device-auto", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("disk-aio", QEMUD_CMD_FLAG_DRIVE | QEMUD_CMD_FLAG_DRIVE_AIO |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
+    DO_TEST("disk-usb-device", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DEVICE | QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("disk-scsi-device", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DEVICE | QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("disk-scsi-device-auto", QEMU_CAPS_DRIVE |
+            QEMU_CAPS_DEVICE | QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("disk-aio", QEMU_CAPS_DRIVE | QEMU_CAPS_DRIVE_AIO |
+            QEMU_CAPS_DRIVE_CACHE_V2 | QEMU_CAPS_DRIVE_FORMAT, false);
     DO_TEST("graphics-vnc", 0, false);
     DO_TEST("graphics-vnc-socket", 0, false);
 
     driver.vncSASL = 1;
     driver.vncSASLdir = strdup("/root/.sasl2");
-    DO_TEST("graphics-vnc-sasl", QEMUD_CMD_FLAG_VGA, false);
+    DO_TEST("graphics-vnc-sasl", QEMU_CAPS_VGA, false);
     driver.vncTLS = 1;
     driver.vncTLSx509verify = 1;
     driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");
@@ -348,29 +348,29 @@ mymain(int argc, char **argv)
 
     DO_TEST("graphics-sdl", 0, false);
     DO_TEST("graphics-sdl-fullscreen", 0, false);
-    DO_TEST("nographics", QEMUD_CMD_FLAG_VGA, false);
-    DO_TEST("nographics-vga", QEMUD_CMD_FLAG_VGA |
-                              QEMUD_CMD_FLAG_VGA_NONE, false);
+    DO_TEST("nographics", QEMU_CAPS_VGA, false);
+    DO_TEST("nographics-vga", QEMU_CAPS_VGA |
+                              QEMU_CAPS_VGA_NONE, false);
     DO_TEST("graphics-spice",
-            QEMUD_CMD_FLAG_VGA | QEMUD_CMD_FLAG_VGA_QXL |
-            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_SPICE, false);
+            QEMU_CAPS_VGA | QEMU_CAPS_VGA_QXL |
+            QEMU_CAPS_DEVICE | QEMU_CAPS_SPICE, false);
 
     DO_TEST("input-usbmouse", 0, false);
     DO_TEST("input-usbtablet", 0, false);
-    DO_TEST("input-xen", QEMUD_CMD_FLAG_DOMID, true);
+    DO_TEST("input-xen", QEMU_CAPS_DOMID, true);
     DO_TEST("misc-acpi", 0, false);
     DO_TEST("misc-no-reboot", 0, false);
-    DO_TEST("misc-uuid", QEMUD_CMD_FLAG_NAME |
-            QEMUD_CMD_FLAG_UUID, false);
+    DO_TEST("misc-uuid", QEMU_CAPS_NAME |
+            QEMU_CAPS_UUID, false);
     DO_TEST("net-user", 0, false);
     DO_TEST("net-virtio", 0, false);
-    DO_TEST("net-virtio-device", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_VIRTIO_TX_ALG, false);
-    DO_TEST("net-virtio-netdev", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NETDEV | QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("net-virtio-device", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_VIRTIO_TX_ALG, false);
+    DO_TEST("net-virtio-netdev", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NETDEV | QEMU_CAPS_NODEFCONFIG, false);
     DO_TEST("net-eth", 0, false);
     DO_TEST("net-eth-ifname", 0, false);
-    DO_TEST("net-eth-names", QEMUD_CMD_FLAG_NET_NAME, false);
+    DO_TEST("net-eth-names", QEMU_CAPS_NET_NAME, false);
 
     DO_TEST("serial-vc", 0, false);
     DO_TEST("serial-pty", 0, false);
@@ -385,103 +385,103 @@ mymain(int argc, char **argv)
     DO_TEST("console-compat", 0, false);
     DO_TEST("console-compat-auto", 0, false);
 
-    DO_TEST("serial-vc-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-pty-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-dev-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-file-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-unix-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-udp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-tcp-telnet-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("serial-many-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("parallel-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("console-compat-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("serial-vc-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-pty-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-dev-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-file-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-unix-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-tcp-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-udp-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-tcp-telnet-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("serial-many-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("parallel-tcp-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("console-compat-chardev", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
 
-    DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("channel-virtio", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("channel-virtio-auto", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("console-virtio", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("channel-spicevmc", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_SPICE |
-            QEMUD_CMD_FLAG_CHARDEV_SPICEVMC, false);
-    DO_TEST("channel-spicevmc-old", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_SPICE |
-            QEMUD_CMD_FLAG_DEVICE_SPICEVMC, false);
+    DO_TEST("channel-guestfwd", QEMU_CAPS_CHARDEV|QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("channel-virtio", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("channel-virtio-auto", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("console-virtio", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("channel-spicevmc", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_SPICE |
+            QEMU_CAPS_CHARDEV_SPICEVMC, false);
+    DO_TEST("channel-spicevmc-old", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_SPICE |
+            QEMU_CAPS_DEVICE_SPICEVMC, false);
 
     DO_TEST("smartcard-host",
-            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_EMULATED, false);
+            QEMU_CAPS_CHARDEV | QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_CCID_EMULATED, false);
     DO_TEST("smartcard-host-certificates",
-            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_EMULATED, false);
+            QEMU_CAPS_CHARDEV | QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_CCID_EMULATED, false);
     DO_TEST("smartcard-passthrough-tcp",
-            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_PASSTHRU, false);
+            QEMU_CAPS_CHARDEV | QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_CCID_PASSTHRU, false);
     DO_TEST("smartcard-passthrough-spicevmc",
-            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_PASSTHRU |
-            QEMUD_CMD_FLAG_CHARDEV_SPICEVMC, false);
+            QEMU_CAPS_CHARDEV | QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_CCID_PASSTHRU |
+            QEMU_CAPS_CHARDEV_SPICEVMC, false);
     DO_TEST("smartcard-controller",
-            QEMUD_CMD_FLAG_CHARDEV | QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_CCID_EMULATED, false);
+            QEMU_CAPS_CHARDEV | QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_CCID_EMULATED, false);
 
-    DO_TEST("smbios", QEMUD_CMD_FLAG_SMBIOS_TYPE, false);
+    DO_TEST("smbios", QEMU_CAPS_SMBIOS_TYPE, false);
 
     DO_TEST("watchdog", 0, false);
-    DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("watchdog-device", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
     DO_TEST("watchdog-dump", 0, false);
-    DO_TEST("balloon-device", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("balloon-device-auto", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("balloon-device", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("balloon-device-auto", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
     DO_TEST("sound", 0, false);
-    DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_HDA_DUPLEX, false);
-    DO_TEST("fs9p", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_FSDEV, false);
+    DO_TEST("sound-device", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_HDA_DUPLEX, false);
+    DO_TEST("fs9p", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG | QEMU_CAPS_FSDEV, false);
 
     DO_TEST("hostdev-usb-address", 0, false);
-    DO_TEST("hostdev-usb-address-device", QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_NODEFCONFIG, false);
-    DO_TEST("hostdev-pci-address", QEMUD_CMD_FLAG_PCIDEVICE, false);
-    DO_TEST("hostdev-pci-address-device", QEMUD_CMD_FLAG_PCIDEVICE |
-            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("hostdev-usb-address-device", QEMU_CAPS_DEVICE |
+            QEMU_CAPS_NODEFCONFIG, false);
+    DO_TEST("hostdev-pci-address", QEMU_CAPS_PCIDEVICE, false);
+    DO_TEST("hostdev-pci-address-device", QEMU_CAPS_PCIDEVICE |
+            QEMU_CAPS_DEVICE | QEMU_CAPS_NODEFCONFIG, false);
 
-    DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio", 7,
+    DO_TEST_FULL("restore-v1", QEMU_CAPS_MIGRATE_KVM_STDIO, "stdio", 7,
                  false);
-    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "stdio", 7,
+    DO_TEST_FULL("restore-v2", QEMU_CAPS_MIGRATE_QEMU_EXEC, "stdio", 7,
                  false);
-    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "exec:cat", 7,
+    DO_TEST_FULL("restore-v2", QEMU_CAPS_MIGRATE_QEMU_EXEC, "exec:cat", 7,
                  false);
-    DO_TEST_FULL("restore-v2-fd", QEMUD_CMD_FLAG_MIGRATE_QEMU_FD, "stdio", 7,
+    DO_TEST_FULL("restore-v2-fd", QEMU_CAPS_MIGRATE_QEMU_FD, "stdio", 7,
                  false);
-    DO_TEST_FULL("restore-v2-fd", QEMUD_CMD_FLAG_MIGRATE_QEMU_FD, "fd:7", 7,
+    DO_TEST_FULL("restore-v2-fd", QEMU_CAPS_MIGRATE_QEMU_FD, "fd:7", 7,
                  false);
-    DO_TEST_FULL("migrate", QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP,
+    DO_TEST_FULL("migrate", QEMU_CAPS_MIGRATE_QEMU_TCP,
                  "tcp:10.0.0.1:5000", -1, false);
 
     DO_TEST("qemu-ns", 0, false);
 
-    DO_TEST("smp", QEMUD_CMD_FLAG_SMP_TOPOLOGY, false);
+    DO_TEST("smp", QEMU_CAPS_SMP_TOPOLOGY, false);
 
-    DO_TEST("cpu-topology1", QEMUD_CMD_FLAG_SMP_TOPOLOGY, false);
-    DO_TEST("cpu-topology2", QEMUD_CMD_FLAG_SMP_TOPOLOGY, false);
+    DO_TEST("cpu-topology1", QEMU_CAPS_SMP_TOPOLOGY, false);
+    DO_TEST("cpu-topology2", QEMU_CAPS_SMP_TOPOLOGY, false);
     DO_TEST("cpu-topology3", 0, false);
     DO_TEST("cpu-minimum1", 0, false);
     DO_TEST("cpu-minimum2", 0, false);
@@ -489,8 +489,8 @@ mymain(int argc, char **argv)
     DO_TEST("cpu-exact2", 0, false);
     DO_TEST("cpu-strict1", 0, false);
 
-    DO_TEST("memtune", QEMUD_CMD_FLAG_NAME, false);
-    DO_TEST("blkiotune", QEMUD_CMD_FLAG_NAME, false);
+    DO_TEST("memtune", QEMU_CAPS_NAME, false);
+    DO_TEST("blkiotune", QEMU_CAPS_NAME, false);
 
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);

@@ -145,7 +145,7 @@ mymain(int argc, char **argv)
     unsetenv("LD_LIBRARY_PATH");
 
     /* Can't roundtrip vcpu  cpuset attribute */
-    /*DO_TEST("minimal", QEMUD_CMD_FLAG_NAME);*/
+    /*DO_TEST("minimal", QEMU_CAPS_NAME);*/
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");

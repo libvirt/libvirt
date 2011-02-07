@@ -1159,7 +1159,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
     if (ret < 0)
         goto cleanup;
 
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
         int i;
 
         for (i = 0 ; i < vm->def->ndisks ; i++) {
@@ -1816,7 +1816,7 @@ qemuProcessReconnect(void *payload, const char *name ATTRIBUTE_UNUSED, void *opa
     if (qemuCapsExtractVersionInfo(obj->def->emulator, obj->def->os.arch,
                                    NULL,
                                    &qemuCmdFlags) >= 0 &&
-        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        (qemuCmdFlags & QEMU_CAPS_DEVICE)) {
         priv->persistentAddrs = 1;
 
         if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)) ||
@@ -2027,7 +2027,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
 #if HAVE_YAJL
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_MONITOR_JSON)
+    if (qemuCmdFlags & QEMU_CAPS_MONITOR_JSON)
         priv->monJSON = 1;
     else
 #endif
@@ -2056,7 +2056,7 @@ int qemuProcessStart(virConnectPtr conn,
      * we also need to populate the PCi address set cache for later
      * use in hotplug
      */
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
         VIR_DEBUG0("Assigning domain PCI addresses");
         /* Populate cache with current addresses */
         if (priv->pciaddrs) {
@@ -2190,7 +2190,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
-    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+    if (!(qemuCmdFlags & QEMU_CAPS_DEVICE)) {
         VIR_DEBUG0("Determining domain device PCI addresses");
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
             goto cleanup;

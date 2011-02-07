@@ -400,7 +400,7 @@ qemuCapsProbeCPUModels(const char *qemu,
     }
 
     cmd = virCommandNewArgList(qemu, "-cpu", "?", NULL);
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_NODEFCONFIG)
+    if (qemuCmdFlags & QEMU_CAPS_NODEFCONFIG)
         virCommandAddArg(cmd, "-nodefconfig");
     virCommandAddEnvPassCommon(cmd);
     virCommandSetOutputBuffer(cmd, &output);
@@ -559,7 +559,7 @@ qemuCapsInitGuest(virCapsPtr caps,
         goto error;
 
     if (qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCmdFlags) < 0 ||
-        ((qemuCmdFlags & QEMUD_CMD_FLAG_BOOTINDEX) &&
+        ((qemuCmdFlags & QEMU_CAPS_BOOTINDEX) &&
          !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0)))
         goto error;
 
@@ -791,119 +791,119 @@ qemuCapsComputeCmdFlags(const char *help,
     const char *p;
 
     if (strstr(help, "-no-kqemu"))
-        flags |= QEMUD_CMD_FLAG_KQEMU;
+        flags |= QEMU_CAPS_KQEMU;
     if (strstr(help, "-enable-kqemu"))
-        flags |= QEMUD_CMD_FLAG_ENABLE_KQEMU;
+        flags |= QEMU_CAPS_ENABLE_KQEMU;
     if (strstr(help, "-no-kvm"))
-        flags |= QEMUD_CMD_FLAG_KVM;
+        flags |= QEMU_CAPS_KVM;
     if (strstr(help, "-enable-kvm"))
-        flags |= QEMUD_CMD_FLAG_ENABLE_KVM;
+        flags |= QEMU_CAPS_ENABLE_KVM;
     if (strstr(help, "-no-reboot"))
-        flags |= QEMUD_CMD_FLAG_NO_REBOOT;
+        flags |= QEMU_CAPS_NO_REBOOT;
     if (strstr(help, "-name")) {
-        flags |= QEMUD_CMD_FLAG_NAME;
+        flags |= QEMU_CAPS_NAME;
         if (strstr(help, ",process="))
-            flags |= QEMUD_CMD_FLAG_NAME_PROCESS;
+            flags |= QEMU_CAPS_NAME_PROCESS;
     }
     if (strstr(help, "-uuid"))
-        flags |= QEMUD_CMD_FLAG_UUID;
+        flags |= QEMU_CAPS_UUID;
     if (strstr(help, "-xen-domid"))
-        flags |= QEMUD_CMD_FLAG_XEN_DOMID;
+        flags |= QEMU_CAPS_XEN_DOMID;
     else if (strstr(help, "-domid"))
-        flags |= QEMUD_CMD_FLAG_DOMID;
+        flags |= QEMU_CAPS_DOMID;
     if (strstr(help, "-drive")) {
-        flags |= QEMUD_CMD_FLAG_DRIVE;
+        flags |= QEMU_CAPS_DRIVE;
         if (strstr(help, "cache=") &&
             !strstr(help, "cache=on|off"))
-            flags |= QEMUD_CMD_FLAG_DRIVE_CACHE_V2;
+            flags |= QEMU_CAPS_DRIVE_CACHE_V2;
         if (strstr(help, "format="))
-            flags |= QEMUD_CMD_FLAG_DRIVE_FORMAT;
+            flags |= QEMU_CAPS_DRIVE_FORMAT;
         if (strstr(help, "readonly="))
-            flags |= QEMUD_CMD_FLAG_DRIVE_READONLY;
+            flags |= QEMU_CAPS_DRIVE_READONLY;
         if (strstr(help, "aio=threads|native"))
-            flags |= QEMUD_CMD_FLAG_DRIVE_AIO;
+            flags |= QEMU_CAPS_DRIVE_AIO;
     }
     if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
         const char *nl = strstr(p, "\n");
 
-        flags |= QEMUD_CMD_FLAG_VGA;
+        flags |= QEMU_CAPS_VGA;
 
         if (strstr(p, "|qxl"))
-            flags |= QEMUD_CMD_FLAG_VGA_QXL;
+            flags |= QEMU_CAPS_VGA_QXL;
         if ((p = strstr(p, "|none")) && p < nl)
-            flags |= QEMUD_CMD_FLAG_VGA_NONE;
+            flags |= QEMU_CAPS_VGA_NONE;
     }
     if (strstr(help, "-spice"))
-        flags |= QEMUD_CMD_FLAG_SPICE;
+        flags |= QEMU_CAPS_SPICE;
     if (strstr(help, "boot=on"))
-        flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
+        flags |= QEMU_CAPS_DRIVE_BOOT;
     if (strstr(help, "serial=s"))
-        flags |= QEMUD_CMD_FLAG_DRIVE_SERIAL;
+        flags |= QEMU_CAPS_DRIVE_SERIAL;
     if (strstr(help, "-pcidevice"))
-        flags |= QEMUD_CMD_FLAG_PCIDEVICE;
+        flags |= QEMU_CAPS_PCIDEVICE;
     if (strstr(help, "-mem-path"))
-        flags |= QEMUD_CMD_FLAG_MEM_PATH;
+        flags |= QEMU_CAPS_MEM_PATH;
     if (strstr(help, "-chardev")) {
-        flags |= QEMUD_CMD_FLAG_CHARDEV;
+        flags |= QEMU_CAPS_CHARDEV;
         if (strstr(help, "-chardev spicevmc"))
-            flags |= QEMUD_CMD_FLAG_CHARDEV_SPICEVMC;
+            flags |= QEMU_CAPS_CHARDEV_SPICEVMC;
     }
     if (strstr(help, "-balloon"))
-        flags |= QEMUD_CMD_FLAG_BALLOON;
+        flags |= QEMU_CAPS_BALLOON;
     if (strstr(help, "-device")) {
-        flags |= QEMUD_CMD_FLAG_DEVICE;
+        flags |= QEMU_CAPS_DEVICE;
         /*
          * When -device was introduced, qemu already supported drive's
          * readonly option but didn't advertise that.
          */
-        flags |= QEMUD_CMD_FLAG_DRIVE_READONLY;
+        flags |= QEMU_CAPS_DRIVE_READONLY;
     }
     if (strstr(help, "-nodefconfig"))
-        flags |= QEMUD_CMD_FLAG_NODEFCONFIG;
+        flags |= QEMU_CAPS_NODEFCONFIG;
     /* The trailing ' ' is important to avoid a bogus match */
     if (strstr(help, "-rtc "))
-        flags |= QEMUD_CMD_FLAG_RTC;
+        flags |= QEMU_CAPS_RTC;
     /* to wit */
     if (strstr(help, "-rtc-td-hack"))
-        flags |= QEMUD_CMD_FLAG_RTC_TD_HACK;
+        flags |= QEMU_CAPS_RTC_TD_HACK;
     if (strstr(help, "-no-hpet"))
-        flags |= QEMUD_CMD_FLAG_NO_HPET;
+        flags |= QEMU_CAPS_NO_HPET;
     if (strstr(help, "-no-kvm-pit-reinjection"))
-        flags |= QEMUD_CMD_FLAG_NO_KVM_PIT;
+        flags |= QEMU_CAPS_NO_KVM_PIT;
     if (strstr(help, "-tdf"))
-        flags |= QEMUD_CMD_FLAG_TDF;
+        flags |= QEMU_CAPS_TDF;
     if (strstr(help, "-enable-nesting"))
-        flags |= QEMUD_CMD_FLAG_NESTING;
+        flags |= QEMU_CAPS_NESTING;
     if (strstr(help, ",menu=on"))
-        flags |= QEMUD_CMD_FLAG_BOOT_MENU;
+        flags |= QEMU_CAPS_BOOT_MENU;
     if (strstr(help, "-fsdev"))
-        flags |= QEMUD_CMD_FLAG_FSDEV;
+        flags |= QEMU_CAPS_FSDEV;
     if (strstr(help, "-smbios type"))
-        flags |= QEMUD_CMD_FLAG_SMBIOS_TYPE;
+        flags |= QEMU_CAPS_SMBIOS_TYPE;
 
     if (strstr(help, "-netdev")) {
         /* Disable -netdev on 0.12 since although it exists,
          * the corresponding netdev_add/remove monitor commands
          * do not, and we need them to be able todo hotplug */
         if (version >= 13000)
-            flags |= QEMUD_CMD_FLAG_NETDEV;
+            flags |= QEMU_CAPS_NETDEV;
     }
 
     if (strstr(help, "-sdl"))
-        flags |= QEMUD_CMD_FLAG_SDL;
+        flags |= QEMU_CAPS_SDL;
     if (strstr(help, "cores=") &&
         strstr(help, "threads=") &&
         strstr(help, "sockets="))
-        flags |= QEMUD_CMD_FLAG_SMP_TOPOLOGY;
+        flags |= QEMU_CAPS_SMP_TOPOLOGY;
 
     if (version >= 9000)
-        flags |= QEMUD_CMD_FLAG_VNC_COLON;
+        flags |= QEMU_CAPS_VNC_COLON;
 
     if (is_kvm && (version >= 10000 || kvm_version >= 74))
-        flags |= QEMUD_CMD_FLAG_VNET_HDR;
+        flags |= QEMU_CAPS_VNET_HDR;
 
     if (is_kvm && strstr(help, ",vhost=")) {
-        flags |= QEMUD_CMD_FLAG_VNET_HOST;
+        flags |= QEMU_CAPS_VNET_HOST;
     }
 
     /*
@@ -919,22 +919,22 @@ qemuCapsComputeCmdFlags(const char *help,
      * while waiting for data, so pretend it doesn't exist
      */
     if (version >= 10000) {
-        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
-        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
+        flags |= QEMU_CAPS_MIGRATE_QEMU_TCP;
+        flags |= QEMU_CAPS_MIGRATE_QEMU_EXEC;
         if (version >= 12000) {
-            flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX;
-            flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_FD;
+            flags |= QEMU_CAPS_MIGRATE_QEMU_UNIX;
+            flags |= QEMU_CAPS_MIGRATE_QEMU_FD;
         }
     } else if (kvm_version >= 79) {
-        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
+        flags |= QEMU_CAPS_MIGRATE_QEMU_TCP;
         if (kvm_version >= 80)
-            flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
+            flags |= QEMU_CAPS_MIGRATE_QEMU_EXEC;
     } else if (kvm_version > 0) {
-        flags |= QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO;
+        flags |= QEMU_CAPS_MIGRATE_KVM_STDIO;
     }
 
     if (version >= 10000)
-        flags |= QEMUD_CMD_FLAG_0_10;
+        flags |= QEMU_CAPS_0_10;
 
     /* While JSON mode was available in 0.12.0, it was too
      * incomplete to contemplate using. The 0.13.0 release
@@ -943,7 +943,7 @@ qemuCapsComputeCmdFlags(const char *help,
      * the downside.
      */
      if (version >= 13000)
-        flags |= QEMUD_CMD_FLAG_MONITOR_JSON;
+        flags |= QEMU_CAPS_MONITOR_JSON;
 
     return flags;
 }
@@ -1098,26 +1098,26 @@ qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
 {
     /* Which devices exist. */
     if (strstr(str, "name \"hda-duplex\""))
-        *flags |= QEMUD_CMD_FLAG_HDA_DUPLEX;
+        *flags |= QEMU_CAPS_HDA_DUPLEX;
     if (strstr(str, "name \"ccid-card-emulated\""))
-        *flags |= QEMUD_CMD_FLAG_CCID_EMULATED;
+        *flags |= QEMU_CAPS_CCID_EMULATED;
     if (strstr(str, "name \"ccid-card-passthru\""))
-        *flags |= QEMUD_CMD_FLAG_CCID_PASSTHRU;
+        *flags |= QEMU_CAPS_CCID_PASSTHRU;
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
-    if (!(*flags & QEMUD_CMD_FLAG_CHARDEV_SPICEVMC) &&
+    if (!(*flags & QEMU_CAPS_CHARDEV_SPICEVMC) &&
         strstr(str, "name \"spicevmc\""))
-        *flags |= QEMUD_CMD_FLAG_DEVICE_SPICEVMC;
+        *flags |= QEMU_CAPS_DEVICE_SPICEVMC;
 
     /* Features of given devices. */
     if (strstr(str, "pci-assign.configfd"))
-        *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
+        *flags |= QEMU_CAPS_PCI_CONFIGFD;
     if (strstr(str, "virtio-blk-pci.bootindex")) {
-        *flags |= QEMUD_CMD_FLAG_BOOTINDEX;
+        *flags |= QEMU_CAPS_BOOTINDEX;
         if (strstr(str, "pci-assign.bootindex"))
-            *flags |= QEMUD_CMD_FLAG_PCI_BOOTINDEX;
+            *flags |= QEMU_CAPS_PCI_BOOTINDEX;
     }
     if (strstr(str, "virtio-net-pci.tx="))
-        *flags |= QEMUD_CMD_FLAG_VIRTIO_TX_ALG;
+        *flags |= QEMU_CAPS_VIRTIO_TX_ALG;
 
     return 0;
 }
@@ -1161,12 +1161,12 @@ int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
     /* Currently only x86_64 and i686 support PCI-multibus. */
     if (STREQLEN(arch, "x86_64", 6) ||
         STREQLEN(arch, "i686", 4)) {
-        flags |= QEMUD_CMD_FLAG_PCI_MULTIBUS;
+        flags |= QEMU_CAPS_PCI_MULTIBUS;
     }
 
     /* qemuCapsExtractDeviceStr will only set additional flags if qemu
      * understands the 0.13.0+ notion of "-device driver,".  */
-    if ((flags & QEMUD_CMD_FLAG_DEVICE) &&
+    if ((flags & QEMU_CAPS_DEVICE) &&
         strstr(help, "-device driver,?") &&
         qemuCapsExtractDeviceStr(qemu, &flags) < 0)
         goto cleanup;
