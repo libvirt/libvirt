@@ -244,7 +244,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     int ret = -1;
     int internalret;
     char *unixfile = NULL;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
 
@@ -298,15 +298,15 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
 
     /* check that this qemu version supports the interactive exec */
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
-                                   NULL, &qemuCmdFlags) < 0) {
+                                   NULL, &qemuCaps) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Cannot determine QEMU argv syntax %s"),
                         vm->def->emulator);
         goto endjob;
     }
-    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_UNIX))
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX))
         internalret = virAsprintf(&migrateFrom, "unix:%s", unixfile);
-    else if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_EXEC))
+    else if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC))
         internalret = virAsprintf(&migrateFrom, "exec:nc -U -l %s", unixfile);
     else {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -708,7 +708,7 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     virStreamPtr st = NULL;
     char *unixfile = NULL;
     int internalret;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     int status;
     unsigned long long transferred, remaining, total;
     unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
@@ -770,15 +770,15 @@ static int doTunnelMigrate(struct qemud_driver *driver,
 
     /* check that this qemu version supports the unix migration */
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
-                                   NULL, &qemuCmdFlags) < 0) {
+                                   NULL, &qemuCaps) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Cannot extract Qemu version from '%s'"),
                         vm->def->emulator);
         goto cleanup;
     }
 
-    if (!qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
-        !qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
+    if (!qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
+        !qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("Source qemu is too old to support tunnelled migration"));
         goto cleanup;
@@ -820,11 +820,11 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
     if (flags & VIR_MIGRATE_NON_SHARED_INC)
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
-    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
         internalret = qemuMonitorMigrateToUnix(priv->mon, background_flags,
                                                unixfile);
     }
-    else if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
+    else if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
         internalret = qemuMonitorMigrateToCommand(priv->mon, QEMU_MONITOR_MIGRATE_BACKGROUND, args);
     } else {

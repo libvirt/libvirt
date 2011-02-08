@@ -3538,7 +3538,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainChrSourceDef monConfig;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     virCommandPtr cmd = NULL;
     char *ret = NULL;
     int i;
@@ -3595,14 +3595,14 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
 
     if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
                                    NULL,
-                                   &qemuCmdFlags) < 0)
+                                   &qemuCaps) < 0)
         goto cleanup;
 
     if (qemuProcessPrepareMonitorChr(driver, &monConfig, def->name) < 0)
         goto cleanup;
 
     if (!(cmd = qemuBuildCommandLine(conn, driver, def,
-                                     &monConfig, false, qemuCmdFlags,
+                                     &monConfig, false, qemuCaps,
                                      NULL, -1, NULL, VIR_VM_OP_NO_OP)))
         goto cleanup;
 
@@ -3947,7 +3947,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
 
@@ -3977,7 +3977,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
 
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
                                    NULL,
-                                   &qemuCmdFlags) < 0)
+                                   &qemuCaps) < 0)
         goto endjob;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
@@ -3997,7 +3997,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
             ret = qemuDomainChangeEjectableMedia(driver, vm,
                                                  dev->data.disk,
-                                                 qemuCmdFlags,
+                                                 qemuCaps,
                                                  false);
             if (ret == 0)
                 dev->data.disk = NULL;
@@ -4006,17 +4006,17 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 ret = qemuDomainAttachUsbMassstorageDevice(driver, vm,
-                                                           dev->data.disk, qemuCmdFlags);
+                                                           dev->data.disk, qemuCaps);
                 if (ret == 0)
                     dev->data.disk = NULL;
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
                 ret = qemuDomainAttachPciDiskDevice(driver, vm,
-                                                    dev->data.disk, qemuCmdFlags);
+                                                    dev->data.disk, qemuCaps);
                 if (ret == 0)
                     dev->data.disk = NULL;
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
                 ret = qemuDomainAttachSCSIDisk(driver, vm,
-                                               dev->data.disk, qemuCmdFlags);
+                                               dev->data.disk, qemuCaps);
                 if (ret == 0)
                     dev->data.disk = NULL;
             } else {
@@ -4041,7 +4041,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
             ret = qemuDomainAttachPciControllerDevice(driver, vm,
-                                                      dev->data.controller, qemuCmdFlags);
+                                                      dev->data.controller, qemuCaps);
             if (ret == 0)
                 dev->data.controller = NULL;
         } else {
@@ -4052,12 +4052,12 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         ret = qemuDomainAttachNetDevice(dom->conn, driver, vm,
-                                        dev->data.net, qemuCmdFlags);
+                                        dev->data.net, qemuCaps);
         if (ret == 0)
             dev->data.net = NULL;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         ret = qemuDomainAttachHostDevice(driver, vm,
-                                         dev->data.hostdev, qemuCmdFlags);
+                                         dev->data.hostdev, qemuCaps);
         if (ret == 0)
             dev->data.hostdev = NULL;
     } else {
@@ -4105,7 +4105,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
@@ -4147,7 +4147,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
                                    NULL,
-                                   &qemuCmdFlags) < 0)
+                                   &qemuCaps) < 0)
         goto endjob;
 
     switch (dev->type) {
@@ -4168,7 +4168,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
             ret = qemuDomainChangeEjectableMedia(driver, vm,
                                                  dev->data.disk,
-                                                 qemuCmdFlags,
+                                                 qemuCaps,
                                                  force);
             if (ret == 0)
                 dev->data.disk = NULL;
@@ -4223,7 +4223,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
                                    const char *xml) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     virDomainDeviceDefPtr dev = NULL;
     int ret = -1;
 
@@ -4253,28 +4253,28 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
 
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
                                    NULL,
-                                   &qemuCmdFlags) < 0)
+                                   &qemuCaps) < 0)
         goto endjob;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
         if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-            ret = qemuDomainDetachPciDiskDevice(driver, vm, dev, qemuCmdFlags);
+            ret = qemuDomainDetachPciDiskDevice(driver, vm, dev, qemuCaps);
         }
         else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             ret = qemuDomainDetachSCSIDiskDevice(driver, vm, dev,
-                                                 qemuCmdFlags);
+                                                 qemuCaps);
         }
         else {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("This type of disk cannot be hot unplugged"));
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        ret = qemuDomainDetachNetDevice(driver, vm, dev, qemuCmdFlags);
+        ret = qemuDomainDetachNetDevice(driver, vm, dev, qemuCaps);
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
             ret = qemuDomainDetachPciControllerDevice(driver, vm, dev,
-                                                      qemuCmdFlags);
+                                                      qemuCaps);
         } else {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("disk controller bus '%s' cannot be hotunplugged."),
@@ -4282,7 +4282,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
             /* fallthrough */
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-        ret = qemuDomainDetachHostDevice(driver, vm, dev, qemuCmdFlags);
+        ret = qemuDomainDetachHostDevice(driver, vm, dev, qemuCaps);
     } else {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         "%s", _("This type of device cannot be hot unplugged"));

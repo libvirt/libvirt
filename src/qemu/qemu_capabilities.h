@@ -111,7 +111,7 @@ int qemuCapsProbeMachineTypes(const char *binary,
                               int *nmachines);
 
 int qemuCapsProbeCPUModels(const char *qemu,
-                           unsigned long long qemuCmdFlags,
+                           unsigned long long qemuCaps,
                            const char *arch,
                            unsigned int *count,
                            const char ***cpus);
@@ -120,16 +120,16 @@ int qemuCapsExtractVersion(virCapsPtr caps,
                            unsigned int *version);
 int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
                                unsigned int *version,
-                               unsigned long long *qemuCmdFlags);
+                               unsigned long long *qemuCaps);
 
 int qemuCapsParseHelpStr(const char *qemu,
                          const char *str,
-                         unsigned long long *qemuCmdFlags,
+                         unsigned long long *qemuCaps,
                          unsigned int *version,
                          unsigned int *is_kvm,
                          unsigned int *kvm_version);
 int qemuCapsParseDeviceStr(const char *str,
-                           unsigned long long *qemuCmdFlags);
+                           unsigned long long *qemuCaps);
 
 
 #endif /* __QEMU_CAPABILITIES_H__*/

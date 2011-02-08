@@ -377,7 +377,7 @@ error:
 
 int
 qemuCapsProbeCPUModels(const char *qemu,
-                       unsigned long long qemuCmdFlags,
+                       unsigned long long qemuCaps,
                        const char *arch,
                        unsigned int *count,
                        const char ***cpus)
@@ -400,7 +400,7 @@ qemuCapsProbeCPUModels(const char *qemu,
     }
 
     cmd = virCommandNewArgList(qemu, "-cpu", "?", NULL);
-    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_NODEFCONFIG))
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
         virCommandAddArg(cmd, "-nodefconfig");
     virCommandAddEnvPassCommon(cmd);
     virCommandSetOutputBuffer(cmd, &output);
@@ -442,7 +442,7 @@ qemuCapsInitGuest(virCapsPtr caps,
     int nmachines = 0;
     struct stat st;
     unsigned int ncpus;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     int ret = -1;
 
     /* Check for existance of base emulator, or alternate base
@@ -558,8 +558,8 @@ qemuCapsInitGuest(virCapsPtr caps,
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto error;
 
-    if (qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCmdFlags) < 0 ||
-        (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_BOOTINDEX) &&
+    if (qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCaps) < 0 ||
+        (qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
          !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0)))
         goto error;
 

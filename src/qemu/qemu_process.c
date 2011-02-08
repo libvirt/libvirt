@@ -1137,7 +1137,7 @@ static int
 qemuProcessInitPasswords(virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainObjPtr vm,
-                         unsigned long long qemuCmdFlags)
+                         unsigned long long qemuCaps)
 {
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1159,7 +1159,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
     if (ret < 0)
         goto cleanup;
 
-    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         int i;
 
         for (i = 0 ; i < vm->def->ndisks ; i++) {
@@ -1789,7 +1789,7 @@ qemuProcessReconnect(void *payload, const char *name ATTRIBUTE_UNUSED, void *opa
     struct qemuProcessReconnectData *data = opaque;
     struct qemud_driver *driver = data->driver;
     qemuDomainObjPrivatePtr priv;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     virConnectPtr conn = data->conn;
 
     virDomainObjLock(obj);
@@ -1815,8 +1815,8 @@ qemuProcessReconnect(void *payload, const char *name ATTRIBUTE_UNUSED, void *opa
      * since launch time */
     if (qemuCapsExtractVersionInfo(obj->def->emulator, obj->def->os.arch,
                                    NULL,
-                                   &qemuCmdFlags) >= 0 &&
-        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
+                                   &qemuCaps) >= 0 &&
+        qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         priv->persistentAddrs = 1;
 
         if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)) ||
@@ -1879,7 +1879,7 @@ int qemuProcessStart(virConnectPtr conn,
                      enum virVMOperationType vmop)
 {
     int ret;
-    unsigned long long qemuCmdFlags;
+    unsigned long long qemuCaps;
     off_t pos = -1;
     char ebuf[1024];
     char *pidfile = NULL;
@@ -2010,7 +2010,7 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG0("Determining emulator version");
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
                                    NULL,
-                                   &qemuCmdFlags) < 0)
+                                   &qemuCaps) < 0)
         goto cleanup;
 
     VIR_DEBUG0("Setting up domain cgroup (if required)");
@@ -2027,7 +2027,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
 #if HAVE_YAJL
-    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MONITOR_JSON))
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON))
         priv->monJSON = 1;
     else
 #endif
@@ -2056,7 +2056,7 @@ int qemuProcessStart(virConnectPtr conn,
      * we also need to populate the PCi address set cache for later
      * use in hotplug
      */
-    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG0("Assigning domain PCI addresses");
         /* Populate cache with current addresses */
         if (priv->pciaddrs) {
@@ -2078,7 +2078,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG0("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
-                                     priv->monJSON != 0, qemuCmdFlags,
+                                     priv->monJSON != 0, qemuCaps,
                                      migrateFrom, stdin_fd,
                                      vm->current_snapshot, vmop)))
         goto cleanup;
@@ -2185,12 +2185,12 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG0("Setting any required VM passwords");
-    if (qemuProcessInitPasswords(conn, driver, vm, qemuCmdFlags) < 0)
+    if (qemuProcessInitPasswords(conn, driver, vm, qemuCaps) < 0)
         goto cleanup;
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
-    if (!qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
+    if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG0("Determining domain device PCI addresses");
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
             goto cleanup;

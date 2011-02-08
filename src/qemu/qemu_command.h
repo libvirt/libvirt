@@ -46,7 +46,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virDomainDefPtr def,
                                    virDomainChrSourceDefPtr monitor_chr,
                                    bool monitor_json,
-                                   unsigned long long qemuCmdFlags,
+                                   unsigned long long qemuCaps,
                                    const char *migrateFrom,
                                    int migrateFd,
                                    virDomainSnapshotObjPtr current_snapshot,
@@ -68,44 +68,44 @@ char * qemuBuildNicStr(virDomainNetDefPtr net,
 /* Current, best practice */
 char * qemuBuildNicDevStr(virDomainNetDefPtr net,
                           int vlan,
-                          unsigned long long qemuCmdFlags);
+                          unsigned long long qemuCaps);
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
-                               unsigned long long qemuCmdFlags);
+                               unsigned long long qemuCaps);
 
 /* Both legacy & current support */
 char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
                         int bootable,
-                        unsigned long long qemuCmdFlags);
+                        unsigned long long qemuCaps);
 char *qemuBuildFSStr(virDomainFSDefPtr fs,
-                     unsigned long long qemuCmdFlags);
+                     unsigned long long qemuCaps);
 
 /* Current, best practice */
 char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
-                            unsigned long long qemuCmdFlags);
+                            unsigned long long qemuCaps);
 char * qemuBuildFSDevStr(virDomainFSDefPtr fs,
-                         unsigned long long qemuCmdFlags);
+                         unsigned long long qemuCaps);
 /* Current, best practice */
 char * qemuBuildControllerDevStr(virDomainControllerDefPtr def,
-                                 unsigned long long qemuCmdFlags);
+                                 unsigned long long qemuCaps);
 
 char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev,
-                               unsigned long long qemuCmdFlags);
+                               unsigned long long qemuCaps);
 
 char * qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev,
-                                 unsigned long long qemuCmdFlags);
+                                 unsigned long long qemuCaps);
 
 char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev);
 
 char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound,
-                            unsigned long long qemuCmdFlags);
+                            unsigned long long qemuCaps);
 
 /* Legacy, pre device support */
 char * qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */
 char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev,
                                  const char *configfd,
-                                 unsigned long long qemuCmdFlags);
+                                 unsigned long long qemuCaps);
 
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
@@ -125,7 +125,7 @@ int qemuNetworkIfaceConnect(virConnectPtr conn,
 int qemuPhysIfaceConnect(virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,
-                         unsigned long long qemuCmdFlags,
+                         unsigned long long qemuCaps,
                          const unsigned char *vmuuid,
                          enum virVMOperationType vmop);
 
@@ -156,7 +156,7 @@ int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr ad
 
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);
-int qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, unsigned long long qemuCmdFlags);
+int qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, unsigned long long qemuCaps);
 int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr net, int idx);
 int qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller);
 
