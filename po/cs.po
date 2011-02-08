@@ -574,7 +574,7 @@ msgstr ""
 #: daemon/libvirtd.c:3324
 #, fuzzy
 msgid "Driver state initialization failed"
-msgstr "autentizace selhala"
+msgstr "Selhala inicializace stavu ovlada??e"
 
 #: daemon/libvirtd.c:3331
 msgid "Network event loop enablement failed"
@@ -669,7 +669,7 @@ msgstr ""
 
 #: daemon/remote.c:3606
 msgid "cannot get TLS cipher size"
-msgstr ""
+msgstr "nelze z??skat velikost ??ifry TLS"
 
 #: daemon/remote.c:3615
 #, c-format
@@ -688,7 +688,7 @@ msgstr ""
 
 #: daemon/remote.c:3668
 msgid "cannot allocate mechlist"
-msgstr ""
+msgstr "nelze alokovat mechlist"
 
 #: daemon/remote.c:3702 src/remote/remote_driver.c:7392
 #, c-format
@@ -721,7 +721,7 @@ msgstr ""
 
 #: daemon/remote.c:3812 daemon/remote.c:3912
 msgid "client tried invalid SASL start request"
-msgstr ""
+msgstr "klient se pokusil o neplatn?? SASL start po??adavek"
 
 #: daemon/remote.c:3827
 #, c-format
@@ -749,15 +749,15 @@ msgstr ""
 
 #: daemon/remote.c:4018
 msgid "client tried unsupported SASL start request"
-msgstr ""
+msgstr "klient se pokusil o nepodporovan?? SASL start po??adavek"
 
 #: daemon/remote.c:4033
 msgid "client tried unsupported SASL step request"
-msgstr ""
+msgstr "klient se pokusil o nepodporovan?? SASL step po??adavek"
 
 #: daemon/remote.c:4079 daemon/remote.c:4169
 msgid "client tried invalid PolicyKit init request"
-msgstr ""
+msgstr "klient se pokusil o neplatn?? PolicyKit init po??adavek"
 
 #: daemon/remote.c:4084 daemon/remote.c:4174
 msgid "cannot get peer socket identity"
@@ -766,7 +766,7 @@ msgstr ""
 #: daemon/remote.c:4088 daemon/remote.c:4184
 #, c-format
 msgid "Checking PID %d running as %d"
-msgstr ""
+msgstr "Kontroluji zda PID %d b?????? jako %d"
 
 #: daemon/remote.c:4092
 #, c-format
@@ -786,12 +786,12 @@ msgstr ""
 #: daemon/remote.c:4107
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %d"
-msgstr ""
+msgstr "PolicyKit zam??tl akci %s, pid %d, uid %d, v??sledek: %d"
 
 #: daemon/remote.c:4113
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d"
-msgstr ""
+msgstr "PolicyKit povolil akci %s, pid %d, uid %d"
 
 #: daemon/remote.c:4188
 #, c-format
@@ -885,7 +885,7 @@ msgstr ""
 
 #: src/conf/cpu_conf.c:123
 msgid "XML does not contain expected 'cpu' element"
-msgstr ""
+msgstr "XML neobsahuje o??ek??van?? 'cpu' element"
 
 #: src/conf/cpu_conf.c:136
 msgid ""
@@ -899,31 +899,31 @@ msgstr ""
 
 #: src/conf/cpu_conf.c:170
 msgid "Missing CPU architecture"
-msgstr ""
+msgstr "Chyb?? architektura CPU"
 
 #: src/conf/cpu_conf.c:178 src/cpu/cpu_x86.c:949
 msgid "Missing CPU model name"
-msgstr ""
+msgstr "Chyb?? jm??no modelu CPU"
 
 #: src/conf/cpu_conf.c:185
 msgid "CPU vendor specified without CPU model"
-msgstr ""
+msgstr "V??robce CPU specifikov??n bez modelu CPU"
 
 #: src/conf/cpu_conf.c:197
 msgid "Missing 'sockets' attribute in CPU topology"
-msgstr ""
+msgstr "Chyb?? atribut 'sockets' v topologii CPU"
 
 #: src/conf/cpu_conf.c:206
 msgid "Missing 'cores' attribute in CPU topology"
-msgstr ""
+msgstr "Chybi?? atribut 'cores' v topologii CPU"
 
 #: src/conf/cpu_conf.c:215
 msgid "Missing 'threads' attribute in CPU topology"
-msgstr ""
+msgstr "Chybi?? atribut 'threads' v topologii CPU"
 
 #: src/conf/cpu_conf.c:222
 msgid "Invalid CPU topology"
-msgstr ""
+msgstr "Neplatn?? topologie CPU"
 
 #: src/conf/cpu_conf.c:234 src/conf/cpu_conf.c:343
 msgid "Non-empty feature list specified without CPU model"
@@ -2167,11 +2167,11 @@ msgstr ""
 
 #: src/conf/interface_conf.c:126
 msgid "interface has no name"
-msgstr ""
+msgstr "rozhran?? nem?? jm??no"
 
 #: src/conf/interface_conf.c:142
 msgid "interface mtu value is improper"
-msgstr ""
+msgstr "hodnota mtu dan??ho rozhran?? je nespr??vn??"
 
 #: src/conf/interface_conf.c:166
 #, c-format
@@ -2200,7 +2200,7 @@ msgstr ""
 
 #: src/conf/interface_conf.c:294
 msgid "Invalid ip address prefix value"
-msgstr ""
+msgstr "Neplatn?? prefix IP adresy"
 
 #: src/conf/interface_conf.c:451
 msgid "protocol misses the family attribute"
@@ -2354,6 +2354,7 @@ msgstr ""
 #, c-format
 msgid "Unrecognized family '%s' in definition of network '%s'"
 msgstr ""
+"Maska pods??t?? nen?? podporov??na pro adresu '%s' v s??ti '%s' (pouze pro IPv4)"
 
 #: src/conf/network_conf.c:511
 #, c-format
@@ -2364,6 +2365,8 @@ msgstr ""
 #, c-format
 msgid "netmask not supported for address '%s' in network '%s' (IPv4 only)"
 msgstr ""
+"s???? '%s' m?? neplatnou masku pods??t?? '%s' pro adresu '%s' (ob?? mus?? b??t v "
+"IPv4)"
 
 #: src/conf/network_conf.c:526
 #, c-format
@@ -2428,12 +2431,12 @@ msgstr ""
 #: src/conf/node_device_conf.c:574
 #, c-format
 msgid "error parsing storage capabilities for '%s'"
-msgstr ""
+msgstr "chyba p??i parsov??n?? vlastnost?? ??lo??i??t?? '%s'"
 
 #: src/conf/node_device_conf.c:584
 #, c-format
 msgid "missing storage capability type for '%s'"
-msgstr ""
+msgstr "chyb?? typ vlasnosti ??lo??i??t?? pro '%s'"
 
 #: src/conf/node_device_conf.c:606
 #, c-format
@@ -2448,37 +2451,37 @@ msgstr ""
 #: src/conf/node_device_conf.c:617
 #, c-format
 msgid "unknown storage capability type '%s' for '%s'"
-msgstr ""
+msgstr "nezn??m?? typ vlastnosti ??lo??i??t?? '%s' pro '%s'"
 
 #: src/conf/node_device_conf.c:629
 #, c-format
 msgid "no size supplied for '%s'"
-msgstr ""
+msgstr "nebyla zad??na velikost pro '%s'"
 
 #: src/conf/node_device_conf.c:630
 #, c-format
 msgid "invalid size supplied for '%s'"
-msgstr ""
+msgstr "zad??na neplatn?? velikost pro '%s'"
 
 #: src/conf/node_device_conf.c:656 src/conf/node_device_conf.c:732
 #, c-format
 msgid "no SCSI host ID supplied for '%s'"
-msgstr ""
+msgstr "nebylo zad??no SCSI host ID pro '%s'"
 
 #: src/conf/node_device_conf.c:657 src/conf/node_device_conf.c:733
 #, c-format
 msgid "invalid SCSI host ID supplied for '%s'"
-msgstr ""
+msgstr "zad??no neplatn?? SCSI host ID pro '%s'"
 
 #: src/conf/node_device_conf.c:662
 #, c-format
 msgid "no SCSI bus ID supplied for '%s'"
-msgstr ""
+msgstr "nebylo zada??no SCSI host ID pro '%s'"
 
 #: src/conf/node_device_conf.c:663
 #, c-format
 msgid "invalid SCSI bus ID supplied for '%s'"
-msgstr ""
+msgstr "zada??no neplatne?? SCSI host ID pro '%s'"
 
 #: src/conf/node_device_conf.c:668
 #, c-format
@@ -2493,12 +2496,12 @@ msgstr ""
 #: src/conf/node_device_conf.c:674
 #, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
-msgstr ""
+msgstr "nebylo zad??no SCSI LUN ID pro '%s'"
 
 #: src/conf/node_device_conf.c:675
 #, c-format
 msgid "invalid SCSI LUN ID supplied for '%s'"
-msgstr ""
+msgstr "zad??no neplatn?? SCSI LUN ID pro '%s'"
 
 #: src/conf/node_device_conf.c:702
 #, c-format
@@ -3011,7 +3014,7 @@ msgstr ""
 #: src/conf/storage_conf.c:1489
 #, c-format
 msgid "Config filename '%s/%s' is too long"
-msgstr ""
+msgstr "Jme??no konfigurac??ni??ho souboru '%s/%s' je pr??i??lis?? dlouhe??"
 
 #: src/conf/storage_conf.c:1497
 #, c-format
@@ -3057,12 +3060,12 @@ msgstr ""
 
 #: src/conf/storage_encryption_conf.c:146
 msgid "unknown volume encryption format"
-msgstr ""
+msgstr "nezn??m?? form??t ??ifrov??n?? svazku"
 
 #: src/conf/storage_encryption_conf.c:152
 #, c-format
 msgid "unknown volume encryption format type %s"
-msgstr ""
+msgstr "nezna??my?? typ s??ifrova??ni?? svazku %s"
 
 #: src/conf/storage_encryption_conf.c:163
 msgid "cannot extract volume encryption secrets"
@@ -3139,15 +3142,15 @@ msgstr ""
 
 #: src/cpu/cpu.c:301
 msgid "nonzero ncpus doesn't match with NULL xmlCPUs"
-msgstr ""
+msgstr "nenulov?? ncpus neodpov??d?? NULL xmlCPUs"
 
 #: src/cpu/cpu.c:306 src/cpu/cpu.c:383
 msgid "No CPUs given"
-msgstr ""
+msgstr "Nebyla zad??na CPU"
 
 #: src/cpu/cpu.c:378
 msgid "nonzero ncpus doesn't match with NULL cpus"
-msgstr ""
+msgstr "nenulove?? ncpus neodpovi??d?? NULL cpus"
 
 #: src/cpu/cpu.c:398
 #, c-format
@@ -3502,7 +3505,7 @@ msgstr ""
 #: src/esx/esx_driver.c:384
 #, c-format
 msgid "Found unexpected controller model '%s' for disk '%s'"
-msgstr ""
+msgstr "Nalezen neo??ek??van?? model ??adi??e '%s' pro disk '%s'"
 
 #: src/esx/esx_driver.c:427 src/esx/esx_driver.c:507 src/esx/esx_driver.c:1095
 #: src/esx/esx_driver.c:1196 src/esx/esx_driver.c:1294
@@ -3521,7 +3524,7 @@ msgstr ""
 #: src/vmx/vmx.c:694
 #, c-format
 msgid "Could not parse UUID from string '%s'"
-msgstr ""
+msgstr "Nelze parsovat UUID z ??et??zce '%s'"
 
 #: src/esx/esx_driver.c:635 src/esx/esx_driver.c:1435
 #: src/esx/esx_driver.c:2766 src/esx/esx_driver.c:4172
@@ -3572,12 +3575,12 @@ msgstr ""
 #: src/esx/esx_driver.c:685
 #, c-format
 msgid "%s is neither an ESX 3.5 host nor an ESX 4.x host"
-msgstr ""
+msgstr "%s nen?? ESX 3.5 hostitel ani ESX 4.x hostitel"
 
 #: src/esx/esx_driver.c:692
 #, c-format
 msgid "%s isn't a GSX 2.0 host"
-msgstr ""
+msgstr "%s nen?? GSX 2.0 hostitel"
 
 #: src/esx/esx_driver.c:757
 msgid "Path has to specify the datacenter and compute resource"
@@ -3586,16 +3589,16 @@ msgstr ""
 #: src/esx/esx_driver.c:805
 #, c-format
 msgid "%s is neither a vCenter 2.5 server nor a vCenter 4.x server"
-msgstr ""
+msgstr "%s nen?? vCenter 2.5 server ani vCenter 4.x server"
 
 #: src/esx/esx_driver.c:959
 msgid "This host is not managed by a vCenter"
-msgstr ""
+msgstr "Tento host nen?? spravov??n vCenter"
 
 #: src/esx/esx_driver.c:966
 #, c-format
 msgid "vCenter IP address %s too big for destination"
-msgstr ""
+msgstr "IP adresa %s vCenter je p????li?? velik?? pro c??l"
 
 #: src/esx/esx_driver.c:979
 #, c-format
@@ -3895,12 +3898,12 @@ msgstr ""
 #: src/esx/esx_storage_driver.c:1011 src/esx/esx_storage_driver.c:1243
 #, c-format
 msgid "Volume name '%s' doesn't have expected format '<directory>/<file>'"
-msgstr ""
+msgstr "Jm??no svazku '%s' nem?? o??ek??van?? form??t '<adres????>/<soubor>'"
 
 #: src/esx/esx_storage_driver.c:1018 src/esx/esx_storage_driver.c:1250
 #, c-format
 msgid "Volume name '%s' has unsupported suffix, expecting '.vmdk'"
-msgstr ""
+msgstr "Jm??no svazku '%s' m?? nepodporovan?? suffix, o??ek??v??m '.vmdk'"
 
 #: src/esx/esx_storage_driver.c:1098
 msgid "Unsupported capacity-to-allocation relation"
@@ -3984,48 +3987,48 @@ msgstr ""
 #: src/esx/esx_util.c:394
 #, c-format
 msgid "No IP address for host '%s' found: %s"
-msgstr ""
+msgstr "IP adresa pro hosta '%s'??nalezena: %s"
 
 #: src/esx/esx_util.c:404
 #, c-format
 msgid "Formating IP address for host '%s' failed: %s"
-msgstr ""
+msgstr "Formatov??n?? IP adresy pro hosta '%s' selhalo: %s"
 
 #: src/esx/esx_vi.c:233
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d) : %s"
-msgstr ""
+msgstr "curl_easy_perform() vr??til chybu: %s (%d) : %s"
 
 #: src/esx/esx_vi.c:243
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
-msgstr ""
+msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) vr??til chybu: %s (%d) : %s"
 
 #: src/esx/esx_vi.c:251
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
-msgstr ""
+msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) vr??til z??porn?? n??vratov?? k??d"
 
 #: src/esx/esx_vi.c:263
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %s (%d) : %s"
-msgstr ""
+msgstr "curl_easy_getinfo(CURLINFO_REDIRECT_URL) vr??til chybu: %s (%d) : %s"
 
 #: src/esx/esx_vi.c:269
 #, c-format
 msgid "The server redirects from '%s' to '%s'"
-msgstr ""
+msgstr "Server p??esm??rov??v?? z '%s' na '%s'"
 
 #: src/esx/esx_vi.c:274
 #, c-format
 msgid "The server redirects from '%s'"
-msgstr ""
+msgstr "Server p??esm??rov??v?? z '%s'"
 
 #: src/esx/esx_vi.c:304
 msgid "Could not initialize CURL"
-msgstr ""
+msgstr "Nepoda??ilo se inicializovat CURL"
 
 #: src/esx/esx_vi.c:324
 msgid "Could not build CURL header list"
@@ -4033,7 +4036,7 @@ msgstr ""
 
 #: src/esx/esx_vi.c:360
 msgid "Could not initialize CURL mutex"
-msgstr ""
+msgstr "Nepoda??ilo se inicializovat CURL mutex"
 
 #: src/esx/esx_vi.c:391
 #, c-format
@@ -4043,17 +4046,17 @@ msgstr ""
 #: src/esx/esx_vi.c:401
 #, c-format
 msgid "Expecting GSX major/minor version '2.0' but found '%s'"
-msgstr ""
+msgstr "O??ek??v??m GSX major/minor verzi '2.0', ale nalezeno '%s'"
 
 #: src/esx/esx_vi.c:420
 #, c-format
 msgid "Expecting ESX major/minor version '3.5' or '4.x' but found '%s'"
-msgstr ""
+msgstr "O??ek??v??m ESX major/minor verzi '3.5' or '4.x', ale nalezeno '%s'"
 
 #: src/esx/esx_vi.c:439
 #, c-format
 msgid "Expecting VPX major/minor version '2.5' or '4.x' but found '%s'"
-msgstr ""
+msgstr "O??ek??v??m VPX major/minor verzi '2.5' or '4.x', ale nalezeno '%s'"
 
 #: src/esx/esx_vi.c:445
 #, c-format
@@ -4171,7 +4174,7 @@ msgstr ""
 #: src/esx/esx_vi.c:1066 src/esx/esx_vi.c:1138 src/esx/esx_vi_types.c:941
 #, c-format
 msgid "Unknown value '%s' for %s"
-msgstr ""
+msgstr "Nezn??m?? hodnota '%s' pro %s"
 
 #: src/esx/esx_vi.c:1232
 #, c-format
@@ -4200,7 +4203,7 @@ msgstr "neplatná hodnota %d pro velikost paměti"
 #: src/esx/esx_vi.c:1660
 #, c-format
 msgid "Invalid lookup from '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/esx/esx_vi.c:1691
 #, fuzzy, c-format
@@ -4247,7 +4250,7 @@ msgstr ""
 
 #: src/esx/esx_vi.c:2060
 msgid "Could not get name of virtual machine"
-msgstr ""
+msgstr "Nepoda??ilo se z??skat jm??no virtualn??ho stroje"
 
 #: src/esx/esx_vi.c:2088
 msgid "Could not get UUID of virtual machine"
@@ -4421,7 +4424,7 @@ msgstr ""
 #: src/esx/esx_vi_types.c:1342
 #, c-format
 msgid "xsd:dateTime value '%s' too long for destination"
-msgstr ""
+msgstr "nepoda??ilo se z??skat informace o uzlu"
 
 #: src/esx/esx_vi_types.c:1364 src/esx/esx_vi_types.c:1374
 #: src/esx/esx_vi_types.c:1387 src/esx/esx_vi_types.c:1401
@@ -4431,7 +4434,7 @@ msgstr ""
 
 #: src/esx/esx_vi_types.c:1484
 msgid "MethodFault is missing 'type' property"
-msgstr ""
+msgstr "chyb?? \""
 
 #: src/esx/esx_vi_types.c:1581
 msgid "ManagedObjectReference is missing 'type' property"
@@ -4444,7 +4447,7 @@ msgstr ""
 
 #: src/fdstream.c:75 src/fdstream.c:111
 msgid "stream does not have a callback registered"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/fdstream.c:178
 msgid "stream already has a callback registered"
@@ -4534,7 +4537,7 @@ msgstr ""
 #: src/internal.h:228
 #, c-format
 msgid "%s: unsupported flags (0x%lx)"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/libvirt.c:527 src/libvirt.c:560 src/libvirt.c:593 src/libvirt.c:626
 #: src/libvirt.c:659 src/libvirt.c:692 src/libvirt.c:728 src/libvirt.c:768
@@ -4568,7 +4571,7 @@ msgstr "URI spojení hypervizoru"
 
 #: src/libvirt.c:2294
 msgid "cannot get working directory"
-msgstr ""
+msgstr "p??ipojit s????ov?? rozhran??"
 
 #: src/libvirt.c:2301 src/libvirt.c:2378
 msgid "path too long"
@@ -4632,7 +4635,7 @@ msgstr ""
 #: src/lxc/lxc_container.c:135
 #, fuzzy
 msgid "setsid failed"
-msgstr "selhala operace"
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_container.c:141
 msgid "ioctl(TIOCSTTY) failed"
@@ -4641,19 +4644,19 @@ msgstr ""
 #: src/lxc/lxc_container.c:156
 #, fuzzy
 msgid "dup2(stdin) failed"
-msgstr "selhala operace"
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_container.c:162
 msgid "dup2(stdout) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_container.c:168
 msgid "dup2(stderr) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_container.c:196
 msgid "Unable to send container continue message"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it neaktivn?? dom??nu %s\n"
 
 #: src/lxc/lxc_container.c:225
 #, fuzzy
@@ -4717,7 +4720,7 @@ msgstr "Nepodařilo se připojit zařízení z %s"
 
 #: src/lxc/lxc_container.c:488
 msgid "Failed to create symlink /dev/ptmx to /dev/pts/ptmx"
-msgstr ""
+msgstr "Nepoda??ilo se ulo??it dom??nu %s do %s"
 
 #: src/lxc/lxc_container.c:496
 #, fuzzy
@@ -4858,12 +4861,12 @@ msgstr "Nepodařilo se zavřít soket %d\n"
 #: src/lxc/lxc_controller.c:263
 #, c-format
 msgid "read of fd %d failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:270
 #, c-format
 msgid "write to fd %d failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:291
 #, fuzzy, c-format
@@ -4872,28 +4875,28 @@ msgstr "nepodařilo se zjistit schopnosti"
 
 #: src/lxc/lxc_controller.c:357
 msgid "epoll_create(2) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:367
 msgid "epoll_ctl(appPty) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:373
 msgid "epoll_ctl(contPty) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:381
 msgid "epoll_ctl(monitor) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:389 src/lxc/lxc_controller.c:421
 #: src/lxc/lxc_controller.c:427
 msgid "epoll_ctl(client) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:409
 msgid "accept(monitor,...) failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/lxc/lxc_controller.c:443
 #, c-format
@@ -4959,12 +4962,12 @@ msgstr ""
 
 #: src/lxc/lxc_driver.c:146
 msgid "lxc state driver is not active"
-msgstr ""
+msgstr "cesta k log souboru nen?? souborem"
 
 #: src/lxc/lxc_driver.c:209
 #, c-format
 msgid "No domain with matching id %d"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/lxc/lxc_driver.c:238 src/lxc/lxc_driver.c:292 src/lxc/lxc_driver.c:317
 #: src/lxc/lxc_driver.c:341 src/lxc/lxc_driver.c:469 src/lxc/lxc_driver.c:522
@@ -4978,12 +4981,12 @@ msgstr ""
 #: src/lxc/lxc_driver.c:2724 src/vmware/vmware_driver.c:574
 #, c-format
 msgid "No domain with matching uuid '%s'"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/lxc/lxc_driver.c:264
 #, c-format
 msgid "No domain with matching name '%s'"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/lxc/lxc_driver.c:419 src/lxc/lxc_driver.c:1610
 #: src/lxc/lxc_driver.c:1681
@@ -5078,7 +5081,7 @@ msgstr ""
 #: src/lxc/lxc_driver.c:795 src/qemu/qemu_driver.c:7057
 #, c-format
 msgid "Parameter `%s' not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/lxc/lxc_driver.c:841 src/lxc/lxc_driver.c:2351
 #: src/qemu/qemu_driver.c:7108 src/qemu/qemu_driver.c:7271
@@ -5164,7 +5167,7 @@ msgstr ""
 #: src/lxc/lxc_driver.c:1479
 #, c-format
 msgid "Cannot create log directory '%s'"
-msgstr ""
+msgstr "nepoda??ilo se zapsat konfigura??n?? soubor: %s"
 
 #: src/lxc/lxc_driver.c:1514
 #, fuzzy, c-format
@@ -5227,7 +5230,7 @@ msgstr "automaticky spustit doménu"
 #: src/lxc/lxc_driver.c:2520
 #, c-format
 msgid "Cannot create autostart directory %s"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it s???? z %s"
 
 #: src/lxc/lxc_driver.c:2527 src/qemu/qemu_driver.c:6917
 #: src/uml/uml_driver.c:1978
@@ -5350,12 +5353,12 @@ msgstr ""
 #: src/network/bridge_driver.c:642 src/network/bridge_driver.c:648
 #, c-format
 msgid "cannot create directory %s"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it s???? z %s"
 
 #: src/network/bridge_driver.c:680
 #, c-format
 msgid "bridge  '%s' has an invalid prefix"
-msgstr ""
+msgstr "dom??na %s ji?? existuje"
 
 #: src/network/bridge_driver.c:716
 #, fuzzy, c-format
@@ -5454,7 +5457,7 @@ msgstr ""
 #: src/network/bridge_driver.c:1361
 #, c-format
 msgid "cannot write to %s to disable IPv6 on bridge %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/network/bridge_driver.c:1383
 #, c-format
@@ -5464,7 +5467,7 @@ msgstr ""
 #: src/network/bridge_driver.c:1399
 #, c-format
 msgid "cannot enable %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/network/bridge_driver.c:1492
 #, fuzzy, c-format
@@ -5479,7 +5482,7 @@ msgstr ""
 #: src/network/bridge_driver.c:1522
 #, c-format
 msgid "cannot set IP address on bridge '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/network/bridge_driver.c:1541
 #, fuzzy
@@ -5526,7 +5529,7 @@ msgstr ""
 #: src/network/bridge_driver.c:1785
 #, c-format
 msgid "no network with matching name '%s'"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/network/bridge_driver.c:2024
 msgid ""
@@ -5572,7 +5575,7 @@ msgstr "Nepodařilo se uložit doménu %s do %s"
 #: src/node_device/node_device_driver.c:88
 #, c-format
 msgid "cannot resolve driver link %s"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/node_device/node_device_driver.c:267
 #: src/node_device/node_device_driver.c:296
@@ -5582,7 +5585,7 @@ msgstr ""
 #: src/test/test_driver.c:5023
 #, c-format
 msgid "no node device with matching name '%s'"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/node_device/node_device_driver.c:307 src/test/test_driver.c:4967
 #, fuzzy
@@ -5592,12 +5595,12 @@ msgstr "cíl diskového zařízení"
 #: src/node_device/node_device_driver.c:408
 #, c-format
 msgid "Invalid vport operation (%d)"
-msgstr ""
+msgstr "neplatn?? parametr v"
 
 #: src/node_device/node_device_driver.c:438
 #, c-format
 msgid "No vport operation path found for host%d"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/node_device/node_device_driver.c:459
 #, c-format
@@ -5620,7 +5623,7 @@ msgstr ""
 
 #: src/node_device/node_device_hal.c:726
 msgid "dbus_bus_get failed"
-msgstr ""
+msgstr "selhala operace"
 
 #: src/node_device/node_device_hal.c:736
 msgid "libhal_ctx_set_dbus_connection failed"
@@ -5645,7 +5648,7 @@ msgstr ""
 #: src/node_device/node_device_hal.c:794
 #, c-format
 msgid "%s: %s"
-msgstr ""
+msgstr "%s: chyba:"
 
 #: src/node_device/node_device_linux_sysfs.c:60
 #, fuzzy, c-format
@@ -5756,7 +5759,7 @@ msgstr "Nepodařilo se vytvořit doménu z %s"
 #: src/node_device/node_device_udev.c:1377
 #, c-format
 msgid "udev scan devices returned %d"
-msgstr ""
+msgstr "Dom??na %s vytvo??ena z %s\n"
 
 #: src/node_device/node_device_udev.c:1445
 #, c-format
@@ -5872,7 +5875,7 @@ msgstr ""
 #: src/nwfilter/nwfilter_ebiptables_driver.c:161
 #, c-format
 msgid "cannot find value for '%s'"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:168
 #, c-format
@@ -5889,7 +5892,7 @@ msgstr ""
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:227
 msgid "Buffer too small for MAC address"
-msgstr ""
+msgstr "Nenalezeno ????dn?? rozhran?? s MAC adresou %s"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:239
 #: src/nwfilter/nwfilter_ebiptables_driver.c:259
@@ -5903,12 +5906,12 @@ msgstr ""
 #: src/nwfilter/nwfilter_ebiptables_driver.c:266
 #, c-format
 msgid "Unhandled datatype %x"
-msgstr ""
+msgstr "neplatn?? dom??nov?? ukazatel v %s"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:1163
 #, c-format
 msgid "cannot create rule since %s tool is missing."
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it s???? z %s"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:1852
 msgid "cannot create rule since ebtables tool is missing."
@@ -5918,7 +5921,7 @@ msgstr ""
 #: src/nwfilter/nwfilter_ebiptables_driver.c:2384
 #, c-format
 msgid "'%s' protocol not support for net type '%s'"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:2400
 msgid "illegal protocol type"
@@ -5926,7 +5929,7 @@ msgstr ""
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:2465
 msgid "cannot create temporary file"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it XML"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:2472
 msgid "cannot change permissions on temp. file"
@@ -5958,11 +5961,11 @@ msgstr ""
 #: src/nwfilter/nwfilter_ebiptables_driver.c:3459
 #, c-format
 msgid "Some rules could not be created for interface %s."
-msgstr ""
+msgstr "Nenalezeno ????dn?? rozhran?? s MAC adresou %s"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:3579
 msgid "error while executing CLI commands"
-msgstr ""
+msgstr "Chyba p??i alokaci pam??ti: %s"
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:3711
 msgid "essential tools to support ip(6)tables firewalls could not be located"
@@ -5985,7 +5988,7 @@ msgstr ""
 #: src/nwfilter/nwfilter_gentech_driver.c:731
 #, c-format
 msgid "Filter '%s' is in use."
-msgstr ""
+msgstr "S???? st??le b??????"
 
 #: src/nwfilter/nwfilter_gentech_driver.c:408
 #: src/nwfilter/nwfilter_gentech_driver.c:494
@@ -5999,7 +6002,7 @@ msgstr ""
 #: src/nwfilter/nwfilter_gentech_driver.c:985
 #, c-format
 msgid "Could not get access to ACL tech driver '%s'"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/nwfilter/nwfilter_gentech_driver.c:724
 #, fuzzy, c-format
@@ -6014,7 +6017,7 @@ msgstr "autentizace selhala"
 #: src/nwfilter/nwfilter_learnipaddr.c:160
 #, c-format
 msgid "interface name %s does not fit into buffer "
-msgstr ""
+msgstr "p????kaz '%s' neexistuje"
 
 #: src/nwfilter/nwfilter_learnipaddr.c:654
 #, c-format
@@ -6098,7 +6101,7 @@ msgstr "uzel seznamu domén"
 #: src/opennebula/one_driver.c:517 src/opennebula/one_driver.c:553
 #: src/opennebula/one_driver.c:588 src/opennebula/one_driver.c:621
 msgid "Wrong state to perform action"
-msgstr ""
+msgstr "informace o uzlu"
 
 #: src/opennebula/one_driver.c:595 src/opennebula/one_driver.c:628
 #: src/qemu/qemu_driver.c:3385 src/uml/uml_driver.c:1310
@@ -6129,7 +6132,7 @@ msgstr ""
 #: src/openvz/openvz_conf.c:232
 #, c-format
 msgid "Could not read 'NETIF' from config for container %d"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/openvz/openvz_conf.c:258
 #, fuzzy
@@ -6161,9 +6164,8 @@ msgid "MAC address %s too long for destination"
 msgstr ""
 
 #: src/openvz/openvz_conf.c:302
-#, fuzzy
 msgid "Wrong MAC address"
-msgstr "MAC adresar"
+msgstr "Nespr??vn?? MAC adresa"
 
 #: src/openvz/openvz_conf.c:372
 #, c-format
@@ -6223,7 +6225,7 @@ msgstr "převést jméno nebo ID domény na UUID domény"
 
 #: src/openvz/openvz_driver.c:201
 msgid "Could not copy default config"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/openvz/openvz_driver.c:207
 msgid "Could not set the source dir for the filesystem"
@@ -6337,7 +6339,7 @@ msgstr "neznámý druh OS %s"
 #: src/openvz/openvz_driver.c:1190 src/openvz/openvz_driver.c:1236
 #, c-format
 msgid "unsupported flags (0x%x)"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/openvz/openvz_driver.c:1252
 msgid "VCPUs should be >= 1"
@@ -6399,7 +6401,7 @@ msgstr "autentizace selhala"
 #: src/phyp/phyp_driver.c:1002
 #, c-format
 msgid "Error while getting %s address info"
-msgstr ""
+msgstr "Chyba p??i alokaci pam??ti: %s"
 
 #: src/phyp/phyp_driver.c:1019
 #, fuzzy, c-format
@@ -6408,7 +6410,7 @@ msgstr "nepodařilo se připojit k %s"
 
 #: src/phyp/phyp_driver.c:1039
 msgid "Failure establishing SSH session."
-msgstr ""
+msgstr "Chyba p??i alokaci pam??ti: %s"
 
 #: src/phyp/phyp_driver.c:1081
 #, fuzzy
@@ -6425,12 +6427,12 @@ msgstr ""
 
 #: src/phyp/phyp_driver.c:1192
 msgid "Error while opening SSH session."
-msgstr ""
+msgstr "Chyba p??i alokaci pam??ti: %s"
 
 #: src/phyp/phyp_driver.c:1729 src/phyp/phyp_driver.c:1796
 #: src/phyp/phyp_driver.c:2029
 msgid "Unable to get VIOS profile name."
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/phyp/phyp_driver.c:1791 src/phyp/phyp_driver.c:1986
 #, fuzzy
@@ -6459,20 +6461,20 @@ msgstr "Nepodařilo se vytvořit doménu z %s"
 
 #: src/phyp/phyp_driver.c:2391 src/phyp/phyp_driver.c:2686
 #: src/phyp/phyp_driver.c:3241
-msgid "Unable to determine storage pool's name."
+nepoda??ilomsgid "Unable to determine storage pool's name."
 msgstr ""
 
 #: src/phyp/phyp_driver.c:2396 src/phyp/phyp_driver.c:3246
 msgid "Unable to determine storage pool's uuid."
-msgstr ""
+msgstr "nepoda??ilo se z??skat hostitelsk?? jm??no"
 
 #: src/phyp/phyp_driver.c:2402 src/phyp/phyp_driver.c:3252
 msgid "Unable to determine storage pools's size."
-msgstr ""
+msgstr "nepoda??ilo se z??skat hostitelsk?? jm??no"
 
 #: src/phyp/phyp_driver.c:2415 src/phyp/phyp_driver.c:3265
 msgid "Unable to determine storage pools's source adapter."
-msgstr ""
+msgstr "chyb?? zdrojov?? informace pro za????zen?? %s"
 
 #: src/phyp/phyp_driver.c:2420
 msgid "Error parsing volume XML."
@@ -6480,7 +6482,7 @@ msgstr ""
 
 #: src/phyp/phyp_driver.c:2426
 msgid "StoragePool name already exists."
-msgstr ""
+msgstr "dom??na %s ji?? existuje"
 
 #: src/phyp/phyp_driver.c:2434
 msgid "Key must be empty, Power Hypervisor will create one for you."
@@ -6581,17 +6583,17 @@ msgstr ""
 #: src/qemu/qemu_bridge_filter.c:43
 #, c-format
 msgid "failed to add ebtables rule to set default policy to drop on '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se ulo??it dom??nu %s do %s"
 
 #: src/qemu/qemu_bridge_filter.c:59
 #, c-format
 msgid "cannot filter mac addresses on bridge '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/qemu/qemu_bridge_filter.c:79 src/qemu/qemu_bridge_filter.c:100
 #, c-format
 msgid "failed to add ebtables rule to allow routing to '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se ulo??it dom??nu %s do %s"
 
 #: src/qemu/qemu_capabilities.c:1033
 #, c-format
@@ -6640,11 +6642,11 @@ msgstr "Nepodařilo se odpojit zařízení z %s"
 
 #: src/qemu/qemu_cgroup.c:224
 msgid "unable to allow /dev/pts/ devices"
-msgstr ""
+msgstr "Nepoda??ilo se vypsat neaktivn?? dom??ny"
 
 #: src/qemu/qemu_cgroup.c:232
 msgid "unable to allow /dev/snd/ devices"
-msgstr ""
+msgstr "Nepoda??ilo se vypsat neaktivn?? dom??ny"
 
 #: src/qemu/qemu_cgroup.c:243
 #, fuzzy, c-format
@@ -6748,7 +6750,7 @@ msgstr ""
 #: src/qemu/qemu_command.c:749
 #, c-format
 msgid "unable to reserve PCI address %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/qemu/qemu_command.c:871
 msgid "No more available PCI addresses"
@@ -6787,7 +6789,7 @@ msgstr "neočekávaná data '%s'"
 
 #: src/qemu/qemu_command.c:1159
 msgid "unexpected address type for scsi disk"
-msgstr ""
+msgstr "neo??ek??van?? typ MIME"
 
 #: src/qemu/qemu_command.c:1168
 msgid "SCSI controller only supports 1 bus"
@@ -6816,7 +6818,7 @@ msgstr ""
 #: src/qemu/qemu_command.c:1231 src/qemu/qemu_command.c:3203
 #, c-format
 msgid "unsupported disk driver type for '%s'"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/qemu/qemu_command.c:1237 src/qemu/qemu_command.c:3209
 msgid "cannot create virtual FAT disks in read-write mode"
@@ -6841,7 +6843,7 @@ msgstr ""
 
 #: src/qemu/qemu_command.c:1697 src/qemu/qemu_command.c:3920
 msgid "missing watchdog model"
-msgstr ""
+msgstr "neplatn?? parametr v"
 
 #: src/qemu/qemu_command.c:1773 src/qemu/qemu_command.c:3883
 msgid "invalid sound model"
@@ -6895,7 +6897,7 @@ msgstr ""
 msgid ""
 "setting current vcpu count less than maximum is not supported with this QEMU "
 "binary"
-msgstr ""
+msgstr "tato funkce nen?? hypervizorem podporov??na"
 
 #: src/qemu/qemu_command.c:2586
 #, c-format
@@ -6923,7 +6925,7 @@ msgstr ""
 #: src/qemu/qemu_command.c:2667
 #, c-format
 msgid "hugepage backing not supported by '%s'"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/qemu/qemu_command.c:2705
 #, fuzzy, c-format
@@ -6937,7 +6939,7 @@ msgstr "příkaz '%s' nepodporuje volbu --%s"
 
 #: src/qemu/qemu_command.c:2727
 msgid "Host SMBIOS information is not available"
-msgstr ""
+msgstr "S???? st??le b??????"
 
 #: src/qemu/qemu_command.c:2736
 #, c-format
@@ -6983,7 +6985,7 @@ msgstr ""
 
 #: src/qemu/qemu_command.c:3288
 msgid "filesystem passthrough not supported by this QEMU"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/qemu/qemu_command.c:3473
 msgid "guestfwd requires QEMU to support -chardev & -device"
@@ -7081,7 +7083,7 @@ msgstr "neznámý příkaz '%s'"
 #, c-format
 msgid ""
 "Memory balloon device type '%s' is not supported by this version of qemu"
-msgstr ""
+msgstr "tato funkce nen?? hypervizorem podporov??na"
 
 #: src/qemu/qemu_command.c:4287
 #, fuzzy, c-format
@@ -7264,7 +7266,7 @@ msgstr ""
 
 #: src/qemu/qemu_conf.c:112
 msgid "unable to find hugetlbfs mountpoint"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it dom??nu z %s"
 
 #: src/qemu/qemu_conf.c:290
 msgid "cgroup_controllers must be a list of strings"
@@ -7273,7 +7275,7 @@ msgstr ""
 #: src/qemu/qemu_conf.c:296
 #, c-format
 msgid "Unknown cgroup controller '%s'"
-msgstr ""
+msgstr "nezn??m?? druh OS %s"
 
 #: src/qemu/qemu_conf.c:329
 msgid "cgroup_device_acl must be a list of strings"
@@ -7300,7 +7302,7 @@ msgstr ""
 #: src/qemu/qemu_domain.c:151
 #, c-format
 msgid "unsupported monitor type '%s'"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/qemu/qemu_domain.c:229
 #, c-format
@@ -7404,7 +7406,7 @@ msgstr ""
 
 #: src/qemu/qemu_driver.c:468 src/storage/storage_backend.c:425
 msgid "secret storage not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/qemu/qemu_driver.c:477
 #, fuzzy, c-format
@@ -7510,7 +7512,7 @@ msgstr ""
 #: src/qemu/qemu_driver.c:1627
 #, c-format
 msgid "Out of space while reading %s log output: %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/qemu/qemu_driver.c:1634
 #, c-format
@@ -7661,7 +7663,7 @@ msgstr "Nepodařilo se otevřít '%s': %s"
 #: src/qemu/qemu_driver.c:3437 src/qemu/qemu_driver.c:9020
 #, c-format
 msgid "no domain with matching name '%s'"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/qemu/qemu_driver.c:3913 src/uml/uml_driver.c:1468
 msgid "cannot set memory higher than max memory"
@@ -7789,7 +7791,7 @@ msgstr ""
 
 #: src/qemu/qemu_driver.c:4921
 msgid "resuming after dump failed"
-msgstr ""
+msgstr "selhala operace"
 
 #: src/qemu/qemu_driver.c:4977
 #, fuzzy
@@ -7803,7 +7805,7 @@ msgstr "selhala operace"
 
 #: src/qemu/qemu_driver.c:5041
 msgid "cannot change vcpu count of this domain"
-msgstr ""
+msgstr "nelze zm??nit po??et vcpu pro tuto dom??nu"
 
 #: src/qemu/qemu_driver.c:5067 src/qemu/qemu_driver.c:5346
 #: src/test/test_driver.c:2055 src/test/test_driver.c:2116
@@ -7830,7 +7832,7 @@ msgstr ""
 
 #: src/qemu/qemu_driver.c:5112
 msgid "could not determine max vcpus for the domain"
-msgstr ""
+msgstr "nepoda??ilo se z??skat hostitelsk?? jm??no"
 
 #: src/qemu/qemu_driver.c:5122 src/xen/xend_internal.c:3592
 #: src/xen/xm_internal.c:1692
@@ -7965,7 +7967,7 @@ msgstr "Nepodařilo se vytvořit XML"
 #: src/qemu/qemu_driver.c:5749
 #, c-format
 msgid "Invalid compressed save format %d"
-msgstr ""
+msgstr "neplatn?? parametr v"
 
 #: src/qemu/qemu_driver.c:5761
 #, fuzzy, c-format
@@ -7985,7 +7987,7 @@ msgstr ""
 #: src/qemu/qemu_driver.c:5807
 #, c-format
 msgid "child process returned error reading '%s'"
-msgstr ""
+msgstr "nepoda??ilo se otev????t %s pro ??ten??"
 
 #: src/qemu/qemu_driver.c:5832
 #, fuzzy
@@ -8008,7 +8010,7 @@ msgstr "nepodařilo se zjistit schopnosti"
 #: src/xen/xen_driver.c:1206 src/xen/xen_driver.c:1247
 #, c-format
 msgid "unsupported config type %s"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/qemu/qemu_driver.c:6237
 #, fuzzy
@@ -8057,7 +8059,7 @@ msgstr ""
 #: src/qemu/qemu_driver.c:6726
 #, c-format
 msgid "disk device type '%s' cannot be updated"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/qemu/qemu_driver.c:6773 src/uml/uml_driver.c:1867
 #, fuzzy
@@ -8066,7 +8068,7 @@ msgstr "oddefinovat neaktivní doménu"
 
 #: src/qemu/qemu_driver.c:6798 src/uml/uml_driver.c:1882
 msgid "This type of disk cannot be hot unplugged"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/qemu/qemu_driver.c:6808
 #, c-format
@@ -8086,7 +8088,7 @@ msgstr "automaticky spustit doménu"
 #: src/uml/uml_driver.c:1971
 #, c-format
 msgid "cannot create autostart directory %s"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it s???? z %s"
 
 #: src/qemu/qemu_driver.c:6992 src/qemu/qemu_driver.c:7095
 #: src/qemu/qemu_driver.c:7208 src/qemu/qemu_driver.c:7279
@@ -8234,7 +8236,7 @@ msgstr ""
 #: src/qemu/qemu_driver.c:8399
 #, c-format
 msgid "cannot parse URI %s"
-msgstr ""
+msgstr "neplatn?? MAC adresa: %s"
 
 #: src/qemu/qemu_driver.c:8453
 msgid "tunnelled migration failed to read from qemu"
@@ -8247,7 +8249,7 @@ msgstr "Nepodařilo se zapsat do soketu %d\n"
 
 #: src/qemu/qemu_driver.c:8526
 msgid "cannot open tunnelled migration socket"
-msgstr ""
+msgstr "uzel soket?? CPU"
 
 #: src/qemu/qemu_driver.c:8534
 #, c-format
@@ -8285,7 +8287,7 @@ msgstr ""
 #: src/qemu/qemu_driver.c:8652
 #, fuzzy
 msgid "migrate failed"
-msgstr "selhala operace"
+msgstr "selhala operace %s"
 
 #: src/qemu/qemu_driver.c:8661
 msgid "tunnelled migration failed to accept from qemu"
@@ -8308,7 +8310,7 @@ msgstr "Nepodařilo se probudit doménu %s"
 #: src/qemu/qemu_driver.c:9027
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
-msgstr ""
+msgstr "Dom??na st??le b??????"
 
 #: src/qemu/qemu_driver.c:9171 src/xen/xen_driver.c:1859
 #, c-format
@@ -8419,7 +8421,7 @@ msgstr ""
 #: src/qemu/qemu_hotplug.c:250
 #, c-format
 msgid "target %s:%d already exists"
-msgstr ""
+msgstr "neo??ek??van?? typ MIME"
 
 #: src/qemu/qemu_hotplug.c:375
 #, fuzzy, c-format
@@ -8433,7 +8435,7 @@ msgstr ""
 
 #: src/qemu/qemu_hotplug.c:487 src/uml/uml_driver.c:1700
 msgid "disk source path is missing"
-msgstr ""
+msgstr "chyb?? zdrojov?? informace pro za????zen??"
 
 #: src/qemu/qemu_hotplug.c:564
 msgid "installed qemu version does not support host_net_add"
@@ -8496,7 +8498,7 @@ msgstr ""
 #: src/qemu/qemu_hotplug.c:1107
 #, c-format
 msgid "unable to change config on '%s' graphics type"
-msgstr ""
+msgstr "Nepoda??ilo se zav????t soket %d\n"
 
 #: src/qemu/qemu_hotplug.c:1145 src/qemu/qemu_hotplug.c:1236
 #: src/uml/uml_driver.c:1820
@@ -8507,7 +8509,7 @@ msgstr "Doména nebyla nalezena"
 #: src/qemu/qemu_hotplug.c:1163 src/qemu/qemu_hotplug.c:1328
 #: src/qemu/qemu_hotplug.c:1410 src/qemu/qemu_hotplug.c:1547
 msgid "device cannot be detached without a PCI address"
-msgstr ""
+msgstr "oddefinovat neaktivn?? dom??nu"
 
 #: src/qemu/qemu_hotplug.c:1242
 msgid "Underlying qemu does not support SCSI disk removal"
@@ -8516,7 +8518,7 @@ msgstr ""
 #: src/qemu/qemu_hotplug.c:1319
 #, c-format
 msgid "disk controller %s:%d not found"
-msgstr ""
+msgstr "Dom??na nebyla nalezena"
 
 #: src/qemu/qemu_hotplug.c:1400
 #, c-format
@@ -8576,7 +8578,7 @@ msgstr "nepodařilo se připojit ke Xen Store"
 
 #: src/qemu/qemu_monitor.c:276
 msgid "monitor socket did not show up."
-msgstr ""
+msgstr "Dom??na %s je pr??v?? vyp??n??na\n"
 
 #: src/qemu/qemu_monitor.c:294
 #, c-format
@@ -8591,7 +8593,7 @@ msgstr ""
 #: src/qemu/qemu_monitor.c:517
 #, c-format
 msgid "event from unexpected fd %d!=%d / watch %d!=%d"
-msgstr ""
+msgstr "neo??ek??van?? p????kazov?? (dict) uzel"
 
 #: src/qemu/qemu_monitor.c:564
 #, c-format
@@ -8625,7 +8627,7 @@ msgstr ""
 
 #: src/qemu/qemu_monitor.c:667
 msgid "unable to register monitor events"
-msgstr ""
+msgstr "Nepoda??ilo se zapsat do soketu %d\n"
 
 #: src/qemu/qemu_monitor.c:899 src/qemu/qemu_monitor.c:920
 #: src/qemu/qemu_monitor.c:940 src/qemu/qemu_monitor.c:959
@@ -8668,7 +8670,7 @@ msgstr ""
 #: src/qemu/qemu_monitor_json.c:231
 #, c-format
 msgid "cannot parse JSON doc '%s'"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/qemu/qemu_monitor_json.c:238 src/qemu/qemu_monitor_text.c:255
 #, fuzzy, c-format
@@ -8725,7 +8727,7 @@ msgstr "neúplná informace o doméně, chybí jméno"
 #: src/qemu/qemu_monitor_json.c:836
 #, c-format
 msgid "unexpected cpu index %d expecting %d"
-msgstr ""
+msgstr "neo??ek??van?? p????kazov?? (dict) uzel"
 
 #: src/qemu/qemu_monitor_json.c:916 src/qemu/qemu_monitor_json.c:971
 msgid "info balloon reply was missing return data"
@@ -8873,7 +8875,7 @@ msgstr ""
 
 #: src/qemu/qemu_monitor_text.c:371
 msgid "cannot stop CPU execution"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/qemu/qemu_monitor_text.c:384
 #, fuzzy
@@ -8892,11 +8894,11 @@ msgstr "změnit paměťovou alokaci"
 #: src/qemu/qemu_monitor_text.c:565
 #, c-format
 msgid "could not parse memory balloon allocation from '%s'"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/qemu/qemu_monitor_text.c:592
 msgid "could not query memory balloon statistics"
-msgstr ""
+msgstr "zm??nit pam????ovou alokaci"
 
 #: src/qemu/qemu_monitor_text.c:624
 msgid "'info blockstats' command failed"
@@ -9018,7 +9020,7 @@ msgstr ""
 #: src/qemu/qemu_monitor_text.c:1432
 #, c-format
 msgid "unable to add USB disk %s: %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/qemu/qemu_monitor_text.c:1460
 #, fuzzy
@@ -9138,7 +9140,7 @@ msgstr "Spuštěna síť %s\n"
 #: src/qemu/qemu_monitor_text.c:2195
 #, fuzzy, c-format
 msgid "adding %s disk failed: %s"
-msgstr "selhala operace %s"
+msgstr "dom??na %s ji?? existuje"
 
 #: src/qemu/qemu_monitor_text.c:2250
 #, c-format
@@ -9271,7 +9273,7 @@ msgstr "Nepodařilo se číst ze soketu %d\n"
 #: src/remote/remote_driver.c:726
 #, c-format
 msgid "unable to connect to '%s', libvirtd may need to be started"
-msgstr ""
+msgstr "nepoda??ilo se p??ipojit k %s"
 
 #: src/remote/remote_driver.c:795 src/remote/remote_driver.c:801
 #, fuzzy
@@ -9284,11 +9286,11 @@ msgstr ""
 
 #: src/remote/remote_driver.c:837 src/remote/remote_driver.c:843
 msgid "unable to make socket non-blocking"
-msgstr ""
+msgstr "Nepoda??ilo se ????st ze soketu %d\n"
 
 #: src/remote/remote_driver.c:849
 msgid "unable to make pipe"
-msgstr ""
+msgstr "Nepoda??ilo se zav????t soket %d\n"
 
 #: src/remote/remote_driver.c:884
 #, fuzzy
@@ -9298,7 +9300,7 @@ msgstr "nepodařilo se získat URI"
 #: src/remote/remote_driver.c:1129
 #, c-format
 msgid "Cannot access %s '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/remote/remote_driver.c:1164
 #, fuzzy, c-format
@@ -9356,7 +9358,7 @@ msgstr "Nemohu ověřit současnou velikost paměti"
 
 #: src/remote/remote_driver.c:1353
 msgid "cannot get current time"
-msgstr ""
+msgstr "Nemohu ov????it sou??asnou velikost pam??ti"
 
 #: src/remote/remote_driver.c:1358
 #, fuzzy
@@ -9580,7 +9582,7 @@ msgstr ""
 #: src/remote/remote_driver.c:6705 src/remote/remote_driver.c:6719
 #, c-format
 msgid "too many remote nwfilters: %d > %d"
-msgstr ""
+msgstr "p????li?? mnoho s??t??"
 
 #: src/remote/remote_driver.c:6871
 #, fuzzy, c-format
@@ -9696,12 +9698,12 @@ msgstr ""
 #: src/remote/remote_driver.c:7668 src/remote/remote_driver.c:7695
 #: src/remote/remote_driver.c:7725 src/remote/remote_driver.c:7761
 msgid "unable to demarshall reboot event"
-msgstr ""
+msgstr "Nepoda??ilo se zapsat do soketu %d\n"
 
 #: src/remote/remote_driver.c:7931 src/remote/remote_driver.c:7944
 #, c-format
 msgid "too many remote secret UUIDs: %d > %d"
-msgstr ""
+msgstr "p????li?? mnoho dom??n"
 
 #: src/remote/remote_driver.c:8264 src/remote/remote_driver.c:9371
 msgid "xdr_remote_message_header failed"
@@ -9746,7 +9748,7 @@ msgstr ""
 
 #: src/remote/remote_driver.c:9434
 msgid "cannot send data"
-msgstr ""
+msgstr "uzel seznamu dom??n"
 
 #: src/remote/remote_driver.c:9462
 #, fuzzy, c-format
@@ -9839,11 +9841,11 @@ msgstr ""
 
 #: src/remote/remote_driver.c:10140 src/remote/remote_driver.c:10144
 msgid "read on wakeup fd failed"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/remote/remote_driver.c:10153
 msgid "poll on socket failed"
-msgstr ""
+msgstr "selhala operace"
 
 #: src/remote/remote_driver.c:10214
 msgid "received hangup / error event on socket"
@@ -9907,7 +9909,7 @@ msgstr "Nepodařilo se otevřít '%s': %s"
 #: src/secret/secret_driver.c:381
 #, c-format
 msgid "cannot stat '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/secret/secret_driver.c:386
 #, c-format
@@ -9917,7 +9919,7 @@ msgstr ""
 #: src/secret/secret_driver.c:395
 #, c-format
 msgid "cannot read '%s'"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/secret/secret_driver.c:402
 #, fuzzy, c-format
@@ -9934,22 +9936,22 @@ msgstr "Chyba při alokaci paměti: %s"
 #: src/secret/secret_driver.c:933
 #, c-format
 msgid "no secret with matching uuid '%s'"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/secret/secret_driver.c:660
 #, c-format
 msgid "no secret with matching usage '%s'"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/secret/secret_driver.c:700
 #, c-format
 msgid "a secret with UUID %s already defined for use with %s"
-msgstr ""
+msgstr "dom??na %s ji?? existuje"
 
 #: src/secret/secret_driver.c:720
 #, c-format
 msgid "a secret with UUID %s is already defined for use with %s"
-msgstr ""
+msgstr "dom??na %s ji?? existuje"
 
 #: src/secret/secret_driver.c:727
 msgid "cannot change private flag on existing secret"
@@ -9962,7 +9964,7 @@ msgstr ""
 #: src/secret/secret_driver.c:895
 #, c-format
 msgid "secret '%s' does not have a value"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/secret/secret_driver.c:902
 msgid "secret is private"
@@ -10537,22 +10539,22 @@ msgstr ""
 
 #: src/storage/storage_backend.c:432
 msgid "secrets already defined"
-msgstr ""
+msgstr "dom??na %s ji?? existuje"
 
 #: src/storage/storage_backend.c:500
 #, c-format
 msgid "Cannot set gid to %u before creating %s"
-msgstr ""
+msgstr "Jm??no neaktivn?? dom??ny"
 
 #: src/storage/storage_backend.c:507
 #, c-format
 msgid "Cannot set uid to %u before creating %s"
-msgstr ""
+msgstr "Jm??no neaktivn?? dom??ny"
 
 #: src/storage/storage_backend.c:538
 #, c-format
 msgid "Cannot run %s to create %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend.c:544
 #, fuzzy, c-format
@@ -10562,12 +10564,12 @@ msgstr "Nepodařilo se vytvořit XML"
 #: src/storage/storage_backend.c:555
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend.c:594
 #, c-format
 msgid "Unable to read '%s -h' output"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it dom??nu z %s"
 
 #: src/storage/storage_backend.c:617
 #, c-format
@@ -10586,7 +10588,7 @@ msgstr ""
 #: src/storage/storage_backend.c:685
 #, c-format
 msgid "unknown storage vol backing store type %d"
-msgstr ""
+msgstr "nezn??m?? druh OS %s"
 
 #: src/storage/storage_backend.c:691
 #, c-format
@@ -10601,7 +10603,7 @@ msgstr ""
 #: src/storage/storage_backend.c:711
 #, c-format
 msgid "unsupported volume encryption format %d"
-msgstr ""
+msgstr "autentizace selhala"
 
 #: src/storage/storage_backend.c:717
 msgid "too many secrets for qcow encryption"
@@ -10627,7 +10629,7 @@ msgstr ""
 #: src/storage/storage_backend.c:901
 #, c-format
 msgid "Unknown file create tool type '%d'."
-msgstr ""
+msgstr "nezn??m?? druh OS %s"
 
 #: src/storage/storage_backend.c:949
 msgid "creation of non-raw file images is not supported without qemu-img."
@@ -10716,11 +10718,11 @@ msgstr ""
 
 #: src/storage/storage_backend_disk.c:393
 msgid "Invalid partition type"
-msgstr ""
+msgstr "neplatn?? dom??nov?? ukazatel v %s"
 
 #: src/storage/storage_backend_disk.c:402
 msgid "extended partition already exists"
-msgstr ""
+msgstr "neo??ek??van?? typ MIME"
 
 #: src/storage/storage_backend_disk.c:437
 msgid "no extended partition found and no primary partition available"
@@ -10738,7 +10740,7 @@ msgstr ""
 #: src/storage/storage_backend_disk.c:654
 #, c-format
 msgid "Couldn't read volume target path '%s'"
-msgstr ""
+msgstr "nepoda??ilo se p??ipojit k %s"
 
 #: src/storage/storage_backend_disk.c:665
 #, c-format
@@ -10763,7 +10765,7 @@ msgstr "neplatný síťový ukazatel v %s"
 #: src/storage/storage_backend_fs.c:280
 #, c-format
 msgid "cannot read mount list '%s'"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/storage/storage_backend_fs.c:371 src/storage/storage_backend_fs.c:446
 #: src/storage/storage_backend_iscsi.c:648
@@ -10792,17 +10794,17 @@ msgstr "chybí zdrojové informace pro zařízení"
 #: src/storage/storage_backend_fs.c:554
 #, c-format
 msgid "path '%s' is not absolute"
-msgstr ""
+msgstr "p????kaz '%s' neexistuje"
 
 #: src/storage/storage_backend_fs.c:618
 #, c-format
 msgid "cannot open path '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend_fs.c:685
 #, c-format
 msgid "cannot statvfs path '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend_fs.c:752
 #, fuzzy, c-format
@@ -10811,7 +10813,7 @@ msgstr "nepodařilo se získat doménu '%s'"
 
 #: src/storage/storage_backend_fs.c:803
 msgid "cannot copy from volume to a directory volume"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it s???? z %s"
 
 #: src/storage/storage_backend_fs.c:837
 msgid ""
@@ -10825,7 +10827,7 @@ msgstr ""
 #: src/storage/storage_backend_fs.c:904
 #, c-format
 msgid "cannot unlink file '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend_iscsi.c:66
 #, fuzzy, c-format
@@ -10849,7 +10851,7 @@ msgstr ""
 #: src/storage/storage_backend_iscsi.c:196
 #, c-format
 msgid "Could not allocate memory for output of '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se alokovat pam????"
 
 #: src/storage/storage_backend_iscsi.c:205
 #, c-format
@@ -10865,11 +10867,11 @@ msgstr ""
 #: src/storage/storage_backend_iscsi.c:226
 #, c-format
 msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr ""
+msgstr "neo??ek??van?? typ MIME"
 
 #: src/storage/storage_backend_iscsi.c:275
 msgid "Failed to initialize random generator when creating iscsi interface"
-msgstr ""
+msgstr "Nepoda??ilo se naj??t s????: %s"
 
 #: src/storage/storage_backend_iscsi.c:296
 #, c-format
@@ -10879,7 +10881,7 @@ msgstr ""
 #: src/storage/storage_backend_iscsi.c:312
 #, c-format
 msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se z??skat stav rozhran?? %s %s"
 
 #: src/storage/storage_backend_iscsi.c:421
 #, c-format
@@ -10930,37 +10932,37 @@ msgstr "nepodařilo se získat informace o uzlu"
 #: src/storage/storage_backend_logical.c:425
 #, c-format
 msgid "cannot open device '%s'"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/storage/storage_backend_logical.c:431
 #, c-format
 msgid "cannot clear device header of '%s'"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/storage/storage_backend_logical.c:438
 #, c-format
 msgid "cannot close device '%s'"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/storage/storage_backend_logical.c:562
 #, c-format
 msgid "cannot remove PV device '%s'"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/storage/storage_backend_logical.c:635
 #, c-format
 msgid "cannot set file owner '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend_logical.c:642
 #, c-format
 msgid "cannot set file mode '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend_logical.c:658
 #, c-format
 msgid "cannot find newly created volume '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/storage/storage_backend_mpath.c:232
 #, fuzzy, c-format
@@ -10970,12 +10972,12 @@ msgstr "Nepodařilo se získat informace o disku"
 #: src/storage/storage_backend_scsi.c:65
 #, c-format
 msgid "Could not find typefile '%s'"
-msgstr ""
+msgstr "nepoda??ilo se p??ipojit k %s"
 
 #: src/storage/storage_backend_scsi.c:77
 #, c-format
 msgid "Could not read typefile '%s'"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/storage/storage_backend_scsi.c:89
 #, c-format
@@ -11022,7 +11024,7 @@ msgstr ""
 #: src/storage/storage_driver.c:77
 #, c-format
 msgid "Missing backend %d"
-msgstr ""
+msgstr "chyb?? \""
 
 #: src/storage/storage_driver.c:85
 #, fuzzy, c-format
@@ -11053,7 +11055,7 @@ msgstr ""
 #: src/storage/storage_driver.c:460 src/test/test_driver.c:3879
 #, c-format
 msgid "pool type '%s' does not support source discovery"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/storage/storage_driver.c:614 src/storage/storage_driver.c:668
 #: src/storage/storage_driver.c:713 src/storage/storage_driver.c:750
@@ -11109,7 +11111,7 @@ msgstr ""
 
 #: src/storage/storage_driver.c:828
 msgid "pool does not support pool deletion"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/storage/storage_driver.c:1007 src/test/test_driver.c:4238
 msgid "pool has no config file"
@@ -11205,7 +11207,7 @@ msgstr ""
 #: src/test/test_driver.c:685
 #, c-format
 msgid "node vol list for pool '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se spustit dom??nu %s"
 
 #: src/test/test_driver.c:696
 #, fuzzy
@@ -11220,7 +11222,7 @@ msgstr "načíst definiční soubor hostitele"
 #: src/test/test_driver.c:795
 #, c-format
 msgid "Invalid XML in file '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/test/test_driver.c:803
 msgid "Root element is not 'node'"
@@ -11332,7 +11334,7 @@ msgstr "Doména stále běží"
 #: src/test/test_driver.c:1734
 #, c-format
 msgid "saving domain '%s' failed to allocate space for metadata"
-msgstr ""
+msgstr "nepoda??ilo se alokovat uzel"
 
 #: src/test/test_driver.c:1741
 #, fuzzy, c-format
@@ -11381,7 +11383,7 @@ msgstr "Paměť domény %s uložena do %s\n"
 #: src/test/test_driver.c:1918
 #, c-format
 msgid "domain '%s' coredump: failed to write header to %s"
-msgstr ""
+msgstr "%s: nepoda??ilo se zapisovat do souboru z??znamu: %s"
 
 #: src/test/test_driver.c:1924
 #, fuzzy, c-format
@@ -11471,11 +11473,11 @@ msgstr ""
 
 #: src/uml/uml_conf.c:224
 msgid "TCP server networking type not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/uml/uml_conf.c:229
 msgid "TCP client networking type not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/uml/uml_conf.c:244
 #, fuzzy, c-format
@@ -11484,11 +11486,11 @@ msgstr "Síť nebyla nalezena"
 
 #: src/uml/uml_conf.c:274
 msgid "internal networking type not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/uml/uml_conf.c:279
 msgid "direct networking type not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/uml/uml_conf.c:348
 msgid "only TCP listen is supported for chr device"
@@ -11605,7 +11607,7 @@ msgstr ""
 
 #: src/uml/uml_driver.c:988
 msgid "uml state driver is not active"
-msgstr ""
+msgstr "cesta k log souboru nen?? souborem"
 
 #: src/uml/uml_driver.c:1224
 #, fuzzy, c-format
@@ -11766,7 +11768,7 @@ msgstr "Doména již běží"
 #: src/util/command.c:1141
 #, c-format
 msgid "daemonized command cannot set working directory %s"
-msgstr ""
+msgstr "p??ipojit s????ov?? rozhran??"
 
 #: src/util/command.c:1205
 #, fuzzy
@@ -11898,11 +11900,11 @@ msgstr "příkaz '%s' neexistuje"
 
 #: src/util/interface.c:343
 msgid "ifaceGetIndex is not supported on non-linux platforms"
-msgstr ""
+msgstr "konzola na t??to platform?? nen?? implementov??na"
 
 #: src/util/interface.c:388
 msgid "ifaceGetVlanID is not supported on non-linux platforms"
-msgstr ""
+msgstr "konzola na t??to platform?? nen?? implementov??na"
 
 #: src/util/iptables.c:297
 msgid "Only IPv4 or IPv6 addresses can be used with iptables"
@@ -11929,7 +11931,7 @@ msgstr ""
 
 #: src/util/macvtap.c:141
 msgid "cannot send to netlink socket"
-msgstr ""
+msgstr "uzel soket?? CPU"
 
 #: src/util/macvtap.c:155
 msgid "error in select call"
@@ -11958,7 +11960,7 @@ msgstr "vnitřní chyba %s"
 #: src/util/macvtap.c:350
 #, c-format
 msgid "error destroying %s interface"
-msgstr ""
+msgstr "Nepoda??ilo se zni??it s???? %s"
 
 #: src/util/macvtap.c:407
 msgid "buffer for ifindex path is too small"
@@ -11971,16 +11973,16 @@ msgstr ""
 
 #: src/util/macvtap.c:422
 msgid "cannot determine macvtap's tap device interface index"
-msgstr ""
+msgstr "oddefinovat neaktivn?? dom??nu"
 
 #: src/util/macvtap.c:434
 msgid "internal buffer for tap device is too small"
-msgstr ""
+msgstr "vnit??n?? chyba %s"
 
 #: src/util/macvtap.c:451
 #, c-format
 msgid "cannot open macvtap tap device %s"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/util/macvtap.c:502
 msgid "cannot get interface flags on macvtap tap"
@@ -11997,7 +11999,7 @@ msgstr ""
 #: src/util/macvtap.c:583
 #, c-format
 msgid "Interface %s already exists"
-msgstr ""
+msgstr "neo??ek??van?? typ MIME"
 
 #: src/util/macvtap.c:622
 #, c-format
@@ -12008,21 +12010,21 @@ msgstr ""
 
 #: src/util/macvtap.c:716
 msgid "error parsing pid of lldpad"
-msgstr ""
+msgstr "zji????uji n??zev soubor dom??ny"
 
 #: src/util/macvtap.c:721
 #, fuzzy, c-format
 msgid "Error opening file %s"
-msgstr "operace GET selhala: %s"
+msgstr "zji????uji n??zev soubor dom??ny"
 
 #: src/util/macvtap.c:787
 #, c-format
 msgid "error dumping %s (%d) interface"
-msgstr ""
+msgstr "Nepoda??ilo se zni??it s???? %s"
 
 #: src/util/macvtap.c:873
 msgid "buffer for root interface name is too small"
-msgstr ""
+msgstr "vnit??n?? chyba %s"
 
 #: src/util/macvtap.c:924
 msgid "error parsing IFLA_PORT_SELF part"
@@ -12042,7 +12044,7 @@ msgstr ""
 
 #: src/util/macvtap.c:964
 msgid "Could not find netlink response with expected parameters"
-msgstr ""
+msgstr "ID nebo UUID dom??ny"
 
 #: src/util/macvtap.c:969
 msgid "IFLA_VF_PORTS is missing"
@@ -12077,7 +12079,7 @@ msgstr ""
 #: src/util/macvtap.c:1352 src/util/macvtap.c:1492
 #, c-format
 msgid "operation type %d not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/util/network.c:83 src/util/network.c:176
 #, fuzzy
@@ -12087,17 +12089,17 @@ msgstr "IP adresa"
 #: src/util/network.c:92
 #, c-format
 msgid "Cannot parse socket address '%s': %s"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/util/network.c:99
 #, c-format
 msgid "No socket addresses found for '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/util/network.c:200
 #, c-format
 msgid "Cannot convert socket address to string: %s"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/util/pci.c:613
 #, c-format
@@ -12210,12 +12212,12 @@ msgstr ""
 #: src/util/processinfo.c:75 src/util/processinfo.c:91
 #, c-format
 msgid "cannot set CPU affinity on process %d"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/util/processinfo.c:136 src/util/processinfo.c:150
 #, c-format
 msgid "cannot get CPU affinity of process %d"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/util/processinfo.c:170 src/util/processinfo.c:180
 #, fuzzy
@@ -12286,11 +12288,11 @@ msgstr ""
 
 #: src/util/util.c:370 src/util/util.c:416
 msgid "cannot unblock signals"
-msgstr ""
+msgstr "uzel soket?? CPU"
 
 #: src/util/util.c:479
 msgid "cannot create pipe"
-msgstr ""
+msgstr "Nepoda??ilo se vytvo??it XML"
 
 #: src/util/util.c:486 src/util/util.c:515
 msgid "Failed to set non-blocking file descriptor flag"
@@ -12343,7 +12345,7 @@ msgstr ""
 #: src/util/util.c:848
 #, c-format
 msgid "cannot wait for '%s'"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/util/util.c:857
 #, c-format
@@ -12352,15 +12354,15 @@ msgstr ""
 
 #: src/util/util.c:896
 msgid "virRunWithHook is not implemented for WIN32"
-msgstr ""
+msgstr "konzola na t??to platform?? nen?? implementov??na"
 
 #: src/util/util.c:911 src/util/util.c:933
 msgid "virExec is not implemented for WIN32"
-msgstr ""
+msgstr "konzola na t??to platform?? nen?? implementov??na"
 
 #: src/util/util.c:951
 msgid "virExecDaemonize is not implemented for WIN32"
-msgstr ""
+msgstr "konzola na t??to platform?? nen?? implementov??na"
 
 #: src/util/util.c:1006
 msgid "Unknown poll response."
@@ -12452,7 +12454,7 @@ msgstr "nepodařilo se získat hostitelské jméno"
 #: src/util/util.c:2608
 #, c-format
 msgid "getaddrinfo failed for '%s': %s"
-msgstr ""
+msgstr "dom??na %s ji?? existuje"
 
 #: src/util/util.c:2739 src/util/util.c:2796 src/util/util.c:2838
 #, fuzzy
@@ -12516,7 +12518,7 @@ msgstr ""
 
 #: src/util/virtaudit.c:60
 msgid "Unable to initialize audit layer"
-msgstr ""
+msgstr "Nepoda??ilo se naj??t s????: %s"
 
 #: src/util/virterror.c:248
 #, fuzzy
@@ -12997,7 +12999,7 @@ msgstr "Síť nebyla nalezena: %s"
 
 #: src/util/virterror.c:1092
 msgid "Requested operation is not valid"
-msgstr ""
+msgstr "selhala operace"
 
 #: src/util/virterror.c:1094
 #, fuzzy, c-format
@@ -13041,7 +13043,7 @@ msgstr ""
 #: src/util/virterror.c:1118
 #, c-format
 msgid "multiple matching interfaces found: %s"
-msgstr ""
+msgstr "Nepoda??ilo se naj??t s????: %s"
 
 #: src/util/virterror.c:1122
 #, fuzzy
@@ -13296,7 +13298,7 @@ msgstr ""
 #: src/vbox/vbox_tmpl.c:1145
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
-msgstr ""
+msgstr "zm??nit po??et virtu??ln??ch CPU"
 
 #: src/vbox/vbox_tmpl.c:1217 src/vbox/vbox_tmpl.c:1277
 #: src/vbox/vbox_tmpl.c:1347 src/vbox/vbox_tmpl.c:1421
@@ -13332,7 +13334,7 @@ msgstr ""
 
 #: src/vbox/vbox_tmpl.c:1671
 msgid "machine not running, so can't reboot it"
-msgstr ""
+msgstr "Dom??na st??le b??????"
 
 #: src/vbox/vbox_tmpl.c:1778
 msgid "memory size can't be changed unless domain is powered down"
@@ -13346,12 +13348,12 @@ msgstr ""
 #: src/vbox/vbox_tmpl.c:2008
 #, c-format
 msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr ""
+msgstr "nepoda??ilo se z??skat hostitelsk?? jm??no"
 
 #: src/vbox/vbox_tmpl.c:2019
 #, c-format
 msgid "can't open session to the domain with id %d"
-msgstr ""
+msgstr "uzel seznamu dom??n"
 
 #: src/vbox/vbox_tmpl.c:2657
 #, c-format
@@ -13368,7 +13370,7 @@ msgstr ""
 #: src/vbox/vbox_tmpl.c:3278
 #, c-format
 msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr ""
+msgstr "zm??nit po??et virtu??ln??ch CPU"
 
 #: src/vbox/vbox_tmpl.c:3448
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
@@ -13521,7 +13523,7 @@ msgstr "nepodařilo se získat hostitelské jméno"
 #: src/vbox/vbox_tmpl.c:5508
 #, c-format
 msgid "domain %s has no snapshots with name %s"
-msgstr ""
+msgstr "dom??na %s ji?? existuje"
 
 #: src/vbox/vbox_tmpl.c:5555 src/vbox/vbox_tmpl.c:5657
 #: src/vbox/vbox_tmpl.c:5761 src/vbox/vbox_tmpl.c:5801
@@ -13773,7 +13775,7 @@ msgstr ""
 #: src/vmx/vmx.c:819 src/vmx/vmx.c:859 src/vmx/vmx.c:894
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
-msgstr ""
+msgstr "nepoda??ilo zpracovat URI spojen??"
 
 #: src/vmx/vmx.c:826
 #, c-format
@@ -13967,7 +13969,7 @@ msgstr ""
 #: src/vmx/vmx.c:1989 src/vmx/vmx.c:2022
 #, c-format
 msgid "Unsupported bus type '%s' for device type '%s'"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/vmx/vmx.c:2029 src/vmx/vmx.c:2204
 #, fuzzy, c-format
@@ -14002,7 +14004,7 @@ msgstr ""
 #: src/vmx/vmx.c:2211
 #, c-format
 msgid "Could not assign address to disk '%s'"
-msgstr ""
+msgstr "nepoda??ilo se p??ipojit k %s"
 
 #: src/vmx/vmx.c:2284 src/vmx/vmx.c:3480
 #, c-format
@@ -14051,7 +14053,7 @@ msgstr ""
 #: src/vmx/vmx.c:2632
 #, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/vmx/vmx.c:2643
 #, c-format
@@ -14174,7 +14176,7 @@ msgstr ""
 #: src/vmx/vmx.c:3353
 #, c-format
 msgid "Unsupported bus type '%s' for cdrom"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/vmx/vmx.c:3368
 #, c-format
@@ -14319,7 +14321,7 @@ msgstr ""
 #: src/xen/xen_inotify.c:408
 #, c-format
 msgid "cannot open directory: %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/xen/xen_inotify.c:426
 msgid "Error adding file to config list"
@@ -14361,7 +14363,7 @@ msgstr ""
 #: src/xen/xend_internal.c:386
 #, c-format
 msgid "%d status from xen daemon: %s:%s"
-msgstr ""
+msgstr "Nepoda??ilo se probudit dom??nu %s"
 
 #: src/xen/xend_internal.c:434 src/xen/xend_internal.c:437
 #: src/xen/xend_internal.c:446
@@ -14549,7 +14551,7 @@ msgstr ""
 
 #: src/xen/xend_internal.c:3587 src/xen/xm_internal.c:1683
 msgid "could not determin max vcpus for the domain"
-msgstr ""
+msgstr "nepoda??ilo se z??skat hostitelsk?? jm??no"
 
 #: src/xen/xend_internal.c:3980 src/xen/xend_internal.c:4120
 #: src/xen/xend_internal.c:4232
@@ -14564,7 +14566,7 @@ msgstr "druh cílového zařízení"
 
 #: src/xen/xend_internal.c:4184
 msgid "requested device does not exist"
-msgstr ""
+msgstr "p????kaz '%s' neexistuje"
 
 #: src/xen/xend_internal.c:4330
 msgid "xenDaemonGetAutostart failed to find this domain"
@@ -14727,7 +14729,7 @@ msgstr ""
 #: src/xen/xend_internal.c:5468 src/xen/xm_internal.c:2077
 #, c-format
 msgid "unsupported disk type %s"
-msgstr ""
+msgstr "neo??ek??van?? data '%s'"
 
 #: src/xen/xend_internal.c:5518 src/xen/xm_internal.c:2180
 #, c-format
@@ -14751,7 +14753,7 @@ msgstr "neočekávaná hodnota uzlu"
 
 #: src/xen/xend_internal.c:5837 src/xen/xm_internal.c:2425
 msgid "configurable timezones are not supported"
-msgstr ""
+msgstr "Spu??t??na s???? %s\n"
 
 #: src/xen/xend_internal.c:5861
 #, fuzzy
@@ -14781,7 +14783,7 @@ msgstr ""
 #: src/xen/xm_internal.c:395
 #, fuzzy, c-format
 msgid "cannot stat: %s"
-msgstr "bez stavu"
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: src/xen/xm_internal.c:453
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
@@ -14790,7 +14792,7 @@ msgstr ""
 #: src/xen/xm_internal.c:505
 #, c-format
 msgid "cannot read directory %s"
-msgstr ""
+msgstr "druh c??lov??ho za????zen??"
 
 #: src/xen/xm_internal.c:798
 #, fuzzy, c-format
@@ -14835,7 +14837,7 @@ msgstr ""
 #: src/xen/xm_internal.c:1090
 #, c-format
 msgid "Type %s too big for destination"
-msgstr ""
+msgstr "nepoda??ilo se z??skat informace o uzlu"
 
 #: src/xen/xm_internal.c:1097
 #, c-format
@@ -14973,7 +14975,7 @@ msgstr ""
 
 #: src/xenapi/xenapi_driver.c:109
 msgid "Authentication Credentials not found"
-msgstr ""
+msgstr "autentizace selhala"
 
 #: src/xenapi/xenapi_driver.c:153
 #, fuzzy
@@ -14987,7 +14989,7 @@ msgstr "nepodařilo zpracovat URI spojení"
 
 #: src/xenapi/xenapi_driver.c:295
 msgid "Couldn't get version info"
-msgstr ""
+msgstr "Nelze z??skat verzi b??????c??ho %s hypervizora\n"
 
 #: src/xenapi/xenapi_driver.c:364
 #, fuzzy
@@ -15065,7 +15067,7 @@ msgstr "Nepodařilo se získat informace o rozhraní"
 
 #: src/xenapi/xenapi_driver.c:1745
 msgid "Couldn't get host metrics"
-msgstr ""
+msgstr "Nemohu ov????it sou??asnou velikost pam??ti"
 
 #: src/xenapi/xenapi_utils.c:122
 msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
@@ -15079,12 +15081,12 @@ msgstr ""
 #: tools/console.c:296
 #, c-format
 msgid "unable to get tty attributes: %s"
-msgstr ""
+msgstr "Nepoda??ilo se otev????t '%s': %s"
 
 #: tools/console.c:305
 #, c-format
 msgid "unable to set tty attributes: %s"
-msgstr ""
+msgstr "Nepoda??ilo se spustit dom??nu %s"
 
 #: tools/libvirt-guests.init.sh:139
 msgid "libvirt-guests is configured not to start any guests on boot"
@@ -15636,7 +15638,7 @@ msgstr "Nepodařilo se uložit doménu %s do %s"
 
 #: tools/virsh.c:1516
 msgid "Remove managed save of a domain"
-msgstr ""
+msgstr "ulo??it stav dom??ny do souboru"
 
 #: tools/virsh.c:1517
 msgid "Remove an existing managed save state file from a domain"
@@ -15696,7 +15698,7 @@ msgstr ""
 
 #: tools/virsh.c:1639
 msgid "Invalid value for parameter, expecting an int"
-msgstr ""
+msgstr "Neplatn?? hodnota omezen??"
 
 #: tools/virsh.c:1646
 msgid "Invalid value for parameter, expecting an unsigned int"
@@ -15704,7 +15706,7 @@ msgstr ""
 
 #: tools/virsh.c:1653
 msgid "Invalid value for parameter, expecting a long long"
-msgstr ""
+msgstr "Neplatn?? hodnota omezen??"
 
 #: tools/virsh.c:1660
 msgid "Invalid value for parameter, expecting an unsigned long long"
@@ -15712,7 +15714,7 @@ msgstr ""
 
 #: tools/virsh.c:1666
 msgid "Invalid value for parameter, expecting a double"
-msgstr ""
+msgstr "Neplatn?? hodnota omezen??"
 
 #: tools/virsh.c:1700 tools/virsh.c:1704
 msgid "Scheduler"
@@ -15971,7 +15973,7 @@ msgstr ""
 
 #: tools/virsh.c:2177
 msgid "Unbounded"
-msgstr ""
+msgstr "pozastaveno"
 
 #: tools/virsh.c:2182
 msgid "None"
@@ -16056,7 +16058,7 @@ msgstr ""
 
 #: tools/virsh.c:2302
 msgid "Show maximum number of virtual CPUs for guests on this connection."
-msgstr ""
+msgstr "Zm??nit po??et aktivn??ch virtu??ln??ch CPU v hostovan?? dom??n??."
 
 #: tools/virsh.c:2307
 #, fuzzy
@@ -16113,7 +16115,7 @@ msgstr ""
 
 #: tools/virsh.c:2431 tools/virsh.c:2490
 msgid "live"
-msgstr ""
+msgstr "aktivn??"
 
 #: tools/virsh.c:2468 tools/virsh.c:2490
 msgid "current"
@@ -16700,7 +16702,7 @@ msgstr "Nenalezeno žádné rozhraní s MAC adresou %s"
 #: tools/virsh.c:3866
 #, c-format
 msgid "Interface %s XML configuration not changed.\n"
-msgstr ""
+msgstr "nepoda??ilo se na????st konfigura??n?? soubor"
 
 #: tools/virsh.c:3882 tools/virsh.c:4824 tools/virsh.c:9403
 msgid "ERROR: the XML configuration was changed by another user"
@@ -17808,7 +17810,7 @@ msgstr ""
 
 #: tools/virsh.c:7207
 msgid "volume name or path"
-msgstr ""
+msgstr "jm??no svazku nebo cesta k n??mu"
 
 #: tools/virsh.c:7233
 msgid "returns the volume path for a given volume name or key"
@@ -17943,7 +17945,7 @@ msgstr ""
 #: tools/virsh.c:7560
 #, fuzzy
 msgid "Unused"
-msgstr "pozastaveno"
+msgstr "Nepou??ito"
 
 #: tools/virsh.c:7574
 msgid "show version"
@@ -18145,7 +18147,7 @@ msgstr "Nepodařilo se připojit zařízení z %s"
 
 #: tools/virsh.c:8236
 msgid "Device attached successfully\n"
-msgstr ""
+msgstr "Za????zen?? bylo ??sp????n?? p??ipojeno\n"
 
 #: tools/virsh.c:8248
 msgid "detach device from an XML file"
@@ -18220,7 +18222,7 @@ msgstr "název cílové sítě"
 #: tools/virsh.c:8397 tools/virsh.c:8504
 #, fuzzy
 msgid "MAC address"
-msgstr "MAC adresar"
+msgstr "MAC adresa"
 
 #: tools/virsh.c:8398
 msgid "script used to bridge network interface"
@@ -18461,6 +18463,8 @@ msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
+"%s: jm??no do??asn??ho souboru obsahuje nepovolen?? nebo speci??ln?? znaky shellu "
+"(je spr??vn?? nastaven?? $TMPDIR?)"
 
 #: tools/virsh.c:9140
 #, c-format
@@ -18498,7 +18502,7 @@ msgstr ""
 
 #: tools/virsh.c:9199
 msgid "cd: command valid only in interactive mode"
-msgstr ""
+msgstr "cd: p????kaz je platn?? pouze v interaktivn??m m??du"
 
 #: tools/virsh.c:9212
 #, c-format
@@ -18875,7 +18879,7 @@ msgstr "chybí \""
 
 #: tools/virsh.c:11222 tools/virsh.c:11244
 msgid "idle"
-msgstr ""
+msgstr "ne??inn??"
 
 #: tools/virsh.c:11224
 msgid "paused"
