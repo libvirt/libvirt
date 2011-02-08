@@ -104,6 +104,16 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         goto cleanup;
     }
 
+    if (def->blkio.weight) {
+        rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set Blkio weight for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+
     rc = virCgroupSetMemory(cgroup, def->mem.max_balloon);
     if (rc != 0) {
         virReportSystemError(-rc,
