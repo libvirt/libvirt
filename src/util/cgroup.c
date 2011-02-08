@@ -1,7 +1,7 @@
 /*
  * cgroup.c: Tools for managing cgroups
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * See COPYING.LIB for the License of this software
@@ -849,6 +849,45 @@ int virCgroupForDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
     return -ENXIO;
 }
 #endif
+
+/**
+ * virCgroupSetBlkioWeight:
+ *
+ * @group: The cgroup to change io weight for
+ * @weight: The Weight for this cgroup
+ *
+ * Returns: 0 on success
+ */
+int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
+{
+    if (weight > 1000 || weight < 100)
+        return -EINVAL;
+
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.weight",
+                                weight);
+}
+
+/**
+ * virCgroupGetBlkioWeight:
+ *
+ * @group: The cgroup to get weight for
+ * @Weight: Pointer to returned weight
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
+{
+    unsigned long long tmp;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_BLKIO,
+                               "blkio.weight", &tmp);
+    if (ret == 0)
+        *weight = tmp;
+    return ret;
+}
 
 /**
  * virCgroupSetMemory:

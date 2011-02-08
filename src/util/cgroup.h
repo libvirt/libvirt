@@ -1,6 +1,7 @@
 /*
  * cgroup.h: Interface to tools for managing cgroups
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * See COPYING.LIB for the License of this software
@@ -40,6 +41,9 @@ int virCgroupForDomain(virCgroupPtr driver,
                        int create);
 
 int virCgroupAddTask(virCgroupPtr group, pid_t pid);
+
+int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);
+int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight);
 
 int virCgroupSetMemory(virCgroupPtr group, unsigned long long kb);
 int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb);
