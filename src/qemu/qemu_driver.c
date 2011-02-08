@@ -3538,7 +3538,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainChrSourceDef monConfig;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     virCommandPtr cmd = NULL;
     char *ret = NULL;
     int i;
@@ -3611,6 +3611,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
 cleanup:
     qemuDriverUnlock(driver);
 
+    qemuCapsFree(qemuCaps);
     virCommandFree(cmd);
     virDomainDefFree(def);
     return ret;
@@ -3947,7 +3948,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
 
@@ -4078,6 +4079,7 @@ cleanup:
     if (cgroup)
         virCgroupFree(&cgroup);
 
+    qemuCapsFree(qemuCaps);
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
@@ -4105,7 +4107,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
@@ -4211,6 +4213,7 @@ cleanup:
     if (cgroup)
         virCgroupFree(&cgroup);
 
+    qemuCapsFree(qemuCaps);
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
@@ -4223,7 +4226,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
                                    const char *xml) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     virDomainDeviceDefPtr dev = NULL;
     int ret = -1;
 
@@ -4296,6 +4299,7 @@ endjob:
         vm = NULL;
 
 cleanup:
+    qemuCapsFree(qemuCaps);
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);

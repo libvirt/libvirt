@@ -71,6 +71,7 @@ VC_LIST_ALWAYS_EXCLUDE_REGEX = ^docs/news.html.in$$
 # Functions like free() that are no-ops on NULL arguments.
 useless_free_options =				\
   --name=VIR_FREE				\
+  --name=qemuCapsFree				\
   --name=sexpr_free				\
   --name=virBitmapFree                          \
   --name=virCPUDefFree				\

@@ -44,7 +44,7 @@
 int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
                                    virDomainObjPtr vm,
                                    virDomainDiskDefPtr disk,
-                                   unsigned long long qemuCaps,
+                                   virBitmapPtr qemuCaps,
                                    bool force)
 {
     virDomainDiskDefPtr origdisk = NULL;
@@ -140,7 +140,7 @@ error:
 int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk,
-                                  unsigned long long qemuCaps)
+                                  virBitmapPtr qemuCaps)
 {
     int i, ret;
     const char* type = virDomainDiskBusTypeToString(disk->bus);
@@ -235,7 +235,7 @@ error:
 int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
                                         virDomainObjPtr vm,
                                         virDomainControllerDefPtr controller,
-                                        unsigned long long qemuCaps)
+                                        virBitmapPtr qemuCaps)
 {
     int i;
     int ret = -1;
@@ -300,7 +300,7 @@ static virDomainControllerDefPtr
 qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
                                          virDomainObjPtr vm,
                                          int controller,
-                                         unsigned long long qemuCaps)
+                                         virBitmapPtr qemuCaps)
 {
     int i;
     virDomainControllerDefPtr cont;
@@ -346,7 +346,7 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
 int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk,
-                             unsigned long long qemuCaps)
+                             virBitmapPtr qemuCaps)
 {
     int i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -462,7 +462,7 @@ error:
 int qemuDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
                                          virDomainObjPtr vm,
                                          virDomainDiskDefPtr disk,
-                                         unsigned long long qemuCaps)
+                                         virBitmapPtr qemuCaps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int i, ret;
@@ -547,7 +547,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
                               virDomainNetDefPtr net,
-                              unsigned long long qemuCaps)
+                              virBitmapPtr qemuCaps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tapfd_name = NULL;
@@ -777,7 +777,7 @@ no_memory:
 int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev,
-                                  unsigned long long qemuCaps)
+                                  virBitmapPtr qemuCaps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
@@ -872,7 +872,7 @@ error:
 int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev,
-                                  unsigned long long qemuCaps)
+                                  virBitmapPtr qemuCaps)
 {
     int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -935,7 +935,7 @@ error:
 int qemuDomainAttachHostDevice(struct qemud_driver *driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev,
-                               unsigned long long qemuCaps)
+                               virBitmapPtr qemuCaps)
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1130,7 +1130,7 @@ static inline int qemuFindDisk(virDomainDefPtr def, const char *dst)
 int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,
-                                  unsigned long long qemuCaps)
+                                  virBitmapPtr qemuCaps)
 {
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
@@ -1221,7 +1221,7 @@ cleanup:
 int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
                                    virDomainObjPtr vm,
                                    virDomainDeviceDefPtr dev,
-                                   unsigned long long qemuCaps)
+                                   virBitmapPtr qemuCaps)
 {
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
@@ -1350,7 +1350,7 @@ static bool qemuDomainControllerIsBusy(virDomainObjPtr vm,
 int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
                                         virDomainObjPtr vm,
                                         virDomainDeviceDefPtr dev,
-                                        unsigned long long qemuCaps)
+                                        virBitmapPtr qemuCaps)
 {
     int i, ret = -1;
     virDomainControllerDefPtr detach = NULL;
@@ -1434,7 +1434,7 @@ cleanup:
 int qemuDomainDetachNetDevice(struct qemud_driver *driver,
                               virDomainObjPtr vm,
                               virDomainDeviceDefPtr dev,
-                              unsigned long long qemuCaps)
+                              virBitmapPtr qemuCaps)
 {
     int i, ret = -1;
     virDomainNetDefPtr detach = NULL;
@@ -1561,7 +1561,7 @@ cleanup:
 int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,
-                                  unsigned long long qemuCaps)
+                                  virBitmapPtr qemuCaps)
 {
     virDomainHostdevDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1661,7 +1661,7 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
 int qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,
-                                  unsigned long long qemuCaps)
+                                  virBitmapPtr qemuCaps)
 {
     virDomainHostdevDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1743,7 +1743,7 @@ int qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
 int qemuDomainDetachHostDevice(struct qemud_driver *driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev,
-                               unsigned long long qemuCaps)
+                               virBitmapPtr qemuCaps)
 {
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     int ret;

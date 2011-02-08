@@ -109,7 +109,7 @@ int
 qemuPhysIfaceConnect(virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainNetDefPtr net,
-                     unsigned long long qemuCaps,
+                     virBitmapPtr qemuCaps,
                      const unsigned char *vmuuid,
                      enum virVMOperationType vmop)
 {
@@ -170,7 +170,7 @@ int
 qemuNetworkIfaceConnect(virConnectPtr conn,
                         struct qemud_driver *driver,
                         virDomainNetDefPtr net,
-                        unsigned long long qemuCaps)
+                        virBitmapPtr qemuCaps)
 {
     char *brname = NULL;
     int err;
@@ -305,7 +305,7 @@ cleanup:
 
 static int
 qemuOpenVhostNet(virDomainNetDefPtr net,
-                 unsigned long long qemuCaps,
+                 virBitmapPtr qemuCaps,
                  int *vhostfd)
 {
 
@@ -403,7 +403,7 @@ static int qemuAssignDeviceDiskAliasLegacy(virDomainDiskDefPtr disk)
 
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
-                               unsigned long long qemuCaps)
+                               virBitmapPtr qemuCaps)
 {
     char *ret;
 
@@ -501,7 +501,7 @@ no_memory:
 
 
 int
-qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, unsigned long long qemuCaps)
+qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, virBitmapPtr qemuCaps)
 {
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE)) {
         if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
@@ -584,7 +584,7 @@ qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
 
 
 static int
-qemuAssignDeviceAliases(virDomainDefPtr def, unsigned long long qemuCaps)
+qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
 {
     int i;
 
@@ -720,7 +720,7 @@ int
 qemuDomainAssignPCIAddresses(virDomainDefPtr def)
 {
     int ret = -1;
-    unsigned long long qemuCaps = 0;
+    virBitmapPtr qemuCaps = NULL;
     qemuDomainPCIAddressSetPtr addrs = NULL;
 
     if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
@@ -739,6 +739,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def)
     ret = 0;
 
 cleanup:
+    qemuCapsFree(qemuCaps);
     qemuDomainPCIAddressSetFree(addrs);
 
     return ret;
@@ -1126,7 +1127,7 @@ error:
 static int
 qemuBuildDeviceAddressStr(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
-                          unsigned long long qemuCaps)
+                          virBitmapPtr qemuCaps)
 {
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         if (info->addr.pci.domain != 0) {
@@ -1180,7 +1181,7 @@ qemuSafeSerialParamValue(const char *value)
 char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   int bootable,
-                  unsigned long long qemuCaps)
+                  virBitmapPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
@@ -1396,7 +1397,7 @@ error:
 
 char *
 qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
-                     unsigned long long qemuCaps)
+                     virBitmapPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
@@ -1453,7 +1454,7 @@ error:
 
 
 char *qemuBuildFSStr(virDomainFSDefPtr fs,
-                     unsigned long long qemuCaps ATTRIBUTE_UNUSED)
+                     virBitmapPtr qemuCaps ATTRIBUTE_UNUSED)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
 
@@ -1489,7 +1490,7 @@ error:
 
 char *
 qemuBuildFSDevStr(virDomainFSDefPtr fs,
-                  unsigned long long qemuCaps)
+                  virBitmapPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
 
@@ -1520,7 +1521,7 @@ error:
 
 char *
 qemuBuildControllerDevStr(virDomainControllerDefPtr def,
-                          unsigned long long qemuCaps)
+                          virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -1605,7 +1606,7 @@ qemuBuildNicStr(virDomainNetDefPtr net,
 char *
 qemuBuildNicDevStr(virDomainNetDefPtr net,
                    int vlan,
-                   unsigned long long qemuCaps)
+                   virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *nic;
@@ -1777,7 +1778,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 
 char *
 qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev,
-                        unsigned long long qemuCaps)
+                        virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -1808,7 +1809,7 @@ error:
 
 char *
 qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev,
-                          unsigned long long qemuCaps)
+                          virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -1855,7 +1856,7 @@ error:
 
 char *
 qemuBuildSoundDevStr(virDomainSoundDefPtr sound,
-                     unsigned long long qemuCaps)
+                     virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *model = virDomainSoundModelTypeToString(sound->model);
@@ -1917,7 +1918,7 @@ error:
 
 static char *
 qemuBuildVideoDevStr(virDomainVideoDefPtr video,
-                     unsigned long long qemuCaps)
+                     virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *model = qemuVideoTypeToString(video->type);
@@ -1973,7 +1974,7 @@ qemuOpenPCIConfig(virDomainHostdevDefPtr dev)
 
 char *
 qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
-                          unsigned long long qemuCaps)
+                          virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2066,7 +2067,7 @@ qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
  * host side of the character device */
 static char *
 qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
-                       unsigned long long qemuCaps)
+                       virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
@@ -2244,7 +2245,7 @@ error:
 
 static char *
 qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
-                                unsigned long long qemuCaps)
+                                virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)
@@ -2482,7 +2483,7 @@ static int
 qemuBuildCpuArgStr(const struct qemud_driver *driver,
                    const virDomainDefPtr def,
                    const char *emulator,
-                   unsigned long long qemuCaps,
+                   virBitmapPtr qemuCaps,
                    const struct utsname *ut,
                    char **opt,
                    bool *hasHwVirt)
@@ -2607,7 +2608,7 @@ no_memory:
 
 static char *
 qemuBuildSmpArgStr(const virDomainDefPtr def,
-                   unsigned long long qemuCaps)
+                   virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2660,7 +2661,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      virDomainDefPtr def,
                      virDomainChrSourceDefPtr monitor_chr,
                      bool monitor_json,
-                     unsigned long long qemuCaps,
+                     virBitmapPtr qemuCaps,
                      const char *migrateFrom,
                      int migrateFd,
                      virDomainSnapshotObjPtr current_snapshot,
@@ -2698,7 +2699,7 @@ qemuBuildCommandLine(virConnectPtr conn,
      */
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
         (def->virtType == VIR_DOMAIN_VIRT_QEMU))
-        qemuCapsClear(&qemuCaps, QEMU_CAPS_DRIVE_BOOT);
+        qemuCapsClear(qemuCaps, QEMU_CAPS_DRIVE_BOOT);
 
     switch (def->virtType) {
     case VIR_DOMAIN_VIRT_QEMU:
@@ -3241,13 +3242,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                 if (disk->bus != VIR_DOMAIN_DISK_BUS_XEN) {
                     withDeviceArg = 1;
                 } else {
-                    qemuCapsClear(&qemuCaps, QEMU_CAPS_DEVICE);
+                    qemuCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
                     deviceFlagMasked = true;
                 }
             }
             optstr = qemuBuildDriveStr(disk, bootable, qemuCaps);
             if (deviceFlagMasked)
-                qemuCapsSet(&qemuCaps, QEMU_CAPS_DEVICE);
+                qemuCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
             if (!optstr)
                 goto error;
             virCommandAddArg(cmd, optstr);

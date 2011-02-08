@@ -1137,7 +1137,7 @@ static int
 qemuProcessInitPasswords(virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainObjPtr vm,
-                         unsigned long long qemuCaps)
+                         virBitmapPtr qemuCaps)
 {
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1789,7 +1789,7 @@ qemuProcessReconnect(void *payload, const char *name ATTRIBUTE_UNUSED, void *opa
     struct qemuProcessReconnectData *data = opaque;
     struct qemud_driver *driver = data->driver;
     qemuDomainObjPrivatePtr priv;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     virConnectPtr conn = data->conn;
 
     virDomainObjLock(obj);
@@ -1835,9 +1835,12 @@ qemuProcessReconnect(void *payload, const char *name ATTRIBUTE_UNUSED, void *opa
 
     if (virDomainObjUnref(obj) > 0)
         virDomainObjUnlock(obj);
+
+    qemuCapsFree(qemuCaps);
     return;
 
 error:
+    qemuCapsFree(qemuCaps);
     if (!virDomainObjIsActive(obj)) {
         if (virDomainObjUnref(obj) > 0)
             virDomainObjUnlock(obj);
@@ -1879,7 +1882,7 @@ int qemuProcessStart(virConnectPtr conn,
                      enum virVMOperationType vmop)
 {
     int ret;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     off_t pos = -1;
     char ebuf[1024];
     char *pidfile = NULL;
@@ -2220,6 +2223,7 @@ int qemuProcessStart(virConnectPtr conn,
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
 
+    qemuCapsFree(qemuCaps);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
 
@@ -2229,6 +2233,7 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
+    qemuCapsFree(qemuCaps);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
     qemuProcessStop(driver, vm, 0);

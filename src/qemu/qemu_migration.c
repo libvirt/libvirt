@@ -244,7 +244,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     int ret = -1;
     int internalret;
     char *unixfile = NULL;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
 
@@ -376,6 +376,7 @@ endjob:
     }
 
 cleanup:
+    qemuCapsFree(qemuCaps);
     virDomainDefFree(def);
     if (unixfile)
         unlink(unixfile);
@@ -708,7 +709,7 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     virStreamPtr st = NULL;
     char *unixfile = NULL;
     int internalret;
-    unsigned long long qemuCaps;
+    virBitmapPtr qemuCaps = NULL;
     int status;
     unsigned long long transferred, remaining, total;
     unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
@@ -894,6 +895,7 @@ finish:
 cleanup:
     VIR_FORCE_CLOSE(client_sock);
     VIR_FORCE_CLOSE(qemu_sock);
+    qemuCapsFree(qemuCaps);
 
     if (ddomain)
         virUnrefDomain(ddomain);
