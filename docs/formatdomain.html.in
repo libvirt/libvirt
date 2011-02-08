@@ -275,6 +275,9 @@
   &lt;memoryBacking&gt;
     &lt;hugepages/&gt;
   &lt;/memoryBacking&gt;
+  &lt;blkiotune&gt;
+    &lt;weight&gt;800&lt;/weight&gt;
+  &lt;/blkiotune&gt;
   &lt;memtune&gt;
     &lt;hard_limit&gt;1048576&lt;/hard_limit&gt;
     &lt;soft_limit&gt;131072&lt;/soft_limit&gt;
@@ -298,10 +301,17 @@
         <code>hugepages</code> element set within it. This tells the
         hypervisor that the guest should have its memory allocated using
         hugepages instead of the normal native page size.</dd>
+      <dt><code>blkiotune</code></dt>
+      <dd> The optional <code>blkiotune</code> element provides the ability
+        to tune Blkio cgroup tunable parameters for the domain. If this is
+        omitted, it defaults to the OS provided defaults.</dd>
+      <dt><code>weight</code></dt>
+      <dd> The optional <code>weight</code> element is the I/O weight of the
+        guest. The value should be in range [100, 1000].</dd>
       <dt><code>memtune</code></dt>
       <dd> The optional <code>memtune</code> element provides details
-      regarding the memory tuneable parameters for the domain. If this is
-      omitted, it defaults to the OS provided defaults.</dd>
+        regarding the memory tunable parameters for the domain. If this is
+        omitted, it defaults to the OS provided defaults.</dd>
       <dt><code>hard_limit</code></dt>
       <dd> The optional <code>hard_limit</code> element is the maximum memory
 	the guest can use. The units for this value are kilobytes (i.e. blocks
