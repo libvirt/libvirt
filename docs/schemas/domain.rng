@@ -306,6 +306,18 @@
         </element>
       </optional>
 
+      <!-- The Blkio cgroup related tunables would go in the blkiotune -->
+      <optional>
+        <element name="blkiotune">
+          <!-- I/O weight the VM can use -->
+          <optional>
+            <element name="weight">
+              <ref name="weight"/>
+            </element>
+          </optional>
+        </element>
+      </optional>
+
       <!-- All the memory/swap related tunables would go in the memtune -->
       <optional>
         <element name="memtune">
@@ -2147,9 +2159,10 @@
        Type library
 
        Our unsignedInt doesn't allow a leading '+' in its lexical form
-       A domain name shoul be made of ascii, numbers, _-+ and is non-empty
+       A domain name should be made of ascii, numbers, _-+ and is non-empty
        UUID currently allows only the 32 characters strict syntax
        memoryKB request at least 4Mbytes though Xen will grow bigger if too low
+       weight currently is in range [100, 1000]
     -->
   <define name="unsignedInt">
     <data type="unsignedInt">
@@ -2180,6 +2193,13 @@
   <define name="PortNumber">
     <data type="short">
       <param name="minInclusive">-1</param>
+    </data>
+  </define>
+  <define name="weight">
+    <data type="unsignedInt">
+      <param name="pattern">[0-9]+</param>
+      <param name="minInclusive">100</param>
+      <param name="maxInclusive">1000</param>
     </data>
   </define>
   <define name="memoryKB">
