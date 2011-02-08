@@ -37,7 +37,7 @@
 
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
-              "freezer");
+              "freezer", "blkio");
 
 struct virCgroupController {
     int type;
