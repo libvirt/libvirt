@@ -160,7 +160,7 @@ int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
                                         vm, disk) < 0)
         return -1;
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
             goto error;
         if (qemuAssignDeviceDiskAlias(disk, qemuCmdFlags) < 0)
@@ -179,7 +179,7 @@ int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         ret = qemuMonitorAddDrive(priv->mon, drivestr);
         if (ret == 0) {
             ret = qemuMonitorAddDevice(priv->mon, devstr);
@@ -219,7 +219,7 @@ error:
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
 
-    if ((qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &disk->info) < 0)
         VIR_WARN("Unable to release PCI address on %s", disk->src);
@@ -253,7 +253,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
         }
     }
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
             goto cleanup;
         if (qemuAssignDeviceControllerAlias(controller) < 0)
@@ -270,7 +270,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         ret = qemuMonitorAddDevice(priv->mon, devstr);
     } else {
         ret = qemuMonitorAttachPCIDiskController(priv->mon,
@@ -286,7 +286,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
 
 cleanup:
     if ((ret != 0) &&
-        (qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &controller->info) < 0)
         VIR_WARN0("Unable to release PCI address on controller");
@@ -376,7 +376,7 @@ int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
         goto error;
     }
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceDiskAlias(disk, qemuCmdFlags) < 0)
             goto error;
         if (!(devstr = qemuBuildDriveDevStr(disk, qemuCmdFlags)))
@@ -409,7 +409,7 @@ int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         ret = qemuMonitorAddDrive(priv->mon, drivestr);
         if (ret == 0) {
             ret = qemuMonitorAddDevice(priv->mon, devstr);
@@ -487,7 +487,7 @@ int qemuDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
         goto error;
     }
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceDiskAlias(disk, qemuCmdFlags) < 0)
             goto error;
         if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
@@ -502,7 +502,7 @@ int qemuDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         ret = qemuMonitorAddDrive(priv->mon, drivestr);
         if (ret == 0) {
             ret = qemuMonitorAddDevice(priv->mon, devstr);
@@ -558,7 +558,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     virDomainDevicePCIAddress guestAddr;
     int vlan;
 
-    if (!(qemuCmdFlags & QEMU_CAPS_HOST_NET_ADD)) {
+    if (!qemuCapsGet(qemuCmdFlags, QEMU_CAPS_HOST_NET_ADD)) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("installed qemu version does not support host_net_add"));
         return -1;
@@ -595,18 +595,18 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
         goto no_memory;
 
-    if ((qemuCmdFlags & QEMU_CAPS_NET_NAME) ||
-        (qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_NET_NAME) ||
+        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
             goto cleanup;
     }
 
-    if ((qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
         goto cleanup;
 
-    if ((qemuCmdFlags & QEMU_CAPS_NETDEV) &&
-        (qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_NETDEV) &&
+        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         vlan = -1;
     } else {
         vlan = qemuDomainNetVLAN(net);
@@ -637,8 +637,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
 
     /* FIXME - need to support vhost-net here (5th arg) */
-    if ((qemuCmdFlags & QEMU_CAPS_NETDEV) &&
-        (qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_NETDEV) &&
+        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (!(netstr = qemuBuildHostNetStr(net, ',',
                                            -1, tapfd_name, 0)))
             goto try_tapfd_close;
@@ -649,8 +649,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if ((qemuCmdFlags & QEMU_CAPS_NETDEV) &&
-        (qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_NETDEV) &&
+        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorAddNetdev(priv->mon, netstr) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             qemuDomainNetAudit(vm, NULL, net, "attach", false);
@@ -673,7 +673,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (!(nicstr = qemuBuildNicDevStr(net, vlan, qemuCmdFlags)))
             goto try_remove;
     } else {
@@ -682,7 +682,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorAddDevice(priv->mon, nicstr) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             qemuDomainNetAudit(vm, NULL, net, "attach", false);
@@ -708,7 +708,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
 cleanup:
     if ((ret != 0) &&
-        (qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &net->info) < 0)
         VIR_WARN0("Unable to release PCI address on NIC");
@@ -728,8 +728,8 @@ try_remove:
         goto cleanup;
 
     if (vlan < 0) {
-        if ((qemuCmdFlags & QEMU_CAPS_NETDEV) &&
-            (qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+        if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_NETDEV) &&
+            qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
             char *netdev_name;
             if (virAsprintf(&netdev_name, "host%s", net->info.alias) < 0)
                 goto no_memory;
@@ -793,12 +793,12 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
     if (qemuPrepareHostdevPCIDevices(driver, &hostdev, 1) < 0)
         return -1;
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
             goto error;
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &hostdev->info) < 0)
             goto error;
-        if (qemuCmdFlags & QEMU_CAPS_PCI_CONFIGFD) {
+        if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_PCI_CONFIGFD)) {
             configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {
                 if (virAsprintf(&configfd_name, "fd-%s",
@@ -854,7 +854,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
     return 0;
 
 error:
-    if ((qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         (hostdev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &hostdev->info) < 0)
         VIR_WARN0("Unable to release PCI address on host device");
@@ -878,7 +878,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
             goto error;
         if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev)))
@@ -910,7 +910,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE)
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE))
         ret = qemuMonitorAddDevice(priv->mon, devstr);
     else
         ret = qemuMonitorAddUSBDeviceExact(priv->mon,
@@ -1173,7 +1173,7 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
             qemuDomainObjExitMonitor(vm);
             goto cleanup;
@@ -1193,7 +1193,7 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
 
     qemuDomainDiskAudit(vm, detach, NULL, "detach", ret >= 0);
 
-    if ((qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
         VIR_WARN("Unable to release PCI address on %s", dev->data.disk->src);
 
@@ -1237,7 +1237,7 @@ int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (!(qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+    if (!qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("Underlying qemu does not support SCSI disk removal"));
         goto cleanup;
@@ -1385,13 +1385,13 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceControllerAlias(detach) < 0)
             goto cleanup;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias)) {
             qemuDomainObjExitMonitor(vm);
             goto cleanup;
@@ -1419,7 +1419,7 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
         vm->def->ncontrollers = 0;
     }
 
-    if ((qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
         VIR_WARN0("Unable to release PCI address on controller");
 
@@ -1479,7 +1479,7 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
             qemuDomainObjExitMonitor(vm);
             qemuDomainNetAudit(vm, detach, NULL, "detach", false);
@@ -1494,8 +1494,8 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
         }
     }
 
-    if ((qemuCmdFlags & QEMU_CAPS_NETDEV) &&
-        (qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_NETDEV) &&
+        qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             qemuDomainNetAudit(vm, detach, NULL, "detach", false);
@@ -1512,7 +1512,7 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
 
     qemuDomainNetAudit(vm, detach, NULL, "detach", true);
 
-    if ((qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
         VIR_WARN0("Unable to release PCI address on NIC");
 
@@ -1605,7 +1605,7 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
             qemuDomainObjExitMonitor(vm);
             return -1;
@@ -1636,7 +1636,7 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
         pciFreeDevice(pci);
     }
 
-    if ((qemuCmdFlags & QEMU_CAPS_DEVICE) &&
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
         VIR_WARN0("Unable to release PCI address on host device");
 
@@ -1707,7 +1707,7 @@ int qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (!(qemuCmdFlags & QEMU_CAPS_DEVICE)) {
+    if (!qemuCapsGet(qemuCmdFlags, QEMU_CAPS_DEVICE)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("device cannot be detached with this QEMU version"));
         return -1;

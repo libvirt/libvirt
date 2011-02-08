@@ -95,6 +95,15 @@ enum qemuCapsFlags {
     QEMU_CAPS_VIRTIO_TX_ALG = (1LL << 58), /* -device virtio-net-pci,tx=string */
 };
 
+void qemuCapsSet(unsigned long long *caps,
+                 enum qemuCapsFlags flag);
+
+void qemuCapsClear(unsigned long long *caps,
+                   enum qemuCapsFlags flag);
+
+bool qemuCapsGet(unsigned long long caps,
+                 enum qemuCapsFlags flag);
+
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
 
 int qemuCapsProbeMachineTypes(const char *binary,

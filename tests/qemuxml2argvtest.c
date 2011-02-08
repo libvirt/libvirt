@@ -79,7 +79,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto fail;
     }
 
-    if (extraFlags & QEMU_CAPS_DOMID)
+    if (qemuCapsGet(extraFlags, QEMU_CAPS_DOMID))
         vmdef->id = 6;
     else
         vmdef->id = -1;
@@ -96,7 +96,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
         goto fail;
 
-    if (flags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(flags, QEMU_CAPS_DEVICE)) {
         qemuDomainPCIAddressSetPtr pciaddrs;
         if (!(pciaddrs = qemuDomainPCIAddressSetCreate(vmdef)))
             goto fail;
@@ -117,7 +117,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
      */
     if (STREQLEN(vmdef->os.arch, "x86_64", 6) ||
         STREQLEN(vmdef->os.arch, "i686", 4)) {
-        flags |= QEMU_CAPS_PCI_MULTIBUS;
+        qemuCapsSet(&flags, QEMU_CAPS_PCI_MULTIBUS);
     }
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver,

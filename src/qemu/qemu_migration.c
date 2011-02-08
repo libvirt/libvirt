@@ -304,9 +304,9 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                         vm->def->emulator);
         goto endjob;
     }
-    if (qemuCmdFlags & QEMU_CAPS_MIGRATE_QEMU_UNIX)
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_UNIX))
         internalret = virAsprintf(&migrateFrom, "unix:%s", unixfile);
-    else if (qemuCmdFlags & QEMU_CAPS_MIGRATE_QEMU_EXEC)
+    else if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_EXEC))
         internalret = virAsprintf(&migrateFrom, "exec:nc -U -l %s", unixfile);
     else {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -777,8 +777,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (!(qemuCmdFlags & QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
-        !(qemuCmdFlags & QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
+    if (!qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
+        !qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("Source qemu is too old to support tunnelled migration"));
         goto cleanup;
@@ -820,11 +820,11 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
     if (flags & VIR_MIGRATE_NON_SHARED_INC)
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
-    if (qemuCmdFlags & QEMU_CAPS_MIGRATE_QEMU_UNIX){
+    if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
         internalret = qemuMonitorMigrateToUnix(priv->mon, background_flags,
                                                unixfile);
     }
-    else if (qemuCmdFlags & QEMU_CAPS_MIGRATE_QEMU_EXEC) {
+    else if (qemuCapsGet(qemuCmdFlags, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
         internalret = qemuMonitorMigrateToCommand(priv->mon, QEMU_MONITOR_MIGRATE_BACKGROUND, args);
     } else {

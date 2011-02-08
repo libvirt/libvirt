@@ -57,7 +57,7 @@ static int testHelpStrParsing(const void *data)
                              &version, &is_kvm, &kvm_version) == -1)
         goto cleanup;
 
-    if (info->flags & QEMU_CAPS_DEVICE) {
+    if (qemuCapsGet(info->flags, QEMU_CAPS_DEVICE)) {
         VIR_FREE(path);
         if (virAsprintf(&path, "%s/qemuhelpdata/%s-device", abs_srcdir,
                         info->name) < 0)
