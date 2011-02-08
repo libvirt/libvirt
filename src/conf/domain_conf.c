@@ -5149,6 +5149,11 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (node)
         def->mem.hugepage_backed = 1;
 
+    /* Extract blkio cgroup tunables */
+    if (virXPathUInt("string(./blkiotune/weight)", ctxt,
+                     &def->blkio.weight) < 0)
+        def->blkio.weight = 0;
+
     /* Extract other memory tunables */
     if (virXPathULong("string(./memtune/hard_limit)", ctxt,
                       &def->mem.hard_limit) < 0)
@@ -7681,6 +7686,14 @@ char *virDomainDefFormat(virDomainDefPtr def,
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->mem.max_balloon);
     virBufferVSprintf(&buf, "  <currentMemory>%lu</currentMemory>\n",
                       def->mem.cur_balloon);
+
+    /* add blkiotune only if there are any */
+    if (def->blkio.weight) {
+        virBufferVSprintf(&buf, "  <blkiotune>\n");
+        virBufferVSprintf(&buf, "    <weight>%u</weight>\n",
+                          def->blkio.weight);
+        virBufferVSprintf(&buf, "  </blkiotune>\n");
+    }
 
     /* add memtune only if there are any */
     if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||

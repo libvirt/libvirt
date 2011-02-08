@@ -1029,6 +1029,10 @@ struct _virDomainDef {
     char *description;
 
     struct {
+        unsigned int weight;
+    } blkio;
+
+    struct {
         unsigned long max_balloon;
         unsigned long cur_balloon;
         unsigned long hugepage_backed;

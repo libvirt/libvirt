@@ -270,6 +270,21 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
     }
 
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+        if (vm->def->blkio.weight != 0) {
+            rc = virCgroupSetBlkioWeight(cgroup, vm->def->blkio.weight);
+            if(rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set io weight for domain %s"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+    } else {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("Block I/O tuning is not available on this host"));
+    }
+
     if ((rc = qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY))) {
         if (vm->def->mem.hard_limit != 0) {
             rc = virCgroupSetMemoryHardLimit(cgroup, vm->def->mem.hard_limit);

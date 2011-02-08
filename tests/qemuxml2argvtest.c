@@ -480,6 +480,9 @@ mymain(int argc, char **argv)
     DO_TEST("cpu-exact2", 0, false);
     DO_TEST("cpu-strict1", 0, false);
 
+    DO_TEST("memtune", QEMUD_CMD_FLAG_NAME, false);
+    DO_TEST("blkiotune", QEMUD_CMD_FLAG_NAME, false);
+
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
 

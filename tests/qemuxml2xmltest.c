@@ -182,6 +182,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("encrypted-disk");
     DO_TEST("memtune");
+    DO_TEST("blkiotune");
 
     DO_TEST("smp");
 

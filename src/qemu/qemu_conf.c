@@ -303,7 +303,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         driver->cgroupControllers =
             (1 << VIR_CGROUP_CONTROLLER_CPU) |
             (1 << VIR_CGROUP_CONTROLLER_DEVICES) |
-            (1 << VIR_CGROUP_CONTROLLER_MEMORY);
+            (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+            (1 << VIR_CGROUP_CONTROLLER_BLKIO);
     }
     for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
         if (driver->cgroupControllers & (1 << i)) {
