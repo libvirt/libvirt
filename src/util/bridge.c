@@ -484,6 +484,7 @@ brAddTap(brControl *ctl,
          char **ifname,
          const unsigned char *macaddr,
          int vnet_hdr,
+         bool up,
          int *tapfd)
 {
     int fd;
@@ -530,7 +531,7 @@ brAddTap(brControl *ctl,
         goto error;
     if ((errno = brAddInterface(ctl, bridge, ifr.ifr_name)))
         goto error;
-    if ((errno = brSetInterfaceUp(ctl, ifr.ifr_name, 1)))
+    if (up && ((errno = brSetInterfaceUp(ctl, ifr.ifr_name, 1))))
         goto error;
     if (!tapfd &&
         (errno = ioctl(fd, TUNSETPERSIST, 1)))

@@ -71,6 +71,7 @@ int     brAddTap                (brControl *ctl,
                                  char **ifname,
                                  const unsigned char *macaddr,
                                  int vnet_hdr,
+                                 bool up,
                                  int *tapfd);
 
 int     brDeleteTap             (brControl *ctl,

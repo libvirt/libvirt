@@ -252,6 +252,7 @@ qemuNetworkIfaceConnect(virConnectPtr conn,
                         &net->ifname,
                         tapmac,
                         vnet_hdr,
+                        true,
                         &tapfd))) {
         if (err == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */

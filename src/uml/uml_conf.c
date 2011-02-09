@@ -143,6 +143,7 @@ umlConnectTapDevice(virConnectPtr conn,
                         &net->ifname,
                         tapmac,
                         0,
+                        true,
                         NULL))) {
         if (err == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
