@@ -266,6 +266,10 @@
                 <a href="csharp.html">C#</a>
                 <span>overview of the C# API bindings</span>
               </li>
+              <li>
+                <a href="php.html">PHP</a>
+                <span>overview of the PHP API bindings</span>
+              </li>
             </ul>
           </li>
           <li>

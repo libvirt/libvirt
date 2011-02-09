@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1>PHP API bindings</h1>
+
+<h2>Presentation</h2>
+    <p>The libvirt-php, originally called php-libvirt, is the PHP API bindings for
+       the libvirt virtualization toolkit originally developed by Radek Hladik but
+       currently maintained by Red Hat.</p>
+
+<h2>Getting the source</h2>
+<p> The PHP bindings code source is now maintained in a <a
+href="http://git-scm.com/">git</a> repository available on
+<a href="http://libvirt.org/git/">libvirt.org</a>:
+</p>
+<pre>
+git clone git://libvirt.org/libvirt-php.git
+</pre>
+<p>
+It can also be browsed at
+</p>
+<pre>
+<a href="http://libvirt.org/git/?p=libvirt-php.git;a=summary">http://libvirt.org/git/?p=libvirt-php.git;a=summary</a>
+</pre>
+
+<p></p>
+<h2>Building</h2>
+<p>The code is using autotools to generate the files necessary for compilation. The preferred way of building is
+   to run autogen.sh to generate configure script and then go on with the standard linux make commands, i.e.</p>
+
+<pre>
+$ cd libvirt-php
+$ ./autogen.sh
+$ make
+</pre>
+
+
+<h2>Enabling the module in PHP</h2>
+<p>Before you start using the module you have to install the module first. The module
+php_libvirt.so is being generated when you compile it. This is necessary to be loaded
+in the extensions sections of php.ini file for PHP version older than PHP-5.</p>
+<p>
+Starting with PHP-5 you can create a file called libvirt.ini in /etc/php.d having just
+one line <code>extension=php_libvirt.so</code> to enable the extension. Of course, you
+need to have this module copied in the directory with the rest of your PHP modules to
+make PHP find the module for you.</p>
+<p>
+If you're using PHP as a module (mod_php5.so) in the Apache webserver you need to
+restart your Apache to trigger configuration reload for PHP.
+</p>
+<p>
+If you're not sure that you have everything set up right and you don't want to restart
+your Apache webserver before you're sure everything will be working fine you could try
+running the test using cli-based PHP interpreter. There are some example scripts coming
+along the source codes in the <code>example</code> subdirectory so you can try to run
+php on the index.php script to check whether it's working fine to establish connection or not.
+</p>
+<p>
+When you're having some issues with the connection make sure the apache user is having
+access to libvirt. For more information please see <a href="auth.html">Libvirt access control</a> page.
+</p>
+<h2>Contribution</h2>
+<p>
+If you would like to contribute to the libvirt-php project you could write patches for it but please
+make sure you're following the procedure below:
+
+<ol>
+ <li>Sign up to libvirt list if you're not on it yet (libvir-list@redhat.com)</li>
+ <li>Clone the repository from libvirt.org site using:
+     <pre>git clone git://libvirt.org/libvirt-php</pre>
+ </li>
+ <li>Set your git username and e-mail and also set the subject prefix in the project's repository using:
+     <pre>git config --local format.subjectprefix "libvirt-php"</pre>
+ </li>
+ <li>Create the patch in the form of the commits and include also information about usage (example source codes maybe) and testing</li>
+ <li>Format it using <code>git format-patch -X</code> where X is the number of patch parts to be posted, for multipart patch (X is greater than 1) please use also numbering (-n) option and include the cover-letter (--cover-letter).</li>
+ <li>Send to libvir-list@redhat.com using the <code>git send-email &lt;files&gt; --to libvir-list@redhat.com</code> command where &lt;files&gt; can be <i>000*</i> to send all the patches formatted by git format-patch since git format-patch names the files starting with the 4 digit numbers.</li>
+</ol>
+
+When you send the patch you're patch will be reviewed and later committed to the libvirt-php repository. You'll be contacted in case some flaws are found during the review.
+
+</p>
+
+  </body>
+</html>
