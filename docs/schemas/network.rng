@@ -50,6 +50,14 @@
           </element>
         </optional>
 
+        <!-- <mac> element -->
+        <optional>
+          <element name="mac">
+            <attribute name="address"><ref name="mac-addr"/></attribute>
+            <empty/>
+          </element>
+        </optional>
+
         <!-- <forward> element -->
         <optional>
           <!-- The device through which the bridge is connected to the

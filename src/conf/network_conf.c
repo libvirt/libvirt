@@ -628,6 +628,19 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     if (virXPathULong("string(./bridge[1]/@delay)", ctxt, &def->delay) < 0)
         def->delay = 0;
 
+    tmp = virXPathString("string(./mac[1]/@address)", ctxt);
+    if (tmp) {
+        if (virParseMacAddr(tmp, def->mac) < 0) {
+            virNetworkReportError(VIR_ERR_XML_ERROR,
+                                  _("Invalid bridge mac address '%s' in network '%s'"),
+                                  tmp, def->name);
+            VIR_FREE(tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+        def->mac_specified = true;
+    }
+
     nIps = virXPathNodeSet("./ip", ctxt, &ipNodes);
     if (nIps > 0) {
         int ii;
@@ -856,6 +869,11 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
     virBufferVSprintf(&buf, " stp='%s' delay='%ld' />\n",
                       def->stp ? "on" : "off",
                       def->delay);
+    if (def->mac_specified) {
+        char macaddr[VIR_MAC_STRING_BUFLEN];
+        virFormatMacAddr(def->mac, macaddr);
+        virBufferVSprintf(&buf, "  <mac address='%s'/>\n", macaddr);
+    }
 
     if (def->domain)
         virBufferVSprintf(&buf, "  <domain name='%s'/>\n", def->domain);
@@ -1164,6 +1182,18 @@ error:
     return ret;
 }
 
+
+void virNetworkSetBridgeMacAddr(virNetworkDefPtr def)
+{
+    if (!def->mac_specified) {
+        /* if the bridge doesn't have a mac address explicitly defined,
+         * autogenerate a random one.
+         */
+        virGenerateMacAddr((unsigned char[]){ 0x52, 0x54, 0 },
+                           def->mac);
+        def->mac_specified = true;
+    }
+}
 
 /*
  * virNetworkObjIsDuplicate:

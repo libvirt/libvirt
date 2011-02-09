@@ -105,12 +105,15 @@
     <h3><a name="elementsAddress">Addressing</a></h3>
 
     <p>
-      The final set of elements define the IPv4 address range available,
-      and optionally enable DHCP sevices.
+      The final set of elements define the addresses (IPv4 and/or
+      IPv6, as well as MAC) to be assigned to the bridge device
+      associated with the virtual network, and optionally enable DHCP
+      services.
     </p>
 
     <pre>
         ...
+        &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
         &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
           &lt;dhcp&gt;
             &lt;range start="192.168.122.100" end="192.168.122.254" /&gt;
@@ -121,6 +124,20 @@
       &lt;/network&gt;</pre>
 
     <dl>
+      <dt><code>mac</code></dt>
+      <dd>The <code>address</code> attribute defines a MAC
+        (hardware) address formatted as 6 groups of 2-digit
+        hexadecimal numbers, the groups separated by colons
+        (eg, <code>"52:54:00:1C:DA:2F"</code>).  This MAC address is
+        assigned to the bridge device when it is created.  Generally
+        it is best to not specify a MAC address when creating a
+        network - in this case, if a defined MAC address is needed for
+        proper operation, libvirt will automatically generate a random
+        MAC address and save it in the config. Allowing libvirt to
+        generate the MAC address will assure that it is compatible
+        with the idiosyncrasies of the platform where libvirt is
+        running. <span class="since">Since 0.8.8</span>
+      </dd>
       <dt><code>ip</code></dt>
       <dd>The <code>address</code> attribute defines an IPv4 address in
         dotted-decimal format, or an IPv6 address in standard

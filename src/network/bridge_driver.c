@@ -128,6 +128,15 @@ networkRadvdConfigFileName(const char *netname)
     return configfile;
 }
 
+static char *
+networkBridgeDummyNicName(const char *brname)
+{
+    char *nicname;
+
+    virAsprintf(&nicname, "%s-nic", brname);
+    return nicname;
+}
+
 static void
 networkFindActiveConfigs(struct network_driver *driver) {
     unsigned int i;
@@ -1566,6 +1575,7 @@ networkStartNetworkDaemon(struct network_driver *driver,
     bool v4present = false, v6present = false;
     virErrorPtr save_err = NULL;
     virNetworkIpDefPtr ipdef;
+    char *macTapIfName;
 
     if (virNetworkObjIsActive(network)) {
         networkReportError(VIR_ERR_OPERATION_INVALID,
@@ -1583,6 +1593,30 @@ networkStartNetworkDaemon(struct network_driver *driver,
                              _("cannot create bridge '%s'"),
                              network->def->bridge);
         return -1;
+    }
+
+    if (network->def->mac_specified) {
+        /* To set a mac for the bridge, we need to define a dummy tap
+         * device, set its mac, then attach it to the bridge. As long
+         * as its mac address is lower than any other interface that
+         * gets attached, the bridge will always maintain this mac
+         * address.
+         */
+        macTapIfName = networkBridgeDummyNicName(network->def->bridge);
+        if (!macTapIfName) {
+            virReportOOMError();
+            goto err0;
+        }
+        if ((err = brAddTap(driver->brctl, network->def->bridge,
+                            &macTapIfName, network->def->mac, 0, false, NULL))) {
+            virReportSystemError(err,
+                                 _("cannot create dummy tap device '%s' to set mac"
+                                   " address on bridge '%s'"),
+                                 macTapIfName, network->def->bridge);
+            VIR_FREE(macTapIfName);
+            goto err0;
+        }
+        VIR_FREE(macTapIfName);
     }
 
     /* Set bridge options */
@@ -1695,6 +1729,17 @@ networkStartNetworkDaemon(struct network_driver *driver,
  err1:
     if (!save_err)
         save_err = virSaveLastError();
+
+    if ((err = brDeleteTap(driver->brctl, macTapIfName))) {
+        char ebuf[1024];
+        VIR_WARN("Failed to delete dummy tap device '%s' on bridge '%s' : %s",
+                 macTapIfName, network->def->bridge,
+                 virStrerror(err, ebuf, sizeof ebuf));
+    }
+
+ err0:
+    if (!save_err)
+        save_err = virSaveLastError();
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
         char ebuf[1024];
         VIR_WARN("Failed to delete bridge '%s' : %s",
@@ -1714,6 +1759,7 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
 {
     int err;
     char *stateFile;
+    char *macTapIfName;
 
     VIR_INFO(_("Shutting down network '%s'"), network->def->name);
 
@@ -1744,6 +1790,21 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
         kill(network->dnsmasqPid, SIGTERM);
 
     char ebuf[1024];
+
+    if (network->def->mac_specified) {
+        macTapIfName = networkBridgeDummyNicName(network->def->bridge);
+        if (!macTapIfName) {
+            virReportOOMError();
+        } else {
+            if ((err = brDeleteTap(driver->brctl, macTapIfName))) {
+                VIR_WARN("Failed to delete dummy tap device '%s' on bridge '%s' : %s",
+                         macTapIfName, network->def->bridge,
+                         virStrerror(err, ebuf, sizeof ebuf));
+            }
+            VIR_FREE(macTapIfName);
+        }
+    }
+
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         VIR_WARN("Failed to bring down bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
@@ -1988,6 +2049,8 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     if (virNetworkSetBridgeName(&driver->networks, def, 1))
         goto cleanup;
 
+    virNetworkSetBridgeMacAddr(def);
+
     if (!(network = virNetworkAssignDef(&driver->networks,
                                         def)))
         goto cleanup;
@@ -2028,6 +2091,8 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
 
     if (virNetworkSetBridgeName(&driver->networks, def, 1))
         goto cleanup;
+
+    virNetworkSetBridgeMacAddr(def);
 
     if (!(network = virNetworkAssignDef(&driver->networks,
                                         def)))

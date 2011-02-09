@@ -608,6 +608,7 @@ virNetworkObjLock;
 virNetworkObjUnlock;
 virNetworkRemoveInactive;
 virNetworkSaveConfig;
+virNetworkSetBridgeMacAddr;
 virNetworkSetBridgeName;
 
 
@@ -877,6 +878,7 @@ virFileWriteStr;
 virFindFileInPath;
 virFork;
 virFormatMacAddr;
+virGenerateMacAddr;
 virGetGroupID;
 virGetHostname;
 virGetUserDirectory;

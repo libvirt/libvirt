@@ -31,6 +31,7 @@
 # include "internal.h"
 # include "threads.h"
 # include "network.h"
+# include "util.h"
 
 /* 2 possible types of forwarding */
 enum virNetworkForwardType {
@@ -92,6 +93,8 @@ struct _virNetworkDef {
     char *domain;
     unsigned long delay;   /* Bridge forward delay (ms) */
     unsigned int stp :1; /* Spanning tree protocol */
+    unsigned char mac[VIR_MAC_BUFLEN]; /* mac address of bridge device */
+    bool mac_specified;
 
     int forwardType;    /* One of virNetworkForwardType constants */
     char *forwardDev;   /* Destination device for forwarding */
@@ -190,6 +193,8 @@ char *virNetworkAllocateBridge(const virNetworkObjListPtr nets,
 int virNetworkSetBridgeName(const virNetworkObjListPtr nets,
                             virNetworkDefPtr def,
                             int check_collision);
+
+void virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
 
 int virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
                              virNetworkDefPtr def,
