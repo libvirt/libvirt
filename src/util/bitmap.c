@@ -32,6 +32,7 @@
 
 #include "bitmap.h"
 #include "memory.h"
+#include "buf.h"
 
 
 struct _virBitmap {
@@ -146,4 +147,36 @@ int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
 
     *result = !!(bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] & VIR_BITMAP_BIT(b));
     return 0;
+}
+
+/**
+ * virBitmapString:
+ * @bitmap: Pointer to bitmap
+ *
+ * Convert @bitmap to printable string.
+ *
+ * Returns pointer to the string or NULL on error.
+ */
+char *virBitmapString(virBitmapPtr bitmap)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t sz;
+
+    virBufferAddLit(&buf, "0x");
+
+    sz = (bitmap->size + VIR_BITMAP_BITS_PER_UNIT - 1) /
+          VIR_BITMAP_BITS_PER_UNIT;
+
+    while (sz--) {
+        virBufferVSprintf(&buf, "%0*lx",
+                          VIR_BITMAP_BITS_PER_UNIT / 4,
+                          bitmap->map[sz]);
+    }
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 }

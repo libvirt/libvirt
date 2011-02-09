@@ -16,6 +16,7 @@ virBitmapClearBit;
 virBitmapFree;
 virBitmapGetBit;
 virBitmapSetBit;
+virBitmapString;
 
 
 # buf.h
