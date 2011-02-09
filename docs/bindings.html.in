@@ -28,16 +28,17 @@
       <li>
         <p>
           <strong>PHP</strong>: Radek Hladik started developing
-          <a href="http://phplibvirt.cybersales.cz/">PHP bindings</a> in 2010.
+          <a href="http://libvirt.org/php">PHP bindings</a> in 2010.
         </p>
         <p>
-          In February 2011 the binding development has been moved to the
-          <a href="http://libvirt.org/git/?p=libvirt-php.git;a=summary">libvirt.org as libvirt-php project</a>.
+          In February 2011 the binding development has been moved to the libvirt.org website as
+          libvirt-php project.
         </p>
         <p>
           The project is now maintained by Michal Novotny and it's heavily based
-          on Radek's version. For more information including the information on posting
-          the patches you to libvirt-php please refer to <a href="php.html">PHP binding page</a>.
+          on Radek's version. For more information, including
+          information on posting patches to libvirt-php, please refer
+          to the <a href="http://libvirt.org/php">PHP bindings</a> site.
         </p>
       </li>
       <li>
