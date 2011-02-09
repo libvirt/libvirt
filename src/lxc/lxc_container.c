@@ -810,7 +810,14 @@ static int lxcContainerChild( void *data )
 
 static int userns_supported(void)
 {
+#if 1
+    /*
+     * put off using userns until uid mapping is implemented
+     */
+    return 0;
+#else
     return lxcContainerAvailable(LXC_CONTAINER_FEATURE_USER) == 0;
+#endif
 }
 
 /**
