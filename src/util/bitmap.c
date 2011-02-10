@@ -1,7 +1,7 @@
 /*
  * bitmap.h: Simple bitmap operations
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -36,13 +36,14 @@
 
 struct _virBitmap {
     size_t size;
-    uint32_t *map;
+    unsigned long *map;
 };
 
 
-#define VIR_BITMAP_BITS_PER_UNIT  (sizeof(uint32_t) * CHAR_BIT)
+#define VIR_BITMAP_BITS_PER_UNIT  ((int) sizeof(unsigned long) * CHAR_BIT)
 #define VIR_BITMAP_UNIT_OFFSET(b) ((b) / VIR_BITMAP_BITS_PER_UNIT)
 #define VIR_BITMAP_BIT_OFFSET(b)  ((b) % VIR_BITMAP_BITS_PER_UNIT)
+#define VIR_BITMAP_BIT(b)         (1UL << VIR_BITMAP_BIT_OFFSET(b))
 
 
 /**
@@ -105,7 +106,7 @@ int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
     if (bitmap->size <= b)
         return -1;
 
-    bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] |= (1 << VIR_BITMAP_BIT_OFFSET(b));
+    bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] |= VIR_BITMAP_BIT(b);
     return 0;
 }
 
@@ -123,7 +124,7 @@ int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
     if (bitmap->size <= b)
         return -1;
 
-    bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~(1 << VIR_BITMAP_BIT_OFFSET(b));
+    bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~VIR_BITMAP_BIT(b);
     return 0;
 }
 
@@ -140,14 +141,9 @@ int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
  */
 int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
 {
-    uint32_t bit;
-
     if (bitmap->size <= b)
         return -1;
 
-    bit = bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &
-            (1 << VIR_BITMAP_BIT_OFFSET(b));
-
-    *result = bit != 0;
+    *result = !!(bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] & VIR_BITMAP_BIT(b));
     return 0;
 }
