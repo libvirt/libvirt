@@ -298,6 +298,10 @@ XENAPI_DRIVER_SOURCES =								\
 		xenapi/xenapi_driver_private.h					\
 		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
 
+LIBXL_DRIVER_SOURCES =						\
+		libxl/libxl_conf.c libxl/libxl_conf.h		\
+		libxl/libxl_driver.c libxl/libxl_driver.h
+
 UML_DRIVER_SOURCES =						\
 		uml/uml_conf.c uml/uml_conf.h			\
 		uml/uml_driver.c uml/uml_driver.h
@@ -692,6 +696,25 @@ endif
 libvirt_driver_xenapi_la_SOURCES = $(XENAPI_DRIVER_SOURCES)
 endif
 
+if WITH_LIBXL
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_libxl.la
+else
+noinst_LTLIBRARIES += libvirt_driver_libxl.la
+# Stateful, so linked to daemon instead
+#libvirt_la_BUILT_LIBADD += libvirt_driver_libxl.la
+endif
+libvirt_driver_libxl_la_CFLAGS = $(LIBXL_CFLAGS) \
+		-I@top_srcdir@/src/conf $(AM_CFLAGS)
+libvirt_driver_libxl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_libxl_la_LIBADD = $(LIBXL_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_libxl_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_libxl_la_LDFLAGS += -module -avoid-version
+endif
+libvirt_driver_libxl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
+endif
+
 if WITH_QEMU
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_qemu.la
@@ -1005,6 +1028,7 @@ EXTRA_DIST +=							\
 		$(PHYP_DRIVER_SOURCES)				\
 		$(VBOX_DRIVER_SOURCES)				\
 		$(XENAPI_DRIVER_SOURCES)			\
+		$(LIBXL_DRIVER_SOURCES)			\
 		$(ESX_DRIVER_SOURCES)				\
 		$(ESX_DRIVER_EXTRA_DIST)			\
 		$(NETWORK_DRIVER_SOURCES)			\
@@ -1259,6 +1283,10 @@ if WITH_LXC
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
 endif
+if WITH_LIBXL
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/libxl"
+endif
 if WITH_UML
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/uml"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/uml"
@@ -1295,6 +1323,10 @@ endif
 if WITH_LXC
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
+endif
+if WITH_LIBXL
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/libxl" ||:
 endif
 if WITH_UML
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/uml" ||:

@@ -45,6 +45,7 @@
 %define with_vbox          0%{!?_without_vbox:%{server_drivers}}
 %define with_uml           0%{!?_without_uml:%{server_drivers}}
 %define with_xenapi        0%{!?_without_xenapi:%{server_drivers}}
+%define with_libxl         0%{!?_without_libxl:%{server_drivers}}
 # XXX this shouldn't be here, but it mistakenly links into libvirtd
 %define with_one           0%{!?_without_one:%{server_drivers}}
 
@@ -96,7 +97,7 @@
 %endif
 
 # RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor,
-# VMWare, or libxenserver (xenapi)
+# VMWare, libxenserver (xenapi), or libxenlight (Xen 4.1 and newer)
 %if 0%{?rhel}
 %define with_openvz 0
 %define with_vbox 0
@@ -105,6 +106,7 @@
 %define with_phyp 0
 %define with_vmware 0
 %define with_xenapi 0
+%define with_libxl 0
 %endif
 
 # RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
@@ -493,6 +495,10 @@ of recent versions of Linux (and other OSes).
 %define _without_xenapi --without-xenapi
 %endif
 
+%if ! %{with_libxl}
+%define _without_libxl --without-libxl
+%endif
+
 %if ! %{with_sasl}
 %define _without_sasl --without-sasl
 %endif
@@ -872,6 +878,9 @@ fi
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
+%if %{with_libxl}
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
+%endif
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
 %if %{with_qemu}
@@ -911,6 +920,10 @@ fi
 %if %{with_uml}
 %dir %{_localstatedir}/run/libvirt/uml/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
+%endif
+%if %{with_libxl}
+%dir %{_localstatedir}/run/libvirt/libxl/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
 %endif
 %if %{with_network}
 %dir %{_localstatedir}/run/libvirt/network/

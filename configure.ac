@@ -263,6 +263,8 @@ AC_ARG_WITH([phyp],
   AC_HELP_STRING([--with-phyp], [add PHYP support @<:@default=check@:>@]),[],[with_phyp=check])
 AC_ARG_WITH([xenapi],
   AC_HELP_STRING([--with-xenapi], [add XenAPI support @<:@default=check@:>@]),[],[with_xenapi=check])
+AC_ARG_WITH([libxl],
+  AC_HELP_STRING([--with-libxl], [add libxenlight support @<:@default=check@:>@]),[],[with_libxl=check])
 AC_ARG_WITH([vbox],
   AC_HELP_STRING([--with-vbox=@<:@PFX@:>@],
                  [VirtualBox XPCOMC location @<:@default=yes@:>@]),[],
@@ -497,6 +499,46 @@ fi
 AC_SUBST([LIBXENSERVER_CFLAGS])
 AC_SUBST([LIBXENSERVER_LIBS])
 
+old_LIBS="$LIBS"
+old_CFLAGS="$CFLAGS"
+LIBXL_LIBS=""
+LIBXL_CFLAGS=""
+dnl search for libxl, aka libxenlight
+fail=0
+if test "$with_libxl" != "no" ; then
+    if test "$with_libxl" != "yes" && test "$with_libxl" != "check" ; then
+        LIBXL_CFLAGS="-I$with_libxl/include"
+        LIBXL_LIBS="-L$with_libxl"
+    fi
+    CFLAGS="$CFLAGS $LIBXL_CFLAGS"
+    LIBS="$LIBS $LIBXL_LIBS"
+    AC_CHECK_LIB([xenlight], [libxl_ctx_init], [
+        with_libxl=yes
+        LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenstore -lxenctrl -lxenguest -luuid -lutil -lblktapctl"
+    ],[
+        if test "$with_libxl" = "yes"; then
+            fail=1
+        fi
+        with_libxl=no
+    ],[
+        -lxenstore -lxenctrl -lxenguest -luuid -lutil -lblktapctl
+    ])
+fi
+
+LIBS="$old_LIBS"
+CFLAGS="$old_CFLAGS"
+
+if test $fail = 1; then
+    AC_MSG_ERROR([You must install the libxl Library to compile libxenlight driver with -lxl])
+fi
+
+if test "$with_libxl" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_LIBXL], 1, [whether libxenlight driver is enabled])
+fi
+AM_CONDITIONAL([WITH_LIBXL], [test "$with_libxl" = "yes"])
+
+AC_SUBST([LIBXL_CFLAGS])
+AC_SUBST([LIBXL_LIBS])
 
 old_LIBS="$LIBS"
 old_CFLAGS="$CFLAGS"
@@ -2370,6 +2412,7 @@ AC_MSG_NOTICE([  OpenVZ: $with_openvz])
 AC_MSG_NOTICE([  VMware: $with_vmware])
 AC_MSG_NOTICE([    VBox: $with_vbox])
 AC_MSG_NOTICE([  XenAPI: $with_xenapi])
+AC_MSG_NOTICE([xenlight: $with_libxl])
 AC_MSG_NOTICE([     LXC: $with_lxc])
 AC_MSG_NOTICE([    PHYP: $with_phyp])
 AC_MSG_NOTICE([     ONE: $with_one])
@@ -2478,6 +2521,11 @@ if test "$with_xenapi" = "yes" ; then
 AC_MSG_NOTICE([  xenapi: $LIBXENSERVER_CFLAGS $LIBXENSERVER_LIBS])
 else
 AC_MSG_NOTICE([  xenapi: no])
+fi
+if test "$with_libxl" = "yes" ; then
+AC_MSG_NOTICE([  libxenlight: $LIBXL_CFLAGS $LIBXL_LIBS])
+else
+AC_MSG_NOTICE([  libxenlight: no])
 fi
 if test "$with_hal" = "yes" ; then
 AC_MSG_NOTICE([     hal: $HAL_CFLAGS $HAL_LIBS])

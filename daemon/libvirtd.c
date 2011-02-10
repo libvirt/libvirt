@@ -81,6 +81,9 @@
 # ifdef WITH_LXC
 #  include "lxc/lxc_driver.h"
 # endif
+# ifdef WITH_LIBXL
+#  include "libxl/libxl_driver.h"
+# endif
 # ifdef WITH_UML
 #  include "uml/uml_driver.h"
 # endif
@@ -942,6 +945,9 @@ static struct qemud_server *qemudInitialize(void) {
 # endif
 # ifdef WITH_NWFILTER
     nwfilterRegister();
+# endif
+# ifdef WITH_LIBXL
+    libxlRegister();
 # endif
 # ifdef WITH_QEMU
     qemuRegister();

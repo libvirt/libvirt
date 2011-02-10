@@ -106,6 +106,10 @@ if WITH_LXC
     libvirtd_LDADD += ../src/libvirt_driver_lxc.la
 endif
 
+if WITH_LIBXL
+    libvirtd_LDADD += ../src/libvirt_driver_libxl.la
+endif
+
 if WITH_UML
     libvirtd_LDADD += ../src/libvirt_driver_uml.la
 endif

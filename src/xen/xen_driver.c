@@ -50,6 +50,7 @@
 #include "uuid.h"
 #include "fdstream.h"
 #include "files.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -229,6 +230,23 @@ xenUnifiedProbe (void)
     return 0;
 }
 
+#ifdef WITH_LIBXL
+static int
+xenUnifiedXendProbe (void)
+{
+    virCommandPtr cmd;
+    int status;
+    int ret = 0;
+
+    cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
+    if (virCommandRun(cmd, &status) == 0 && status == 0)
+        ret = 1;
+    virCommandFree(cmd);
+
+    return ret;
+}
+#endif
+
 static virDrvOpenStatus
 xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
@@ -291,6 +309,13 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
             }
         }
     }
+
+#ifdef WITH_LIBXL
+    /* Decline xen:// URI if xend is not running and libxenlight
+     * driver is potentially available. */
+    if (!xenUnifiedXendProbe())
+        return VIR_DRV_OPEN_DECLINED;
+#endif
 
     /* We now know the URI is definitely for this driver, so beyond
      * here, don't return DECLINED, always use ERROR */

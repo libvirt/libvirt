@@ -27,7 +27,8 @@ typedef enum {
     VIR_DRV_ESX = 10,
     VIR_DRV_PHYP = 11,
     VIR_DRV_XENAPI = 12,
-    VIR_DRV_VMWARE = 13
+    VIR_DRV_VMWARE = 13,
+    VIR_DRV_LIBXL = 14,
 } virDrvNo;
 
 

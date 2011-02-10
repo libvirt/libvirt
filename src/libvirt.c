@@ -912,6 +912,10 @@ virGetVersion(unsigned long *libVer, const char *type,
         if (STRCASEEQ(type, "LXC"))
             *typeVer = LIBVIR_VERSION_NUMBER;
 # endif
+# if WITH_LIBXL
+        if (STRCASEEQ(type, "xenlight"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+# endif
 # if WITH_PHYP
         if (STRCASEEQ(type, "phyp"))
             *typeVer = LIBVIR_VERSION_NUMBER;
