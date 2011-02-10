@@ -1331,7 +1331,7 @@ qemudStartup(int privileged) {
     rc = virCgroupForDriver("qemu", &qemu_driver->cgroup, privileged, 1);
     if (rc < 0) {
         char buf[1024];
-        VIR_WARN("Unable to create cgroup for driver: %s",
+        VIR_INFO("Unable to create cgroup for driver: %s, disabling cgroups",
                  virStrerror(-rc, buf, sizeof(buf)));
     }
 
