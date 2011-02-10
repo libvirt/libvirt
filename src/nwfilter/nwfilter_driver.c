@@ -69,7 +69,7 @@ nwfilterDriverStartup(int privileged) {
     if (virNWFilterLearnInit() < 0)
         return -1;
 
-    virNWFilterTechDriversInit();
+    virNWFilterTechDriversInit(privileged);
 
     if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB) < 0)
         goto conf_init_err;

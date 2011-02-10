@@ -114,7 +114,7 @@ static const char *m_physdev_out_str = "-m physdev " PHYSDEV_OUT;
 #define COMMENT_VARNAME "comment"
 
 static int ebtablesRemoveBasicRules(const char *ifname);
-static int ebiptablesDriverInit(void);
+static int ebiptablesDriverInit(bool privileged);
 static void ebiptablesDriverShutdown(void);
 static int ebtablesCleanAll(const char *ifname);
 static int ebiptablesAllTeardown(const char *ifname);
@@ -3653,10 +3653,13 @@ virNWFilterTechDriver ebiptables_driver = {
 
 
 static int
-ebiptablesDriverInit(void)
+ebiptablesDriverInit(bool privileged)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int cli_status;
+
+    if (!privileged)
+        return 0;
 
     if (virMutexInit(&execCLIMutex))
         return EINVAL;
@@ -3730,7 +3733,7 @@ ebiptablesDriverInit(void)
 
 
 static void
-ebiptablesDriverShutdown()
+ebiptablesDriverShutdown(void)
 {
     VIR_FREE(gawk_cmd_path);
     VIR_FREE(grep_cmd_path);

@@ -50,17 +50,17 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
 };
 
 
-void virNWFilterTechDriversInit() {
+void virNWFilterTechDriversInit(bool privileged) {
     int i = 0;
     while (filter_tech_drivers[i]) {
         if (!(filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
-            filter_tech_drivers[i]->init();
+            filter_tech_drivers[i]->init(privileged);
         i++;
     }
 }
 
 
-void virNWFilterTechDriversShutdown() {
+void virNWFilterTechDriversShutdown(void) {
     int i = 0;
     while (filter_tech_drivers[i]) {
         if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))

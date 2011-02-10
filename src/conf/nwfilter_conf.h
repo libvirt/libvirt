@@ -502,7 +502,7 @@ struct domUpdateCBStruct {
 };
 
 
-typedef int (*virNWFilterTechDrvInit)(void);
+typedef int (*virNWFilterTechDrvInit)(bool privileged);
 typedef void (*virNWFilterTechDrvShutdown)(void);
 
 enum virDomainNetType;

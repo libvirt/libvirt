@@ -28,7 +28,7 @@ virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 int virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
                                void *data);
 
-void virNWFilterTechDriversInit(void);
+void virNWFilterTechDriversInit(bool privileged);
 void virNWFilterTechDriversShutdown(void);
 
 enum instCase {
