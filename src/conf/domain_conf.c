@@ -3873,7 +3873,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
 
         def->data.spice.listenAddr = virXMLPropString(node, "listen");
         def->data.spice.keymap = virXMLPropString(node, "keymap");
-        if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth) < 0)
+        if (virDomainGraphicsAuthDefParseXML(node, &def->data.spice.auth) < 0)
             goto error;
 
         cur = node->children;
