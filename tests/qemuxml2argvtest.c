@@ -111,6 +111,15 @@ static int testCompareXMLToArgvFiles(const char *xml,
     free(virtTestLogContentAndReset());
     virResetLastError();
 
+    /* We do not call qemuCapsExtractVersionInfo() before calling
+     * qemuBuildCommandLine(), so we should set QEMUD_CMD_FLAG_PCI_MULTIBUS for
+     * x86_64 and i686 architectures here.
+     */
+    if (STREQLEN(vmdef->os.arch, "x86_64", 6) ||
+        STREQLEN(vmdef->os.arch, "i686", 4)) {
+        flags |= QEMUD_CMD_FLAG_PCI_MULTIBUS;
+    }
+
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
                                      vmdef, &monitor_chr, false, flags,
                                      migrateFrom, migrateFd, NULL,

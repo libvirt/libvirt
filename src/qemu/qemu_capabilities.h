@@ -108,7 +108,7 @@ int qemuCapsProbeCPUModels(const char *qemu,
 
 int qemuCapsExtractVersion(virCapsPtr caps,
                            unsigned int *version);
-int qemuCapsExtractVersionInfo(const char *qemu,
+int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
                                unsigned int *version,
                                unsigned long long *qemuCmdFlags);
 

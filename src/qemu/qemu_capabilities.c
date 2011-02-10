@@ -556,7 +556,7 @@ qemuCapsInitGuest(virCapsPtr caps,
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto error;
 
-    if (qemuCapsExtractVersionInfo(binary, NULL, &qemuCmdFlags) < 0 ||
+    if (qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCmdFlags) < 0 ||
         ((qemuCmdFlags & QEMUD_CMD_FLAG_BOOTINDEX) &&
          !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0)))
         goto error;
@@ -1117,7 +1117,7 @@ qemuCapsParseDeviceStr(const char *str, unsigned long long *flags)
     return 0;
 }
 
-int qemuCapsExtractVersionInfo(const char *qemu,
+int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
                                unsigned int *retversion,
                                unsigned long long *retflags)
 {
@@ -1152,6 +1152,12 @@ int qemuCapsExtractVersionInfo(const char *qemu,
     if (qemuCapsParseHelpStr(qemu, help, &flags,
                              &version, &is_kvm, &kvm_version) == -1)
         goto cleanup;
+
+    /* Currently only x86_64 and i686 support PCI-multibus. */
+    if (STREQLEN(arch, "x86_64", 6) ||
+        STREQLEN(arch, "i686", 4)) {
+        flags |= QEMUD_CMD_FLAG_PCI_MULTIBUS;
+    }
 
     /* qemuCapsExtractDeviceStr will only set additional flags if qemu
      * understands the 0.13.0+ notion of "-device driver,".  */
@@ -1214,7 +1220,7 @@ int qemuCapsExtractVersion(virCapsPtr caps,
         return -1;
     }
 
-    if (qemuCapsExtractVersionInfo(binary, version, NULL) < 0) {
+    if (qemuCapsExtractVersionInfo(binary, ut.machine, version, NULL) < 0) {
         return -1;
     }
 

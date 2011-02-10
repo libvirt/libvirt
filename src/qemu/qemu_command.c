@@ -2685,12 +2685,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         break;
     }
 
-    /* Currently only x86_64 and i686 support PCI-multibus. */
-    if (STREQLEN(def->os.arch, "x86_64", 6) ||
-        STREQLEN(def->os.arch, "i686", 4)) {
-        qemuCmdFlags |= QEMUD_CMD_FLAG_PCI_MULTIBUS;
-    }
-
     cmd = virCommandNewArgList(emulator, "-S", NULL);
 
     virCommandAddEnvPassCommon(cmd);
