@@ -3489,15 +3489,17 @@ doMigrate (void *opaque)
     const char *migrateuri;
     const char *dname;
     int flags = 0, found;
-    sigset_t sigmask, oldsigmask;
     vshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
+#if HAVE_PTHREAD_SIGMASK
+    sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
+#endif
 
     if (!vshConnectionUsability (ctl, ctl->conn))
         goto out;
@@ -3563,8 +3565,10 @@ doMigrate (void *opaque)
     }
 
 out:
+#if HAVE_PTHREAD_SIGMASK
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 out_sig:
+#endif
     if (dom) virDomainFree (dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
@@ -3607,12 +3611,16 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     struct sigaction old_sig_action;
     virDomainJobInfo jobinfo;
     bool verbose = false;
-    sigset_t sigmask, oldsigmask;
     int timeout;
     struct timeval start, curr;
     bool live_flag = false;
-
     vshCtrlData data;
+#if HAVE_PTHREAD_SIGMASK
+    sigset_t sigmask, oldsigmask;
+
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+#endif
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
@@ -3665,8 +3673,6 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     pollfd.fd = p[0];
     pollfd.events = POLLIN;
     pollfd.revents = 0;
-    sigemptyset(&sigmask);
-    sigaddset(&sigmask, SIGINT);
 
     GETTIMEOFDAY(&start);
     while (1) {
@@ -3709,9 +3715,13 @@ repoll:
         }
 
         if (verbose) {
+#if HAVE_PTHREAD_SIGMASK
             pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+#endif
             ret = virDomainGetJobInfo(dom, &jobinfo);
+#if HAVE_PTHREAD_SIGMASK
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+#endif
             if (ret == 0)
                 print_job_progress(jobinfo.dataRemaining, jobinfo.dataTotal);
         }
