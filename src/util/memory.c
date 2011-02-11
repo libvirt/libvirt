@@ -1,7 +1,7 @@
 /*
  * memory.c: safer memory allocation
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@
 
 #include <config.h>
 #include <stdlib.h>
-#include <stddef.h>
 
 #include "memory.h"
 #include "ignore-value.h"
