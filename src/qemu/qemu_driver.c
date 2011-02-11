@@ -3962,7 +3962,7 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
 
     /* Lack of balloon support is a fatal error */
     if (r == 0) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("cannot set memory of an active domain"));
         goto endjob;
     }
@@ -6980,8 +6980,8 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
 
     qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
-                        __FUNCTION__);
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cgroup CPU controller is not mounted"));
         goto cleanup;
     }
 
@@ -7011,8 +7011,8 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
 
     qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
-                        __FUNCTION__);
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cgroup memory controller is not mounted"));
         goto cleanup;
     }
 
@@ -7114,8 +7114,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
     qemuDriverLock(driver);
 
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
-                        __FUNCTION__);
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cgroup memory controller is not mounted"));
         goto cleanup;
     }
 
@@ -7227,8 +7227,8 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
 
     qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
-                        __FUNCTION__);
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cgroup CPU controller is not mounted"));
         goto cleanup;
     }
 
@@ -7292,8 +7292,8 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
 
     qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
-                        __FUNCTION__);
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cgroup CPU controller is not mounted"));
         goto cleanup;
     }
 
