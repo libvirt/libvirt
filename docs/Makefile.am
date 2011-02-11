@@ -80,6 +80,7 @@ fig = \
 EXTRA_DIST=					\
   apibuild.py \
   site.xsl newapi.xsl news.xsl page.xsl \
+  hacking1.xsl hacking2.xsl wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(fig) $(png) $(css) \
