@@ -79,7 +79,7 @@ VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
               QEMU_MONITOR_MIGRATION_STATUS_LAST,
               "inactive", "active", "completed", "failed", "cancelled")
 
-static char *qemuMonitorEscape(const char *in, int shell)
+char *qemuMonitorEscapeArg(const char *in)
 {
     int len = 0;
     int i, j;
@@ -87,9 +87,6 @@ static char *qemuMonitorEscape(const char *in, int shell)
 
     /* To pass through the QEMU monitor, we need to use escape
        sequences: \r, \n, \", \\
-
-       To pass through both QEMU + the shell, we need to escape
-       the single character ' as the five characters '\\''
     */
 
     for (i = 0; in[i] != '\0'; i++) {
@@ -99,12 +96,6 @@ static char *qemuMonitorEscape(const char *in, int shell)
         case '"':
         case '\\':
             len += 2;
-            break;
-        case '\'':
-            if (shell)
-                len += 5;
-            else
-                len += 1;
             break;
         default:
             len += 1;
@@ -130,17 +121,6 @@ static char *qemuMonitorEscape(const char *in, int shell)
             out[j++] = '\\';
             out[j++] = in[i];
             break;
-        case '\'':
-            if (shell) {
-                out[j++] = '\'';
-                out[j++] = '\\';
-                out[j++] = '\\';
-                out[j++] = '\'';
-                out[j++] = '\'';
-            } else {
-                out[j++] = in[i];
-            }
-            break;
         default:
             out[j++] = in[i];
             break;
@@ -151,14 +131,45 @@ static char *qemuMonitorEscape(const char *in, int shell)
     return out;
 }
 
-char *qemuMonitorEscapeArg(const char *in)
-{
-    return qemuMonitorEscape(in, 0);
-}
-
 char *qemuMonitorEscapeShell(const char *in)
 {
-    return qemuMonitorEscape(in, 1);
+    int len = 2; /* leading and trailing single quote */
+    int i, j;
+    char *out;
+
+    for (i = 0; in[i] != '\0'; i++) {
+        switch(in[i]) {
+        case '\'':
+            len += 4; /* '\'' */
+            break;
+        default:
+            len += 1;
+            break;
+        }
+    }
+
+    if (VIR_ALLOC_N(out, len + 1) < 0)
+        return NULL;
+
+    j = 0;
+    out[j++] = '\'';
+    for (i = 0; in[i] != '\0'; i++) {
+        switch(in[i]) {
+        case '\'':
+            out[j++] = '\'';
+            out[j++] = '\\';
+            out[j++] = '\'';
+            out[j++] = '\'';
+            break;
+        default:
+            out[j++] = in[i];
+            break;
+        }
+    }
+    out[j++] = '\'';
+    out[j] = '\0';
+
+    return out;
 }
 
 
