@@ -9,6 +9,11 @@ dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([-Wno-portability])
 AM_MAINTAINER_MODE([enable])
 
+# Maintainer note - comment this line out if you plan to rerun
+# GNULIB_POSIXCHECK testing to see if libvirt should be using more modules.
+# Leave it uncommented for normal releases, for faster ./configure.
+gl_ASSERT_NO_GNULIB_POSIXCHECK
+
 # Use the silent-rules feature when possible.
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes])
