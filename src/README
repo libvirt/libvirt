@@ -20,6 +20,8 @@ There are two core shared modules to be aware of:
             files used by the public API. This directory is only
             in the include path for driver implementation modules
 
+ * vmx/   - VMware VMX config handling (used by esx/ and vmware/)
+
 
 Then there are the hypervisor implementations:
 
@@ -33,7 +35,9 @@ Then there are the hypervisor implementations:
  * test/         - A "mock" driver for testing
  * uml/          - User Mode Linux
  * vbox/         - Virtual Box using native API
+ * vmware/       - VMware Workstation and Player using the vmrun tool
  * xen/          - Xen using hypercalls, XenD SEXPR & XenStore
+ * xenapi/       - Xen using libxenserver
 
 
 Finally some secondary drivers that are shared for several HVs.
@@ -41,8 +45,10 @@ Currently these are used by LXC, OpenVZ, QEMU, UML and Xen drivers.
 The ESX, OpenNebula, Power Hypervisor, Remote, Test & VirtualBox
 drivers all implement the secondary drivers directly
 
+ * cpu/          - CPU feature management
  * interface/    - Host network interface management
  * network/      - Virtual NAT networking
+ * nwfilter/     - Network traffic filtering rules
  * node_device/  - Host device enumeration
  * secret/       - Secret management
  * security/     - Mandatory access control drivers
