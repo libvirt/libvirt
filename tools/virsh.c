@@ -325,7 +325,7 @@ static void vshDebug(vshControl *ctl, int level, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(3, 4);
 
 /* XXX: add batch support */
-#define vshPrint(_ctl, ...)   fprintf(stdout, __VA_ARGS__)
+#define vshPrint(_ctl, ...)   vshPrintExtra(NULL, __VA_ARGS__)
 
 static const char *vshDomainStateToString(int state);
 static const char *vshDomainVcpuStateToString(int state);
@@ -11574,13 +11574,20 @@ static void
 vshPrintExtra(vshControl *ctl, const char *format, ...)
 {
     va_list ap;
+    char *str;
 
-    if (ctl->quiet == TRUE)
+    if (ctl && ctl->quiet == TRUE)
         return;
 
     va_start(ap, format);
-    vfprintf(stdout, format, ap);
+    if (virVasprintf(&str, format, ap) < 0) {
+        vshError(ctl, "%s", _("Out of memory"));
+        va_end(ap);
+        return;
+    }
     va_end(ap);
+    fprintf(stdout, "%s", str);
+    VIR_FREE(str);
 }
 
 
@@ -11588,6 +11595,7 @@ static void
 vshError(vshControl *ctl, const char *format, ...)
 {
     va_list ap;
+    char *str;
 
     if (ctl != NULL) {
         va_start(ap, format);
@@ -11598,10 +11606,13 @@ vshError(vshControl *ctl, const char *format, ...)
     fputs(_("error: "), stderr);
 
     va_start(ap, format);
-    vfprintf(stderr, format, ap);
+    /* We can't recursively call vshError on an OOM situation, so ignore
+       failure here. */
+    ignore_value(virVasprintf(&str, format, ap));
     va_end(ap);
 
-    fputc('\n', stderr);
+    fprintf(stderr, "%s\n", NULLSTR(str));
+    VIR_FREE(str);
 }
 
 /*
