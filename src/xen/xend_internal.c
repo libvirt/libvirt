@@ -3965,6 +3965,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
     virDomainDefPtr def = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char class[8], ref[80];
+    char *target = NULL;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -4029,6 +4030,13 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
                                     STREQ(def->os.type, "hvm") ? 1 : 0,
                                     priv->xendConfigVersion, 1) < 0)
             goto cleanup;
+
+        if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            if (!(target = strdup(dev->data.disk->dst))) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
@@ -4038,6 +4046,14 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
                                    STREQ(def->os.type, "hvm") ? 1 : 0,
                                    priv->xendConfigVersion, 1) < 0)
             goto cleanup;
+
+        char macStr[VIR_MAC_STRING_BUFLEN];
+        virFormatMacAddr(dev->data.net->mac, macStr);
+
+        if (!(target = strdup(macStr))) {
+            virReportOOMError();
+            goto cleanup;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -4046,6 +4062,17 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
             if (xenDaemonFormatSxprOnePCI(dev->data.hostdev,
                                           &buf, 0) < 0)
                 goto cleanup;
+
+            virDomainDevicePCIAddress PCIAddr;
+
+            PCIAddr = dev->data.hostdev->source.subsys.u.pci;
+            virAsprintf(&target, "PCI device: %.4x:%.2x:%.2x", PCIAddr.domain,
+                                 PCIAddr.bus, PCIAddr.slot);
+
+            if (target == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
         } else {
             virXendError(VIR_ERR_NO_SUPPORT, "%s",
                          _("unsupported device type"));
@@ -4065,17 +4092,22 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
         /* device doesn't exist, define it */
         ret = xend_op(domain->conn, domain->name, "op", "device_create",
                       "config", sexpr, NULL);
-    }
-    else {
-        /* device exists, attempt to modify it */
-        ret = xend_op(domain->conn, domain->name, "op", "device_configure",
-                      "config", sexpr, "dev", ref, NULL);
+    } else {
+        if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            virXendError(VIR_ERR_OPERATION_INVALID,
+                         _("target '%s' already exists"), target);
+        } else {
+            /* device exists, attempt to modify it */
+            ret = xend_op(domain->conn, domain->name, "op", "device_configure",
+                          "config", sexpr, "dev", ref, NULL);
+        }
     }
 
 cleanup:
     VIR_FREE(sexpr);
     virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
+    VIR_FREE(target);
     return ret;
 }
 
