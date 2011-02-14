@@ -77,6 +77,17 @@ struct _qemuDomainObjPrivate {
     int persistentAddrs;
 };
 
+struct qemuDomainWatchdogEvent
+{
+    virDomainObjPtr vm;
+    int action;
+};
+
+void qemuDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque);
+
+/* driver must be locked before calling */
+void qemuDomainEventQueue(struct qemud_driver *driver,
+                          virDomainEventPtr event);
 
 void qemuDomainSetPrivateDataHooks(virCapsPtr caps);
 void qemuDomainSetNamespaceHooks(virCapsPtr caps);

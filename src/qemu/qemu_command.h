@@ -37,6 +37,10 @@
 # define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
 # define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
+# define QEMU_VNC_PORT_MIN  5900
+# define QEMU_VNC_PORT_MAX  65535
+
+
 virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    struct qemud_driver *driver,
                                    virDomainDefPtr def,
@@ -134,6 +138,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
 virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
                                            const char *args);
 
+int qemuDomainAssignPCIAddresses(virDomainDefPtr def);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
 int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
                                     int slot);

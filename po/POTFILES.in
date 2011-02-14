@@ -61,6 +61,7 @@ src/qemu/qemu_hotplug.c
 src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
 src/qemu/qemu_monitor_text.c
+src/qemu/qemu_process.c
 src/remote/remote_driver.c
 src/secret/secret_driver.c
 src/security/security_apparmor.c

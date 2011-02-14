@@ -715,6 +715,35 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 
+int
+qemuDomainAssignPCIAddresses(virDomainDefPtr def)
+{
+    int ret = -1;
+    unsigned long long qemuCmdFlags = 0;
+    qemuDomainPCIAddressSetPtr addrs = NULL;
+
+    if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
+                                   NULL,
+                                   &qemuCmdFlags) < 0)
+        goto cleanup;
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (!(addrs = qemuDomainPCIAddressSetCreate(def)))
+            goto cleanup;
+
+        if (qemuAssignDevicePCISlots(def, addrs) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    qemuDomainPCIAddressSetFree(addrs);
+
+    return ret;
+}
+
+
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
 {
     qemuDomainPCIAddressSetPtr addrs;
