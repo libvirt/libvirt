@@ -197,6 +197,18 @@
       </dd>
     </dl>
 
+    <h2><a name="iaas">Infrastructure as a Service (IaaS)</a></h2>
+
+    <dl>
+      <dt><a href="http://www.nimbusproject.org">Nimbus</a></dt>
+      <dd>
+        Nimbus is an open-source toolkit focused on providing
+        Infrastructure-as-a-Service (IaaS) capabilities to the scientific
+        community.  It uses libvirt for communication with all KVM and Xen
+        virtual machines.
+      </dd>
+    </dl>
+
     <h2><a name="libraries">Libraries</a></h2>
 
     <dl>
