@@ -171,6 +171,7 @@ qemuCapsProbeMachineTypes(const char *binary,
     char *output;
     int ret = -1;
     virCommandPtr cmd;
+    int status;
 
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
@@ -186,7 +187,8 @@ qemuCapsProbeMachineTypes(const char *binary,
     virCommandSetOutputBuffer(cmd, &output);
     virCommandClearCaps(cmd);
 
-    if (virCommandRun(cmd, NULL) < 0)
+    /* Ignore failure from older qemu that did not understand '-M ?'.  */
+    if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
 
     if (qemuCapsParseMachineTypesStr(output, machines, nmachines) < 0)
