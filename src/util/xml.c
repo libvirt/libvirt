@@ -105,7 +105,7 @@ virXPathStringLimit(const char *xpath,
 
     if (tmp != NULL && strlen(tmp) >= maxlen) {
         virXMLError(VIR_ERR_INTERNAL_ERROR,
-                    _("\'%s\' value longer than %Zd bytes in virXPathStringLimit()"),
+                    _("\'%s\' value longer than %zd bytes in virXPathStringLimit()"),
                     xpath, maxlen);
             return NULL;
     }
