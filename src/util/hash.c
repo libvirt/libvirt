@@ -253,6 +253,7 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
     unsigned long key, len = 0;
     virHashEntryPtr entry;
     virHashEntryPtr insert;
+    char *new_name;
 
     if ((table == NULL) || (name == NULL))
         return (-1);
@@ -281,11 +282,16 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
             return (-1);
     }
 
-    entry->name = strdup(name);
+    new_name = strdup(name);
+    if (new_name == NULL) {
+        if (insert != NULL)
+            VIR_FREE(entry);
+        return (-1);
+    }
+    entry->name = new_name;
     entry->payload = userdata;
     entry->next = NULL;
     entry->valid = 1;
-
 
     if (insert != NULL)
         insert->next = entry;
@@ -318,6 +324,7 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
     unsigned long key;
     virHashEntryPtr entry;
     virHashEntryPtr insert;
+    char *new_name;
 
     if ((table == NULL) || name == NULL)
         return (-1);
@@ -353,7 +360,13 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
             return (-1);
     }
 
-    entry->name = strdup(name);
+    new_name= strdup(name);
+    if (new_name == NULL) {
+        if (insert != NULL)
+            VIR_FREE(entry);
+        return (-1);
+    }
+    entry->name = new_name;
     entry->payload = userdata;
     entry->next = NULL;
     entry->valid = 1;
