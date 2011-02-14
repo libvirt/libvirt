@@ -589,8 +589,6 @@ static const vshCmdOptDef opts_help[] = {
 static int
 cmdHelp(vshControl *ctl, const vshCmd *cmd)
  {
-    const vshCmdDef *c;
-    const vshCmdGrp *g;
     const char *name;
 
     name = vshCommandOptString(cmd, "command", NULL);
@@ -615,9 +613,9 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
         return TRUE;
     }
 
-    if ((c = vshCmddefSearch(name))) {
+    if (vshCmddefSearch(name)) {
         return vshCmddefHelp(ctl, name);
-    } else if ((g = vshCmdGrpSearch(name))) {
+    } else if (vshCmdGrpSearch(name)) {
         return vshCmdGrpHelp(ctl, name);
     } else {
         vshError(ctl, _("command or command group '%s' doesn't exist"), name);
