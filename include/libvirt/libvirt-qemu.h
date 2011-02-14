@@ -20,7 +20,7 @@
 extern "C" {
 # endif
 
-enum {
+typedef enum {
     VIR_DOMAIN_QEMU_MONITOR_COMMAND_DEFAULT = 0,
     VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP     = (1 << 0), /* cmd is in HMP */
 } virDomainQemuMonitorCommandFlags;
