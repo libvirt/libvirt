@@ -505,6 +505,9 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
         rc = virCgroupPathOfController(group, i, "", &path);
         if (rc < 0)
             return rc;
+        /* As of Feb 2011, clang can't see that the above function
+         * call did not modify group. */
+        sa_assert(group->controllers[i].mountPoint);
 
         VIR_DEBUG("Make controller %s", path);
         if (access(path, F_OK) != 0) {
