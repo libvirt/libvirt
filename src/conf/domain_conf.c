@@ -7058,6 +7058,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
             virBufferAddLit(buf, "/>\n");
             return 0;
         }
+        virBufferAddLit(buf, ">\n");
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
