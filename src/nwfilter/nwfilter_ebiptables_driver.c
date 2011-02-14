@@ -862,6 +862,7 @@ err_exit:
 
 static int
 iptablesHandleIpHdr(virBufferPtr buf,
+                    virBufferPtr afterStateMatch,
                     virNWFilterHashTablePtr vars,
                     ipHdrDataDefPtr ipHdr,
                     int directionIn,
@@ -1005,7 +1006,9 @@ iptablesHandleIpHdr(virBufferPtr buf,
                               &ipHdr->dataConnlimitAbove))
                goto err_exit;
 
-            virBufferVSprintf(buf,
+            /* place connlimit after potential -m state --state ...
+               since this is the most useful order */
+            virBufferVSprintf(afterStateMatch,
                               " -m connlimit %s --connlimit-above %s",
                               ENTRY_GET_NEG_SIGN(&ipHdr->dataConnlimitAbove),
                               number);
@@ -1016,7 +1019,9 @@ iptablesHandleIpHdr(virBufferPtr buf,
     if (HAS_ENTRY_ITEM(&ipHdr->dataComment)) {
         printCommentVar(prefix, ipHdr->dataComment.u.string);
 
-        virBufferAddLit(buf,
+        /* keep comments behind everything else -- they are packet eval.
+           no-ops */
+        virBufferAddLit(afterStateMatch,
                         " -m comment --comment \"$" COMMENT_VARNAME "\"");
     }
 
@@ -1024,6 +1029,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
 err_exit:
     virBufferFreeAndReset(buf);
+    virBufferFreeAndReset(afterStateMatch);
 
     return 1;
 }
@@ -1148,6 +1154,7 @@ _iptablesCreateRuleInstance(int directionIn,
     char number[20];
     virBuffer prefix = VIR_BUFFER_INITIALIZER;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virBuffer afterStateMatch = VIR_BUFFER_INITIALIZER;
     virBufferPtr final = NULL;
     const char *target;
     const char *iptables_cmd = (isIPv6) ? ip6tables_cmd_path
@@ -1188,6 +1195,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.tcpHdrFilter.ipHdr,
                                 directionIn,
@@ -1234,6 +1242,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.udpHdrFilter.ipHdr,
                                 directionIn,
@@ -1267,6 +1276,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.udpliteHdrFilter.ipHdr,
                                 directionIn,
@@ -1295,6 +1305,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.espHdrFilter.ipHdr,
                                 directionIn,
@@ -1323,6 +1334,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.ahHdrFilter.ipHdr,
                                 directionIn,
@@ -1351,6 +1363,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.sctpHdrFilter.ipHdr,
                                 directionIn,
@@ -1387,6 +1400,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.icmpHdrFilter.ipHdr,
                                 directionIn,
@@ -1449,6 +1463,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.igmpHdrFilter.ipHdr,
                                 directionIn,
@@ -1477,6 +1492,7 @@ _iptablesCreateRuleInstance(int directionIn,
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
+                                &afterStateMatch,
                                 vars,
                                 &rule->p.allHdrFilter.ipHdr,
                                 directionIn,
@@ -1511,6 +1527,22 @@ _iptablesCreateRuleInstance(int directionIn,
         iptablesEnforceDirection(directionIn,
                                  rule,
                                  &buf);
+
+    if (virBufferError(&afterStateMatch)) {
+        virBufferFreeAndReset(&buf);
+        virBufferFreeAndReset(&prefix);
+        virBufferFreeAndReset(&afterStateMatch);
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virBufferUse(&afterStateMatch)) {
+        char *s = virBufferContentAndReset(&afterStateMatch);
+
+        virBufferAdd(&buf, s, -1);
+
+        VIR_FREE(s);
+    }
 
     virBufferVSprintf(&buf,
                       " -j %s" CMD_DEF_POST CMD_SEPARATOR
@@ -1553,12 +1585,14 @@ _iptablesCreateRuleInstance(int directionIn,
 err_exit:
     virBufferFreeAndReset(&buf);
     virBufferFreeAndReset(&prefix);
+    virBufferFreeAndReset(&afterStateMatch);
 
     return -1;
 
 exit_no_error:
     virBufferFreeAndReset(&buf);
     virBufferFreeAndReset(&prefix);
+    virBufferFreeAndReset(&afterStateMatch);
 
     return 0;
 }
