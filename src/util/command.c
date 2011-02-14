@@ -1,7 +1,7 @@
 /*
  * command.c: Child command execution
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -881,6 +881,8 @@ virCommandProcessIO(virCommandPtr cmd)
                     buf = cmd->errbuf;
                     len = &errlen;
                 }
+                /* Silence a false positive from clang. */
+                sa_assert(buf);
 
                 done = read(fds[i].fd, data, sizeof(data));
                 if (done < 0) {
@@ -930,9 +932,9 @@ virCommandProcessIO(virCommandPtr cmd)
 
     ret = 0;
 cleanup:
-    if (*cmd->outbuf)
+    if (cmd->outbuf && *cmd->outbuf)
         (*cmd->outbuf)[outlen] = '\0';
-    if (*cmd->errbuf)
+    if (cmd->errbuf && *cmd->errbuf)
         (*cmd->errbuf)[errlen] = '\0';
     return ret;
 }
@@ -950,7 +952,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     int ret = 0;
     char *outbuf = NULL;
     char *errbuf = NULL;
-    int infd[2];
+    int infd[2] = { -1, -1 };
     struct stat st;
     bool string_io;
     bool async_io = false;
