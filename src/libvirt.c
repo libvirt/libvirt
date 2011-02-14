@@ -4411,12 +4411,6 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
 
     VIR_DOMAIN_DEBUG(dom, "stats=%p, nr_stats=%u", stats, nr_stats);
 
-    if (flags != 0) {
-        virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("flags must be zero"));
-        goto error;
-    }
-
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
@@ -4424,6 +4418,12 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
         virDispatchError(NULL);
         return -1;
     }
+    if (flags != 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("flags must be zero"));
+        goto error;
+    }
+
     if (!stats || nr_stats == 0)
         return 0;
 
