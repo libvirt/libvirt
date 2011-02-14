@@ -3489,7 +3489,10 @@ static int qemuDomainIsActive(virDomainPtr dom)
     obj = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
     if (!obj) {
-        qemuReportError(VIR_ERR_NO_DOMAIN, NULL);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = virDomainObjIsActive(obj);
@@ -3510,7 +3513,10 @@ static int qemuDomainIsPersistent(virDomainPtr dom)
     obj = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
     if (!obj) {
-        qemuReportError(VIR_ERR_NO_DOMAIN, NULL);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = obj->persistent;
@@ -3531,7 +3537,10 @@ static int qemuDomainIsUpdated(virDomainPtr dom)
     obj = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
     if (!obj) {
-        qemuReportError(VIR_ERR_NO_DOMAIN, NULL);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = obj->updated;
@@ -4981,12 +4990,14 @@ static void processWatchdogEvent(void *data, void *opaque)
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
         {
             char *dumpfile;
-            int i;
 
-            i = virAsprintf(&dumpfile, "%s/%s-%u",
+            if (virAsprintf(&dumpfile, "%s/%s-%u",
                             driver->autoDumpPath,
                             wdEvent->vm->def->name,
-                            (unsigned int)time(NULL));
+                            (unsigned int)time(NULL)) < 0) {
+                virReportOOMError();
+                break;
+            }
 
             qemuDriverLock(driver);
             virDomainObjLock(wdEvent->vm);
