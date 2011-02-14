@@ -2652,6 +2652,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
         goto cleanup;
 
+    vm->def->id = driver->nextvmid++;
+
     /* Must be run before security labelling */
     DEBUG0("Preparing host devices");
     if (qemuPrepareHostDevices(driver, vm->def) < 0)
@@ -2818,7 +2820,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     DEBUG0("Building emulator command line");
-    vm->def->id = driver->nextvmid++;
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                                      priv->monJSON != 0, qemuCmdFlags,
                                      migrateFrom, stdin_fd,
