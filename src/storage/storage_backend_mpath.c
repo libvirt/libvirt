@@ -212,6 +212,7 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
     int retval = -1, is_mpath = 0;
     char *map_device = NULL;
     uint32_t minor = -1;
+    uint32_t next;
 
     do {
         is_mpath = virStorageBackendIsMultipath(names->name);
@@ -243,9 +244,10 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
         /* Given the way libdevmapper returns its data, I don't see
          * any way to avoid this series of casts. */
-        names = (struct dm_names *)(((char *)names) + names->next);
+        next = names->next;
+        names = (struct dm_names *)(((char *)names) + next);
 
-    } while (names->next);
+    } while (next);
 
     retval = 0;
 out:
