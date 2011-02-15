@@ -1221,9 +1221,11 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
 
     if (exitstatus == NULL) {
         if (status != 0) {
+            char *str = virCommandToString(cmd);
             virCommandError(VIR_ERR_INTERNAL_ERROR,
-                            _("Child process exited with status %d."),
-                            WEXITSTATUS(status));
+                            _("Child process (%s) exited with status %d."),
+                            str ? str : cmd->args[0], WEXITSTATUS(status));
+            VIR_FREE(str);
             return -1;
         }
     } else {
