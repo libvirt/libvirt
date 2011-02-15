@@ -4603,9 +4603,10 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                     host = def->src + strlen("nbd:");
                     port = strchr(host, ':');
                     if (!port) {
-                        def = NULL;
                         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                        _("cannot parse nbd filename '%s'"), def->src);
+                                        _("cannot parse nbd filename '%s'"),
+                                        def->src);
+                        def = NULL;
                         goto cleanup;
                     }
                     *port++ = '\0';
