@@ -290,8 +290,8 @@ static int virCgroupSetValueStr(virCgroupPtr group,
     VIR_DEBUG("Set value '%s' to '%s'", keypath, value);
     rc = virFileWriteStr(keypath, value, 0);
     if (rc < 0) {
-        DEBUG("Failed to write value '%s': %m", value);
         rc = -errno;
+        VIR_DEBUG("Failed to write value '%s': %m", value);
     } else {
         rc = 0;
     }
@@ -313,7 +313,7 @@ static int virCgroupGetValueStr(virCgroupPtr group,
 
     rc = virCgroupPathOfController(group, controller, key, &keypath);
     if (rc != 0) {
-        DEBUG("No path of %s, %s", group->path, key);
+        VIR_DEBUG("No path of %s, %s", group->path, key);
         return rc;
     }
 
@@ -321,8 +321,8 @@ static int virCgroupGetValueStr(virCgroupPtr group,
 
     rc = virFileReadAll(keypath, 1024, value);
     if (rc < 0) {
-        DEBUG("Failed to read %s: %m\n", keypath);
         rc = -errno;
+        VIR_DEBUG("Failed to read %s: %m\n", keypath);
     } else {
         /* Terminated with '\n' has sometimes harmful effects to the caller */
         char *p = strchr(*value, '\n');
@@ -635,8 +635,8 @@ static int virCgroupRemoveRecursively(char *grppath)
     if (grpdir == NULL) {
         if (errno == ENOENT)
             return 0;
-        VIR_ERROR(_("Unable to open %s (%d)"), grppath, errno);
         rc = -errno;
+        VIR_ERROR(_("Unable to open %s (%d)"), grppath, errno);
         return rc;
     }
 
@@ -665,7 +665,7 @@ static int virCgroupRemoveRecursively(char *grppath)
     }
     closedir(grpdir);
 
-    DEBUG("Removing cgroup %s", grppath);
+    VIR_DEBUG("Removing cgroup %s", grppath);
     if (rmdir(grppath) != 0 && errno != ENOENT) {
         rc = -errno;
         VIR_ERROR(_("Unable to remove %s (%d)"), grppath, errno);
@@ -710,7 +710,7 @@ int virCgroupRemove(virCgroupPtr group)
                                       &grppath) != 0)
             continue;
 
-        DEBUG("Removing cgroup %s and all child cgroups", grppath);
+        VIR_DEBUG("Removing cgroup %s and all child cgroups", grppath);
         rc = virCgroupRemoveRecursively(grppath);
         VIR_FREE(grppath);
     }
