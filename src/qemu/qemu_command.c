@@ -2440,7 +2440,8 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     *hasHwVirt = false;
 
     if (def->cpu && def->cpu->model) {
-        if (qemuCapsProbeCPUModels(emulator, qemuCmdFlags, ut->machine,
+        if (host &&
+            qemuCapsProbeCPUModels(emulator, qemuCmdFlags, host->arch,
                                    &ncpus, &cpus) < 0)
             goto cleanup;
 
@@ -2469,7 +2470,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             break;
         }
 
-        if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(ut->machine)))
+        if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(host->arch)))
             goto no_memory;
 
         if (def->cpu->match == VIR_CPU_MATCH_MINIMUM)
@@ -2528,8 +2529,9 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
+    if (guest)
+        cpuDataFree(guest->arch, data);
     virCPUDefFree(guest);
-    cpuDataFree(ut->machine, data);
 
     if (cpus) {
         for (i = 0; i < ncpus; i++)
