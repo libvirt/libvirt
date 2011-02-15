@@ -3102,7 +3102,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             char *devstr;
             if (!(devstr = qemuBuildControllerDevStr(def->controllers[i], qemuCmdFlags)))
-                goto no_memory;
+                goto error;
 
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
