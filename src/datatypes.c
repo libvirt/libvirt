@@ -375,6 +375,12 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         ret->id = -1;
         memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
         ret->snapshots = virHashCreate(20);
+        if (ret->snapshots == NULL) {
+            virMutexUnlock(&conn->lock);
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("failed to create domain snapshots hash"));
+            goto error;
+        }
 
         if (virHashAddEntry(conn->domains, uuidstr, ret) < 0) {
             virMutexUnlock(&conn->lock);
