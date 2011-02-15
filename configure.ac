@@ -32,11 +32,11 @@ AC_SUBST([LIBVIRT_VERSION_NUMBER])
 AC_ARG_WITH([packager],
             [AS_HELP_STRING([--with-packager],
                             [Extra packager name])],
-            [],[])
+            [],[with_packager=no])
 AC_ARG_WITH([packager-version],
             [AS_HELP_STRING([--with-packager-version],
                             [Extra packager version])],
-            [],[])
+            [],[with_packager_version=no])
 if test "x$with_packager" != "xno"
 then
   AC_DEFINE_UNQUOTED([PACKAGER], ["$with_packager"],
