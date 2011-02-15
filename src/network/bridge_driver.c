@@ -1,7 +1,7 @@
 /*
  * bridge_driver.c: core driver methods for managing network
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1586,16 +1586,16 @@ networkStartNetworkDaemon(struct network_driver *driver,
     }
 
     /* Set bridge options */
-    if ((err = brSetForwardDelay(driver->brctl, network->def->bridge,
-                                 network->def->delay))) {
+    if (brSetForwardDelay(driver->brctl, network->def->bridge,
+                          network->def->delay)) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot set forward delay on bridge '%s'"),
                            network->def->bridge);
         goto err1;
     }
 
-    if ((err = brSetEnableSTP(driver->brctl, network->def->bridge,
-                              network->def->stp ? 1 : 0))) {
+    if (brSetEnableSTP(driver->brctl, network->def->bridge,
+                       network->def->stp ? 1 : 0)) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot set STP '%s' on bridge '%s'"),
                            network->def->stp ? "on" : "off", network->def->bridge);
