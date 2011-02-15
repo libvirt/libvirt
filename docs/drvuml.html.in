@@ -7,7 +7,7 @@
     guests built for User Mode Linux. UML requires no special support in
     the host kernel, so can be used by any user of any linux system, provided
     they have enough free RAM for their guest's needs, though there are
-    certain restrictions on network connectivity unless the adminstrator
+    certain restrictions on network connectivity unless the administrator
     has pre-created TAP devices.
     </p>
 

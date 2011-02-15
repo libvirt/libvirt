@@ -55,7 +55,7 @@ openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
     OpenVZ releases later than 3.0.23 ship with a standard network device
     setup script that is able to setup bridging, named
     <code>/usr/sbin/vznetaddbr</code>. For releases prior to 3.0.23, this
-    script must be created manually by the host OS adminstrator. The
+    script must be created manually by the host OS administrator. The
     simplest way is to just download the latest version of this script
     from a newer OpenVZ release, or upstream source repository. Then
     a generic configuration file <code>/etc/vz/vznetctl.conf</code>
