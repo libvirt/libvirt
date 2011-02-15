@@ -1,6 +1,5 @@
 #include <config.h>
 #ifdef WITH_QEMU
-# include <sys/utsname.h>
 # include <stdlib.h>
 
 # include "testutilsqemu.h"
@@ -57,7 +56,6 @@ static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
 }
 
 virCapsPtr testQemuCapsInit(void) {
-    struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
     virCapsGuestMachinePtr *machines = NULL;
@@ -94,8 +92,7 @@ virCapsPtr testQemuCapsInit(void) {
         host_cpu_features       /* features */
     };
 
-    uname (&utsname);
-    if ((caps = virCapabilitiesNew(utsname.machine,
+    if ((caps = virCapabilitiesNew(host_cpu.arch,
                                    0, 0)) == NULL)
         return NULL;
 
@@ -107,7 +104,8 @@ virCapsPtr testQemuCapsInit(void) {
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", "i686", 32,
                                          "/usr/bin/qemu", NULL,
-                                         nmachines, machines)) == NULL)
+                                         nmachines, machines)) == NULL ||
+        !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto cleanup;
     machines = NULL;
 
@@ -124,7 +122,8 @@ virCapsPtr testQemuCapsInit(void) {
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 64,
                                          "/usr/bin/qemu-system-x86_64", NULL,
-                                         nmachines, machines)) == NULL)
+                                         nmachines, machines)) == NULL ||
+        !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto cleanup;
     machines = NULL;
 
