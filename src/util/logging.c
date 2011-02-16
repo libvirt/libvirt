@@ -1,7 +1,7 @@
 /*
  * logging.c: internal logging and debugging
  *
- * Copyright (C) 2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2008, 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -573,12 +573,13 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     struct timeval cur_time;
     struct tm time_info;
     int len, fprio, i, ret;
+    int saved_errno = errno;
 
     if (!virLogInitialized)
         virLogStartup();
 
     if (fmt == NULL)
-       return;
+        goto cleanup;
 
     /*
      * check against list of specific logging patterns
@@ -586,16 +587,17 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     fprio = virLogFiltersCheck(category);
     if (fprio == 0) {
         if (priority < virLogDefaultPriority)
-            return;
-    } else if (priority < fprio)
-        return;
+            goto cleanup;
+    } else if (priority < fprio) {
+        goto cleanup;
+    }
 
     /*
      * serialize the error message, add level and timestamp
      */
     VIR_GET_VAR_STR(fmt, str);
     if (str == NULL)
-        return;
+        goto cleanup;
     gettimeofday(&cur_time, NULL);
     localtime_r(&cur_time.tv_sec, &time_info);
 
@@ -603,10 +605,8 @@ void virLogMessage(const char *category, int priority, const char *funcname,
                              &time_info, &cur_time,
                              priority, str);
     VIR_FREE(str);
-    if (ret < 0) {
-        /* apparently we're running out of memory */
-        return;
-    }
+    if (ret < 0)
+        goto cleanup;
 
     /*
      * Log based on defaults, first store in the history buffer
@@ -648,6 +648,8 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     virLogUnlock();
 
     VIR_FREE(msg);
+cleanup:
+    errno = saved_errno;
 }
 
 static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
