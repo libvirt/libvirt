@@ -38,6 +38,7 @@ EXTRA_DIST =						\
 	test_libvirtd.aug                               \
 	THREADING.txt					\
 	libvirtd.pod.in					\
+	libvirtd.8.in					\
 	libvirtd.stp					\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
@@ -46,7 +47,7 @@ BUILT_SOURCES =
 
 if WITH_LIBVIRTD
 
-man_MANS = libvirtd.8
+man8_MANS = libvirtd.8
 
 sbin_PROGRAMS = libvirtd
 
@@ -62,7 +63,7 @@ augeastests_DATA = test_libvirtd.aug
 POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8
 
-libvirtd.pod: libvirtd.pod.in
+libvirtd.8: $(srcdir)/libvirtd.8.in
 	sed \
 	    -e 's![@]sysconfdir[@]!$(sysconfdir)!g' \
 	    -e 's![@]localstatedir[@]!$(localstatedir)!g' \
@@ -70,7 +71,7 @@ libvirtd.pod: libvirtd.pod.in
 	    < $< > $@-t
 	mv $@-t $@
 
-libvirtd.8: libvirtd.pod
+$(srcdir)/libvirtd.8.in: libvirtd.pod.in
 	$(AM_V_GEN)$(POD2MAN) $< $@
 
 libvirtd_SOURCES = $(DAEMON_SOURCES)
@@ -338,5 +339,6 @@ uninstall-data-sasl:
 endif
 
 
-CLEANFILES += $(BUILT_SOURCES) $(man_MANS) libvirtd.pod
+CLEANFILES += $(BUILT_SOURCES) $(man8_MANS)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
+MAINTAINERCLEANFILES = $(srcdir)/libvirtd.8.in

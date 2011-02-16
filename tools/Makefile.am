@@ -19,22 +19,22 @@ EXTRA_DIST = \
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh
 
-man1_MANS = virt-xml-validate.1 virt-pki-validate.1 virsh.1
+dist_man1_MANS = virt-xml-validate.1 virt-pki-validate.1 virsh.1
 
 
 virt-xml-validate: virt-xml-validate.in Makefile
 	$(AM_V_GEN)sed -e 's,@SCHEMADIR@,$(pkgdatadir)/schemas,' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
-virt-xml-validate.1: virt-xml-validate
-	$(AM_V_GEN)$(POD2MAN) $< $@
+virt-xml-validate.1: virt-xml-validate.in
+	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
 
 virt-pki-validate: virt-pki-validate.in Makefile
 	$(AM_V_GEN)sed -e 's,@SYSCONFDIR@,$(sysconfdir),' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
-virt-pki-validate.1: virt-pki-validate
-	$(AM_V_GEN)$(POD2MAN) $< $@
+virt-pki-validate.1: virt-pki-validate.in
+	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
 
 virsh_SOURCES =							\
 		console.c console.h				\
@@ -123,7 +123,7 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 endif
 
 virsh.1: virsh.pod
-	$(AM_V_GEN)$(POD2MAN) $< $@
+	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
 
 install-data-local: install-init
 
@@ -162,7 +162,8 @@ libvirt-guests.init:
 endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 
 
-CLEANFILES = $(bin_SCRIPTS) $(man1_MANS)
+CLEANFILES = $(bin_SCRIPTS)
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
+MAINTAINERCLEANFILES = $(dist_man1_MANS)
 
 DISTCLEANFILES = $(BUILT_SOURCES)

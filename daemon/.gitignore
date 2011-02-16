@@ -8,6 +8,7 @@ libvirt_qemud
 libvirtd
 libvirtd.init
 libvirtd*.logrotate
-libvirtd.pod
 libvirtd.8
+libvirtd.8.in
+libvirtd.pod
 probes.h
