@@ -483,7 +483,7 @@ static void dev_create(const char *udi)
     return;
 
  failure:
-    DEBUG("FAILED TO ADD dev %s", name);
+    VIR_DEBUG("FAILED TO ADD dev %s", name);
 cleanup:
     VIR_FREE(privData);
     virNodeDeviceDefFree(def);
@@ -503,7 +503,7 @@ static void dev_refresh(const char *udi)
          */
         virNodeDeviceObjRemove(&driverState->devs, dev);
     } else
-        DEBUG("no device named %s", name);
+        VIR_DEBUG("no device named %s", name);
     nodeDeviceUnlock(driverState);
 
     if (dev) {
@@ -514,7 +514,7 @@ static void dev_refresh(const char *udi)
 static void device_added(LibHalContext *ctx ATTRIBUTE_UNUSED,
                          const char *udi)
 {
-    DEBUG0(hal_name(udi));
+    VIR_DEBUG0(hal_name(udi));
     dev_create(udi);
 }
 
@@ -527,11 +527,11 @@ static void device_removed(LibHalContext *ctx ATTRIBUTE_UNUSED,
 
     nodeDeviceLock(driverState);
     dev = virNodeDeviceFindByName(&driverState->devs,name);
-    DEBUG0(name);
+    VIR_DEBUG0(name);
     if (dev)
         virNodeDeviceObjRemove(&driverState->devs, dev);
     else
-        DEBUG("no device named %s", name);
+        VIR_DEBUG("no device named %s", name);
     nodeDeviceUnlock(driverState);
 }
 
@@ -545,12 +545,12 @@ static void device_cap_added(LibHalContext *ctx,
     nodeDeviceLock(driverState);
     dev = virNodeDeviceFindByName(&driverState->devs,name);
     nodeDeviceUnlock(driverState);
-    DEBUG("%s %s", cap, name);
+    VIR_DEBUG("%s %s", cap, name);
     if (dev) {
         (void)gather_capability(ctx, udi, cap, &dev->def->caps);
         virNodeDeviceObjUnlock(dev);
     } else {
-        DEBUG("no device named %s", name);
+        VIR_DEBUG("no device named %s", name);
     }
 }
 
@@ -560,7 +560,7 @@ static void device_cap_lost(LibHalContext *ctx ATTRIBUTE_UNUSED,
                             const char *cap)
 {
     const char *name = hal_name(udi);
-    DEBUG("%s %s", cap, name);
+    VIR_DEBUG("%s %s", cap, name);
 
     dev_refresh(udi);
 }
@@ -573,7 +573,7 @@ static void device_prop_modified(LibHalContext *ctx ATTRIBUTE_UNUSED,
                                  dbus_bool_t is_added ATTRIBUTE_UNUSED)
 {
     const char *name = hal_name(udi);
-    DEBUG("%s %s", name, key);
+    VIR_DEBUG("%s %s", name, key);
 
     dev_refresh(udi);
 }

@@ -1,7 +1,7 @@
 /*
  * libvirtd.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -310,7 +310,7 @@ remoteInitializeGnuTLS (void)
         if (remoteCheckCertFile("CA certificate", ca_file) < 0)
             return -1;
 
-        qemudDebug ("loading CA cert from %s", ca_file);
+        VIR_DEBUG("loading CA cert from %s", ca_file);
         err = gnutls_certificate_set_x509_trust_file (x509_cred, ca_file,
                                                       GNUTLS_X509_FMT_PEM);
         if (err < 0) {
@@ -324,7 +324,7 @@ remoteInitializeGnuTLS (void)
         if (remoteCheckCertFile("CA revocation list", crl_file) < 0)
             return -1;
 
-        DEBUG("loading CRL from %s", crl_file);
+        VIR_DEBUG("loading CRL from %s", crl_file);
         err = gnutls_certificate_set_x509_crl_file (x509_cred, crl_file,
                                                     GNUTLS_X509_FMT_PEM);
         if (err < 0) {
@@ -339,7 +339,7 @@ remoteInitializeGnuTLS (void)
             return -1;
         if (remoteCheckCertFile("server key", key_file) < 0)
             return -1;
-        DEBUG("loading cert and key from %s and %s", cert_file, key_file);
+        VIR_DEBUG("loading cert and key from %s and %s", cert_file, key_file);
         err =
             gnutls_certificate_set_x509_key_file (x509_cred,
                                                   cert_file, key_file,
@@ -1150,7 +1150,7 @@ remoteCheckDN (const char *dname)
     }
 
     /* Print the client's DN. */
-    DEBUG(_("remoteCheckDN: failed: client DN is %s"), dname);
+    VIR_DEBUG("remoteCheckDN: failed: client DN is %s", dname);
 
     return 0; /* Not found. */
 }
@@ -1531,7 +1531,7 @@ void qemudDispatchClientFailure(struct qemud_client *client) {
 
         for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++) {
             if (client->domainEventCallbackID[i] != -1) {
-                DEBUG("Deregistering to relay remote events %d", i);
+                VIR_DEBUG("Deregistering to relay remote events %d", i);
                 virConnectDomainEventDeregisterAny(client->conn,
                                                    client->domainEventCallbackID[i]);
             }
@@ -1678,7 +1678,7 @@ static ssize_t qemudClientReadBuf(struct qemud_client *client,
         return -1;
     }
 
-    /*qemudDebug ("qemudClientRead: len = %d", len);*/
+    /* VIR_DEBUG("qemudClientRead: len = %d", len);*/
 
     if (!client->tlssession) {
         char ebuf[1024];
@@ -1812,7 +1812,7 @@ static ssize_t qemudClientRead(struct qemud_client *client) {
  */
 static void qemudDispatchClientRead(struct qemud_server *server,
                                     struct qemud_client *client) {
-    /*qemudDebug ("qemudDispatchClientRead: mode = %d", client->mode);*/
+    /* VIR_DEBUG("qemudDispatchClientRead: mode = %d", client->mode);*/
 
 readmore:
     if (qemudClientRead(client) < 0)
@@ -1830,14 +1830,14 @@ readmore:
 
         if (!xdr_u_int(&x, &len)) {
             xdr_destroy (&x);
-            DEBUG0("Failed to decode packet length");
+            VIR_DEBUG0("Failed to decode packet length");
             qemudDispatchClientFailure(client);
             return;
         }
         xdr_destroy (&x);
 
         if (len < REMOTE_MESSAGE_HEADER_XDR_LEN) {
-            DEBUG("Packet length %u too small", len);
+            VIR_DEBUG("Packet length %u too small", len);
             qemudDispatchClientFailure(client);
             return;
         }
@@ -1846,7 +1846,7 @@ readmore:
         len -= REMOTE_MESSAGE_HEADER_XDR_LEN;
 
         if (len > REMOTE_MESSAGE_MAX) {
-            DEBUG("Packet length %u too large", len);
+            VIR_DEBUG("Packet length %u too large", len);
             qemudDispatchClientFailure(client);
             return;
         }
@@ -2283,10 +2283,10 @@ static void qemudInactiveTimer(int timerid, void *data) {
 
     if (virStateActive() ||
         server->clients) {
-        DEBUG0("Timer expired but still active, not shutting down");
+        VIR_DEBUG0("Timer expired but still active, not shutting down");
         virEventUpdateTimeoutImpl(timerid, -1);
     } else {
-        DEBUG0("Timer expired and inactive, shutting down");
+        VIR_DEBUG0("Timer expired and inactive, shutting down");
         server->quitEventThread = 1;
     }
 }
@@ -2357,14 +2357,14 @@ static void *qemudRunLoop(void *opaque) {
         if (timeout > 0) {
             if (timerActive) {
                 if (server->clients) {
-                    DEBUG("Deactivating shutdown timer %d", timerid);
+                    VIR_DEBUG("Deactivating shutdown timer %d", timerid);
                     virEventUpdateTimeoutImpl(timerid, -1);
                     timerActive = 0;
                 }
             } else {
                 if (!virStateActive() &&
                     !server->clients) {
-                    DEBUG("Activating shutdown timer %d", timerid);
+                    VIR_DEBUG("Activating shutdown timer %d", timerid);
                     virEventUpdateTimeoutImpl(timerid, timeout * 1000);
                     timerActive = 1;
                 }
@@ -2374,7 +2374,7 @@ static void *qemudRunLoop(void *opaque) {
         virMutexUnlock(&server->lock);
         if (qemudOneLoop() < 0) {
             virMutexLock(&server->lock);
-            DEBUG0("Loop iteration error, exiting");
+            VIR_DEBUG0("Loop iteration error, exiting");
             break;
         }
         virMutexLock(&server->lock);

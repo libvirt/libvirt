@@ -143,14 +143,14 @@ if (strUtf16) {\
 \
     g_pVBoxGlobalData->pFuncs->pfnUtf16ToUtf8(strUtf16, &strUtf8);\
     if (strUtf8) {\
-        DEBUG("%s: %s", msg, strUtf8);\
+        VIR_DEBUG("%s: %s", msg, strUtf8);\
         g_pVBoxGlobalData->pFuncs->pfnUtf8Free(strUtf8);\
     }\
 }
 
 #define DEBUGUUID(msg, iid) \
 {\
-    DEBUG (msg ": {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",\
+    VIR_DEBUG (msg ": {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",\
           (unsigned)(iid)->m0,\
           (unsigned)(iid)->m1,\
           (unsigned)(iid)->m2,\
@@ -617,7 +617,7 @@ static char *vboxGenerateMediumName(PRUint32  storageBus,
 
     name = virIndexToDiskName(total, prefix);
 
-    DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
+    VIR_DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
           "devicePort=%d deviceSlot=%d, maxPortPerInst=%u maxSlotPerPort=%u",
           NULLSTR(name), total, storageBus, deviceInst, devicePort,
           deviceSlot, maxPortPerInst, maxSlotPerPort);
@@ -677,7 +677,7 @@ static bool vboxGetDeviceDetails(const char *deviceName,
     *devicePort = (total % (maxPortPerInst * maxSlotPerPort)) / maxSlotPerPort;
     *deviceSlot = (total % (maxPortPerInst * maxSlotPerPort)) % maxSlotPerPort;
 
-    DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
+    VIR_DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
           "devicePort=%d deviceSlot=%d, maxPortPerInst=%u maxSlotPerPort=%u",
           deviceName, total, storageBus, *deviceInst, *devicePort,
           *deviceSlot, maxPortPerInst, maxSlotPerPort);
@@ -1027,14 +1027,14 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
 #endif /* !(VBOX_API_VERSION == 2002) */
 
     conn->privateData = data;
-    DEBUG0("in vboxOpen");
+    VIR_DEBUG0("in vboxOpen");
 
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int vboxClose(virConnectPtr conn) {
     vboxGlobalData *data = conn->privateData;
-    DEBUG("%s: in vboxClose",conn->driver->name);
+    VIR_DEBUG("%s: in vboxClose",conn->driver->name);
 
     vboxUninitialize(data);
     conn->privateData = NULL;
@@ -1044,7 +1044,7 @@ static int vboxClose(virConnectPtr conn) {
 
 static int vboxGetVersion(virConnectPtr conn, unsigned long *version) {
     vboxGlobalData *data = conn->privateData;
-    DEBUG("%s: in vboxGetVersion",conn->driver->name);
+    VIR_DEBUG("%s: in vboxGetVersion",conn->driver->name);
 
     vboxDriverLock(data);
     *version = data->version;
@@ -3560,22 +3560,22 @@ vboxSetBootDeviceOrder(virDomainDefPtr def, vboxGlobalData *data,
     PRUint32 maxBootPosition            = 0;
     int i = 0;
 
-    DEBUG("def->os.type             %s", def->os.type);
-    DEBUG("def->os.arch             %s", def->os.arch);
-    DEBUG("def->os.machine          %s", def->os.machine);
-    DEBUG("def->os.nBootDevs        %d", def->os.nBootDevs);
-    DEBUG("def->os.bootDevs[0]      %d", def->os.bootDevs[0]);
-    DEBUG("def->os.bootDevs[1]      %d", def->os.bootDevs[1]);
-    DEBUG("def->os.bootDevs[2]      %d", def->os.bootDevs[2]);
-    DEBUG("def->os.bootDevs[3]      %d", def->os.bootDevs[3]);
-    DEBUG("def->os.init             %s", def->os.init);
-    DEBUG("def->os.kernel           %s", def->os.kernel);
-    DEBUG("def->os.initrd           %s", def->os.initrd);
-    DEBUG("def->os.cmdline          %s", def->os.cmdline);
-    DEBUG("def->os.root             %s", def->os.root);
-    DEBUG("def->os.loader           %s", def->os.loader);
-    DEBUG("def->os.bootloader       %s", def->os.bootloader);
-    DEBUG("def->os.bootloaderArgs   %s", def->os.bootloaderArgs);
+    VIR_DEBUG("def->os.type             %s", def->os.type);
+    VIR_DEBUG("def->os.arch             %s", def->os.arch);
+    VIR_DEBUG("def->os.machine          %s", def->os.machine);
+    VIR_DEBUG("def->os.nBootDevs        %d", def->os.nBootDevs);
+    VIR_DEBUG("def->os.bootDevs[0]      %d", def->os.bootDevs[0]);
+    VIR_DEBUG("def->os.bootDevs[1]      %d", def->os.bootDevs[1]);
+    VIR_DEBUG("def->os.bootDevs[2]      %d", def->os.bootDevs[2]);
+    VIR_DEBUG("def->os.bootDevs[3]      %d", def->os.bootDevs[3]);
+    VIR_DEBUG("def->os.init             %s", def->os.init);
+    VIR_DEBUG("def->os.kernel           %s", def->os.kernel);
+    VIR_DEBUG("def->os.initrd           %s", def->os.initrd);
+    VIR_DEBUG("def->os.cmdline          %s", def->os.cmdline);
+    VIR_DEBUG("def->os.root             %s", def->os.root);
+    VIR_DEBUG("def->os.loader           %s", def->os.loader);
+    VIR_DEBUG("def->os.bootloader       %s", def->os.bootloader);
+    VIR_DEBUG("def->os.bootloaderArgs   %s", def->os.bootloaderArgs);
 
     data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
     if (systemProperties) {
@@ -3617,17 +3617,17 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         return;
 
     for (i = 0; i < def->ndisks; i++) {
-        DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
-        DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
-        DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
-        DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
-        DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
-        DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
-        DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
-        DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
-        DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
+        VIR_DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
+        VIR_DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
+        VIR_DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
+        VIR_DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
+        VIR_DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
+        VIR_DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
+        VIR_DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
+        VIR_DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
+        VIR_DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
                                              ? "True" : "False"));
-        DEBUG("disk(%d) shared:     %s", i, (def->disks[i]->shared
+        VIR_DEBUG("disk(%d) shared:     %s", i, (def->disks[i]->shared
                                              ? "True" : "False"));
 
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -3734,15 +3734,15 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                         if (def->disks[i]->readonly) {
                             hardDisk->vtbl->SetType(hardDisk,
                                                     HardDiskType_Immutable);
-                            DEBUG0("setting harddisk to readonly");
+                            VIR_DEBUG0("setting harddisk to readonly");
                         } else if (!def->disks[i]->readonly) {
                             hardDisk->vtbl->SetType(hardDisk,
                                                     HardDiskType_Normal);
-                            DEBUG0("setting harddisk type to normal");
+                            VIR_DEBUG0("setting harddisk type to normal");
                         }
                         if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
                             if (STREQ(def->disks[i]->dst, "hdc")) {
-                                DEBUG0("Not connecting harddisk to hdc as hdc"
+                                VIR_DEBUG0("Not connecting harddisk to hdc as hdc"
                                        " is taken by CD/DVD Drive");
                             } else {
                                 PRInt32 channel          = 0;
@@ -3896,17 +3896,17 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     }
 
     for (i = 0; i < def->ndisks && !error; i++) {
-        DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
-        DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
-        DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
-        DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
-        DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
-        DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
-        DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
-        DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
-        DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
+        VIR_DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
+        VIR_DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
+        VIR_DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
+        VIR_DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
+        VIR_DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
+        VIR_DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
+        VIR_DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
+        VIR_DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
+        VIR_DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
                                              ? "True" : "False"));
-        DEBUG("disk(%d) shared:     %s", i, (def->disks[i]->shared
+        VIR_DEBUG("disk(%d) shared:     %s", i, (def->disks[i]->shared
                                              ? "True" : "False"));
 
         if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
@@ -4017,10 +4017,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                 if (def->disks[i]->readonly) {
                     medium->vtbl->SetType(medium, MediumType_Immutable);
-                    DEBUG0("setting harddisk to immutable");
+                    VIR_DEBUG0("setting harddisk to immutable");
                 } else if (!def->disks[i]->readonly) {
                     medium->vtbl->SetType(medium, MediumType_Normal);
-                    DEBUG0("setting harddisk type to normal");
+                    VIR_DEBUG0("setting harddisk type to normal");
                 }
             }
 
@@ -4129,8 +4129,8 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         systemProperties = NULL;
     }
 
-    DEBUG("Number of Network Cards to be connected: %d", def->nnets);
-    DEBUG("Number of Network Cards available: %d", networkAdapterCount);
+    VIR_DEBUG("Number of Network Cards to be connected: %d", def->nnets);
+    VIR_DEBUG("Number of Network Cards available: %d", networkAdapterCount);
 
     for (i = 0; (i < def->nnets) && (i < networkAdapterCount); i++) {
         INetworkAdapter *adapter = NULL;
@@ -4149,20 +4149,20 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                  def->nets[i]->mac[5]);
         macaddrvbox[VIR_MAC_STRING_BUFLEN - 6] = '\0';
 
-        DEBUG("NIC(%d): Type:   %d", i, def->nets[i]->type);
-        DEBUG("NIC(%d): Model:  %s", i, def->nets[i]->model);
-        DEBUG("NIC(%d): Mac:    %s", i, macaddr);
-        DEBUG("NIC(%d): ifname: %s", i, def->nets[i]->ifname);
+        VIR_DEBUG("NIC(%d): Type:   %d", i, def->nets[i]->type);
+        VIR_DEBUG("NIC(%d): Model:  %s", i, def->nets[i]->model);
+        VIR_DEBUG("NIC(%d): Mac:    %s", i, macaddr);
+        VIR_DEBUG("NIC(%d): ifname: %s", i, def->nets[i]->ifname);
         if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            DEBUG("NIC(%d): name:    %s", i, def->nets[i]->data.network.name);
+            VIR_DEBUG("NIC(%d): name:    %s", i, def->nets[i]->data.network.name);
         } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
-            DEBUG("NIC(%d): name:   %s", i, def->nets[i]->data.internal.name);
+            VIR_DEBUG("NIC(%d): name:   %s", i, def->nets[i]->data.internal.name);
         } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
-            DEBUG("NIC(%d): NAT.", i);
+            VIR_DEBUG("NIC(%d): NAT.", i);
         } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-            DEBUG("NIC(%d): brname: %s", i, def->nets[i]->data.bridge.brname);
-            DEBUG("NIC(%d): script: %s", i, def->nets[i]->data.bridge.script);
-            DEBUG("NIC(%d): ipaddr: %s", i, def->nets[i]->data.bridge.ipaddr);
+            VIR_DEBUG("NIC(%d): brname: %s", i, def->nets[i]->data.bridge.brname);
+            VIR_DEBUG("NIC(%d): script: %s", i, def->nets[i]->data.bridge.script);
+            VIR_DEBUG("NIC(%d): ipaddr: %s", i, def->nets[i]->data.bridge.ipaddr);
         }
 
         machine->vtbl->GetNetworkAdapter(machine, i, &adapter);
@@ -4263,13 +4263,13 @@ vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         systemProperties = NULL;
     }
 
-    DEBUG("Number of Serial Ports to be connected: %d", def->nserials);
-    DEBUG("Number of Serial Ports available: %d", serialPortCount);
+    VIR_DEBUG("Number of Serial Ports to be connected: %d", def->nserials);
+    VIR_DEBUG("Number of Serial Ports available: %d", serialPortCount);
     for (i = 0; (i < def->nserials) && (i < serialPortCount); i++) {
         ISerialPort *serialPort = NULL;
 
-        DEBUG("SerialPort(%d): Type: %d", i, def->serials[i]->source.type);
-        DEBUG("SerialPort(%d): target.port: %d", i,
+        VIR_DEBUG("SerialPort(%d): Type: %d", i, def->serials[i]->source.type);
+        VIR_DEBUG("SerialPort(%d): target.port: %d", i,
               def->serials[i]->target.port);
 
         machine->vtbl->GetSerialPort(machine, i, &serialPort);
@@ -4296,12 +4296,12 @@ vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             if (def->serials[i]->target.port == 0) {
                 serialPort->vtbl->SetIRQ(serialPort, 4);
                 serialPort->vtbl->SetIOBase(serialPort, 1016);
-                DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
+                VIR_DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
                       i, 4, 1016, def->serials[i]->source.data.file.path);
             } else if (def->serials[i]->target.port == 1) {
                 serialPort->vtbl->SetIRQ(serialPort, 3);
                 serialPort->vtbl->SetIOBase(serialPort, 760);
-                DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
+                VIR_DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
                       i, 3, 760, def->serials[i]->source.data.file.path);
             }
 
@@ -4342,13 +4342,13 @@ vboxAttachParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         systemProperties = NULL;
     }
 
-    DEBUG("Number of Parallel Ports to be connected: %d", def->nparallels);
-    DEBUG("Number of Parallel Ports available: %d", parallelPortCount);
+    VIR_DEBUG("Number of Parallel Ports to be connected: %d", def->nparallels);
+    VIR_DEBUG("Number of Parallel Ports available: %d", parallelPortCount);
     for (i = 0; (i < def->nparallels) && (i < parallelPortCount); i++) {
         IParallelPort *parallelPort = NULL;
 
-        DEBUG("ParallelPort(%d): Type: %d", i, def->parallels[i]->source.type);
-        DEBUG("ParallelPort(%d): target.port: %d", i,
+        VIR_DEBUG("ParallelPort(%d): Type: %d", i, def->parallels[i]->source.type);
+        VIR_DEBUG("ParallelPort(%d): target.port: %d", i,
               def->parallels[i]->target.port);
 
         machine->vtbl->GetParallelPort(machine, i, &parallelPort);
@@ -4370,12 +4370,12 @@ vboxAttachParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 if (i == 0) {
                     parallelPort->vtbl->SetIRQ(parallelPort, 7);
                     parallelPort->vtbl->SetIOBase(parallelPort, 888);
-                    DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
+                    VIR_DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
                           i, 7, 888, def->parallels[i]->source.data.file.path);
                 } else if (i == 1) {
                     parallelPort->vtbl->SetIRQ(parallelPort, 5);
                     parallelPort->vtbl->SetIOBase(parallelPort, 632);
-                    DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
+                    VIR_DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
                           i, 5, 632, def->parallels[i]->source.data.file.path);
                 }
             }
@@ -4446,20 +4446,20 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 #endif /* VBOX_API_VERSION >= 4000 */
             if (VRDxServer) {
                 VRDxServer->vtbl->SetEnabled(VRDxServer, PR_TRUE);
-                DEBUG0("VRDP Support turned ON.");
+                VIR_DEBUG0("VRDP Support turned ON.");
 
 #if VBOX_API_VERSION < 3001
                 if (def->graphics[i]->data.rdp.port) {
                     VRDxServer->vtbl->SetPort(VRDxServer,
                                               def->graphics[i]->data.rdp.port);
-                    DEBUG("VRDP Port changed to: %d",
+                    VIR_DEBUG("VRDP Port changed to: %d",
                           def->graphics[i]->data.rdp.port);
                 } else if (def->graphics[i]->data.rdp.autoport) {
                     /* Setting the port to 0 will reset its value to
                      * the default one which is 3389 currently
                      */
                     VRDxServer->vtbl->SetPort(VRDxServer, 0);
-                    DEBUG0("VRDP Port changed to default, which is 3389 currently");
+                    VIR_DEBUG0("VRDP Port changed to default, which is 3389 currently");
                 }
 #elif VBOX_API_VERSION < 4000 /* 3001 <= VBOX_API_VERSION < 4000 */
                 PRUnichar *portUtf16 = NULL;
@@ -4480,13 +4480,13 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 if (def->graphics[i]->data.rdp.replaceUser) {
                     VRDxServer->vtbl->SetReuseSingleConnection(VRDxServer,
                                                                PR_TRUE);
-                    DEBUG0("VRDP set to reuse single connection");
+                    VIR_DEBUG0("VRDP set to reuse single connection");
                 }
 
                 if (def->graphics[i]->data.rdp.multiUser) {
                     VRDxServer->vtbl->SetAllowMultiConnection(VRDxServer,
                                                               PR_TRUE);
-                    DEBUG0("VRDP set to allow multiple connection");
+                    VIR_DEBUG0("VRDP set to allow multiple connection");
                 }
 
                 if (def->graphics[i]->data.rdp.listenAddr) {
@@ -4506,7 +4506,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                                       netAddressUtf16);
                     VBOX_UTF16_FREE(netAddressKey);
 #endif /* VBOX_API_VERSION >= 4000 */
-                    DEBUG("VRDP listen address is set to: %s",
+                    VIR_DEBUG("VRDP listen address is set to: %s",
                           def->graphics[i]->data.rdp.listenAddr);
 
                     VBOX_UTF16_FREE(netAddressUtf16);
@@ -4639,7 +4639,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
                 if (def->hostdevs[i]->source.subsys.u.usb.vendor ||
                     def->hostdevs[i]->source.subsys.u.usb.product) {
-                    DEBUG("USB Device detected, VendorId:0x%x, ProductId:0x%x",
+                    VIR_DEBUG("USB Device detected, VendorId:0x%x, ProductId:0x%x",
                           def->hostdevs[i]->source.subsys.u.usb.vendor,
                           def->hostdevs[i]->source.subsys.u.usb.product);
                     isUSB = true;
@@ -6322,7 +6322,7 @@ vboxCallbackOnMachineStateChange(IVirtualBoxCallback *pThis,
     g_pVBoxGlobalData->domainEventDispatching = 1;
     vboxDriverLock(g_pVBoxGlobalData);
 
-    DEBUG("IVirtualBoxCallback: %p, State: %d", pThis, state);
+    VIR_DEBUG("IVirtualBoxCallback: %p, State: %d", pThis, state);
     DEBUGPRUnichar("machineId", machineId);
 
     if (machineId) {
@@ -6389,7 +6389,7 @@ static nsresult PR_COM_METHOD
 vboxCallbackOnMachineDataChange(IVirtualBoxCallback *pThis,
                                 PRUnichar *machineId)
 {
-    DEBUG("IVirtualBoxCallback: %p", pThis);
+    VIR_DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
 
     return NS_OK;
@@ -6402,7 +6402,7 @@ vboxCallbackOnExtraDataCanChange(IVirtualBoxCallback *pThis,
                                  PRUnichar **error ATTRIBUTE_UNUSED,
                                  PRBool *allowChange)
 {
-    DEBUG("IVirtualBoxCallback: %p, allowChange: %s", pThis, *allowChange ? "true" : "false");
+    VIR_DEBUG("IVirtualBoxCallback: %p, allowChange: %s", pThis, *allowChange ? "true" : "false");
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("key", key);
     DEBUGPRUnichar("value", value);
@@ -6414,7 +6414,7 @@ static nsresult PR_COM_METHOD
 vboxCallbackOnExtraDataChange(IVirtualBoxCallback *pThis, PRUnichar *machineId,
                               PRUnichar *key, PRUnichar *value)
 {
-    DEBUG("IVirtualBoxCallback: %p", pThis);
+    VIR_DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("key", key);
     DEBUGPRUnichar("value", value);
@@ -6427,8 +6427,8 @@ static nsresult PR_COM_METHOD
 vboxCallbackOnMediaRegistered(IVirtualBoxCallback *pThis, PRUnichar *mediaId,
                               PRUint32 mediaType, PRBool registered)
 {
-    DEBUG("IVirtualBoxCallback: %p, registered: %s", pThis, registered ? "true" : "false");
-    DEBUG("mediaType: %d", mediaType);
+    VIR_DEBUG("IVirtualBoxCallback: %p, registered: %s", pThis, registered ? "true" : "false");
+    VIR_DEBUG("mediaType: %d", mediaType);
     DEBUGPRUnichar("mediaId", mediaId);
 
     return NS_OK;
@@ -6447,7 +6447,7 @@ vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis,
     g_pVBoxGlobalData->domainEventDispatching = 1;
     vboxDriverLock(g_pVBoxGlobalData);
 
-    DEBUG("IVirtualBoxCallback: %p, registered: %s", pThis, registered ? "true" : "false");
+    VIR_DEBUG("IVirtualBoxCallback: %p, registered: %s", pThis, registered ? "true" : "false");
     DEBUGPRUnichar("machineId", machineId);
 
     if (machineId) {
@@ -6499,7 +6499,7 @@ static nsresult PR_COM_METHOD
 vboxCallbackOnSessionStateChange(IVirtualBoxCallback *pThis,
                                  PRUnichar *machineId, PRUint32 state)
 {
-    DEBUG("IVirtualBoxCallback: %p, state: %d", pThis, state);
+    VIR_DEBUG("IVirtualBoxCallback: %p, state: %d", pThis, state);
     DEBUGPRUnichar("machineId", machineId);
 
     return NS_OK;
@@ -6509,7 +6509,7 @@ static nsresult PR_COM_METHOD
 vboxCallbackOnSnapshotTaken(IVirtualBoxCallback *pThis, PRUnichar *machineId,
                             PRUnichar *snapshotId)
 {
-    DEBUG("IVirtualBoxCallback: %p", pThis);
+    VIR_DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("snapshotId", snapshotId);
 
@@ -6520,7 +6520,7 @@ static nsresult PR_COM_METHOD
 vboxCallbackOnSnapshotDiscarded(IVirtualBoxCallback *pThis, PRUnichar *machineId,
                                 PRUnichar *snapshotId)
 {
-    DEBUG("IVirtualBoxCallback: %p", pThis);
+    VIR_DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("snapshotId", snapshotId);
 
@@ -6531,7 +6531,7 @@ static nsresult PR_COM_METHOD
 vboxCallbackOnSnapshotChange(IVirtualBoxCallback *pThis, PRUnichar *machineId,
                              PRUnichar *snapshotId)
 {
-    DEBUG("IVirtualBoxCallback: %p", pThis);
+    VIR_DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("snapshotId", snapshotId);
 
@@ -6543,7 +6543,7 @@ vboxCallbackOnGuestPropertyChange(IVirtualBoxCallback *pThis,
                                   PRUnichar *machineId, PRUnichar *name,
                                   PRUnichar *value, PRUnichar *flags)
 {
-    DEBUG("IVirtualBoxCallback: %p", pThis);
+    VIR_DEBUG("IVirtualBoxCallback: %p", pThis);
     DEBUGPRUnichar("machineId", machineId);
     DEBUGPRUnichar("name", name);
     DEBUGPRUnichar("value", value);
@@ -6559,7 +6559,7 @@ vboxCallbackAddRef(nsISupports *pThis)
 
     c = ++g_pVBoxGlobalData->vboxCallBackRefCount;
 
-    DEBUG("pThis: %p, vboxCallback AddRef: %d", pThis, c);
+    VIR_DEBUG("pThis: %p, vboxCallback AddRef: %d", pThis, c);
 
     return c;
 }
@@ -6576,7 +6576,7 @@ vboxCallbackRelease(nsISupports *pThis)
         VIR_FREE(pThis);
     }
 
-    DEBUG("pThis: %p, vboxCallback Release: %d", pThis, c);
+    VIR_DEBUG("pThis: %p, vboxCallback Release: %d", pThis, c);
 
     return c;
 }
@@ -6594,13 +6594,13 @@ vboxCallbackQueryInterface(nsISupports *pThis, const nsID *iid, void **resultp)
         g_pVBoxGlobalData->vboxCallBackRefCount++;
         *resultp = that;
 
-        DEBUG("pThis: %p, vboxCallback QueryInterface: %d", pThis, g_pVBoxGlobalData->vboxCallBackRefCount);
+        VIR_DEBUG("pThis: %p, vboxCallback QueryInterface: %d", pThis, g_pVBoxGlobalData->vboxCallBackRefCount);
 
         return NS_OK;
     }
 
 
-    DEBUG("pThis: %p, vboxCallback QueryInterface didn't find a matching interface", pThis);
+    VIR_DEBUG("pThis: %p, vboxCallback QueryInterface didn't find a matching interface", pThis);
     DEBUGUUID("The UUID Callback Interface expects", iid);
     DEBUGUUID("The UUID Callback Interface got", &ivirtualboxCallbackUUID);
     return NS_NOINTERFACE;
@@ -6708,7 +6708,7 @@ static int vboxDomainEventRegister (virConnectPtr conn,
 
             ret = virDomainEventCallbackListAdd(conn, data->domainEventCallbacks,
                                                 callback, opaque, freecb);
-            DEBUG("virDomainEventCallbackListAdd (ret = %d) ( conn: %p, "
+            VIR_DEBUG("virDomainEventCallbackListAdd (ret = %d) ( conn: %p, "
                   "data->domainEventCallbacks: %p, callback: %p, opaque: %p, "
                   "freecb: %p )", ret, conn, data->domainEventCallbacks, callback,
                   opaque, freecb);
@@ -6809,7 +6809,7 @@ static int vboxDomainEventRegisterAny(virConnectPtr conn,
             ret = virDomainEventCallbackListAddID(conn, data->domainEventCallbacks,
                                                   dom, eventID,
                                                   callback, opaque, freecb);
-            DEBUG("virDomainEventCallbackListAddID (ret = %d) ( conn: %p, "
+            VIR_DEBUG("virDomainEventCallbackListAddID (ret = %d) ( conn: %p, "
                   "data->domainEventCallbacks: %p, callback: %p, opaque: %p, "
                   "freecb: %p )", ret, conn, data->domainEventCallbacks, callback,
                   opaque, freecb);
@@ -6881,7 +6881,7 @@ static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
         (data->vboxSession == NULL))
         goto cleanup;
 
-    DEBUG0("network initialized");
+    VIR_DEBUG0("network initialized");
     /* conn->networkPrivateData = some network specific data */
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -6890,7 +6890,7 @@ cleanup:
 }
 
 static int vboxNetworkClose(virConnectPtr conn) {
-    DEBUG0("network uninitialized");
+    VIR_DEBUG0("network uninitialized");
     conn->networkPrivateData = NULL;
     return 0;
 }
@@ -6924,7 +6924,7 @@ static int vboxNumOfNetworks(virConnectPtr conn) {
 
     VBOX_RELEASE(host);
 
-    DEBUG("numActive: %d", ret);
+    VIR_DEBUG("numActive: %d", ret);
     return ret;
 }
 
@@ -6955,7 +6955,7 @@ static int vboxListNetworks(virConnectPtr conn, char **const names, int nnames) 
                     networkInterface->vtbl->GetName(networkInterface, &nameUtf16);
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
-                    DEBUG("nnames[%d]: %s", ret, nameUtf8);
+                    VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
                     names[ret] = strdup(nameUtf8);
                     if (names[ret] == NULL) {
                         virReportOOMError();
@@ -7006,7 +7006,7 @@ static int vboxNumOfDefinedNetworks(virConnectPtr conn) {
 
     VBOX_RELEASE(host);
 
-    DEBUG("numActive: %d", ret);
+    VIR_DEBUG("numActive: %d", ret);
     return ret;
 }
 
@@ -7037,7 +7037,7 @@ static int vboxListDefinedNetworks(virConnectPtr conn, char **const names, int n
                     networkInterface->vtbl->GetName(networkInterface, &nameUtf16);
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
-                    DEBUG("nnames[%d]: %s", ret, nameUtf8);
+                    VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
                     names[ret] = strdup(nameUtf8);
                     if (names[ret] == NULL) {
                         virReportOOMError();
@@ -7087,7 +7087,7 @@ vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
             ret = virGetNetwork(conn, nameUtf8, uuid);
 
-            DEBUG("Network Name: %s", nameUtf8);
+            VIR_DEBUG("Network Name: %s", nameUtf8);
             DEBUGIID("Network UUID", iid.value);
 
             VBOX_UTF8_FREE(nameUtf8);
@@ -7124,7 +7124,7 @@ static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *nam
             networkInterface->vtbl->GetId(networkInterface, &iid.value);
             vboxIIDToUUID(&iid, uuid);
             ret = virGetNetwork(conn, name, uuid);
-            DEBUG("Network Name: %s", name);
+            VIR_DEBUG("Network Name: %s", name);
 
             DEBUGIID("Network UUID", iid.value);
             vboxIIDUnalloc(&iid);
@@ -7232,7 +7232,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
                 data->vboxObj->vtbl->CreateDHCPServer(data->vboxObj,
                                                       networkNameUtf16,
                                                       &dhcpServer);
-                DEBUG0("couldn't find dhcp server so creating one");
+                VIR_DEBUG0("couldn't find dhcp server so creating one");
             }
             if (dhcpServer) {
                 PRUnichar *ipAddressUtf16     = NULL;
@@ -7692,7 +7692,7 @@ static virDrvOpenStatus vboxStorageOpen (virConnectPtr conn,
         (data->vboxSession == NULL))
         goto cleanup;
 
-    DEBUG0("vbox storage initialized");
+    VIR_DEBUG0("vbox storage initialized");
     /* conn->storagePrivateData = some storage specific data */
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -7701,7 +7701,7 @@ cleanup:
 }
 
 static int vboxStorageClose (virConnectPtr conn) {
-    DEBUG0("vbox storage uninitialized");
+    VIR_DEBUG0("vbox storage uninitialized");
     conn->storagePrivateData = NULL;
     return 0;
 }
@@ -7807,7 +7807,7 @@ static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names
                     VBOX_UTF16_FREE(nameUtf16);
 
                     if (nameUtf8) {
-                        DEBUG("nnames[%d]: %s", numActive, nameUtf8);
+                        VIR_DEBUG("nnames[%d]: %s", numActive, nameUtf8);
                         names[numActive] = strdup(nameUtf8);
                         if (names[numActive] == NULL) {
                             virReportOOMError();
@@ -7874,10 +7874,10 @@ static virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const
 
                             ret = virGetStorageVol(pool->conn, pool->name, name, key);
 
-                            DEBUG("virStorageVolPtr: %p", ret);
-                            DEBUG("Storage Volume Name: %s", name);
-                            DEBUG("Storage Volume key : %s", key);
-                            DEBUG("Storage Volume Pool: %s", pool->name);
+                            VIR_DEBUG("virStorageVolPtr: %p", ret);
+                            VIR_DEBUG("Storage Volume Name: %s", name);
+                            VIR_DEBUG("Storage Volume key : %s", key);
+                            VIR_DEBUG("Storage Volume Pool: %s", pool->name);
                         }
 
                         vboxIIDUnalloc(&hddIID);
@@ -7934,15 +7934,15 @@ static virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char
             if (hddNameUtf8) {
                 if (vboxStorageNumOfPools(conn) == 1) {
                     ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key);
-                    DEBUG("Storage Volume Pool: %s", "default-pool");
+                    VIR_DEBUG("Storage Volume Pool: %s", "default-pool");
                 } else {
                     /* TODO: currently only one default pool and thus
                      * nothing here, change it when pools are supported
                      */
                 }
 
-                DEBUG("Storage Volume Name: %s", key);
-                DEBUG("Storage Volume key : %s", hddNameUtf8);
+                VIR_DEBUG("Storage Volume Name: %s", key);
+                VIR_DEBUG("Storage Volume key : %s", hddNameUtf8);
 
                 VBOX_UTF8_FREE(hddNameUtf8);
                 VBOX_UTF16_FREE(hddNameUtf16);
@@ -8007,9 +8007,9 @@ static virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const cha
                     if (vboxStorageNumOfPools(conn) == 1)
                         ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key);
 
-                    DEBUG("Storage Volume Pool: %s", "default-pool");
-                    DEBUG("Storage Volume Name: %s", hddNameUtf8);
-                    DEBUG("Storage Volume key : %s", key);
+                    VIR_DEBUG("Storage Volume Pool: %s", "default-pool");
+                    VIR_DEBUG("Storage Volume Name: %s", hddNameUtf8);
+                    VIR_DEBUG("Storage Volume key : %s", key);
                 }
 
                 vboxIIDUnalloc(&hddIID);
@@ -8241,12 +8241,12 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
 #endif /* VBOX_API_VERSION >= 3001 */
                                             if (NS_SUCCEEDED(rc)) {
                                                 rc = machine->vtbl->SaveSettings(machine);
-                                                DEBUG0("saving machine settings");
+                                                VIR_DEBUG0("saving machine settings");
                                             }
 
                                             if (NS_SUCCEEDED(rc)) {
                                                 deregister++;
-                                                DEBUG("deregistering hdd:%d", deregister);
+                                                VIR_DEBUG("deregistering hdd:%d", deregister);
                                             }
 
                                             if (controller)
@@ -8341,10 +8341,10 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
 
             ret = 0;
 
-            DEBUG("Storage Volume Name: %s", vol->name);
-            DEBUG("Storage Volume Type: %s", info->type == VIR_STORAGE_VOL_BLOCK ? "Block" : "File");
-            DEBUG("Storage Volume Capacity: %llu", info->capacity);
-            DEBUG("Storage Volume Allocation: %llu", info->allocation);
+            VIR_DEBUG("Storage Volume Name: %s", vol->name);
+            VIR_DEBUG("Storage Volume Type: %s", info->type == VIR_STORAGE_VOL_BLOCK ? "Block" : "File");
+            VIR_DEBUG("Storage Volume Capacity: %llu", info->capacity);
+            VIR_DEBUG("Storage Volume Allocation: %llu", info->allocation);
         }
 
         VBOX_MEDIUM_RELEASE(hardDisk);
@@ -8435,7 +8435,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags A
                 VBOX_UTF16_TO_UTF8(hddFormatUtf16, &hddFormatUtf8);
                 if (hddFormatUtf8) {
 
-                    DEBUG("Storage Volume Format: %s", hddFormatUtf8);
+                    VIR_DEBUG("Storage Volume Format: %s", hddFormatUtf8);
 
                     if (STRCASEEQ("vmdk", hddFormatUtf8))
                         def.target.format = VIR_STORAGE_FILE_VMDK;
@@ -8505,9 +8505,9 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
                 if (!ret)
                     virReportOOMError();
 
-                DEBUG("Storage Volume Name: %s", vol->name);
-                DEBUG("Storage Volume Path: %s", hddLocationUtf8);
-                DEBUG("Storage Volume Pool: %s", vol->pool);
+                VIR_DEBUG("Storage Volume Name: %s", vol->name);
+                VIR_DEBUG("Storage Volume Path: %s", hddLocationUtf8);
+                VIR_DEBUG("Storage Volume Pool: %s", vol->pool);
 
                 VBOX_UTF8_FREE(hddLocationUtf8);
             }

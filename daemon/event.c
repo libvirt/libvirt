@@ -37,7 +37,7 @@
 #include "util.h"
 #include "ignore-value.h"
 
-#define EVENT_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
+#define EVENT_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
 
 static int virEventInterruptLocked(void);
 
@@ -390,7 +390,7 @@ static int virEventDispatchTimeouts(void) {
     int i;
     /* Save this now - it may be changed during dispatch */
     int ntimeouts = eventLoop.timeoutsCount;
-    DEBUG("Dispatch %d", ntimeouts);
+    VIR_DEBUG("Dispatch %d", ntimeouts);
 
     if (gettimeofday(&tv, NULL) < 0) {
         return -1;
@@ -435,7 +435,7 @@ static int virEventDispatchTimeouts(void) {
  */
 static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
     int i, n;
-    DEBUG("Dispatch %d", nfds);
+    VIR_DEBUG("Dispatch %d", nfds);
 
     /* NB, use nfds not eventLoop.handlesCount, because new
      * fds might be added on end of list, and they're not
@@ -449,7 +449,7 @@ static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
         if (i == eventLoop.handlesCount)
             break;
 
-        DEBUG("i=%d w=%d", i, eventLoop.handles[i].watch);
+        VIR_DEBUG("i=%d w=%d", i, eventLoop.handles[i].watch);
         if (eventLoop.handles[i].deleted) {
             EVENT_DEBUG("Skip deleted n=%d w=%d f=%d", i,
                         eventLoop.handles[i].watch, eventLoop.handles[i].fd);
@@ -480,7 +480,7 @@ static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
 static int virEventCleanupTimeouts(void) {
     int i;
     size_t gap;
-    DEBUG("Cleanup %zu", eventLoop.timeoutsCount);
+    VIR_DEBUG("Cleanup %zu", eventLoop.timeoutsCount);
 
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series
@@ -523,7 +523,7 @@ static int virEventCleanupTimeouts(void) {
 static int virEventCleanupHandles(void) {
     int i;
     size_t gap;
-    DEBUG("Cleanup %zu", eventLoop.handlesCount);
+    VIR_DEBUG("Cleanup %zu", eventLoop.handlesCount);
 
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series

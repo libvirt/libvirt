@@ -91,7 +91,7 @@ failed:
  */
 static void
 virReleaseConnect(virConnectPtr conn) {
-    DEBUG("release connection %p", conn);
+    VIR_DEBUG("release connection %p", conn);
 
     /* make sure to release the connection lock before we call the
      * close callbacks, otherwise we will deadlock if an error
@@ -142,7 +142,7 @@ virUnrefConnect(virConnectPtr conn) {
         return -1;
     }
     virMutexLock(&conn->lock);
-    DEBUG("unref connection %p %d", conn, conn->refs);
+    VIR_DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     refs = conn->refs;
     if (refs == 0) {
@@ -235,7 +235,7 @@ virReleaseDomain(virDomainPtr domain) {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(domain->uuid, uuidstr);
-    DEBUG("release domain %p %s %s", domain, domain->name, uuidstr);
+    VIR_DEBUG("release domain %p %s %s", domain, domain->name, uuidstr);
 
     domain->magic = -1;
     domain->id = -1;
@@ -243,7 +243,7 @@ virReleaseDomain(virDomainPtr domain) {
     VIR_FREE(domain);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -273,7 +273,7 @@ virUnrefDomain(virDomainPtr domain) {
         return -1;
     }
     virMutexLock(&domain->conn->lock);
-    DEBUG("unref domain %p %s %d", domain, domain->name, domain->refs);
+    VIR_DEBUG("unref domain %p %s %d", domain, domain->name, domain->refs);
     domain->refs--;
     refs = domain->refs;
     if (refs == 0) {
@@ -366,14 +366,14 @@ virReleaseNetwork(virNetworkPtr network) {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(network->uuid, uuidstr);
-    DEBUG("release network %p %s %s", network, network->name, uuidstr);
+    VIR_DEBUG("release network %p %s %s", network, network->name, uuidstr);
 
     network->magic = -1;
     VIR_FREE(network->name);
     VIR_FREE(network);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -404,7 +404,7 @@ virUnrefNetwork(virNetworkPtr network) {
         return -1;
     }
     virMutexLock(&network->conn->lock);
-    DEBUG("unref network %p %s %d", network, network->name, network->refs);
+    VIR_DEBUG("unref network %p %s %d", network, network->name, network->refs);
     network->refs--;
     refs = network->refs;
     if (refs == 0) {
@@ -501,7 +501,7 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
 static void
 virReleaseInterface(virInterfacePtr iface) {
     virConnectPtr conn = iface->conn;
-    DEBUG("release interface %p %s", iface, iface->name);
+    VIR_DEBUG("release interface %p %s", iface, iface->name);
 
     iface->magic = -1;
     VIR_FREE(iface->name);
@@ -509,7 +509,7 @@ virReleaseInterface(virInterfacePtr iface) {
     VIR_FREE(iface);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -540,7 +540,7 @@ virUnrefInterface(virInterfacePtr iface) {
         return -1;
     }
     virMutexLock(&iface->conn->lock);
-    DEBUG("unref interface %p %s %d", iface, iface->name, iface->refs);
+    VIR_DEBUG("unref interface %p %s %d", iface, iface->name, iface->refs);
     iface->refs--;
     refs = iface->refs;
     if (refs == 0) {
@@ -636,14 +636,14 @@ virReleaseStoragePool(virStoragePoolPtr pool) {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(pool->uuid, uuidstr);
-    DEBUG("release pool %p %s %s", pool, pool->name, uuidstr);
+    VIR_DEBUG("release pool %p %s %s", pool, pool->name, uuidstr);
 
     pool->magic = -1;
     VIR_FREE(pool->name);
     VIR_FREE(pool);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -674,7 +674,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
         return -1;
     }
     virMutexLock(&pool->conn->lock);
-    DEBUG("unref pool %p %s %d", pool, pool->name, pool->refs);
+    VIR_DEBUG("unref pool %p %s %d", pool, pool->name, pool->refs);
     pool->refs--;
     refs = pool->refs;
     if (refs == 0) {
@@ -777,7 +777,7 @@ error:
 static void
 virReleaseStorageVol(virStorageVolPtr vol) {
     virConnectPtr conn = vol->conn;
-    DEBUG("release vol %p %s", vol, vol->name);
+    VIR_DEBUG("release vol %p %s", vol, vol->name);
 
     vol->magic = -1;
     VIR_FREE(vol->name);
@@ -785,7 +785,7 @@ virReleaseStorageVol(virStorageVolPtr vol) {
     VIR_FREE(vol);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -816,7 +816,7 @@ virUnrefStorageVol(virStorageVolPtr vol) {
         return -1;
     }
     virMutexLock(&vol->conn->lock);
-    DEBUG("unref vol %p %s %d", vol, vol->name, vol->refs);
+    VIR_DEBUG("unref vol %p %s %d", vol, vol->name, vol->refs);
     vol->refs--;
     refs = vol->refs;
     if (refs == 0) {
@@ -900,7 +900,7 @@ error:
 static void
 virReleaseNodeDevice(virNodeDevicePtr dev) {
     virConnectPtr conn = dev->conn;
-    DEBUG("release dev %p %s", dev, dev->name);
+    VIR_DEBUG("release dev %p %s", dev, dev->name);
 
     dev->magic = -1;
     VIR_FREE(dev->name);
@@ -908,7 +908,7 @@ virReleaseNodeDevice(virNodeDevicePtr dev) {
     VIR_FREE(dev);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -934,7 +934,7 @@ virUnrefNodeDevice(virNodeDevicePtr dev) {
     int refs;
 
     virMutexLock(&dev->conn->lock);
-    DEBUG("unref dev %p %s %d", dev, dev->name, dev->refs);
+    VIR_DEBUG("unref dev %p %s %d", dev, dev->name, dev->refs);
     dev->refs--;
     refs = dev->refs;
     if (refs == 0) {
@@ -1027,14 +1027,14 @@ virReleaseSecret(virSecretPtr secret) {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(secret->uuid, uuidstr);
-    DEBUG("release secret %p %s", secret, uuidstr);
+    VIR_DEBUG("release secret %p %s", secret, uuidstr);
 
     VIR_FREE(secret->usageID);
     secret->magic = -1;
     VIR_FREE(secret);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -1063,7 +1063,7 @@ virUnrefSecret(virSecretPtr secret) {
         return -1;
     }
     virMutexLock(&secret->conn->lock);
-    DEBUG("unref secret %p %p %d", secret, secret->uuid, secret->refs);
+    VIR_DEBUG("unref secret %p %p %d", secret, secret->uuid, secret->refs);
     secret->refs--;
     refs = secret->refs;
     if (refs == 0) {
@@ -1101,12 +1101,12 @@ error:
 static void
 virReleaseStream(virStreamPtr st) {
     virConnectPtr conn = st->conn;
-    DEBUG("release dev %p", st);
+    VIR_DEBUG("release dev %p", st);
 
     st->magic = -1;
     VIR_FREE(st);
 
-    DEBUG("unref connection %p %d", conn, conn->refs);
+    VIR_DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     if (conn->refs == 0) {
         virReleaseConnect(conn);
@@ -1121,7 +1121,7 @@ int virUnrefStream(virStreamPtr st) {
     int refs;
 
     virMutexLock(&st->conn->lock);
-    DEBUG("unref stream %p %d", st, st->refs);
+    VIR_DEBUG("unref stream %p %d", st, st->refs);
     st->refs--;
     refs = st->refs;
     if (refs == 0) {
@@ -1217,14 +1217,14 @@ virReleaseNWFilter(virNWFilterPtr nwfilter)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(nwfilter->uuid, uuidstr);
-    DEBUG("release nwfilter %p %s %s", nwfilter, nwfilter->name, uuidstr);
+    VIR_DEBUG("release nwfilter %p %s %s", nwfilter, nwfilter->name, uuidstr);
 
     nwfilter->magic = -1;
     VIR_FREE(nwfilter->name);
     VIR_FREE(nwfilter);
 
     if (conn) {
-        DEBUG("unref connection %p %d", conn, conn->refs);
+        VIR_DEBUG("unref connection %p %d", conn, conn->refs);
         conn->refs--;
         if (conn->refs == 0) {
             virReleaseConnect(conn);
@@ -1256,7 +1256,8 @@ virUnrefNWFilter(virNWFilterPtr nwfilter)
         return -1;
     }
     virMutexLock(&nwfilter->conn->lock);
-    DEBUG("unref nwfilter %p %s %d", nwfilter, nwfilter->name, nwfilter->refs);
+    VIR_DEBUG("unref nwfilter %p %s %d", nwfilter, nwfilter->name,
+              nwfilter->refs);
     nwfilter->refs--;
     refs = nwfilter->refs;
     if (refs == 0) {
@@ -1317,14 +1318,14 @@ static void
 virReleaseDomainSnapshot(virDomainSnapshotPtr snapshot)
 {
     virDomainPtr domain = snapshot->domain;
-    DEBUG("release snapshot %p %s", snapshot, snapshot->name);
+    VIR_DEBUG("release snapshot %p %s", snapshot, snapshot->name);
 
     snapshot->magic = -1;
     VIR_FREE(snapshot->name);
     VIR_FREE(snapshot);
 
     if (domain) {
-        DEBUG("unref domain %p %d", domain, domain->refs);
+        VIR_DEBUG("unref domain %p %d", domain, domain->refs);
         domain->refs--;
         if (domain->refs == 0) {
             virReleaseDomain(domain);
@@ -1346,7 +1347,7 @@ virUnrefDomainSnapshot(virDomainSnapshotPtr snapshot)
     }
 
     virMutexLock(&snapshot->domain->conn->lock);
-    DEBUG("unref snapshot %p %s %d", snapshot, snapshot->name, snapshot->refs);
+    VIR_DEBUG("unref snapshot %p %s %d", snapshot, snapshot->name, snapshot->refs);
     snapshot->refs--;
     refs = snapshot->refs;
     if (refs == 0) {

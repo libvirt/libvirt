@@ -227,7 +227,7 @@ static int lxcContainerWaitForContinue(int control)
     }
     VIR_FORCE_CLOSE(control);
 
-    DEBUG0("Received container continue message");
+    VIR_DEBUG0("Received container continue message");
 
     return 0;
 }
@@ -258,12 +258,12 @@ static int lxcContainerRenameAndEnableInterfaces(unsigned int nveths,
             goto error_out;
         }
 
-        DEBUG("Renaming %s to %s", veths[i], newname);
+        VIR_DEBUG("Renaming %s to %s", veths[i], newname);
         rc = setInterfaceName(veths[i], newname);
         if (rc < 0)
             goto error_out;
 
-        DEBUG("Enabling %s", newname);
+        VIR_DEBUG("Enabling %s", newname);
         rc = vethInterfaceUpOrDown(newname, 1);
         if (rc < 0)
             goto error_out;
@@ -854,18 +854,18 @@ int lxcContainerStart(virDomainDefPtr def,
     flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
 
     if (userns_supported()) {
-        DEBUG0("Enable user namespaces");
+        VIR_DEBUG0("Enable user namespaces");
         flags |= CLONE_NEWUSER;
     }
 
     if (def->nets != NULL) {
-        DEBUG0("Enable network namespaces");
+        VIR_DEBUG0("Enable network namespaces");
         flags |= CLONE_NEWNET;
     }
 
     pid = clone(lxcContainerChild, stacktop, flags, &args);
     VIR_FREE(stack);
-    DEBUG("clone() completed, new container PID is %d", pid);
+    VIR_DEBUG("clone() completed, new container PID is %d", pid);
 
     if (pid < 0) {
         virReportSystemError(errno, "%s",
@@ -897,7 +897,7 @@ int lxcContainerAvailable(int features)
         flags |= CLONE_NEWNET;
 
     if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0) {
-        DEBUG0("Unable to allocate stack");
+        VIR_DEBUG0("Unable to allocate stack");
         return -1;
     }
 
@@ -907,7 +907,7 @@ int lxcContainerAvailable(int features)
     VIR_FREE(stack);
     if (cpid < 0) {
         char ebuf[1024];
-        DEBUG("clone call returned %s, container support is not enabled",
+        VIR_DEBUG("clone call returned %s, container support is not enabled",
               virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     } else {

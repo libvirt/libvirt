@@ -1086,7 +1086,7 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
     unsigned char *cpumap;
     int cpumaplen;
 
-    DEBUG0("Setting CPU affinity");
+    VIR_DEBUG0("Setting CPU affinity");
 
     if (nodeGetInfo(NULL, &nodeinfo) < 0)
         return -1;
@@ -1893,7 +1893,7 @@ int qemuProcessStart(virConnectPtr conn,
     hookData.vm = vm;
     hookData.driver = driver;
 
-    DEBUG0("Beginning VM startup process");
+    VIR_DEBUG0("Beginning VM startup process");
 
     if (virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -1905,18 +1905,18 @@ int qemuProcessStart(virConnectPtr conn,
      * runtime state to vm->def that won't be persisted. This let's us
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
-    DEBUG0("Setting current domain def as transient");
+    VIR_DEBUG0("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
         goto cleanup;
 
     vm->def->id = driver->nextvmid++;
 
     /* Must be run before security labelling */
-    DEBUG0("Preparing host devices");
+    VIR_DEBUG0("Preparing host devices");
     if (qemuPrepareHostDevices(driver, vm->def) < 0)
         goto cleanup;
 
-    DEBUG0("Preparing chr devices");
+    VIR_DEBUG0("Preparing chr devices");
     if (virDomainChrDefForeach(vm->def,
                                true,
                                qemuProcessPrepareChardevDevice,
@@ -1925,14 +1925,14 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
-    DEBUG0("Generating domain security label (if required)");
+    VIR_DEBUG0("Generating domain security label (if required)");
     if (virSecurityManagerGenLabel(driver->securityManager, vm) < 0) {
         qemuDomainSecurityLabelAudit(vm, false);
         goto cleanup;
     }
     qemuDomainSecurityLabelAudit(vm, true);
 
-    DEBUG0("Generating setting domain security labels (if required)");
+    VIR_DEBUG0("Generating setting domain security labels (if required)");
     if (virSecurityManagerSetAllLabel(driver->securityManager,
                                       vm, stdin_path) < 0)
         goto cleanup;
@@ -1943,7 +1943,7 @@ int qemuProcessStart(virConnectPtr conn,
          */
         struct stat stdin_sb;
 
-        DEBUG0("setting security label on pipe used for migration");
+        VIR_DEBUG0("setting security label on pipe used for migration");
 
         if (fstat(stdin_fd, &stdin_sb) < 0) {
             virReportSystemError(errno,
@@ -1957,7 +1957,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
-    DEBUG0("Ensuring no historical cgroup is lying around");
+    VIR_DEBUG0("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(driver, vm, 1);
 
     if (vm->def->ngraphics == 1) {
@@ -2003,17 +2003,17 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    DEBUG0("Creating domain log file");
+    VIR_DEBUG0("Creating domain log file");
     if ((logfile = qemuProcessLogFD(driver, vm->def->name, false)) < 0)
         goto cleanup;
 
-    DEBUG0("Determining emulator version");
+    VIR_DEBUG0("Determining emulator version");
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
                                    NULL,
                                    &qemuCmdFlags) < 0)
         goto cleanup;
 
-    DEBUG0("Setting up domain cgroup (if required)");
+    VIR_DEBUG0("Setting up domain cgroup (if required)");
     if (qemuSetupCgroup(driver, vm) < 0)
         goto cleanup;
 
@@ -2022,7 +2022,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    DEBUG0("Preparing monitor state");
+    VIR_DEBUG0("Preparing monitor state");
     if (qemuProcessPrepareMonitorChr(driver, priv->monConfig, vm->def->name) < 0)
         goto cleanup;
 
@@ -2057,7 +2057,7 @@ int qemuProcessStart(virConnectPtr conn,
      * use in hotplug
      */
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
-        DEBUG0("Assigning domain PCI addresses");
+        VIR_DEBUG0("Assigning domain PCI addresses");
         /* Populate cache with current addresses */
         if (priv->pciaddrs) {
             qemuDomainPCIAddressSetFree(priv->pciaddrs);
@@ -2076,7 +2076,7 @@ int qemuProcessStart(virConnectPtr conn,
         priv->persistentAddrs = 0;
     }
 
-    DEBUG0("Building emulator command line");
+    VIR_DEBUG0("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                                      priv->monJSON != 0, qemuCmdFlags,
                                      migrateFrom, stdin_fd,
@@ -2176,27 +2176,27 @@ int qemuProcessStart(virConnectPtr conn,
     if (ret == -1) /* The VM failed to start */
         goto cleanup;
 
-    DEBUG0("Waiting for monitor to show up");
+    VIR_DEBUG0("Waiting for monitor to show up");
     if (qemuProcessWaitForMonitor(driver, vm, pos) < 0)
         goto cleanup;
 
-    DEBUG0("Detecting VCPU PIDs");
+    VIR_DEBUG0("Detecting VCPU PIDs");
     if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)
         goto cleanup;
 
-    DEBUG0("Setting any required VM passwords");
+    VIR_DEBUG0("Setting any required VM passwords");
     if (qemuProcessInitPasswords(conn, driver, vm, qemuCmdFlags) < 0)
         goto cleanup;
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-        DEBUG0("Determining domain device PCI addresses");
+        VIR_DEBUG0("Determining domain device PCI addresses");
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
             goto cleanup;
     }
 
-    DEBUG0("Setting initial memory amount");
+    VIR_DEBUG0("Setting initial memory amount");
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorSetBalloon(priv->mon, vm->def->mem.cur_balloon) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -2205,7 +2205,7 @@ int qemuProcessStart(virConnectPtr conn,
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (!start_paused) {
-        DEBUG0("Starting domain CPUs");
+        VIR_DEBUG0("Starting domain CPUs");
         /* Allow the CPUS to start executing */
         if (qemuProcessStartCPUs(driver, vm, conn) < 0) {
             if (virGetLastError() == NULL)
@@ -2216,7 +2216,7 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
 
-    DEBUG0("Writing domain status to disk");
+    VIR_DEBUG0("Writing domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
 

@@ -2326,7 +2326,7 @@ int qemuMonitorJSONDriveDel(qemuMonitorPtr mon,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
-    DEBUG("JSONDriveDel drivestr=%s", drivestr);
+    VIR_DEBUG("JSONDriveDel drivestr=%s", drivestr);
     cmd = qemuMonitorJSONMakeCommand("drive_del",
                                      "s:id", drivestr,
                                      NULL);

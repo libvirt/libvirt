@@ -99,13 +99,13 @@ int vethCreate(char** veth1, char** veth2)
     int vethDev = 0;
     bool veth1_alloc = false;
 
-    DEBUG("veth1: %s veth2: %s", NULLSTR(*veth1), NULLSTR(*veth2));
+    VIR_DEBUG("veth1: %s veth2: %s", NULLSTR(*veth1), NULLSTR(*veth2));
 
     if (*veth1 == NULL) {
         vethDev = getFreeVethName(veth1, vethDev);
         if (vethDev < 0)
             return vethDev;
-        DEBUG("Assigned veth1: %s", *veth1);
+        VIR_DEBUG("Assigned veth1: %s", *veth1);
         veth1_alloc = true;
     }
     argv[3] = *veth1;
@@ -118,11 +118,11 @@ int vethCreate(char** veth1, char** veth2)
                 VIR_FREE(*veth1);
             return vethDev;
         }
-        DEBUG("Assigned veth2: %s", *veth2);
+        VIR_DEBUG("Assigned veth2: %s", *veth2);
     }
     argv[8] = *veth2;
 
-    DEBUG("veth1: %s veth2: %s", *veth1, *veth2);
+    VIR_DEBUG("veth1: %s veth2: %s", *veth1, *veth2);
     rc = virRun(argv, &cmdResult);
 
     if (rc != 0 ||
@@ -156,7 +156,7 @@ int vethDelete(const char *veth)
     const char *argv[] = {"ip", "link", "del", veth, NULL};
     int cmdResult = 0;
 
-    DEBUG("veth: %s", veth);
+    VIR_DEBUG("veth: %s", veth);
 
     rc = virRun(argv, &cmdResult);
 

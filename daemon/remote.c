@@ -62,7 +62,7 @@
 #include "libvirt/libvirt-qemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
-#define REMOTE_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
+#define REMOTE_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
 
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);

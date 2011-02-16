@@ -82,7 +82,7 @@ remoteStreamEvent(virStreamPtr st, int events, void *opaque)
         goto cleanup;
     }
 
-    DEBUG("st=%p events=%d", st, events);
+    VIR_DEBUG("st=%p events=%d", st, events);
 
     if (events & VIR_STREAM_EVENT_WRITABLE) {
         if (remoteStreamHandleWrite(client, stream) < 0) {
@@ -149,7 +149,7 @@ remoteStreamFilter(struct qemud_client *client,
     if (msg->hdr.serial == stream->serial &&
         msg->hdr.proc == stream->procedure &&
         msg->hdr.type == REMOTE_STREAM) {
-        DEBUG("Incoming rx=%p serial=%d proc=%d status=%d",
+        VIR_DEBUG("Incoming rx=%p serial=%d proc=%d status=%d",
               stream->rx, msg->hdr.proc, msg->hdr.serial, msg->hdr.status);
 
         /* If there are queued packets, we need to queue all further
@@ -207,7 +207,7 @@ remoteCreateClientStream(virConnectPtr conn,
 {
     struct qemud_client_stream *stream;
 
-    DEBUG("proc=%d serial=%d", hdr->proc, hdr->serial);
+    VIR_DEBUG("proc=%d serial=%d", hdr->proc, hdr->serial);
 
     if (VIR_ALLOC(stream) < 0)
         return NULL;
@@ -241,7 +241,7 @@ void remoteFreeClientStream(struct qemud_client *client,
     if (!stream)
         return;
 
-    DEBUG("proc=%d serial=%d", stream->procedure, stream->serial);
+    VIR_DEBUG("proc=%d serial=%d", stream->procedure, stream->serial);
 
     msg = stream->rx;
     while (msg) {
@@ -265,7 +265,7 @@ int remoteAddClientStream(struct qemud_client *client,
 {
     struct qemud_client_stream *tmp = client->streams;
 
-    DEBUG("client=%p proc=%d serial=%d", client, stream->procedure, stream->serial);
+    VIR_DEBUG("client=%p proc=%d serial=%d", client, stream->procedure, stream->serial);
 
     if (virStreamEventAddCallback(stream->st, 0,
                                   remoteStreamEvent, client, NULL) < 0)
@@ -328,7 +328,7 @@ int
 remoteRemoveClientStream(struct qemud_client *client,
                          struct qemud_client_stream *stream)
 {
-    DEBUG("client=%p proc=%d serial=%d", client, stream->procedure, stream->serial);
+    VIR_DEBUG("client=%p proc=%d serial=%d", client, stream->procedure, stream->serial);
 
     struct qemud_client_stream *curr = client->streams;
     struct qemud_client_stream *prev = NULL;
@@ -381,7 +381,7 @@ remoteStreamHandleWriteData(struct qemud_client *client,
     remote_error rerr;
     int ret;
 
-    DEBUG("stream=%p proc=%d serial=%d len=%d offset=%d",
+    VIR_DEBUG("stream=%p proc=%d serial=%d len=%d offset=%d",
           stream, msg->hdr.proc, msg->hdr.serial, msg->bufferLength, msg->bufferOffset);
 
     memset(&rerr, 0, sizeof rerr);
@@ -426,7 +426,7 @@ remoteStreamHandleFinish(struct qemud_client *client,
     remote_error rerr;
     int ret;
 
-    DEBUG("stream=%p proc=%d serial=%d",
+    VIR_DEBUG("stream=%p proc=%d serial=%d",
           stream, msg->hdr.proc, msg->hdr.serial);
 
     memset(&rerr, 0, sizeof rerr);
@@ -460,7 +460,7 @@ remoteStreamHandleAbort(struct qemud_client *client,
 {
     remote_error rerr;
 
-    DEBUG("stream=%p proc=%d serial=%d",
+    VIR_DEBUG("stream=%p proc=%d serial=%d",
           stream, msg->hdr.proc, msg->hdr.serial);
 
     memset(&rerr, 0, sizeof rerr);
@@ -495,7 +495,7 @@ remoteStreamHandleWrite(struct qemud_client *client,
 {
     struct qemud_client_message *msg, *tmp;
 
-    DEBUG("stream=%p", stream);
+    VIR_DEBUG("stream=%p", stream);
 
     msg = stream->rx;
     while (msg && !stream->closed) {
@@ -550,7 +550,7 @@ remoteStreamHandleRead(struct qemud_client *client,
     size_t bufferLen = REMOTE_MESSAGE_PAYLOAD_MAX;
     int ret;
 
-    DEBUG("stream=%p", stream);
+    VIR_DEBUG("stream=%p", stream);
 
     /* Shouldn't ever be called unless we're marked able to
      * transmit, but doesn't hurt to check */
@@ -603,7 +603,7 @@ remoteStreamMessageFinished(struct qemud_client *client,
         stream = stream->next;
     }
 
-    DEBUG("Message client=%p stream=%p proc=%d serial=%d", client, stream, msg->hdr.proc, msg->hdr.serial);
+    VIR_DEBUG("Message client=%p stream=%p proc=%d serial=%d", client, stream, msg->hdr.proc, msg->hdr.serial);
 
     if (stream) {
         stream->tx = 1;

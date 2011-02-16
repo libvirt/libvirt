@@ -141,7 +141,7 @@ remoteSerializeError(struct qemud_client *client,
     unsigned int len;
     struct qemud_client_message *msg = NULL;
 
-    DEBUG("prog=%d ver=%d proc=%d type=%d serial=%d, msg=%s",
+    VIR_DEBUG("prog=%d ver=%d proc=%d type=%d serial=%d, msg=%s",
           program, version, procedure, type, serial,
           rerr->message ? *rerr->message : "(none)");
 
@@ -372,7 +372,7 @@ remoteDispatchClientRequest(struct qemud_server *server,
     remote_error rerr;
     bool qemu_call;
 
-    DEBUG("prog=%d ver=%d type=%d status=%d serial=%d proc=%d",
+    VIR_DEBUG("prog=%d ver=%d type=%d status=%d serial=%d proc=%d",
           msg->hdr.prog, msg->hdr.vers, msg->hdr.type,
           msg->hdr.status, msg->hdr.serial, msg->hdr.proc);
 
@@ -631,7 +631,7 @@ remoteSendStreamData(struct qemud_client *client,
     struct qemud_client_message *msg;
     XDR xdr;
 
-    DEBUG("client=%p stream=%p data=%p len=%d", client, stream, data, len);
+    VIR_DEBUG("client=%p stream=%p data=%p len=%d", client, stream, data, len);
 
     if (VIR_ALLOC(msg) < 0) {
         return -1;
@@ -682,7 +682,7 @@ remoteSendStreamData(struct qemud_client *client,
 
         xdr_destroy (&xdr);
 
-        DEBUG("Total %d", msg->bufferOffset);
+        VIR_DEBUG("Total %d", msg->bufferOffset);
     }
     if (data)
         msg->streamTX = 1;

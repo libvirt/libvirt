@@ -515,7 +515,7 @@ doRemoteOpen (virConnectPtr conn,
                 if (!pkipath) goto out_of_memory;
                 var->ignore = 1;
             } else {
-                DEBUG("passing through variable '%s' ('%s') to remote end",
+                VIR_DEBUG("passing through variable '%s' ('%s') to remote end",
                       var->name, var->value);
             }
         }
@@ -571,7 +571,7 @@ doRemoteOpen (virConnectPtr conn,
         goto failed;
     }
 
-    DEBUG("proceeding with name = %s", name);
+    VIR_DEBUG("proceeding with name = %s", name);
 
     /* For ext transport, command is required. */
     if (transport == trans_ext && !command) {
@@ -894,7 +894,7 @@ doRemoteOpen (virConnectPtr conn,
             goto failed;
         }
 
-        DEBUG("Auto-probed URI is %s", uriret.uri);
+        VIR_DEBUG("Auto-probed URI is %s", uriret.uri);
         conn->uri = xmlParseURI(uriret.uri);
         VIR_FREE(uriret.uri);
         if (!conn->uri) {
@@ -913,21 +913,21 @@ doRemoteOpen (virConnectPtr conn,
         goto failed;
     }
 
-    DEBUG0("Adding Handler for remote events");
+    VIR_DEBUG0("Adding Handler for remote events");
     /* Set up a callback to listen on the socket data */
     if ((priv->watch = virEventAddHandle(priv->sock,
                                          VIR_EVENT_HANDLE_READABLE,
                                          remoteDomainEventFired,
                                          conn, NULL)) < 0) {
-        DEBUG0("virEventAddHandle failed: No addHandleImpl defined."
+        VIR_DEBUG0("virEventAddHandle failed: No addHandleImpl defined."
                " continuing without events.");
     } else {
 
-        DEBUG0("Adding Timeout for remote event queue flushing");
+        VIR_DEBUG0("Adding Timeout for remote event queue flushing");
         if ( (priv->eventFlushTimer = virEventAddTimeout(-1,
                                                          remoteDomainEventQueueFlush,
                                                          conn, NULL)) < 0) {
-            DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
+            VIR_DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
                     "continuing without events.");
             virEventRemoveHandle(priv->watch);
             priv->watch = -1;
@@ -1076,7 +1076,7 @@ remoteOpen (virConnectPtr conn,
         (STREQ(conn->uri->path, "/session") ||
          STRPREFIX(conn->uri->scheme, "test+")) &&
         getuid() > 0) {
-        DEBUG0("Auto-spawn user daemon instance");
+        VIR_DEBUG0("Auto-spawn user daemon instance");
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
         if (!autostart ||
             STRNEQ(autostart, "0"))
@@ -1090,10 +1090,10 @@ remoteOpen (virConnectPtr conn,
      * to the UNIX socket anyway.
      */
     if (!conn->uri) {
-        DEBUG0("Auto-probe remote URI");
+        VIR_DEBUG0("Auto-probe remote URI");
 #ifndef __sun
         if (getuid() > 0) {
-            DEBUG0("Auto-spawn user daemon instance");
+            VIR_DEBUG0("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
             if (!autostart ||
                 STRNEQ(autostart, "0"))
@@ -1142,7 +1142,7 @@ check_cert_file(const char *type, const char *file)
 
 
 static void remote_debug_gnutls_log(int level, const char* str) {
-    DEBUG("%d %s", level, str);
+    VIR_DEBUG("%d %s", level, str);
 }
 
 static int
@@ -1252,7 +1252,7 @@ initialize_gnutls(char *pkipath, int flags)
         goto error;
 
     /* Set the trusted CA cert. */
-    DEBUG("loading CA file %s", libvirt_cacert);
+    VIR_DEBUG("loading CA file %s", libvirt_cacert);
     err =
         gnutls_certificate_set_x509_trust_file (x509_cred, libvirt_cacert,
                                                 GNUTLS_X509_FMT_PEM);
@@ -1264,7 +1264,7 @@ initialize_gnutls(char *pkipath, int flags)
     }
 
     /* Set the client certificate and private key. */
-    DEBUG("loading client cert and key from files %s and %s",
+    VIR_DEBUG("loading client cert and key from files %s and %s",
           libvirt_clientcert, libvirt_clientkey);
     err =
         gnutls_certificate_set_x509_key_file (x509_cred,
@@ -1390,7 +1390,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
 
     /* Verify certificate. */
     if (verify_certificate (conn, priv, session) == -1) {
-        DEBUG0("failed to verify peer's certificate");
+        VIR_DEBUG0("failed to verify peer's certificate");
         if (!no_verify) return NULL;
     }
 
@@ -7240,7 +7240,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     int ret = -1;
     const char *mechlist;
 
-    DEBUG0("Client initialize SASL authentication");
+    VIR_DEBUG0("Client initialize SASL authentication");
     /* Sets up the SASL library as a whole */
     err = sasl_client_init(NULL);
     if (err != SASL_OK) {
@@ -7305,7 +7305,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         }
         ssf *= 8; /* key size is bytes, sasl wants bits */
 
-        DEBUG("Setting external SSF %d", ssf);
+        VIR_DEBUG("Setting external SSF %d", ssf);
         err = sasl_setprop(saslconn, SASL_SSF_EXTERNAL, &ssf);
         if (err != SASL_OK) {
             remoteError(VIR_ERR_INTERNAL_ERROR,
@@ -7353,7 +7353,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     }
  restart:
     /* Start the auth negotiation on the client end first */
-    DEBUG("Client start negotiation mechlist '%s'", mechlist);
+    VIR_DEBUG("Client start negotiation mechlist '%s'", mechlist);
     err = sasl_client_start(saslconn,
                             mechlist,
                             &interact,
@@ -7408,7 +7408,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     sargs.data.data_val = (char*)clientout;
     sargs.data.data_len = clientoutlen;
     sargs.mech = (char*)mech;
-    DEBUG("Server start negotiation with mech %s. Data %d bytes %p", mech, clientoutlen, clientout);
+    VIR_DEBUG("Server start negotiation with mech %s. Data %d bytes %p", mech, clientoutlen, clientout);
 
     /* Now send the initial auth data to the server */
     memset (&sret, 0, sizeof sret);
@@ -7421,7 +7421,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     /* NB, distinction of NULL vs "" is *critical* in SASL */
     serverin = sret.nil ? NULL : sret.data.data_val;
     serverinlen = sret.data.data_len;
-    DEBUG("Client step result complete: %d. Data %d bytes %p",
+    VIR_DEBUG("Client step result complete: %d. Data %d bytes %p",
           complete, serverinlen, serverin);
 
     /* Loop-the-loop...
@@ -7468,7 +7468,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         }
 
         VIR_FREE(serverin);
-        DEBUG("Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
+        VIR_DEBUG("Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
 
         /* Previous server call showed completion & we're now locally complete too */
         if (complete && err == SASL_OK)
@@ -7480,7 +7480,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         pargs.nil = clientout ? 0 : 1;
         pargs.data.data_val = (char*)clientout;
         pargs.data.data_len = clientoutlen;
-        DEBUG("Server step with %d bytes %p", clientoutlen, clientout);
+        VIR_DEBUG("Server step with %d bytes %p", clientoutlen, clientout);
 
         memset (&pret, 0, sizeof pret);
         if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_STEP,
@@ -7493,7 +7493,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         serverin = pret.nil ? NULL : pret.data.data_val;
         serverinlen = pret.data.data_len;
 
-        DEBUG("Client step result complete: %d. Data %d bytes %p",
+        VIR_DEBUG("Client step result complete: %d. Data %d bytes %p",
               complete, serverinlen, serverin);
 
         /* This server call shows complete, and earlier client step was OK */
@@ -7513,7 +7513,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
             goto cleanup;
         }
         ssf = *(const int *)val;
-        DEBUG("SASL SSF value %d", ssf);
+        VIR_DEBUG("SASL SSF value %d", ssf);
         if (ssf < 56) { /* 56 == DES level, good for Kerberos */
             remoteError(VIR_ERR_AUTH_FAILED,
                         _("negotiation SSF %d was not strong enough"), ssf);
@@ -7522,7 +7522,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         priv->is_secure = 1;
     }
 
-    DEBUG0("SASL authentication complete");
+    VIR_DEBUG0("SASL authentication complete");
     priv->saslconn = saslconn;
     ret = 0;
 
@@ -7548,7 +7548,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED)
 {
     remote_auth_polkit_ret ret;
-    DEBUG0("Client initialize PolicyKit-1 authentication");
+    VIR_DEBUG0("Client initialize PolicyKit-1 authentication");
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,
@@ -7557,7 +7557,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         return -1; /* virError already set by call */
     }
 
-    DEBUG0("PolicyKit-1 authentication complete");
+    VIR_DEBUG0("PolicyKit-1 authentication complete");
     return 0;
 }
 # elif HAVE_POLKIT0
@@ -7577,7 +7577,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         NULL,
         0,
     };
-    DEBUG0("Client initialize PolicyKit-0 authentication");
+    VIR_DEBUG0("Client initialize PolicyKit-0 authentication");
 
     if (auth && auth->cb) {
         /* Check if the necessary credential type for PolicyKit is supported */
@@ -7587,7 +7587,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         }
 
         if (allowcb) {
-            DEBUG0("Client run callback for PolicyKit authentication");
+            VIR_DEBUG0("Client run callback for PolicyKit authentication");
             /* Run the authentication callback */
             if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
                 remoteError(VIR_ERR_AUTH_FAILED, "%s",
@@ -7595,10 +7595,10 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                 return -1;
             }
         } else {
-            DEBUG0("Client auth callback does not support PolicyKit");
+            VIR_DEBUG0("Client auth callback does not support PolicyKit");
         }
     } else {
-        DEBUG0("No auth callback provided");
+        VIR_DEBUG0("No auth callback provided");
     }
 
     memset (&ret, 0, sizeof ret);
@@ -7608,7 +7608,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         return -1; /* virError already set by call */
     }
 
-    DEBUG0("PolicyKit-0 authentication complete");
+    VIR_DEBUG0("PolicyKit-0 authentication complete");
     return 0;
 }
 # endif /* HAVE_POLKIT0 */
@@ -8330,7 +8330,7 @@ remoteStreamPacket(virStreamPtr st,
                    const char *data,
                    size_t nbytes)
 {
-    DEBUG("st=%p status=%d data=%p nbytes=%zu", st, status, data, nbytes);
+    VIR_DEBUG("st=%p status=%d data=%p nbytes=%zu", st, status, data, nbytes);
     struct private_data *priv = st->conn->privateData;
     struct private_stream_data *privst = st->privateData;
     XDR xdr;
@@ -8475,7 +8475,7 @@ remoteStreamSend(virStreamPtr st,
                  const char *data,
                  size_t nbytes)
 {
-    DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
+    VIR_DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
     struct private_data *priv = st->conn->privateData;
     int rv = -1;
 
@@ -8504,7 +8504,7 @@ remoteStreamRecv(virStreamPtr st,
                  char *data,
                  size_t nbytes)
 {
-    DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
+    VIR_DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
     struct private_data *priv = st->conn->privateData;
     struct private_stream_data *privst = st->privateData;
     int rv = -1;
@@ -8519,7 +8519,7 @@ remoteStreamRecv(virStreamPtr st,
         int ret;
 
         if (st->flags & VIR_STREAM_NONBLOCK) {
-            DEBUG0("Non-blocking mode and no data available");
+            VIR_DEBUG0("Non-blocking mode and no data available");
             rv = -2;
             goto cleanup;
         }
@@ -8549,7 +8549,7 @@ remoteStreamRecv(virStreamPtr st,
             goto cleanup;
     }
 
-    DEBUG("After IO %d", privst->incomingOffset);
+    VIR_DEBUG("After IO %d", privst->incomingOffset);
     if (privst->incomingOffset) {
         int want = privst->incomingOffset;
         if (want > nbytes)
@@ -8569,7 +8569,7 @@ remoteStreamRecv(virStreamPtr st,
 
     remoteStreamEventTimerUpdate(privst);
 
-    DEBUG("Done %d", rv);
+    VIR_DEBUG("Done %d", rv);
 
 cleanup:
     if (rv == -1)
@@ -9818,7 +9818,7 @@ remoteIODecodeMessageLength(struct private_data *priv) {
     /* Extend our declared buffer length and carry
        on reading the header + payload */
     priv->bufferLength += len;
-    DEBUG("Got length, now need %d total (%d more)", priv->bufferLength, len);
+    VIR_DEBUG("Got length, now need %d total (%d more)", priv->bufferLength, len);
     return 0;
 }
 
@@ -9977,10 +9977,10 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
     /* An async message has come in while we were waiting for the
      * response. Process it to pull it off the wire, and try again
      */
-    DEBUG0("Encountered an event while waiting for a response");
+    VIR_DEBUG0("Encountered an event while waiting for a response");
 
     if (in_open) {
-        DEBUG("Ignoring bogus event %d received while in open", hdr->proc);
+        VIR_DEBUG("Ignoring bogus event %d received while in open", hdr->proc);
         return -1;
     }
 
@@ -10014,7 +10014,7 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
         break;
 
     default:
-        DEBUG("Unexpected event proc %d", hdr->proc);
+        VIR_DEBUG("Unexpected event proc %d", hdr->proc);
         break;
     }
 
@@ -10023,7 +10023,7 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
 
     if (virDomainEventQueuePush(priv->domainEvents,
                                 event) < 0) {
-        DEBUG0("Error adding event to queue");
+        VIR_DEBUG0("Error adding event to queue");
         virDomainEventFree(event);
     }
     virEventUpdateTimeout(priv->eventFlushTimer, 0);
@@ -10271,7 +10271,7 @@ remoteIOEventLoop(virConnectPtr conn,
 
         if (fds[1].revents) {
             ssize_t s;
-            DEBUG0("Woken up from poll by other thread");
+            VIR_DEBUG0("Woken up from poll by other thread");
             s = saferead(priv->wakeupReadFD, &ignore, sizeof(ignore));
             if (s < 0) {
                 virReportSystemError(errno, "%s",
@@ -10322,7 +10322,7 @@ remoteIOEventLoop(virConnectPtr conn,
                  * we release our mutex a short while
                  * later...
                  */
-                DEBUG("Waking up sleep %d %p %p", tmp->proc_nr, tmp, priv->waitDispatch);
+                VIR_DEBUG("Waking up sleep %d %p %p", tmp->proc_nr, tmp, priv->waitDispatch);
                 virCondSignal(&tmp->cond);
             }
             prev = tmp;
@@ -10336,11 +10336,11 @@ remoteIOEventLoop(virConnectPtr conn,
              * remove us
              */
             priv->waitDispatch = thiscall->next;
-            DEBUG("Giving up the buck %d %p %p", thiscall->proc_nr, thiscall, priv->waitDispatch);
+            VIR_DEBUG("Giving up the buck %d %p %p", thiscall->proc_nr, thiscall, priv->waitDispatch);
             /* See if someone else is still waiting
              * and if so, then pass the buck ! */
             if (priv->waitDispatch) {
-                DEBUG("Passing the buck to %d %p", priv->waitDispatch->proc_nr, priv->waitDispatch);
+                VIR_DEBUG("Passing the buck to %d %p", priv->waitDispatch->proc_nr, priv->waitDispatch);
                 virCondSignal(&priv->waitDispatch->cond);
             }
             return 0;
@@ -10357,11 +10357,11 @@ remoteIOEventLoop(virConnectPtr conn,
 
 error:
     priv->waitDispatch = thiscall->next;
-    DEBUG("Giving up the buck due to I/O error %d %p %p", thiscall->proc_nr, thiscall, priv->waitDispatch);
+    VIR_DEBUG("Giving up the buck due to I/O error %d %p %p", thiscall->proc_nr, thiscall, priv->waitDispatch);
     /* See if someone else is still waiting
      * and if so, then pass the buck ! */
     if (priv->waitDispatch) {
-        DEBUG("Passing the buck to %d %p", priv->waitDispatch->proc_nr, priv->waitDispatch);
+        VIR_DEBUG("Passing the buck to %d %p", priv->waitDispatch->proc_nr, priv->waitDispatch);
         virCondSignal(&priv->waitDispatch->cond);
     }
     return -1;
@@ -10408,7 +10408,7 @@ remoteIO(virConnectPtr conn,
 {
     int rv;
 
-    DEBUG("Do proc=%d serial=%d length=%d wait=%p",
+    VIR_DEBUG("Do proc=%d serial=%d length=%d wait=%p",
           thiscall->proc_nr, thiscall->serial,
           thiscall->bufferLength, priv->waitDispatch);
 
@@ -10439,7 +10439,7 @@ remoteIO(virConnectPtr conn,
             return -1;
         }
 
-        DEBUG("Going to sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
+        VIR_DEBUG("Going to sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
         /* Go to sleep while other thread is working... */
         if (virCondWait(&thiscall->cond, &priv->lock) < 0) {
             if (priv->waitDispatch == thiscall) {
@@ -10458,7 +10458,7 @@ remoteIO(virConnectPtr conn,
             return -1;
         }
 
-        DEBUG("Wokeup from sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
+        VIR_DEBUG("Wokeup from sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
         /* Two reasons we can be woken up
          *  1. Other thread has got our reply ready for us
          *  2. Other thread is all done, and it is our turn to
@@ -10482,7 +10482,7 @@ remoteIO(virConnectPtr conn,
         priv->waitDispatch = thiscall;
     }
 
-    DEBUG("We have the buck %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
+    VIR_DEBUG("We have the buck %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
     /*
      * The buck stops here!
      *
@@ -10509,7 +10509,7 @@ remoteIO(virConnectPtr conn,
         return -1;
 
 cleanup:
-    DEBUG("All done with our call %d %p %p", thiscall->proc_nr,
+    VIR_DEBUG("All done with our call %d %p %p", thiscall->proc_nr,
           priv->waitDispatch, thiscall);
     if (thiscall->mode == REMOTE_MODE_ERROR) {
         /* Interop for virErrorNumber glitch in 0.8.0, if server is
@@ -10641,10 +10641,10 @@ remoteDomainEventFired(int watch,
     if (priv->waitDispatch)
         goto done;
 
-    DEBUG("Event fired %d %d %d %X", watch, fd, event, event);
+    VIR_DEBUG("Event fired %d %d %d %X", watch, fd, event, event);
 
     if (event & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR)) {
-         DEBUG("%s : VIR_EVENT_HANDLE_HANGUP or "
+         VIR_DEBUG("%s : VIR_EVENT_HANDLE_HANGUP or "
                "VIR_EVENT_HANDLE_ERROR encountered", __FUNCTION__);
          virEventRemoveHandle(watch);
          priv->watch = -1;
@@ -10658,7 +10658,7 @@ remoteDomainEventFired(int watch,
     }
 
     if (remoteIOHandleInput(conn, priv, 0) < 0)
-        DEBUG0("Something went wrong during async message processing");
+        VIR_DEBUG0("Something went wrong during async message processing");
 
 done:
     remoteDriverUnlock(priv);

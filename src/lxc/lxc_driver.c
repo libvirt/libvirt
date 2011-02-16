@@ -979,7 +979,7 @@ static int lxcVmCleanup(lxc_driver_t *driver,
                              vm->pid, waitRc);
         rc = -1;
     } else if (WIFEXITED(childStatus)) {
-        DEBUG("container exited with rc: %d", WEXITSTATUS(childStatus));
+        VIR_DEBUG("container exited with rc: %d", WEXITSTATUS(childStatus));
         rc = -1;
     }
 
@@ -1086,18 +1086,18 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             break;
         }
 
-        DEBUG("bridge: %s", bridge);
+        VIR_DEBUG("bridge: %s", bridge);
         if (NULL == bridge) {
             lxcError(VIR_ERR_INTERNAL_ERROR,
                      "%s", _("Failed to get bridge for interface"));
             goto error_exit;
         }
 
-        DEBUG0("calling vethCreate()");
+        VIR_DEBUG0("calling vethCreate()");
         parentVeth = def->nets[i]->ifname;
         if (vethCreate(&parentVeth, &containerVeth) < 0)
             goto error_exit;
-        DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
+        VIR_DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
 
         if (NULL == def->nets[i]->ifname) {
             def->nets[i]->ifname = parentVeth;

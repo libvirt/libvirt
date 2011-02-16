@@ -363,13 +363,13 @@ xenXMConfigCacheRemoveFile(virConnectPtr conn,
 
     entry = virHashLookup(priv->configCache, filename);
     if (!entry) {
-        DEBUG("No config entry for %s", filename);
+        VIR_DEBUG("No config entry for %s", filename);
         return 0;
     }
 
     virHashRemoveEntry(priv->nameConfigMap, entry->def->name, NULL);
     virHashRemoveEntry(priv->configCache, filename, xenXMConfigFree);
-    DEBUG("Removed %s %s", entry->def->name, filename);
+    VIR_DEBUG("Removed %s %s", entry->def->name, filename);
     return 0;
 }
 
@@ -387,7 +387,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
     int newborn = 0;
     time_t now = time(NULL);
 
-    DEBUG("Adding file %s", filename);
+    VIR_DEBUG("Adding file %s", filename);
 
     /* Get modified time */
     if ((stat(filename, &st) < 0)) {
@@ -400,7 +400,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
     /* Ignore zero length files, because inotify fires before
        any content has actually been created */
     if (st.st_size == 0) {
-        DEBUG("Ignoring zero length file %s", filename);
+        VIR_DEBUG("Ignoring zero length file %s", filename);
         return -1;
     }
 
@@ -436,7 +436,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
     entry->refreshedAt = now;
 
     if (!(entry->def = xenXMConfigReadFile(conn, entry->filename))) {
-        DEBUG("Failed to read %s", entry->filename);
+        VIR_DEBUG("Failed to read %s", entry->filename);
         if (!newborn)
             virHashRemoveEntry(priv->configCache, filename, NULL);
         VIR_FREE(entry);
@@ -465,7 +465,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
             VIR_FREE(entry);
         }
     }
-    DEBUG("Added config %s %s", entry->def->name, filename);
+    VIR_DEBUG("Added config %s %s", entry->def->name, filename);
 
     return 0;
 }

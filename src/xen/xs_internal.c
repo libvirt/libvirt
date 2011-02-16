@@ -327,7 +327,7 @@ xenStoreOpen(virConnectPtr conn,
                                            xenStoreWatchEvent,
                                            conn,
                                            NULL)) < 0)
-        DEBUG0("Failed to add event handle, disabling events");
+        VIR_DEBUG0("Failed to add event handle, disabling events");
 
     return 0;
 }
@@ -353,12 +353,12 @@ xenStoreClose(virConnectPtr conn)
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
     if (xenStoreRemoveWatch(conn, "@introduceDomain", "introduceDomain") < 0) {
-        DEBUG0("Warning, could not remove @introduceDomain watch");
+        VIR_DEBUG0("Warning, could not remove @introduceDomain watch");
         /* not fatal */
     }
 
     if (xenStoreRemoveWatch(conn, "@releaseDomain", "releaseDomain") < 0) {
-        DEBUG0("Warning, could not remove @releaseDomain watch");
+        VIR_DEBUG0("Warning, could not remove @releaseDomain watch");
         /* not fatal */
     }
 
@@ -1196,7 +1196,7 @@ int xenStoreRemoveWatch(virConnectPtr conn,
                        list->watches[i]->path,
                        list->watches[i]->token))
             {
-                DEBUG0("WARNING: Could not remove watch");
+                VIR_DEBUG0("WARNING: Could not remove watch");
                 /* Not fatal, continue */
             }
 
@@ -1351,7 +1351,7 @@ retry:
     VIR_FREE(new_domids);
 
     if (missing && retries--) {
-        DEBUG0("Some domains were missing, trying again");
+        VIR_DEBUG0("Some domains were missing, trying again");
         usleep(100 * 1000);
         goto retry;
     }
@@ -1426,7 +1426,7 @@ retry:
     VIR_FREE(new_domids);
 
     if (!removed && retries--) {
-        DEBUG0("No domains removed, retrying");
+        VIR_DEBUG0("No domains removed, retrying");
         usleep(100 * 1000);
         goto retry;
     }

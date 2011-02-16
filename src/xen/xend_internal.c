@@ -522,7 +522,7 @@ xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
     }
 
     content = virBufferContentAndReset(&buf);
-    DEBUG("xend op: %s\n", content);
+    VIR_DEBUG("xend op: %s\n", content);
     ret = http2unix(xend_post(xend, path, content));
     VIR_FREE(content);
 
@@ -4603,7 +4603,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         }
     }
 
-    DEBUG("hostname = %s, port = %s", hostname, port);
+    VIR_DEBUG("hostname = %s, port = %s", hostname, port);
 
     /* Make the call.
      * NB:  xend will fail the operation if any parameters are
@@ -4626,7 +4626,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     if (ret == 0 && undefined_source)
         xenDaemonDomainUndefine (domain);
 
-    DEBUG0("migration done");
+    VIR_DEBUG0("migration done");
 
     return ret;
 }
@@ -5805,7 +5805,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     char *bufout;
     int hvm = 0, i;
 
-    DEBUG0("Formatting domain sexpr");
+    VIR_DEBUG0("Formatting domain sexpr");
 
     virBufferAddLit(&buf, "(vm ");
     virBufferEscapeSexpr(&buf, "(name '%s')", def->name);
@@ -6058,7 +6058,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     }
 
     bufout = virBufferContentAndReset(&buf);
-    DEBUG("Formatted sexpr: \n%s", bufout);
+    VIR_DEBUG("Formatted sexpr: \n%s", bufout);
     return bufout;
 
 error:

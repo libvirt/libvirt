@@ -1,7 +1,7 @@
 /*
  * libvirtd.h: daemon data structure definitions
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -127,8 +127,6 @@
 #   define ATTRIBUTE_RETURN_CHECK
 #  endif
 # endif
-
-# define qemudDebug DEBUG
 
 /* Whether we're passing reads & writes through a sasl SSF */
 enum qemud_sasl_ssf {

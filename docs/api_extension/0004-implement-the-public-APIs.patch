@@ -62,7 +62,7 @@ index 629d97b..1b39210 100644
 +                       unsigned int flags)
 +{
 +    virConnectPtr conn;
-+    DEBUG("domain=%p, nvcpus=%u, flags=%u", domain, nvcpus, flags);
++    VIR_DEBUG("domain=%p, nvcpus=%u, flags=%u", domain, nvcpus, flags);
 +
 +    virResetLastError();
 +
@@ -125,7 +125,7 @@ index 629d97b..1b39210 100644
 +virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 +{
 +    virConnectPtr conn;
-+    DEBUG("domain=%p, flags=%u", domain, flags);
++    VIR_DEBUG("domain=%p, flags=%u", domain, flags);
 +
 +    virResetLastError();
 +

@@ -42,7 +42,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 {
     virConnectPtr conn;
 
-    DEBUG("domain=%p, cmd=%s, result=%p, flags=%u", domain, cmd, result, flags);
+    VIR_DEBUG("domain=%p, cmd=%s, result=%p, flags=%u", domain, cmd, result, flags);
 
     virResetLastError();
 

@@ -42,7 +42,7 @@
 #include "event.h"
 #include "memory.h"
 
-#define AVAHI_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
+#define AVAHI_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
 
 struct libvirtd_mdns_entry {
     char *type;

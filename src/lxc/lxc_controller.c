@@ -446,7 +446,7 @@ static int lxcControllerMain(int monitor,
                         ++numActive;
                     }
                 } else if (epollEvent.events & EPOLLHUP) {
-                    DEBUG("EPOLLHUP from fd %d", epollEvent.data.fd);
+                    VIR_DEBUG("EPOLLHUP from fd %d", epollEvent.data.fd);
                     continue;
                 } else {
                     lxcError(VIR_ERR_INTERNAL_ERROR,

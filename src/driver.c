@@ -53,7 +53,7 @@ virDriverLoadModule(const char *name)
     if (moddir == NULL)
         moddir = DEFAULT_DRIVER_DIR;
 
-    DEBUG("Module load %s", name);
+    VIR_DEBUG("Module load %s", name);
 
     if (virAsprintf(&modfile, "%s/libvirt_driver_%s.so", moddir, name) < 0)
         return NULL;

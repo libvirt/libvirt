@@ -849,7 +849,7 @@ virRunWithHook(const char *const*argv,
         virReportOOMError();
         goto error;
     }
-    DEBUG0(argv_str);
+    VIR_DEBUG0(argv_str);
 
     if ((execret = __virExec(argv, NULL, NULL,
                              &childpid, -1, &outfd, &errfd,
@@ -865,9 +865,9 @@ virRunWithHook(const char *const*argv,
     }
 
     if (outbuf)
-        DEBUG("Command stdout: %s", outbuf);
+        VIR_DEBUG("Command stdout: %s", outbuf);
     if (errbuf)
-        DEBUG("Command stderr: %s", errbuf);
+        VIR_DEBUG("Command stderr: %s", errbuf);
 
     while ((waitret = waitpid(childpid, &exitstatus, 0) == -1) &&
             errno == EINTR);

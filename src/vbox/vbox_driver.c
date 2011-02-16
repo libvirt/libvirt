@@ -87,7 +87,7 @@ int vboxRegister(void) {
 
     /* Init the glue and get the API version. */
     if (VBoxCGlueInit(&uVersion) == 0) {
-        DEBUG("VBoxCGlueInit found API version: %d.%d.%d (%u)",
+        VIR_DEBUG("VBoxCGlueInit found API version: %d.%d.%d (%u)",
               uVersion / 1000000,
               uVersion % 1000000 / 1000,
               uVersion % 1000,
@@ -98,36 +98,36 @@ int vboxRegister(void) {
          * number 51, thus the version ranges in the if statements below.
          */
         if (uVersion >= 2001052 && uVersion < 2002051) {
-            DEBUG0("VirtualBox API version: 2.2");
+            VIR_DEBUG0("VirtualBox API version: 2.2");
             driver        = &vbox22Driver;
             networkDriver = &vbox22NetworkDriver;
             storageDriver = &vbox22StorageDriver;
         } else if (uVersion >= 2002051 && uVersion < 3000051) {
-            DEBUG0("VirtualBox API version: 3.0");
+            VIR_DEBUG0("VirtualBox API version: 3.0");
             driver        = &vbox30Driver;
             networkDriver = &vbox30NetworkDriver;
             storageDriver = &vbox30StorageDriver;
         } else if (uVersion >= 3000051 && uVersion < 3001051) {
-            DEBUG0("VirtualBox API version: 3.1");
+            VIR_DEBUG0("VirtualBox API version: 3.1");
             driver        = &vbox31Driver;
             networkDriver = &vbox31NetworkDriver;
             storageDriver = &vbox31StorageDriver;
         } else if (uVersion >= 3001051 && uVersion < 3002051) {
-            DEBUG0("VirtualBox API version: 3.2");
+            VIR_DEBUG0("VirtualBox API version: 3.2");
             driver        = &vbox32Driver;
             networkDriver = &vbox32NetworkDriver;
             storageDriver = &vbox32StorageDriver;
         } else if (uVersion >= 3002051 && uVersion < 4000051) {
-            DEBUG0("VirtualBox API version: 4.0");
+            VIR_DEBUG0("VirtualBox API version: 4.0");
             driver        = &vbox40Driver;
             networkDriver = &vbox40NetworkDriver;
             storageDriver = &vbox40StorageDriver;
         } else {
-            DEBUG0("Unsupport VirtualBox API version");
+            VIR_DEBUG0("Unsupport VirtualBox API version");
         }
 
     } else {
-        DEBUG0("VBoxCGlueInit failed, using dummy driver");
+        VIR_DEBUG0("VBoxCGlueInit failed, using dummy driver");
     }
 
     if (virRegisterDriver(driver) < 0)

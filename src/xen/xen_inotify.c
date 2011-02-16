@@ -97,7 +97,7 @@ xenInotifyXenCacheLookup(virConnectPtr conn,
     xenXMConfCachePtr entry;
 
     if (!(entry = virHashLookup(priv->configCache, filename))) {
-        DEBUG("No config found for %s", filename);
+        VIR_DEBUG("No config found for %s", filename);
         return -1;
     }
 
@@ -105,7 +105,7 @@ xenInotifyXenCacheLookup(virConnectPtr conn,
     memcpy(uuid, entry->def->uuid, VIR_UUID_BUFLEN);
 
     if (!*name) {
-        DEBUG0("Error getting dom from def");
+        VIR_DEBUG0("Error getting dom from def");
         virReportOOMError();
         return -1;
     }
@@ -135,7 +135,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
     /* call directly into xend here, as driver may not yet
        be set during open while we are building our
        initial list of domains */
-    DEBUG("Looking for dom with uuid: %s", uuid_str);
+    VIR_DEBUG("Looking for dom with uuid: %s", uuid_str);
     /* XXX Should not have to go via a virDomainPtr obj instance */
     if(!(dom = xenDaemonLookupByUUID(conn, rawuuid))) {
         /* If we are here, the domain has gone away.
@@ -149,7 +149,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
                     return -1;
                 }
                 memcpy(uuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN);
-                DEBUG0("Found dom on list");
+                VIR_DEBUG0("Found dom on list");
                 return 0;
             }
         }
@@ -288,7 +288,7 @@ xenInotifyEvent(int watch ATTRIBUTE_UNUSED,
     virConnectPtr conn = data;
     xenUnifiedPrivatePtr priv = NULL;
 
-    DEBUG0("got inotify event");
+    VIR_DEBUG0("got inotify event");
 
     if( conn && conn->privateData ) {
         priv = conn->privateData;
@@ -437,7 +437,7 @@ xenInotifyOpen(virConnectPtr conn,
         return -1;
     }
 
-    DEBUG("Adding a watch on %s", priv->configDir);
+    VIR_DEBUG("Adding a watch on %s", priv->configDir);
     if (inotify_add_watch(priv->inotifyFD,
                           priv->configDir,
                           IN_CREATE |
@@ -449,18 +449,18 @@ xenInotifyOpen(virConnectPtr conn,
         return -1;
     }
 
-    DEBUG0("Building initial config cache");
+    VIR_DEBUG0("Building initial config cache");
     if (priv->useXenConfigCache &&
         xenXMConfigCacheRefresh (conn) < 0) {
-        DEBUG("Failed to enable XM config cache %s", conn->err.message);
+        VIR_DEBUG("Failed to enable XM config cache %s", conn->err.message);
         return -1;
     }
 
-    DEBUG0("Registering with event loop");
+    VIR_DEBUG0("Registering with event loop");
     /* Add the handle for monitoring */
     if ((priv->inotifyWatch = virEventAddHandle(priv->inotifyFD, VIR_EVENT_HANDLE_READABLE,
                                                 xenInotifyEvent, conn, NULL)) < 0) {
-        DEBUG0("Failed to add inotify handle, disabling events");
+        VIR_DEBUG0("Failed to add inotify handle, disabling events");
     }
 
     return 0;

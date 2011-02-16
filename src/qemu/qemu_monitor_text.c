@@ -445,7 +445,7 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
         if (VIR_REALLOC_N(cpupids, ncpupids+1) < 0)
             goto error;
 
-        DEBUG("vcpu=%d pid=%d", vcpu, tid);
+        VIR_DEBUG("vcpu=%d pid=%d", vcpu, tid);
         cpupids[ncpupids++] = tid;
         lastVcpu = vcpu;
 
@@ -480,7 +480,7 @@ static int parseMemoryStat(char **text, unsigned int tag,
     if (STRPREFIX (*text, search)) {
         *text += strlen(search);
         if (virStrToLong_ull (*text, &dummy, 10, &value)) {
-            DEBUG ("error reading %s: %s", search, *text);
+            VIR_DEBUG ("error reading %s: %s", search, *text);
             return 0;
         }
 
@@ -671,21 +671,21 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                 if (STRPREFIX (p, "rd_bytes=")) {
                     p += 9;
                     if (virStrToLong_ll (p, &dummy, 10, rd_bytes) == -1)
-                        DEBUG ("error reading rd_bytes: %s", p);
+                        VIR_DEBUG ("error reading rd_bytes: %s", p);
                 } else if (STRPREFIX (p, "wr_bytes=")) {
                     p += 9;
                     if (virStrToLong_ll (p, &dummy, 10, wr_bytes) == -1)
-                        DEBUG ("error reading wr_bytes: %s", p);
+                        VIR_DEBUG ("error reading wr_bytes: %s", p);
                 } else if (STRPREFIX (p, "rd_operations=")) {
                     p += 14;
                     if (virStrToLong_ll (p, &dummy, 10, rd_req) == -1)
-                        DEBUG ("error reading rd_req: %s", p);
+                        VIR_DEBUG ("error reading rd_req: %s", p);
                 } else if (STRPREFIX (p, "wr_operations=")) {
                     p += 14;
                     if (virStrToLong_ll (p, &dummy, 10, wr_req) == -1)
-                        DEBUG ("error reading wr_req: %s", p);
+                        VIR_DEBUG ("error reading wr_req: %s", p);
                 } else
-                    DEBUG ("unknown block stat near %s", p);
+                    VIR_DEBUG ("unknown block stat near %s", p);
 
                 /* Skip to next label. */
                 p = strchr (p, ' ');
@@ -2355,7 +2355,7 @@ int qemuMonitorTextDelDevice(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    DEBUG("TextDelDevice devalias=%s", devalias);
+    VIR_DEBUG("TextDelDevice devalias=%s", devalias);
     if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("cannot detach %s device"), devalias);
@@ -2477,7 +2477,7 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
     char *reply = NULL;
     char *safedev;
     int ret = -1;
-    DEBUG("TextDriveDel drivestr=%s", drivestr);
+    VIR_DEBUG("TextDriveDel drivestr=%s", drivestr);
 
     if (!(safedev = qemuMonitorEscapeArg(drivestr))) {
         virReportOOMError();

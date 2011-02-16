@@ -1,7 +1,7 @@
 /*
  * logging.h: internal logging and debugging
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@
 /*
  * If configured with --enable-debug=yes then library calls
  * are printed to stderr for debugging or to an appropriate channel
- * defined at runtime of from the libvirt daemon configuration file
+ * defined at runtime from the libvirt daemon configuration file
  */
 # ifdef ENABLE_DEBUG
 #  define VIR_DEBUG_INT(category, f, l, fmt,...)                             \
@@ -61,12 +61,6 @@
         VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
 # define VIR_ERROR0(msg)                                                     \
         VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
-
-/* Legacy compat */
-# define DEBUG(fmt,...)                                                  \
-        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-# define DEBUG0(msg)                                                     \
-        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
 
 /*
  * To be made public

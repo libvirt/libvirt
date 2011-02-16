@@ -10,9 +10,9 @@
 # include <sys/poll.h>
 # include <libvirt/libvirt.h>
 
-# define DEBUG0(fmt) printf("%s:%d :: " fmt "\n", \
+# define VIR_DEBUG0(fmt) printf("%s:%d :: " fmt "\n", \
         __func__, __LINE__)
-# define DEBUG(fmt, ...) printf("%s:%d: " fmt "\n", \
+# define VIR_DEBUG(fmt, ...) printf("%s:%d: " fmt "\n", \
         __func__, __LINE__, __VA_ARGS__)
 # define STREQ(a,b) (strcmp(a,b) == 0)
 
@@ -300,7 +300,7 @@ int  myEventAddHandleFunc(int fd, int event,
                           void *opaque,
                           virFreeCallback ff)
 {
-    DEBUG("Add handle %d %d %p %p", fd, event, cb, opaque);
+    VIR_DEBUG("Add handle %d %d %p %p", fd, event, cb, opaque);
     h_fd = fd;
     h_event = myEventHandleTypeToPollEvent(event);
     h_cb = cb;
@@ -311,14 +311,14 @@ int  myEventAddHandleFunc(int fd, int event,
 
 void myEventUpdateHandleFunc(int fd, int event)
 {
-    DEBUG("Updated Handle %d %d", fd, event);
+    VIR_DEBUG("Updated Handle %d %d", fd, event);
     h_event = myEventHandleTypeToPollEvent(event);
     return;
 }
 
 int  myEventRemoveHandleFunc(int fd)
 {
-    DEBUG("Removed Handle %d", fd);
+    VIR_DEBUG("Removed Handle %d", fd);
     h_fd = 0;
     if (h_ff)
        (h_ff)(h_opaque);
@@ -330,7 +330,7 @@ int myEventAddTimeoutFunc(int timeout,
                           void *opaque,
                           virFreeCallback ff)
 {
-    DEBUG("Adding Timeout %d %p %p", timeout, cb, opaque);
+    VIR_DEBUG("Adding Timeout %d %p %p", timeout, cb, opaque);
     t_active = 1;
     t_timeout = timeout;
     t_cb = cb;
@@ -341,13 +341,13 @@ int myEventAddTimeoutFunc(int timeout,
 
 void myEventUpdateTimeoutFunc(int timer ATTRIBUTE_UNUSED, int timeout)
 {
-    /*DEBUG("Timeout updated %d %d", timer, timeout);*/
+    /*VIR_DEBUG("Timeout updated %d %d", timer, timeout);*/
     t_timeout = timeout;
 }
 
 int myEventRemoveTimeoutFunc(int timer)
 {
-   DEBUG("Timeout removed %d", timer);
+   VIR_DEBUG("Timeout removed %d", timer);
    t_active = 0;
    if (t_ff)
        (t_ff)(t_opaque);
@@ -408,7 +408,7 @@ int main(int argc, char **argv)
     sigaction(SIGTERM, &action_stop, NULL);
     sigaction(SIGINT, &action_stop, NULL);
 
-    DEBUG0("Registering domain event cbs");
+    VIR_DEBUG0("Registering domain event cbs");
 
     /* Add 2 callbacks to prove this works with more than just one */
     callback1ret = virConnectDomainEventRegister(dconn, myDomainEventCallback1,
@@ -464,15 +464,15 @@ int main(int argc, char **argv)
             }
 
             if (sts == 0) {
-                /* DEBUG0("Poll timeout"); */
+                /* VIR_DEBUG0("Poll timeout"); */
                 continue;
             }
             if (sts < 0 ) {
-                DEBUG0("Poll failed");
+                VIR_DEBUG0("Poll failed");
                 continue;
             }
             if ( pfd.revents & POLLHUP ) {
-                DEBUG0("Reset by peer");
+                VIR_DEBUG0("Reset by peer");
                 return -1;
             }
 
@@ -485,7 +485,7 @@ int main(int argc, char **argv)
 
         }
 
-        DEBUG0("Deregistering event handlers");
+        VIR_DEBUG0("Deregistering event handlers");
         virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
         virConnectDomainEventDeregisterAny(dconn, callback2ret);
         virConnectDomainEventDeregisterAny(dconn, callback3ret);
@@ -495,7 +495,7 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback7ret);
     }
 
-    DEBUG0("Closing connection");
+    VIR_DEBUG0("Closing connection");
     if( dconn && virConnectClose(dconn)<0 ) {
         printf("error closing\n");
     }

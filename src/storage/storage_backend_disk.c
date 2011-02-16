@@ -475,7 +475,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
     unsigned long long cylinderSize = dev->geometry.heads *
                                       dev->geometry.sectors * SECTOR_SIZE;
 
-    DEBUG("find free area: allocation %llu, cyl size %llu", allocation,
+    VIR_DEBUG("find free area: allocation %llu, cyl size %llu", allocation,
           cylinderSize);
     int partType = virStorageBackendDiskPartTypeToCreate(pool);
 
@@ -529,7 +529,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    DEBUG("aligned alloc %llu", alignedAllocation);
+    VIR_DEBUG("aligned alloc %llu", alignedAllocation);
     *start = dev->freeExtents[smallestExtent].start;
 
     if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
@@ -545,7 +545,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
 
     /* counting in byte, we want the last byte of the current sector */
     *end -= 1;
-    DEBUG("final aligned start %llu, end %llu", *start, *end);
+    VIR_DEBUG("final aligned start %llu, end %llu", *start, *end);
     return 0;
 }
 
@@ -661,7 +661,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     devname = basename(devpath);
     srcname = basename(pool->def->source.devices[0].path);
-    DEBUG("devname=%s, srcname=%s", devname, srcname);
+    VIR_DEBUG("devname=%s, srcname=%s", devname, srcname);
 
     isDevMapperDevice = virIsDevMapperDevice(devpath);
 
