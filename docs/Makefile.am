@@ -138,8 +138,8 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	    "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
 	  echo "Validating $@" ; \
 	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
-	  $(XMLLINT) --catalogs --nonet --format --valid $< > $@ \
-	  || { rm $@ && exit 1; }; \
+	  $(XMLLINT) --catalogs --nonet --format --valid $< > $(srcdir)/$@ \
+	  || { rm $(srcdir)/$@ && exit 1; }; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi
 
 
