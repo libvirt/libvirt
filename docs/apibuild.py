@@ -1614,8 +1614,9 @@ class CParser:
 
 class docBuilder:
     """A documentation builder"""
-    def __init__(self, name, directories=['.'], includes=[]):
+    def __init__(self, name, path='.', directories=['.'], includes=[]):
         self.name = name
+        self.path = path
         self.directories = directories
 	self.includes = includes + included_files.keys()
 	self.modules = {}
@@ -2062,7 +2063,7 @@ class docBuilder:
 	output.write("  </index>\n")
 
     def serialize(self):
-        filename = "%s-api.xml" % self.name
+        filename = "%s/%s-api.xml" % (self.path, self.name)
         print "Saving XML description %s" % (filename)
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
@@ -2098,7 +2099,7 @@ class docBuilder:
         output.write("</api>\n")
         output.close()
 
-        filename = "%s-refs.xml" % self.name
+        filename = "%s/%s-refs.xml" % (self.path, self.name)
         print "Saving XML Cross References %s" % (filename)
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
@@ -2113,14 +2114,16 @@ def rebuild():
     srcdir = os.environ["srcdir"]
     if glob.glob(srcdir + "/../src/libvirt.c") != [] :
         print "Rebuilding API description for libvirt"
-	builder = docBuilder("libvirt",
-                             [srcdir + "/../src",
-                              srcdir + "/../src/util",
-                              srcdir + "/../include/libvirt"],
-                             [])
+        dirs = [srcdir + "/../src",
+                srcdir + "/../src/util",
+                srcdir + "/../include/libvirt"]
+        if glob.glob(srcdir + "/../include/libvirt/libvirt.h") == [] :
+            dirs.append("../include/libvirt")
+        builder = docBuilder("libvirt", srcdir, dirs, [])
     elif glob.glob("src/libvirt.c") != [] :
-        print "Rebuilding API description for libvir"
-	builder = docBuilder("libvirt", ["src", "src/util", "include/libvirt"],
+        print "Rebuilding API description for libvirt"
+        builder = docBuilder("libvirt", srcdir,
+                             ["src", "src/util", "include/libvirt"],
 	                     [])
     else:
         print "rebuild() failed, unable to guess the module"
