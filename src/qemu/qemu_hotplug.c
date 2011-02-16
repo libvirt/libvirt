@@ -893,6 +893,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virCgroupPtr cgroup = NULL;
         usbDevice *usb;
+        qemuCgroupData data = { vm, cgroup };
 
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -905,7 +906,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                 hostdev->source.subsys.u.usb.device)) == NULL)
             goto error;
 
-        if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, cgroup) < 0 )
+        if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, &data) < 0)
             goto error;
     }
 
@@ -1206,7 +1207,7 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }
@@ -1284,7 +1285,7 @@ int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }

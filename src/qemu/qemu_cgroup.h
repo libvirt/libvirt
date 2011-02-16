@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.h: QEMU cgroup management
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -28,25 +28,22 @@
 # include "domain_conf.h"
 # include "qemu_conf.h"
 
+struct _qemuCgroupData {
+    virDomainObjPtr vm;
+    virCgroupPtr cgroup;
+};
+typedef struct _qemuCgroupData qemuCgroupData;
+
 int qemuCgroupControllerActive(struct qemud_driver *driver,
                                int controller);
-int qemuSetupDiskPathAllow(virDomainDiskDefPtr disk,
-                           const char *path,
-                           size_t depth,
-                           void *opaque);
 int qemuSetupDiskCgroup(struct qemud_driver *driver,
+                        virDomainObjPtr vm,
                         virCgroupPtr cgroup,
                         virDomainDiskDefPtr disk);
-int qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk,
-                             const char *path,
-                             size_t depth,
-                             void *opaque);
 int qemuTeardownDiskCgroup(struct qemud_driver *driver,
+                           virDomainObjPtr vm,
                            virCgroupPtr cgroup,
                            virDomainDiskDefPtr disk);
-int qemuSetupChardevCgroup(virDomainDefPtr def,
-                           virDomainChrDefPtr dev,
-                           void *opaque);
 int qemuSetupHostUsbDeviceCgroup(usbDevice *dev,
                                  const char *path,
                                  void *opaque);

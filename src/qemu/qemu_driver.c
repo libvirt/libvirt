@@ -3988,7 +3988,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (qemuSetupDiskCgroup(driver, cgroup, dev->data.disk) < 0)
+            if (qemuSetupDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
                 goto endjob;
         }
 
@@ -4034,7 +4034,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             /* Fallthrough */
         }
         if (ret != 0 && cgroup) {
-            if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
+            if (qemuTeardownDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
                 VIR_WARN("Failed to teardown cgroup for disk path %s",
                          NULLSTR(dev->data.disk->src));
         }
@@ -4160,7 +4160,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (qemuSetupDiskCgroup(driver, cgroup, dev->data.disk) < 0)
+            if (qemuSetupDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
                 goto endjob;
         }
 
@@ -4184,7 +4184,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         }
 
         if (ret != 0 && cgroup) {
-            if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
+            if (qemuTeardownDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
                 VIR_WARN("Failed to teardown cgroup for disk path %s",
                          NULLSTR(dev->data.disk->src));
         }

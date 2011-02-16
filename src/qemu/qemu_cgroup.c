@@ -54,18 +54,18 @@ int qemuCgroupControllerActive(struct qemud_driver *driver,
     return 0;
 }
 
-
-int qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
-                           const char *path,
-                           size_t depth ATTRIBUTE_UNUSED,
-                           void *opaque)
+static int
+qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
+                       const char *path,
+                       size_t depth ATTRIBUTE_UNUSED,
+                       void *opaque)
 {
-    virCgroupPtr cgroup = opaque;
+    qemuCgroupData *data = opaque;
     int rc;
 
     VIR_DEBUG("Process path %s for disk", path);
     /* XXX RO vs RW */
-    rc = virCgroupAllowDevicePath(cgroup, path);
+    rc = virCgroupAllowDevicePath(data->cgroup, path);
     if (rc < 0) {
         if (rc == -EACCES) { /* Get this for root squash NFS */
             VIR_DEBUG("Ignoring EACCES for %s", path);
@@ -81,28 +81,31 @@ int qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 
 
 int qemuSetupDiskCgroup(struct qemud_driver *driver,
+                        virDomainObjPtr vm,
                         virCgroupPtr cgroup,
                         virDomainDiskDefPtr disk)
 {
+    qemuCgroupData data = { vm, cgroup };
     return virDomainDiskDefForeachPath(disk,
                                        driver->allowDiskFormatProbing,
                                        true,
                                        qemuSetupDiskPathAllow,
-                                       cgroup);
+                                       &data);
 }
 
 
-int qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
-                             const char *path,
-                             size_t depth ATTRIBUTE_UNUSED,
-                             void *opaque)
+static int
+qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
+                         const char *path,
+                         size_t depth ATTRIBUTE_UNUSED,
+                         void *opaque)
 {
-    virCgroupPtr cgroup = opaque;
+    qemuCgroupData *data = opaque;
     int rc;
 
     VIR_DEBUG("Process path %s for disk", path);
     /* XXX RO vs RW */
-    rc = virCgroupDenyDevicePath(cgroup, path);
+    rc = virCgroupDenyDevicePath(data->cgroup, path);
     if (rc < 0) {
         if (rc == -EACCES) { /* Get this for root squash NFS */
             VIR_DEBUG("Ignoring EACCES for %s", path);
@@ -118,22 +121,25 @@ int qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 
 
 int qemuTeardownDiskCgroup(struct qemud_driver *driver,
+                           virDomainObjPtr vm,
                            virCgroupPtr cgroup,
                            virDomainDiskDefPtr disk)
 {
+    qemuCgroupData data = { vm, cgroup };
     return virDomainDiskDefForeachPath(disk,
                                        driver->allowDiskFormatProbing,
                                        true,
                                        qemuTeardownDiskPathDeny,
-                                       cgroup);
+                                       &data);
 }
 
 
-int qemuSetupChardevCgroup(virDomainDefPtr def,
-                           virDomainChrDefPtr dev,
-                           void *opaque)
+static int
+qemuSetupChardevCgroup(virDomainDefPtr def,
+                       virDomainChrDefPtr dev,
+                       void *opaque)
 {
-    virCgroupPtr cgroup = opaque;
+    qemuCgroupData *data = opaque;
     int rc;
 
     if (dev->source.type != VIR_DOMAIN_CHR_TYPE_DEV)
@@ -141,7 +147,7 @@ int qemuSetupChardevCgroup(virDomainDefPtr def,
 
 
     VIR_DEBUG("Process path '%s' for disk", dev->source.data.file.path);
-    rc = virCgroupAllowDevicePath(cgroup, dev->source.data.file.path);
+    rc = virCgroupAllowDevicePath(data->cgroup, dev->source.data.file.path);
     if (rc < 0) {
         virReportSystemError(-rc,
                              _("Unable to allow device %s for %s"),
@@ -157,11 +163,11 @@ int qemuSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
                                  const char *path,
                                  void *opaque)
 {
-    virCgroupPtr cgroup = opaque;
+    qemuCgroupData *data = opaque;
     int rc;
 
     VIR_DEBUG("Process path '%s' for USB device", path);
-    rc = virCgroupAllowDevicePath(cgroup, path);
+    rc = virCgroupAllowDevicePath(data->cgroup, path);
     if (rc < 0) {
         virReportSystemError(-rc,
                              _("Unable to allow device %s"),
@@ -195,6 +201,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
     }
 
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        qemuCgroupData data = { vm, cgroup };
         rc = virCgroupDenyAllDevices(cgroup);
         if (rc != 0) {
             if (rc == -EPERM) {
@@ -208,7 +215,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         for (i = 0; i < vm->def->ndisks ; i++) {
-            if (qemuSetupDiskCgroup(driver, cgroup, vm->def->disks[i]) < 0)
+            if (qemuSetupDiskCgroup(driver, vm, cgroup, vm->def->disks[i]) < 0)
                 goto cleanup;
         }
 
@@ -243,7 +250,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         if (virDomainChrDefForeach(vm->def,
                                    true,
                                    qemuSetupChardevCgroup,
-                                   cgroup) < 0)
+                                   &data) < 0)
             goto cleanup;
 
         for (i = 0; i < vm->def->nhostdevs; i++) {
@@ -259,7 +266,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                                     hostdev->source.subsys.u.usb.device)) == NULL)
                 goto cleanup;
 
-            if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, cgroup) < 0 )
+            if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
+                                     &data) < 0)
                 goto cleanup;
         }
     }
