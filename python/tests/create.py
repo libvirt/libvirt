@@ -23,7 +23,7 @@ osroot = None
 for root in osroots:
     if os.access(root, os.R_OK):
         osroot = root
-	break
+        break
 
 if osroot == None:
     print "Could not find a guest OS root, edit to add the path in osroots"
@@ -124,11 +124,11 @@ while i < 30:
     time.sleep(1)
     i = i + 1
     try:
-	t = dom.info()[4]
+        t = dom.info()[4]
     except:
         okay = 0
-	t = -1
-	break;
+        t = -1
+        break;
 
     if t == 0:
         break

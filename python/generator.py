@@ -90,8 +90,8 @@ class docParser(xml.sax.handler.ContentHandler):
                 self.function_arg_info = None
                 if attrs.has_key('name'):
                     self.function_arg_name = attrs['name']
-		    if self.function_arg_name == 'from':
-		        self.function_arg_name = 'frm'
+                    if self.function_arg_name == 'from':
+                        self.function_arg_name = 'frm'
                 if attrs.has_key('type'):
                     self.function_arg_type = attrs['type']
                 if attrs.has_key('info'):
@@ -409,8 +409,8 @@ def print_function_wrapper(name, output, export, include):
     if name in skip_function:
         return 0
     if name in skip_impl:
-	# Don't delete the function entry in the caller.
-	return 1
+        # Don't delete the function entry in the caller.
+        return 1
 
     c_call = "";
     format=""
@@ -426,8 +426,8 @@ def print_function_wrapper(name, output, export, include):
         c_args = c_args + "    %s %s;\n" % (arg[1], arg[0])
         if py_types.has_key(arg[1]):
             (f, t, n, c) = py_types[arg[1]]
-	    if (f == 'z') and (name in foreign_encoding_args) and (num_bufs == 0):
-	        f = 't#'
+            if (f == 'z') and (name in foreign_encoding_args) and (num_bufs == 0):
+                f = 't#'
             if f != None:
                 format = format + f
             if t != None:
@@ -438,10 +438,10 @@ def print_function_wrapper(name, output, export, include):
                    arg[1], t, arg[0]);
             else:
                 format_args = format_args + ", &%s" % (arg[0])
-	    if f == 't#':
-	        format_args = format_args + ", &py_buffsize%d" % num_bufs
-	        c_args = c_args + "    int py_buffsize%d;\n" % num_bufs
-		num_bufs = num_bufs + 1
+            if f == 't#':
+                format_args = format_args + ", &py_buffsize%d" % num_bufs
+                c_args = c_args + "    int py_buffsize%d;\n" % num_bufs
+                num_bufs = num_bufs + 1
             if c_call != "":
                 c_call = c_call + ", ";
             c_call = c_call + "%s" % (arg[0])
@@ -459,14 +459,14 @@ def print_function_wrapper(name, output, export, include):
 
     if ret[0] == 'void':
         if file == "python_accessor":
-	    if args[1][1] == "char *":
-		c_call = "\n    free(%s->%s);\n" % (
-		                 args[0][0], args[1][0], args[0][0], args[1][0])
-		c_call = c_call + "    %s->%s = (%s)strdup((const xmlChar *)%s);\n" % (args[0][0],
-		                 args[1][0], args[1][1], args[1][0])
-	    else:
-		c_call = "\n    %s->%s = %s;\n" % (args[0][0], args[1][0],
-						   args[1][0])
+            if args[1][1] == "char *":
+                c_call = "\n    free(%s->%s);\n" % (
+                                 args[0][0], args[1][0], args[0][0], args[1][0])
+                c_call = c_call + "    %s->%s = (%s)strdup((const xmlChar *)%s);\n" % (args[0][0],
+                                 args[1][0], args[1][1], args[1][0])
+            else:
+                c_call = "\n    %s->%s = %s;\n" % (args[0][0], args[1][0],
+                                                   args[1][0])
         else:
             c_call = "\n    %s(%s);\n" % (name, c_call);
         ret_convert = "    Py_INCREF(Py_None);\n    return(Py_None);\n"
@@ -508,24 +508,24 @@ def print_function_wrapper(name, output, export, include):
 
     if file == "python":
         # Those have been manually generated
-	if cond != None and cond != "":
-	    include.write("#endif\n");
-	    export.write("#endif\n");
-	    output.write("#endif\n");
+        if cond != None and cond != "":
+            include.write("#endif\n");
+            export.write("#endif\n");
+            output.write("#endif\n");
         return 1
     if file == "python_accessor" and ret[0] != "void" and ret[2] is None:
         # Those have been manually generated
-	if cond != None and cond != "":
-	    include.write("#endif\n");
-	    export.write("#endif\n");
-	    output.write("#endif\n");
+        if cond != None and cond != "":
+            include.write("#endif\n");
+            export.write("#endif\n");
+            output.write("#endif\n");
         return 1
 
     output.write("PyObject *\n")
     output.write("libvirt_%s(PyObject *self ATTRIBUTE_UNUSED," % (name))
     output.write(" PyObject *args")
     if format == "":
-	output.write(" ATTRIBUTE_UNUSED")
+        output.write(" ATTRIBUTE_UNUSED")
     output.write(") {\n")
     if ret[0] != 'void':
         output.write("    PyObject *py_retval;\n")
@@ -557,38 +557,38 @@ def buildStubs():
     global unknown_types
 
     try:
-	f = open(os.path.join(srcPref,"libvirt-api.xml"))
-	data = f.read()
-	(parser, target)  = getparser()
-	parser.feed(data)
-	parser.close()
+        f = open(os.path.join(srcPref,"libvirt-api.xml"))
+        data = f.read()
+        (parser, target)  = getparser()
+        parser.feed(data)
+        parser.close()
     except IOError, msg:
-	try:
-	    f = open(os.path.join(srcPref,"..","docs","libvirt-api.xml"))
-	    data = f.read()
-	    (parser, target)  = getparser()
-	    parser.feed(data)
-	    parser.close()
-	except IOError, msg:
-	    print file, ":", msg
-	    sys.exit(1)
+        try:
+            f = open(os.path.join(srcPref,"..","docs","libvirt-api.xml"))
+            data = f.read()
+            (parser, target)  = getparser()
+            parser.feed(data)
+            parser.close()
+        except IOError, msg:
+            print file, ":", msg
+            sys.exit(1)
 
     n = len(functions.keys())
     print "Found %d functions in libvirt-api.xml" % (n)
 
     py_types['pythonObject'] = ('O', "pythonObject", "pythonObject", "pythonObject")
     try:
-	f = open(os.path.join(srcPref,"libvirt-override-api.xml"))
-	data = f.read()
-	(parser, target)  = getparser()
-	parser.feed(data)
-	parser.close()
+        f = open(os.path.join(srcPref,"libvirt-override-api.xml"))
+        data = f.read()
+        (parser, target)  = getparser()
+        parser.feed(data)
+        parser.close()
     except IOError, msg:
-	print file, ":", msg
+        print file, ":", msg
 
 
     print "Found %d functions in libvirt-override-api.xml" % (
-	  len(functions.keys()) - n)
+          len(functions.keys()) - n)
     nb_wrap = 0
     failed = 0
     skipped = 0
@@ -604,17 +604,17 @@ def buildStubs():
     wrapper.write("#include \"typewrappers.h\"\n")
     wrapper.write("#include \"libvirt.h\"\n\n")
     for function in functions.keys():
-	ret = print_function_wrapper(function, wrapper, export, include)
-	if ret < 0:
-	    failed = failed + 1
-	    functions_failed.append(function)
-	    del functions[function]
-	if ret == 0:
-	    skipped = skipped + 1
-	    functions_skipped.append(function)
-	    del functions[function]
-	if ret == 1:
-	    nb_wrap = nb_wrap + 1
+        ret = print_function_wrapper(function, wrapper, export, include)
+        if ret < 0:
+            failed = failed + 1
+            functions_failed.append(function)
+            del functions[function]
+        if ret == 0:
+            skipped = skipped + 1
+            functions_skipped.append(function)
+            del functions[function]
+        if ret == 1:
+            nb_wrap = nb_wrap + 1
     include.close()
     export.close()
     wrapper.close()
@@ -623,7 +623,7 @@ def buildStubs():
 
     print "Missing type converters: "
     for type in unknown_types.keys():
-	print "%s:%d " % (type, len(unknown_types[type])),
+        print "%s:%d " % (type, len(unknown_types[type])),
     print
 
     for f in functions_failed:
@@ -955,7 +955,7 @@ def buildWrappers():
     global functions_noexcept
 
     for type in classes_type.keys():
-	function_classes[classes_type[type][2]] = []
+        function_classes[classes_type[type][2]] = []
 
     #
     # Build the list of C types to look for ordered to start
@@ -966,46 +966,46 @@ def buildWrappers():
     ctypes_processed = {}
     classes_processed = {}
     for classe in primary_classes:
-	classes_list.append(classe)
-	classes_processed[classe] = ()
-	for type in classes_type.keys():
-	    tinfo = classes_type[type]
-	    if tinfo[2] == classe:
-		ctypes.append(type)
-		ctypes_processed[type] = ()
+        classes_list.append(classe)
+        classes_processed[classe] = ()
+        for type in classes_type.keys():
+            tinfo = classes_type[type]
+            if tinfo[2] == classe:
+                ctypes.append(type)
+                ctypes_processed[type] = ()
     for type in classes_type.keys():
-	if ctypes_processed.has_key(type):
-	    continue
-	tinfo = classes_type[type]
-	if not classes_processed.has_key(tinfo[2]):
-	    classes_list.append(tinfo[2])
-	    classes_processed[tinfo[2]] = ()
+        if ctypes_processed.has_key(type):
+            continue
+        tinfo = classes_type[type]
+        if not classes_processed.has_key(tinfo[2]):
+            classes_list.append(tinfo[2])
+            classes_processed[tinfo[2]] = ()
 
-	ctypes.append(type)
-	ctypes_processed[type] = ()
+        ctypes.append(type)
+        ctypes_processed[type] = ()
 
     for name in functions.keys():
-	found = 0;
-	(desc, ret, args, file, cond) = functions[name]
-	for type in ctypes:
-	    classe = classes_type[type][2]
+        found = 0;
+        (desc, ret, args, file, cond) = functions[name]
+        for type in ctypes:
+            classe = classes_type[type][2]
 
-	    if name[0:3] == "vir" and len(args) >= 1 and args[0][1] == type:
-		found = 1
-		func = nameFixup(name, classe, type, file)
-		info = (0, func, name, ret, args, file)
-		function_classes[classe].append(info)
-	    elif name[0:3] == "vir" and len(args) >= 2 and args[1][1] == type \
-	        and file != "python_accessor" and not name in function_skip_index_one:
-		found = 1
-		func = nameFixup(name, classe, type, file)
-		info = (1, func, name, ret, args, file)
-		function_classes[classe].append(info)
-	if found == 1:
-	    continue
-	func = nameFixup(name, "None", file, file)
-	info = (0, func, name, ret, args, file)
-	function_classes['None'].append(info)
+            if name[0:3] == "vir" and len(args) >= 1 and args[0][1] == type:
+                found = 1
+                func = nameFixup(name, classe, type, file)
+                info = (0, func, name, ret, args, file)
+                function_classes[classe].append(info)
+            elif name[0:3] == "vir" and len(args) >= 2 and args[1][1] == type \
+                and file != "python_accessor" and not name in function_skip_index_one:
+                found = 1
+                func = nameFixup(name, classe, type, file)
+                info = (1, func, name, ret, args, file)
+                function_classes[classe].append(info)
+        if found == 1:
+            continue
+        func = nameFixup(name, "None", file, file)
+        info = (0, func, name, ret, args, file)
+        function_classes['None'].append(info)
 
     classes = open("libvirt.py", "w")
 
@@ -1032,60 +1032,60 @@ def buildWrappers():
     extra.close()
 
     if function_classes.has_key("None"):
-	flist = function_classes["None"]
-	flist.sort(functionCompare)
-	oldfile = ""
-	for info in flist:
-	    (index, func, name, ret, args, file) = info
-	    if file != oldfile:
-		classes.write("#\n# Functions from module %s\n#\n\n" % file)
-		oldfile = file
-	    classes.write("def %s(" % func)
-	    n = 0
-	    for arg in args:
-		if n != 0:
-		    classes.write(", ")
-		classes.write("%s" % arg[0])
-		n = n + 1
-	    classes.write("):\n")
-	    writeDoc(name, args, '    ', classes);
+        flist = function_classes["None"]
+        flist.sort(functionCompare)
+        oldfile = ""
+        for info in flist:
+            (index, func, name, ret, args, file) = info
+            if file != oldfile:
+                classes.write("#\n# Functions from module %s\n#\n\n" % file)
+                oldfile = file
+            classes.write("def %s(" % func)
+            n = 0
+            for arg in args:
+                if n != 0:
+                    classes.write(", ")
+                classes.write("%s" % arg[0])
+                n = n + 1
+            classes.write("):\n")
+            writeDoc(name, args, '    ', classes);
 
-	    for arg in args:
-		if classes_type.has_key(arg[1]):
-		    classes.write("    if %s is None: %s__o = None\n" %
-				  (arg[0], arg[0]))
-		    classes.write("    else: %s__o = %s%s\n" %
-				  (arg[0], arg[0], classes_type[arg[1]][0]))
-	    if ret[0] != "void":
-		classes.write("    ret = ");
-	    else:
-		classes.write("    ");
-	    classes.write("libvirtmod.%s(" % name)
-	    n = 0
-	    for arg in args:
-		if n != 0:
-		    classes.write(", ");
-		classes.write("%s" % arg[0])
-		if classes_type.has_key(arg[1]):
-		    classes.write("__o");
-		n = n + 1
-	    classes.write(")\n");
+            for arg in args:
+                if classes_type.has_key(arg[1]):
+                    classes.write("    if %s is None: %s__o = None\n" %
+                                  (arg[0], arg[0]))
+                    classes.write("    else: %s__o = %s%s\n" %
+                                  (arg[0], arg[0], classes_type[arg[1]][0]))
+            if ret[0] != "void":
+                classes.write("    ret = ");
+            else:
+                classes.write("    ");
+            classes.write("libvirtmod.%s(" % name)
+            n = 0
+            for arg in args:
+                if n != 0:
+                    classes.write(", ");
+                classes.write("%s" % arg[0])
+                if classes_type.has_key(arg[1]):
+                    classes.write("__o");
+                n = n + 1
+            classes.write(")\n");
 
             if ret[0] != "void":
-		if classes_type.has_key(ret[0]):
-		    #
-		    # Raise an exception
-		    #
-		    if functions_noexcept.has_key(name):
-			classes.write("    if ret is None:return None\n");
-		    else:
-			classes.write(
-		     "    if ret is None:raise libvirtError('%s() failed')\n" %
-				      (name))
+                if classes_type.has_key(ret[0]):
+                    #
+                    # Raise an exception
+                    #
+                    if functions_noexcept.has_key(name):
+                        classes.write("    if ret is None:return None\n");
+                    else:
+                        classes.write(
+                     "    if ret is None:raise libvirtError('%s() failed')\n" %
+                                      (name))
 
-		    classes.write("    return ");
-		    classes.write(classes_type[ret[0]][1] % ("ret"));
-		    classes.write("\n");
+                    classes.write("    return ");
+                    classes.write(classes_type[ret[0]][1] % ("ret"));
+                    classes.write("\n");
 
                 # For functions returning an integral type there are
                 # several things that we can do, depending on the
@@ -1099,7 +1099,7 @@ def buildWrappers():
                         classes.write (("    if " + test +
                                         ": raise libvirtError ('%s() failed')\n") %
                                        ("ret", name))
-		    classes.write("    return ret\n")
+                    classes.write("    return ret\n")
 
                 elif is_list_type (ret[0]):
                     if not functions_noexcept.has_key (name):
@@ -1110,30 +1110,30 @@ def buildWrappers():
                         classes.write (("    if " + test +
                                         ": raise libvirtError ('%s() failed')\n") %
                                        ("ret", name))
-		    classes.write("    return ret\n")
+                    classes.write("    return ret\n")
 
-		else:
-		    classes.write("    return ret\n")
+                else:
+                    classes.write("    return ret\n")
 
-	    classes.write("\n");
+            classes.write("\n");
 
     for classname in classes_list:
-	if classname == "None":
-	    pass
-	else:
-	    if classes_ancestor.has_key(classname):
-		classes.write("class %s(%s):\n" % (classname,
-			      classes_ancestor[classname]))
-		classes.write("    def __init__(self, _obj=None):\n")
-		if reference_keepers.has_key(classname):
-		    rlist = reference_keepers[classname]
-		    for ref in rlist:
-		        classes.write("        self.%s = None\n" % ref[1])
-		classes.write("        self._o = _obj\n")
-		classes.write("        %s.__init__(self, _obj=_obj)\n\n" % (
-			      classes_ancestor[classname]))
-	    else:
-		classes.write("class %s:\n" % (classname))
+        if classname == "None":
+            pass
+        else:
+            if classes_ancestor.has_key(classname):
+                classes.write("class %s(%s):\n" % (classname,
+                              classes_ancestor[classname]))
+                classes.write("    def __init__(self, _obj=None):\n")
+                if reference_keepers.has_key(classname):
+                    rlist = reference_keepers[classname]
+                    for ref in rlist:
+                        classes.write("        self.%s = None\n" % ref[1])
+                classes.write("        self._o = _obj\n")
+                classes.write("        %s.__init__(self, _obj=_obj)\n\n" % (
+                              classes_ancestor[classname]))
+            else:
+                classes.write("class %s:\n" % (classname))
                 if classname in [ "virDomain", "virNetwork", "virInterface", "virStoragePool",
                                   "virStorageVol", "virNodeDevice", "virSecret","virStream",
                                   "virNWFilter" ]:
@@ -1142,10 +1142,10 @@ def buildWrappers():
                     classes.write("    def __init__(self, dom, _obj=None):\n")
                 else:
                     classes.write("    def __init__(self, _obj=None):\n")
-		if reference_keepers.has_key(classname):
-		    list = reference_keepers[classname]
-		    for ref in list:
-		        classes.write("        self.%s = None\n" % ref[1])
+                if reference_keepers.has_key(classname):
+                    list = reference_keepers[classname]
+                    for ref in list:
+                        classes.write("        self.%s = None\n" % ref[1])
                 if classname in [ "virDomain", "virNetwork", "virInterface",
                                   "virNodeDevice", "virSecret", "virStream",
                                   "virNWFilter" ]:
@@ -1156,16 +1156,16 @@ def buildWrappers():
                                   "            self._conn = conn._conn\n")
                 elif classname in [ "virDomainSnapshot" ]:
                     classes.write("        self._dom = dom\n")
-		classes.write("        if _obj != None:self._o = _obj;return\n")
-		classes.write("        self._o = None\n\n");
-	    destruct=None
-	    if classes_destructors.has_key(classname):
-		classes.write("    def __del__(self):\n")
-		classes.write("        if self._o != None:\n")
-		classes.write("            libvirtmod.%s(self._o)\n" %
-			      classes_destructors[classname]);
-		classes.write("        self._o = None\n\n");
-		destruct=classes_destructors[classname]
+                classes.write("        if _obj != None:self._o = _obj;return\n")
+                classes.write("        self._o = None\n\n");
+            destruct=None
+            if classes_destructors.has_key(classname):
+                classes.write("    def __del__(self):\n")
+                classes.write("        if self._o != None:\n")
+                classes.write("            libvirtmod.%s(self._o)\n" %
+                              classes_destructors[classname]);
+                classes.write("        self._o = None\n\n");
+                destruct=classes_destructors[classname]
 
             if not class_skip_connect_impl.has_key(classname):
                 # Build python safe 'connect' method
@@ -1176,99 +1176,99 @@ def buildWrappers():
                 classes.write("    def domain(self):\n")
                 classes.write("        return self._dom\n\n")
 
-	    flist = function_classes[classname]
-	    flist.sort(functionCompare)
-	    oldfile = ""
-	    for info in flist:
-		(index, func, name, ret, args, file) = info
-		#
-		# Do not provide as method the destructors for the class
-		# to avoid double free
-		#
-		if name == destruct:
-		    continue;
-		if file != oldfile:
-		    if file == "python_accessor":
-			classes.write("    # accessors for %s\n" % (classname))
-		    else:
-			classes.write("    #\n")
-			classes.write("    # %s functions from module %s\n" % (
-				      classname, file))
-			classes.write("    #\n\n")
-		oldfile = file
-		classes.write("    def %s(self" % func)
-		n = 0
-		for arg in args:
-		    if n != index:
-			classes.write(", %s" % arg[0])
-		    n = n + 1
-		classes.write("):\n")
-		writeDoc(name, args, '        ', classes);
-		n = 0
-		for arg in args:
-		    if classes_type.has_key(arg[1]):
-			if n != index:
-			    classes.write("        if %s is None: %s__o = None\n" %
-					  (arg[0], arg[0]))
-			    classes.write("        else: %s__o = %s%s\n" %
-					  (arg[0], arg[0], classes_type[arg[1]][0]))
-		    n = n + 1
-		if ret[0] != "void":
-		    classes.write("        ret = ");
-		else:
-		    classes.write("        ");
-		classes.write("libvirtmod.%s(" % name)
-		n = 0
-		for arg in args:
-		    if n != 0:
-			classes.write(", ");
-		    if n != index:
-			classes.write("%s" % arg[0])
-			if classes_type.has_key(arg[1]):
-			    classes.write("__o");
-		    else:
-			classes.write("self");
-			if classes_type.has_key(arg[1]):
-			    classes.write(classes_type[arg[1]][0])
-		    n = n + 1
-		classes.write(")\n");
+            flist = function_classes[classname]
+            flist.sort(functionCompare)
+            oldfile = ""
+            for info in flist:
+                (index, func, name, ret, args, file) = info
+                #
+                # Do not provide as method the destructors for the class
+                # to avoid double free
+                #
+                if name == destruct:
+                    continue;
+                if file != oldfile:
+                    if file == "python_accessor":
+                        classes.write("    # accessors for %s\n" % (classname))
+                    else:
+                        classes.write("    #\n")
+                        classes.write("    # %s functions from module %s\n" % (
+                                      classname, file))
+                        classes.write("    #\n\n")
+                oldfile = file
+                classes.write("    def %s(self" % func)
+                n = 0
+                for arg in args:
+                    if n != index:
+                        classes.write(", %s" % arg[0])
+                    n = n + 1
+                classes.write("):\n")
+                writeDoc(name, args, '        ', classes);
+                n = 0
+                for arg in args:
+                    if classes_type.has_key(arg[1]):
+                        if n != index:
+                            classes.write("        if %s is None: %s__o = None\n" %
+                                          (arg[0], arg[0]))
+                            classes.write("        else: %s__o = %s%s\n" %
+                                          (arg[0], arg[0], classes_type[arg[1]][0]))
+                    n = n + 1
+                if ret[0] != "void":
+                    classes.write("        ret = ");
+                else:
+                    classes.write("        ");
+                classes.write("libvirtmod.%s(" % name)
+                n = 0
+                for arg in args:
+                    if n != 0:
+                        classes.write(", ");
+                    if n != index:
+                        classes.write("%s" % arg[0])
+                        if classes_type.has_key(arg[1]):
+                            classes.write("__o");
+                    else:
+                        classes.write("self");
+                        if classes_type.has_key(arg[1]):
+                            classes.write(classes_type[arg[1]][0])
+                    n = n + 1
+                classes.write(")\n");
 
                 if name == "virConnectClose":
                     classes.write("        self._o = None\n")
 
                 # For functions returning object types:
                 if ret[0] != "void":
-		    if classes_type.has_key(ret[0]):
-			#
-			# Raise an exception
-			#
-			if functions_noexcept.has_key(name):
-			    classes.write(
-			        "        if ret is None:return None\n");
-			else:
+                    if classes_type.has_key(ret[0]):
+                        #
+                        # Raise an exception
+                        #
+                        if functions_noexcept.has_key(name):
+                            classes.write(
+                                "        if ret is None:return None\n");
+                        else:
                             if classname == "virConnect":
                                 classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed', conn=self)\n" %
+                     "        if ret is None:raise libvirtError('%s() failed', conn=self)\n" %
                                               (name))
                             elif classname == "virDomain":
                                 classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed', dom=self)\n" %
+                     "        if ret is None:raise libvirtError('%s() failed', dom=self)\n" %
                                               (name))
                             elif classname == "virNetwork":
                                 classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed', net=self)\n" %
+                     "        if ret is None:raise libvirtError('%s() failed', net=self)\n" %
                                               (name))
                             elif classname == "virInterface":
                                 classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed', net=self)\n" %
+                     "        if ret is None:raise libvirtError('%s() failed', net=self)\n" %
                                               (name))
                             elif classname == "virStoragePool":
                                 classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed', pool=self)\n" %
+                     "        if ret is None:raise libvirtError('%s() failed', pool=self)\n" %
                                               (name))
                             elif classname == "virStorageVol":
                                 classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed', vol=self)\n" %
+                     "        if ret is None:raise libvirtError('%s() failed', vol=self)\n" %
                                               (name))
                             elif classname == "virDomainSnapshot":
                                 classes.write(
@@ -1276,54 +1276,54 @@ def buildWrappers():
                                               (name))
                             else:
                                 classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed')\n" %
+                     "        if ret is None:raise libvirtError('%s() failed')\n" %
                                               (name))
 
-			#
-			# generate the returned class wrapper for the object
-			#
-			classes.write("        __tmp = ");
-			classes.write(classes_type[ret[0]][1] % ("ret"));
-			classes.write("\n");
+                        #
+                        # generate the returned class wrapper for the object
+                        #
+                        classes.write("        __tmp = ");
+                        classes.write(classes_type[ret[0]][1] % ("ret"));
+                        classes.write("\n");
 
                         #
-			# Sometime one need to keep references of the source
-			# class in the returned class object.
-			# See reference_keepers for the list
-			#
-			tclass = classes_type[ret[0]][2]
-			if reference_keepers.has_key(tclass):
-			    list = reference_keepers[tclass]
-			    for pref in list:
-				if pref[0] == classname:
-				    classes.write("        __tmp.%s = self\n" %
-						  pref[1])
+                        # Sometime one need to keep references of the source
+                        # class in the returned class object.
+                        # See reference_keepers for the list
+                        #
+                        tclass = classes_type[ret[0]][2]
+                        if reference_keepers.has_key(tclass):
+                            list = reference_keepers[tclass]
+                            for pref in list:
+                                if pref[0] == classname:
+                                    classes.write("        __tmp.%s = self\n" %
+                                                  pref[1])
 
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
                                           (function_post[name]));
 
-			#
-			# return the class
-			#
-			classes.write("        return __tmp\n");
-		    elif converter_type.has_key(ret[0]):
-			#
-			# Raise an exception
-			#
-			if functions_noexcept.has_key(name):
-			    classes.write(
-			        "        if ret is None:return None");
+                        #
+                        # return the class
+                        #
+                        classes.write("        return __tmp\n");
+                    elif converter_type.has_key(ret[0]):
+                        #
+                        # Raise an exception
+                        #
+                        if functions_noexcept.has_key(name):
+                            classes.write(
+                                "        if ret is None:return None");
 
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
                                           (function_post[name]));
 
-			classes.write("        return ");
-			classes.write(converter_type[ret[0]] % ("ret"));
-			classes.write("\n");
+                        classes.write("        return ");
+                        classes.write(converter_type[ret[0]] % ("ret"));
+                        classes.write("\n");
 
                     # For functions returning an integral type there
                     # are several things that we can do, depending on
@@ -1412,15 +1412,15 @@ def buildWrappers():
 
                         classes.write ("        return ret\n")
 
-		    else:
+                    else:
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
                                           (function_post[name]));
 
-			classes.write("        return ret\n");
+                        classes.write("        return ret\n");
 
-		classes.write("\n");
+                classes.write("\n");
             # Append "<classname>.py" to class def, iff it exists
             try:
                 extra = open(os.path.join(srcPref,"libvirt-override-" + classname + ".py"), "r")

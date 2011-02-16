@@ -327,8 +327,8 @@ sc_prohibit_ctype_h:
 # files in gnulib, since they're imported.
 sc_TAB_in_indentation:
 	@prohibit='^ *	'						\
-	in_vc_files='(\.(rng|[ch](\.in)?|html.in)|(daemon|tools)/.*\.in)$$' \
-	halt='use leading spaces, not TAB, in C, sh, html, and RNG schemas' \
+	in_vc_files='(\.(rng|[ch](\.in)?|html.in|py)|(daemon|tools)/.*\.in)$$' \
+	halt='use leading spaces, not TAB, in C, sh, html, py, and RNG schemas' \
 	  $(_sc_search_regexp)
 
 ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
