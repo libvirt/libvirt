@@ -187,7 +187,6 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
 	for f in $(css) $(dot_html) $(gif) $(png); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR); done
-	-$(INSTALL) -m 0644 $(srcdir)/Libxml2-Logo-90x34.gif $(DESTDIR)$(HTML_DIR)
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
 	for h in $(apihtml); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$h $(DESTDIR)$(HTML_DIR)/html; done
