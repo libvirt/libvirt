@@ -1,7 +1,7 @@
 /*
  * qemu_audit.c: QEMU audit management
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -99,6 +99,52 @@ void qemuDomainNetAudit(virDomainObjPtr vm,
               newDef ? newMacstr : "?");
 
     VIR_FREE(vmname);
+}
+
+
+/**
+ * qemuDomainCgroupAudit:
+ * @vm: domain making the cgroups ACL change
+ * @cgroup: cgroup that manages the devices
+ * @reason: either "allow" or "deny"
+ * @item: one of "all", "path", or "major"
+ * @name: NULL for @item of "all", device path for @item of "path", and
+ * string describing major device type for @item of "major"
+ * @success: true if the cgroup operation succeeded
+ *
+ * Log an audit message about an attempted cgroup device ACL change.
+ */
+void qemuDomainCgroupAudit(virDomainObjPtr vm,
+                           virCgroupPtr cgroup ATTRIBUTE_UNUSED,
+                           const char *reason,
+                           const char *item,
+                           const char *name,
+                           bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    char *detail = NULL;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN0("OOM while encoding audit message");
+        return;
+    }
+    if (name &&
+        !(detail = virAuditEncode(STREQ(item, "path") ? "path" : "type",
+                                  name))) {
+        VIR_WARN0("OOM while encoding audit message");
+        goto cleanup;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "resrc=cgroup reason=%s %s uuid=%s item=%s%s%s",
+              reason, vmname, uuidstr,
+              item, detail ? " " : "", detail ? detail : "");
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(detail);
 }
 
 
