@@ -4243,7 +4243,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                     if (configfd >= 0) {
                         if (virAsprintf(&configfd_name, "%d", configfd) < 0) {
                             VIR_FORCE_CLOSE(configfd);
-                            virReportOOMError();
                             goto no_memory;
                         }
 
