@@ -2453,6 +2453,12 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
         goto cleanup;
     }
 
+    if (strstr(reply, "could not open disk image")) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("open disk image file failed"));
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
