@@ -990,6 +990,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainGetJobInfo */
     NULL,                       /* domainAbortJob */
     NULL,                       /* domainMigrateSetMaxDowntime */
+    NULL,                       /* domainMigrateSetMaxSpeed */
     NULL,                       /* domainEventRegisterAny */
     NULL,                       /* domainEventDeregisterAny */
     NULL,                       /* domainManagedSave */

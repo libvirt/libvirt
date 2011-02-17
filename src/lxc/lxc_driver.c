@@ -2883,6 +2883,7 @@ static virDriver lxcDriver = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainMigrateSetMaxSpeed */
     lxcDomainEventRegisterAny, /* domainEventRegisterAny */
     lxcDomainEventDeregisterAny, /* domainEventDeregisterAny */
     NULL, /* domainManagedSave */

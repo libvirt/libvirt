@@ -4038,6 +4038,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainGetJobInfo */
     NULL,                       /* domainAbortJob */
     NULL,                       /* domainMigrateSetMaxDowntime */
+    NULL,                       /* domainMigrateSetMaxSpeed */
     NULL,                       /* domainEventRegisterAny */
     NULL,                       /* domainEventDeregisterAny */
     NULL,                       /* domainManagedSave */

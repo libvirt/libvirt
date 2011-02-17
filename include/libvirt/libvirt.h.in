@@ -436,6 +436,10 @@ int virDomainMigrateSetMaxDowntime (virDomainPtr domain,
                                     unsigned long long downtime,
                                     unsigned int flags);
 
+int virDomainMigrateSetMaxSpeed(virDomainPtr domain,
+                                unsigned long bandwidth,
+                                unsigned int flags);
+
 /**
  * VIR_NODEINFO_MAXCPUS:
  * @nodeinfo: virNodeInfo instance

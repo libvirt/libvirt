@@ -1414,6 +1414,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainGetJobInfo */
     NULL,                       /* domainAbortJob */
     NULL,                       /* domainMigrateSetMaxDowntime */
+    NULL,                       /* domainMigrateSetMaxSpeed */
     NULL,                       /* domainEventRegisterAny */
     NULL,                       /* domainEventDeregisterAny */
     NULL,                       /* domainManagedSave */

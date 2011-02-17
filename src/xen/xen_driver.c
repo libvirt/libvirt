@@ -2124,6 +2124,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainMigrateSetMaxSpeed */
     xenUnifiedDomainEventRegisterAny, /* domainEventRegisterAny */
     xenUnifiedDomainEventDeregisterAny, /* domainEventDeregisterAny */
     NULL, /* domainManagedSave */

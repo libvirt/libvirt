@@ -442,6 +442,10 @@ typedef int
     (*virDrvDomainMigrateSetMaxDowntime)(virDomainPtr domain,
                                          unsigned long long downtime,
                                          unsigned int flags);
+typedef int
+    (*virDrvDomainMigrateSetMaxSpeed)(virDomainPtr domain,
+                                      unsigned long bandwidth,
+                                      unsigned int flags);
 
 typedef int
     (*virDrvDomainEventRegisterAny)(virConnectPtr conn,
@@ -618,6 +622,7 @@ struct _virDriver {
     virDrvDomainGetJobInfo     domainGetJobInfo;
     virDrvDomainAbortJob     domainAbortJob;
     virDrvDomainMigrateSetMaxDowntime  domainMigrateSetMaxDowntime;
+    virDrvDomainMigrateSetMaxSpeed  domainMigrateSetMaxSpeed;
     virDrvDomainEventRegisterAny domainEventRegisterAny;
     virDrvDomainEventDeregisterAny domainEventDeregisterAny;
     virDrvDomainManagedSave domainManagedSave;

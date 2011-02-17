@@ -8625,6 +8625,7 @@ virDriver NAME(Driver) = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainMigrateSetMaxSpeed */
 #if VBOX_API_VERSION == 2002 || VBOX_API_VERSION == 4000
     NULL, /* domainEventRegisterAny */
     NULL, /* domainEventDeregisterAny */

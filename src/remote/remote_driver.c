@@ -11156,6 +11156,7 @@ static virDriver remote_driver = {
     remoteDomainGetJobInfo, /* domainGetJobInfo */
     remoteDomainAbortJob, /* domainFinishJob */
     remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainMigrateSetMaxSpeed */
     remoteDomainEventRegisterAny, /* domainEventRegisterAny */
     remoteDomainEventDeregisterAny, /* domainEventDeregisterAny */
     remoteDomainManagedSave, /* domainManagedSave */

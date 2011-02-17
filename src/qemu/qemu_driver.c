@@ -7121,6 +7121,7 @@ static virDriver qemuDriver = {
     qemuDomainGetJobInfo, /* domainGetJobInfo */
     qemuDomainAbortJob, /* domainAbortJob */
     qemuDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainMigrateSetMaxSpeed */
     qemuDomainEventRegisterAny, /* domainEventRegisterAny */
     qemuDomainEventDeregisterAny, /* domainEventDeregisterAny */
     qemuDomainManagedSave, /* domainManagedSave */
