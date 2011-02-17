@@ -243,19 +243,19 @@ virReleaseConnect(virConnectPtr conn) {
     virMutexUnlock(&conn->lock);
 
     if (conn->networkDriver)
-        conn->networkDriver->close (conn);
+        conn->networkDriver->close(conn);
     if (conn->interfaceDriver)
-        conn->interfaceDriver->close (conn);
+        conn->interfaceDriver->close(conn);
     if (conn->storageDriver)
-        conn->storageDriver->close (conn);
+        conn->storageDriver->close(conn);
     if (conn->deviceMonitor)
-        conn->deviceMonitor->close (conn);
+        conn->deviceMonitor->close(conn);
     if (conn->secretDriver)
-        conn->secretDriver->close (conn);
+        conn->secretDriver->close(conn);
     if (conn->nwfilterDriver)
-        conn->nwfilterDriver->close (conn);
+        conn->nwfilterDriver->close(conn);
     if (conn->driver)
-        conn->driver->close (conn);
+        conn->driver->close(conn);
 
     virMutexLock(&conn->lock);
 
