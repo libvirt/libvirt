@@ -66,11 +66,8 @@ int qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
     VIR_DEBUG("Process path %s for disk", path);
     /* XXX RO vs RW */
     rc = virCgroupAllowDevicePath(cgroup, path);
-    if (rc != 0) {
-        /* Get this for non-block devices */
-        if (rc == -EINVAL) {
-            VIR_DEBUG("Ignoring EINVAL for %s", path);
-        } else if (rc == -EACCES) { /* Get this for root squash NFS */
+    if (rc < 0) {
+        if (rc == -EACCES) { /* Get this for root squash NFS */
             VIR_DEBUG("Ignoring EACCES for %s", path);
         } else {
             virReportSystemError(-rc,
@@ -106,11 +103,8 @@ int qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
     VIR_DEBUG("Process path %s for disk", path);
     /* XXX RO vs RW */
     rc = virCgroupDenyDevicePath(cgroup, path);
-    if (rc != 0) {
-        /* Get this for non-block devices */
-        if (rc == -EINVAL) {
-            VIR_DEBUG("Ignoring EINVAL for %s", path);
-        } else if (rc == -EACCES) { /* Get this for root squash NFS */
+    if (rc < 0) {
+        if (rc == -EACCES) { /* Get this for root squash NFS */
             VIR_DEBUG("Ignoring EACCES for %s", path);
         } else {
             virReportSystemError(-rc,
@@ -148,7 +142,7 @@ int qemuSetupChardevCgroup(virDomainDefPtr def,
 
     VIR_DEBUG("Process path '%s' for disk", dev->source.data.file.path);
     rc = virCgroupAllowDevicePath(cgroup, dev->source.data.file.path);
-    if (rc != 0) {
+    if (rc < 0) {
         virReportSystemError(-rc,
                              _("Unable to allow device %s for %s"),
                              dev->source.data.file.path, def->name);
@@ -168,7 +162,7 @@ int qemuSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     rc = virCgroupAllowDevicePath(cgroup, path);
-    if (rc != 0) {
+    if (rc < 0) {
         virReportSystemError(-rc,
                              _("Unable to allow device %s"),
                              path);
