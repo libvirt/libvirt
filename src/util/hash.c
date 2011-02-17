@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "virterror_internal.h"
@@ -243,24 +244,16 @@ virHashFree(virHashTablePtr table, virHashDeallocator f)
     VIR_FREE(table);
 }
 
-/**
- * virHashAddEntry:
- * @table: the hash table
- * @name: the name of the userdata
- * @userdata: a pointer to the userdata
- *
- * Add the @userdata to the hash @table. This can later be retrieved
- * by using @name. Duplicate entries generate errors.
- *
- * Returns 0 the addition succeeded and -1 in case of error.
- */
-int
-virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
+static int
+virHashAddOrUpdateEntry(virHashTablePtr table, const char *name,
+                        void *userdata, virHashDeallocator f,
+                        bool is_update)
 {
     unsigned long key, len = 0;
     virHashEntryPtr entry;
     virHashEntryPtr insert;
     char *new_name;
+    bool found;
 
     if ((table == NULL) || (name == NULL))
         return (-1);
@@ -268,18 +261,32 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
     /*
      * Check for duplicate and insertion location.
      */
+    found = false;
     key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0) {
         insert = NULL;
     } else {
         for (insert = &(table->table[key]); insert->next != NULL;
              insert = insert->next) {
-            if (STREQ(insert->name, name))
-                return (-1);
+            if (STREQ(insert->name, name)) {
+                found = true;
+                break;
+            }
             len++;
         }
         if (STREQ(insert->name, name))
+            found = true;
+    }
+
+    if (found) {
+        if (is_update) {
+            if (f)
+                f(insert->payload, insert->name);
+            insert->payload = userdata;
+            return (0);
+        } else {
             return (-1);
+        }
     }
 
     if (insert == NULL) {
@@ -315,6 +322,23 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
 }
 
 /**
+ * virHashAddEntry:
+ * @table: the hash table
+ * @name: the name of the userdata
+ * @userdata: a pointer to the userdata
+ *
+ * Add the @userdata to the hash @table. This can later be retrieved
+ * by using @name. Duplicate entries generate errors.
+ *
+ * Returns 0 the addition succeeded and -1 in case of error.
+ */
+int
+virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
+{
+    return virHashAddOrUpdateEntry(table, name, userdata, NULL, false);
+}
+
+/**
  * virHashUpdateEntry:
  * @table: the hash table
  * @name: the name of the userdata
@@ -331,67 +355,7 @@ int
 virHashUpdateEntry(virHashTablePtr table, const char *name,
                    void *userdata, virHashDeallocator f)
 {
-    unsigned long key, len = 0;
-    virHashEntryPtr entry;
-    virHashEntryPtr insert;
-    char *new_name;
-
-    if ((table == NULL) || name == NULL)
-        return (-1);
-
-    /*
-     * Check for duplicate and insertion location.
-     */
-    key = virHashComputeKey(table, name);
-    if (table->table[key].valid == 0) {
-        insert = NULL;
-    } else {
-        for (insert = &(table->table[key]); insert->next != NULL;
-             insert = insert->next) {
-            if (STREQ(insert->name, name)) {
-                if (f)
-                    f(insert->payload, insert->name);
-                insert->payload = userdata;
-                return (0);
-            }
-            len++;
-        }
-        if (STREQ(insert->name, name)) {
-            if (f)
-                f(insert->payload, insert->name);
-            insert->payload = userdata;
-            return (0);
-        }
-    }
-
-    if (insert == NULL) {
-        entry = &(table->table[key]);
-    } else {
-        if (VIR_ALLOC(entry) < 0)
-            return (-1);
-    }
-
-    new_name= strdup(name);
-    if (new_name == NULL) {
-        if (insert != NULL)
-            VIR_FREE(entry);
-        return (-1);
-    }
-    entry->name = new_name;
-    entry->payload = userdata;
-    entry->next = NULL;
-    entry->valid = 1;
-    table->nbElems++;
-
-
-    if (insert != NULL) {
-        insert->next = entry;
-    }
-
-    if (len > MAX_HASH_LEN)
-        virHashGrow(table, MAX_HASH_LEN * table->size);
-
-    return (0);
+    return virHashAddOrUpdateEntry(table, name, userdata, f, true);
 }
 
 /**
