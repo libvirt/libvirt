@@ -317,9 +317,6 @@ remoteInitializeGnuTLS (void)
 {
     int err;
 
-    /* Initialise GnuTLS. */
-    gnutls_global_init ();
-
     err = gnutls_certificate_allocate_credentials (&x509_cred);
     if (err) {
         VIR_ERROR(_("gnutls_certificate_allocate_credentials: %s"),
@@ -3309,6 +3306,11 @@ int main(int argc, char **argv) {
         ret = VIR_DAEMON_ERR_PRIVS;
         goto error;
     }
+
+    /* Initialise GnuTLS. Required even if we don't use TLS
+     * for libvirtd, because QEMU driver needs to be able to
+     * parse x590 certificates for seamless migration */
+    gnutls_global_init();
 
     if (!(server = qemudInitialize())) {
         ret = VIR_DAEMON_ERR_INIT;
