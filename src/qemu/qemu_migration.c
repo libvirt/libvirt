@@ -144,6 +144,17 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0)
                 VIR_WARN0("Unable to set migration downtime");
+        } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_SPEED) {
+            unsigned long bandwidth = priv->jobSignalsData.migrateBandwidth;
+
+            priv->jobSignals ^= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
+            priv->jobSignalsData.migrateBandwidth = 0;
+            VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            if (rc < 0)
+                VIR_WARN0("Unable to set migration speed");
         }
 
         /* Repeat check because the job signals might have caused

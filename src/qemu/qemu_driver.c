@@ -6071,6 +6071,55 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
+                             unsigned long bandwidth,
+                             unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (priv->jobActive != QEMU_JOB_MIGRATION_OUT) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not being migrated"));
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Requesting migration speed change to %luMbs", bandwidth);
+    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
+    priv->jobSignalsData.migrateBandwidth = bandwidth;
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
 static char *qemuFindQemuImgBinary(void)
 {
     char *ret;
@@ -7121,7 +7170,7 @@ static virDriver qemuDriver = {
     qemuDomainGetJobInfo, /* domainGetJobInfo */
     qemuDomainAbortJob, /* domainAbortJob */
     qemuDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
+    qemuDomainMigrateSetMaxSpeed, /* domainMigrateSetMaxSpeed */
     qemuDomainEventRegisterAny, /* domainEventRegisterAny */
     qemuDomainEventDeregisterAny, /* domainEventDeregisterAny */
     qemuDomainManagedSave, /* domainManagedSave */
