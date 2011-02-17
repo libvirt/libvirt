@@ -4303,7 +4303,9 @@ endjob:
     return ret;
 }
 
-/* this internal function expects the driver lock to already be held on entry */
+/* This internal function expects the driver lock to already be held on
+ * entry and the vm must be active.
+ */
 static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                                virDomainObjPtr vm, const char *path,
                                int compressed)
@@ -4331,12 +4333,6 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto endjob;
-    }
 
     priv->jobActive = QEMU_JOB_SAVE;
 
@@ -4653,6 +4649,12 @@ static int qemudDomainSave(virDomainPtr dom, const char *path)
         virUUIDFormat(dom->uuid, uuidstr);
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
         goto cleanup;
     }
 
