@@ -1074,7 +1074,8 @@ EXTRA_DIST += \
 
 BUILT_SOURCES += libvirt.syms libvirt.def libvirt_qemu.def
 
-libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
+libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)rm -f $@-tmp $@ ; \
 	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
 	cat $(srcdir)/libvirt_public.syms >>$@-tmp && \
