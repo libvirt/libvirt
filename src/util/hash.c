@@ -331,7 +331,7 @@ int
 virHashUpdateEntry(virHashTablePtr table, const char *name,
                    void *userdata, virHashDeallocator f)
 {
-    unsigned long key;
+    unsigned long key, len = 0;
     virHashEntryPtr entry;
     virHashEntryPtr insert;
     char *new_name;
@@ -354,6 +354,7 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
                 insert->payload = userdata;
                 return (0);
             }
+            len++;
         }
         if (STREQ(insert->name, name)) {
             if (f)
@@ -386,6 +387,10 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
     if (insert != NULL) {
         insert->next = entry;
     }
+
+    if (len > MAX_HASH_LEN)
+        virHashGrow(table, MAX_HASH_LEN * table->size);
+
     return (0);
 }
 
