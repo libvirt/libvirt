@@ -1276,6 +1276,11 @@ struct remote_domain_migrate_set_max_downtime_args {
 	uint64_t                   downtime;
 	u_int                      flags;
 };
+struct remote_domain_migrate_set_max_speed_args {
+	remote_nonnull_domain      dom;
+	uint64_t                   bandwidth;
+	u_int                      flags;
+};
 struct remote_domain_events_register_any_args {
 	int                        eventID;
 };

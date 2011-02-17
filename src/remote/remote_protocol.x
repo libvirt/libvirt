@@ -1760,6 +1760,12 @@ struct remote_domain_migrate_set_max_downtime_args {
     unsigned flags;
 };
 
+struct remote_domain_migrate_set_max_speed_args {
+    remote_nonnull_domain dom;
+    unsigned hyper bandwidth;
+    unsigned flags;
+};
+
 struct remote_domain_events_register_any_args {
     int eventID;
 };
@@ -2152,7 +2158,8 @@ enum remote_procedure {
     REMOTE_PROC_GET_SYSINFO = 203,
     REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204,
     REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205,
-    REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206
+    REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206,
+    REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

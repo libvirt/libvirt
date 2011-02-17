@@ -6563,6 +6563,34 @@ remoteDispatchDomainMigrateSetMaxDowntime(struct qemud_server *server ATTRIBUTE_
 }
 
 static int
+remoteDispatchDomainMigrateSetMaxSpeed(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                       remote_error *rerr,
+                                       remote_domain_migrate_set_max_speed_args *args,
+                                       void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+
+    dom = get_nonnull_domain(conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainMigrateSetMaxSpeed(dom, args->bandwidth, args->flags) == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainFree(dom);
+
+    return 0;
+}
+
+static int
 remoteDispatchDomainSnapshotCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
                                        struct qemud_client *client ATTRIBUTE_UNUSED,
                                        virConnectPtr conn,

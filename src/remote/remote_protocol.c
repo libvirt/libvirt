@@ -3508,6 +3508,19 @@ xdr_remote_domain_migrate_set_max_downtime_args (XDR *xdrs, remote_domain_migrat
 }
 
 bool_t
+xdr_remote_domain_migrate_set_max_speed_args (XDR *xdrs, remote_domain_migrate_set_max_speed_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->bandwidth))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_events_register_any_args (XDR *xdrs, remote_domain_events_register_any_args *objp)
 {
 

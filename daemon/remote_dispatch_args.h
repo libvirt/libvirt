@@ -175,3 +175,4 @@
     remote_domain_set_memory_flags_args val_remote_domain_set_memory_flags_args;
     remote_domain_set_blkio_parameters_args val_remote_domain_set_blkio_parameters_args;
     remote_domain_get_blkio_parameters_args val_remote_domain_get_blkio_parameters_args;
+    remote_domain_migrate_set_max_speed_args val_remote_domain_migrate_set_max_speed_args;

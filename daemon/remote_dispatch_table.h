@@ -1037,3 +1037,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_get_blkio_parameters_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_get_blkio_parameters_ret,
 },
+{   /* DomainMigrateSetMaxSpeed => 207 */
+    .fn = (dispatch_fn) remoteDispatchDomainMigrateSetMaxSpeed,
+    .args_filter = (xdrproc_t) xdr_remote_domain_migrate_set_max_speed_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

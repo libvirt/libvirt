@@ -1982,6 +1982,13 @@ struct remote_domain_migrate_set_max_downtime_args {
 };
 typedef struct remote_domain_migrate_set_max_downtime_args remote_domain_migrate_set_max_downtime_args;
 
+struct remote_domain_migrate_set_max_speed_args {
+        remote_nonnull_domain dom;
+        uint64_t bandwidth;
+        u_int flags;
+};
+typedef struct remote_domain_migrate_set_max_speed_args remote_domain_migrate_set_max_speed_args;
+
 struct remote_domain_events_register_any_args {
         int eventID;
 };
@@ -2387,6 +2394,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204,
         REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205,
         REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206,
+        REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2736,6 +2744,7 @@ extern  bool_t xdr_remote_domain_get_job_info_args (XDR *, remote_domain_get_job
 extern  bool_t xdr_remote_domain_get_job_info_ret (XDR *, remote_domain_get_job_info_ret*);
 extern  bool_t xdr_remote_domain_abort_job_args (XDR *, remote_domain_abort_job_args*);
 extern  bool_t xdr_remote_domain_migrate_set_max_downtime_args (XDR *, remote_domain_migrate_set_max_downtime_args*);
+extern  bool_t xdr_remote_domain_migrate_set_max_speed_args (XDR *, remote_domain_migrate_set_max_speed_args*);
 extern  bool_t xdr_remote_domain_events_register_any_args (XDR *, remote_domain_events_register_any_args*);
 extern  bool_t xdr_remote_domain_events_deregister_any_args (XDR *, remote_domain_events_deregister_any_args*);
 extern  bool_t xdr_remote_domain_event_reboot_msg (XDR *, remote_domain_event_reboot_msg*);
@@ -3090,6 +3099,7 @@ extern bool_t xdr_remote_domain_get_job_info_args ();
 extern bool_t xdr_remote_domain_get_job_info_ret ();
 extern bool_t xdr_remote_domain_abort_job_args ();
 extern bool_t xdr_remote_domain_migrate_set_max_downtime_args ();
+extern bool_t xdr_remote_domain_migrate_set_max_speed_args ();
 extern bool_t xdr_remote_domain_events_register_any_args ();
 extern bool_t xdr_remote_domain_events_deregister_any_args ();
 extern bool_t xdr_remote_domain_event_reboot_msg ();

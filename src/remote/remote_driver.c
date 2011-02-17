@@ -9183,6 +9183,35 @@ done:
     return rv;
 }
 
+static int
+remoteDomainMigrateSetMaxSpeed(virDomainPtr domain,
+                               unsigned long bandwidth,
+                               unsigned int flags)
+{
+    struct private_data *priv = domain->conn->privateData;
+    remote_domain_migrate_set_max_speed_args args;
+    int rv = -1;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.bandwidth = bandwidth;
+    args.flags = flags;
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED,
+             (xdrproc_t) xdr_remote_domain_migrate_set_max_speed_args,
+             (char *) &args,
+             (xdrproc_t) xdr_void,
+             (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static virDomainSnapshotPtr
 remoteDomainSnapshotCreateXML(virDomainPtr domain,
                               const char *xmlDesc,
@@ -11156,7 +11185,7 @@ static virDriver remote_driver = {
     remoteDomainGetJobInfo, /* domainGetJobInfo */
     remoteDomainAbortJob, /* domainFinishJob */
     remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
+    remoteDomainMigrateSetMaxSpeed, /* domainMigrateSetMaxSpeed */
     remoteDomainEventRegisterAny, /* domainEventRegisterAny */
     remoteDomainEventDeregisterAny, /* domainEventDeregisterAny */
     remoteDomainManagedSave, /* domainManagedSave */
