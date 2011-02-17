@@ -3,6 +3,7 @@
  *
  * Reference: Your favorite introductory book on algorithms
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -26,6 +27,7 @@
 #include "virterror_internal.h"
 #include "hash.h"
 #include "memory.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -190,9 +192,8 @@ virHashGrow(virHashTablePtr table, int size)
     VIR_FREE(oldtable);
 
 #ifdef DEBUG_GROW
-    xmlGenericError(xmlGenericErrorContext,
-                    "virHashGrow : from %d to %d, %d elems\n", oldsize,
-                    size, nbElem);
+    VIR_DEBUG("virHashGrow : from %d to %d, %ld elems\n", oldsize,
+              size, nbElem);
 #endif
 
     return (0);
