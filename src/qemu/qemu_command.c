@@ -3173,7 +3173,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         int bootCD = 0, bootFloppy = 0, bootDisk = 0;
 
         /* If QEMU supports boot=on for -drive param... */
-        if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT) {
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT && !def->os.kernel) {
             for (i = 0 ; i < def->os.nBootDevs ; i++) {
                 switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_CDROM:
