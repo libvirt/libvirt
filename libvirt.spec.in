@@ -973,6 +973,13 @@ fi
 %endif
 
 %changelog
+* Thu Feb 17 2011 Daniel Veillard <veillard@redhat.com> - 0.8.8-1
+- expose new API for sysinfo extraction
+- cgroup blkio weight support
+- smartcard device support
+- qemu: Support per-device boot ordering
+- Various improvements and bug fixes
+
 * Tue Jan  4 2011 Daniel Veillard <veillard@redhat.com> - 0.8.7-1
 - Preliminary support for VirtualBox 4.0
 - IPv6 support
