@@ -4121,7 +4121,11 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!ret && virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+    /* update domain status forcibly because the domain status may be changed
+     * even if we attach the device failed. For example, a new controller may
+     * be created.
+     */
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         ret = -1;
 
 endjob:
