@@ -995,10 +995,8 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
      * Note that the monitor itself can be on a pty, so we still need to try the
      * log output method. */
     paths = virHashCreate(0);
-    if (paths == NULL) {
-        virReportOOMError();
+    if (paths == NULL)
         goto cleanup;
-    }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     qemuDomainObjPrivatePtr priv = vm->privateData;

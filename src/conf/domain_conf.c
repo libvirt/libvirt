@@ -394,10 +394,8 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
 int virDomainObjListInit(virDomainObjListPtr doms)
 {
     doms->objs = virHashCreate(50);
-    if (!doms->objs) {
-        virReportOOMError();
+    if (!doms->objs)
         return -1;
-    }
     return 0;
 }
 
@@ -1061,7 +1059,6 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
     virUUIDFormat(def->uuid, uuidstr);
     if (virHashAddEntry(doms->objs, uuidstr, domain) < 0) {
         VIR_FREE(domain);
-        virReportOOMError();
         return NULL;
     }
 
@@ -8189,10 +8186,8 @@ static virDomainObjPtr virDomainLoadStatus(virCapsPtr caps,
         goto error;
     }
 
-    if (virHashAddEntry(doms->objs, uuidstr, obj) < 0) {
-        virReportOOMError();
+    if (virHashAddEntry(doms->objs, uuidstr, obj) < 0)
         goto error;
-    }
 
     if (notify)
         (*notify)(obj, 1, opaque);
@@ -8750,7 +8745,6 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 
     if (virHashAddEntry(snapshots->objs, snap->def->name, snap) < 0) {
         VIR_FREE(snap);
-        virReportOOMError();
         return NULL;
     }
 
@@ -8761,10 +8755,8 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr snapshots)
 {
     snapshots->objs = virHashCreate(50);
-    if (!snapshots->objs) {
-        virReportOOMError();
+    if (!snapshots->objs)
         return -1;
-    }
     return 0;
 }
 
@@ -9053,10 +9045,8 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
                                  _("could not close file %s"),
                                  path);
 
-        if (virHashAddEntry(paths, path, (void*)0x1) < 0) {
-            virReportOOMError();
+        if (virHashAddEntry(paths, path, (void*)0x1) < 0)
             goto cleanup;
-        }
 
         depth++;
         nextpath = meta.backingStore;

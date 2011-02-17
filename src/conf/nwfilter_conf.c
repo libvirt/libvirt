@@ -2300,10 +2300,8 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
         .skipInterfaces = virHashCreate(0),
     };
 
-    if (!cb.skipInterfaces) {
-        virReportOOMError();
+    if (!cb.skipInterfaces)
         return 1;
-    }
 
     for (i = 0; i < nCallbackDriver; i++) {
         callbackDrvArray[i]->vmFilterRebuild(conn,

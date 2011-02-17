@@ -526,7 +526,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
         virUUIDFormat(dom->def->uuid, uuidstr);
         if (virHashAddEntry(driver->domains.objs, uuidstr, dom) < 0)
-            goto no_memory;
+            goto cleanup;
 
         virDomainObjUnlock(dom);
         dom = NULL;

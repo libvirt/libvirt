@@ -121,7 +121,6 @@ virNWFilterHashTableCreate(int n) {
     }
     ret->hashTable = virHashCreate(n);
     if (!ret->hashTable) {
-        virReportOOMError();
         VIR_FREE(ret);
         return NULL;
     }

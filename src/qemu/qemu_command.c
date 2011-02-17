@@ -753,7 +753,7 @@ qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
         goto no_memory;
 
     if (!(addrs->used = virHashCreate(10)))
-        goto no_memory;
+        goto error;
 
     if (virDomainDeviceInfoIterate(def, qemuCollectPCIAddress, addrs) < 0)
         goto error;

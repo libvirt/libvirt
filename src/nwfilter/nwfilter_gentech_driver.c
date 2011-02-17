@@ -1037,8 +1037,6 @@ virNWFilterDomainFWUpdateCB(void *payload,
                         cb->err = virHashAddEntry(cb->skipInterfaces,
                                                   net->ifname,
                                                   (void *)~0);
-                        if (cb->err)
-                            virReportOOMError();
                     }
                     break;
 

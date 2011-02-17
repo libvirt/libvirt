@@ -165,7 +165,6 @@ virNWFilterLockIface(const char *ifname) {
         }
 
         while (virHashAddEntry(ifaceLockMap, ifname, ifaceLock)) {
-            virReportOOMError();
             VIR_FREE(ifaceLock);
             goto err_exit;
         }
@@ -825,7 +824,6 @@ virNWFilterLearnInit(void) {
 
     pendingLearnReq = virHashCreate(0);
     if (!pendingLearnReq) {
-        virReportOOMError();
         return 1;
     }
 
@@ -848,7 +846,6 @@ virNWFilterLearnInit(void) {
 
     ifaceLockMap = virHashCreate(0);
     if (!ifaceLockMap) {
-        virReportOOMError();
         virNWFilterLearnShutdown();
         return 1;
     }
