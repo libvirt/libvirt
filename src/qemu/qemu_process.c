@@ -1008,9 +1008,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
         ret = qemuProcessFindCharDevicePTYsMonitor(vm, paths);
 
 cleanup:
-    if (paths) {
-        virHashFree(paths, qemuProcessFreePtyPath);
-    }
+    virHashFree(paths, qemuProcessFreePtyPath);
 
     if (kill(vm->pid, 0) == -1 && errno == ESRCH) {
         /* VM is dead, any other error raised in the interim is probably

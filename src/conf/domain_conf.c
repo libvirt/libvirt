@@ -410,8 +410,7 @@ static void virDomainObjListDeallocator(void *payload, const char *name ATTRIBUT
 
 void virDomainObjListDeinit(virDomainObjListPtr doms)
 {
-    if (doms->objs)
-        virHashFree(doms->objs, virDomainObjListDeallocator);
+    virHashFree(doms->objs, virDomainObjListDeallocator);
 }
 
 
@@ -8770,8 +8769,7 @@ static void virDomainSnapshotObjListDeallocator(void *payload,
 
 static void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots)
 {
-    if (snapshots->objs)
-        virHashFree(snapshots->objs, virDomainSnapshotObjListDeallocator);
+    virHashFree(snapshots->objs, virDomainSnapshotObjListDeallocator);
 }
 
 struct virDomainSnapshotNameData {

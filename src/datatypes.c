@@ -209,22 +209,14 @@ virGetConnect(void) {
 
 failed:
     if (ret != NULL) {
-        if (ret->domains != NULL)
-            virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
-        if (ret->networks != NULL)
-            virHashFree(ret->networks, (virHashDeallocator) virNetworkFreeName);
-        if (ret->interfaces != NULL)
-           virHashFree(ret->interfaces, (virHashDeallocator) virInterfaceFreeName);
-        if (ret->storagePools != NULL)
-            virHashFree(ret->storagePools, (virHashDeallocator) virStoragePoolFreeName);
-        if (ret->storageVols != NULL)
-            virHashFree(ret->storageVols, (virHashDeallocator) virStorageVolFreeName);
-        if (ret->nodeDevices != NULL)
-            virHashFree(ret->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
-        if (ret->secrets != NULL)
-            virHashFree(ret->secrets, (virHashDeallocator) virSecretFreeName);
-        if (ret->nwfilters != NULL)
-            virHashFree(ret->nwfilters, (virHashDeallocator) virNWFilterFreeName);
+        virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
+        virHashFree(ret->networks, (virHashDeallocator) virNetworkFreeName);
+        virHashFree(ret->interfaces, (virHashDeallocator) virInterfaceFreeName);
+        virHashFree(ret->storagePools, (virHashDeallocator) virStoragePoolFreeName);
+        virHashFree(ret->storageVols, (virHashDeallocator) virStorageVolFreeName);
+        virHashFree(ret->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
+        virHashFree(ret->secrets, (virHashDeallocator) virSecretFreeName);
+        virHashFree(ret->nwfilters, (virHashDeallocator) virNWFilterFreeName);
 
         virMutexDestroy(&ret->lock);
         VIR_FREE(ret);
@@ -267,22 +259,14 @@ virReleaseConnect(virConnectPtr conn) {
 
     virMutexLock(&conn->lock);
 
-    if (conn->domains != NULL)
-        virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
-    if (conn->networks != NULL)
-        virHashFree(conn->networks, (virHashDeallocator) virNetworkFreeName);
-    if (conn->interfaces != NULL)
-        virHashFree(conn->interfaces, (virHashDeallocator) virInterfaceFreeName);
-    if (conn->storagePools != NULL)
-        virHashFree(conn->storagePools, (virHashDeallocator) virStoragePoolFreeName);
-    if (conn->storageVols != NULL)
-        virHashFree(conn->storageVols, (virHashDeallocator) virStorageVolFreeName);
-    if (conn->nodeDevices != NULL)
-        virHashFree(conn->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
-    if (conn->secrets != NULL)
-        virHashFree(conn->secrets, (virHashDeallocator) virSecretFreeName);
-    if (conn->nwfilters != NULL)
-        virHashFree(conn->nwfilters, (virHashDeallocator) virNWFilterFreeName);
+    virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
+    virHashFree(conn->networks, (virHashDeallocator) virNetworkFreeName);
+    virHashFree(conn->interfaces, (virHashDeallocator) virInterfaceFreeName);
+    virHashFree(conn->storagePools, (virHashDeallocator) virStoragePoolFreeName);
+    virHashFree(conn->storageVols, (virHashDeallocator) virStorageVolFreeName);
+    virHashFree(conn->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
+    virHashFree(conn->secrets, (virHashDeallocator) virSecretFreeName);
+    virHashFree(conn->nwfilters, (virHashDeallocator) virNWFilterFreeName);
 
     virResetError(&conn->err);
 
@@ -435,8 +419,7 @@ virReleaseDomain(virDomainPtr domain) {
     domain->magic = -1;
     domain->id = -1;
     VIR_FREE(domain->name);
-    if (domain->snapshots != NULL)
-        virHashFree(domain->snapshots, (virHashDeallocator) virDomainSnapshotFreeName);
+    virHashFree(domain->snapshots, (virHashDeallocator) virDomainSnapshotFreeName);
     VIR_FREE(domain);
 
     if (conn) {
