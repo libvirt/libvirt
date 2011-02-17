@@ -114,6 +114,13 @@ int qemuMonitorTextMigrate(qemuMonitorPtr mon,
 
 int qemuMonitorTextMigrateCancel(qemuMonitorPtr mon);
 
+int qemuMonitorTextGraphicsRelocate(qemuMonitorPtr mon,
+                                    int type,
+                                    const char *hostname,
+                                    int port,
+                                    int tlsPort,
+                                    const char *tlsSubject);
+
 int qemuMonitorTextAddUSBDisk(qemuMonitorPtr mon,
                               const char *path);
 

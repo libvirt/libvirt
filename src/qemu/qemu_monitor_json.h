@@ -118,6 +118,13 @@ int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
 
 int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon);
 
+int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
+                                    int type,
+                                    const char *hostname,
+                                    int port,
+                                    int tlsPort,
+                                    const char *tlsSubject);
+
 int qemuMonitorJSONAddUSBDisk(qemuMonitorPtr mon,
                               const char *path);
 

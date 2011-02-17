@@ -305,6 +305,12 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);
 
+int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
+                                int type,
+                                const char *hostname,
+                                int port,
+                                int tlsPort,
+                                const char *tlsSubject);
 
 /* XXX disk driver type eg,  qcow/etc.
  * XXX cache mode

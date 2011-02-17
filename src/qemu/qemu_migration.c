@@ -740,6 +740,39 @@ cleanup:
 }
 
 
+static int
+qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
+                                  virDomainObjPtr vm,
+                                  qemuMigrationCookiePtr cookie)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (!cookie)
+        return 0;
+
+    if (!cookie->graphics)
+        return 0;
+
+    /* QEMU doesn't support VNC relocation yet, so
+     * skip it to avoid generating an error
+     */
+    if (cookie->graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
+        return 0;
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorGraphicsRelocate(priv->mon,
+                                      cookie->graphics->type,
+                                      cookie->hostname,
+                                      cookie->graphics->port,
+                                      cookie->graphics->tlsPort,
+                                      cookie->graphics->tlsSubject);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    return ret;
+}
+
+
 /* Prepare is the first step, and it runs on the destination host.
  *
  * This version starts an empty VM listening on a localhost TCP port, and
@@ -1127,6 +1160,9 @@ static int doNativeMigrate(struct qemud_driver *driver,
                                        QEMU_MIGRATION_COOKIE_GRAPHICS)))
         goto cleanup;
 
+    if (qemuDomainMigrateGraphicsRelocate(driver, vm, mig) < 0)
+        VIR_WARN("unable to provide data for graphics client relocation");
+
     /* Issue the migrate command. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
         /* HACK: source host generates bogus URIs, so fix them up */
@@ -1259,6 +1295,9 @@ static int doTunnelMigrate(struct qemud_driver *driver,
      *   3. start migration on source
      */
 
+    /*
+     * XXX need to support migration cookies
+     */
 
     /* Stage 1. setup local support infrastructure */
 

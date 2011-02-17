@@ -1640,6 +1640,37 @@ int qemuMonitorMigrateCancel(qemuMonitorPtr mon)
     return ret;
 }
 
+
+int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
+                                int type,
+                                const char *hostname,
+                                int port,
+                                int tlsPort,
+                                const char *tlsSubject)
+{
+    int ret;
+    VIR_DEBUG("mon=%p type=%d hostname=%s port=%d tlsPort=%d tlsSubject=%s",
+              mon, type, hostname, port, tlsPort, NULLSTR(tlsSubject));
+
+    if (mon->json)
+        ret = qemuMonitorJSONGraphicsRelocate(mon,
+                                              type,
+                                              hostname,
+                                              port,
+                                              tlsPort,
+                                              tlsSubject);
+    else
+        ret = qemuMonitorTextGraphicsRelocate(mon,
+                                              type,
+                                              hostname,
+                                              port,
+                                              tlsPort,
+                                              tlsSubject);
+
+    return ret;
+}
+
+
 int qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
                           const char *path)
 {
