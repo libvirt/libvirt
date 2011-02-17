@@ -59,18 +59,6 @@ enum diskCommand {
     DISK_GEOMETRY
 };
 
-static int
-is_dm_device(const char *devname)
-{
-    struct stat buf;
-
-    if (devname && !stat(devname, &buf) && dm_is_dm_major(major(buf.st_rdev))) {
-        return 1;
-    }
-
-    return 0;
-}
-
 int main(int argc, char **argv)
 {
     PedDevice *dev;
@@ -96,7 +84,7 @@ int main(int argc, char **argv)
     }
 
     path = argv[1];
-    if (is_dm_device(path)) {
+    if (virIsDevMapperDevice(path)) {
         partsep = "p";
         canonical_path = strdup(path);
         if (canonical_path == NULL) {

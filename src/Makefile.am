@@ -437,9 +437,9 @@ libvirt_la_BUILT_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
-		$(AM_CFLAGS) $(AUDIT_CFLAGS)
+		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
-		$(LIB_PTHREAD) $(AUDIT_LIBS)
+		$(LIB_PTHREAD) $(AUDIT_LIBS) $(DEVMAPPER_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -1154,7 +1154,6 @@ libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
 libvirt_parthelper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
 libvirt_parthelper_LDADD =		\
 		$(LIBPARTED_LIBS)	\
-		$(DEVMAPPER_LIBS)	\
 		libvirt_util.la		\
 		../gnulib/lib/libgnu.la
 
@@ -1179,7 +1178,8 @@ libvirt_lxc_SOURCES =						\
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(LIB_PTHREAD) \
-		$(LIBNL_LIBS) $(AUDIT_LIBS) ../gnulib/lib/libgnu.la
+		$(LIBNL_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
+		../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
 		$(NUMACTL_CFLAGS)		\

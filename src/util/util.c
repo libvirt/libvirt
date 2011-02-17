@@ -45,6 +45,7 @@
 #include <string.h>
 #include <signal.h>
 #include <termios.h>
+#include <libdevmapper.h>
 #include "c-ctype.h"
 
 #ifdef HAVE_PATHS_H
@@ -3122,4 +3123,17 @@ virTimestamp(void)
     }
 
     return timestamp;
+}
+
+bool
+virIsDevMapperDevice(const char *devname)
+{
+    struct stat buf;
+
+    if (!stat(devname, &buf) &&
+        S_ISBLK(buf.st_mode) &&
+        dm_is_dm_major(major(buf.st_rdev)))
+            return true;
+
+    return false;
 }

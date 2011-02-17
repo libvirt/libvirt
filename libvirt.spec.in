@@ -279,6 +279,7 @@ Requires: iscsi-initiator-utils
 %if %{with_storage_disk}
 # For disk driver
 Requires: parted
+Requires: device-mapper
 %endif
 %if %{with_storage_mpath}
 # For multipath support

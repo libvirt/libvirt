@@ -296,4 +296,5 @@ int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
 
 char *virTimestamp(void);
 
+bool virIsDevMapperDevice(const char *devname) ATTRIBUTE_NONNULL(1);
 #endif /* __VIR_UTIL_H__ */
