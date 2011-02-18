@@ -1,0 +1,46 @@
+# libvirtd upstart job
+#
+# XXX wait for rc to get all dependent initscripts started
+# from sysv libvirtd initscript: Required-Start: $network messagebus
+start on stopped rc RUNLEVEL=[345]
+stop on runlevel [!345]
+
+respawn
+
+script
+    LIBVIRTD_CONFIG=
+    LIBVIRTD_ARGS=
+    KRB5_KTNAME=/etc/libvirt/krb5.tab
+
+    if [ -f /etc/sysconfig/libvirtd ]; then
+        . /etc/sysconfig/libvirtd
+    fi
+
+    export QEMU_AUDIO_DRV
+    export SDL_AUDIODRIVER
+    export KRB5_KTNAME
+
+    LIBVIRTD_CONFIG_ARGS=
+    if [ -n "$LIBVIRTD_CONFIG" ]; then
+        LIBVIRTD_CONFIG_ARGS="--config $LIBVIRTD_CONFIG"
+    fi
+
+    # DAEMON_COREFILE_LIMIT from /etc/sysconfig/libvirtd is not handled
+    # automatically
+    if [ -n "$DAEMON_COREFILE_LIMIT" ]; then
+        ulimit -c "$DAEMON_COREFILE_LIMIT"
+    fi
+
+    # Clean up a pidfile that might be left around
+    rm -f /var/run/libvirtd.pid
+
+    mkdir -p /var/cache/libvirt
+    rm -rf /var/cache/libvirt/*
+
+    exec /usr/sbin/libvirtd $LIBVIRTD_CONFIG_ARGS $LIBVIRTD_ARGS
+end script
+
+post-stop script
+    rm -f $PIDFILE
+    rm -rf /var/cache/libvirt/*
+end script

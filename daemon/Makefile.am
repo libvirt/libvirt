@@ -26,6 +26,7 @@ EXTRA_DIST =						\
 	remote_generate_stubs.pl			\
 	libvirtd.conf					\
 	libvirtd.init.in				\
+	libvirtd.upstart				\
 	libvirtd.policy-0				\
 	libvirtd.policy-1				\
 	libvirtd.sasl					\

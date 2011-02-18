@@ -895,6 +895,7 @@ fi
 %{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %{_sysconfdir}/rc.d/init.d/libvirtd
+%doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %if %{with_dtrace}
