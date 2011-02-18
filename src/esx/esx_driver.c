@@ -518,10 +518,11 @@ esxLookupHostSystemBiosUuid(esxPrivate *priv, unsigned char *uuid)
 
             if (strlen(dynamicProperty->val->string) > 0) {
                 if (virUUIDParse(dynamicProperty->val->string, uuid) < 0) {
-                    ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                              _("Could not parse UUID from string '%s'"),
-                              dynamicProperty->val->string);
-                    goto cleanup;
+                    VIR_WARN("Could not parse host UUID from string '%s'",
+                             dynamicProperty->val->string);
+
+                    /* HostSystem has an invalid UUID, ignore it */
+                    memset(uuid, 0, VIR_UUID_BUFLEN);
                 }
             } else {
                 /* HostSystem has an empty UUID */
