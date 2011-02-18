@@ -245,7 +245,7 @@ virErrorGenericFailure(virErrorPtr err)
     err->code = VIR_ERR_INTERNAL_ERROR;
     err->domain = VIR_FROM_NONE;
     err->level = VIR_ERR_ERROR;
-    err->message = strdup(_("Unknown failure"));
+    err->message = strdup(_("An error occurred, but the cause is unknown"));
 }
 
 
