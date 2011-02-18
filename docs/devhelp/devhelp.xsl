@@ -13,6 +13,13 @@
   <!-- Build keys for all symbols -->
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
 
+  <xsl:template match="/">
+    <xsl:document xmlns="http://www.devhelp.net/book" href="libvirt.devhelp"
+                  method="xml" encoding="UTF-8" indent="yes">
+      <xsl:apply-templates/>
+    </xsl:document>
+  </xsl:template>
+
   <xsl:template match="/api">
     <book title="{@name} Reference Manual" link="index.html" author="" name="{@name}">
       <xsl:apply-templates select="files"/>
