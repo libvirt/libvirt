@@ -64,7 +64,7 @@ dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in \
       $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
-patches = $(wildcard api_extension/*.patch)
+patches = $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/api_extension/*.patch))
 
 xml = \
   libvirt-api.xml \
