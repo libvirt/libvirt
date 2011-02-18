@@ -45,7 +45,9 @@
 #include <string.h>
 #include <signal.h>
 #include <termios.h>
-#include <libdevmapper.h>
+#if HAVE_LIBDEVMAPPER_H
+# include <libdevmapper.h>
+#endif
 #include "c-ctype.h"
 
 #ifdef HAVE_PATHS_H
@@ -3125,6 +3127,7 @@ virTimestamp(void)
     return timestamp;
 }
 
+#if HAVE_LIBDEVMAPPER_H
 bool
 virIsDevMapperDevice(const char *devname)
 {
@@ -3137,3 +3140,9 @@ virIsDevMapperDevice(const char *devname)
 
     return false;
 }
+#else
+bool virIsDevMapperDevice(const char *devname ATTRIBUTE_UNUSED)
+{
+    return false;
+}
+#endif

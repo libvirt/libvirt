@@ -1711,12 +1711,12 @@ if test "$with_storage_mpath" = "yes"; then
      save_LIBS="$LIBS"
      save_CFLAGS="$CFLAGS"
      DEVMAPPER_FOUND=yes
-     AC_CHECK_HEADER([libdevmapper.h],,[DEVMAPPER_FOUND=no])
      AC_CHECK_LIB([devmapper], [dm_task_run],,[DEVMAPPER_FOUND=no])
      DEVMAPPER_LIBS="-ldevmapper"
      LIBS="$save_LIBS"
      CFLAGS="$save_CFLAGS"
    fi
+   AC_CHECK_HEADERS([libdevmapper.h],,[DEVMAPPER_FOUND=no])
    if test "$DEVMAPPER_FOUND" = "no" ; then
      AC_MSG_ERROR([You must install device-mapper-devel/libdevmapper >= $DEVMAPPER_REQUIRED to compile libvirt])
    fi
