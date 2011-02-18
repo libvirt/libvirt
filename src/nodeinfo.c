@@ -468,7 +468,8 @@ nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
         long long mem;
         if (numa_node_size64(n, &mem) < 0) {
             nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Failed to query NUMA free memory"));
+                           _("Failed to query NUMA free memory for node: %d"),
+                           n);
             goto cleanup;
         }
         freeMems[numCells++] = mem;

@@ -2283,9 +2283,15 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     int ret;
     int cell, cell_given;
     unsigned long long memory;
-    unsigned long long *nodes = NULL;
+    xmlNodePtr *nodes = NULL;
+    unsigned long nodes_cnt;
+    unsigned long *nodes_id = NULL;
+    unsigned long long *nodes_free = NULL;
     int all_given;
-    virNodeInfo info;
+    int i;
+    char *cap_xml = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
 
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -2301,32 +2307,57 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (all_given) {
-        if (virNodeGetInfo(ctl->conn, &info) < 0) {
-            vshError(ctl, "%s", _("failed to get NUMA nodes count"));
+        cap_xml = virConnectGetCapabilities(ctl->conn);
+        if (!cap_xml) {
+            vshError(ctl, "%s", _("unable to get node capabilities"));
             goto cleanup;
         }
 
-        if (!info.nodes) {
-            vshError(ctl, "%s", _("no NUMA nodes present"));
+        xml = xmlReadDoc((const xmlChar *) cap_xml, "node.xml", NULL,
+                          XML_PARSE_NOENT | XML_PARSE_NONET |
+                          XML_PARSE_NOWARNING);
+
+        if (!xml) {
+            vshError(ctl, "%s", _("unable to get node capabilities"));
             goto cleanup;
         }
 
-        if (VIR_ALLOC_N(nodes, info.nodes) < 0) {
-            vshError(ctl, "%s", _("could not allocate memory"));
-            goto cleanup;
-        }
+        ctxt = xmlXPathNewContext(xml);
+        nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
+                                    ctxt, &nodes);
 
-        ret = virNodeGetCellsFreeMemory(ctl->conn, nodes, 0, info.nodes);
-        if (ret != info.nodes) {
+        if (nodes_cnt == -1) {
             vshError(ctl, "%s", _("could not get information about "
-                                  "all NUMA nodes"));
+                                  "NUMA topology"));
             goto cleanup;
+        }
+
+        nodes_free = vshCalloc(ctl, nodes_cnt, sizeof(*nodes_free));
+        nodes_id = vshCalloc(ctl, nodes_cnt, sizeof(*nodes_id));
+
+        for (i = 0; i < nodes_cnt; i++) {
+            unsigned long id;
+            char *val = virXMLPropString(nodes[i], "id");
+            if (virStrToLong_ul(val, NULL, 10, &id)) {
+                vshError(ctl, "%s", _("conversion from string failed"));
+                VIR_FREE(val);
+                goto cleanup;
+            }
+            VIR_FREE(val);
+            nodes_id[i]=id;
+            ret = virNodeGetCellsFreeMemory(ctl->conn, &(nodes_free[i]), id, 1);
+            if (ret != 1) {
+                vshError(ctl, _("failed to get free memory for NUMA node "
+                                "number: %lu"), id);
+                goto cleanup;
+            }
         }
 
         memory = 0;
-        for (cell = 0; cell < info.nodes; cell++) {
-            vshPrint(ctl, "%5d: %10llu kB\n", cell, (nodes[cell]/1024));
-            memory += nodes[cell];
+        for (cell = 0; cell < nodes_cnt; cell++) {
+            vshPrint(ctl, "%5lu: %10llu kB\n", nodes_id[cell],
+                    (nodes_free[cell]/1024));
+            memory += nodes_free[cell];
         }
 
         vshPrintExtra(ctl, "--------------------\n");
@@ -2351,7 +2382,13 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     func_ret = TRUE;
 
 cleanup:
+    xmlXPathFreeContext(ctxt);
+    if (xml)
+        xmlFreeDoc(xml);
     VIR_FREE(nodes);
+    VIR_FREE(nodes_free);
+    VIR_FREE(nodes_id);
+    VIR_FREE(cap_xml);
     return func_ret;
 }
 
