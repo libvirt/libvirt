@@ -2,7 +2,7 @@
  * nwfilter_conf.c: network filter XML processing
  *                  (derived from storage_conf.c)
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010 IBM Corporation
@@ -2299,7 +2299,7 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
         .conn = conn,
         .err = 0,
         .step = STEP_APPLY_NEW,
-        .skipInterfaces = virHashCreate(0),
+        .skipInterfaces = virHashCreate(0, NULL),
     };
 
     if (!cb.skipInterfaces)
@@ -2330,7 +2330,7 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
                                                  &cb);
     }
 
-    virHashFree(cb.skipInterfaces, NULL);
+    virHashFree(cb.skipInterfaces);
 
     return err;
 }

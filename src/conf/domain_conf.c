@@ -391,16 +391,8 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
-int virDomainObjListInit(virDomainObjListPtr doms)
-{
-    doms->objs = virHashCreate(50);
-    if (!doms->objs)
-        return -1;
-    return 0;
-}
-
-
-static void virDomainObjListDeallocator(void *payload, const char *name ATTRIBUTE_UNUSED)
+static void
+virDomainObjListDeallocator(void *payload, const char *name ATTRIBUTE_UNUSED)
 {
     virDomainObjPtr obj = payload;
     virDomainObjLock(obj);
@@ -408,9 +400,18 @@ static void virDomainObjListDeallocator(void *payload, const char *name ATTRIBUT
         virDomainObjUnlock(obj);
 }
 
+int virDomainObjListInit(virDomainObjListPtr doms)
+{
+    doms->objs = virHashCreate(50, virDomainObjListDeallocator);
+    if (!doms->objs)
+        return -1;
+    return 0;
+}
+
+
 void virDomainObjListDeinit(virDomainObjListPtr doms)
 {
-    virHashFree(doms->objs, virDomainObjListDeallocator);
+    virHashFree(doms->objs);
 }
 
 
@@ -8751,25 +8752,27 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 }
 
 /* Snapshot Obj List functions */
-int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr snapshots)
-{
-    snapshots->objs = virHashCreate(50);
-    if (!snapshots->objs)
-        return -1;
-    return 0;
-}
-
-static void virDomainSnapshotObjListDeallocator(void *payload,
-                                                const char *name ATTRIBUTE_UNUSED)
+static void
+virDomainSnapshotObjListDeallocator(void *payload,
+                                    const char *name ATTRIBUTE_UNUSED)
 {
     virDomainSnapshotObjPtr obj = payload;
 
     virDomainSnapshotObjUnref(obj);
 }
 
-static void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots)
+int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr snapshots)
 {
-    virHashFree(snapshots->objs, virDomainSnapshotObjListDeallocator);
+    snapshots->objs = virHashCreate(50, virDomainSnapshotObjListDeallocator);
+    if (!snapshots->objs)
+        return -1;
+    return 0;
+}
+
+static void
+virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots)
+{
+    virHashFree(snapshots->objs);
 }
 
 struct virDomainSnapshotNameData {
@@ -9002,7 +9005,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         }
     }
 
-    paths = virHashCreate(5);
+    paths = virHashCreate(5, NULL);
 
     do {
         virStorageFileMetadata meta;
@@ -9070,7 +9073,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     ret = 0;
 
 cleanup:
-    virHashFree(paths, NULL);
+    virHashFree(paths);
     VIR_FREE(nextpath);
 
     return ret;

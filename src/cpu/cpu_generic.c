@@ -2,7 +2,7 @@
  * cpu_generic.c: CPU manipulation driver for architectures which are not
  * handled by their own driver
  *
- * Copyright (C) 2009--2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,14 +39,14 @@ genericHashFeatures(virCPUDefPtr cpu)
     virHashTablePtr hash;
     unsigned int i;
 
-    if ((hash = virHashCreate(cpu->nfeatures)) == NULL)
+    if ((hash = virHashCreate(cpu->nfeatures, NULL)) == NULL)
         return NULL;
 
     for (i = 0; i < cpu->nfeatures; i++) {
         if (virHashAddEntry(hash,
                             cpu->features[i].name,
                             cpu->features + i)) {
-            virHashFree(hash, NULL);
+            virHashFree(hash);
             return NULL;
         }
     }
@@ -105,7 +105,7 @@ genericCompare(virCPUDefPtr host,
         ret = VIR_CPU_COMPARE_IDENTICAL;
 
 cleanup:
-    virHashFree(hash, NULL);
+    virHashFree(hash);
     return ret;
 }
 
@@ -178,7 +178,7 @@ genericBaseline(virCPUDefPtr *cpus,
             }
         }
 
-        virHashFree(hash, NULL);
+        virHashFree(hash);
     }
 
     if (VIR_ALLOC_N(cpu->features, count) < 0)

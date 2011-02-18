@@ -1,6 +1,7 @@
 /*
  * nwfilter_params.c: parsing and data maintenance of filter parameters
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -102,7 +103,7 @@ virNWFilterHashTableFree(virNWFilterHashTablePtr table)
     int i;
     if (!table)
         return;
-    virHashFree(table->hashTable, hashDealloc);
+    virHashFree(table->hashTable);
 
     for (i = 0; i < table->nNames; i++)
         VIR_FREE(table->names[i]);
@@ -119,7 +120,7 @@ virNWFilterHashTableCreate(int n) {
         virReportOOMError();
         return NULL;
     }
-    ret->hashTable = virHashCreate(n);
+    ret->hashTable = virHashCreate(n, hashDealloc);
     if (!ret->hashTable) {
         VIR_FREE(ret);
         return NULL;

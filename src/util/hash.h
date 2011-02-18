@@ -3,7 +3,7 @@
  * Description: This module implements the hash table and allocation and
  *              deallocation of domains and connections
  *
- * Copy: Copyright (C) 2005 Red Hat, Inc.
+ * Copy: Copyright (C) 2005, 2011 Red Hat, Inc.
  *
  * Author: Bjorn Reese <bjorn.reese@systematic.dk>
  *         Daniel Veillard <veillard@redhat.com>
@@ -49,13 +49,14 @@ typedef void (*virHashIterator) (void *payload, const char *name, void *data);
  * Returns 1 if the hash entry is desired, 0 to move
  * to next entry
  */
-typedef int (*virHashSearcher) (const void *payload, const char *name, const void *data);
+typedef int (*virHashSearcher) (const void *payload, const char *name,
+                                const void *data);
 
 /*
  * Constructor and destructor.
  */
-virHashTablePtr virHashCreate(int size);
-void virHashFree(virHashTablePtr table, virHashDeallocator f);
+virHashTablePtr virHashCreate(int size, virHashDeallocator f);
+void virHashFree(virHashTablePtr table);
 int virHashSize(virHashTablePtr table);
 
 /*

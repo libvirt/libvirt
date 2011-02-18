@@ -1,7 +1,7 @@
 /*
  * xm_internal.h: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -587,12 +587,12 @@ xenXMOpen (virConnectPtr conn,
 
     priv->configDir = XM_CONFIG_DIR;
 
-    priv->configCache = virHashCreate(50);
+    priv->configCache = virHashCreate(50, xenXMConfigFree);
     if (!priv->configCache)
         return (-1);
-    priv->nameConfigMap = virHashCreate(50);
+    priv->nameConfigMap = virHashCreate(50, NULL);
     if (!priv->nameConfigMap) {
-        virHashFree(priv->configCache, NULL);
+        virHashFree(priv->configCache);
         priv->configCache = NULL;
         return (-1);
     }
@@ -611,8 +611,8 @@ xenXMOpen (virConnectPtr conn,
 int xenXMClose(virConnectPtr conn) {
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    virHashFree(priv->nameConfigMap, NULL);
-    virHashFree(priv->configCache, xenXMConfigFree);
+    virHashFree(priv->nameConfigMap);
+    virHashFree(priv->configCache);
 
     return (0);
 }

@@ -55,6 +55,7 @@ struct _virHashTable {
     struct _virHashEntry *table;
     int size;
     int nbElems;
+    virHashDeallocator f;
 };
 
 /*
@@ -80,13 +81,14 @@ virHashComputeKey(virHashTablePtr table, const char *name)
 /**
  * virHashCreate:
  * @size: the size of the hash table
+ * @deallocator: function to call on each entry during virHashFree
  *
  * Create a new virHashTablePtr.
  *
  * Returns the newly created object, or NULL if an error occured.
  */
 virHashTablePtr
-virHashCreate(int size)
+virHashCreate(int size, virHashDeallocator deallocator)
 {
     virHashTablePtr table = NULL;
 
@@ -100,6 +102,7 @@ virHashCreate(int size)
 
     table->size = size;
     table->nbElems = 0;
+    table->f = deallocator;
     if (VIR_ALLOC_N(table->table, size) < 0) {
         virReportOOMError();
         VIR_FREE(table);
@@ -203,13 +206,12 @@ virHashGrow(virHashTablePtr table, int size)
 /**
  * virHashFree:
  * @table: the hash table
- * @f:  the deallocator function for items in the hash
  *
  * Free the hash @table and its contents. The userdata is
- * deallocated with @f if provided.
+ * deallocated with function provided at creation time.
  */
 void
-virHashFree(virHashTablePtr table, virHashDeallocator f)
+virHashFree(virHashTablePtr table)
 {
     int i;
     virHashEntryPtr iter;
@@ -228,8 +230,8 @@ virHashFree(virHashTablePtr table, virHashDeallocator f)
             inside_table = 1;
             while (iter) {
                 next = iter->next;
-                if ((f != NULL) && (iter->payload != NULL))
-                    f(iter->payload, iter->name);
+                if ((table->f != NULL) && (iter->payload != NULL))
+                    table->f(iter->payload, iter->name);
                 VIR_FREE(iter->name);
                 iter->payload = NULL;
                 if (!inside_table)

@@ -994,7 +994,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
      * reliable if it's available.
      * Note that the monitor itself can be on a pty, so we still need to try the
      * log output method. */
-    paths = virHashCreate(0);
+    paths = virHashCreate(0, qemuProcessFreePtyPath);
     if (paths == NULL)
         goto cleanup;
 
@@ -1008,7 +1008,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
         ret = qemuProcessFindCharDevicePTYsMonitor(vm, paths);
 
 cleanup:
-    virHashFree(paths, qemuProcessFreePtyPath);
+    virHashFree(paths);
 
     if (kill(vm->pid, 0) == -1 && errno == ESRCH) {
         /* VM is dead, any other error raised in the interim is probably

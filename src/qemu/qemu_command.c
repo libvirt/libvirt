@@ -745,6 +745,13 @@ cleanup:
 }
 
 
+static void
+qemuDomainPCIAddressSetFreeEntry(void *payload,
+                                 const char *name ATTRIBUTE_UNUSED)
+{
+    VIR_FREE(payload);
+}
+
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
 {
     qemuDomainPCIAddressSetPtr addrs;
@@ -752,7 +759,7 @@ qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
     if (VIR_ALLOC(addrs) < 0)
         goto no_memory;
 
-    if (!(addrs->used = virHashCreate(10)))
+    if (!(addrs->used = virHashCreate(10, qemuDomainPCIAddressSetFreeEntry)))
         goto error;
 
     if (virDomainDeviceInfoIterate(def, qemuCollectPCIAddress, addrs) < 0)
@@ -823,11 +830,6 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
     return ret;
 }
 
-static void qemuDomainPCIAddressSetFreeEntry(void *payload, const char *name ATTRIBUTE_UNUSED)
-{
-    VIR_FREE(payload);
-}
-
 
 int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
@@ -852,7 +854,7 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
     if (!addrs)
         return;
 
-    virHashFree(addrs->used, qemuDomainPCIAddressSetFreeEntry);
+    virHashFree(addrs->used);
     VIR_FREE(addrs);
 }
 

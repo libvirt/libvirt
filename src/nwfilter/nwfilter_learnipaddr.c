@@ -2,6 +2,7 @@
  * nwfilter_learnipaddr.c: support for learning IP address used by a VM
  *                         on an interface
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -822,7 +823,7 @@ virNWFilterLearnInit(void) {
 
     threadsTerminate = false;
 
-    pendingLearnReq = virHashCreate(0);
+    pendingLearnReq = virHashCreate(0, freeLearnReqEntry);
     if (!pendingLearnReq) {
         return 1;
     }
@@ -844,7 +845,7 @@ virNWFilterLearnInit(void) {
         return 1;
     }
 
-    ifaceLockMap = virHashCreate(0);
+    ifaceLockMap = virHashCreate(0, freeIfaceLock);
     if (!ifaceLockMap) {
         virNWFilterLearnShutdown();
         return 1;
@@ -879,12 +880,12 @@ virNWFilterLearnShutdown(void) {
 
     virNWFilterLearnThreadsTerminate(false);
 
-    virHashFree(pendingLearnReq, freeLearnReqEntry);
+    virHashFree(pendingLearnReq);
     pendingLearnReq = NULL;
 
     virNWFilterHashTableFree(ipAddressMap);
     ipAddressMap = NULL;
 
-    virHashFree(ifaceLockMap, freeIfaceLock);
+    virHashFree(ifaceLockMap);
     ifaceLockMap = NULL;
 }
