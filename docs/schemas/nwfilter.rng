@@ -839,6 +839,7 @@
     <choice>
       <value>drop</value>
       <value>accept</value>
+      <value>reject</value>
     </choice>
   </define>
 

@@ -1516,7 +1516,7 @@ _iptablesCreateRuleInstance(int directionIn,
     if (rule->action == VIR_NWFILTER_RULE_ACTION_ACCEPT)
         target = accept_target;
     else {
-        target = "DROP";
+        target = virNWFilterJumpTargetTypeToString(rule->action);
         skipMatch = defMatch;
     }
 
@@ -1880,6 +1880,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
          number[20];
     char chain[MAX_CHAINNAME_LENGTH];
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *target;
 
     if (!ebtables_cmd_path) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2295,10 +2296,20 @@ ebtablesCreateRuleInstance(char chainPrefix,
         return -1;
     }
 
+    switch (rule->action) {
+    case VIR_NWFILTER_RULE_ACTION_REJECT:
+        /* REJECT not supported */
+        target = virNWFilterJumpTargetTypeToString(
+                                     VIR_NWFILTER_RULE_ACTION_DROP);
+    break;
+    default:
+        target = virNWFilterJumpTargetTypeToString(rule->action);
+    }
+
     virBufferVSprintf(&buf,
                       " -j %s" CMD_DEF_POST CMD_SEPARATOR
                       CMD_EXEC,
-                      virNWFilterJumpTargetTypeToString(rule->action));
+                      target);
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);

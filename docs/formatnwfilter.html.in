@@ -260,9 +260,11 @@
     </p>
     <ul>
      <li>
-        action -- mandatory; must either be <code>drop</code> or <code>accept</code> if
-        the evaluation of the filtering rule is supposed to drop or accept
-        a packet
+        action -- mandatory; must either be <code>drop</code>,
+        <code>reject</code><span class="since">(since 0.8.9)</span>,
+        or <code>accept</code> if
+        the evaluation of the filtering rule is supposed to drop,
+        reject (using ICMP message), or accept a packet
      </li>
      <li>
         direction -- mandatory; must either be <code>in</code>, <code>out</code> or
