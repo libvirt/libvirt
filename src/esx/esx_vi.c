@@ -85,6 +85,16 @@ ESX_VI__TEMPLATE__ALLOC(CURL)
 /* esxVI_CURL_Free */
 ESX_VI__TEMPLATE__FREE(CURL,
 {
+    esxVI_SharedCURL *shared = item->shared;
+
+    if (shared != NULL) {
+        esxVI_SharedCURL_Remove(shared, item);
+
+        if (shared->count == 0) {
+            esxVI_SharedCURL_Free(&shared);
+        }
+    }
+
     if (item->handle != NULL) {
         curl_easy_cleanup(item->handle);
     }
@@ -411,6 +421,172 @@ esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content)
                      responseCode, url);
         return -1;
     }
+
+    return 0;
+}
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * SharedCURL
+ */
+
+static void
+esxVI_SharedCURL_Lock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
+                      curl_lock_access access_ ATTRIBUTE_UNUSED, void *userptr)
+{
+    int i;
+    esxVI_SharedCURL *shared = userptr;
+
+    switch (data) {
+      case CURL_LOCK_DATA_SHARE:
+        i = 0;
+        break;
+
+      case CURL_LOCK_DATA_COOKIE:
+        i = 1;
+        break;
+
+      case CURL_LOCK_DATA_DNS:
+        i = 2;
+        break;
+
+      default:
+        VIR_ERROR(_("Trying to lock unknown SharedCURL lock %d"), (int)data);
+        return;
+    }
+
+    virMutexLock(&shared->locks[i]);
+}
+
+static void
+esxVI_SharedCURL_Unlock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
+                        void *userptr)
+{
+    int i;
+    esxVI_SharedCURL *shared = userptr;
+
+    switch (data) {
+      case CURL_LOCK_DATA_SHARE:
+        i = 0;
+        break;
+
+      case CURL_LOCK_DATA_COOKIE:
+        i = 1;
+        break;
+
+      case CURL_LOCK_DATA_DNS:
+        i = 2;
+        break;
+
+      default:
+        VIR_ERROR(_("Trying to unlock unknown SharedCURL lock %d"), (int)data);
+        return;
+    }
+
+    virMutexUnlock(&shared->locks[i]);
+}
+
+/* esxVI_SharedCURL_Alloc */
+ESX_VI__TEMPLATE__ALLOC(SharedCURL)
+
+/* esxVI_SharedCURL_Free */
+ESX_VI__TEMPLATE__FREE(SharedCURL,
+{
+    int i;
+
+    if (item->count > 0) {
+        /* Better leak than crash */
+        VIR_ERROR0(_("Trying to free SharedCURL object that is still in use"));
+        return;
+    }
+
+    if (item->handle != NULL) {
+        curl_share_cleanup(item->handle);
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(item->locks); ++i) {
+        virMutexDestroy(&item->locks[i]);
+    }
+})
+
+int
+esxVI_SharedCURL_Add(esxVI_SharedCURL *shared, esxVI_CURL *curl)
+{
+    int i;
+
+    if (curl->handle == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot share uninitialized CURL handle"));
+        return -1;
+    }
+
+    if (curl->shared != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot share CURL handle that is already shared"));
+        return -1;
+    }
+
+    if (shared->handle == NULL) {
+        shared->handle = curl_share_init();
+
+        if (shared->handle == NULL) {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Could not initialize CURL (share)"));
+            return -1;
+        }
+
+        curl_share_setopt(shared->handle, CURLSHOPT_LOCKFUNC,
+                          esxVI_SharedCURL_Lock);
+        curl_share_setopt(shared->handle, CURLSHOPT_UNLOCKFUNC,
+                          esxVI_SharedCURL_Unlock);
+        curl_share_setopt(shared->handle, CURLSHOPT_USERDATA, shared);
+        curl_share_setopt(shared->handle, CURLSHOPT_SHARE,
+                          CURL_LOCK_DATA_COOKIE);
+        curl_share_setopt(shared->handle, CURLSHOPT_SHARE,
+                          CURL_LOCK_DATA_DNS);
+
+        for (i = 0; i < ARRAY_CARDINALITY(shared->locks); ++i) {
+            if (virMutexInit(&shared->locks[i]) < 0) {
+                ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Could not initialize a CURL (share) mutex"));
+                return -1;
+            }
+        }
+    }
+
+    curl_easy_setopt(curl->handle, CURLOPT_SHARE, shared->handle);
+
+    curl->shared = shared;
+    ++shared->count;
+
+    return 0;
+}
+
+int
+esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl)
+{
+    if (curl->handle == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot unshare uninitialized CURL handle"));
+        return -1;
+    }
+
+    if (curl->shared == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot unshare CURL handle that is not shared"));
+        return -1;
+    }
+
+    if (curl->shared != shared) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("CURL (share) mismatch"));
+        return -1;
+    }
+
+    curl_easy_setopt(curl->handle, CURLOPT_SHARE, NULL);
+
+    curl->shared = NULL;
+    --shared->count;
 
     return 0;
 }
