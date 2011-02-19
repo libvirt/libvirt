@@ -2639,7 +2639,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
 
     url = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_DownloadFile(priv->primary, url, &vmx) < 0) {
+    if (esxVI_CURL_Download(priv->primary->curl, url, &vmx) < 0) {
         goto cleanup;
     }
 
@@ -3108,7 +3108,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     /* Upload VMX file */
     VIR_DEBUG("Uploading .vmx config, url='%s' vmx='%s'", url, vmx);
 
-    if (esxVI_Context_UploadFile(priv->primary, url, vmx) < 0) {
+    if (esxVI_CURL_Upload(priv->primary->curl, url, vmx) < 0) {
         goto cleanup;
     }
 

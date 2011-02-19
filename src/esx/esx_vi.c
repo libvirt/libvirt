@@ -76,42 +76,25 @@
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Context
+ * CURL
  */
 
-/* esxVI_Context_Alloc */
-ESX_VI__TEMPLATE__ALLOC(Context);
+/* esxVI_CURL_Alloc */
+ESX_VI__TEMPLATE__ALLOC(CURL)
 
-/* esxVI_Context_Free */
-ESX_VI__TEMPLATE__FREE(Context,
+/* esxVI_CURL_Free */
+ESX_VI__TEMPLATE__FREE(CURL,
 {
-    VIR_FREE(item->url);
-    VIR_FREE(item->ipAddress);
-
-    if (item->curl_handle != NULL) {
-        curl_easy_cleanup(item->curl_handle);
+    if (item->handle != NULL) {
+        curl_easy_cleanup(item->handle);
     }
 
-    if (item->curl_headers != NULL) {
-        curl_slist_free_all(item->curl_headers);
+    if (item->headers != NULL) {
+        curl_slist_free_all(item->headers);
     }
 
-    virMutexDestroy(&item->curl_lock);
-
-    VIR_FREE(item->username);
-    VIR_FREE(item->password);
-    esxVI_ServiceContent_Free(&item->service);
-    esxVI_UserSession_Free(&item->session);
-    esxVI_Datacenter_Free(&item->datacenter);
-    esxVI_ComputeResource_Free(&item->computeResource);
-    esxVI_HostSystem_Free(&item->hostSystem);
-    esxVI_SelectionSpec_Free(&item->selectSet_folderToChildEntity);
-    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToParent);
-    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToVm);
-    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToDatastore);
-    esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToHost);
-    esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToParentToParent);
-});
+    virMutexDestroy(&item->lock);
+})
 
 static size_t
 esxVI_CURL_ReadString(char *data, size_t size, size_t nmemb, void *ptrptr)
@@ -218,7 +201,7 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
 #endif
 
 static int
-esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
+esxVI_CURL_Perform(esxVI_CURL *curl, const char *url)
 {
     CURLcode errorCode;
     long responseCode = 0;
@@ -226,23 +209,23 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
     const char *redirectUrl = NULL;
 #endif
 
-    errorCode = curl_easy_perform(ctx->curl_handle);
+    errorCode = curl_easy_perform(curl->handle);
 
     if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("curl_easy_perform() returned an error: %s (%d) : %s"),
-                     curl_easy_strerror(errorCode), errorCode, ctx->curl_error);
+                     curl_easy_strerror(errorCode), errorCode, curl->error);
         return -1;
     }
 
-    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
+    errorCode = curl_easy_getinfo(curl->handle, CURLINFO_RESPONSE_CODE,
                                   &responseCode);
 
     if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an "
                        "error: %s (%d) : %s"), curl_easy_strerror(errorCode),
-                     errorCode, ctx->curl_error);
+                     errorCode, curl->error);
         return -1;
     }
 
@@ -255,7 +238,7 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
 
     if (responseCode == 301) {
 #if LIBCURL_VERSION_NUM >= 0x071202 /* 7.18.2 */
-        errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_REDIRECT_URL,
+        errorCode = curl_easy_getinfo(curl->handle, CURLINFO_REDIRECT_URL,
                                       &redirectUrl);
 
         if (errorCode != CURLE_OK) {
@@ -263,7 +246,7 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
                          _("curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned "
                            "an error: %s (%d) : %s"),
                          curl_easy_strerror(errorCode),
-                         errorCode, ctx->curl_error);
+                         errorCode, curl->error);
         } else {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                          _("The server redirects from '%s' to '%s'"), url,
@@ -281,32 +264,23 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
 }
 
 int
-esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
-                      const char *ipAddress, const char *username,
-                      const char *password, esxUtil_ParsedUri *parsedUri)
+esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
 {
-    if (ctx == NULL || url == NULL || ipAddress == NULL || username == NULL ||
-        password == NULL || ctx->url != NULL || ctx->service != NULL ||
-        ctx->curl_handle != NULL || ctx->curl_headers != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+    if (curl->handle != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));
         return -1;
     }
 
-    if (esxVI_String_DeepCopyValue(&ctx->url, url) < 0 ||
-        esxVI_String_DeepCopyValue(&ctx->ipAddress, ipAddress) < 0) {
-        return -1;
-    }
+    curl->handle = curl_easy_init();
 
-    ctx->curl_handle = curl_easy_init();
-
-    if (ctx->curl_handle == NULL) {
+    if (curl->handle == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Could not initialize CURL"));
         return -1;
     }
 
-    ctx->curl_headers = curl_slist_append(ctx->curl_headers, "Content-Type: "
-                                          "text/xml; charset=UTF-8");
+    curl->headers = curl_slist_append(curl->headers,
+                                      "Content-Type: text/xml; charset=UTF-8");
 
     /*
      * Add a dummy expect header to stop CURL from waiting for a response code
@@ -316,56 +290,179 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
      * 100 (Continue) response and the wait times out resulting in wasting
      * approx. 2 sec per POST operation.
      */
-    ctx->curl_headers = curl_slist_append(ctx->curl_headers,
-                                          "Expect: nothing");
+    curl->headers = curl_slist_append(curl->headers, "Expect: nothing");
 
-    if (ctx->curl_headers == NULL) {
+    if (curl->headers == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Could not build CURL header list"));
         return -1;
     }
 
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, ctx->url);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_USERAGENT, "libvirt-esx");
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_HEADER, 0);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_FOLLOWLOCATION, 0);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER,
+    curl_easy_setopt(curl->handle, CURLOPT_USERAGENT, "libvirt-esx");
+    curl_easy_setopt(curl->handle, CURLOPT_HEADER, 0);
+    curl_easy_setopt(curl->handle, CURLOPT_FOLLOWLOCATION, 0);
+    curl_easy_setopt(curl->handle, CURLOPT_SSL_VERIFYPEER,
                      parsedUri->noVerify ? 0 : 1);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYHOST,
+    curl_easy_setopt(curl->handle, CURLOPT_SSL_VERIFYHOST,
                      parsedUri->noVerify ? 0 : 2);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_COOKIEFILE, "");
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPHEADER, ctx->curl_headers);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_READFUNCTION,
+    curl_easy_setopt(curl->handle, CURLOPT_COOKIEFILE, "");
+    curl_easy_setopt(curl->handle, CURLOPT_HTTPHEADER, curl->headers);
+    curl_easy_setopt(curl->handle, CURLOPT_READFUNCTION,
                      esxVI_CURL_ReadString);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEFUNCTION,
+    curl_easy_setopt(curl->handle, CURLOPT_WRITEFUNCTION,
                      esxVI_CURL_WriteBuffer);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_ERRORBUFFER,
-                     ctx->curl_error);
+    curl_easy_setopt(curl->handle, CURLOPT_ERRORBUFFER, curl->error);
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_DEBUGFUNCTION, esxVI_CURL_Debug);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_VERBOSE, 1);
+    curl_easy_setopt(curl->handle, CURLOPT_DEBUGFUNCTION, esxVI_CURL_Debug);
+    curl_easy_setopt(curl->handle, CURLOPT_VERBOSE, 1);
 #endif
 
     if (parsedUri->proxy) {
-        curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXY,
+        curl_easy_setopt(curl->handle, CURLOPT_PROXY,
                          parsedUri->proxy_hostname);
-        curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXYTYPE,
+        curl_easy_setopt(curl->handle, CURLOPT_PROXYTYPE,
                          parsedUri->proxy_type);
-        curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXYPORT,
+        curl_easy_setopt(curl->handle, CURLOPT_PROXYPORT,
                          parsedUri->proxy_port);
     }
 
-    if (virMutexInit(&ctx->curl_lock) < 0) {
+    if (virMutexInit(&curl->lock) < 0) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Could not initialize CURL mutex"));
         return -1;
     }
 
-    ctx->username = strdup(username);
-    ctx->password = strdup(password);
+    return 0;
+}
 
-    if (ctx->username == NULL || ctx->password == NULL) {
+int
+esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content)
+{
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    int responseCode = 0;
+
+    if (content == NULL || *content != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    virMutexLock(&curl->lock);
+
+    curl_easy_setopt(curl->handle, CURLOPT_URL, url);
+    curl_easy_setopt(curl->handle, CURLOPT_WRITEDATA, &buffer);
+    curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 0);
+    curl_easy_setopt(curl->handle, CURLOPT_HTTPGET, 1);
+
+    responseCode = esxVI_CURL_Perform(curl, url);
+
+    virMutexUnlock(&curl->lock);
+
+    if (responseCode < 0) {
+        goto cleanup;
+    } else if (responseCode != 200) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("HTTP response code %d for download from '%s'"),
+                     responseCode, url);
+        goto cleanup;
+    }
+
+    if (virBufferError(&buffer)) {
         virReportOOMError();
+        goto cleanup;
+    }
+
+    *content = virBufferContentAndReset(&buffer);
+
+  cleanup:
+    if (*content == NULL) {
+        virBufferFreeAndReset(&buffer);
+        return -1;
+    }
+
+    return 0;
+}
+
+int
+esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content)
+{
+    int responseCode = 0;
+
+    if (content == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    virMutexLock(&curl->lock);
+
+    curl_easy_setopt(curl->handle, CURLOPT_URL, url);
+    curl_easy_setopt(curl->handle, CURLOPT_READDATA, &content);
+    curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 1);
+    curl_easy_setopt(curl->handle, CURLOPT_INFILESIZE, strlen(content));
+
+    responseCode = esxVI_CURL_Perform(curl, url);
+
+    virMutexUnlock(&curl->lock);
+
+    if (responseCode < 0) {
+        return -1;
+    } else if (responseCode != 200 && responseCode != 201) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("HTTP response code %d for upload to '%s'"),
+                     responseCode, url);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Context
+ */
+
+/* esxVI_Context_Alloc */
+ESX_VI__TEMPLATE__ALLOC(Context)
+
+/* esxVI_Context_Free */
+ESX_VI__TEMPLATE__FREE(Context,
+{
+    esxVI_CURL_Free(&item->curl);
+    VIR_FREE(item->url);
+    VIR_FREE(item->ipAddress);
+    VIR_FREE(item->username);
+    VIR_FREE(item->password);
+    esxVI_ServiceContent_Free(&item->service);
+    esxVI_UserSession_Free(&item->session);
+    esxVI_Datacenter_Free(&item->datacenter);
+    esxVI_ComputeResource_Free(&item->computeResource);
+    esxVI_HostSystem_Free(&item->hostSystem);
+    esxVI_SelectionSpec_Free(&item->selectSet_folderToChildEntity);
+    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToParent);
+    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToVm);
+    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToDatastore);
+    esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToHost);
+    esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToParentToParent);
+})
+
+int
+esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
+                      const char *ipAddress, const char *username,
+                      const char *password, esxUtil_ParsedUri *parsedUri)
+{
+    if (ctx == NULL || url == NULL || ipAddress == NULL || username == NULL ||
+        password == NULL || ctx->url != NULL || ctx->service != NULL ||
+        ctx->curl != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_CURL_Alloc(&ctx->curl) < 0 ||
+        esxVI_CURL_Connect(ctx->curl, parsedUri) < 0 ||
+        esxVI_String_DeepCopyValue(&ctx->url, url) < 0 ||
+        esxVI_String_DeepCopyValue(&ctx->ipAddress, ipAddress) < 0 ||
+        esxVI_String_DeepCopyValue(&ctx->username, username) < 0 ||
+        esxVI_String_DeepCopyValue(&ctx->password, password) < 0) {
         return -1;
     }
 
@@ -577,87 +674,6 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
 }
 
 int
-esxVI_Context_DownloadFile(esxVI_Context *ctx, const char *url, char **content)
-{
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    int responseCode = 0;
-
-    if (content == NULL || *content != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-
-    virMutexLock(&ctx->curl_lock);
-
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, url);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEDATA, &buffer);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 0);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPGET, 1);
-
-    responseCode = esxVI_CURL_Perform(ctx, url);
-
-    virMutexUnlock(&ctx->curl_lock);
-
-    if (responseCode < 0) {
-        goto cleanup;
-    } else if (responseCode != 200) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     _("HTTP response code %d for download from '%s'"),
-                     responseCode, url);
-        goto cleanup;
-    }
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    *content = virBufferContentAndReset(&buffer);
-
-  cleanup:
-    if (*content == NULL) {
-        virBufferFreeAndReset(&buffer);
-        return -1;
-    }
-
-    return 0;
-}
-
-int
-esxVI_Context_UploadFile(esxVI_Context *ctx, const char *url,
-                         const char *content)
-{
-    int responseCode = 0;
-
-    if (content == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-
-    virMutexLock(&ctx->curl_lock);
-
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, url);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_READDATA, &content);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 1);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_INFILESIZE, strlen(content));
-
-    responseCode = esxVI_CURL_Perform(ctx, url);
-
-    virMutexUnlock(&ctx->curl_lock);
-
-    if (responseCode < 0) {
-        return -1;
-    } else if (responseCode != 200 && responseCode != 201) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     _("HTTP response code %d for upload to '%s'"),
-                     responseCode, url);
-        return -1;
-    }
-
-    return 0;
-}
-
-int
 esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                       const char *request, esxVI_Response **response,
                       esxVI_Occurrence occurrence)
@@ -678,17 +694,17 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
         return -1;
     }
 
-    virMutexLock(&ctx->curl_lock);
+    virMutexLock(&ctx->curl->lock);
 
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, ctx->url);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEDATA, &buffer);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 0);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_POSTFIELDS, request);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_POSTFIELDSIZE, strlen(request));
+    curl_easy_setopt(ctx->curl->handle, CURLOPT_URL, ctx->url);
+    curl_easy_setopt(ctx->curl->handle, CURLOPT_WRITEDATA, &buffer);
+    curl_easy_setopt(ctx->curl->handle, CURLOPT_UPLOAD, 0);
+    curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDS, request);
+    curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDSIZE, strlen(request));
 
-    (*response)->responseCode = esxVI_CURL_Perform(ctx, ctx->url);
+    (*response)->responseCode = esxVI_CURL_Perform(ctx->curl, ctx->url);
 
-    virMutexUnlock(&ctx->curl_lock);
+    virMutexUnlock(&ctx->curl->lock);
 
     if ((*response)->responseCode < 0) {
         goto cleanup;
@@ -869,7 +885,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
  */
 
 /* esxVI_Response_Alloc */
-ESX_VI__TEMPLATE__ALLOC(Response);
+ESX_VI__TEMPLATE__ALLOC(Response)
 
 /* esxVI_Response_Free */
 ESX_VI__TEMPLATE__FREE(Response,
@@ -879,7 +895,7 @@ ESX_VI__TEMPLATE__FREE(Response,
     if (item->document != NULL) {
         xmlFreeDoc(item->document);
     }
-});
+})
 
 
 

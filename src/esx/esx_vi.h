@@ -82,6 +82,7 @@ typedef enum _esxVI_APIVersion esxVI_APIVersion;
 typedef enum _esxVI_ProductVersion esxVI_ProductVersion;
 typedef enum _esxVI_Occurrence esxVI_Occurrence;
 typedef struct _esxVI_ParsedHostCpuIdInfo esxVI_ParsedHostCpuIdInfo;
+typedef struct _esxVI_CURL esxVI_CURL;
 typedef struct _esxVI_Context esxVI_Context;
 typedef struct _esxVI_Response esxVI_Response;
 typedef struct _esxVI_Enumeration esxVI_Enumeration;
@@ -142,16 +143,32 @@ struct _esxVI_ParsedHostCpuIdInfo {
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * CURL
+ */
+
+struct _esxVI_CURL {
+    CURL *handle;
+    virMutex lock;
+    struct curl_slist *headers;
+    char error[CURL_ERROR_SIZE];
+};
+
+int esxVI_CURL_Alloc(esxVI_CURL **curl);
+void esxVI_CURL_Free(esxVI_CURL **curl);
+int esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri);
+int esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content);
+int esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Context
  */
 
 struct _esxVI_Context {
+    esxVI_CURL *curl;
     char *url;
     char *ipAddress;
-    CURL *curl_handle;
-    struct curl_slist *curl_headers;
-    char curl_error[CURL_ERROR_SIZE];
-    virMutex curl_lock;
     char *username;
     char *password;
     esxVI_ServiceContent *service;
@@ -180,10 +197,6 @@ int esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
                                       esxUtil_ParsedUri *parsedUri);
 int esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
                                               const char *hostSystemIpAddress);
-int esxVI_Context_DownloadFile(esxVI_Context *ctx, const char *url,
-                               char **content);
-int esxVI_Context_UploadFile(esxVI_Context *ctx, const char *url,
-                             const char *content);
 int esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                           const char *request, esxVI_Response **response,
                           esxVI_Occurrence occurrence);
