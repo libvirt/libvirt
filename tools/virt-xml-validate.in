@@ -17,8 +17,8 @@
 
 set -e
 
-XMLFILE=$1
-TYPE=$2
+XMLFILE="$1"
+TYPE="$2"
 
 if [ -z "$XMLFILE" ]; then
   echo "syntax: $0 XMLFILE [TYPE]"
@@ -31,8 +31,8 @@ if [ ! -f "$XMLFILE" ]; then
 fi
 
 if [ -z "$TYPE" ]; then
-  ROOT=`xmllint --stream --debug $XMLFILE 2>/dev/null | grep "^0 1 " | awk '{ print $3 }'`
-  case $ROOT in
+  ROOT=`xmllint --stream --debug "$XMLFILE" 2>/dev/null | grep "^0 1 " | awk '{ print $3 }'`
+  case "$ROOT" in
      *domain*)
         TYPE="domain"
         ;;
@@ -64,7 +64,7 @@ if [ ! -f "$SCHEMA" ]; then
   exit 4
 fi
 
-xmllint --noout --relaxng $SCHEMA $XMLFILE
+xmllint --noout --relaxng "$SCHEMA" "$XMLFILE"
 
 exit 0
 
