@@ -14,7 +14,7 @@ PORT=16514
 # First get certtool
 #
 CERTOOL=`which certtool 2>/dev/null`
-if [ ! -x $CERTOOL ]
+if [ ! -x "$CERTOOL" ]
 then
     echo "Could not locate the certtool program"
     echo "make sure the gnutls-utils (or gnutls-bin) package is installed"
