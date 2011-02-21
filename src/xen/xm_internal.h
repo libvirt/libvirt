@@ -62,7 +62,6 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr con, const char *xml);
 int xenXMDomainUndefine(virDomainPtr domain);
 
 virConfPtr xenXMDomainConfigFormat(virConnectPtr conn, virDomainDefPtr def);
-virDomainDefPtr xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf);
 
 int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long offset, size_t size, void *buffer);
 

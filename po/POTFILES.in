@@ -120,6 +120,7 @@ src/xen/xs_internal.c
 src/xenapi/xenapi_driver.c
 src/xenapi/xenapi_utils.c
 src/xenxs/xen_sxpr.c
+src/xenxs/xen_xm.c
 tools/console.c
 tools/libvirt-guests.init.sh
 tools/virsh.c

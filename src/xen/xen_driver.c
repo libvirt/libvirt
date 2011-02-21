@@ -34,6 +34,7 @@
 #include "xen_driver.h"
 
 #include "xen_sxpr.h"
+#include "xen_xm.h"
 #include "xen_hypervisor.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
@@ -1216,7 +1217,7 @@ xenUnifiedDomainXMLFromNative(virConnectPtr conn,
         if (!conf)
             goto cleanup;
 
-        def = xenXMDomainConfigParse(conn, conf);
+        def = xenXMDomainConfigParse(conf, priv->xendConfigVersion, priv->caps);
     } else if (STREQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
         id = xenGetDomIdFromSxprString(config, priv->xendConfigVersion);
         xenUnifiedLock(priv);

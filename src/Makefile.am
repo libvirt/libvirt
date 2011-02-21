@@ -425,7 +425,8 @@ VMX_SOURCES =							\
 
 XENXS_SOURCES =							\
 		xenxs/xenxs_private.h				\
-		xenxs/xen_sxpr.c xenxs/xen_sxpr.h
+		xenxs/xen_sxpr.c xenxs/xen_sxpr.h		\
+		xenxs/xen_xm.c xenxs/xen_xm.h
 
 pkgdata_DATA =	cpu/cpu_map.xml
 

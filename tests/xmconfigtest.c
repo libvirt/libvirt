@@ -31,6 +31,7 @@
 #include "datatypes.h"
 #include "xen/xen_driver.h"
 #include "xen/xm_internal.h"
+#include "xenxs/xen_xm.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "memory.h"
@@ -127,7 +128,7 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml,
     if (!(conf = virConfReadMem(xmcfgPtr, strlen(xmcfgPtr), 0)))
         goto fail;
 
-    if (!(def = xenXMDomainConfigParse(conn, conf)))
+    if (!(def = xenXMDomainConfigParse(conf, priv.xendConfigVersion, priv.caps)))
         goto fail;
 
     if (!(gotxml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))

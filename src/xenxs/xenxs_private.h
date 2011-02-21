@@ -46,6 +46,8 @@
 #  define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
 # endif
 
+# define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
+
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 # define XENXS_ERROR(code, ...)                                               \
