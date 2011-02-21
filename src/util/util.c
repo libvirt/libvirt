@@ -657,6 +657,7 @@ __virExec(const char *const*argv,
         struct sigaction waxon, waxoff;
         waxoff.sa_handler = SIG_IGN;
         waxoff.sa_flags = 0;
+        sigemptyset(&waxoff.sa_mask);
         memset(&waxon, 0, sizeof(waxon));
         if (sigaction(SIGPIPE, &waxoff, &waxon) < 0) {
             virReportSystemError(errno, "%s",
