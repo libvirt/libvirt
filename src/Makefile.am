@@ -68,6 +68,7 @@ UTIL_SOURCES =							\
 		util/network.c util/network.h			\
 		util/interface.c util/interface.h		\
 		util/qparams.c util/qparams.h			\
+		util/sexpr.c util/sexpr.h			\
 		util/stats_linux.c util/stats_linux.h		\
 		util/storage_file.c util/storage_file.h		\
 		util/sysinfo.c util/sysinfo.h			\
@@ -221,7 +222,6 @@ TEST_DRIVER_SOURCES =						\
 
 # Now the Hypervisor specific drivers
 XEN_DRIVER_SOURCES =						\
-		xen/sexpr.c xen/sexpr.h				\
 		xen/block_stats.c xen/block_stats.h		\
 		xen/xen_hypervisor.c xen/xen_hypervisor.h	\
 		xen/xen_driver.c xen/xen_driver.h		\
