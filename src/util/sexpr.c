@@ -566,3 +566,67 @@ sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
 
     return sexpr_node(sexpr, node);
 }
+
+/**
+ * sexpr_int:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup an int value in the S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error).
+ * This function suffers from the flaw that zero is both a correct
+ * return value and an error indicator: careful!
+ */
+int
+sexpr_int(const struct sexpr *sexpr, const char *name)
+{
+    const char *value = sexpr_node(sexpr, name);
+
+    if (value) {
+        return strtol(value, NULL, 0);
+    }
+    return 0;
+}
+
+
+/**
+ * sexpr_float:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a float value in the S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+double
+sexpr_float(const struct sexpr *sexpr, const char *name)
+{
+    const char *value = sexpr_node(sexpr, name);
+
+    if (value) {
+        return strtod(value, NULL);
+    }
+    return 0;
+}
+
+/**
+ * sexpr_u64:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a 64bits unsigned int value in the
+ * S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+uint64_t
+sexpr_u64(const struct sexpr *sexpr, const char *name)
+{
+    const char *value = sexpr_node(sexpr, name);
+
+    if (value) {
+        return strtoll(value, NULL, 0);
+    }
+    return 0;
+}

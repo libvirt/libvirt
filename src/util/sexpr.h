@@ -16,6 +16,7 @@
 # include "internal.h"
 
 # include <sys/types.h>
+# include <stdint.h>
 
 enum sexpr_type {
     SEXPR_NIL,
@@ -52,4 +53,9 @@ const char *sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
   ATTRIBUTE_FMT_PRINTF(2,3);
 struct sexpr *sexpr_lookup(const struct sexpr *sexpr, const char *node);
 int sexpr_has(const struct sexpr *sexpr, const char *node);
+
+int sexpr_int(const struct sexpr *sexpr, const char *name);
+double sexpr_float(const struct sexpr *sexpr, const char *name);
+uint64_t sexpr_u64(const struct sexpr *sexpr, const char *name);
+
 #endif
