@@ -418,6 +418,8 @@ Requires: ncurses
 Requires: nc
 # Needed by libvirt-guests init script.
 Requires: gettext
+# Needed by virt-pki-validate script.
+Requires: gnutls-utils
 %if %{with_sasl}
 Requires: cyrus-sasl
 # Not technically required, but makes 'out-of-box' config
