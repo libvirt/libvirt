@@ -61,8 +61,13 @@ virSecurityStackOpen(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 }
 
 static int
-virSecurityStackClose(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecurityStackClose(virSecurityManagerPtr mgr)
 {
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+
+    virSecurityManagerFree(priv->primary);
+    virSecurityManagerFree(priv->secondary);
+
     return 0;
 }
 
