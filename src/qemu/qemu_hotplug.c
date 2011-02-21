@@ -1297,6 +1297,56 @@ cleanup:
     return ret;
 }
 
+static bool qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
+                                           virDomainControllerDefPtr detach)
+{
+    int i;
+    virDomainDiskDefPtr disk;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        disk = vm->def->disks[i];
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+            /* the disk does not use disk controller */
+            continue;
+
+        /* check whether the disk uses this type controller */
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE &&
+            detach->type != VIR_DOMAIN_CONTROLLER_TYPE_IDE)
+            continue;
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC &&
+            detach->type != VIR_DOMAIN_CONTROLLER_TYPE_FDC)
+            continue;
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+            detach->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+            continue;
+
+        if (disk->info.addr.drive.controller == detach->idx)
+            return true;
+    }
+
+    return false;
+}
+
+static bool qemuDomainControllerIsBusy(virDomainObjPtr vm,
+                                       virDomainControllerDefPtr detach)
+{
+    switch (detach->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+        return qemuDomainDiskControllerIsBusy(vm, detach);
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+    case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    default:
+        /* libvirt does not support sata controller, and does not support to
+         * detach virtio and smart card controller.
+         */
+        return true;
+    }
+}
+
 int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
                                         virDomainObjPtr vm,
                                         virDomainDeviceDefPtr dev,
@@ -1326,6 +1376,12 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
                                        VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("device cannot be detached without a PCI address"));
+        goto cleanup;
+    }
+
+    if (qemuDomainControllerIsBusy(vm, detach)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("device cannot be detached: device is busy"));
         goto cleanup;
     }
 
