@@ -75,7 +75,7 @@ static int testCompareParseXML(const char *xmcfg, const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
-    if (!(conf = xenXMDomainConfigFormat(conn, def)))
+    if (!(conf = xenXMDomainConfigFormat(conn, def, xendConfigVersion)))
         goto fail;
 
     if (virConfWriteMem(gotxmcfgPtr, &wrote, conf) < 0)

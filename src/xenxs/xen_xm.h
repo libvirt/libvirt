@@ -30,6 +30,9 @@
 # include "conf.h"
 # include "domain_conf.h"
 
+virConfPtr xenXMDomainConfigFormat(virConnectPtr conn, virDomainDefPtr def,
+                                   int xendConfigVersion);
+
 virDomainDefPtr xenXMDomainConfigParse(virConfPtr conf, int xendConfigVersion,
                                        virCapsPtr caps);
 

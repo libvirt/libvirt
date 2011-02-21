@@ -32,12 +32,6 @@
 # include "domain_conf.h"
 # include "sexpr.h"
 
-# ifdef __sun
-#  define DEFAULT_VIF_SCRIPT "vif-vnic"
-# else
-#  define DEFAULT_VIF_SCRIPT "vif-bridge"
-# endif
-
 /* helper functions to get the dom id from a sexpr */
 int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion);
 int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion);

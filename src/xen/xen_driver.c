@@ -1266,7 +1266,7 @@ xenUnifiedDomainXMLToNative(virConnectPtr conn,
 
     if (STREQ(format, XEN_CONFIG_FORMAT_XM)) {
         int len = MAX_CONFIG_SIZE;
-        conf = xenXMDomainConfigFormat(conn, def);
+        conf = xenXMDomainConfigFormat(conn, def, priv->xendConfigVersion);
         if (!conf)
             goto cleanup;
 

@@ -48,6 +48,12 @@
 
 # define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
+# ifdef __sun
+#  define DEFAULT_VIF_SCRIPT "vif-vnic"
+# else
+#  define DEFAULT_VIF_SCRIPT "vif-bridge"
+# endif
+
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 # define XENXS_ERROR(code, ...)                                               \
