@@ -40,13 +40,13 @@ elif kernelOv.find('xen0'):
     initrdU = "/boot/initrd-" + kernelOv.replace('xen0', 'xenU') + ".img"
 
 if not os.access(kernelU, os.R_OK):
-    print "Did not found the guest kernel %s" % (kernelU)
+    print "Did not find the guest kernel %s" % (kernelU)
     sys.exit(1)
 
 kernelU = "<kernel>" + kernelU + "</kernel>"
 
 if not os.access(initrdU, os.R_OK):
-    print "Did not found the guest initrd %s" % (initrdU)
+    print "Did not find the guest initrd %s" % (initrdU)
     initrdU = ""
 else:
     initrdU = "<initrd>" + initrdU + "</initrd>"
