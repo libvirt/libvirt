@@ -10,6 +10,7 @@
 
 #include "internal.h"
 #include "xen/xend_internal.h"
+#include "xenxs/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 

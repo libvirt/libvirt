@@ -27,6 +27,24 @@
 
 # include "internal.h"
 
+# include <stdint.h>
+# include <xen/xen.h>
+
+/* xen-unstable changeset 19788 removed MAX_VIRT_CPUS from public
+ * headers.  Its semantic was retained with XEN_LEGACY_MAX_VCPUS.
+ * Ensure MAX_VIRT_CPUS is defined accordingly.
+ */
+# if !defined(MAX_VIRT_CPUS) && defined(XEN_LEGACY_MAX_VCPUS)
+#  define MAX_VIRT_CPUS XEN_LEGACY_MAX_VCPUS
+# endif
+
+# ifdef WITH_RHEL5_API
+#  define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
+#  define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 2
+# else
+#  define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
+#  define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
+# endif
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 

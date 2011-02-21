@@ -91,18 +91,6 @@ xenDaemonDomainFetch(virConnectPtr xend,
                      const char *cpus);
 
 
-int
-xenDaemonFormatSxprChr(virDomainChrDefPtr def,
-                       virBufferPtr buf);
-int
-xenDaemonFormatSxprSound(virDomainDefPtr def,
-                         virBufferPtr buf);
-
-char *
-xenDaemonFormatSxpr(virConnectPtr conn,
-                    virDomainDefPtr def,
-                    int xendConfigVersion);
-
   int is_sound_model_valid(const char *model);
   int is_sound_model_conflict(const char *model, const char *soundstr);
 

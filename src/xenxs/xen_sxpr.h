@@ -59,4 +59,36 @@ virDomainChrDefPtr
 xenDaemonParseSxprChar(const char *value,
                        const char *tty);
 
+int
+xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
+                        virDomainDiskDefPtr def,
+                        virBufferPtr buf,
+                        int hvm,
+                        int xendConfigVersion,
+                        int isAttach);
+int
+xenDaemonFormatSxprNet(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       virDomainNetDefPtr def,
+                       virBufferPtr buf,
+                       int hvm,
+                       int xendConfigVersion,
+                       int isAttach);
+
+int
+xenDaemonFormatSxprOnePCI(virDomainHostdevDefPtr def,
+                          virBufferPtr buf,
+                          int detach);
+
+int
+xenDaemonFormatSxprChr(virDomainChrDefPtr def,
+                       virBufferPtr buf);
+int
+xenDaemonFormatSxprSound(virDomainDefPtr def,
+                         virBufferPtr buf);
+
+char *
+xenDaemonFormatSxpr(virConnectPtr conn,
+                    virDomainDefPtr def,
+                    int xendConfigVersion);
+
 #endif /* __VIR_XEN_SXPR_H__ */
