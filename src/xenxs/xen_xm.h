@@ -30,10 +30,10 @@
 # include "conf.h"
 # include "domain_conf.h"
 
-virConfPtr xenXMDomainConfigFormat(virConnectPtr conn, virDomainDefPtr def,
-                                   int xendConfigVersion);
+virConfPtr xenFormatXM(virConnectPtr conn, virDomainDefPtr def,
+                       int xendConfigVersion);
 
-virDomainDefPtr xenXMDomainConfigParse(virConfPtr conf, int xendConfigVersion,
-                                       virCapsPtr caps);
+virDomainDefPtr xenParseXM(virConfPtr conf, int xendConfigVersion,
+                           virCapsPtr caps);
 
 #endif /* __VIR_XEN_XM_H__ */

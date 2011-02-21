@@ -196,7 +196,7 @@ static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *
  * domain, suitable for later feeding for virDomainCreateXML
  */
 virDomainDefPtr
-xenXMDomainConfigParse(virConfPtr conf, int xendConfigVersion,
+xenParseXM(virConfPtr conf, int xendConfigVersion,
                        virCapsPtr caps) {
     const char *str;
     int hvm = 0;
@@ -951,7 +951,7 @@ xenXMDomainConfigParse(virConfPtr conf, int xendConfigVersion,
         if (xenXMConfigGetString(conf, "parallel", &str, NULL) < 0)
             goto cleanup;
         if (str && STRNEQ(str, "none") &&
-            !(chr = xenDaemonParseSxprChar(str, NULL)))
+            !(chr = xenParseSxprChar(str, NULL)))
             goto cleanup;
 
         if (chr) {
@@ -968,7 +968,7 @@ xenXMDomainConfigParse(virConfPtr conf, int xendConfigVersion,
         if (xenXMConfigGetString(conf, "serial", &str, NULL) < 0)
             goto cleanup;
         if (str && STRNEQ(str, "none") &&
-            !(chr = xenDaemonParseSxprChar(str, NULL)))
+            !(chr = xenParseSxprChar(str, NULL)))
             goto cleanup;
 
         if (chr) {
@@ -981,7 +981,7 @@ xenXMDomainConfigParse(virConfPtr conf, int xendConfigVersion,
             def->nserials++;
         }
     } else {
-        if (!(def->console = xenDaemonParseSxprChar("pty", NULL)))
+        if (!(def->console = xenParseSxprChar("pty", NULL)))
             goto cleanup;
         def->console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
         def->console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
@@ -992,7 +992,7 @@ xenXMDomainConfigParse(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
 
         if (str &&
-            xenDaemonParseSxprSound(def, str) < 0)
+            xenParseSxprSound(def, str) < 0)
             goto cleanup;
     }
 
@@ -1048,7 +1048,7 @@ int xenXMConfigSetString(virConfPtr conf, const char *setting, const char *str) 
 }
 
 
-static int xenXMDomainConfigFormatDisk(virConfValuePtr list,
+static int xenFormatXMDisk(virConfValuePtr list,
                                        virDomainDiskDefPtr disk,
                                        int hvm,
                                        int xendConfigVersion)
@@ -1120,7 +1120,7 @@ cleanup:
     return -1;
 }
 
-static int xenXMDomainConfigFormatNet(virConnectPtr conn,
+static int xenFormatXMNet(virConnectPtr conn,
                                       virConfValuePtr list,
                                       virDomainNetDefPtr net,
                                       int hvm, int xendConfigVersion)
@@ -1232,7 +1232,7 @@ cleanup:
 
 
 static int
-xenXMDomainConfigFormatPCI(virConfPtr conf,
+xenFormatXMPCI(virConfPtr conf,
                            virDomainDefPtr def)
 {
 
@@ -1308,7 +1308,7 @@ error:
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
 
-virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
+virConfPtr xenFormatXM(virConnectPtr conn,
                                    virDomainDefPtr def,
                                    int xendConfigVersion) {
     virConfPtr conf = NULL;
@@ -1626,8 +1626,8 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
             continue;
 
-        if (xenXMDomainConfigFormatDisk(diskVal, def->disks[i],
-                                        hvm, xendConfigVersion) < 0)
+        if (xenFormatXMDisk(diskVal, def->disks[i],
+                            hvm, xendConfigVersion) < 0)
             goto cleanup;
     }
     if (diskVal->list != NULL) {
@@ -1644,9 +1644,8 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     netVal->list = NULL;
 
     for (i = 0 ; i < def->nnets ; i++) {
-        if (xenXMDomainConfigFormatNet(conn, netVal,
-                                       def->nets[i],
-                                       hvm, xendConfigVersion) < 0)
+        if (xenFormatXMNet(conn, netVal,def->nets[i],
+                           hvm, xendConfigVersion) < 0)
             goto cleanup;
     }
     if (netVal->list != NULL) {
@@ -1657,7 +1656,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     }
     VIR_FREE(netVal);
 
-    if (xenXMDomainConfigFormatPCI(conf, def) < 0)
+    if (xenFormatXMPCI(conf, def) < 0)
         goto cleanup;
 
     if (hvm) {
@@ -1666,7 +1665,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             char *str;
             int ret;
 
-            ret = xenDaemonFormatSxprChr(def->parallels[0], &buf);
+            ret = xenFormatSxprChr(def->parallels[0], &buf);
             str = virBufferContentAndReset(&buf);
             if (ret == 0)
                 ret = xenXMConfigSetString(conf, "parallel", str);
@@ -1683,7 +1682,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             char *str;
             int ret;
 
-            ret = xenDaemonFormatSxprChr(def->serials[0], &buf);
+            ret = xenFormatSxprChr(def->serials[0], &buf);
             str = virBufferContentAndReset(&buf);
             if (ret == 0)
                 ret = xenXMConfigSetString(conf, "serial", str);
@@ -1699,7 +1698,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         if (def->sounds) {
             virBuffer buf = VIR_BUFFER_INITIALIZER;
             char *str = NULL;
-            int ret = xenDaemonFormatSxprSound(def, &buf);
+            int ret = xenFormatSxprSound(def, &buf);
             str = virBufferContentAndReset(&buf);
             if (ret == 0)
                 ret = xenXMConfigSetString(conf, "soundhw", str);

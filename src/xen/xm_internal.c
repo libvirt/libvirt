@@ -178,7 +178,7 @@ xenXMConfigReadFile(virConnectPtr conn, const char *filename) {
     if (!(conf = virConfReadFile(filename, 0)))
         return NULL;
 
-    def = xenXMDomainConfigParse(conf, priv->xendConfigVersion, priv->caps);
+    def = xenParseXM(conf, priv->xendConfigVersion, priv->caps);
     virConfFree(conf);
 
     return def;
@@ -190,7 +190,7 @@ xenXMConfigSaveFile(virConnectPtr conn, const char *filename, virDomainDefPtr de
     xenUnifiedPrivatePtr priv = conn->privateData;
     int ret;
 
-    if (!(conf = xenXMDomainConfigFormat(conn, def, priv->xendConfigVersion)))
+    if (!(conf = xenFormatXM(conn, def, priv->xendConfigVersion)))
         return -1;
 
     ret = virConfWriteFile(filename, conf);
@@ -1011,7 +1011,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto error;
 
-    if (!(sexpr = xenDaemonFormatSxpr(domain->conn, entry->def, priv->xendConfigVersion)))
+    if (!(sexpr = xenFormatSxpr(domain->conn, entry->def, priv->xendConfigVersion)))
         goto error;
 
     ret = xenDaemonDomainCreateXML(domain->conn, sexpr);

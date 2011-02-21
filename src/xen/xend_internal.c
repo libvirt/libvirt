@@ -1793,11 +1793,11 @@ xenDaemonDomainFetch(virConnectPtr conn,
     tty = xenStoreDomainGetConsolePath(conn, id);
     vncport = xenStoreDomainGetVNCPort(conn, id);
     xenUnifiedUnlock(priv);
-    if (!(def = xenDaemonParseSxpr(root,
-                                   priv->xendConfigVersion,
-                                   cpus,
-                                   tty,
-                                   vncport)))
+    if (!(def = xenParseSxpr(root,
+                             priv->xendConfigVersion,
+                             cpus,
+                             tty,
+                             vncport)))
         goto cleanup;
 
 cleanup:
@@ -2525,7 +2525,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
                                         VIR_DOMAIN_XML_INACTIVE)))
         return (NULL);
 
-    if (!(sexpr = xenDaemonFormatSxpr(conn, def, priv->xendConfigVersion))) {
+    if (!(sexpr = xenFormatSxpr(conn, def, priv->xendConfigVersion))) {
         virDomainDefFree(def);
         return (NULL);
     }
@@ -2641,11 +2641,11 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        if (xenDaemonFormatSxprDisk(domain->conn,
-                                    dev->data.disk,
-                                    &buf,
-                                    STREQ(def->os.type, "hvm") ? 1 : 0,
-                                    priv->xendConfigVersion, 1) < 0)
+        if (xenFormatSxprDisk(domain->conn,
+                              dev->data.disk,
+                               &buf,
+                               STREQ(def->os.type, "hvm") ? 1 : 0,
+                               priv->xendConfigVersion, 1) < 0)
             goto cleanup;
 
         if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -2657,11 +2657,11 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        if (xenDaemonFormatSxprNet(domain->conn,
-                                   dev->data.net,
-                                   &buf,
-                                   STREQ(def->os.type, "hvm") ? 1 : 0,
-                                   priv->xendConfigVersion, 1) < 0)
+        if (xenFormatSxprNet(domain->conn,
+                             dev->data.net,
+                             &buf,
+                             STREQ(def->os.type, "hvm") ? 1 : 0,
+                             priv->xendConfigVersion, 1) < 0)
             goto cleanup;
 
         char macStr[VIR_MAC_STRING_BUFLEN];
@@ -2676,8 +2676,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            if (xenDaemonFormatSxprOnePCI(dev->data.hostdev,
-                                          &buf, 0) < 0)
+            if (xenFormatSxprOnePCI(dev->data.hostdev, &buf, 0) < 0)
                 goto cleanup;
 
             virDomainDevicePCIAddress PCIAddr;
@@ -2812,11 +2811,11 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        if (xenDaemonFormatSxprDisk(domain->conn,
-                                    dev->data.disk,
-                                    &buf,
-                                    STREQ(def->os.type, "hvm") ? 1 : 0,
-                                    priv->xendConfigVersion, 1) < 0)
+        if (xenFormatSxprDisk(domain->conn,
+                              dev->data.disk,
+                              &buf,
+                              STREQ(def->os.type, "hvm") ? 1 : 0,
+                              priv->xendConfigVersion, 1) < 0)
             goto cleanup;
         break;
 
@@ -2927,8 +2926,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            if (xenDaemonFormatSxprOnePCI(dev->data.hostdev,
-                                          &buf, 1) < 0)
+            if (xenFormatSxprOnePCI(dev->data.hostdev, &buf, 1) < 0)
                 goto cleanup;
         } else {
             virXendError(VIR_ERR_NO_SUPPORT, "%s",
@@ -3267,7 +3265,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
         return (NULL);
     }
 
-    if (!(sexpr = xenDaemonFormatSxpr(conn, def, priv->xendConfigVersion))) {
+    if (!(sexpr = xenFormatSxpr(conn, def, priv->xendConfigVersion))) {
         virXendError(VIR_ERR_XML_ERROR,
                      "%s", _("failed to build sexpr"));
         goto error;
@@ -3759,8 +3757,8 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     vncport = xenStoreDomainGetVNCPort(domain->conn, id);
     xenUnifiedUnlock(priv);
 
-    if (!(def = xenDaemonParseSxpr(root, priv->xendConfigVersion, NULL, tty,
-                                   vncport)))
+    if (!(def = xenParseSxpr(root, priv->xendConfigVersion, NULL, tty,
+                             vncport)))
         goto cleanup;
 
     for (i = 0 ; i < def->ndisks ; i++) {

@@ -58,8 +58,7 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   vncport = xenStoreDomainGetVNCPort(conn, id);
   xenUnifiedUnlock(&priv);
 
-  if (!(def = xenDaemonParseSxprString(sexprData, xendConfigVersion, tty,
-                                       vncport)))
+  if (!(def = xenParseSxprString(sexprData, xendConfigVersion, tty, vncport)))
       goto fail;
 
   if (!(gotxml = virDomainDefFormat(def, 0)))

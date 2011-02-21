@@ -36,53 +36,31 @@
 int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion);
 int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion);
 
-virDomainDefPtr
-xenDaemonParseSxprString(const char *sexpr,
-                         int xendConfigVersion, char *tty, int vncport);
+virDomainDefPtr xenParseSxprString(const char *sexpr, int xendConfigVersion,
+                                   char *tty, int vncport);
 
-virDomainDefPtr
-xenDaemonParseSxpr(const struct sexpr *root,
-                   int xendConfigVersion,
-                   const char *cpus, char *tty, int vncport);
+virDomainDefPtr xenParseSxpr(const struct sexpr *root, int xendConfigVersion,
+                             const char *cpus, char *tty, int vncport);
 
-int
-xenDaemonParseSxprSound(virDomainDefPtr def,
-                        const char *str);
+int xenParseSxprSound(virDomainDefPtr def, const char *str);
 
-virDomainChrDefPtr
-xenDaemonParseSxprChar(const char *value,
-                       const char *tty);
+virDomainChrDefPtr xenParseSxprChar(const char *value, const char *tty);
 
-int
-xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        virDomainDiskDefPtr def,
-                        virBufferPtr buf,
-                        int hvm,
-                        int xendConfigVersion,
-                        int isAttach);
-int
-xenDaemonFormatSxprNet(virConnectPtr conn ATTRIBUTE_UNUSED,
-                       virDomainNetDefPtr def,
-                       virBufferPtr buf,
-                       int hvm,
-                       int xendConfigVersion,
-                       int isAttach);
+int xenFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virDomainDiskDefPtr def, virBufferPtr buf, int hvm,
+                      int xendConfigVersion, int isAttach);
 
-int
-xenDaemonFormatSxprOnePCI(virDomainHostdevDefPtr def,
-                          virBufferPtr buf,
-                          int detach);
+int xenFormatSxprNet(virConnectPtr conn,
+                     virDomainNetDefPtr def, virBufferPtr buf, int hvm,
+                     int xendConfigVersion, int isAttach);
 
-int
-xenDaemonFormatSxprChr(virDomainChrDefPtr def,
-                       virBufferPtr buf);
-int
-xenDaemonFormatSxprSound(virDomainDefPtr def,
-                         virBufferPtr buf);
+int xenFormatSxprOnePCI(virDomainHostdevDefPtr def, virBufferPtr buf,
+                        int detach);
 
-char *
-xenDaemonFormatSxpr(virConnectPtr conn,
-                    virDomainDefPtr def,
-                    int xendConfigVersion);
+int xenFormatSxprChr(virDomainChrDefPtr def, virBufferPtr buf);
+int xenFormatSxprSound(virDomainDefPtr def, virBufferPtr buf);
+
+char * xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def,
+                     int xendConfigVersion);
 
 #endif /* __VIR_XEN_SXPR_H__ */
