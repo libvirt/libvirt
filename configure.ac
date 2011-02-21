@@ -1702,29 +1702,6 @@ if test "$with_storage_mpath" = "check" && test "$with_linux" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_MPATH], [test "$with_storage_mpath" = "yes"])
 
-if test "$with_storage_mpath" = "yes"; then
-   DEVMAPPER_CFLAGS=
-   DEVMAPPER_LIBS=
-   PKG_CHECK_MODULES([DEVMAPPER], [devmapper >= $DEVMAPPER_REQUIRED], [], [DEVMAPPER_FOUND=no])
-   if test "$DEVMAPPER_FOUND" = "no"; then
-     # devmapper is missing pkg-config files in ubuntu, suse, etc
-     save_LIBS="$LIBS"
-     save_CFLAGS="$CFLAGS"
-     DEVMAPPER_FOUND=yes
-     AC_CHECK_LIB([devmapper], [dm_task_run],,[DEVMAPPER_FOUND=no])
-     DEVMAPPER_LIBS="-ldevmapper"
-     LIBS="$save_LIBS"
-     CFLAGS="$save_CFLAGS"
-   fi
-   AC_CHECK_HEADERS([libdevmapper.h],,[DEVMAPPER_FOUND=no])
-   if test "$DEVMAPPER_FOUND" = "no" ; then
-     AC_MSG_ERROR([You must install device-mapper-devel/libdevmapper >= $DEVMAPPER_REQUIRED to compile libvirt])
-   fi
-
-fi
-AC_SUBST([DEVMAPPER_CFLAGS])
-AC_SUBST([DEVMAPPER_LIBS])
-
 LIBPARTED_CFLAGS=
 LIBPARTED_LIBS=
 if test "$with_storage_disk" = "yes" ||
@@ -1785,6 +1762,30 @@ fi
 AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
 AC_SUBST([LIBPARTED_CFLAGS])
 AC_SUBST([LIBPARTED_LIBS])
+
+if test "$with_storage_mpath" = "yes" ||
+   test "$with_storage_disk" = "yes"; then
+   DEVMAPPER_CFLAGS=
+   DEVMAPPER_LIBS=
+   PKG_CHECK_MODULES([DEVMAPPER], [devmapper >= $DEVMAPPER_REQUIRED], [], [DEVMAPPER_FOUND=no])
+   if test "$DEVMAPPER_FOUND" = "no"; then
+     # devmapper is missing pkg-config files in ubuntu, suse, etc
+     save_LIBS="$LIBS"
+     save_CFLAGS="$CFLAGS"
+     DEVMAPPER_FOUND=yes
+     AC_CHECK_LIB([devmapper], [dm_task_run],,[DEVMAPPER_FOUND=no])
+     DEVMAPPER_LIBS="-ldevmapper"
+     LIBS="$save_LIBS"
+     CFLAGS="$save_CFLAGS"
+   fi
+   AC_CHECK_HEADERS([libdevmapper.h],,[DEVMAPPER_FOUND=no])
+   if test "$DEVMAPPER_FOUND" = "no" ; then
+     AC_MSG_ERROR([You must install device-mapper-devel/libdevmapper >= $DEVMAPPER_REQUIRED to compile libvirt])
+   fi
+
+fi
+AC_SUBST([DEVMAPPER_CFLAGS])
+AC_SUBST([DEVMAPPER_LIBS])
 
 dnl
 dnl check for libcurl (ESX/XenAPI)
