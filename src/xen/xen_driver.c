@@ -33,6 +33,7 @@
 #include "datatypes.h"
 #include "xen_driver.h"
 
+#include "xen_sxpr.h"
 #include "xen_hypervisor.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
@@ -1198,6 +1199,9 @@ xenUnifiedDomainXMLFromNative(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     char *ret = NULL;
     virConfPtr conf = NULL;
+    int id;
+    char * tty;
+    int vncport;
     GET_PRIVATE(conn);
 
     if (STRNEQ(format, XEN_CONFIG_FORMAT_XM) &&
@@ -1214,7 +1218,13 @@ xenUnifiedDomainXMLFromNative(virConnectPtr conn,
 
         def = xenXMDomainConfigParse(conn, conf);
     } else if (STREQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
-        def = xenDaemonParseSxprString(conn, config, priv->xendConfigVersion);
+        id = xenGetDomIdFromSxprString(config, priv->xendConfigVersion);
+        xenUnifiedLock(priv);
+        tty = xenStoreDomainGetConsolePath(conn, id);
+        vncport = xenStoreDomainGetVNCPort(conn, id);
+        xenUnifiedUnlock(priv);
+        def = xenDaemonParseSxprString(config, priv->xendConfigVersion, tty,
+                                       vncport);
     }
     if (!def)
         goto cleanup;

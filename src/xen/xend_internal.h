@@ -27,12 +27,6 @@
 # include "driver.h"
 # include "buf.h"
 
-# ifdef __sun
-#  define DEFAULT_VIF_SCRIPT "vif-vnic"
-# else
-#  define DEFAULT_VIF_SCRIPT "vif-bridge"
-# endif
-
 int
 xenDaemonOpen_unix(virConnectPtr conn, const char *path);
 
@@ -96,18 +90,6 @@ xenDaemonDomainFetch(virConnectPtr xend,
                      const char *name,
                      const char *cpus);
 
-virDomainDefPtr
-xenDaemonParseSxprString(virConnectPtr conn,
-                         const char *sexpr,
-                         int xendConfigVersion);
-
-int
-xenDaemonParseSxprSound(virDomainDefPtr def,
-                        const char *str);
-
-virDomainChrDefPtr
-xenDaemonParseSxprChar(const char *value,
-                       const char *tty);
 
 int
 xenDaemonFormatSxprChr(virDomainChrDefPtr def,

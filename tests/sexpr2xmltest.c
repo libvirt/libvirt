@@ -9,6 +9,7 @@
 #include "datatypes.h"
 #include "xen/xen_driver.h"
 #include "xen/xend_internal.h"
+#include "xenxs/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 
@@ -25,6 +26,9 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   char *gotxml = NULL;
   char *xmlPtr = &(xmlData[0]);
   char *sexprPtr = &(sexprData[0]);
+  int id;
+  char * tty;
+  int vncport;
   int ret = -1;
   virDomainDefPtr def = NULL;
   virConnectPtr conn;
@@ -48,7 +52,14 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   if (virMutexInit(&priv.lock) < 0)
       goto fail;
 
-  if (!(def = xenDaemonParseSxprString(conn, sexprData, xendConfigVersion)))
+  id = xenGetDomIdFromSxprString(sexprData, xendConfigVersion);
+  xenUnifiedLock(&priv);
+  tty = xenStoreDomainGetConsolePath(conn, id);
+  vncport = xenStoreDomainGetVNCPort(conn, id);
+  xenUnifiedUnlock(&priv);
+
+  if (!(def = xenDaemonParseSxprString(sexprData, xendConfigVersion, tty,
+                                       vncport)))
       goto fail;
 
   if (!(gotxml = virDomainDefFormat(def, 0)))

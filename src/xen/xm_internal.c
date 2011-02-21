@@ -40,6 +40,7 @@
 #include "xm_internal.h"
 #include "xen_driver.h"
 #include "xend_internal.h"
+#include "xen_sxpr.h"
 #include "hash.h"
 #include "buf.h"
 #include "uuid.h"

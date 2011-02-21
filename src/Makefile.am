@@ -423,6 +423,10 @@ CPU_SOURCES =							\
 VMX_SOURCES =							\
 		vmx/vmx.c vmx/vmx.h
 
+XENXS_SOURCES =							\
+		xenxs/xenxs_private.h				\
+		xenxs/xen_sxpr.c xenxs/xen_sxpr.h
+
 pkgdata_DATA =	cpu/cpu_map.xml
 
 EXTRA_DIST +=	$(pkgdata_DATA)
@@ -462,6 +466,14 @@ libvirt_la_BUILT_LIBADD += libvirt_vmx.la
 libvirt_vmx_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
+endif
+
+if WITH_XEN
+noinst_LTLIBRARIES += libvirt_xenxs.la
+libvirt_la_BUILT_LIBADD += libvirt_xenxs.la
+libvirt_xenxs_la_CFLAGS = \
+		-I@top_srcdir@/src/conf $(AM_CFLAGS)
+libvirt_xenxs_la_SOURCES = $(XENXS_SOURCES)
 endif
 
 
@@ -583,6 +595,7 @@ endif
 libvirt_driver_xen_la_CFLAGS =					\
 		$(XEN_CFLAGS)					\
 		-I@top_srcdir@/src/conf				\
+		-I@top_srcdir@/src/xenxs			\
 		$(AM_CFLAGS)
 libvirt_driver_xen_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xen_la_LIBADD = $(XEN_LIBS)
@@ -995,7 +1008,8 @@ EXTRA_DIST +=							\
 		$(SECURITY_DRIVER_APPARMOR_SOURCES)		\
 		$(SECRET_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_EXTRA_DIST)			\
-		$(VMWARE_DRIVER_SOURCES)
+		$(VMWARE_DRIVER_SOURCES)			\
+		$(XENXS_SOURCES)
 
 check-local: augeas-check
 
