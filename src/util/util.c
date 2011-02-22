@@ -1990,30 +1990,22 @@ cleanup:
 int virFileAbsPath(const char *path, char **abspath)
 {
     char *buf;
-    int cwdlen;
 
     if (path[0] == '/') {
-        buf = strdup(path);
-        if (buf == NULL)
-            return(-1);
+        if (!(*abspath = strdup(path)))
+            return -1;
     } else {
         buf = getcwd(NULL, 0);
         if (buf == NULL)
-            return(-1);
+            return -1;
 
-        cwdlen = strlen(buf);
-        /* cwdlen includes the null terminator */
-        if (VIR_REALLOC_N(buf, cwdlen + strlen(path) + 1) < 0) {
+        if (virAsprintf(abspath, "%s/%s", buf, path) < 0) {
             VIR_FREE(buf);
-            errno = ENOMEM;
-            return(-1);
+            return -1;
         }
-
-        buf[cwdlen] = '/';
-        strcpy(&buf[cwdlen + 1], path);
+        VIR_FREE(buf);
     }
 
-    *abspath = buf;
     return 0;
 }
 
