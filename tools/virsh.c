@@ -3036,6 +3036,136 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "blkiotune" command
+ */
+static const vshCmdInfo info_blkiotune[] = {
+    {"help", N_("Get or set blkio parameters")},
+    {"desc", N_("Get or set the current blkio parameters for a guest" \
+                " domain.\n" \
+                "    To get the blkio parameters use following command: \n\n" \
+                "    virsh # blkiotune <domain>")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_blkiotune[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"weight", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("IO Weight in range [100, 1000]")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int weight = 0;
+    int nparams = 0;
+    unsigned int i = 0;
+    virBlkioParameterPtr params = NULL, temp = NULL;
+    int ret = FALSE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    if (vshCommandOptInt(cmd, "weight", &weight) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter"));
+        goto cleanup;
+    }
+
+    if (weight) {
+        nparams++;
+        if (weight < 0) {
+            virDomainFree(dom);
+            vshError(ctl, _("Invalid value of %d for I/O weight"), weight);
+            goto cleanup;
+        }
+    }
+
+    if (nparams == 0) {
+        /* get the number of blkio parameters */
+        if (virDomainGetBlkioParameters(dom, NULL, &nparams, 0) != 0) {
+            vshError(ctl, "%s",
+                     _("Unable to get number of blkio parameters"));
+            goto cleanup;
+        }
+
+        if (nparams == 0) {
+            /* nothing to output */
+            ret = TRUE;
+            goto cleanup;
+        }
+
+        /* now go get all the blkio parameters */
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+        if (virDomainGetBlkioParameters(dom, params, &nparams, 0) != 0) {
+            vshError(ctl, "%s", _("Unable to get blkio parameters"));
+            goto cleanup;
+        }
+
+        for (i = 0; i < nparams; i++) {
+            switch (params[i].type) {
+                case VIR_DOMAIN_BLKIO_PARAM_INT:
+                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
+                             params[i].value.i);
+                    break;
+                case VIR_DOMAIN_BLKIO_PARAM_UINT:
+                    vshPrint(ctl, "%-15s: %u\n", params[i].field,
+                             params[i].value.ui);
+                    break;
+                case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+                    vshPrint(ctl, "%-15s: %lld\n", params[i].field,
+                             params[i].value.l);
+                    break;
+                case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+                    vshPrint(ctl, "%-15s: %llu\n", params[i].field,
+                                 params[i].value.ul);
+                    break;
+                case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+                    vshPrint(ctl, "%-15s: %f\n", params[i].field,
+                             params[i].value.d);
+                    break;
+                case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
+                             params[i].value.b);
+                    break;
+                default:
+                    vshPrint(ctl, "unimplemented blkio parameter type\n");
+            }
+        }
+
+        ret = TRUE;
+    } else {
+        /* set the blkio parameters */
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+
+        for (i = 0; i < nparams; i++) {
+            temp = &params[i];
+            temp->type = VIR_DOMAIN_BLKIO_PARAM_UINT;
+
+            if (weight) {
+                temp->value.ui = weight;
+                strncpy(temp->field, VIR_DOMAIN_BLKIO_WEIGHT,
+                        sizeof(temp->field));
+                weight = 0;
+            }
+        }
+        if (virDomainSetBlkioParameters(dom, params, nparams, 0) != 0)
+            vshError(ctl, "%s", _("Unable to change blkio parameters"));
+        else
+            ret = TRUE;
+    }
+
+  cleanup:
+    VIR_FREE(params);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "memtune" command
  */
 static const vshCmdInfo info_memtune[] = {
@@ -10289,6 +10419,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"attach-disk", cmdAttachDisk, opts_attach_disk, info_attach_disk},
     {"attach-interface", cmdAttachInterface, opts_attach_interface, info_attach_interface},
     {"autostart", cmdAutostart, opts_autostart, info_autostart},
+    {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune},
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console},
 #endif

@@ -618,6 +618,11 @@ flags, the current settings are displayed; with a flag, the
 appropriate limit is adjusted if supported by the hypervisor.  LXC and
 QEMU/KVM supports I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
 
+=item B<blkiotune> I<domain-id> optional I<--weight> B<weight>
+
+Display or set the blkio parameters. QEMU/KVM supports I<--weight>.
+I<--weight> is in range [100, 1000].
+
 =item B<setvcpus> I<domain-id> I<count> optional I<--maximum> I<--config>
 I<--live>
 
