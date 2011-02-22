@@ -109,6 +109,7 @@
 # define KVM_CAP_NR_VCPUS 9       /* returns max vcpus per vm */
 #endif
 
+#define QEMU_NB_BLKIO_PARAM  1
 
 #define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
 
@@ -4485,6 +4486,165 @@ cleanup:
     return ret;
 }
 
+static int qemuDomainSetBlkioParameters(virDomainPtr dom,
+                                         virBlkioParameterPtr params,
+                                         int nparams,
+                                         unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+    qemuDriverLock(driver);
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+        qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (i = 0; i < nparams; i++) {
+        virBlkioParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
+            int rc;
+            if (param->type != VIR_DOMAIN_BLKIO_PARAM_UINT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
+                ret = -1;
+                continue;
+            }
+
+            if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("out of blkio weight range."));
+                ret = -1;
+                continue;
+            }
+
+            rc = virCgroupSetBlkioWeight(group, params[i].value.ui);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set blkio weight tunable"));
+                ret = -1;
+            }
+        } else {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Parameter `%s' not supported"), param->field);
+            ret = -1;
+        }
+    }
+
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int qemuDomainGetBlkioParameters(virDomainPtr dom,
+                                         virBlkioParameterPtr params,
+                                         int *nparams,
+                                         unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    unsigned int val;
+    int ret = -1;
+    int rc;
+
+    virCheckFlags(0, -1);
+    qemuDriverLock(driver);
+
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+        qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if ((*nparams) == 0) {
+        /* Current number of blkio parameters supported by cgroups */
+        *nparams = QEMU_NB_BLKIO_PARAM;
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((*nparams) != QEMU_NB_BLKIO_PARAM) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        "%s", _("Invalid parameter count"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    for (i = 0; i < *nparams; i++) {
+        virBlkioParameterPtr param = &params[i];
+        val = 0;
+        param->value.ui = 0;
+        param->type = VIR_DOMAIN_BLKIO_PARAM_UINT;
+
+        switch(i) {
+        case 0: /* fill blkio weight here */
+            rc = virCgroupGetBlkioWeight(group, &val);
+            if (rc != 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to get blkio weight"));
+                goto cleanup;
+            }
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field blkio weight too long for destination"));
+                goto cleanup;
+            }
+            param->value.ui = val;
+            break;
+
+        default:
+            break;
+            /* should not hit here */
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    if (group)
+        virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
 
 static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                                          virMemoryParameterPtr params,
@@ -6889,8 +7049,8 @@ static virDriver qemuDriver = {
     qemudDomainSetMemoryFlags, /* domainSetMemoryFlags */
     qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
     qemuDomainGetMemoryParameters, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
+    qemuDomainSetBlkioParameters, /* domainSetBlkioParameters */
+    qemuDomainGetBlkioParameters, /* domainGetBlkioParameters */
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
     qemudDomainRestore, /* domainRestore */
