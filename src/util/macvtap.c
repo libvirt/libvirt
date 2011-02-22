@@ -1470,8 +1470,6 @@ doPortProfileOp8021Qbh(const char *ifname,
                                   NULL,
                                   vf,
                                   PORT_REQUEST_DISASSOCIATE);
-        if (!rc)
-            ifaceUp(ifname);
         break;
 
     case DISASSOCIATE:
@@ -1484,7 +1482,6 @@ doPortProfileOp8021Qbh(const char *ifname,
                                    NULL,
                                    vf,
                                    PORT_REQUEST_DISASSOCIATE);
-        ifaceDown(ifname);
         break;
 
     default:
@@ -1550,10 +1547,11 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
 
     case VIR_VIRTUALPORT_8021QBH:
         /* avoid associating twice */
-        if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
-            break;
-        rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
-                                    virtPort, vmuuid, ASSOCIATE);
+        if (vmOp != VIR_VM_OP_MIGRATE_IN_FINISH)
+            rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+                                        virtPort, vmuuid, ASSOCIATE);
+        if (vmOp != VIR_VM_OP_MIGRATE_IN_START && !rc)
+            ifaceUp(linkdev);
         break;
     }
 
@@ -1600,6 +1598,7 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
         /* avoid disassociating twice */
         if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
             break;
+        ifaceDown(linkdev);
         rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
                                     virtPort, NULL, DISASSOCIATE);
         break;
