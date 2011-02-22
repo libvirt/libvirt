@@ -306,6 +306,8 @@ skip_impl = (
     'virDomainGetSchedulerType',
     'virDomainGetSchedulerParameters',
     'virDomainSetSchedulerParameters',
+    'virDomainSetBlkioParameters',
+    'virDomainGetBlkioParameters',
     'virDomainSetMemoryParameters',
     'virDomainGetMemoryParameters',
     'virDomainGetVcpus',

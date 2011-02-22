@@ -162,6 +162,18 @@
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter objects'/>
     </function>
+    <function name='virDomainSetBlkioParameters' file='python'>
+      <info>Change the blkio tunables</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='params' type='virBlkioParameterPtr' info='pointer to blkio tunable objects'/>
+    </function>
+    <function name='virDomainGetBlkioParameters' file='python'>
+      <info>Get the blkio parameters, the @params array will be filled with the values.</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='params' type='virBlkioParameterPtr' info='pointer to blkio tunable objects'/>
+    </function>
     <function name='virDomainSetMemoryParameters' file='python'>
       <info>Change the memory tunables</info>
       <return type='int' info='-1 in case of error, 0 in case of success.'/>

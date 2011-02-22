@@ -4,7 +4,7 @@
  *           entry points where an automatically generated stub is
  *           unpractical
  *
- * Copyright (C) 2005, 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2011 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
@@ -369,6 +369,23 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
 
     free(params);
     return VIR_PY_INT_SUCCESS;
+}
+
+
+
+
+/* FIXME: This is a place holder for the implementation. */
+static PyObject *
+libvirt_virDomainSetBlkioParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                     PyObject *args ATTRIBUTE_UNUSED) {
+    return VIR_PY_INT_FAIL;
+}
+
+/* FIXME: This is a place holder for the implementation. */
+static PyObject *
+libvirt_virDomainGetBlkioParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                     PyObject *args ATTRIBUTE_UNUSED) {
+    return VIR_PY_INT_FAIL;
 }
 
 /* FIXME: This is a place holder for the implementation. */
@@ -3532,6 +3549,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetSchedulerType", libvirt_virDomainGetSchedulerType, METH_VARARGS, NULL},
     {(char *) "virDomainGetSchedulerParameters", libvirt_virDomainGetSchedulerParameters, METH_VARARGS, NULL},
     {(char *) "virDomainSetSchedulerParameters", libvirt_virDomainSetSchedulerParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainSetBlkioParameters", libvirt_virDomainSetBlkioParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainGetBlkioParameters", libvirt_virDomainGetBlkioParameters, METH_VARARGS, NULL},
     {(char *) "virDomainSetMemoryParameters", libvirt_virDomainSetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetMemoryParameters", libvirt_virDomainGetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetVcpus", libvirt_virDomainGetVcpus, METH_VARARGS, NULL},

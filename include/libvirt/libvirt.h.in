@@ -676,6 +676,73 @@ int                     virDomainGetInfo        (virDomainPtr domain,
  */
 char *                  virDomainGetSchedulerType(virDomainPtr domain,
                                                  int *nparams);
+/**
+ * virDomainBlkioParameterType:
+ *
+ * A blkio parameter field type
+ */
+typedef enum {
+    VIR_DOMAIN_BLKIO_PARAM_INT     = 1, /* integer case */
+    VIR_DOMAIN_BLKIO_PARAM_UINT    = 2, /* unsigned integer case */
+    VIR_DOMAIN_BLKIO_PARAM_LLONG   = 3, /* long long case */
+    VIR_DOMAIN_BLKIO_PARAM_ULLONG  = 4, /* unsigned long long case */
+    VIR_DOMAIN_BLKIO_PARAM_DOUBLE  = 5, /* double case */
+    VIR_DOMAIN_BLKIO_PARAM_BOOLEAN = 6  /* boolean(character) case */
+} virBlkioParameterType;
+
+/**
+ * VIR_DOMAIN_BLKIO_FIELD_LENGTH:
+ *
+ * Macro providing the field length of virBlkioParameter
+ */
+
+#define VIR_DOMAIN_BLKIO_FIELD_LENGTH 80
+
+/**
+ * VIR_DOMAIN_BLKIO_WEIGHT:
+ *
+ * Macro for the Blkio tunable weight: it represents the io weight
+ * the guest can use.
+ */
+
+#define VIR_DOMAIN_BLKIO_WEIGHT "weight"
+
+/**
+ * virDomainBlkioParameter:
+ *
+ * a virDomainBlkioParameter is the set of blkio parameters
+ */
+
+typedef struct _virBlkioParameter virBlkioParameter;
+
+struct _virBlkioParameter {
+    char field[VIR_DOMAIN_BLKIO_FIELD_LENGTH];  /* parameter name */
+    int type;   /* parameter type */
+    union {
+        int i;                          /* data for integer case */
+        unsigned int ui;        /* data for unsigned integer case */
+        long long int l;        /* data for long long integer case */
+        unsigned long long int ul;      /* data for unsigned long long integer case */
+        double d;       /* data for double case */
+        char b;         /* data for char case */
+    } value; /* parameter value */
+};
+
+/**
+ * virBlkioParameterPtr:
+ *
+ * a virBlkioParameterPtr is a pointer to a virBlkioParameter structure.
+ */
+
+typedef virBlkioParameter *virBlkioParameterPtr;
+
+/* Set Blkio tunables for the domain*/
+int     virDomainSetBlkioParameters(virDomainPtr domain,
+                                     virBlkioParameterPtr params,
+                                     int nparams, unsigned int flags);
+int     virDomainGetBlkioParameters(virDomainPtr domain,
+                                     virBlkioParameterPtr params,
+                                     int *nparams, unsigned int flags);
 
 /**
  * virDomainMemoryParameterType:
