@@ -173,3 +173,5 @@
     remote_domain_is_updated_args val_remote_domain_is_updated_args;
     remote_get_sysinfo_args val_remote_get_sysinfo_args;
     remote_domain_set_memory_flags_args val_remote_domain_set_memory_flags_args;
+    remote_domain_set_blkio_parameters_args val_remote_domain_set_blkio_parameters_args;
+    remote_domain_get_blkio_parameters_args val_remote_domain_get_blkio_parameters_args;

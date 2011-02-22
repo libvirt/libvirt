@@ -2647,6 +2647,175 @@ done:
 }
 
 static int
+remoteDomainSetBlkioParameters (virDomainPtr domain,
+                                virBlkioParameterPtr params,
+                                 int nparams,
+                                 unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_set_blkio_parameters_args args;
+    int i, do_error;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    /* Serialise the blkio parameters. */
+    args.params.params_len = nparams;
+    args.flags = flags;
+    if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
+        virReportOOMError();
+        goto done;
+    }
+
+    do_error = 0;
+    for (i = 0; i < nparams; ++i) {
+        // call() will free this:
+        args.params.params_val[i].field = strdup (params[i].field);
+        if (args.params.params_val[i].field == NULL) {
+            virReportOOMError();
+            do_error = 1;
+        }
+        args.params.params_val[i].value.type = params[i].type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_BLKIO_PARAM_INT:
+            args.params.params_val[i].value.remote_blkio_param_value_u.i =
+                params[i].value.i; break;
+        case VIR_DOMAIN_BLKIO_PARAM_UINT:
+            args.params.params_val[i].value.remote_blkio_param_value_u.ui =
+                params[i].value.ui; break;
+        case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+            args.params.params_val[i].value.remote_blkio_param_value_u.l =
+                params[i].value.l; break;
+        case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+            args.params.params_val[i].value.remote_blkio_param_value_u.ul =
+                params[i].value.ul; break;
+        case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+            args.params.params_val[i].value.remote_blkio_param_value_u.d =
+                params[i].value.d; break;
+        case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+            args.params.params_val[i].value.remote_blkio_param_value_u.b =
+                params[i].value.b; break;
+        default:
+            remoteError(VIR_ERR_RPC, "%s", _("unknown parameter type"));
+            do_error = 1;
+        }
+    }
+
+    if (do_error) {
+        xdr_free ((xdrproc_t) xdr_remote_domain_set_blkio_parameters_args,
+                  (char *) &args);
+        goto done;
+    }
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS,
+              (xdrproc_t) xdr_remote_domain_set_blkio_parameters_args,
+              (char *) &args, (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainGetBlkioParameters (virDomainPtr domain,
+                                 virBlkioParameterPtr params, int *nparams,
+                                 unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_blkio_parameters_args args;
+    remote_domain_get_blkio_parameters_ret ret;
+    int i = -1;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.nparams = *nparams;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS,
+              (xdrproc_t) xdr_remote_domain_get_blkio_parameters_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_blkio_parameters_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Check the length of the returned list carefully. */
+    if (ret.params.params_len > REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX ||
+        ret.params.params_len > *nparams) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("remoteDomainGetBlkioParameters: "
+                      "returned number of parameters exceeds limit"));
+        goto cleanup;
+    }
+    /* Handle the case when the caller does not know the number of parameters
+     * and is asking for the number of parameters supported
+     */
+    if (*nparams == 0) {
+        *nparams = ret.nparams;
+        rv = 0;
+        goto cleanup;
+    }
+
+    *nparams = ret.params.params_len;
+
+    /* Deserialise the result. */
+    for (i = 0; i < *nparams; ++i) {
+        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
+            remoteError(VIR_ERR_INTERNAL_ERROR,
+                        _("Parameter %s too big for destination"),
+                        ret.params.params_val[i].field);
+            goto cleanup;
+        }
+        params[i].type = ret.params.params_val[i].value.type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_BLKIO_PARAM_INT:
+            params[i].value.i =
+                ret.params.params_val[i].value.remote_blkio_param_value_u.i;
+            break;
+        case VIR_DOMAIN_BLKIO_PARAM_UINT:
+            params[i].value.ui =
+                ret.params.params_val[i].value.remote_blkio_param_value_u.ui;
+            break;
+        case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+            params[i].value.l =
+                ret.params.params_val[i].value.remote_blkio_param_value_u.l;
+            break;
+        case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+            params[i].value.ul =
+                ret.params.params_val[i].value.remote_blkio_param_value_u.ul;
+            break;
+        case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+            params[i].value.d =
+                ret.params.params_val[i].value.remote_blkio_param_value_u.d;
+            break;
+        case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+            params[i].value.b =
+                ret.params.params_val[i].value.remote_blkio_param_value_u.b;
+            break;
+        default:
+            remoteError(VIR_ERR_RPC, "%s",
+                        _("remoteDomainGetBlkioParameters: "
+                          "unknown parameter type"));
+            goto cleanup;
+        }
+    }
+
+    rv = 0;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_blkio_parameters_ret,
+              (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainGetInfo (virDomainPtr domain, virDomainInfoPtr info)
 {
     int rv = -1;
@@ -10906,8 +11075,8 @@ static virDriver remote_driver = {
     remoteDomainSetMemoryFlags, /* domainSetMemoryFlags */
     remoteDomainSetMemoryParameters, /* domainSetMemoryParameters */
     remoteDomainGetMemoryParameters, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
+    remoteDomainSetBlkioParameters, /* domainSetBlkioParameters */
+    remoteDomainGetBlkioParameters, /* domainGetBlkioParameters */
     remoteDomainGetInfo, /* domainGetInfo */
     remoteDomainSave, /* domainSave */
     remoteDomainRestore, /* domainRestore */

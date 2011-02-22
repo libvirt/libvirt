@@ -1027,3 +1027,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_set_memory_flags_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainSetBlkioParameters => 205 */
+    .fn = (dispatch_fn) remoteDispatchDomainSetBlkioParameters,
+    .args_filter = (xdrproc_t) xdr_remote_domain_set_blkio_parameters_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* DomainGetBlkioParameters => 206 */
+    .fn = (dispatch_fn) remoteDispatchDomainGetBlkioParameters,
+    .args_filter = (xdrproc_t) xdr_remote_domain_get_blkio_parameters_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_get_blkio_parameters_ret,
+},

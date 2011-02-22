@@ -128,6 +128,9 @@ const REMOTE_NWFILTER_NAME_LIST_MAX = 1024;
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
 
+/* Upper limit on list of blkio parameters. */
+const REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX = 16;
+
 /* Upper limit on list of memory parameters. */
 const REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX = 16;
 
@@ -316,6 +319,26 @@ struct remote_sched_param {
     remote_sched_param_value value;
 };
 
+union remote_blkio_param_value switch (int type) {
+ case VIR_DOMAIN_BLKIO_PARAM_INT:
+     int i;
+ case VIR_DOMAIN_BLKIO_PARAM_UINT:
+     unsigned int ui;
+ case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+     hyper l;
+ case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+     unsigned hyper ul;
+ case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+     double d;
+ case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+     int b;
+};
+
+struct remote_blkio_param {
+    remote_nonnull_string field;
+    remote_blkio_param_value value;
+};
+
 union remote_memory_param_value switch (int type) {
  case VIR_DOMAIN_MEMORY_PARAM_INT:
      int i;
@@ -451,6 +474,23 @@ struct remote_domain_get_scheduler_parameters_ret {
 struct remote_domain_set_scheduler_parameters_args {
     remote_nonnull_domain dom;
     remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+};
+
+struct remote_domain_set_blkio_parameters_args {
+    remote_nonnull_domain dom;
+    remote_blkio_param params<REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX>;
+    unsigned int flags;
+};
+
+struct remote_domain_get_blkio_parameters_args {
+    remote_nonnull_domain dom;
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_domain_get_blkio_parameters_ret {
+    remote_blkio_param params<REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX>;
+    int nparams;
 };
 
 struct remote_domain_set_memory_parameters_args {
@@ -2110,7 +2150,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201,
     REMOTE_PROC_DOMAIN_IS_UPDATED = 202,
     REMOTE_PROC_GET_SYSINFO = 203,
-    REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204
+    REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204,
+    REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205,
+    REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

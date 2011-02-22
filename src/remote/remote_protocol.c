@@ -308,6 +308,53 @@ xdr_remote_sched_param (XDR *xdrs, remote_sched_param *objp)
 }
 
 bool_t
+xdr_remote_blkio_param_value (XDR *xdrs, remote_blkio_param_value *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->type))
+                 return FALSE;
+        switch (objp->type) {
+        case VIR_DOMAIN_BLKIO_PARAM_INT:
+                         return FALSE;
+                break;
+        case VIR_DOMAIN_BLKIO_PARAM_UINT:
+                 if (!xdr_u_int (xdrs, &objp->remote_blkio_param_value_u.ui))
+                         return FALSE;
+                break;
+        case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+                 if (!xdr_int64_t (xdrs, &objp->remote_blkio_param_value_u.l))
+                         return FALSE;
+                break;
+        case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+                 if (!xdr_uint64_t (xdrs, &objp->remote_blkio_param_value_u.ul))
+                         return FALSE;
+                break;
+        case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+                 if (!xdr_double (xdrs, &objp->remote_blkio_param_value_u.d))
+                         return FALSE;
+                break;
+        case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+                 if (!xdr_int (xdrs, &objp->remote_blkio_param_value_u.b))
+                         return FALSE;
+                break;
+        default:
+                return FALSE;
+        }
+        return TRUE;
+}
+
+bool_t
+xdr_remote_blkio_param (XDR *xdrs, remote_blkio_param *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->field))
+                 return FALSE;
+         if (!xdr_remote_blkio_param_value (xdrs, &objp->value))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_memory_param_value (XDR *xdrs, remote_memory_param_value *objp)
 {
 
@@ -641,6 +688,47 @@ xdr_remote_domain_set_scheduler_parameters_args (XDR *xdrs, remote_domain_set_sc
                  return FALSE;
          if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->params.params_len, REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
                 sizeof (remote_sched_param), (xdrproc_t) xdr_remote_sched_param))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_set_blkio_parameters_args (XDR *xdrs, remote_domain_set_blkio_parameters_args *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->params.params_val;
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->params.params_len, REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
+                sizeof (remote_blkio_param), (xdrproc_t) xdr_remote_blkio_param))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_get_blkio_parameters_args (XDR *xdrs, remote_domain_get_blkio_parameters_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->nparams))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_get_blkio_parameters_ret (XDR *xdrs, remote_domain_get_blkio_parameters_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->params.params_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->params.params_len, REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
+                sizeof (remote_blkio_param), (xdrproc_t) xdr_remote_blkio_param))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->nparams))
                  return FALSE;
         return TRUE;
 }

@@ -2620,6 +2620,216 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
 }
 
 static int
+remoteDispatchDomainSetBlkioParameters(struct qemud_server *server
+                                        ATTRIBUTE_UNUSED,
+                                        struct qemud_client *client
+                                        ATTRIBUTE_UNUSED,
+                                        virConnectPtr conn,
+                                        remote_message_header *
+                                        hdr ATTRIBUTE_UNUSED,
+                                        remote_error * rerr,
+                                        remote_domain_set_blkio_parameters_args
+                                        * args, void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    int i, r, nparams;
+    virBlkioParameterPtr params;
+    unsigned int flags;
+
+    nparams = args->params.params_len;
+    flags = args->flags;
+
+    if (nparams > REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX) {
+        remoteDispatchFormatError(rerr, "%s", _("nparams too large"));
+        return -1;
+    }
+    if (VIR_ALLOC_N(params, nparams) < 0) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    /* Deserialise parameters. */
+    for (i = 0; i < nparams; ++i) {
+        if (virStrcpyStatic
+            (params[i].field, args->params.params_val[i].field) == NULL) {
+            remoteDispatchFormatError(rerr,
+                                      _
+                                      ("Field %s too big for destination"),
+                                      args->params.params_val[i].field);
+            return -1;
+        }
+        params[i].type = args->params.params_val[i].value.type;
+        switch (params[i].type) {
+            case VIR_DOMAIN_BLKIO_PARAM_INT:
+                params[i].value.i =
+                    args->params.params_val[i].value.
+                    remote_blkio_param_value_u.i;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_UINT:
+                params[i].value.ui =
+                    args->params.params_val[i].value.
+                    remote_blkio_param_value_u.ui;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+                params[i].value.l =
+                    args->params.params_val[i].value.
+                    remote_blkio_param_value_u.l;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+                params[i].value.ul =
+                    args->params.params_val[i].value.
+                    remote_blkio_param_value_u.ul;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+                params[i].value.d =
+                    args->params.params_val[i].value.
+                    remote_blkio_param_value_u.d;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+                params[i].value.b =
+                    args->params.params_val[i].value.
+                    remote_blkio_param_value_u.b;
+                break;
+        }
+    }
+
+    dom = get_nonnull_domain(conn, args->dom);
+    if (dom == NULL) {
+        VIR_FREE(params);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    r = virDomainSetBlkioParameters(dom, params, nparams, flags);
+    virDomainFree(dom);
+    VIR_FREE(params);
+    if (r == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetBlkioParameters(struct qemud_server *server
+                                        ATTRIBUTE_UNUSED,
+                                        struct qemud_client *client
+                                        ATTRIBUTE_UNUSED,
+                                        virConnectPtr conn,
+                                        remote_message_header *
+                                        hdr ATTRIBUTE_UNUSED,
+                                        remote_error * rerr,
+                                        remote_domain_get_blkio_parameters_args
+                                        * args,
+                                        remote_domain_get_blkio_parameters_ret
+                                        * ret)
+{
+    virDomainPtr dom;
+    virBlkioParameterPtr params;
+    int i, r, nparams;
+    unsigned int flags;
+
+    nparams = args->nparams;
+    flags = args->flags;
+
+    if (nparams > REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX) {
+        remoteDispatchFormatError(rerr, "%s", _("nparams too large"));
+        return -1;
+    }
+    if (VIR_ALLOC_N(params, nparams) < 0) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    dom = get_nonnull_domain(conn, args->dom);
+    if (dom == NULL) {
+        VIR_FREE(params);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    r = virDomainGetBlkioParameters(dom, params, &nparams, flags);
+    if (r == -1) {
+        virDomainFree(dom);
+        VIR_FREE(params);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    /* In this case, we need to send back the number of parameters
+     * supported
+     */
+    if (args->nparams == 0) {
+        ret->nparams = nparams;
+        goto success;
+    }
+
+    /* Serialise the blkio parameters. */
+    ret->params.params_len = nparams;
+    if (VIR_ALLOC_N(ret->params.params_val, nparams) < 0)
+        goto oom;
+
+    for (i = 0; i < nparams; ++i) {
+        // remoteDispatchClientRequest will free this:
+        ret->params.params_val[i].field = strdup(params[i].field);
+        if (ret->params.params_val[i].field == NULL)
+            goto oom;
+
+        ret->params.params_val[i].value.type = params[i].type;
+        switch (params[i].type) {
+            case VIR_DOMAIN_BLKIO_PARAM_INT:
+                ret->params.params_val[i].
+                    value.remote_blkio_param_value_u.i =
+                    params[i].value.i;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_UINT:
+                ret->params.params_val[i].
+                    value.remote_blkio_param_value_u.ui =
+                    params[i].value.ui;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+                ret->params.params_val[i].
+                    value.remote_blkio_param_value_u.l =
+                    params[i].value.l;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+                ret->params.params_val[i].
+                    value.remote_blkio_param_value_u.ul =
+                    params[i].value.ul;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+                ret->params.params_val[i].
+                    value.remote_blkio_param_value_u.d =
+                    params[i].value.d;
+                break;
+            case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+                ret->params.params_val[i].
+                    value.remote_blkio_param_value_u.b =
+                    params[i].value.b;
+                break;
+            default:
+                remoteDispatchFormatError(rerr, "%s", _("unknown type"));
+                goto cleanup;
+        }
+    }
+
+  success:
+    virDomainFree(dom);
+    VIR_FREE(params);
+
+    return 0;
+
+  oom:
+    remoteDispatchOOMError(rerr);
+  cleanup:
+    virDomainFree(dom);
+    for (i = 0; i < nparams; i++)
+        VIR_FREE(ret->params.params_val[i].field);
+    VIR_FREE(params);
+    return -1;
+}
+
+static int
 remoteDispatchDomainSetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
                               struct qemud_client *client ATTRIBUTE_UNUSED,
                               virConnectPtr conn,
