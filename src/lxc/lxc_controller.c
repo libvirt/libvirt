@@ -33,6 +33,7 @@
 #include <sys/personality.h>
 #include <unistd.h>
 #include <paths.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <getopt.h>
@@ -121,12 +122,10 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         virReportSystemError(-rc,
                              _("Unable to set memory limit for domain %s"),
                              def->name);
-        /* Don't fail if we can't set memory due to lack of kernel support */
-        if (rc != -ENOENT)
-            goto cleanup;
+        goto cleanup;
     }
 
-    if(def->mem.hard_limit) {
+    if (def->mem.hard_limit) {
         rc = virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit);
         if (rc != 0) {
             virReportSystemError(-rc,
@@ -136,7 +135,7 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         }
     }
 
-    if(def->mem.soft_limit) {
+    if (def->mem.soft_limit) {
         rc = virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit);
         if (rc != 0) {
             virReportSystemError(-rc,
@@ -146,7 +145,7 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         }
     }
 
-    if(def->mem.swap_hard_limit) {
+    if (def->mem.swap_hard_limit) {
         rc = virCgroupSetSwapHardLimit(cgroup, def->mem.swap_hard_limit);
         if (rc != 0) {
             virReportSystemError(-rc,
@@ -327,6 +326,18 @@ ignorable_epoll_accept_errno(int errnum)
           || errnum == EWOULDBLOCK);
 }
 
+static bool
+lxcPidGone(pid_t container)
+{
+    waitpid(container, NULL, WNOHANG);
+
+    if (kill(container, 0) < 0 &&
+        errno == ESRCH)
+        return true;
+
+    return false;
+}
+
 /**
  * lxcControllerMain
  * @monitor: server socket fd to accept client requests
@@ -344,7 +355,8 @@ ignorable_epoll_accept_errno(int errnum)
 static int lxcControllerMain(int monitor,
                              int client,
                              int appPty,
-                             int contPty)
+                             int contPty,
+                             pid_t container)
 {
     int rc = -1;
     int epollFd;
@@ -450,7 +462,13 @@ static int lxcControllerMain(int monitor,
                         ++numActive;
                     }
                 } else if (epollEvent.events & EPOLLHUP) {
-                    VIR_DEBUG("EPOLLHUP from fd %d", epollEvent.data.fd);
+                    if (lxcPidGone(container))
+                        goto cleanup;
+                    curFdOff = epollEvent.data.fd == appPty ? 0 : 1;
+                    if (fdArray[curFdOff].active) {
+                        fdArray[curFdOff].active = 0;
+                        --numActive;
+                    }
                     continue;
                 } else {
                     lxcError(VIR_ERR_INTERNAL_ERROR,
@@ -489,7 +507,9 @@ static int lxcControllerMain(int monitor,
                 --numActive;
                 fdArray[curFdOff].active = 0;
             } else if (-1 == rc) {
-                goto cleanup;
+                if (lxcPidGone(container))
+                    goto cleanup;
+                continue;
             }
 
         }
@@ -587,7 +607,7 @@ lxcControllerRun(virDomainDefPtr def,
     int rc = -1;
     int control[2] = { -1, -1};
     int containerPty = -1;
-    char *containerPtyPath;
+    char *containerPtyPath = NULL;
     pid_t container = -1;
     virDomainFSDefPtr root;
     char *devpts = NULL;
@@ -709,7 +729,7 @@ lxcControllerRun(virDomainDefPtr def,
     if (lxcControllerClearCapabilities() < 0)
         goto cleanup;
 
-    rc = lxcControllerMain(monitor, client, appPty, containerPty);
+    rc = lxcControllerMain(monitor, client, appPty, containerPty, container);
 
 cleanup:
     VIR_FREE(devptmx);

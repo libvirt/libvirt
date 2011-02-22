@@ -9,6 +9,28 @@ light-weight "application container" which does not have it's own root image.  Y
 start it using
 </p>
 
+<h2>Cgroups Requirements</h2>
+
+<p>
+The libvirt LXC driver requires that certain cgroups controllers are
+mounted on the host OS. The minimum required controllers are 'cpuacct',
+'memory' and 'devices', while recommended extra controllers are
+'cpu', 'freezer' and 'blkio'. The /etc/cgconfig.conf &amp; cgconfig
+init service used to mount cgroups at host boot time. To manually
+mount them use:
+</p>
+
+<pre>
+ # mount -t cgroup cgroup /dev/cgroup -o cpuacct,memory,devices,cpu,freezer,blkio
+</pre>
+
+<p>
+NB, the blkio controller in some kernels will not allow creation of nested
+sub-directories which will prevent correct operation of the libvirt LXC
+driver. On such kernels, it may be neccessary to unmount the blkio controller.
+</p>
+
+
 <h3>Example config version 1</h3>
 <p></p>
 <pre>
