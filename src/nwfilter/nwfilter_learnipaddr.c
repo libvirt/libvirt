@@ -207,7 +207,7 @@ virNWFilterUnlockIface(const char *ifname) {
 
         ifaceLock->refctr--;
         if (ifaceLock->refctr == 0)
-            virHashRemoveEntry(ifaceLockMap, ifname, freeIfaceLock);
+            virHashRemoveEntry(ifaceLockMap, ifname);
     }
 
     virMutexUnlock(&ifaceMapLock);
@@ -301,10 +301,7 @@ virNWFilterDeregisterLearnReq(int ifindex) {
 
     virMutexLock(&pendingLearnReqLock);
 
-    res = virHashLookup(pendingLearnReq, ifindex_str);
-
-    if (res)
-        virHashRemoveEntry(pendingLearnReq, ifindex_str, NULL);
+    res = virHashSteal(pendingLearnReq, ifindex_str);
 
     virMutexUnlock(&pendingLearnReqLock);
 

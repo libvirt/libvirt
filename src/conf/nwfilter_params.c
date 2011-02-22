@@ -35,7 +35,7 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 static void
-hashDealloc(void *payload, const char *name ATTRIBUTE_UNUSED)
+hashDataFree(void *payload, const char *name ATTRIBUTE_UNUSED)
 {
     VIR_FREE(payload);
 }
@@ -80,7 +80,7 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
             return 1;
         }
     } else {
-        if (virHashUpdateEntry(table->hashTable, name, val, hashDealloc) != 0) {
+        if (virHashUpdateEntry(table->hashTable, name, val) != 0) {
             return 1;
         }
     }
@@ -120,7 +120,7 @@ virNWFilterHashTableCreate(int n) {
         virReportOOMError();
         return NULL;
     }
-    ret->hashTable = virHashCreate(n, hashDealloc);
+    ret->hashTable = virHashCreate(n, hashDataFree);
     if (!ret->hashTable) {
         VIR_FREE(ret);
         return NULL;
@@ -134,7 +134,7 @@ virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
                                 const char *entry)
 {
     int i;
-    int rc = virHashRemoveEntry(ht->hashTable, entry, hashDealloc);
+    int rc = virHashRemoveEntry(ht->hashTable, entry);
 
     if (rc == 0) {
         for (i = 0; i < ht->nNames; i++) {

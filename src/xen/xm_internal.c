@@ -161,7 +161,7 @@ static int xenXMConfigReaper(const void *payload, const char *key ATTRIBUTE_UNUS
         const char *olddomname = entry->def->name;
         char *nameowner = (char *)virHashLookup(args->priv->nameConfigMap, olddomname);
         if (nameowner && STREQ(nameowner, key)) {
-            virHashRemoveEntry(args->priv->nameConfigMap, olddomname, NULL);
+            virHashRemoveEntry(args->priv->nameConfigMap, olddomname);
         }
         return (1);
     }
@@ -216,8 +216,8 @@ xenXMConfigCacheRemoveFile(virConnectPtr conn,
         return 0;
     }
 
-    virHashRemoveEntry(priv->nameConfigMap, entry->def->name, NULL);
-    virHashRemoveEntry(priv->configCache, filename, xenXMConfigFree);
+    virHashRemoveEntry(priv->nameConfigMap, entry->def->name);
+    virHashRemoveEntry(priv->configCache, filename);
     VIR_DEBUG("Removed %s %s", entry->def->name, filename);
     return 0;
 }
@@ -268,7 +268,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
             re-acquire it later - just in case it was renamed */
         nameowner = (char *)virHashLookup(priv->nameConfigMap, entry->def->name);
         if (nameowner && STREQ(nameowner, filename)) {
-            virHashRemoveEntry(priv->nameConfigMap, entry->def->name, NULL);
+            virHashRemoveEntry(priv->nameConfigMap, entry->def->name);
         }
 
         /* Clear existing config entry which needs refresh */
@@ -287,7 +287,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
     if (!(entry->def = xenXMConfigReadFile(conn, entry->filename))) {
         VIR_DEBUG("Failed to read %s", entry->filename);
         if (!newborn)
-            virHashRemoveEntry(priv->configCache, filename, NULL);
+            virHashSteal(priv->configCache, filename);
         VIR_FREE(entry);
         return -1;
     }
@@ -309,7 +309,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
         */
     if (!virHashLookup(priv->nameConfigMap, entry->def->name)) {
         if (virHashAddEntry(priv->nameConfigMap, entry->def->name, entry->filename) < 0) {
-            virHashRemoveEntry(priv->configCache, filename, NULL);
+            virHashSteal(priv->configCache, filename);
             virDomainDefFree(entry->def);
             VIR_FREE(entry);
         }
@@ -412,7 +412,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
        then the config is no longer on disk */
     args.now = now;
     args.priv = priv;
-    virHashRemoveSet(priv->configCache, xenXMConfigReaper, xenXMConfigFree, &args);
+    virHashRemoveSet(priv->configCache, xenXMConfigReaper, &args);
     ret = 0;
 
     closedir(dh);
@@ -1114,14 +1114,14 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         }
 
         /* Remove the name -> filename mapping */
-        if (virHashRemoveEntry(priv->nameConfigMap, def->name, NULL) < 0) {
+        if (virHashRemoveEntry(priv->nameConfigMap, def->name) < 0) {
             xenXMError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("failed to remove old domain from config map"));
             goto error;
         }
 
         /* Remove the config record itself */
-        if (virHashRemoveEntry(priv->configCache, oldfilename, xenXMConfigFree) < 0) {
+        if (virHashRemoveEntry(priv->configCache, oldfilename) < 0) {
             xenXMError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("failed to remove old domain from config map"));
             goto error;
@@ -1164,7 +1164,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     }
 
     if (virHashAddEntry(priv->nameConfigMap, def->name, entry->filename) < 0) {
-        virHashRemoveEntry(priv->configCache, filename, NULL);
+        virHashSteal(priv->configCache, filename);
         xenXMError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("unable to store config file handle"));
         goto error;
@@ -1213,11 +1213,11 @@ int xenXMDomainUndefine(virDomainPtr domain) {
         goto cleanup;
 
     /* Remove the name -> filename mapping */
-    if (virHashRemoveEntry(priv->nameConfigMap, domain->name, NULL) < 0)
+    if (virHashRemoveEntry(priv->nameConfigMap, domain->name) < 0)
         goto cleanup;
 
     /* Remove the config record itself */
-    if (virHashRemoveEntry(priv->configCache, entry->filename, xenXMConfigFree) < 0)
+    if (virHashRemoveEntry(priv->configCache, entry->filename) < 0)
         goto cleanup;
 
     ret = 0;

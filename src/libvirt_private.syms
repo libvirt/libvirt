@@ -413,6 +413,7 @@ virHashRemoveEntry;
 virHashRemoveSet;
 virHashSearch;
 virHashSize;
+virHashSteal;
 
 
 # hooks.h

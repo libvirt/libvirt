@@ -23,13 +23,13 @@ typedef virHashTable *virHashTablePtr;
  */
 
 /**
- * virHashDeallocator:
+ * virHashDataFree:
  * @payload:  the data in the hash
  * @name:  the name associated
  *
  * Callback to free data from a hash.
  */
-typedef void (*virHashDeallocator) (void *payload, const char *name);
+typedef void (*virHashDataFree) (void *payload, const char *name);
 /**
  * virHashIterator:
  * @payload: the data in the hash
@@ -55,7 +55,7 @@ typedef int (*virHashSearcher) (const void *payload, const char *name,
 /*
  * Constructor and destructor.
  */
-virHashTablePtr virHashCreate(int size, virHashDeallocator f);
+virHashTablePtr virHashCreate(int size, virHashDataFree dataFree);
 void virHashFree(virHashTablePtr table);
 int virHashSize(virHashTablePtr table);
 
@@ -66,25 +66,30 @@ int virHashAddEntry(virHashTablePtr table,
                     const char *name, void *userdata);
 int virHashUpdateEntry(virHashTablePtr table,
                        const char *name,
-                       void *userdata, virHashDeallocator f);
+                       void *userdata);
 
 /*
  * Remove an entry from the hash table.
  */
 int virHashRemoveEntry(virHashTablePtr table,
-                       const char *name, virHashDeallocator f);
+                       const char *name);
 
 /*
  * Retrieve the userdata.
  */
 void *virHashLookup(virHashTablePtr table, const char *name);
 
+/*
+ * Retrieve & remove the userdata.
+ */
+void *virHashSteal(virHashTablePtr table, const char *name);
+
 
 /*
  * Iterators
  */
 int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
-int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDeallocator f, const void *data);
+int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
 void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data);
 
 #endif                          /* ! __VIR_HASH_H__ */

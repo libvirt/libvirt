@@ -842,7 +842,7 @@ int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
     if (!addr)
         return -1;
 
-    ret = virHashRemoveEntry(addrs->used, addr, qemuDomainPCIAddressSetFreeEntry);
+    ret = virHashRemoveEntry(addrs->used, addr);
 
     VIR_FREE(addr);
 

@@ -392,7 +392,7 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
 static void
-virDomainObjListDeallocator(void *payload, const char *name ATTRIBUTE_UNUSED)
+virDomainObjListDataFree(void *payload, const char *name ATTRIBUTE_UNUSED)
 {
     virDomainObjPtr obj = payload;
     virDomainObjLock(obj);
@@ -402,7 +402,7 @@ virDomainObjListDeallocator(void *payload, const char *name ATTRIBUTE_UNUSED)
 
 int virDomainObjListInit(virDomainObjListPtr doms)
 {
-    doms->objs = virHashCreate(50, virDomainObjListDeallocator);
+    doms->objs = virHashCreate(50, virDomainObjListDataFree);
     if (!doms->objs)
         return -1;
     return 0;
@@ -1143,7 +1143,7 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 
     virDomainObjUnlock(dom);
 
-    virHashRemoveEntry(doms->objs, uuidstr, virDomainObjListDeallocator);
+    virHashRemoveEntry(doms->objs, uuidstr);
 }
 
 
@@ -8753,8 +8753,8 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 
 /* Snapshot Obj List functions */
 static void
-virDomainSnapshotObjListDeallocator(void *payload,
-                                    const char *name ATTRIBUTE_UNUSED)
+virDomainSnapshotObjListDataFree(void *payload,
+                                 const char *name ATTRIBUTE_UNUSED)
 {
     virDomainSnapshotObjPtr obj = payload;
 
@@ -8763,7 +8763,7 @@ virDomainSnapshotObjListDeallocator(void *payload,
 
 int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr snapshots)
 {
-    snapshots->objs = virHashCreate(50, virDomainSnapshotObjListDeallocator);
+    snapshots->objs = virHashCreate(50, virDomainSnapshotObjListDataFree);
     if (!snapshots->objs)
         return -1;
     return 0;
@@ -8860,8 +8860,7 @@ virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjLi
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot)
 {
-    virHashRemoveEntry(snapshots->objs, snapshot->def->name,
-                       virDomainSnapshotObjListDeallocator);
+    virHashRemoveEntry(snapshots->objs, snapshot->def->name);
 }
 
 struct snapshot_has_children {
