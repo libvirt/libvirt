@@ -1012,7 +1012,7 @@ virNWFilterTeardownFilter(const virDomainNetDefPtr net)
 
 void
 virNWFilterDomainFWUpdateCB(void *payload,
-                            const char *name ATTRIBUTE_UNUSED,
+                            const void *name ATTRIBUTE_UNUSED,
                             void *data)
 {
     virDomainObjPtr obj = payload;

@@ -949,7 +949,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
     return 0;
 }
 
-static void qemuProcessFreePtyPath(void *payload, const char *name ATTRIBUTE_UNUSED)
+static void qemuProcessFreePtyPath(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
     VIR_FREE(payload);
 }
@@ -1783,7 +1783,7 @@ struct qemuProcessReconnectData {
  * and re-reserve the security labels in use
  */
 static void
-qemuProcessReconnect(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr obj = payload;
     struct qemuProcessReconnectData *data = opaque;

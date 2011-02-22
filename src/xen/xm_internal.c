@@ -139,7 +139,7 @@ static int xenInotifyActive(virConnectPtr conn)
 
 
 /* Release memory associated with a cached config object */
-static void xenXMConfigFree(void *payload, const char *key ATTRIBUTE_UNUSED) {
+static void xenXMConfigFree(void *payload, const void *key ATTRIBUTE_UNUSED) {
     xenXMConfCachePtr entry = (xenXMConfCachePtr)payload;
     virDomainDefFree(entry->def);
     VIR_FREE(entry);
@@ -151,7 +151,7 @@ struct xenXMConfigReaperData {
 };
 
 /* Remove any configs which were not refreshed recently */
-static int xenXMConfigReaper(const void *payload, const char *key ATTRIBUTE_UNUSED, const void *data) {
+static int xenXMConfigReaper(const void *payload, const void *key ATTRIBUTE_UNUSED, const void *data) {
     const struct xenXMConfigReaperData *args = data;
     xenXMConfCachePtr entry = (xenXMConfCachePtr)payload;
 
@@ -938,7 +938,7 @@ cleanup:
 /*
  * Hash table iterator to search for a domain based on UUID
  */
-static int xenXMDomainSearchForUUID(const void *payload, const char *name ATTRIBUTE_UNUSED, const void *data) {
+static int xenXMDomainSearchForUUID(const void *payload, const void *name ATTRIBUTE_UNUSED, const void *data) {
     const unsigned char *wantuuid = (const unsigned char *)data;
     const xenXMConfCachePtr entry = (const xenXMConfCachePtr)payload;
 
@@ -1235,7 +1235,7 @@ struct xenXMListIteratorContext {
     char ** names;
 };
 
-static void xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const char *name, void *data) {
+static void xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, void *data) {
     struct xenXMListIteratorContext *ctx = data;
     virDomainPtr dom = NULL;
 

@@ -1967,7 +1967,7 @@ struct lxcAutostartData {
 };
 
 static void
-lxcAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+lxcAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr vm = payload;
     const struct lxcAutostartData *data = opaque;
@@ -2014,7 +2014,7 @@ lxcAutostartConfigs(lxc_driver_t *driver) {
 }
 
 static void
-lxcReconnectVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr vm = payload;
     lxc_driver_t *driver = opaque;

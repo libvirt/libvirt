@@ -149,7 +149,7 @@ struct umlAutostartData {
 };
 
 static void
-umlAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+umlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr vm = payload;
     const struct umlAutostartData *data = opaque;
@@ -508,7 +508,7 @@ umlActive(void) {
 }
 
 static void
-umlShutdownOneVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+umlShutdownOneVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr dom = payload;
     struct uml_driver *driver = opaque;

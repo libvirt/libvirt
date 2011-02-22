@@ -392,7 +392,7 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
 static void
-virDomainObjListDataFree(void *payload, const char *name ATTRIBUTE_UNUSED)
+virDomainObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
     virDomainObjPtr obj = payload;
     virDomainObjLock(obj);
@@ -416,7 +416,7 @@ void virDomainObjListDeinit(virDomainObjListPtr doms)
 
 
 static int virDomainObjListSearchID(const void *payload,
-                                    const char *name ATTRIBUTE_UNUSED,
+                                    const void *name ATTRIBUTE_UNUSED,
                                     const void *data)
 {
     virDomainObjPtr obj = (virDomainObjPtr)payload;
@@ -457,7 +457,7 @@ virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
 }
 
 static int virDomainObjListSearchName(const void *payload,
-                                      const char *name ATTRIBUTE_UNUSED,
+                                      const void *name ATTRIBUTE_UNUSED,
                                       const void *data)
 {
     virDomainObjPtr obj = (virDomainObjPtr)payload;
@@ -8435,7 +8435,7 @@ void virDomainObjUnlock(virDomainObjPtr obj)
 }
 
 
-static void virDomainObjListCountActive(void *payload, const char *name ATTRIBUTE_UNUSED, void *data)
+static void virDomainObjListCountActive(void *payload, const void *name ATTRIBUTE_UNUSED, void *data)
 {
     virDomainObjPtr obj = payload;
     int *count = data;
@@ -8445,7 +8445,7 @@ static void virDomainObjListCountActive(void *payload, const char *name ATTRIBUT
     virDomainObjUnlock(obj);
 }
 
-static void virDomainObjListCountInactive(void *payload, const char *name ATTRIBUTE_UNUSED, void *data)
+static void virDomainObjListCountInactive(void *payload, const void *name ATTRIBUTE_UNUSED, void *data)
 {
     virDomainObjPtr obj = payload;
     int *count = data;
@@ -8471,7 +8471,7 @@ struct virDomainIDData {
     int *ids;
 };
 
-static void virDomainObjListCopyActiveIDs(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+static void virDomainObjListCopyActiveIDs(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr obj = payload;
     struct virDomainIDData *data = opaque;
@@ -8497,7 +8497,7 @@ struct virDomainNameData {
     char **const names;
 };
 
-static void virDomainObjListCopyInactiveNames(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+static void virDomainObjListCopyInactiveNames(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr obj = payload;
     struct virDomainNameData *data = opaque;
@@ -8754,7 +8754,7 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 /* Snapshot Obj List functions */
 static void
 virDomainSnapshotObjListDataFree(void *payload,
-                                 const char *name ATTRIBUTE_UNUSED)
+                                 const void *name ATTRIBUTE_UNUSED)
 {
     virDomainSnapshotObjPtr obj = payload;
 
@@ -8783,7 +8783,7 @@ struct virDomainSnapshotNameData {
 };
 
 static void virDomainSnapshotObjListCopyNames(void *payload,
-                                              const char *name ATTRIBUTE_UNUSED,
+                                              const void *name ATTRIBUTE_UNUSED,
                                               void *opaque)
 {
     virDomainSnapshotObjPtr obj = payload;
@@ -8821,7 +8821,7 @@ cleanup:
 }
 
 static void virDomainSnapshotObjListCount(void *payload ATTRIBUTE_UNUSED,
-                                          const char *name ATTRIBUTE_UNUSED,
+                                          const void *name ATTRIBUTE_UNUSED,
                                           void *data)
 {
     int *count = data;
@@ -8839,7 +8839,7 @@ int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots)
 }
 
 static int virDomainSnapshotObjListSearchName(const void *payload,
-                                              const char *name ATTRIBUTE_UNUSED,
+                                              const void *name ATTRIBUTE_UNUSED,
                                               const void *data)
 {
     virDomainSnapshotObjPtr obj = (virDomainSnapshotObjPtr)payload;
@@ -8869,7 +8869,7 @@ struct snapshot_has_children {
 };
 
 static void virDomainSnapshotCountChildren(void *payload,
-                                           const char *name ATTRIBUTE_UNUSED,
+                                           const void *name ATTRIBUTE_UNUSED,
                                            void *data)
 {
     virDomainSnapshotObjPtr obj = payload;

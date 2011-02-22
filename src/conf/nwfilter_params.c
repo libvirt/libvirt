@@ -35,7 +35,7 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 static void
-hashDataFree(void *payload, const char *name ATTRIBUTE_UNUSED)
+hashDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
     VIR_FREE(payload);
 }
@@ -157,7 +157,7 @@ struct addToTableStruct {
 
 
 static void
-addToTable(void *payload, const char *name, void *data)
+addToTable(void *payload, const void *name, void *data)
 {
     struct addToTableStruct *atts = (struct addToTableStruct *)data;
     char *val;
@@ -172,10 +172,10 @@ addToTable(void *payload, const char *name, void *data)
         return;
     }
 
-    if (virNWFilterHashTablePut(atts->target, name, val, 1) != 0) {
+    if (virNWFilterHashTablePut(atts->target, (const char *)name, val, 1) != 0) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not put variable '%s' into hashmap"),
-                               name);
+                               (const char *)name);
         atts->errOccurred = 1;
         VIR_FREE(val);
     }
@@ -265,13 +265,13 @@ struct formatterParam {
 
 
 static void
-_formatParameterAttrs(void *payload, const char *name, void *data)
+_formatParameterAttrs(void *payload, const void *name, void *data)
 {
     struct formatterParam *fp = (struct formatterParam *)data;
 
     virBufferVSprintf(fp->buf, "%s<parameter name='%s' value='%s'/>\n",
                       fp->indent,
-                      name,
+                      (const char *)name,
                       (char *)payload);
 }
 

@@ -189,7 +189,7 @@ virNWFilterLockIface(const char *ifname) {
 
 
 static void
-freeIfaceLock(void *payload, const char *name ATTRIBUTE_UNUSED) {
+freeIfaceLock(void *payload, const void *name ATTRIBUTE_UNUSED) {
     VIR_FREE(payload);
 }
 
@@ -287,7 +287,7 @@ virNWFilterLookupLearnReq(int ifindex) {
 
 
 static void
-freeLearnReqEntry(void *payload, const char *name ATTRIBUTE_UNUSED) {
+freeLearnReqEntry(void *payload, const void *name ATTRIBUTE_UNUSED) {
     virNWFilterIPAddrLearnReqFree(payload);
 }
 

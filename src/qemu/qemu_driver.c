@@ -132,7 +132,7 @@ struct qemuAutostartData {
 };
 
 static void
-qemuAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr vm = payload;
     struct qemuAutostartData *data = opaque;
@@ -275,7 +275,7 @@ err_exit:
 }
 
 static void qemuDomainSnapshotLoad(void *payload,
-                                   const char *name ATTRIBUTE_UNUSED,
+                                   const void *name ATTRIBUTE_UNUSED,
                                    void *data)
 {
     virDomainObjPtr vm = (virDomainObjPtr)payload;
@@ -6519,7 +6519,7 @@ struct snap_remove {
 };
 
 static void qemuDomainSnapshotDiscardChildren(void *payload,
-                                              const char *name ATTRIBUTE_UNUSED,
+                                              const void *name ATTRIBUTE_UNUSED,
                                               void *data)
 {
     virDomainSnapshotObjPtr snap = payload;
@@ -6550,7 +6550,7 @@ struct snap_reparent {
 
 static void
 qemuDomainSnapshotReparentChildren(void *payload,
-                                   const char *name ATTRIBUTE_UNUSED,
+                                   const void *name ATTRIBUTE_UNUSED,
                                    void *data)
 {
     virDomainSnapshotObjPtr snap = payload;

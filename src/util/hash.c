@@ -42,7 +42,7 @@ typedef struct _virHashEntry virHashEntry;
 typedef virHashEntry *virHashEntryPtr;
 struct _virHashEntry {
     struct _virHashEntry *next;
-    char *name;
+    void *name;
     void *payload;
     int valid;
 };
@@ -55,39 +55,70 @@ struct _virHashTable {
     int size;
     int nbElems;
     virHashDataFree dataFree;
+    virHashKeyCode keyCode;
+    virHashKeyEqual keyEqual;
+    virHashKeyCopy keyCopy;
+    virHashKeyFree keyFree;
 };
 
-/*
- * virHashComputeKey:
- * Calculate the hash key
- */
-static unsigned long
-virHashComputeKey(virHashTablePtr table, const char *name)
+static unsigned long virHashStrCode(const void *name)
 {
+    const char *str = name;
     unsigned long value = 0L;
     char ch;
 
-    if (name != NULL) {
-        value += 30 * (*name);
-        while ((ch = *name++) != 0) {
+    if (str != NULL) {
+        value += 30 * (*str);
+        while ((ch = *str++) != 0) {
             value =
                 value ^ ((value << 5) + (value >> 3) + (unsigned long) ch);
         }
     }
+    return value;
+}
+
+static bool virHashStrEqual(const void *namea, const void *nameb)
+{
+    return STREQ(namea, nameb);
+}
+
+static void *virHashStrCopy(const void *name)
+{
+    return strdup(name);
+}
+
+static void virHashStrFree(void *name)
+{
+    VIR_FREE(name);
+}
+
+
+static unsigned long
+virHashComputeKey(virHashTablePtr table, const void *name)
+{
+    unsigned long value = table->keyCode(name);
     return (value % table->size);
 }
 
 /**
- * virHashCreate:
+ * virHashCreateFull:
  * @size: the size of the hash table
- * @dataFree: function to call on each entry during virHashFree
+ * @dataFree: callback to free data
+ * @keyCode: callback to compute hash code
+ * @keyEqual: callback to compare hash keys
+ * @keyCopy: callback to copy hash keys
+ * @keyFree: callback to free keys
  *
  * Create a new virHashTablePtr.
  *
  * Returns the newly created object, or NULL if an error occured.
  */
-virHashTablePtr
-virHashCreate(int size, virHashDataFree dataFree)
+virHashTablePtr virHashCreateFull(int size,
+                                  virHashDataFree dataFree,
+                                  virHashKeyCode keyCode,
+                                  virHashKeyEqual keyEqual,
+                                  virHashKeyCopy keyCopy,
+                                  virHashKeyFree keyFree)
 {
     virHashTablePtr table = NULL;
 
@@ -102,6 +133,11 @@ virHashCreate(int size, virHashDataFree dataFree)
     table->size = size;
     table->nbElems = 0;
     table->dataFree = dataFree;
+    table->keyCode = keyCode;
+    table->keyEqual = keyEqual;
+    table->keyCopy = keyCopy;
+    table->keyFree = keyFree;
+
     if (VIR_ALLOC_N(table->table, size) < 0) {
         virReportOOMError();
         VIR_FREE(table);
@@ -109,6 +145,26 @@ virHashCreate(int size, virHashDataFree dataFree)
     }
 
     return table;
+}
+
+
+/**
+ * virHashCreate:
+ * @size: the size of the hash table
+ * @dataFree: callback to free data
+ *
+ * Create a new virHashTablePtr.
+ *
+ * Returns the newly created object, or NULL if an error occured.
+ */
+virHashTablePtr virHashCreate(int size, virHashDataFree dataFree)
+{
+    return virHashCreateFull(size,
+                             dataFree,
+                             virHashStrCode,
+                             virHashStrEqual,
+                             virHashStrCopy,
+                             virHashStrFree);
 }
 
 /**
@@ -231,7 +287,8 @@ virHashFree(virHashTablePtr table)
                 next = iter->next;
                 if ((table->dataFree != NULL) && (iter->payload != NULL))
                     table->dataFree(iter->payload, iter->name);
-                VIR_FREE(iter->name);
+                if (table->keyFree)
+                    table->keyFree(iter->name);
                 iter->payload = NULL;
                 if (!inside_table)
                     VIR_FREE(iter);
@@ -269,13 +326,13 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
     } else {
         for (insert = &(table->table[key]); insert->next != NULL;
              insert = insert->next) {
-            if (STREQ(insert->name, name)) {
+            if (table->keyEqual(insert->name, name)) {
                 found = true;
                 break;
             }
             len++;
         }
-        if (STREQ(insert->name, name))
+        if (table->keyEqual(insert->name, name))
             found = true;
     }
 
@@ -299,7 +356,7 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
         }
     }
 
-    new_name = strdup(name);
+    new_name = table->keyCopy(name);
     if (new_name == NULL) {
         virReportOOMError();
         if (insert != NULL)
@@ -334,7 +391,7 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
+virHashAddEntry(virHashTablePtr table, const void *name, void *userdata)
 {
     return virHashAddOrUpdateEntry(table, name, userdata, false);
 }
@@ -352,7 +409,7 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-virHashUpdateEntry(virHashTablePtr table, const char *name,
+virHashUpdateEntry(virHashTablePtr table, const void *name,
                    void *userdata)
 {
     return virHashAddOrUpdateEntry(table, name, userdata, true);
@@ -363,12 +420,12 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
  * @table: the hash table
  * @name: the name of the userdata
  *
- * Find the userdata specified by the (@name, @name2, @name3) tuple.
+ * Find the userdata specified by @name
  *
  * Returns the a pointer to the userdata
  */
 void *
-virHashLookup(virHashTablePtr table, const char *name)
+virHashLookup(virHashTablePtr table, const void *name)
 {
     unsigned long key;
     virHashEntryPtr entry;
@@ -381,7 +438,7 @@ virHashLookup(virHashTablePtr table, const char *name)
     if (table->table[key].valid == 0)
         return (NULL);
     for (entry = &(table->table[key]); entry != NULL; entry = entry->next) {
-        if (STREQ(entry->name, name))
+        if (table->keyEqual(entry->name, name))
             return (entry->payload);
     }
     return (NULL);
@@ -398,7 +455,7 @@ virHashLookup(virHashTablePtr table, const char *name)
  *
  * Returns the a pointer to the userdata
  */
-void *virHashSteal(virHashTablePtr table, const char *name)
+void *virHashSteal(virHashTablePtr table, const void *name)
 {
     void *data = virHashLookup(table, name);
     if (data) {
@@ -440,7 +497,7 @@ virHashSize(virHashTablePtr table)
  * Returns 0 if the removal succeeded and -1 in case of error or not found.
  */
 int
-virHashRemoveEntry(virHashTablePtr table, const char *name)
+virHashRemoveEntry(virHashTablePtr table, const void *name)
 {
     unsigned long key;
     virHashEntryPtr entry;
@@ -455,11 +512,12 @@ virHashRemoveEntry(virHashTablePtr table, const char *name)
     } else {
         for (entry = &(table->table[key]); entry != NULL;
              entry = entry->next) {
-            if (STREQ(entry->name, name)) {
+            if (table->keyEqual(entry->name, name)) {
                 if (table->dataFree && (entry->payload != NULL))
                     table->dataFree(entry->payload, entry->name);
                 entry->payload = NULL;
-                VIR_FREE(entry->name);
+                if (table->keyFree)
+                    table->keyFree(entry->name);
                 if (prev) {
                     prev->next = entry->next;
                     VIR_FREE(entry);
@@ -544,7 +602,8 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *da
                 count++;
                 if (table->dataFree)
                     table->dataFree(entry->payload, entry->name);
-                VIR_FREE(entry->name);
+                if (table->keyFree)
+                    table->keyFree(entry->name);
                 table->nbElems--;
                 if (prev) {
                     prev->next = entry->next;

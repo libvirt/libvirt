@@ -29,33 +29,78 @@ typedef virHashTable *virHashTablePtr;
  *
  * Callback to free data from a hash.
  */
-typedef void (*virHashDataFree) (void *payload, const char *name);
+typedef void (*virHashDataFree) (void *payload, const void *name);
 /**
  * virHashIterator:
  * @payload: the data in the hash
- * @name: the name associated
+ * @name: the hash key
  * @data: user supplied data blob
  *
  * Callback to process a hash entry during iteration
  */
-typedef void (*virHashIterator) (void *payload, const char *name, void *data);
+typedef void (*virHashIterator) (void *payload, const void *name, void *data);
 /**
- * virHashSearcher
+ * virHashSearcher:
  * @payload: the data in the hash
- * @name: the name associated
+ * @name: the hash key
  * @data: user supplied data blob
  *
  * Callback to identify hash entry desired
  * Returns 1 if the hash entry is desired, 0 to move
  * to next entry
  */
-typedef int (*virHashSearcher) (const void *payload, const char *name,
+typedef int (*virHashSearcher) (const void *payload, const void *name,
                                 const void *data);
+
+/**
+ * virHashKeyCode:
+ * @name: the hash key
+ *
+ * Compute the hash code corresponding to the key @name
+ *
+ * Returns the hash code
+ */
+typedef unsigned long (*virHashKeyCode)(const void *name);
+/**
+ * virHashKeyEqual:
+ * @namea: the first hash key
+ * @nameb: the second hash key
+ *
+ * Compare two hash keys for equality
+ *
+ * Returns true if the keys are equal, false otherwise
+ */
+typedef bool (*virHashKeyEqual)(const void *namea, const void *nameb);
+/**
+ * virHashKeyCopy:
+ * @name: the hash key
+ *
+ * Create a copy of the hash key, duplicating
+ * memory allocation where applicable
+ *
+ * Returns a newly allocated copy of @name
+ */
+typedef void *(*virHashKeyCopy)(const void *name);
+/**
+ * virHashKeyFree:
+ * @name: the hash key
+ *
+ * Free any memory associated with the hash
+ * key @name
+ */
+typedef void (*virHashKeyFree)(void *name);
 
 /*
  * Constructor and destructor.
  */
-virHashTablePtr virHashCreate(int size, virHashDataFree dataFree);
+virHashTablePtr virHashCreate(int size,
+                              virHashDataFree dataFree);
+virHashTablePtr virHashCreateFull(int size,
+                                  virHashDataFree dataFree,
+                                  virHashKeyCode keyCode,
+                                  virHashKeyEqual keyEqual,
+                                  virHashKeyCopy keyCopy,
+                                  virHashKeyFree keyFree);
 void virHashFree(virHashTablePtr table);
 int virHashSize(virHashTablePtr table);
 
@@ -63,26 +108,26 @@ int virHashSize(virHashTablePtr table);
  * Add a new entry to the hash table.
  */
 int virHashAddEntry(virHashTablePtr table,
-                    const char *name, void *userdata);
+                    const void *name, void *userdata);
 int virHashUpdateEntry(virHashTablePtr table,
-                       const char *name,
+                       const void *name,
                        void *userdata);
 
 /*
  * Remove an entry from the hash table.
  */
 int virHashRemoveEntry(virHashTablePtr table,
-                       const char *name);
+                       const void *name);
 
 /*
  * Retrieve the userdata.
  */
-void *virHashLookup(virHashTablePtr table, const char *name);
+void *virHashLookup(virHashTablePtr table, const void *name);
 
 /*
  * Retrieve & remove the userdata.
  */
-void *virHashSteal(virHashTablePtr table, const char *name);
+void *virHashSteal(virHashTablePtr table, const void *name);
 
 
 /*

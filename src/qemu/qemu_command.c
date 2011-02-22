@@ -748,7 +748,7 @@ cleanup:
 
 static void
 qemuDomainPCIAddressSetFreeEntry(void *payload,
-                                 const char *name ATTRIBUTE_UNUSED)
+                                 const void *name ATTRIBUTE_UNUSED)
 {
     VIR_FREE(payload);
 }

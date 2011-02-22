@@ -64,7 +64,7 @@ virNWFilterHashTablePtr virNWFilterCreateVarHashmap(char *macaddr,
                                                     char *ipaddr);
 
 void virNWFilterDomainFWUpdateCB(void *payload,
-                                 const char *name ATTRIBUTE_UNUSED,
+                                 const void *name,
                                  void *data);
 
 #endif
