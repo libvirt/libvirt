@@ -5366,6 +5366,10 @@ static virDriver testDriver = {
     testSetMaxMemory, /* domainSetMaxMemory */
     testSetMemory, /* domainSetMemory */
     NULL, /* domainSetMemoryFlags */
+    NULL, /* domainSetMemoryParameters */
+    NULL, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     testGetDomainInfo, /* domainGetInfo */
     testDomainSave, /* domainSave */
     testDomainRestore, /* domainRestore */
@@ -5441,8 +5445,6 @@ static virDriver testDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
     NULL, /* domainOpenConsole */
 };
 

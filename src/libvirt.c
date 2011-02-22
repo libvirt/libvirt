@@ -2907,7 +2907,6 @@ error:
     return -1;
 }
 
-
 /**
  * virDomainSetMemoryParameters:
  * @domain: pointer to domain object
@@ -3028,6 +3027,114 @@ virDomainGetMemoryParameters(virDomainPtr domain,
         return ret;
     }
     virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainSetBlkioParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to blkio parameter objects
+ * @nparams: number of blkio parameters (this value should be same or
+ *          less than the number of parameters supported)
+ * @flags: currently unused, for future extension
+ *
+ * Change the blkio tunables
+ * This function requires privileged access to the hypervisor.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainSetBlkioParameters(virDomainPtr domain,
+                             virBlkioParameterPtr params,
+                             int nparams, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%u",
+                     params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if ((nparams <= 0) || (params == NULL)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainSetBlkioParameters) {
+        int ret;
+        ret = conn->driver->domainSetBlkioParameters (domain, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetBlkioParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to blkio parameter object
+ *          (return value, allocated by the caller)
+ * @nparams: pointer to number of blkio parameters
+ * @flags: currently unused, for future extension
+ *
+ * Get the blkio parameters, the @params array will be filled with the values
+ * equal to the number of parameters suggested by @nparams
+ *
+ * This function requires privileged access to the hypervisor. This function
+ * expects the caller to allocate the @params.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainGetBlkioParameters(virDomainPtr domain,
+                             virBlkioParameterPtr params,
+                             int *nparams, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%u",
+                     params, (nparams) ? *nparams : -1, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if ((nparams == NULL) || (*nparams < 0)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainGetBlkioParameters) {
+        int ret;
+        ret = conn->driver->domainGetBlkioParameters (domain, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virLibConnError (VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);

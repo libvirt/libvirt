@@ -426,6 +426,8 @@ LIBVIRT_0.8.8 {
 
 LIBVIRT_0.9.0 {
     global:
+        virDomainGetBlkioParameters;
+        virDomainSetBlkioParameters;
         virDomainSetMemoryFlags;
         virEventRegisterDefaultImpl;
         virEventRunDefaultImpl;

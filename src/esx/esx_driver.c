@@ -4594,6 +4594,10 @@ static virDriver esxDriver = {
     esxDomainSetMaxMemory,           /* domainSetMaxMemory */
     esxDomainSetMemory,              /* domainSetMemory */
     NULL,                            /* domainSetMemoryFlags */
+    esxDomainSetMemoryParameters,    /* domainSetMemoryParameters */
+    esxDomainGetMemoryParameters,    /* domainGetMemoryParameters */
+    NULL,                            /* domainSetBlkioParameters */
+    NULL,                            /* domainGetBlkioParameters */
     esxDomainGetInfo,                /* domainGetInfo */
     NULL,                            /* domainSave */
     NULL,                            /* domainRestore */
@@ -4669,8 +4673,6 @@ static virDriver esxDriver = {
     esxDomainRevertToSnapshot,       /* domainRevertToSnapshot */
     esxDomainSnapshotDelete,         /* domainSnapshotDelete */
     NULL,                            /* qemuDomainMonitorCommand */
-    esxDomainSetMemoryParameters,    /* domainSetMemoryParameters */
-    esxDomainGetMemoryParameters,    /* domainGetMemoryParameters */
     NULL,                            /* domainOpenConsole */
 };
 

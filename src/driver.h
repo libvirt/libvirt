@@ -150,6 +150,18 @@ typedef int
                                          int *nparams,
                                          unsigned int flags);
 typedef int
+        (*virDrvDomainSetBlkioParameters)
+                                        (virDomainPtr domain,
+                                         virBlkioParameterPtr params,
+                                         int nparams,
+                                         unsigned int flags);
+typedef int
+        (*virDrvDomainGetBlkioParameters)
+                                        (virDomainPtr domain,
+                                         virBlkioParameterPtr params,
+                                         int *nparams,
+                                         unsigned int flags);
+typedef int
         (*virDrvDomainGetInfo)		(virDomainPtr domain,
                                          virDomainInfoPtr info);
 typedef int
@@ -541,6 +553,10 @@ struct _virDriver {
     virDrvDomainSetMaxMemory	domainSetMaxMemory;
     virDrvDomainSetMemory		domainSetMemory;
     virDrvDomainSetMemoryFlags  domainSetMemoryFlags;
+    virDrvDomainSetMemoryParameters domainSetMemoryParameters;
+    virDrvDomainGetMemoryParameters domainGetMemoryParameters;
+    virDrvDomainSetBlkioParameters domainSetBlkioParameters;
+    virDrvDomainGetBlkioParameters domainGetBlkioParameters;
     virDrvDomainGetInfo		domainGetInfo;
     virDrvDomainSave		domainSave;
     virDrvDomainRestore		domainRestore;
@@ -616,8 +632,6 @@ struct _virDriver {
     virDrvDomainRevertToSnapshot domainRevertToSnapshot;
     virDrvDomainSnapshotDelete domainSnapshotDelete;
     virDrvQemuDomainMonitorCommand qemuDomainMonitorCommand;
-    virDrvDomainSetMemoryParameters domainSetMemoryParameters;
-    virDrvDomainGetMemoryParameters domainGetMemoryParameters;
     virDrvDomainOpenConsole domainOpenConsole;
 };
 

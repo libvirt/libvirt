@@ -10904,6 +10904,10 @@ static virDriver remote_driver = {
     remoteDomainSetMaxMemory, /* domainSetMaxMemory */
     remoteDomainSetMemory, /* domainSetMemory */
     remoteDomainSetMemoryFlags, /* domainSetMemoryFlags */
+    remoteDomainSetMemoryParameters, /* domainSetMemoryParameters */
+    remoteDomainGetMemoryParameters, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     remoteDomainGetInfo, /* domainGetInfo */
     remoteDomainSave, /* domainSave */
     remoteDomainRestore, /* domainRestore */
@@ -10979,8 +10983,6 @@ static virDriver remote_driver = {
     remoteDomainRevertToSnapshot, /* domainRevertToSnapshot */
     remoteDomainSnapshotDelete, /* domainSnapshotDelete */
     remoteQemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
-    remoteDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    remoteDomainGetMemoryParameters, /* domainGetMemoryParameters */
     remoteDomainOpenConsole, /* domainOpenConsole */
 };
 

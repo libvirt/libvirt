@@ -2852,6 +2852,10 @@ static virDriver lxcDriver = {
     lxcDomainSetMaxMemory, /* domainSetMaxMemory */
     lxcDomainSetMemory, /* domainSetMemory */
     NULL, /* domainSetMemoryFlags */
+    lxcDomainSetMemoryParameters, /* domainSetMemoryParameters */
+    lxcDomainGetMemoryParameters, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     lxcDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */
@@ -2927,8 +2931,6 @@ static virDriver lxcDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
-    lxcDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    lxcDomainGetMemoryParameters, /* domainGetMemoryParameters */
     lxcDomainOpenConsole, /* domainOpenConsole */
 };
 

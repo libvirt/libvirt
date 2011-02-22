@@ -8556,6 +8556,10 @@ virDriver NAME(Driver) = {
     NULL, /* domainSetMaxMemory */
     vboxDomainSetMemory, /* domainSetMemory */
     NULL, /* domainSetMemoryFlags */
+    NULL, /* domainSetMemoryParameters */
+    NULL, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     vboxDomainGetInfo, /* domainGetInfo */
     vboxDomainSave, /* domainSave */
     NULL, /* domainRestore */
@@ -8641,8 +8645,6 @@ virDriver NAME(Driver) = {
     vboxDomainRevertToSnapshot, /* domainRevertToSnapshot */
     vboxDomainSnapshotDelete, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
     NULL, /* domainOpenConsole */
 };
 

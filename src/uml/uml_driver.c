@@ -2168,6 +2168,10 @@ static virDriver umlDriver = {
     umlDomainSetMaxMemory, /* domainSetMaxMemory */
     umlDomainSetMemory, /* domainSetMemory */
     NULL, /* domainSetMemoryFlags */
+    NULL, /* domainSetMemoryParameters */
+    NULL, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     umlDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */
@@ -2243,8 +2247,6 @@ static virDriver umlDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainSetMemoryParamters */
-    NULL, /* domainGetMemoryParamters */
     umlDomainOpenConsole, /* domainOpenConsole */
 };
 

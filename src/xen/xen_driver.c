@@ -2035,6 +2035,10 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainSetMaxMemory, /* domainSetMaxMemory */
     xenUnifiedDomainSetMemory, /* domainSetMemory */
     NULL, /*domainSetMemoryFlags */
+    NULL, /* domainSetMemoryParameters */
+    NULL, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     xenUnifiedDomainGetInfo, /* domainGetInfo */
     xenUnifiedDomainSave, /* domainSave */
     xenUnifiedDomainRestore, /* domainRestore */
@@ -2110,8 +2114,6 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
     xenUnifiedDomainOpenConsole, /* domainOpenConsole */
 };
 

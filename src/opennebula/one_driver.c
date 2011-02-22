@@ -751,6 +751,10 @@ static virDriver oneDriver = {
     NULL, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */
     NULL, /* domainSetMemoryFlags */
+    NULL, /* domainSetMemoryParameters */
+    NULL, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     oneDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */
@@ -826,8 +830,6 @@ static virDriver oneDriver = {
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
     NULL, /* domainOpenConsole */
 };
 

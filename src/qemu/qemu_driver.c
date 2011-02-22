@@ -6887,6 +6887,10 @@ static virDriver qemuDriver = {
     NULL, /* domainSetMaxMemory */
     qemudDomainSetMemory, /* domainSetMemory */
     qemudDomainSetMemoryFlags, /* domainSetMemoryFlags */
+    qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
+    qemuDomainGetMemoryParameters, /* domainGetMemoryParameters */
+    NULL, /* domainSetBlkioParameters */
+    NULL, /* domainGetBlkioParameters */
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
     qemudDomainRestore, /* domainRestore */
@@ -6962,8 +6966,6 @@ static virDriver qemuDriver = {
     qemuDomainRevertToSnapshot, /* domainRevertToSnapshot */
     qemuDomainSnapshotDelete, /* domainSnapshotDelete */
     qemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
-    qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    qemuDomainGetMemoryParameters, /* domainGetMemoryParameters */
     qemuDomainOpenConsole, /* domainOpenConsole */
 };
 
