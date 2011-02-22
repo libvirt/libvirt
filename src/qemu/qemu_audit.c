@@ -148,6 +148,59 @@ cleanup:
 }
 
 
+/**
+ * qemuDomainResourceAudit:
+ * @vm: domain making an integer resource change
+ * @resource: name of the resource: "mem" or "vcpu"
+ * @oldval: the old value of the resource
+ * @newval: the new value of the resource
+ * @reason: either "start" or "update"
+ * @success: true if the resource change succeeded
+ *
+ * Log an audit message about an attempted resource change.
+ */
+static void
+qemuDomainResourceAudit(virDomainObjPtr vm,
+                        const char *resource,
+                        unsigned long long oldval,
+                        unsigned long long newval,
+                        const char *reason,
+                        bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN0("OOM while encoding audit message");
+        return;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "resrc=%s reason=%s %s uuid=%s old-%s=%lld new-%s=%lld",
+              resource, reason, vmname, uuidstr,
+              resource, oldval, resource, newval);
+
+    VIR_FREE(vmname);
+}
+
+void
+qemuDomainMemoryAudit(virDomainObjPtr vm,
+                      unsigned long long oldmem, unsigned long long newmem,
+                      const char *reason, bool success)
+{
+    return qemuDomainResourceAudit(vm, "mem", oldmem, newmem, reason, success);
+}
+
+void
+qemuDomainVcpuAudit(virDomainObjPtr vm,
+                    unsigned int oldvcpu, unsigned int newvcpu,
+                    const char *reason, bool success)
+{
+    return qemuDomainResourceAudit(vm, "vcpu", oldvcpu, newvcpu, reason,
+                                   success);
+}
+
 static void qemuDomainLifecycleAudit(virDomainObjPtr vm,
                                      const char *op,
                                      const char *reason,
@@ -184,6 +237,9 @@ void qemuDomainStartAudit(virDomainObjPtr vm, const char *reason, bool success)
         virDomainNetDefPtr net = vm->def->nets[i];
         qemuDomainNetAudit(vm, NULL, net, "start", true);
     }
+
+    qemuDomainMemoryAudit(vm, 0, vm->def->mem.cur_balloon, "start", true);
+    qemuDomainVcpuAudit(vm, 0, vm->def->vcpus, "start", true);
 
     qemuDomainLifecycleAudit(vm, "start", reason, success);
 }

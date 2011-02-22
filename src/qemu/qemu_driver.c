@@ -1604,6 +1604,8 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     qemuDomainObjEnterMonitor(vm);
     r = qemuMonitorSetBalloon(priv->mon, newmem);
     qemuDomainObjExitMonitor(vm);
+    qemuDomainMemoryAudit(vm, vm->def->mem.cur_balloon, newmem, "update",
+                          r == 1);
     if (r < 0)
         goto endjob;
 
@@ -2517,8 +2519,9 @@ static void processWatchdogEvent(void *data, void *opaque)
 static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int i, rc;
+    int i, rc = 1;
     int ret = -1;
+    int oldvcpus = vm->def->vcpus;
 
     qemuDomainObjEnterMonitor(vm);
 
@@ -2553,6 +2556,7 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
 
 cleanup:
     qemuDomainObjExitMonitor(vm);
+    qemuDomainVcpuAudit(vm, oldvcpus, nvcpus, "update", rc == 1);
     return ret;
 
 unsupported:

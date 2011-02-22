@@ -45,6 +45,16 @@ void qemuDomainCgroupAudit(virDomainObjPtr vm,
                            const char *item,
                            const char *name,
                            bool success);
+void qemuDomainMemoryAudit(virDomainObjPtr vm,
+                           unsigned long long oldmem,
+                           unsigned long long newmem,
+                           const char *reason,
+                           bool success);
+void qemuDomainVcpuAudit(virDomainObjPtr vm,
+                         unsigned int oldvcpu,
+                         unsigned int newvcpu,
+                         const char *reason,
+                         bool success);
 void qemuDomainSecurityLabelAudit(virDomainObjPtr vm, bool success);
 
 #endif /* __QEMU_AUDIT_H__ */
