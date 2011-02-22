@@ -2122,6 +2122,9 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
         if (last_error->code != VIR_ERR_NO_SUPPORT) {
             virDomainFree(dom);
             return FALSE;
+        } else {
+            virFreeError(last_error);
+            last_error = NULL;
         }
     } else {
         /* Only print something if a security model is active */
@@ -2498,6 +2501,8 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
                 if (!tmp || virStrToLong_i(tmp + 1, &tmp, 10, &count) < 0)
                     count = -1;
             }
+            virFreeError(last_error);
+            last_error = NULL;
             VIR_FREE(xml);
         }
 
