@@ -90,4 +90,8 @@ int virCgroupRemove(virCgroupPtr group);
 void virCgroupFree(virCgroupPtr *group);
 bool virCgroupMounted(virCgroupPtr cgroup, int controller);
 
+int virCgroupKill(virCgroupPtr group, int signum);
+int virCgroupKillRecursive(virCgroupPtr group, int signum);
+int virCgroupKillPainfully(virCgroupPtr group);
+
 #endif /* CGROUP_H */
