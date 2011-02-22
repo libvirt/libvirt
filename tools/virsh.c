@@ -10000,8 +10000,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (numsnaps < 0)
         goto cleanup;
 
-    vshPrint(ctl, " %-20s %-25s %s\n", _("Name"), _("Creation Time"), _("State"));
-    vshPrint(ctl, "---------------------------------------------------\n");
+    vshPrintExtra(ctl, " %-20s %-25s %s\n", _("Name"), _("Creation Time"), _("State"));
+    vshPrintExtra(ctl, "---------------------------------------------------\n");
 
     if (numsnaps) {
         if (VIR_ALLOC_N(names, numsnaps) < 0)
