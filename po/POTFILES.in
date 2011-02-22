@@ -92,6 +92,7 @@ src/util/event_poll.c
 src/util/hash.c
 src/util/hooks.c
 src/util/hostusb.c
+src/util/iohelper.c
 src/util/interface.c
 src/util/iptables.c
 src/util/json.c

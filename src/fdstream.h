@@ -24,6 +24,7 @@
 # define __VIR_FDSTREAM_H_
 
 # include "internal.h"
+# include "command.h"
 
 int virFDStreamOpen(virStreamPtr st,
                     int fd);
@@ -34,9 +35,13 @@ int virFDStreamConnectUNIX(virStreamPtr st,
 
 int virFDStreamOpenFile(virStreamPtr st,
                         const char *path,
+                        unsigned long long offset,
+                        unsigned long long length,
                         int flags);
 int virFDStreamCreateFile(virStreamPtr st,
                           const char *path,
+                          unsigned long long offset,
+                          unsigned long long length,
                           int flags,
                           mode_t mode);
 

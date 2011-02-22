@@ -376,6 +376,9 @@ STORAGE_DRIVER_DISK_SOURCES =					\
 STORAGE_HELPER_DISK_SOURCES =					\
 		storage/parthelper.c
 
+UTIL_IO_HELPER_SOURCES =					\
+		util/iohelper.c
+
 # Network filters
 NWFILTER_DRIVER_SOURCES =					\
 		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
@@ -1177,6 +1180,15 @@ libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
 
 libexec_PROGRAMS =
+
+libexec_PROGRAMS += libvirt_iohelper
+libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
+libvirt_iohelper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
+libvirt_iohelper_LDADD =		\
+		libvirt_util.la		\
+		../gnulib/lib/libgnu.la
+
+libvirt_iohelper_CFLAGS = $(AM_CFLAGS)
 
 if WITH_STORAGE_DISK
 if WITH_LIBVIRTD
