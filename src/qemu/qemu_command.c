@@ -716,16 +716,16 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
         if (virAsprintf(&def->channels[i]->info.alias, "channel%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nsmartcards ; i++) {
-        if (virAsprintf(&def->smartcards[i]->info.alias, "smartcard%d", i) < 0)
+    for (i = 0; i < def->nconsoles ; i++) {
+        if (virAsprintf(&def->consoles[i]->info.alias, "console%d", i) < 0)
             goto no_memory;
     }
     for (i = 0; i < def->nhubs ; i++) {
         if (virAsprintf(&def->hubs[i]->info.alias, "hub%d", i) < 0)
             goto no_memory;
     }
-    if (def->console) {
-        if (virAsprintf(&def->console->info.alias, "console%d", i) < 0)
+    for (i = 0; i < def->nsmartcards ; i++) {
+        if (virAsprintf(&def->smartcards[i]->info.alias, "smartcard%d", i) < 0)
             goto no_memory;
     }
     if (def->watchdog) {
@@ -4498,8 +4498,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     /* Explicit console devices */
-    if (def->console) {
-        virDomainChrDefPtr console = def->console;
+    for (i = 0 ; i < def->nconsoles ; i++) {
+        virDomainChrDefPtr console = def->consoles[i];
         char *devstr;
 
         switch(console->targetType) {

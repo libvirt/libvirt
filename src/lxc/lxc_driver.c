@@ -1680,10 +1680,18 @@ static int lxcVmStart(virConnectPtr conn,
                              _("Failed to allocate tty"));
         goto cleanup;
     }
-    if (vm->def->console &&
-        vm->def->console->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
-        VIR_FREE(vm->def->console->source.data.file.path);
-        vm->def->console->source.data.file.path = parentTtyPath;
+    if (vm->def->nconsoles) {
+        if (vm->def->nconsoles > 1) {
+            lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                     _("Only one console supported"));
+            goto cleanup;
+        }
+        if (vm->def->consoles[0]->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
+            VIR_FREE(vm->def->consoles[0]->source.data.file.path);
+            vm->def->consoles[0]->source.data.file.path = parentTtyPath;
+        } else {
+            VIR_FREE(parentTtyPath);
+        }
     } else {
         VIR_FREE(parentTtyPath);
     }
@@ -3026,8 +3034,8 @@ lxcDomainOpenConsole(virDomainPtr dom,
                  _("Named device aliases are not supported"));
         goto cleanup;
     } else {
-        if (vm->def->console)
-            chr = vm->def->console;
+        if (vm->def->nconsoles)
+            chr = vm->def->consoles[0];
         else if (vm->def->nserials)
             chr = vm->def->serials[0];
     }

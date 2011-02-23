@@ -466,9 +466,13 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
     }
 
     for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
+        virDomainChrDefPtr chr = NULL;
         char *ret = NULL;
-        if (i == 0 && vm->def->console)
-            ret = umlBuildCommandLineChr(vm->def->console, "con", cmd);
+        for (j = 0 ; j < vm->def->nconsoles ; j++)
+            if (vm->def->consoles[j]->target.port == i)
+                chr = vm->def->consoles[j];
+        if (chr)
+            ret = umlBuildCommandLineChr(chr, "con", cmd);
         if (!ret)
             if (virAsprintf(&ret, "con%d=none", i) < 0)
                 goto no_memory;

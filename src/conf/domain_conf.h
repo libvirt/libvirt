@@ -1455,6 +1455,9 @@ struct _virDomainDef {
     int nchannels;
     virDomainChrDefPtr *channels;
 
+    int nconsoles;
+    virDomainChrDefPtr *consoles;
+
     size_t nleases;
     virDomainLeaseDefPtr *leases;
 
@@ -1462,7 +1465,6 @@ struct _virDomainDef {
     virDomainHubDefPtr *hubs;
 
     /* Only 1 */
-    virDomainChrDefPtr console;
     virSecurityLabelDef seclabel;
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;

@@ -248,10 +248,10 @@ umlIdentifyChrPTY(struct uml_driver *driver,
 {
     int i;
 
-    if (dom->def->console &&
-        dom->def->console->source.type == VIR_DOMAIN_CHR_TYPE_PTY)
+    for (i = 0 ; i < dom->def->nserials; i++)
+        if (dom->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY)
         if (umlIdentifyOneChrPTY(driver, dom,
-                                 dom->def->console, "con") < 0)
+                                 dom->def->consoles[i], "con") < 0)
             return -1;
 
     for (i = 0 ; i < dom->def->nserials; i++)
@@ -2390,8 +2390,8 @@ umlDomainOpenConsole(virDomainPtr dom,
                        _("Named device aliases are not supported"));
         goto cleanup;
     } else {
-        if (vm->def->console)
-            chr = vm->def->console;
+        if (vm->def->nconsoles)
+            chr = vm->def->consoles[0];
         else if (vm->def->nserials)
             chr = vm->def->serials[0];
     }

@@ -10519,9 +10519,11 @@ qemuDomainOpenConsole(virDomainPtr dom,
     }
 
     if (dev_name) {
-        if (vm->def->console &&
-            STREQ(dev_name, vm->def->console->info.alias))
-            chr = vm->def->console;
+        for (i = 0 ; !chr && i < vm->def->nconsoles ; i++) {
+            if (vm->def->consoles[i]->info.alias &&
+                STREQ(dev_name, vm->def->consoles[i]->info.alias))
+                chr = vm->def->consoles[i];
+        }
         for (i = 0 ; !chr && i < vm->def->nserials ; i++) {
             if (STREQ(dev_name, vm->def->serials[i]->info.alias))
                 chr = vm->def->serials[i];
@@ -10531,8 +10533,8 @@ qemuDomainOpenConsole(virDomainPtr dom,
                 chr = vm->def->parallels[i];
         }
     } else {
-        if (vm->def->console)
-            chr = vm->def->console;
+        if (vm->def->nconsoles)
+            chr = vm->def->consoles[0];
         else if (vm->def->nserials)
             chr = vm->def->serials[0];
     }

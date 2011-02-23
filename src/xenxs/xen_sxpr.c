@@ -202,7 +202,6 @@ xenParseSxprChar(const char *value,
         }
     }
 
-    /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
     switch (def->source.type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
         if (tty != NULL &&
@@ -1395,12 +1394,15 @@ xenParseSxpr(const struct sexpr *root,
             def->parallels[def->nparallels++] = chr;
         }
     } else {
+        def->nconsoles = 1;
+        if (VIR_ALLOC_N(def->consoles, 1) < 0)
+            goto no_memory;
         /* Fake a paravirt console, since that's not in the sexpr */
-        if (!(def->console = xenParseSxprChar("pty", tty)))
+        if (!(def->consoles[0] = xenParseSxprChar("pty", tty)))
             goto error;
-        def->console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
-        def->console->target.port = 0;
-        def->console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+        def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        def->consoles[0]->target.port = 0;
+        def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
     }
     VIR_FREE(tty);
 
@@ -1613,6 +1615,11 @@ xenFormatSxprChr(virDomainChrDefPtr def,
         if (def->source.data.nix.listen)
             virBufferAddLit(buf, ",server,nowait");
         break;
+
+    default:
+        XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("unsupported chr device type '%s'"), type);
+        return -1;
     }
 
     if (virBufferError(buf)) {

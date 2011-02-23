@@ -1,0 +1,12 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -chardev \
+socket,id=charmonitor,path=/tmp/test-monitor,server,nowait -mon \
+chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -device \
+virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x3 -hda \
+/dev/HostVG/QEMUGuest1 -chardev pty,id=charserial0 \
+-device isa-serial,chardev=charserial0,id=serial0 -chardev pty,id=charconsole1 \
+-device virtconsole,chardev=charconsole1,id=console1 -chardev \
+pty,id=charconsole2 -device virtconsole,chardev=charconsole2,id=console2 \
+-chardev pty,id=charconsole3 -device virtconsole,chardev=charconsole3,\
+id=console3 -usb -device virtio-balloon-pci,id=balloon0,\
+bus=pci.0,addr=0x4

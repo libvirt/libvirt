@@ -925,12 +925,16 @@ get_files(vahControl * ctl)
                                      ctl->def->serials[i]->source.type) != 0)
                 goto clean;
 
-    if (ctl->def->console && ctl->def->console->source.data.file.path)
-        if (vah_add_file_chardev(&buf,
-                                 ctl->def->console->source.data.file.path,
-                                 "rw",
-                                 ctl->def->console->source.type) != 0)
-            goto clean;
+    for (i = 0; i < ctl->def->nconsoles; i++)
+        if (ctl->def->consoles[i] &&
+            (ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            ctl->def->consoles[i]->source.data.file.path)
+            if (vah_add_file(&buf,
+                             ctl->def->consoles[i]->source.data.file.path, "rw") != 0)
+                goto clean;
 
     for (i = 0 ; i < ctl->def->nparallels; i++)
         if (ctl->def->parallels[i] &&

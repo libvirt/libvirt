@@ -2136,8 +2136,8 @@ xenUnifiedDomainOpenConsole(virDomainPtr dom,
     if (!def)
         goto cleanup;
 
-    if (def->console)
-        chr = def->console;
+    if (def->nconsoles)
+        chr = def->consoles[0];
     else if (def->nserials)
         chr = def->serials[0];
 

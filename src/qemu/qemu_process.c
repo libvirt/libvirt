@@ -1112,8 +1112,8 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
                               paths, chardevfmt) < 0)
         return -1;
 
-    if (vm->def->console &&
-        qemuProcessLookupPTYs(&vm->def->console, 1, paths, chardevfmt) < 0)
+    if (qemuProcessLookupPTYs(vm->def->consoles, vm->def->nconsoles,
+                              paths, chardevfmt) < 0)
         return -1;
 
     return 0;
@@ -1161,8 +1161,8 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
         }
     }
 
-    if (vm->def->console) {
-        virDomainChrDefPtr chr = vm->def->console;
+    for (i = 0 ; i < vm->def->nconsoles ; i++) {
+        virDomainChrDefPtr chr = vm->def->consoles[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
             chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
             if ((ret = qemuProcessExtractTTYPath(output, &offset,

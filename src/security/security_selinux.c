@@ -888,6 +888,11 @@ SELinuxRestoreSecurityChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     virDomainObjPtr vm = opaque;
 
+    /* This is taken care of by processing of def->serials */
+    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
+        return 0;
+
     return SELinuxRestoreSecurityChardevLabel(vm, &dev->source);
 }
 
@@ -1227,6 +1232,11 @@ SELinuxSetSecurityChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                   void *opaque)
 {
     virDomainObjPtr vm = opaque;
+
+    /* This is taken care of by processing of def->serials */
+    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
+        return 0;
 
     return SELinuxSetSecurityChardevLabel(vm, &dev->source);
 }

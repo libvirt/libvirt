@@ -1066,11 +1066,14 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             }
         }
     } else {
-        if (!(def->console = xenParseSxprChar("pty", NULL)))
+        def->nconsoles = 1;
+        if (VIR_ALLOC_N(def->consoles, 1) < 0)
+            goto no_memory;
+        if (!(def->consoles[0] = xenParseSxprChar("pty", NULL)))
             goto cleanup;
-        def->console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
-        def->console->target.port = 0;
-        def->console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+        def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        def->consoles[0]->target.port = 0;
+        def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
     }
 
     if (hvm) {

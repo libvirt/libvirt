@@ -1,6 +1,7 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
-pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -monitor \
-unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -device \
+pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -chardev \
+socket,id=charmonitor,path=/tmp/test-monitor,server,nowait -mon \
+chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -device \
 virtio-serial-pci,id=virtio-serial0,max_ports=16,vectors=4,bus=pci.0,addr=0x3 \
 -device virtio-serial-pci,id=virtio-serial1,bus=pci.0,addr=0xa -device \
 virtio-serial-pci,id=virtio-serial2,bus=pci.0,addr=0x4 -hda \

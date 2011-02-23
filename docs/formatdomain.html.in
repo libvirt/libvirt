@@ -2681,11 +2681,28 @@ qemu-kvm -net nic,model=? /dev/null
     <h6><a name="elementCharConsole">Console</a></h6>
 
     <p>
-      This represents the primary console. This can be the paravirtualized
-      console with Xen guests, virtio console for QEMU/KVM, or duplicates
-      the primary serial port for fully virtualized guests without a
-      paravirtualized console.
+      The console element is used to represent interactive consoles. Depending
+      on the type of guest in use, the consoles might be paravirtualized devices,
+      or they might be a clone of a serial device, according to the following
+      rules:
     </p>
+
+    <ul>
+      <li>If no <code>targetType</code> attribue is set, then the default
+        device type is according to the hypervisor's rules. The default
+        type will be added when re-querying the XML fed into libvirt.
+        For fully virtualized guests, the default device type will usually
+        be a serial port.</li>
+      <li>If the <code>targetType</code> attribute is <code>serial</code>,
+        then if no <code>&lt;serial&gt;</code> element exists, the console
+        element will be copied to the serial element. If a <code>&lt;serial&gt;</code>
+        element does already exist, the console element will be ignored.</li>
+      <li>If the <code>targetType</code> attribute is not <code>serial</code>,
+        it will be treated normally.</li>
+      <li>Only the first <code>console</code> element may use a <code>targetType</code>
+        of <code>serial</code>. Secondary consoles must all be paravirtualized.
+      </li>
+    </ul>
 
     <p>
       A virtio console device is exposed in the
