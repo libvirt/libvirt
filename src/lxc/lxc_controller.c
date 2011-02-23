@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2010 Red Hat, Inc.
- * Copyright IBM Corp. 2008
+ * Copyright (C) 2010 Red Hat, Inc.  Copyright IBM Corp. 2008
  *
  * lxc_controller.c: linux container process controller
  *
@@ -29,6 +28,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <sys/utsname.h>
+#include <sys/personality.h>
 #include <unistd.h>
 #include <paths.h>
 #include <fcntl.h>
@@ -545,6 +546,25 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
     return 0;
 }
 
+static int lxcSetPersonality(virDomainDefPtr def)
+{
+    struct utsname utsname;
+    const char *altArch;
+
+    uname(&utsname);
+
+    altArch = lxcContainerGetAlt32bitArch(utsname.machine);
+    if (altArch &&
+        STREQ(def->os.arch, altArch)) {
+        if (personality(PER_LINUX32) < 0) {
+            virReportSystemError(errno, _("Unable to request personality for %s on %s"),
+                                 altArch, utsname.machine);
+            return -1;
+        }
+    }
+    return 0;
+}
+
 #ifndef MS_REC
 # define MS_REC          16384
 #endif
@@ -664,6 +684,8 @@ lxcControllerRun(virDomainDefPtr def,
         }
     }
 
+    if (lxcSetPersonality(def) < 0)
+        goto cleanup;
 
     if ((container = lxcContainerStart(def,
                                        nveths,

@@ -36,6 +36,7 @@
 #include "logging.h"
 #include "uuid.h"
 #include "configmake.h"
+#include "lxc_container.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -45,6 +46,7 @@ virCapsPtr lxcCapsInit(void)
     struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
+    const char *altArch;
 
     uname(&utsname);
 
@@ -73,7 +75,7 @@ virCapsPtr lxcCapsInit(void)
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
                                          utsname.machine,
-                                         sizeof(int) == 4 ? 32 : 8,
+                                         sizeof(void*) == 4 ? 32 : 64,
                                          LIBEXECDIR "/libvirt_lxc",
                                          NULL,
                                          0,
@@ -87,6 +89,27 @@ virCapsPtr lxcCapsInit(void)
                                       0,
                                       NULL) == NULL)
         goto error;
+
+    /* On 64-bit hosts, we can use personality() to request a 32bit process */
+    if ((altArch = lxcContainerGetAlt32bitArch(utsname.machine)) != NULL) {
+        if ((guest = virCapabilitiesAddGuest(caps,
+                                             "exe",
+                                             altArch,
+                                             32,
+                                             LIBEXECDIR "/libvirt_lxc",
+                                             NULL,
+                                             0,
+                                             NULL)) == NULL)
+            goto error;
+
+        if (virCapabilitiesAddGuestDomain(guest,
+                                          "lxc",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            goto error;
+    }
 
     /* LXC Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);

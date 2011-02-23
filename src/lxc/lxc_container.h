@@ -55,4 +55,6 @@ int lxcContainerStart(virDomainDefPtr def,
 
 int lxcContainerAvailable(int features);
 
+const char *lxcContainerGetAlt32bitArch(const char *arch);
+
 #endif /* LXC_CONTAINER_H */

@@ -837,6 +837,27 @@ static int userns_supported(void)
 #endif
 }
 
+const char *lxcContainerGetAlt32bitArch(const char *arch)
+{
+    /* Any Linux 64bit arch which has a 32bit
+     * personality available should be listed here */
+    if (STREQ(arch, "x86_64"))
+        return "i686";
+    if (STREQ(arch, "s390x"))
+        return "s390";
+    if (STREQ(arch, "ppc64"))
+        return "ppc";
+    if (STREQ(arch, "parisc64"))
+        return "parisc";
+    if (STREQ(arch, "sparc64"))
+        return "sparc";
+    if (STREQ(arch, "mips64"))
+        return "mips";
+
+    return NULL;
+}
+
+
 /**
  * lxcContainerStart:
  * @def: pointer to virtual machine structure
