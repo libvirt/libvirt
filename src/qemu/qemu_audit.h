@@ -39,6 +39,10 @@ void qemuDomainNetAudit(virDomainObjPtr vm,
                         virDomainNetDefPtr newDef,
                         const char *reason,
                         bool success);
+void qemuDomainHostdevAudit(virDomainObjPtr vm,
+                            virDomainHostdevDefPtr def,
+                            const char *reason,
+                            bool success);
 void qemuDomainCgroupAudit(virDomainObjPtr vm,
                            virCgroupPtr group,
                            const char *reason,

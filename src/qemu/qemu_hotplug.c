@@ -842,6 +842,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
         hostdev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
         memcpy(&hostdev->info.addr.pci, &guestAddr, sizeof(guestAddr));
     }
+    qemuDomainHostdevAudit(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
         goto error;
 
@@ -918,6 +919,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                            hostdev->source.subsys.u.usb.bus,
                                            hostdev->source.subsys.u.usb.device);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+    qemuDomainHostdevAudit(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
         goto error;
 
@@ -1607,20 +1609,14 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
-            qemuDomainObjExitMonitor(vm);
-            return -1;
-        }
+        ret = qemuMonitorDelDevice(priv->mon, detach->info.alias);
     } else {
-        if (qemuMonitorRemovePCIDevice(priv->mon,
-                                       &detach->info.addr.pci) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            return -1;
-        }
+        ret = qemuMonitorRemovePCIDevice(priv->mon, &detach->info.addr.pci);
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-    ret = 0;
+    qemuDomainHostdevAudit(vm, detach, "detach", ret == 0);
+    if (ret < 0)
+        return -1;
 
     pci = pciGetDevice(detach->source.subsys.u.pci.domain,
                        detach->source.subsys.u.pci.bus,
@@ -1715,13 +1711,11 @@ int qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        return -1;
-    }
+    ret = qemuMonitorDelDevice(priv->mon, detach->info.alias);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-    ret = 0;
+    qemuDomainHostdevAudit(vm, detach, "detach", ret == 0);
+    if (ret < 0)
+        return -1;
 
     if (vm->def->nhostdevs > 1) {
         memmove(vm->def->hostdevs + i,

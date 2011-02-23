@@ -103,6 +103,75 @@ void qemuDomainNetAudit(virDomainObjPtr vm,
 
 
 /**
+ * qemuDomainHostdevAudit:
+ * @vm: domain making a change in pass-through host device
+ * @hostdev: device being attached or removed
+ * @reason: one of "start, "attach", or "detach"
+ * @success: true if the device passthrough operation succeeded
+ *
+ * Log an audit message about an attempted device passthrough change.
+ */
+void
+qemuDomainHostdevAudit(virDomainObjPtr vm,
+                       virDomainHostdevDefPtr hostdev,
+                       const char *reason,
+                       bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    char *address;
+    char *device;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN0("OOM while encoding audit message");
+        return;
+    }
+
+    switch (hostdev->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        if (virAsprintf(&address, "%.4x:%.2x:%.2x.%.1x",
+                        hostdev->source.subsys.u.pci.domain,
+                        hostdev->source.subsys.u.pci.bus,
+                        hostdev->source.subsys.u.pci.slot,
+                        hostdev->source.subsys.u.pci.function) < 0) {
+            VIR_WARN0("OOM while encoding audit message");
+            goto cleanup;
+        }
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        if (virAsprintf(&address, "%.3d.%.3d",
+                        hostdev->source.subsys.u.usb.bus,
+                        hostdev->source.subsys.u.usb.device) < 0) {
+            VIR_WARN0("OOM while encoding audit message");
+            goto cleanup;
+        }
+        break;
+    default:
+        VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
+                 hostdev->source.subsys.type);
+        goto cleanup;
+    }
+
+    if (!(device = virAuditEncode("device", VIR_AUDIT_STR(address)))) {
+        VIR_WARN0("OOM while encoding audit message");
+        goto cleanup;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "resrc=dev reason=%s %s uuid=%s type=%s %s",
+              reason, vmname, uuidstr,
+              virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type),
+              device);
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(device);
+    VIR_FREE(address);
+}
+
+
+/**
  * qemuDomainCgroupAudit:
  * @vm: domain making the cgroups ACL change
  * @cgroup: cgroup that manages the devices
@@ -236,6 +305,11 @@ void qemuDomainStartAudit(virDomainObjPtr vm, const char *reason, bool success)
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
         qemuDomainNetAudit(vm, NULL, net, "start", true);
+    }
+
+    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
+        qemuDomainHostdevAudit(vm, hostdev, "start", true);
     }
 
     qemuDomainMemoryAudit(vm, 0, vm->def->mem.cur_balloon, "start", true);
