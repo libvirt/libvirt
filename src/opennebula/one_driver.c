@@ -25,7 +25,6 @@
 #include <fcntl.h>
 #include <sched.h>
 #include <sys/utsname.h>
-#include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>

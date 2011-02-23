@@ -25,7 +25,6 @@
 # define __QEMUD_CONF_H
 
 # include <config.h>
-# include <stdbool.h>
 
 # include "ebtables.h"
 # include "internal.h"

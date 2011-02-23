@@ -13,7 +13,6 @@
 #include <config.h>
 
 #include <string.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>

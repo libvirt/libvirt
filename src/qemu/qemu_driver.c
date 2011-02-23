@@ -29,7 +29,6 @@
 #include <dirent.h>
 #include <limits.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>

@@ -23,8 +23,6 @@
 #ifndef __VIR_VMX_H__
 # define __VIR_VMX_H__
 
-# include <stdbool.h>
-
 # include "internal.h"
 # include "conf.h"
 # include "domain_conf.h"

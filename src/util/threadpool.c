@@ -25,8 +25,6 @@
 
 #include <config.h>
 
-#include <stdbool.h>
-
 #include "threadpool.h"
 #include "memory.h"
 #include "threads.h"

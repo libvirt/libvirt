@@ -35,7 +35,6 @@
 #include <config.h>
 
 #include <sys/utsname.h>
-#include <stdbool.h>
 #include <unistd.h>
 
 #include "internal.h"

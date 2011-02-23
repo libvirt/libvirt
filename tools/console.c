@@ -34,7 +34,6 @@
 # include <errno.h>
 # include <unistd.h>
 # include <signal.h>
-# include <stdbool.h>
 
 # include "internal.h"
 # include "console.h"

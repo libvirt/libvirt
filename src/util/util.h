@@ -31,7 +31,6 @@
 # include <sys/select.h>
 # include <sys/types.h>
 # include <stdarg.h>
-# include <stdbool.h>
 
 # ifndef MIN
 #  define MIN(a, b) ((a) < (b) ? (a) : (b))

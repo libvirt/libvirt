@@ -24,7 +24,6 @@
 # define __LIBVIRT_AUDIT_H__
 
 # include "internal.h"
-# include <stdbool.h>
 
 enum virAuditRecordType {
     VIR_AUDIT_RECORD_MACHINE_CONTROL,

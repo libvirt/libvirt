@@ -23,7 +23,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include <wait.h>
-#include <stdbool.h>
 
 #include "internal.h"
 

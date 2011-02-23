@@ -22,8 +22,6 @@
 #ifndef __THREADS_H_
 # define __THREADS_H_
 
-# include <stdbool.h>
-
 # include "internal.h"
 
 typedef struct virMutex virMutex;

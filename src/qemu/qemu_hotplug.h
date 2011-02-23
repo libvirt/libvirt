@@ -24,8 +24,6 @@
 #ifndef __QEMU_HOTPLUG_H__
 # define __QEMU_HOTPLUG_H__
 
-# include <stdbool.h>
-
 # include "qemu_conf.h"
 # include "domain_conf.h"
 

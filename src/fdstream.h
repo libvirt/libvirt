@@ -24,7 +24,6 @@
 # define __VIR_FDSTREAM_H_
 
 # include "internal.h"
-# include <stdbool.h>
 
 int virFDStreamOpen(virStreamPtr st,
                     int fd);

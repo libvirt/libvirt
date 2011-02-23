@@ -26,7 +26,6 @@
 #ifndef __VIR_FILES_H_
 # define __VIR_FILES_H_
 
-# include <stdbool.h>
 # include <stdio.h>
 
 # include "internal.h"

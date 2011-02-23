@@ -25,7 +25,6 @@
 # define __VIR_STORAGE_FILE_H__
 
 # include "util.h"
-# include <stdbool.h>
 
 enum virStorageFileFormat {
     VIR_STORAGE_FILE_AUTO_SAFE = -2,

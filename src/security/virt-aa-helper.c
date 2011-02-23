@@ -24,7 +24,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <stdbool.h>
 #include <sys/utsname.h>
 #include <locale.h>
 

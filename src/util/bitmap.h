@@ -25,7 +25,6 @@
 
 # include "internal.h"
 
-# include <stdbool.h>
 # include <sys/types.h>
 
 

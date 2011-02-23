@@ -27,7 +27,6 @@
 # include "buf.h"
 # include "util.h"
 
-# include <stdbool.h>
 # include <libxml/tree.h>
 
 enum virStorageEncryptionSecretType {

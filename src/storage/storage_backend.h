@@ -25,7 +25,6 @@
 # define __VIR_STORAGE_BACKEND_H__
 
 # include <stdint.h>
-# include <stdbool.h>
 # include "internal.h"
 # include "storage_conf.h"
 

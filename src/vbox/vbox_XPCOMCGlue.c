@@ -34,7 +34,6 @@
 
 #include <stdlib.h>
 #include <dlfcn.h>
-#include <stdbool.h>
 
 #include "vbox_XPCOMCGlue.h"
 #include "internal.h"

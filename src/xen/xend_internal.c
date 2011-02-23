@@ -21,7 +21,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <math.h>
 #include <stdarg.h>
 #include <netinet/in.h>

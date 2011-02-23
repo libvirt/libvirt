@@ -7,7 +7,6 @@
 # define __VIR_DRIVER_H__
 
 # include "config.h"
-# include <stdbool.h>
 
 # include <libxml/uri.h>
 
