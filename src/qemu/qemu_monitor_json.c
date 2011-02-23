@@ -31,6 +31,7 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_command.h"
 #include "memory.h"
@@ -2451,11 +2452,18 @@ int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name)
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        VIR_DEBUG0("savevm command not found, trying HMP");
+        ret = qemuMonitorTextCreateSnapshot(mon, name);
+        goto cleanup;
+    }
 
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -2473,11 +2481,18 @@ int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name)
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        VIR_DEBUG0("loadvm command not found, trying HMP");
+        ret = qemuMonitorTextLoadSnapshot(mon, name);
+        goto cleanup;
+    }
 
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -2495,11 +2510,18 @@ int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        VIR_DEBUG0("delvm command not found, trying HMP");
+        ret = qemuMonitorTextDeleteSnapshot(mon, name);
+        goto cleanup;
+    }
 
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
