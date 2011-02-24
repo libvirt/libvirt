@@ -53,7 +53,7 @@
 #include "xml.h"
 #include "libvirt/libvirt-qemu.h"
 #include "files.h"
-#include "../daemon/event.h"
+#include "event_poll.h"
 #include "configmake.h"
 #include "threads.h"
 #include "command.h"
@@ -11677,13 +11677,13 @@ vshInit(vshControl *ctl)
     /* set up the signals handlers to catch disconnections */
     vshSetupSignals();
 
-    virEventRegisterImpl(virEventAddHandleImpl,
-                         virEventUpdateHandleImpl,
-                         virEventRemoveHandleImpl,
-                         virEventAddTimeoutImpl,
-                         virEventUpdateTimeoutImpl,
-                         virEventRemoveTimeoutImpl);
-    virEventInit();
+    virEventRegisterImpl(virEventPollAddHandle,
+                         virEventPollUpdateHandle,
+                         virEventPollRemoveHandle,
+                         virEventPollAddTimeout,
+                         virEventPollUpdateTimeout,
+                         virEventPollRemoveTimeout);
+    virEventPollInit();
 
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,

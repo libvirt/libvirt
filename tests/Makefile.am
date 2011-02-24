@@ -375,7 +375,7 @@ virbuftest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
-	eventtest.c testutils.h testutils.c ../daemon/event.c
+	eventtest.c testutils.h testutils.c
 eventtest_LDADD = -lrt $(LDADDS)
 endif
 

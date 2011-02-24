@@ -21,13 +21,13 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIRTD_EVENT_H__
-# define __VIRTD_EVENT_H__
+#ifndef __VIR_EVENT_POLL_H__
+# define __VIR_EVENT_POLL_H__
 
 # include "internal.h"
 
 /**
- * virEventAddHandleImpl: register a callback for monitoring file handle events
+ * virEventPollAddHandle: register a callback for monitoring file handle events
  *
  * @fd: file handle to monitor for events
  * @events: bitset of events to watch from POLLnnn constants
@@ -36,32 +36,32 @@
  *
  * returns -1 if the file handle cannot be registered, 0 upon success
  */
-int virEventAddHandleImpl(int fd, int events,
-                          virEventHandleCallback cb,
-                          void *opaque,
-                          virFreeCallback ff);
+int virEventPollAddHandle(int fd, int events,
+                            virEventHandleCallback cb,
+                            void *opaque,
+                            virFreeCallback ff);
 
 /**
- * virEventUpdateHandleImpl: change event set for a monitored file handle
+ * virEventPollUpdateHandle: change event set for a monitored file handle
  *
  * @watch: watch whose handle to update
  * @events: bitset of events to watch from POLLnnn constants
  *
  * Will not fail if fd exists
  */
-void virEventUpdateHandleImpl(int watch, int events);
+void virEventPollUpdateHandle(int watch, int events);
 
 /**
- * virEventRemoveHandleImpl: unregister a callback from a file handle
+ * virEventPollRemoveHandle: unregister a callback from a file handle
  *
  * @watch: watch whose handle to remove
  *
  * returns -1 if the file handle was not registered, 0 upon success
  */
-int virEventRemoveHandleImpl(int watch);
+int virEventPollRemoveHandle(int watch);
 
 /**
- * virEventAddTimeoutImpl: register a callback for a timer event
+ * virEventPollAddTimeout: register a callback for a timer event
  *
  * @frequency: time between events in milliseconds
  * @cb: callback to invoke when an event occurs
@@ -73,13 +73,13 @@ int virEventRemoveHandleImpl(int watch);
  * returns -1 if the file handle cannot be registered, a positive
  * integer timer id upon success
  */
-int virEventAddTimeoutImpl(int frequency,
-                           virEventTimeoutCallback cb,
-                           void *opaque,
-                           virFreeCallback ff);
+int virEventPollAddTimeout(int frequency,
+                             virEventTimeoutCallback cb,
+                             void *opaque,
+                             virFreeCallback ff);
 
 /**
- * virEventUpdateTimeoutImpl: change frequency for a timer
+ * virEventPollUpdateTimeout: change frequency for a timer
  *
  * @timer: timer id to change
  * @frequency: time between events in milliseconds
@@ -89,46 +89,44 @@ int virEventAddTimeoutImpl(int frequency,
  *
  * Will not fail if timer exists
  */
-void virEventUpdateTimeoutImpl(int timer, int frequency);
+void virEventPollUpdateTimeout(int timer, int frequency);
 
 /**
- * virEventRemoveTimeoutImpl: unregister a callback for a timer
+ * virEventPollRemoveTimeout: unregister a callback for a timer
  *
  * @timer: the timer id to remove
  *
  * returns -1 if the timer was not registered, 0 upon success
  */
-int virEventRemoveTimeoutImpl(int timer);
+int virEventPollRemoveTimeout(int timer);
 
 /**
- * virEventInit: Initialize the event loop
+ * virEventPollInit: Initialize the event loop
  *
  * returns -1 if initialization failed
  */
-int virEventInit(void);
+int virEventPollInit(void);
 
 /**
- * virEventRunOnce: run a single iteration of the event loop.
+ * virEventPollRunOnce: run a single iteration of the event loop.
  *
  * Blocks the caller until at least one file handle has an
  * event or the first timer expires.
  *
  * returns -1 if the event monitoring failed
  */
-int virEventRunOnce(void);
+int virEventPollRunOnce(void);
 
-int
-virEventHandleTypeToPollEvent(int events);
-int
-virPollEventToEventHandleType(int events);
+int virEventPollFromNativeEvents(int events);
+int virEventPollToNativeEvents(int events);
 
 
 /**
- * virEventInterrupt: wakeup any thread waiting in poll()
+ * virEventPollInterrupt: wakeup any thread waiting in poll()
  *
  * return -1 if wakup failed
  */
-int virEventInterrupt(void);
+int virEventPollInterrupt(void);
 
 
 #endif /* __VIRTD_EVENT_H__ */

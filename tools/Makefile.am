@@ -38,7 +38,6 @@ virt-pki-validate.1: virt-pki-validate.in
 
 virsh_SOURCES =							\
 		console.c console.h				\
-		../daemon/event.c ../daemon/event.h		\
 		virsh.c
 
 virsh_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)

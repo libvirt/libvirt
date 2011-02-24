@@ -40,7 +40,7 @@
 #include "libvirtd.h"
 #include "mdns.h"
 #include "event.h"
-#include "src/util/event.h"
+#include "event_poll.h"
 #include "memory.h"
 
 #define AVAHI_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
@@ -231,7 +231,7 @@ static void libvirtd_mdns_client_callback(AvahiClient *c, AvahiClientState state
 static void libvirtd_mdns_watch_dispatch(int watch, int fd, int events, void *opaque)
 {
     AvahiWatch *w = (AvahiWatch*)opaque;
-    int fd_events = virEventHandleTypeToPollEvent(events);
+    int fd_events = virEventPollToNativeEvents(events);
     AVAHI_DEBUG("Dispatch watch %d FD %d Event %d", watch, fd, fd_events);
     w->revents = fd_events;
     w->callback(w, fd, fd_events, w->userdata);
@@ -257,7 +257,7 @@ static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED
     w->userdata = userdata;
 
     AVAHI_DEBUG("New handle %p FD %d Event %d", w, w->fd, event);
-    hEvents = virPollEventToEventHandleType(event);
+    hEvents = virEventPollFromNativeEvents(event);
     if ((w->watch = virEventAddHandle(fd, hEvents,
                                       libvirtd_mdns_watch_dispatch,
                                       w,

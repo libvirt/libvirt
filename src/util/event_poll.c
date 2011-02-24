@@ -32,17 +32,17 @@
 
 #include "threads.h"
 #include "logging.h"
-#include "event.h"
+#include "event_poll.h"
 #include "memory.h"
 #include "util.h"
 #include "ignore-value.h"
 
 #define EVENT_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
 
-static int virEventInterruptLocked(void);
+static int virEventPollInterruptLocked(void);
 
 /* State for a single file handle being monitored */
-struct virEventHandle {
+struct virEventPollHandle {
     int watch;
     int fd;
     int events;
@@ -53,7 +53,7 @@ struct virEventHandle {
 };
 
 /* State for a single timer being generated */
-struct virEventTimeout {
+struct virEventPollTimeout {
     int timer;
     int frequency;
     unsigned long long expiresAt;
@@ -63,26 +63,26 @@ struct virEventTimeout {
     int deleted;
 };
 
-/* Allocate extra slots for virEventHandle/virEventTimeout
+/* Allocate extra slots for virEventPollHandle/virEventPollTimeout
    records in this multiple */
 #define EVENT_ALLOC_EXTENT 10
 
 /* State for the main event loop */
-struct virEventLoop {
+struct virEventPollLoop {
     virMutex lock;
     int running;
     virThread leader;
     int wakeupfd[2];
     size_t handlesCount;
     size_t handlesAlloc;
-    struct virEventHandle *handles;
+    struct virEventPollHandle *handles;
     size_t timeoutsCount;
     size_t timeoutsAlloc;
-    struct virEventTimeout *timeouts;
+    struct virEventPollTimeout *timeouts;
 };
 
 /* Only have one event loop */
-static struct virEventLoop eventLoop;
+static struct virEventPollLoop eventLoop;
 
 /* Unique ID for the next FD watch to be registered */
 static int nextWatch = 1;
@@ -95,7 +95,7 @@ static int nextTimer = 1;
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddHandleImpl(int fd, int events,
+int virEventPollAddHandle(int fd, int events,
                           virEventHandleCallback cb,
                           void *opaque,
                           virFreeCallback ff) {
@@ -117,7 +117,7 @@ int virEventAddHandleImpl(int fd, int events,
     eventLoop.handles[eventLoop.handlesCount].watch = watch;
     eventLoop.handles[eventLoop.handlesCount].fd = fd;
     eventLoop.handles[eventLoop.handlesCount].events =
-                                         virEventHandleTypeToPollEvent(events);
+                                         virEventPollToNativeEvents(events);
     eventLoop.handles[eventLoop.handlesCount].cb = cb;
     eventLoop.handles[eventLoop.handlesCount].ff = ff;
     eventLoop.handles[eventLoop.handlesCount].opaque = opaque;
@@ -125,13 +125,13 @@ int virEventAddHandleImpl(int fd, int events,
 
     eventLoop.handlesCount++;
 
-    virEventInterruptLocked();
+    virEventPollInterruptLocked();
     virMutexUnlock(&eventLoop.lock);
 
     return watch;
 }
 
-void virEventUpdateHandleImpl(int watch, int events) {
+void virEventPollUpdateHandle(int watch, int events) {
     int i;
     EVENT_DEBUG("Update handle w=%d e=%d", watch, events);
 
@@ -144,8 +144,8 @@ void virEventUpdateHandleImpl(int watch, int events) {
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
         if (eventLoop.handles[i].watch == watch) {
             eventLoop.handles[i].events =
-                    virEventHandleTypeToPollEvent(events);
-            virEventInterruptLocked();
+                    virEventPollToNativeEvents(events);
+            virEventPollInterruptLocked();
             break;
         }
     }
@@ -158,7 +158,7 @@ void virEventUpdateHandleImpl(int watch, int events) {
  * For this reason we only ever set a flag in the existing list.
  * Actual deletion will be done out-of-band
  */
-int virEventRemoveHandleImpl(int watch) {
+int virEventPollRemoveHandle(int watch) {
     int i;
     EVENT_DEBUG("Remove handle w=%d", watch);
 
@@ -175,7 +175,7 @@ int virEventRemoveHandleImpl(int watch) {
         if (eventLoop.handles[i].watch == watch) {
             EVENT_DEBUG("mark delete %d %d", i, eventLoop.handles[i].fd);
             eventLoop.handles[i].deleted = 1;
-            virEventInterruptLocked();
+            virEventPollInterruptLocked();
             virMutexUnlock(&eventLoop.lock);
             return 0;
         }
@@ -190,7 +190,7 @@ int virEventRemoveHandleImpl(int watch) {
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddTimeoutImpl(int frequency,
+int virEventPollAddTimeout(int frequency,
                            virEventTimeoutCallback cb,
                            void *opaque,
                            virFreeCallback ff) {
@@ -225,12 +225,12 @@ int virEventAddTimeoutImpl(int frequency,
 
     eventLoop.timeoutsCount++;
     ret = nextTimer-1;
-    virEventInterruptLocked();
+    virEventPollInterruptLocked();
     virMutexUnlock(&eventLoop.lock);
     return ret;
 }
 
-void virEventUpdateTimeoutImpl(int timer, int frequency) {
+void virEventPollUpdateTimeout(int timer, int frequency) {
     struct timeval tv;
     int i;
     EVENT_DEBUG("Updating timer %d timeout with %d ms freq", timer, frequency);
@@ -252,7 +252,7 @@ void virEventUpdateTimeoutImpl(int timer, int frequency) {
                 frequency >= 0 ? frequency +
                 (((unsigned long long)tv.tv_sec)*1000) +
                 (((unsigned long long)tv.tv_usec)/1000) : 0;
-            virEventInterruptLocked();
+            virEventPollInterruptLocked();
             break;
         }
     }
@@ -265,7 +265,7 @@ void virEventUpdateTimeoutImpl(int timer, int frequency) {
  * For this reason we only ever set a flag in the existing list.
  * Actual deletion will be done out-of-band
  */
-int virEventRemoveTimeoutImpl(int timer) {
+int virEventPollRemoveTimeout(int timer) {
     int i;
     EVENT_DEBUG("Remove timer %d", timer);
 
@@ -281,7 +281,7 @@ int virEventRemoveTimeoutImpl(int timer) {
 
         if (eventLoop.timeouts[i].timer == timer) {
             eventLoop.timeouts[i].deleted = 1;
-            virEventInterruptLocked();
+            virEventPollInterruptLocked();
             virMutexUnlock(&eventLoop.lock);
             return 0;
         }
@@ -296,7 +296,7 @@ int virEventRemoveTimeoutImpl(int timer) {
  *           no timeout is pending
  * returns: 0 on success, -1 on error
  */
-static int virEventCalculateTimeout(int *timeout) {
+static int virEventPollCalculateTimeout(int *timeout) {
     unsigned long long then = 0;
     int i;
     EVENT_DEBUG("Calculate expiry of %zu timers", eventLoop.timeoutsCount);
@@ -339,7 +339,7 @@ static int virEventCalculateTimeout(int *timeout) {
  * file handles. The caller must free the returned data struct
  * returns: the pollfd array, or NULL on error
  */
-static struct pollfd *virEventMakePollFDs(int *nfds) {
+static struct pollfd *virEventPollMakePollFDs(int *nfds) {
     struct pollfd *fds;
     int i;
 
@@ -384,7 +384,7 @@ static struct pollfd *virEventMakePollFDs(int *nfds) {
  *
  * Returns 0 upon success, -1 if an error occurred
  */
-static int virEventDispatchTimeouts(void) {
+static int virEventPollDispatchTimeouts(void) {
     struct timeval tv;
     unsigned long long now;
     int i;
@@ -433,7 +433,7 @@ static int virEventDispatchTimeouts(void) {
  *
  * Returns 0 upon success, -1 if an error occurred
  */
-static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
+static int virEventPollDispatchHandles(int nfds, struct pollfd *fds) {
     int i, n;
     VIR_DEBUG("Dispatch %d", nfds);
 
@@ -460,7 +460,7 @@ static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
             virEventHandleCallback cb = eventLoop.handles[i].cb;
             int watch = eventLoop.handles[i].watch;
             void *opaque = eventLoop.handles[i].opaque;
-            int hEvents = virPollEventToEventHandleType(fds[n].revents);
+            int hEvents = virEventPollFromNativeEvents(fds[n].revents);
             EVENT_DEBUG("Dispatch n=%d f=%d w=%d e=%d %p", i,
                         fds[n].fd, watch, fds[n].revents, opaque);
             virMutexUnlock(&eventLoop.lock);
@@ -477,7 +477,7 @@ static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
  * were previously marked as deleted. This asynchronous
  * cleanup is needed to make dispatch re-entrant safe.
  */
-static int virEventCleanupTimeouts(void) {
+static void virEventPollCleanupTimeouts(void) {
     int i;
     size_t gap;
     VIR_DEBUG("Cleanup %zu", eventLoop.timeoutsCount);
@@ -499,7 +499,7 @@ static int virEventCleanupTimeouts(void) {
         if ((i+1) < eventLoop.timeoutsCount) {
             memmove(eventLoop.timeouts+i,
                     eventLoop.timeouts+i+1,
-                    sizeof(struct virEventTimeout)*(eventLoop.timeoutsCount
+                    sizeof(struct virEventPollTimeout)*(eventLoop.timeoutsCount
                                                     -(i+1)));
         }
         eventLoop.timeoutsCount--;
@@ -513,14 +513,13 @@ static int virEventCleanupTimeouts(void) {
                     eventLoop.timeoutsCount, eventLoop.timeoutsAlloc, gap);
         VIR_SHRINK_N(eventLoop.timeouts, eventLoop.timeoutsAlloc, gap);
     }
-    return 0;
 }
 
 /* Used post dispatch to actually remove any handles that
  * were previously marked as deleted. This asynchronous
  * cleanup is needed to make dispatch re-entrant safe.
  */
-static int virEventCleanupHandles(void) {
+static void virEventPollCleanupHandles(void) {
     int i;
     size_t gap;
     VIR_DEBUG("Cleanup %zu", eventLoop.handlesCount);
@@ -540,7 +539,7 @@ static int virEventCleanupHandles(void) {
         if ((i+1) < eventLoop.handlesCount) {
             memmove(eventLoop.handles+i,
                     eventLoop.handles+i+1,
-                    sizeof(struct virEventHandle)*(eventLoop.handlesCount
+                    sizeof(struct virEventPollHandle)*(eventLoop.handlesCount
                                                    -(i+1)));
         }
         eventLoop.handlesCount--;
@@ -554,14 +553,13 @@ static int virEventCleanupHandles(void) {
                     eventLoop.handlesCount, eventLoop.handlesAlloc, gap);
         VIR_SHRINK_N(eventLoop.handles, eventLoop.handlesAlloc, gap);
     }
-    return 0;
 }
 
 /*
  * Run a single iteration of the event loop, blocking until
  * at least one file handle has an event, or a timer expires
  */
-int virEventRunOnce(void) {
+int virEventPollRunOnce(void) {
     struct pollfd *fds = NULL;
     int ret, timeout, nfds;
 
@@ -569,12 +567,11 @@ int virEventRunOnce(void) {
     eventLoop.running = 1;
     virThreadSelf(&eventLoop.leader);
 
-    if (virEventCleanupTimeouts() < 0 ||
-        virEventCleanupHandles() < 0)
-        goto error;
+    virEventPollCleanupTimeouts();
+    virEventPollCleanupHandles();
 
-    if (!(fds = virEventMakePollFDs(&nfds)) ||
-        virEventCalculateTimeout(&timeout) < 0)
+    if (!(fds = virEventPollMakePollFDs(&nfds)) ||
+        virEventPollCalculateTimeout(&timeout) < 0)
         goto error;
 
     virMutexUnlock(&eventLoop.lock);
@@ -592,16 +589,15 @@ int virEventRunOnce(void) {
     EVENT_DEBUG("Poll got %d event(s)", ret);
 
     virMutexLock(&eventLoop.lock);
-    if (virEventDispatchTimeouts() < 0)
+    if (virEventPollDispatchTimeouts() < 0)
         goto error;
 
     if (ret > 0 &&
-        virEventDispatchHandles(nfds, fds) < 0)
+        virEventPollDispatchHandles(nfds, fds) < 0)
         goto error;
 
-    if (virEventCleanupTimeouts() < 0 ||
-        virEventCleanupHandles() < 0)
-        goto error;
+    virEventPollCleanupTimeouts();
+    virEventPollCleanupHandles();
 
     eventLoop.running = 0;
     virMutexUnlock(&eventLoop.lock);
@@ -616,10 +612,10 @@ error_unlocked:
 }
 
 
-static void virEventHandleWakeup(int watch ATTRIBUTE_UNUSED,
-                                 int fd,
-                                 int events ATTRIBUTE_UNUSED,
-                                 void *opaque ATTRIBUTE_UNUSED)
+static void virEventPollHandleWakeup(int watch ATTRIBUTE_UNUSED,
+                                     int fd,
+                                     int events ATTRIBUTE_UNUSED,
+                                     void *opaque ATTRIBUTE_UNUSED)
 {
     char c;
     virMutexLock(&eventLoop.lock);
@@ -627,27 +623,30 @@ static void virEventHandleWakeup(int watch ATTRIBUTE_UNUSED,
     virMutexUnlock(&eventLoop.lock);
 }
 
-int virEventInit(void)
+int virEventPollInit(void)
 {
-    if (virMutexInit(&eventLoop.lock) < 0)
+    if (virMutexInit(&eventLoop.lock) < 0) {
         return -1;
+    }
 
     if (pipe(eventLoop.wakeupfd) < 0 ||
         virSetNonBlock(eventLoop.wakeupfd[0]) < 0 ||
         virSetNonBlock(eventLoop.wakeupfd[1]) < 0 ||
         virSetCloseExec(eventLoop.wakeupfd[0]) < 0 ||
-        virSetCloseExec(eventLoop.wakeupfd[1]) < 0)
+        virSetCloseExec(eventLoop.wakeupfd[1]) < 0) {
         return -1;
+    }
 
-    if (virEventAddHandleImpl(eventLoop.wakeupfd[0],
+    if (virEventPollAddHandle(eventLoop.wakeupfd[0],
                               VIR_EVENT_HANDLE_READABLE,
-                              virEventHandleWakeup, NULL, NULL) < 0)
+                              virEventPollHandleWakeup, NULL, NULL) < 0) {
         return -1;
+    }
 
     return 0;
 }
 
-static int virEventInterruptLocked(void)
+static int virEventPollInterruptLocked(void)
 {
     char c = '\0';
 
@@ -664,17 +663,17 @@ static int virEventInterruptLocked(void)
     return 0;
 }
 
-int virEventInterrupt(void)
+int virEventPollInterrupt(void)
 {
     int ret;
     virMutexLock(&eventLoop.lock);
-    ret = virEventInterruptLocked();
+    ret = virEventPollInterruptLocked();
     virMutexUnlock(&eventLoop.lock);
     return ret;
 }
 
 int
-virEventHandleTypeToPollEvent(int events)
+virEventPollToNativeEvents(int events)
 {
     int ret = 0;
     if(events & VIR_EVENT_HANDLE_READABLE)
@@ -689,7 +688,7 @@ virEventHandleTypeToPollEvent(int events)
 }
 
 int
-virPollEventToEventHandleType(int events)
+virEventPollFromNativeEvents(int events)
 {
     int ret = 0;
     if(events & POLLIN)

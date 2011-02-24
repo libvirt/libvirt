@@ -3,7 +3,6 @@
 CLEANFILES =
 
 DAEMON_SOURCES =					\
-		event.c event.h				\
 		libvirtd.c libvirtd.h			\
 		remote.c remote.h			\
 		dispatch.c dispatch.h			\

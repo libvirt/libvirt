@@ -63,7 +63,7 @@
 #include "remote_driver.h"
 #include "conf.h"
 #include "event.h"
-#include "src/util/event.h"
+#include "event_poll.h"
 #include "memory.h"
 #include "stream.h"
 #include "hooks.h"
@@ -893,7 +893,7 @@ static struct qemud_server *qemudInitialize(void) {
         return NULL;
     }
 
-    if (virEventInit() < 0) {
+    if (virEventPollInit() < 0) {
         VIR_ERROR0(_("Failed to initialize event system"));
         virMutexDestroy(&server->lock);
         if (virCondDestroy(&server->job) < 0)
@@ -957,12 +957,12 @@ static struct qemud_server *qemudInitialize(void) {
 # endif
 #endif
 
-    virEventRegisterImpl(virEventAddHandleImpl,
-                         virEventUpdateHandleImpl,
-                         virEventRemoveHandleImpl,
-                         virEventAddTimeoutImpl,
-                         virEventUpdateTimeoutImpl,
-                         virEventRemoveTimeoutImpl);
+    virEventRegisterImpl(virEventPollAddHandle,
+                         virEventPollUpdateHandle,
+                         virEventPollRemoveHandle,
+                         virEventPollAddTimeout,
+                         virEventPollUpdateTimeout,
+                         virEventPollRemoveTimeout);
 
     return server;
 }
@@ -2283,7 +2283,7 @@ qemudDispatchServerEvent(int watch, int fd, int events, void *opaque) {
 static int qemudOneLoop(void) {
     sig_atomic_t errors;
 
-    if (virEventRunOnce() < 0)
+    if (virEventPollRunOnce() < 0)
         return -1;
 
     /* Check for any signal handling errors and log them. */

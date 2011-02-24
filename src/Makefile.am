@@ -52,6 +52,7 @@ UTIL_SOURCES =							\
 		util/conf.c util/conf.h				\
 		util/cgroup.c util/cgroup.h			\
 		util/event.c util/event.h			\
+		util/event_poll.c util/event_poll.h		\
 		util/files.c util/files.h			\
 		util/hash.c util/hash.h				\
 		util/hooks.c util/hooks.h			\
