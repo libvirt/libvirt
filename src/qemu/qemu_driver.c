@@ -6036,20 +6036,46 @@ cleanup:
 
 /* The domain is expected to be locked and active. */
 static int
-qemuDomainSnapshotCreateActive(struct qemud_driver *driver,
+qemuDomainSnapshotCreateActive(virConnectPtr conn,
+                               struct qemud_driver *driver,
                                virDomainObjPtr *vmptr,
                                virDomainSnapshotObjPtr snap)
 {
     virDomainObjPtr vm = *vmptr;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
+    bool resume = false;
+    int ret = -1;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         return -1;
 
+    if (vm->state == VIR_DOMAIN_RUNNING) {
+        /* savevm monitor command pauses the domain emitting an event which
+         * confuses libvirt since it's not notified when qemu resumes the
+         * domain. Thus we stop and start CPUs ourselves.
+         */
+        if (qemuProcessStopCPUs(driver, vm) < 0)
+            goto cleanup;
+
+        resume = true;
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit"));
+            goto cleanup;
+        }
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+cleanup:
+    if (resume && virDomainObjIsActive(vm) &&
+        qemuProcessStartCPUs(driver, vm, conn) < 0 &&
+        virGetLastError() == NULL) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("resuming after snapshot failed"));
+    }
 
     if (qemuDomainObjEndJob(vm) == 0)
         *vmptr = NULL;
@@ -6095,17 +6121,18 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
         goto cleanup;
 
+    snap->def->state = vm->state;
+
     /* actually do the snapshot */
     if (!virDomainObjIsActive(vm)) {
         if (qemuDomainSnapshotCreateInactive(vm, snap) < 0)
             goto cleanup;
     }
     else {
-        if (qemuDomainSnapshotCreateActive(driver, &vm, snap) < 0)
+        if (qemuDomainSnapshotCreateActive(domain->conn, driver,
+                                           &vm, snap) < 0)
             goto cleanup;
     }
-
-    snap->def->state = vm->state;
 
     /* FIXME: if we fail after this point, there's not a whole lot we can
      * do; we've successfully taken the snapshot, and we are now running
