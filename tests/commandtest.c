@@ -730,6 +730,9 @@ mymain(int argc, char **argv)
     if (chdir("/tmp") < 0)
         return(EXIT_FAILURE);
 
+    setpgid(0, 0);
+    setsid();
+
     /* Kill off any inherited fds that might interfere with our
      * testing.  */
     fd = 3;
