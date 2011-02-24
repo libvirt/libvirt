@@ -824,7 +824,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     memset(meta, 0, sizeof (*meta));
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
-        virReportSystemError(errno, _("cannot set to start of '%s'"), path);
+        virReportSystemError(errno, _("cannot seek to start of '%s'"), path);
         goto cleanup;
     }
 
