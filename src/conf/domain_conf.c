@@ -2974,7 +2974,8 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
     default:
         portStr = virXMLPropString(cur, "port");
         if (portStr == NULL) {
-            /* Not required. It will be assigned automatically later */
+            /* Set to negative value to indicate we should set it later */
+            def->target.port = -1;
             break;
         }
 
@@ -2984,6 +2985,7 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
                                  portStr);
             goto error;
         }
+        def->target.port = port;
         break;
     }
 
@@ -5547,7 +5549,15 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!chr)
             goto error;
 
-        chr->target.port = i;
+        if (chr->target.port == -1) {
+            int maxport = -1;
+            int j;
+            for (j = 0 ; j < i ; j++) {
+                if (def->parallels[j]->target.port > maxport)
+                    maxport = def->parallels[j]->target.port;
+            }
+            chr->target.port = maxport + 1;
+        }
         def->parallels[def->nparallels++] = chr;
     }
     VIR_FREE(nodes);
@@ -5567,7 +5577,15 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!chr)
             goto error;
 
-        chr->target.port = i;
+        if (chr->target.port == -1) {
+            int maxport = -1;
+            int j;
+            for (j = 0 ; j < i ; j++) {
+                if (def->serials[j]->target.port > maxport)
+                    maxport = def->serials[j]->target.port;
+            }
+            chr->target.port = maxport + 1;
+        }
         def->serials[def->nserials++] = chr;
     }
     VIR_FREE(nodes);
