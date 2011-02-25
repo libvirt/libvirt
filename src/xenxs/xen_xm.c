@@ -965,20 +965,57 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             chr = NULL;
         }
 
-        if (xenXMConfigGetString(conf, "serial", &str, NULL) < 0)
-            goto cleanup;
-        if (str && STRNEQ(str, "none") &&
-            !(chr = xenParseSxprChar(str, NULL)))
-            goto cleanup;
+        /* Try to get the list of values to support multiple serial ports */
+        list = virConfGetValue(conf, "serial");
+        if (list && list->type == VIR_CONF_LIST) {
+            int portnum = -1;
 
-        if (chr) {
-            if (VIR_ALLOC_N(def->serials, 1) < 0) {
-                virDomainChrDefFree(chr);
-                goto no_memory;
+            list = list->list;
+            while (list) {
+                char *port = NULL;
+
+                if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
+                    goto cleanup;
+
+                port = list->str;
+                portnum++;
+                if (STREQ(port, "none")) {
+                    list = list->next;
+                    continue;
+                }
+
+                if (VIR_ALLOC(chr) < 0)
+                    goto no_memory;
+                if (!(chr = xenParseSxprChar(port, NULL)))
+                    goto cleanup;
+
+                if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0)
+                    goto no_memory;
+
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                chr->target.port = portnum;
+
+                def->serials[def->nserials++] = chr;
+                chr = NULL;
+
+                list = list->next;
             }
-            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-            def->serials[0] = chr;
-            def->nserials++;
+        } else {
+            /* If domain is not using multiple serial ports we parse data old way */
+            if (xenXMConfigGetString(conf, "serial", &str, NULL) < 0)
+                goto cleanup;
+            if (str && STRNEQ(str, "none") &&
+                !(chr = xenParseSxprChar(str, NULL)))
+                goto cleanup;
+            if (chr) {
+                if (VIR_ALLOC_N(def->serials, 1) < 0) {
+                    virDomainChrDefFree(chr);
+                    goto no_memory;
+                }
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                def->serials[0] = chr;
+                def->nserials++;
+            }
         }
     } else {
         if (!(def->console = xenParseSxprChar("pty", NULL)))
@@ -1093,6 +1130,49 @@ static int xenFormatXMDisk(virConfValuePtr list,
     else
         virBufferAddLit(&buf, ",w");
 
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(val) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    val->type = VIR_CONF_STRING;
+    val->str = virBufferContentAndReset(&buf);
+    tmp = list->list;
+    while (tmp && tmp->next)
+        tmp = tmp->next;
+    if (tmp)
+        tmp->next = val;
+    else
+        list->list = val;
+
+    return 0;
+
+cleanup:
+    virBufferFreeAndReset(&buf);
+    return -1;
+}
+
+static int xenFormatXMSerial(virConfValuePtr list,
+                             virDomainChrDefPtr serial)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virConfValuePtr val, tmp;
+    int ret;
+
+    if (serial) {
+        ret = xenFormatSxprChr(serial, &buf);
+        if (ret < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else {
+        virBufferAddLit(&buf, "none");
+    }
     if (virBufferError(&buf)) {
         virReportOOMError();
         goto cleanup;
@@ -1678,17 +1758,52 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         }
 
         if (def->nserials) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
-            char *str;
-            int ret;
+            if ((def->nserials == 1) && (def->serials[0]->target.port == 0)) {
+                virBuffer buf = VIR_BUFFER_INITIALIZER;
+                char *str;
+                int ret;
 
-            ret = xenFormatSxprChr(def->serials[0], &buf);
-            str = virBufferContentAndReset(&buf);
-            if (ret == 0)
-                ret = xenXMConfigSetString(conf, "serial", str);
-            VIR_FREE(str);
-            if (ret < 0)
-                goto no_memory;
+                ret = xenFormatSxprChr(def->serials[0], &buf);
+                str = virBufferContentAndReset(&buf);
+                if (ret == 0)
+                    ret = xenXMConfigSetString(conf, "serial", str);
+                VIR_FREE(str);
+                if (ret < 0)
+                    goto no_memory;
+            } else {
+                int j = 0;
+                int maxport = -1;
+                virConfValuePtr serialVal = NULL;
+
+                if (VIR_ALLOC(serialVal) < 0)
+                    goto no_memory;
+                serialVal->type = VIR_CONF_LIST;
+                serialVal->list = NULL;
+
+                for (i = 0; i < def->nserials; i++)
+                    if (def->serials[i]->target.port > maxport)
+                        maxport = def->serials[i]->target.port;
+
+                for (i = 0; i <= maxport; i++) {
+                    virDomainChrDefPtr chr = NULL;
+                    for (j = 0; j < def->nserials; j++) {
+                        if (def->serials[j]->target.port == i) {
+                            chr = def->serials[j];
+                            break;
+                        }
+                    }
+                    if (xenFormatXMSerial(serialVal, chr) < 0)
+                        goto cleanup;
+                }
+
+                if (serialVal->list != NULL) {
+                    int ret = virConfSetValue(conf, "serial", serialVal);
+                    serialVal = NULL;
+                    if (ret < 0)
+                        goto no_memory;
+                }
+                VIR_FREE(serialVal);
+            }
         } else {
             if (xenXMConfigSetString(conf, "serial", "none") < 0)
                 goto no_memory;

@@ -219,6 +219,8 @@ mymain(int argc, char **argv)
     DO_TEST("fullvirt-usbtablet", 2);
     DO_TEST("fullvirt-usbmouse", 2);
     DO_TEST("fullvirt-serial-file", 2);
+    DO_TEST("fullvirt-serial-dev-2-ports", 2);
+    DO_TEST("fullvirt-serial-dev-2nd-port", 2);
     DO_TEST("fullvirt-serial-null", 2);
     DO_TEST("fullvirt-serial-pipe", 2);
     DO_TEST("fullvirt-serial-pty", 2);

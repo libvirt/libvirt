@@ -1,0 +1,49 @@
+<domain type='xen' id='1'>
+  <name>fvtest</name>
+  <uuid>b5d70dd2-75cd-aca5-1776-9660b059d8ff</uuid>
+  <memory>409600</memory>
+  <currentMemory>409600</currentMemory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
+    <disk type='file' device='disk'>
+      <driver name='file'/>
+      <source file='/root/foo.img'/>
+      <target dev='hda' bus='ide'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='file'/>
+      <source file='/root/boot.iso'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+    </disk>
+    <interface type='bridge'>
+      <mac address='00:16:3e:1b:b1:47'/>
+      <source bridge='xenbr0'/>
+      <script path='vif-bridge'/>
+      <target dev='vif1.0'/>
+    </interface>
+    <serial type='dev'>
+      <source path='/dev/ttyS1'/>
+      <target port='1'/>
+    </serial>
+    <console type='dev'>
+      <source path='/dev/ttyS1'/>
+      <target type='serial' port='1'/>
+    </console>
+    <input type='mouse' bus='ps2'/>
+    <graphics type='vnc' port='5901' autoport='no'/>
+  </devices>
+</domain>

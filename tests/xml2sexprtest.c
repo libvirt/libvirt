@@ -149,6 +149,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("fv-serial-null", "fv-serial-null", "fvtest", 1);
     DO_TEST("fv-serial-file", "fv-serial-file", "fvtest", 1);
+    DO_TEST("fv-serial-dev-2-ports", "fv-serial-dev-2-ports", "fvtest", 1);
+    DO_TEST("fv-serial-dev-2nd-port", "fv-serial-dev-2nd-port", "fvtest", 1);
     DO_TEST("fv-serial-stdio", "fv-serial-stdio", "fvtest", 1);
     DO_TEST("fv-serial-pty", "fv-serial-pty", "fvtest", 1);
     DO_TEST("fv-serial-pipe", "fv-serial-pipe", "fvtest", 1);

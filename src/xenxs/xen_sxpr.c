@@ -177,6 +177,9 @@ xenParseSxprChar(const char *value,
 
     if (value[0] == '/') {
         def->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+        def->source.data.file.path = strdup(value);
+        if (!def->source.data.file.path)
+            goto no_memory;
     } else {
         if ((tmp = strchr(value, ':')) != NULL) {
             *tmp = '\0';
@@ -1280,18 +1283,55 @@ xenParseSxpr(const struct sexpr *root,
 
     /* Character device config */
     if (hvm) {
-        tmp = sexpr_node(root, "domain/image/hvm/serial");
-        if (tmp && STRNEQ(tmp, "none")) {
-            virDomainChrDefPtr chr;
-            if ((chr = xenParseSxprChar(tmp, tty)) == NULL)
-                goto error;
-            if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
-                virDomainChrDefFree(chr);
-                goto no_memory;
+        const struct sexpr *serial_root;
+        bool have_multiple_serials = false;
+
+        serial_root = sexpr_lookup(root, "domain/image/hvm/serial");
+        if (serial_root) {
+            const struct sexpr *cur, *node, *cur2;
+            int ports_skipped = 0;
+
+            for (cur = serial_root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+                node = cur->u.s.car;
+
+                for (cur2 = node; cur2->kind == SEXPR_CONS; cur2 = cur2->u.s.cdr) {
+                    tmp = cur2->u.s.car->u.value;
+
+                    if (tmp && STRNEQ(tmp, "none")) {
+                        virDomainChrDefPtr chr;
+                        if ((chr = xenParseSxprChar(tmp, tty)) == NULL)
+                            goto error;
+                        if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
+                            virDomainChrDefFree(chr);
+                            goto no_memory;
+                        }
+                        chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                        chr->target.port = def->nserials + ports_skipped;
+                        def->serials[def->nserials++] = chr;
+                    }
+                    else
+                        ports_skipped++;
+
+                    have_multiple_serials = true;
+                }
             }
-            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-            def->serials[def->nserials++] = chr;
         }
+
+        if (!have_multiple_serials) {
+            tmp = sexpr_node(root, "domain/image/hvm/serial");
+            if (tmp && STRNEQ(tmp, "none")) {
+                virDomainChrDefPtr chr;
+                if ((chr = xenParseSxprChar(tmp, tty)) == NULL)
+                    goto error;
+                if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
+                    virDomainChrDefFree(chr);
+                    goto no_memory;
+                }
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                def->serials[def->nserials++] = chr;
+            }
+        }
+
         tmp = sexpr_node(root, "domain/image/hvm/parallel");
         if (tmp && STRNEQ(tmp, "none")) {
             virDomainChrDefPtr chr;
@@ -2121,10 +2161,41 @@ xenFormatSxpr(virConnectPtr conn,
                 virBufferAddLit(&buf, "(parallel none)");
             }
             if (def->serials) {
-                virBufferAddLit(&buf, "(serial ");
-                if (xenFormatSxprChr(def->serials[0], &buf) < 0)
-                    goto error;
-                virBufferAddLit(&buf, ")");
+                if ((def->nserials > 1) || (def->serials[0]->target.port != 0)) {
+                    int maxport = -1;
+                    int j = 0;
+
+                    virBufferAddLit(&buf, "(serial (");
+                    for (i = 0; i < def->nserials; i++)
+                        if (def->serials[i]->target.port > maxport)
+                            maxport = def->serials[i]->target.port;
+
+                    for (i = 0; i <= maxport; i++) {
+                        virDomainChrDefPtr chr = NULL;
+
+                        if (i)
+                            virBufferAddLit(&buf, " ");
+                        for (j = 0; j < def->nserials; j++) {
+                            if (def->serials[j]->target.port == i) {
+                                chr = def->serials[j];
+                                break;
+                            }
+                        }
+                        if (chr) {
+                            if (xenFormatSxprChr(chr, &buf) < 0)
+                                goto error;
+                        } else {
+                            virBufferAddLit(&buf, "none");
+                        }
+                    }
+                    virBufferAddLit(&buf, "))");
+                }
+                else {
+                    virBufferAddLit(&buf, "(serial ");
+                    if (xenFormatSxprChr(def->serials[0], &buf) < 0)
+                        goto error;
+                    virBufferAddLit(&buf, ")");
+                }
             } else {
                 virBufferAddLit(&buf, "(serial none)");
             }
