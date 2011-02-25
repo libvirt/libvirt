@@ -5988,6 +5988,75 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
     return 1;
 }
 
+/* The domain is expected to be locked and inactive. */
+static int
+qemuDomainSnapshotCreateInactive(virDomainObjPtr vm,
+                                 virDomainSnapshotObjPtr snap)
+{
+    const char *qemuimgarg[] = { NULL, "snapshot", "-c", NULL, NULL, NULL };
+    int ret = -1;
+    int i;
+
+    qemuimgarg[0] = qemuFindQemuImgBinary();
+    if (qemuimgarg[0] == NULL) {
+        /* qemuFindQemuImgBinary set the error */
+        goto cleanup;
+    }
+
+    qemuimgarg[3] = snap->def->name;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        /* FIXME: we also need to handle LVM here */
+        /* FIXME: if we fail halfway through this loop, we are in an
+         * inconsistent state.  I'm not quite sure what to do about that
+         */
+        if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (!vm->def->disks[i]->driverType ||
+                STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
+                qemuReportError(VIR_ERR_OPERATION_INVALID,
+                                _("Disk device '%s' does not support"
+                                  " snapshotting"),
+                                vm->def->disks[i]->info.alias);
+                goto cleanup;
+            }
+
+            qemuimgarg[4] = vm->def->disks[i]->src;
+
+            if (virRun(qemuimgarg, NULL) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(qemuimgarg[0]);
+    return ret;
+}
+
+/* The domain is expected to be locked and active. */
+static int
+qemuDomainSnapshotCreateActive(struct qemud_driver *driver,
+                               virDomainObjPtr *vmptr,
+                               virDomainSnapshotObjPtr snap)
+{
+    virDomainObjPtr vm = *vmptr;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+        return -1;
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (qemuDomainObjEndJob(vm) == 0)
+        *vmptr = NULL;
+
+    return ret;
+}
+
 static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                                         const char *xmlDesc,
                                                         unsigned int flags)
@@ -5998,8 +6067,6 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotPtr snapshot = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotDefPtr def;
-    const char *qemuimgarg[] = { NULL, "snapshot", "-c", NULL, NULL, NULL };
-    int i;
 
     virCheckFlags(0, NULL);
 
@@ -6030,50 +6097,11 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
     /* actually do the snapshot */
     if (!virDomainObjIsActive(vm)) {
-        qemuimgarg[0] = qemuFindQemuImgBinary();
-        if (qemuimgarg[0] == NULL)
-            /* qemuFindQemuImgBinary set the error */
+        if (qemuDomainSnapshotCreateInactive(vm, snap) < 0)
             goto cleanup;
-
-        qemuimgarg[3] = snap->def->name;
-
-        for (i = 0; i < vm->def->ndisks; i++) {
-            /* FIXME: we also need to handle LVM here */
-            /* FIXME: if we fail halfway through this loop, we are in an
-             * inconsistent state.  I'm not quite sure what to do about that
-             */
-            if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                if (!vm->def->disks[i]->driverType ||
-                    STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
-                    qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                    _("Disk device '%s' does not support snapshotting"),
-                                    vm->def->disks[i]->info.alias);
-                    goto cleanup;
-                }
-
-                qemuimgarg[4] = vm->def->disks[i]->src;
-
-                if (virRun(qemuimgarg, NULL) < 0) {
-                    goto cleanup;
-                }
-            }
-        }
     }
     else {
-        qemuDomainObjPrivatePtr priv;
-        int ret;
-
-        if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
-            goto cleanup;
-        priv = vm->privateData;
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorCreateSnapshot(priv->mon, def->name);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        if (qemuDomainObjEndJob(vm) == 0) {
-            vm = NULL;
-            goto cleanup;
-        }
-        if (ret < 0)
+        if (qemuDomainSnapshotCreateActive(driver, &vm, snap) < 0)
             goto cleanup;
     }
 
@@ -6103,7 +6131,6 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
 cleanup:
-    VIR_FREE(qemuimgarg[0]);
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
