@@ -241,7 +241,11 @@ int qemuSetupCgroup(struct qemud_driver *driver,
             goto cleanup;
         }
 
-        if (vm->def->nsounds) {
+        if (vm->def->nsounds &&
+            (!vm->def->ngraphics ||
+             ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+               driver->vncAllowHostAudio) ||
+              (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {
             rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR);
             qemuDomainCgroupAudit(vm, cgroup, "allow", "major", "sound",
                                   rc == 0);
