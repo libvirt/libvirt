@@ -159,7 +159,7 @@ qemuDomainHostdevAudit(virDomainObjPtr vm,
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "resrc=dev reason=%s %s uuid=%s type=%s %s",
+              "resrc=dev reason=%s %s uuid=%s bus=%s %s",
               reason, vmname, uuidstr,
               virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type),
               device);
@@ -200,14 +200,14 @@ void qemuDomainCgroupAudit(virDomainObjPtr vm,
         return;
     }
     if (name &&
-        !(detail = virAuditEncode(STREQ(item, "path") ? "path" : "type",
+        !(detail = virAuditEncode(STREQ(item, "path") ? "path" : "category",
                                   name))) {
         VIR_WARN0("OOM while encoding audit message");
         goto cleanup;
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "resrc=cgroup reason=%s %s uuid=%s item=%s%s%s",
+              "resrc=cgroup reason=%s %s uuid=%s class=%s%s%s",
               reason, vmname, uuidstr,
               item, detail ? " " : "", detail ? detail : "");
 
