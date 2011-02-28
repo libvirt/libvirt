@@ -1307,6 +1307,8 @@ int virCgroupGetFreezerState(virCgroupPtr group, char **state)
                                 "freezer.state", state);
 }
 
+
+#ifdef HAVE_KILL
 static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
 {
     int rc;
@@ -1520,3 +1522,21 @@ int virCgroupKillPainfully(virCgroupPtr group)
     VIR_DEBUG("Complete %d", rc);
     return rc;
 }
+
+#else /* HAVE_KILL */
+int virCgroupKill(virCgroupPtr group ATTRIBUTE_UNUSED,
+                  int signum ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+int virCgroupKillRecursive(virCgroupPtr group ATTRIBUTE_UNUSED,
+                           int signum ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+
+int virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+#endif /* HAVE_KILL */
