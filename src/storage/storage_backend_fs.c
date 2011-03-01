@@ -1,7 +1,7 @@
 /*
  * storage_backend_fs.c: storage backend for FS and directory handling
  *
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -96,16 +96,25 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
         *backingStore = meta.backingStore;
         meta.backingStore = NULL;
         if (meta.backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
-            if ((*backingStoreFormat
-                 = virStorageFileProbeFormat(*backingStore)) < 0) {
-                VIR_FORCE_CLOSE(fd);
-                goto cleanup;
+            if ((ret = virStorageFileProbeFormat(*backingStore)) < 0) {
+                /* If the backing file is currently unavailable, only log an error,
+                 * but continue. Returning -1 here would disable the whole storage
+                 * pool, making it unavailable for even maintenance. */
+                virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                                      _("cannot probe backing volume format: %s"),
+                                      *backingStore);
+                ret = -3;
+            } else {
+                *backingStoreFormat = ret;
+                ret = 0;
             }
         } else {
             *backingStoreFormat = meta.backingStoreFormat;
+            ret = 0;
         }
     } else {
         VIR_FREE(meta.backingStore);
+        ret = 0;
     }
 
     if (capacity && meta.capacity)
@@ -133,7 +142,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
          */
     }
 
-    return 0;
+    return ret;
 
 cleanup:
     VIR_FREE(*backingStore);
@@ -646,15 +655,21 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
                                                 &vol->allocation,
                                                 &vol->capacity,
                                                 &vol->target.encryption)) < 0) {
-            if (ret == -1)
-                goto cleanup;
-            else {
+            if (ret == -2) {
                 /* Silently ignore non-regular files,
                  * eg '.' '..', 'lost+found', dangling symbolic link */
                 virStorageVolDefFree(vol);
                 vol = NULL;
                 continue;
-            }
+            } else if (ret == -3) {
+                /* The backing file is currently unavailable, its format is not
+                 * explicitly specified, the probe to auto detect the format
+                 * failed: continue with faked RAW format, since AUTO will
+                 * break virStorageVolTargetDefFormat() generating the line
+                 * <format type='...'/>. */
+                backingStoreFormat = VIR_STORAGE_FILE_RAW;
+            } else
+                goto cleanup;
         }
 
         if (backingStore != NULL) {
@@ -664,8 +679,15 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
             if (virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
                                                      NULL,
                                                      NULL) < 0) {
-                VIR_FREE(vol->backingStore.path);
-                goto cleanup;
+                /* The backing file is currently unavailable, the capacity,
+                 * allocation, owner, group and mode are unknown. Just log the
+                 * error an continue.
+                 * Unfortunately virStorageBackendProbeTarget() might already
+                 * have logged a similar message for the same problem, but only
+                 * if AUTO format detection was used. */
+                virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                                      _("cannot probe backing volume info: %s"),
+                                      vol->backingStore.path);
             }
         }
 
