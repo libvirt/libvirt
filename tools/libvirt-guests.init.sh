@@ -105,7 +105,7 @@ guest_name() {
     uuid=$2
 
     name=$(run_virsh_c $uri dominfo $uuid 2>/dev/null | \
-           awk '/^Name:/{print $2}')
+           sed -ne 's/^Name: *//p')
     [ -n "$name" ] || name=$uuid
 
     echo "$name"
