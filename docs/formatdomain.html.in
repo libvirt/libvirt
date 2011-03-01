@@ -954,7 +954,7 @@
 <pre>
   ...
   &lt;devices&gt;
-    &lt;hostdev mode='subsystem' type='pci'&gt;
+    &lt;hostdev mode='subsystem' type='pci' managed='yes'&gt;
       &lt;source&gt;
         &lt;address bus='0x06' slot='0x02' function='0x0'/&gt;
       &lt;/source&gt;
@@ -966,9 +966,11 @@
     <dl>
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
-      host devices. For usb device passthrough <code>mode</code> is always
-      "subsystem" and <code>type</code> is "usb" for an USB device and "pci"
-      for a PCI device..
+        host devices. For usb device passthrough <code>mode</code> is always
+        "subsystem" and <code>type</code> is "usb" for a USB device and "pci"
+        for a PCI device. When <code>managed</code> is "yes" for a PIC
+        device, it is detached from the host before being passed on to
+        the guest.</dd>
       <dt><code>source</code></dt>
       <dd>The source element describes the device as seen from the host.
       The USB device can either be addressed by vendor / product id using the

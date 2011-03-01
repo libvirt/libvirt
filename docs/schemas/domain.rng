@@ -1731,12 +1731,14 @@
             <value>capabilities</value>
           </choice>
         </attribute>
-        <attribute name="type">
-          <choice>
-            <value>usb</value>
-            <value>pci</value>
-          </choice>
-        </attribute>
+      </optional>
+      <attribute name="type">
+        <choice>
+          <value>usb</value>
+          <value>pci</value>
+        </choice>
+      </attribute>
+      <optional>
         <attribute name="managed">
           <choice>
             <value>yes</value>
