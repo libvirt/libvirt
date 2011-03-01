@@ -9977,7 +9977,6 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
     /* An async message has come in while we were waiting for the
      * response. Process it to pull it off the wire, and try again
      */
-    VIR_DEBUG0("Encountered an event while waiting for a response");
 
     if (in_open) {
         VIR_DEBUG("Ignoring bogus event %d received while in open", hdr->proc);
@@ -10017,6 +10016,7 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
         VIR_DEBUG("Unexpected event proc %d", hdr->proc);
         break;
     }
+    VIR_DEBUG("Event ready for queue %p %p", event, conn);
 
     if (!event)
         return -1;
@@ -10674,6 +10674,7 @@ static void remoteDomainEventDispatchFunc(virConnectPtr conn,
 
     /* Drop the lock whle dispatching, for sake of re-entrancy */
     remoteDriverUnlock(priv);
+    VIR_DEBUG("Dispatch event %p %p", event, conn);
     virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
     remoteDriverLock(priv);
 }
@@ -10687,6 +10688,7 @@ remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 
     remoteDriverLock(priv);
 
+    VIR_DEBUG("Event queue flush %p", conn);
     priv->domainEventDispatching = 1;
 
     /* Copy the queue, so we're reentrant safe */
