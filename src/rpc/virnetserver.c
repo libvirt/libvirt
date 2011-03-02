@@ -36,6 +36,9 @@
 #include "util.h"
 #include "files.h"
 #include "event.h"
+#if HAVE_AVAHI
+# include "virnetservermdns.h"
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 #define virNetError(code, ...)                                    \
@@ -74,6 +77,12 @@ struct _virNetServer {
     int sigread;
     int sigwrite;
     int sigwatch;
+
+    char *mdnsGroupName;
+#if HAVE_AVAHI
+    virNetServerMDNSPtr mdns;
+    virNetServerMDNSGroupPtr mdnsGroup;
+#endif
 
     size_t nservices;
     virNetServerServicePtr *services;
@@ -260,6 +269,7 @@ static void virNetServerFatalSignal(int sig, siginfo_t *siginfo ATTRIBUTE_UNUSED
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t max_clients,
+                                const char *mdnsGroupName,
                                 virNetServerClientInitHook clientInitHook)
 {
     virNetServerPtr srv;
@@ -281,6 +291,20 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     srv->sigwrite = srv->sigread = -1;
     srv->clientInitHook = clientInitHook;
     srv->privileged = geteuid() == 0 ? true : false;
+
+    if (mdnsGroupName &&
+        !(srv->mdnsGroupName = strdup(mdnsGroupName))) {
+        virReportOOMError();
+        goto error;
+    }
+#if HAVE_AVAHI
+    if (srv->mdnsGroupName) {
+        if (!(srv->mdns = virNetServerMDNSNew()))
+            goto error;
+        if (!(srv->mdnsGroup = virNetServerMDNSAddGroup(srv->mdns, mdnsGroupName)))
+            goto error;
+    }
+#endif
 
     if (virMutexInit(&srv->lock) < 0) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -494,12 +518,25 @@ error:
 
 
 int virNetServerAddService(virNetServerPtr srv,
-                           virNetServerServicePtr svc)
+                           virNetServerServicePtr svc,
+                           const char *mdnsEntryName ATTRIBUTE_UNUSED)
 {
     virNetServerLock(srv);
 
     if (VIR_EXPAND_N(srv->services, srv->nservices, 1) < 0)
         goto no_memory;
+
+#if HAVE_AVAHI
+    if (mdnsEntryName) {
+        int port = virNetServerServiceGetPort(svc);
+        virNetServerMDNSEntryPtr entry;
+
+        if (!(entry = virNetServerMDNSAddEntry(srv->mdnsGroup,
+                                               mdnsEntryName,
+                                               port)))
+            goto error;
+    }
+#endif
 
     srv->services[srv->nservices-1] = svc;
     virNetServerServiceRef(svc);
@@ -513,6 +550,9 @@ int virNetServerAddService(virNetServerPtr srv,
 
 no_memory:
     virReportOOMError();
+#if HAVE_AVAHI
+error:
+#endif
     virNetServerUnlock(srv);
     return -1;
 }
@@ -581,6 +621,12 @@ void virNetServerRun(virNetServerPtr srv)
     int i;
 
     virNetServerLock(srv);
+
+#if HAVE_AVAHI
+    if (srv->mdns &&
+        virNetServerMDNSStart(srv->mdns) < 0)
+        goto cleanup;
+#endif
 
     if (srv->autoShutdownTimeout &&
         (timerid = virEventAddTimeout(-1,

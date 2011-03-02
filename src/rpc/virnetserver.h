@@ -37,6 +37,7 @@ typedef int (*virNetServerClientInitHook)(virNetServerPtr srv,
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t max_clients,
+                                const char *mdnsGroupName,
                                 virNetServerClientInitHook clientInitHook);
 
 typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
@@ -58,7 +59,8 @@ int virNetServerAddSignalHandler(virNetServerPtr srv,
                                  void *opaque);
 
 int virNetServerAddService(virNetServerPtr srv,
-                           virNetServerServicePtr svc);
+                           virNetServerServicePtr svc,
+                           const char *mdnsEntryName);
 
 int virNetServerAddProgram(virNetServerPtr srv,
                            virNetServerProgramPtr prog);

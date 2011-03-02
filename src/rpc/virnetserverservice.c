@@ -187,6 +187,14 @@ error:
 }
 
 
+int virNetServerServiceGetPort(virNetServerServicePtr svc)
+{
+    /* We're assuming if there are multiple sockets
+     * for IPv4 & 6, then they are all on same port */
+    return virNetSocketGetPort(svc->socks[0]);
+}
+
+
 int virNetServerServiceGetAuth(virNetServerServicePtr svc)
 {
     return svc->auth;

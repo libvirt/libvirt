@@ -682,6 +682,12 @@ bool virNetSocketIsLocal(virNetSocketPtr sock)
 }
 
 
+int virNetSocketGetPort(virNetSocketPtr sock)
+{
+    return virSocketGetPort(&sock->localAddr);
+}
+
+
 #ifdef SO_PEERCRED
 int virNetSocketGetLocalIdentity(virNetSocketPtr sock,
                                  uid_t *uid,

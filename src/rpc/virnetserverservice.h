@@ -48,6 +48,8 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   bool readonly,
                                                   virNetTLSContextPtr tls);
 
+int virNetServerServiceGetPort(virNetServerServicePtr svc);
+
 int virNetServerServiceGetAuth(virNetServerServicePtr svc);
 bool virNetServerServiceIsReadonly(virNetServerServicePtr svc);
 
