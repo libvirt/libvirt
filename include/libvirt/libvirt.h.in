@@ -1768,6 +1768,9 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
                           virEventUpdateTimeoutFunc updateTimeout,
                           virEventRemoveTimeoutFunc removeTimeout);
 
+int virEventRegisterDefaultImpl(void);
+int virEventRunDefaultImpl(void);
+
 /*
  * Secret manipulation API
  */

@@ -24,6 +24,9 @@
 #include <config.h>
 
 #include "event.h"
+#include "event_poll.h"
+#include "logging.h"
+#include "virterror_internal.h"
 
 #include <stdlib.h>
 
@@ -77,6 +80,15 @@ int virEventRemoveTimeout(int timer) {
     return removeTimeoutImpl(timer);
 }
 
+
+/*****************************************************
+ *
+ * Below this point are 3  *PUBLIC*  APIs for event
+ * loop integration with applications using libvirt.
+ * These API contracts cannot be changed.
+ *
+ *****************************************************/
+
 /**
  * virEventRegisterImpl:
  * @addHandle: the callback to add fd handles
@@ -86,18 +98,96 @@ int virEventRemoveTimeout(int timer) {
  * @updateTimeout: the callback to update a timeout
  * @removeTimeout: the callback to remove a timeout
  *
- * Registers an event implementation
+ * Registers an event implementation, to allow integration
+ * with an external event loop. Applications would use this
+ * to integrate with the libglib2 event loop, or libevent
+ * or the QT event loop.
+ *
+ * If an application does not need to integrate with an
+ * existing event loop implementation, then the
+ * virEventRegisterDefaultImpl method can be used to setup
+ * the generic libvirt implementation.
  */
 void virEventRegisterImpl(virEventAddHandleFunc addHandle,
                           virEventUpdateHandleFunc updateHandle,
                           virEventRemoveHandleFunc removeHandle,
                           virEventAddTimeoutFunc addTimeout,
                           virEventUpdateTimeoutFunc updateTimeout,
-                          virEventRemoveTimeoutFunc removeTimeout) {
+                          virEventRemoveTimeoutFunc removeTimeout)
+{
+    VIR_DEBUG("addHandle=%p updateHandle=%p removeHandle=%p "
+              "addTimeout=%p updateTimeout=%p removeTimeout=%p",
+              addHandle, updateHandle, removeHandle,
+              addTimeout, updateTimeout, removeTimeout);
+
     addHandleImpl = addHandle;
     updateHandleImpl = updateHandle;
     removeHandleImpl = removeHandle;
     addTimeoutImpl = addTimeout;
     updateTimeoutImpl = updateTimeout;
     removeTimeoutImpl = removeTimeout;
+}
+
+/**
+ * virEventRegisterDefaultImpl:
+ *
+ * Registers a default event implementation based on the
+ * poll() system call. This is a generic implementation
+ * that can be used by any client application which does
+ * not have a need to integrate with an external event
+ * loop impl.
+ *
+ * Once registered, the application can invoke
+ * virEventRunDefaultImpl in a loop to process
+ * events
+ */
+int virEventRegisterDefaultImpl(void)
+{
+    VIR_DEBUG0("");
+
+    virResetLastError();
+
+    if (virEventPollInit() < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    virEventRegisterImpl(
+        virEventPollAddHandle,
+        virEventPollUpdateHandle,
+        virEventPollRemoveHandle,
+        virEventPollAddTimeout,
+        virEventPollUpdateTimeout,
+        virEventPollRemoveTimeout
+        );
+
+    return 0;
+}
+
+
+/**
+ * virEventRunDefaultImpl:
+ *
+ * Run one iteration of the event loop. Applications
+ * will generally want to have a thread which invokes
+ * this method in an infinite loop
+ *
+ *  static bool quit = false;
+ *
+ *  while (!quit) {
+ *    if (virEventRunDefaultImpl() < 0)
+ *       ...print error...
+ *  }
+ */
+int virEventRunDefaultImpl(void)
+{
+    VIR_DEBUG0("");
+    virResetLastError();
+
+    if (virEventPollRunOnce() < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    return 0;
 }

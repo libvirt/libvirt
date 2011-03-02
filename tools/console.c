@@ -44,7 +44,6 @@
 # include "virterror_internal.h"
 
 # include "event.h"
-# include "event_poll.h"
 
 /* ie  Ctrl-]  as per telnet */
 # define CTRL_CLOSE_BRACKET '\35'
@@ -350,7 +349,7 @@ int vshRunConsole(virDomainPtr dom, const char *devname)
                               NULL);
 
     while (!con->quit) {
-        if (virEventPollRunOnce() < 0)
+        if (virEventRunDefaultImpl() < 0)
             break;
     }
 

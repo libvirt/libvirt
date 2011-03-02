@@ -36,8 +36,15 @@
 #include "memory.h"
 #include "util.h"
 #include "ignore-value.h"
+#include "virterror_internal.h"
 
 #define EVENT_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
+
+#define VIR_FROM_THIS VIR_FROM_EVENT
+
+#define virEventError(code, ...)                                    \
+    virReportErrorHelper(NULL, VIR_FROM_EVENT, code, __FILE__,      \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static int virEventPollInterruptLocked(void);
 
@@ -316,6 +323,8 @@ static int virEventPollCalculateTimeout(int *timeout) {
         struct timeval tv;
 
         if (gettimeofday(&tv, NULL) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to get current time"));
             return -1;
         }
 
@@ -350,8 +359,10 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
     }
 
     /* Setup the poll file handle data structs */
-    if (VIR_ALLOC_N(fds, *nfds) < 0)
+    if (VIR_ALLOC_N(fds, *nfds) < 0) {
+        virReportOOMError();
         return NULL;
+    }
 
     *nfds = 0;
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
@@ -393,6 +404,8 @@ static int virEventPollDispatchTimeouts(void) {
     VIR_DEBUG("Dispatch %d", ntimeouts);
 
     if (gettimeofday(&tv, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to get current time"));
         return -1;
     }
     now = (((unsigned long long)tv.tv_sec)*1000) +
@@ -584,6 +597,8 @@ int virEventPollRunOnce(void) {
         if (errno == EINTR) {
             goto retry;
         }
+        virReportSystemError(errno, "%s",
+                             _("Unable to poll on file handles"));
         goto error_unlocked;
     }
     EVENT_DEBUG("Poll got %d event(s)", ret);
@@ -626,6 +641,8 @@ static void virEventPollHandleWakeup(int watch ATTRIBUTE_UNUSED,
 int virEventPollInit(void)
 {
     if (virMutexInit(&eventLoop.lock) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to initialize mutex"));
         return -1;
     }
 
@@ -634,12 +651,17 @@ int virEventPollInit(void)
         virSetNonBlock(eventLoop.wakeupfd[1]) < 0 ||
         virSetCloseExec(eventLoop.wakeupfd[0]) < 0 ||
         virSetCloseExec(eventLoop.wakeupfd[1]) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to setup wakeup pipe"));
         return -1;
     }
 
     if (virEventPollAddHandle(eventLoop.wakeupfd[0],
                               VIR_EVENT_HANDLE_READABLE,
                               virEventPollHandleWakeup, NULL, NULL) < 0) {
+        virEventError(VIR_ERR_INTERNAL_ERROR,
+                      _("Unable to add handle %d to event loop"),
+                      eventLoop.wakeupfd[0]);
         return -1;
     }
 

@@ -893,8 +893,7 @@ static struct qemud_server *qemudInitialize(void) {
         return NULL;
     }
 
-    if (virEventPollInit() < 0) {
-        VIR_ERROR0(_("Failed to initialize event system"));
+    if (virEventRegisterDefaultImpl() < 0) {
         virMutexDestroy(&server->lock);
         if (virCondDestroy(&server->job) < 0)
         {}
@@ -956,13 +955,6 @@ static struct qemud_server *qemudInitialize(void) {
     oneRegister();
 # endif
 #endif
-
-    virEventRegisterImpl(virEventPollAddHandle,
-                         virEventPollUpdateHandle,
-                         virEventPollRemoveHandle,
-                         virEventPollAddTimeout,
-                         virEventPollUpdateTimeout,
-                         virEventPollRemoveTimeout);
 
     return server;
 }
@@ -2283,7 +2275,7 @@ qemudDispatchServerEvent(int watch, int fd, int events, void *opaque) {
 static int qemudOneLoop(void) {
     sig_atomic_t errors;
 
-    if (virEventPollRunOnce() < 0)
+    if (virEventRunDefaultImpl() < 0)
         return -1;
 
     /* Check for any signal handling errors and log them. */

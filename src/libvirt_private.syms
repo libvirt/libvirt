@@ -396,14 +396,6 @@ virEventUpdateTimeout;
 # event_poll.h
 virEventPollToNativeEvents;
 virEventPollFromNativeEvents;
-virEventPollRunOnce;
-virEventPollInit;
-virEventPollRemoveTimeout;
-virEventPollUpdateTimeout;
-virEventPollAddTimeout;
-virEventPollRemoveHandle;
-virEventPollUpdateHandle;
-virEventPollAddHandle;
 
 
 # fdstream.h

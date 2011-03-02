@@ -11677,13 +11677,8 @@ vshInit(vshControl *ctl)
     /* set up the signals handlers to catch disconnections */
     vshSetupSignals();
 
-    virEventRegisterImpl(virEventPollAddHandle,
-                         virEventPollUpdateHandle,
-                         virEventPollRemoveHandle,
-                         virEventPollAddTimeout,
-                         virEventPollUpdateTimeout,
-                         virEventPollRemoveTimeout);
-    virEventPollInit();
+    if (virEventRegisterDefaultImpl() < 0)
+        return FALSE;
 
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,

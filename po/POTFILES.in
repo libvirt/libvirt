@@ -88,6 +88,7 @@ src/util/cgroup.c
 src/util/command.c
 src/util/conf.c
 src/util/dnsmasq.c
+src/util/event_poll.c
 src/util/hooks.c
 src/util/hostusb.c
 src/util/interface.c

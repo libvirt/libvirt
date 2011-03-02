@@ -200,6 +200,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_STREAMS:
             dom = "Streams ";
             break;
+        case VIR_FROM_EVENT:
+            dom = "Events ";
+            break;
     }
     return(dom);
 }
