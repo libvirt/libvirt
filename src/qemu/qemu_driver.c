@@ -3248,8 +3248,8 @@ static int ATTRIBUTE_NONNULL(6)
 qemudDomainSaveImageStartVM(virConnectPtr conn,
                             struct qemud_driver *driver,
                             virDomainObjPtr vm,
-                            int fd,
-                            pid_t read_pid,
+                            int *fd,
+                            pid_t *read_pid,
                             const struct qemud_save_header *header,
                             const char *path)
 {
@@ -3273,20 +3273,21 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
 
         if (header->compressed != QEMUD_SAVE_FORMAT_RAW) {
             intermediate_argv[0] = prog;
-            intermediatefd = fd;
-            fd = -1;
+            intermediatefd = *fd;
+            *fd = -1;
             if (virExec(intermediate_argv, NULL, NULL,
-                        &intermediate_pid, intermediatefd, &fd, NULL, 0) < 0) {
+                        &intermediate_pid, intermediatefd, fd, NULL, 0) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("Failed to start decompression binary %s"),
                                 intermediate_argv[0]);
+                *fd = intermediatefd;
                 goto out;
             }
         }
     }
 
     /* Set the migration source and start it up. */
-    ret = qemuProcessStart(conn, driver, vm, "stdio", true, fd, path,
+    ret = qemuProcessStart(conn, driver, vm, "stdio", true, *fd, path,
                            VIR_VM_OP_RESTORE);
 
     if (intermediate_pid != -1) {
@@ -3295,7 +3296,7 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
              * wait forever to write to stdout, so we must manually kill it.
              */
             VIR_FORCE_CLOSE(intermediatefd);
-            VIR_FORCE_CLOSE(fd);
+            VIR_FORCE_CLOSE(*fd);
             kill(intermediate_pid, SIGTERM);
         }
 
@@ -3307,9 +3308,9 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     }
     VIR_FORCE_CLOSE(intermediatefd);
 
-    wait_ret = qemudDomainSaveImageClose(fd, read_pid, &status);
-    fd = -1;
-    if (read_pid != -1) {
+    wait_ret = qemudDomainSaveImageClose(*fd, *read_pid, &status);
+    *fd = -1;
+    if (*read_pid != -1) {
         if (wait_ret == -1) {
             virReportSystemError(errno,
                                  _("failed to wait for process reading '%s'"),
@@ -3330,6 +3331,7 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
             }
         }
     }
+    *read_pid = -1;
 
     if (ret < 0) {
         qemuDomainStartAudit(vm, "restored", false);
@@ -3398,8 +3400,8 @@ static int qemudDomainRestore(virConnectPtr conn,
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
 
-    ret = qemudDomainSaveImageStartVM(conn, driver, vm, fd,
-                                      read_pid, &header, path);
+    ret = qemudDomainSaveImageStartVM(conn, driver, vm, &fd,
+                                      &read_pid, &header, path);
 
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
@@ -3449,8 +3451,8 @@ static int qemudDomainObjRestore(virConnectPtr conn,
     virDomainObjAssignDef(vm, def, true);
     def = NULL;
 
-    ret = qemudDomainSaveImageStartVM(conn, driver, vm, fd,
-                                      read_pid, &header, path);
+    ret = qemudDomainSaveImageStartVM(conn, driver, vm, &fd,
+                                      &read_pid, &header, path);
 
 cleanup:
     virDomainDefFree(def);
