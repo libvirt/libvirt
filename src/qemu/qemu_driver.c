@@ -6854,6 +6854,7 @@ static virDriver qemuDriver = {
     qemudDomainGetMaxMemory, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     qemudDomainSetMemory, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
     qemudDomainRestore, /* domainRestore */

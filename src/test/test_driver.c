@@ -5365,6 +5365,7 @@ static virDriver testDriver = {
     testGetMaxMemory, /* domainGetMaxMemory */
     testSetMaxMemory, /* domainSetMaxMemory */
     testSetMemory, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     testGetDomainInfo, /* domainGetInfo */
     testDomainSave, /* domainSave */
     testDomainRestore, /* domainRestore */

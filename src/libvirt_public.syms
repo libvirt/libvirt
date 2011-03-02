@@ -426,6 +426,7 @@ LIBVIRT_0.8.8 {
 
 LIBVIRT_0.9.0 {
     global:
+        virDomainSetMemoryFlags;
         virEventRegisterDefaultImpl;
         virEventRunDefaultImpl;
 } LIBVIRT_0.8.8;

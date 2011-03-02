@@ -4593,6 +4593,7 @@ static virDriver esxDriver = {
     esxDomainGetMaxMemory,           /* domainGetMaxMemory */
     esxDomainSetMaxMemory,           /* domainSetMaxMemory */
     esxDomainSetMemory,              /* domainSetMemory */
+    NULL,                            /* domainSetMemoryFlags */
     esxDomainGetInfo,                /* domainGetInfo */
     NULL,                            /* domainSave */
     NULL,                            /* domainRestore */

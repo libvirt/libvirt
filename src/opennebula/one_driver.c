@@ -750,6 +750,7 @@ static virDriver oneDriver = {
     NULL, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     oneDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */

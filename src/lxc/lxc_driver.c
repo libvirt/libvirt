@@ -2851,6 +2851,7 @@ static virDriver lxcDriver = {
     lxcDomainGetMaxMemory, /* domainGetMaxMemory */
     lxcDomainSetMaxMemory, /* domainSetMaxMemory */
     lxcDomainSetMemory, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     lxcDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */

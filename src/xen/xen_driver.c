@@ -2034,6 +2034,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainGetMaxMemory, /* domainGetMaxMemory */
     xenUnifiedDomainSetMaxMemory, /* domainSetMaxMemory */
     xenUnifiedDomainSetMemory, /* domainSetMemory */
+    NULL, /*domainSetMemoryFlags */
     xenUnifiedDomainGetInfo, /* domainGetInfo */
     xenUnifiedDomainSave, /* domainSave */
     xenUnifiedDomainRestore, /* domainRestore */

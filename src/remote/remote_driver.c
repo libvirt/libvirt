@@ -10876,6 +10876,7 @@ static virDriver remote_driver = {
     remoteDomainGetMaxMemory, /* domainGetMaxMemory */
     remoteDomainSetMaxMemory, /* domainSetMaxMemory */
     remoteDomainSetMemory, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     remoteDomainGetInfo, /* domainGetInfo */
     remoteDomainSave, /* domainSave */
     remoteDomainRestore, /* domainRestore */

@@ -925,6 +925,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainGetMaxMemory */
     NULL,                       /* domainSetMaxMemory */
     NULL,                       /* domainSetMemory */
+    NULL,                       /* domainSetMemoryFlags */
     vmwareDomainGetInfo,        /* domainGetInfo */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */

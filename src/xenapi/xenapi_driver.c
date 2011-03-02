@@ -1803,6 +1803,7 @@ static virDriver xenapiDriver = {
     xenapiDomainGetMaxMemory, /* domainGetMaxMemory */
     xenapiDomainSetMaxMemory, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     xenapiDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */

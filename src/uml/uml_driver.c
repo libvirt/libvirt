@@ -2167,6 +2167,7 @@ static virDriver umlDriver = {
     umlDomainGetMaxMemory, /* domainGetMaxMemory */
     umlDomainSetMaxMemory, /* domainSetMaxMemory */
     umlDomainSetMemory, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     umlDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */

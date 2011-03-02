@@ -780,6 +780,13 @@ int     virDomainGetMemoryParameters(virDomainPtr domain,
                                      virMemoryParameterPtr params,
                                      int *nparams, unsigned int flags);
 
+/* Memory size modification flags. */
+typedef enum {
+    VIR_DOMAIN_MEM_LIVE   = (1 << 0), /* affect active domain */
+    VIR_DOMAIN_MEM_CONFIG = (1 << 1), /* affect next boot */
+} virDomainMemoryModFlags;
+
+
 /*
  * Dynamic control of domains
  */
@@ -795,6 +802,9 @@ int                     virDomainSetMaxMemory   (virDomainPtr domain,
                                                  unsigned long memory);
 int                     virDomainSetMemory      (virDomainPtr domain,
                                                  unsigned long memory);
+int                     virDomainSetMemoryFlags (virDomainPtr domain,
+                                                 unsigned long memory,
+                                                 unsigned int flags);
 int                     virDomainGetMaxVcpus    (virDomainPtr domain);
 int                     virDomainGetSecurityLabel (virDomainPtr domain,
                                                    virSecurityLabelPtr seclabel);

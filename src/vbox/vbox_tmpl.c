@@ -8555,6 +8555,7 @@ virDriver NAME(Driver) = {
     NULL, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     vboxDomainSetMemory, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     vboxDomainGetInfo, /* domainGetInfo */
     vboxDomainSave, /* domainSave */
     NULL, /* domainRestore */

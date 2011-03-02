@@ -3973,6 +3973,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainGetMaxMemory */
     NULL,                       /* domainSetMaxMemory */
     NULL,                       /* domainSetMemory */
+    NULL,                       /* domainSetMemoryFlags */
     phypDomainGetInfo,          /* domainGetInfo */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */

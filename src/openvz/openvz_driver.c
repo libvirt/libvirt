@@ -1571,6 +1571,7 @@ static virDriver openvzDriver = {
     NULL, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */
+    NULL, /* domainSetMemoryFlags */
     openvzDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */

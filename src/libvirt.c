@@ -2846,6 +2846,68 @@ error:
     return -1;
 }
 
+/*
+ * virDomainSetMemoryFlags
+ * @domain: a domain object or NULL
+ * @memory: the memory size in kilobytes
+ * @flags: an OR'ed set of virDomainMemoryModFlags
+ *
+ * Dynamically change the target amount of physical memory allocated to a
+ * domain. If domain is NULL, then this change the amount of memory reserved
+ * to Domain0 i.e. the domain where the application runs.
+ * This funcation may requires privileged access to the hypervisor.
+ *
+ * @flags must include VIR_DOMAIN_MEM_LIVE to affect a running
+ * domain (which may fail if domain is not active), or
+ * VIR_DOMAIN_MEM_CONFIG to affect the next boot via the XML
+ * description of the domain. Both flags may be set.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+
+int
+virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
+                        unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "memory=%lu flags=%u", memory, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (memory < 4096 ||
+        (flags & (VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_CONFIG)) == 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainSetMemoryFlags) {
+        int ret;
+        ret = conn->driver->domainSetMemoryFlags(domain, memory, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
 /**
  * virDomainSetMemoryParameters:
  * @domain: pointer to domain object
