@@ -1396,6 +1396,37 @@ int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
+                           unsigned int flags,
+                           int fd)
+{
+    int ret;
+    VIR_DEBUG("mon=%p fd=%d flags=%u",
+          mon, fd, flags);
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (qemuMonitorSendFileHandle(mon, "migrate", fd) < 0)
+        return -1;
+
+    if (mon->json)
+        ret = qemuMonitorJSONMigrate(mon, flags, "fd:migrate");
+    else
+        ret = qemuMonitorTextMigrate(mon, flags, "fd:migrate");
+
+    if (ret < 0) {
+        if (qemuMonitorCloseFileHandle(mon, "migrate") < 0)
+            VIR_WARN0("failed to close migration handle");
+    }
+
+    return ret;
+}
+
+
 int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
                              unsigned int flags,
                              const char *hostname,

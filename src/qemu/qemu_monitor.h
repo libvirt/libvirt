@@ -266,6 +266,10 @@ typedef enum {
   QEMU_MONITOR_MIGRATION_FLAGS_LAST
 } QEMU_MONITOR_MIGRATE;
 
+int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
+                           unsigned int flags,
+                           int fd);
+
 int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
                              unsigned int flags,
                              const char *hostname,
