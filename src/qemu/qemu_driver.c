@@ -1823,6 +1823,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     int is_reg = 0;
     unsigned long long offset;
     virCgroupPtr cgroup = NULL;
+    virBitmapPtr qemuCaps = NULL;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -1852,6 +1853,11 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
             goto endjob;
         }
     }
+
+    if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
+                                   NULL,
+                                   &qemuCaps) < 0)
+        goto endjob;
 
     /* Get XML for the domain */
     xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
@@ -2013,10 +2019,23 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
+        /* XXX gross - why don't we reuse the fd already opened earlier */
+        int fd = -1;
+
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+            priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)
+            fd = open(path, O_WRONLY);
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToFile(priv->mon,
-                                      QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                      args, path, offset);
+        if (fd >= 0 && lseek(fd, offset, SEEK_SET) == offset) {
+            rc = qemuMonitorMigrateToFd(priv->mon,
+                                        QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                        fd);
+        } else {
+            rc = qemuMonitorMigrateToFile(priv->mon,
+                                          QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                          args, path, offset);
+        }
+        VIR_FORCE_CLOSE(fd);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
@@ -2099,6 +2118,7 @@ endjob:
     }
 
 cleanup:
+    qemuCapsFree(qemuCaps);
     VIR_FREE(xml);
     if (ret != 0 && is_reg)
         unlink(path);
