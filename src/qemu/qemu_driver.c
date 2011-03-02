@@ -1568,11 +1568,21 @@ cleanup:
     return ret;
 }
 
-static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
+static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
+                                     unsigned int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
+    virDomainDefPtr persistentDef = NULL;
     int ret = -1, r;
+
+    virCheckFlags(VIR_DOMAIN_MEM_LIVE |
+                  VIR_DOMAIN_MEM_CONFIG, -1);
+
+    if ((flags & (VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_CONFIG)) == 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("invalid flag combination: (0x%x)"), flags);
+    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1594,24 +1604,42 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     if (qemuDomainObjBeginJob(vm) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm)) {
+    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_MEM_LIVE)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
         goto endjob;
     }
 
-    priv = vm->privateData;
-    qemuDomainObjEnterMonitor(vm);
-    r = qemuMonitorSetBalloon(priv->mon, newmem);
-    qemuDomainObjExitMonitor(vm);
-    qemuAuditMemory(vm, vm->def->mem.cur_balloon, newmem, "update", r == 1);
-    if (r < 0)
-        goto endjob;
+    if (flags & VIR_DOMAIN_MEM_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot change persistent config of a transient domain"));
+            goto endjob;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto endjob;
+    }
 
-    /* Lack of balloon support is a fatal error */
-    if (r == 0) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot set memory of an active domain"));
+    if (flags & VIR_DOMAIN_MEM_LIVE) {
+        priv = vm->privateData;
+        qemuDomainObjEnterMonitor(vm);
+        r = qemuMonitorSetBalloon(priv->mon, newmem);
+        qemuDomainObjExitMonitor(vm);
+        qemuAuditMemory(vm, vm->def->mem.cur_balloon, newmem, "update", r == 1);
+        if (r < 0)
+            goto endjob;
+
+        /* Lack of balloon support is a fatal error */
+        if (r == 0) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("cannot set memory of an active domain"));
+            goto endjob;
+        }
+    }
+
+    if (flags& VIR_DOMAIN_MEM_CONFIG) {
+        persistentDef->mem.cur_balloon = newmem;
+        ret = virDomainSaveConfig(driver->configDir, persistentDef);
         goto endjob;
     }
 
@@ -1624,6 +1652,10 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
+    return qemudDomainSetMemoryFlags(dom, newmem, VIR_DOMAIN_MEM_LIVE);
 }
 
 static int qemudDomainGetInfo(virDomainPtr dom,
@@ -6854,7 +6886,7 @@ static virDriver qemuDriver = {
     qemudDomainGetMaxMemory, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     qemudDomainSetMemory, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
+    qemudDomainSetMemoryFlags, /* domainSetMemoryFlags */
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
     qemudDomainRestore, /* domainRestore */
