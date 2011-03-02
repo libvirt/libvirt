@@ -2904,6 +2904,8 @@ static const vshCmdInfo info_setmem[] = {
 static const vshCmdOptDef opts_setmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"kilobytes", VSH_OT_INT, VSH_OFLAG_REQ, N_("number of kilobytes of memory")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2914,6 +2916,17 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     virDomainInfo info;
     unsigned long kilobytes = 0;
     int ret = TRUE;
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    int flags = 0;
+
+    /* Need to use flags if config was specified, but prefer older api
+     * for live-only behavior otherwise */
+    if (config) {
+        flags = VIR_DOMAIN_MEM_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_MEM_LIVE;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
@@ -2945,8 +2958,14 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    if (virDomainSetMemory(dom, kilobytes) != 0) {
-        ret = FALSE;
+    if (!flags) {
+        if (virDomainSetMemory(dom, kilobytes) != 0) {
+            ret = FALSE;
+        }
+    } else {
+        if (virDomainSetMemoryFlags(dom, kilobytes, flags) < 0) {
+            ret = FALSE;
+        }
     }
 
     virDomainFree(dom);

@@ -578,9 +578,12 @@ Therefore, -1 is a useful shorthand for 262144.
 B<Note>: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler and are now I<DEPRECATED>.
 
-=item B<setmem> I<domain-id> B<kilobytes>
+=item B<setmem> I<domain-id> B<kilobytes> optional I<--config> I<--live>
 
-Immediately change the current memory allocation for an active guest domain.
+Change the memory allocation for a guest domain.
+If I<--live> is specified, perform a memory balloon of a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+Both flags may be given.  If neither flag is given, I<--live> is assumed.
 
 Some hypervisors require a larger granularity than kilobytes, and requests
 that are not an even multiple will be rounded up.  For example, vSphere/ESX
@@ -589,10 +592,6 @@ rounds the parameter up unless the kB argument is evenly divisible by 1024
 
 For Xen, you can only adjust the memory of a running domain if the domain is
 paravirtualized or running the PV balloon driver.
-
-Note, this command only works on active guest domains.  To change the memory
-allocation for an inactive guest domain, use the virsh B<edit> command to
-update the XML <currentMemory> element.
 
 =item B<setmaxmem> I<domain-id> B<kilobytes>
 
