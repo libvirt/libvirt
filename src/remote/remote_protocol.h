@@ -581,6 +581,13 @@ struct remote_domain_set_memory_args {
 };
 typedef struct remote_domain_set_memory_args remote_domain_set_memory_args;
 
+struct remote_domain_set_memory_flags_args {
+        remote_nonnull_domain dom;
+        uint64_t memory;
+        u_int flags;
+};
+typedef struct remote_domain_set_memory_flags_args remote_domain_set_memory_flags_args;
+
 struct remote_domain_get_info_args {
         remote_nonnull_domain dom;
 };
@@ -2331,6 +2338,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201,
         REMOTE_PROC_DOMAIN_IS_UPDATED = 202,
         REMOTE_PROC_GET_SYSINFO = 203,
+        REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2448,6 +2456,7 @@ extern  bool_t xdr_remote_domain_get_max_memory_args (XDR *, remote_domain_get_m
 extern  bool_t xdr_remote_domain_get_max_memory_ret (XDR *, remote_domain_get_max_memory_ret*);
 extern  bool_t xdr_remote_domain_set_max_memory_args (XDR *, remote_domain_set_max_memory_args*);
 extern  bool_t xdr_remote_domain_set_memory_args (XDR *, remote_domain_set_memory_args*);
+extern  bool_t xdr_remote_domain_set_memory_flags_args (XDR *, remote_domain_set_memory_flags_args*);
 extern  bool_t xdr_remote_domain_get_info_args (XDR *, remote_domain_get_info_args*);
 extern  bool_t xdr_remote_domain_get_info_ret (XDR *, remote_domain_get_info_ret*);
 extern  bool_t xdr_remote_domain_save_args (XDR *, remote_domain_save_args*);
@@ -2796,6 +2805,7 @@ extern bool_t xdr_remote_domain_get_max_memory_args ();
 extern bool_t xdr_remote_domain_get_max_memory_ret ();
 extern bool_t xdr_remote_domain_set_max_memory_args ();
 extern bool_t xdr_remote_domain_set_memory_args ();
+extern bool_t xdr_remote_domain_set_memory_flags_args ();
 extern bool_t xdr_remote_domain_get_info_args ();
 extern bool_t xdr_remote_domain_get_info_ret ();
 extern bool_t xdr_remote_domain_save_args ();

@@ -1022,3 +1022,8 @@
     .args_filter = (xdrproc_t) xdr_remote_get_sysinfo_args,
     .ret_filter = (xdrproc_t) xdr_remote_get_sysinfo_ret,
 },
+{   /* DomainSetMemoryFlags => 204 */
+    .fn = (dispatch_fn) remoteDispatchDomainSetMemoryFlags,
+    .args_filter = (xdrproc_t) xdr_remote_domain_set_memory_flags_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

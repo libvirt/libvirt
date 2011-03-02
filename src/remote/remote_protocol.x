@@ -641,6 +641,12 @@ struct remote_domain_set_memory_args {
     unsigned hyper memory;
 };
 
+struct remote_domain_set_memory_flags_args {
+    remote_nonnull_domain dom;
+    unsigned hyper memory;
+    unsigned int flags;
+};
+
 struct remote_domain_get_info_args {
     remote_nonnull_domain dom;
 };
@@ -2103,7 +2109,8 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201,
     REMOTE_PROC_DOMAIN_IS_UPDATED = 202,
-    REMOTE_PROC_GET_SYSINFO = 203
+    REMOTE_PROC_GET_SYSINFO = 203,
+    REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

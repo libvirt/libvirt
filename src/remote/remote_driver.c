@@ -2451,6 +2451,33 @@ done:
 }
 
 static int
+remoteDomainSetMemoryFlags (virDomainPtr domain, unsigned long memory, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_set_memory_flags_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.memory = memory;
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS,
+              (xdrproc_t) xdr_remote_domain_set_memory_flags_args,
+              (char *) &args,
+              (xdrproc_t) xdr_void,
+              (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainSetMemoryParameters (virDomainPtr domain,
                                  virMemoryParameterPtr params,
                                  int nparams,
@@ -10876,7 +10903,7 @@ static virDriver remote_driver = {
     remoteDomainGetMaxMemory, /* domainGetMaxMemory */
     remoteDomainSetMaxMemory, /* domainSetMaxMemory */
     remoteDomainSetMemory, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
+    remoteDomainSetMemoryFlags, /* domainSetMemoryFlags */
     remoteDomainGetInfo, /* domainGetInfo */
     remoteDomainSave, /* domainSave */
     remoteDomainRestore, /* domainRestore */

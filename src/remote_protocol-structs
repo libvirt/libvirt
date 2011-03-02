@@ -340,6 +340,11 @@ struct remote_domain_set_memory_args {
 	remote_nonnull_domain      dom;
 	uint64_t                   memory;
 };
+struct remote_domain_set_memory_flags_args {
+	remote_nonnull_domain      dom;
+	uint64_t                   memory;
+	u_int                      flags;
+};
 struct remote_domain_get_info_args {
 	remote_nonnull_domain      dom;
 };

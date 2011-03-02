@@ -554,6 +554,14 @@ static int remoteDispatchDomainSetMemory(
     remote_error *err,
     remote_domain_set_memory_args *args,
     void *ret);
+static int remoteDispatchDomainSetMemoryFlags(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_set_memory_flags_args *args,
+    void *ret);
 static int remoteDispatchDomainSetMemoryParameters(
     struct qemud_server *server,
     struct qemud_client *client,

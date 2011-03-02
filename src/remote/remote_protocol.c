@@ -1070,6 +1070,19 @@ xdr_remote_domain_set_memory_args (XDR *xdrs, remote_domain_set_memory_args *obj
 }
 
 bool_t
+xdr_remote_domain_set_memory_flags_args (XDR *xdrs, remote_domain_set_memory_flags_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->memory))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_get_info_args (XDR *xdrs, remote_domain_get_info_args *objp)
 {
 
