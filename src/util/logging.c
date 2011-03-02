@@ -569,11 +569,12 @@ void virLogMessage(const char *category, int priority, const char *funcname,
                    long long linenr, int flags, const char *fmt, ...) {
     static bool logVersionStderr = true;
     char *str = NULL;
-    char *msg;
+    char *msg = NULL;
     struct timeval cur_time;
     struct tm time_info;
     int len, fprio, i, ret;
     int saved_errno = errno;
+    int emit = 1;
 
     if (!virLogInitialized)
         virLogStartup();
@@ -587,9 +588,9 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     fprio = virLogFiltersCheck(category);
     if (fprio == 0) {
         if (priority < virLogDefaultPriority)
-            goto cleanup;
+            emit = 0;
     } else if (priority < fprio) {
-        goto cleanup;
+        emit = 0;
     }
 
     /*
@@ -609,8 +610,8 @@ void virLogMessage(const char *category, int priority, const char *funcname,
         goto cleanup;
 
     /*
-     * Log based on defaults, first store in the history buffer
-     * then push the message on the outputs defined, if none
+     * Log based on defaults, first store in the history buffer,
+     * then if emit push the message on the outputs defined, if none
      * use stderr.
      * NOTE: the locking is a single point of contention for multiple
      *       threads, but avoid intermixing. Maybe set up locks per output
@@ -618,6 +619,9 @@ void virLogMessage(const char *category, int priority, const char *funcname,
      */
     len = strlen(msg);
     virLogStr(msg, len);
+    if (emit == 0)
+        goto cleanup;
+
     virLogLock();
     for (i = 0; i < virLogNbOutputs;i++) {
         if (priority >= virLogOutputs[i].priority) {
@@ -647,8 +651,8 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     }
     virLogUnlock();
 
-    VIR_FREE(msg);
 cleanup:
+    VIR_FREE(msg);
     errno = saved_errno;
 }
 
