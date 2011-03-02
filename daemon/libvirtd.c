@@ -63,6 +63,7 @@
 #include "remote_driver.h"
 #include "conf.h"
 #include "event.h"
+#include "src/util/event.h"
 #include "memory.h"
 #include "stream.h"
 #include "hooks.h"
@@ -1104,12 +1105,12 @@ static int qemudNetworkEnable(struct qemud_server *server) {
 
     sock = server->sockets;
     while (sock) {
-        if ((sock->watch = virEventAddHandleImpl(sock->fd,
-                                                 VIR_EVENT_HANDLE_READABLE |
-                                                 VIR_EVENT_HANDLE_ERROR |
-                                                 VIR_EVENT_HANDLE_HANGUP,
-                                                 qemudDispatchServerEvent,
-                                                 server, NULL)) < 0) {
+        if ((sock->watch = virEventAddHandle(sock->fd,
+                                             VIR_EVENT_HANDLE_READABLE |
+                                             VIR_EVENT_HANDLE_ERROR |
+                                             VIR_EVENT_HANDLE_HANGUP,
+                                             qemudDispatchServerEvent,
+                                             server, NULL)) < 0) {
             VIR_ERROR0(_("Failed to add server event callback"));
             return -1;
         }
@@ -1541,7 +1542,7 @@ error:
  */
 void qemudDispatchClientFailure(struct qemud_client *client) {
     if (client->watch != -1) {
-        virEventRemoveHandleImpl(client->watch);
+        virEventRemoveHandle(client->watch);
         client->watch = -1;
     }
 
@@ -2235,10 +2236,10 @@ int qemudRegisterClientEvent(struct qemud_server *server,
 
     mode = qemudCalculateHandleMode(client);
 
-    if ((client->watch = virEventAddHandleImpl(client->fd,
-                                               mode,
-                                               qemudDispatchClientEvent,
-                                               server, NULL)) < 0)
+    if ((client->watch = virEventAddHandle(client->fd,
+                                           mode,
+                                           qemudDispatchClientEvent,
+                                           server, NULL)) < 0)
         return -1;
 
     return 0;
@@ -2252,7 +2253,7 @@ void qemudUpdateClientEvent(struct qemud_client *client) {
 
     mode = qemudCalculateHandleMode(client);
 
-    virEventUpdateHandleImpl(client->watch, mode);
+    virEventUpdateHandle(client->watch, mode);
 }
 
 
@@ -2304,7 +2305,7 @@ static void qemudInactiveTimer(int timerid, void *data) {
     if (virStateActive() ||
         server->clients) {
         VIR_DEBUG0("Timer expired but still active, not shutting down");
-        virEventUpdateTimeoutImpl(timerid, -1);
+        virEventUpdateTimeout(timerid, -1);
     } else {
         VIR_DEBUG0("Timer expired and inactive, shutting down");
         server->quitEventThread = 1;
@@ -2347,9 +2348,9 @@ static void *qemudRunLoop(void *opaque) {
     virMutexLock(&server->lock);
 
     if (timeout > 0 &&
-        (timerid = virEventAddTimeoutImpl(-1,
-                                          qemudInactiveTimer,
-                                          server, NULL)) < 0) {
+        (timerid = virEventAddTimeout(-1,
+                                      qemudInactiveTimer,
+                                      server, NULL)) < 0) {
         VIR_ERROR0(_("Failed to register shutdown timeout"));
         return NULL;
     }
@@ -2378,14 +2379,14 @@ static void *qemudRunLoop(void *opaque) {
             if (timerActive) {
                 if (server->clients) {
                     VIR_DEBUG("Deactivating shutdown timer %d", timerid);
-                    virEventUpdateTimeoutImpl(timerid, -1);
+                    virEventUpdateTimeout(timerid, -1);
                     timerActive = 0;
                 }
             } else {
                 if (!virStateActive() &&
                     !server->clients) {
                     VIR_DEBUG("Activating shutdown timer %d", timerid);
-                    virEventUpdateTimeoutImpl(timerid, timeout * 1000);
+                    virEventUpdateTimeout(timerid, timeout * 1000);
                     timerActive = 1;
                 }
             }
@@ -2501,7 +2502,7 @@ static void qemudCleanup(struct qemud_server *server) {
     while (sock) {
         struct qemud_socket *next = sock->next;
         if (sock->watch)
-            virEventRemoveHandleImpl(sock->watch);
+            virEventRemoveHandle(sock->watch);
         VIR_FORCE_CLOSE(sock->fd);
 
         /* Unlink unix domain sockets which are not in
@@ -3081,10 +3082,10 @@ daemonSetupSignals(struct qemud_server *server)
     sig_action.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &sig_action, NULL);
 
-    if (virEventAddHandleImpl(sigpipe[0],
-                              VIR_EVENT_HANDLE_READABLE,
-                              qemudDispatchSignalEvent,
-                              server, NULL) < 0) {
+    if (virEventAddHandle(sigpipe[0],
+                          VIR_EVENT_HANDLE_READABLE,
+                          qemudDispatchSignalEvent,
+                          server, NULL) < 0) {
         VIR_ERROR0(_("Failed to register callback for signal pipe"));
         goto error;
     }
