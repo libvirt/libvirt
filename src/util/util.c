@@ -1559,6 +1559,15 @@ parenterror:
         goto childerror;
     }
 childerror:
+    /* ret tracks -errno on failure, but exit value must be positive.
+     * If the child exits with EACCES, then the parent tries again.  */
+    /* XXX This makes assumptions about errno being < 255, which is
+     * not true on Hurd.  */
+    ret = -ret;
+    if ((ret & 0xff) != ret) {
+        VIR_WARN("unable to pass desired return value %d", ret);
+        ret = 0xff;
+    }
     _exit(ret);
 
 }
