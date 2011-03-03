@@ -548,9 +548,8 @@ virHashRemoveEntry(virHashTablePtr table, const void *name)
  * @data: opaque data to pass to the iterator
  *
  * Iterates over every element in the hash table, invoking the
- * 'iter' callback. The callback must not call any other virHash*
- * functions, and in particular must not attempt to remove the
- * element.
+ * 'iter' callback. The callback is allowed to remove the element using
+ * virHashRemoveEntry but calling other virHash* functions is prohibited.
  *
  * Returns number of items iterated over upon completion, -1 on failure
  */
@@ -563,11 +562,12 @@ int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data) {
     for (i = 0 ; i < table->size ; i++) {
         virHashEntryPtr entry = table->table + i;
         while (entry) {
+            virHashEntryPtr next = entry->next;
             if (entry->valid) {
                 iter(entry->payload, entry->name, data);
                 count++;
             }
-            entry = entry->next;
+            entry = next;
         }
     }
     return (count);
