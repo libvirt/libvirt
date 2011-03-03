@@ -107,11 +107,13 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Received EOF on %p '%s'", vm, vm->def->name);
 
+    qemuDriverLock(driver);
     virDomainObjLock(vm);
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("Domain %p is not active, ignoring EOF", vm);
         virDomainObjUnlock(vm);
+        qemuDriverUnlock(driver);
         return;
     }
 
@@ -137,10 +139,9 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         virDomainObjUnlock(vm);
 
     if (event) {
-        qemuDriverLock(driver);
         qemuDomainEventQueue(driver, event);
-        qemuDriverUnlock(driver);
     }
+    qemuDriverUnlock(driver);
 }
 
 
