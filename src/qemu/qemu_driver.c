@@ -1824,6 +1824,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     unsigned long long offset;
     virCgroupPtr cgroup = NULL;
     virBitmapPtr qemuCaps = NULL;
+    int fd = -1;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -1902,45 +1903,32 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         header.xml_len += pad;
     }
 
-    /* Setup hook data needed by virFileOperation hook function */
-    hdata.dom = dom;
-    hdata.path = path;
-    hdata.xml = xml;
-    hdata.header = &header;
-
-    /* Write header to file, followed by XML */
+    /* Obtain the file handle.  */
 
     /* First try creating the file as root */
     if (!is_reg) {
-        int fd = open(path, O_WRONLY | O_TRUNC);
+        fd = open(path, O_WRONLY | O_TRUNC);
         if (fd < 0) {
             virReportSystemError(errno, _("unable to open %s"), path);
             goto endjob;
         }
-        if (qemudDomainSaveFileOpHook(fd, &hdata) < 0) {
-            VIR_FORCE_CLOSE(fd);
-            goto endjob;
-        }
-        if (VIR_CLOSE(fd) < 0) {
-            virReportSystemError(errno, _("unable to close %s"), path);
-            goto endjob;
-        }
     } else {
-        if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
-                                  S_IRUSR|S_IWUSR,
-                                  getuid(), getgid(),
-                                  qemudDomainSaveFileOpHook, &hdata,
-                                  0)) < 0) {
+        if ((fd = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
+                                   S_IRUSR|S_IWUSR,
+                                   getuid(), getgid(),
+                                   NULL, NULL,
+                                   VIR_FILE_OP_RETURN_FD)) < 0) {
             /* If we failed as root, and the error was permission-denied
                (EACCES or EPERM), assume it's on a network-connected share
                where root access is restricted (eg, root-squashed NFS). If the
                qemu user (driver->user) is non-root, just set a flag to
                bypass security driver shenanigans, and retry the operation
                after doing setuid to qemu user */
-
+            rc = fd;
             if (((rc != -EACCES) && (rc != -EPERM)) ||
                 driver->user == getuid()) {
-                virReportSystemError(-rc, _("Failed to create domain save file '%s'"),
+                virReportSystemError(-rc,
+                                    _("Failed to create domain save file '%s'"),
                                      path);
                 goto endjob;
             }
@@ -1965,7 +1953,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                 default:
                    /* local file - log the error returned by virFileOperation */
                    virReportSystemError(-rc,
-                                        _("Failed to create domain save file '%s'"),
+                                    _("Failed to create domain save file '%s'"),
                                         path);
                    goto endjob;
                    break;
@@ -1974,13 +1962,15 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
             /* Retry creating the file as driver->user */
 
-            if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
+            if ((fd = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
                                        S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
                                        driver->user, driver->group,
-                                       qemudDomainSaveFileOpHook, &hdata,
-                                       VIR_FILE_OP_AS_UID)) < 0) {
-                virReportSystemError(-rc, _("Error from child process creating '%s'"),
-                                 path);
+                                       NULL, NULL,
+                                       (VIR_FILE_OP_AS_UID |
+                                        VIR_FILE_OP_RETURN_FD))) < 0) {
+                virReportSystemError(-fd,
+                                   _("Error from child process creating '%s'"),
+                                     path);
                 goto endjob;
             }
 
@@ -1992,6 +1982,18 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         }
     }
 
+    /* Write header to file, followed by XML */
+    hdata.dom = dom;
+    hdata.path = path;
+    hdata.xml = xml;
+    hdata.header = &header;
+
+    if (qemudDomainSaveFileOpHook(fd, &hdata) < 0) {
+        VIR_FORCE_CLOSE(fd);
+        goto endjob;
+    }
+
+    /* Allow qemu to access file */
 
     if (!is_reg &&
         qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
@@ -2019,14 +2021,10 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
-        /* XXX gross - why don't we reuse the fd already opened earlier */
-        int fd = -1;
 
-        if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
-            priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)
-            fd = open(path, O_WRONLY);
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (fd >= 0 && lseek(fd, offset, SEEK_SET) == offset) {
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+            priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
             rc = qemuMonitorMigrateToFd(priv->mon,
                                         QEMU_MONITOR_MIGRATE_BACKGROUND,
                                         fd);
@@ -2035,7 +2033,6 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                                           QEMU_MONITOR_MIGRATE_BACKGROUND,
                                           args, path, offset);
         }
-        VIR_FORCE_CLOSE(fd);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
@@ -2053,6 +2050,11 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
     if (rc < 0)
         goto endjob;
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("unable to close %s"), path);
+        goto endjob;
+    }
 
     rc = qemuMigrationWaitForCompletion(driver, vm);
 
@@ -2119,6 +2121,7 @@ endjob:
 
 cleanup:
     qemuCapsFree(qemuCaps);
+    VIR_FORCE_CLOSE(fd);
     VIR_FREE(xml);
     if (ret != 0 && is_reg)
         unlink(path);
