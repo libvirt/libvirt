@@ -1428,14 +1428,15 @@ static int virFileOperationNoFork(const char *path, int openflags, mode_t mode,
     if ((hook) && ((ret = hook(fd, hookdata)) != 0)) {
         goto error;
     }
+    if (flags & VIR_FILE_OP_RETURN_FD)
+        return fd;
     if (VIR_CLOSE(fd) < 0) {
         ret = -errno;
         virReportSystemError(errno, _("failed to close new file '%s'"),
                              path);
-        fd = -1;
         goto error;
     }
-    fd = -1;
+
 error:
     VIR_FORCE_CLOSE(fd);
     return ret;
@@ -1480,7 +1481,32 @@ error:
     return ret;
 }
 
-/* return -errno on failure, or 0 on success */
+/**
+ * virFileOperation:
+ * @path: file to open or create
+ * @openflags: flags to pass to open
+ * @mode: mode to use on creation or when forcing permissions
+ * @uid: uid that should own file on creation
+ * @gid: gid that should own file
+ * @hook: callback to run once file is open; see below for restrictions
+ * @hookdata: opaque data for @hook
+ * @flags: bit-wise or of VIR_FILE_OP_* flags
+ *
+ * Open @path, and execute an optional callback @hook on the open file
+ * description.  @hook must return 0 on success, or -errno on failure.
+ * If @flags includes VIR_FILE_OP_AS_UID, then open the file while the
+ * effective user id is @uid (by using a child process); this allows
+ * one to bypass root-squashing NFS issues.  If @flags includes
+ * VIR_FILE_OP_FORCE_PERMS, then ensure that @path has those
+ * permissions before the callback, even if the file already existed
+ * with different permissions.  If @flags includes
+ * VIR_FILE_OP_RETURN_FD, then use SCM_RIGHTS to guarantee that any
+ * @hook is run in the parent, and the return value (if non-negative)
+ * is the file descriptor, left open.  Otherwise, @hook might be run
+ * in a child process, so it must be async-signal-safe (ie. no
+ * malloc() or anything else that depends on modifying locks held in
+ * the parent), no file descriptor remains open, and 0 is returned on
+ * success.  Return -errno on failure.  */
 int virFileOperation(const char *path, int openflags, mode_t mode,
                      uid_t uid, gid_t gid,
                      virFileOperationHook hook, void *hookdata,
@@ -1488,7 +1514,14 @@ int virFileOperation(const char *path, int openflags, mode_t mode,
     struct stat st;
     pid_t pid;
     int waitret, status, ret = 0;
-    int fd;
+    int fd = -1;
+    int pair[2] = { -1, -1 };
+    struct msghdr msg;
+    struct cmsghdr *cmsg;
+    char buf[CMSG_SPACE(sizeof(fd))];
+    char dummy = 0;
+    struct iovec iov;
+    int forkRet;
 
     if ((!(flags & VIR_FILE_OP_AS_UID))
         || (getuid() != 0)
@@ -1502,7 +1535,29 @@ int virFileOperation(const char *path, int openflags, mode_t mode,
      * following dance avoids problems caused by root-squashing
      * NFS servers. */
 
-    int forkRet = virFork(&pid);
+    if (flags & VIR_FILE_OP_RETURN_FD) {
+        if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
+            ret = -errno;
+            virReportSystemError(errno,
+                                 _("failed to create socket needed for '%s'"),
+                                 path);
+            return ret;
+        }
+
+        memset(&msg, 0, sizeof(msg));
+        iov.iov_base = &dummy;
+        iov.iov_len = 1;
+        msg.msg_iov = &iov;
+        msg.msg_iovlen = 1;
+        msg.msg_control = buf;
+        msg.msg_controllen = sizeof(buf);
+        cmsg = CMSG_FIRSTHDR(&msg);
+        cmsg->cmsg_level = SOL_SOCKET;
+        cmsg->cmsg_type = SCM_RIGHTS;
+        cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
+    }
+
+    forkRet = virFork(&pid);
 
     if (pid < 0) {
         ret = -errno;
@@ -1510,6 +1565,31 @@ int virFileOperation(const char *path, int openflags, mode_t mode,
     }
 
     if (pid) { /* parent */
+        if (flags & VIR_FILE_OP_RETURN_FD) {
+            VIR_FORCE_CLOSE(pair[1]);
+
+            do {
+                ret = recvmsg(pair[0], &msg, 0);
+            } while (ret < 0 && errno == EINTR);
+
+            if (ret < 0) {
+                ret = -errno;
+                VIR_FORCE_CLOSE(pair[0]);
+                while ((waitret = waitpid(pid, NULL, 0) == -1)
+                       && (errno == EINTR));
+                goto parenterror;
+            }
+            VIR_FORCE_CLOSE(pair[0]);
+
+            /* See if fd was transferred.  */
+            cmsg = CMSG_FIRSTHDR(&msg);
+            if (cmsg && cmsg->cmsg_len == CMSG_LEN(sizeof(fd)) &&
+                cmsg->cmsg_level == SOL_SOCKET &&
+                cmsg->cmsg_type == SCM_RIGHTS) {
+                memcpy(&fd, CMSG_DATA(cmsg), sizeof(fd));
+            }
+        }
+
         /* wait for child to complete, and retrieve its exit code */
         while ((waitret = waitpid(pid, &status, 0) == -1)
                && (errno == EINTR));
@@ -1520,11 +1600,19 @@ int virFileOperation(const char *path, int openflags, mode_t mode,
                                  path);
             goto parenterror;
         }
-        if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES) {
+        if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES ||
+            ((flags & VIR_FILE_OP_RETURN_FD) && fd == -1)) {
             /* fall back to the simpler method, which works better in
              * some cases */
             return virFileOperationNoFork(path, openflags, mode, uid, gid,
                                           hook, hookdata, flags);
+        }
+        if (!ret && (flags & VIR_FILE_OP_RETURN_FD)) {
+            if ((hook) && ((ret = hook(fd, hookdata)) != 0)) {
+                VIR_FORCE_CLOSE(fd);
+                goto parenterror;
+            }
+            ret = fd;
         }
 parenterror:
         return ret;
@@ -1535,6 +1623,7 @@ parenterror:
 
     if (forkRet < 0) {
         /* error encountered and logged in virFork() after the fork. */
+        ret = -errno;
         goto childerror;
     }
 
@@ -1584,15 +1673,32 @@ parenterror:
                              path, mode);
         goto childerror;
     }
-    if ((hook) && ((ret = hook(fd, hookdata)) != 0)) {
-        goto childerror;
+    if (flags & VIR_FILE_OP_RETURN_FD) {
+        VIR_FORCE_CLOSE(pair[0]);
+        memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
+
+        do {
+            ret = sendmsg(pair[1], &msg, 0);
+        } while (ret < 0 && errno == EINTR);
+
+        if (ret < 0) {
+            ret = -errno;
+            goto childerror;
+        }
+        ret = 0;
+    } else {
+        if ((hook) && ((ret = hook(fd, hookdata)) != 0))
+            goto childerror;
+        if (VIR_CLOSE(fd) < 0) {
+            ret = -errno;
+            virReportSystemError(errno,
+                                 _("child failed to close new file '%s'"),
+                                 path);
+            goto childerror;
+        }
     }
-    if (VIR_CLOSE(fd) < 0) {
-        ret = -errno;
-        virReportSystemError(errno, _("child failed to close new file '%s'"),
-                             path);
-        goto childerror;
-    }
+
+    ret = 0;
 childerror:
     /* ret tracks -errno on failure, but exit value must be positive.
      * If the child exits with EACCES, then the parent tries again.  */
@@ -1719,7 +1825,7 @@ int virFileOperation(const char *path ATTRIBUTE_UNUSED,
     virUtilError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("virFileOperation is not implemented for WIN32"));
 
-    return -1;
+    return -ENOSYS;
 }
 
 int virDirCreate(const char *path ATTRIBUTE_UNUSED,
@@ -1731,7 +1837,7 @@ int virDirCreate(const char *path ATTRIBUTE_UNUSED,
     virUtilError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("virDirCreate is not implemented for WIN32"));
 
-    return -1;
+    return -ENOSYS;
 }
 #endif /* WIN32 */
 
