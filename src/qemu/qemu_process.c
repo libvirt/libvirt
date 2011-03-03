@@ -593,10 +593,14 @@ no_memory:
 static void qemuProcessHandleMonitorDestroy(qemuMonitorPtr mon,
                                             virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivatePtr priv;
+
+    virDomainObjLock(vm);
+    priv = vm->privateData;
     if (priv->mon == mon)
         priv->mon = NULL;
-    virDomainObjUnref(vm);
+    if (virDomainObjUnref(vm) > 0)
+        virDomainObjUnlock(vm);
 }
 
 static qemuMonitorCallbacks monitorCallbacks = {
