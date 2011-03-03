@@ -271,6 +271,8 @@ static void virLogStr(const char *str, int len) {
         tmp = virLogLen - LOG_BUFFER_SIZE;
         virLogLen = LOG_BUFFER_SIZE;
         virLogStart += tmp;
+        if (virLogStart >= LOG_BUFFER_SIZE)
+            virLogStart -= LOG_BUFFER_SIZE;
     }
     virLogUnlock();
 }
