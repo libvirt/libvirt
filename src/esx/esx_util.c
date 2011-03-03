@@ -552,3 +552,22 @@ esxUtil_EscapeDatastoreItem(const char *string)
 
     return escaped2;
 }
+
+
+
+char *
+esxUtil_EscapeForXml(const char *string)
+{
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+
+    virBufferEscapeString(&buffer, "%s", string);
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError();
+        virBufferFreeAndReset(&buffer);
+
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buffer);
+}

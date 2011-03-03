@@ -626,6 +626,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
     int result = -1;
     char ipAddress[NI_MAXHOST] = "";
     char *username = NULL;
+    char *unescapedPassword = NULL;
     char *password = NULL;
     char *url = NULL;
     esxVI_String *propertyNameList = NULL;
@@ -657,10 +658,16 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
         }
     }
 
-    password = virRequestPassword(auth, username, hostname);
+    unescapedPassword = virRequestPassword(auth, username, hostname);
+
+    if (unescapedPassword == NULL) {
+        ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
+        goto cleanup;
+    }
+
+    password = esxUtil_EscapeForXml(unescapedPassword);
 
     if (password == NULL) {
-        ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
         goto cleanup;
     }
 
@@ -727,8 +734,9 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
     result = 0;
 
   cleanup:
-    VIR_FREE(password);
     VIR_FREE(username);
+    VIR_FREE(unescapedPassword);
+    VIR_FREE(password);
     VIR_FREE(url);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
@@ -748,6 +756,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     int result = -1;
     char ipAddress[NI_MAXHOST] = "";
     char *username = NULL;
+    char *unescapedPassword = NULL;
     char *password = NULL;
     char *url = NULL;
 
@@ -779,10 +788,16 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
         }
     }
 
-    password = virRequestPassword(auth, username, hostname);
+    unescapedPassword = virRequestPassword(auth, username, hostname);
+
+    if (unescapedPassword == NULL) {
+        ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
+        goto cleanup;
+    }
+
+    password = esxUtil_EscapeForXml(unescapedPassword);
 
     if (password == NULL) {
-        ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
         goto cleanup;
     }
 
@@ -822,8 +837,9 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     result = 0;
 
   cleanup:
-    VIR_FREE(password);
     VIR_FREE(username);
+    VIR_FREE(unescapedPassword);
+    VIR_FREE(password);
     VIR_FREE(url);
 
     return result;

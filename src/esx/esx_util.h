@@ -62,4 +62,6 @@ void esxUtil_ReplaceSpecialWindowsPathChars(char *string);
 
 char *esxUtil_EscapeDatastoreItem(const char *string);
 
+char *esxUtil_EscapeForXml(const char *string);
+
 #endif /* __ESX_UTIL_H__ */
