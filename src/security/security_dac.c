@@ -509,7 +509,7 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
     if (virDomainChrDefForeach(vm->def,
                                false,
                                virSecurityDACRestoreChardevCallback,
-                               vm) < 0)
+                               mgr) < 0)
         rc = -1;
 
     if (vm->def->os.kernel &&
@@ -565,7 +565,7 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
     if (virDomainChrDefForeach(vm->def,
                                true,
                                virSecurityDACSetChardevCallback,
-                               vm) < 0)
+                               mgr) < 0)
         return -1;
 
     if (vm->def->os.kernel &&
