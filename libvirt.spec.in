@@ -865,6 +865,7 @@ fi
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
 
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
 %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu

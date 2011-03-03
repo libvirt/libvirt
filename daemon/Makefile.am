@@ -32,6 +32,7 @@ EXTRA_DIST =						\
 	libvirtd.sasl					\
 	libvirtd.sysconf				\
 	libvirtd.aug                                    \
+	libvirtd.logrotate.in                           \
 	libvirtd.qemu.logrotate.in                      \
 	libvirtd.lxc.logrotate.in                       \
 	libvirtd.uml.logrotate.in                       \
@@ -246,9 +247,15 @@ qemu_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl $(QEMU_PROTOCOL)
 	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -r qemu $(QEMU_PROTOCOL) > $@
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
-                  libvirtd.uml.logrotate
+                  libvirtd.uml.logrotate libvirtd.logrotate
 
 BUILT_SOURCES += $(LOGROTATE_CONFS)
+
+libvirtd.logrotate: libvirtd.logrotate.in
+	sed							\
+	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
+	    < $< > $@-t
+	mv $@-t $@
 
 libvirtd.qemu.logrotate: libvirtd.qemu.logrotate.in
 	sed							\
@@ -273,6 +280,7 @@ install-logrotate: $(LOGROTATE_CONFS)
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/lxc/
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/uml/
 	mkdir -p $(DESTDIR)$(sysconfdir)/logrotate.d/
+	$(INSTALL_DATA) libvirtd.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
 	$(INSTALL_DATA) libvirtd.qemu.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu
 	$(INSTALL_DATA) libvirtd.lxc.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc
 	$(INSTALL_DATA) libvirtd.uml.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
