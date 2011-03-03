@@ -370,11 +370,16 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
                            virStoragePoolObjPtr pool,
                            virStorageVolDefPtr vol,
                            virStorageVolDefPtr inputvol,
-                           unsigned int flags ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
     int ret = -1;
-    int createstat;
+    int fd = -1;
     struct createRawFileOpHookData hdata = { vol, inputvol };
+    uid_t uid;
+    gid_t gid;
+    int operation_flags;
+
+    virCheckFlags(0, -1);
 
     if (vol->target.encryption != NULL) {
         virStorageReportError(VIR_ERR_NO_SUPPORT,
@@ -383,24 +388,31 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    uid_t uid = (vol->target.perms.uid == -1) ? getuid() : vol->target.perms.uid;
-    gid_t gid = (vol->target.perms.gid == -1) ? getgid() : vol->target.perms.gid;
+    uid = (vol->target.perms.uid == -1) ? getuid() : vol->target.perms.uid;
+    gid = (vol->target.perms.gid == -1) ? getgid() : vol->target.perms.gid;
+    operation_flags = VIR_FILE_OP_FORCE_PERMS | VIR_FILE_OP_RETURN_FD;
+    if (pool->def->type == VIR_STORAGE_POOL_NETFS)
+        operation_flags |= VIR_FILE_OP_AS_UID;
 
-    if ((createstat = virFileOperation(vol->target.path,
-                                       O_RDWR | O_CREAT | O_EXCL,
-                                       vol->target.perms.mode, uid, gid,
-                                       createRawFileOpHook, &hdata,
-                                       VIR_FILE_OP_FORCE_PERMS |
-                                       (pool->def->type == VIR_STORAGE_POOL_NETFS
-                                        ? VIR_FILE_OP_AS_UID : 0))) < 0) {
-    virReportSystemError(-createstat,
-                         _("cannot create path '%s'"),
-                         vol->target.path);
-    goto cleanup;
+    if ((fd = virFileOperation(vol->target.path,
+                               O_RDWR | O_CREAT | O_EXCL,
+                               vol->target.perms.mode, uid, gid,
+                               NULL, NULL, operation_flags)) < 0) {
+        virReportSystemError(-fd,
+                             _("cannot create path '%s'"),
+                             vol->target.path);
+        goto cleanup;
     }
 
-    ret = 0;
+    if ((ret = createRawFileOpHook(fd, &hdata)) < 0) {
+        virReportSystemError(-fd,
+                             _("cannot create path '%s'"),
+                             vol->target.path);
+        ret = -1;
+    }
+
 cleanup:
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
