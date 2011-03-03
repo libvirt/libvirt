@@ -246,6 +246,26 @@ static void sig_handler(int sig, siginfo_t * siginfo,
     errno = origerrno;
 }
 
+static void sig_fatal(int sig, siginfo_t * siginfo ATTRIBUTE_UNUSED,
+                      void* context ATTRIBUTE_UNUSED) {
+    struct sigaction sig_action;
+    int origerrno;
+
+    origerrno = errno;
+    virLogEmergencyDumpAll(sig);
+
+    /*
+     * If the signal is fatal, avoid looping over this handler
+     * by desactivating it
+     */
+    if (sig != SIGUSR2) {
+        sig_action.sa_flags = SA_SIGINFO;
+        sig_action.sa_handler = SIG_IGN;
+        sigaction(sig, &sig_action, NULL);
+    }
+    errno = origerrno;
+}
+
 static void qemudDispatchClientEvent(int watch, int fd, int events, void *opaque);
 static void qemudDispatchServerEvent(int watch, int fd, int events, void *opaque);
 static int qemudStartWorker(struct qemud_server *server, struct qemud_worker *worker);
@@ -3045,6 +3065,18 @@ daemonSetupSignals(struct qemud_server *server)
     sigaction(SIGINT, &sig_action, NULL);
     sigaction(SIGQUIT, &sig_action, NULL);
     sigaction(SIGTERM, &sig_action, NULL);
+
+    /*
+     * catch fatal errors to dump a log, also hook to USR2 for dynamic
+     * debugging purposes or testing
+     */
+    sig_action.sa_sigaction = sig_fatal;
+    sigaction(SIGFPE, &sig_action, NULL);
+    sigaction(SIGSEGV, &sig_action, NULL);
+    sigaction(SIGILL, &sig_action, NULL);
+    sigaction(SIGABRT, &sig_action, NULL);
+    sigaction(SIGBUS, &sig_action, NULL);
+    sigaction(SIGUSR2, &sig_action, NULL);
 
     sig_action.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &sig_action, NULL);
