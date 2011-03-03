@@ -2698,16 +2698,18 @@ remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
 
 /*
  * Set up the logging environment
- * By default if daemonized all errors go to syslog and the logging
- * is also saved onto the logfile libvird.log, but if verbose or error
- * debugging is asked for then output informations or debug.
+ * By default if daemonized all errors go to the logfile libvirtd.log,
+ * but if verbose or error debugging is asked for then also output
+ * informations or debug.
  */
 static int
-qemudSetLogging(virConfPtr conf, const char *filename)
+qemudSetLogging(struct qemud_server *server, virConfPtr conf,
+                const char *filename)
 {
     int log_level = 0;
     char *log_filters = NULL;
     char *log_outputs = NULL;
+    char *log_file = NULL;
     int ret = -1;
 
     virLogReset();
@@ -2743,19 +2745,30 @@ qemudSetLogging(virConfPtr conf, const char *filename)
     }
 
     /*
-     * If no defined outputs, then direct to syslog when running
+     * If no defined outputs, then direct to libvirtd.log when running
      * as daemon. Otherwise the default output is stderr.
      */
     if (virLogGetNbOutputs() == 0) {
         char *tmp = NULL;
+
         if (godaemon) {
-            if (virAsprintf (&tmp, "%d:syslog:libvirtd",
-                             virLogGetDefaultPriority()) < 0)
-                goto free_and_fail;
+            if (server->privileged) {
+                if (virAsprintf(&tmp, "%d:file:%s/log/libvirt/libvirtd.log",
+                                virLogGetDefaultPriority(),
+                                LOCALSTATEDIR) == -1)
+                    goto out_of_memory;
+            } else {
+                char *userdir = virGetUserDirectory(geteuid());
+                if (!userdir)
+                    goto free_and_fail;
+
+                if (virAsprintf(&tmp, "%d:file:%s/.libvirt/libvirtd.log",
+                                virLogGetDefaultPriority(), userdir) == -1)
+                    goto out_of_memory;
+            }
         } else {
-            if (virAsprintf (&tmp, "%d:stderr",
-                             virLogGetDefaultPriority()) < 0)
-                goto free_and_fail;
+            if (virAsprintf(&tmp, "%d:stderr", virLogGetDefaultPriority()) < 0)
+                goto out_of_memory;
         }
         virLogParseOutputs(tmp);
         VIR_FREE(tmp);
@@ -2772,7 +2785,21 @@ qemudSetLogging(virConfPtr conf, const char *filename)
 free_and_fail:
     VIR_FREE(log_filters);
     VIR_FREE(log_outputs);
+    VIR_FREE(log_file);
     return(ret);
+
+out_of_memory:
+    virReportOOMError();
+    goto free_and_fail;
+}
+
+/*
+ * Stop logging
+ */
+static void
+qemudStopLogging(void)
+{
+    virLogShutdown();
 }
 
 /* Read the config file if it exists.
@@ -2805,7 +2832,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     /*
      * First get all the logging settings and activate them
      */
-    if (qemudSetLogging(conf, filename) < 0)
+    if (qemudSetLogging(server, conf, filename) < 0)
         goto free_and_fail;
 
     GET_CONF_INT (conf, filename, listen_tcp);
@@ -3369,6 +3396,6 @@ error:
         qemudCleanup(server);
     if (pid_file)
         unlink (pid_file);
-    virLogShutdown();
+    qemudStopLogging();
     return ret;
 }
