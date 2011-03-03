@@ -133,5 +133,5 @@ extern int virLogParseOutputs(const char *output);
 extern void virLogMessage(const char *category, int priority,
                           const char *funcname, long long linenr, int flags,
                           const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(6, 7);
-
+extern void virLogEmergencyDumpAll(int signum);
 #endif

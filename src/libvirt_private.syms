@@ -541,6 +541,7 @@ virRegisterStorageDriver;
 # logging.h
 virLogDefineFilter;
 virLogDefineOutput;
+virLogEmergencyDumpAll;
 virLogGetDefaultPriority;
 virLogGetFilters;
 virLogGetNbFilters;

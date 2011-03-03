@@ -129,6 +129,9 @@ static virLogPriority virLogDefaultPriority = VIR_LOG_DEFAULT;
 
 static int virLogResetFilters(void);
 static int virLogResetOutputs(void);
+static int virLogOutputToFd(const char *category, int priority,
+                            const char *funcname, long long linenr,
+                            const char *str, int len, void *data);
 
 /*
  * Logs accesses must be serialized though a mutex
@@ -277,50 +280,66 @@ static void virLogStr(const char *str, int len) {
     virLogUnlock();
 }
 
-#if 0
-/*
- * Output the ring buffer
- */
-static int virLogDump(void *data, virLogOutputFunc f) {
-    int ret = 0, tmp;
+static void virLogDumpAllFD(const char *msg, int len) {
+    int i, found = 0;
 
-    if ((virLogLen == 0) || (f == NULL))
-        return 0;
-    virLogLock();
-    if (virLogStart + virLogLen < LOG_BUFFER_SIZE) {
-push_end:
-        virLogBuffer[virLogStart + virLogLen] = 0;
-        tmp = f(data, &virLogBuffer[virLogStart], virLogLen);
-        if (tmp < 0) {
-            ret = -1;
-            goto error;
-        }
-        ret += tmp;
-        virLogStart += tmp;
-        virLogLen -= tmp;
-    } else {
-        tmp = LOG_BUFFER_SIZE - virLogStart;
-        ret = f(data, &virLogBuffer[virLogStart], tmp);
-        if (ret < 0) {
-            ret = -1;
-            goto error;
-        }
-        if (ret < tmp) {
-            virLogStart += ret;
-            virLogLen -= ret;
-        } else {
-            virLogStart = 0;
-            virLogLen -= tmp;
-            /* dump the second part */
-            if (virLogLen > 0)
-                goto push_end;
+    for (i = 0; i < virLogNbOutputs;i++) {
+        if (virLogOutputs[i].f == virLogOutputToFd) {
+            int fd = (long) virLogOutputs[i].data;
+
+            if (fd >= 0) {
+                ignore_value (safewrite(fd, msg, len));
+                found = 1;
+            }
         }
     }
-error:
-    virLogUnlock();
-    return ret;
+    if (!found)
+        ignore_value (safewrite(STDERR_FILENO, msg, len));
 }
-#endif
+
+/**
+ * virLogEmergencyDumpAll:
+ * @signum: the signal number
+ *
+ * Emergency function called, possibly from a signal handler.
+ * It need to output the debug ring buffer through the log
+ * output which are safe to use from a signal handler.
+ * In case none is found it is emitted to standard error.
+ */
+void
+virLogEmergencyDumpAll(int signum) {
+    int ret = 0, len;
+    char buf[100];
+
+    if (virLogLen == 0)
+        return;
+
+    virLogLock();
+    snprintf(buf, sizeof(buf) - 1,
+             "Caught signal %d, dumping internal log buffer:\n", signum);
+    buf[sizeof(buf) - 1] = 0;
+    virLogDumpAllFD(buf, strlen(buf));
+    snprintf(buf, sizeof(buf) - 1, "\n\n    ====== start of log =====\n\n");
+    virLogDumpAllFD(buf, strlen(buf));
+    while (virLogLen > 0) {
+        if (virLogStart + virLogLen < LOG_BUFFER_SIZE) {
+            virLogBuffer[virLogStart + virLogLen] = 0;
+            virLogDumpAllFD(&virLogBuffer[virLogStart], virLogLen);
+            ret += virLogLen;
+            virLogStart += virLogLen;
+            virLogLen = 0;
+        } else {
+            len = LOG_BUFFER_SIZE - virLogStart;
+            virLogBuffer[LOG_BUFFER_SIZE] = 0;
+            virLogDumpAllFD(&virLogBuffer[virLogStart], len);
+            virLogLen -= len;
+            virLogStart = 0;
+        }
+    }
+    snprintf(buf, sizeof(buf) - 1, "\n\n     ====== end of log =====\n\n");
+    virLogDumpAllFD(buf, strlen(buf));
+    virLogUnlock();
+}
 
 /**
  * virLogSetDefaultPriority:
