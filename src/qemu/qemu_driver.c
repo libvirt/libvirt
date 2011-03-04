@@ -3048,183 +3048,32 @@ cleanup:
     return ret;
 }
 
-/* qemudOpenAsUID() - pipe/fork/setuid/open a file, and return the
-   pipe fd to caller, so that it can read from the file. Also return
-   the pid of the child process, so the caller can wait for it to exit
-   after it's finished reading (to avoid a zombie, if nothing
-   else). */
-
-static int
-qemudOpenAsUID(const char *path, uid_t uid, gid_t gid, pid_t *child_pid)
-{
-    int pipefd[2];
-    int fd = -1;
-
-    *child_pid = -1;
-
-    if (pipe(pipefd) < 0) {
-        virReportSystemError(errno,
-                             _("failed to create pipe to read '%s'"),
-                             path);
-        pipefd[0] = pipefd[1] = -1;
-        goto parent_cleanup;
-    }
-
-    int forkRet = virFork(child_pid);
-
-    if (*child_pid < 0) {
-        virReportSystemError(errno,
-                             _("failed to fork child to read '%s'"),
-                             path);
-        goto parent_cleanup;
-    }
-
-    if (*child_pid > 0) {
-
-        /* parent */
-
-        /* parent doesn't need the write side of the pipe */
-        VIR_FORCE_CLOSE(pipefd[1]);
-
-        if (forkRet < 0) {
-            virReportSystemError(errno,
-                                 _("failed in parent after forking child to read '%s'"),
-                                 path);
-            goto parent_cleanup;
-        }
-        /* caller gets the read side of the pipe */
-        fd = pipefd[0];
-        pipefd[0] = -1;
-parent_cleanup:
-        VIR_FORCE_CLOSE(pipefd[0]);
-        VIR_FORCE_CLOSE(pipefd[1]);
-        if ((fd < 0) && (*child_pid > 0)) {
-            /* a child process was started and subsequently an error
-               occurred in the parent, so we need to wait for it to
-               exit, but its status is inconsequential. */
-            while ((waitpid(*child_pid, NULL, 0) == -1)
-                   && (errno == EINTR)) {
-                /* empty */
-            }
-            *child_pid = -1;
-        }
-        return fd;
-    }
-
-    /* child */
-
-    /* setuid to the qemu user, then open the file, read it,
-       and stuff it into the pipe for the parent process to
-       read */
-    int exit_code;
-    char *buf = NULL;
-    size_t bufsize = 1024 * 1024;
-    int bytesread;
-
-    /* child doesn't need the read side of the pipe */
-    VIR_FORCE_CLOSE(pipefd[0]);
-
-    if (forkRet < 0) {
-        exit_code = errno;
-        virReportSystemError(errno,
-                             _("failed in child after forking to read '%s'"),
-                             path);
-        goto child_cleanup;
-    }
-
-    if (virSetUIDGID(uid, gid) < 0) {
-       exit_code = errno;
-       goto child_cleanup;
-    }
-
-    if ((fd = open(path, O_RDONLY)) < 0) {
-        exit_code = errno;
-        virReportSystemError(errno,
-                             _("cannot open '%s' as uid %d"),
-                             path, uid);
-        goto child_cleanup;
-    }
-
-    if (VIR_ALLOC_N(buf, bufsize) < 0) {
-        exit_code = ENOMEM;
-        virReportOOMError();
-        goto child_cleanup;
-    }
-
-    /* read from fd and write to pipefd[1] until EOF */
-    do {
-        if ((bytesread = saferead(fd, buf, bufsize)) < 0) {
-            exit_code = errno;
-            virReportSystemError(errno,
-                                 _("child failed reading from '%s'"),
-                                 path);
-            goto child_cleanup;
-        }
-        if (safewrite(pipefd[1], buf, bytesread) != bytesread) {
-            exit_code = errno;
-            virReportSystemError(errno, "%s",
-                                 _("child failed writing to pipe"));
-            goto child_cleanup;
-        }
-    } while (bytesread > 0);
-    exit_code = 0;
-
-child_cleanup:
-    VIR_FREE(buf);
-    VIR_FORCE_CLOSE(fd);
-    VIR_FORCE_CLOSE(pipefd[1]);
-    _exit(exit_code);
-}
-
-static int qemudDomainSaveImageClose(int fd, pid_t read_pid, int *status)
-{
-    int ret = 0;
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot close file"));
-    }
-
-    if (read_pid != -1) {
-        /* reap the process that read the file */
-        while ((ret = waitpid(read_pid, status, 0)) == -1
-               && errno == EINTR) {
-            /* empty */
-        }
-    } else if (status) {
-        *status = 0;
-    }
-
-    return ret;
-}
-
-static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
-qemudDomainSaveImageOpen(struct qemud_driver *driver,
-                         const char *path,
-                         virDomainDefPtr *ret_def,
-                         struct qemud_save_header *ret_header,
-                         pid_t *ret_read_pid)
+static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+qemuDomainSaveImageOpen(struct qemud_driver *driver,
+                        const char *path,
+                        virDomainDefPtr *ret_def,
+                        struct qemud_save_header *ret_header)
 {
     int fd;
-    pid_t read_pid = -1;
     struct qemud_save_header header;
     char *xml = NULL;
     virDomainDefPtr def = NULL;
 
-    if ((fd = open(path, O_RDONLY)) < 0) {
-        if ((driver->user == 0) || (getuid() != 0)) {
+    if ((fd = virFileOpenAs(path, O_RDONLY, 0, getuid(), getgid(), 0)) < 0) {
+        if ((fd != -EACCES && fd != -EPERM) ||
+            driver->user == getuid()) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             "%s", _("cannot read domain image"));
             goto error;
         }
 
         /* Opening as root failed, but qemu runs as a different user
-           that might have better luck. Create a pipe, then fork a
-           child process to run as the qemu user, which will hopefully
-           have the necessary authority to read the file. */
-        if ((fd = qemudOpenAsUID(path,
-                                 driver->user, driver->group, &read_pid)) < 0) {
-            /* error already reported */
+         * that might have better luck. */
+        if ((fd = virFileOpenAs(path, O_RDONLY, 0,
+                                driver->user, driver->group,
+                                VIR_FILE_OPEN_AS_UID)) < 0) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("cannot read domain image"));
             goto error;
         }
     }
@@ -3274,34 +3123,30 @@ qemudDomainSaveImageOpen(struct qemud_driver *driver,
 
     *ret_def = def;
     *ret_header = header;
-    *ret_read_pid = read_pid;
 
     return fd;
 
 error:
     virDomainDefFree(def);
     VIR_FREE(xml);
-    qemudDomainSaveImageClose(fd, read_pid, NULL);
+    VIR_FORCE_CLOSE(fd);
 
     return -1;
 }
 
-static int ATTRIBUTE_NONNULL(6)
-qemudDomainSaveImageStartVM(virConnectPtr conn,
-                            struct qemud_driver *driver,
-                            virDomainObjPtr vm,
-                            int *fd,
-                            pid_t *read_pid,
-                            const struct qemud_save_header *header,
-                            const char *path)
+static int ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6)
+qemuDomainSaveImageStartVM(virConnectPtr conn,
+                           struct qemud_driver *driver,
+                           virDomainObjPtr vm,
+                           int *fd,
+                           const struct qemud_save_header *header,
+                           const char *path)
 {
     int ret = -1;
     virDomainEventPtr event;
     int intermediatefd = -1;
     pid_t intermediate_pid = -1;
     int childstat;
-    int wait_ret;
-    int status;
 
     if (header->version == 2) {
         const char *intermediate_argv[3] = { NULL, "-dc", NULL };
@@ -3334,8 +3179,9 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
 
     if (intermediate_pid != -1) {
         if (ret < 0) {
-            /* if there was an error setting up qemu, the intermediate process will
-             * wait forever to write to stdout, so we must manually kill it.
+            /* if there was an error setting up qemu, the intermediate
+             * process will wait forever to write to stdout, so we
+             * must manually kill it.
              */
             VIR_FORCE_CLOSE(intermediatefd);
             VIR_FORCE_CLOSE(*fd);
@@ -3350,30 +3196,10 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     }
     VIR_FORCE_CLOSE(intermediatefd);
 
-    wait_ret = qemudDomainSaveImageClose(*fd, *read_pid, &status);
-    *fd = -1;
-    if (*read_pid != -1) {
-        if (wait_ret == -1) {
-            virReportSystemError(errno,
-                                 _("failed to wait for process reading '%s'"),
-                                 path);
-            ret = -1;
-        } else if (!WIFEXITED(status)) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            _("child process exited abnormally reading '%s'"),
-                            path);
-            ret = -1;
-        } else {
-            int exit_status = WEXITSTATUS(status);
-            if (exit_status != 0) {
-                virReportSystemError(exit_status,
-                                     _("child process returned error reading '%s'"),
-                                     path);
-                ret = -1;
-            }
-        }
+    if (VIR_CLOSE(*fd) < 0) {
+        virReportSystemError(errno, _("cannot close file: %s"), path);
+        ret = -1;
     }
-    *read_pid = -1;
 
     if (ret < 0) {
         qemuAuditDomainStart(vm, "restored", false);
@@ -3412,19 +3238,20 @@ out:
     return ret;
 }
 
-static int qemudDomainRestore(virConnectPtr conn,
-                              const char *path) {
+static int
+qemuDomainRestore(virConnectPtr conn,
+                  const char *path)
+{
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     int fd = -1;
-    pid_t read_pid = -1;
     int ret = -1;
     struct qemud_save_header header;
 
     qemuDriverLock(driver);
 
-    fd = qemudDomainSaveImageOpen(driver, path, &def, &header, &read_pid);
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header);
     if (fd < 0)
         goto cleanup;
 
@@ -3442,8 +3269,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
 
-    ret = qemudDomainSaveImageStartVM(conn, driver, vm, &fd,
-                                      &read_pid, &header, path);
+    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path);
 
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
@@ -3454,25 +3280,25 @@ static int qemudDomainRestore(virConnectPtr conn,
 
 cleanup:
     virDomainDefFree(def);
-    qemudDomainSaveImageClose(fd, read_pid, NULL);
+    VIR_FORCE_CLOSE(fd);
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
     return ret;
 }
 
-static int qemudDomainObjRestore(virConnectPtr conn,
-                                 struct qemud_driver *driver,
-                                 virDomainObjPtr vm,
-                                 const char *path)
+static int
+qemuDomainObjRestore(virConnectPtr conn,
+                     struct qemud_driver *driver,
+                     virDomainObjPtr vm,
+                     const char *path)
 {
     virDomainDefPtr def = NULL;
     int fd = -1;
-    pid_t read_pid = -1;
     int ret = -1;
     struct qemud_save_header header;
 
-    fd = qemudDomainSaveImageOpen(driver, path, &def, &header, &read_pid);
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header);
     if (fd < 0)
         goto cleanup;
 
@@ -3493,12 +3319,11 @@ static int qemudDomainObjRestore(virConnectPtr conn,
     virDomainObjAssignDef(vm, def, true);
     def = NULL;
 
-    ret = qemudDomainSaveImageStartVM(conn, driver, vm, &fd,
-                                      &read_pid, &header, path);
+    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path);
 
 cleanup:
     virDomainDefFree(def);
-    qemudDomainSaveImageClose(fd, read_pid, NULL);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -3709,7 +3534,7 @@ static int qemudDomainObjStart(virConnectPtr conn,
      */
     managed_save = qemuDomainManagedSavePath(driver, vm);
     if ((managed_save) && (virFileExists(managed_save))) {
-        ret = qemudDomainObjRestore(conn, driver, vm, managed_save);
+        ret = qemuDomainObjRestore(conn, driver, vm, managed_save);
 
         if (unlink(managed_save) < 0) {
             VIR_WARN("Failed to remove the managed state %s", managed_save);
@@ -7126,7 +6951,7 @@ static virDriver qemuDriver = {
     qemuDomainGetBlkioParameters, /* domainGetBlkioParameters */
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
-    qemudDomainRestore, /* domainRestore */
+    qemuDomainRestore, /* domainRestore */
     qemudDomainCoreDump, /* domainCoreDump */
     qemudDomainSetVcpus, /* domainSetVcpus */
     qemudDomainSetVcpusFlags, /* domainSetVcpusFlags */
