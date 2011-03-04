@@ -1,6 +1,7 @@
 /*
  * nwfilter_gentech_driver.c: generic technology driver
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -660,8 +661,6 @@ virNWFilterInstantiate(virConnectPtr conn,
         }
 
         virNWFilterUnlockIface(ifname);
-
-        VIR_FREE(ptrs);
     }
 
 err_exit:
@@ -670,6 +669,7 @@ err_exit:
         virNWFilterRuleInstFree(insts[j]);
 
     VIR_FREE(insts);
+    VIR_FREE(ptrs);
 
     virNWFilterHashTableFree(missing_vars);
 

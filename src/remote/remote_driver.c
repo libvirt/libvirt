@@ -479,22 +479,27 @@ doRemoteOpen (virConnectPtr conn,
         for (i = 0; i < vars->n; i++) {
             var = &vars->p[i];
             if (STRCASEEQ (var->name, "name")) {
+                VIR_FREE(name);
                 name = strdup (var->value);
                 if (!name) goto out_of_memory;
                 var->ignore = 1;
             } else if (STRCASEEQ (var->name, "command")) {
+                VIR_FREE(command);
                 command = strdup (var->value);
                 if (!command) goto out_of_memory;
                 var->ignore = 1;
             } else if (STRCASEEQ (var->name, "socket")) {
+                VIR_FREE(sockname);
                 sockname = strdup (var->value);
                 if (!sockname) goto out_of_memory;
                 var->ignore = 1;
             } else if (STRCASEEQ (var->name, "auth")) {
+                VIR_FREE(authtype);
                 authtype = strdup (var->value);
                 if (!authtype) goto out_of_memory;
                 var->ignore = 1;
             } else if (STRCASEEQ (var->name, "netcat")) {
+                VIR_FREE(netcat);
                 netcat = strdup (var->value);
                 if (!netcat) goto out_of_memory;
                 var->ignore = 1;
@@ -511,6 +516,7 @@ doRemoteOpen (virConnectPtr conn,
                 else
                     priv->debugLog = stderr;
             } else if (STRCASEEQ(var->name, "pkipath")) {
+                VIR_FREE(pkipath);
                 pkipath = strdup(var->value);
                 if (!pkipath) goto out_of_memory;
                 var->ignore = 1;

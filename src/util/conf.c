@@ -1,7 +1,7 @@
 /**
  * conf.c: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -648,22 +648,23 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
 
     SKIP_BLANKS_AND_EOL;
     if (CUR == '#') {
-        return(virConfParseComment(ctxt));
+        return virConfParseComment(ctxt);
     }
     name = virConfParseName(ctxt);
     if (name == NULL)
-        return(-1);
+        return -1;
     SKIP_BLANKS;
     if (CUR != '=') {
         virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting an assignment"));
-        return(-1);
+        VIR_FREE(name);
+        return -1;
     }
     NEXT;
     SKIP_BLANKS;
     value = virConfParseValue(ctxt);
     if (value == NULL) {
         VIR_FREE(name);
-        return(-1);
+        return -1;
     }
     SKIP_BLANKS;
     if (CUR == '#') {
@@ -675,16 +676,16 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
             virReportOOMError();
             VIR_FREE(name);
             virConfFreeValue(value);
-            return(-1);
+            return -1;
         }
     }
     if (virConfAddEntry(ctxt->conf, name, value, comm) == NULL) {
         VIR_FREE(name);
         virConfFreeValue(value);
         VIR_FREE(comm);
-        return(-1);
+        return -1;
     }
-    return(0);
+    return 0;
 }
 
 /**

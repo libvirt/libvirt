@@ -9518,6 +9518,8 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     const char *dir;
     int found;
+    int ret = TRUE;
+    bool dir_malloced = false;
 
     if (!ctl->imode) {
         vshError(ctl, "%s", _("cd: command valid only in interactive mode"));
@@ -9528,16 +9530,19 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (!found) {
         uid_t uid = geteuid();
         dir = virGetUserDirectory(uid);
+        dir_malloced = !!dir;
     }
     if (!dir)
         dir = "/";
 
-    if (chdir (dir) == -1) {
+    if (chdir(dir) == -1) {
         vshError(ctl, _("cd: %s: %s"), strerror(errno), dir);
-        return FALSE;
+        ret = FALSE;
     }
 
-    return TRUE;
+    if (dir_malloced)
+        VIR_FREE(dir);
+    return ret;
 }
 
 #endif

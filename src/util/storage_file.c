@@ -1,7 +1,7 @@
 /*
  * storage_file.c: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -838,8 +838,9 @@ virStorageFileGetMetadataFromFD(const char *path,
 
     if (format < 0 ||
         format >= VIR_STORAGE_FILE_LAST) {
-        virReportSystemError(EINVAL, _("unknown storage file format %d"), format);
-        return -1;
+        virReportSystemError(EINVAL, _("unknown storage file format %d"),
+                             format);
+        goto cleanup;
     }
 
     ret = virStorageFileGetMetadataFromBuf(format, path, head, len, meta);
