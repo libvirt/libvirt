@@ -1774,30 +1774,25 @@ struct qemud_save_header {
     int unused[15];
 };
 
-struct fileOpHookData {
-    virDomainPtr dom;
-    const char *path;
-    char *xml;
-    struct qemud_save_header *header;
-};
-
 /* return -errno on failure, or 0 on success */
-static int qemudDomainSaveFileOpHook(int fd, void *data) {
-    struct fileOpHookData *hdata = data;
+static int
+qemuDomainSaveHeader(int fd, const char *path, char *xml,
+                     struct qemud_save_header *header)
+{
     int ret = 0;
 
-    if (safewrite(fd, hdata->header, sizeof(*hdata->header)) != sizeof(*hdata->header)) {
+    if (safewrite(fd, header, sizeof(*header)) != sizeof(*header)) {
         ret = -errno;
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("failed to write header to domain save file '%s'"),
-                        hdata->path);
+                        path);
         goto endjob;
     }
 
-    if (safewrite(fd, hdata->xml, hdata->header->xml_len) != hdata->header->xml_len) {
+    if (safewrite(fd, xml, header->xml_len) != header->xml_len) {
         ret = -errno;
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                         _("failed to write xml to '%s'"), hdata->path);
+                         _("failed to write xml to '%s'"), path);
         goto endjob;
     }
 endjob:
@@ -1813,7 +1808,6 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 {
     char *xml = NULL;
     struct qemud_save_header header;
-    struct fileOpHookData hdata;
     int bypassSecurityDriver = 0;
     int ret = -1;
     int rc;
@@ -1979,12 +1973,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     }
 
     /* Write header to file, followed by XML */
-    hdata.dom = dom;
-    hdata.path = path;
-    hdata.xml = xml;
-    hdata.header = &header;
-
-    if (qemudDomainSaveFileOpHook(fd, &hdata) < 0) {
+    if (qemuDomainSaveHeader(fd, path, xml, &header) < 0) {
         VIR_FORCE_CLOSE(fd);
         goto endjob;
     }

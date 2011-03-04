@@ -292,31 +292,27 @@ cleanup:
     return ret;
 }
 
-struct createRawFileOpHookData {
-    virStorageVolDefPtr vol;
-    virStorageVolDefPtr inputvol;
-};
-
-static int createRawFileOpHook(int fd, void *data) {
-    struct createRawFileOpHookData *hdata = data;
+static int
+createRawFile(int fd, virStorageVolDefPtr vol,
+              virStorageVolDefPtr inputvol)
+{
     int ret = 0;
     unsigned long long remain;
 
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
-    if (ftruncate(fd, hdata->vol->capacity) < 0) {
+    if (ftruncate(fd, vol->capacity) < 0) {
         ret = -errno;
         virReportSystemError(errno,
                              _("cannot extend file '%s'"),
-                             hdata->vol->target.path);
+                             vol->target.path);
         goto cleanup;
     }
 
-    remain = hdata->vol->allocation;
+    remain = vol->allocation;
 
-    if (hdata->inputvol) {
-        ret = virStorageBackendCopyToFD(hdata->vol, hdata->inputvol,
-                                        fd, &remain, 1);
+    if (inputvol) {
+        ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain, 1);
         if (ret < 0) {
             goto cleanup;
         }
@@ -334,11 +330,10 @@ static int createRawFileOpHook(int fd, void *data) {
 
                 if (bytes > remain)
                     bytes = remain;
-                if (safezero(fd, 0, hdata->vol->allocation - remain,
-                             bytes) != 0) {
+                if (safezero(fd, 0, vol->allocation - remain, bytes) != 0) {
                     ret = -errno;
                     virReportSystemError(errno, _("cannot fill file '%s'"),
-                                         hdata->vol->target.path);
+                                         vol->target.path);
                     goto cleanup;
                 }
                 remain -= bytes;
@@ -347,7 +342,7 @@ static int createRawFileOpHook(int fd, void *data) {
             if (safezero(fd, 0, 0, remain) != 0) {
                 ret = -errno;
                 virReportSystemError(errno, _("cannot fill file '%s'"),
-                                     hdata->vol->target.path);
+                                     vol->target.path);
                 goto cleanup;
             }
         }
@@ -357,7 +352,7 @@ static int createRawFileOpHook(int fd, void *data) {
     if (fsync(fd) < 0) {
         ret = -errno;
         virReportSystemError(errno, _("cannot sync data to file '%s'"),
-                             hdata->vol->target.path);
+                             vol->target.path);
         goto cleanup;
     }
 
@@ -374,7 +369,6 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     int ret = -1;
     int fd = -1;
-    struct createRawFileOpHookData hdata = { vol, inputvol };
     uid_t uid;
     gid_t gid;
     int operation_flags;
@@ -404,7 +398,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if ((ret = createRawFileOpHook(fd, &hdata)) < 0) {
+    if ((ret = createRawFile(fd, vol, inputvol)) < 0) {
         virReportSystemError(-fd,
                              _("cannot create path '%s'"),
                              vol->target.path);
