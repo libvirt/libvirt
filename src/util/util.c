@@ -1439,8 +1439,7 @@ static int virDirCreateNoFork(const char *path, mode_t mode, uid_t uid, gid_t gi
     struct stat st;
 
     if ((mkdir(path, mode) < 0)
-        && !((errno == EEXIST) && (flags & VIR_DIR_CREATE_ALLOW_EXIST)))
-       {
+        && !((errno == EEXIST) && (flags & VIR_DIR_CREATE_ALLOW_EXIST))) {
         ret = -errno;
         virReportSystemError(errno, _("failed to create directory '%s'"),
                              path);
@@ -1516,27 +1515,25 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
      * following dance avoids problems caused by root-squashing
      * NFS servers. */
 
-    {
-        if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
-            ret = -errno;
-            virReportSystemError(errno,
-                                 _("failed to create socket needed for '%s'"),
-                                 path);
-            return ret;
-        }
-
-        memset(&msg, 0, sizeof(msg));
-        iov.iov_base = &dummy;
-        iov.iov_len = 1;
-        msg.msg_iov = &iov;
-        msg.msg_iovlen = 1;
-        msg.msg_control = buf;
-        msg.msg_controllen = sizeof(buf);
-        cmsg = CMSG_FIRSTHDR(&msg);
-        cmsg->cmsg_level = SOL_SOCKET;
-        cmsg->cmsg_type = SCM_RIGHTS;
-        cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
+        ret = -errno;
+        virReportSystemError(errno,
+                             _("failed to create socket needed for '%s'"),
+                             path);
+        return ret;
     }
+
+    memset(&msg, 0, sizeof(msg));
+    iov.iov_base = &dummy;
+    iov.iov_len = 1;
+    msg.msg_iov = &iov;
+    msg.msg_iovlen = 1;
+    msg.msg_control = buf;
+    msg.msg_controllen = sizeof(buf);
+    cmsg = CMSG_FIRSTHDR(&msg);
+    cmsg->cmsg_level = SOL_SOCKET;
+    cmsg->cmsg_type = SCM_RIGHTS;
+    cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
 
     forkRet = virFork(&pid);
 
@@ -1546,29 +1543,27 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
     }
 
     if (pid) { /* parent */
-        {
-            VIR_FORCE_CLOSE(pair[1]);
+        VIR_FORCE_CLOSE(pair[1]);
 
-            do {
-                ret = recvmsg(pair[0], &msg, 0);
-            } while (ret < 0 && errno == EINTR);
+        do {
+            ret = recvmsg(pair[0], &msg, 0);
+        } while (ret < 0 && errno == EINTR);
 
-            if (ret < 0) {
-                ret = -errno;
-                VIR_FORCE_CLOSE(pair[0]);
-                while ((waitret = waitpid(pid, NULL, 0) == -1)
-                       && (errno == EINTR));
-                goto parenterror;
-            }
+        if (ret < 0) {
+            ret = -errno;
             VIR_FORCE_CLOSE(pair[0]);
+            while ((waitret = waitpid(pid, NULL, 0) == -1)
+                   && (errno == EINTR));
+            goto parenterror;
+        }
+        VIR_FORCE_CLOSE(pair[0]);
 
-            /* See if fd was transferred.  */
-            cmsg = CMSG_FIRSTHDR(&msg);
-            if (cmsg && cmsg->cmsg_len == CMSG_LEN(sizeof(fd)) &&
-                cmsg->cmsg_level == SOL_SOCKET &&
-                cmsg->cmsg_type == SCM_RIGHTS) {
-                memcpy(&fd, CMSG_DATA(cmsg), sizeof(fd));
-            }
+        /* See if fd was transferred.  */
+        cmsg = CMSG_FIRSTHDR(&msg);
+        if (cmsg && cmsg->cmsg_len == CMSG_LEN(sizeof(fd)) &&
+            cmsg->cmsg_level == SOL_SOCKET &&
+            cmsg->cmsg_type == SCM_RIGHTS) {
+            memcpy(&fd, CMSG_DATA(cmsg), sizeof(fd));
         }
 
         /* wait for child to complete, and retrieve its exit code */
@@ -1649,17 +1644,15 @@ parenterror:
                              path, mode);
         goto childerror;
     }
-    {
-        memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
+    memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
 
-        do {
-            ret = sendmsg(pair[1], &msg, 0);
-        } while (ret < 0 && errno == EINTR);
+    do {
+        ret = sendmsg(pair[1], &msg, 0);
+    } while (ret < 0 && errno == EINTR);
 
-        if (ret < 0) {
-            ret = -errno;
-            goto childerror;
-        }
+    if (ret < 0) {
+        ret = -errno;
+        goto childerror;
     }
 
     ret = 0;
