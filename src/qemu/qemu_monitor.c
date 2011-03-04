@@ -1402,6 +1402,7 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
                              int port)
 {
     int ret;
+    char *uri = NULL;
     VIR_DEBUG("mon=%p hostname=%s port=%d flags=%u",
           mon, hostname, port, flags);
 
@@ -1411,10 +1412,18 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
         return -1;
     }
 
+
+    if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToHost(mon, flags, hostname, port);
+        ret = qemuMonitorJSONMigrate(mon, flags, uri);
     else
-        ret = qemuMonitorTextMigrateToHost(mon, flags, hostname, port);
+        ret = qemuMonitorTextMigrate(mon, flags, uri);
+
+    VIR_FREE(uri);
     return ret;
 }
 
@@ -1423,7 +1432,9 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
                                 unsigned int flags,
                                 const char * const *argv)
 {
-    int ret;
+    char *argstr;
+    char *dest = NULL;
+    int ret = -1;
     VIR_DEBUG("mon=%p argv=%p flags=%u",
           mon, argv, flags);
 
@@ -1433,10 +1444,25 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
         return -1;
     }
 
+    argstr = virArgvToString(argv);
+    if (!argstr) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dest, "exec:%s", argstr) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToCommand(mon, flags, argv);
+        ret = qemuMonitorJSONMigrate(mon, flags, dest);
     else
-        ret = qemuMonitorTextMigrateToCommand(mon, flags, argv);
+        ret = qemuMonitorTextMigrate(mon, flags, dest);
+
+cleanup:
+    VIR_FREE(argstr);
+    VIR_FREE(dest);
     return ret;
 }
 
@@ -1446,7 +1472,10 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
                              const char *target,
                              unsigned long long offset)
 {
-    int ret;
+    char *argstr;
+    char *dest = NULL;
+    int ret = -1;
+    char *safe_target = NULL;
     VIR_DEBUG("mon=%p argv=%p target=%s offset=%llu flags=%u",
           mon, argv, target, offset, flags);
 
@@ -1463,10 +1492,43 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
         return -1;
     }
 
+    argstr = virArgvToString(argv);
+    if (!argstr) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Migrate to file */
+    safe_target = qemuMonitorEscapeShell(target);
+    if (!safe_target) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Two dd processes, sharing the same stdout, are necessary to
+     * allow starting at an alignment of 512, but without wasting
+     * padding to get to the larger alignment useful for speed.  Use
+     * <> redirection to avoid truncating a regular file.  */
+    if (virAsprintf(&dest, "exec:" VIR_WRAPPER_SHELL_PREFIX "%s | "
+                    "{ dd bs=%llu seek=%llu if=/dev/null && "
+                    "dd bs=%llu; } 1<>%s" VIR_WRAPPER_SHELL_SUFFIX,
+                    argstr, QEMU_MONITOR_MIGRATE_TO_FILE_BS,
+                    offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS,
+                    QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
+                    safe_target) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToFile(mon, flags, argv, target, offset);
+        ret = qemuMonitorJSONMigrate(mon, flags, dest);
     else
-        ret = qemuMonitorTextMigrateToFile(mon, flags, argv, target, offset);
+        ret = qemuMonitorTextMigrate(mon, flags, dest);
+
+cleanup:
+    VIR_FREE(safe_target);
+    VIR_FREE(argstr);
+    VIR_FREE(dest);
     return ret;
 }
 
@@ -1474,7 +1536,8 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
                              unsigned int flags,
                              const char *unixfile)
 {
-    int ret;
+    char *dest = NULL;
+    int ret = -1;
     VIR_DEBUG("mon=%p, unixfile=%s flags=%u",
           mon, unixfile, flags);
 
@@ -1484,10 +1547,17 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
         return -1;
     }
 
+    if (virAsprintf(&dest, "unix:%s", unixfile) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToUnix(mon, flags, unixfile);
+        ret = qemuMonitorJSONMigrate(mon, flags, dest);
     else
-        ret = qemuMonitorTextMigrateToUnix(mon, flags, unixfile);
+        ret = qemuMonitorTextMigrate(mon, flags, dest);
+
+    VIR_FREE(dest);
     return ret;
 }
 

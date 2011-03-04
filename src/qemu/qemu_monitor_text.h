@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_text.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2009, 2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -107,24 +107,9 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
                                       unsigned long long *remaining,
                                       unsigned long long *total);
 
-int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
-                                 unsigned int flags,
-                                 const char *hostname,
-                                 int port);
-
-int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
-                                    unsigned int flags,
-                                    const char * const *argv);
-
-int qemuMonitorTextMigrateToFile(qemuMonitorPtr mon,
-                                 unsigned int flags,
-                                 const char * const *argv,
-                                 const char *target,
-                                 unsigned long long offset);
-
-int qemuMonitorTextMigrateToUnix(qemuMonitorPtr mon,
-                                 unsigned int flags,
-                                 const char *unixfile);
+int qemuMonitorTextMigrate(qemuMonitorPtr mon,
+                           unsigned int flags,
+                           const char *uri);
 
 int qemuMonitorTextMigrateCancel(qemuMonitorPtr mon);
 

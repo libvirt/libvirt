@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1720,9 +1720,9 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
 }
 
 
-static int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
-                                  unsigned int flags,
-                                  const char *uri)
+int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
+                           unsigned int flags,
+                           const char *uri)
 {
     int ret;
     virJSONValuePtr cmd =
@@ -1746,123 +1746,6 @@ static int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
-
-
-int qemuMonitorJSONMigrateToHost(qemuMonitorPtr mon,
-                                 unsigned int flags,
-                                 const char *hostname,
-                                 int port)
-{
-    char *uri = NULL;
-    int ret;
-
-    if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    ret = qemuMonitorJSONMigrate(mon, flags, uri);
-
-    VIR_FREE(uri);
-
-    return ret;
-}
-
-
-int qemuMonitorJSONMigrateToCommand(qemuMonitorPtr mon,
-                                    unsigned int flags,
-                                    const char * const *argv)
-{
-    char *argstr;
-    char *dest = NULL;
-    int ret = -1;
-
-    argstr = virArgvToString(argv);
-    if (!argstr) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virAsprintf(&dest, "exec:%s", argstr) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ret = qemuMonitorJSONMigrate(mon, flags, dest);
-
-cleanup:
-    VIR_FREE(argstr);
-    VIR_FREE(dest);
-    return ret;
-}
-
-int qemuMonitorJSONMigrateToFile(qemuMonitorPtr mon,
-                                 unsigned int flags,
-                                 const char * const *argv,
-                                 const char *target,
-                                 unsigned long long offset)
-{
-    char *argstr;
-    char *dest = NULL;
-    int ret = -1;
-    char *safe_target = NULL;
-
-    argstr = virArgvToString(argv);
-    if (!argstr) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    /* Migrate to file */
-    safe_target = qemuMonitorEscapeShell(target);
-    if (!safe_target) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    /* Two dd processes, sharing the same stdout, are necessary to
-     * allow starting at an alignment of 512, but without wasting
-     * padding to get to the larger alignment useful for speed.  Use
-     * <> redirection to avoid truncating a regular file.  */
-    if (virAsprintf(&dest, "exec:" VIR_WRAPPER_SHELL_PREFIX "%s | "
-                    "{ dd bs=%llu seek=%llu if=/dev/null && "
-                    "dd bs=%llu; } 1<>%s" VIR_WRAPPER_SHELL_SUFFIX,
-                    argstr, QEMU_MONITOR_MIGRATE_TO_FILE_BS,
-                    offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS,
-                    QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
-                    safe_target) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ret = qemuMonitorJSONMigrate(mon, flags, dest);
-
-cleanup:
-    VIR_FREE(safe_target);
-    VIR_FREE(argstr);
-    VIR_FREE(dest);
-    return ret;
-}
-
-int qemuMonitorJSONMigrateToUnix(qemuMonitorPtr mon,
-                                 unsigned int flags,
-                                 const char *unixfile)
-{
-    char *dest = NULL;
-    int ret = -1;
-
-    if (virAsprintf(&dest, "unix:%s", unixfile) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    ret = qemuMonitorJSONMigrate(mon, flags, dest);
-
-    VIR_FREE(dest);
-
-    return ret;
-}
-
 
 int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon)
 {
