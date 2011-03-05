@@ -860,14 +860,15 @@ int virStateActive(void) {
 /**
  * virGetVersion:
  * @libVer: return value for the library version (OUT)
- * @type: the type of connection/driver looked at
- * @typeVer: return value for the version of the hypervisor (OUT)
+ * @type: the type of connection/driver looked at, if @typeVer is not NULL
+ * @typeVer: optional return value for the version of the hypervisor (OUT)
  *
- * Provides two information back, @libVer is the version of the library
- * while @typeVer will be the version of the hypervisor type @type against
- * which the library was compiled. If @type is NULL, "Xen" is assumed, if
- * @type is unknown or not available, an error code will be returned and
- * @typeVer will be 0.
+ * Provides information on up to two versions: @libVer is the version of the
+ * library and will always be set unless an error occurs, in which case an
+ * error code will be returned. If @typeVer is not NULL it will be set to the
+ * version of the hypervisor @type against which the library was compiled.
+ * If @type is NULL, "Xen" is assumed, if @type is unknown or not
+ * available, an error code will be returned and @typeVer will be 0.
  *
  * Returns -1 in case of failure, 0 otherwise, and values for @libVer and
  *       @typeVer have the format major * 1,000,000 + minor * 1,000 + release.
