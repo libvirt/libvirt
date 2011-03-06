@@ -4167,6 +4167,10 @@ virDomainVideoDefaultRAM(virDomainDefPtr def,
         /* Original Xen PVFB hardcoded to 4 MB */
         return 4 * 1024;
 
+    case VIR_DOMAIN_VIDEO_TYPE_QXL:
+        /* QEMU use 64M as the minimal video video memory for qxl device */
+        return 64 * 1024;
+
     default:
         return 0;
     }

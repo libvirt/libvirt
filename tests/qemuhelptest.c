@@ -489,6 +489,7 @@ mymain(int argc, char **argv)
             QEMU_CAPS_DRIVE_AIO,
             QEMU_CAPS_CCID_PASSTHRU,
             QEMU_CAPS_CHARDEV_SPICEVMC,
+            QEMU_CAPS_DEVICE_QXL_VGA,
             QEMU_CAPS_VIRTIO_TX_ALG);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

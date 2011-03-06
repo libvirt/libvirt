@@ -357,6 +357,10 @@ mymain(int argc, char **argv)
     DO_TEST("graphics-spice", false,
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE);
+    DO_TEST("graphics-spice-qxl-vga", false,
+            QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL_VGA);
 
     DO_TEST("input-usbmouse", false, NONE);
     DO_TEST("input-usbtablet", false, NONE);

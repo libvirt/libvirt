@@ -1122,6 +1122,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
     }
     if (strstr(str, "virtio-net-pci.tx="))
         qemuCapsSet(flags, QEMU_CAPS_VIRTIO_TX_ALG);
+    if (strstr(str, "name \"qxl-vga\""))
+        qemuCapsSet(flags, QEMU_CAPS_DEVICE_QXL_VGA);
 
     return 0;
 }

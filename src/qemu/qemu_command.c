@@ -1931,6 +1931,12 @@ qemuBuildVideoDevStr(virDomainVideoDefPtr video,
 
     virBufferVSprintf(&buf, "%s", model);
     virBufferVSprintf(&buf, ",id=%s", video->info.alias);
+
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
+        /* QEMU accepts bytes for vram_size. */
+        virBufferVSprintf(&buf, ",vram_size=%u", video->vram * 1024);
+    }
+
     if (qemuBuildDeviceAddressStr(&buf, &video->info, qemuCaps) < 0)
         goto error;
 
@@ -4033,6 +4039,18 @@ qemuBuildCommandLine(virConnectPtr conn,
                 }
 
                 virCommandAddArgList(cmd, "-vga", vgastr, NULL);
+
+                if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
+                    if (def->videos[0]->vram &&
+                        qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                            if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA))
+                                virCommandAddArgFormat(cmd, "-global qxl-vga.vram_size=%u",
+                                                       def->videos[0]->vram * 1024);
+                            else
+                                virCommandAddArgFormat(cmd, "-global qxl.vram_size=%u",
+                                                       def->videos[0]->vram * 1024);
+                    }
+                }
             }
         } else {
 
