@@ -35,6 +35,12 @@
 
 /* #define DEBUG_GROW */
 
+#define virHashIterationError(ret)                                      \
+    do {                                                                \
+        VIR_ERROR0(_("Hash operation not allowed during iteration"));   \
+        return ret;                                                     \
+    } while (0)
+
 /*
  * A single entry in the hash table
  */
@@ -54,6 +60,10 @@ struct _virHashTable {
     struct _virHashEntry *table;
     int size;
     int nbElems;
+    /* True iff we are iterating over hash entries. */
+    bool iterating;
+    /* Pointer to the current entry during iteration. */
+    virHashEntryPtr current;
     virHashDataFree dataFree;
     virHashKeyCode keyCode;
     virHashKeyEqual keyEqual;
@@ -316,6 +326,9 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
     if ((table == NULL) || (name == NULL))
         return (-1);
 
+    if (table->iterating)
+        virHashIterationError(-1);
+
     /*
      * Check for duplicate and insertion location.
      */
@@ -513,6 +526,8 @@ virHashRemoveEntry(virHashTablePtr table, const void *name)
         for (entry = &(table->table[key]); entry != NULL;
              entry = entry->next) {
             if (table->keyEqual(entry->name, name)) {
+                if (table->iterating && table->current != entry)
+                    virHashIterationError(-1);
                 if (table->dataFree && (entry->payload != NULL))
                     table->dataFree(entry->payload, entry->name);
                 entry->payload = NULL;
@@ -548,28 +563,38 @@ virHashRemoveEntry(virHashTablePtr table, const void *name)
  * @data: opaque data to pass to the iterator
  *
  * Iterates over every element in the hash table, invoking the
- * 'iter' callback. The callback is allowed to remove the element using
- * virHashRemoveEntry but calling other virHash* functions is prohibited.
+ * 'iter' callback. The callback is allowed to remove the current element
+ * using virHashRemoveEntry but calling other virHash* functions is prohibited.
  *
  * Returns number of items iterated over upon completion, -1 on failure
  */
-int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data) {
+int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
+{
     int i, count = 0;
 
     if (table == NULL || iter == NULL)
         return (-1);
 
+    if (table->iterating)
+        virHashIterationError(-1);
+
+    table->iterating = true;
+    table->current = NULL;
     for (i = 0 ; i < table->size ; i++) {
         virHashEntryPtr entry = table->table + i;
         while (entry) {
             virHashEntryPtr next = entry->next;
             if (entry->valid) {
+                table->current = entry;
                 iter(entry->payload, entry->name, data);
+                table->current = NULL;
                 count++;
             }
             entry = next;
         }
     }
+    table->iterating = false;
+
     return (count);
 }
 
@@ -593,6 +618,11 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *da
     if (table == NULL || iter == NULL)
         return (-1);
 
+    if (table->iterating)
+        virHashIterationError(-1);
+
+    table->iterating = true;
+    table->current = NULL;
     for (i = 0 ; i < table->size ; i++) {
         virHashEntryPtr prev = NULL;
         virHashEntryPtr entry = &(table->table[i]);
@@ -629,6 +659,8 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *da
             }
         }
     }
+    table->iterating = false;
+
     return (count);
 }
 
@@ -649,15 +681,24 @@ void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *dat
     if (table == NULL || iter == NULL)
         return (NULL);
 
+    if (table->iterating)
+        virHashIterationError(NULL);
+
+    table->iterating = true;
+    table->current = NULL;
     for (i = 0 ; i < table->size ; i++) {
         virHashEntryPtr entry = table->table + i;
         while (entry) {
             if (entry->valid) {
-                if (iter(entry->payload, entry->name, data))
+                if (iter(entry->payload, entry->name, data)) {
+                    table->iterating = false;
                     return entry->payload;
+                }
             }
             entry = entry->next;
         }
     }
+    table->iterating = false;
+
     return (NULL);
 }
