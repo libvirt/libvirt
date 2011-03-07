@@ -4278,6 +4278,8 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         }
         else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             ret = qemuDomainDetachDiskDevice(driver, vm, dev, qemuCaps);
+        } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+            ret = qemuDomainDetachDiskDevice(driver, vm, dev, qemuCaps);
         }
         else {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
