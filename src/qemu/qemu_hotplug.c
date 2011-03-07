@@ -1795,7 +1795,7 @@ qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
     if (ret == -2) {
         if (type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Only VNC graphics are supported"));
+                            _("Graphics password only supported for VNC"));
             ret = -1;
         } else {
             ret = qemuMonitorSetVNCPassword(priv->mon,
