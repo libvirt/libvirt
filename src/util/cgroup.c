@@ -527,9 +527,20 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
         if (access(path, F_OK) != 0) {
             if (!create ||
                 mkdir(path, 0755) < 0) {
-                rc = -errno;
-                VIR_FREE(path);
-                break;
+                /* With a kernel that doesn't support multi-level directory
+                 * for blkio controller, libvirt will fail and disable all
+                 * other controllers even though they are available. So
+                 * treat blkio as unmounted if mkdir fails. */
+                if (i == VIR_CGROUP_CONTROLLER_BLKIO) {
+                    rc = 0;
+                    VIR_FREE(group->controllers[i].mountPoint);
+                    VIR_FREE(path);
+                    continue;
+                } else {
+                    rc = -errno;
+                    VIR_FREE(path);
+                    break;
+                }
             }
             if (group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint != NULL &&
                 (i == VIR_CGROUP_CONTROLLER_CPUSET ||
