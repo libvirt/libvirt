@@ -67,9 +67,7 @@ qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
     VIR_DEBUG("Process path %s for disk", path);
     /* XXX RO vs RW */
     rc = virCgroupAllowDevicePath(data->cgroup, path);
-    if (rc <= 0)
-        qemuDomainCgroupAudit(data->vm, data->cgroup, "allow", "path", path,
-                              rc == 0);
+    qemuAuditCgroupPath(data->vm, data->cgroup, "allow", path, rc);
     if (rc < 0) {
         if (rc == -EACCES) { /* Get this for root squash NFS */
             VIR_DEBUG("Ignoring EACCES for %s", path);
@@ -110,9 +108,7 @@ qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
     VIR_DEBUG("Process path %s for disk", path);
     /* XXX RO vs RW */
     rc = virCgroupDenyDevicePath(data->cgroup, path);
-    if (rc <= 0)
-        qemuDomainCgroupAudit(data->vm, data->cgroup, "deny", "path", path,
-                              rc == 0);
+    qemuAuditCgroupPath(data->vm, data->cgroup, "deny", path, rc);
     if (rc < 0) {
         if (rc == -EACCES) { /* Get this for root squash NFS */
             VIR_DEBUG("Ignoring EACCES for %s", path);
@@ -155,9 +151,8 @@ qemuSetupChardevCgroup(virDomainDefPtr def,
 
     VIR_DEBUG("Process path '%s' for disk", dev->source.data.file.path);
     rc = virCgroupAllowDevicePath(data->cgroup, dev->source.data.file.path);
-    if (rc < 0)
-        qemuDomainCgroupAudit(data->vm, data->cgroup, "allow", "path",
-                              dev->source.data.file.path, rc == 0);
+    qemuAuditCgroupPath(data->vm, data->cgroup, "allow",
+                        dev->source.data.file.path, rc);
     if (rc < 0) {
         virReportSystemError(-rc,
                              _("Unable to allow device %s for %s"),
@@ -178,9 +173,7 @@ int qemuSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     rc = virCgroupAllowDevicePath(data->cgroup, path);
-    if (rc <= 0)
-        qemuDomainCgroupAudit(data->vm, data->cgroup, "allow", "path", path,
-                              rc == 0);
+    qemuAuditCgroupPath(data->vm, data->cgroup, "allow", path, rc);
     if (rc < 0) {
         virReportSystemError(-rc,
                              _("Unable to allow device %s"),
@@ -216,7 +209,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         qemuCgroupData data = { vm, cgroup };
         rc = virCgroupDenyAllDevices(cgroup);
-        qemuDomainCgroupAudit(vm, cgroup, "deny", "all", NULL, rc == 0);
+        qemuAuditCgroup(vm, cgroup, "deny", "all", rc == 0);
         if (rc != 0) {
             if (rc == -EPERM) {
                 VIR_WARN0("Group devices ACL is not accessible, disabling whitelisting");
@@ -234,7 +227,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR);
-        qemuDomainCgroupAudit(vm, cgroup, "allow", "major", "pty", rc == 0);
+        qemuAuditCgroupMajor(vm, cgroup, "allow", DEVICE_PTY_MAJOR,
+                             "pty", rc == 0);
         if (rc != 0) {
             virReportSystemError(-rc, "%s",
                                  _("unable to allow /dev/pts/ devices"));
@@ -247,8 +241,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                driver->vncAllowHostAudio) ||
               (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {
             rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR);
-            qemuDomainCgroupAudit(vm, cgroup, "allow", "major", "sound",
-                                  rc == 0);
+            qemuAuditCgroupMajor(vm, cgroup, "allow", DEVICE_SND_MAJOR,
+                                 "sound", rc == 0);
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to allow /dev/snd/ devices"));
@@ -259,8 +253,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         for (i = 0; deviceACL[i] != NULL ; i++) {
             rc = virCgroupAllowDevicePath(cgroup,
                                           deviceACL[i]);
-            qemuDomainCgroupAudit(vm, cgroup, "allow", "path",
-                                  deviceACL[i], rc == 0);
+            qemuAuditCgroupPath(vm, cgroup, "allow", deviceACL[i], rc);
             if (rc < 0 &&
                 rc != -ENOENT) {
                 virReportSystemError(-rc,

@@ -43,12 +43,22 @@ void qemuDomainHostdevAudit(virDomainObjPtr vm,
                             virDomainHostdevDefPtr def,
                             const char *reason,
                             bool success);
-void qemuDomainCgroupAudit(virDomainObjPtr vm,
-                           virCgroupPtr group,
-                           const char *reason,
-                           const char *item,
-                           const char *name,
-                           bool success);
+void qemuAuditCgroup(virDomainObjPtr vm,
+                     virCgroupPtr group,
+                     const char *reason,
+                     const char *extra,
+                     bool success);
+void qemuAuditCgroupMajor(virDomainObjPtr vm,
+                          virCgroupPtr group,
+                          const char *reason,
+                          int maj,
+                          const char *name,
+                          bool success);
+void qemuAuditCgroupPath(virDomainObjPtr vm,
+                         virCgroupPtr group,
+                         const char *reason,
+                         const char *path,
+                         int rc);
 void qemuDomainMemoryAudit(virDomainObjPtr vm,
                            unsigned long long oldmem,
                            unsigned long long newmem,
