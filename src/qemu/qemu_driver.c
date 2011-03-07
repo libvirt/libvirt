@@ -4025,6 +4025,14 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto endjob;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        if (dev->data.disk->driverName != NULL &&
+            !STREQ(dev->data.disk->driverName, "qemu")) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("unsupported driver name '%s' for disk '%s'"),
+                            dev->data.disk->driverName, dev->data.disk->src);
+            goto endjob;
+        }
+
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
             if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
