@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
 #if HAVE_SYSLOG_H
 # include <syslog.h>
 #endif
@@ -283,6 +284,9 @@ static void virLogStr(const char *str, int len) {
 static void virLogDumpAllFD(const char *msg, int len) {
     int i, found = 0;
 
+    if (len <= 0)
+        len = strlen(msg);
+
     for (i = 0; i < virLogNbOutputs;i++) {
         if (virLogOutputs[i].f == virLogOutputToFd) {
             int fd = (long) virLogOutputs[i].data;
@@ -308,24 +312,38 @@ static void virLogDumpAllFD(const char *msg, int len) {
  */
 void
 virLogEmergencyDumpAll(int signum) {
-    int ret = 0, len;
-    char buf[100];
-
-    if (virLogLen == 0)
-        return;
+    int len;
 
     virLogLock();
-    snprintf(buf, sizeof(buf) - 1,
-             "Caught signal %d, dumping internal log buffer:\n", signum);
-    buf[sizeof(buf) - 1] = 0;
-    virLogDumpAllFD(buf, strlen(buf));
-    snprintf(buf, sizeof(buf) - 1, "\n\n    ====== start of log =====\n\n");
-    virLogDumpAllFD(buf, strlen(buf));
+    switch (signum) {
+        case SIGFPE:
+            virLogDumpAllFD( "Caught signal Floating-point exception", -1);
+            break;
+        case SIGSEGV:
+            virLogDumpAllFD( "Caught Segmentation violation", -1);
+            break;
+        case SIGILL:
+            virLogDumpAllFD( "Caught illegal instruction", -1);
+            break;
+        case SIGABRT:
+            virLogDumpAllFD( "Caught abort signal", -1);
+            break;
+        case SIGBUS:
+            virLogDumpAllFD( "Caught bus error", -1);
+            break;
+        case SIGUSR2:
+            virLogDumpAllFD( "Caught User-defined signal 2", -1);
+            break;
+        default:
+            virLogDumpAllFD( "Caught unexpected signal", -1);
+            break;
+    }
+    virLogDumpAllFD(" dumping internal log buffer:\n", -1);
+    virLogDumpAllFD("\n\n    ====== start of log =====\n\n", -1);
     while (virLogLen > 0) {
         if (virLogStart + virLogLen < LOG_BUFFER_SIZE) {
             virLogBuffer[virLogStart + virLogLen] = 0;
             virLogDumpAllFD(&virLogBuffer[virLogStart], virLogLen);
-            ret += virLogLen;
             virLogStart += virLogLen;
             virLogLen = 0;
         } else {
@@ -336,8 +354,7 @@ virLogEmergencyDumpAll(int signum) {
             virLogStart = 0;
         }
     }
-    snprintf(buf, sizeof(buf) - 1, "\n\n     ====== end of log =====\n\n");
-    virLogDumpAllFD(buf, strlen(buf));
+    virLogDumpAllFD("\n\n     ====== end of log =====\n\n", -1);
     virLogUnlock();
 }
 
