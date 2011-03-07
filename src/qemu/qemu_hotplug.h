@@ -77,10 +77,10 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,
                                   virBitmapPtr qemuCaps);
-int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
-                                   virDomainObjPtr vm,
-                                   virDomainDeviceDefPtr dev,
-                                   virBitmapPtr qemuCaps);
+int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
+                               virDomainObjPtr vm,
+                               virDomainDeviceDefPtr dev,
+                               virBitmapPtr qemuCaps);
 int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
                                         virDomainObjPtr vm,
                                         virDomainDeviceDefPtr dev,

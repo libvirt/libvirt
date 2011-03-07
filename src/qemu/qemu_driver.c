@@ -4277,8 +4277,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
             ret = qemuDomainDetachPciDiskDevice(driver, vm, dev, qemuCaps);
         }
         else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-            ret = qemuDomainDetachSCSIDiskDevice(driver, vm, dev,
-                                                 qemuCaps);
+            ret = qemuDomainDetachDiskDevice(driver, vm, dev, qemuCaps);
         }
         else {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

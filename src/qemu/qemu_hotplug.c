@@ -1221,10 +1221,10 @@ cleanup:
     return ret;
 }
 
-int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
-                                   virDomainObjPtr vm,
-                                   virDomainDeviceDefPtr dev,
-                                   virBitmapPtr qemuCaps)
+int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
+                               virDomainObjPtr vm,
+                               virDomainDeviceDefPtr dev,
+                               virBitmapPtr qemuCaps)
 {
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
@@ -1241,8 +1241,9 @@ int qemuDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
     }
 
     if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                        _("Underlying qemu does not support SCSI disk removal"));
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("Underlying qemu does not support %s disk removal"),
+                        virDomainDiskBusTypeToString(dev->data.disk->bus));
         goto cleanup;
     }
 
