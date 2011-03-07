@@ -40,6 +40,11 @@ int virCgroupForDomain(virCgroupPtr driver,
                        virCgroupPtr *group,
                        int create);
 
+int virCgroupPathOfController(virCgroupPtr group,
+                              int controller,
+                              const char *key,
+                              char **path);
+
 int virCgroupAddTask(virCgroupPtr group, pid_t pid);
 
 int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);

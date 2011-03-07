@@ -79,6 +79,7 @@ virCgroupKill;
 virCgroupKillRecursive;
 virCgroupKillPainfully;
 virCgroupMounted;
+virCgroupPathOfController;
 virCgroupRemove;
 virCgroupSetBlkioWeight;
 virCgroupSetCpuShares;

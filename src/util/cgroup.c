@@ -254,10 +254,10 @@ static int virCgroupDetect(virCgroupPtr group)
 #endif
 
 
-static int virCgroupPathOfController(virCgroupPtr group,
-                                     int controller,
-                                     const char *key,
-                                     char **path)
+int virCgroupPathOfController(virCgroupPtr group,
+                              int controller,
+                              const char *key,
+                              char **path)
 {
     if (controller == -1) {
         int i;

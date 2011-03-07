@@ -213,11 +213,13 @@ cleanup:
  * Log an audit message about an attempted cgroup device ACL change.
  */
 void
-qemuAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup ATTRIBUTE_UNUSED,
+qemuAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup,
                 const char *reason, const char *extra, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
+    char *controller = NULL;
+    char *detail;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
@@ -225,11 +227,18 @@ qemuAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup ATTRIBUTE_UNUSED,
         return;
     }
 
+    virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_DEVICES,
+                              NULL, &controller);
+    detail = virAuditEncode("cgroup", VIR_AUDIT_STR(controller));
+
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "resrc=cgroup reason=%s %s uuid=%s class=%s",
-              reason, vmname, uuidstr, extra);
+              "resrc=cgroup reason=%s %s uuid=%s %s class=%s",
+              reason, vmname, uuidstr,
+              detail ? detail : "cgroup=?", extra);
 
     VIR_FREE(vmname);
+    VIR_FREE(controller);
+    VIR_FREE(detail);
 }
 
 /**
