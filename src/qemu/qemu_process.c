@@ -339,15 +339,18 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virDomainObjLock(vm);
     if (vm->state == VIR_DOMAIN_RUNNING) {
-        VIR_DEBUG("Transitioned guest %s to paused state due to unknown event", vm->def->name);
+        VIR_DEBUG("Transitioned guest %s to paused state due to unknown event",
+                  vm->def->name);
 
         vm->state = VIR_DOMAIN_PAUSED;
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
 
-        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
-            VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after state change",
+                     vm->def->name);
+        }
     }
     virDomainObjUnlock(vm);
 
@@ -412,8 +415,10 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG);
 
-        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
-            VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after watchdog event",
+                     vm->def->name);
+        }
     }
 
     if (vm->def->watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
