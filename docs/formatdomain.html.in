@@ -1388,7 +1388,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source network='default'/&gt;
       &lt;target dev='vnet1'/&gt;
       &lt;model type='virtio'/&gt;
-      <b>&lt;driver txmode='iothread'/&gt;</b>
+      <b>&lt;driver name='vhost' txmode='iothread'/&gt;</b>
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -1401,6 +1401,18 @@ qemu-kvm -net nic,model=? /dev/null
     </p>
 
     <dl>
+      <dt><code>name</code></dt>
+      <dd>
+        The optional <code>name</code> attribute forces which type of
+        backend driver to use. The value can be either 'qemu' (a
+        user-space backend) or 'vhost' (a kernel backend, which
+        requires the vhost module to be provided by the kernel); an
+        attempt to require the vhost driver without kernel support
+        will be rejected.  If this attribute is not present, then the
+        domain defaults to 'vhost' if present, but silently falls back
+        to 'qemu' without error.
+        <span class="since">Since 0.8.8 (QEMU and KVM only)</span>
+      </dd>
       <dt><code>txmode</code></dt>
       <dd>
         The <code>txmode</code> attribute specifies how to handle
