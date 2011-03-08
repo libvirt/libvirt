@@ -910,6 +910,7 @@ virRandom;
 virRandomInitialize;
 virRun;
 virRunWithHook;
+virSetBlocking;
 virSetCloseExec;
 virSetNonBlock;
 virSetUIDGID;

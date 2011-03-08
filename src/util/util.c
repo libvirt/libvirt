@@ -244,16 +244,19 @@ virArgvToString(const char *const *argv)
     return ret;
 }
 
-int virSetNonBlock(int fd) {
+int virSetBlocking(int fd, bool blocking) {
 #ifndef WIN32
     int flags;
     if ((flags = fcntl(fd, F_GETFL)) < 0)
         return -1;
-    flags |= O_NONBLOCK;
+    if (blocking)
+        flags &= ~O_NONBLOCK;
+    else
+        flags |= O_NONBLOCK;
     if ((fcntl(fd, F_SETFL, flags)) < 0)
         return -1;
 #else
-    unsigned long flag = 1;
+    unsigned long flag = blocking ? 0 : 1;
 
     /* This is actually Gnulib's replacement rpl_ioctl function.
      * We can't call ioctlsocket directly in any case.
@@ -262,6 +265,10 @@ int virSetNonBlock(int fd) {
         return -1;
 #endif
     return 0;
+}
+
+int virSetNonBlock(int fd) {
+    return virSetBlocking(fd, false);
 }
 
 

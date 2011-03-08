@@ -49,6 +49,7 @@ enum {
     VIR_EXEC_CLEAR_CAPS = (1 << 2),
 };
 
+int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;
 int virSetNonBlock(int fd) ATTRIBUTE_RETURN_CHECK;
 int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
 
