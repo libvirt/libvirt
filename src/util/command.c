@@ -109,11 +109,6 @@ virCommandNewArgs(const char *const*args)
 
     virCommandAddArgSet(cmd, args);
 
-    if (cmd->has_error) {
-        virCommandFree(cmd);
-        return NULL;
-    }
-
     return cmd;
 }
 
@@ -362,6 +357,9 @@ virCommandAddEnvPass(virCommandPtr cmd, const char *name)
 void
 virCommandAddEnvPassCommon(virCommandPtr cmd)
 {
+    if (!cmd || cmd->has_error)
+        return;
+
     /* Attempt to Pre-allocate; allocation failure will be detected
      * later during virCommandAdd*.  */
     ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 9));
@@ -477,6 +475,11 @@ virCommandAddArgSet(virCommandPtr cmd, const char *const*vals)
 
     if (!cmd || cmd->has_error)
         return;
+
+    if (vals[0] == NULL) {
+        cmd->has_error = EINVAL;
+        return;
+    }
 
     while (vals[narg] != NULL)
         narg++;
