@@ -324,7 +324,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                                    -1, NULL, VIR_VM_OP_MIGRATE_IN_START);
     VIR_FREE(migrateFrom);
     if (internalret < 0) {
-        qemuDomainStartAudit(vm, "migrated", false);
+        qemuAuditDomainStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
          * should have already done that.
          */
@@ -338,7 +338,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     if (virFDStreamConnectUNIX(st,
                                unixfile,
                                false) < 0) {
-        qemuDomainStartAudit(vm, "migrated", false);
+        qemuAuditDomainStart(vm, "migrated", false);
         qemuProcessStop(driver, vm, 0);
         if (!vm->persistent) {
             if (qemuDomainObjEndJob(vm) > 0)
@@ -351,7 +351,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
         goto endjob;
     }
 
-    qemuDomainStartAudit(vm, "migrated", true);
+    qemuAuditDomainStart(vm, "migrated", true);
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
@@ -532,7 +532,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
     if (qemuProcessStart(dconn, driver, vm, migrateFrom, true,
                          -1, NULL, VIR_VM_OP_MIGRATE_IN_START) < 0) {
-        qemuDomainStartAudit(vm, "migrated", false);
+        qemuAuditDomainStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
          * should have already done that.
          */
@@ -544,7 +544,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
         goto endjob;
     }
 
-    qemuDomainStartAudit(vm, "migrated", true);
+    qemuAuditDomainStart(vm, "migrated", true);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_MIGRATED);
@@ -1089,7 +1089,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
 
     /* Clean up the source domain. */
     qemuProcessStop(driver, vm, 1);
-    qemuDomainStopAudit(vm, "migrated");
+    qemuAuditDomainStop(vm, "migrated");
     resume = 0;
 
     event = virDomainEventNewFromObj(vm,
@@ -1268,7 +1268,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
         }
     } else {
         qemuProcessStop(driver, vm, 1);
-        qemuDomainStopAudit(vm, "failed");
+        qemuAuditDomainStop(vm, "failed");
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);

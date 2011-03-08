@@ -1266,7 +1266,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (qemuProcessStart(conn, driver, vm, NULL,
                          (flags & VIR_DOMAIN_START_PAUSED) != 0,
                          -1, NULL, VIR_VM_OP_CREATE) < 0) {
-        qemuDomainStartAudit(vm, "booted", false);
+        qemuAuditDomainStart(vm, "booted", false);
         if (qemuDomainObjEndJob(vm) > 0)
             virDomainRemoveInactive(&driver->domains,
                                     vm);
@@ -1277,7 +1277,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
-    qemuDomainStartAudit(vm, "booted", true);
+    qemuAuditDomainStart(vm, "booted", true);
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
@@ -1492,7 +1492,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
-    qemuDomainStopAudit(vm, "destroyed");
+    qemuAuditDomainStop(vm, "destroyed");
 
     if (!vm->persistent) {
         if (qemuDomainObjEndJob(vm) > 0)
@@ -1604,8 +1604,7 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     qemuDomainObjEnterMonitor(vm);
     r = qemuMonitorSetBalloon(priv->mon, newmem);
     qemuDomainObjExitMonitor(vm);
-    qemuDomainMemoryAudit(vm, vm->def->mem.cur_balloon, newmem, "update",
-                          r == 1);
+    qemuAuditMemory(vm, vm->def->mem.cur_balloon, newmem, "update", r == 1);
     if (r < 0)
         goto endjob;
 
@@ -2024,7 +2023,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
     /* Shut it down */
     qemuProcessStop(driver, vm, 0);
-    qemuDomainStopAudit(vm, "saved");
+    qemuAuditDomainStop(vm, "saved");
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
@@ -2420,7 +2419,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
         qemuProcessStop(driver, vm, 0);
-        qemuDomainStopAudit(vm, "crashed");
+        qemuAuditDomainStop(vm, "crashed");
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
@@ -2552,7 +2551,7 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
 
 cleanup:
     qemuDomainObjExitMonitor(vm);
-    qemuDomainVcpuAudit(vm, oldvcpus, nvcpus, "update", rc == 1);
+    qemuAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
     return ret;
 
 unsupported:
@@ -3330,14 +3329,14 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     *read_pid = -1;
 
     if (ret < 0) {
-        qemuDomainStartAudit(vm, "restored", false);
+        qemuAuditDomainStart(vm, "restored", false);
         goto out;
     }
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
-    qemuDomainStartAudit(vm, "restored", true);
+    qemuAuditDomainStart(vm, "restored", true);
     if (event)
         qemuDomainEventQueue(driver, event);
 
@@ -3675,7 +3674,7 @@ static int qemudDomainObjStart(virConnectPtr conn,
 
     ret = qemuProcessStart(conn, driver, vm, NULL, start_paused, -1, NULL,
                            VIR_VM_OP_CREATE);
-    qemuDomainStartAudit(vm, "booted", ret >= 0);
+    qemuAuditDomainStart(vm, "booted", ret >= 0);
     if (ret >= 0) {
         virDomainEventPtr event =
             virDomainEventNewFromObj(vm,
@@ -6354,7 +6353,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
                                   false, -1, NULL, VIR_VM_OP_CREATE);
-            qemuDomainStartAudit(vm, "from-snapshot", rc >= 0);
+            qemuAuditDomainStart(vm, "from-snapshot", rc >= 0);
             if (qemuDomainSnapshotSetCurrentInactive(vm, driver->snapshotDir) < 0)
                 goto endjob;
             if (rc < 0)
@@ -6387,7 +6386,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
         if (virDomainObjIsActive(vm)) {
             qemuProcessStop(driver, vm, 0);
-            qemuDomainStopAudit(vm, "from-snapshot");
+            qemuAuditDomainStop(vm, "from-snapshot");
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);

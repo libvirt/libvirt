@@ -27,48 +27,66 @@
 # include "domain_conf.h"
 # include "cgroup.h"
 
-void qemuDomainStartAudit(virDomainObjPtr vm, const char *reason, bool success);
-void qemuDomainStopAudit(virDomainObjPtr vm, const char *reason);
-void qemuDomainDiskAudit(virDomainObjPtr vm,
-                         virDomainDiskDefPtr oldDef,
-                         virDomainDiskDefPtr newDef,
-                         const char *reason,
-                         bool success);
-void qemuDomainNetAudit(virDomainObjPtr vm,
-                        virDomainNetDefPtr oldDef,
-                        virDomainNetDefPtr newDef,
-                        const char *reason,
-                        bool success);
-void qemuDomainHostdevAudit(virDomainObjPtr vm,
-                            virDomainHostdevDefPtr def,
-                            const char *reason,
-                            bool success);
+void qemuAuditDomainStart(virDomainObjPtr vm,
+                          const char *reason,
+                          bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuAuditDomainStop(virDomainObjPtr vm,
+                         const char *reason)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuAuditDisk(virDomainObjPtr vm,
+                   virDomainDiskDefPtr oldDef,
+                   virDomainDiskDefPtr newDef,
+                   const char *reason,
+                   bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void qemuAuditNet(virDomainObjPtr vm,
+                  virDomainNetDefPtr oldDef,
+                  virDomainNetDefPtr newDef,
+                  const char *reason,
+                  bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void qemuAuditHostdev(virDomainObjPtr vm,
+                      virDomainHostdevDefPtr def,
+                      const char *reason,
+                      bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 void qemuAuditCgroup(virDomainObjPtr vm,
                      virCgroupPtr group,
                      const char *reason,
                      const char *extra,
-                     bool success);
+                     bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
 void qemuAuditCgroupMajor(virDomainObjPtr vm,
                           virCgroupPtr group,
                           const char *reason,
                           int maj,
                           const char *name,
-                          bool success);
+                          bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(5);
 void qemuAuditCgroupPath(virDomainObjPtr vm,
                          virCgroupPtr group,
                          const char *reason,
                          const char *path,
-                         int rc);
-void qemuDomainMemoryAudit(virDomainObjPtr vm,
-                           unsigned long long oldmem,
-                           unsigned long long newmem,
-                           const char *reason,
-                           bool success);
-void qemuDomainVcpuAudit(virDomainObjPtr vm,
-                         unsigned int oldvcpu,
-                         unsigned int newvcpu,
-                         const char *reason,
-                         bool success);
-void qemuDomainSecurityLabelAudit(virDomainObjPtr vm, bool success);
+                         int rc)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
+void qemuAuditMemory(virDomainObjPtr vm,
+                     unsigned long long oldmem,
+                     unsigned long long newmem,
+                     const char *reason,
+                     bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void qemuAuditVcpu(virDomainObjPtr vm,
+                   unsigned int oldvcpu,
+                   unsigned int newvcpu,
+                   const char *reason,
+                   bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void qemuAuditSecurityLabel(virDomainObjPtr vm,
+                            bool success)
+    ATTRIBUTE_NONNULL(1);
 
 #endif /* __QEMU_AUDIT_H__ */

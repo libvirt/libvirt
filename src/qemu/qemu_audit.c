@@ -57,11 +57,10 @@ qemuAuditGetRdev(const char *path ATTRIBUTE_UNUSED)
 }
 #endif
 
-void qemuDomainDiskAudit(virDomainObjPtr vm,
-                         virDomainDiskDefPtr oldDef,
-                         virDomainDiskDefPtr newDef,
-                         const char *reason,
-                         bool success)
+void
+qemuAuditDisk(virDomainObjPtr vm,
+              virDomainDiskDefPtr oldDef, virDomainDiskDefPtr newDef,
+              const char *reason, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
@@ -99,11 +98,10 @@ cleanup:
 }
 
 
-void qemuDomainNetAudit(virDomainObjPtr vm,
-                        virDomainNetDefPtr oldDef,
-                        virDomainNetDefPtr newDef,
-                        const char *reason,
-                        bool success)
+void
+qemuAuditNet(virDomainObjPtr vm,
+             virDomainNetDefPtr oldDef, virDomainNetDefPtr newDef,
+             const char *reason, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char newMacstr[VIR_MAC_STRING_BUFLEN];
@@ -131,7 +129,7 @@ void qemuDomainNetAudit(virDomainObjPtr vm,
 
 
 /**
- * qemuDomainHostdevAudit:
+ * qemuAuditHostdev:
  * @vm: domain making a change in pass-through host device
  * @hostdev: device being attached or removed
  * @reason: one of "start", "attach", or "detach"
@@ -140,10 +138,8 @@ void qemuDomainNetAudit(virDomainObjPtr vm,
  * Log an audit message about an attempted device passthrough change.
  */
 void
-qemuDomainHostdevAudit(virDomainObjPtr vm,
-                       virDomainHostdevDefPtr hostdev,
-                       const char *reason,
-                       bool success)
+qemuAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
+                 const char *reason, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
@@ -310,7 +306,7 @@ cleanup:
 }
 
 /**
- * qemuDomainResourceAudit:
+ * qemuAuditResource:
  * @vm: domain making an integer resource change
  * @resource: name of the resource: "mem" or "vcpu"
  * @oldval: the old value of the resource
@@ -321,12 +317,9 @@ cleanup:
  * Log an audit message about an attempted resource change.
  */
 static void
-qemuDomainResourceAudit(virDomainObjPtr vm,
-                        const char *resource,
-                        unsigned long long oldval,
-                        unsigned long long newval,
-                        const char *reason,
-                        bool success)
+qemuAuditResource(virDomainObjPtr vm, const char *resource,
+                  unsigned long long oldval, unsigned long long newval,
+                  const char *reason, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
@@ -346,26 +339,24 @@ qemuDomainResourceAudit(virDomainObjPtr vm,
 }
 
 void
-qemuDomainMemoryAudit(virDomainObjPtr vm,
-                      unsigned long long oldmem, unsigned long long newmem,
-                      const char *reason, bool success)
+qemuAuditMemory(virDomainObjPtr vm,
+                unsigned long long oldmem, unsigned long long newmem,
+                const char *reason, bool success)
 {
-    return qemuDomainResourceAudit(vm, "mem", oldmem, newmem, reason, success);
+    return qemuAuditResource(vm, "mem", oldmem, newmem, reason, success);
 }
 
 void
-qemuDomainVcpuAudit(virDomainObjPtr vm,
-                    unsigned int oldvcpu, unsigned int newvcpu,
-                    const char *reason, bool success)
+qemuAuditVcpu(virDomainObjPtr vm,
+              unsigned int oldvcpu, unsigned int newvcpu,
+              const char *reason, bool success)
 {
-    return qemuDomainResourceAudit(vm, "vcpu", oldvcpu, newvcpu, reason,
-                                   success);
+    return qemuAuditResource(vm, "vcpu", oldvcpu, newvcpu, reason, success);
 }
 
-static void qemuDomainLifecycleAudit(virDomainObjPtr vm,
-                                     const char *op,
-                                     const char *reason,
-                                     bool success)
+static void
+qemuAuditLifecycle(virDomainObjPtr vm, const char *op,
+                   const char *reason, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
@@ -384,39 +375,42 @@ static void qemuDomainLifecycleAudit(virDomainObjPtr vm,
 }
 
 
-void qemuDomainStartAudit(virDomainObjPtr vm, const char *reason, bool success)
+void
+qemuAuditDomainStart(virDomainObjPtr vm, const char *reason, bool success)
 {
     int i;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         if (disk->src) /* Skips CDROM without media initially inserted */
-            qemuDomainDiskAudit(vm, NULL, disk, "start", true);
+            qemuAuditDisk(vm, NULL, disk, "start", true);
     }
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
-        qemuDomainNetAudit(vm, NULL, net, "start", true);
+        qemuAuditNet(vm, NULL, net, "start", true);
     }
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
-        qemuDomainHostdevAudit(vm, hostdev, "start", true);
+        qemuAuditHostdev(vm, hostdev, "start", true);
     }
 
-    qemuDomainMemoryAudit(vm, 0, vm->def->mem.cur_balloon, "start", true);
-    qemuDomainVcpuAudit(vm, 0, vm->def->vcpus, "start", true);
+    qemuAuditMemory(vm, 0, vm->def->mem.cur_balloon, "start", true);
+    qemuAuditVcpu(vm, 0, vm->def->vcpus, "start", true);
 
-    qemuDomainLifecycleAudit(vm, "start", reason, success);
+    qemuAuditLifecycle(vm, "start", reason, success);
 }
 
 
-void qemuDomainStopAudit(virDomainObjPtr vm, const char *reason)
+void
+qemuAuditDomainStop(virDomainObjPtr vm, const char *reason)
 {
-    qemuDomainLifecycleAudit(vm, "stop", reason, true);
+    qemuAuditLifecycle(vm, "stop", reason, true);
 }
 
-void qemuDomainSecurityLabelAudit(virDomainObjPtr vm, bool success)
+void
+qemuAuditSecurityLabel(virDomainObjPtr vm, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;

@@ -131,7 +131,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
     qemuProcessStop(driver, vm, 0);
-    qemuDomainStopAudit(vm, hasError ? "failed" : "shutdown");
+    qemuAuditDomainStop(vm, hasError ? "failed" : "shutdown");
 
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains, vm);
@@ -1935,10 +1935,10 @@ int qemuProcessStart(virConnectPtr conn,
        then generate a security label for isolation */
     VIR_DEBUG0("Generating domain security label (if required)");
     if (virSecurityManagerGenLabel(driver->securityManager, vm) < 0) {
-        qemuDomainSecurityLabelAudit(vm, false);
+        qemuAuditSecurityLabel(vm, false);
         goto cleanup;
     }
-    qemuDomainSecurityLabelAudit(vm, true);
+    qemuAuditSecurityLabel(vm, true);
 
     VIR_DEBUG0("Generating setting domain security labels (if required)");
     if (virSecurityManagerSetAllLabel(driver->securityManager,
