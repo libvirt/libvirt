@@ -1,7 +1,7 @@
 /*
  * storage_backend.c: internal storage driver backend contract
  *
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -36,6 +36,10 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 #include <dirent.h>
+#ifdef __linux__
+# include <sys/ioctl.h>
+# include <linux/fs.h>
+#endif
 
 #if HAVE_SELINUX
 # include <selinux/selinux.h>
@@ -108,6 +112,9 @@ enum {
     TOOL_QCOW_CREATE,
 };
 
+#define READ_BLOCK_SIZE_DEFAULT  (1024 * 1024)
+#define WRITE_BLOCK_SIZE_DEFAULT (4 * 1024)
+
 static int ATTRIBUTE_NONNULL (2)
 virStorageBackendCopyToFD(virStorageVolDefPtr vol,
                           virStorageVolDefPtr inputvol,
@@ -119,9 +126,12 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     int amtread = -1;
     int ret = 0;
     unsigned long long remain;
-    size_t bytes = 1024 * 1024;
-    char zerobuf[512];
+    size_t rbytes = READ_BLOCK_SIZE_DEFAULT;
+    size_t wbytes = 0;
+    int interval;
+    char *zerobuf;
     char *buf = NULL;
+    struct stat st;
 
     if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
         ret = -errno;
@@ -131,9 +141,23 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    bzero(&zerobuf, sizeof(zerobuf));
+#ifdef __linux__
+    if (ioctl(fd, BLKBSZGET, &wbytes) < 0) {
+        wbytes = 0;
+    }
+#endif
+    if ((wbytes == 0) && fstat(fd, &st) == 0)
+        wbytes = st.st_blksize;
+    if (wbytes < WRITE_BLOCK_SIZE_DEFAULT)
+        wbytes = WRITE_BLOCK_SIZE_DEFAULT;
 
-    if (VIR_ALLOC_N(buf, bytes) < 0) {
+    if (VIR_ALLOC_N(zerobuf, wbytes) < 0) {
+        ret = -errno;
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(buf, rbytes) < 0) {
         ret = -errno;
         virReportOOMError();
         goto cleanup;
@@ -144,10 +168,10 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     while (amtread != 0) {
         int amtleft;
 
-        if (remain < bytes)
-            bytes = remain;
+        if (remain < rbytes)
+            rbytes = remain;
 
-        if ((amtread = saferead(inputfd, buf, bytes)) < 0) {
+        if ((amtread = saferead(inputfd, buf, rbytes)) < 0) {
             ret = -errno;
             virReportSystemError(errno,
                                  _("failed reading from file '%s'"),
@@ -160,7 +184,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
          * blocks */
         amtleft = amtread;
         do {
-            int interval = ((512 > amtleft) ? amtleft : 512);
+            interval = ((wbytes > amtleft) ? amtleft : wbytes);
             int offset = amtread - amtleft;
 
             if (is_dest_file && memcmp(buf+offset, zerobuf, interval) == 0) {
@@ -179,7 +203,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
                 goto cleanup;
 
             }
-        } while ((amtleft -= 512) > 0);
+        } while ((amtleft -= interval) > 0);
     }
 
     if (VIR_CLOSE(inputfd) < 0) {
@@ -196,6 +220,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
 cleanup:
     VIR_FORCE_CLOSE(inputfd);
 
+    VIR_FREE(zerobuf);
     VIR_FREE(buf);
 
     return ret;
