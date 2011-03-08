@@ -558,9 +558,6 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
         pvargv[1] = pool->def->source.devices[i].path;
         if (virRun(pvargv, NULL) < 0) {
             error = -1;
-            virReportSystemError(errno,
-                                 _("cannot remove PV device '%s'"),
-                                 pool->def->source.devices[i].path);
             break;
         }
     }

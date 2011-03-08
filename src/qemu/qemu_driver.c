@@ -6056,10 +6056,6 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
                 qemuimgarg[4] = vm->def->disks[i]->src;
 
                 if (virRun(qemuimgarg, NULL) < 0) {
-                    virReportSystemError(errno,
-                                         _("Failed to run '%s' to create snapshot '%s' from disk '%s'"),
-                                         qemuimgarg[0], snap->def->name,
-                                         vm->def->disks[i]->src);
                     goto cleanup;
                 }
             }

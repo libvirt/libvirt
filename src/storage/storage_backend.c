@@ -534,9 +534,6 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     }
     if (!filecreated) {
         if (virRun(cmdargv, NULL) < 0) {
-            virReportSystemError(errno,
-                                 _("Cannot run %s to create %s"),
-                                 cmdargv[0], vol->target.path);
             return -1;
         }
         if (stat(vol->target.path, &st) < 0) {

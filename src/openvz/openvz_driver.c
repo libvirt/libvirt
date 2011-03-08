@@ -216,8 +216,6 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
         }
 
         if (virRun(prog, NULL) < 0) {
-            openvzError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not exec %s"), VZCTL);
             goto cleanup;
         }
     }
@@ -495,8 +493,6 @@ static int openvzDomainSuspend(virDomainPtr dom) {
     if (vm->state != VIR_DOMAIN_PAUSED) {
         openvzSetProgramSentinal(prog, vm->def->name);
         if (virRun(prog, NULL) < 0) {
-            openvzError(VIR_ERR_OPERATION_FAILED, "%s",
-                        _("Suspend operation failed"));
             goto cleanup;
         }
         vm->state = VIR_DOMAIN_PAUSED;
@@ -535,8 +531,6 @@ static int openvzDomainResume(virDomainPtr dom) {
   if (vm->state == VIR_DOMAIN_PAUSED) {
       openvzSetProgramSentinal(prog, vm->def->name);
       if (virRun(prog, NULL) < 0) {
-          openvzError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("Resume operation failed"));
           goto cleanup;
       }
       vm->state = VIR_DOMAIN_RUNNING;
@@ -775,8 +769,6 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     if (prog[0] != NULL) {
         ADD_ARG_LIT("--save");
         if (virRun(prog, NULL) < 0) {
-           openvzError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not exec %s"), VZCTL);
            rc = -1;
            goto exit;
         }
@@ -982,8 +974,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     openvzSetProgramSentinal(progstart, vm->def->name);
 
     if (virRun(progstart, NULL) < 0) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                   _("Could not exec %s"), VZCTL);
         goto cleanup;
     }
 
@@ -1039,8 +1029,6 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZCTL);
         goto cleanup;
     }
 
@@ -1086,8 +1074,6 @@ openvzDomainUndefine(virDomainPtr dom)
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZCTL);
         goto cleanup;
     }
 
@@ -1124,8 +1110,6 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZCTL);
         goto cleanup;
     }
     ret = 0;
@@ -1216,8 +1200,6 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZCTL);
         return -1;
     }
 
@@ -1551,8 +1533,6 @@ openvzDomainSetMemoryInternal(virDomainObjPtr vm,
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZCTL);
         goto cleanup;
     }
 

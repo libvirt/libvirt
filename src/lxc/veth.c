@@ -94,7 +94,6 @@ int vethCreate(char** veth1, char** veth2)
     const char *argv[] = {
         "ip", "link", "add", NULL, "type", "veth", "peer", "name", NULL, NULL
     };
-    int cmdResult = 0;
     int vethDev = 0;
     bool veth1_alloc = false;
 
@@ -122,13 +121,7 @@ int vethCreate(char** veth1, char** veth2)
     argv[8] = *veth2;
 
     VIR_DEBUG("veth1: %s veth2: %s", *veth1, *veth2);
-    rc = virRun(argv, &cmdResult);
-
-    if (rc != 0 ||
-        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
-        vethError(VIR_ERR_INTERNAL_ERROR,
-                  _("Failed to create veth device pair '%s', '%s': %d"),
-                  *veth1, *veth2, WEXITSTATUS(cmdResult));
+    if (virRun(argv, NULL) < 0) {
         if (veth1_alloc)
             VIR_FREE(*veth1);
         VIR_FREE(*veth2);
@@ -233,7 +226,6 @@ int moveInterfaceToNetNs(const char* iface, int pidInNs)
     const char *argv[] = {
         "ip", "link", "set", iface, "netns", NULL, NULL
     };
-    int cmdResult = 0;
 
     if (virAsprintf(&pid, "%d", pidInNs) == -1) {
         virReportOOMError();
@@ -241,14 +233,7 @@ int moveInterfaceToNetNs(const char* iface, int pidInNs)
     }
 
     argv[5] = pid;
-    rc = virRun(argv, &cmdResult);
-    if (rc != 0 ||
-        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
-        vethError(VIR_ERR_INTERNAL_ERROR,
-                  _("Failed to move '%s' into NS(pid=%d) (%d)"),
-                  iface, pidInNs, WEXITSTATUS(cmdResult));
-        rc = -1;
-    }
+    rc = virRun(argv, NULL);
 
     VIR_FREE(pid);
     return rc;
@@ -267,22 +252,11 @@ int moveInterfaceToNetNs(const char* iface, int pidInNs)
  */
 int setMacAddr(const char* iface, const char* macaddr)
 {
-    int rc;
     const char *argv[] = {
         "ip", "link", "set", iface, "address", macaddr, NULL
     };
-    int cmdResult = 0;
 
-    rc = virRun(argv, &cmdResult);
-    if (rc != 0 ||
-        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
-        vethError(VIR_ERR_INTERNAL_ERROR,
-                  _("Failed to set '%s' to '%s' (%d)"),
-                  macaddr, iface, WEXITSTATUS(cmdResult));
-        rc = -1;
-    }
-
-    return rc;
+    return virRun(argv, NULL);
 }
 
 /**
@@ -298,20 +272,9 @@ int setMacAddr(const char* iface, const char* macaddr)
  */
 int setInterfaceName(const char* iface, const char* new)
 {
-    int rc;
     const char *argv[] = {
         "ip", "link", "set", iface, "name", new, NULL
     };
-    int cmdResult = 0;
 
-    rc = virRun(argv, &cmdResult);
-    if (rc != 0 ||
-        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
-        vethError(VIR_ERR_INTERNAL_ERROR,
-                  _("Failed to set '%s' to '%s' (%d)"),
-                  new, iface, WEXITSTATUS(cmdResult));
-        rc = -1;
-    }
-
-    return rc;
+    return virRun(argv, NULL);
 }
