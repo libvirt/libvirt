@@ -36,12 +36,15 @@
 #endif
 
 #include "ignore-value.h"
+#include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
 #include "util.h"
 #include "buf.h"
 #include "threads.h"
 #include "files.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 /*
  * Macro used to format the message as a string in virLogMessage
@@ -83,9 +86,9 @@
 /*
  * A logging buffer to keep some history over logs
  */
-#define LOG_BUFFER_SIZE 64000
 
-static char virLogBuffer[LOG_BUFFER_SIZE + 1];
+static int virLogSize = 64 * 1024;
+static char *virLogBuffer = NULL;
 static int virLogLen = 0;
 static int virLogStart = 0;
 static int virLogEnd = 0;
@@ -184,6 +187,8 @@ static int virLogInitialized = 0;
  * Returns 0 if successful, and -1 in case or error
  */
 int virLogStartup(void) {
+    const char *pbm = NULL;
+
     if (virLogInitialized)
         return -1;
 
@@ -192,12 +197,82 @@ int virLogStartup(void) {
 
     virLogInitialized = 1;
     virLogLock();
+    if (VIR_ALLOC_N(virLogBuffer, virLogSize) < 0) {
+        /*
+         * The debug buffer is not a critical component, allow startup
+         * even in case of failure to allocate it in case of a
+         * configuration mistake.
+         */
+        virLogSize = 64 * 1024;
+        if (VIR_ALLOC_N(virLogBuffer, virLogSize) < 0) {
+            pbm = "Failed to allocate debug buffer: deactivating debug log\n";
+            virLogSize = 0;
+        } else {
+            pbm = "Failed to allocate debug buffer: reduced to 64 kB\n";
+        }
+    }
     virLogLen = 0;
     virLogStart = 0;
     virLogEnd = 0;
     virLogDefaultPriority = VIR_LOG_DEFAULT;
     virLogUnlock();
+    if (pbm)
+        VIR_WARN0(pbm);
     return 0;
+}
+
+/**
+ * virLogSetBufferSize:
+ * @size: size of the buffer in kilobytes or <= 0 to deactivate
+ *
+ * Dynamically set the size or deactivate the logging buffer used to keep
+ * a trace of all recent debug output. Note that the content of the buffer
+ * is lost if it gets reallocated.
+ *
+ * Return -1 in case of failure or 0 in case of success
+ */
+extern int
+virLogSetBufferSize(int size) {
+    int ret = 0;
+    int oldsize;
+    char *oldLogBuffer;
+    const char *pbm = NULL;
+
+    if (size < 0)
+        size = 0;
+
+    if ((virLogInitialized == 0) || (size * 1024 == virLogSize))
+        return ret;
+
+    virLogLock();
+
+    oldsize = virLogSize;
+    oldLogBuffer = virLogBuffer;
+
+    if (INT_MAX / 1024 < size) {
+        pbm = "Requested log size of %d kB too large\n";
+        ret = -1;
+        goto error;
+    }
+
+    virLogSize = size * 1024;
+    if (VIR_ALLOC_N(virLogBuffer, virLogSize) < 0) {
+        pbm = "Failed to allocate debug buffer of %d kB\n";
+        virLogBuffer = oldLogBuffer;
+        virLogSize = oldsize;
+        ret = -1;
+        goto error;
+    }
+    VIR_FREE(oldLogBuffer);
+    virLogLen = 0;
+    virLogStart = 0;
+    virLogEnd = 0;
+
+error:
+    virLogUnlock();
+    if (pbm)
+        VIR_ERROR(pbm, size);
+    return ret;
 }
 
 /**
@@ -235,6 +310,7 @@ void virLogShutdown(void) {
     virLogLen = 0;
     virLogStart = 0;
     virLogEnd = 0;
+    VIR_FREE(virLogBuffer);
     virLogUnlock();
     virMutexDestroy(&virLogMutex);
     virLogInitialized = 0;
@@ -246,21 +322,21 @@ void virLogShutdown(void) {
 static void virLogStr(const char *str, int len) {
     int tmp;
 
-    if (str == NULL)
+    if ((str == NULL) || (virLogBuffer == NULL) || (virLogSize <= 0))
         return;
     if (len <= 0)
         len = strlen(str);
-    if (len > LOG_BUFFER_SIZE)
+    if (len > virLogSize)
         return;
     virLogLock();
 
     /*
      * copy the data and reset the end, we cycle over the end of the buffer
      */
-    if (virLogEnd + len >= LOG_BUFFER_SIZE) {
-        tmp = LOG_BUFFER_SIZE - virLogEnd;
+    if (virLogEnd + len >= virLogSize) {
+        tmp = virLogSize - virLogEnd;
         memcpy(&virLogBuffer[virLogEnd], str, tmp);
-        virLogBuffer[LOG_BUFFER_SIZE] = 0;
+        virLogBuffer[virLogSize] = 0;
         memcpy(&virLogBuffer[0], &str[tmp], len - tmp);
         virLogEnd = len - tmp;
     } else {
@@ -271,12 +347,12 @@ static void virLogStr(const char *str, int len) {
      * Update the log length, and if full move the start index
      */
     virLogLen += len;
-    if (virLogLen > LOG_BUFFER_SIZE) {
-        tmp = virLogLen - LOG_BUFFER_SIZE;
-        virLogLen = LOG_BUFFER_SIZE;
+    if (virLogLen > virLogSize) {
+        tmp = virLogLen - virLogSize;
+        virLogLen = virLogSize;
         virLogStart += tmp;
-        if (virLogStart >= LOG_BUFFER_SIZE)
-            virLogStart -= LOG_BUFFER_SIZE;
+        if (virLogStart >= virLogSize)
+            virLogStart -= virLogSize;
     }
     virLogUnlock();
 }
@@ -350,23 +426,28 @@ virLogEmergencyDumpAll(int signum) {
             virLogDumpAllFD( "Caught unexpected signal", -1);
             break;
     }
+    if ((virLogBuffer == NULL) || (virLogSize <= 0)) {
+        virLogDumpAllFD(" internal log buffer deactivated\n", -1);
+        goto done;
+    }
     virLogDumpAllFD(" dumping internal log buffer:\n", -1);
     virLogDumpAllFD("\n\n    ====== start of log =====\n\n", -1);
     while (virLogLen > 0) {
-        if (virLogStart + virLogLen < LOG_BUFFER_SIZE) {
+        if (virLogStart + virLogLen < virLogSize) {
             virLogBuffer[virLogStart + virLogLen] = 0;
             virLogDumpAllFD(&virLogBuffer[virLogStart], virLogLen);
             virLogStart += virLogLen;
             virLogLen = 0;
         } else {
-            len = LOG_BUFFER_SIZE - virLogStart;
-            virLogBuffer[LOG_BUFFER_SIZE] = 0;
+            len = virLogSize - virLogStart;
+            virLogBuffer[virLogSize] = 0;
             virLogDumpAllFD(&virLogBuffer[virLogStart], len);
             virLogLen -= len;
             virLogStart = 0;
         }
     }
     virLogDumpAllFD("\n\n     ====== end of log =====\n\n", -1);
+done:
     virLogUnlock();
 }
 
@@ -642,6 +723,9 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     } else if (priority < fprio) {
         emit = 0;
     }
+
+    if ((emit == 0) && ((virLogBuffer == NULL) || (virLogSize <= 0)))
+        goto cleanup;
 
     /*
      * serialize the error message, add level and timestamp

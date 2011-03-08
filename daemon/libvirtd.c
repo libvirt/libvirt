@@ -2714,17 +2714,21 @@ remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
  * Set up the logging environment
  * By default if daemonized all errors go to the logfile libvirtd.log,
  * but if verbose or error debugging is asked for then also output
- * informations or debug.
+ * informational and debug messages. Default size if 64 kB.
  */
 static int
 qemudSetLogging(struct qemud_server *server, virConfPtr conf,
                 const char *filename)
 {
     int log_level = 0;
+    int log_buffer_size = 64;
     char *log_filters = NULL;
     char *log_outputs = NULL;
     char *log_file = NULL;
     int ret = -1;
+
+    GET_CONF_INT (conf, filename, log_buffer_size);
+    virLogSetBufferSize(log_buffer_size);
 
     virLogReset();
 
