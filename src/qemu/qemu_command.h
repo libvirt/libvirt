@@ -116,20 +116,22 @@ char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev);
 
 
 
-int qemuNetworkIfaceConnect(virConnectPtr conn,
+int qemuNetworkIfaceConnect(virDomainDefPtr def,
+                            virConnectPtr conn,
                             struct qemud_driver *driver,
                             virDomainNetDefPtr net,
                             virBitmapPtr qemuCaps)
-    ATTRIBUTE_NONNULL(1);
+    ATTRIBUTE_NONNULL(2);
 
-int qemuPhysIfaceConnect(virConnectPtr conn,
+int qemuPhysIfaceConnect(virDomainDefPtr def,
+                         virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,
                          virBitmapPtr qemuCaps,
-                         const unsigned char *vmuuid,
                          enum virVMOperationType vmop);
 
-int qemuOpenVhostNet(virDomainNetDefPtr net,
+int qemuOpenVhostNet(virDomainDefPtr def,
+                     virDomainNetDefPtr net,
                      virBitmapPtr qemuCaps,
                      int *vhostfd);
 

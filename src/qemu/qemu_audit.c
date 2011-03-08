@@ -127,6 +127,47 @@ qemuAuditNet(virDomainObjPtr vm,
     VIR_FREE(vmname);
 }
 
+/**
+ * qemuAuditNetDevice:
+ * @vm: domain opening a network-related device
+ * @def: details of network device that fd will be tied to
+ * @device: device being opened (such as /dev/vhost-net,
+ * /dev/net/tun, /dev/tanN). Note that merely opening a device
+ * does not mean that qemu owns it; a followup qemuAuditNet
+ * shows whether the fd was passed on.
+ * @success: true if the device was opened
+ *
+ * Log an audit message about an attempted network device open.
+ */
+void
+qemuAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
+                   const char *device, bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char macstr[VIR_MAC_STRING_BUFLEN];
+    char *vmname;
+    char *devname;
+    char *rdev;
+
+    virUUIDFormat(vmDef->uuid, uuidstr);
+    virFormatMacAddr(netDef->mac, macstr);
+    rdev = qemuAuditGetRdev(device);
+
+    if (!(vmname = virAuditEncode("vm", vmDef->name)) ||
+        !(devname = virAuditEncode("path", device))) {
+        VIR_WARN0("OOM while encoding audit message");
+        goto cleanup;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "resrc=net reason=open %s uuid=%s net='%s' %s rdev=%s",
+              vmname, uuidstr, macstr, devname, VIR_AUDIT_STR(rdev));
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(devname);
+    VIR_FREE(rdev);
+}
 
 /**
  * qemuAuditHostdev:

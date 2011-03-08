@@ -46,6 +46,11 @@ void qemuAuditNet(virDomainObjPtr vm,
                   const char *reason,
                   bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void qemuAuditNetDevice(virDomainDefPtr vmDef,
+                        virDomainNetDefPtr netDef,
+                        const char *device,
+                        bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 void qemuAuditHostdev(virDomainObjPtr vm,
                       virDomainHostdevDefPtr def,
                       const char *reason,

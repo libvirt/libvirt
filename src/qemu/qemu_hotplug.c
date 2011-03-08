@@ -576,9 +576,10 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             return -1;
         }
 
-        if ((tapfd = qemuNetworkIfaceConnect(conn, driver, net, qemuCaps)) < 0)
+        if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
+                                             qemuCaps)) < 0)
             return -1;
-        if (qemuOpenVhostNet(net, qemuCaps, &vhostfd) < 0)
+        if (qemuOpenVhostNet(vm->def, net, qemuCaps, &vhostfd) < 0)
             goto cleanup;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
@@ -589,12 +590,11 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             return -1;
         }
 
-        if ((tapfd = qemuPhysIfaceConnect(conn, driver, net,
+        if ((tapfd = qemuPhysIfaceConnect(vm->def, conn, driver, net,
                                           qemuCaps,
-                                          vm->def->uuid,
                                           VIR_VM_OP_CREATE)) < 0)
             return -1;
-        if (qemuOpenVhostNet(net, qemuCaps, &vhostfd) < 0)
+        if (qemuOpenVhostNet(vm->def, net, qemuCaps, &vhostfd) < 0)
             goto cleanup;
     }
 

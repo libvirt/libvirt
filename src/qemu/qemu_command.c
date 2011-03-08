@@ -35,6 +35,7 @@
 #include "uuid.h"
 #include "c-ctype.h"
 #include "domain_nwfilter.h"
+#include "qemu_audit.h"
 
 #include <sys/utsname.h>
 #include <sys/stat.h>
@@ -97,20 +98,20 @@ uname_normalize (struct utsname *ut)
 
 /**
  * qemuPhysIfaceConnect:
+ * @def: the definition of the VM (needed by 802.1Qbh and audit)
  * @conn: pointer to virConnect object
  * @driver: pointer to the qemud_driver
  * @net: pointer to he VM's interface description with direct device type
  * @qemuCaps: flags for qemu
- * @vmuuid: The UUID of the VM (needed by 802.1Qbh)
  *
  * Returns a filedescriptor on success or -1 in case of error.
  */
 int
-qemuPhysIfaceConnect(virConnectPtr conn,
+qemuPhysIfaceConnect(virDomainDefPtr def,
+                     virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainNetDefPtr net,
                      virBitmapPtr qemuCaps,
-                     const unsigned char *vmuuid,
                      enum virVMOperationType vmop)
 {
     int rc;
@@ -124,9 +125,10 @@ qemuPhysIfaceConnect(virConnectPtr conn,
         vnet_hdr = 1;
 
     rc = openMacvtapTap(net->ifname, net->mac, net->data.direct.linkdev,
-                        net->data.direct.mode, vnet_hdr, vmuuid,
+                        net->data.direct.mode, vnet_hdr, def->uuid,
                         &net->data.direct.virtPortProfile, &res_ifname,
                         vmop);
+    qemuAuditNetDevice(def, net, res_ifname, rc >= 0);
     if (rc >= 0) {
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
@@ -152,11 +154,11 @@ qemuPhysIfaceConnect(virConnectPtr conn,
         }
     }
 #else
+    (void)def;
     (void)conn;
     (void)net;
     (void)qemuCaps;
     (void)driver;
-    (void)vmuuid;
     (void)vmop;
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("No support for macvtap device"));
@@ -167,7 +169,8 @@ qemuPhysIfaceConnect(virConnectPtr conn,
 
 
 int
-qemuNetworkIfaceConnect(virConnectPtr conn,
+qemuNetworkIfaceConnect(virDomainDefPtr def,
+                        virConnectPtr conn,
                         struct qemud_driver *driver,
                         virDomainNetDefPtr net,
                         virBitmapPtr qemuCaps)
@@ -247,13 +250,10 @@ qemuNetworkIfaceConnect(virConnectPtr conn,
 
     memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
     tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
-    if ((err = brAddTap(driver->brctl,
-                        brname,
-                        &net->ifname,
-                        tapmac,
-                        vnet_hdr,
-                        true,
-                        &tapfd))) {
+    err = brAddTap(driver->brctl, brname, &net->ifname, tapmac,
+                   vnet_hdr, true, &tapfd);
+    qemuAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
+    if (err) {
         if (err == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -304,7 +304,8 @@ cleanup:
 
 
 int
-qemuOpenVhostNet(virDomainNetDefPtr net,
+qemuOpenVhostNet(virDomainDefPtr def,
+                 virDomainNetDefPtr net,
                  virBitmapPtr qemuCaps,
                  int *vhostfd)
 {
@@ -342,6 +343,7 @@ qemuOpenVhostNet(virDomainNetDefPtr net,
     }
 
     *vhostfd = open("/dev/vhost-net", O_RDWR);
+    qemuAuditNetDevice(def, net, "/dev/vhost-net", *vhostfd >= 0);
 
     /* If the config says explicitly to use vhost and we couldn't open it,
      * report an error.
@@ -3460,7 +3462,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                int tapfd = qemuNetworkIfaceConnect(conn, driver, net,
+                int tapfd = qemuNetworkIfaceConnect(def, conn, driver, net,
                                                     qemuCaps);
                 if (tapfd < 0)
                     goto error;
@@ -3472,10 +3474,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                              tapfd) >= sizeof(tapfd_name))
                     goto no_memory;
             } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-                int tapfd = qemuPhysIfaceConnect(conn, driver, net,
-                                                 qemuCaps,
-                                                 def->uuid,
-                                                 vmop);
+                int tapfd = qemuPhysIfaceConnect(def, conn, driver, net,
+                                                 qemuCaps, vmop);
                 if (tapfd < 0)
                     goto error;
 
@@ -3494,7 +3494,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                    network device */
                 int vhostfd;
 
-                if (qemuOpenVhostNet(net, qemuCaps, &vhostfd) < 0)
+                if (qemuOpenVhostNet(def, net, qemuCaps, &vhostfd) < 0)
                     goto error;
                 if (vhostfd >= 0) {
                     virCommandTransferFD(cmd, vhostfd);
