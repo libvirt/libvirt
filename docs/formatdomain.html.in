@@ -1145,7 +1145,7 @@
       network config with '<code>virsh net-dumpxml [networkname]</code>'.
       There is one virtual network called 'default' setup out
       of the box which does NAT'ing to the default route and has an IP range of
-      <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
+      <code>192.168.122.0/255.255.255.0</code>. Each guest will have an
       associated tun device created with a name of vnetN, which can also be
       overridden with the &lt;target&gt; element (see
       <a href="#elementsNICSTargetOverride">overriding the target element</a>).
@@ -1259,7 +1259,7 @@
       driver to be available. <span class="since">(Since Linux 2.6.34.)</span>
       One of the modes 'vepa'
       ( <a href="http://www.ieee802.org/1/files/public/docs2009/new-evb-congdon-vepa-modular-0709-v01.pdf">
-      'Virtual  Ethernet Port Aggregator'</a>), 'bridge' or 'private'
+      'Virtual Ethernet Port Aggregator'</a>), 'bridge' or 'private'
       can be chosen for the operation mode of the macvtap device, 'vepa'
       being the default mode. The individual modes cause the delivery of
       packets to behave as follows:
