@@ -105,7 +105,7 @@ static const char *virErrorDomainName(virErrorDomain domain) {
             dom = "Domain ";
             break;
         case VIR_FROM_RPC:
-            dom = "XML-RPC ";
+            dom = "RPC ";
             break;
         case VIR_FROM_QEMU:
             dom = "QEMU ";
