@@ -703,7 +703,8 @@ endif
 libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS) \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 libvirt_driver_qemu_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_qemu_la_LIBADD = $(NUMACTL_LIBS)
+libvirt_driver_qemu_la_LIBADD = $(NUMACTL_LIBS) \
+				$(CAPNG_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_qemu_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
@@ -730,8 +731,15 @@ noinst_LTLIBRARIES += libvirt_driver_lxc.la
 endif
 libvirt_driver_lxc_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
+libvirt_driver_lxc_la_LIBADD = $(CAPNG_LIBS)
+if WITH_SECDRIVER_SELINUX
+libvirt_driver_lxc_la_LIBADD += $(SELINUX_LIBS)
+endif
+if WITH_SECDRIVER_APPARMOR
+libvirt_driver_lxc_la_LIBADD += $(APPARMOR_LIBS)
+endif
 if WITH_DRIVER_MODULES
-libvirt_driver_lxc_la_LIBADD = ../gnulib/lib/libgnu.la
+libvirt_driver_lxc_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_lxc_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
 libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
@@ -870,6 +878,12 @@ libvirt_driver_storage_la_CFLAGS = \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 libvirt_driver_storage_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_storage_la_LIBADD =
+if WITH_SECDRIVER_SELINUX
+libvirt_driver_storage_la_LIBADD += $(SELINUX_LIBS)
+endif
+if WITH_SECDRIVER_APPARMOR
+libvirt_driver_storage_la_LIBADD += $(APPARMOR_LIBS)
+endif
 if WITH_STORAGE_DIR
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la
