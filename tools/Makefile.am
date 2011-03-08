@@ -47,6 +47,7 @@ virsh_LDADD =							\
 		../src/libvirt.la				\
 		../src/libvirt-qemu.la				\
 		../gnulib/lib/libgnu.la				\
+		$(LIBXML_LIBS)					\
 		$(VIRSH_LIBS)
 virsh_CFLAGS =							\
 		-I$(top_srcdir)/gnulib/lib -I../gnulib/lib	\
