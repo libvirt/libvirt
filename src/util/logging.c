@@ -316,24 +316,36 @@ virLogEmergencyDumpAll(int signum) {
 
     virLogLock();
     switch (signum) {
+#ifdef SIGFPE
         case SIGFPE:
             virLogDumpAllFD( "Caught signal Floating-point exception", -1);
             break;
+#endif
+#ifdef SIGSEGV
         case SIGSEGV:
             virLogDumpAllFD( "Caught Segmentation violation", -1);
             break;
+#endif
+#ifdef SIGILL
         case SIGILL:
             virLogDumpAllFD( "Caught illegal instruction", -1);
             break;
+#endif
+#ifdef SIGABRT
         case SIGABRT:
             virLogDumpAllFD( "Caught abort signal", -1);
             break;
+#endif
+#ifdef SIGBUS
         case SIGBUS:
             virLogDumpAllFD( "Caught bus error", -1);
             break;
+#endif
+#ifdef SIGUSR2
         case SIGUSR2:
             virLogDumpAllFD( "Caught User-defined signal 2", -1);
             break;
+#endif
         default:
             virLogDumpAllFD( "Caught unexpected signal", -1);
             break;
