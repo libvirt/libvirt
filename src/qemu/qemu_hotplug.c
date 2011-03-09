@@ -552,6 +552,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tapfd_name = NULL;
     int tapfd = -1;
+    char *vhostfd_name = NULL;
+    int vhostfd = -1;
     char *nicstr = NULL;
     char *netstr = NULL;
     int ret = -1;
@@ -576,6 +578,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
         if ((tapfd = qemuNetworkIfaceConnect(conn, driver, net, qemuCaps)) < 0)
             return -1;
+        if (qemuOpenVhostNet(net, qemuCaps, &vhostfd) < 0)
+            goto cleanup;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -590,6 +594,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                                           vm->def->uuid,
                                           VIR_VM_OP_CREATE)) < 0)
             return -1;
+        if (qemuOpenVhostNet(net, qemuCaps, &vhostfd) < 0)
+            goto cleanup;
     }
 
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
@@ -636,15 +642,32 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         }
     }
 
-    /* FIXME - need to support vhost-net here (5th arg) */
+    if (vhostfd != -1) {
+        if (virAsprintf(&vhostfd_name, "vhostfd-%s", net->info.alias) < 0)
+            goto no_memory;
+
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        if (qemuMonitorSendFileHandle(priv->mon, vhostfd_name, vhostfd) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto try_tapfd_close;
+        }
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit"));
+            goto cleanup;
+        }
+    }
+
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         if (!(netstr = qemuBuildHostNetStr(net, ',',
-                                           -1, tapfd_name, 0)))
+                                           -1, tapfd_name, vhostfd_name)))
             goto try_tapfd_close;
     } else {
         if (!(netstr = qemuBuildHostNetStr(net, ' ',
-                                           vlan, tapfd_name, 0)))
+                                           vlan, tapfd_name, vhostfd_name)))
             goto try_tapfd_close;
     }
 
@@ -666,6 +689,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     VIR_FORCE_CLOSE(tapfd);
+    VIR_FORCE_CLOSE(vhostfd);
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -720,6 +744,8 @@ cleanup:
     VIR_FREE(netstr);
     VIR_FREE(tapfd_name);
     VIR_FORCE_CLOSE(tapfd);
+    VIR_FREE(vhostfd_name);
+    VIR_FORCE_CLOSE(vhostfd);
 
     return ret;
 
@@ -759,10 +785,14 @@ try_tapfd_close:
     if (!virDomainObjIsActive(vm))
         goto cleanup;
 
-    if (tapfd_name) {
+    if (tapfd_name || vhostfd_name) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorCloseFileHandle(priv->mon, tapfd_name) < 0)
+        if (tapfd_name &&
+            qemuMonitorCloseFileHandle(priv->mon, tapfd_name) < 0)
             VIR_WARN("Failed to close tapfd with '%s'", tapfd_name);
+        if (vhostfd_name &&
+            qemuMonitorCloseFileHandle(priv->mon, vhostfd_name) < 0)
+            VIR_WARN("Failed to close vhostfd with '%s'", vhostfd_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 

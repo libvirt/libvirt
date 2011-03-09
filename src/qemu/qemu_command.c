@@ -303,12 +303,11 @@ cleanup:
 }
 
 
-static int
+int
 qemuOpenVhostNet(virDomainNetDefPtr net,
                  virBitmapPtr qemuCaps,
                  int *vhostfd)
 {
-
     *vhostfd = -1;   /* assume we won't use vhost */
 
     /* If the config says explicitly to not use vhost, return now */
