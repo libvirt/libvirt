@@ -133,9 +133,15 @@ void qemuMonitorUnlock(qemuMonitorPtr mon);
 int qemuMonitorRef(qemuMonitorPtr mon);
 int qemuMonitorUnref(qemuMonitorPtr mon);
 
-/* This API is for use by the internal Text/JSON monitor impl code only */
+/* These APIs are for use by the internal Text/JSON monitor impl code only */
 int qemuMonitorSend(qemuMonitorPtr mon,
                     qemuMonitorMessagePtr msg);
+int qemuMonitorCommandWithFd(qemuMonitorPtr mon,
+                             const char *cmd,
+                             int scm_fd,
+                             char **reply);
+# define qemuMonitorCommand(mon, cmd, reply) \
+    qemuMonitorCommandWithFd(mon, cmd, -1, reply)
 
 /* XXX same comment about virConnectPtr as above */
 int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,

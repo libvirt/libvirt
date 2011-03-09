@@ -742,6 +742,18 @@ cleanup:
 }
 
 
+int qemuMonitorCommandWithFd(qemuMonitorPtr mon,
+                             const char *cmd,
+                             int scm_fd,
+                             char **reply)
+{
+    if (mon->json)
+        return qemuMonitorJSONHumanCommandWithFd(mon, cmd, scm_fd, reply);
+    else
+        return qemuMonitorTextCommandWithFd(mon, cmd, scm_fd, reply);
+}
+
+
 int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
                              virConnectPtr conn,
                              const char *path,

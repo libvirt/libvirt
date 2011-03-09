@@ -676,6 +676,56 @@ static void qemuMonitorJSONHandleVNCDisconnect(qemuMonitorPtr mon, virJSONValueP
 
 
 int
+qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
+                                  const char *cmd_str,
+                                  int scm_fd,
+                                  char **reply_str)
+{
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr obj;
+    int ret = -1;
+
+    cmd = qemuMonitorJSONMakeCommand("human-monitor-command",
+                                     "s:command-line", cmd_str,
+                                     NULL);
+
+    if (!cmd || qemuMonitorJSONCommandWithFd(mon, cmd, scm_fd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply))
+        goto cleanup;
+
+    if (!(obj = virJSONValueObjectGet(reply, "return"))) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("human monitor command was missing return data"));
+        goto cleanup;
+    }
+
+    if (reply_str) {
+        const char *data;
+
+        if ((data = virJSONValueGetString(obj)))
+            *reply_str = strdup(data);
+        else
+            *reply_str = strdup("");
+
+        if (!*reply_str) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
 qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;
@@ -2464,36 +2514,17 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     int ret = -1;
 
-    if (!hmp) {
-        cmd = virJSONValueFromString(cmd_str);
+    if (hmp) {
+        return qemuMonitorJSONHumanCommandWithFd(mon, cmd_str, -1, reply_str);
     } else {
-        cmd = qemuMonitorJSONMakeCommand("human-monitor-command",
-                                         "s:command-line", cmd_str,
-                                         NULL);
-    }
+        if (!(cmd = virJSONValueFromString(cmd_str)))
+            goto cleanup;
 
-    if (!cmd)
-        return -1;
+        if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+            goto cleanup;
 
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (!hmp) {
         if (!(*reply_str = virJSONValueToString(reply)))
             goto cleanup;
-    } else if (qemuMonitorJSONCheckError(cmd, reply)) {
-        goto cleanup;
-    } else {
-        const char *data;
-        if (!(data = virJSONValueObjectGetString(reply, "return"))) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("human monitor command was missing return data"));
-            goto cleanup;
-        }
-        if (!(*reply_str = strdup(data))) {
-            virReportOOMError();
-            goto cleanup;
-        }
     }
 
     ret = 0;

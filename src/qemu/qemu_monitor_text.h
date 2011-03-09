@@ -35,6 +35,11 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon,
                              size_t len,
                              qemuMonitorMessagePtr msg);
 
+int qemuMonitorTextCommandWithFd(qemuMonitorPtr mon,
+                                 const char *cmd,
+                                 int scm_fd,
+                                 char **reply);
+
 int qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
                              virConnectPtr conn);
 int qemuMonitorTextStopCPUs(qemuMonitorPtr mon);
