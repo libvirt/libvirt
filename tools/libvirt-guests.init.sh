@@ -66,12 +66,10 @@ run_virsh() {
     shift
 
     if [ "x$uri" = xdefault ]; then
-        conn=
+        virsh "$@" </dev/null
     else
-        conn="-c $uri"
+        virsh -c "$uri" "$@" </dev/null
     fi
-
-    virsh $conn "$@" </dev/null
 }
 
 run_virsh_c() {
@@ -81,7 +79,7 @@ run_virsh_c() {
 list_guests() {
     uri=$1
 
-    list=$(run_virsh_c $uri list)
+    list=$(run_virsh_c "$uri" list)
     if [ $? -ne 0 ]; then
         RETVAL=1
         return 1
@@ -89,7 +87,7 @@ list_guests() {
 
     uuids=
     for id in $(echo "$list" | awk 'NR > 2 {print $1}'); do
-        uuid=$(run_virsh_c $uri dominfo $id | awk '/^UUID:/{print $2}')
+        uuid=$(run_virsh_c "$uri" dominfo "$id" | awk '/^UUID:/{print $2}')
         if [ -z "$uuid" ]; then
             RETVAL=1
             return 1
@@ -104,7 +102,7 @@ guest_name() {
     uri=$1
     uuid=$2
 
-    name=$(run_virsh_c $uri dominfo $uuid 2>/dev/null | \
+    name=$(run_virsh_c "$uri" dominfo "$uuid" 2>/dev/null | \
            sed -ne 's/^Name: *//p')
     [ -n "$name" ] || name=$uuid
 
@@ -116,7 +114,7 @@ guest_is_on() {
     uuid=$2
 
     guest_running=false
-    info=$(run_virsh_c $uri dominfo $uuid)
+    info=$(run_virsh_c "$uri" dominfo "$uuid")
     if [ $? -ne 0 ]; then
         RETVAL=1
         return 1
@@ -146,25 +144,25 @@ start() {
     while read uri list; do
         configured=false
         for confuri in $URIS; do
-            if [ $confuri = $uri ]; then
+            if [ "x$confuri" = "x$uri" ]; then
                 configured=true
                 break
             fi
         done
-        if ! $configured; then
+        if ! "$configured"; then
             eval_gettext "Ignoring guests on \$uri URI"; echo
             continue
         fi
 
         eval_gettext "Resuming guests on \$uri URI..."; echo
         for guest in $list; do
-            name=$(guest_name $uri $guest)
+            name=$(guest_name "$uri" "$guest")
             eval_gettext "Resuming guest \$name: "
-            if guest_is_on $uri $guest; then
-                if $guest_running; then
+            if guest_is_on "$uri" "$guest"; then
+                if "$guest_running"; then
                     gettext "already active"; echo
                 else
-                    retval run_virsh $uri start "$guest" >/dev/null && \
+                    retval run_virsh "$uri" start "$name" >/dev/null && \
                     gettext "done"; echo
                 fi
             fi
@@ -180,15 +178,15 @@ suspend_guest()
     uri=$1
     guest=$2
 
-    name=$(guest_name $uri $guest)
+    name=$(guest_name "$uri" "$guest")
     label=$(eval_gettext "Suspending \$name: ")
     printf %s "$label"
-    run_virsh $uri managedsave $guest >/dev/null &
+    run_virsh "$uri" managedsave "$guest" >/dev/null &
     virsh_pid=$!
     while true; do
         sleep 1
-        kill -0 $virsh_pid >/dev/null 2>&1 || break
-        progress=$(run_virsh_c $uri domjobinfo $guest 2>/dev/null | \
+        kill -0 "$virsh_pid" >/dev/null 2>&1 || break
+        progress=$(run_virsh_c "$uri" domjobinfo "$guest" 2>/dev/null | \
                    awk '/^Data processed:/{print $3, $4}')
         if [ -n "$progress" ]; then
             printf '\r%s%12s ' "$label" "$progress"
@@ -196,7 +194,7 @@ suspend_guest()
             printf '\r%s%-12s ' "$label" "..."
         fi
     done
-    retval wait $virsh_pid && printf '\r%s%-12s\n' "$label" "$(gettext "done")"
+    retval wait "$virsh_pid" && printf '\r%s%-12s\n' "$label" "$(gettext "done")"
 }
 
 shutdown_guest()
@@ -204,21 +202,21 @@ shutdown_guest()
     uri=$1
     guest=$2
 
-    name=$(guest_name $uri $guest)
+    name=$(guest_name "$uri" "$guest")
     label=$(eval_gettext "Shutting down \$name: ")
     printf %s "$label"
-    retval run_virsh $uri shutdown $guest >/dev/null || return
+    retval run_virsh "$uri" shutdown "$guest" >/dev/null || return
     timeout=$SHUTDOWN_TIMEOUT
-    while [ $timeout -gt 0 ]; do
+    while [ "$timeout" -gt 0 ]; do
         sleep 1
         timeout=$((timeout - 1))
-        guest_is_on $uri $guest || return
-        $guest_running || break
-        printf '\r%s%-12d ' "$label" $timeout
+        guest_is_on "$uri" "$guest" || return
+        "$guest_running" || break
+        printf '\r%s%-12d ' "$label" "$timeout"
     done
 
-    if guest_is_on $uri $guest; then
-        if $guest_running; then
+    if guest_is_on "$uri" "$guest"; then
+        if "$guest_running"; then
             printf '\r%s%-12s\n' "$label" \
                 "$(gettext "failed to shutdown in time")"
         else
@@ -251,35 +249,35 @@ stop() {
             continue
         fi
 
-        list=$(list_guests $uri)
+        list=$(list_guests "$uri")
         if [ $? -eq 0 ]; then
             empty=true
             for uuid in $list; do
-                $empty || printf ", "
-                printf %s "$(guest_name $uri $uuid)"
+                "$empty" || printf ", "
+                printf %s "$(guest_name "$uri" "$uuid")"
                 empty=false
             done
-            if $empty; then
+            if "$empty"; then
                 gettext "no running guests."; echo
             else
                 echo
-                echo $uri $list >>"$LISTFILE"
+                echo "$uri" "$list" >>"$LISTFILE"
             fi
         fi
     done
 
     while read uri list; do
-        if $suspending; then
+        if "$suspending"; then
             eval_gettext "Suspending guests on \$uri URI..."; echo
         else
             eval_gettext "Shutting down guests on \$uri URI..."; echo
         fi
 
         for guest in $list; do
-            if $suspending; then
-                suspend_guest $uri $guest
+            if "$suspending"; then
+                suspend_guest "$uri" "$guest"
             else
-                shutdown_guest $uri $guest
+                shutdown_guest "$uri" "$guest"
             fi
         done
     done <"$LISTFILE"
@@ -290,7 +288,7 @@ stop() {
 gueststatus() {
     for uri in $URIS; do
         echo "* $uri URI:"
-        retval run_virsh $uri list || echo
+        retval run_virsh "$uri" list || echo
     done
 }
 
@@ -330,7 +328,7 @@ case "$1" in
         usage 0
         ;;
     start|stop|gueststatus)
-        $1
+        "$1"
         ;;
     restart)
         stop && start
