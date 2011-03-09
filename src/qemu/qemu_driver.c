@@ -4209,8 +4209,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("disk device type '%s' cannot be updated"),
-                        virDomainDiskDeviceTypeToString(dev->data.disk->device));
+                        _("device type '%s' cannot be updated"),
+                        virDomainDeviceTypeToString(dev->type));
         break;
     }
 
