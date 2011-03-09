@@ -60,9 +60,6 @@ augeas_DATA = libvirtd.aug
 augeastestsdir = $(datadir)/augeas/lenses/tests
 augeastests_DATA = test_libvirtd.aug
 
-POD2MAN = pod2man -c "Virtualization Support" \
-			-r "$(PACKAGE)-$(VERSION)" -s 8
-
 libvirtd.8: $(srcdir)/libvirtd.8.in
 	sed \
 	    -e 's![@]sysconfdir[@]!$(sysconfdir)!g' \
@@ -70,9 +67,6 @@ libvirtd.8: $(srcdir)/libvirtd.8.in
 	    -e 's![@]remote_pid_file[@]!$(REMOTE_PID_FILE)!g' \
 	    < $< > $@-t
 	mv $@-t $@
-
-$(srcdir)/libvirtd.8.in: libvirtd.pod.in
-	$(AM_V_GEN)$(POD2MAN) $< $@
 
 libvirtd_SOURCES = $(DAEMON_SOURCES)
 
@@ -329,6 +323,13 @@ else # WITH_LIBVIRTD
 install-data-local: install-data-sasl
 uninstall-local:: uninstall-data-sasl
 endif # WITH_LIBVIRTD
+
+# This is needed for 'make dist' too, so can't wrap in WITH_LIBVIRTD.
+POD2MAN = pod2man -c "Virtualization Support" \
+			-r "$(PACKAGE)-$(VERSION)" -s 8
+
+$(srcdir)/libvirtd.8.in: libvirtd.pod.in
+	$(AM_V_GEN)$(POD2MAN) $< $@
 
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional
