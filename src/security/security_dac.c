@@ -615,7 +615,8 @@ virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
 
-    VIR_DEBUG("Dropping privileges of VM to %d:%d", priv->user, priv->group);
+    VIR_DEBUG("Dropping privileges of VM to %u:%u",
+              (unsigned int) priv->user, (unsigned int) priv->group);
 
     if (virSetUIDGID(priv->user, priv->group) < 0)
         return -1;
