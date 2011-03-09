@@ -244,6 +244,7 @@ qemuAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup,
  * @reason: either "allow" or "deny"
  * @maj: the major number of the device category
  * @name: a textual name for that device category, alphabetic only
+ * @perms: string containing "r", "w", and/or "m" as appropriate
  * @success: true if the cgroup operation succeeded
  *
  * Log an audit message about an attempted cgroup device ACL change.
@@ -251,11 +252,12 @@ qemuAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup,
 void
 qemuAuditCgroupMajor(virDomainObjPtr vm, virCgroupPtr cgroup,
                      const char *reason, int maj, const char *name,
-                     bool success)
+                     const char *perms, bool success)
 {
     char *extra;
 
-    if (virAsprintf(&extra, "major category=%s maj=%02X", name, maj) < 0) {
+    if (virAsprintf(&extra, "major category=%s maj=%02X acl=%s",
+                    name, maj, perms) < 0) {
         VIR_WARN0("OOM while encoding audit message");
         return;
     }
@@ -271,6 +273,7 @@ qemuAuditCgroupMajor(virDomainObjPtr vm, virCgroupPtr cgroup,
  * @cgroup: cgroup that manages the devices
  * @reason: either "allow" or "deny"
  * @path: the device being adjusted
+ * @perms: string containing "r", "w", and/or "m" as appropriate
  * @rc: > 0 if not a device, 0 if success, < 0 if failure
  *
  * Log an audit message about an attempted cgroup device ACL change to
@@ -278,7 +281,8 @@ qemuAuditCgroupMajor(virDomainObjPtr vm, virCgroupPtr cgroup,
  */
 void
 qemuAuditCgroupPath(virDomainObjPtr vm, virCgroupPtr cgroup,
-                    const char *reason, const char *path, int rc)
+                    const char *reason, const char *path, const char *perms,
+                    int rc)
 {
     char *detail;
     char *rdev;
@@ -291,8 +295,8 @@ qemuAuditCgroupPath(virDomainObjPtr vm, virCgroupPtr cgroup,
     rdev = qemuAuditGetRdev(path);
 
     if (!(detail = virAuditEncode("path", path)) ||
-        virAsprintf(&extra, "path path=%s rdev=%s",
-                    path, VIR_AUDIT_STR(rdev)) < 0) {
+        virAsprintf(&extra, "path path=%s rdev=%s acl=%s",
+                    path, VIR_AUDIT_STR(rdev), perms) < 0) {
         VIR_WARN0("OOM while encoding audit message");
         goto cleanup;
     }

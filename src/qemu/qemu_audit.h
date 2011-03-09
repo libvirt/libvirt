@@ -63,16 +63,18 @@ void qemuAuditCgroupMajor(virDomainObjPtr vm,
                           const char *reason,
                           int maj,
                           const char *name,
+                          const char *perms,
                           bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
 void qemuAuditCgroupPath(virDomainObjPtr vm,
                          virCgroupPtr group,
                          const char *reason,
                          const char *path,
+                         const char *perms,
                          int rc)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 void qemuAuditMemory(virDomainObjPtr vm,
                      unsigned long long oldmem,
                      unsigned long long newmem,
