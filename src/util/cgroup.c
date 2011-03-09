@@ -1308,7 +1308,7 @@ int virCgroupGetFreezerState(virCgroupPtr group, char **state)
 }
 
 
-#ifdef HAVE_KILL
+#if defined HAVE_KILL && defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
 {
     int rc;
@@ -1523,7 +1523,7 @@ int virCgroupKillPainfully(virCgroupPtr group)
     return rc;
 }
 
-#else /* HAVE_KILL */
+#else /* !(HAVE_KILL, HAVE_MNTENT_H, HAVE_GETMNTENT_R) */
 int virCgroupKill(virCgroupPtr group ATTRIBUTE_UNUSED,
                   int signum ATTRIBUTE_UNUSED)
 {
@@ -1539,4 +1539,4 @@ int virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
 {
     return -ENOSYS;
 }
-#endif /* HAVE_KILL */
+#endif /* HAVE_KILL, HAVE_MNTENT_H, HAVE_GETMNTENT_R */
