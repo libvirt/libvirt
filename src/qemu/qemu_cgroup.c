@@ -56,7 +56,7 @@ int qemuCgroupControllerActive(struct qemud_driver *driver,
 }
 
 static int
-qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
+qemuSetupDiskPathAllow(virDomainDiskDefPtr disk,
                        const char *path,
                        size_t depth ATTRIBUTE_UNUSED,
                        void *opaque)
@@ -65,8 +65,9 @@ qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
     int rc;
 
     VIR_DEBUG("Process path %s for disk", path);
-    /* XXX RO vs RW */
-    rc = virCgroupAllowDevicePath(data->cgroup, path);
+    rc = virCgroupAllowDevicePath(data->cgroup, path,
+                                  (disk->readonly ? VIR_CGROUP_DEVICE_READ
+                                   : VIR_CGROUP_DEVICE_RW));
     qemuAuditCgroupPath(data->vm, data->cgroup, "allow", path, rc);
     if (rc < 0) {
         if (rc == -EACCES) { /* Get this for root squash NFS */
@@ -106,8 +107,8 @@ qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
     int rc;
 
     VIR_DEBUG("Process path %s for disk", path);
-    /* XXX RO vs RW */
-    rc = virCgroupDenyDevicePath(data->cgroup, path);
+    rc = virCgroupDenyDevicePath(data->cgroup, path,
+                                 VIR_CGROUP_DEVICE_RWM);
     qemuAuditCgroupPath(data->vm, data->cgroup, "deny", path, rc);
     if (rc < 0) {
         if (rc == -EACCES) { /* Get this for root squash NFS */
@@ -150,7 +151,8 @@ qemuSetupChardevCgroup(virDomainDefPtr def,
 
 
     VIR_DEBUG("Process path '%s' for disk", dev->source.data.file.path);
-    rc = virCgroupAllowDevicePath(data->cgroup, dev->source.data.file.path);
+    rc = virCgroupAllowDevicePath(data->cgroup, dev->source.data.file.path,
+                                  VIR_CGROUP_DEVICE_RW);
     qemuAuditCgroupPath(data->vm, data->cgroup, "allow",
                         dev->source.data.file.path, rc);
     if (rc < 0) {
@@ -172,7 +174,8 @@ int qemuSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
     int rc;
 
     VIR_DEBUG("Process path '%s' for USB device", path);
-    rc = virCgroupAllowDevicePath(data->cgroup, path);
+    rc = virCgroupAllowDevicePath(data->cgroup, path,
+                                  VIR_CGROUP_DEVICE_RW);
     qemuAuditCgroupPath(data->vm, data->cgroup, "allow", path, rc);
     if (rc < 0) {
         virReportSystemError(-rc,
@@ -226,7 +229,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 goto cleanup;
         }
 
-        rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR);
+        rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR,
+                                       VIR_CGROUP_DEVICE_RW);
         qemuAuditCgroupMajor(vm, cgroup, "allow", DEVICE_PTY_MAJOR,
                              "pty", rc == 0);
         if (rc != 0) {
@@ -240,7 +244,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
              ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
                driver->vncAllowHostAudio) ||
               (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {
-            rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR);
+            rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR,
+                                           VIR_CGROUP_DEVICE_RW);
             qemuAuditCgroupMajor(vm, cgroup, "allow", DEVICE_SND_MAJOR,
                                  "sound", rc == 0);
             if (rc != 0) {
@@ -251,8 +256,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         for (i = 0; deviceACL[i] != NULL ; i++) {
-            rc = virCgroupAllowDevicePath(cgroup,
-                                          deviceACL[i]);
+            rc = virCgroupAllowDevicePath(cgroup, deviceACL[i],
+                                          VIR_CGROUP_DEVICE_RW);
             qemuAuditCgroupPath(vm, cgroup, "allow", deviceACL[i], rc);
             if (rc < 0 &&
                 rc != -ENOENT) {

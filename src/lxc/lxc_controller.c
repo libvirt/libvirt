@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2010 Red Hat, Inc.  Copyright IBM Corp. 2008
+ * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright IBM Corp. 2008
  *
  * lxc_controller.c: linux container process controller
  *
@@ -168,7 +169,8 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         rc = virCgroupAllowDevice(cgroup,
                                   dev->type,
                                   dev->major,
-                                  dev->minor);
+                                  dev->minor,
+                                  VIR_CGROUP_DEVICE_RWM);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to allow device %c:%d:%d for domain %s"),
@@ -177,7 +179,8 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         }
     }
 
-    rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY);
+    rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
+                                   VIR_CGROUP_DEVICE_RWM);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to allow PYT devices for domain %s"),

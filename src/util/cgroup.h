@@ -60,27 +60,41 @@ int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb);
 int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long long kb);
 int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long long *kb);
 
+enum {
+    VIR_CGROUP_DEVICE_READ  = 1,
+    VIR_CGROUP_DEVICE_WRITE = 2,
+    VIR_CGROUP_DEVICE_MKNOD = 4,
+    VIR_CGROUP_DEVICE_RW    = VIR_CGROUP_DEVICE_READ | VIR_CGROUP_DEVICE_WRITE,
+    VIR_CGROUP_DEVICE_RWM   = VIR_CGROUP_DEVICE_RW | VIR_CGROUP_DEVICE_MKNOD,
+};
+
 int virCgroupDenyAllDevices(virCgroupPtr group);
 
 int virCgroupAllowDevice(virCgroupPtr group,
                          char type,
                          int major,
-                         int minor);
+                         int minor,
+                         int perms);
 int virCgroupAllowDeviceMajor(virCgroupPtr group,
                               char type,
-                              int major);
+                              int major,
+                              int perms);
 int virCgroupAllowDevicePath(virCgroupPtr group,
-                             const char *path);
+                             const char *path,
+                             int perms);
 
 int virCgroupDenyDevice(virCgroupPtr group,
                         char type,
                         int major,
-                        int minor);
+                        int minor,
+                        int perms);
 int virCgroupDenyDeviceMajor(virCgroupPtr group,
                              char type,
-                             int major);
+                             int major,
+                             int perms);
 int virCgroupDenyDevicePath(virCgroupPtr group,
-                            const char *path);
+                            const char *path,
+                            int perms);
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);

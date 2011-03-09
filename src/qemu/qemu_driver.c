@@ -1962,7 +1962,8 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                             vm->def->name);
             goto endjob;
         }
-        rc = virCgroupAllowDevicePath(cgroup, path);
+        rc = virCgroupAllowDevicePath(cgroup, path,
+                                      VIR_CGROUP_DEVICE_RW);
         qemuAuditCgroupPath(vm, cgroup, "allow", path, rc);
         if (rc < 0) {
             virReportSystemError(-rc,
@@ -2012,7 +2013,8 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         VIR_WARN("failed to restore save state label on %s", path);
 
     if (cgroup != NULL) {
-        rc = virCgroupDenyDevicePath(cgroup, path);
+        rc = virCgroupDenyDevicePath(cgroup, path,
+                                     VIR_CGROUP_DEVICE_RWM);
         qemuAuditCgroupPath(vm, cgroup, "deny", path, rc);
         if (rc < 0)
             VIR_WARN("Unable to deny device %s for %s %d",
@@ -2044,7 +2046,8 @@ endjob:
             }
 
             if (cgroup != NULL) {
-                rc = virCgroupDenyDevicePath(cgroup, path);
+                rc = virCgroupDenyDevicePath(cgroup, path,
+                                             VIR_CGROUP_DEVICE_RWM);
                 qemuAuditCgroupPath(vm, cgroup, "deny", path, rc);
                 if (rc < 0)
                     VIR_WARN("Unable to deny device %s for %s: %d",
