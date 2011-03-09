@@ -1,7 +1,7 @@
 /*
  * virterror.c: implements error handling and reporting code for libvirt
  *
- * Copy:  Copyright (C) 2006, 2008-2010 Red Hat, Inc.
+ * Copy:  Copyright (C) 2006, 2008-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -1344,6 +1344,12 @@ void virReportOOMErrorFull(int domcode,
                       virerr, NULL, NULL, -1, -1, virerr, NULL);
 }
 
+/**
+ * virSetErrorLogPriorityFunc:
+ * @func: function to install
+ *
+ * Install a function used to filter error logging based on error priority.
+ */
 void virSetErrorLogPriorityFunc(virErrorLogPriorityFunc func)
 {
     virErrorLogPriorityFilter = func;

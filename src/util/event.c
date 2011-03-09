@@ -1,8 +1,8 @@
 /*
  * event.c: event loop for monitoring file handles
  *
+ * Copyright (C) 2007, 2011 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
- * Copyright (C) 2007 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -140,6 +140,8 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
  * Once registered, the application can invoke
  * virEventRunDefaultImpl in a loop to process
  * events
+ *
+ * Returns 0 on success, -1 on failure.
  */
 int virEventRegisterDefaultImpl(void)
 {
@@ -178,6 +180,8 @@ int virEventRegisterDefaultImpl(void)
  *    if (virEventRunDefaultImpl() < 0)
  *       ...print error...
  *  }
+ *
+ * Returns 0 on success, -1 on failure.
  */
 int virEventRunDefaultImpl(void)
 {
