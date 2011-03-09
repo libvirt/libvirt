@@ -603,6 +603,7 @@ static int qemudListenUnix(struct qemud_server *server,
     if (bind(sock->fd, &sock->addr.data.sa, sock->addr.len) < 0) {
         VIR_ERROR(_("Failed to bind socket to '%s': %s"),
                   path, virStrerror(errno, ebuf, sizeof ebuf));
+        umask(oldmask);
         goto cleanup;
     }
     umask(oldmask);
