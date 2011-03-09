@@ -3277,16 +3277,20 @@ int main(int argc, char **argv) {
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (geteuid() == 0) {
         const char *rundir = LOCALSTATEDIR "/run/libvirt";
+        mode_t old_umask;
 
+        old_umask = umask(022);
         if (mkdir (rundir, 0755)) {
             if (errno != EEXIST) {
                 char ebuf[1024];
                 VIR_ERROR(_("unable to create rundir %s: %s"), rundir,
                           virStrerror(errno, ebuf, sizeof(ebuf)));
                 ret = VIR_DAEMON_ERR_RUNDIR;
+                umask(old_umask);
                 goto error;
             }
         }
+        umask(old_umask);
     }
 
     /* Beyond this point, nothing should rely on using
