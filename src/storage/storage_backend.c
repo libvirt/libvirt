@@ -634,6 +634,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     int ret = -1;
     char *size = NULL;
     char *create_tool;
+    int imgformat = -1;
 
     const char *type = virStorageFileFormatTypeToString(vol->target.format);
     const char *backingType = vol->backingStore.path ?
@@ -738,6 +739,10 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         return -1;
     }
 
+    imgformat = virStorageBackendQEMUImgBackingFormat(create_tool);
+    if (imgformat < 0)
+        goto cleanup;
+
     if (inputvol) {
         const char *imgargv[] = {
             create_tool,
@@ -747,7 +752,18 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             inputPath,
             vol->target.path,
             NULL,
+            NULL,
+            NULL
         };
+
+        if (vol->target.encryption != NULL) {
+            if (imgformat == QEMU_IMG_BACKING_FORMAT_FLAG) {
+                imgargv[8] = "-o";
+                imgargv[9] = "encryption=on";
+            } else {
+                imgargv[8] = "-e";
+            }
+        }
 
         ret = virStorageBackendCreateExecCommand(pool, vol, imgargv);
     } else if (vol->backingStore.path) {
@@ -763,11 +779,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             NULL,
             NULL
         };
-        int imgformat = virStorageBackendQEMUImgBackingFormat(create_tool);
-        char *optflag = NULL;
-        if (imgformat < 0)
-            goto cleanup;
 
+        char *optflag = NULL;
         switch (imgformat) {
         case QEMU_IMG_BACKING_FORMAT_FLAG:
             imgargv[6] = "-F";
@@ -783,13 +796,21 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                 virReportOOMError();
                 goto cleanup;
             }
+
+            if (vol->target.encryption != NULL) {
+                char *tmp = NULL;
+                if (virAsprintf(&tmp, "%s,%s", optflag, "encryption=on") < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+                VIR_FREE(optflag);
+                optflag = tmp;
+            }
+
             imgargv[6] = "-o";
             imgargv[7] = optflag;
             imgargv[8] = vol->target.path;
             imgargv[9] = size;
-            if (vol->target.encryption != NULL)
-                imgargv[10] = "-e";
-            break;
 
         default:
             VIR_INFO("Unable to set backing store format for %s with %s",
@@ -811,10 +832,18 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             vol->target.path,
             size,
             NULL,
+            NULL,
             NULL
         };
-        if (vol->target.encryption != NULL)
-            imgargv[6] = "-e";
+
+        if (vol->target.encryption != NULL) {
+            if (imgformat == QEMU_IMG_BACKING_FORMAT_FLAG) {
+                imgargv[6] = "-o";
+                imgargv[7] = "encryption=on";
+            } else {
+                imgargv[6] = "-e";
+            }
+        }
 
         ret = virStorageBackendCreateExecCommand(pool, vol, imgargv);
     }
