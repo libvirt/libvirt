@@ -195,9 +195,13 @@ remote_protocol-structs:
 		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
 		-e '    $$p =~ s!\s+\n!\n!sg;'				\
 		-e '    $$p =~ s!\s+$$!!;'				\
+		-e '    $$p =~ s!\t!        !g;'			\
 		-e '    print "$$p\n";'					\
 		-e '    $$n++;'						\
 		-e '  }'						\
+		-e '}'							\
+		-e 'BEGIN {'						\
+		-e '  print "/* -*- c -*- */\n";'			\
 		-e '}'							\
 		-e 'END {'						\
 		-e '  if ($$n < 300) {'					\
