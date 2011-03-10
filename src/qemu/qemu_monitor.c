@@ -742,10 +742,10 @@ cleanup:
 }
 
 
-int qemuMonitorCommandWithFd(qemuMonitorPtr mon,
-                             const char *cmd,
-                             int scm_fd,
-                             char **reply)
+int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
+                                const char *cmd,
+                                int scm_fd,
+                                char **reply)
 {
     if (mon->json)
         return qemuMonitorJSONHumanCommandWithFd(mon, cmd, scm_fd, reply);
