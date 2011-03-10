@@ -1299,36 +1299,49 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     int rc;
     bool restoreLabel = false;
 
-    if (!is_reg &&
-        qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        if (virCgroupForDomain(driver->cgroup, vm->def->name,
-                               &cgroup, 0) != 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s"),
-                            vm->def->name);
-            goto cleanup;
+    if (qemuCaps && qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+        !compressor) {
+        /* All right! We can use fd migration, which means that qemu
+         * doesn't have to open() the file, so we don't have to futz
+         * around with granting access or revoking it later.  */
+        is_reg = true;
+        bypassSecurityDriver = true;
+    } else {
+        /* Phooey - we have to fall back on exec migration, where qemu
+         * has to popen() the file by name.  We might also stumble on
+         * a race present in some qemu versions where it does a wait()
+         * that botches pclose.  */
+        if (!is_reg &&
+            qemuCgroupControllerActive(driver,
+                                       VIR_CGROUP_CONTROLLER_DEVICES)) {
+            if (virCgroupForDomain(driver->cgroup, vm->def->name,
+                                   &cgroup, 0) != 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Unable to find cgroup for %s"),
+                                vm->def->name);
+                goto cleanup;
+            }
+            rc = virCgroupAllowDevicePath(cgroup, path,
+                                          VIR_CGROUP_DEVICE_RW);
+            qemuAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
+            if (rc < 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to allow device %s for %s"),
+                                     path, vm->def->name);
+                goto cleanup;
+            }
         }
-        rc = virCgroupAllowDevicePath(cgroup, path,
-                                      VIR_CGROUP_DEVICE_RW);
-        qemuAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to allow device %s for %s"),
-                                 path, vm->def->name);
+        if ((!bypassSecurityDriver) &&
+            virSecurityManagerSetSavedStateLabel(driver->securityManager,
+                                                 vm, path) < 0)
             goto cleanup;
-        }
+        restoreLabel = true;
     }
 
-    if ((!bypassSecurityDriver) &&
-        virSecurityManagerSetSavedStateLabel(driver->securityManager,
-                                             vm, path) < 0)
-        goto cleanup;
-    restoreLabel = true;
-
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (!compressor) {
         const char *args[] = { "cat", NULL };
 
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuCaps && qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
             priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
             rc = qemuMonitorMigrateToFd(priv->mon,
@@ -1339,7 +1352,6 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
                                           QEMU_MONITOR_MIGRATE_BACKGROUND,
                                           args, path, offset);
         }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         const char *prog = compressor;
         const char *args[] = {
@@ -1347,12 +1359,11 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
             "-c",
             NULL
         };
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         rc = qemuMonitorMigrateToFile(priv->mon,
                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
                                       args, path, offset);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (rc < 0)
         goto cleanup;
