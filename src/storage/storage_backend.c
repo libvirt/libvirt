@@ -595,7 +595,8 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
 
     start = strstr(help, " create ");
     end = strstr(start, "\n");
-    if ((tmp = strstr(start, "-F fmt")) && tmp < end)
+    if (((tmp = strstr(start, "-F fmt")) && tmp < end) ||
+        ((tmp = strstr(start, "-F backing_fmt")) && tmp < end))
         ret = QEMU_IMG_BACKING_FORMAT_FLAG;
     else if ((tmp = strstr(start, "[-o options]")) && tmp < end)
         ret = QEMU_IMG_BACKING_FORMAT_OPTIONS;
@@ -757,7 +758,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         };
 
         if (vol->target.encryption != NULL) {
-            if (imgformat == QEMU_IMG_BACKING_FORMAT_FLAG) {
+            if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS) {
                 imgargv[8] = "-o";
                 imgargv[9] = "encryption=on";
             } else {
@@ -837,7 +838,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         };
 
         if (vol->target.encryption != NULL) {
-            if (imgformat == QEMU_IMG_BACKING_FORMAT_FLAG) {
+            if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS) {
                 imgargv[6] = "-o";
                 imgargv[7] = "encryption=on";
             } else {
