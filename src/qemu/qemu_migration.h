@@ -60,4 +60,12 @@ virDomainPtr qemuMigrationFinish(struct qemud_driver *driver,
                                  int retcode);
 
 
+int qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
+                        virBitmapPtr qemuCaps,
+                        int fd, off_t offset, const char *path,
+                        const char *compressor,
+                        bool is_reg, bool bypassSecurityDriver)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_RETURN_CHECK;
+
 #endif /* __QEMU_MIGRATION_H__ */

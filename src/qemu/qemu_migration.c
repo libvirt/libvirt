@@ -29,6 +29,7 @@
 #include "qemu_process.h"
 #include "qemu_capabilities.h"
 #include "qemu_audit.h"
+#include "qemu_cgroup.h"
 
 #include "logging.h"
 #include "virterror_internal.h"
@@ -1282,4 +1283,101 @@ cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     return dom;
+}
+
+/* Helper function called while driver lock is held and vm is active.  */
+int
+qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
+                    virBitmapPtr qemuCaps,
+                    int fd, off_t offset, const char *path,
+                    const char *compressor,
+                    bool is_reg, bool bypassSecurityDriver)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    int rc;
+    bool restoreLabel = false;
+
+    if (!is_reg &&
+        qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        if (virCgroupForDomain(driver->cgroup, vm->def->name,
+                               &cgroup, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unable to find cgroup for %s"),
+                            vm->def->name);
+            goto cleanup;
+        }
+        rc = virCgroupAllowDevicePath(cgroup, path,
+                                      VIR_CGROUP_DEVICE_RW);
+        qemuAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
+        if (rc < 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to allow device %s for %s"),
+                                 path, vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    if ((!bypassSecurityDriver) &&
+        virSecurityManagerSetSavedStateLabel(driver->securityManager,
+                                             vm, path) < 0)
+        goto cleanup;
+    restoreLabel = true;
+
+    if (!compressor) {
+        const char *args[] = { "cat", NULL };
+
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        if (qemuCaps && qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+            priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+            rc = qemuMonitorMigrateToFd(priv->mon,
+                                        QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                        fd);
+        } else {
+            rc = qemuMonitorMigrateToFile(priv->mon,
+                                          QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                          args, path, offset);
+        }
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    } else {
+        const char *prog = compressor;
+        const char *args[] = {
+            prog,
+            "-c",
+            NULL
+        };
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        rc = qemuMonitorMigrateToFile(priv->mon,
+                                      QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                      args, path, offset);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    }
+
+    if (rc < 0)
+        goto cleanup;
+
+    rc = qemuMigrationWaitForCompletion(driver, vm);
+
+    if (rc < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    if (restoreLabel && (!bypassSecurityDriver) &&
+        virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
+                                                 vm, path) < 0)
+        VIR_WARN("failed to restore save state label on %s", path);
+
+    if (cgroup != NULL) {
+        rc = virCgroupDenyDevicePath(cgroup, path,
+                                     VIR_CGROUP_DEVICE_RWM);
+        qemuAuditCgroupPath(vm, cgroup, "deny", path, "rwm", rc);
+        if (rc < 0)
+            VIR_WARN("Unable to deny device %s for %s %d",
+                     path, vm->def->name, rc);
+        virCgroupFree(&cgroup);
+    }
+    return ret;
 }

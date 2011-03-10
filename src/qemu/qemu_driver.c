@@ -1799,6 +1799,15 @@ endjob:
     return ret;
 }
 
+/* Given a enum qemud_save_formats compression level, return the name
+ * of the program to run, or NULL if no program is needed.  */
+static const char *
+qemuCompressProgramName(int compress)
+{
+    return (compress == QEMUD_SAVE_FORMAT_RAW ? NULL :
+            qemudSaveCompressionTypeToString(compress));
+}
+
 /* This internal function expects the driver lock to already be held on
  * entry and the vm must be active.
  */
@@ -1808,15 +1817,14 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 {
     char *xml = NULL;
     struct qemud_save_header header;
-    int bypassSecurityDriver = 0;
+    bool bypassSecurityDriver = false;
     int ret = -1;
     int rc;
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
     struct stat sb;
-    int is_reg = 0;
+    bool is_reg = false;
     unsigned long long offset;
-    virCgroupPtr cgroup = NULL;
     virBitmapPtr qemuCaps = NULL;
     int fd = -1;
 
@@ -1871,9 +1879,9 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
          * that with NFS we can't actually stat() the file.
          * The subsequent codepaths will still raise an error
          * if a truely fatal problem is hit */
-        is_reg = 1;
+        is_reg = true;
     } else {
-        is_reg = S_ISREG(sb.st_mode);
+        is_reg = !!S_ISREG(sb.st_mode);
     }
 
     offset = sizeof(header) + header.xml_len;
@@ -1968,7 +1976,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                is NFS, we assume it's a root-squashing NFS share, and that
                the security driver stuff would have failed anyway */
 
-            bypassSecurityDriver = 1;
+            bypassSecurityDriver = true;
         }
     }
 
@@ -1978,87 +1986,14 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         goto endjob;
     }
 
-    /* Allow qemu to access file */
-
-    if (!is_reg &&
-        qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s"),
-                            vm->def->name);
-            goto endjob;
-        }
-        rc = virCgroupAllowDevicePath(cgroup, path,
-                                      VIR_CGROUP_DEVICE_RW);
-        qemuAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to allow device %s for %s"),
-                                 path, vm->def->name);
-            goto endjob;
-        }
-    }
-
-    if ((!bypassSecurityDriver) &&
-        virSecurityManagerSetSavedStateLabel(driver->securityManager,
-                                             vm, path) < 0)
-        goto endjob;
-
-    if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
-        const char *args[] = { "cat", NULL };
-
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
-            priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
-            rc = qemuMonitorMigrateToFd(priv->mon,
-                                        QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                        fd);
-        } else {
-            rc = qemuMonitorMigrateToFile(priv->mon,
-                                          QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                          args, path, offset);
-        }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-    } else {
-        const char *prog = qemudSaveCompressionTypeToString(header.compressed);
-        const char *args[] = {
-            prog,
-            "-c",
-            NULL
-        };
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToFile(priv->mon,
-                                      QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                      args, path, offset);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-    }
-
-    if (rc < 0)
-        goto endjob;
-
+    /* Perform the migration */
+    if (qemuMigrationToFile(driver, vm, qemuCaps, fd, offset, path,
+                            qemuCompressProgramName(compressed),
+                            is_reg, bypassSecurityDriver) < 0)
+        goto cleanup;
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, _("unable to close %s"), path);
-        goto endjob;
-    }
-
-    rc = qemuMigrationWaitForCompletion(driver, vm);
-
-    if (rc < 0)
-        goto endjob;
-
-    if ((!bypassSecurityDriver) &&
-        virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
-                                                 vm, path) < 0)
-        VIR_WARN("failed to restore save state label on %s", path);
-    bypassSecurityDriver = true;
-
-    if (cgroup != NULL) {
-        rc = virCgroupDenyDevicePath(cgroup, path,
-                                     VIR_CGROUP_DEVICE_RWM);
-        qemuAuditCgroupPath(vm, cgroup, "deny", path, "rwm", rc);
-        if (rc < 0)
-            VIR_WARN("Unable to deny device %s for %s %d",
-                     path, vm->def->name, rc);
+        goto cleanup;
     }
 
     ret = 0;
@@ -2084,22 +2019,7 @@ endjob:
                 if (rc < 0)
                     VIR_WARN0("Unable to resume guest CPUs after save failure");
             }
-
-            if (cgroup != NULL) {
-                rc = virCgroupDenyDevicePath(cgroup, path,
-                                             VIR_CGROUP_DEVICE_RWM);
-                qemuAuditCgroupPath(vm, cgroup, "deny", path, "rwm", rc);
-                if (rc < 0)
-                    VIR_WARN("Unable to deny device %s for %s: %d",
-                             path, vm->def->name, rc);
-            }
-
-            if ((!bypassSecurityDriver) &&
-                virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
-                                                         vm, path) < 0)
-                VIR_WARN("failed to restore save state label on %s", path);
         }
-
         if (qemuDomainObjEndJob(vm) == 0)
             vm = NULL;
     }
@@ -2112,7 +2032,6 @@ cleanup:
         unlink(path);
     if (event)
         qemuDomainEventQueue(driver, event);
-    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -2316,9 +2235,6 @@ static int doCoreDump(struct qemud_driver *driver,
 {
     int fd = -1;
     int ret = -1;
-    qemuDomainObjPrivatePtr priv;
-
-    priv = vm->privateData;
 
     /* Create an empty file with appropriate ownership.  */
     if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
@@ -2327,6 +2243,10 @@ static int doCoreDump(struct qemud_driver *driver,
         goto cleanup;
     }
 
+    if (qemuMigrationToFile(driver, vm, NULL, fd, 0, path,
+                            qemuCompressProgramName(compress), true, false) < 0)
+        goto cleanup;
+
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("unable to save file %s"),
@@ -2334,42 +2254,7 @@ static int doCoreDump(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (virSecurityManagerSetSavedStateLabel(driver->securityManager,
-                                             vm, path) < 0)
-        goto cleanup;
-
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (compress == QEMUD_SAVE_FORMAT_RAW) {
-        const char *args[] = {
-            "cat",
-            NULL,
-        };
-        ret = qemuMonitorMigrateToFile(priv->mon,
-                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                       args, path, 0);
-    } else {
-        const char *prog = qemudSaveCompressionTypeToString(compress);
-        const char *args[] = {
-            prog,
-            "-c",
-            NULL,
-        };
-        ret = qemuMonitorMigrateToFile(priv->mon,
-                                       QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                       args, path, 0);
-    }
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
-    if (ret < 0)
-        goto cleanup;
-
-    ret = qemuMigrationWaitForCompletion(driver, vm);
-
-    if (ret < 0)
-        goto cleanup;
-
-    if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
-                                                 vm, path) < 0)
-        goto cleanup;
+    ret = 0;
 
 cleanup:
     if (ret != 0)
