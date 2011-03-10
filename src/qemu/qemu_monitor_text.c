@@ -206,12 +206,13 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuMonitorCommandWithHandler(qemuMonitorPtr mon,
-                              const char *cmd,
-                              qemuMonitorPasswordHandler passwordHandler,
-                              void *passwordOpaque,
-                              int scm_fd,
-                              char **reply) {
+qemuMonitorTextCommandWithHandler(qemuMonitorPtr mon,
+                                  const char *cmd,
+                                  qemuMonitorPasswordHandler passwordHandler,
+                                  void *passwordOpaque,
+                                  int scm_fd,
+                                  char **reply)
+{
     int ret;
     qemuMonitorMessage msg;
 
@@ -265,7 +266,8 @@ qemuMonitorTextCommandWithFd(qemuMonitorPtr mon,
                              int scm_fd,
                              char **reply)
 {
-    return qemuMonitorCommandWithHandler(mon, cmd, NULL, NULL, scm_fd, reply);
+    return qemuMonitorTextCommandWithHandler(mon, cmd, NULL, NULL,
+                                             scm_fd, reply);
 }
 
 
@@ -345,10 +347,10 @@ qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn) {
     char *reply;
 
-    if (qemuMonitorCommandWithHandler(mon, "cont",
-                                      qemuMonitorSendDiskPassphrase,
-                                      conn,
-                                      -1, &reply) < 0)
+    if (qemuMonitorTextCommandWithHandler(mon, "cont",
+                                          qemuMonitorSendDiskPassphrase,
+                                          conn,
+                                          -1, &reply) < 0)
         return -1;
 
     VIR_FREE(reply);
@@ -750,10 +752,10 @@ int qemuMonitorTextSetVNCPassword(qemuMonitorPtr mon,
 {
     char *info = NULL;
 
-    if (qemuMonitorCommandWithHandler(mon, "change vnc password",
-                                      qemuMonitorSendVNCPassphrase,
-                                      (char *)password,
-                                      -1, &info) < 0) {
+    if (qemuMonitorTextCommandWithHandler(mon, "change vnc password",
+                                          qemuMonitorSendVNCPassphrase,
+                                          (char *)password,
+                                          -1, &info) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("setting VNC password failed"));
         return -1;
