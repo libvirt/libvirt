@@ -1296,6 +1296,52 @@
   &lt;/devices&gt;
   ...</pre>
 
+    <p>
+      The network access of direct attached virtual machines can be
+      managed by the hardware switch to which the physical interface
+      of the host machine is connected to.
+    <p>
+      The interface can have additional parameters as shown below,
+      if the switch is conforming to the IEEE 802.1Qbg standard.
+      The parameters of the virtualport element are documented in more detail
+      in the IEEE 802.1Qbg standard. The values are network specific and
+      should be provided by the network administrator. In 802.1Qbg terms,
+      the Virtual Station Interface (VSI) represents the virtual interface
+      of a virtual machine.
+    </p>
+    <dl>
+      <dt><code>managerid</code></dt>
+      <dd>The VSI Manager ID identifies the database containing the VSI type
+        and instance definitions. This is an integer value and the
+        value 0 is reserved.</dd>
+      <dt><code>typeid</code></dt>
+      <dd>The VSI Type ID identifies a VSI type characterizing the network
+        access. VSI types are typically managed by network administrator.
+        This is an integer value.
+      </dd>
+      <dt><code>typeidversion</code></dt>
+      <dd>The VSI Type Version allows multiple versions of a VSI Type.
+        This is an integer value.
+      </dd>
+      <dt><code>instanceid</code></dt>
+      <dd>The VSI Instance ID Identifier is generated when a VSI instance
+        (i.e. a virtual interface of a virtual machine) is created.
+        This is a globally unique identifier.
+      </dd>
+    </dl>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='direct'/&gt;
+    ...
+    &lt;interface type='direct'&gt;
+      &lt;source dev='eth0' mode='vepa'/&gt;
+      &lt;virtualport type="802.1Qbg"&gt;
+        &lt;parameters managerid="11" typeid="1193047" typeidversion="2" instanceid="09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f"/&gt;
+      &lt;/virtualport&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h5><a name="elementsNICSMulticast">Multicast tunnel</a></h5>
 
