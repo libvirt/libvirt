@@ -109,6 +109,16 @@ static void networkReloadIptablesRules(struct network_driver *driver);
 static struct network_driver *driverState = NULL;
 
 static char *
+networkDnsmasqLeaseFileName(const char *netname)
+{
+    char *leasefile;
+
+    virAsprintf(&leasefile, DNSMASQ_STATE_DIR "/%s.leases",
+                netname);
+    return leasefile;
+}
+
+static char *
 networkRadvdPidfileBasename(const char *netname)
 {
     /* this is simple but we want to be sure it's consistently done */
@@ -531,6 +541,11 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         }
 
         if (ipdef->nranges > 0) {
+            char *leasefile = networkDnsmasqLeaseFileName(network->def->name);
+            if (!leasefile)
+                goto cleanup;
+            virCommandAddArgFormat(cmd, "--dhcp-leasefile=%s", leasefile);
+            VIR_FREE(leasefile);
             virCommandAddArgFormat(cmd, "--dhcp-lease-max=%d", nbleases);
         }
 
@@ -2195,12 +2210,19 @@ static int networkUndefine(virNetworkPtr net) {
     }
 
     if (dhcp_present) {
+        char *leasefile;
         dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
         if (dctx == NULL)
             goto cleanup;
 
         dnsmasqDelete(dctx);
         dnsmasqContextFree(dctx);
+
+        leasefile = networkDnsmasqLeaseFileName(network->def->name);
+        if (!leasefile)
+            goto cleanup;
+        unlink(leasefile);
+        VIR_FREE(leasefile);
     }
 
     if (v6present) {
