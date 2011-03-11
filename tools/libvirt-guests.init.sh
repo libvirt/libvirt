@@ -143,12 +143,15 @@ start() {
 
     while read uri list; do
         configured=false
+        set -f
         for confuri in $URIS; do
+            set +f
             if [ "x$confuri" = "x$uri" ]; then
                 configured=true
                 break
             fi
         done
+        set +f
         if ! "$configured"; then
             eval_gettext "Ignoring guests on \$uri URI"; echo
             continue
@@ -241,7 +244,9 @@ stop() {
     fi
 
     : >"$LISTFILE"
+    set -f
     for uri in $URIS; do
+        set +f
         eval_gettext "Running guests on \$uri URI: "
 
         if [ "x$uri" = xdefault ] && [ ! -x "$libvirtd" ]; then
@@ -265,6 +270,7 @@ stop() {
             fi
         fi
     done
+    set +f
 
     while read uri list; do
         if "$suspending"; then
@@ -286,10 +292,13 @@ stop() {
 }
 
 gueststatus() {
+    set -f
     for uri in $URIS; do
+        set +f
         echo "* $uri URI:"
         retval run_virsh "$uri" list || echo
     done
+    set +f
 }
 
 # rh_status
