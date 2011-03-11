@@ -120,7 +120,7 @@ AC_MSG_RESULT([$have_cpuid])
 dnl Availability of various common functions (non-fatal if missing),
 dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([cfmakeraw regexec sched_getaffinity getuid getgid \
- initgroups posix_fallocate mmap kill \
+ geteuid initgroups posix_fallocate mmap kill \
  getmntent_r getgrnam_r getpwuid_r])
 
 dnl Availability of pthread functions (if missing, win32 threading is

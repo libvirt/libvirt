@@ -269,6 +269,10 @@ const char *virEnumToString(const char *const*types,
 static inline int getuid (void) { return 0; }
 # endif
 
+# ifndef HAVE_GETEUID
+static inline int geteuid (void) { return 0; }
+# endif
+
 # ifndef HAVE_GETGID
 static inline int getgid (void) { return 0; }
 # endif
