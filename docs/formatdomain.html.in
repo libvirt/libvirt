@@ -1300,6 +1300,7 @@
       The network access of direct attached virtual machines can be
       managed by the hardware switch to which the physical interface
       of the host machine is connected to.
+    </p>
     <p>
       The interface can have additional parameters as shown below,
       if the switch is conforming to the IEEE 802.1Qbg standard.
