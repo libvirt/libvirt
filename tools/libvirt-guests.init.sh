@@ -164,7 +164,7 @@ start() {
                 if $guest_running; then
                     gettext "already active"; echo
                 else
-                    retval run_virsh $uri start "$name" >/dev/null && \
+                    retval run_virsh $uri start "$guest" >/dev/null && \
                     gettext "done"; echo
                 fi
             fi

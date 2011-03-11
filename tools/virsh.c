@@ -1402,7 +1402,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL, VSH_BYNAME)))
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
+                                      VSH_BYNAME | VSH_BYUUID)))
         return FALSE;
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
