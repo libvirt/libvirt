@@ -499,78 +499,78 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     }
 
     if (ipdef) {
-    for (r = 0 ; r < ipdef->nranges ; r++) {
-        char *saddr = virSocketFormatAddr(&ipdef->ranges[r].start);
-        if (!saddr)
-            goto cleanup;
-        char *eaddr = virSocketFormatAddr(&ipdef->ranges[r].end);
-        if (!eaddr) {
-            VIR_FREE(saddr);
-            goto cleanup;
-        }
-        virCommandAddArg(cmd, "--dhcp-range");
-        virCommandAddArgFormat(cmd, "%s,%s", saddr, eaddr);
-        VIR_FREE(saddr);
-        VIR_FREE(eaddr);
-        nbleases += virSocketGetRange(&ipdef->ranges[r].start,
-                                      &ipdef->ranges[r].end);
-    }
-
-    /*
-     * For static-only DHCP, i.e. with no range but at least one host element,
-     * we have to add a special --dhcp-range option to enable the service in
-     * dnsmasq.
-     */
-    if (!ipdef->nranges && ipdef->nhosts) {
-        char *bridgeaddr = virSocketFormatAddr(&ipdef->address);
-        if (!bridgeaddr)
-            goto cleanup;
-        virCommandAddArg(cmd, "--dhcp-range");
-        virCommandAddArgFormat(cmd, "%s,static", bridgeaddr);
-        VIR_FREE(bridgeaddr);
-    }
-
-    if (ipdef->nranges > 0) {
-        virCommandAddArgFormat(cmd, "--dhcp-lease-max=%d", nbleases);
-    }
-
-    if (ipdef->nranges || ipdef->nhosts)
-        virCommandAddArg(cmd, "--dhcp-no-override");
-
-    if (ipdef->nhosts > 0) {
-        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name,
-                                                 DNSMASQ_STATE_DIR);
-        if (dctx == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        if (networkSaveDnsmasqHostsfile(ipdef, dctx, false) == 0) {
-            virCommandAddArgPair(cmd, "--dhcp-hostsfile",
-                                 dctx->hostsfile->path);
-        }
-        dnsmasqContextFree(dctx);
-    }
-
-    if (ipdef->tftproot) {
-        virCommandAddArgList(cmd, "--enable-tftp",
-                             "--tftp-root", ipdef->tftproot,
-                             NULL);
-    }
-    if (ipdef->bootfile) {
-        virCommandAddArg(cmd, "--dhcp-boot");
-        if (VIR_SOCKET_HAS_ADDR(&ipdef->bootserver)) {
-            char *bootserver = virSocketFormatAddr(&ipdef->bootserver);
-
-            if (!bootserver)
+        for (r = 0 ; r < ipdef->nranges ; r++) {
+            char *saddr = virSocketFormatAddr(&ipdef->ranges[r].start);
+            if (!saddr)
                 goto cleanup;
-            virCommandAddArgFormat(cmd, "%s%s%s",
-                               ipdef->bootfile, ",,", bootserver);
-            VIR_FREE(bootserver);
-        } else {
-            virCommandAddArg(cmd, ipdef->bootfile);
+            char *eaddr = virSocketFormatAddr(&ipdef->ranges[r].end);
+            if (!eaddr) {
+                VIR_FREE(saddr);
+                goto cleanup;
+            }
+            virCommandAddArg(cmd, "--dhcp-range");
+            virCommandAddArgFormat(cmd, "%s,%s", saddr, eaddr);
+            VIR_FREE(saddr);
+            VIR_FREE(eaddr);
+            nbleases += virSocketGetRange(&ipdef->ranges[r].start,
+                                          &ipdef->ranges[r].end);
         }
-    }
+
+        /*
+         * For static-only DHCP, i.e. with no range but at least one host element,
+         * we have to add a special --dhcp-range option to enable the service in
+         * dnsmasq.
+         */
+        if (!ipdef->nranges && ipdef->nhosts) {
+            char *bridgeaddr = virSocketFormatAddr(&ipdef->address);
+            if (!bridgeaddr)
+                goto cleanup;
+            virCommandAddArg(cmd, "--dhcp-range");
+            virCommandAddArgFormat(cmd, "%s,static", bridgeaddr);
+            VIR_FREE(bridgeaddr);
+        }
+
+        if (ipdef->nranges > 0) {
+            virCommandAddArgFormat(cmd, "--dhcp-lease-max=%d", nbleases);
+        }
+
+        if (ipdef->nranges || ipdef->nhosts)
+            virCommandAddArg(cmd, "--dhcp-no-override");
+
+        if (ipdef->nhosts > 0) {
+            dnsmasqContext *dctx = dnsmasqContextNew(network->def->name,
+                                                     DNSMASQ_STATE_DIR);
+            if (dctx == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            if (networkSaveDnsmasqHostsfile(ipdef, dctx, false) == 0) {
+                virCommandAddArgPair(cmd, "--dhcp-hostsfile",
+                                     dctx->hostsfile->path);
+            }
+            dnsmasqContextFree(dctx);
+        }
+
+        if (ipdef->tftproot) {
+            virCommandAddArgList(cmd, "--enable-tftp",
+                                 "--tftp-root", ipdef->tftproot,
+                                 NULL);
+        }
+        if (ipdef->bootfile) {
+            virCommandAddArg(cmd, "--dhcp-boot");
+            if (VIR_SOCKET_HAS_ADDR(&ipdef->bootserver)) {
+                char *bootserver = virSocketFormatAddr(&ipdef->bootserver);
+
+                if (!bootserver)
+                    goto cleanup;
+                virCommandAddArgFormat(cmd, "%s%s%s",
+                                       ipdef->bootfile, ",,", bootserver);
+                VIR_FREE(bootserver);
+            } else {
+                virCommandAddArg(cmd, ipdef->bootfile);
+            }
+        }
     }
 
     ret = 0;
