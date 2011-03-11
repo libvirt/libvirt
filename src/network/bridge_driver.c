@@ -440,12 +440,9 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                         virCommandPtr cmd) {
     int r, ret = -1;
     int nbleases = 0;
-    char *bridgeaddr;
     int ii;
     virNetworkIpDefPtr tmpipdef;
 
-    if (!(bridgeaddr = virSocketFormatAddr(&ipdef->address)))
-        goto cleanup;
     /*
      * NB, be careful about syntax for dnsmasq options in long format.
      *
@@ -501,6 +498,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         VIR_FREE(ipaddr);
     }
 
+    if (ipdef) {
     for (r = 0 ; r < ipdef->nranges ; r++) {
         char *saddr = virSocketFormatAddr(&ipdef->ranges[r].start);
         if (!saddr)
@@ -524,8 +522,12 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
      * dnsmasq.
      */
     if (!ipdef->nranges && ipdef->nhosts) {
+        char *bridgeaddr = virSocketFormatAddr(&ipdef->address);
+        if (!bridgeaddr)
+            goto cleanup;
         virCommandAddArg(cmd, "--dhcp-range");
         virCommandAddArgFormat(cmd, "%s,static", bridgeaddr);
+        VIR_FREE(bridgeaddr);
     }
 
     if (ipdef->nranges > 0) {
@@ -569,10 +571,10 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             virCommandAddArg(cmd, ipdef->bootfile);
         }
     }
+    }
 
     ret = 0;
 cleanup:
-    VIR_FREE(bridgeaddr);
     return ret;
 }
 
@@ -594,7 +596,16 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
         if (ipdef->nranges || ipdef->nhosts)
             break;
     }
+    /* If no IPv4 addresses had dhcp info, pick the first (if there were any). */
     if (!ipdef)
+        ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
+
+    /* If there are no IP addresses at all (v4 or v6), return now, since
+     * there won't be any address for dnsmasq to listen on anyway.
+     * If there are any addresses, even if no dhcp ranges or static entries,
+     * we should continue and run dnsmasq, just for the DNS capabilities.
+     */
+    if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
         return 0;
 
     if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
@@ -1677,8 +1688,8 @@ networkStartNetworkDaemon(struct network_driver *driver,
     }
 
 
-    /* start dnsmasq if there are any IPv4 addresses */
-    if (v4present && networkStartDhcpDaemon(network) < 0)
+    /* start dnsmasq if there are any IP addresses (v4 or v6) */
+    if ((v4present || v6present) && networkStartDhcpDaemon(network) < 0)
         goto err3;
 
     /* start radvd if there are any ipv6 addresses */
