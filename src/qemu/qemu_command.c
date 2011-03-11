@@ -4042,12 +4042,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                 if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
                     if (def->videos[0]->vram &&
                         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                            if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA))
-                                virCommandAddArgFormat(cmd, "-global qxl-vga.vram_size=%u",
-                                                       def->videos[0]->vram * 1024);
-                            else
-                                virCommandAddArgFormat(cmd, "-global qxl.vram_size=%u",
-                                                       def->videos[0]->vram * 1024);
+                        virCommandAddArg(cmd, "-global");
+                        if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA))
+                            virCommandAddArgFormat(cmd, "qxl-vga.vram_size=%u",
+                                                   def->videos[0]->vram * 1024);
+                        else
+                            virCommandAddArgFormat(cmd, "qxl.vram_size=%u",
+                                                   def->videos[0]->vram * 1024);
                     }
                 }
             }
