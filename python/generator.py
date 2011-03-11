@@ -14,6 +14,11 @@ import re
 if __name__ == "__main__":
     # launched as a script
     srcPref = os.path.dirname(sys.argv[0])
+    if len(sys.argv) > 1:
+        python = sys.argv[1]
+    else:
+        print "Python binary not specified"
+        sys.exit(1)
 else:
     # imported
     srcPref = os.path.dirname(__file__)
@@ -1012,7 +1017,7 @@ def buildWrappers():
     classes = open("libvirt.py", "w")
 
     extra = open(os.path.join(srcPref,"libvirt-override.py"), "r")
-    classes.write("#!/usr/bin/env python\n")
+    classes.write("#! " + python + " -i\n")
     classes.write("#\n")
     classes.write("# WARNING WARNING WARNING WARNING\n")
     classes.write("#\n")

@@ -53,7 +53,7 @@ GENERATED= libvirt-export.c \
 	   libvirt.py
 
 generated.stamp: $(srcdir)/$(GENERATE) $(API_DESC)
-	$(PYTHON) $(srcdir)/$(GENERATE) $(srcdir)
+	$(PYTHON) $(srcdir)/$(GENERATE) $(PYTHON)
 	touch $@
 
 $(GENERATED): generated.stamp
