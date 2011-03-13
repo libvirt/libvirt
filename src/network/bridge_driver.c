@@ -490,6 +490,13 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                          "--except-interface", "lo",
                          NULL);
 
+    /* If this is an isolated network, set the default route option
+     * (3) to be empty to avoid setting a default route that's
+     * guaranteed to not work.
+     */
+    if (network->def->forwardType == VIR_NETWORK_FORWARD_NONE)
+        virCommandAddArg(cmd, "--dhcp-option=3");
+
     /*
      * --interface does not actually work with dnsmasq < 2.47,
      * due to DAD for ipv6 addresses on the interface.
