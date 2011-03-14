@@ -8,4 +8,7 @@
  (html-mode . (
 	       (indent-tabs-mode . nil)
 	       ))
+ (sh-mode . (
+	     (indent-tabs-mode . nil)
+	     ))
  )

@@ -327,10 +327,11 @@ sc_prohibit_ctype_h:
 # Ensure that no C source file, docs, or rng schema uses TABs for
 # indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
 # files in gnulib, since they're imported.
+space_indent_files=(\.(rng|s?[ch](\.in)?|html.in|py)|(daemon|tools)/.*\.in)
 sc_TAB_in_indentation:
 	@prohibit='^ *	'						\
-	in_vc_files='(\.(rng|[ch](\.in)?|html.in|py)|(daemon|tools)/.*\.in)$$' \
-	halt='use leading spaces, not TAB, in C, sh, html, py, and RNG schemas' \
+	in_vc_files='$(space_indent_files)$$'				\
+	halt='indent with space, not TAB, in C, sh, html, py, and RNG schemas' \
 	  $(_sc_search_regexp)
 
 ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
