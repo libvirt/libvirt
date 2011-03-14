@@ -128,8 +128,8 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                         net->data.direct.mode, vnet_hdr, def->uuid,
                         &net->data.direct.virtPortProfile, &res_ifname,
                         vmop);
-    qemuAuditNetDevice(def, net, res_ifname, rc >= 0);
     if (rc >= 0) {
+        qemuAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
     }
