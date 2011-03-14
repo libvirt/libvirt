@@ -152,8 +152,11 @@ typedef enum {
 /*
  * Command Option Flags
  */
-#define VSH_OFLAG_NONE    0     /* without flags */
-#define VSH_OFLAG_REQ    (1 << 1)       /* option required */
+enum {
+    VSH_OFLAG_NONE     = 0,        /* without flags */
+    VSH_OFLAG_REQ      = (1 << 0), /* option required */
+    VSH_OFLAG_EMPTY_OK = (1 << 1), /* empty string option allowed */
+};
 
 /* dummy */
 typedef struct __vshControl vshControl;
@@ -685,7 +688,8 @@ static const vshCmdInfo info_connect[] = {
 };
 
 static const vshCmdOptDef opts_connect[] = {
-    {"name",     VSH_OT_DATA, 0, N_("hypervisor connection URI")},
+    {"name",     VSH_OT_DATA, VSH_OFLAG_EMPTY_OK,
+     N_("hypervisor connection URI")},
     {"readonly", VSH_OT_BOOL, 0, N_("read-only connection")},
     {NULL, 0, 0, NULL}
 };
@@ -10993,14 +10997,16 @@ vshCommandOptString(const vshCmd *cmd, const char *name, const char **value)
     int ret = 0;
 
     if (arg && arg->data) {
-        ret = -1;
-        if (*arg->data) {
-            if (value) {
-                *value = arg->data;
-                ret = 1;
-            }
+        if (*arg->data
+            || (arg->def && (arg->def->flag & VSH_OFLAG_EMPTY_OK))) {
+            *value = arg->data;
+            ret = 1;
         } else if (arg->def && ((arg->def->flag) & VSH_OFLAG_REQ)) {
             vshError(NULL, _("Missing required option '%s'"), name);
+            ret = -1;
+        } else {
+            /* Treat "--option ''" as if option had not been specified. */
+            ret = 0;
         }
     }
 
