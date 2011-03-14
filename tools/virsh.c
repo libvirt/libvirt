@@ -186,6 +186,13 @@ typedef struct vshCmdOpt {
 } vshCmdOpt;
 
 /*
+ * Command Usage Flags
+ */
+enum {
+    VSH_CMD_FLAG_NOCONNECT = (1 << 0),  /* no prior connection needed */
+};
+
+/*
  * vshCmdDef - command definition
  */
 typedef struct {
@@ -193,6 +200,7 @@ typedef struct {
     bool (*handler) (vshControl *, const vshCmd *);    /* command handler */
     const vshCmdOptDef *opts;   /* definition of command options */
     const vshCmdInfo *info;     /* details about command */
+    int flags;                  /* bitwise OR of VSH_CMD_FLAG */
 } vshCmdDef;
 
 /*
@@ -563,16 +571,21 @@ vshSetupSignals(void) {
  *
  */
 static void
-vshReconnect(vshControl *ctl) {
-    if (ctl->conn != NULL)
+vshReconnect(vshControl *ctl)
+{
+    bool connected = false;
+
+    if (ctl->conn != NULL) {
+        connected = true;
         virConnectClose(ctl->conn);
+    }
 
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,
                                    ctl->readonly ? VIR_CONNECT_RO : 0);
     if (!ctl->conn)
         vshError(ctl, "%s", _("Failed to reconnect to the hypervisor"));
-    else
+    else if (connected)
         vshError(ctl, "%s", _("Reconnected to the hypervisor"));
     disconnected = 0;
     ctl->useGetInfo = false;
@@ -9966,7 +9979,7 @@ static const vshCmdOptDef opts_cd[] = {
 };
 
 static bool
-cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdCd(vshControl *ctl, const vshCmd *cmd)
 {
     const char *dir = NULL;
     char *dir_malloced = NULL;
@@ -10737,205 +10750,259 @@ cleanup:
 }
 
 static const vshCmdDef domManagementCmds[] = {
-    {"attach-device", cmdAttachDevice, opts_attach_device, info_attach_device},
-    {"attach-disk", cmdAttachDisk, opts_attach_disk, info_attach_disk},
-    {"attach-interface", cmdAttachInterface, opts_attach_interface, info_attach_interface},
-    {"autostart", cmdAutostart, opts_autostart, info_autostart},
-    {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune},
+    {"attach-device", cmdAttachDevice, opts_attach_device,
+     info_attach_device, 0},
+    {"attach-disk", cmdAttachDisk, opts_attach_disk,
+     info_attach_disk, 0},
+    {"attach-interface", cmdAttachInterface, opts_attach_interface,
+     info_attach_interface, 0},
+    {"autostart", cmdAutostart, opts_autostart, info_autostart, 0},
+    {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
 #ifndef WIN32
-    {"console", cmdConsole, opts_console, info_console},
+    {"console", cmdConsole, opts_console, info_console, 0},
 #endif
-    {"cpu-baseline", cmdCPUBaseline, opts_cpu_baseline, info_cpu_baseline},
-    {"cpu-compare", cmdCPUCompare, opts_cpu_compare, info_cpu_compare},
-    {"create", cmdCreate, opts_create, info_create},
-    {"define", cmdDefine, opts_define, info_define},
-    {"destroy", cmdDestroy, opts_destroy, info_destroy},
-    {"detach-device", cmdDetachDevice, opts_detach_device, info_detach_device},
-    {"detach-disk", cmdDetachDisk, opts_detach_disk, info_detach_disk},
-    {"detach-interface", cmdDetachInterface, opts_detach_interface, info_detach_interface},
-    {"domid", cmdDomid, opts_domid, info_domid},
-    {"domjobabort", cmdDomjobabort, opts_domjobabort, info_domjobabort},
-    {"domjobinfo", cmdDomjobinfo, opts_domjobinfo, info_domjobinfo},
-    {"domname", cmdDomname, opts_domname, info_domname},
-    {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid},
-    {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative, info_domxmlfromnative},
-    {"domxml-to-native", cmdDomXMLToNative, opts_domxmltonative, info_domxmltonative},
-    {"dump", cmdDump, opts_dump, info_dump},
-    {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
-    {"edit", cmdEdit, opts_edit, info_edit},
-    {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave},
-    {"managedsave-remove", cmdManagedSaveRemove, opts_managedsaveremove, info_managedsaveremove},
-    {"maxvcpus", cmdMaxvcpus, opts_maxvcpus, info_maxvcpus},
-    {"memtune", cmdMemtune, opts_memtune, info_memtune},
-    {"migrate", cmdMigrate, opts_migrate, info_migrate},
-    {"migrate-setmaxdowntime", cmdMigrateSetMaxDowntime, opts_migrate_setmaxdowntime, info_migrate_setmaxdowntime},
-    {"reboot", cmdReboot, opts_reboot, info_reboot},
-    {"restore", cmdRestore, opts_restore, info_restore},
-    {"resume", cmdResume, opts_resume, info_resume},
-    {"save", cmdSave, opts_save, info_save},
-    {"schedinfo", cmdSchedinfo, opts_schedinfo, info_schedinfo},
-    {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem},
-    {"setmem", cmdSetmem, opts_setmem, info_setmem},
-    {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus},
-    {"inject-nmi", cmdInjectNMI, opts_inject_nmi, info_inject_nmi},
-    {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
-    {"start", cmdStart, opts_start, info_start},
-    {"suspend", cmdSuspend, opts_suspend, info_suspend},
-    {"ttyconsole", cmdTTYConsole, opts_ttyconsole, info_ttyconsole},
-    {"undefine", cmdUndefine, opts_undefine, info_undefine},
-    {"update-device", cmdUpdateDevice, opts_update_device, info_update_device},
-    {"vcpucount", cmdVcpucount, opts_vcpucount, info_vcpucount},
-    {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},
-    {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
-    {"version", cmdVersion, NULL, info_version},
-    {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay},
-    {NULL, NULL, NULL, NULL}
+    {"cpu-baseline", cmdCPUBaseline, opts_cpu_baseline, info_cpu_baseline, 0},
+    {"cpu-compare", cmdCPUCompare, opts_cpu_compare, info_cpu_compare, 0},
+    {"create", cmdCreate, opts_create, info_create, 0},
+    {"define", cmdDefine, opts_define, info_define, 0},
+    {"destroy", cmdDestroy, opts_destroy, info_destroy, 0},
+    {"detach-device", cmdDetachDevice, opts_detach_device,
+     info_detach_device, 0},
+    {"detach-disk", cmdDetachDisk, opts_detach_disk, info_detach_disk, 0},
+    {"detach-interface", cmdDetachInterface, opts_detach_interface,
+     info_detach_interface, 0},
+    {"domid", cmdDomid, opts_domid, info_domid, 0},
+    {"domjobabort", cmdDomjobabort, opts_domjobabort, info_domjobabort, 0},
+    {"domjobinfo", cmdDomjobinfo, opts_domjobinfo, info_domjobinfo, 0},
+    {"domname", cmdDomname, opts_domname, info_domname, 0},
+    {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid, 0},
+    {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative,
+     info_domxmlfromnative, 0},
+    {"domxml-to-native", cmdDomXMLToNative, opts_domxmltonative,
+     info_domxmltonative, 0},
+    {"dump", cmdDump, opts_dump, info_dump, 0},
+    {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml, 0},
+    {"edit", cmdEdit, opts_edit, info_edit, 0},
+    {"inject-nmi", cmdInjectNMI, opts_inject_nmi, info_inject_nmi, 0},
+    {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave, 0},
+    {"managedsave-remove", cmdManagedSaveRemove, opts_managedsaveremove,
+     info_managedsaveremove, 0},
+    {"maxvcpus", cmdMaxvcpus, opts_maxvcpus, info_maxvcpus, 0},
+    {"memtune", cmdMemtune, opts_memtune, info_memtune, 0},
+    {"migrate", cmdMigrate, opts_migrate, info_migrate, 0},
+    {"migrate-setmaxdowntime", cmdMigrateSetMaxDowntime,
+     opts_migrate_setmaxdowntime, info_migrate_setmaxdowntime, 0},
+    {"reboot", cmdReboot, opts_reboot, info_reboot, 0},
+    {"restore", cmdRestore, opts_restore, info_restore, 0},
+    {"resume", cmdResume, opts_resume, info_resume, 0},
+    {"save", cmdSave, opts_save, info_save, 0},
+    {"schedinfo", cmdSchedinfo, opts_schedinfo, info_schedinfo, 0},
+    {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem, 0},
+    {"setmem", cmdSetmem, opts_setmem, info_setmem, 0},
+    {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus, 0},
+    {"shutdown", cmdShutdown, opts_shutdown, info_shutdown, 0},
+    {"start", cmdStart, opts_start, info_start, 0},
+    {"suspend", cmdSuspend, opts_suspend, info_suspend, 0},
+    {"ttyconsole", cmdTTYConsole, opts_ttyconsole, info_ttyconsole, 0},
+    {"undefine", cmdUndefine, opts_undefine, info_undefine, 0},
+    {"update-device", cmdUpdateDevice, opts_update_device,
+     info_update_device, 0},
+    {"vcpucount", cmdVcpucount, opts_vcpucount, info_vcpucount, 0},
+    {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo, 0},
+    {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin, 0},
+    {"version", cmdVersion, NULL, info_version, 0},
+    {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef domMonitoringCmds[] = {
-    {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo},
-    {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
-    {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
-    {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
-    {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat},
-    {"domstate", cmdDomstate, opts_domstate, info_domstate},
-    {"list", cmdList, opts_list, info_list},
-    {NULL, NULL, NULL, NULL}
+    {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo, 0},
+    {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},
+    {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat, 0},
+    {"dominfo", cmdDominfo, opts_dominfo, info_dominfo, 0},
+    {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat, 0},
+    {"domstate", cmdDomstate, opts_domstate, info_domstate, 0},
+    {"list", cmdList, opts_list, info_list, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef storagePoolCmds[] = {
     {"find-storage-pool-sources-as", cmdPoolDiscoverSourcesAs,
-     opts_find_storage_pool_sources_as, info_find_storage_pool_sources_as},
+     opts_find_storage_pool_sources_as, info_find_storage_pool_sources_as, 0},
     {"find-storage-pool-sources", cmdPoolDiscoverSources,
-     opts_find_storage_pool_sources, info_find_storage_pool_sources},
-    {"pool-autostart", cmdPoolAutostart, opts_pool_autostart, info_pool_autostart},
-    {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build},
-    {"pool-create-as", cmdPoolCreateAs, opts_pool_X_as, info_pool_create_as},
-    {"pool-create", cmdPoolCreate, opts_pool_create, info_pool_create},
-    {"pool-define-as", cmdPoolDefineAs, opts_pool_X_as, info_pool_define_as},
-    {"pool-define", cmdPoolDefine, opts_pool_define, info_pool_define},
-    {"pool-delete", cmdPoolDelete, opts_pool_delete, info_pool_delete},
-    {"pool-destroy", cmdPoolDestroy, opts_pool_destroy, info_pool_destroy},
-    {"pool-dumpxml", cmdPoolDumpXML, opts_pool_dumpxml, info_pool_dumpxml},
-    {"pool-edit", cmdPoolEdit, opts_pool_edit, info_pool_edit},
-    {"pool-info", cmdPoolInfo, opts_pool_info, info_pool_info},
-    {"pool-list", cmdPoolList, opts_pool_list, info_pool_list},
-    {"pool-name", cmdPoolName, opts_pool_name, info_pool_name},
-    {"pool-refresh", cmdPoolRefresh, opts_pool_refresh, info_pool_refresh},
-    {"pool-start", cmdPoolStart, opts_pool_start, info_pool_start},
-    {"pool-undefine", cmdPoolUndefine, opts_pool_undefine, info_pool_undefine},
-    {"pool-uuid", cmdPoolUuid, opts_pool_uuid, info_pool_uuid},
-    {NULL, NULL, NULL, NULL}
+     opts_find_storage_pool_sources, info_find_storage_pool_sources, 0},
+    {"pool-autostart", cmdPoolAutostart, opts_pool_autostart,
+     info_pool_autostart, 0},
+    {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build, 0},
+    {"pool-create-as", cmdPoolCreateAs, opts_pool_X_as, info_pool_create_as, 0},
+    {"pool-create", cmdPoolCreate, opts_pool_create, info_pool_create, 0},
+    {"pool-define-as", cmdPoolDefineAs, opts_pool_X_as, info_pool_define_as, 0},
+    {"pool-define", cmdPoolDefine, opts_pool_define, info_pool_define, 0},
+    {"pool-delete", cmdPoolDelete, opts_pool_delete, info_pool_delete, 0},
+    {"pool-destroy", cmdPoolDestroy, opts_pool_destroy, info_pool_destroy, 0},
+    {"pool-dumpxml", cmdPoolDumpXML, opts_pool_dumpxml, info_pool_dumpxml, 0},
+    {"pool-edit", cmdPoolEdit, opts_pool_edit, info_pool_edit, 0},
+    {"pool-info", cmdPoolInfo, opts_pool_info, info_pool_info, 0},
+    {"pool-list", cmdPoolList, opts_pool_list, info_pool_list, 0},
+    {"pool-name", cmdPoolName, opts_pool_name, info_pool_name, 0},
+    {"pool-refresh", cmdPoolRefresh, opts_pool_refresh, info_pool_refresh, 0},
+    {"pool-start", cmdPoolStart, opts_pool_start, info_pool_start, 0},
+    {"pool-undefine", cmdPoolUndefine, opts_pool_undefine,
+     info_pool_undefine, 0},
+    {"pool-uuid", cmdPoolUuid, opts_pool_uuid, info_pool_uuid, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef storageVolCmds[] = {
-    {"vol-clone", cmdVolClone, opts_vol_clone, info_vol_clone},
-    {"vol-create-as", cmdVolCreateAs, opts_vol_create_as, info_vol_create_as},
-    {"vol-create", cmdVolCreate, opts_vol_create, info_vol_create},
-    {"vol-create-from", cmdVolCreateFrom, opts_vol_create_from, info_vol_create_from},
-    {"vol-delete", cmdVolDelete, opts_vol_delete, info_vol_delete},
-    {"vol-download", cmdVolDownload, opts_vol_download, info_vol_download },
-    {"vol-dumpxml", cmdVolDumpXML, opts_vol_dumpxml, info_vol_dumpxml},
-    {"vol-info", cmdVolInfo, opts_vol_info, info_vol_info},
-    {"vol-key", cmdVolKey, opts_vol_key, info_vol_key},
-    {"vol-list", cmdVolList, opts_vol_list, info_vol_list},
-    {"vol-name", cmdVolName, opts_vol_name, info_vol_name},
-    {"vol-path", cmdVolPath, opts_vol_path, info_vol_path},
-    {"vol-pool", cmdVolPool, opts_vol_pool, info_vol_pool},
-    {"vol-upload", cmdVolUpload, opts_vol_upload, info_vol_upload },
-    {"vol-wipe", cmdVolWipe, opts_vol_wipe, info_vol_wipe},
-    {NULL, NULL, NULL, NULL}
+    {"vol-clone", cmdVolClone, opts_vol_clone, info_vol_clone, 0},
+    {"vol-create-as", cmdVolCreateAs, opts_vol_create_as,
+     info_vol_create_as, 0},
+    {"vol-create", cmdVolCreate, opts_vol_create, info_vol_create, 0},
+    {"vol-create-from", cmdVolCreateFrom, opts_vol_create_from,
+     info_vol_create_from, 0},
+    {"vol-delete", cmdVolDelete, opts_vol_delete, info_vol_delete, 0},
+    {"vol-download", cmdVolDownload, opts_vol_download, info_vol_download, 0},
+    {"vol-dumpxml", cmdVolDumpXML, opts_vol_dumpxml, info_vol_dumpxml, 0},
+    {"vol-info", cmdVolInfo, opts_vol_info, info_vol_info, 0},
+    {"vol-key", cmdVolKey, opts_vol_key, info_vol_key, 0},
+    {"vol-list", cmdVolList, opts_vol_list, info_vol_list, 0},
+    {"vol-name", cmdVolName, opts_vol_name, info_vol_name, 0},
+    {"vol-path", cmdVolPath, opts_vol_path, info_vol_path, 0},
+    {"vol-pool", cmdVolPool, opts_vol_pool, info_vol_pool, 0},
+    {"vol-upload", cmdVolUpload, opts_vol_upload, info_vol_upload, 0},
+    {"vol-wipe", cmdVolWipe, opts_vol_wipe, info_vol_wipe, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef networkCmds[] = {
-    {"net-autostart", cmdNetworkAutostart, opts_network_autostart, info_network_autostart},
-    {"net-create", cmdNetworkCreate, opts_network_create, info_network_create},
-    {"net-define", cmdNetworkDefine, opts_network_define, info_network_define},
-    {"net-destroy", cmdNetworkDestroy, opts_network_destroy, info_network_destroy},
-    {"net-dumpxml", cmdNetworkDumpXML, opts_network_dumpxml, info_network_dumpxml},
-    {"net-edit", cmdNetworkEdit, opts_network_edit, info_network_edit},
-    {"net-info", cmdNetworkInfo, opts_network_info, info_network_info},
-    {"net-list", cmdNetworkList, opts_network_list, info_network_list},
-    {"net-name", cmdNetworkName, opts_network_name, info_network_name},
-    {"net-start", cmdNetworkStart, opts_network_start, info_network_start},
-    {"net-undefine", cmdNetworkUndefine, opts_network_undefine, info_network_undefine},
-    {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid},
-    {NULL, NULL, NULL, NULL}
+    {"net-autostart", cmdNetworkAutostart, opts_network_autostart,
+     info_network_autostart, 0},
+    {"net-create", cmdNetworkCreate, opts_network_create,
+     info_network_create, 0},
+    {"net-define", cmdNetworkDefine, opts_network_define,
+     info_network_define, 0},
+    {"net-destroy", cmdNetworkDestroy, opts_network_destroy,
+     info_network_destroy, 0},
+    {"net-dumpxml", cmdNetworkDumpXML, opts_network_dumpxml,
+     info_network_dumpxml, 0},
+    {"net-edit", cmdNetworkEdit, opts_network_edit, info_network_edit, 0},
+    {"net-info", cmdNetworkInfo, opts_network_info, info_network_info, 0},
+    {"net-list", cmdNetworkList, opts_network_list, info_network_list, 0},
+    {"net-name", cmdNetworkName, opts_network_name, info_network_name, 0},
+    {"net-start", cmdNetworkStart, opts_network_start, info_network_start, 0},
+    {"net-undefine", cmdNetworkUndefine, opts_network_undefine,
+     info_network_undefine, 0},
+    {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef nodedevCmds[] = {
-    {"nodedev-create", cmdNodeDeviceCreate, opts_node_device_create, info_node_device_create},
-    {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy, info_node_device_destroy},
-    {"nodedev-dettach", cmdNodeDeviceDettach, opts_node_device_dettach, info_node_device_dettach},
-    {"nodedev-dumpxml", cmdNodeDeviceDumpXML, opts_node_device_dumpxml, info_node_device_dumpxml},
-    {"nodedev-list", cmdNodeListDevices, opts_node_list_devices, info_node_list_devices},
-    {"nodedev-reattach", cmdNodeDeviceReAttach, opts_node_device_reattach, info_node_device_reattach},
-    {"nodedev-reset", cmdNodeDeviceReset, opts_node_device_reset, info_node_device_reset},
-    {NULL, NULL, NULL, NULL}
+    {"nodedev-create", cmdNodeDeviceCreate, opts_node_device_create,
+     info_node_device_create, 0},
+    {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy,
+     info_node_device_destroy, 0},
+    {"nodedev-dettach", cmdNodeDeviceDettach, opts_node_device_dettach,
+     info_node_device_dettach, 0},
+    {"nodedev-dumpxml", cmdNodeDeviceDumpXML, opts_node_device_dumpxml,
+     info_node_device_dumpxml, 0},
+    {"nodedev-list", cmdNodeListDevices, opts_node_list_devices,
+     info_node_list_devices, 0},
+    {"nodedev-reattach", cmdNodeDeviceReAttach, opts_node_device_reattach,
+     info_node_device_reattach, 0},
+    {"nodedev-reset", cmdNodeDeviceReset, opts_node_device_reset,
+     info_node_device_reset, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef ifaceCmds[] = {
-    {"iface-define", cmdInterfaceDefine, opts_interface_define, info_interface_define},
-    {"iface-destroy", cmdInterfaceDestroy, opts_interface_destroy, info_interface_destroy},
-    {"iface-dumpxml", cmdInterfaceDumpXML, opts_interface_dumpxml, info_interface_dumpxml},
-    {"iface-edit", cmdInterfaceEdit, opts_interface_edit, info_interface_edit},
-    {"iface-list", cmdInterfaceList, opts_interface_list, info_interface_list},
-    {"iface-mac", cmdInterfaceMAC, opts_interface_mac, info_interface_mac},
-    {"iface-name", cmdInterfaceName, opts_interface_name, info_interface_name},
-    {"iface-start", cmdInterfaceStart, opts_interface_start, info_interface_start},
-    {"iface-undefine", cmdInterfaceUndefine, opts_interface_undefine, info_interface_undefine},
-    {NULL, NULL, NULL, NULL}
+    {"iface-define", cmdInterfaceDefine, opts_interface_define,
+     info_interface_define, 0},
+    {"iface-destroy", cmdInterfaceDestroy, opts_interface_destroy,
+     info_interface_destroy, 0},
+    {"iface-dumpxml", cmdInterfaceDumpXML, opts_interface_dumpxml,
+     info_interface_dumpxml, 0},
+    {"iface-edit", cmdInterfaceEdit, opts_interface_edit,
+     info_interface_edit, 0},
+    {"iface-list", cmdInterfaceList, opts_interface_list,
+     info_interface_list, 0},
+    {"iface-mac", cmdInterfaceMAC, opts_interface_mac,
+     info_interface_mac, 0},
+    {"iface-name", cmdInterfaceName, opts_interface_name,
+     info_interface_name, 0},
+    {"iface-start", cmdInterfaceStart, opts_interface_start,
+     info_interface_start, 0},
+    {"iface-undefine", cmdInterfaceUndefine, opts_interface_undefine,
+     info_interface_undefine, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef nwfilterCmds[] = {
-    {"nwfilter-define", cmdNWFilterDefine, opts_nwfilter_define, info_nwfilter_define},
-    {"nwfilter-dumpxml", cmdNWFilterDumpXML, opts_nwfilter_dumpxml, info_nwfilter_dumpxml},
-    {"nwfilter-edit", cmdNWFilterEdit, opts_nwfilter_edit, info_nwfilter_edit},
-    {"nwfilter-list", cmdNWFilterList, opts_nwfilter_list, info_nwfilter_list},
-    {"nwfilter-undefine", cmdNWFilterUndefine, opts_nwfilter_undefine, info_nwfilter_undefine},
-    {NULL, NULL, NULL, NULL}
+    {"nwfilter-define", cmdNWFilterDefine, opts_nwfilter_define,
+     info_nwfilter_define, 0},
+    {"nwfilter-dumpxml", cmdNWFilterDumpXML, opts_nwfilter_dumpxml,
+     info_nwfilter_dumpxml, 0},
+    {"nwfilter-edit", cmdNWFilterEdit, opts_nwfilter_edit,
+     info_nwfilter_edit, 0},
+    {"nwfilter-list", cmdNWFilterList, opts_nwfilter_list,
+     info_nwfilter_list, 0},
+    {"nwfilter-undefine", cmdNWFilterUndefine, opts_nwfilter_undefine,
+     info_nwfilter_undefine, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef secretCmds[] = {
-    {"secret-define", cmdSecretDefine, opts_secret_define, info_secret_define},
-    {"secret-dumpxml", cmdSecretDumpXML, opts_secret_dumpxml, info_secret_dumpxml},
-    {"secret-get-value", cmdSecretGetValue, opts_secret_get_value, info_secret_get_value},
-    {"secret-list", cmdSecretList, NULL, info_secret_list},
-    {"secret-set-value", cmdSecretSetValue, opts_secret_set_value, info_secret_set_value},
-    {"secret-undefine", cmdSecretUndefine, opts_secret_undefine, info_secret_undefine},
-    {NULL, NULL, NULL, NULL}
+    {"secret-define", cmdSecretDefine, opts_secret_define,
+     info_secret_define, 0},
+    {"secret-dumpxml", cmdSecretDumpXML, opts_secret_dumpxml,
+     info_secret_dumpxml, 0},
+    {"secret-get-value", cmdSecretGetValue, opts_secret_get_value,
+     info_secret_get_value, 0},
+    {"secret-list", cmdSecretList, NULL, info_secret_list, 0},
+    {"secret-set-value", cmdSecretSetValue, opts_secret_set_value,
+     info_secret_set_value, 0},
+    {"secret-undefine", cmdSecretUndefine, opts_secret_undefine,
+     info_secret_undefine, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef virshCmds[] = {
-    {"cd", cmdCd, opts_cd, info_cd},
-    {"echo", cmdEcho, opts_echo, info_echo},
-    {"exit", cmdQuit, NULL, info_quit},
-    {"help", cmdHelp, opts_help, info_help},
-    {"pwd", cmdPwd, NULL, info_pwd},
-    {"quit", cmdQuit, NULL, info_quit},
-    {NULL, NULL, NULL, NULL}
+    {"cd", cmdCd, opts_cd, info_cd, VSH_CMD_FLAG_NOCONNECT},
+    {"echo", cmdEcho, opts_echo, info_echo, VSH_CMD_FLAG_NOCONNECT},
+    {"exit", cmdQuit, NULL, info_quit, VSH_CMD_FLAG_NOCONNECT},
+    {"help", cmdHelp, opts_help, info_help, VSH_CMD_FLAG_NOCONNECT},
+    {"pwd", cmdPwd, NULL, info_pwd, VSH_CMD_FLAG_NOCONNECT},
+    {"quit", cmdQuit, NULL, info_quit, VSH_CMD_FLAG_NOCONNECT},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef snapshotCmds[] = {
-    {"snapshot-create", cmdSnapshotCreate, opts_snapshot_create, info_snapshot_create},
-    {"snapshot-current", cmdSnapshotCurrent, opts_snapshot_current, info_snapshot_current},
-    {"snapshot-delete", cmdSnapshotDelete, opts_snapshot_delete, info_snapshot_delete},
-    {"snapshot-dumpxml", cmdSnapshotDumpXML, opts_snapshot_dumpxml, info_snapshot_dumpxml},
-    {"snapshot-list", cmdSnapshotList, opts_snapshot_list, info_snapshot_list},
-    {"snapshot-revert", cmdDomainSnapshotRevert, opts_snapshot_revert, info_snapshot_revert},
-    {NULL, NULL, NULL, NULL}
+    {"snapshot-create", cmdSnapshotCreate, opts_snapshot_create,
+     info_snapshot_create, 0},
+    {"snapshot-current", cmdSnapshotCurrent, opts_snapshot_current,
+     info_snapshot_current, 0},
+    {"snapshot-delete", cmdSnapshotDelete, opts_snapshot_delete,
+     info_snapshot_delete, 0},
+    {"snapshot-dumpxml", cmdSnapshotDumpXML, opts_snapshot_dumpxml,
+     info_snapshot_dumpxml, 0},
+    {"snapshot-list", cmdSnapshotList, opts_snapshot_list,
+     info_snapshot_list, 0},
+    {"snapshot-revert", cmdDomainSnapshotRevert, opts_snapshot_revert,
+     info_snapshot_revert, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdDef hostAndHypervisorCmds[] = {
-    {"capabilities", cmdCapabilities, NULL, info_capabilities},
-    {"connect", cmdConnect, opts_connect, info_connect},
-    {"freecell", cmdFreecell, opts_freecell, info_freecell},
-    {"hostname", cmdHostname, NULL, info_hostname},
-    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
-    {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command, info_qemu_monitor_command},
-    {"sysinfo", cmdSysinfo, NULL, info_sysinfo},
-    {"uri", cmdURI, NULL, info_uri},
-    {NULL, NULL, NULL, NULL}
+    {"capabilities", cmdCapabilities, NULL, info_capabilities, 0},
+    {"connect", cmdConnect, opts_connect, info_connect,
+     VSH_CMD_FLAG_NOCONNECT},
+    {"freecell", cmdFreecell, opts_freecell, info_freecell, 0},
+    {"hostname", cmdHostname, NULL, info_hostname, 0},
+    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
+    {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
+     info_qemu_monitor_command, 0},
+    {"sysinfo", cmdSysinfo, NULL, info_sysinfo, 0},
+    {"uri", cmdURI, NULL, info_uri, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const vshCmdGrp cmdGroups[] = {
@@ -11744,7 +11811,8 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
         struct timeval before, after;
         bool enable_timing = ctl->timing;
 
-        if ((ctl->conn == NULL) || (disconnected != 0))
+        if ((ctl->conn == NULL || disconnected) &&
+            !(cmd->def->flags & VSH_CMD_FLAG_NOCONNECT))
             vshReconnect(ctl);
 
         if (enable_timing)
@@ -12352,19 +12420,22 @@ vshInit(vshControl *ctl)
     if (virEventRegisterDefaultImpl() < 0)
         return false;
 
-    ctl->conn = virConnectOpenAuth(ctl->name,
-                                   virConnectAuthPtrDefault,
-                                   ctl->readonly ? VIR_CONNECT_RO : 0);
+    if (ctl->name) {
+        ctl->conn = virConnectOpenAuth(ctl->name,
+                                       virConnectAuthPtrDefault,
+                                       ctl->readonly ? VIR_CONNECT_RO : 0);
 
-
-    /* This is not necessarily fatal.  All the individual commands check
-     * vshConnectionUsability, except ones which don't need a connection
-     * such as "help".
-     */
-    if (!ctl->conn) {
-        virshReportError(ctl);
-        vshError(ctl, "%s", _("failed to connect to the hypervisor"));
-        return false;
+        /* Connecting to a named connection must succeed, but we delay
+         * connecting to the default connection until we need it
+         * (since the first command might be 'connect' which allows a
+         * non-default connection, or might be 'help' which needs no
+         * connection).
+         */
+        if (!ctl->conn) {
+            virshReportError(ctl);
+            vshError(ctl, "%s", _("failed to connect to the hypervisor"));
+            return false;
+        }
     }
 
     return true;
