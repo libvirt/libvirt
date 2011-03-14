@@ -968,7 +968,7 @@
       <dd>The <code>hostdev</code> element is the main container for describing
         host devices. For usb device passthrough <code>mode</code> is always
         "subsystem" and <code>type</code> is "usb" for a USB device and "pci"
-        for a PCI device. When <code>managed</code> is "yes" for a PIC
+        for a PCI device. When <code>managed</code> is "yes" for a PCI
         device, it is detached from the host before being passed on to
         the guest.</dd>
       <dt><code>source</code></dt>
