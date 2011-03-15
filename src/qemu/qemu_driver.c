@@ -2553,14 +2553,15 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
     int i, rc = 1;
     int ret = -1;
     int oldvcpus = vm->def->vcpus;
+    int vcpus = oldvcpus;
 
     qemuDomainObjEnterMonitor(vm);
 
     /* We need different branches here, because we want to offline
      * in reverse order to onlining, so any partial fail leaves us in a
      * reasonably sensible state */
-    if (nvcpus > vm->def->vcpus) {
-        for (i = vm->def->vcpus ; i < nvcpus ; i++) {
+    if (nvcpus > vcpus) {
+        for (i = vcpus ; i < nvcpus ; i++) {
             /* Online new CPU */
             rc = qemuMonitorSetCPU(priv->mon, i, 1);
             if (rc == 0)
@@ -2568,10 +2569,10 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
             if (rc < 0)
                 goto cleanup;
 
-            vm->def->vcpus++;
+            vcpus++;
         }
     } else {
-        for (i = vm->def->vcpus - 1 ; i >= nvcpus ; i--) {
+        for (i = vcpus - 1 ; i >= nvcpus ; i--) {
             /* Offline old CPU */
             rc = qemuMonitorSetCPU(priv->mon, i, 0);
             if (rc == 0)
@@ -2579,7 +2580,7 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
             if (rc < 0)
                 goto cleanup;
 
-            vm->def->vcpus--;
+            vcpus--;
         }
     }
 
@@ -2587,6 +2588,7 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
 
 cleanup:
     qemuDomainObjExitMonitor(vm);
+    vm->def->vcpus = vcpus;
     qemuAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
     return ret;
 

@@ -1008,8 +1008,8 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
     if (paths == NULL)
         goto cleanup;
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorGetPtyPaths(priv->mon, paths);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -1175,6 +1175,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
         for (i = 0 ; i < vm->def->ndisks ; i++) {
             char *secret;
             size_t secretLen;
+            const char *alias;
 
             if (!vm->def->disks[i]->encryption ||
                 !vm->def->disks[i]->src)
@@ -1185,10 +1186,9 @@ qemuProcessInitPasswords(virConnectPtr conn,
                                                    &secret, &secretLen) < 0)
                 goto cleanup;
 
+            alias = vm->def->disks[i]->info.alias;
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            ret = qemuMonitorSetDrivePassphrase(priv->mon,
-                                                vm->def->disks[i]->info.alias,
-                                                secret);
+            ret = qemuMonitorSetDrivePassphrase(priv->mon, alias, secret);
             VIR_FREE(secret);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (ret < 0)
@@ -1727,17 +1727,19 @@ qemuProcessPrepareMonitorChr(struct qemud_driver *driver,
 }
 
 
-int qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm, virConnectPtr conn)
+int
+qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
+                     virConnectPtr conn)
 {
     int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorStartCPUs(priv->mon, conn);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret == 0) {
         vm->state = VIR_DOMAIN_RUNNING;
     }
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     return ret;
 }
@@ -1901,6 +1903,7 @@ int qemuProcessStart(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
+    unsigned long cur_balloon;
 
     hookData.conn = conn;
     hookData.vm = vm;
@@ -2210,8 +2213,9 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG0("Setting initial memory amount");
+    cur_balloon = vm->def->mem.cur_balloon;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorSetBalloon(priv->mon, vm->def->mem.cur_balloon) < 0) {
+    if (qemuMonitorSetBalloon(priv->mon, cur_balloon) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
