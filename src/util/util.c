@@ -475,6 +475,18 @@ __virExec(const char *const*argv,
     int childout = -1;
     int childerr = -1;
     int tmpfd;
+    const char *binary = NULL;
+
+    if (argv[0][0] != '/') {
+        if (!(binary = virFindFileInPath(argv[0]))) {
+            virReportSystemError(ENOENT,
+                                 _("Cannot find '%s' in path"),
+                                 argv[0]);
+            return -1;
+        }
+    } else {
+        binary = argv[0];
+    }
 
     if ((null = open("/dev/null", O_RDWR)) < 0) {
         virReportSystemError(errno,
@@ -694,9 +706,9 @@ __virExec(const char *const*argv,
     virLogReset();
 
     if (envp)
-        execve(argv[0], (char **) argv, (char**)envp);
+        execve(binary, (char **) argv, (char**)envp);
     else
-        execvp(argv[0], (char **) argv);
+        execv(binary, (char **) argv);
 
     virReportSystemError(errno,
                          _("cannot execute binary %s"),
@@ -709,6 +721,9 @@ __virExec(const char *const*argv,
  cleanup:
     /* This is cleanup of parent process only - child
        should never jump here on error */
+
+    if (binary != argv[0])
+        VIR_FREE(binary);
 
     /* NB we don't virUtilError() on any failures here
        because the code which jumped hre already raised
