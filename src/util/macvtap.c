@@ -120,13 +120,18 @@ int nlComm(struct nl_msg *nl_msg,
     fd_set readfds;
     int fd;
     int n;
-    struct nl_handle *nlhandle = nl_handle_alloc();
     struct nlmsghdr *nlmsg = nlmsg_hdr(nl_msg);
+    struct nl_handle *nlhandle = nl_handle_alloc();
 
-    if (!nlhandle)
+    if (!nlhandle) {
+        virReportSystemError(errno,
+                             "%s", _("cannot allocate nlhandle for netlink"));
         return -1;
+    }
 
     if (nl_connect(nlhandle, NETLINK_ROUTE) < 0) {
+        virReportSystemError(errno,
+                             "%s", _("cannot connect to netlink socket"));
         rc = -1;
         goto err_exit;
     }
@@ -161,9 +166,11 @@ int nlComm(struct nl_msg *nl_msg,
     }
 
     *respbuflen = nl_recv(nlhandle, &nladdr, respbuf, NULL);
-    if (*respbuflen <= 0)
+    if (*respbuflen <= 0) {
+        virReportSystemError(errno,
+                             "%s", _("nl_recv failed"));
         rc = -1;
-
+    }
 err_exit:
     if (rc == -1) {
         VIR_FREE(*respbuf);
