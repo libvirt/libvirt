@@ -2030,10 +2030,13 @@ int qemuMonitorDelDevice(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddDevice(qemuMonitorPtr mon,
-                         const char *devicestr)
+int qemuMonitorAddDeviceWithFd(qemuMonitorPtr mon,
+                               const char *devicestr,
+                               int fd,
+                               const char *fdname)
 {
-    VIR_DEBUG("mon=%p device=%s", mon, devicestr);
+    VIR_DEBUG("mon=%p device=%s fd=%d fdname=%s", mon, devicestr, fd,
+              NULLSTR(fdname));
     int ret;
 
     if (!mon) {
@@ -2042,11 +2045,26 @@ int qemuMonitorAddDevice(qemuMonitorPtr mon,
         return -1;
     }
 
+    if (fd >= 0 && qemuMonitorSendFileHandle(mon, fdname, fd) < 0)
+        return -1;
+
     if (mon->json)
         ret = qemuMonitorJSONAddDevice(mon, devicestr);
     else
         ret = qemuMonitorTextAddDevice(mon, devicestr);
+
+    if (ret < 0 && fd >= 0) {
+        if (qemuMonitorCloseFileHandle(mon, fdname) < 0)
+            VIR_WARN("failed to close device handle '%s'", fdname);
+    }
+
     return ret;
+}
+
+int qemuMonitorAddDevice(qemuMonitorPtr mon,
+                         const char *devicestr)
+{
+    return qemuMonitorAddDeviceWithFd(mon, devicestr, -1, NULL);
 }
 
 int qemuMonitorAddDrive(qemuMonitorPtr mon,

@@ -390,6 +390,11 @@ int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
 int qemuMonitorAddDevice(qemuMonitorPtr mon,
                          const char *devicestr);
 
+int qemuMonitorAddDeviceWithFd(qemuMonitorPtr mon,
+                               const char *devicestr,
+                               int fd,
+                               const char *fdname);
+
 int qemuMonitorDelDevice(qemuMonitorPtr mon,
                          const char *devalias);
 

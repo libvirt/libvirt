@@ -820,14 +820,6 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
                     virReportOOMError();
                     goto error;
                 }
-
-                qemuDomainObjEnterMonitorWithDriver(driver, vm);
-                if (qemuMonitorSendFileHandle(priv->mon, configfd_name,
-                                              configfd) < 0) {
-                    qemuDomainObjExitMonitorWithDriver(driver, vm);
-                    goto error;
-                }
-                qemuDomainObjExitMonitorWithDriver(driver, vm);
             }
         }
 
@@ -842,7 +834,8 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
             goto error;
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorAddDevice(priv->mon, devstr);
+        ret = qemuMonitorAddDeviceWithFd(priv->mon, devstr,
+                                         configfd, configfd_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         virDomainDevicePCIAddress guestAddr;
