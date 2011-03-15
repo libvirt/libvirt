@@ -389,8 +389,8 @@ static void virLogDumpAllFD(const char *msg, int len) {
 void
 virLogEmergencyDumpAll(int signum) {
     int len;
+    int oldLogStart, oldLogLen, oldLogEnd;
 
-    virLogLock();
     switch (signum) {
 #ifdef SIGFPE
         case SIGFPE:
@@ -428,27 +428,43 @@ virLogEmergencyDumpAll(int signum) {
     }
     if ((virLogBuffer == NULL) || (virLogSize <= 0)) {
         virLogDumpAllFD(" internal log buffer deactivated\n", -1);
-        goto done;
+        return;
     }
+
     virLogDumpAllFD(" dumping internal log buffer:\n", -1);
     virLogDumpAllFD("\n\n    ====== start of log =====\n\n", -1);
-    while (virLogLen > 0) {
-        if (virLogStart + virLogLen < virLogSize) {
-            virLogBuffer[virLogStart + virLogLen] = 0;
-            virLogDumpAllFD(&virLogBuffer[virLogStart], virLogLen);
-            virLogStart += virLogLen;
-            virLogLen = 0;
+
+    /*
+     * Since we can't lock the buffer safely from a signal handler
+     * we mark it as empty in case of concurrent access, and proceed
+     * with the data, at worse we will output something a bit weird
+     * if another thread start logging messages at the same time.
+     * Note that virLogStr() uses virLogEnd for the computations and
+     * writes to the buffer and only then updates virLogLen and virLogStart
+     * so it's best to reset it first.
+     */
+    oldLogStart = virLogStart;
+    oldLogEnd = virLogEnd;
+    oldLogLen = virLogLen;
+    virLogEnd = 0;
+    virLogLen = 0;
+    virLogStart = 0;
+
+    while (oldLogLen > 0) {
+        if (oldLogStart + oldLogLen < virLogSize) {
+            virLogBuffer[oldLogStart + oldLogLen] = 0;
+            virLogDumpAllFD(&virLogBuffer[oldLogStart], oldLogLen);
+            oldLogStart += oldLogLen;
+            oldLogLen = 0;
         } else {
-            len = virLogSize - virLogStart;
+            len = virLogSize - oldLogStart;
             virLogBuffer[virLogSize] = 0;
-            virLogDumpAllFD(&virLogBuffer[virLogStart], len);
-            virLogLen -= len;
-            virLogStart = 0;
+            virLogDumpAllFD(&virLogBuffer[oldLogStart], len);
+            oldLogLen -= len;
+            oldLogStart = 0;
         }
     }
     virLogDumpAllFD("\n\n     ====== end of log =====\n\n", -1);
-done:
-    virLogUnlock();
 }
 
 /**
