@@ -1935,7 +1935,7 @@ qemuBuildVideoDevStr(virDomainVideoDefPtr video,
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
         if (video->vram > (UINT_MAX / 1024)) {
-            qemuReportError(VIR_ERR_INVALID_ARG,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("value for 'vram' must be less than '%u'"),
                             UINT_MAX / 1024);
             goto error;
@@ -4050,7 +4050,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                     if (def->videos[0]->vram &&
                         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                         if (def->videos[0]->vram > (UINT_MAX / 1024)) {
-                            qemuReportError(VIR_ERR_INVALID_ARG,
+                            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                             _("value for 'vram' must be less than '%u'"),
                                             UINT_MAX / 1024);
                             goto error;
