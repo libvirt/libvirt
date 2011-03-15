@@ -18,7 +18,7 @@
       version is available here:
     </p>
 
-    <a href="http://libvirt.org/sources/win32_experimental/Libvirt-0.8.7-2.exe">http://libvirt.org/sources/win32_experimental/Libvirt-0.8.7-2.exe</a>
+    <a href="http://libvirt.org/sources/win32_experimental/Libvirt-0.8.8-0.exe">http://libvirt.org/sources/win32_experimental/Libvirt-0.8.8-0.exe</a>
 
     <p>
       <b>It is not production ready.</b>
@@ -67,13 +67,6 @@
         probably happen, is for this installer to detect an existing
         installation then offer to either uninstall it first or ask for a
         new installation location.
-        <br /><br />
-      </li>
-
-      <li>
-        Start menu shortcuts aren't being removed at uninstall time
-        <br /><br />
-        Not sure why yet.  Needs to be investigated.
         <br /><br />
       </li>
 
