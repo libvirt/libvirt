@@ -1450,7 +1450,14 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        VIR_DEBUG0("cpu_set command not found, trying HMP");
+        ret = qemuMonitorTextSetCPU(mon, cpu, online);
+        goto cleanup;
+    }
 
     if (ret == 0) {
         /* XXX See if CPU soft-failed due to lack of ACPI */
@@ -1468,10 +1475,7 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
             ret = 1;
     }
 
-#if 0
 cleanup:
-#endif
-
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
