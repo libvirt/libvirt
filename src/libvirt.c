@@ -2902,6 +2902,8 @@ virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         return ret;
     }
 
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
 error:
     virDispatchError(domain->conn);
     return -1;
