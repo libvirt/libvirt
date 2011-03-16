@@ -588,7 +588,6 @@ void qemuDomainObjExitMonitor(virDomainObjPtr obj)
     virDomainObjLock(obj);
 
     if (refs == 0) {
-        virDomainObjUnref(obj);
         priv->mon = NULL;
     }
 }
@@ -634,7 +633,6 @@ void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
     virDomainObjLock(obj);
 
     if (refs == 0) {
-        virDomainObjUnref(obj);
         priv->mon = NULL;
     }
 }
