@@ -396,7 +396,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     char *authType = NULL;
     int nsource, i;
     virStoragePoolOptionsPtr options;
-    char *port;
+    char *port = NULL;
 
     relnode = ctxt->node;
     ctxt->node = node;
