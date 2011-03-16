@@ -1820,11 +1820,15 @@ int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
 
 
 int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
-                              const char *netstr)
+                              const char *netstr,
+                              int tapfd, const char *tapfd_name,
+                              int vhostfd, const char *vhostfd_name)
 {
-    int ret;
-    VIR_DEBUG("mon=%p netstr=%s",
-          mon, netstr);
+    int ret = -1;
+    VIR_DEBUG("mon=%p netstr=%s tapfd=%d tapfd_name=%s "
+              "vhostfd=%d vhostfd_name=%s",
+              mon, netstr, tapfd, NULLSTR(tapfd_name),
+              vhostfd, NULLSTR(vhostfd_name));
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1832,10 +1836,27 @@ int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
         return -1;
     }
 
+    if (tapfd >= 0 && qemuMonitorSendFileHandle(mon, tapfd_name, tapfd) < 0)
+        return -1;
+    if (vhostfd >= 0 &&
+        qemuMonitorSendFileHandle(mon, vhostfd_name, vhostfd) < 0) {
+        vhostfd = -1;
+        goto cleanup;
+    }
+
     if (mon->json)
         ret = qemuMonitorJSONAddHostNetwork(mon, netstr);
     else
         ret = qemuMonitorTextAddHostNetwork(mon, netstr);
+
+cleanup:
+    if (ret < 0) {
+        if (tapfd >= 0 && qemuMonitorCloseFileHandle(mon, tapfd_name) < 0)
+            VIR_WARN("failed to close device handle '%s'", tapfd_name);
+        if (vhostfd >= 0 && qemuMonitorCloseFileHandle(mon, vhostfd_name) < 0)
+            VIR_WARN("failed to close device handle '%s'", vhostfd_name);
+    }
+
     return ret;
 }
 
@@ -1863,11 +1884,15 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
 
 
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
-                         const char *netdevstr)
+                         const char *netdevstr,
+                         int tapfd, const char *tapfd_name,
+                         int vhostfd, const char *vhostfd_name)
 {
-    int ret;
-    VIR_DEBUG("mon=%p netdevstr=%s",
-          mon, netdevstr);
+    int ret = -1;
+    VIR_DEBUG("mon=%p netdevstr=%s tapfd=%d tapfd_name=%s "
+              "vhostfd=%d vhostfd_name=%s",
+              mon, netdevstr, tapfd, NULLSTR(tapfd_name),
+              vhostfd, NULLSTR(vhostfd_name));
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1875,13 +1900,29 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
         return -1;
     }
 
+    if (tapfd >= 0 && qemuMonitorSendFileHandle(mon, tapfd_name, tapfd) < 0)
+        return -1;
+    if (vhostfd >= 0 &&
+        qemuMonitorSendFileHandle(mon, vhostfd_name, vhostfd) < 0) {
+        vhostfd = -1;
+        goto cleanup;
+    }
+
     if (mon->json)
         ret = qemuMonitorJSONAddNetdev(mon, netdevstr);
     else
         ret = qemuMonitorTextAddNetdev(mon, netdevstr);
+
+cleanup:
+    if (ret < 0) {
+        if (tapfd >= 0 && qemuMonitorCloseFileHandle(mon, tapfd_name) < 0)
+            VIR_WARN("failed to close device handle '%s'", tapfd_name);
+        if (vhostfd >= 0 && qemuMonitorCloseFileHandle(mon, vhostfd_name) < 0)
+            VIR_WARN("failed to close device handle '%s'", vhostfd_name);
+    }
+
     return ret;
 }
-
 
 int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
                             const char *alias)

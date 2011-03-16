@@ -611,63 +611,39 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     if (tapfd != -1) {
         if (virAsprintf(&tapfd_name, "fd-%s", net->info.alias) < 0)
             goto no_memory;
-
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorSendFileHandle(priv->mon, tapfd_name, tapfd) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            goto cleanup;
-        }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("guest unexpectedly quit"));
-            goto cleanup;
-        }
     }
 
     if (vhostfd != -1) {
         if (virAsprintf(&vhostfd_name, "vhostfd-%s", net->info.alias) < 0)
             goto no_memory;
-
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorSendFileHandle(priv->mon, vhostfd_name, vhostfd) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            goto try_tapfd_close;
-        }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("guest unexpectedly quit"));
-            goto cleanup;
-        }
     }
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         if (!(netstr = qemuBuildHostNetStr(net, ',',
                                            -1, tapfd_name, vhostfd_name)))
-            goto try_tapfd_close;
+            goto cleanup;
     } else {
         if (!(netstr = qemuBuildHostNetStr(net, ' ',
                                            vlan, tapfd_name, vhostfd_name)))
-            goto try_tapfd_close;
+            goto cleanup;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorAddNetdev(priv->mon, netstr) < 0) {
+        if (qemuMonitorAddNetdev(priv->mon, netstr, tapfd, tapfd_name,
+                                 vhostfd, vhostfd_name) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             qemuAuditNet(vm, NULL, net, "attach", false);
-            goto try_tapfd_close;
+            goto cleanup;
         }
     } else {
-        if (qemuMonitorAddHostNetwork(priv->mon, netstr) < 0) {
+        if (qemuMonitorAddHostNetwork(priv->mon, netstr, tapfd, tapfd_name,
+                                      vhostfd, vhostfd_name) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             qemuAuditNet(vm, NULL, net, "attach", false);
-            goto try_tapfd_close;
+            goto cleanup;
         }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -763,23 +739,6 @@ try_remove:
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         VIR_FREE(hostnet_name);
     }
-    goto cleanup;
-
-try_tapfd_close:
-    if (!virDomainObjIsActive(vm))
-        goto cleanup;
-
-    if (tapfd_name || vhostfd_name) {
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (tapfd_name &&
-            qemuMonitorCloseFileHandle(priv->mon, tapfd_name) < 0)
-            VIR_WARN("Failed to close tapfd with '%s'", tapfd_name);
-        if (vhostfd_name &&
-            qemuMonitorCloseFileHandle(priv->mon, vhostfd_name) < 0)
-            VIR_WARN("Failed to close vhostfd with '%s'", vhostfd_name);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-    }
-
     goto cleanup;
 
 no_memory:

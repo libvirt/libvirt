@@ -352,14 +352,18 @@ int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
  * sendable item here
  */
 int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
-                              const char *netstr);
+                              const char *netstr,
+                              int tapfd, const char *tapfd_name,
+                              int vhostfd, const char *vhostfd_name);
 
 int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
                                  int vlan,
                                  const char *netname);
 
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
-                         const char *netdevstr);
+                         const char *netdevstr,
+                         int tapfd, const char *tapfd_name,
+                         int vhostfd, const char *vhostfd_name);
 
 int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
                             const char *alias);
