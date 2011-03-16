@@ -239,7 +239,8 @@ qemuMonitorUnwatch(void *monitor)
     qemuMonitorPtr mon = monitor;
 
     qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    if (qemuMonitorUnref(mon) > 0)
+        qemuMonitorUnlock(mon);
 }
 
 static int
