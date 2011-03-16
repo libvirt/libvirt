@@ -805,7 +805,8 @@ typedef enum {
  * VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT:
  *
  * Macro for the swap tunable swap_hard_limit: it represents the maximum swap
- * the guest can use.
+ * plus memory the guest can use. This limit has to be more than
+ * VIR_DOMAIN_MEMORY_HARD_LIMIT.
  */
 
 #define VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT "swap_hard_limit"

@@ -779,7 +779,7 @@ static int lxcDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            rc = virCgroupSetSwapHardLimit(cgroup, params[i].value.ul);
+            rc = virCgroupSetMemSwapHardLimit(cgroup, params[i].value.ul);
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to set swap_hard_limit tunable"));
@@ -885,7 +885,7 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
             break;
 
         case 2: /* fill swap hard limit here */
-            rc = virCgroupGetSwapHardLimit(cgroup, &val);
+            rc = virCgroupGetMemSwapHardLimit(cgroup, &val);
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get swap hard limit"));

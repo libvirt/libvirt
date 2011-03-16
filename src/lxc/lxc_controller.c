@@ -146,7 +146,7 @@ static int lxcSetContainerResources(virDomainDefPtr def)
     }
 
     if (def->mem.swap_hard_limit) {
-        rc = virCgroupSetSwapHardLimit(cgroup, def->mem.swap_hard_limit);
+        rc = virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set swap hard limit for domain %s"),

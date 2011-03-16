@@ -4721,7 +4721,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            rc = virCgroupSetSwapHardLimit(group, params[i].value.ul);
+            rc = virCgroupSetMemSwapHardLimit(group, params[i].value.ul);
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to set swap_hard_limit tunable"));
@@ -4832,7 +4832,7 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             break;
 
         case 2: /* fill swap hard limit here */
-            rc = virCgroupGetSwapHardLimit(group, &val);
+            rc = virCgroupGetMemSwapHardLimit(group, &val);
             if (rc != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get swap hard limit"));

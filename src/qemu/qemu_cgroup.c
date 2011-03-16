@@ -330,7 +330,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         if (vm->def->mem.swap_hard_limit != 0) {
-            rc = virCgroupSetSwapHardLimit(cgroup, vm->def->mem.swap_hard_limit);
+            rc = virCgroupSetMemSwapHardLimit(cgroup, vm->def->mem.swap_hard_limit);
             if (rc != 0) {
                 virReportSystemError(-rc,
                                      _("Unable to set swap hard limit for domain %s"),

@@ -1033,14 +1033,14 @@ int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
 }
 
 /**
- * virCgroupSetSwapHardLimit:
+ * virCgroupSetMemSwapHardLimit:
  *
- * @group: The cgroup to change swap hard limit for
- * @kb: The swap amount in kilobytes
+ * @group: The cgroup to change mem+swap hard limit for
+ * @kb: The mem+swap amount in kilobytes
  *
  * Returns: 0 on success
  */
-int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long long kb)
+int virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb)
 {
     unsigned long long maxkb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
 
@@ -1059,14 +1059,14 @@ int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long long kb)
 }
 
 /**
- * virCgroupGetSwapHardLimit:
+ * virCgroupGetMemSwapHardLimit:
  *
- * @group: The cgroup to get swap hard limit for
- * @kb: The swap amount in kilobytes
+ * @group: The cgroup to get mem+swap hard limit for
+ * @kb: The mem+swap amount in kilobytes
  *
  * Returns: 0 on success
  */
-int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
+int virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
     long long unsigned int limit_in_bytes;
     int ret;

@@ -57,8 +57,8 @@ int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb);
 int virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb);
 int virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb);
 int virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb);
-int virCgroupSetSwapHardLimit(virCgroupPtr group, unsigned long long kb);
-int virCgroupGetSwapHardLimit(virCgroupPtr group, unsigned long long *kb);
+int virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb);
+int virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb);
 
 enum {
     VIR_CGROUP_DEVICE_READ  = 1,
