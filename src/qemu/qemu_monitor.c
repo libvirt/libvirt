@@ -1777,6 +1777,19 @@ int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
         return -1;
     }
 
+    if (fd < 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("fd must be valid"));
+        return -1;
+    }
+
+    if (!mon->hasSendFD) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("qemu is not using a unix socket monitor, "
+                          "cannot send fd %s"), fdname);
+        return -1;
+    }
+
     if (mon->json)
         ret = qemuMonitorJSONSendFileHandle(mon, fdname, fd);
     else

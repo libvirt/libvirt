@@ -568,28 +568,12 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("network device type '%s' cannot be attached: "
-                              "qemu is not using a unix socket monitor"),
-                            virDomainNetTypeToString(net->type));
-            return -1;
-        }
-
         if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
                                              qemuCaps)) < 0)
             return -1;
         if (qemuOpenVhostNet(vm->def, net, qemuCaps, &vhostfd) < 0)
             goto cleanup;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("network device type '%s' cannot be attached: "
-                            "qemu is not using a unix socket monitor"),
-                            virDomainNetTypeToString(net->type));
-            return -1;
-        }
-
         if ((tapfd = qemuPhysIfaceConnect(vm->def, conn, driver, net,
                                           qemuCaps,
                                           VIR_VM_OP_CREATE)) < 0)
