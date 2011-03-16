@@ -1,7 +1,7 @@
 /*
  * node_device_udev.c: node device enumeration - libudev implementation
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1589,7 +1589,7 @@ out:
     return ret;
 }
 
-static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
+static int udevDeviceMonitorStartup(int privileged)
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
@@ -1597,11 +1597,16 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     int pciret;
 
     if ((pciret = pci_system_init()) != 0) {
-        char ebuf[256];
-        VIR_ERROR(_("Failed to initialize libpciaccess: %s"),
-                  virStrerror(pciret, ebuf, sizeof ebuf));
-        ret = -1;
-        goto out;
+        /* Ignore failure as non-root; udev is not as helpful in that
+         * situation, but a non-privileged user won't benefit much
+         * from udev in the first place.  */
+        if (privileged || errno != EACCES) {
+            char ebuf[256];
+            VIR_ERROR(_("Failed to initialize libpciaccess: %s"),
+                      virStrerror(pciret, ebuf, sizeof ebuf));
+            ret = -1;
+            goto out;
+        }
     }
 
     if (VIR_ALLOC(priv) < 0) {
