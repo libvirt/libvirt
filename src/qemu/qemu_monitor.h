@@ -127,6 +127,8 @@ void qemuMonitorClose(qemuMonitorPtr mon);
 
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
 
+int qemuMonitorCheckHMP(qemuMonitorPtr mon, const char *cmd);
+
 void qemuMonitorLock(qemuMonitorPtr mon);
 void qemuMonitorUnlock(qemuMonitorPtr mon);
 

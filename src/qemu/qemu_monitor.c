@@ -72,6 +72,7 @@ struct _qemuMonitor {
     int lastErrno;
 
     unsigned json: 1;
+    unsigned json_hmp: 1;
 };
 
 
@@ -924,11 +925,28 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
         return -1;
     }
 
-    if (mon->json)
+    if (mon->json) {
         ret = qemuMonitorJSONSetCapabilities(mon);
-    else
+        mon->json_hmp = qemuMonitorJSONCheckHMP(mon);
+    } else {
         ret = 0;
+    }
     return ret;
+}
+
+
+int
+qemuMonitorCheckHMP(qemuMonitorPtr mon, const char *cmd)
+{
+    if (!mon->json || mon->json_hmp)
+        return 1;
+
+    if (cmd) {
+        VIR_DEBUG("HMP passthrough not supported by qemu process;"
+                  " not trying HMP for command %s", cmd);
+    }
+
+    return 0;
 }
 
 
