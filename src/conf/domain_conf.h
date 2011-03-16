@@ -1246,9 +1246,6 @@ virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
 
 virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
                                       const char *filename);
-virDomainObjPtr virDomainObjParseNode(virCapsPtr caps,
-                                      xmlDocPtr xml,
-                                      xmlNodePtr root);
 
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 

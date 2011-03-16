@@ -6081,24 +6081,10 @@ cleanup:
 }
 
 
-virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
-                                      const char *filename)
-{
-    xmlDocPtr xml;
-    virDomainObjPtr obj = NULL;
-
-    if ((xml = virXMLParseFile(filename))) {
-        obj = virDomainObjParseNode(caps, xml, xmlDocGetRootElement(xml));
-        xmlFreeDoc(xml);
-    }
-
-    return obj;
-}
-
-
-virDomainObjPtr virDomainObjParseNode(virCapsPtr caps,
-                                      xmlDocPtr xml,
-                                      xmlNodePtr root)
+static virDomainObjPtr
+virDomainObjParseNode(virCapsPtr caps,
+                      xmlDocPtr xml,
+                      xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
     virDomainObjPtr obj = NULL;
@@ -6122,6 +6108,22 @@ cleanup:
     xmlXPathFreeContext(ctxt);
     return obj;
 }
+
+
+virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
+                                      const char *filename)
+{
+    xmlDocPtr xml;
+    virDomainObjPtr obj = NULL;
+
+    if ((xml = virXMLParseFile(filename))) {
+        obj = virDomainObjParseNode(caps, xml, xmlDocGetRootElement(xml));
+        xmlFreeDoc(xml);
+    }
+
+    return obj;
+}
+
 
 static int virDomainDefMaybeAddController(virDomainDefPtr def,
                                           int type,
