@@ -1,5 +1,0 @@
-^docs/api_extension/.*
-^tests/qemuhelpdata/.*
-*.gif$
-*.ico$
-*.png$
