@@ -3046,15 +3046,7 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
         vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
-        virDomainFree(dom);
-        return FALSE;
-    }
-
-    if (kilobytes < info.memory) {
-        if (virDomainSetMemory(dom, kilobytes) != 0) {
-            vshError(ctl, "%s", _("Unable to shrink current MemorySize"));
-            ret = FALSE;
-        }
+        ret = FALSE;
     }
 
     virDomainFree(dom);
