@@ -1349,11 +1349,13 @@ int pciDeviceFileIterate(pciDevice *dev,
 
     while ((ent = readdir(dir)) != NULL) {
         /* Device assignment requires:
-         *   $PCIDIR/config, $PCIDIR/resource, $PCIDIR/resourceNNN, $PCIDIR/rom
+         *   $PCIDIR/config, $PCIDIR/resource, $PCIDIR/resourceNNN,
+         *   $PCIDIR/rom, $PCIDIR/reset
          */
         if (STREQ(ent->d_name, "config") ||
             STRPREFIX(ent->d_name, "resource") ||
-            STREQ(ent->d_name, "rom")) {
+            STREQ(ent->d_name, "rom") ||
+            STREQ(ent->d_name, "reset")) {
             if (virAsprintf(&file, "%s/%s", pcidir, ent->d_name) < 0) {
                 virReportOOMError();
                 goto cleanup;
