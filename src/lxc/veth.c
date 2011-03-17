@@ -90,33 +90,40 @@ static int getFreeVethName(char **veth, int startDev)
  */
 int vethCreate(char** veth1, char** veth2)
 {
-    int rc;
+    int rc = -1;
     const char *argv[] = {
         "ip", "link", "add", NULL, "type", "veth", "peer", "name", NULL, NULL
     };
     int vethDev = 0;
     bool veth1_alloc = false;
+    bool veth2_alloc = false;
 
     VIR_DEBUG("veth1: %s veth2: %s", NULLSTR(*veth1), NULLSTR(*veth2));
 
     if (*veth1 == NULL) {
-        vethDev = getFreeVethName(veth1, vethDev);
-        if (vethDev < 0)
-            return vethDev;
+        if ((vethDev = getFreeVethName(veth1, vethDev)) < 0)
+            goto cleanup;
         VIR_DEBUG("Assigned veth1: %s", *veth1);
         veth1_alloc = true;
     }
     argv[3] = *veth1;
 
-    while (*veth2 == NULL || STREQ(*veth1, *veth2)) {
-        VIR_FREE(*veth2);
-        vethDev = getFreeVethName(veth2, vethDev + 1);
-        if (vethDev < 0) {
+    while (*veth2 == NULL) {
+        if ((vethDev = getFreeVethName(veth2, vethDev + 1)) < 0) {
             if (veth1_alloc)
                 VIR_FREE(*veth1);
-            return vethDev;
+            goto cleanup;
         }
+
+        /* Just make sure they didn't accidentally get same name */
+        if (STREQ(*veth1, *veth2)) {
+            vethDev++;
+            VIR_FREE(*veth2);
+            continue;
+        }
+
         VIR_DEBUG("Assigned veth2: %s", *veth2);
+        veth2_alloc = true;
     }
     argv[8] = *veth2;
 
@@ -124,10 +131,14 @@ int vethCreate(char** veth1, char** veth2)
     if (virRun(argv, NULL) < 0) {
         if (veth1_alloc)
             VIR_FREE(*veth1);
-        VIR_FREE(*veth2);
-        rc = -1;
+        if (veth2_alloc)
+            VIR_FREE(*veth2);
+        goto cleanup;
     }
 
+    rc = 0;
+
+cleanup:
     return rc;
 }
 
