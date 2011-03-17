@@ -8609,6 +8609,7 @@ remoteStreamPacket(virStreamPtr st,
     xdr_destroy (&xdr);
 
     ret = remoteIO(st->conn, priv, 0, thiscall);
+    ignore_value(virCondDestroy(&thiscall->cond));
     VIR_FREE(thiscall);
     if (ret < 0)
         return -1;
@@ -8617,6 +8618,7 @@ remoteStreamPacket(virStreamPtr st,
 
 error:
     xdr_destroy (&xdr);
+    ignore_value(virCondDestroy(&thiscall->cond));
     VIR_FREE(thiscall);
     return -1;
 }
@@ -8746,6 +8748,7 @@ remoteStreamRecv(virStreamPtr st,
         }
 
         ret = remoteIO(st->conn, priv, 0, thiscall);
+        ignore_value(virCondDestroy(&thiscall->cond));
         VIR_FREE(thiscall);
         if (ret < 0)
             goto cleanup;
@@ -9719,6 +9722,7 @@ prepareCall(struct private_data *priv,
 
 error:
     xdr_destroy (&xdr);
+    ignore_value(virCondDestroy(&rv->cond));
     VIR_FREE(rv);
     return NULL;
 }
@@ -10818,6 +10822,7 @@ call (virConnectPtr conn, struct private_data *priv,
     }
 
     rv = remoteIO(conn, priv, flags, thiscall);
+    ignore_value(virCondDestroy(&thiscall->cond));
     VIR_FREE(thiscall);
     return rv;
 }
