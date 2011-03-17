@@ -2055,7 +2055,7 @@ try_command:
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to close fd in qemu with '%s'"), cmd);
+                        _("failed to attach drive '%s'"), drivestr);
         goto cleanup;
     }
 
@@ -2324,7 +2324,7 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to close fd in qemu with '%s'"), cmd);
+                        _("failed to add drive '%s'"), drivestr);
         goto cleanup;
     }
 
@@ -2425,8 +2425,8 @@ int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
     }
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to close fd in qemu with '%s'"), cmd);
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("failed to set disk password"));
         goto cleanup;
     }
 
