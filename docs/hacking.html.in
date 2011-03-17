@@ -101,6 +101,32 @@
                             (libvirt-c-mode))))
 </pre>
 
+    <p>
+      If you use vim, append the following to your ~/.vimrc file:
+    </p>
+<pre>
+  set nocompatible
+  filetype on
+  set autoindent
+  set smartindent
+  set cindent
+  set tabstop=8
+  set shiftwidth=4
+  set expandtab
+  set cinoptions=(0,:0,l1,t0
+  filetype plugin indent on
+  au FileType make setlocal noexpandtab
+  au BufRead,BufNewFile *.am setlocal noexpandtab
+  match ErrorMsg /\s\+$\| \+\ze\t/
+</pre>
+    <p>
+      Or if you don't want to mess your ~/.vimrc up, you can save the above
+      into a file called .lvimrc (not .vimrc) located at the root of libvirt
+      source, then install a vim script from
+      http://www.vim.org/scripts/script.php?script_id=1408,
+      which will load the .lvimrc only when you edit libvirt code.
+    </p>
+
     <h2><a name="formatting">Code formatting (especially for new code)</a></h2>
 
     <p>

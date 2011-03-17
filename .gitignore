@@ -15,6 +15,7 @@
 *~
 .git
 .git-module-status
+.lvimrc
 .sc-start-sc_*
 /ABOUT-NLS
 /COPYING
