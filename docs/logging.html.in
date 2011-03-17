@@ -6,17 +6,37 @@
        this complements the <a href="errors.html">error handling</a>
        mechanism and APIs to allow tracing through the execution of the
        library as well as in the libvirtd daemon.</p>
+    <ul>
+      <li>
+        <a href="#log_library">Logging in the library</a>
+      </li>
+      <li>
+        <a href="#log_config">Configuring logging in the library</a>
+      </li>
+      <li>
+        <a href="#log_daemon">Logging in the daemon</a>
+      </li>
+      <li>
+        <a href="#log_syntax">Syntax for filters and output values</a>
+      </li>
+      <li>
+        <a href="#log_examples">Examples</a>
+      </li>
+    </ul>
+    <h3>
+      <a name="log_library">Logging in the library</a>
+    </h3>
     <p>The logging functionalities in libvirt are based on 3 key concepts,
        similar to the one present in other generic logging facilities like
        log4j:</p>
     <ul>
-      <li>log messages: they are information generated at runtime by
+      <li><b>log messages</b>: they are information generated at runtime by
           the libvirt code. Each message includes a priority level (DEBUG = 1,
           INFO = 2, WARNING = 3, ERROR = 4), a category, function name and
           line number, indicating where it originated from, and finally
           a formatted message.  In addition the library adds a timestamp
-          at the begining of the message</li>
-      <li>log filters: a set of patterns and priorities to accept
+          at the beginning of the message</li>
+      <li><b>log filters</b>: a set of patterns and priorities to accept
           or reject a log message.  If the message category matches a filter,
           the message priority is compared to the filter priority, if lower
           the message is discarded, if higher the message is output. If
@@ -24,12 +44,22 @@
           all remaining messages. This allows, for example, capturing all
           debug messages for the QEmu driver, but otherwise only allowing
           errors to show up from other parts.</li>
-      <li>log outputs: once a message has gone through filtering a set of
+      <li><b>log outputs</b>: once a message has gone through filtering a set of
           output defines where to send the message, they can also filter
           based on the priority, for example it may be useful to output
           all messages to a debugging file but only allow errors to be
           logged through syslog.</li>
     </ul>
+    <p>Note that the logging module saves all logs to a <b>debug buffer</b>
+       filled in a round-robin fashion as to keep a full log of the
+       recent logs including all debug. The debug buffer can be resized
+       or deactivated in the daemon using the log_buffer_size variable,
+       default is 64 kB. This can be used when debugging the library
+       (see the virLogBuffer variable content).</p>
+
+    <h3>
+      <a name="log_config">Configuring logging in the library</a>
+    </h3>
     <p>The library configuration of logging is through 3 environment variables
     allowing to control the logging behaviour:</p>
     <ul>
@@ -48,6 +78,9 @@
        you specify an invalid value, it will be ignored with a warning. If you
        have an error in a filter or output string, some of the settings may be
        applied up to the point at which libvirt encountered the error.</p>
+    <h3>
+      <a name="log_daemon">Logging in the daemon</a>
+    </h3>
     <p>Similarly the daemon logging behaviour can be tuned using 3 config
     variables, stored in the configuration file:
     <ul>
@@ -64,12 +97,21 @@
     <p>When starting the libvirt daemon, any logging environment variable
        settings will override settings in the config file. Command line options
        take precedence over all. If no outputs are defined for libvirtd, it
-       defaults to logging to syslog when it is running as a daemon, or to
+       defaults to logging to /var/log/libvirt/libvirtd.log (before 0.9.0
+       it was using syslog) when it is running as a daemon, or to
        stderr when it is running in the foreground.</p>
     <p>Libvirtd does not reload its logging configuration when issued a SIGHUP.
        If you want to reload the configuration, you must do a <code>service
        libvirtd restart</code> or manually stop and restart the daemon
        yourself.</p>
+    <p>Starting from 0.9.0, the daemon can save all the content of the debug
+       buffer to the defined error channels (or /var/log/libvirt/libvirtd.log
+       by default) in case of crash, this can also be activated explicitly
+       for debugging purposes by sending the daemon a USR2 signal:</p>
+       <pre>killall -USR2 libvirtd</pre>
+    <h3>
+      <a name="log_syntax">Syntax for filters and output values</a>
+    </h3>
     <p>The syntax for filters and outputs is the same for both types of
        variables.</p>
     <p>The format for a filter is:</p>
@@ -109,8 +151,11 @@
     <p>Multiple output can be defined, they just need to be separated by
        spaces, e.g.: <code>"3:syslog:libvirtd 1:file:/tmp/libvirt.log"</code>
        will log all warnings and errors to syslog under the libvirtd ident
-       but also log everything debugging and informations included in the
+       but also log all debug and information included in the
        file <code>/tmp/libvirt.log</code></p>
+    <h3>
+      <a name="log_examples">Examples</a>
+    </h3>
     <p>For example setting up the following:</p>
     <pre>export LIBVIRT_DEBUG=1
 export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"</pre>
@@ -123,5 +168,16 @@ export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"</pre>
     message. This should be sufficient to at least get a precise idea of
     what is happening and where things are going wrong, allowing to then
     put the correct breakpoints when running under a debugger.</p>
+    <p>To activate full debug of the libvirt entry points, utility
+    functions and the QEmu/KVM driver, set:</p>
+    <pre>log_filters=1:libvirt 1:util 1:qemu
+log_output=1:file:/var/log/libvirt/libvirtd.log</pre>
+    <p>in libvirtd.conf and restart the daemon will allow to
+    gather a copious amount of debugging traces for the operations done
+    in those areas.</p>
+    <p>On the other hand to deactivate the logbuffer in the daemon
+    for stable high load servers, set</p>
+    <pre>log_buffer_size=0</pre>
+    <p>in the libvirtd.conf.</p>
   </body>
 </html>
