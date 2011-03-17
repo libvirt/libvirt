@@ -1628,6 +1628,7 @@ qemu-kvm -net nic,model=? /dev/null
   to use. It is possible to set a limit on the validity of the password
   be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
   assumed to be in UTC. NB, this may not be supported by all hypervisors.
+  <span class="since">"spice" since 0.8.6</span>.
             </p>
             <p>
   When SPICE has both a normal and TLS secured TCP port configured, it
@@ -1694,8 +1695,9 @@ qemu-kvm -net nic,model=? /dev/null
       <dt><code>model</code></dt>
       <dd>
         The <code>model</code> element has a mandatory <code>type</code>
-        attribute which takes the value "vga", "cirrus", "vmvga", "qxl",
-        "xen" or "vbox", depending on the hypervisor features available.
+        attribute which takes the value "vga", "cirrus", "vmvga", "xen",
+        "vbox", or "qxl" (<span class="since">since 0.8.6</span>)
+        depending on the hypervisor features available.
         You can also provide the amount of video memory in kilobytes using
         <code>vram</code> and the number of screen with <code>heads</code>.
       </dd>
