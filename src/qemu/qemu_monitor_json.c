@@ -2289,11 +2289,19 @@ int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply) < 0))
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
+        qemuMonitorCheckHMP(mon, "drive_add")) {
+        VIR_DEBUG0("drive_add command not found, trying HMP");
+        ret = qemuMonitorTextAddDrive(mon, drivestr);
+        goto cleanup;
+    }
 
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -2314,22 +2322,24 @@ int qemuMonitorJSONDriveDel(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        /* See if drive_del isn't supported */
-        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        if (qemuMonitorCheckHMP(mon, "drive_del")) {
+            VIR_DEBUG0("drive_del command not found, trying HMP");
+            ret = qemuMonitorTextDriveDel(mon, drivestr);
+        } else {
             VIR_ERROR0(_("deleting disk is not supported.  "
                         "This may leak data if disk is reassigned"));
             ret = 1;
-            goto cleanup;
-        } else if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
-            /* NB: device not found errors mean the drive was
-             * auto-deleted and we ignore the error */
-            ret = 0;
-        } else {
-            ret = qemuMonitorJSONCheckError(cmd, reply);
         }
+    } else if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
+        /* NB: device not found errors mean the drive was
+         * auto-deleted and we ignore the error */
+        ret = 0;
+    } else {
+        ret = qemuMonitorJSONCheckError(cmd, reply);
     }
 
 cleanup:
