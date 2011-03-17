@@ -10376,12 +10376,27 @@ remoteIOHandleInput(virConnectPtr conn, struct private_data *priv,
                 ret = processCallDispatch(conn, priv, flags);
                 priv->bufferOffset = priv->bufferLength = 0;
                 /*
-                 * We've completed one call, so return even
-                 * though there might still be more data on
-                 * the wire. We need to actually let the caller
-                 * deal with this arrived message to keep good
-                 * response, and also to correctly handle EOF.
+                 * We've completed one call, but we don't want to
+                 * spin around the loop forever if there are many
+                 * incoming async events, or replies for other
+                 * thread's RPC calls. We want to get out & let
+                 * any other thread take over as soon as we've
+                 * got our reply. When SASL is active though, we
+                 * may have read more data off the wire than we
+                 * initially wanted & cached it in memory. In this
+                 * case, poll() would not detect that there is more
+                 * ready todo.
+                 *
+                 * So if SASL is active *and* some SASL data is
+                 * already cached, then we'll process that now,
+                 * before returning.
                  */
+#if HAVE_SASL
+                if (ret == 0 &&
+                    priv->saslconn &&
+                    priv->saslDecoded)
+                    continue;
+#endif
                 return ret;
             }
         }
