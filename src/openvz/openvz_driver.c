@@ -1444,9 +1444,10 @@ static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
             continue;
         }
         snprintf(vpsname, sizeof(vpsname), "%d", veid);
-        if (!(names[got] = strdup(vpsname)))
+        if (!(names[got] = strdup(vpsname))) {
             virReportOOMError();
             goto out;
+        }
         got ++;
     }
     waitpid(pid, NULL, 0);
