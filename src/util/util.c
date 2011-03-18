@@ -1357,7 +1357,8 @@ bool virFileExists(const char *path)
     return access(path, F_OK) == 0;
 }
 
-/* Check that a file is regular and has executable bits.
+/* Check that a file is regular and has executable bits.  If false is
+ * returned, errno is valid.
  *
  * Note: In the presence of ACLs, this may return true for a file that
  * would actually fail with EACCES for a given user, or false for a
@@ -1370,9 +1371,12 @@ virFileIsExecutable(const char *file)
 
     /* We would also want to check faccessat if we cared about ACLs,
      * but we don't.  */
-    return (stat(file, &sb) == 0 &&
-            S_ISREG(sb.st_mode) &&
-            (sb.st_mode & 0111) != 0);
+    if (stat(file, &sb) < 0)
+        return false;
+    if (S_ISREG(sb.st_mode) && (sb.st_mode & 0111) != 0)
+        return true;
+    errno = S_ISDIR(sb.st_mode) ? EISDIR : EACCES;
+    return false;
 }
 
 #ifndef WIN32
