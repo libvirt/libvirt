@@ -306,7 +306,7 @@ remoteFindDaemonPath(void)
         return(customDaemon);
 
     for (i = 0; serverPaths[i]; i++) {
-        if (access(serverPaths[i], X_OK | R_OK) == 0) {
+        if (virFileIsExecutable(serverPaths[i])) {
             return serverPaths[i];
         }
     }

@@ -689,7 +689,7 @@ networkStartRadvd(virNetworkObjPtr network)
 
     network->radvdPid = -1;
 
-    if (access(RADVD, X_OK) < 0) {
+    if (!virFileIsExecutable(RADVD)) {
         virReportSystemError(errno,
                              _("Cannot find %s - "
                                "Possibly the package isn't installed"),

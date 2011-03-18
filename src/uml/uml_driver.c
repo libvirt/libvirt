@@ -829,7 +829,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
      * Technically we could catch the exec() failure, but that's
      * in a sub-process so its hard to feed back a useful error
      */
-    if (access(vm->def->os.kernel, X_OK) < 0) {
+    if (!virFileIsExecutable(vm->def->os.kernel)) {
         virReportSystemError(errno,
                              _("Cannot find UML kernel %s"),
                              vm->def->os.kernel);

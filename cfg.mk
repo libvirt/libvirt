@@ -258,6 +258,13 @@ sc_prohibit_fork_wrappers:
 	halt='use virCommand for child processes'			\
 	  $(_sc_search_regexp)
 
+# access with X_OK accepts directories, but we can't exec() those.
+# access with F_OK or R_OK is okay, though.
+sc_prohibit_access_xok:
+	@prohibit='access''(at)? *\(.*X_OK'				\
+	halt='use virFileIsExecutable instead of access''(,X_OK)'	\
+	  $(_sc_search_regexp)
+
 # Similar to the gnulib maint.mk rule for sc_prohibit_strcmp
 # Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
 sc_prohibit_strncmp:
@@ -550,6 +557,8 @@ exclude_file_name_regexp--sc_po_check = ^docs/
 
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
   ^(include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virterror\.c)$$
+
+exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/util\.c$$
 
 exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
   (^docs|^python/(libvirt-override|typewrappers)\.c$$)

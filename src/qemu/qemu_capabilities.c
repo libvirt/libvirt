@@ -178,7 +178,7 @@ qemuCapsProbeMachineTypes(const char *binary,
      * Technically we could catch the exec() failure, but that's
      * in a sub-process so it's hard to feed back a useful error.
      */
-    if (access(binary, X_OK) < 0) {
+    if (!virFileIsExecutable(binary)) {
         virReportSystemError(errno, _("Cannot find QEMU binary %s"), binary);
         return -1;
     }
@@ -451,12 +451,9 @@ qemuCapsInitGuest(virCapsPtr caps,
      */
     binary = virFindFileInPath(info->binary);
 
-    if (binary == NULL || access(binary, X_OK) != 0) {
+    if (binary == NULL || !virFileIsExecutable(binary)) {
         VIR_FREE(binary);
         binary = virFindFileInPath(info->altbinary);
-
-        if (binary != NULL && access(binary, X_OK) != 0)
-            VIR_FREE(binary);
     }
 
     /* Can use acceleration for KVM/KQEMU if
@@ -475,10 +472,8 @@ qemuCapsInitGuest(virCapsPtr caps,
             for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
                 kvmbin = virFindFileInPath(kvmbins[i]);
 
-                if (kvmbin == NULL || access(kvmbin, X_OK) != 0) {
-                    VIR_FREE(kvmbin);
+                if (!kvmbin)
                     continue;
-                }
 
                 haskvm = 1;
                 if (!binary)
@@ -753,7 +748,7 @@ virCapsPtr qemuCapsInit(virCapsPtr old_caps)
     /* Then possibly the Xen paravirt guests (ie Xenner */
     xenner = virFindFileInPath("xenner");
 
-    if (xenner != NULL && access(xenner, X_OK) == 0 &&
+    if (xenner != NULL && virFileIsExecutable(xenner) == 0 &&
         access("/dev/kvm", F_OK) == 0) {
         for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_xen) ; i++)
             /* Allow Xen 32-on-32, 32-on-64 and 64-on-64 */
@@ -1147,7 +1142,7 @@ int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
      * Technically we could catch the exec() failure, but that's
      * in a sub-process so it's hard to feed back a useful error.
      */
-    if (access(qemu, X_OK) < 0) {
+    if (!virFileIsExecutable(qemu)) {
         virReportSystemError(errno, _("Cannot find QEMU binary %s"), qemu);
         return -1;
     }
