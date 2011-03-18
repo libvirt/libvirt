@@ -6015,7 +6015,8 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
     return obj;
 
 error:
-    virDomainObjUnref(obj);
+    /* obj was never shared, so unref should return 0 */
+    ignore_value(virDomainObjUnref(obj));
     return NULL;
 }
 
@@ -8220,8 +8221,9 @@ static virDomainObjPtr virDomainLoadStatus(virCapsPtr caps,
     return obj;
 
 error:
+    /* obj was never shared, so unref should return 0 */
     if (obj)
-        virDomainObjUnref(obj);
+        ignore_value(virDomainObjUnref(obj));
     VIR_FREE(statusFile);
     return NULL;
 }

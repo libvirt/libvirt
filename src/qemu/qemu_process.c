@@ -643,8 +643,9 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
                                 priv->monJSON,
                                 &monitorCallbacks);
 
+    /* Safe to ignore value since ref count was incremented above */
     if (priv->mon == NULL)
-        virDomainObjUnref(vm);
+        ignore_value(virDomainObjUnref(vm));
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm) < 0) {
         VIR_ERROR(_("Failed to clear security context for monitor for %s"),

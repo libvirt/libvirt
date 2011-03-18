@@ -31,6 +31,7 @@
 #include "c-ctype.h"
 #include "event.h"
 #include "cpu/cpu.h"
+#include "ignore-value.h"
 
 #include <sys/time.h>
 
@@ -460,7 +461,8 @@ int qemuDomainObjBeginJob(virDomainObjPtr obj)
 
     while (priv->jobActive) {
         if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
-            virDomainObjUnref(obj);
+            /* Safe to ignore value since ref count was incremented above */
+            ignore_value(virDomainObjUnref(obj));
             if (errno == ETIMEDOUT)
                 qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
                                 "%s", _("cannot acquire state change lock"));
@@ -504,7 +506,8 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
 
     while (priv->jobActive) {
         if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
-            virDomainObjUnref(obj);
+            /* Safe to ignore value since ref count was incremented above */
+            ignore_value(virDomainObjUnref(obj));
             if (errno == ETIMEDOUT)
                 qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
                                 "%s", _("cannot acquire state change lock"));
@@ -650,7 +653,9 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 {
     qemuDriverLock(driver);
     virDomainObjLock(obj);
-    virDomainObjUnref(obj);
+    /* Safe to ignore value, since we incremented ref in
+     * qemuDomainObjEnterRemoteWithDriver */
+    ignore_value(virDomainObjUnref(obj));
 }
 
 

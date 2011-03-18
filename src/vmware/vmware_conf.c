@@ -1,5 +1,7 @@
 /*---------------------------------------------------------------------------*/
-/* Copyright 2010, diateam (www.diateam.net)
+/*
+ * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright 2010, diateam (www.diateam.net)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -201,8 +203,9 @@ cleanup:
     VIR_FREE(directoryName);
     VIR_FREE(fileName);
     VIR_FREE(vmx);
+    /* any non-NULL vm here has not been shared, so unref will return 0 */
     if (vm)
-        virDomainObjUnref(vm);
+        ignore_value(virDomainObjUnref(vm));
     return ret;
 }
 

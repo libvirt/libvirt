@@ -1,7 +1,7 @@
 /*
  * openvz_conf.c: config functions for managing OpenVZ VEs
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -52,6 +52,7 @@
 #include "nodeinfo.h"
 #include "files.h"
 #include "command.h"
+#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -543,8 +544,9 @@ int openvzLoadDomains(struct openvz_driver *driver) {
  cleanup:
     virCommandFree(cmd);
     VIR_FREE(outbuf);
+    /* dom hasn't been shared yet, so unref should return 0 */
     if (dom)
-        virDomainObjUnref(dom);
+        ignore_value(virDomainObjUnref(dom));
     return -1;
 }
 

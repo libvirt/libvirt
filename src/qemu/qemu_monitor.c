@@ -763,7 +763,7 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
         if ((mon)->cb && (mon)->cb->callback)                   \
             (ret) = ((mon)->cb->callback)(mon, __VA_ARGS__);    \
         qemuMonitorLock(mon);                                   \
-        qemuMonitorUnref(mon);                                  \
+        ignore_value(qemuMonitorUnref(mon));                    \
     } while (0)
 
 int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,

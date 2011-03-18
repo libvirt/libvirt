@@ -133,7 +133,7 @@ void qemuMonitorLock(qemuMonitorPtr mon);
 void qemuMonitorUnlock(qemuMonitorPtr mon);
 
 int qemuMonitorRef(qemuMonitorPtr mon);
-int qemuMonitorUnref(qemuMonitorPtr mon);
+int qemuMonitorUnref(qemuMonitorPtr mon) ATTRIBUTE_RETURN_CHECK;
 
 /* These APIs are for use by the internal Text/JSON monitor impl code only */
 int qemuMonitorSend(qemuMonitorPtr mon,
