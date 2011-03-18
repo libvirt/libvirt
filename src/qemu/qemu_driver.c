@@ -4300,6 +4300,12 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot find cgroup for domain %s"), vm->def->name);
@@ -4373,6 +4379,12 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
     if (vm == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
         goto cleanup;
     }
 
@@ -4457,6 +4469,12 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
     if (vm == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
         goto cleanup;
     }
 
@@ -4560,6 +4578,12 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
     if (vm == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
         goto cleanup;
     }
 
@@ -4676,6 +4700,12 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot find cgroup for domain %s"), vm->def->name);
@@ -4749,6 +4779,12 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot find cgroup for domain %s"), vm->def->name);
@@ -4809,7 +4845,7 @@ qemudDomainBlockStats (virDomainPtr dom,
     if (qemuDomainObjBeginJob(vm) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive (vm)) {
+    if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
         goto endjob;
