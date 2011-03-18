@@ -689,6 +689,14 @@ networkStartRadvd(virNetworkObjPtr network)
 
     network->radvdPid = -1;
 
+    if (access(RADVD, X_OK) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot find %s - "
+                               "Possibly the package isn't installed"),
+                             RADVD);
+        goto cleanup;
+    }
+
     if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
         virReportSystemError(err,
                              _("cannot create directory %s"),
