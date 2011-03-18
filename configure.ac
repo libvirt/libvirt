@@ -512,7 +512,7 @@ if test "$with_libxl" != "no" ; then
     fi
     CFLAGS="$CFLAGS $LIBXL_CFLAGS"
     LIBS="$LIBS $LIBXL_LIBS"
-    AC_CHECK_LIB([xenlight], [libxl_ctx_init], [
+    AC_CHECK_LIB([xenlight], [libxl_domain_create_new], [
         with_libxl=yes
         LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenstore -lxenctrl -lxenguest -luuid -lutil -lblktapctl"
     ],[
