@@ -8722,8 +8722,6 @@ static virDomainSnapshotObjPtr virDomainSnapshotObjNew(void)
         return NULL;
     }
 
-    snapshot->refs = 1;
-
     VIR_DEBUG("obj=%p", snapshot);
 
     return snapshot;
@@ -8738,17 +8736,6 @@ static void virDomainSnapshotObjFree(virDomainSnapshotObjPtr snapshot)
 
     virDomainSnapshotDefFree(snapshot->def);
     VIR_FREE(snapshot);
-}
-
-int virDomainSnapshotObjUnref(virDomainSnapshotObjPtr snapshot)
-{
-    snapshot->refs--;
-    VIR_DEBUG("obj=%p refs=%d", snapshot, snapshot->refs);
-    if (snapshot->refs == 0) {
-        virDomainSnapshotObjFree(snapshot);
-        return 0;
-    }
-    return snapshot->refs;
 }
 
 virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
@@ -8782,7 +8769,7 @@ virDomainSnapshotObjListDataFree(void *payload,
 {
     virDomainSnapshotObjPtr obj = payload;
 
-    virDomainSnapshotObjUnref(obj);
+    virDomainSnapshotObjFree(obj);
 }
 
 int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr snapshots)

@@ -998,8 +998,6 @@ struct _virDomainSnapshotDef {
 typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
 typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
 struct _virDomainSnapshotObj {
-    int refs;
-
     virDomainSnapshotDefPtr def;
 };
 
@@ -1028,7 +1026,6 @@ virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjLi
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);
-int virDomainSnapshotObjUnref(virDomainSnapshotObjPtr snapshot);
 int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
                                 virDomainSnapshotObjListPtr snapshots);
 
