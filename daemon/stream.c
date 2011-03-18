@@ -343,6 +343,7 @@ remoteRemoveClientStream(struct qemud_client *client,
                 filter->next = filter->next->next;
                 break;
             }
+            filter = filter->next;
         }
     }
 
