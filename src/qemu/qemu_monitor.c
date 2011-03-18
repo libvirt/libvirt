@@ -755,6 +755,16 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
         return qemuMonitorTextCommandWithFd(mon, cmd, scm_fd, reply);
 }
 
+/* Ensure proper locking around callbacks.  */
+#define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...)          \
+    do {                                                        \
+        qemuMonitorRef(mon);                                    \
+        qemuMonitorUnlock(mon);                                 \
+        if ((mon)->cb && (mon)->cb->callback)                   \
+            (ret) = ((mon)->cb->callback)(mon, __VA_ARGS__);    \
+        qemuMonitorLock(mon);                                   \
+        qemuMonitorUnref(mon);                                  \
+    } while (0)
 
 int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
                              virConnectPtr conn,
@@ -766,12 +776,8 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
     *secret = NULL;
     *secretLen = 0;
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->diskSecretLookup)
-        ret = mon->cb->diskSecretLookup(mon, conn, mon->vm, path, secret, secretLen);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, diskSecretLookup, conn, mon->vm,
+                          path, secret, secretLen);
     return ret;
 }
 
@@ -781,12 +787,7 @@ int qemuMonitorEmitShutdown(qemuMonitorPtr mon)
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainShutdown)
-        ret = mon->cb->domainShutdown(mon, mon->vm);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainShutdown, mon->vm);
     return ret;
 }
 
@@ -796,12 +797,7 @@ int qemuMonitorEmitReset(qemuMonitorPtr mon)
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainReset)
-        ret = mon->cb->domainReset(mon, mon->vm);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainReset, mon->vm);
     return ret;
 }
 
@@ -811,12 +807,7 @@ int qemuMonitorEmitPowerdown(qemuMonitorPtr mon)
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainPowerdown)
-        ret = mon->cb->domainPowerdown(mon, mon->vm);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainPowerdown, mon->vm);
     return ret;
 }
 
@@ -826,12 +817,7 @@ int qemuMonitorEmitStop(qemuMonitorPtr mon)
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainStop)
-        ret = mon->cb->domainStop(mon, mon->vm);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainStop, mon->vm);
     return ret;
 }
 
@@ -841,12 +827,7 @@ int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset)
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainRTCChange)
-        ret = mon->cb->domainRTCChange(mon, mon->vm, offset);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainRTCChange, mon->vm, offset);
     return ret;
 }
 
@@ -856,12 +837,7 @@ int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action)
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainWatchdog)
-        ret = mon->cb->domainWatchdog(mon, mon->vm, action);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainWatchdog, mon->vm, action);
     return ret;
 }
 
@@ -874,12 +850,8 @@ int qemuMonitorEmitIOError(qemuMonitorPtr mon,
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainIOError)
-        ret = mon->cb->domainIOError(mon, mon->vm, diskAlias, action, reason);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainIOError, mon->vm,
+                          diskAlias, action, reason);
     return ret;
 }
 
@@ -899,16 +871,10 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    qemuMonitorRef(mon);
-    qemuMonitorUnlock(mon);
-    if (mon->cb && mon->cb->domainGraphics)
-        ret = mon->cb->domainGraphics(mon, mon->vm,
-                                      phase,
-                                      localFamily, localNode, localService,
-                                      remoteFamily, remoteNode, remoteService,
-                                      authScheme, x509dname, saslUsername);
-    qemuMonitorLock(mon);
-    qemuMonitorUnref(mon);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainGraphics, mon->vm, phase,
+                          localFamily, localNode, localService,
+                          remoteFamily, remoteNode, remoteService,
+                          authScheme, x509dname, saslUsername);
     return ret;
 }
 
