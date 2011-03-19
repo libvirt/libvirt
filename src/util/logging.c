@@ -326,7 +326,7 @@ static void virLogStr(const char *str, int len) {
         return;
     if (len <= 0)
         len = strlen(str);
-    if (len > virLogSize)
+    if (len >= virLogSize)
         return;
     virLogLock();
 
@@ -336,13 +336,13 @@ static void virLogStr(const char *str, int len) {
     if (virLogEnd + len >= virLogSize) {
         tmp = virLogSize - virLogEnd;
         memcpy(&virLogBuffer[virLogEnd], str, tmp);
-        virLogBuffer[virLogSize] = 0;
         memcpy(&virLogBuffer[0], &str[tmp], len - tmp);
         virLogEnd = len - tmp;
     } else {
         memcpy(&virLogBuffer[virLogEnd], str, len);
         virLogEnd += len;
     }
+    virLogBuffer[virLogEnd] = 0;
     /*
      * Update the log length, and if full move the start index
      */
