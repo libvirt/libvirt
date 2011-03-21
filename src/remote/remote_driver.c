@@ -10832,7 +10832,6 @@ call (virConnectPtr conn, struct private_data *priv,
                            ret_filter, ret);
 
     if (!thiscall) {
-        virReportOOMError();
         return -1;
     }
 
