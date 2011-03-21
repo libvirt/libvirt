@@ -1064,6 +1064,109 @@ cleanup:
     return ret;
 }
 
+static unsigned long
+libxlDomainGetMaxMemory(virDomainPtr dom)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    unsigned long ret = 0;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+    ret = vm->def->mem.max_balloon;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long memory,
+                          unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_MEM_LIVE |
+                  VIR_DOMAIN_MEM_CONFIG, -1);
+
+    if ((flags & (VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_CONFIG)) == 0) {
+        libxlError(VIR_ERR_INVALID_ARG,
+                   _("invalid flag combination: (0x%x)"), flags);
+    }
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (memory > vm->def->mem.max_balloon) {
+        libxlError(VIR_ERR_INVALID_ARG, "%s",
+                   _("cannot set memory higher than max memory"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_MEM_LIVE)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("cannot set memory on an inactive domain"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_MEM_CONFIG) {
+        if (!vm->persistent) {
+            libxlError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(def = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_MEM_LIVE) {
+        priv = vm->privateData;
+
+        if (libxl_set_memory_target(&priv->ctx, dom->id, memory, 0,
+                                    /* force */ 1) < 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to set memory for domain '%d'"
+                         " with libxenlight"), dom->id);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+    if (flags & VIR_DOMAIN_MEM_CONFIG) {
+        def->mem.cur_balloon = memory;
+        ret = virDomainSaveConfig(driver->configDir, def);
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+libxlDomainSetMemory(virDomainPtr dom, unsigned long memory)
+{
+    return libxlDomainSetMemoryFlags(dom, memory, VIR_DOMAIN_MEM_LIVE);
+}
+
 static int
 libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 {
@@ -1287,6 +1390,26 @@ libxlDomainUndefine(virDomainPtr dom)
     return ret;
 }
 
+static unsigned long long
+libxlNodeGetFreeMemory(virConnectPtr conn)
+{
+    libxl_physinfo phy_info;
+    const libxl_version_info* ver_info;
+    libxlDriverPrivatePtr driver = conn->privateData;
+
+    if (libxl_get_physinfo(&driver->ctx, &phy_info)) {
+        libxlError(VIR_ERR_INTERNAL_ERROR, _("libxl_get_physinfo_info failed"));
+        return 0;
+    }
+
+    if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
+        libxlError(VIR_ERR_INTERNAL_ERROR, _("libxl_get_version_info failed"));
+        return 0;
+    }
+
+    return phy_info.free_pages * ver_info->pagesize;
+}
+
 static int
 libxlDomainIsActive(virDomainPtr dom)
 {
@@ -1358,10 +1481,10 @@ static virDriver libxlDriver = {
     libxlDomainReboot,          /* domainReboot */
     libxlDomainDestroy,         /* domainDestroy */
     NULL,                       /* domainGetOSType */
-    NULL,                       /* domainGetMaxMemory */
+    libxlDomainGetMaxMemory,    /* domainGetMaxMemory */
     NULL,                       /* domainSetMaxMemory */
-    NULL,                       /* domainSetMemory */
-    NULL,                       /* domainSetMemoryFlags */
+    libxlDomainSetMemory,       /* domainSetMemory */
+    libxlDomainSetMemoryFlags,  /* domainSetMemoryFlags */
     NULL,                       /* domainSetMemoryParameters */
     NULL,                       /* domainGetMemoryParameters */
     NULL,                       /* domainSetBlkioParameters */
@@ -1407,7 +1530,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainMemoryPeek */
     NULL,                       /* domainGetBlockInfo */
     NULL,                       /* nodeGetCellsFreeMemory */
-    NULL,                       /* getFreeMemory */
+    libxlNodeGetFreeMemory,     /* getFreeMemory */
     NULL,                       /* domainEventRegister */
     NULL,                       /* domainEventDeregister */
     NULL,                       /* domainMigratePrepare2 */
