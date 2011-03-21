@@ -1495,7 +1495,8 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
     if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
+        qemuMonitorCheckHMP(mon, "cpu_set")) {
         VIR_DEBUG0("cpu_set command not found, trying HMP");
         ret = qemuMonitorTextSetCPU(mon, cpu, online);
         goto cleanup;
@@ -2384,7 +2385,8 @@ int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name)
     if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
+        qemuMonitorCheckHMP(mon, "savevm")) {
         VIR_DEBUG0("savevm command not found, trying HMP");
         ret = qemuMonitorTextCreateSnapshot(mon, name);
         goto cleanup;
@@ -2413,7 +2415,8 @@ int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name)
     if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
+        qemuMonitorCheckHMP(mon, "loadvm")) {
         VIR_DEBUG0("loadvm command not found, trying HMP");
         ret = qemuMonitorTextLoadSnapshot(mon, name);
         goto cleanup;
@@ -2442,7 +2445,8 @@ int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
+        qemuMonitorCheckHMP(mon, "delvm")) {
         VIR_DEBUG0("delvm command not found, trying HMP");
         ret = qemuMonitorTextDeleteSnapshot(mon, name);
         goto cleanup;
@@ -2466,6 +2470,12 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
     int ret = -1;
 
     if (hmp) {
+        if (!qemuMonitorCheckHMP(mon, NULL)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("HMP passthrough is not supported by qemu"
+                              " process; only QMP commands can be used"));
+            return -1;
+        }
         return qemuMonitorJSONHumanCommandWithFd(mon, cmd_str, -1, reply_str);
     } else {
         if (!(cmd = virJSONValueFromString(cmd_str)))
