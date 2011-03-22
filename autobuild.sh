@@ -15,8 +15,11 @@ rm -rf build
 mkdir build
 cd build
 
+# Run with options not normally exercised by the rpm build, for
+# more complete code coverage.
 ../autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
   --enable-test-coverage \
+  --disable-nls \
   --enable-compile-warnings=error
 
 # If the MAKEFLAGS envvar does not yet include a -j option,
@@ -61,6 +64,7 @@ if [ -f /usr/bin/rpmbuild ]; then
      -ba --clean libvirt.spec
 fi
 
+# Test mingw cross-compile
 if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
   make distclean
 
@@ -71,23 +75,7 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --host=i686-pc-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw" \
     --enable-compile-warnings=error \
-    --without-xen \
-    --without-qemu \
-    --without-openvz \
-    --without-lxc \
-    --without-vbox \
-    --without-xenapi \
-    --without-uml \
-    --without-sasl \
-    --without-avahi \
-    --without-polkit \
-    --without-python \
-    --without-libvirtd \
-    --without-phyp \
-    --without-hyperv \
-    --without-netcf \
-    --without-audit \
-    --without-dtrace \
+    --without-libvirtd
 
   make
   make install
