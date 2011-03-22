@@ -1146,7 +1146,11 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
                         cmd->pwd);
         return -1;
     }
-
+    if (cmd->pidfile && !(cmd->flags & VIR_EXEC_DAEMON)) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("creation of pid file requires daemonized command"));
+        return -1;
+    }
 
     str = virCommandToString(cmd);
     VIR_DEBUG("About to run %s", str ? str : cmd->args[0]);
