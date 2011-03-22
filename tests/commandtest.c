@@ -696,6 +696,14 @@ static int test18(const void *unused ATTRIBUTE_UNUSED)
         printf("cannot read pidfile\n");
         goto cleanup;
     }
+
+    virCommandFree(cmd);
+    cmd = NULL;
+    if (kill(pid, 0) != 0) {
+        printf("daemon should still be running\n");
+        goto cleanup;
+    }
+
     while (kill(pid, SIGINT) != -1)
         usleep(100*1000);
 
@@ -708,6 +716,42 @@ cleanup:
     return ret;
 }
 
+/*
+ * Asynchronously run long-running daemon, to ensure no hang.
+ */
+static int test19(const void *unused ATTRIBUTE_UNUSED)
+{
+    virCommandPtr cmd = virCommandNewArgList("sleep", "100", NULL);
+    pid_t pid;
+    int ret = -1;
+
+    alarm(5);
+    if (virCommandRunAsync(cmd, &pid) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+
+    if (kill(pid, 0) != 0) {
+        printf("Child should still be running");
+        goto cleanup;
+    }
+
+    virCommandAbort(cmd);
+
+    if (kill(pid, 0) == 0) {
+        printf("Child should be aborted");
+        goto cleanup;
+    }
+
+    alarm(0);
+
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
 
 static int
 mymain(int argc, char **argv)
@@ -781,6 +825,7 @@ mymain(int argc, char **argv)
     DO_TEST(test16);
     DO_TEST(test17);
     DO_TEST(test18);
+    DO_TEST(test19);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

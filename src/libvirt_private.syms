@@ -91,6 +91,7 @@ virCgroupSetMemSwapHardLimit;
 
 
 # command.h
+virCommandAbort;
 virCommandAddArg;
 virCommandAddArgBuffer;
 virCommandAddArgFormat;

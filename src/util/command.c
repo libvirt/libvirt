@@ -81,6 +81,7 @@ struct _virCommand {
 
     pid_t pid;
     char *pidfile;
+    bool reap;
 };
 
 /*
@@ -1222,6 +1223,8 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 
     if (ret == 0 && pid)
         *pid = cmd->pid;
+    else
+        cmd->reap = true;
 
     return ret;
 }
@@ -1267,6 +1270,7 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
     }
 
     cmd->pid = -1;
+    cmd->reap = false;
 
     if (exitstatus == NULL) {
         if (status != 0) {
@@ -1286,6 +1290,65 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
     return 0;
 }
 
+
+/*
+ * Abort an async command if it is running, without issuing
+ * any errors or affecting errno.  Designed for error paths
+ * where some but not all paths to the cleanup code might
+ * have started the child process.
+ */
+void
+virCommandAbort(virCommandPtr cmd)
+{
+    int saved_errno;
+    int ret;
+    int status;
+    char *tmp = NULL;
+
+    if (!cmd || cmd->pid == -1)
+        return;
+
+    /* See if intermediate process has exited; if not, try a nice
+     * SIGTERM followed by a more severe SIGKILL.
+     */
+    saved_errno = errno;
+    VIR_DEBUG("aborting child process %d", cmd->pid);
+    while ((ret = waitpid(cmd->pid, &status, WNOHANG)) == -1 &&
+           errno == EINTR);
+    if (ret == cmd->pid) {
+        tmp = virCommandTranslateStatus(status);
+        VIR_DEBUG("process has ended: %s", tmp);
+        goto cleanup;
+    } else if (ret == 0) {
+        VIR_DEBUG("trying SIGTERM to child process %d", cmd->pid);
+        kill(cmd->pid, SIGTERM);
+        usleep(10 * 1000);
+        while ((ret = waitpid(cmd->pid, &status, WNOHANG)) == -1 &&
+               errno == EINTR);
+        if (ret == cmd->pid) {
+            tmp = virCommandTranslateStatus(status);
+            VIR_DEBUG("process has ended: %s", tmp);
+            goto cleanup;
+        } else if (ret == 0) {
+            VIR_DEBUG("trying SIGKILL to child process %d", cmd->pid);
+            kill(cmd->pid, SIGKILL);
+            while ((ret = waitpid(cmd->pid, &status, 0)) == -1 &&
+                   errno == EINTR);
+            if (ret == cmd->pid) {
+                tmp = virCommandTranslateStatus(status);
+                VIR_DEBUG("process has ended: %s", tmp);
+                goto cleanup;
+            }
+        }
+    }
+    VIR_DEBUG("failed to reap child %d, abandoning it", cmd->pid);
+
+cleanup:
+    VIR_FREE(tmp);
+    cmd->pid = -1;
+    cmd->reap = false;
+    errno = saved_errno;
+}
 
 /*
  * Release all resources
@@ -1319,6 +1382,9 @@ virCommandFree(virCommandPtr cmd)
     VIR_FREE(cmd->pwd);
 
     VIR_FREE(cmd->pidfile);
+
+    if (cmd->reap)
+        virCommandAbort(cmd);
 
     VIR_FREE(cmd);
 }
