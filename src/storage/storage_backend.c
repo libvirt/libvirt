@@ -390,14 +390,14 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     uid = (vol->target.perms.uid == -1) ? getuid() : vol->target.perms.uid;
     gid = (vol->target.perms.gid == -1) ? getgid() : vol->target.perms.gid;
-    operation_flags = VIR_FILE_OP_FORCE_PERMS | VIR_FILE_OP_RETURN_FD;
+    operation_flags = VIR_FILE_OPEN_FORCE_PERMS;
     if (pool->def->type == VIR_STORAGE_POOL_NETFS)
-        operation_flags |= VIR_FILE_OP_AS_UID;
+        operation_flags |= VIR_FILE_OPEN_AS_UID;
 
-    if ((fd = virFileOperation(vol->target.path,
-                               O_RDWR | O_CREAT | O_EXCL,
-                               vol->target.perms.mode, uid, gid,
-                               NULL, NULL, operation_flags)) < 0) {
+    if ((fd = virFileOpenAs(vol->target.path,
+                            O_RDWR | O_CREAT | O_EXCL,
+                            vol->target.perms.mode, uid, gid,
+                            operation_flags)) < 0) {
         virReportSystemError(-fd,
                              _("cannot create path '%s'"),
                              vol->target.path);

@@ -1913,11 +1913,9 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
             goto endjob;
         }
     } else {
-        if ((fd = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
-                                   S_IRUSR|S_IWUSR,
-                                   getuid(), getgid(),
-                                   NULL, NULL,
-                                   VIR_FILE_OP_RETURN_FD)) < 0) {
+        if ((fd = virFileOpenAs(path, O_CREAT|O_TRUNC|O_WRONLY,
+                                S_IRUSR|S_IWUSR,
+                                getuid(), getgid(), 0)) < 0) {
             /* If we failed as root, and the error was permission-denied
                (EACCES or EPERM), assume it's on a network-connected share
                where root access is restricted (eg, root-squashed NFS). If the
@@ -1951,7 +1949,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
                 case 0:
                 default:
-                   /* local file - log the error returned by virFileOperation */
+                   /* local file - log the error returned by virFileOpenAs */
                    virReportSystemError(-rc,
                                     _("Failed to create domain save file '%s'"),
                                         path);
@@ -1962,12 +1960,10 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
 
             /* Retry creating the file as driver->user */
 
-            if ((fd = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
-                                       S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
-                                       driver->user, driver->group,
-                                       NULL, NULL,
-                                       (VIR_FILE_OP_AS_UID |
-                                        VIR_FILE_OP_RETURN_FD))) < 0) {
+            if ((fd = virFileOpenAs(path, O_CREAT|O_TRUNC|O_WRONLY,
+                                    S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
+                                    driver->user, driver->group,
+                                    VIR_FILE_OPEN_AS_UID)) < 0) {
                 virReportSystemError(-fd,
                                    _("Error from child process creating '%s'"),
                                      path);

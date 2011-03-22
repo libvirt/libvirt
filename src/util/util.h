@@ -127,16 +127,13 @@ bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 char *virFileSanitizePath(const char *path);
 
 enum {
-    VIR_FILE_OP_NONE        = 0,
-    VIR_FILE_OP_AS_UID      = (1 << 0),
-    VIR_FILE_OP_FORCE_PERMS = (1 << 1),
-    VIR_FILE_OP_RETURN_FD   = (1 << 2),
+    VIR_FILE_OPEN_NONE        = 0,
+    VIR_FILE_OPEN_AS_UID      = (1 << 0),
+    VIR_FILE_OPEN_FORCE_PERMS = (1 << 1),
 };
-typedef int (*virFileOperationHook)(int fd, void *data);
-int virFileOperation(const char *path, int openflags, mode_t mode,
-                     uid_t uid, gid_t gid,
-                     virFileOperationHook hook, void *hookdata,
-                     unsigned int flags)
+int virFileOpenAs(const char *path, int openflags, mode_t mode,
+                  uid_t uid, gid_t gid,
+                  unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 enum {
