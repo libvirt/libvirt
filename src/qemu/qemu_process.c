@@ -1927,6 +1927,22 @@ int qemuProcessStart(virConnectPtr conn,
 
     vm->def->id = driver->nextvmid++;
 
+    /* Run a early hook to set-up missing devices */
+    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
+        char *xml = virDomainDefFormat(vm->def, 0);
+        int hookret;
+
+        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
+                    VIR_HOOK_QEMU_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN, NULL, xml);
+        VIR_FREE(xml);
+
+        /*
+         * If the script raised an error abort the launch
+         */
+        if (hookret < 0)
+            goto cleanup;
+    }
+
     /* Must be run before security labelling */
     VIR_DEBUG0("Preparing host devices");
     if (qemuPrepareHostDevices(driver, vm->def) < 0)
@@ -2418,6 +2434,16 @@ retry:
     vm->state = VIR_DOMAIN_SHUTOFF;
     VIR_FREE(priv->vcpupids);
     priv->nvcpupids = 0;
+
+    /* The "release" hook cleans up additional ressources */
+    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
+        char *xml = virDomainDefFormat(vm->def, 0);
+
+        /* we can't stop the operation even if the script raised an error */
+        virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
+                    VIR_HOOK_QEMU_OP_RELEASE, VIR_HOOK_SUBOP_END, NULL, xml);
+        VIR_FREE(xml);
+    }
 
     if (vm->newDef) {
         virDomainDefFree(vm->def);

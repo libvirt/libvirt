@@ -54,6 +54,8 @@ enum virHookSubopType {
 enum virHookQemuOpType {
     VIR_HOOK_QEMU_OP_START,            /* domain is about to start */
     VIR_HOOK_QEMU_OP_STOPPED,          /* domain has stopped */
+    VIR_HOOK_QEMU_OP_PREPARE,          /* domain startup initiated */
+    VIR_HOOK_QEMU_OP_RELEASE,          /* domain destruction is over */
 
     VIR_HOOK_QEMU_OP_LAST,
 };
