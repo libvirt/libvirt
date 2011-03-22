@@ -60,6 +60,7 @@
 #include "uuid.h"
 #include "network.h"
 #include "libvirt/libvirt-qemu.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 #define REMOTE_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
@@ -4368,8 +4369,10 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
         goto authfail;
     }
     if (status != 0) {
-        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %d"),
-                  action, callerPid, callerUid, status);
+        char *tmp = virCommandTranslateStatus(status);
+        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d: %s"),
+                  action, callerPid, callerUid, NULLSTR(tmp));
+        VIR_FREE(tmp);
         goto authdeny;
     }
     PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",

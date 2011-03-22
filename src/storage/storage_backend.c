@@ -56,6 +56,7 @@
 #include "storage_backend.h"
 #include "logging.h"
 #include "files.h"
+#include "command.h"
 
 #if WITH_STORAGE_LVM
 # include "storage_backend_logical.h"
@@ -631,18 +632,13 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
 cleanup:
     VIR_FREE(help);
     VIR_FORCE_CLOSE(newstdout);
-rewait:
     if (child) {
-        if (waitpid(child, &status, 0) != child) {
-            if (errno == EINTR)
-                goto rewait;
-
-            VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
-                      WEXITSTATUS(status), (unsigned long)child);
-        }
-        if (WEXITSTATUS(status) != 0) {
-            VIR_WARN("Unexpected exit status '%d', qemu probably failed",
-                     WEXITSTATUS(status));
+        while (waitpid(child, &status, 0) == -1 && errno == EINTR);
+        if (status) {
+            tmp = virCommandTranslateStatus(status);
+            VIR_WARN("Unexpected status, qemu probably failed: %s",
+                     NULLSTR(tmp));
+            VIR_FREE(tmp);
         }
     }
 

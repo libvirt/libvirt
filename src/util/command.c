@@ -798,6 +798,26 @@ virCommandToString(virCommandPtr cmd)
 
 
 /*
+ * Translate an exit status into a malloc'd string.  Generic helper
+ * for virCommandRun and virCommandWait status argument, as well as
+ * raw waitpid and older virRun status.
+ */
+char *
+virCommandTranslateStatus(int status)
+{
+    char *buf;
+    if (WIFEXITED(status)) {
+        virAsprintf(&buf, _("exit status %d"), WEXITSTATUS(status));
+    } else if (WIFSIGNALED(status)) {
+        virAsprintf(&buf, _("fatal signal %d"), WTERMSIG(status));
+    } else {
+        virAsprintf(&buf, _("invalid value %d"), status);
+    }
+    return buf;
+}
+
+
+/*
  * Manage input and output to the child process.
  */
 static int
@@ -958,6 +978,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     struct stat st;
     bool string_io;
     bool async_io = false;
+    char *str;
 
     if (!cmd ||cmd->has_error == ENOMEM) {
         virReportOOMError();
@@ -1048,9 +1069,14 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     if (virCommandWait(cmd, exitstatus) < 0)
         ret = -1;
 
-    VIR_DEBUG("Result stdout: '%s' stderr: '%s'",
+    str = (exitstatus ? virCommandTranslateStatus(*exitstatus)
+           : (char *) "status 0");
+    VIR_DEBUG("Result %s, stdout: '%s' stderr: '%s'",
+              NULLSTR(str),
               cmd->outbuf ? NULLSTR(*cmd->outbuf) : "(null)",
               cmd->errbuf ? NULLSTR(*cmd->errbuf) : "(null)");
+    if (exitstatus)
+        VIR_FREE(str);
 
     /* Reset any capturing, in case caller runs
      * this identical command again */
@@ -1230,10 +1256,12 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
     if (exitstatus == NULL) {
         if (status != 0) {
             char *str = virCommandToString(cmd);
+            char *st = virCommandTranslateStatus(status);
             virCommandError(VIR_ERR_INTERNAL_ERROR,
-                            _("Child process (%s) exited with status %d."),
-                            str ? str : cmd->args[0], WEXITSTATUS(status));
+                            _("Child process (%s) status unexpected: %s"),
+                            str ? str : cmd->args[0], NULLSTR(st));
             VIR_FREE(str);
+            VIR_FREE(st);
             return -1;
         }
     } else {

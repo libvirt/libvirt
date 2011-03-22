@@ -1,5 +1,6 @@
 /*
  * AppArmor security driver for libvirt
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2009-2010 Canonical Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -36,6 +37,7 @@
 #include "hostusb.h"
 #include "files.h"
 #include "configmake.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_APPARMOR_VOID_DOI      "0"
@@ -217,15 +219,19 @@ load_profile(virSecurityManagerPtr mgr,
     VIR_FORCE_CLOSE(pipefd[1]);
     rc = 0;
 
-  rewait:
-    if (waitpid(child, &status, 0) != child) {
-        if (errno == EINTR)
-            goto rewait;
-
+    while ((ret = waitpid(child, &status, 0)) < 0 && errno == EINTR);
+    if (ret < 0) {
+        virReportSystemError(errno,
+                             _("Failed to reap virt-aa-helper pid %lu"),
+                             (unsigned long)child);
+        rc = -1;
+    } else if (status) {
+        char *str = virCommandTranslateStatus(status);
         virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected exit status from virt-aa-helper "
-                               "%d pid %lu"),
-                               WEXITSTATUS(status), (unsigned long)child);
+                               _("Unexpected status from virt-aa-helper "
+                                 "pid %lu: %s"),
+                               (unsigned long)child, NULLSTR(str));
+        VIR_FREE(str);
         rc = -1;
     }
 

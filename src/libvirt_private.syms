@@ -123,6 +123,7 @@ virCommandSetPreExecHook;
 virCommandSetWorkingDirectory;
 virCommandToString;
 virCommandTransferFD;
+virCommandTranslateStatus;
 virCommandWait;
 virCommandWriteArgLog;
 

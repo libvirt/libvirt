@@ -76,6 +76,7 @@
 #include "threads.h"
 #include "verify.h"
 #include "files.h"
+#include "command.h"
 
 #ifndef NSIG
 # define NSIG 32
@@ -832,9 +833,11 @@ int virExecDaemonize(const char *const*argv,
                    errno == EINTR);
 
     if (childstat != 0) {
+        char *str = virCommandTranslateStatus(childstat);
         virUtilError(VIR_ERR_INTERNAL_ERROR,
-                     _("Intermediate daemon process exited with status %d."),
-                     WEXITSTATUS(childstat));
+                     _("Intermediate daemon process status unexpected: %s"),
+                     NULLSTR(str));
+        VIR_FREE(str);
         ret = -2;
     }
 
@@ -903,13 +906,12 @@ virRunWithHook(const char *const*argv,
 
     if (status == NULL) {
         errno = EINVAL;
-        if (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) != 0) {
+        if (exitstatus) {
+            char *str = virCommandTranslateStatus(exitstatus);
             virUtilError(VIR_ERR_INTERNAL_ERROR,
-                         _("'%s' exited with non-zero status %d and "
-                           "signal %d: %s"), argv_str,
-                         WIFEXITED(exitstatus) ? WEXITSTATUS(exitstatus) : 0,
-                         WIFSIGNALED(exitstatus) ? WTERMSIG(exitstatus) : 0,
-                         (errbuf ? errbuf : ""));
+                         _("'%s' exited unexpectedly: %s"),
+                         argv_str, NULLSTR(str));
+            VIR_FREE(str);
             goto error;
         }
     } else {
@@ -1510,8 +1512,7 @@ int virFileOperation(const char *path, int openflags, mode_t mode,
                                  path);
             goto parenterror;
         }
-        ret = -WEXITSTATUS(status);
-        if (!WIFEXITED(status) || (ret == -EACCES)) {
+        if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES) {
             /* fall back to the simpler method, which works better in
              * some cases */
             return virFileOperationNoFork(path, openflags, mode, uid, gid,
@@ -1630,14 +1631,10 @@ int virDirCreate(const char *path, mode_t mode,
                                  path);
             goto parenterror;
         }
-        ret = -WEXITSTATUS(status);
-        if (!WIFEXITED(status) || (ret == -EACCES)) {
+        if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES) {
             /* fall back to the simpler method, which works better in
              * some cases */
             return virDirCreateNoFork(path, mode, uid, gid, flags);
-        }
-        if (ret < 0) {
-            goto parenterror;
         }
 parenterror:
         return ret;

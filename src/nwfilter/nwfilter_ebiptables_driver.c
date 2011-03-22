@@ -1,6 +1,7 @@
 /*
  * nwfilter_ebiptables_driver.c: driver for ebtables/iptables on tap devices
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -2558,7 +2559,7 @@ err_exit:
  * ebiptablesExecCLI:
  * @buf : pointer to virBuffer containing the string with the commands to
  *        execute.
- * @status: Pointer to an integer for returning the status of the
+ * @status: Pointer to an integer for returning the WEXITSTATUS of the
  *        commands executed via the script the was run.
  *
  * Returns 0 in case of success, != 0 in case of an error. The returned
@@ -2587,7 +2588,7 @@ ebiptablesExecCLI(virBufferPtr buf,
 
     cmds = virBufferContentAndReset(buf);
 
-    VIR_DEBUG("%s", cmds);
+    VIR_DEBUG("%s", NULLSTR(cmds));
 
     if (!cmds)
         return 0;
@@ -2606,9 +2607,16 @@ ebiptablesExecCLI(virBufferPtr buf,
 
     virMutexUnlock(&execCLIMutex);
 
-    *status >>= 8;
+    if (rc == 0) {
+        if (WIFEXITED(*status)) {
+            *status = WEXITSTATUS(*status);
+        } else {
+            rc = -1;
+            *status = 1;
+        }
+    }
 
-    VIR_DEBUG("rc = %d, status = %d",rc, *status);
+    VIR_DEBUG("rc = %d, status = %d", rc, *status);
 
     unlink(filename);
 

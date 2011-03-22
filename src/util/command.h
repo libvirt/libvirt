@@ -1,7 +1,7 @@
 /*
  * command.h: Child command execution
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -241,6 +241,12 @@ void virCommandWriteArgLog(virCommandPtr cmd,
  * Caller is responsible for freeing the resulting string.
  */
 char *virCommandToString(virCommandPtr cmd) ATTRIBUTE_RETURN_CHECK;
+
+
+/*
+ * Translate an exit status into a malloc'd string.
+ */
+char *virCommandTranslateStatus(int exitstatus) ATTRIBUTE_RETURN_CHECK;
 
 /*
  * Run the command and wait for completion.
