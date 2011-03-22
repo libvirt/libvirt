@@ -306,14 +306,6 @@ UML_DRIVER_SOURCES =						\
 		uml/uml_conf.c uml/uml_conf.h			\
 		uml/uml_driver.c uml/uml_driver.h
 
-ONE_DRIVER_SOURCES =						\
-		./opennebula/one_conf.c				\
-		./opennebula/one_conf.h				\
-		./opennebula/one_driver.c			\
-		./opennebula/one_driver.h			\
-		./opennebula/one_client.c			\
-		./opennebula/one_client.h
-
 ESX_DRIVER_SOURCES =						\
 		esx/esx_private.h						\
 		esx/esx_driver.c esx/esx_driver.h		\
@@ -794,26 +786,6 @@ endif
 libvirt_driver_uml_la_SOURCES = $(UML_DRIVER_SOURCES)
 endif
 
-if WITH_ONE
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_one.la
-else
-noinst_LTLIBRARIES += libvirt_driver_one.la
-# Stateful, so linked to daemon instead
-#libvirt_la_BUILT_LIBADD  += libvirt_driver_one.la
-endif
-libvirt_driver_one_la_CFLAGS = $(XMLRPC_CFLAGS) \
-		-I@top_srcdir@/src/conf $(AM_CFLAGS)
-libvirt_driver_one_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_one_la_LIBADD = $(XMLRPC_LIBS)
-#libvirt_driver_one_la_CFLAGS  = "-DWITH_ONE"
-if WITH_DRIVER_MODULES
-libvirt_driver_one_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_one_la_LDFLAGS += -module -avoid-version
-endif
-libvirt_driver_one_la_SOURCES = $(ONE_DRIVER_SOURCES)
-endif
-
 
 BUILT_SOURCES += $(ESX_DRIVER_GENERATED)
 
@@ -1023,7 +995,6 @@ EXTRA_DIST +=							\
 		$(QEMU_DRIVER_SOURCES)				\
 		$(LXC_DRIVER_SOURCES)				\
 		$(UML_DRIVER_SOURCES)				\
-		$(ONE_DRIVER_SOURCES)				\
 		$(OPENVZ_DRIVER_SOURCES)			\
 		$(PHYP_DRIVER_SOURCES)				\
 		$(VBOX_DRIVER_SOURCES)				\

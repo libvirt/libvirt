@@ -46,8 +46,6 @@
 %define with_uml           0%{!?_without_uml:%{server_drivers}}
 %define with_xenapi        0%{!?_without_xenapi:%{server_drivers}}
 %define with_libxl         0%{!?_without_libxl:%{server_drivers}}
-# XXX this shouldn't be here, but it mistakenly links into libvirtd
-%define with_one           0%{!?_without_one:%{server_drivers}}
 
 # Then the hypervisor drivers that talk a native remote protocol
 %define with_phyp          0%{!?_without_phyp:1}
@@ -96,13 +94,12 @@
 %define with_numactl 0
 %endif
 
-# RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor,
+# RHEL doesn't ship OpenVZ, VBox, UML, PowerHypervisor,
 # VMWare, libxenserver (xenapi), or libxenlight (Xen 4.1 and newer)
 %if 0%{?rhel}
 %define with_openvz 0
 %define with_vbox 0
 %define with_uml 0
-%define with_one 0
 %define with_phyp 0
 %define with_vmware 0
 %define with_xenapi 0
@@ -313,9 +310,6 @@ BuildRequires: python-devel
 
 %if %{with_xen}
 BuildRequires: xen-devel
-%endif
-%if %{with_one}
-BuildRequires: xmlrpc-c-devel >= 1.14.0
 %endif
 BuildRequires: libxml2-devel
 BuildRequires: xhtml1-dtds
@@ -568,10 +562,6 @@ of recent versions of Linux (and other OSes).
 
 %if ! %{with_uml}
 %define _without_uml --without-uml
-%endif
-
-%if ! %{with_one}
-%define _without_one --without-one
 %endif
 
 %if %{with_rhel5}

@@ -54,7 +54,6 @@ MinGW Windows libvirt virtualization library.
   --without-uml \
   --without-vbox \
   --without-openvz \
-  --without-one \
   --without-phyp \
   --without-netcf \
   --without-audit \

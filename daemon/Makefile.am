@@ -114,10 +114,6 @@ if WITH_UML
     libvirtd_LDADD += ../src/libvirt_driver_uml.la
 endif
 
-if WITH_ONE
-    libvirtd_LDADD += ../src/libvirt_driver_one.la
-endif
-
 if WITH_STORAGE_DIR
     libvirtd_LDADD += ../src/libvirt_driver_storage.la
 endif

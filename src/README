@@ -27,7 +27,6 @@ Then there are the hypervisor implementations:
 
  * esx/          - VMware ESX and GSX support using vSphere API over SOAP
  * lxc/          - Linux Native Containers
- * opennebula/   - Open Nebula using XMLRPC
  * openvz/       - OpenVZ containers using cli tools
  * phyp/         - IBM Power Hypervisor using CLI tools over SSH
  * qemu/         - QEMU / KVM using qemu CLI/monitor
@@ -42,8 +41,8 @@ Then there are the hypervisor implementations:
 
 Finally some secondary drivers that are shared for several HVs.
 Currently these are used by LXC, OpenVZ, QEMU, UML and Xen drivers.
-The ESX, OpenNebula, Power Hypervisor, Remote, Test & VirtualBox
-drivers all implement the secondary drivers directly
+The ESX, Power Hypervisor, Remote, Test & VirtualBox drivers all
+implement the secondary drivers directly
 
  * cpu/          - CPU feature management
  * interface/    - Host network interface management

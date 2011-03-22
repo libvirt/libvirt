@@ -87,9 +87,6 @@
 # ifdef WITH_UML
 #  include "uml/uml_driver.h"
 # endif
-# ifdef WITH_ONE
-#  include "opennebula/one_driver.h"
-# endif
 # ifdef WITH_NETWORK
 #  include "network/bridge_driver.h"
 # endif
@@ -925,7 +922,6 @@ static struct qemud_server *qemudInitialize(void) {
     virDriverLoadModule("qemu");
     virDriverLoadModule("lxc");
     virDriverLoadModule("uml");
-    virDriverLoadModule("one");
     virDriverLoadModule("nwfilter");
 #else
 # ifdef WITH_NETWORK
@@ -957,9 +953,6 @@ static struct qemud_server *qemudInitialize(void) {
 # endif
 # ifdef WITH_UML
     umlRegister();
-# endif
-# ifdef WITH_ONE
-    oneRegister();
 # endif
 #endif
 

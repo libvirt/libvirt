@@ -20,7 +20,6 @@
 
     <ul>
       <li><strong><a href="drvlxc.html">LXC</a></strong> - Linux Containers</li>
-      <li><strong><a href="drvone.html">OpenNebula</a></strong></li>
       <li><strong><a href="drvopenvz.html">OpenVZ</a></strong></li>
       <li><strong><a href="drvqemu.html">QEMU</a></strong></li>
       <li><strong><a href="drvtest.html">Test</a></strong> - Used for testing</li>

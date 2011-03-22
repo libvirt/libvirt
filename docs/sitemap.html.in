@@ -191,10 +191,6 @@
                 <span>Driver for VirtualBox</span>
               </li>
               <li>
-                <a href="drvone.html">OpenNebula</a>
-                <span>Driver for OpenNebula</span>
-              </li>
-              <li>
                 <a href="drvesx.html">VMware ESX</a>
                 <span>Driver for VMware ESX</span>
               </li>

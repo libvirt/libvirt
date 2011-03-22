@@ -81,7 +81,6 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --without-uml \
     --without-vbox \
     --without-openvz \
-    --without-one \
     --without-phyp \
     --without-netcf \
     --without-audit \

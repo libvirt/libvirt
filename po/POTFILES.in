@@ -46,8 +46,6 @@ src/nwfilter/nwfilter_driver.c
 src/nwfilter/nwfilter_ebiptables_driver.c
 src/nwfilter/nwfilter_gentech_driver.c
 src/nwfilter/nwfilter_learnipaddr.c
-src/opennebula/one_conf.c
-src/opennebula/one_driver.c
 src/openvz/openvz_conf.c
 src/openvz/openvz_driver.c
 src/phyp/phyp_driver.c
