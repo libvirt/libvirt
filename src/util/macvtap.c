@@ -87,6 +87,7 @@ enum virVirtualPortOp {
     ASSOCIATE = 0x1,
     DISASSOCIATE = 0x2,
     PREASSOCIATE = 0x3,
+    PREASSOCIATE_RR = 0x4,
 };
 
 
@@ -1452,6 +1453,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     }
 
     switch (virtPortOp) {
+    case PREASSOCIATE_RR:
     case ASSOCIATE:
         rc = virGetHostUUID(hostuuid);
         if (rc)
@@ -1465,7 +1467,9 @@ doPortProfileOp8021Qbh(const char *ifname,
                                    vm_uuid,
                                    hostuuid,
                                    vf,
-                                   PORT_REQUEST_ASSOCIATE);
+                                   (virtPortOp == PREASSOCIATE_RR) ?
+                                    PORT_REQUEST_PREASSOCIATE_RR
+                                    : PORT_REQUEST_ASSOCIATE);
         if (rc == -ETIMEDOUT)
             /* Association timed out, disassociate */
             doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
@@ -1553,10 +1557,11 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
         break;
 
     case VIR_VIRTUALPORT_8021QBH:
-        /* avoid associating twice */
-        if (vmOp != VIR_VM_OP_MIGRATE_IN_FINISH)
-            rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
-                                        virtPort, vmuuid, ASSOCIATE);
+        rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+                                    virtPort, vmuuid,
+                                    (vmOp == VIR_VM_OP_MIGRATE_IN_START)
+                                      ? PREASSOCIATE_RR
+                                      : ASSOCIATE);
         if (vmOp != VIR_VM_OP_MIGRATE_IN_START && !rc)
             ifaceUp(linkdev);
         break;
