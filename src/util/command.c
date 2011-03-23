@@ -41,6 +41,11 @@
     virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,           \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+enum {
+    /* Internal-use extension beyond public VIR_EXEC_ flags */
+    VIR_EXEC_RUN_SYNC = 0x40000000,
+};
+
 struct _virCommand {
     int has_error; /* ENOMEM on allocation failure, -1 for anything else.  */
 
@@ -1050,6 +1055,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         }
     }
 
+    cmd->flags |= VIR_EXEC_RUN_SYNC;
     if (virCommandRunAsync(cmd, NULL) < 0) {
         if (cmd->inbuf) {
             int tmpfd = infd[0];
@@ -1139,6 +1145,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     int ret;
     char *str;
     int i;
+    bool synchronous = false;
 
     if (!cmd || cmd->has_error == ENOMEM) {
         virReportOOMError();
@@ -1149,6 +1156,9 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
                         _("invalid use of command API"));
         return -1;
     }
+
+    synchronous = cmd->flags & VIR_EXEC_RUN_SYNC;
+    cmd->flags &= ~VIR_EXEC_RUN_SYNC;
 
     /* Buffer management can only be requested via virCommandRun.  */
     if ((cmd->inbuf && cmd->infd == -1) ||
@@ -1166,6 +1176,11 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
         return -1;
     }
 
+    if (!synchronous && (cmd->flags & VIR_EXEC_DAEMON)) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("daemonized command cannot use virCommandRunAsync"));
+        return -1;
+    }
     if (cmd->pwd && (cmd->flags & VIR_EXEC_DAEMON)) {
         virCommandError(VIR_ERR_INTERNAL_ERROR,
                         _("daemonized command cannot set working directory %s"),
