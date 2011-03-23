@@ -236,15 +236,21 @@ Requires: %{name}-client = %{version}-%{release}
 # daemon is present
 %if %{with_libvirtd}
 Requires: bridge-utils
+# for modprobe of pci devices
+Requires: module-init-tools
+# for /sbin/ip
+Requires: iproute
 %endif
 %if %{with_network}
 Requires: dnsmasq >= 2.41
+Requires: radvd
+%endif
+%if %{with_network} || %{with_nwfilter}
 Requires: iptables
+Requires: iptables-ipv6
 %endif
 %if %{with_nwfilter}
 Requires: ebtables
-Requires: iptables
-Requires: iptables-ipv6
 %endif
 # needed for device enumeration
 %if %{with_hal}
@@ -313,10 +319,15 @@ BuildRequires: xmlrpc-c-devel >= 1.14.0
 %endif
 BuildRequires: libxml2-devel
 BuildRequires: xhtml1-dtds
+BuildRequires: libxslt
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: gnutls-devel
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
+# for augparse, optionally used in testing
+BuildRequires: augeas
+%endif
 %if %{with_hal}
 BuildRequires: hal-devel
 %endif
@@ -341,8 +352,15 @@ BuildRequires: libselinux-devel
 %endif
 %if %{with_network}
 BuildRequires: dnsmasq >= 2.41
+BuildRequires: iptables
+BuildRequires: iptables-ipv6
+BuildRequires: radvd
+%endif
+%if %{with_nwfilter}
+BuildRequires: ebtables
 %endif
 BuildRequires: bridge-utils
+BuildRequires: module-init-tools
 %if %{with_sasl}
 BuildRequires: cyrus-sasl-devel
 %endif
@@ -406,7 +424,11 @@ BuildRequires: libssh2-devel
 BuildRequires: netcf-devel >= 0.1.4
 %endif
 %if %{with_esx}
+%if 0%{?fedora} >= 9 || 0%{?rhel} >= 6
 BuildRequires: libcurl-devel
+%else
+BuildRequires: curl-devel
+%endif
 %endif
 %if %{with_audit}
 BuildRequires: audit-libs-devel
