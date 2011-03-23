@@ -197,14 +197,14 @@ int virLogStartup(void) {
 
     virLogInitialized = 1;
     virLogLock();
-    if (VIR_ALLOC_N(virLogBuffer, virLogSize) < 0) {
+    if (VIR_ALLOC_N(virLogBuffer, virLogSize + 1) < 0) {
         /*
          * The debug buffer is not a critical component, allow startup
          * even in case of failure to allocate it in case of a
          * configuration mistake.
          */
         virLogSize = 64 * 1024;
-        if (VIR_ALLOC_N(virLogBuffer, virLogSize) < 0) {
+        if (VIR_ALLOC_N(virLogBuffer, virLogSize + 1) < 0) {
             pbm = "Failed to allocate debug buffer: deactivating debug log\n";
             virLogSize = 0;
         } else {
@@ -249,14 +249,14 @@ virLogSetBufferSize(int size) {
     oldsize = virLogSize;
     oldLogBuffer = virLogBuffer;
 
-    if (INT_MAX / 1024 < size) {
+    if (INT_MAX / 1024 <= size) {
         pbm = "Requested log size of %d kB too large\n";
         ret = -1;
         goto error;
     }
 
     virLogSize = size * 1024;
-    if (VIR_ALLOC_N(virLogBuffer, virLogSize) < 0) {
+    if (VIR_ALLOC_N(virLogBuffer, virLogSize + 1) < 0) {
         pbm = "Failed to allocate debug buffer of %d kB\n";
         virLogBuffer = oldLogBuffer;
         virLogSize = oldsize;
