@@ -2932,6 +2932,7 @@ static const vshCmdOptDef opts_setmem[] = {
     {"kilobytes", VSH_OT_INT, VSH_OFLAG_REQ, N_("number of kilobytes of memory")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2944,14 +2945,23 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     int ret = TRUE;
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
+    int current = vshCommandOptBool(cmd, "current");
     int flags = 0;
 
-    /* Need to use flags if config was specified, but prefer older api
-     * for live-only behavior otherwise */
-    if (config) {
-        flags = VIR_DOMAIN_MEM_CONFIG;
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return FALSE;
+        }
+        flags = VIR_DOMAIN_MEM_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_MEM_CONFIG;
         if (live)
             flags |= VIR_DOMAIN_MEM_LIVE;
+        /* neither option is specified */
+        if (!live && !config)
+            flags = -1;
     }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -2984,7 +2994,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    if (!flags) {
+    if (flags == -1) {
         if (virDomainSetMemory(dom, kilobytes) != 0) {
             ret = FALSE;
         }
