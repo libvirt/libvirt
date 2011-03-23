@@ -860,7 +860,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virCgroupPtr cgroup = NULL;
         usbDevice *usb;
-        qemuCgroupData data = { vm, cgroup };
+        qemuCgroupData data;
 
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -873,6 +873,8 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                 hostdev->source.subsys.u.usb.device)) == NULL)
             goto error;
 
+        data.vm = vm;
+        data.cgroup = cgroup;
         if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, &data) < 0)
             goto error;
     }
