@@ -225,7 +225,9 @@ Group: Development/Libraries
 Source: http://libvirt.org/sources/libvirt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://libvirt.org/
-BuildRequires: python-devel
+
+# All runtime requirements for the libvirt package (runtime requrements
+# for subpackages are listed later in those subpackages)
 
 # The client side, i.e. shared libs and virsh are in a subpackage
 Requires: %{name}-client = %{version}-%{release}
@@ -259,10 +261,6 @@ Requires: PolicyKit >= 0.6
 %endif
 %endif
 %if %{with_storage_fs}
-# For mount/umount in FS driver
-BuildRequires: util-linux
-# For showmount in FS driver (netfs discovery)
-BuildRequires: nfs-utils
 Requires: nfs-utils
 # For glusterfs
 %if 0%{?fedora} >= 11
@@ -303,6 +301,10 @@ Requires: device-mapper
 %if %{with_cgconfig}
 Requires: libcgroup
 %endif
+
+# All build-time requirements
+BuildRequires: python-devel
+
 %if %{with_xen}
 BuildRequires: xen-devel
 %endif
@@ -414,6 +416,12 @@ BuildRequires: audit-libs-devel
 BuildRequires: systemtap-sdt-devel
 %endif
 
+%if %{with_storage_fs}
+# For mount/umount in FS driver
+BuildRequires: util-linux
+# For showmount in FS driver (netfs discovery)
+BuildRequires: nfs-utils
+%endif
 
 # Fedora build root suckage
 BuildRequires: gawk
