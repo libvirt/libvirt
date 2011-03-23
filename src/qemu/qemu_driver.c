@@ -1577,14 +1577,10 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     virDomainObjPtr vm;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1, r;
+    bool isActive;
 
     virCheckFlags(VIR_DOMAIN_MEM_LIVE |
                   VIR_DOMAIN_MEM_CONFIG, -1);
-
-    if ((flags & (VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_CONFIG)) == 0) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("invalid flag combination: (0x%x)"), flags);
-    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1606,7 +1602,16 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     if (qemuDomainObjBeginJob(vm) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_MEM_LIVE)) {
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_MEM_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_MEM_LIVE;
+        else
+            flags = VIR_DOMAIN_MEM_CONFIG;
+    }
+
+    if (!isActive && (flags & VIR_DOMAIN_MEM_LIVE)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
         goto endjob;

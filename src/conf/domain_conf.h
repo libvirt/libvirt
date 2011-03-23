@@ -1172,7 +1172,7 @@ struct _virDomainObjList {
     virHashTable *objs;
 };
 
-static inline int
+static inline bool
 virDomainObjIsActive(virDomainObjPtr dom)
 {
     return dom->def->id != -1;
