@@ -113,14 +113,10 @@ void remoteDispatchOOMError (remote_error *rerr)
 
 
 void remoteDispatchConnError (remote_error *rerr,
-                              virConnectPtr conn)
+                              virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    virErrorPtr verr;
+    virErrorPtr verr = virGetLastError();
 
-    if (conn)
-        verr = virConnGetLastError(conn);
-    else
-        verr = virGetLastError();
     if (verr)
         remoteDispatchCopyError(rerr, verr);
     else
