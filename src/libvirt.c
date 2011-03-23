@@ -2822,12 +2822,17 @@ error:
  * Dynamically change the target amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
- * This funcation may requires privileged access to the hypervisor.
+ * This function may requires privileged access to the hypervisor.
  *
- * @flags must include VIR_DOMAIN_MEM_LIVE to affect a running
- * domain (which may fail if domain is not active), or
- * VIR_DOMAIN_MEM_CONFIG to affect the next boot via the XML
- * description of the domain. Both flags may be set.
+ * @flags may include VIR_DOMAIN_MEM_LIVE or VIR_DOMAIN_MEM_CONFIG.
+ * Both flags may be set. If VIR_DOMAIN_MEM_LIVE is set, the change affects
+ * a running domain and will fail if domain is not active.
+ * If VIR_DOMAIN_MEM_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified
+ * (that is, @flags is VIR_DOMAIN_MEM_CURRENT), then an inactive domain
+ * modifies persistent setup, while an active domain is hypervisor-dependent
+ * on whether just live or both live and persistent state is changed.
+ * Not all hypervisors can support all flag combinations.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -2853,8 +2858,7 @@ virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         goto error;
     }
 
-    if (memory < 4096 ||
-        (flags & (VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_CONFIG)) == 0) {
+    if (memory < 4096) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }

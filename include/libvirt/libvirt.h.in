@@ -854,8 +854,9 @@ int     virDomainGetMemoryParameters(virDomainPtr domain,
 
 /* Memory size modification flags. */
 typedef enum {
-    VIR_DOMAIN_MEM_LIVE   = (1 << 0), /* affect active domain */
-    VIR_DOMAIN_MEM_CONFIG = (1 << 1), /* affect next boot */
+    VIR_DOMAIN_MEM_CURRENT = 0,        /* affect current domain state */
+    VIR_DOMAIN_MEM_LIVE    = (1 << 0), /* affect active domain */
+    VIR_DOMAIN_MEM_CONFIG  = (1 << 1), /* affect next boot */
 } virDomainMemoryModFlags;
 
 
