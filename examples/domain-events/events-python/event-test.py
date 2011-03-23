@@ -15,6 +15,17 @@ import errno
 import time
 import threading
 
+# For the sake of demonstration, this example program includes
+# an implementation of a pure python event loop. Most applications
+# would be better off just using the default libvirt event loop
+# APIs, instead of implementing this in python. The exception is
+# where an application wants to integrate with an existing 3rd
+# party event loop impl
+#
+# Change this to 'False' to make the demo use the native
+# libvirt event loop impl
+use_pure_python_event_loop = True
+
 do_debug = False
 def debug(msg):
     global do_debug
@@ -392,11 +403,22 @@ def virEventLoopPureRun():
     global eventLoop
     eventLoop.run_loop()
 
+def virEventLoopNativeRun():
+    while True:
+        libvirt.virEventRunDefaultImpl()
+
 # Spawn a background thread to run the event loop
 def virEventLoopPureStart():
     global eventLoopThread
     virEventLoopPureRegister()
     eventLoopThread = threading.Thread(target=virEventLoopPureRun, name="libvirtEventLoop")
+    eventLoopThread.setDaemon(True)
+    eventLoopThread.start()
+
+def virEventLoopNativeStart():
+    global eventLoopThread
+    libvirt.virEventRegisterDefaultImpl()
+    eventLoopThread = threading.Thread(target=virEventLoopNativeRun, name="libvirtEventLoop")
     eventLoopThread.setDaemon(True)
     eventLoopThread.start()
 
@@ -474,9 +496,12 @@ def main():
     print "Using uri:" + uri
 
     # Run a background thread with the event loop
-    virEventLoopPureStart()
+    if use_pure_python_event_loop:
+        virEventLoopPureStart()
+    else:
+        virEventLoopNativeStart()
 
-    vc = libvirt.open(uri)
+    vc = libvirt.openReadOnly(uri)
 
     # Close connection on exit (to test cleanup paths)
     old_exitfunc = getattr(sys, 'exitfunc', None)
