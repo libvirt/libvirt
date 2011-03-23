@@ -1928,7 +1928,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     vm->def->id = driver->nextvmid++;
 
-    /* Run a early hook to set-up missing devices */
+    /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         char *xml = virDomainDefFormat(vm->def, 0);
         int hookret;
@@ -2436,7 +2436,7 @@ retry:
     VIR_FREE(priv->vcpupids);
     priv->nvcpupids = 0;
 
-    /* The "release" hook cleans up additional ressources */
+    /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         char *xml = virDomainDefFormat(vm->def, 0);
 

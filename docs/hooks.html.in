@@ -100,11 +100,26 @@
 
     <h5><a name="qemu">/etc/libvirt/hooks/qemu</a></h5>
     <ul>
-      <li>When a QEMU guest is started, the qemu hook script is called as:<br/>
-          <pre>/etc/libvirt/hooks/qemu guest_name start begin -</pre></li>
+      <li>Before a QEMU guest is started, the qemu hook script is
+        called in two locations; if either location fails, the guest
+        is not started.  The first location, <span class="since">since
+        0.9.0</span>, is before libvirt performs any resource
+        labeling, and the hook can allocate resources not managed by
+        libvirt such as DRBD or missing bridges.  This is called as:</br>
+        <pre>/etc/libvirt/hooks/qemu guest_name prepare begin -</pre>
+        The second location, available <span class="since">Since
+        0.8.0</span>, occurs after libvirt has finished labeling
+        all resources, but has not yet started the guest, called as:</br>
+        <pre>/etc/libvirt/hooks/qemu guest_name start begin -</pre></li>
       <li>When a QEMU guest is stopped, the qemu hook script is called
-          as:<br/>
-          <pre>/etc/libvirt/hooks/qemu guest_name stopped end -</pre></li>
+        in two locations, to match the startup.
+        First, <span class="since">since 0.8.0</span>, the hook is
+        called before libvirt restores any labels:</br>
+        <pre>/etc/libvirt/hooks/qemu guest_name stopped end -</pre>
+        Then, after libvirt has released all resources, the hook is
+        called again, <span class="since">since 0.9.0</span>, to allow
+        any additional resource cleanup:<br/>
+        <pre>/etc/libvirt/hooks/qemu guest_name release end -</pre></li>
     </ul>
 
     <h5><a name="lxc">/etc/libvirt/hooks/lxc</a></h5>
