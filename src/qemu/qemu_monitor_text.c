@@ -2283,7 +2283,15 @@ int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    /* If the command succeeds, no output is sent. So
+    /* If the host device is hotpluged first time, qemu will output
+     * husb: using %s file-system with %s if the command succeeds.
+     */
+    if (STRPREFIX(reply, "husb: using")) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    /* Otherwise, if the command succeeds, no output is sent. So
      * any non-empty string shows an error */
     if (STRNEQ(reply, "")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
