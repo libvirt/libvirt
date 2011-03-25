@@ -2044,6 +2044,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
                                                  vm, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
+    bypassSecurityDriver = true;
 
     if (cgroup != NULL) {
         rc = virCgroupDenyDevicePath(cgroup, path,
