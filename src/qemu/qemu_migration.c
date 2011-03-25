@@ -1298,9 +1298,11 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     int ret = -1;
     int rc;
     bool restoreLabel = false;
+    virCommandPtr cmd = NULL;
+    int pipeFD[2] = { -1, -1 };
 
     if (qemuCaps && qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
-        !compressor) {
+        (!compressor || pipe(pipeFD) == 0)) {
         /* All right! We can use fd migration, which means that qemu
          * doesn't have to open() the file, so we don't have to futz
          * around with granting access or revoking it later.  */
@@ -1359,9 +1361,31 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
             "-c",
             NULL
         };
-        rc = qemuMonitorMigrateToFile(priv->mon,
-                                      QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                      args, path, offset);
+        if (pipeFD[0] != -1) {
+            cmd = virCommandNewArgs(args);
+            virCommandSetInputFD(cmd, pipeFD[0]);
+            virCommandSetOutputFD(cmd, &fd);
+            if (virSetCloseExec(pipeFD[1]) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Unable to set cloexec flag"));
+                qemuDomainObjExitMonitorWithDriver(driver, vm);
+                goto cleanup;
+            }
+            if (virCommandRunAsync(cmd, NULL) < 0) {
+                qemuDomainObjExitMonitorWithDriver(driver, vm);
+                goto cleanup;
+            }
+            rc = qemuMonitorMigrateToFd(priv->mon,
+                                        QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                        pipeFD[1]);
+            if (VIR_CLOSE(pipeFD[0]) < 0 ||
+                VIR_CLOSE(pipeFD[1]) < 0)
+                VIR_WARN0("failed to close intermediate pipe");
+        } else {
+            rc = qemuMonitorMigrateToFile(priv->mon,
+                                          QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                          args, path, offset);
+        }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -1373,9 +1397,15 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     if (rc < 0)
         goto cleanup;
 
+    if (cmd && virCommandWait(cmd, NULL) < 0)
+        goto cleanup;
+
     ret = 0;
 
 cleanup:
+    VIR_FORCE_CLOSE(pipeFD[0]);
+    VIR_FORCE_CLOSE(pipeFD[1]);
+    virCommandFree(cmd);
     if (restoreLabel && (!bypassSecurityDriver) &&
         virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
                                                  vm, path) < 0)
