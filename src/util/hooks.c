@@ -110,9 +110,12 @@ virHookCheck(int no, const char *driver) {
         return -1;
     }
 
-    if (!virFileIsExecutable(path)) {
+    if (!virFileExists(path)) {
         ret = 0;
-        VIR_WARN("Missing or non-executable hook script %s", path);
+        VIR_DEBUG("No hook script %s", path);
+    } else if (!virFileIsExecutable(path)) {
+        ret = 0;
+        VIR_WARN("Non-executable hook script %s", path);
     } else {
         ret = 1;
         VIR_DEBUG("Found hook script %s", path);
