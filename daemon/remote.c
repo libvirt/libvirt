@@ -5108,12 +5108,13 @@ remoteDispatchStoragePoolListVolumes (struct qemud_server *server ATTRIBUTE_UNUS
     ret->names.names_len =
         virStoragePoolListVolumes (pool,
                                    ret->names.names_val, args->maxnames);
-    virStoragePoolFree(pool);
     if (ret->names.names_len == -1) {
         VIR_FREE(ret->names.names_val);
         remoteDispatchConnError(rerr, conn);
+        virStoragePoolFree(pool);
         return -1;
     }
+    virStoragePoolFree(pool);
 
     return 0;
 }
@@ -5137,11 +5138,12 @@ remoteDispatchStoragePoolNumOfVolumes (struct qemud_server *server ATTRIBUTE_UNU
     }
 
     ret->num = virStoragePoolNumOfVolumes (pool);
-    virStoragePoolFree(pool);
     if (ret->num == -1) {
         remoteDispatchConnError(rerr, conn);
+        virStoragePoolFree(pool);
         return -1;
     }
+    virStoragePoolFree(pool);
 
     return 0;
 }
