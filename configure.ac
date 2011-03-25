@@ -2523,9 +2523,9 @@ else
 AC_MSG_NOTICE([  xenapi: no])
 fi
 if test "$with_libxl" = "yes" ; then
-AC_MSG_NOTICE([  libxenlight: $LIBXL_CFLAGS $LIBXL_LIBS])
+AC_MSG_NOTICE([xenlight: $LIBXL_CFLAGS $LIBXL_LIBS])
 else
-AC_MSG_NOTICE([  libxenlight: no])
+AC_MSG_NOTICE([xenlight: no])
 fi
 if test "$with_hal" = "yes" ; then
 AC_MSG_NOTICE([     hal: $HAL_CFLAGS $HAL_LIBS])
