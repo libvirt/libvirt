@@ -1331,6 +1331,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
         GNUTLS_CRT_OPENPGP,
         0
     };
+    bool success = false;
     int err;
     gnutls_session_t session;
 
@@ -1350,7 +1351,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
         remoteError(VIR_ERR_GNUTLS_ERROR,
                     _("unable to set TLS algorithm priority: %s"),
                     gnutls_strerror (err));
-        return NULL;
+        goto cleanup;
     }
     err =
         gnutls_certificate_type_set_priority (session,
@@ -1359,7 +1360,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
         remoteError(VIR_ERR_GNUTLS_ERROR,
                     _("unable to set certificate priority: %s"),
                     gnutls_strerror (err));
-        return NULL;
+        goto cleanup;
     }
 
     /* put the x509 credentials to the current session
@@ -1369,7 +1370,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
         remoteError(VIR_ERR_GNUTLS_ERROR,
                     _("unable to set session credentials: %s"),
                     gnutls_strerror (err));
-        return NULL;
+        goto cleanup;
     }
 
     gnutls_transport_set_ptr (session,
@@ -1391,13 +1392,14 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
         remoteError(VIR_ERR_GNUTLS_ERROR,
                     _("unable to complete TLS handshake: %s"),
                     gnutls_strerror (err));
-        return NULL;
+        goto cleanup;
     }
 
     /* Verify certificate. */
     if (verify_certificate (conn, priv, session) == -1) {
         VIR_DEBUG0("failed to verify peer's certificate");
-        if (!no_verify) return NULL;
+        if (!no_verify)
+            goto cleanup;
     }
 
     /* At this point, the server is verifying _our_ certificate, IP address,
@@ -1413,19 +1415,27 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
         remoteError(VIR_ERR_GNUTLS_ERROR,
                     _("unable to complete TLS initialization: %s"),
                     gnutls_strerror (len));
-        return NULL;
+        goto cleanup;
     }
     if (len != 1 || buf[0] != '\1') {
         remoteError(VIR_ERR_RPC, "%s",
                     _("server verification (of our certificate or IP "
                       "address) failed"));
-        return NULL;
+        goto cleanup;
     }
 
 #if 0
     /* Print session info. */
     print_info (session);
 #endif
+
+    success = true;
+
+cleanup:
+    if (!success) {
+        gnutls_deinit(session);
+        session = NULL;
+    }
 
     return session;
 }
