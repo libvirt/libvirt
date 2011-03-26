@@ -913,6 +913,7 @@ virRun;
 virRunWithHook;
 virSetBlocking;
 virSetCloseExec;
+virSetInherit;
 virSetNonBlock;
 virSetUIDGID;
 virSkipSpaces;

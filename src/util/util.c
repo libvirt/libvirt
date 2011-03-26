@@ -273,13 +273,21 @@ int virSetNonBlock(int fd) {
 }
 
 
+int virSetCloseExec(int fd)
+{
+    return virSetInherit(fd, false);
+}
+
 #ifndef WIN32
 
-int virSetCloseExec(int fd) {
+int virSetInherit(int fd, bool inherit) {
     int flags;
     if ((flags = fcntl(fd, F_GETFD)) < 0)
         return -1;
-    flags |= FD_CLOEXEC;
+    if (inherit)
+        flags &= ~FD_CLOEXEC;
+    else
+        flags |= FD_CLOEXEC;
     if ((fcntl(fd, F_SETFD, flags)) < 0)
         return -1;
     return 0;
@@ -931,7 +939,7 @@ virRunWithHook(const char *const*argv,
 
 #else /* WIN32 */
 
-int virSetCloseExec(int fd ATTRIBUTE_UNUSED)
+int virSetInherit(int fd ATTRIBUTE_UNUSED, bool inherit ATTRIBUTE_UNUSED)
 {
     return -1;
 }

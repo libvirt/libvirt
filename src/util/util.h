@@ -51,6 +51,7 @@ enum {
 
 int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;
 int virSetNonBlock(int fd) ATTRIBUTE_RETURN_CHECK;
+int virSetInherit(int fd, bool inherit) ATTRIBUTE_RETURN_CHECK;
 int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
 
 /* This will execute in the context of the first child
