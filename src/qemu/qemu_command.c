@@ -4329,6 +4329,14 @@ qemuBuildCommandLine(virConnectPtr conn,
         } else if (STREQ(migrateFrom, "stdio")) {
             if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
                 virCommandAddArgFormat(cmd, "fd:%d", migrateFd);
+                /* migrateFd might be cloexec, but qemu must inherit
+                 * it if vmop indicates qemu will be executed */
+                if (vmop != VIR_VM_OP_NO_OP &&
+                    virSetInherit(migrateFd, true) < 0) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Failed to clear cloexec flag"));
+                    goto error;
+                }
                 virCommandPreserveFD(cmd, migrateFd);
             } else if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
                 virCommandAddArg(cmd, "exec:cat");
@@ -4358,6 +4366,14 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
             virCommandAddArg(cmd, migrateFrom);
+            /* migrateFd might be cloexec, but qemu must inherit
+             * it if vmop indicates qemu will be executed */
+            if (vmop != VIR_VM_OP_NO_OP &&
+                virSetInherit(migrateFd, true) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Failed to clear cloexec flag"));
+                goto error;
+            }
             virCommandPreserveFD(cmd, migrateFd);
         } else if (STRPREFIX(migrateFrom, "unix")) {
             if (!qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
