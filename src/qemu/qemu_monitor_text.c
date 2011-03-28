@@ -1679,8 +1679,8 @@ int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
 
     if (STRNEQ(reply, "")) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unable to send TAP file handle: %s"),
-                        reply);
+                        _("unable to send file handle '%s': %s"),
+                        fdname, reply);
         goto cleanup;
     }
 
