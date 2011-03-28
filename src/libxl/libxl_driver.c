@@ -176,6 +176,29 @@ libxlDomainObjUnref(void *data)
     ignore_value(virDomainObjUnref(vm));
 }
 
+static void
+libxlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
+                     void *opaque)
+{
+    libxlDriverPrivatePtr driver = opaque;
+    virDomainObjPtr vm = payload;
+    virErrorPtr err;
+
+    virDomainObjLock(vm);
+    virResetLastError();
+
+    if (vm->autostart && !virDomainObjIsActive(vm) &&
+        libxlVmStart(driver, vm, false) < 0) {
+        err = virGetLastError();
+        VIR_ERROR(_("Failed to autostart VM '%s': %s"),
+                  vm->def->name,
+                  err ? err->message : _("unknown error"));
+    }
+
+    if (vm)
+        virDomainObjUnlock(vm);
+}
+
 /*
  * Cleanup function for domain that has reached shutoff state.
  *
@@ -703,9 +726,10 @@ libxlStartup(int privileged) {
                                 0, NULL, NULL) < 0)
         goto error;
 
-    libxlDriverUnlock(libxl_driver);
+    virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
+                   libxl_driver);
 
-    /* TODO: autostart domains */
+    libxlDriverUnlock(libxl_driver);
 
     return 0;
 
@@ -733,9 +757,11 @@ libxlReload(void)
                             libxl_driver->configDir,
                             libxl_driver->autostartDir,
                             0, NULL, libxl_driver);
-    libxlDriverUnlock(libxl_driver);
 
-    /* TODO: autostart domains */
+    virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
+                   libxl_driver);
+
+    libxlDriverUnlock(libxl_driver);
 
     return 0;
 }
@@ -2102,6 +2128,105 @@ libxlDomainEventDeregister(virConnectPtr conn,
     return ret;
 }
 
+static int
+libxlDomainGetAutostart(virDomainPtr dom, int *autostart)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        libxlError(VIR_ERR_NO_DOMAIN,
+                   _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    *autostart = vm->autostart;
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+libxlDomainSetAutostart(virDomainPtr dom, int autostart)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    char *configFile = NULL, *autostartLink = NULL;
+    int ret = -1;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        libxlError(VIR_ERR_NO_DOMAIN,
+                   _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!vm->persistent) {
+        libxlError(VIR_ERR_OPERATION_INVALID,
+                   "%s", _("cannot set autostart for transient domain"));
+        goto cleanup;
+    }
+
+    autostart = (autostart != 0);
+
+    if (vm->autostart != autostart) {
+        if (!(configFile = virDomainConfigFile(driver->configDir, vm->def->name)))
+            goto cleanup;
+        if (!(autostartLink = virDomainConfigFile(driver->autostartDir, vm->def->name)))
+            goto cleanup;
+
+        if (autostart) {
+            int err;
+
+            if ((err = virFileMakePath(driver->autostartDir))) {
+                virReportSystemError(err,
+                                     _("cannot create autostart directory %s"),
+                                     driver->autostartDir);
+                goto cleanup;
+            }
+
+            if (symlink(configFile, autostartLink) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to create symlink '%s to '%s'"),
+                                     autostartLink, configFile);
+                goto cleanup;
+            }
+        } else {
+            if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+                virReportSystemError(errno,
+                                     _("Failed to delete symlink '%s'"),
+                                     autostartLink);
+                goto cleanup;
+            }
+        }
+
+        vm->autostart = autostart;
+    }
+    ret = 0;
+
+cleanup:
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
+    if (vm)
+        virDomainObjUnlock(vm);
+    libxlDriverUnlock(driver);
+    return ret;
+}
+
 static char *
 libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
 {
@@ -2304,8 +2429,8 @@ static virDriver libxlDriver = {
     NULL,                       /* domainDetachDevice */
     NULL,                       /* domainDetachDeviceFlags */
     NULL,                       /* domainUpdateDeviceFlags */
-    NULL,                       /* domainGetAutostart */
-    NULL,                       /* domainSetAutostart */
+    libxlDomainGetAutostart,    /* domainGetAutostart */
+    libxlDomainSetAutostart,    /* domainSetAutostart */
     libxlDomainGetSchedulerType,/* domainGetSchedulerType */
     NULL,                       /* domainGetSchedulerParameters */
     NULL,                       /* domainSetSchedulerParameters */
