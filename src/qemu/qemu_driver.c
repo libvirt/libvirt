@@ -1990,10 +1990,10 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     if (qemuMigrationToFile(driver, vm, qemuCaps, fd, offset, path,
                             qemuCompressProgramName(compressed),
                             is_reg, bypassSecurityDriver) < 0)
-        goto cleanup;
+        goto endjob;
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, _("unable to close %s"), path);
-        goto cleanup;
+        goto endjob;
     }
 
     ret = 0;
