@@ -127,11 +127,11 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         if (!pciDeviceIsAssignable(dev, !driver->relaxedACS))
-            goto cleanup;
+            goto reattachdevs;
 
         if (pciDeviceGetManaged(dev) &&
             pciDettachDevice(dev, driver->activePciHostdevs) < 0)
-            goto cleanup;
+            goto reattachdevs;
     }
 
     /* Now that all the PCI hostdevs have be dettached, we can safely
@@ -139,7 +139,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         if (pciResetDevice(dev, driver->activePciHostdevs, pcidevs) < 0)
-            goto cleanup;
+            goto reattachdevs;
     }
 
     /* Now mark all the devices as active */
@@ -167,6 +167,12 @@ inactivedevs:
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         pciDeviceListSteal(driver->activePciHostdevs, dev);
+    }
+
+reattachdevs:
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        pciReAttachDevice(dev, driver->activePciHostdevs);
     }
 
 cleanup:
