@@ -1051,7 +1051,7 @@ AUDIT_LIBS=
 if test "$with_audit" != "no" ; then
   old_cflags="$CFLAGS"
   old_libs="$LIBS"
-  if test "$with_audit" != "check" && "$with_audit" != "yes" ; then
+  if test "$with_audit" != "check" && test "$with_audit" != "yes" ; then
     AUDIT_CFLAGS="-I$with_audit/include"
     AUDIT_LIBS="-L$with_audit/lib"
   fi
