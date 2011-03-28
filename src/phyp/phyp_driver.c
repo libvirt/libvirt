@@ -59,6 +59,7 @@
 #include "storage_conf.h"
 #include "nodeinfo.h"
 #include "files.h"
+#include "interface_conf.h"
 
 #include "phyp_driver.h"
 
@@ -74,6 +75,8 @@
 
 static unsigned const int HMC = 0;
 static unsigned const int IVM = 127;
+static unsigned const int PHYP_IFACENAME_SIZE = 24;
+static unsigned const int PHYP_MAC_SIZE= 12;
 
 static int
 waitsocket(int socket_fd, LIBSSH2_SESSION * session)
@@ -3290,6 +3293,561 @@ phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 }
 
 static int
+phypInterfaceDestroy(virInterfacePtr iface,
+                     unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    ConnectionData *connection_data = iface->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = iface->conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    int slot_num = 0;
+    int lpar_id = 0;
+    char *char_ptr;
+    char *cmd = NULL;
+    char *ret = NULL;
+
+    /* Getting the remote slot number */
+
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype eth --level lpar "
+                      " -F mac_addr,slot_num|"
+                      " sed -n '/%s/ s/^.*,//p'", iface->mac);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, iface->conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &slot_num) == -1)
+        goto err;
+
+    /* Getting the remote slot number */
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype eth --level lpar "
+                      " -F mac_addr,lpar_id|"
+                      " sed -n '/%s/ s/^.*,//p'", iface->mac);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    VIR_FREE(ret);
+
+    ret = phypExec(session, cmd, &exit_status, iface->conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
+        goto err;
+
+    /* excluding interface */
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+
+    virBufferAddLit(&buf, "chhwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype eth"
+                      " --id %d -o r -s %d", lpar_id, slot_num);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, iface->conn);
+
+    if (exit_status < 0 || ret != NULL)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static virInterfacePtr
+phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
+                       unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    char *char_ptr;
+    char *cmd = NULL;
+    int slot = 0;
+    char *ret = NULL;
+    char name[PHYP_IFACENAME_SIZE];
+    char mac[PHYP_MAC_SIZE];
+    virInterfaceDefPtr def;
+
+    if (!(def = virInterfaceDefParseString(xml)))
+        goto err;
+
+    /* Now need to get the next free slot number */
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype slot --level slot"
+                      " -Fslot_num --filter lpar_names=%s"
+                      " |sort|tail -n 1", def->name);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+        goto err;
+
+    /* The next free slot itself: */
+    slot++;
+
+    /* Now adding the new network interface */
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+
+    virBufferAddLit(&buf, "chhwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype eth"
+                      " -p %s -o a -s %d -a port_vlan_id=1,"
+                      "ieee_virtual_eth=0", def->name, slot);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret != NULL)
+        goto err;
+
+    /* Need to sleep a little while to wait for the HMC to
+     * complete the execution of the command.
+     * */
+    sleep(1);
+
+    /* Getting the new interface name */
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype slot --level slot"
+                      " |sed '/lpar_name=%s/!d; /slot_num=%d/!d; "
+                      "s/^.*drc_name=//'", def->name, slot);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL) {
+        /* roll back and excluding interface if error*/
+        VIR_FREE(cmd);
+        VIR_FREE(ret);
+
+        virBufferAddLit(&buf, "chhwres ");
+        if (system_type == HMC)
+            virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+        virBufferVSprintf(&buf,
+                " -r virtualio --rsubtype eth"
+                " -p %s -o r -s %d", def->name, slot);
+
+        if (virBufferError(&buf)) {
+            virBufferFreeAndReset(&buf);
+            virReportOOMError();
+            goto err;
+        }
+
+        cmd = virBufferContentAndReset(&buf);
+
+        ret = phypExec(session, cmd, &exit_status, conn);
+        goto err;
+    }
+
+    memcpy(name, ret, PHYP_IFACENAME_SIZE-1);
+
+    /* Getting the new interface mac addr */
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      "-r virtualio --rsubtype eth --level lpar "
+                      " |sed '/lpar_name=%s/!d; /slot_num=%d/!d; "
+                      "s/^.*mac_addr=//'", def->name, slot);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    memcpy(mac, ret, PHYP_MAC_SIZE-1);
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    virInterfaceDefFree(def);
+    return virGetInterface(conn, name, mac);
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    virInterfaceDefFree(def);
+    return NULL;
+}
+
+static virInterfacePtr
+phypInterfaceLookupByName(virConnectPtr conn, const char *name)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    char *char_ptr;
+    char *cmd = NULL;
+    char *ret = NULL;
+    int slot = 0;
+    int lpar_id = 0;
+    char mac[PHYP_MAC_SIZE];
+
+    /*Getting the slot number for the interface */
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype slot --level slot "
+                      " -F drc_name,slot_num |"
+                      " sed -n '/%s/ s/^.*,//p'", name);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+        goto err;
+
+    /*Getting the lpar_id for the interface */
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype slot --level slot "
+                      " -F drc_name,lpar_id |"
+                      " sed -n '/%s/ s/^.*,//p'", name);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
+        goto err;
+
+    /*Getting the interface mac */
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype eth --level lpar "
+                      " -F lpar_id,slot_num,mac_addr|"
+                      " sed -n '/%d,%d/ s/^.*,//p'", lpar_id, slot);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    VIR_FREE(ret);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    memcpy(mac, ret, PHYP_MAC_SIZE-1);
+
+    virInterfacePtr result = virGetInterface(conn, name, ret);
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return result;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return NULL;
+
+}
+
+static int
+phypInterfaceIsActive(virInterfacePtr iface)
+{
+    ConnectionData *connection_data = iface->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = iface->conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    int state = 0;
+    char *char_ptr;
+    char *cmd = NULL;
+    char *ret = NULL;
+
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      " -r virtualio --rsubtype eth --level lpar "
+                      " -F mac_addr,state |"
+                      " sed -n '/%s/ s/^.*,//p'", iface->mac);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, iface->conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &state) == -1)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return state;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+
+}
+
+static int
+phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    int system_type = phyp_driver->system_type;
+    char *managed_system = phyp_driver->managed_system;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    int got = 0;
+    int i;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *networks = NULL;
+    char *char_ptr2 = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "lshwres");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf, " -r virtualio --rsubtype slot  --level slot|"
+                      " sed '/eth/!d; /lpar_id=%d/d; s/^.*drc_name=//g'",
+                      vios_id);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto err;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    /* I need to parse the textual return in order to get the network interfaces */
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    networks = ret;
+
+    while (got < nnames) {
+        char_ptr2 = strchr(networks, '\n');
+
+        if (char_ptr2) {
+            *char_ptr2 = '\0';
+            if ((names[got++] = strdup(networks)) == NULL) {
+                virReportOOMError();
+                goto err;
+            }
+            char_ptr2++;
+            networks = char_ptr2;
+        } else {
+            break;
+        }
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return got;
+
+  err:
+    for (i = 0; i < got; i++)
+        VIR_FREE(names[i]);
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static int
+phypNumOfInterfaces(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    int nnets = 0;
+    char *char_ptr;
+    char *cmd = NULL;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "lshwres ");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "-m %s ", managed_system);
+
+    virBufferVSprintf(&buf,
+                      "-r virtualio --rsubtype eth --level lpar|"
+                      "grep -v lpar_id=%d|grep -c lpar_name", vios_id);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &nnets) == -1)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return nnets;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+
+}
+
+static int
 phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
@@ -3812,6 +4370,7 @@ static virDomainPtr
 phypDomainCreateAndStart(virConnectPtr conn,
                          const char *xml, unsigned int flags)
 {
+    virCheckFlags(0, NULL);
 
     ConnectionData *connection_data = conn->networkPrivateData;
     LIBSSH2_SESSION *session = connection_data->session;
@@ -4115,27 +4674,22 @@ static virStorageDriver phypStorageDriver = {
     .poolIsPersistent = NULL
 };
 
-static virNetworkDriver phypNetworkDriver = {
+static virInterfaceDriver phypInterfaceDriver = {
     .name = "PHYP",
     .open = phypVIOSDriverOpen,
     .close = phypVIOSDriverClose,
-    .numOfNetworks = NULL,
-    .listNetworks = NULL,
-    .numOfDefinedNetworks = NULL,
-    .listDefinedNetworks = NULL,
-    .networkLookupByUUID = NULL,
-    .networkLookupByName = NULL,
-    .networkCreateXML = NULL,
-    .networkDefineXML = NULL,
-    .networkUndefine = NULL,
-    .networkCreate = NULL,
-    .networkDestroy = NULL,
-    .networkDumpXML = NULL,
-    .networkGetBridgeName = NULL,
-    .networkGetAutostart = NULL,
-    .networkSetAutostart = NULL,
-    .networkIsActive = NULL,
-    .networkIsPersistent = NULL
+    .numOfInterfaces = phypNumOfInterfaces,
+    .listInterfaces = phypListInterfaces,
+    .numOfDefinedInterfaces = NULL,
+    .listDefinedInterfaces = NULL,
+    .interfaceLookupByName = phypInterfaceLookupByName,
+    .interfaceLookupByMACString = NULL,
+    .interfaceGetXMLDesc = NULL,
+    .interfaceDefineXML = phypInterfaceDefineXML,
+    .interfaceUndefine = NULL,
+    .interfaceCreate = NULL,
+    .interfaceDestroy = phypInterfaceDestroy,
+    .interfaceIsActive = phypInterfaceIsActive
 };
 
 int
@@ -4145,7 +4699,7 @@ phypRegister(void)
         return -1;
     if (virRegisterStorageDriver(&phypStorageDriver) < 0)
         return -1;
-    if (virRegisterNetworkDriver(&phypNetworkDriver) < 0)
+    if (virRegisterInterfaceDriver(&phypInterfaceDriver) < 0)
         return -1;
 
     return 0;
