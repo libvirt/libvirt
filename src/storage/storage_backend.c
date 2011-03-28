@@ -692,6 +692,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     }
 
     if (vol->backingStore.path) {
+        int accessRetCode = -1;
+        char *absolutePath = NULL;
 
         /* XXX: Not strictly required: qemu-img has an option a different
          * backing store, not really sure what use it serves though, and it
@@ -712,7 +714,20 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                                   vol->backingStore.format);
             return -1;
         }
-        if (access(vol->backingStore.path, R_OK) != 0) {
+
+        /* Convert relative backing store paths to absolute paths for access
+         * validation.
+         */
+        if ('/' != *(vol->backingStore.path) &&
+            virAsprintf(&absolutePath, "%s/%s", pool->def->target.path,
+                        vol->backingStore.path) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+        accessRetCode = access(absolutePath ? absolutePath
+                               : vol->backingStore.path, R_OK);
+        VIR_FREE(absolutePath);
+        if (accessRetCode != 0) {
             virReportSystemError(errno,
                                  _("inaccessible backing store volume %s"),
                                  vol->backingStore.path);
