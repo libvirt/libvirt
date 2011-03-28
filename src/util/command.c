@@ -1291,6 +1291,7 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
 }
 
 
+#ifndef WIN32
 /*
  * Abort an async command if it is running, without issuing
  * any errors or affecting errno.  Designed for error paths
@@ -1349,6 +1350,15 @@ cleanup:
     cmd->reap = false;
     errno = saved_errno;
 }
+#else /* WIN32 */
+void
+virCommandAbort(virCommandPtr cmd ATTRIBUTE_UNUSED)
+{
+    /* Mingw lacks WNOHANG and kill().  But since we haven't ported
+     * virExecWithHook to mingw yet, there's no process to be killed,
+     * making this implementation trivially correct for now :)  */
+}
+#endif
 
 /*
  * Release all resources
