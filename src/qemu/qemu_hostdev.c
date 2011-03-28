@@ -112,7 +112,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
     if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs)))
         return -1;
 
-    /* We have to use 3 loops here. *All* devices must
+    /* We have to use 4 loops here. *All* devices must
      * be detached before we reset any of them, because
      * in some cases you have to reset the whole PCI,
      * which impacts all devices on it. Also, all devices
@@ -145,14 +145,29 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
     /* Now mark all the devices as active */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        pciDeviceListSteal(pcidevs, dev);
         if (pciDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
             pciFreeDevice(dev);
-            goto cleanup;
+            goto inactivedevs;
         }
     }
 
+    /* Now steal all the devices from pcidevs */
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        pciDeviceListSteal(pcidevs, dev);
+    }
+
     ret = 0;
+    goto cleanup;
+
+inactivedevs:
+    /* Only steal all the devices from driver->activePciHostdevs. We will
+     * free them in pciDeviceListFree().
+     */
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        pciDeviceListSteal(driver->activePciHostdevs, dev);
+    }
 
 cleanup:
     pciDeviceListFree(pcidevs);
