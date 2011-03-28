@@ -8,7 +8,8 @@
     <ul>
       <li>
         A toolkit to interact with the virtualization capabilities
-        of recent versions of Linux (and other OSes).
+        of recent versions of Linux (and other OSes), see our
+        <a href="goals.html">project goals</a> for details.
       </li>
       <li>
         Free software available under the

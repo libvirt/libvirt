@@ -16,20 +16,35 @@
     <p class="image">
       <img alt="Hypervisor and domains running on a node" src="node.gif"/>
     </p>
-    <p>Now we can define the goal of libvirt: to provide a common generic
-    and stable layer to securely manage domains on a node. The node may be
-    distant and libvirt should provide all APIs needed to provision, create,
-    modify, monitor, control, migrate and stop the domains, within the limits
-    of the support of the hypervisor for those operations. Multiple nodes may
-    be accessed with libvirt simultaneously but the APIs are limited to
-    single node operations.</p>
+    <p>Now we can define the goal of libvirt: <b> to provide a common and
+    stable layer sufficient to securely manage domains on a node, possibly
+    remote</b>.</p>
+    <p> As a result, libvirt should provide all APIs needed to do the
+    management, such as: provision, create, modify, monitor, control, migrate
+    and stop the domains - within the limits of the support of the hypervisor
+    for those operations.
+    Not all hypervisors provide the same operations; but if an operation is
+    useful for domain management of even one specific hypervisor it is worth
+    providing in libvirt.
+    Multiple nodes
+    may be accessed with libvirt simultaneously, but the APIs are limited to
+    single node operations. Node resource operations which are needed
+    for the management and provisioning of domains are also in the scope of
+    the libvirt API, such as interface setup, firewall rules, storage management
+    and general provisioning APIs. Libvirt will also provide the state
+    monitoring APIs needed to implement management policies, obviously
+    checking domain state but also exposing local node resource consumption.
+    </p>
     <p>This implies the following sub-goals:</p>
     <ul>
-      <li>the API should not be targeted to a single virtualization environment
-    which also means that some very specific capabilities which are not generic
-    enough may not be provided as libvirt APIs</li>
+      <li>All API can be carried remotely though secure APIs</li>
+      <li>While most API will be generic in term of hypervisor or Host OS,
+    some API may be targeted to a single virtualization environment
+    as long as the semantic for the operations from a domain management
+    perspective is clear</li>
       <li>the API should allow to do efficiently and cleanly all the operations
-    needed to manage domains on a node</li>
+    needed to manage domains on a node, including resource provisioning and
+    setup</li>
       <li>the API will not try to provide high level virtualization policies or
     multi-nodes management features like load balancing, but the API should be
     sufficient so they can be implemented on top of libvirt</li>
