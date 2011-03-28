@@ -1304,8 +1304,12 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     if (qemuCaps && qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
         (!compressor || pipe(pipeFD) == 0)) {
         /* All right! We can use fd migration, which means that qemu
-         * doesn't have to open() the file, so we don't have to futz
-         * around with granting access or revoking it later.  */
+         * doesn't have to open() the file, so while we still have to
+         * grant SELinux access, we can do it on fd and avoid cleanup
+         * later, as well as skip futzing with cgroup.  */
+        if (virSecurityManagerSetFDLabel(driver->securityManager, vm,
+                                         compressor ? pipeFD[1] : fd) < 0)
+            goto cleanup;
         is_reg = true;
         bypassSecurityDriver = true;
     } else {
