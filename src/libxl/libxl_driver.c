@@ -107,7 +107,7 @@ libxlDomainObjUnref(void *data)
 {
     virDomainObjPtr vm = data;
 
-    virDomainObjUnref(vm);
+    ignore_value(virDomainObjUnref(vm));
 }
 
 /*
@@ -279,7 +279,7 @@ libxlCreateDomEvents(virDomainObjPtr vm)
              VIR_EVENT_HANDLE_READABLE | VIR_EVENT_HANDLE_ERROR,
              libxlEventHandler,
              vm, libxlDomainObjUnref)) < 0) {
-        virDomainObjUnref(vm);
+        ignore_value(virDomainObjUnref(vm));
         goto error;
     }
 
