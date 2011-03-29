@@ -848,6 +848,22 @@ virDomainClockDefClear(virDomainClockDefPtr def)
     VIR_FREE(def->timers);
 }
 
+static void
+virDomainVcpupinDefFree(virDomainVcpupinDefPtr *def,
+                        int nvcpupin)
+{
+    int i;
+
+    if (!def || !nvcpupin)
+        return;
+
+    for(i = 0; i < nvcpupin; i++) {
+        VIR_FREE(def[i]);
+    }
+
+    VIR_FREE(def);
+}
+
 void virDomainDefFree(virDomainDefPtr def)
 {
     unsigned int i;
@@ -935,6 +951,8 @@ void virDomainDefFree(virDomainDefPtr def)
     virSecurityLabelDefFree(def);
 
     virCPUDefFree(def->cpu);
+
+    virDomainVcpupinDefFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
     virSysinfoDefFree(def->sysinfo);
 
@@ -5089,6 +5107,76 @@ cleanup:
     return ret;
 }
 
+/* Parse the XML definition for a vcpupin */
+static virDomainVcpupinDefPtr
+virDomainVcpupinDefParseXML(const xmlNodePtr node,
+                            xmlXPathContextPtr ctxt,
+                            int maxvcpus,
+                            int flags ATTRIBUTE_UNUSED)
+{
+    virDomainVcpupinDefPtr def;
+    xmlNodePtr oldnode = ctxt->node;
+    unsigned int vcpuid;
+    char *tmp = NULL;
+    int ret;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    ctxt->node = node;
+
+    ret = virXPathUInt("string(./@vcpu)", ctxt, &vcpuid);
+    if (ret == -2) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("vcpu id must be an unsigned integer"));
+        goto error;
+    } else if (ret == -1) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("can't parse vcpupin node"));
+        goto error;
+    }
+
+    if (vcpuid >= maxvcpus) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("vcpu id must be less than maxvcpus"));
+        goto error;
+    }
+
+    def->vcpuid = vcpuid;
+
+    tmp = virXMLPropString(node, "cpuset");
+
+    if (tmp) {
+        char *set = tmp;
+        int cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
+
+        if (VIR_ALLOC_N(def->cpumask, cpumasklen) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+        if (virDomainCpuSetParse((const char **)&set,
+                                 0, def->cpumask,
+                                 cpumasklen) < 0)
+           goto error;
+        VIR_FREE(tmp);
+    } else {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("missing cpuset for vcpupin"));
+        goto error;
+    }
+
+cleanup:
+    ctxt->node = oldnode;
+    return def;
+
+error:
+    VIR_FREE(def);
+    goto cleanup;
+}
+
+
 static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                             xmlDocPtr xml,
                                             xmlNodePtr root,
@@ -5249,6 +5337,46 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
         VIR_FREE(tmp);
     }
+
+    /* Extract cpu tunables. */
+    if (virXPathULong("string(./cputune/shares[1])", ctxt,
+                      &def->cputune.shares) < 0)
+        def->cputune.shares = 0;
+
+    if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract vcpupin nodes"));
+        goto error;
+    }
+
+    if (n && VIR_ALLOC_N(def->cputune.vcpupin, n) < 0)
+        goto no_memory;
+
+    if (n > def->maxvcpus) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("vcpupin nodes must be less than maxvcpus"));
+        goto error;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virDomainVcpupinDefPtr vcpupin = NULL;
+        vcpupin = virDomainVcpupinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
+
+        if (!vcpupin)
+            goto error;
+
+        if (virDomainVcpupinIsDuplicate(def->cputune.vcpupin,
+                                        def->cputune.nvcpupin,
+                                        vcpupin->vcpuid)) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("duplicate vcpupin for same vcpu"));
+            VIR_FREE(vcpupin);
+            goto error;
+        }
+
+        def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
+    }
+    VIR_FREE(nodes);
 
     n = virXPathNodeSet("./features/*", ctxt, &nodes);
     if (n < 0)
@@ -6502,6 +6630,126 @@ virDomainCpuSetParse(const char **str, char sep,
 }
 
 
+/* Check if vcpupin with same vcpuid already exists.
+ * Return 1 if exists, 0 if not. */
+int
+virDomainVcpupinIsDuplicate(virDomainVcpupinDefPtr *def,
+                            int nvcpupin,
+                            int vcpu)
+{
+    int i;
+
+    if (!def || !nvcpupin)
+        return 0;
+
+    for (i = 0; i < nvcpupin; i++) {
+        if (def[i]->vcpuid == vcpu)
+            return 1;
+    }
+
+    return 0;
+}
+
+virDomainVcpupinDefPtr
+virDomainVcpupinFindByVcpu(virDomainVcpupinDefPtr *def,
+                           int nvcpupin,
+                           int vcpu)
+{
+    int i;
+
+    if (!def || !nvcpupin)
+        return NULL;
+
+    for (i = 0; i < nvcpupin; i++) {
+        if (def[i]->vcpuid == vcpu)
+            return def[i];
+    }
+
+    return NULL;
+}
+
+int
+virDomainVcpupinAdd(virDomainDefPtr def,
+                    unsigned char *cpumap,
+                    int maplen,
+                    int vcpu)
+{
+    virDomainVcpupinDefPtr *vcpupin_list = NULL;
+    virDomainVcpupinDefPtr vcpupin = NULL;
+    char *cpumask = NULL;
+    int i;
+
+    if (VIR_ALLOC_N(cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Reset cpumask to all 0s. */
+    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++)
+        cpumask[i] = 0;
+
+    /* Convert bitmap (cpumap) to cpumask, which is byte map? */
+    for (i = 0; i < maplen; i++) {
+        int cur;
+
+        for (cur = 0; cur < 8; cur++) {
+            if (cpumap[i] & (1 << cur))
+                cpumask[i * 8 + cur] = 1;
+        }
+    }
+
+    /* No vcpupin exists yet. */
+    if (!def->cputune.nvcpupin) {
+        if (VIR_ALLOC(vcpupin) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC(vcpupin_list) < 0) {
+            virReportOOMError();
+            VIR_FREE(vcpupin);
+            goto cleanup;
+        }
+
+        vcpupin->vcpuid = vcpu;
+        vcpupin->cpumask = cpumask;
+        vcpupin_list[def->cputune.nvcpupin++] = vcpupin;
+
+        def->cputune.vcpupin = vcpupin_list;
+    } else {
+        if (virDomainVcpupinIsDuplicate(def->cputune.vcpupin,
+                                        def->cputune.nvcpupin,
+                                        vcpu)) {
+            vcpupin = virDomainVcpupinFindByVcpu(def->cputune.vcpupin,
+                                                 def->cputune.nvcpupin,
+                                                 vcpu);
+            vcpupin->vcpuid = vcpu;
+            vcpupin->cpumask = cpumask;
+        } else {
+            if (VIR_ALLOC(vcpupin) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin + 1) < 0) {
+                virReportOOMError();
+                VIR_FREE(vcpupin);
+                goto cleanup;
+            }
+
+            vcpupin->vcpuid = vcpu;
+            vcpupin->cpumask = cpumask;
+            def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
+       }
+    }
+
+    return 0;
+
+cleanup:
+    VIR_FREE(cpumask);
+    return -1;
+}
+
 static int
 virDomainLifecycleDefFormat(virBufferPtr buf,
                             int type,
@@ -7732,6 +7980,36 @@ char *virDomainDefFormat(virDomainDefPtr def,
     if (def->vcpus != def->maxvcpus)
         virBufferVSprintf(&buf, " current='%u'", def->vcpus);
     virBufferVSprintf(&buf, ">%u</vcpu>\n", def->maxvcpus);
+
+    if (def->cputune.shares || def->cputune.vcpupin)
+        virBufferAddLit(&buf, "  <cputune>\n");
+
+    if (def->cputune.shares)
+        virBufferVSprintf(&buf, "    <shares>%lu</shares>\n",
+                          def->cputune.shares);
+    if (def->cputune.vcpupin) {
+        int i;
+        for (i = 0; i < def->cputune.nvcpupin; i++) {
+            virBufferVSprintf(&buf, "    <vcpupin vcpu='%u' ",
+                              def->cputune.vcpupin[i]->vcpuid);
+
+            char *cpumask = NULL;
+            cpumask = virDomainCpuSetFormat(def->cputune.vcpupin[i]->cpumask,
+                                            VIR_DOMAIN_CPUMASK_LEN);
+
+            if (cpumask == NULL) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     "%s", _("failed to format cpuset for vcpupin"));
+                goto cleanup;
+            }
+
+            virBufferVSprintf(&buf, "cpuset='%s'/>\n", cpumask);
+            VIR_FREE(cpumask);
+        }
+    }
+
+    if (def->cputune.shares || def->cputune.vcpupin)
+        virBufferAddLit(&buf, "  </cputune>\n");
 
     if (def->sysinfo)
         virDomainSysinfoDefFormat(&buf, def->sysinfo);
