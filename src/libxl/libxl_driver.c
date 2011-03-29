@@ -33,6 +33,7 @@
 #include "internal.h"
 #include "logging.h"
 #include "virterror_internal.h"
+#include "conf.h"
 #include "datatypes.h"
 #include "files.h"
 #include "memory.h"
@@ -41,6 +42,7 @@
 #include "command.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"
+#include "xen_xm.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -50,6 +52,8 @@
 #define LIBXL_DOM_REQ_SUSPEND  2
 #define LIBXL_DOM_REQ_CRASH    3
 #define LIBXL_DOM_REQ_HALT     4
+
+#define LIBXL_CONFIG_FORMAT_XM "xen-xm"
 
 static libxlDriverPrivatePtr libxl_driver = NULL;
 
@@ -1636,6 +1640,92 @@ libxlDomainDumpXML(virDomainPtr dom, int flags)
     return ret;
 }
 
+static char *
+libxlDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
+                         const char * nativeConfig,
+                         unsigned int flags ATTRIBUTE_UNUSED)
+{
+    libxlDriverPrivatePtr driver = conn->privateData;
+    const libxl_version_info *ver_info;
+    virDomainDefPtr def = NULL;
+    virConfPtr conf = NULL;
+    char *xml = NULL;
+
+    if (STRNEQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+        libxlError(VIR_ERR_INVALID_ARG,
+                   _("unsupported config type %s"), nativeFormat);
+        goto cleanup;
+    }
+
+    if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
+        VIR_ERROR0(_("cannot get version information from libxenlight"));
+        goto cleanup;
+    }
+
+    if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
+        goto cleanup;
+
+    if (!(def = xenParseXM(conf, ver_info->xen_version_major, driver->caps))) {
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s", _("parsing xm config failed"));
+        goto cleanup;
+    }
+
+    xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
+
+cleanup:
+    virDomainDefFree(def);
+    if (conf)
+        virConfFree(conf);
+    return xml;
+}
+
+#define MAX_CONFIG_SIZE (1024 * 65)
+static char *
+libxlDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
+                       const char * domainXml,
+                       unsigned int flags ATTRIBUTE_UNUSED)
+{
+    libxlDriverPrivatePtr driver = conn->privateData;
+    const libxl_version_info *ver_info;
+    virDomainDefPtr def = NULL;
+    virConfPtr conf = NULL;
+    int len = MAX_CONFIG_SIZE;
+    char *ret = NULL;
+
+    if (STRNEQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+        libxlError(VIR_ERR_INVALID_ARG,
+                   _("unsupported config type %s"), nativeFormat);
+        goto cleanup;
+    }
+
+    if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
+        VIR_ERROR0(_("cannot get version information from libxenlight"));
+        goto cleanup;
+    }
+
+    if (!(def = virDomainDefParseString(driver->caps, domainXml, 0)))
+        goto cleanup;
+
+    if (!(conf = xenFormatXM(conn, def, ver_info->xen_version_major)))
+        goto cleanup;
+
+    if (VIR_ALLOC_N(ret, len) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virConfWriteMem(ret, &len, conf) < 0) {
+        VIR_FREE(ret);
+        goto cleanup;
+    }
+
+cleanup:
+    virDomainDefFree(def);
+    if (conf)
+        virConfFree(conf);
+    return ret;
+}
+
 static int
 libxlListDefinedDomains(virConnectPtr conn,
                         char **const names, int nnames)
@@ -1994,8 +2084,8 @@ static virDriver libxlDriver = {
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
     libxlDomainDumpXML,         /* domainDumpXML */
-    NULL,                       /* domainXmlFromNative */
-    NULL,                       /* domainXmlToNative */
+    libxlDomainXMLFromNative,   /* domainXmlFromNative */
+    libxlDomainXMLToNative,     /* domainXmlToNative */
     libxlListDefinedDomains,    /* listDefinedDomains */
     libxlNumDefinedDomains,     /* numOfDefinedDomains */
     libxlDomainCreate,          /* domainCreate */

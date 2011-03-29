@@ -757,6 +757,22 @@ virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
 virSecurityManagerVerify;
 
+# sexpr.h
+sexpr_append;
+sexpr_cons;
+sexpr_float;
+sexpr_fmt_node;
+sexpr_free;
+sexpr_has;
+sexpr_int;
+sexpr_lookup;
+sexpr_nil;
+sexpr_node;
+sexpr_node_copy;
+sexpr_string;
+sexpr_u64;
+sexpr2string;
+string2sexpr;
 
 # storage_conf.h
 virStoragePartedFsTypeTypeToString;

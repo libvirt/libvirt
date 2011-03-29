@@ -600,6 +600,8 @@ AM_CONDITIONAL([WITH_XEN], [test "$with_xen" = "yes"])
 AC_SUBST([XEN_CFLAGS])
 AC_SUBST([XEN_LIBS])
 
+AM_CONDITIONAL([WITH_XENXS], [test "$with_libxl" = "yes" || test "$with_xen" = "yes"])
+
 dnl
 dnl check for kernel headers required by xen_inotify
 dnl

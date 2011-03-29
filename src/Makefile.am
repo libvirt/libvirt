@@ -473,7 +473,7 @@ libvirt_vmx_la_CFLAGS = \
 libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
 endif
 
-if WITH_XEN
+if WITH_XENXS
 noinst_LTLIBRARIES += libvirt_xenxs.la
 libvirt_la_BUILT_LIBADD += libvirt_xenxs.la
 libvirt_xenxs_la_CFLAGS = \
@@ -703,10 +703,12 @@ noinst_LTLIBRARIES += libvirt_driver_libxl.la
 # Stateful, so linked to daemon instead
 #libvirt_la_BUILT_LIBADD += libvirt_driver_libxl.la
 endif
-libvirt_driver_libxl_la_CFLAGS = $(LIBXL_CFLAGS) \
-		-I@top_srcdir@/src/conf $(AM_CFLAGS)
+libvirt_driver_libxl_la_CFLAGS = $(LIBXL_CFLAGS)		\
+		-I@top_srcdir@/src/conf				\
+		-I@top_srcdir@/src/xenxs			\
+		$(AM_CFLAGS)
 libvirt_driver_libxl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_libxl_la_LIBADD = $(LIBXL_LIBS)
+libvirt_driver_libxl_la_LIBADD = $(LIBXL_LIBS) libvirt_xenxs.la
 if WITH_DRIVER_MODULES
 libvirt_driver_libxl_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_libxl_la_LDFLAGS += -module -avoid-version
