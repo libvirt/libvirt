@@ -1040,6 +1040,122 @@ libxlDomainLookupByName(virConnectPtr conn, const char *name)
 }
 
 static int
+libxlDomainSuspend(virDomainPtr dom)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    libxlDomainObjPrivatePtr priv;
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        libxlError(VIR_ERR_NO_DOMAIN,
+                   _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (vm->state != VIR_DOMAIN_PAUSED) {
+        if (libxl_domain_pause(&priv->ctx, dom->id) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to suspend domain '%d' with libxenlight"),
+                       dom->id);
+            goto cleanup;
+        }
+
+        vm->state = VIR_DOMAIN_PAUSED;
+
+        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
+                                         VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+    }
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    if (event) {
+        libxlDriverLock(driver);
+        libxlDomainEventQueue(driver, event);
+        libxlDriverUnlock(driver);
+    }
+    return ret;
+}
+
+
+static int
+libxlDomainResume(virDomainPtr dom)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    libxlDomainObjPrivatePtr priv;
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        libxlError(VIR_ERR_NO_DOMAIN,
+                   _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (vm->state == VIR_DOMAIN_PAUSED) {
+        if (libxl_domain_unpause(&priv->ctx, dom->id) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to resume domain '%d' with libxenlight"),
+                       dom->id);
+            goto cleanup;
+        }
+
+        vm->state = VIR_DOMAIN_RUNNING;
+
+        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_RESUMED,
+                                         VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
+    }
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    if (event) {
+        libxlDriverLock(driver);
+        libxlDomainEventQueue(driver, event);
+        libxlDriverUnlock(driver);
+    }
+    return ret;
+}
+
+static int
 libxlDomainShutdown(virDomainPtr dom)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
@@ -2146,8 +2262,8 @@ static virDriver libxlDriver = {
     libxlDomainLookupByID,      /* domainLookupByID */
     libxlDomainLookupByUUID,    /* domainLookupByUUID */
     libxlDomainLookupByName,    /* domainLookupByName */
-    NULL,                       /* domainSuspend */
-    NULL,                       /* domainResume */
+    libxlDomainSuspend,         /* domainSuspend */
+    libxlDomainResume,          /* domainResume */
     libxlDomainShutdown,        /* domainShutdown */
     libxlDomainReboot,          /* domainReboot */
     libxlDomainDestroy,         /* domainDestroy */
