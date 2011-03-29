@@ -494,6 +494,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("memtune", false, QEMU_CAPS_NAME);
     DO_TEST("blkiotune", false, QEMU_CAPS_NAME);
+    DO_TEST("cputune", false, QEMU_CAPS_NAME);
 
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
