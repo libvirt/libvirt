@@ -55,6 +55,9 @@
 
 #define LIBXL_CONFIG_FORMAT_XM "xen-xm"
 
+/* Number of Xen scheduler parameters */
+#define XEN_SCHED_CREDIT_NPARAM   2
+
 static libxlDriverPrivatePtr libxl_driver = NULL;
 
 
@@ -1954,6 +1957,65 @@ libxlDomainEventDeregister(virConnectPtr conn,
     return ret;
 }
 
+static char *
+libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    char * ret = NULL;
+    int sched_id;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+    if ((sched_id = libxl_get_sched_id(&priv->ctx)) < 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to get scheduler id for domain '%d'"
+                     " with libxenlight"), dom->id);
+        goto cleanup;
+    }
+
+    *nparams = 0;
+    switch(sched_id) {
+    case XEN_SCHEDULER_SEDF:
+        ret = strdup("sedf");
+        break;
+    case XEN_SCHEDULER_CREDIT:
+        ret = strdup("credit");
+        *nparams = XEN_SCHED_CREDIT_NPARAM;
+        break;
+    case XEN_SCHEDULER_CREDIT2:
+        ret = strdup("credit2");
+        break;
+    case XEN_SCHEDULER_ARINC653:
+        ret = strdup("arinc653");
+        break;
+    default:
+        goto cleanup;
+    }
+
+    if (!ret)
+        virReportOOMError();
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static int
 libxlDomainIsActive(virDomainPtr dom)
 {
@@ -2099,7 +2161,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainUpdateDeviceFlags */
     NULL,                       /* domainGetAutostart */
     NULL,                       /* domainSetAutostart */
-    NULL,                       /* domainGetSchedulerType */
+    libxlDomainGetSchedulerType,/* domainGetSchedulerType */
     NULL,                       /* domainGetSchedulerParameters */
     NULL,                       /* domainSetSchedulerParameters */
     NULL,                       /* domainMigratePrepare */
