@@ -52,6 +52,7 @@
 /mkinstalldirs
 /po/
 /proxy/
+/src/libvirt_iohelper
 /tests/*.log
 /tests/cputest
 /tests/nwfilterxml2xmltest
