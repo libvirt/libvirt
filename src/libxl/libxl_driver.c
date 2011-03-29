@@ -1174,6 +1174,33 @@ cleanup:
     return ret;
 }
 
+static char *
+libxlDomainGetOSType(virDomainPtr dom)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    char *type = NULL;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        libxlError(VIR_ERR_NO_DOMAIN,
+                   _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!(type = strdup(vm->def->os.type)))
+        virReportOOMError();
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return type;
+}
+
 static unsigned long
 libxlDomainGetMaxMemory(virDomainPtr dom)
 {
@@ -2124,7 +2151,7 @@ static virDriver libxlDriver = {
     libxlDomainShutdown,        /* domainShutdown */
     libxlDomainReboot,          /* domainReboot */
     libxlDomainDestroy,         /* domainDestroy */
-    NULL,                       /* domainGetOSType */
+    libxlDomainGetOSType,       /* domainGetOSType */
     libxlDomainGetMaxMemory,    /* domainGetMaxMemory */
     NULL,                       /* domainSetMaxMemory */
     libxlDomainSetMemory,       /* domainSetMemory */
