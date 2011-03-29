@@ -406,14 +406,19 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
-            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
-            virReportOOMError();
-            goto done;
+        if (virFileExists(dev->data.file.path)) {
+            if (virSecurityDACSetOwnership(dev->data.file.path, priv->user, priv->group) < 0)
+                goto done;
+        } else {
+            if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
+                (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
+                virReportOOMError();
+                goto done;
+            }
+            if ((virSecurityDACSetOwnership(in, priv->user, priv->group) < 0) ||
+                (virSecurityDACSetOwnership(out, priv->user, priv->group) < 0))
+                goto done;
         }
-        if ((virSecurityDACSetOwnership(in, priv->user, priv->group) < 0) ||
-            (virSecurityDACSetOwnership(out, priv->user, priv->group) < 0))
-            goto done;
         ret = 0;
         break;
 
