@@ -27,6 +27,7 @@
 #include <config.h>
 
 #include <sys/utsname.h>
+#include <math.h>
 #include <libxl.h>
 
 #include "internal.h"
@@ -1311,6 +1312,305 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     return ret;
 }
 
+static int
+libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                         unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainDefPtr def;
+    virDomainObjPtr vm;
+    libxl_cpumap map;
+    uint8_t *bitmask = NULL;
+    unsigned int maplen;
+    unsigned int i, pos;
+    int max;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
+                  VIR_DOMAIN_VCPU_CONFIG |
+                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+
+    /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
+     * mixed with LIVE.  */
+    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0 ||
+        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
+         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) {
+        libxlError(VIR_ERR_INVALID_ARG,
+                   _("invalid flag combination: (0x%x)"), flags);
+        return -1;
+    }
+
+    if (!nvcpus) {
+        libxlError(VIR_ERR_INVALID_ARG, _("nvcpus is zero"));
+        return -1;
+    }
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_VCPU_LIVE)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("cannot set vcpus on an inactive domain"));
+        goto cleanup;
+    }
+
+    if (!vm->persistent && (flags & VIR_DOMAIN_VCPU_CONFIG)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("cannot change persistent config of a transient domain"));
+        goto cleanup;
+    }
+
+    if ((max = libxlGetMaxVcpus(dom->conn, NULL)) < 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("could not determine max vcpus for the domain"));
+        goto cleanup;
+    }
+
+    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && vm->def->maxvcpus < max) {
+        max = vm->def->maxvcpus;
+    }
+
+    if (nvcpus > max) {
+        libxlError(VIR_ERR_INVALID_ARG,
+                   _("requested vcpus is greater than max allowable"
+                     " vcpus for the domain: %d > %d"), nvcpus, max);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (!(def = virDomainObjGetPersistentDef(driver->caps, vm)))
+        goto cleanup;
+
+    maplen = (unsigned int) ceil((double) nvcpus / 8);
+    if (VIR_ALLOC_N(bitmask, maplen) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    memset(bitmask, 0, maplen);
+    for (i = 0; i < nvcpus; ++i) {
+        pos = (unsigned int) floor((double) i / 8);
+        bitmask[pos] |= 1 << (i % 8);
+    }
+
+    map.size = maplen;
+    map.map = bitmask;
+
+    switch (flags) {
+    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
+        def->maxvcpus = nvcpus;
+        if (nvcpus < def->vcpus)
+            def->vcpus = nvcpus;
+        ret = 0;
+        break;
+
+    case VIR_DOMAIN_VCPU_CONFIG:
+        def->vcpus = nvcpus;
+        break;
+
+    case VIR_DOMAIN_VCPU_LIVE:
+        if (libxl_set_vcpuonline(&priv->ctx, dom->id, &map) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to set vcpus for domain '%d'"
+                         " with libxenlight"), dom->id);
+            goto cleanup;
+        }
+        break;
+
+    case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
+        if (libxl_set_vcpuonline(&priv->ctx, dom->id, &map) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to set vcpus for domain '%d'"
+                         " with libxenlight"), dom->id);
+            goto cleanup;
+        }
+        def->vcpus = nvcpus;
+        break;
+    }
+
+    ret = 0;
+
+    if (flags & VIR_DOMAIN_VCPU_CONFIG)
+        ret = virDomainSaveConfig(driver->configDir, def);
+
+cleanup:
+    VIR_FREE(bitmask);
+     if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+libxlDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+{
+    return libxlDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
+}
+
+static int
+libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virDomainDefPtr def;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
+                  VIR_DOMAIN_VCPU_CONFIG |
+                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+
+    /* Exactly one of LIVE or CONFIG must be set.  */
+    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
+        libxlError(VIR_ERR_INVALID_ARG,
+                   _("invalid flag combination: (0x%x)"), flags);
+        return -1;
+    }
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_VCPU_LIVE) {
+        if (!virDomainObjIsActive(vm)) {
+            libxlError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
+            goto cleanup;
+        }
+        def = vm->def;
+    } else {
+        def = vm->newDef ? vm->newDef : vm->def;
+    }
+
+    ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
+                   int maplen)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    int ret = -1;
+    libxl_cpumap map;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("cannot pin vcpus on an inactive domain"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    map.size = maplen;
+    map.map = cpumap;
+    if (libxl_set_vcpuaffinity(&priv->ctx, dom->id, vcpu, &map) != 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to pin vcpu '%d' with libxenlight"), vcpu);
+        goto cleanup;
+    }
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
+static int
+libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
+                    unsigned char *cpumaps, int maplen)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    int ret = -1;
+    libxl_vcpuinfo *vcpuinfo;
+    int maxcpu, hostcpus;
+    unsigned int i;
+    unsigned char *cpumap;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+    if ((vcpuinfo = libxl_list_vcpu(&priv->ctx, dom->id, &maxcpu,
+                                    &hostcpus)) == NULL) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to list vcpus for domain '%d' with libxenlight"),
+                   dom->id);
+        goto cleanup;
+    }
+
+    if (cpumaps && maplen > 0)
+        memset(cpumaps, 0, maplen * maxinfo);
+    for (i = 0; i < maxcpu && i < maxinfo; ++i) {
+        info[i].number = vcpuinfo[i].vcpuid;
+        info[i].cpu = vcpuinfo[i].cpu;
+        info[i].cpuTime = vcpuinfo[i].vcpu_time;
+        if (vcpuinfo[i].running)
+            info[i].state = VIR_VCPU_RUNNING;
+        else if (vcpuinfo[i].blocked)
+            info[i].state = VIR_VCPU_BLOCKED;
+        else
+            info[i].state = VIR_VCPU_OFFLINE;
+
+        if (cpumaps && maplen > 0) {
+            cpumap = VIR_GET_CPUMAP(cpumaps, maplen, i);
+            memcpy(cpumap, vcpuinfo[i].cpumap.map,
+                   MIN(maplen, vcpuinfo[i].cpumap.size));
+        }
+
+        libxl_vcpuinfo_destroy(&vcpuinfo[i]);
+    }
+    VIR_FREE(vcpuinfo);
+
+    ret = maxinfo;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static char *
 libxlDomainDumpXML(virDomainPtr dom, int flags)
 {
@@ -1685,11 +1985,11 @@ static virDriver libxlDriver = {
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */
-    NULL,                       /* domainSetVcpus */
-    NULL,                       /* domainSetVcpusFlags */
-    NULL,                       /* domainGetVcpusFlags */
-    NULL,                       /* domainPinVcpu */
-    NULL,                       /* domainGetVcpus */
+    libxlDomainSetVcpus,        /* domainSetVcpus */
+    libxlDomainSetVcpusFlags,   /* domainSetVcpusFlags */
+    libxlDomainGetVcpusFlags,   /* domainGetVcpusFlags */
+    libxlDomainPinVcpu,         /* domainPinVcpu */
+    libxlDomainGetVcpus,        /* domainGetVcpus */
     NULL,                       /* domainGetMaxVcpus */
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
