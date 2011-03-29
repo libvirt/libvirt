@@ -1,6 +1,7 @@
 /*---------------------------------------------------------------------------*/
 /*  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *  Copyright (C) 2011 Univention GmbH.
+ *  Copyright (C) 2006-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,6 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *
+ * Authors:
+ *     Jim Fehlig <jfehlig@novell.com>
+ *     Markus Groß <gross@univention.de>
+ *     Daniel P. Berrange <berrange@redhat.com>
  */
 /*---------------------------------------------------------------------------*/
 
