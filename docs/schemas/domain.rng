@@ -366,6 +366,27 @@
           <ref name="countCPU"/>
         </element>
       </optional>
+
+      <!-- All the cpu related tunables would go in the cputune -->
+      <optional>
+        <element name="cputune">
+          <optional>
+            <element name="shares">
+              <ref name="cpushares"/>
+            </element>
+          </optional>
+          <zeroOrMore>
+            <element name="vcpupin">
+              <attribute name="vcpu">
+                <ref name="vcpuid"/>
+              </attribute>
+              <attribute name="cpuset">
+                <ref name="cpuset"/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </optional>
     </interleave>
   </define>
   <define name="clock">
@@ -2198,6 +2219,16 @@
       <param name="minInclusive">1</param>
     </data>
   </define>
+  <define name="vcpuid">
+    <data type="unsignedShort">
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+  <define name="cpushares">
+    <data type="unsignedInt">
+      <param name="pattern">[0-9]+</param>
+    </data>
+   </define>
   <define name="hostName">
     <data type="string">
       <param name="pattern">[a-zA-Z0-9\.\-]+</param>
