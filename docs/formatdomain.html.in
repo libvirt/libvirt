@@ -346,6 +346,22 @@
         be used to specify whether fewer than the maximum number of
         virtual CPUs should be enabled.
       </dd>
+      <dt><code>cputune</code></dt>
+      <dd> The optional <code>cputune</code> element provides details
+        regarding the cpu tunable parameters for the domain.</dd>
+      <dt><code>vcpupin</code></dt>
+      <dd> The optional <code>vcpupin</code> element specifies which of host
+        physical CPUS the domain VCPU will be pinned to. If this is ommited,
+        each VCPU pinned to all the physical CPUS by default. It contains two
+        required attributes, the attribute <code>vcpu</vcpu> specifies vcpu id,
+        and the attribute <code>cpuset</code> is same as attribute <code>cpuset</code>
+        of element <code>vcpu</code>. NB, Only qemu driver supports</dd>
+      <dt><code>shares</code></dt>
+      <dd> The optional <code>shares</code> element specifies the proportional
+        weighted share for the domain. If this is ommited, it defaults to
+        the OS provided defaults. NB, There is no unit for the value, it's a relative
+        measure based on the setting of other VM, e.g. A VM configured with value
+        2048 will get twice as much CPU time as a VM configured with value 1024.</dd>
     </dl>
 
     <h3><a name="elementsCPU">CPU model and topology</a></h3>
