@@ -2679,6 +2679,13 @@ qemudDomainPinVcpu(virDomainPtr dom,
                         "%s", _("cpu affinity is not supported"));
         goto cleanup;
     }
+
+    if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("failed to update or add vcpupin xml"));
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
@@ -4644,6 +4651,8 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
                                      _("unable to set cpu shares tunable"));
                 goto cleanup;
             }
+
+            vm->def->cputune.shares = params[i].value.ul;
         } else {
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("Invalid parameter `%s'"), param->field);

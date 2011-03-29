@@ -343,6 +343,21 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                  vm->def->name);
     }
 
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+        if (vm->def->cputune.shares != 0) {
+            rc = virCgroupSetCpuShares(cgroup, vm->def->cputune.shares);
+            if(rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set io cpu shares for domain %s"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+    } else {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("CPU tuning is not available on this host"));
+    }
+
 done:
     virCgroupFree(&cgroup);
     return 0;
