@@ -26,6 +26,7 @@
 
 # include "internal.h"
 # include "domain_conf.h"
+# include "domain_event.h"
 # include "capabilities.h"
 # include "configmake.h"
 # include "bitmap.h"
@@ -57,6 +58,12 @@ struct _libxlDriverPrivate {
     virBitmapPtr reservedVNCPorts;
     virDomainObjList domains;
 
+    /* A list of callbacks */
+    virDomainEventCallbackListPtr domainEventCallbacks;
+    virDomainEventQueuePtr domainEventQueue;
+    int domainEventTimer;
+    int domainEventDispatching;
+
     char *configDir;
     char *autostartDir;
     char *logDir;
@@ -86,6 +93,5 @@ libxlMakeCapabilities(libxl_ctx *ctx);
 int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
                        virDomainDefPtr def, libxl_domain_config *d_config);
-
 
 #endif /* LIBXL_CONF_H */
