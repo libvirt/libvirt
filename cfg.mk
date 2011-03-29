@@ -571,7 +571,7 @@ exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
   (^docs|^python/(libvirt-override|typewrappers)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|po/|src/util/util\.c$$)
+  ^(bootstrap.conf$$|po/|src/util/util\.c$$|examples/domain-events/events-c/event-test\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.py$$|^docs/|(src/util/files\.c|src/libvirt\.c)$$)
