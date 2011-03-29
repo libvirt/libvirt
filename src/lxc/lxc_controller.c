@@ -117,6 +117,16 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         }
     }
 
+    if (def->cputune.shares) {
+        rc = virCgroupSetCpuShares(cgroup, def->cputune.shares);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set cpu shares for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+
     rc = virCgroupSetMemory(cgroup, def->mem.max_balloon);
     if (rc != 0) {
         virReportSystemError(-rc,

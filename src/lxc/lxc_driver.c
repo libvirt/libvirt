@@ -2292,6 +2292,8 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
                                  params[i].value.ul);
             goto cleanup;
         }
+
+        vm->def->cputune.shares = params[i].value.ul;
     }
     ret = 0;
 
