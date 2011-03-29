@@ -1029,6 +1029,21 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
 int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
                                 virDomainSnapshotObjListPtr snapshots);
 
+typedef struct _virDomainVcpupinDef virDomainVcpupinDef;
+typedef virDomainVcpupinDef *virDomainVcpupinDefPtr;
+struct _virDomainVcpupinDef {
+    int vcpuid;
+    char *cpumask;
+};
+
+int virDomainVcpupinIsDuplicate(virDomainVcpupinDefPtr *def,
+                                int nvcpupin,
+                                int vcpu);
+
+virDomainVcpupinDefPtr virDomainVcpupinFindByVcpu(virDomainVcpupinDefPtr *def,
+                                                  int nvcpupin,
+                                                  int vcpu);
+
 /* Guest VM main configuration */
 typedef struct _virDomainDef virDomainDef;
 typedef virDomainDef *virDomainDefPtr;
@@ -1056,6 +1071,12 @@ struct _virDomainDef {
     unsigned short maxvcpus;
     int cpumasklen;
     char *cpumask;
+
+    struct {
+        unsigned long shares;
+        int nvcpupin;
+        virDomainVcpupinDefPtr *vcpupin;
+    } cputune;
 
     /* These 3 are based on virDomainLifeCycleAction enum flags */
     int onReboot;
@@ -1255,6 +1276,11 @@ int virDomainCpuSetParse(const char **str,
                          int maxcpu);
 char *virDomainCpuSetFormat(char *cpuset,
                             int maxcpu);
+
+int virDomainVcpupinAdd(virDomainDefPtr def,
+                        unsigned char *cpumap,
+                        int maplen,
+                        int vcpu);
 
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk);
