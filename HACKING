@@ -127,6 +127,12 @@ Note that sometimes you'll have to post-process that output further, by piping
 it through "expand -i", since some leading TABs can get through. Usually
 they're in macro definitions or strings, and should be converted anyhow.
 
+Libvirt requires a C99 compiler for various reasons. However, most of the code
+base prefers to stick to C89 syntax unless there is a compelling reason
+otherwise. For example, it is preferable to use "/* */" comments rather than
+"//". Also, when declaring local variables, the prevailing style has been to
+declare them at the beginning of a scope, rather than immediately before use.
+
 
 Curly braces
 ============

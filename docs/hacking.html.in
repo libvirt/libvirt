@@ -152,6 +152,16 @@
       anyhow.
     </p>
 
+    <p>
+      Libvirt requires a C99 compiler for various reasons.  However,
+      most of the code base prefers to stick to C89 syntax unless
+      there is a compelling reason otherwise.  For example, it is
+      preferable to use <code>/* */</code> comments rather
+      than <code>//</code>.  Also, when declaring local variables, the
+      prevailing style has been to declare them at the beginning of a
+      scope, rather than immediately before use.
+    </p>
+
 
     <h2><a name="curly_braces">Curly braces</a></h2>
 
