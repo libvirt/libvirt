@@ -908,7 +908,16 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 
     if (mon->json) {
         ret = qemuMonitorJSONSetCapabilities(mon);
-        mon->json_hmp = qemuMonitorJSONCheckHMP(mon);
+        if (ret == 0) {
+            int hmp = qemuMonitorJSONCheckHMP(mon);
+            if (hmp < 0) {
+                /* qemu may quited unexpectedly when we call
+                 * qemuMonitorJSONCheckHMP() */
+                ret = -1;
+            } else {
+                mon->json_hmp = hmp > 0;
+            }
+        }
     } else {
         ret = 0;
     }

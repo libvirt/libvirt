@@ -746,10 +746,14 @@ qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon)
 }
 
 
+/*
+ * Returns: 0 if human-monitor-command is not supported, +1 if
+ * human-monitor-command worked or -1 on failure
+ */
 int
 qemuMonitorJSONCheckHMP(qemuMonitorPtr mon)
 {
-    int ret = 0;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-commands", NULL);
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
@@ -780,6 +784,9 @@ qemuMonitorJSONCheckHMP(qemuMonitorPtr mon)
             goto cleanup;
         }
     }
+
+    /* human-monitor-command is not supported */
+    ret = 0;
 
 cleanup:
     virJSONValueFree(cmd);
