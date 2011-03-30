@@ -895,51 +895,71 @@ qemuProcessExtractTTYPath(const char *haystack,
 }
 
 static int
-qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
-                                     virHashTablePtr paths)
+qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
+                      int count,
+                      const char *prefix,
+                      virHashTablePtr paths)
 {
     int i;
 
-#define LOOKUP_PTYS(array, arraylen, idprefix)                            \
-    for (i = 0 ; i < (arraylen) ; i++) {                                  \
-        virDomainChrDefPtr chr = (array)[i];                              \
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {                \
-            char id[16];                                                  \
-                                                                          \
-            if (snprintf(id, sizeof(id), idprefix "%i", i) >= sizeof(id)) \
-                return -1;                                                \
-                                                                          \
-            const char *path = (const char *) virHashLookup(paths, id);   \
-            if (path == NULL) {                                           \
-                if (chr->source.data.file.path == NULL) {                 \
-                    /* neither the log output nor 'info chardev' had a */ \
-                    /* pty path for this chardev, report an error */      \
-                    qemuReportError(VIR_ERR_INTERNAL_ERROR,               \
-                                    _("no assigned pty for device %s"), id); \
-                    return -1;                                            \
-                } else {                                                  \
-                    /* 'info chardev' had no pty path for this chardev, */\
-                    /* but the log output had, so we're fine */           \
-                    continue;                                             \
-                }                                                         \
-            }                                                             \
-                                                                          \
-            VIR_FREE(chr->source.data.file.path);                         \
-            chr->source.data.file.path = strdup(path);                    \
-                                                                          \
-            if (chr->source.data.file.path == NULL) {                     \
-                virReportOOMError();                                      \
-                return -1;                                                \
-            }                                                             \
-        }                                                                 \
+    for (i = 0 ; i < count ; i++) {
+        virDomainChrDefPtr chr = devices[i];
+        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
+            char id[16];
+            const char *path;
+
+            if (snprintf(id, sizeof(id), "%s%d", prefix, i) >= sizeof(id))
+                return -1;
+
+            path = (const char *) virHashLookup(paths, id);
+            if (path == NULL) {
+                if (chr->source.data.file.path == NULL) {
+                    /* neither the log output nor 'info chardev' had a
+                     * pty path for this chardev, report an error
+                     */
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    _("no assigned pty for device %s"), id);
+                    return -1;
+                } else {
+                    /* 'info chardev' had no pty path for this chardev,
+                     * but the log output had, so we're fine
+                     */
+                    continue;
+                }
+            }
+
+            VIR_FREE(chr->source.data.file.path);
+            chr->source.data.file.path = strdup(path);
+
+            if (chr->source.data.file.path == NULL) {
+                virReportOOMError();
+                return -1;
+            }
+        }
     }
 
-    LOOKUP_PTYS(vm->def->serials,   vm->def->nserials,   "serial");
-    LOOKUP_PTYS(vm->def->parallels, vm->def->nparallels, "parallel");
-    LOOKUP_PTYS(vm->def->channels,  vm->def->nchannels,  "channel");
-    if (vm->def->console)
-        LOOKUP_PTYS(&vm->def->console, 1,  "console");
-#undef LOOKUP_PTYS
+    return 0;
+}
+
+static int
+qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
+                                     virHashTablePtr paths)
+{
+    if (qemuProcessLookupPTYs(vm->def->serials, vm->def->nserials,
+                              "serial", paths) < 0)
+        return -1;
+
+    if (qemuProcessLookupPTYs(vm->def->parallels, vm->def->nparallels,
+                              "parallel", paths) < 0)
+        return -1;
+
+    if (qemuProcessLookupPTYs(vm->def->channels, vm->def->nchannels,
+                              "channel", paths) < 0)
+        return -1;
+
+    if (vm->def->console &&
+        qemuProcessLookupPTYs(&vm->def->console, 1, "console", paths) < 0)
+        return -1;
 
     return 0;
 }
