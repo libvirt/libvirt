@@ -660,6 +660,14 @@ virLogFormatString(char **msg,
                    const char *str)
 {
     int ret;
+
+    /*
+     * Be careful when changing the following log message formatting, we rely
+     * on it when stripping libvirt debug messages from qemu log files. So when
+     * changing this, you might also need to change the code there.
+     * virLogFormatString() function name is mentioned there so it's sufficient
+     * to just grep for it to find the right place.
+     */
     if ((funcname != NULL)) {
         ret = virAsprintf(msg, "%02d:%02d:%02d.%03d: %d: %s : %s:%lld : %s\n",
                           time_info->tm_hour, time_info->tm_min,
