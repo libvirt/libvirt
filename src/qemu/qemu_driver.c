@@ -2146,7 +2146,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     if (name == NULL)
         goto cleanup;
 
-    VIR_DEBUG("Saving state to %s", name);
+    VIR_INFO("Saving state to %s", name);
 
     compressed = QEMUD_SAVE_FORMAT_RAW;
     ret = qemudDomainSaveFlag(driver, dom, vm, name, compressed);
@@ -3637,6 +3637,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
 
     if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
+        VIR_INFO(_("Defining domain '%s'"), vm->def->name);
         virDomainRemoveInactive(&driver->domains,
                                 vm);
         vm = NULL;
@@ -3649,6 +3650,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 
+    VIR_INFO(_("Creating domain '%s'"), vm->def->name);
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
 
@@ -3698,6 +3700,7 @@ static int qemudDomainUndefine(virDomainPtr dom) {
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
+    VIR_INFO(_("Undefining domain '%s'"), vm->def->name);
     virDomainRemoveInactive(&driver->domains,
                             vm);
     vm = NULL;

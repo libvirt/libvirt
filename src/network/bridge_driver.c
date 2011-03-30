@@ -1731,6 +1731,7 @@ networkStartNetworkDaemon(struct network_driver *driver,
         goto err5;
     }
 
+    VIR_INFO(_("Starting up network '%s'"), network->def->name);
     network->active = 1;
 
     return 0;
@@ -2104,6 +2105,7 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
+    VIR_INFO(_("Creating network '%s'"), network->def->name);
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
 cleanup:
@@ -2175,6 +2177,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         dnsmasqContextFree(dctx);
     }
 
+    VIR_INFO(_("Defining network '%s'"), network->def->name);
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
 cleanup:
@@ -2261,6 +2264,7 @@ static int networkUndefine(virNetworkPtr net) {
 
     }
 
+    VIR_INFO(_("Undefining network '%s'"), network->def->name);
     virNetworkRemoveInactive(&driver->networks,
                              network);
     network = NULL;

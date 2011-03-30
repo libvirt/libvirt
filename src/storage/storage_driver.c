@@ -551,6 +551,7 @@ storagePoolCreate(virConnectPtr conn,
         pool = NULL;
         goto cleanup;
     }
+    VIR_INFO(_("Creating storage pool '%s'"), pool->def->name);
     pool->active = 1;
 
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
@@ -592,6 +593,7 @@ storagePoolDefine(virConnectPtr conn,
     }
     def = NULL;
 
+    VIR_INFO(_("Defining storage pool '%s'"), pool->def->name);
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
 
 cleanup:
@@ -641,6 +643,7 @@ storagePoolUndefine(virStoragePoolPtr obj) {
     VIR_FREE(pool->configFile);
     VIR_FREE(pool->autostartLink);
 
+    VIR_INFO(_("Undefining storage pool '%s'"), pool->def->name);
     virStoragePoolObjRemove(&driver->pools, pool);
     pool = NULL;
     ret = 0;
@@ -688,6 +691,7 @@ storagePoolStart(virStoragePoolPtr obj,
         goto cleanup;
     }
 
+    VIR_INFO(_("Starting up storage pool '%s'"), pool->def->name);
     pool->active = 1;
     ret = 0;
 
@@ -775,6 +779,7 @@ storagePoolDestroy(virStoragePoolPtr obj) {
     virStoragePoolObjClearVols(pool);
 
     pool->active = 0;
+    VIR_INFO(_("Shutting down storage pool '%s'"), pool->def->name);
 
     if (pool->configFile == NULL) {
         virStoragePoolObjRemove(&driver->pools, pool);
@@ -831,6 +836,7 @@ storagePoolDelete(virStoragePoolPtr obj,
     }
     if (backend->deletePool(obj->conn, pool, flags) < 0)
         goto cleanup;
+    VIR_INFO(_("Deleting storage pool '%s'"), pool->def->name);
     ret = 0;
 
 cleanup:
@@ -1356,6 +1362,8 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
 
     }
 
+    VIR_INFO(_("Creating volume '%s' in storage pool '%s'"),
+             volobj->name, pool->def->name);
     ret = volobj;
     volobj = NULL;
     voldef = NULL;
@@ -1514,6 +1522,8 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
         goto cleanup;
     }
 
+    VIR_INFO(_("Creating volume '%s' in storage pool '%s'"),
+             volobj->name, pool->def->name);
     ret = volobj;
     volobj = NULL;
 
@@ -1918,6 +1928,8 @@ storageVolumeDelete(virStorageVolPtr obj,
 
     for (i = 0 ; i < pool->volumes.count ; i++) {
         if (pool->volumes.objs[i] == vol) {
+            VIR_INFO(_("Deleting volume '%s' from storage pool '%s'"),
+                     vol->name, pool->def->name);
             virStorageVolDefFree(vol);
             vol = NULL;
 
