@@ -544,18 +544,18 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (x509dname) {
         if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
             goto no_memory;
-        if (!(subject->identities[subject->nidentity].type = strdup("x509dname")) ||
-            !(subject->identities[subject->nidentity].name = strdup(x509dname)))
-            goto no_memory;
         subject->nidentity++;
+        if (!(subject->identities[subject->nidentity-1].type = strdup("x509dname")) ||
+            !(subject->identities[subject->nidentity-1].name = strdup(x509dname)))
+            goto no_memory;
     }
     if (saslUsername) {
         if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
             goto no_memory;
-        if (!(subject->identities[subject->nidentity].type = strdup("saslUsername")) ||
-            !(subject->identities[subject->nidentity].name = strdup(saslUsername)))
-            goto no_memory;
         subject->nidentity++;
+        if (!(subject->identities[subject->nidentity-1].type = strdup("saslUsername")) ||
+            !(subject->identities[subject->nidentity-1].name = strdup(saslUsername)))
+            goto no_memory;
     }
 
     virDomainObjLock(vm);
