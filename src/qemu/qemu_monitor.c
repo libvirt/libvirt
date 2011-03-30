@@ -587,6 +587,15 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         void (*eofNotify)(qemuMonitorPtr, virDomainObjPtr, int)
             = mon->cb->eofNotify;
         virDomainObjPtr vm = mon->vm;
+
+        /* If qemu quited unexpectedly, and we may try to send monitor
+         * command later. But we have no chance to wake up it. So set
+         * mon->lastErrno to EIO, and check it before sending monitor
+         * command.
+         */
+        if (!mon->lastErrno)
+            mon->lastErrno = EIO;
+
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         if (qemuMonitorUnref(mon) > 0)
@@ -724,6 +733,12 @@ int qemuMonitorSend(qemuMonitorPtr mon,
                     qemuMonitorMessagePtr msg)
 {
     int ret = -1;
+
+    /* Check whether qemu quited unexpectedly */
+    if (mon->lastErrno) {
+        msg->lastErrno = mon->lastErrno;
+        return -1;
+    }
 
     mon->msg = msg;
     qemuMonitorUpdateWatch(mon);
