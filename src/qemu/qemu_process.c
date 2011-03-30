@@ -525,8 +525,6 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventGraphicsSubjectPtr subject = NULL;
     int i;
 
-    virDomainObjLock(vm);
-
     if (VIR_ALLOC(localAddr) < 0)
         goto no_memory;
     localAddr->family = localFamily;
@@ -560,6 +558,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         subject->nidentity++;
     }
 
+    virDomainObjLock(vm);
     event = virDomainEventGraphicsNewFromObj(vm, phase, localAddr, remoteAddr, authScheme, subject);
     virDomainObjUnlock(vm);
 
