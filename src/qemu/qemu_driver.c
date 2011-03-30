@@ -2068,13 +2068,13 @@ static int qemudDomainSave(virDomainPtr dom, const char *path)
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             "%s", _("Invalid save image format specified "
                                     "in configuration file"));
-            return -1;
+            goto cleanup;
         }
         if (!qemudCompressProgramAvailable(compressed)) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             "%s", _("Compression program for image format "
                                     "in configuration file isn't available"));
-            return -1;
+            goto cleanup;
         }
     }
 
