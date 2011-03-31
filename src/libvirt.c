@@ -2852,7 +2852,7 @@ error:
 }
 
 /*
- * virDomainSetMemoryFlags
+ * virDomainSetMemoryFlags:
  * @domain: a domain object or NULL
  * @memory: the memory size in kilobytes
  * @flags: an OR'ed set of virDomainMemoryModFlags

@@ -353,7 +353,7 @@
       <dd> The optional <code>vcpupin</code> element specifies which of host
         physical CPUS the domain VCPU will be pinned to. If this is ommited,
         each VCPU pinned to all the physical CPUS by default. It contains two
-        required attributes, the attribute <code>vcpu</vcpu> specifies vcpu id,
+        required attributes, the attribute <code>vcpu</code> specifies vcpu id,
         and the attribute <code>cpuset</code> is same as attribute <code>cpuset</code>
         of element <code>vcpu</code>. NB, Only qemu driver supports</dd>
       <dt><code>shares</code></dt>
