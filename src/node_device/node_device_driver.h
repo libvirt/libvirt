@@ -78,8 +78,8 @@ int read_wwn_linux(int host, const char *file, char **wwn);
 
 # else  /* __linux__ */
 
-#  define check_fc_host(d)
-#  define check_vport_capable(d)
+#  define check_fc_host(d)                      (-1)
+#  define check_vport_capable(d)                (-1)
 #  define get_physical_function(sysfs_path, d)
 #  define get_virtual_functions(sysfs_path, d)
 #  define read_wwn(host, file, wwn)
