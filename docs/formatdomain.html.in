@@ -314,7 +314,11 @@
       <dt><code>memtune</code></dt>
       <dd> The optional <code>memtune</code> element provides details
         regarding the memory tunable parameters for the domain. If this is
-        omitted, it defaults to the OS provided defaults.</dd>
+        omitted, it defaults to the OS provided defaults. For QEMU/KVMi, the
+        parameters are applied to the QEMU process as a whole. Thus, when
+        counting them, one needs to add up guest RAM, guest video RAM, and
+        some memory overhead of QEMU itself. The last piece is hard to
+        determine so one needs guess and try.</dd>
       <dt><code>hard_limit</code></dt>
       <dd> The optional <code>hard_limit</code> element is the maximum memory
         the guest can use. The units for this value are kilobytes (i.e. blocks

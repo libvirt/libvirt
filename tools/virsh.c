@@ -3202,7 +3202,7 @@ static const vshCmdOptDef opts_memtune[] = {
     {"soft-limit", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Memory during contention in kilobytes")},
     {"swap-hard-limit", VSH_OT_INT, VSH_OFLAG_NONE,
-     N_("Max swap in kilobytes")},
+     N_("Max memory plus swap in kilobytes")},
     {"min-guarantee", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Min guaranteed memory in kilobytes")},
     {NULL, 0, 0, NULL}

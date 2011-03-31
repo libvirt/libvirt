@@ -611,12 +611,42 @@ use the virsh B<edit> command instead to update its XML <memory> element.
 
 =item B<memtune> I<domain-id> optional I<--hard-limit> B<kilobytes>
 optional I<--soft-limit> B<kilobytes> optional I<--swap-hard-limit>
-B<kilobytes> -I<--min-guarantee> B<kilobytes>
+B<kilobytes> optional I<--min-guarantee> B<kilobytes>
 
 Allows you to display or set the domain memory parameters. Without
 flags, the current settings are displayed; with a flag, the
 appropriate limit is adjusted if supported by the hypervisor.  LXC and
-QEMU/KVM supports I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
+QEMU/KVM support I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
+
+For QEMU/KVM, the parameters are applied to the QEMU process as a whole.
+Thus, when counting them, one needs to add up guest RAM, guest video RAM, and
+some memory overhead of QEMU itself.  The last piece is hard to determine so
+one needs guess and try.
+
+=over 4
+
+=item I<--hard-limit>
+
+The maximum memory the guest can use.  The units for this value are kilobytes
+(i.e. blocks of 1024 bytes).
+
+=item I<--soft-limit>
+
+The memory limit to enforce during memory contention.  The units for this
+value are kilobytes (i.e. blocks of 1024 bytes).
+
+=item I<--swap-hard-limit>
+
+The maximum memory plus swap the guest can use.  The units for this value are
+kilobytes (i.e. blocks of 1024 bytes).  This has to be more than hard-limit
+value provided.
+
+=item I<--min-guarantee>
+
+The guaranteed minimum memory allocation for the guest.  The units for this
+value are kilobytes (i.e. blocks of 1024 bytes).
+
+=back
 
 =item B<blkiotune> I<domain-id> optional I<--weight> B<weight>
 
