@@ -44,6 +44,8 @@
 
 # include "libvirt_internal.h"
 
+# include "c-strcase.h"
+
 /* On architectures which lack these limits, define them (ie. Cygwin).
  * Note that the libvirt code should be robust enough to handle the
  * case where actual value is longer than these limits (eg. by setting
@@ -64,13 +66,13 @@
 
 /* String equality tests, suggested by Jim Meyering. */
 # define STREQ(a,b) (strcmp(a,b) == 0)
-# define STRCASEEQ(a,b) (strcasecmp(a,b) == 0)
+# define STRCASEEQ(a,b) (c_strcasecmp(a,b) == 0)
 # define STRNEQ(a,b) (strcmp(a,b) != 0)
-# define STRCASENEQ(a,b) (strcasecmp(a,b) != 0)
+# define STRCASENEQ(a,b) (c_strcasecmp(a,b) != 0)
 # define STREQLEN(a,b,n) (strncmp(a,b,n) == 0)
-# define STRCASEEQLEN(a,b,n) (strncasecmp(a,b,n) == 0)
+# define STRCASEEQLEN(a,b,n) (c_strncasecmp(a,b,n) == 0)
 # define STRNEQLEN(a,b,n) (strncmp(a,b,n) != 0)
-# define STRCASENEQLEN(a,b,n) (strncasecmp(a,b,n) != 0)
+# define STRCASENEQLEN(a,b,n) (c_strncasecmp(a,b,n) != 0)
 # define STRPREFIX(a,b) (strncmp(a,b,strlen(b)) == 0)
 # define STRSKIP(a,b) (STRPREFIX(a,b) ? (a) + strlen(b) : NULL)
 

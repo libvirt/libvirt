@@ -432,6 +432,7 @@ static int namesorter(const void *a, const void *b) {
   const char **sa = (const char**)a;
   const char **sb = (const char**)b;
 
+  /* User visible sort, so we want locale-specific case comparison.  */
   return strcasecmp(*sa, *sb);
 }
 

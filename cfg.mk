@@ -349,6 +349,11 @@ sc_avoid_ctype_macros:
 	halt="don't use ctype macros (use c-ctype.h)"			\
 	  $(_sc_search_regexp)
 
+sc_avoid_strcase:
+	@prohibit='\bstrn?case(cmp|str) *\('				\
+	halt="don't use raw strcase functions (use c-strcase instead)"	\
+	  $(_sc_search_regexp)
+
 sc_prohibit_virBufferAdd_with_string_literal:
 	@prohibit='\<virBufferAdd *\([^,]+, *"[^"]'			\
 	halt='use virBufferAddLit, not virBufferAdd, with a string literal' \
@@ -547,6 +552,8 @@ _makefile_at_at_check_exceptions = ' && !/(SCHEMA|SYSCONF)DIR/'
 syntax-check: $(top_srcdir)/HACKING
 
 # List all syntax-check exemptions:
+exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.c$$
+
 _src1=libvirt|fdstream|qemu/qemu_monitor|util/(command|util)|xen/xend_internal
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/console)\.c$$
