@@ -5065,9 +5065,9 @@ endjob:
         vm = NULL;
 
 cleanup:
-    VIR_FREE(tmp);
     VIR_FORCE_CLOSE(fd);
     unlink (tmp);
+    VIR_FREE(tmp);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
