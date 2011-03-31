@@ -77,6 +77,7 @@
 #include "verify.h"
 #include "files.h"
 #include "command.h"
+#include "nonblocking.h"
 
 #ifndef NSIG
 # define NSIG 32
@@ -246,26 +247,7 @@ virArgvToString(const char *const *argv)
 }
 
 int virSetBlocking(int fd, bool blocking) {
-#ifndef WIN32
-    int flags;
-    if ((flags = fcntl(fd, F_GETFL)) < 0)
-        return -1;
-    if (blocking)
-        flags &= ~O_NONBLOCK;
-    else
-        flags |= O_NONBLOCK;
-    if ((fcntl(fd, F_SETFL, flags)) < 0)
-        return -1;
-#else
-    unsigned long flag = blocking ? 0 : 1;
-
-    /* This is actually Gnulib's replacement rpl_ioctl function.
-     * We can't call ioctlsocket directly in any case.
-     */
-    if (ioctl (fd, FIONBIO, (void *) &flag) == -1)
-        return -1;
-#endif
-    return 0;
+    return set_nonblocking_flag (fd, !blocking);
 }
 
 int virSetNonBlock(int fd) {
