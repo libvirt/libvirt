@@ -71,6 +71,8 @@ rm -rf $RPM_BUILD_ROOT%{_mingw32_sysconfdir}/libvirt
 rm -rf $RPM_BUILD_ROOT%{_mingw32_datadir}/doc/*
 rm -rf $RPM_BUILD_ROOT%{_mingw32_datadir}/gtk-doc/*
 
+rm -rf $RPM_BUILD_ROOT%{_mingw32_libexecdir}/libvirt_iohelper.exe
+
 rm $RPM_BUILD_ROOT%{_mingw32_libdir}/libvirt.a
 rm $RPM_BUILD_ROOT%{_mingw32_libdir}/libvirt-qemu.a
 
