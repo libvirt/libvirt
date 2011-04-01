@@ -36,6 +36,9 @@
 
 #include <sys/utsname.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "internal.h"
 #include "datatypes.h"
@@ -51,6 +54,9 @@
 #include "nodeinfo.h"
 #include "logging.h"
 #include "vbox_driver.h"
+#include "configmake.h"
+#include "files.h"
+#include "fdstream.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 2002
@@ -8527,6 +8533,129 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     return ret;
 }
 
+#if VBOX_API_VERSION == 4000
+static char *
+vboxDomainScreenshot(virDomainPtr dom,
+                     virStreamPtr st,
+                     unsigned int screen,
+                     unsigned int flags ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
+    IConsole *console = NULL;
+    vboxIID iid = VBOX_IID_INITIALIZER;
+    IMachine *machine = NULL;
+    nsresult rc;
+    char *tmp;
+    int tmp_fd = -1;
+    unsigned int max_screen;
+
+    vboxIIDFromUUID(&iid, dom->uuid);
+    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
+                  _("no domain with matching uuid"));
+        return NULL;
+    }
+
+    rc = machine->vtbl->GetMonitorCount(machine, &max_screen);
+    if (NS_FAILED(rc)) {
+        vboxError(VIR_ERR_OPERATION_FAILED, "%s",
+                  _("unable to get monitor count"));
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+    if (screen >= max_screen) {
+        vboxError(VIR_ERR_INVALID_ARG, _("screen ID higher than monitor "
+                  "count (%d)"), max_screen);
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+    if (virAsprintf(&tmp, "%s/cache/libvirt/vbox.screendump.XXXXXX", LOCALSTATEDIR) < 0) {
+        virReportOOMError();
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+    if ((tmp_fd = mkstemp(tmp)) == -1) {
+        virReportSystemError(errno, _("mkstemp(\"%s\") failed"), tmp);
+        VIR_FREE(tmp);
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+
+    rc = VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
+    if (NS_SUCCEEDED(rc)) {
+        rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
+        if (NS_SUCCEEDED(rc) && console) {
+            IDisplay *display = NULL;
+
+            console->vtbl->GetDisplay(console, &display);
+
+            if (display) {
+                PRUint32 width, height, bitsPerPixel;
+                PRUint32 screenDataSize;
+                PRUint8 *screenData;
+
+                rc = display->vtbl->GetScreenResolution(display, screen,
+                                                        &width, &height,
+                                                        &bitsPerPixel);
+
+                if (NS_FAILED(rc) || !width || !height) {
+                    vboxError(VIR_ERR_OPERATION_FAILED, "%s",
+                              _("unable to get screen resolution"));
+                    goto endjob;
+                }
+
+                rc = display->vtbl->TakeScreenShotPNGToArray(display, screen,
+                                                             width, height,
+                                                             &screenDataSize,
+                                                             &screenData);
+                if (NS_FAILED(rc)) {
+                    vboxError(VIR_ERR_OPERATION_FAILED, "%s",
+                              _("failed to take screenshot"));
+                    goto endjob;
+                }
+
+                if (safewrite(tmp_fd, (char *) screenData,
+                              screenDataSize) < 0) {
+                    virReportSystemError(errno, _("unable to write data "
+                                                  "to '%s'"), tmp);
+                    goto endjob;
+                }
+
+                if (VIR_CLOSE(tmp_fd) < 0) {
+                    virReportSystemError(errno, _("unable to close %s"), tmp);
+                    goto endjob;
+                }
+
+                if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY, true) < 0) {
+                    vboxError(VIR_ERR_OPERATION_FAILED, "%s",
+                              _("unable to open stream"));
+                    goto endjob;
+                }
+
+                ret = strdup("image/png");
+
+endjob:
+                VIR_FREE(screenData);
+                VBOX_RELEASE(display);
+            }
+            VBOX_RELEASE(console);
+        }
+        VBOX_SESSION_CLOSE();
+    }
+
+    VIR_FORCE_CLOSE(tmp_fd);
+    VIR_FREE(tmp);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
+#endif /* VBOX_API_VERSION == 4000 */
+
 /**
  * Function Tables
  */
@@ -8569,7 +8698,11 @@ virDriver NAME(Driver) = {
     vboxDomainSave, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
+#if VBOX_API_VERSION == 4000
+    vboxDomainScreenshot, /* domainScreenshot */
+#else
     NULL, /* domainScreenshot */
+#endif
     vboxDomainSetVcpus, /* domainSetVcpus */
     vboxDomainSetVcpusFlags, /* domainSetVcpusFlags */
     vboxDomainGetVcpusFlags, /* domainGetVcpusFlags */
