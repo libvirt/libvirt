@@ -30,7 +30,7 @@
       by the particular volume format and driver, automatically generate a
       secret value at the time of volume creation, and store it using the
       specified <code>uuid</code>.
-    <p>
+    </p>
     <h3><a name="StorageEncryptionDefault">"default" format</a></h3>
     <p>
       <code>&lt;encryption type="default"/&gt;</code> can be specified only

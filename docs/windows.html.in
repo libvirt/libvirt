@@ -30,7 +30,7 @@
       and untested Python bindings.
     </p>
 
-    <h3><a name="caveats">Caveats</h3>
+    <h3><a name="caveats">Caveats</a></h3>
 
     <ul>
       <li>
@@ -47,7 +47,7 @@
       </li>
     </ul>
 
-    <h3><a name="knowninstallerprobs">Existing problems with this installer we know about</a>
+    <h3><a name="knowninstallerprobs">Existing problems with this installer we know about</a></h3>
 
     <p>
       These are problems we know about, and need to be fixed in subsequent
@@ -72,7 +72,7 @@
 
     </ul>
 
-    <h2><a name="conntypes">Connection types</h2>
+    <h2><a name="conntypes">Connection types</a></h2>
 
     <p>
       These connection types are known to work:
@@ -114,7 +114,7 @@
       be used in security sensitive environments.</b>
     </p>
 
-    <h2><a name="esx">Connecting to VMware ESX/vSphere</h2>
+    <h2><a name="esx">Connecting to VMware ESX/vSphere</a></h2>
 
     <p>
       Details on the capabilities, certificates, and connection string
@@ -124,7 +124,7 @@
 
     <a href="http://libvirt.org/drvesx.html">http://libvirt.org/drvesx.html</a>
 
-    <h2><a name="tlscerts">TLS Certificates</h2>
+    <h2><a name="tlscerts">TLS Certificates</a></h2>
 
     <p>
       TLS certificates need to have been created and placed in the correct
@@ -184,7 +184,7 @@
       <li>C:\Users\someuser\AppData\Roaming\libvirt\pki\libvirt\private\clientkey.pem</li>
     </ul>
 
-    <h2><a name="feedback">Feedback</h2>
+    <h2><a name="feedback">Feedback</a></h2>
 
     <p>
       Feedback and suggestions on changes to make and what else to include

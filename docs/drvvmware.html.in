@@ -8,7 +8,9 @@
     </p>
     <p>
     This driver uses the "vmrun" utility which is distributed with the VMware VIX API.
-    You can download the VIX API from <a href="http://www.vmware.com/support/developer/vix-api/">here</a>.
+    You can download the VIX API
+    from <a href="http://www.vmware.com/support/developer/vix-api/">here</a>.
+    </p>
 
     <h2>Connections to VMware driver</h2>
 

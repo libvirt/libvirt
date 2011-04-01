@@ -9,9 +9,9 @@
     </p>
 
     <ul>
-      <li>Introduction to basic rules and guidelines for <a href="hacking.html">hacking<a>
+      <li>Introduction to basic rules and guidelines for <a href="hacking.html">hacking</a>
             on libvirt code</li>
-      <li>Guide to adding <a href="api_extension.html">public APIs<a></li>
+      <li>Guide to adding <a href="api_extension.html">public APIs</a></li>
       <li>Approach for <a href="internals/command.html">spawning commands</a> from
         libvirt driver code</li>
     </ul>

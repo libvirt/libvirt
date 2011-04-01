@@ -4,7 +4,7 @@
     <h1>The libvirt API concepts</h1>
 
     <p> This page describes the main principles and architecture choices
-    behind the definition of the libvirt API:
+    behind the definition of the libvirt API:</p>
 
     <ul id="toc"></ul>
 
@@ -22,7 +22,7 @@
     possible to use both KVM and LinuxContainers on the same node). A NULL
     name will default to a preselected hypervisor but it's probably not a
     wise thing to do in most cases. See the <a href="uri.html">connection
-    URI</a> page for a full descriptions of the values allowed.<p>
+    URI</a> page for a full descriptions of the values allowed.</p>
     <p> Once the application obtained a <code class='docref'>virConnectPtr</code>
     connection to the
     hypervisor it can then use it to manage domains and related resources
@@ -61,7 +61,7 @@
       <code>defined</code> in which case they are inactive but there is
       a permanent definition available in the system for them. Based on this
       thay can be activated dynamically in order to be used.</p>
-    <p> Most kind of object can also be named in various ways:<p>
+    <p> Most kind of object can also be named in various ways:</p>
     <ul>
       <li>by their <code>name</code>, an user friendly identifier but
       whose unicity cannot be garanteed between two nodes.</li>
@@ -82,7 +82,7 @@
     <p> For each first class object you will find apis
       for the following actions:</p>
     <ul>
-      <li><b>Lookup</b>:...LookupByName,
+      <li><b>Lookup</b>:...LookupByName,</li>
       <li><b>Enumeration</b>:virConnectList... and virConnectNumOf...:
         those are used to enumerate a set of object available to an given
         hypervisor connection like:
@@ -108,7 +108,8 @@
       <li><b>Destruction</b>: ... </li>
     </ul>
     <p> For more in-depth details of the storage related APIs see
-      <a href="storage.html">the storage management page</a>,
+      <a href="storage.html">the storage management page</a>.
+    </p>
     <h2><a name="Driver">The libvirt drivers</a></h2>
     <p></p>
     <p class="image">

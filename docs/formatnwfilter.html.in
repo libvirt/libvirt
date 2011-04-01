@@ -25,18 +25,18 @@
       cannot be circumvented from within
       the virtual machine, it makes them mandatory from the point of
       view of a virtual machine user.
-      <br><br>
+      <br/><br/>
       The network filter subsystem allows each virtual machine's network
       traffic filtering rules to be configured individually on a per
       interface basis. The rules are
       applied on the host when the virtual machine is started and can be modified
       while the virtual machine is running. The latter can be achieved by
       modifying the XML description of a network filter.
-      <br><br>
+      <br/><br/>
       Multiple virtual machines can make use of the same generic network filter.
       When such a filter is modified, the network traffic filtering rules
       of all running virtual machines that reference this filter are updated.
-      <br><br>
+      <br/><br/>
       Network filtering support is available <span class="since">since 0.8.1
       (Qemu, KVM)</span>
     </p>
@@ -79,7 +79,7 @@
     other filters can be used, a <i>tree</i> of filters can be built.
     The <code>clean-traffic</code> filter can be viewed using the
     command <code>virsh nwfilter-dumpxml clean-traffic</code>.
-    <br><br>
+    <br/><br/>
     As previously mentioned, a single network filter can be referenced
     by multiple virtual machines. Since interfaces will typically
     have individual parameters associated with their respective traffic
@@ -108,7 +108,7 @@
       10.0.0.1 and enforce that the traffic from this interface will
       always be using 10.0.0.1 as the source IP address, which is
       one of the purposes of this particular filter.
-      <br><br>
+      <br/><br/>
     </p>
 
     <h3><a name="nwfconceptsvars">Usage of variables in filters</a></h3>
@@ -117,7 +117,7 @@
       Two variables names have so far been reserved for usage by the
       network traffic filtering subsystem: <code>MAC</code> and
       <code>IP</code>.
-      <br><br>
+      <br/><br/>
       <code>MAC</code> is the MAC address of the
       network interface. A filtering rule that references this variable
       will automatically be instantiated with the MAC address of the
@@ -125,7 +125,7 @@
       the MAC parameter. Even though it is possible to specify the MAC
       parameter similar to the IP parameter above, it is discouraged
       since libvirt knows what MAC address an interface will be using.
-      <br><br>
+      <br/><br/>
       The parameter <code>IP</code> represents the IP address
       that the operating system inside the virtual machine is expected
       to use on the given interface. The <code>IP</code> parameter
@@ -136,7 +136,7 @@
       For current limitations on IP address detection, consult the
       <a href="#nwflimits">section on limitations</a> on how to use this
       feature and what to expect when using it.
-      <br><br>
+      <br/><br/>
       The following is the XML description of the network filer
       <code>no-arp-spoofing</code>. It serves as an example for
       a network filter XML referencing the <code>MAC</code> and
@@ -205,7 +205,7 @@
      filters may be referenced multiple times in a filter tree but
      references between filters must not introduce loops (directed
      acyclic graph).
-     <br><br>
+     <br/><br/>
      The following shows the XML of the <code>clean-traffic</code>
      network filter referencing several other filters.
     </p>
@@ -226,7 +226,7 @@
     needs to be provided inside a <code>filter</code> node. This
     node must have the attribute <code>filter</code> whose value contains
     the name of the filter to be referenced.
-    <br><br>
+    <br/><br/>
     New network filters can be defined at any time and
     may contain references to network filters that are
     not known to libvirt, yet. However, once a virtual machine
@@ -282,7 +282,7 @@
      <li>
         statematch -- optional; possible values are '0' or 'false' to
         turn the underlying connection state matching off; default is 'true'
-        <br>
+        <br/>
         Also read the section on <a href="#nwfelemsRulesAdv">advanced configuration</a>
         topics.
      </li>
@@ -294,7 +294,7 @@
      traffic of type <code>ip</code> is also associated with the chain
      'ipv4' then that filter's rules will be ordered relative to the priority
      500 of the shown rule.
-     <br><br>
+     <br/><br/>
      A rule may contain a single rule for filtering of traffic. The
      above example shows that traffic of type <code>ip</code> is to be
      filtered.
@@ -325,7 +325,7 @@
      <li>STRING: A string</li>
     </ul>
     <p>
-     <br><br>
+     <br/><br/>
      Every attribute except for those of type IP_MASK or IPV6_MASK can
      be negated using the <code>match</code>
      attribute with value <code>no</code>. Multiple negated attributes
@@ -349,14 +349,14 @@
      the protocol property attribute1 does not match value1 AND
      the protocol property attribute2 does not match value2 AND
      the protocol property attribute3 matches value3.
-     <br><br>
+     <br/><br/>
     </p>
 
 
     <h5><a name="nwfelemsRulesProtoMAC">MAC (Ethernet)</a></h5>
     <p>
       Protocol ID: <code>mac</code>
-      <br>
+      <br/>
       Note: Rules of this type should go into the <code>root</code> chain.
     </p>
       <table class="top_table">
@@ -408,7 +408,7 @@
     <h5><a name="nwfelemsRulesProtoARP">ARP/RARP</a></h5>
     <p>
       Protocol ID: <code>arp</code> or <code>rarp</code>
-      <br>
+      <br/>
       Note: Rules of this type should either go into the
       <code>root</code> or <code>arp/rarp</code> chain.
     </p>
@@ -483,7 +483,7 @@
       Valid strings for the <code>Opcode</code> field are:
        Request, Reply, Request_Reverse, Reply_Reverse, DRARP_Request,
        DRARP_Reply, DRARP_Error, InARP_Request, ARP_NAK
-      <br><br>
+      <br/><br/>
     </p>
 
     <h5><a name="nwfelemsRulesProtoIP">IPv4</a></h5>
@@ -572,7 +572,7 @@
     <p>
       Valid strings for <code>protocol</code> are:
          tcp, udp, udplite, esp, ah, icmp, igmp, sctp
-      <br><br>
+      <br/><br/>
     </p>
 
 
@@ -662,13 +662,13 @@
     <p>
       Valid strings for <code>protocol</code> are:
          tcp, udp, udplite, esp, ah, icmpv6, sctp
-      <br><br>
+      <br/><br/>
     </p>
 
     <h5><a name="nwfelemsRulesProtoTCP-ipv4">TCP/UDP/SCTP</a></h5>
     <p>
       Protocol ID: <code>tcp</code>, <code>udp</code>, <code>sctp</code>
-      <br>
+      <br/>
       Note: The chain parameter is ignored for this type of traffic
       and should either be omitted or set to <code>root</code>.
     </p>
@@ -757,14 +757,14 @@
        </tr>
       </table>
     <p>
-      <br><br>
+      <br/><br/>
     </p>
 
 
     <h5><a name="nwfelemsRulesProtoICMP">ICMP</a></h5>
     <p>
       Protocol ID: <code>icmp</code>
-      <br>
+      <br/>
       Note: The chain parameter is ignored for this type of traffic
       and should either be omitted or set to <code>root</code>.
     </p>
@@ -857,13 +857,13 @@
        </tr>
       </table>
     <p>
-      <br><br>
+      <br/><br/>
     </p>
 
     <h5><a name="nwfelemsRulesProtoMisc">IGMP, ESP, AH, UDPLITE, 'ALL'</a></h5>
     <p>
       Protocol ID: <code>igmp</code>, <code>esp</code>, <code>ah</code>, <code>udplite</code>, <code>all</code>
-      <br>
+      <br/>
       Note: The chain parameter is ignored for this type of traffic
       and should either be omitted or set to <code>root</code>.
     </p>
@@ -946,14 +946,14 @@
        </tr>
       </table>
     <p>
-      <br><br>
+      <br/><br/>
     </p>
 
 
     <h5><a name="nwfelemsRulesProtoTCP-ipv6">TCP/UDP/SCTP over IPV6</a></h5>
     <p>
       Protocol ID: <code>tcp-ipv6</code>, <code>udp-ipv6</code>, <code>sctp-ipv6</code>
-      <br>
+      <br/>
       Note: The chain parameter is ignored for this type of traffic
       and should either be omitted or set to <code>root</code>.
     </p>
@@ -1042,14 +1042,14 @@
        </tr>
       </table>
     <p>
-      <br><br>
+      <br/><br/>
     </p>
 
 
     <h5><a name="nwfelemsRulesProtoICMPv6">ICMPv6</a></h5>
     <p>
       Protocol ID: <code>icmpv6</code>
-      <br>
+      <br/>
       Note: The chain parameter is ignored for this type of traffic
       and should either be omitted or set to <code>root</code>.
     </p>
@@ -1128,13 +1128,13 @@
        </tr>
       </table>
     <p>
-      <br><br>
+      <br/><br/>
     </p>
 
     <h5><a name="nwfelemsRulesProtoMiscv6">IGMP, ESP, AH, UDPLITE, 'ALL' over IPv6</a></h5>
     <p>
       Protocol ID: <code>igmp-ipv6</code>, <code>esp-ipv6</code>, <code>ah-ipv6</code>, <code>udplite-ipv6</code>, <code>all-ipv6</code>
-      <br>
+      <br/>
       Note: The chain parameter is ignored for this type of traffic
       and should either be omitted or set to <code>root</code>.
     </p>
@@ -1202,7 +1202,7 @@
        </tr>
       </table>
     <p>
-      <br><br>
+      <br/><br/>
     </p>
 
     <h3><a name="nwfelemsRulesAdv">Advanced Filter Configuration Topics</a></h3>
@@ -1227,7 +1227,7 @@
      port 80 on an attacker site, then the attacker will not be able to
      initiate a connection from TCP port 80 back towards the VM.
      By default the connection state match that enables connection tracking
-     and then enforcement of directionality of traffic is turned on. <br>
+     and then enforcement of directionality of traffic is turned on. <br/>
      The following shows an example XML fragement where this feature has been
      turned off for incoming connections to TCP port 12345.
     </p>
@@ -1277,14 +1277,14 @@
 </pre>
     <p>
      Note that the rule for the limit has to logically appear
-     before the rule for accepting the traffic.<br>
+     before the rule for accepting the traffic.<br/>
      An additional rule for letting DNS traffic to port 22
      go out the VM has been added to avoid ssh sessions not
      getting established for reasons related to DNS lookup failures
      by the ssh daemon. Leaving this rule out may otherwise lead to
      fun-filled debugging joy (symptom: ssh client seems to hang
      while trying to connect).
-     <br><br>
+     <br/><br/>
      Lot of care must be taken with timeouts related
      to tracking of traffic. An ICMP ping that
      the user may have terminated inside the VM may have a long
@@ -1299,7 +1299,7 @@
     <p>
       sets the ICMP connection tracking timeout to 3 seconds. The
       effect of this is that once one ping is terminated, another
-      one can start after 3 seconds.<br>
+      one can start after 3 seconds.<br/>
       Further, we want to point out that a client that for whatever
       reason has not properly closed a TCP connection may cause a
       connection to be held open for a longer period of time,
@@ -1323,7 +1323,7 @@
       with life-cycle support for network filters. All commands related
       to the network filtering subsystem start with the prefix
       <code>nwfilter</code>. The following commands are available:
-    <p>
+    </p>
     <ul>
      <li>nwfilter-list : list UUIDs and names of all network filters</li>
      <li>nwfilter-define : define a new network filter or update an existing one</li>
@@ -1398,7 +1398,7 @@
      the protocols very well that you want to be filtering on so that
      no further traffic than what you want can pass and that in fact the
      traffic you want to allow does pass.
-     <br><br>
+     <br/><br/>
      The network filtering subsystem is currently only available on
      Linux hosts and only works for Qemu and KVM type of virtual machines.
      On Linux
@@ -1412,19 +1412,19 @@
      <li>arp, rarp</li>
      <li>ip</li>
      <li>ipv6</li>
-    </uL>
+    </ul>
 
     <p>
     All other protocols over IPv4 are supported using iptables, those over
     IPv6 are implemented using ip6tables.
-    <br><br>
+    <br/><br/>
     On a Linux host, all traffic filtering instantiated by libvirt's network
     filter subsystem first passes through the filtering support implemented
     by ebtables and only then through iptables or ip6tables filters. If
     a filter tree has rules with the protocols <code>mac</code>,
     <code>arp</code>, <code>rarp</code>, <code>ip</code>, or <code>ipv6</code>
     ebtables rules will automatically be instantiated.
-    <br>
+    <br/>
     The role of the <code>chain</code> attribute in the network filter
     XML is that internally a new user-defined ebtables table is created
     that then for example receives all <code>arp</code> traffic coming
@@ -1435,7 +1435,7 @@
     placed into filters specifying this chain. This type of branching
     into user-defined tables is only supported with filtering on the ebtables
     layer.
-    <br>
+    <br/>
     As an example, it is
     possible to filter on UDP traffic by source and destination ports using
     the <code>ip</code> protocol filter and specifying attributes for the
@@ -1467,7 +1467,7 @@
      The requirement to prevent spoofing is fulfilled by the existing
      <code>clean-traffic</code> network filter, thus we will reference this
      filter from our custom filter.
-     <br>
+     <br/>
      To enable traffic for TCP ports 22 and 80 we will add 2 rules to
      enable this type of traffic. To allow the VM to send ping traffic
      we will add a rule for ICMP traffic. For simplicity reasons
@@ -1523,7 +1523,7 @@
      per-interface basis and the rules are evaluated based on the knowledge
      about which (tap) interface has sent or will receive the packet rather
      than what their source or destination IP address may be.
-     <br><br>
+     <br/><br/>
      An XML fragment for a possible network interface description inside
      the domain XML of the <code>test</code> VM could then look like this:
     </p>
@@ -1568,7 +1568,7 @@
      <li>allows the VM to send ping traffic from an interface
         but not let the VM be pinged on the interface</li>
      <li>allows the VM to do DNS lookups (UDP towards port 53)</li>
-     <li>enable an ftp server (in active mode) to be run inside the VM
+     <li>enable an ftp server (in active mode) to be run inside the VM</li>
     </ul>
     <p>
      The additional requirement of allowing an ftp server to be run inside
@@ -1577,7 +1577,7 @@
      outgoing tcp connection originating from the VM's TCP port 20 back to
      the ftp client (ftp active mode). There are several ways of how this
      filter can be written and we present 2 solutions.
-     <br><br>
+     <br/><br/>
      The 1st solution makes use of the <code>state</code> attribute of
      the TCP protocol that gives us a hook into the connection tracking
      framework of the Linux host. For the VM-initiated ftp data connection
@@ -1752,13 +1752,13 @@
        to be using.
        Different IP addresses in use by multiple interfaces of a VM
        (one IP address each) will be independently detected.
-       <br><br>
+       <br/><br/>
        Once a VM's IP address has been detected, its IP network traffic
        may be locked to that address, if for example IP address spoofing
        is prevented by one of its filters. In that case the user of the VM
        will not be able to change the IP address on the interface inside
        the VM, which would be considered IP address spoofing.
-       <br><br>
+       <br/><br/>
        In case a VM is resumed after suspension or migrated, IP address
        detection will be restarted.
      </p>
@@ -1776,7 +1776,7 @@
       outside the scope of libvirt to ensure that referenced filters
       on the source system are equivalent to those on the target system
       and vice versa.
-      <br><br>
+      <br/><br/>
       Migration must occur between libvirt insallations of version
       0.8.1 or later in order not to lose the network traffic filters
       associated with an interface.

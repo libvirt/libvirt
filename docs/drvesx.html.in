@@ -74,7 +74,7 @@ vpx://example-vcenter.com/dc1/cluster1/example-esx.com
 </pre>
 
 
-    <h4><a name="extraparams">Extra parameters</h4>
+    <h4><a name="extraparams">Extra parameters</a></h4>
     <p>
         Extra parameters can be added to a URI as part of the query string
         (the part following <code>?</code>). A single parameter is formed by a
@@ -308,7 +308,7 @@ error: invalid argument in libvirt was built without the 'esx' driver
         There are several specialties in the domain XML config for ESX domains.
     </p>
 
-    <h3><a name="restrictions">Restrictions</h3>
+    <h3><a name="restrictions">Restrictions</a></h3>
     <p>
         There are some restrictions for some values of the domain XML config.
         The driver will complain if this restrictions are violated.
@@ -328,7 +328,7 @@ error: invalid argument in libvirt was built without the 'esx' driver
     </ul>
 
 
-    <h3><a name="datastore">Datastore references</h3>
+    <h3><a name="datastore">Datastore references</a></h3>
     <p>
         Storage is managed in datastores. VMware uses a special path format to
         reference files in a datastore. Basically, the datastore name is put
@@ -347,7 +347,7 @@ error: invalid argument in libvirt was built without the 'esx' driver
     </p>
 
 
-    <h3><a name="macaddresses">MAC addresses</h3>
+    <h3><a name="macaddresses">MAC addresses</a></h3>
     <p>
         VMware has registered two MAC address prefixes for domains:
         <code>00:0c:29</code> and <code>00:50:56</code>. These prefixes are
@@ -408,7 +408,7 @@ ethernet0.checkMACAddress = "false"
 </pre>
 
 
-    <h3><a name="hardware">Available hardware</h3>
+    <h3><a name="hardware">Available hardware</a></h3>
     <p>
         VMware ESX supports different models of SCSI controllers and network
         cards.

@@ -1277,7 +1277,7 @@
     <p>
       Provides direct attachment of the virtual machine's NIC to the given
       physial interface of the host.
-      <span class="since">Since 0.7.7 (QEMU and KVM only)</span><br>
+      <span class="since">Since 0.7.7 (QEMU and KVM only)</span><br/>
       This setup requires the Linux macvtap
       driver to be available. <span class="since">(Since Linux 2.6.34.)</span>
       One of the modes 'vepa'
@@ -1299,7 +1299,7 @@
       originate from are directly delivered to the target macvtap device.
       Both origin and destination devices need to be in bridge mode
       for direct delivery. If either one of them is in <code>vepa</code> mode,
-      a VEPA capable bridge is required.
+      a VEPA capable bridge is required.</dd>
       <dt><code>private</code></dt>
       <dd>All packets are sent to the external bridge and will only be
       delivered to a target VM on the same host if they are sent through an
@@ -1488,23 +1488,23 @@ qemu-kvm -net nic,model=? /dev/null
         The <code>txmode</code> attribute specifies how to handle
         transmission of packets when the transmit buffer is full. The
         value can be either 'iothread' or 'timer'.
-        <span class="since">Since 0.8.8 (QEMU and KVM only)</span><br><br>
+        <span class="since">Since 0.8.8 (QEMU and KVM only)</span><br/><br/>
 
         If set to 'iothread', packet tx is all done in an iothread in
         the bottom half of the driver (this option translates into
         adding "tx=bh" to the qemu commandline -device virtio-net-pci
-        option).<br><br>
+        option).<br/><br/>
 
         If set to 'timer', tx work is done in qemu, and if there is
         more tx data than can be sent at the present time, a timer is
         set before qemu moves on to do other things; when the timer
-        fires, another attempt is made to send more data.<br><br>
+        fires, another attempt is made to send more data.<br/><br/>
 
         The resulting difference, according to the qemu developer who
         added the option is: "bh makes tx more asynchronous and reduces
         latency, but potentially causes more processor bandwidth
         contention since the cpu doing the tx isn't necessarily the
-        cpu where the guest generated the packets."<br><br>
+        cpu where the guest generated the packets."<br/><br/>
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>
@@ -1628,8 +1628,8 @@ qemu-kvm -net nic,model=? /dev/null
   in clear text. The <code>keymap</code> attribute specifies the keymap
   to use. It is possible to set a limit on the validity of the password
   be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-  assumed to be in UTC. NB, this may not be supported by all hypervisors.<br>
-  <br>
+  assumed to be in UTC. NB, this may not be supported by all hypervisors.<br/>
+  <br/>
   Rather than using listen/port, QEMU supports a <code>socket</code>
   attribute for listening on a unix domain socket path.
   <span class="since">Since 0.8.8</span>
@@ -2103,7 +2103,7 @@ qemu-kvm -net nic,model=? /dev/null
       Alternatively you can use <code>telnet</code> instead of <code>raw</code> TCP.
       <span class="since">Since 0.8.5</span> you can also use <code>telnets</code>
       (secure telnet) and <code>tls</code>.
-    <p>
+    </p>
 
 <pre>
   ...

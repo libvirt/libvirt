@@ -32,7 +32,7 @@
         </li>
       <li><strong>Guest C</strong>. The only network interface is connected
         to a virtual network <code>VLAN 2</code>. It has no direct connectivity
-        to a physical LAN, relying on <code>Guest B</codE> to route traffic
+        to a physical LAN, relying on <code>Guest B</code> to route traffic
         on its behalf.
       </li>
     </ul>
