@@ -294,8 +294,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
     }
 
-    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-        if (vm->def->blkio.weight != 0) {
+    if (vm->def->blkio.weight != 0) {
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
             rc = virCgroupSetBlkioWeight(cgroup, vm->def->blkio.weight);
             if(rc != 0) {
                 virReportSystemError(-rc,
@@ -303,48 +303,52 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                                      vm->def->name);
                 goto cleanup;
             }
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Block I/O tuning is not available on this host"));
         }
-    } else {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("Block I/O tuning is not available on this host"));
     }
 
-    if ((rc = qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY))) {
-        if (vm->def->mem.hard_limit != 0) {
-            rc = virCgroupSetMemoryHardLimit(cgroup, vm->def->mem.hard_limit);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to set memory hard limit for domain %s"),
-                                     vm->def->name);
-                goto cleanup;
+    if (vm->def->mem.hard_limit != 0 ||
+        vm->def->mem.soft_limit != 0 ||
+        vm->def->mem.swap_hard_limit != 0) {
+        if ((rc = qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY))) {
+            if (vm->def->mem.hard_limit != 0) {
+                rc = virCgroupSetMemoryHardLimit(cgroup, vm->def->mem.hard_limit);
+                if (rc != 0) {
+                    virReportSystemError(-rc,
+                                         _("Unable to set memory hard limit for domain %s"),
+                                         vm->def->name);
+                    goto cleanup;
+                }
             }
-        }
-        if (vm->def->mem.soft_limit != 0) {
-            rc = virCgroupSetMemorySoftLimit(cgroup, vm->def->mem.soft_limit);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to set memory soft limit for domain %s"),
-                                     vm->def->name);
-                goto cleanup;
+            if (vm->def->mem.soft_limit != 0) {
+                rc = virCgroupSetMemorySoftLimit(cgroup, vm->def->mem.soft_limit);
+                if (rc != 0) {
+                    virReportSystemError(-rc,
+                                         _("Unable to set memory soft limit for domain %s"),
+                                         vm->def->name);
+                    goto cleanup;
+                }
             }
-        }
 
-        if (vm->def->mem.swap_hard_limit != 0) {
-            rc = virCgroupSetMemSwapHardLimit(cgroup, vm->def->mem.swap_hard_limit);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to set swap hard limit for domain %s"),
-                                     vm->def->name);
-                goto cleanup;
+            if (vm->def->mem.swap_hard_limit != 0) {
+                rc = virCgroupSetMemSwapHardLimit(cgroup, vm->def->mem.swap_hard_limit);
+                if (rc != 0) {
+                    virReportSystemError(-rc,
+                                         _("Unable to set swap hard limit for domain %s"),
+                                         vm->def->name);
+                    goto cleanup;
+                }
             }
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Memory cgroup is not available on this host"));
         }
-    } else {
-        VIR_WARN("Memory cgroup is disabled in qemu configuration file: %s",
-                 vm->def->name);
     }
 
-    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        if (vm->def->cputune.shares != 0) {
+    if (vm->def->cputune.shares != 0) {
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
             rc = virCgroupSetCpuShares(cgroup, vm->def->cputune.shares);
             if(rc != 0) {
                 virReportSystemError(-rc,
@@ -352,10 +356,10 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                                      vm->def->name);
                 goto cleanup;
             }
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("CPU tuning is not available on this host"));
         }
-    } else {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("CPU tuning is not available on this host"));
     }
 
 done:
