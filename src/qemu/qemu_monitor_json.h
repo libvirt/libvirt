@@ -205,4 +205,9 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     bool hmp);
 
 int qemuMonitorJSONInjectNMI(qemuMonitorPtr mon);
+
+int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
+                              const char *file);
+
+
 #endif /* QEMU_MONITOR_JSON_H */

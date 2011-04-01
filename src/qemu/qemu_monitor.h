@@ -425,6 +425,9 @@ int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
 
 int qemuMonitorInjectNMI(qemuMonitorPtr mon);
 
+int qemuMonitorScreendump(qemuMonitorPtr mon,
+                          const char *file);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

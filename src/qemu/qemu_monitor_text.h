@@ -199,4 +199,7 @@ int qemuMonitorTextArbitraryCommand(qemuMonitorPtr mon, const char *cmd,
                                     char **reply);
 
 int qemuMonitorTextInjectNMI(qemuMonitorPtr mon);
+
+int qemuMonitorTextScreendump(qemuMonitorPtr mon, const char *file);
+
 #endif /* QEMU_MONITOR_TEXT_H */

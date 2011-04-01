@@ -2486,6 +2486,94 @@ cleanup:
     return ret;
 }
 
+static char *
+qemuDomainScreenshot(virDomainPtr dom,
+                     virStreamPtr st,
+                     unsigned int screen,
+                     unsigned int flags ATTRIBUTE_UNUSED)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
+    char *tmp = NULL;
+    int tmp_fd = -1;
+    char *ret = NULL;
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJob(vm) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    /* Well, even if qemu allows multiple graphic cards, heads, whatever,
+     * screenshot command does not */
+    if (screen) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        "%s", _("currently is supported only taking "
+                                "screenshots of screen ID 0"));
+        goto endjob;
+    }
+
+    if (virAsprintf(&tmp, "%s/qemu.screendump.XXXXXX", driver->cacheDir) < 0) {
+        virReportOOMError();
+        goto endjob;
+    }
+
+    if ((tmp_fd = mkstemp(tmp)) == -1) {
+        virReportSystemError(errno, _("mkstemp(\"%s\") failed"), tmp);
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(vm);
+    if (qemuMonitorScreendump(priv->mon, tmp) < 0) {
+        qemuDomainObjExitMonitor(vm);
+        goto endjob;
+    }
+    qemuDomainObjExitMonitor(vm);
+
+    if (VIR_CLOSE(tmp_fd) < 0) {
+        virReportSystemError(errno, _("unable to close %s"), tmp);
+        goto endjob;
+    }
+
+    if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY, true) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("unable to open stream"));
+        goto endjob;
+    }
+
+    ret = strdup("image/x-portable-pixmap");
+
+endjob:
+    VIR_FORCE_CLOSE(tmp_fd);
+    VIR_FREE(tmp);
+
+    if (qemuDomainObjEndJob(vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static void processWatchdogEvent(void *data, void *opaque)
 {
     int ret;
@@ -7171,7 +7259,7 @@ static virDriver qemuDriver = {
     qemudDomainSave, /* domainSave */
     qemuDomainRestore, /* domainRestore */
     qemudDomainCoreDump, /* domainCoreDump */
-    NULL, /* domainScreenshot */
+    qemuDomainScreenshot, /* domainScreenshot */
     qemudDomainSetVcpus, /* domainSetVcpus */
     qemudDomainSetVcpusFlags, /* domainSetVcpusFlags */
     qemudDomainGetVcpusFlags, /* domainGetVcpusFlags */
