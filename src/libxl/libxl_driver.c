@@ -548,7 +548,7 @@ libxlStartup(int privileged) {
     const libxl_version_info *ver_info;
     char *log_file = NULL;
     virCommandPtr cmd;
-    int status;
+    int status, ret = 0;
 
     /* Disable libxl driver if non-root */
     if (!privileged) {
@@ -659,19 +659,19 @@ libxlStartup(int privileged) {
             (xentoollog_logger *)xtl_createlogger_stdiostream(libxl_driver->logger_file, XTL_DEBUG,  0);
     if (!libxl_driver->logger) {
         VIR_ERROR0(_("cannot create logger for libxenlight"));
-        goto error;
+        goto fail;
     }
 
     if (libxl_ctx_init(&libxl_driver->ctx,
                        LIBXL_VERSION,
                        libxl_driver->logger)) {
         VIR_ERROR0(_("cannot initialize libxenlight context"));
-        goto error;
+        goto fail;
     }
 
     if ((ver_info = libxl_get_version_info(&libxl_driver->ctx)) == NULL) {
         VIR_ERROR0(_("cannot version information from libxenlight"));
-        goto error;
+        goto fail;
     }
     libxl_driver->version = (ver_info->xen_version_major * 1000000) +
             (ver_info->xen_version_minor * 1000);
@@ -712,11 +712,13 @@ libxlStartup(int privileged) {
 out_of_memory:
     virReportOOMError();
 error:
+    ret = -1;
+fail:
     VIR_FREE(log_file);
     if (libxl_driver)
         libxlDriverUnlock(libxl_driver);
     libxlShutdown();
-    return -1;
+    return ret;
 }
 
 static int
