@@ -51,8 +51,8 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
     int i;
     int ret;
     char *driveAlias = NULL;
+    qemuDomainObjPrivatePtr priv;
 
-    origdisk = NULL;
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (vm->def->disks[i]->bus == disk->bus &&
             STREQ(vm->def->disks[i]->dst, disk->dst)) {
@@ -90,7 +90,7 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
     if (!(driveAlias = qemuDeviceDriveHostAlias(origdisk, qemuCaps)))
         goto error;
 
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    priv = vm->privateData;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (disk->src) {
         const char *format = NULL;

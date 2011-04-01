@@ -3727,6 +3727,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     for (i = 0 ; i < def->nchannels ; i++) {
         virDomainChrDefPtr channel = def->channels[i];
         char *devstr;
+        char *addr;
+        int port;
 
         switch(channel->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
@@ -3745,10 +3747,10 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
-            char *addr = virSocketFormatAddr(channel->target.addr);
+            addr = virSocketFormatAddr(channel->target.addr);
             if (!addr)
                 goto error;
-            int port = virSocketGetPort(channel->target.addr);
+            port = virSocketGetPort(channel->target.addr);
 
             virCommandAddArg(cmd, "-netdev");
             virCommandAddArgFormat(cmd,

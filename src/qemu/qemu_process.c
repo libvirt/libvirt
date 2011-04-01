@@ -1016,6 +1016,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
     int logfd;
     int ret = -1;
     virHashTablePtr paths = NULL;
+    qemuDomainObjPrivatePtr priv;
 
     if ((logfd = qemuProcessLogReadFD(driver->logDir, vm->def->name, pos)) < 0)
         return -1;
@@ -1038,7 +1039,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
     if (paths == NULL)
         goto cleanup;
 
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    priv = vm->privateData;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorGetPtyPaths(priv->mon, paths);
     qemuDomainObjExitMonitorWithDriver(driver, vm);

@@ -7186,12 +7186,15 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
         }
     }
 #else /* VBOX_API_VERSION != 2002 */
-    IProgress *progress = NULL;
-    host->vtbl->CreateHostOnlyNetworkInterface(host, &networkInterface, &progress);
+    {
+        IProgress *progress = NULL;
+        host->vtbl->CreateHostOnlyNetworkInterface(host, &networkInterface,
+                                                   &progress);
 
-    if (progress) {
-        progress->vtbl->WaitForCompletion(progress, -1);
-        VBOX_RELEASE(progress);
+        if (progress) {
+            progress->vtbl->WaitForCompletion(progress, -1);
+            VBOX_RELEASE(progress);
+        }
     }
 #endif /* VBOX_API_VERSION != 2002 */
 
@@ -7342,6 +7345,8 @@ static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml) {
 static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface) {
     VBOX_OBJECT_HOST_CHECK(network->conn, int, -1);
     char *networkNameUtf8 = NULL;
+    PRUnichar *networkInterfaceNameUtf16    = NULL;
+    IHostNetworkInterface *networkInterface = NULL;
 
     /* Current limitation of the function for VirtualBox 2.2.* is
      * that you can't delete the default hostonly adaptor namely:
@@ -7355,9 +7360,6 @@ static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterfac
         virReportOOMError();
         goto cleanup;
     }
-
-    PRUnichar *networkInterfaceNameUtf16    = NULL;
-    IHostNetworkInterface *networkInterface = NULL;
 
     VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
 
@@ -7433,6 +7435,8 @@ static int vboxNetworkUndefine(virNetworkPtr network) {
 static int vboxNetworkCreate(virNetworkPtr network) {
     VBOX_OBJECT_HOST_CHECK(network->conn, int, -1);
     char *networkNameUtf8 = NULL;
+    PRUnichar *networkInterfaceNameUtf16    = NULL;
+    IHostNetworkInterface *networkInterface = NULL;
 
     /* Current limitation of the function for VirtualBox 2.2.* is
      * that the default hostonly network "vboxnet0" is always active
@@ -7445,9 +7449,6 @@ static int vboxNetworkCreate(virNetworkPtr network) {
         virReportOOMError();
         goto cleanup;
     }
-
-    PRUnichar *networkInterfaceNameUtf16    = NULL;
-    IHostNetworkInterface *networkInterface = NULL;
 
     VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
 
@@ -7509,6 +7510,8 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
     virNetworkDefPtr def  = NULL;
     virNetworkIpDefPtr ipdef = NULL;
     char *networkNameUtf8 = NULL;
+    PRUnichar *networkInterfaceNameUtf16    = NULL;
+    IHostNetworkInterface *networkInterface = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -7525,9 +7528,6 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
         virReportOOMError();
         goto cleanup;
     }
-
-    PRUnichar *networkInterfaceNameUtf16    = NULL;
-    IHostNetworkInterface *networkInterface = NULL;
 
     VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
 

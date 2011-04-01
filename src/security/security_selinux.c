@@ -95,8 +95,9 @@ SELinuxGenNewContext(const char *oldcontext, const char *mcs)
 {
     char *newcontext = NULL;
     char *scontext = strdup(oldcontext);
+    context_t con;
     if (!scontext) goto err;
-    context_t con = context_new(scontext);
+    con = context_new(scontext);
     if (!con) goto err;
     context_range_set(con, mcs);
     newcontext = strdup(context_str(con));

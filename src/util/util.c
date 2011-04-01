@@ -467,6 +467,7 @@ __virExec(const char *const*argv,
     int childerr = -1;
     int tmpfd;
     const char *binary = NULL;
+    int forkRet;
 
     if (argv[0][0] != '/') {
         if (!(binary = virFindFileInPath(argv[0]))) {
@@ -544,7 +545,7 @@ __virExec(const char *const*argv,
         childerr = null;
     }
 
-    int forkRet = virFork(&pid);
+    forkRet = virFork(&pid);
 
     if (pid < 0) {
         goto cleanup;

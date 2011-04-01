@@ -49,6 +49,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 	try_compiler_flags="$try_compiler_flags -Wredundant-decls"
 	try_compiler_flags="$try_compiler_flags -Wno-sign-compare"
 	try_compiler_flags="$try_compiler_flags -Wlogical-op"
+	try_compiler_flags="$try_compiler_flags -Wjump-misses-init"
 	try_compiler_flags="$try_compiler_flags $common_flags"
 	if test "$enable_compile_warnings" = "error" ; then
 	    try_compiler_flags="$try_compiler_flags -Werror"

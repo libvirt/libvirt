@@ -1337,6 +1337,7 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
     char *ret = NULL;
     int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *char_ptr;
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
@@ -1354,7 +1355,7 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
     if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -1675,6 +1676,7 @@ phypGetLparProfile(virConnectPtr conn, int lpar_id)
     char *cmd = NULL;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *char_ptr;
 
     virBufferAddLit(&buf, "lssyscfg");
     if (system_type == HMC)
@@ -1694,7 +1696,7 @@ phypGetLparProfile(virConnectPtr conn, int lpar_id)
     if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -1892,6 +1894,7 @@ phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
     char *cmd = NULL;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *char_ptr;
 
     if (system_type == HMC)
         virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
@@ -1916,7 +1919,7 @@ phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
     if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -2154,6 +2157,7 @@ phypVolumeGetKey(virConnectPtr conn, char *key, const char *name)
     char *cmd = NULL;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *char_ptr;
 
     if (system_type == HMC)
         virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
@@ -2178,7 +2182,7 @@ phypVolumeGetKey(virConnectPtr conn, char *key, const char *name)
     if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -2209,6 +2213,7 @@ phypGetStoragePoolDevice(virConnectPtr conn, char *name)
     char *cmd = NULL;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *char_ptr;
 
     if (system_type == HMC)
         virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
@@ -2233,7 +2238,7 @@ phypGetStoragePoolDevice(virConnectPtr conn, char *name)
     if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -2474,6 +2479,7 @@ phypVolumeGetPhysicalVolumeByStoragePool(virStorageVolPtr vol, char *sp)
     char *cmd = NULL;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *char_ptr;
 
     if (system_type == HMC)
         virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
@@ -2498,7 +2504,7 @@ phypVolumeGetPhysicalVolumeByStoragePool(virStorageVolPtr vol, char *sp)
     if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -2723,6 +2729,8 @@ phypVolumeGetPath(virStorageVolPtr vol)
     char *sp = NULL;
     char *path = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *char_ptr;
+    char *pv;
 
     if (system_type == HMC)
         virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
@@ -2748,12 +2756,12 @@ phypVolumeGetPath(virStorageVolPtr vol)
     if (exit_status < 0 || sp == NULL)
         goto err;
 
-    char *char_ptr = strchr(sp, '\n');
+    char_ptr = strchr(sp, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
 
-    char *pv = phypVolumeGetPhysicalVolumeByStoragePool(vol, sp);
+    pv = phypVolumeGetPhysicalVolumeByStoragePool(vol, sp);
 
     if (pv) {
         if (virAsprintf(&path, "/%s/%s/%s", pv, sp, vol->name) < 0) {

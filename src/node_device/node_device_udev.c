@@ -415,6 +415,7 @@ static int udevProcessPCI(struct udev_device *device,
     const char *syspath = NULL;
     union _virNodeDevCapData *data = &def->caps->data;
     int ret = -1;
+    char *p;
 
     syspath = udev_device_get_syspath(device);
 
@@ -425,7 +426,7 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     }
 
-    char *p = strrchr(syspath, '/');
+    p = strrchr(syspath, '/');
 
     if ((p == NULL) || (udevStrToLong_ui(p+1,
                                          &p,

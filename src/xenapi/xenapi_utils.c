@@ -1,5 +1,6 @@
 /*
  * xenapi_utils.c: Xen API driver -- utils parts.
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -462,6 +463,11 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
                        xen_vm_record **record, xen_vm *vm)
 {
     char uuidStr[VIR_UUID_STRING_BUFLEN];
+    xen_string_string_map *strings = NULL;
+    int device_number = 0;
+    char *bridge = NULL, *mac = NULL;
+    int i;
+
     *record = xen_vm_record_alloc();
     if (!((*record)->name_label = strdup(def->name)))
         goto error_cleanup;
@@ -521,7 +527,6 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
     if (def->onCrash)
         (*record)->actions_after_crash = actionCrashLibvirt2XenapiEnum(def->onCrash);
 
-    xen_string_string_map *strings = NULL;
     if (def->features) {
         if (def->features & (1 << VIR_DOMAIN_FEATURE_ACPI))
             allocStringMap(&strings, (char *)"acpi", (char *)"true");
@@ -546,9 +551,6 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
         return -1;
     }
 
-    int device_number = 0;
-    char *bridge = NULL, *mac = NULL;
-    int i;
     for (i = 0; i < def->nnets; i++) {
         if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             if (def->nets[i]->data.bridge.brname)

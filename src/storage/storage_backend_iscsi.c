@@ -1,7 +1,7 @@
 /*
  * storage_backend_iscsi.c: storage backend for iSCSI handling
  *
- * Copyright (C) 2007-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2011 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -269,6 +269,15 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
 {
     int ret = -1, exitstatus = -1;
     char temp_ifacename[32];
+    const char *const cmdargv1[] = {
+        ISCSIADM, "--mode", "iface", "--interface",
+        temp_ifacename, "--op", "new", NULL
+    };
+    const char *const cmdargv2[] = {
+        ISCSIADM, "--mode", "iface", "--interface", temp_ifacename,
+        "--op", "update", "--name", "iface.initiatorname", "--value",
+        initiatoriqn, NULL
+    };
 
     if (virRandomInitialize(time(NULL) ^ getpid()) == -1) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -277,12 +286,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
         goto out;
     }
 
-    snprintf(temp_ifacename, sizeof(temp_ifacename), "libvirt-iface-%08x", virRandom(1024 * 1024 * 1024));
-
-    const char *const cmdargv1[] = {
-        ISCSIADM, "--mode", "iface", "--interface",
-        &temp_ifacename[0], "--op", "new", NULL
-    };
+    snprintf(temp_ifacename, sizeof(temp_ifacename), "libvirt-iface-%08x",
+             virRandom(1024 * 1024 * 1024));
 
     VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
               &temp_ifacename[0], initiatoriqn);
@@ -297,12 +302,6 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
                               cmdargv1[0]);
         goto out;
     }
-
-    const char *const cmdargv2[] = {
-        ISCSIADM, "--mode", "iface", "--interface", &temp_ifacename[0],
-        "--op", "update", "--name", "iface.initiatorname", "--value",
-        initiatoriqn, NULL
-    };
 
     /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
      * returned an exit status of > 0, even if they succeeded.  We will just

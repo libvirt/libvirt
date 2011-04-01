@@ -56,21 +56,24 @@
 static virCapsPtr
 getCapsObject (void)
 {
+    virCapsGuestPtr guest1, guest2;
+    virCapsGuestDomainPtr domain1, domain2;
     virCapsPtr caps = virCapabilitiesNew("x86_64", 0, 0);
+
     if (!caps) {
         virReportOOMError();
         return NULL;
     }
-    virCapsGuestPtr guest1 = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 0, "", "", 0, NULL);
+    guest1 = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 0, "", "", 0, NULL);
     if (!guest1)
         goto error_cleanup;
-    virCapsGuestDomainPtr domain1 = virCapabilitiesAddGuestDomain(guest1, "xen", "", "", 0, NULL);
+    domain1 = virCapabilitiesAddGuestDomain(guest1, "xen", "", "", 0, NULL);
     if (!domain1)
         goto error_cleanup;
-    virCapsGuestPtr guest2 = virCapabilitiesAddGuest(caps, "xen", "x86_64", 0, "", "", 0, NULL);
+    guest2 = virCapabilitiesAddGuest(caps, "xen", "x86_64", 0, "", "", 0, NULL);
     if (!guest2)
         goto error_cleanup;
-    virCapsGuestDomainPtr domain2 = virCapabilitiesAddGuestDomain(guest2, "xen", "", "", 0, NULL);
+    domain2 = virCapabilitiesAddGuestDomain(guest2, "xen", "", "", 0, NULL);
     if (!domain2)
         goto error_cleanup;
 
@@ -1234,6 +1237,12 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
     xen_string_string_map *result=NULL;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     virDomainDefPtr defPtr = NULL;
+    char *boot_policy = NULL;
+    unsigned long memory=0;
+    int64_t dynamic_mem=0;
+    char *val = NULL;
+    struct xen_vif_set *vif_set = NULL;
+    char *xml;
 
     if (!xen_vm_get_by_name_label(session, &vms, dom->name)) return NULL;
     if (vms->size != 1) {
@@ -1253,7 +1262,6 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
     memcpy(defPtr->uuid, dom->uuid, VIR_UUID_BUFLEN);
     if (!(defPtr->name = strdup(dom->name)))
         goto error_cleanup;
-    char *boot_policy = NULL;
     xen_vm_get_hvm_boot_policy(session, &boot_policy, vm);
     if (STREQ(boot_policy,"BIOS order")) {
         if (!(defPtr->os.type = strdup("hvm"))) {
@@ -1318,7 +1326,6 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
         if (!(defPtr->os.bootloader = strdup("pygrub")))
             goto error_cleanup;
     }
-    char *val = NULL;
     xen_vm_get_pv_bootloader_args(session, &val, vm);
     if (STRNEQ(val, "")) {
         if (!(defPtr->os.bootloaderArgs = strdup(val))) {
@@ -1327,10 +1334,8 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
         }
         VIR_FREE(val);
     }
-    unsigned long memory=0;
     memory = xenapiDomainGetMaxMemory(dom);
     defPtr->mem.max_balloon = memory;
-    int64_t dynamic_mem=0;
     if (xen_vm_get_memory_dynamic_max(session, &dynamic_mem, vm)) {
         defPtr->mem.cur_balloon = (unsigned long) (dynamic_mem / 1024);
     } else {
@@ -1365,7 +1370,6 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
         }
         xen_string_string_map_free(result);
     }
-    struct xen_vif_set *vif_set = NULL;
     xen_vm_get_vifs(session, &vif_set, vm);
     if (vif_set) {
         int i;
@@ -1403,7 +1407,7 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
         xen_vif_set_free(vif_set);
     }
     if (vms) xen_vm_set_free(vms);
-    char *xml = virDomainDefFormat(defPtr, 0);
+    xml = virDomainDefFormat(defPtr, 0);
     virDomainDefFree(defPtr);
     return xml;
 

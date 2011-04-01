@@ -1873,7 +1873,7 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
     if (qemuMonitorHMPCommand(mon, "info chardev", &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("failed to retrieve chardev info in qemu with 'info chardev'"));
-        goto cleanup;
+        return -1;
     }
 
     char *pos;                          /* The current start of searching */

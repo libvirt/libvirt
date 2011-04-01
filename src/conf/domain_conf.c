@@ -3557,6 +3557,8 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
 
     virDomainTimerDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
+    xmlNodePtr catchup;
+    int ret;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -3610,7 +3612,7 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
         }
     }
 
-    int ret = virXPathULong("string(./frequency)", ctxt, &def->frequency);
+    ret = virXPathULong("string(./frequency)", ctxt, &def->frequency);
     if (ret == -1) {
         def->frequency = 0;
     } else if (ret < 0) {
@@ -3629,7 +3631,7 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
         }
     }
 
-    xmlNodePtr catchup = virXPathNode("./catchup", ctxt);
+    catchup = virXPathNode("./catchup", ctxt);
     if (catchup != NULL) {
         ret = virXPathULong("string(./catchup/@threshold)", ctxt,
                             &def->catchup.threshold);

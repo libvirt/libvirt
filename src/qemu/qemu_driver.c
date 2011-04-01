@@ -1426,6 +1426,7 @@ static int qemudDomainShutdown(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+    qemuDomainObjPrivatePtr priv;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1448,7 +1449,7 @@ static int qemudDomainShutdown(virDomainPtr dom) {
         goto endjob;
     }
 
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    priv = vm->privateData;
     qemuDomainObjEnterMonitor(vm);
     ret = qemuMonitorSystemPowerdown(priv->mon);
     qemuDomainObjExitMonitor(vm);
@@ -4748,6 +4749,7 @@ qemudDomainBlockStats (virDomainPtr dom,
     int i, ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
+    qemuDomainObjPrivatePtr priv;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4788,7 +4790,7 @@ qemudDomainBlockStats (virDomainPtr dom,
         goto endjob;
     }
 
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    priv = vm->privateData;
     qemuDomainObjEnterMonitor(vm);
     ret = qemuMonitorGetBlockStatsInfo(priv->mon,
                                        disk->info.alias,
@@ -4995,6 +4997,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     virDomainObjPtr vm;
     char *tmp = NULL;
     int fd = -1, ret = -1;
+    qemuDomainObjPrivatePtr priv;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -5035,7 +5038,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto endjob;
     }
 
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    priv = vm->privateData;
     qemuDomainObjEnterMonitor(vm);
     if (flags == VIR_MEMORY_VIRTUAL) {
         if (qemuMonitorSaveVirtualMemory(priv->mon, offset, size, tmp) < 0) {

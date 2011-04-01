@@ -869,12 +869,14 @@ doRemoteOpen (virConnectPtr conn,
         goto failed;
 
     /* Finally we can call the remote side's open function. */
-    remote_open_args args = { &name, flags };
+    {
+        remote_open_args args = { &name, flags };
 
-    if (call (conn, priv, REMOTE_CALL_IN_OPEN, REMOTE_PROC_OPEN,
-              (xdrproc_t) xdr_remote_open_args, (char *) &args,
-              (xdrproc_t) xdr_void, (char *) NULL) == -1)
-        goto failed;
+        if (call (conn, priv, REMOTE_CALL_IN_OPEN, REMOTE_PROC_OPEN,
+                  (xdrproc_t) xdr_remote_open_args, (char *) &args,
+                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto failed;
+    }
 
     /* Now try and find out what URI the daemon used */
     if (conn->uri == NULL) {
