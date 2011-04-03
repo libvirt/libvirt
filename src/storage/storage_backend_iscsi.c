@@ -408,12 +408,15 @@ static int
 virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
                               const char *session)
 {
-    char sysfs_path[PATH_MAX];
+    char *sysfs_path;
     int retval = 0;
     uint32_t host;
 
-    snprintf(sysfs_path, PATH_MAX,
-             "/sys/class/iscsi_session/session%s/device", session);
+    if (virAsprintf(&sysfs_path,
+                    "/sys/class/iscsi_session/session%s/device", session) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
     if (virStorageBackendSCSIGetHostNumber(sysfs_path, &host) < 0) {
         virReportSystemError(errno,
@@ -428,6 +431,8 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
                              _("Failed to find LUs on host %u"), host);
         retval = -1;
     }
+
+    VIR_FREE(sysfs_path);
 
     return retval;
 }
