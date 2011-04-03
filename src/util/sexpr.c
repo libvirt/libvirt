@@ -199,78 +199,56 @@ sexpr_append(struct sexpr *lst, const struct sexpr *value)
  * sexpr2string:
  * @sexpr: an S-Expression pointer
  * @buffer: the output buffer
- * @n_buffer: the size of the buffer in bytes
  *
  * Serialize the S-Expression in the buffer.
- * Note that the output may be truncated if @n_buffer is too small
- * resulting in an unparseable value.
  *
- * Returns the number of bytes used by the serialization in the buffer or
- *         0 in case of error.
+ * Returns 0 on success, -1 on error.
  */
-size_t
-sexpr2string(const struct sexpr * sexpr, char *buffer, size_t n_buffer)
+int
+sexpr2string(const struct sexpr *sexpr, virBufferPtr buffer)
 {
-    size_t ret = 0, tmp;
-
-    if ((sexpr == NULL) || (buffer == NULL) || (n_buffer <= 0))
-        return (0);
+    if ((sexpr == NULL) || (buffer == NULL))
+        return -1;
 
     switch (sexpr->kind) {
-        case SEXPR_CONS:
-            tmp = snprintf(buffer + ret, n_buffer - ret, "(");
-            if (tmp == 0)
-                goto error;
-            ret += tmp;
-            tmp = sexpr2string(sexpr->u.s.car, buffer + ret, n_buffer - ret);
-            if (tmp == 0)
-                goto error;
-            ret += tmp;
-            while (sexpr->u.s.cdr->kind != SEXPR_NIL) {
-                sexpr = sexpr->u.s.cdr;
-                tmp = snprintf(buffer + ret, n_buffer - ret, " ");
-                if (tmp == 0)
-                    goto error;
-                ret += tmp;
-                tmp =
-                    sexpr2string(sexpr->u.s.car, buffer + ret, n_buffer - ret);
-                if (tmp == 0)
-                    goto error;
-                ret += tmp;
-            }
-            tmp = snprintf(buffer + ret, n_buffer - ret, ")");
-            if (tmp == 0)
-                goto error;
-            ret += tmp;
-            break;
-        case SEXPR_VALUE:
-            if (strchr(sexpr->u.value, ' ') ||
-                strchr(sexpr->u.value, ')') ||
-                strchr(sexpr->u.value, '('))
-                tmp = snprintf(buffer + ret, n_buffer - ret, "'%s'",
-                               sexpr->u.value);
-            else
-                tmp = snprintf(buffer + ret, n_buffer - ret, "%s",
-                               sexpr->u.value);
-            if (tmp == 0)
-                goto error;
-            ret += tmp;
-            break;
-        case SEXPR_NIL:
-            tmp = snprintf(buffer + ret, n_buffer - ret, "()");
-            if (tmp == 0)
-                goto error;
-            ret += tmp;
-            break;
-        default:
+    case SEXPR_CONS:
+        virBufferAddChar(buffer, '(');
+
+        if (sexpr2string(sexpr->u.s.car, buffer) < 0)
             goto error;
+
+        while (sexpr->u.s.cdr->kind != SEXPR_NIL) {
+            sexpr = sexpr->u.s.cdr;
+
+            virBufferAddChar(buffer, ' ');
+
+            if (sexpr2string(sexpr->u.s.car, buffer) < 0)
+                goto error;
+        }
+
+        virBufferAddChar(buffer, ')');
+        break;
+    case SEXPR_VALUE:
+        if (strchr(sexpr->u.value, ' ') ||
+            strchr(sexpr->u.value, ')') ||
+            strchr(sexpr->u.value, '('))
+            virBufferVSprintf(buffer, "'%s'", sexpr->u.value);
+        else
+            virBufferVSprintf(buffer, "%s", sexpr->u.value);
+
+        break;
+    case SEXPR_NIL:
+        virBufferAddLit(buffer, "()");
+        break;
+    default:
+        goto error;
     }
 
-    return (ret);
+    return 0;
+
   error:
-    buffer[n_buffer - 1] = 0;
-    virSexprError(VIR_ERR_SEXPR_SERIAL, "%s", buffer);
-    return (0);
+    virSexprError(VIR_ERR_SEXPR_SERIAL, NULL);
+    return -1;
 }
 
 #define IS_SPACE(c) ((c == 0x20) || (c == 0x9) || (c == 0xD) || (c == 0xA))
@@ -413,22 +391,28 @@ string2sexpr(const char *buffer)
 static struct sexpr *
 sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
 {
-    char buffer[4096], *ptr, *token;
+    struct sexpr *result = NULL;
+    char *buffer, *ptr, *token;
 
     if ((node == NULL) || (sexpr == NULL))
-        return (NULL);
+        return NULL;
 
-    snprintf(buffer, sizeof(buffer), "%s", node);
+    buffer = strdup(node);
+
+    if (buffer == NULL) {
+        virReportOOMError();
+        return NULL;
+    }
 
     ptr = buffer;
     token = strsep(&ptr, "/");
 
     if (sexpr->kind != SEXPR_CONS || sexpr->u.s.car->kind != SEXPR_VALUE) {
-        return NULL;
+        goto cleanup;
     }
 
     if (STRNEQ(sexpr->u.s.car->u.value, token)) {
-        return NULL;
+        goto cleanup;
     }
 
     for (token = strsep(&ptr, "/"); token; token = strsep(&ptr, "/")) {
@@ -454,10 +438,15 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
     }
 
     if (token != NULL) {
-        return NULL;
+        goto cleanup;
     }
 
-    return (struct sexpr *) sexpr;
+    result = (struct sexpr *) sexpr;
+
+cleanup:
+    VIR_FREE(buffer);
+
+    return result;
 }
 
 /**
@@ -550,21 +539,30 @@ int sexpr_node_copy(const struct sexpr *sexpr, const char *node, char **dst)
  * @... extra data to build the path
  *
  * Search a node value in the S-Expression based on its path
- * NOTE: path are limited to 4096 bytes.
  *
  * Returns the value of the node or NULL if not found.
  */
 const char *
 sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
 {
+    int result;
     va_list ap;
-    char node[4096];
+    char *node;
+    const char *value;
 
     va_start(ap, fmt);
-    vsnprintf(node, sizeof(node), fmt, ap);
+    result = virVasprintf(&node, fmt, ap);
     va_end(ap);
 
-    return sexpr_node(sexpr, node);
+    if (result < 0) {
+        return NULL;
+    }
+
+    value = sexpr_node(sexpr, node);
+
+    VIR_FREE(node);
+
+    return value;
 }
 
 /**

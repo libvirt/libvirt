@@ -14,6 +14,7 @@
 # define _LIBVIR_SEXPR_H_
 
 # include "internal.h"
+# include "buf.h"
 
 # include <sys/types.h>
 # include <stdint.h>
@@ -36,7 +37,7 @@ struct sexpr {
 };
 
 /* conversion to/from strings */
-size_t sexpr2string(const struct sexpr *sexpr, char *buffer, size_t n_buffer);
+int sexpr2string(const struct sexpr *sexpr, virBufferPtr buffer);
 struct sexpr *string2sexpr(const char *buffer);
 
 /* constructors and destructors */

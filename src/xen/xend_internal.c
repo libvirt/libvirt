@@ -3023,7 +3023,8 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
                             int autostart)
 {
     struct sexpr *root, *autonode;
-    char buf[4096];
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *content = NULL;
     int ret = -1;
     xenUnifiedPrivatePtr priv;
 
@@ -3065,12 +3066,20 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
             goto error;
         }
 
-        if (sexpr2string(root, buf, sizeof(buf)) == 0) {
+        if (sexpr2string(root, &buffer) < 0) {
             virXendError(VIR_ERR_INTERNAL_ERROR,
                          "%s", _("sexpr2string failed"));
             goto error;
         }
-        if (xend_op(domain->conn, "", "op", "new", "config", buf, NULL) != 0) {
+
+        if (virBufferError(&buffer)) {
+            virReportOOMError();
+            goto error;
+        }
+
+        content = virBufferContentAndReset(&buffer);
+
+        if (xend_op(domain->conn, "", "op", "new", "config", content, NULL) != 0) {
             virXendError(VIR_ERR_XEN_CALL,
                          "%s", _("Failed to redefine sexpr"));
             goto error;
@@ -3083,6 +3092,8 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
 
     ret = 0;
   error:
+    virBufferFreeAndReset(&buffer);
+    VIR_FREE(content);
     sexpr_free(root);
     return ret;
 }
