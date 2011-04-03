@@ -2052,7 +2052,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     virDomainInfo info;
     virDomainPtr dom;
     virSecurityModel secmodel;
-    virSecurityLabel seclabel;
+    virSecurityLabelPtr seclabel;
     int persistent = 0;
     int ret = TRUE, autostart;
     unsigned int id;
@@ -2138,15 +2138,22 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %s\n", _("Security DOI:"), secmodel.doi);
 
             /* Security labels are only valid for active domains */
-            memset(&seclabel, 0, sizeof seclabel);
-            if (virDomainGetSecurityLabel(dom, &seclabel) == -1) {
+            if (VIR_ALLOC(seclabel) < 0) {
                 virDomainFree(dom);
                 return FALSE;
-            } else {
-                if (seclabel.label[0] != '\0')
-                    vshPrint(ctl, "%-15s %s (%s)\n", _("Security label:"),
-                             seclabel.label, seclabel.enforcing ? "enforcing" : "permissive");
             }
+
+            if (virDomainGetSecurityLabel(dom, seclabel) == -1) {
+                virDomainFree(dom);
+                VIR_FREE(seclabel);
+                return FALSE;
+            } else {
+                if (seclabel->label[0] != '\0')
+                    vshPrint(ctl, "%-15s %s (%s)\n", _("Security label:"),
+                             seclabel->label, seclabel->enforcing ? "enforcing" : "permissive");
+            }
+
+            VIR_FREE(seclabel);
         }
     }
     virDomainFree(dom);
@@ -12141,13 +12148,15 @@ vshOpenLogFile(vshControl *ctl)
 static void
 vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list ap)
 {
-    char msg_buf[MSG_BUFFER];
+    char *msg_buf;
     const char *lvl = "";
     struct timeval stTimeval;
     struct tm *stTm;
 
     if (ctl->log_fd == -1)
         return;
+
+    msg_buf = vshMalloc(ctl, MSG_BUFFER);
 
     /**
      * create log format
@@ -12199,6 +12208,8 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list
         vshCloseLogFile(ctl);
         vshError(ctl, "%s", _("failed to write the log file"));
     }
+
+    VIR_FREE(msg_buf);
 }
 
 /**
