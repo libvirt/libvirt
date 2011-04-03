@@ -211,6 +211,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     const char *defaultArch, *defaultMachine;
     int vmlocaltime = 0;
     unsigned long count;
+    char *script = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -556,7 +557,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
         while (list) {
-            char script[PATH_MAX];
             char model[10];
             char type[10];
             char ip[16];
@@ -567,7 +567,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             bridge[0] = '\0';
             mac[0] = '\0';
-            script[0] = '\0';
             ip[0] = '\0';
             model[0] = '\0';
             type[0] = '\0';
@@ -602,12 +601,10 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                         goto skipnic;
                     }
                 } else if (STRPREFIX(key, "script=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(script) - 1;
-                    if (virStrncpy(script, data, len, sizeof(script)) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("Script %s too big for destination"),
-                                   data);
-                        goto skipnic;
+                    int len = nextkey ? (nextkey - data) : strlen(data);
+                    VIR_FREE(script);
+                    if (!(script = strndup(data, len))) {
+                        goto no_memory;
                     }
                 } else if (STRPREFIX(key, "model=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(model) - 1;
@@ -1043,6 +1040,7 @@ cleanup:
     virDomainNetDefFree(net);
     virDomainDiskDefFree(disk);
     virDomainDefFree(def);
+    VIR_FREE(script);
     return NULL;
 }
 
