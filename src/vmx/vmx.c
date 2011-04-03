@@ -55,6 +55,8 @@ def->mem.cur_balloon = <value kilobyte>    <=>   sched.mem.max = "<value megabyt
 def->mem.min_guarantee = <value kilobyte>  <=>   sched.mem.minsize = "<value megabyte>"  # defaults to 0
 def->maxvcpus = <value>           <=>   numvcpus = "<value>"                    # must be 1 or a multiple of 2, defaults to 1
 def->cpumask = <uint list>        <=>   sched.cpu.affinity = "<uint list>"
+def->cputune.shares = <value>     <=>   sched.cpu.shares = "<value>"            # with handling for special values
+                                                                                # "high", "normal", "low"
 
 
 
@@ -1200,6 +1202,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     long long sched_mem_minsize = 0;
     long long numvcpus = 0;
     char *sched_cpu_affinity = NULL;
+    char *sched_cpu_shares = NULL;
     char *guestOS = NULL;
     bool smbios_reflecthost = false;
     int controller;
@@ -1445,6 +1448,30 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
                       _("Expecting VMX entry 'sched.cpu.affinity' to contain "
                         "at least as many values as 'numvcpus' (%lld) but "
                         "found only %d value(s)"), numvcpus, count);
+            goto cleanup;
+        }
+    }
+
+    /* vmx:sched.cpu.shares -> def:cputune.shares */
+    if (virVMXGetConfigString(conf, "sched.cpu.shares", &sched_cpu_shares,
+                              true) < 0) {
+        goto cleanup;
+    }
+
+    if (sched_cpu_shares != NULL) {
+        /* See http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
+        if (STRCASEEQ(sched_cpu_shares, "low")) {
+            def->cputune.shares = def->vcpus * 500;
+        } else if (STRCASEEQ(sched_cpu_shares, "normal")) {
+            def->cputune.shares = def->vcpus * 1000;
+        } else if (STRCASEEQ(sched_cpu_shares, "high")) {
+            def->cputune.shares = def->vcpus * 2000;
+        } else if (virStrToLong_ul(sched_cpu_shares, NULL, 10,
+                                   &def->cputune.shares) < 0) {
+            VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("Expecting VMX entry 'sched.cpu.shares' to be an "
+                        "unsigned integer or 'low', 'normal' or 'high' but "
+                        "found '%s'"), sched_cpu_shares);
             goto cleanup;
         }
     }
@@ -1715,6 +1742,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     virConfFree(conf);
     VIR_FREE(encoding);
     VIR_FREE(sched_cpu_affinity);
+    VIR_FREE(sched_cpu_shares);
     VIR_FREE(guestOS);
 
     return def;
@@ -2996,6 +3024,21 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
         }
 
         virBufferAddLit(&buffer, "\"\n");
+    }
+
+    /* def:cputune.shares -> vmx:sched.cpu.shares */
+    if (def->cputune.shares > 0) {
+        /* See http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
+        if (def->cputune.shares == def->vcpus * 500) {
+            virBufferAddLit(&buffer, "sched.cpu.shares = \"low\"\n");
+        } else if (def->cputune.shares == def->vcpus * 1000) {
+            virBufferAddLit(&buffer, "sched.cpu.shares = \"normal\"\n");
+        } else if (def->cputune.shares == def->vcpus * 2000) {
+            virBufferAddLit(&buffer, "sched.cpu.shares = \"high\"\n");
+        } else {
+            virBufferVSprintf(&buffer, "sched.cpu.shares = \"%lu\"\n",
+                              def->cputune.shares);
+        }
     }
 
     /* def:graphics */

@@ -4,6 +4,9 @@
   <memory>1048576</memory>
   <currentMemory>1048576</currentMemory>
   <vcpu>1</vcpu>
+  <cputune>
+    <shares>1000</shares>
+  </cputune>
   <os>
     <type arch='i686'>hvm</type>
   </os>

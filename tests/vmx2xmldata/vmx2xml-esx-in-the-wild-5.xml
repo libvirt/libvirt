@@ -8,6 +8,9 @@
     <min_guarantee>262144</min_guarantee>
   </memtune>
   <vcpu>2</vcpu>
+  <cputune>
+    <shares>2000</shares>
+  </cputune>
   <os>
     <type arch='x86_64'>hvm</type>
   </os>

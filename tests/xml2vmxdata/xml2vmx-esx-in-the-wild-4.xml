@@ -4,6 +4,9 @@
   <memory>524288</memory>
   <currentMemory>524288</currentMemory>
   <vcpu>1</vcpu>
+  <cputune>
+    <shares>1000</shares>
+  </cputune>
   <os>
     <type>hvm</type>
   </os>
