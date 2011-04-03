@@ -3318,7 +3318,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     } else {
         for (i = 0 ; i < def->ndisks ; i++) {
             char dev[NAME_MAX];
-            char file[PATH_MAX];
+            char *file;
+            const char *fmt;
             virDomainDiskDefPtr disk = def->disks[i];
             int j;
 
@@ -3368,9 +3369,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                     goto error;
                 }
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-                    snprintf(file, PATH_MAX, "fat:floppy:%s", disk->src);
+                    fmt = "fat:floppy:%s";
                 else
-                    snprintf(file, PATH_MAX, "fat:%s", disk->src);
+                    fmt = "fat:%s";
+
+                if (virAsprintf(&file, fmt, disk->src) < 0) {
+                    goto no_memory;
+                }
             } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
                 switch (disk->protocol) {
                 case VIR_DOMAIN_DISK_PROTOCOL_NBD:
@@ -3379,11 +3384,15 @@ qemuBuildCommandLine(virConnectPtr conn,
                                         _("NBD accepts only one host"));
                         goto error;
                     }
-                    snprintf(file, PATH_MAX, "nbd:%s:%s,",
-                             disk->hosts->name, disk->hosts->port);
+                    if (virAsprintf(&file, "nbd:%s:%s,", disk->hosts->name,
+                                    disk->hosts->port) < 0) {
+                        goto no_memory;
+                    }
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-                    snprintf(file, PATH_MAX, "rbd:%s,", disk->src);
+                    if (virAsprintf(&file, "rbd:%s,", disk->src) < 0) {
+                        goto no_memory;
+                    }
                     for (j = 0 ; j < disk->nhosts ; j++) {
                         if (!has_rbd_hosts) {
                             virBufferAddLit(&rbd_hosts, "CEPH_ARGS=-m ");
@@ -3403,20 +3412,28 @@ qemuBuildCommandLine(virConnectPtr conn,
                     }
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-                    if (disk->nhosts == 0)
-                        snprintf(file, PATH_MAX, "sheepdog:%s,", disk->src);
-                    else
+                    if (disk->nhosts == 0) {
+                        if (virAsprintf(&file, "sheepdog:%s,", disk->src) < 0) {
+                            goto no_memory;
+                        }
+                    } else {
                         /* only one host is supported now */
-                        snprintf(file, PATH_MAX, "sheepdog:%s:%s:%s,",
-                                 disk->hosts->name, disk->hosts->port,
-                                 disk->src);
+                        if (virAsprintf(&file, "sheepdog:%s:%s:%s,",
+                                        disk->hosts->name, disk->hosts->port,
+                                        disk->src) < 0) {
+                            goto no_memory;
+                        }
+                    }
                     break;
                 }
             } else {
-                snprintf(file, PATH_MAX, "%s", disk->src);
+                if (!(file = strdup(disk->src))) {
+                    goto no_memory;
+                }
             }
 
             virCommandAddArgList(cmd, dev, file, NULL);
+            VIR_FREE(file);
         }
     }
 
