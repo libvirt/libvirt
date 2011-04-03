@@ -279,11 +279,17 @@ istartswith(const char *haystack, const char *needle)
 static int ATTRIBUTE_NONNULL (2)
 xend_req(int fd, char **content)
 {
-    char buffer[4096];
+    char *buffer;
+    size_t buffer_size = 4096;
     int content_length = 0;
     int retcode = 0;
 
-    while (sreads(fd, buffer, sizeof(buffer)) > 0) {
+    if (VIR_ALLOC_N(buffer, buffer_size) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    while (sreads(fd, buffer, buffer_size) > 0) {
         if (STREQ(buffer, "\r\n"))
             break;
 
@@ -292,6 +298,8 @@ xend_req(int fd, char **content)
         else if (istartswith(buffer, "HTTP/1.1 "))
             retcode = atoi(buffer + 9);
     }
+
+    VIR_FREE(buffer);
 
     if (content_length > 0) {
         ssize_t ret;
