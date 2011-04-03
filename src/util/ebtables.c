@@ -266,29 +266,43 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
 ebtablesContext *
 ebtablesContextNew(const char *driver)
 {
-    ebtablesContext *ctx;
-    char chain[PATH_MAX];
+    bool success = false;
+    ebtablesContext *ctx = NULL;
+    char *input_chain = NULL;
+    char *forward_chain = NULL;
+    char *nat_chain = NULL;
 
     if (VIR_ALLOC(ctx) < 0)
         return NULL;
 
-    snprintf(chain, sizeof(chain), "libvirt_%s_INPUT", driver);
-    if (!(ctx->input_filter = ebtRulesNew("filter", chain)))
-        goto error;
+    if (virAsprintf(&input_chain, "libvirt_%s_INPUT", driver) < 0 ||
+        virAsprintf(&forward_chain, "libvirt_%s_FORWARD", driver) < 0 ||
+        virAsprintf(&nat_chain, "libvirt_%s_POSTROUTING", driver) < 0) {
+        goto cleanup;
+    }
 
-    snprintf(chain, sizeof(chain), "libvirt_%s_FORWARD", driver);
-    if (!(ctx->forward_filter = ebtRulesNew("filter", chain)))
-        goto error;
+    if (!(ctx->input_filter = ebtRulesNew("filter", input_chain)))
+        goto cleanup;
 
-    snprintf(chain, sizeof(chain), "libvirt_%s_POSTROUTING", driver);
-    if (!(ctx->nat_postrouting = ebtRulesNew("nat", chain)))
-        goto error;
+    if (!(ctx->forward_filter = ebtRulesNew("filter", forward_chain)))
+        goto cleanup;
+
+    if (!(ctx->nat_postrouting = ebtRulesNew("nat", nat_chain)))
+        goto cleanup;
+
+    success = true;
+
+cleanup:
+    VIR_FREE(input_chain);
+    VIR_FREE(forward_chain);
+    VIR_FREE(nat_chain);
+
+    if (!success) {
+        ebtablesContextFree(ctx);
+        ctx = NULL;
+    }
 
     return ctx;
-
- error:
-    ebtablesContextFree(ctx);
-    return NULL;
 }
 
 /**
