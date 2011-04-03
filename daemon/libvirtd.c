@@ -1766,15 +1766,17 @@ static ssize_t qemudClientReadSASL(struct qemud_client *client) {
     /* Need to read some more data off the wire */
     if (client->saslDecoded == NULL) {
         int ret;
-        char encoded[8192];
-        ssize_t encodedLen = sizeof(encoded);
-        encodedLen = qemudClientReadBuf(client, encoded, encodedLen);
+        ssize_t encodedLen;
+
+        encodedLen = qemudClientReadBuf(client, client->saslTemporary,
+                                        sizeof(client->saslTemporary));
 
         if (encodedLen <= 0)
             return encodedLen;
 
-        ret = sasl_decode(client->saslconn, encoded, encodedLen,
+        ret = sasl_decode(client->saslconn, client->saslTemporary, encodedLen,
                           &client->saslDecoded, &client->saslDecodedLength);
+
         if (ret != SASL_OK) {
             VIR_ERROR(_("failed to decode SASL data %s"),
                       sasl_errstring(ret, NULL, NULL));

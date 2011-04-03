@@ -213,6 +213,7 @@ struct qemud_client {
     unsigned int saslEncodedLength;
     unsigned int saslEncodedOffset;
     char *saslUsername;
+    char saslTemporary[8192]; /* temorary holds data to be decoded */
 # endif
 
     /* Count of meages in 'dx' or 'tx' queue

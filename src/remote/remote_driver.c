@@ -174,6 +174,8 @@ struct private_data {
     const char *saslEncoded;
     unsigned int saslEncodedLength;
     unsigned int saslEncodedOffset;
+
+    char saslTemporary[8192]; /* temorary holds data to be decoded */
 #endif
 
     /* Buffer for incoming data packets
@@ -10065,15 +10067,15 @@ remoteIOReadMessage(struct private_data *priv) {
 #if HAVE_SASL
     if (priv->saslconn) {
         if (priv->saslDecoded == NULL) {
-            char encoded[8192];
             int ret, err;
-            ret = remoteIOReadBuffer(priv, encoded, sizeof(encoded));
+            ret = remoteIOReadBuffer(priv, priv->saslTemporary,
+                                     sizeof(priv->saslTemporary));
             if (ret < 0)
                 return -1;
             if (ret == 0)
                 return 0;
 
-            err = sasl_decode(priv->saslconn, encoded, ret,
+            err = sasl_decode(priv->saslconn, priv->saslTemporary, ret,
                               &priv->saslDecoded, &priv->saslDecodedLength);
             if (err != SASL_OK) {
                 remoteError(VIR_ERR_INTERNAL_ERROR,
