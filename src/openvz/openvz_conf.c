@@ -187,7 +187,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                       int veid) {
     int ret;
     virDomainNetDefPtr net = NULL;
-    char temp[4096];
+    char *temp = NULL;
     char *token, *saveptr = NULL;
 
     /*parse routing network configuration*
@@ -195,7 +195,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
      *   IP_ADDRESS="1.1.1.1 1.1.1.2"
      *   splited IPs by space
      */
-    ret = openvzReadVPSConfigParam(veid, "IP_ADDRESS", temp, sizeof(temp));
+    ret = openvzReadVPSConfigParam(veid, "IP_ADDRESS", &temp);
     if (ret < 0) {
         openvzError(VIR_ERR_INTERNAL_ERROR,
                     _("Could not read 'IP_ADDRESS' from config for container %d"),
@@ -227,7 +227,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
      *NETIF="ifname=eth10,mac=00:18:51:C1:05:EE,host_ifname=veth105.10,host_mac=00:18:51:8F:D9:F3"
      *devices splited by ';'
      */
-    ret = openvzReadVPSConfigParam(veid, "NETIF", temp, sizeof(temp));
+    ret = openvzReadVPSConfigParam(veid, "NETIF", &temp);
     if (ret < 0) {
         openvzError(VIR_ERR_INTERNAL_ERROR,
                     _("Could not read 'NETIF' from config for container %d"),
@@ -316,10 +316,13 @@ openvzReadNetworkConf(virDomainDefPtr def,
         }
     }
 
+    VIR_FREE(temp);
+
     return 0;
 no_memory:
     virReportOOMError();
 error:
+    VIR_FREE(temp);
     virDomainNetDefFree(net);
     return -1;
 }
@@ -364,10 +367,10 @@ openvzReadFSConf(virDomainDefPtr def,
                  int veid) {
     int ret;
     virDomainFSDefPtr fs = NULL;
-    char* veid_str = NULL;
-    char temp[100];
+    char *veid_str = NULL;
+    char *temp = NULL;
 
-    ret = openvzReadVPSConfigParam(veid, "OSTEMPLATE", temp, sizeof(temp));
+    ret = openvzReadVPSConfigParam(veid, "OSTEMPLATE", &temp);
     if (ret < 0) {
         openvzError(VIR_ERR_INTERNAL_ERROR,
                     _("Could not read 'OSTEMPLATE' from config for container %d"),
@@ -381,7 +384,7 @@ openvzReadFSConf(virDomainDefPtr def,
         fs->src = strdup(temp);
     } else {
         /* OSTEMPLATE was not found, VE was booted from a private dir directly */
-        ret = openvzReadVPSConfigParam(veid, "VE_PRIVATE", temp, sizeof(temp));
+        ret = openvzReadVPSConfigParam(veid, "VE_PRIVATE", &temp);
         if (ret <= 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR,
                         _("Could not read 'VE_PRIVATE' from config for container %d"),
@@ -411,10 +414,13 @@ openvzReadFSConf(virDomainDefPtr def,
     def->fss[def->nfss++] = fs;
     fs = NULL;
 
+    VIR_FREE(temp);
+
     return 0;
 no_memory:
     virReportOOMError();
 error:
+    VIR_FREE(temp);
     virDomainFSDefFree(fs);
     return -1;
 }
@@ -439,7 +445,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     char *status;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObjPtr dom = NULL;
-    char temp[50];
+    char *temp = NULL;
     char *outbuf = NULL;
     char *line;
     virCommandPtr cmd = NULL;
@@ -506,7 +512,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         if (!(dom->def->os.init = strdup("/sbin/init")))
             goto no_memory;
 
-        ret = openvzReadVPSConfigParam(veid, "CPUS", temp, sizeof(temp));
+        ret = openvzReadVPSConfigParam(veid, "CPUS", &temp);
         if (ret < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR,
                         _("Could not read config for container %d"),
@@ -534,6 +540,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     }
 
     virCommandFree(cmd);
+    VIR_FREE(temp);
     VIR_FREE(outbuf);
 
     return 0;
@@ -543,6 +550,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
  cleanup:
     virCommandFree(cmd);
+    VIR_FREE(temp);
     VIR_FREE(outbuf);
     /* dom hasn't been shared yet, so unref should return 0 */
     if (dom)
@@ -565,25 +573,26 @@ static int
 openvzWriteConfigParam(const char * conf_file, const char *param, const char *value)
 {
     char * temp_file = NULL;
-    int fd = -1, temp_fd = -1;
-    char line[PATH_MAX];
+    int temp_fd = -1;
+    FILE *fp;
+    char *line = NULL;
+    size_t line_size = 0;
 
     if (virAsprintf(&temp_file, "%s.tmp", conf_file)<0) {
         virReportOOMError();
         return -1;
     }
 
-    fd = open(conf_file, O_RDONLY);
-    if (fd == -1)
+    fp = fopen(conf_file, "r");
+    if (fp == NULL)
         goto error;
     temp_fd = open(temp_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (temp_fd == -1) {
-        VIR_FORCE_CLOSE(fd);
         goto error;
     }
 
     while (1) {
-        if (openvz_readline(fd, line, sizeof(line)) <= 0)
+        if (getline(&line, &line_size, fp) <= 0)
             break;
 
         if (!(STRPREFIX(line, param) && line[strlen(param)] == '=')) {
@@ -599,7 +608,7 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
         safewrite(temp_fd, "\"\n", 2) < 0)
         goto error;
 
-    if (VIR_CLOSE(fd) < 0)
+    if (VIR_FCLOSE(fp) < 0)
         goto error;
     if (VIR_CLOSE(temp_fd) < 0)
         goto error;
@@ -607,10 +616,13 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     if (rename(temp_file, conf_file) < 0)
         goto error;
 
+    VIR_FREE(line);
+
     return 0;
 
 error:
-    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(line);
+    VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(temp_fd);
     if (temp_file)
         unlink(temp_file);
@@ -632,23 +644,29 @@ openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value)
     return ret;
 }
 
+/*
+ * value will be freed before a new value is assigned to it, the caller is
+ * responsible for freeing it afterwards.
+ */
 static int
-openvzReadConfigParam(const char * conf_file ,const char * param, char *value, int maxlen)
+openvzReadConfigParam(const char *conf_file, const char *param, char **value)
 {
-    char line[PATH_MAX];
-    int ret, found = 0;
-    int fd;
-    char * sf, * token;
+    char *line = NULL;
+    size_t line_size = 0;
+    ssize_t ret;
+    FILE *fp;
+    int found = 0;
+    char *sf, *token;
     char *saveptr = NULL;
 
     value[0] = 0;
 
-    fd = open(conf_file, O_RDONLY);
-    if (fd == -1)
+    fp = fopen(conf_file, "r");
+    if (fp == NULL)
         return -1;
 
     while (1) {
-        ret = openvz_readline(fd, line, sizeof(line));
+        ret = getline(&line, &line_size, fp);
         if (ret <= 0)
             break;
         saveptr = NULL;
@@ -658,7 +676,9 @@ openvzReadConfigParam(const char * conf_file ,const char * param, char *value, i
             if (sf[0] == '=' && sf[1] != '\0' ) {
                 sf++;
                 if ((token = strtok_r(sf,"\"\t\n", &saveptr)) != NULL) {
-                    if (virStrcpy(value, token, maxlen) == NULL) {
+                    VIR_FREE(*value);
+                    *value = strdup(token);
+                    if (value == NULL) {
                         ret = -1;
                         break;
                     }
@@ -667,7 +687,8 @@ openvzReadConfigParam(const char * conf_file ,const char * param, char *value, i
             }
        }
     }
-    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(line);
+    VIR_FORCE_FCLOSE(fp);
 
     if (ret == 0 && found)
         ret = 1;
@@ -676,14 +697,18 @@ openvzReadConfigParam(const char * conf_file ,const char * param, char *value, i
 }
 
 /*
-* Read parameter from container config
-* sample: 133, "OSTEMPLATE", value, 1024
-* return: -1 - error
-*	   0 - don't found
-*          1 - OK
-*/
+ * Read parameter from container config
+ *
+ * value will be freed before a new value is assined to it, the caller is
+ * responsible for freeing it afterwards.
+ *
+ * sample: 133, "OSTEMPLATE", &value
+ * return: -1 - error
+ *          0 - don't found
+ *          1 - OK
+ */
 int
-openvzReadVPSConfigParam(int vpsid ,const char * param, char *value, int maxlen)
+openvzReadVPSConfigParam(int vpsid, const char *param, char **value)
 {
     char *conf_file;
     int ret;
@@ -691,7 +716,7 @@ openvzReadVPSConfigParam(int vpsid ,const char * param, char *value, int maxlen)
     if (openvzLocateConfFile(vpsid, &conf_file, "conf") < 0)
         return -1;
 
-    ret = openvzReadConfigParam(conf_file, param, value, maxlen);
+    ret = openvzReadConfigParam(conf_file, param, value);
     VIR_FREE(conf_file);
     return ret;
 }
@@ -699,21 +724,23 @@ openvzReadVPSConfigParam(int vpsid ,const char * param, char *value, int maxlen)
 static int
 openvz_copyfile(char* from_path, char* to_path)
 {
-    char line[PATH_MAX];
-    int fd, copy_fd;
+    char *line = NULL;
+    size_t line_size = 0;
+    FILE *fp;
+    int copy_fd;
     int bytes_read;
 
-    fd = open(from_path, O_RDONLY);
-    if (fd == -1)
+    fp = fopen(from_path, "r");
+    if (fp == NULL)
         return -1;
     copy_fd = open(to_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (copy_fd == -1) {
-        VIR_FORCE_CLOSE(fd);
+        VIR_FORCE_FCLOSE(fp);
         return -1;
     }
 
     while (1) {
-        if (openvz_readline(fd, line, sizeof(line)) <= 0)
+        if (getline(&line, &line_size, fp) <= 0)
             break;
 
         bytes_read = strlen(line);
@@ -721,15 +748,18 @@ openvz_copyfile(char* from_path, char* to_path)
             goto error;
     }
 
-    if (VIR_CLOSE(fd) < 0)
+    if (VIR_FCLOSE(fp) < 0)
         goto error;
     if (VIR_CLOSE(copy_fd) < 0)
         goto error;
 
+    VIR_FREE(line);
+
     return 0;
 
 error:
-    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(line);
+    VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(copy_fd);
     return -1;
 }
@@ -742,14 +772,13 @@ error:
 int
 openvzCopyDefaultConfig(int vpsid)
 {
-    char * confdir = NULL;
-    char * default_conf_file = NULL;
-    char configfile_value[PATH_MAX];
+    char *confdir = NULL;
+    char *default_conf_file = NULL;
+    char *configfile_value = NULL;
     char *conf_file = NULL;
     int ret = -1;
 
-    if (openvzReadConfigParam(VZ_CONF_FILE, "CONFIGFILE", configfile_value,
-                              PATH_MAX) < 0)
+    if (openvzReadConfigParam(VZ_CONF_FILE, "CONFIGFILE", &configfile_value) < 0)
         goto cleanup;
 
     confdir = openvzLocateConfDir();
@@ -772,6 +801,7 @@ openvzCopyDefaultConfig(int vpsid)
 cleanup:
     VIR_FREE(confdir);
     VIR_FREE(default_conf_file);
+    VIR_FREE(configfile_value);
     VIR_FREE(conf_file);
     return ret;
 }
@@ -844,22 +874,24 @@ static int
 openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
 {
     char *conf_file;
-    char line[1024];
+    char *line = NULL;
+    size_t line_size = 0;
+    ssize_t ret;
     char *saveptr = NULL;
     char *uuidbuf;
     char *iden;
-    int fd, ret;
+    FILE *fp;
     int retval = -1;
 
     if (openvzLocateConfFile(vpsid, &conf_file, "conf") < 0)
         return -1;
 
-    fd = open(conf_file, O_RDONLY);
-    if (fd == -1)
+    fp = fopen(conf_file, "r");
+    if (fp == NULL)
         goto cleanup;
 
     while (1) {
-        ret = openvz_readline(fd, line, sizeof(line));
+        ret = getline(&line, &line_size, fp);
         if (ret == -1)
             goto cleanup;
 
@@ -882,7 +914,8 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
     }
     retval = 0;
 cleanup:
-    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(line);
+    VIR_FORCE_FCLOSE(fp);
     VIR_FREE(conf_file);
 
     return retval;

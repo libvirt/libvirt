@@ -631,15 +631,16 @@ openvzGenerateVethName(int veid, char *dev_name_ve)
 static char *
 openvzGenerateContainerVethName(int veid)
 {
-    char    temp[1024];
+    char *temp = NULL;
+    char *name = NULL;
 
     /* try to get line "^NETIF=..." from config */
-    if (openvzReadVPSConfigParam(veid, "NETIF", temp, sizeof(temp)) <= 0) {
-        snprintf(temp, sizeof(temp), "eth0");
+    if (openvzReadVPSConfigParam(veid, "NETIF", &temp) <= 0) {
+        name = strdup("eth0");
     } else {
         char *saveptr;
-        char   *s;
-        int     max = 0;
+        char *s;
+        int max = 0;
 
         /* get maximum interface number (actually, it is the last one) */
         for (s=strtok_r(temp, ";", &saveptr); s; s=strtok_r(NULL, ";", &saveptr)) {
@@ -650,9 +651,16 @@ openvzGenerateContainerVethName(int veid)
         }
 
         /* set new name */
-        snprintf(temp, sizeof(temp), "eth%d", max+1);
+        virAsprintf(&name, "eth%d", max + 1);
     }
-    return strdup(temp);
+
+    VIR_FREE(temp);
+
+    if (name == NULL) {
+        virReportOOMError();
+    }
+
+    return name;
 }
 
 static int
@@ -1125,7 +1133,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    char value[1024];
+    char *value = NULL;
     int ret = -1;
 
     openvzDriverLock(driver);
@@ -1138,7 +1146,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
         goto cleanup;
     }
 
-    if (openvzReadVPSConfigParam(strtoI(vm->def->name), "ONBOOT", value, sizeof(value)) < 0) {
+    if (openvzReadVPSConfigParam(strtoI(vm->def->name), "ONBOOT", &value) < 0) {
         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("Could not read container config"));
         goto cleanup;
@@ -1150,6 +1158,8 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     ret = 0;
 
 cleanup:
+    VIR_FREE(value);
+
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
@@ -1464,12 +1474,14 @@ out:
     return -1;
 }
 
-static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid) {
-    int fd;
-    char line[1024] ;
+static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid)
+{
+    FILE *fp;
+    char *line = NULL;
+    size_t line_size = 0;
     unsigned long long usertime, systime, nicetime;
     int readvps = vpsid + 1;  /* ensure readvps is initially different */
-    int ret;
+    ssize_t ret;
 
 /* read statistic from /proc/vz/vestat.
 sample:
@@ -1479,12 +1491,12 @@ Version: 2.2
      55      178         0       5340   59424597      542650441835148   other..
 */
 
-    if ((fd = open("/proc/vz/vestat", O_RDONLY)) == -1)
+    if ((fp = fopen("/proc/vz/vestat", "r")) == NULL)
         return -1;
 
     /*search line with VEID=vpsid*/
     while (1) {
-        ret = openvz_readline(fd, line, sizeof(line));
+        ret = getline(&line, &line_size, fp);
         if (ret <= 0)
             break;
 
@@ -1499,7 +1511,8 @@ Version: 2.2
         }
     }
 
-    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(line);
+    VIR_FORCE_FCLOSE(fp);
     if (ret < 0)
         return -1;
 
