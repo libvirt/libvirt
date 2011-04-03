@@ -2238,7 +2238,6 @@ error:
 int
 virDomainSave(virDomainPtr domain, const char *to)
 {
-    char filepath[4096];
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain, "to=%s", to);
@@ -2260,29 +2259,21 @@ virDomainSave(virDomainPtr domain, const char *to)
         goto error;
     }
 
-    /*
-     * We must absolutize the file path as the save is done out of process
-     * TODO: check for URI when libxml2 is linked in.
-     */
-    if (to[0] != '/') {
-        unsigned int len, t;
-
-        t = strlen(to);
-        if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL)
-            return -1;
-        len = strlen(filepath);
-        /* that should be covered by getcwd() semantic, but be 100% sure */
-        if (len > sizeof(filepath) - (t + 3))
-            return -1;
-        filepath[len] = '/';
-        strcpy(&filepath[len + 1], to);
-        to = &filepath[0];
-
-    }
-
     if (conn->driver->domainSave) {
         int ret;
-        ret = conn->driver->domainSave (domain, to);
+        char *absolute_to;
+
+        /* We must absolutize the file path as the save is done out of process */
+        if (virFileAbsPath(to, &absolute_to) < 0) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                            _("could not build absolute output file path"));
+            goto error;
+        }
+
+        ret = conn->driver->domainSave(domain, absolute_to);
+
+        VIR_FREE(absolute_to);
+
         if (ret < 0)
             goto error;
         return ret;
@@ -2298,7 +2289,7 @@ error:
 /**
  * virDomainRestore:
  * @conn: pointer to the hypervisor connection
- * @from: path to the
+ * @from: path to the input file
  *
  * This method will restore a domain saved to disk by virDomainSave().
  *
@@ -2307,7 +2298,6 @@ error:
 int
 virDomainRestore(virConnectPtr conn, const char *from)
 {
-    char filepath[4096];
     VIR_DEBUG("conn=%p, from=%s", conn, from);
 
     virResetLastError();
@@ -2326,34 +2316,21 @@ virDomainRestore(virConnectPtr conn, const char *from)
         goto error;
     }
 
-    /*
-     * We must absolutize the file path as the restore is done out of process
-     * TODO: check for URI when libxml2 is linked in.
-     */
-    if (from[0] != '/') {
-        unsigned int len, t;
-
-        t = strlen(from);
-        if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL) {
-            virLibConnError(VIR_ERR_SYSTEM_ERROR,
-                            _("cannot get working directory"));
-            goto error;
-        }
-        len = strlen(filepath);
-        /* that should be covered by getcwd() semantic, but be 100% sure */
-        if (len > sizeof(filepath) - (t + 3)) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                            _("path too long"));
-            goto error;
-        }
-        filepath[len] = '/';
-        strcpy(&filepath[len + 1], from);
-        from = &filepath[0];
-    }
-
     if (conn->driver->domainRestore) {
         int ret;
-        ret = conn->driver->domainRestore (conn, from);
+        char *absolute_from;
+
+        /* We must absolutize the file path as the restore is done out of process */
+        if (virFileAbsPath(from, &absolute_from) < 0) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                            _("could not build absolute input file path"));
+            goto error;
+        }
+
+        ret = conn->driver->domainRestore(conn, absolute_from);
+
+        VIR_FREE(absolute_from);
+
         if (ret < 0)
             goto error;
         return ret;
@@ -2381,7 +2358,6 @@ error:
 int
 virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
 {
-    char filepath[4096];
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain, "to=%s, flags=%d", to, flags);
@@ -2403,35 +2379,21 @@ virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
         goto error;
     }
 
-    /*
-     * We must absolutize the file path as the save is done out of process
-     * TODO: check for URI when libxml2 is linked in.
-     */
-    if (to[0] != '/') {
-        unsigned int len, t;
-
-        t = strlen(to);
-        if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL) {
-            virLibDomainError(VIR_ERR_SYSTEM_ERROR,
-                              _("cannot get current directory"));
-            goto error;
-        }
-        len = strlen(filepath);
-        /* that should be covered by getcwd() semantic, but be 100% sure */
-        if (len > sizeof(filepath) - (t + 3)) {
-            virLibDomainError(VIR_ERR_INTERNAL_ERROR,
-                              _("path too long"));
-            goto error;
-        }
-        filepath[len] = '/';
-        strcpy(&filepath[len + 1], to);
-        to = &filepath[0];
-
-    }
-
     if (conn->driver->domainCoreDump) {
         int ret;
-        ret = conn->driver->domainCoreDump (domain, to, flags);
+        char *absolute_to;
+
+        /* We must absolutize the file path as the save is done out of process */
+        if (virFileAbsPath(to, &absolute_to) < 0) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                            _("could not build absolute core file path"));
+            goto error;
+        }
+
+        ret = conn->driver->domainCoreDump(domain, absolute_to, flags);
+
+        VIR_FREE(absolute_to);
+
         if (ret < 0)
             goto error;
         return ret;
