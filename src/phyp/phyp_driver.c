@@ -115,11 +115,17 @@ phypExec(LIBSSH2_SESSION * session, char *cmd, int *exit_status,
     LIBSSH2_CHANNEL *channel;
     ConnectionData *connection_data = conn->networkPrivateData;
     virBuffer tex_ret = VIR_BUFFER_INITIALIZER;
-    char buffer[0x4000] = { 0 };
+    char *buffer = NULL;
+    size_t buffer_size = 16384;
     int exitcode;
     int bytecount = 0;
     int sock = connection_data->sock;
     int rc = 0;
+
+    if (VIR_ALLOC_N(buffer, buffer_size) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
 
     /* Exec non-blocking on the remove host */
     while ((channel = libssh2_channel_open_session(session)) == NULL &&
@@ -144,7 +150,7 @@ phypExec(LIBSSH2_SESSION * session, char *cmd, int *exit_status,
     for (;;) {
         /* loop until we block */
         do {
-            rc = libssh2_channel_read(channel, buffer, sizeof(buffer));
+            rc = libssh2_channel_read(channel, buffer, buffer_size);
             if (rc > 0) {
                 bytecount += rc;
                 virBufferVSprintf(&tex_ret, "%s", buffer);
@@ -179,9 +185,12 @@ phypExec(LIBSSH2_SESSION * session, char *cmd, int *exit_status,
   err:
     (*exit_status) = SSH_CMD_ERR;
     virBufferFreeAndReset(&tex_ret);
+    VIR_FREE(buffer);
     return NULL;
 
   exit:
+    VIR_FREE(buffer);
+
     if (virBufferError(&tex_ret)) {
         virBufferFreeAndReset(&tex_ret);
         virReportOOMError();
