@@ -1607,7 +1607,7 @@ remoteDispatchDomainGetSecurityLabel(struct qemud_server *server ATTRIBUTE_UNUSE
                                      remote_domain_get_security_label_ret *ret)
 {
     virDomainPtr dom;
-    virSecurityLabel seclabel;
+    virSecurityLabelPtr seclabel;
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1615,22 +1615,30 @@ remoteDispatchDomainGetSecurityLabel(struct qemud_server *server ATTRIBUTE_UNUSE
         return -1;
     }
 
-    memset(&seclabel, 0, sizeof seclabel);
-    if (virDomainGetSecurityLabel(dom, &seclabel) == -1) {
-        remoteDispatchConnError(rerr, conn);
-        virDomainFree(dom);
-        return -1;
-    }
-
-    ret->label.label_len = strlen(seclabel.label) + 1;
-    if (VIR_ALLOC_N(ret->label.label_val, ret->label.label_len) < 0) {
+    if (VIR_ALLOC(seclabel) < 0) {
         virDomainFree(dom);
         remoteDispatchOOMError(rerr);
         return -1;
     }
-    strcpy(ret->label.label_val, seclabel.label);
-    ret->enforcing = seclabel.enforcing;
+
+    if (virDomainGetSecurityLabel(dom, seclabel) == -1) {
+        remoteDispatchConnError(rerr, conn);
+        virDomainFree(dom);
+        VIR_FREE(seclabel);
+        return -1;
+    }
+
+    ret->label.label_len = strlen(seclabel->label) + 1;
+    if (VIR_ALLOC_N(ret->label.label_val, ret->label.label_len) < 0) {
+        virDomainFree(dom);
+        VIR_FREE(seclabel);
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+    strcpy(ret->label.label_val, seclabel->label);
+    ret->enforcing = seclabel->enforcing;
     virDomainFree(dom);
+    VIR_FREE(seclabel);
 
     return 0;
 }
