@@ -1902,14 +1902,13 @@ int virFileOpenTtyAt(const char *ptmx,
     }
 
     if (ttyName) {
-        char tempTtyName[PATH_MAX];
-        if (ptsname_r(*ttymaster, tempTtyName, sizeof(tempTtyName)) < 0)
-            goto cleanup;
-
-        if ((*ttyName = strdup(tempTtyName)) == NULL) {
+        if (VIR_ALLOC_N(*ttyName, PATH_MAX) < 0) {
             errno = ENOMEM;
             goto cleanup;
         }
+
+        if (ptsname_r(*ttymaster, *ttyName, PATH_MAX) < 0)
+            goto cleanup;
     }
 
     rc = 0;
