@@ -1036,20 +1036,24 @@ static char *umlGetCapabilities(virConnectPtr conn) {
 
 
 
-static int umlGetProcessInfo(unsigned long long *cpuTime, int pid) {
-    char proc[PATH_MAX];
+static int umlGetProcessInfo(unsigned long long *cpuTime, int pid)
+{
+    char *proc;
     FILE *pidinfo;
     unsigned long long usertime, systime;
 
-    if (snprintf(proc, sizeof(proc), "/proc/%d/stat", pid) >= (int)sizeof(proc)) {
+    if (virAsprintf(&proc, "/proc/%d/stat", pid) < 0) {
         return -1;
     }
 
     if (!(pidinfo = fopen(proc, "r"))) {
         /* VM probably shut down, so fake 0 */
         *cpuTime = 0;
+        VIR_FREE(proc);
         return 0;
     }
+
+    VIR_FREE(proc);
 
     if (fscanf(pidinfo, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu", &usertime, &systime) != 2) {
         umlDebug("not enough arg");
