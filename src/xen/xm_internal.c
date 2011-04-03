@@ -358,7 +358,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
 
     while ((ent = readdir(dh))) {
         struct stat st;
-        char path[PATH_MAX];
+        char *path;
 
         /*
          * Skip a bunch of crufty files that clearly aren't config files
@@ -387,15 +387,16 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
             continue;
 
         /* Build the full file path */
-        if ((strlen(priv->configDir) + 1 + strlen(ent->d_name) + 1) > PATH_MAX)
-            continue;
-        strcpy(path, priv->configDir);
-        strcat(path, "/");
-        strcat(path, ent->d_name);
+        if (!(path = virFileBuildPath(priv->configDir, ent->d_name, NULL))) {
+            virReportOOMError();
+            closedir(dh);
+            return -1;
+        }
 
         /* Skip anything which isn't a file (takes care of scripts/ subdir */
         if ((stat(path, &st) < 0) ||
             (!S_ISREG(st.st_mode))) {
+            VIR_FREE(path);
             continue;
         }
 
@@ -404,6 +405,8 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
         if (xenXMConfigCacheAddFile(conn, path) < 0) {
             /* Ignoring errors, since alot of stuff goes wrong in /etc/xen */
         }
+
+        VIR_FREE(path);
     }
 
     /* Reap all entries which were not changed, by comparing
@@ -1046,10 +1049,11 @@ int xenXMDomainCreate(virDomainPtr domain) {
  * Create a config file for a domain, based on an XML
  * document describing its config
  */
-virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
+virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
+{
     virDomainPtr ret;
-    char filename[PATH_MAX];
-    const char * oldfilename;
+    char *filename;
+    const char *oldfilename;
     virDomainDefPtr def = NULL;
     xenXMConfCachePtr entry = NULL;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
@@ -1130,15 +1134,10 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         entry = NULL;
     }
 
-    if ((strlen(priv->configDir) + 1 + strlen(def->name) + 1) > PATH_MAX) {
-        xenXMError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("config file name is too long"));
+    if (!(filename = virFileBuildPath(priv->configDir, def->name, NULL))) {
+        virReportOOMError();
         goto error;
     }
-
-    strcpy(filename, priv->configDir);
-    strcat(filename, "/");
-    strcat(filename, def->name);
 
     if (xenXMConfigSaveFile(conn, filename, def) < 0)
         goto error;
@@ -1172,9 +1171,11 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
 
     ret = virGetDomain(conn, def->name, def->uuid);
     xenUnifiedUnlock(priv);
+    VIR_FREE(filename);
     return (ret);
 
  error:
+    VIR_FREE(filename);
     VIR_FREE(entry);
     virDomainDefFree(def);
     xenUnifiedUnlock(priv);

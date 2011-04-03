@@ -2484,7 +2484,7 @@ virNWFilterLoadAllConfigs(virConnectPtr conn,
     }
 
     while ((entry = readdir(dir))) {
-        char path[PATH_MAX];
+        char *path;
         virNWFilterObjPtr nwfilter;
 
         if (entry->d_name[0] == '.')
@@ -2493,17 +2493,16 @@ virNWFilterLoadAllConfigs(virConnectPtr conn,
         if (!virFileHasSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (virFileBuildPath(configDir, entry->d_name,
-                             NULL, path, PATH_MAX) < 0) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("config filename '%s/%s' is too long"),
-                                   configDir, entry->d_name);
+        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL))) {
+            virReportOOMError();
             continue;
         }
 
         nwfilter = virNWFilterObjLoad(conn, nwfilters, entry->d_name, path);
         if (nwfilter)
             virNWFilterObjUnlock(nwfilter);
+
+        VIR_FREE(path);
     }
 
     closedir(dir);
@@ -2523,7 +2522,6 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
 
     if (!nwfilter->configFile) {
         int err;
-        char path[PATH_MAX];
 
         if ((err = virFileMakePath(driver->configDir))) {
             virReportSystemError(err,
@@ -2532,13 +2530,8 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
             return -1;
         }
 
-        if (virFileBuildPath(driver->configDir, def->name, ".xml",
-                             path, sizeof(path)) < 0) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("cannot construct config file path"));
-            return -1;
-        }
-        if (!(nwfilter->configFile = strdup(path))) {
+        if (!(nwfilter->configFile = virFileBuildPath(driver->configDir,
+                                                      def->name, ".xml"))) {
             virReportOOMError();
             return -1;
         }

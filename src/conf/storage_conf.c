@@ -1473,8 +1473,8 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
     }
 
     while ((entry = readdir(dir))) {
-        char path[PATH_MAX];
-        char autostartLink[PATH_MAX];
+        char *path;
+        char *autostartLink;
         virStoragePoolObjPtr pool;
 
         if (entry->d_name[0] == '.')
@@ -1483,19 +1483,15 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
         if (!virFileHasSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (virFileBuildPath(configDir, entry->d_name,
-                             NULL, path, PATH_MAX) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("Config filename '%s/%s' is too long"),
-                                  configDir, entry->d_name);
+        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL))) {
+            virReportOOMError();
             continue;
         }
 
-        if (virFileBuildPath(autostartDir, entry->d_name,
-                             NULL, autostartLink, PATH_MAX) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("Autostart link path '%s/%s' is too long"),
-                                  autostartDir, entry->d_name);
+        if (!(autostartLink = virFileBuildPath(autostartDir, entry->d_name,
+                                               NULL))) {
+            virReportOOMError();
+            VIR_FREE(path);
             continue;
         }
 
@@ -1503,6 +1499,9 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
                                      autostartLink);
         if (pool)
             virStoragePoolObjUnlock(pool);
+
+        VIR_FREE(path);
+        VIR_FREE(autostartLink);
     }
 
     closedir(dir);
@@ -1520,7 +1519,6 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
 
     if (!pool->configFile) {
         int err;
-        char path[PATH_MAX];
 
         if ((err = virFileMakePath(driver->configDir))) {
             virReportSystemError(err,
@@ -1529,26 +1527,14 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
             return -1;
         }
 
-        if (virFileBuildPath(driver->configDir, def->name, ".xml",
-                             path, sizeof(path)) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("cannot construct config file path"));
-            return -1;
-        }
-        if (!(pool->configFile = strdup(path))) {
+        if (!(pool->configFile = virFileBuildPath(driver->configDir,
+                                                  def->name, ".xml"))) {
             virReportOOMError();
             return -1;
         }
 
-        if (virFileBuildPath(driver->autostartDir, def->name, ".xml",
-                             path, sizeof(path)) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("cannot construct "
-                                          "autostart link path"));
-            VIR_FREE(pool->configFile);
-            return -1;
-        }
-        if (!(pool->autostartLink = strdup(path))) {
+        if (!(pool->autostartLink = virFileBuildPath(driver->autostartDir,
+                                                     def->name, ".xml"))) {
             virReportOOMError();
             VIR_FREE(pool->configFile);
             return -1;

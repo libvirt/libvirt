@@ -1842,23 +1842,24 @@ cleanup:
     return err;
 }
 
-/* Build up a fully qualfiied path for a config file to be
+/* Build up a fully qualified path for a config file to be
  * associated with a persistent guest or network */
-int virFileBuildPath(const char *dir,
-                     const char *name,
-                     const char *ext,
-                     char *buf,
-                     unsigned int buflen)
+char *
+virFileBuildPath(const char *dir, const char *name, const char *ext)
 {
-    if ((strlen(dir) + 1 + strlen(name) + (ext ? strlen(ext) : 0) + 1) >= (buflen-1))
-        return -1;
+    char *path;
 
-    strcpy(buf, dir);
-    strcat(buf, "/");
-    strcat(buf, name);
-    if (ext)
-        strcat(buf, ext);
-    return 0;
+    if (ext == NULL) {
+        if (virAsprintf(&path, "%s/%s", dir, name) < 0) {
+            return NULL;
+        }
+    } else {
+        if (virAsprintf(&path, "%s/%s%s", dir, name, ext) < 0) {
+            return NULL;
+        }
+    }
+
+    return path;
 }
 
 
