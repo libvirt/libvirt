@@ -1012,7 +1012,8 @@ static int
 qemuProcessWaitForMonitor(struct qemud_driver* driver,
                           virDomainObjPtr vm, off_t pos)
 {
-    char buf[4096] = ""; /* Plenty of space to get startup greeting */
+    char *buf;
+    size_t buf_size = 4096; /* Plenty of space to get startup greeting */
     int logfd;
     int ret = -1;
     virHashTablePtr paths = NULL;
@@ -1021,7 +1022,12 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
     if ((logfd = qemuProcessLogReadFD(driver->logDir, vm->def->name, pos)) < 0)
         return -1;
 
-    if (qemuProcessReadLogOutput(vm, logfd, buf, sizeof(buf),
+    if (VIR_ALLOC_N(buf, buf_size) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (qemuProcessReadLogOutput(vm, logfd, buf, buf_size,
                                  qemuProcessFindCharDevicePTYs,
                                  "console", 30) < 0)
         goto closelog;
@@ -1054,16 +1060,18 @@ cleanup:
     if (kill(vm->pid, 0) == -1 && errno == ESRCH) {
         /* VM is dead, any other error raised in the interim is probably
          * not as important as the qemu cmdline output */
-        qemuProcessReadLogFD(logfd, buf, sizeof(buf), strlen(buf));
+        qemuProcessReadLogFD(logfd, buf, buf_size, strlen(buf));
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("process exited while connecting to monitor: %s"),
                         buf);
         ret = -1;
     }
 
+    VIR_FREE(buf);
+
 closelog:
     if (VIR_CLOSE(logfd) < 0) {
-        char ebuf[4096];
+        char ebuf[1024];
         VIR_WARN("Unable to close logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
