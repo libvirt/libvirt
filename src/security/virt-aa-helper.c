@@ -188,8 +188,9 @@ replace_string(char *orig, const size_t len, const char *oldstr,
 static int
 parserCommand(const char *profile_name, const char cmd)
 {
+    int result = -1;
     char flag[3];
-    char profile[PATH_MAX];
+    char *profile;
     int status;
     int ret;
 
@@ -200,15 +201,15 @@ parserCommand(const char *profile_name, const char cmd)
 
     snprintf(flag, 3, "-%c", cmd);
 
-    if (snprintf(profile, PATH_MAX, "%s/%s",
-                 APPARMOR_DIR "/libvirt", profile_name) > PATH_MAX - 1) {
+    if (virAsprintf(&profile, "%s/%s",
+                    APPARMOR_DIR "/libvirt", profile_name) < 0) {
         vah_error(NULL, 0, _("profile name exceeds maximum length"));
         return -1;
     }
 
     if (!virFileExists(profile)) {
         vah_error(NULL, 0, _("profile does not exist"));
-        return -1;
+        goto cleanup;
     } else {
         const char * const argv[] = {
             "/sbin/apparmor_parser", flag, profile, NULL
@@ -217,18 +218,23 @@ parserCommand(const char *profile_name, const char cmd)
             (WIFEXITED(status) && WEXITSTATUS(status) != 0)) {
             if (ret != 0) {
                 vah_error(NULL, 0, _("failed to run apparmor_parser"));
-                return -1;
+                goto cleanup;
             } else if (cmd == 'R' && WIFEXITED(status) &&
                        WEXITSTATUS(status) == 234) {
                 vah_warning(_("unable to unload already unloaded profile"));
             } else {
                 vah_error(NULL, 0, _("apparmor_parser exited with error"));
-                return -1;
+                goto cleanup;
             }
         }
     }
 
-    return 0;
+    result = 0;
+
+cleanup:
+    VIR_FREE(profile);
+
+    return result;
 }
 
 /*
@@ -308,7 +314,7 @@ static int
 create_profile(const char *profile, const char *profile_name,
                const char *profile_files)
 {
-    char template[PATH_MAX];
+    char *template;
     char *tcontent = NULL;
     char *pcontent = NULL;
     char *replace_name = NULL;
@@ -324,8 +330,7 @@ create_profile(const char *profile, const char *profile_name,
         goto end;
     }
 
-    if (snprintf(template, PATH_MAX, "%s/TEMPLATE",
-                 APPARMOR_DIR "/libvirt") > PATH_MAX - 1) {
+    if (virAsprintf(&template, "%s/TEMPLATE", APPARMOR_DIR "/libvirt") < 0) {
         vah_error(NULL, 0, _("template name exceeds maximum length"));
         goto end;
     }
@@ -409,6 +414,7 @@ create_profile(const char *profile, const char *profile_name,
   clean_tcontent:
     VIR_FREE(tcontent);
   end:
+    VIR_FREE(template);
     return rc;
 }
 
@@ -1134,8 +1140,8 @@ main(int argc, char **argv)
     vahControl _ctl, *ctl = &_ctl;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int rc = -1;
-    char profile[PATH_MAX];
-    char include_file[PATH_MAX];
+    char *profile = NULL;
+    char *include_file = NULL;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -1164,13 +1170,13 @@ main(int argc, char **argv)
     if (vahParseArgv(ctl, argc, argv) != 0)
         vah_error(ctl, 1, _("could not parse arguments"));
 
-    if (snprintf(profile, PATH_MAX, "%s/%s",
-                 APPARMOR_DIR "/libvirt", ctl->uuid) > PATH_MAX - 1)
-        vah_error(ctl, 1, _("profile name exceeds maximum length"));
+    if (virAsprintf(&profile, "%s/%s",
+                    APPARMOR_DIR "/libvirt", ctl->uuid) < 0)
+        vah_error(ctl, 0, _("could not allocate memory"));
 
-    if (snprintf(include_file, PATH_MAX, "%s/%s.files",
-                 APPARMOR_DIR "/libvirt", ctl->uuid) > PATH_MAX - 1)
-        vah_error(ctl, 1, _("disk profile name exceeds maximum length"));
+    if (virAsprintf(&include_file, "%s/%s.files",
+                    APPARMOR_DIR "/libvirt", ctl->uuid) < 0)
+        vah_error(ctl, 0, _("could not allocate memory"));
 
     if (ctl->cmd == 'a')
         rc = parserLoad(ctl->uuid);
@@ -1258,5 +1264,9 @@ main(int argc, char **argv)
     }
 
     vahDeinit(ctl);
+
+    VIR_FREE(profile);
+    VIR_FREE(include_file);
+
     exit(rc == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
