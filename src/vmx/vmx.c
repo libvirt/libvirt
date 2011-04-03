@@ -732,7 +732,7 @@ virVMXGetConfigLong(virConfPtr conf, const char *name, long long *number,
             }
         }
 
-        if (STREQ(value->str, "unlimited")) {
+        if (STRCASEEQ(value->str, "unlimited")) {
             *number = -1;
         } else if (virStrToLong_ll(value->str, NULL, 10, number) < 0) {
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1388,7 +1388,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
         goto cleanup;
     }
 
-    if (sched_cpu_affinity != NULL && STRNEQ(sched_cpu_affinity, "all")) {
+    if (sched_cpu_affinity != NULL && STRCASENEQ(sched_cpu_affinity, "all")) {
         const char *current = sched_cpu_affinity;
         int number, count = 0;
 
@@ -2135,7 +2135,7 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
                 goto cleanup;
             }
         } else if (virFileHasSuffix(fileName, ".iso") ||
-                   STREQ(deviceType, "atapi-cdrom")) {
+                   STRCASEEQ(deviceType, "atapi-cdrom")) {
             /*
              * This function was called in order to parse a harddisk device,
              * but .iso files and 'atapi-cdrom' devices are for CDROM devices
@@ -2174,7 +2174,7 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
              * handle it.
              */
             goto ignore;
-        } else if (STREQ(deviceType, "atapi-cdrom")) {
+        } else if (STRCASEEQ(deviceType, "atapi-cdrom")) {
             (*def)->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
             (*def)->src = fileName;
 
@@ -2202,7 +2202,7 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
             if ((*def)->src == NULL) {
                 goto cleanup;
             }
-        } else if (fileType != NULL && STREQ(fileType, "device")) {
+        } else if (fileType != NULL && STRCASEEQ(fileType, "device")) {
             (*def)->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
             (*def)->src = fileName;
 
