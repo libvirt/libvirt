@@ -490,6 +490,12 @@ qemuCapsInitGuest(virCapsPtr caps,
     if (!binary)
         return 0;
 
+    /* Ignore binary if extracting version info fails */
+    if (qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCaps) < 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (stat(binary, &st) == 0) {
         binary_mtime = st.st_mtime;
     } else {
@@ -554,9 +560,8 @@ qemuCapsInitGuest(virCapsPtr caps,
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto error;
 
-    if (qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCaps) < 0 ||
-        (qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
-         !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0)))
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
+        !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0))
         goto error;
 
     if (hvm) {
