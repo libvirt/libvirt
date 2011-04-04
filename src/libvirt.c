@@ -2444,6 +2444,71 @@ error:
 }
 
 /**
+ * virDomainScreenshot:
+ * @domain: a domain object
+ * @stream: stream to use as output
+ * @screen: monitor ID to take screenshot from
+ * @flags: extra flags, currently unused
+ *
+ * Take a screenshot of current domain console as a stream. The image format
+ * is hypervisor specific. Moreover, some hypervisors supports multiple
+ * displays per domain. These can be distinguished by @screen argument.
+ *
+ * This call sets up a stream; subsequent use of stream API is necessary
+ * to transfer actual data, determine how much data is successfully
+ * transfered, and detect any errors.
+ *
+ * The screen ID is the sequential number of screen. In case of multiple
+ * graphics cards, heads are enumerated before devices, e.g. having
+ * two graphics cards, both with four heads, screen ID 5 addresses
+ * the first head on the second card.
+ *
+ * Returns a string representing the mime-type of the image format, or
+ * NULL upon error. The caller must free() the returned value.
+ */
+char *
+virDomainScreenshot(virDomainPtr domain,
+                    virStreamPtr stream,
+                    unsigned int screen,
+                    unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(domain, "stream=%p flags=%u", stream, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    if (!VIR_IS_STREAM(stream)) {
+        virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
+        return NULL;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO ||
+        stream->conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (domain->conn->driver->domainScreenshot) {
+        char * ret;
+        ret = domain->conn->driver->domainScreenshot(domain, stream,
+                                                     screen, flags);
+
+        if (ret == NULL)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return NULL;
+}
+
+/**
  * virDomainShutdown:
  * @domain: a domain object
  *
