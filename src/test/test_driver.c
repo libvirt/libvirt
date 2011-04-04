@@ -5374,6 +5374,7 @@ static virDriver testDriver = {
     testDomainSave, /* domainSave */
     testDomainRestore, /* domainRestore */
     testDomainCoreDump, /* domainCoreDump */
+    NULL, /* domainScreenshot */
     testSetVcpus, /* domainSetVcpus */
     testDomainSetVcpusFlags, /* domainSetVcpusFlags */
     testDomainGetVcpusFlags, /* domainGetVcpusFlags */

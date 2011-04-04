@@ -93,6 +93,7 @@ struct xenUnifiedDriver {
         virDrvDomainSave		domainSave;
         virDrvDomainRestore		domainRestore;
         virDrvDomainCoreDump		domainCoreDump;
+        virDrvDomainScreenshot      domainScreenshot;
         virDrvDomainPinVcpu		domainPinVcpu;
         virDrvDomainGetVcpus		domainGetVcpus;
         virDrvListDefinedDomains	listDefinedDomains;

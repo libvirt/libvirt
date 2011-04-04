@@ -2135,6 +2135,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainSave, /* domainSave */
     xenUnifiedDomainRestore, /* domainRestore */
     xenUnifiedDomainCoreDump, /* domainCoreDump */
+    NULL, /* domainScreenshot */
     xenUnifiedDomainSetVcpus, /* domainSetVcpus */
     xenUnifiedDomainSetVcpusFlags, /* domainSetVcpusFlags */
     xenUnifiedDomainGetVcpusFlags, /* domainGetVcpusFlags */

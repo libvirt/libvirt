@@ -8569,6 +8569,7 @@ virDriver NAME(Driver) = {
     vboxDomainSave, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
+    NULL, /* domainScreenshot */
     vboxDomainSetVcpus, /* domainSetVcpus */
     vboxDomainSetVcpusFlags, /* domainSetVcpusFlags */
     vboxDomainGetVcpusFlags, /* domainGetVcpusFlags */

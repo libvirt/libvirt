@@ -2716,6 +2716,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */
+    NULL,                       /* domainScreenshot */
     libxlDomainSetVcpus,        /* domainSetVcpus */
     libxlDomainSetVcpusFlags,   /* domainSetVcpusFlags */
     libxlDomainGetVcpusFlags,   /* domainGetVcpusFlags */

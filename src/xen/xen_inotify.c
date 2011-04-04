@@ -72,6 +72,7 @@ struct xenUnifiedDriver xenInotifyDriver = {
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
+    NULL, /* domainScreenshot */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* listDefinedDomains */

@@ -3864,6 +3864,7 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainSave,         /* domainSave */
     xenDaemonDomainRestore,      /* domainRestore */
     xenDaemonDomainCoreDump,     /* domainCoreDump */
+    NULL,                        /* domainScreenshot */
     xenDaemonDomainPinVcpu,      /* domainPinVcpu */
     xenDaemonDomainGetVcpus,     /* domainGetVcpus */
     xenDaemonListDefinedDomains, /* listDefinedDomains */

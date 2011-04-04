@@ -1594,6 +1594,7 @@ static virDriver openvzDriver = {
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
+    NULL, /* domainScreenshot */
     openvzDomainSetVcpus, /* domainSetVcpus */
     openvzDomainSetVcpusFlags, /* domainSetVcpusFlags */
     openvzDomainGetVcpusFlags, /* domainGetVcpusFlags */

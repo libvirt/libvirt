@@ -103,6 +103,7 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
+    NULL, /* domainScreenshot */
     xenXMDomainPinVcpu, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     xenXMListDefinedDomains, /* listDefinedDomains */

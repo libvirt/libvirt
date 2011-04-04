@@ -4626,6 +4626,7 @@ static virDriver esxDriver = {
     NULL,                            /* domainSave */
     NULL,                            /* domainRestore */
     NULL,                            /* domainCoreDump */
+    NULL,                            /* domainScreenshot */
     esxDomainSetVcpus,               /* domainSetVcpus */
     esxDomainSetVcpusFlags,          /* domainSetVcpusFlags */
     esxDomainGetVcpusFlags,          /* domainGetVcpusFlags */
