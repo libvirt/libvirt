@@ -1,4 +1,4 @@
-!/m4/compiler-flags.m4
+!/m4/virt-*.m4
 !/po/*.po
 !/po/POTFILES.in
 !/po/libvirt.pot
