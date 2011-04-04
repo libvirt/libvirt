@@ -1066,6 +1066,19 @@ fi
 %endif
 
 %changelog
+* Mon Apr  4 2011 Daniel Veillard <veillard@redhat.com> - 0.9.0-1
+- Support cputune cpu usage tuning
+- Add public APIs for storage volume upload/download
+- Add public API for setting migration speed on the fly
+- Add libxenlight driver
+- qemu: support migration to fd
+- libvirt: add virDomain{Get,Set}BlkioParameters
+- setmem: introduce a new libvirt API (virDomainSetMemoryFlags)
+- Expose event loop implementation as a public API
+- Dump the debug buffer to libvirtd.log on fatal signal
+- Audit support
+- Various improvements and bug fixes
+
 * Thu Feb 17 2011 Daniel Veillard <veillard@redhat.com> - 0.8.8-1
 - expose new API for sysinfo extraction
 - cgroup blkio weight support
