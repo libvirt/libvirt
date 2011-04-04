@@ -670,6 +670,14 @@ int                     virDomainCoreDump       (virDomainPtr domain,
                                                  int flags);
 
 /*
+ * Screenshot of current domain console
+ */
+char *                  virDomainScreenshot     (virDomainPtr domain,
+                                                 virStreamPtr stream,
+                                                 unsigned int screen,
+                                                 unsigned int flags);
+
+/*
  * Domain runtime information
  */
 int                     virDomainGetInfo        (virDomainPtr domain,
