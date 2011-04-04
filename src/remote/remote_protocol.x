@@ -714,6 +714,16 @@ struct remote_domain_core_dump_args {
     int flags;
 };
 
+struct remote_domain_screenshot_args {
+    remote_nonnull_domain dom;
+    unsigned int screen;
+    unsigned int flags;
+};
+
+struct remote_domain_screenshot_ret {
+    remote_string mime;
+};
+
 struct remote_domain_get_xml_desc_args {
     remote_nonnull_domain dom;
     int flags;
@@ -2185,8 +2195,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207, /* autogen autogen */
     REMOTE_PROC_STORAGE_VOL_UPLOAD = 208, /* skipgen skipgen */
     REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_INJECT_NMI = 210 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_INJECT_NMI = 210, /* autogen autogen */
 
+    REMOTE_PROC_DOMAIN_SCREENSHOT = 211 /* skipgen skipgen */
     /*
      * Notice how the entries are grouped in sets of 10 ?
      * Nice isn't it. Please keep it this way when adding more.

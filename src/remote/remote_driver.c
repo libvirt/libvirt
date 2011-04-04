@@ -4803,6 +4803,46 @@ done:
     return rv;
 }
 
+static char *
+remoteDomainScreenshot (virDomainPtr domain,
+                        virStreamPtr st,
+                        unsigned int screen,
+                        unsigned int flags)
+{
+    struct private_data *priv = domain->conn->privateData;
+    struct private_stream_data *privst = NULL;
+    remote_domain_screenshot_args args;
+    remote_domain_screenshot_ret ret;
+    char *rv = NULL;
+
+    remoteDriverLock(priv);
+
+    if (!(privst = remoteStreamOpen(st,
+                                    REMOTE_PROC_DOMAIN_SCREENSHOT,
+                                    priv->counter)))
+        goto done;
+
+    st->driver = &remoteStreamDrv;
+    st->privateData = privst;
+
+    make_nonnull_domain(&args.dom, domain);
+    args.flags = flags;
+    args.screen = screen;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SCREENSHOT,
+              (xdrproc_t) xdr_remote_domain_screenshot_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_screenshot_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.mime ? *ret.mime : NULL;
+    VIR_FREE(ret.mime);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static int
 remoteStorageVolUpload(virStorageVolPtr vol,
                        virStreamPtr st,
@@ -6425,7 +6465,7 @@ static virDriver remote_driver = {
     remoteDomainSave, /* domainSave */
     remoteDomainRestore, /* domainRestore */
     remoteDomainCoreDump, /* domainCoreDump */
-    NULL, /* domainScreenshot */
+    remoteDomainScreenshot, /* domainScreenshot */
     remoteDomainSetVcpus, /* domainSetVcpus */
     remoteDomainSetVcpusFlags, /* domainSetVcpusFlags */
     remoteDomainGetVcpusFlags, /* domainGetVcpusFlags */

@@ -1692,6 +1692,63 @@ no_memory:
     goto cleanup;
 }
 
+static int
+remoteDispatchDomainScreenshot (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                struct qemud_client *client,
+                                virConnectPtr conn,
+                                remote_message_header *hdr,
+                                remote_error *rerr,
+                                remote_domain_screenshot_args *args,
+                                remote_domain_screenshot_ret *ret)
+{
+    int rv = -1;
+    struct qemud_client_stream *stream = NULL;
+    virDomainPtr dom;
+    char *mime, **mime_p;
+
+    ret->mime = NULL;
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL)
+        goto err;
+
+    stream = remoteCreateClientStream(conn, hdr);
+    if (!stream)
+        goto err;
+
+    mime = virDomainScreenshot(dom, stream->st, args->screen, args->flags);
+    if (!mime)
+        goto err;
+
+    if (remoteAddClientStream(client, stream, 1) < 0) {
+        virStreamAbort(stream->st);
+        goto err;
+    }
+
+    if (VIR_ALLOC(mime_p) < 0) {
+        remoteDispatchOOMError(rerr);
+        goto cleanup;
+    }
+
+    *mime_p = strdup(mime);
+    if (*mime_p == NULL) {
+        remoteDispatchOOMError(rerr);
+        goto cleanup;
+    }
+
+    ret->mime = mime_p;
+    rv = 0;
+
+err:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+cleanup:
+    virDomainFree(dom);
+    if (stream && rv != 0)
+        remoteFreeClientStream(client, stream);
+    return rv;
+}
+
 /*-------------------------------------------------------------*/
 
 static int

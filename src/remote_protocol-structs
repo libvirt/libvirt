@@ -403,6 +403,14 @@ struct remote_domain_core_dump_args {
         remote_nonnull_string      to;
         int                        flags;
 };
+struct remote_domain_screenshot_args {
+        remote_nonnull_domain      dom;
+        unsigned int               screen;
+        unsigned int               flags;
+};
+struct remote_domain_screenshot_ret {
+        remote_string              mime;
+};
 struct remote_domain_get_xml_desc_args {
         remote_nonnull_domain      dom;
         int                        flags;
