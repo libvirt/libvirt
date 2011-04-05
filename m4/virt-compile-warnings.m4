@@ -15,7 +15,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     case "$enable_compile_warnings" in
     no)
         try_compiler_flags=""
-	;;
+        ;;
     yes|minimum|maximum|error)
 
         # List of warnings that are not relevant / wanted
@@ -118,10 +118,10 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         then
           gl_WARN_ADD([-Werror])
         fi
-	;;
+        ;;
     *)
-	AC_MSG_ERROR(Unknown argument '$enable_compile_warnings' to --enable-compile-warnings)
-	;;
+        AC_MSG_ERROR(Unknown argument '$enable_compile_warnings' to --enable-compile-warnings)
+        ;;
     esac
 
     WARN_LDFLAGS=$WARN_CFLAGS
