@@ -947,6 +947,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 {
     int i;
     bool reservedIDE = false;
+    bool reservedVGA = false;
 
     /* Host bridge */
     if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
@@ -966,7 +967,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
                                     _("Primary IDE controller must have PCI address 0:0:1.1"));
                     goto error;
                 }
-                /* If TYPE==PCI, then then qemuCollectPCIAddress() function
+                /* If TYPE==PCI, then qemuCollectPCIAddress() function
                  * has already reserved the address, so we must skip */
                 reservedIDE = true;
             } else {
@@ -997,16 +998,22 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
                                 _("Primary video card must have PCI address 0:0:2.0"));
                 goto error;
             }
+            /* If TYPE==PCI, then qemuCollectPCIAddress() function
+             * has already reserved the address, so we must skip */
+            reservedVGA = true;
         } else {
             def->videos[0]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             def->videos[0]->info.addr.pci.domain = 0;
             def->videos[0]->info.addr.pci.bus = 0;
             def->videos[0]->info.addr.pci.slot = 2;
             def->videos[0]->info.addr.pci.function = 0;
-            if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
-                goto error;
         }
     }
+
+    if (!reservedVGA
+        && qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
+        goto error;
+
     for (i = 0; i < def->nfss ; i++) {
         if (def->fss[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
