@@ -1567,15 +1567,14 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (!(def = virDomainObjGetPersistentDef(driver->caps, vm)))
         goto cleanup;
 
-    maplen = (unsigned int) ceil((double) nvcpus / 8);
+    maplen = VIR_CPU_MAPLEN(nvcpus);
     if (VIR_ALLOC_N(bitmask, maplen) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    memset(bitmask, 0, maplen);
     for (i = 0; i < nvcpus; ++i) {
-        pos = (unsigned int) floor((double) i / 8);
+        pos = i / 8;
         bitmask[pos] |= 1 << (i % 8);
     }
 
