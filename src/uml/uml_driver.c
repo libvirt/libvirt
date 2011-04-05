@@ -2130,7 +2130,8 @@ umlDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virFDStreamOpenFile(st, chr->source.data.file.path, 0, 0, O_RDWR) < 0)
+    if (virFDStreamOpenFile(st, chr->source.data.file.path,
+                            0, 0, O_RDWR, false) < 0)
         goto cleanup;
 
     ret = 0;

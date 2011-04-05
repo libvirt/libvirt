@@ -146,6 +146,7 @@ int main(int argc, char **argv)
     unsigned long long length;
     int flags;
     int mode;
+    unsigned int delete;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -161,8 +162,8 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    if (argc != 6) {
-        fprintf(stderr, _("%s: syntax FILENAME FLAGS MODE OFFSET LENGTH\n"), argv[0]);
+    if (argc != 7) {
+        fprintf(stderr, _("%s: syntax FILENAME FLAGS MODE OFFSET LENGTH DELETE\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -186,9 +187,16 @@ int main(int argc, char **argv)
         fprintf(stderr, _("%s: malformed file length %s"), argv[0], argv[5]);
         exit(EXIT_FAILURE);
     }
+    if (virStrToLong_ui(argv[6], NULL, 10, &delete) < 0) {
+        fprintf(stderr, _("%s: malformed delete flag %s"), argv[0],argv[6]);
+        exit(EXIT_FAILURE);
+    }
 
     if (runIO(path, flags, mode, offset, length) < 0)
         goto error;
+
+    if (delete)
+        unlink(path);
 
     return 0;
 
