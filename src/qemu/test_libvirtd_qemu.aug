@@ -111,6 +111,8 @@ clear_emulator_capabilities = 0
 allow_disk_format_probing = 1
 
 vnc_auto_unix_socket = 1
+
+max_processes = 12345
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -232,3 +234,5 @@ vnc_auto_unix_socket = 1
 { "allow_disk_format_probing" = "1" }
 { "#empty" }
 { "vnc_auto_unix_socket" = "1" }
+{ "#empty" }
+{ "max_processes" = "12345" }

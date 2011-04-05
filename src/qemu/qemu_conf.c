@@ -424,6 +424,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE ("set_process_name", VIR_CONF_LONG);
     if (p) driver->setProcessName = p->l;
 
+    p = virConfGetValue(conf, "max_processes");
+    CHECK_TYPE("max_processes", VIR_CONF_LONG);
+    if (p) driver->maxProcesses = p->l;
+
     virConfFree (conf);
     return 0;
 }

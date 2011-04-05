@@ -13,11 +13,13 @@ module Libvirtd_qemu =
 
    let str_val = del /\"/ "\"" . store /[^\"]*/ . del /\"/ "\""
    let bool_val = store /0|1/
+   let int_val = store /[0-9]+/
    let str_array_element = [ seq "el" . str_val ] . del /[ \t\n]*/ ""
    let str_array_val = counter "el" . array_start . ( str_array_element . ( array_sep . str_array_element ) * ) ? . array_end
 
    let str_entry       (kw:string) = [ key kw . value_sep . str_val ]
    let bool_entry      (kw:string) = [ key kw . value_sep . bool_val ]
+   let int_entry       (kw:string) = [ key kw . value_sep . int_val ]
    let str_array_entry (kw:string) = [ key kw . value_sep . str_array_val ]
 
 
@@ -45,6 +47,7 @@ module Libvirtd_qemu =
                  | bool_entry "clear_emulator_capabilities"
                  | bool_entry "allow_disk_format_probing"
                  | bool_entry "set_process_name"
+                 | int_entry "max_processes"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry

@@ -25,6 +25,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "qemu_process.h"
 #include "qemu_domain.h"
@@ -1811,6 +1813,25 @@ qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuProcessLimits(struct qemud_driver *driver)
+{
+    if (driver->maxProcesses > 0) {
+        struct rlimit rlim;
+
+        rlim.rlim_cur = rlim.rlim_max = driver->maxProcesses;
+        if (setrlimit(RLIMIT_NPROC, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit number of processes to %d"),
+                                 driver->maxProcesses);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 struct qemuProcessHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
@@ -1820,6 +1841,9 @@ struct qemuProcessHookData {
 static int qemuProcessHook(void *data)
 {
     struct qemuProcessHookData *h = data;
+
+    if (qemuProcessLimits(h->driver) < 0)
+        return -1;
 
     /* This must take place before exec(), so that all QEMU
      * memory allocation is on the correct NUMA node
