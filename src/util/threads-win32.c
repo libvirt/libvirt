@@ -262,6 +262,7 @@ int virThreadCreate(virThreadPtr thread,
                     void *opaque)
 {
     struct virThreadArgs *args;
+    uintptr_t ret;
 
     if (VIR_ALLOC(args) < 0)
         return -1;
@@ -271,17 +272,20 @@ int virThreadCreate(virThreadPtr thread,
 
     thread->joinable = joinable;
     if (joinable) {
-        thread->thread = (HANDLE)_beginthreadex(NULL, 0,
-                                                virThreadHelperJoinable,
-                                                args, 0, NULL);
-        if (thread->thread == 0)
+        ret = _beginthreadex(NULL, 0,
+                             virThreadHelperJoinable,
+                             args, 0, NULL);
+        if (ret == 0)
             return -1;
     } else {
-        thread->thread = (HANDLE)_beginthread(virThreadHelperDaemon,
-                                              0, args);
-        if (thread->thread == (HANDLE)-1L)
+        ret = _beginthread(virThreadHelperDaemon,
+                           0, args);
+        if (ret == -1L)
             return -1;
     }
+
+    thread->thread = (HANDLE)ret;
+
     return 0;
 }
 
