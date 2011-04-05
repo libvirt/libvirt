@@ -98,11 +98,17 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
         # Extra special flags
         gl_WARN_ADD([-Wp,-D_FORTIFY_SOURCE=2])
-        dnl Fedora only uses -fstack-protector, but doesn't seem to
-        dnl be great overhead in adding -fstack-protector-all instead
-        dnl gl_WARN_ADD([-fstack-protector])
-        gl_WARN_ADD([-fstack-protector-all])
-        gl_WARN_ADD([--param=ssp-buffer-size=4])
+        dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
+        dnl on Mingw32, but fails when actually used
+        case $host in
+           *-*-linux*)
+           dnl Fedora only uses -fstack-protector, but doesn't seem to
+           dnl be great overhead in adding -fstack-protector-all instead
+           dnl gl_WARN_ADD([-fstack-protector])
+           gl_WARN_ADD([-fstack-protector-all])
+           gl_WARN_ADD([--param=ssp-buffer-size=4])
+           ;;
+        esac
         gl_WARN_ADD([-fexceptions])
         gl_WARN_ADD([-fasynchronous-unwind-tables])
         gl_WARN_ADD([-fdiagnostics-show-option])
