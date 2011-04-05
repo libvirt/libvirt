@@ -638,7 +638,7 @@ openvzGenerateContainerVethName(int veid)
     if (openvzReadVPSConfigParam(veid, "NETIF", &temp) <= 0) {
         name = strdup("eth0");
     } else {
-        char *saveptr;
+        char *saveptr = NULL;
         char *s;
         int max = 0;
 
