@@ -898,7 +898,7 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %if %{with_dtrace}
-%{_datadir}/systemtap/tapsets/libvirtd.stp
+%{_datadir}/systemtap/tapset/libvirtd.stp
 %endif
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
