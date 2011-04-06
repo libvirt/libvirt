@@ -625,13 +625,13 @@ qemudStartup(int privileged) {
     virHashForEach(qemu_driver->domains.objs, qemuDomainSnapshotLoad,
                    qemu_driver->snapshotDir);
 
-    qemuDriverUnlock(qemu_driver);
-
-    qemuAutostartDomains(qemu_driver);
-
     qemu_driver->workerPool = virThreadPoolNew(0, 1, processWatchdogEvent, qemu_driver);
     if (!qemu_driver->workerPool)
         goto error;
+
+    qemuDriverUnlock(qemu_driver);
+
+    qemuAutostartDomains(qemu_driver);
 
     if (conn)
         virConnectClose(conn);
