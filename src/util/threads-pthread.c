@@ -1,7 +1,7 @@
 /*
  * threads-pthread.c: basic thread synchronization primitives
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -211,7 +211,7 @@ int virThreadSelfID(void)
     tid = syscall(SYS_gettid);
     return (int)tid;
 #else
-    return (int)pthread_self();
+    return (int)(void *)pthread_self();
 #endif
 }
 
