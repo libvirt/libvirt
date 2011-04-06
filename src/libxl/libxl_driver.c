@@ -2286,6 +2286,168 @@ cleanup:
 }
 
 static int
+libxlDomainGetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
+                                  int *nparams)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    libxl_sched_credit sc_info;
+    int sched_id;
+    int ret = -1;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if ((sched_id = libxl_get_sched_id(&priv->ctx)) < 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to get scheduler id for domain '%d'"
+                     " with libxenlight"), dom->id);
+        goto cleanup;
+    }
+
+    if (sched_id != XEN_SCHEDULER_CREDIT) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Only 'credit' scheduler is supported"));
+        goto cleanup;
+    }
+
+    if (*nparams != XEN_SCHED_CREDIT_NPARAM) {
+        libxlError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
+        goto cleanup;
+    }
+
+    if (libxl_sched_credit_domain_get(&priv->ctx, dom->id, &sc_info) != 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to get scheduler parameters for domain '%d'"
+                     " with libxenlight"), dom->id);
+        goto cleanup;
+    }
+
+    params[0].value.ui = sc_info.weight;
+    params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+    if (virStrcpyStatic(params[0].field, "weight") == NULL) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("Field weight too long for destination"));
+        goto cleanup;
+    }
+
+    params[1].value.ui = sc_info.cap;
+    params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+    if (virStrcpyStatic(params[1].field, "cap") == NULL) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("Field cap too long for destination"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+libxlDomainSetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
+                                  int nparams)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    libxl_sched_credit sc_info;
+    int sched_id;
+    int i;
+    int ret = -1;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if ((sched_id = libxl_get_sched_id(&priv->ctx)) < 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to get scheduler id for domain '%d'"
+                     " with libxenlight"), dom->id);
+        goto cleanup;
+    }
+
+    if (sched_id != XEN_SCHEDULER_CREDIT) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Only 'credit' scheduler is supported"));
+        goto cleanup;
+    }
+
+    if (nparams != XEN_SCHED_CREDIT_NPARAM) {
+        libxlError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; ++i) {
+        virSchedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, "weight")) {
+            if (param->type != VIR_DOMAIN_SCHED_FIELD_UINT) {
+                libxlError(VIR_ERR_INVALID_ARG, "%s",
+                           _("invalid type for weight tunable, expected a 'uint'"));
+                goto cleanup;
+            }
+            sc_info.weight = params[i].value.ui;
+
+        } else if (STREQ(param->field, "cap")) {
+            if (param->type != VIR_DOMAIN_SCHED_FIELD_UINT) {
+                libxlError(VIR_ERR_INVALID_ARG, "%s",
+                           _("invalid type for cap tunable, expected a 'uint'"));
+                goto cleanup;
+            }
+            sc_info.cap = params[i].value.ui;
+        } else {
+            libxlError(VIR_ERR_INVALID_ARG,
+                       _("Invalid parameter '%s'"), param->field);
+            goto cleanup;
+        }
+    }
+
+    if (libxl_sched_credit_domain_set(&priv->ctx, dom->id, &sc_info) != 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to set scheduler parameters for domain '%d'"
+                     " with libxenlight"), dom->id);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
 libxlDomainIsActive(virDomainPtr dom)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
@@ -2453,8 +2615,8 @@ static virDriver libxlDriver = {
     libxlDomainGetAutostart,    /* domainGetAutostart */
     libxlDomainSetAutostart,    /* domainSetAutostart */
     libxlDomainGetSchedulerType,/* domainGetSchedulerType */
-    NULL,                       /* domainGetSchedulerParameters */
-    NULL,                       /* domainSetSchedulerParameters */
+    libxlDomainGetSchedulerParameters,/* domainGetSchedulerParameters */
+    libxlDomainSetSchedulerParameters,/* domainSetSchedulerParameters */
     NULL,                       /* domainMigratePrepare */
     NULL,                       /* domainMigratePerform */
     NULL,                       /* domainMigrateFinish */
