@@ -4,4 +4,4 @@ socket,id=charmonitor,path=/tmp/test-monitor,server,nowait -mon \
 chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -device \
 usb-ccid,id=ccid0 -device \
 ccid-card-emulated,backend=nss-emulated,id=smartcard0,bus=ccid0.0 -usb \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

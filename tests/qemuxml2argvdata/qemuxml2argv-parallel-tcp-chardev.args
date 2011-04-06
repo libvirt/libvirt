@@ -4,4 +4,4 @@ id=charmonitor,path=/tmp/test-monitor,server,nowait -mon chardev=charmonitor,\
 id=monitor,mode=readline -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -chardev \
 socket,id=charparallel0,host=127.0.0.1,port=9999,server,nowait -device \
 isa-parallel,chardev=charparallel0,id=parallel0 -usb -device \
-virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2
+virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

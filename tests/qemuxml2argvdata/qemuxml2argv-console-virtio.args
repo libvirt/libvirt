@@ -1,7 +1,7 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
 pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -monitor \
 unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -device \
-virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x2 -hda \
+virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x3 -hda \
 /dev/HostVG/QEMUGuest1 -chardev pty,id=charconsole0 -device virtconsole,\
 chardev=charconsole0,id=console0 -usb -device virtio-balloon-pci,id=balloon0,\
-bus=pci.0,addr=0x3
+bus=pci.0,addr=0x4

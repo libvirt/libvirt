@@ -5,4 +5,4 @@ chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -device \
 usb-ccid,id=ccid0 -device \
 ccid-card-emulated,backend=certificates,cert1=cert1,cert2=cert2,cert3=cert3\
 ,database=/etc/pki/nssdb,id=smartcard0,bus=ccid0.0 -usb -device \
-virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2
+virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
