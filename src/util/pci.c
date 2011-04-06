@@ -867,6 +867,72 @@ recheck:
     return NULL;
 }
 
+static int
+pciUnbindDeviceFromStub(pciDevice *dev, const char *driver)
+{
+    int result = -1;
+    char *drvdir = NULL;
+    char *path = NULL;
+
+    /* If the device is bound to stub, unbind it.
+     */
+    if (pciDriverDir(&drvdir, driver) < 0 ||
+        pciDeviceFile(&path, dev->name, "driver") < 0) {
+        goto cleanup;
+    }
+
+    if (virFileExists(drvdir) && virFileLinkPointsTo(path, drvdir)) {
+        if (pciDriverFile(&path, driver, "unbind") < 0) {
+            goto cleanup;
+        }
+
+        if (virFileWriteStr(path, dev->name, 0) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to bind PCI device '%s' to %s"),
+                                 dev->name, driver);
+            goto cleanup;
+        }
+    }
+
+    /* Xen's pciback.ko wants you to use remove_slot on the specific device */
+    if (pciDriverFile(&path, driver, "remove_slot") < 0) {
+        goto cleanup;
+    }
+
+    if (virFileExists(path) && virFileWriteStr(path, dev->name, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to remove slot for PCI device '%s' to %s"),
+                             dev->name, driver);
+        goto cleanup;
+    }
+
+    /* Trigger a re-probe of the device is not in the stub's dynamic
+     * ID table. If the stub is available, but 'remove_id' isn't
+     * available, then re-probing would just cause the device to be
+     * re-bound to the stub.
+     */
+    if (pciDriverFile(&path, driver, "remove_id") < 0) {
+        goto cleanup;
+    }
+
+    if (!virFileExists(drvdir) || virFileExists(path)) {
+        if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name, 0) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to trigger a re-probe for PCI device '%s'"),
+                                 dev->name);
+            goto cleanup;
+        }
+    }
+
+    result = 0;
+
+cleanup:
+    VIR_FREE(drvdir);
+    VIR_FREE(path);
+
+    return result;
+}
+
 
 static int
 pciBindDeviceToStub(pciDevice *dev, const char *driver)
@@ -983,72 +1049,6 @@ pciDettachDevice(pciDevice *dev, pciDeviceList *activeDevs)
     return pciBindDeviceToStub(dev, driver);
 }
 
-static int
-pciUnBindDeviceFromStub(pciDevice *dev, const char *driver)
-{
-    int result = -1;
-    char *drvdir = NULL;
-    char *path = NULL;
-
-    /* If the device is bound to stub, unbind it.
-     */
-    if (pciDriverDir(&drvdir, driver) < 0 ||
-        pciDeviceFile(&path, dev->name, "driver") < 0) {
-        goto cleanup;
-    }
-
-    if (virFileExists(drvdir) && virFileLinkPointsTo(path, drvdir)) {
-        if (pciDriverFile(&path, driver, "unbind") < 0) {
-            goto cleanup;
-        }
-
-        if (virFileWriteStr(path, dev->name, 0) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to bind PCI device '%s' to %s"),
-                                 dev->name, driver);
-            goto cleanup;
-        }
-    }
-
-    /* Xen's pciback.ko wants you to use remove_slot on the specific device */
-    if (pciDriverFile(&path, driver, "remove_slot") < 0) {
-        goto cleanup;
-    }
-
-    if (virFileExists(path) && virFileWriteStr(path, dev->name, 0) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to remove slot for PCI device '%s' to %s"),
-                             dev->name, driver);
-        goto cleanup;
-    }
-
-    /* Trigger a re-probe of the device is not in the stub's dynamic
-     * ID table. If the stub is available, but 'remove_id' isn't
-     * available, then re-probing would just cause the device to be
-     * re-bound to the stub.
-     */
-    if (pciDriverFile(&path, driver, "remove_id") < 0) {
-        goto cleanup;
-    }
-
-    if (!virFileExists(drvdir) || virFileExists(path)) {
-        if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name, 0) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to trigger a re-probe for PCI device '%s'"),
-                                 dev->name);
-            goto cleanup;
-        }
-    }
-
-    result = 0;
-
-cleanup:
-    VIR_FREE(drvdir);
-    VIR_FREE(path);
-
-    return result;
-}
-
 int
 pciReAttachDevice(pciDevice *dev, pciDeviceList *activeDevs)
 {
@@ -1065,7 +1065,7 @@ pciReAttachDevice(pciDevice *dev, pciDeviceList *activeDevs)
         return -1;
     }
 
-    return pciUnBindDeviceFromStub(dev, driver);
+    return pciUnbindDeviceFromStub(dev, driver);
 }
 
 /* Certain hypervisors (like qemu/kvm) map the PCI bar(s) on
