@@ -314,10 +314,11 @@ crashed.
 
 =back
 
-=item B<freecell> optional I<cellno>
+=item B<freecell> optional { I<--cellno> B<cellno> | I<--all> }
 
 Prints the available amount of memory on the machine or within a
-NUMA cell if I<cellno> is provided.
+NUMA cell if I<cellno> is provided.  If I<--all> is provided instead
+of I<--cellno>, then show the information on all NUMA cells.
 
 =item B<cpu-baseline> I<FILE>
 
