@@ -2330,6 +2330,28 @@ libxlDomainIsPersistent(virDomainPtr dom)
 }
 
 static int
+libxlDomainIsUpdated(virDomainPtr dom)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = vm->updated;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
 libxlDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
                             virConnectDomainEventGenericCallback callback,
                             void *opaque, virFreeCallback freecb)
@@ -2456,7 +2478,7 @@ static virDriver libxlDriver = {
     NULL,                       /* IsSecure */
     libxlDomainIsActive,        /* DomainIsActive */
     libxlDomainIsPersistent,    /* DomainIsPersistent */
-    NULL,                       /* domainIsUpdated */
+    libxlDomainIsUpdated,       /* domainIsUpdated */
     NULL,                       /* cpuCompare */
     NULL,                       /* cpuBaseline */
     NULL,                       /* domainGetJobInfo */
