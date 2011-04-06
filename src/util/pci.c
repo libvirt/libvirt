@@ -1180,7 +1180,7 @@ pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher)
 static char *
 pciReadDeviceID(pciDevice *dev, const char *id_name)
 {
-    char *path;
+    char *path = NULL;
     char *id_str;
 
     if (pciDeviceFile(&path, dev->name, id_name) < 0) {
