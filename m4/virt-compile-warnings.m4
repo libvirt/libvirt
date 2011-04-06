@@ -112,6 +112,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         gl_WARN_ADD([-fexceptions])
         gl_WARN_ADD([-fasynchronous-unwind-tables])
         gl_WARN_ADD([-fdiagnostics-show-option])
+        gl_WARN_ADD([-funit-at-a-time])
 
         if test "$enable_compile_warnings" = "error"
         then
