@@ -1275,6 +1275,7 @@ endif
 if WITH_LIBXL
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/libxl"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/libxl"
 endif
 if WITH_UML
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/uml"
@@ -1316,6 +1317,7 @@ endif
 if WITH_LIBXL
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/libxl" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
 endif
 if WITH_UML
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/uml" ||:
