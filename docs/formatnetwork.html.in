@@ -121,6 +121,7 @@
             &lt;host mac="00:16:3e:3e:a9:1a" name="bar.example.com" ip="192.168.122.11" /&gt;
           &lt;/dhcp&gt;
         &lt;/ip&gt;
+        &lt;ip family="ipv6" address="2001:8794:ca2:2::1" prefix="64" /&gt;
       &lt;/network&gt;</pre>
 
     <dl>
@@ -226,6 +227,7 @@
             &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
           &lt;/dhcp&gt;
         &lt;/ip&gt;
+        &lt;ip family="ipv6" address="2001:8794:ca2:2::1" prefix="64" /&gt;
       &lt;/network&gt;</pre>
 
     <h3><a name="examplesRoute">Routed network config</a></h3>
@@ -249,6 +251,7 @@
             &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
           &lt;/dhcp&gt;
         &lt;/ip&gt;
+        &lt;ip family="ipv6" address="2001:8794:ca2:2::1" prefix="64" /&gt;
       &lt;/network&gt;</pre>
 
     <h3><a name="examplesPrivate">Isolated network config</a></h3>
@@ -270,6 +273,7 @@
             &lt;range start="192.168.152.2" end="192.168.152.254" /&gt;
           &lt;/dhcp&gt;
         &lt;/ip&gt;
+        &lt;ip family="ipv6" address="2001:8794:ca2:3::1" prefix="64" /&gt;
       &lt;/network&gt;</pre>
 
   </body>
