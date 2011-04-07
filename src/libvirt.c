@@ -10101,8 +10101,8 @@ error:
  *
  * The virDomainPtr object handle passed into the callback upon delivery
  * of an event is only valid for the duration of execution of the callback.
- * If the callback wishes to keep the domain object after the callback
- * returns, it shall take a reference to it, by calling virDomainRef.
+ * If the callback wishes to keep the domain object after the callback returns,
+ * it shall take a reference to it, by calling virDomainRef.
  * The reference can be released once the object is no longer required
  * by calling virDomainFree.
  *
@@ -12731,8 +12731,8 @@ error:
  *
  * The virDomainPtr object handle passed into the callback upon delivery
  * of an event is only valid for the duration of execution of the callback.
- * If the callback wishes to keep the domain object after the callback
- * returns, it shall take a reference to it, by calling virDomainRef.
+ * If the callback wishes to keep the domain object after the callback returns,
+ * it shall take a reference to it, by calling virDomainRef.
  * The reference can be released once the object is no longer required
  * by calling virDomainFree.
  *
