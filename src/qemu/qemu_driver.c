@@ -3435,7 +3435,7 @@ static int qemudDomainObjStart(virConnectPtr conn,
     if (!managed_save)
         goto cleanup;
 
-    if ((managed_save) && (virFileExists(managed_save))) {
+    if (virFileExists(managed_save)) {
         ret = qemuDomainObjRestore(conn, driver, vm, managed_save);
 
         if ((ret == 0) && (unlink(managed_save) < 0))

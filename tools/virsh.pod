@@ -546,11 +546,12 @@ I<on_reboot> parameter in the domain's XML definition.
 
 =item B<restore> I<state-file>
 
-Restores a domain from an B<virsh save> state file. See I<save> for more info.
+Restores a domain from a B<virsh save> state file. See I<save> for more info.
 
 B<Note>: To avoid corrupting file system contents within the domain, you
-should not reuse the saved state file to B<restore> unless you are convinced
-with reverting the domain to the previous state.
+should not reuse the saved state file for a second B<restore> unless you
+have also reverted all storage volumes back to the same contents as when
+the state file was created.
 
 =item B<save> I<domain-id> I<state-file>
 
