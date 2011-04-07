@@ -3423,18 +3423,20 @@ static int qemudDomainObjStart(virConnectPtr conn,
 
     /*
      * If there is a managed saved state restore it instead of starting
-     * from scratch. In any case the old state is removed.
+     * from scratch. The old state is removed once the restoring succeeded.
      */
     managed_save = qemuDomainManagedSavePath(driver, vm);
+
+    if (!managed_save)
+        goto cleanup;
+
     if ((managed_save) && (virFileExists(managed_save))) {
         ret = qemuDomainObjRestore(conn, driver, vm, managed_save);
 
-        if (unlink(managed_save) < 0) {
+        if ((ret == 0) && (unlink(managed_save) < 0))
             VIR_WARN("Failed to remove the managed state %s", managed_save);
-        }
 
-        if (ret == 0)
-            goto cleanup;
+        goto cleanup;
     }
 
     ret = qemuProcessStart(conn, driver, vm, NULL, start_paused, -1, NULL,
