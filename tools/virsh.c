@@ -3020,6 +3020,9 @@ static const vshCmdInfo info_setmaxmem[] = {
 static const vshCmdOptDef opts_setmaxmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"kilobytes", VSH_OT_INT, VSH_OFLAG_REQ, N_("maximum memory limit in kilobytes")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3030,6 +3033,25 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     virDomainInfo info;
     int kilobytes = 0;
     int ret = TRUE;
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    int current = vshCommandOptBool(cmd, "current");
+    int flags = VIR_DOMAIN_MEM_MAXIMUM;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return FALSE;
+        }
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_MEM_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_MEM_LIVE;
+        /* neither option is specified */
+        if (!live && !config)
+            flags = -1;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
@@ -3054,9 +3076,16 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
-        vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
-        ret = FALSE;
+    if (flags == -1) {
+        if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
+            vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
+            ret = FALSE;
+        }
+    } else {
+        if (virDomainSetMemoryFlags(dom, kilobytes, flags) < 0) {
+            vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
+            ret = FALSE;
+        }
     }
 
     virDomainFree(dom);
@@ -9279,7 +9308,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
+    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0) {
         vshError(ctl, "%s", _("Failed to create XML"));
         goto cleanup;
     }
@@ -9538,7 +9567,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
+    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0) {
         vshError(ctl, "%s", _("Failed to create XML"));
         goto cleanup;
     }
@@ -10971,7 +11000,7 @@ vshCmddefSearch(const char *cmdname)
 
     for (g = cmdGroups; g->name; g++) {
         for (c = g->commands; c->name; c++) {
-            if(STREQ(c->name, cmdname))
+            if (STREQ(c->name, cmdname))
                 return c;
         }
     }
@@ -10985,7 +11014,7 @@ vshCmdGrpSearch(const char *grpname)
     const vshCmdGrp *g;
 
     for (g = cmdGroups; g->name; g++) {
-        if(STREQ(g->name, grpname) || STREQ(g->keyword, grpname))
+        if (STREQ(g->name, grpname) || STREQ(g->keyword, grpname))
             return g;
     }
 

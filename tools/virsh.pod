@@ -602,12 +602,18 @@ rounds the parameter up unless the kB argument is evenly divisible by 1024
 For Xen, you can only adjust the memory of a running domain if the domain is
 paravirtualized or running the PV balloon driver.
 
-=item B<setmaxmem> I<domain-id> B<kilobytes>
+=item B<setmaxmem> I<domain-id> B<kilobytes> optional I<--config> I<--live>
+I<--current>
 
-Change the maximum memory allocation limit for an inactive guest domain.
+Change the maximum memory allocation limit for a guest domain.
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--current> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
 
-This command works for at least the Xen and vSphere/ESX hypervisors,
-but not for QEMU/KVM.
+This command works for at least the Xen, QEMU/KVM and vSphere/ESX hypervisors.
 
 Some hypervisors require a larger granularity than kilobytes, rounding up
 requests that are not an even multiple of the desired amount.  vSphere/ESX
@@ -615,8 +621,6 @@ is one of these, requiring the parameter to be evenly divisible by 4MB.  For
 vSphere/ESX, 263168 (257MB) would be rounded up because it's not a multiple
 of 4MB, while 266240 (260MB) is valid without rounding.
 
-Note, to change the maximum memory allocation for a QEMU/KVM guest domain,
-use the virsh B<edit> command instead to update its XML <memory> element.
 
 =item B<memtune> I<domain-id> optional I<--hard-limit> B<kilobytes>
 optional I<--soft-limit> B<kilobytes> optional I<--swap-hard-limit>
