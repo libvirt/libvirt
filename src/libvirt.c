@@ -2832,6 +2832,8 @@ error:
  * (that is, @flags is VIR_DOMAIN_MEM_CURRENT), then an inactive domain
  * modifies persistent setup, while an active domain is hypervisor-dependent
  * on whether just live or both live and persistent state is changed.
+ * If VIR_DOMAIN_MEM_MAXIMUM is set, the change affects domain's maximum memory
+ * size rather than current memory size.
  * Not all hypervisors can support all flag combinations.
  *
  * Returns 0 in case of success, -1 in case of failure.
