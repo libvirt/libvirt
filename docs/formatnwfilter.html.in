@@ -755,6 +755,11 @@
          <td>STRING</td>
          <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
        </tr>
+       <tr>
+         <td>flags <span class="since">(Since 0.9.1)</span></td>
+         <td>STRING</td>
+         <td>TCP-only: format of mask/flags with mask and flags each being a comma separated list of SYN,ACK,URG,PSH,FIN,RST or NONE or ALL</td>
+       </tr>
       </table>
     <p>
       <br/><br/>
@@ -1039,6 +1044,11 @@
          <td>state <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>comma separated list of NEW,ESTABLISHED,RELATED,INVALID or NONE</td>
+       </tr>
+       <tr>
+         <td>flags <span class="since">(Since 0.9.1)</span></td>
+         <td>STRING</td>
+         <td>TCP-only: format of mask/flags with mask and flags each being a comma separated list of SYN,ACK,URG,PSH,FIN,RST or NONE or ALL</td>
        </tr>
       </table>
     <p>

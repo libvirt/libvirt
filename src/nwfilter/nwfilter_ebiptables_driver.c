@@ -1204,6 +1204,15 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &prefix))
             goto err_exit;
 
+        if (HAS_ENTRY_ITEM(&rule->p.tcpHdrFilter.dataTCPFlags)) {
+            virBufferVSprintf(&buf, " %s --tcp-flags ",
+                      ENTRY_GET_NEG_SIGN(&rule->p.tcpHdrFilter.dataTCPFlags));
+            virNWFilterPrintTCPFlags(&buf,
+                      rule->p.tcpHdrFilter.dataTCPFlags.u.tcpFlags.mask,
+                      ' ',
+                      rule->p.tcpHdrFilter.dataTCPFlags.u.tcpFlags.flags);
+        }
+
         if (iptablesHandlePortData(&buf,
                                    vars,
                                    &rule->p.tcpHdrFilter.portData,

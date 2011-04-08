@@ -9,4 +9,16 @@
   <rule action='accept' direction='in' priority='500' statematch='false'>
     <tcp srcmacaddr='01:02:03:04:05:06' srcipaddr='10.1.2.3' srcipmask='32' dscp='63' srcportstart='255' srcportend='256' dstportstart='65535'/>
   </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <tcp state='NONE' flags='SYN/ALL'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <tcp state='NONE' flags='SYN/SYN,ACK'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <tcp state='NONE' flags='RST/NONE'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <tcp state='NONE' flags='PSH/NONE'/>
+  </rule>
 </filter>

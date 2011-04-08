@@ -5,7 +5,8 @@
  * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
- * Copyright (C) 2010 IBM Corporation
+ * Copyright (C) 2010-2011 IBM Corporation
+ * Copyright (C) 2010-2011 Stefan Berger
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -726,17 +727,23 @@ printStringItems(virBufferPtr buf, const struct int_map *int_map,
                  int32_t flags, const char *sep)
 {
     unsigned int i, c = 0;
-    int32_t last_attr = 0;
+    int32_t mask = 0x1;
 
-    for (i = 0; int_map[i].val; i++) {
-        if (last_attr != int_map[i].attr &&
-            flags & int_map[i].attr) {
-            if (c >= 1)
-                virBufferVSprintf(buf, "%s", sep);
-            virBufferVSprintf(buf, "%s", int_map[i].val);
-            c++;
+    while (mask) {
+        if ((mask & flags)) {
+            for (i = 0; int_map[i].val; i++) {
+                if (mask == int_map[i].attr) {
+                    if (c >= 1)
+                        virBufferVSprintf(buf, "%s", sep);
+                    virBufferVSprintf(buf, "%s", int_map[i].val);
+                    c++;
+                }
+            }
+            flags ^= mask;
         }
-        last_attr = int_map[i].attr;
+        if (!flags)
+            break;
+        mask <<= 1;
     }
 
     return 0;
@@ -794,6 +801,87 @@ stateFormatter(virBufferPtr buf,
                nwItemDesc *item)
 {
     virNWFilterPrintStateMatchFlags(buf, "", item->u.u16, true);
+
+    return true;
+}
+
+
+
+static const struct int_map tcpFlags[] = {
+    INTMAP_ENTRY(0x1 , "FIN"),
+    INTMAP_ENTRY(0x2 , "SYN"),
+    INTMAP_ENTRY(0x4 , "RST"),
+    INTMAP_ENTRY(0x8 , "PSH"),
+    INTMAP_ENTRY(0x10, "ACK"),
+    INTMAP_ENTRY(0x20, "URG"),
+    INTMAP_ENTRY(0x3F, "ALL"),
+    INTMAP_ENTRY(0x0 , "NONE"),
+    INTMAP_ENTRY_LAST
+};
+
+
+static bool
+tcpFlagsValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
+                  virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+                  nwItemDesc *item)
+{
+    bool rc = false;
+    char *s_mask = val->c;
+    char *sep = strchr(val->c, '/');
+    char *s_flags;
+    int32_t mask = 0, flags = 0;
+
+    if (!sep)
+        return false;
+
+    s_flags = sep + 1;
+
+    *sep = '\0';
+
+    if (!parseStringItems(tcpFlags, s_mask , &mask , ',') &&
+        !parseStringItems(tcpFlags, s_flags, &flags, ',')) {
+        item->u.tcpFlags.mask  = mask  & 0x3f;
+        item->u.tcpFlags.flags = flags & 0x3f;
+        rc = true;
+    }
+
+    *sep = '/';
+
+    return rc;
+}
+
+
+static void
+printTCPFlags(virBufferPtr buf, uint8_t flags)
+{
+    if (flags == 0)
+        virBufferAddLit(buf, "NONE");
+    else if (flags == 0x3f)
+        virBufferAddLit(buf, "ALL");
+    else
+        printStringItems(buf, tcpFlags, flags, ",");
+}
+
+
+void
+virNWFilterPrintTCPFlags(virBufferPtr buf,
+                         uint8_t mask, char sep, uint8_t flags)
+{
+    printTCPFlags(buf, mask);
+    virBufferAddChar(buf, sep);
+    printTCPFlags(buf, flags);
+}
+
+
+static bool
+tcpFlagsFormatter(virBufferPtr buf,
+                  virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+                  nwItemDesc *item)
+{
+    virNWFilterPrintTCPFlags(buf,
+                             item->u.tcpFlags.mask,
+                             '/',
+                             item->u.tcpFlags.flags);
 
     return true;
 }
@@ -1103,6 +1191,13 @@ static const virXMLAttr2Struct tcpAttributes[] = {
         .name = "option",
         .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.tcpHdrFilter.dataTCPOption),
+    },
+    {
+        .name = "flags",
+        .datatype = DATATYPE_STRING,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.tcpHdrFilter.dataTCPFlags),
+        .validator = tcpFlagsValidator,
+        .formatter = tcpFlagsFormatter,
     },
     COMMENT_PROP_IPHDR(tcpHdrFilter),
     {

@@ -19,4 +19,16 @@
           srcportstart='255' srcportend='256'
           dstportstart='65535' dstportend='65536'/>
   </rule>
+  <rule action='accept' direction='in'>
+     <tcp state='NONE' flags='SYN/ALL'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <tcp state='NONE' flags='SYN/SYN,ACK'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <tcp state='NONE' flags='RST/NONE'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <tcp state='NONE' flags='PSH/'/>
+  </rule>
 </filter>

@@ -81,6 +81,7 @@
                   <ref name="common-port-attributes"/>
                   <ref name="common-ip-attributes-p1"/>
                   <ref name="common-ip-attributes-p2"/>
+                  <ref name="tcp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
               </zeroOrMore>
@@ -184,6 +185,7 @@
                   <ref name="common-port-attributes"/>
                   <ref name="common-ipv6-attributes-p1"/>
                   <ref name="common-ipv6-attributes-p2"/>
+                  <ref name="tcp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
               </zeroOrMore>
@@ -606,6 +608,14 @@
     </optional>
   </define>
 
+  <define name="tcp-attributes">
+    <optional>
+      <attribute name="flags">
+        <ref name="tcpflags-type"/>
+      </attribute>
+    </optional>
+  </define>
+
   <!-- ################  type library ################ -->
 
   <define name="UUID">
@@ -870,6 +880,12 @@
   <define name='stateflags-type'>
     <data type="string">
       <param name="pattern">((NEW|ESTABLISHED|RELATED|INVALID)(,(NEW|ESTABLISHED|RELATED|INVALID))*|NONE)</param>
+    </data>
+  </define>
+
+  <define name='tcpflags-type'>
+    <data type="string">
+      <param name="pattern">((SYN|ACK|URG|PSH|FIN|RST)(,(SYN|ACK|URG|PSH|FIN|RST))*|ALL|NONE)/((SYN|ACK|URG|PSH|FIN|RST)(,(SYN|ACK|URG|PSH|FIN|RST))*|ALL|NONE)</param>
     </data>
   </define>
 </grammar>

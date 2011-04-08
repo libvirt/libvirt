@@ -122,6 +122,10 @@ struct _nwItemDesc {
         uint16_t     u16;
         char         protocolID[10];
         char         *string;
+        struct {
+            uint8_t  mask;
+            uint8_t  flags;
+        } tcpFlags;
     } u;
 };
 
@@ -242,6 +246,7 @@ struct _tcpHdrFilterDef {
     ipHdrDataDef ipHdr;
     portDataDef  portData;
     nwItemDesc   dataTCPOption;
+    nwItemDesc   dataTCPFlags;
 };
 
 
@@ -665,6 +670,10 @@ struct _virNWFilterCallbackDriver {
 void virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
 void virNWFilterCallbackDriversLock(void);
 void virNWFilterCallbackDriversUnlock(void);
+
+
+void virNWFilterPrintTCPFlags(virBufferPtr buf, uint8_t mask,
+                              char sep, uint8_t flags);
 
 
 VIR_ENUM_DECL(virNWFilterRuleAction);
