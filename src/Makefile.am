@@ -1183,6 +1183,7 @@ EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
 
 libexec_PROGRAMS =
 
+if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_iohelper
 libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
 libvirt_iohelper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
@@ -1191,6 +1192,7 @@ libvirt_iohelper_LDADD =		\
 		../gnulib/lib/libgnu.la
 
 libvirt_iohelper_CFLAGS = $(AM_CFLAGS)
+endif
 
 if WITH_STORAGE_DISK
 if WITH_LIBVIRTD
