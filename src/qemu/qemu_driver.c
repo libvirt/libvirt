@@ -1580,7 +1580,8 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     bool isActive;
 
     virCheckFlags(VIR_DOMAIN_MEM_LIVE |
-                  VIR_DOMAIN_MEM_CONFIG, -1);
+                  VIR_DOMAIN_MEM_CONFIG |
+                  VIR_DOMAIN_MEM_MAXIMUM, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1590,12 +1591,6 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         virUUIDFormat(dom->uuid, uuidstr);
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
-
-    if (newmem > vm->def->mem.max_balloon) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("cannot set memory higher than max memory"));
         goto cleanup;
     }
 
@@ -1609,6 +1604,12 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             flags = VIR_DOMAIN_MEM_LIVE;
         else
             flags = VIR_DOMAIN_MEM_CONFIG;
+    }
+    if (flags == VIR_DOMAIN_MEM_MAXIMUM) {
+        if (isActive)
+            flags = VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_MAXIMUM;
+        else
+            flags = VIR_DOMAIN_MEM_CONFIG | VIR_DOMAIN_MEM_MAXIMUM;
     }
 
     if (!isActive && (flags & VIR_DOMAIN_MEM_LIVE)) {
@@ -1627,27 +1628,56 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_MEM_LIVE) {
-        priv = vm->privateData;
-        qemuDomainObjEnterMonitor(vm);
-        r = qemuMonitorSetBalloon(priv->mon, newmem);
-        qemuDomainObjExitMonitor(vm);
-        qemuAuditMemory(vm, vm->def->mem.cur_balloon, newmem, "update", r == 1);
-        if (r < 0)
-            goto endjob;
+    if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
+        /* resize the maximum memory */
 
-        /* Lack of balloon support is a fatal error */
-        if (r == 0) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            "%s", _("cannot set memory of an active domain"));
+        if (flags & VIR_DOMAIN_MEM_LIVE) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot resize the maximum memory on an "
+                              "active domain"));
             goto endjob;
         }
-    }
 
-    if (flags& VIR_DOMAIN_MEM_CONFIG) {
-        persistentDef->mem.cur_balloon = newmem;
-        ret = virDomainSaveConfig(driver->configDir, persistentDef);
-        goto endjob;
+        if (flags & VIR_DOMAIN_MEM_CONFIG) {
+            persistentDef->mem.max_balloon = newmem;
+            if (persistentDef->mem.cur_balloon > newmem)
+                persistentDef->mem.cur_balloon = newmem;
+            ret = virDomainSaveConfig(driver->configDir, persistentDef);
+            goto endjob;
+        }
+
+    } else {
+        /* resize the current memory */
+
+        if (newmem > vm->def->mem.max_balloon) {
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                            _("cannot set memory higher than max memory"));
+            goto endjob;
+        }
+
+        if (flags & VIR_DOMAIN_MEM_LIVE) {
+            priv = vm->privateData;
+            qemuDomainObjEnterMonitor(vm);
+            r = qemuMonitorSetBalloon(priv->mon, newmem);
+            qemuDomainObjExitMonitor(vm);
+            qemuAuditMemory(vm, vm->def->mem.cur_balloon, newmem, "update",
+                            r == 1);
+            if (r < 0)
+                goto endjob;
+
+            /* Lack of balloon support is a fatal error */
+            if (r == 0) {
+                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                _("cannot set memory of an active domain"));
+                goto endjob;
+            }
+        }
+
+        if (flags & VIR_DOMAIN_MEM_CONFIG) {
+            persistentDef->mem.cur_balloon = newmem;
+            ret = virDomainSaveConfig(driver->configDir, persistentDef);
+            goto endjob;
+        }
     }
 
     ret = 0;
@@ -1661,12 +1691,19 @@ cleanup:
     return ret;
 }
 
-static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
+static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem)
+{
     return qemudDomainSetMemoryFlags(dom, newmem, VIR_DOMAIN_MEM_LIVE);
 }
 
+static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
+{
+    return qemudDomainSetMemoryFlags(dom, memory, VIR_DOMAIN_MEM_MAXIMUM);
+}
+
 static int qemudDomainGetInfo(virDomainPtr dom,
-                              virDomainInfoPtr info) {
+                              virDomainInfoPtr info)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -6849,7 +6886,7 @@ static virDriver qemuDriver = {
     qemudDomainDestroy, /* domainDestroy */
     qemudDomainGetOSType, /* domainGetOSType */
     qemudDomainGetMaxMemory, /* domainGetMaxMemory */
-    NULL, /* domainSetMaxMemory */
+    qemudDomainSetMaxMemory, /* domainSetMaxMemory */
     qemudDomainSetMemory, /* domainSetMemory */
     qemudDomainSetMemoryFlags, /* domainSetMemoryFlags */
     qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
