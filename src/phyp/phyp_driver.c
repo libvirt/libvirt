@@ -2156,8 +2156,8 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     return -1;
 }
 
-static int
-phypVolumeGetKey(virConnectPtr conn, char *key, const char *name)
+static char *
+phypVolumeGetKey(virConnectPtr conn, const char *name)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
     phyp_driverPtr phyp_driver = conn->privateData;
@@ -2185,10 +2185,10 @@ phypVolumeGetKey(virConnectPtr conn, char *key, const char *name)
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        return -1;
+        return NULL;
     }
-    cmd = virBufferContentAndReset(&buf);
 
+    cmd = virBufferContentAndReset(&buf);
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret == NULL)
@@ -2199,17 +2199,13 @@ phypVolumeGetKey(virConnectPtr conn, char *key, const char *name)
     if (char_ptr)
         *char_ptr = '\0';
 
-    if (memcpy(key, ret, MAX_KEY_SIZE) == NULL)
-        goto err;
-
     VIR_FREE(cmd);
-    VIR_FREE(ret);
-    return 0;
+    return ret;
 
   err:
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return -1;
+    return NULL;
 }
 
 static char *
@@ -2316,9 +2312,9 @@ phypGetStoragePoolSize(virConnectPtr conn, char *name)
     return -1;
 }
 
-static int
+static char *
 phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
-                unsigned int capacity, char *key)
+                unsigned int capacity)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
     phyp_driverPtr phyp_driver = conn->privateData;
@@ -2330,6 +2326,7 @@ phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
     char *ret = NULL;
     int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *key;
 
     if (system_type == HMC)
         virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
@@ -2343,10 +2340,10 @@ phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        return -1;
+        return NULL;
     }
-    cmd = virBufferContentAndReset(&buf);
 
+    cmd = virBufferContentAndReset(&buf);
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
@@ -2354,29 +2351,37 @@ phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
         goto err;
     }
 
-    if (phypVolumeGetKey(conn, key, lvname) == -1)
-        goto err;;
+    key = phypVolumeGetKey(conn, lvname);
+
+    if (key == NULL)
+        goto err;
 
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return 0;
+    return key;
 
   err:
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return -1;
+    return NULL;
 }
 
 static virStorageVolPtr
 phypVolumeLookupByName(virStoragePoolPtr pool, const char *volname)
 {
+    char *key;
+    virStorageVolPtr vol;
 
-    char key[MAX_KEY_SIZE];
+    key = phypVolumeGetKey(pool->conn, volname);
 
-    if (phypVolumeGetKey(pool->conn, key, volname) == -1)
+    if (key == NULL)
         return NULL;
 
-    return virGetStorageVol(pool->conn, pool->name, volname, key);
+    vol = virGetStorageVol(pool->conn, pool->name, volname, key);
+
+    VIR_FREE(key);
+
+    return vol;
 }
 
 static virStorageVolPtr
@@ -2391,11 +2396,6 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
     char *key = NULL;
 
     if (VIR_ALLOC(spdef) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    if (VIR_ALLOC_N(key, MAX_KEY_SIZE) < 0) {
         virReportOOMError();
         return NULL;
     }
@@ -2457,9 +2457,10 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
         goto err;
     }
 
-    if (phypBuildVolume
-        (pool->conn, voldef->name, spdef->name, voldef->capacity,
-         key) == -1)
+    key = phypBuildVolume(pool->conn, voldef->name, spdef->name,
+                          voldef->capacity);
+
+    if (key == NULL)
         goto err;
 
     if ((vol =
@@ -2467,9 +2468,12 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
                           key)) == NULL)
         goto err;
 
+    VIR_FREE(key);
+
     return vol;
 
   err:
+    VIR_FREE(key);
     virStorageVolDefFree(voldef);
     virStoragePoolDefFree(spdef);
     if (vol)
@@ -2543,8 +2547,10 @@ phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
     int exit_status = 0;
     char *cmd = NULL;
     char *spname = NULL;
+    char *char_ptr;
     char *key = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virStorageVolPtr vol;
 
     if (system_type == HMC)
         virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
@@ -2569,20 +2575,21 @@ phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
     if (exit_status < 0 || spname == NULL)
         return NULL;
 
-    char *char_ptr = strchr(spname, '\n');
+    char_ptr = strchr(spname, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
 
-    if (VIR_ALLOC_N(key, MAX_KEY_SIZE) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
+    key = phypVolumeGetKey(conn, volname);
 
-    if (phypVolumeGetKey(conn, key, volname) == -1)
+    if (key == NULL)
         return NULL;
 
-    return virGetStorageVol(conn, spname, volname, key);
+    vol = virGetStorageVol(conn, spname, volname, key);
+
+    VIR_FREE(key);
+
+    return vol;
 }
 
 static int
@@ -2650,6 +2657,8 @@ phypStoragePoolLookupByName(virConnectPtr conn, const char *name)
 static char *
 phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 {
+    char *xml;
+
     virCheckFlags(0, NULL);
 
     virStorageVolDef voldef;
@@ -2663,11 +2672,6 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
     virStoragePoolDef pool;
     memset(&pool, 0, sizeof(virStoragePoolDef));
-
-    if (VIR_ALLOC_N(voldef.key, MAX_KEY_SIZE) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
 
     if (sp->name != NULL) {
         pool.name = sp->name;
@@ -2705,14 +2709,20 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
         goto err;
     }
 
-    if (memmove(voldef.key, vol->key, PATH_MAX) == NULL) {
-        VIR_ERROR0(_("Unable to determine volume's key."));
+    voldef.key = strdup(vol->key);
+
+    if (voldef.key == NULL) {
+        virReportOOMError();
         goto err;
     }
 
     voldef.type = VIR_STORAGE_POOL_LOGICAL;
 
-    return virStorageVolDefFormat(&pool, &voldef);
+    xml = virStorageVolDefFormat(&pool, &voldef);
+
+    VIR_FREE(voldef.key);
+
+    return xml;
 
   err:
     return NULL;

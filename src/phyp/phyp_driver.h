@@ -30,7 +30,6 @@
 # include <config.h>
 # include <libssh2.h>
 
-# define MAX_KEY_SIZE (1024*4)
 # define LPAR_EXEC_ERR -1
 # define SSH_CONN_ERR -2         /* error while trying to connect to remote host */
 # define SSH_CMD_ERR -3          /* error while trying to execute the remote cmd */
