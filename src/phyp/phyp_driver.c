@@ -894,54 +894,61 @@ phypUUIDTable_Free(uuid_tablePtr uuid_table)
     VIR_FREE(uuid_table);
 }
 
-static int
-escape_specialcharacters(char *src, char *dst, size_t dstlen)
+#define SPECIALCHARACTER_CASES                                                \
+    case '&': case ';': case '`': case '@': case '"': case '|': case '*':     \
+    case '?': case '~': case '<': case '>': case '^': case '(': case ')':     \
+    case '[': case ']': case '{': case '}': case '$': case '%': case '#':     \
+    case '\\': case '\n': case '\r': case '\t':
+
+static bool
+contains_specialcharacters(const char *src)
 {
     size_t len = strlen(src);
-    char temp_buffer[len];
-    unsigned int i = 0, j = 0;
+    size_t i = 0;
+
     if (len == 0)
-        return -1;
+        return false;
 
     for (i = 0; i < len; i++) {
         switch (src[i]) {
-            case '&':
-            case ';':
-            case '`':
-            case '@':
-            case '"':
-            case '|':
-            case '*':
-            case '?':
-            case '~':
-            case '<':
-            case '>':
-            case '^':
-            case '(':
-            case ')':
-            case '[':
-            case ']':
-            case '{':
-            case '}':
-            case '$':
-            case '%':
-            case '#':
-            case '\\':
-            case '\n':
-            case '\r':
-            case '\t':
-                continue;
-            default:
-                temp_buffer[j] = src[i];
-                j++;
+        SPECIALCHARACTER_CASES
+            return true;
+        default:
+            continue;
         }
     }
-    temp_buffer[j] = '\0';
 
-    if (virStrcpy(dst, temp_buffer, dstlen) == NULL)
-        return -1;
+    return false;
+}
 
-    return 0;
+static char *
+escape_specialcharacters(const char *src)
+{
+    size_t len = strlen(src);
+    size_t i = 0, j = 0;
+    char *dst;
+
+    if (len == 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(dst, len + 1) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    for (i = 0; i < len; i++) {
+        switch (src[i]) {
+        SPECIALCHARACTER_CASES
+            continue;
+        default:
+            dst[j] = src[i];
+            j++;
+        }
+    }
+
+    dst[j] = '\0';
+
+    return dst;
 }
 
 static LIBSSH2_SESSION *
@@ -1124,8 +1131,6 @@ phypOpen(virConnectPtr conn,
 {
     LIBSSH2_SESSION *session = NULL;
     ConnectionData *connection_data = NULL;
-    char *string = NULL;
-    size_t len = 0;
     int internal_socket;
     uuid_tablePtr uuid_table = NULL;
     phyp_driverPtr phyp_driver = NULL;
@@ -1160,13 +1165,6 @@ phypOpen(virConnectPtr conn,
     }
 
     if (conn->uri->path) {
-        len = strlen(conn->uri->path) + 1;
-
-        if (VIR_ALLOC_N(string, len) < 0) {
-            virReportOOMError();
-            goto failure;
-        }
-
         /* need to shift one byte in order to remove the first "/" of URI component */
         if (conn->uri->path[0] == '/')
             managed_system = strdup(conn->uri->path + 1);
@@ -1186,7 +1184,7 @@ phypOpen(virConnectPtr conn,
         if (char_ptr)
             *char_ptr = '\0';
 
-        if (escape_specialcharacters(conn->uri->path, string, len) == -1) {
+        if (contains_specialcharacters(conn->uri->path)) {
             PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                        "%s",
                        _("Error parsing 'path'. Invalid characters."));
@@ -1245,7 +1243,6 @@ phypOpen(virConnectPtr conn,
     }
 
     VIR_FREE(connection_data);
-    VIR_FREE(string);
 
     return VIR_DRV_OPEN_ERROR;
 }
@@ -1950,14 +1947,9 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *domain_name = NULL;
 
-    if (VIR_ALLOC_N(domain_name, sizeof(domain->name)) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    domain_name = escape_specialcharacters(domain->name);
 
-    if (escape_specialcharacters
-        (domain->name, domain_name, strlen(domain->name)) == -1) {
-        virReportOOMError();
+    if (domain_name == NULL) {
         goto cleanup;
     }
 
