@@ -1971,7 +1971,6 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     dev = virDomainDeviceDefParse(phyp_driver->caps, def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (!dev) {
-        virReportOOMError();
         goto cleanup;
     }
 
