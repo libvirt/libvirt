@@ -213,7 +213,7 @@ phypGetSystemType(virConnectPtr conn)
 
     if (virAsprintf(&cmd, "lshmc -V") < 0) {
         virReportOOMError();
-        exit_status = -1;
+        return -1;
     }
     ret = phypExec(session, cmd, &exit_status, conn);
 
