@@ -113,34 +113,35 @@ read_stat (const char *path)
 }
 
 static int64_t
-read_bd_stat (int device, int domid, const char *str)
+read_bd_stat(int device, int domid, const char *str)
 {
-    char path[PATH_MAX];
+    static const char *paths[] = {
+        "/sys/bus/xen-backend/devices/vbd-%d-%d/statistics/%s",
+        "/sys/bus/xen-backend/devices/tap-%d-%d/statistics/%s",
+        "/sys/devices/xen-backend/vbd-%d-%d/statistics/%s",
+        "/sys/devices/xen-backend/tap-%d-%d/statistics/%s"
+    };
+
+    int i;
+    char *path;
     int64_t r;
 
-    snprintf (path, sizeof path,
-              "/sys/bus/xen-backend/devices/vbd-%d-%d/statistics/%s",
-              domid, device, str);
-    r = read_stat (path);
-    if (r >= 0) return r;
+    for (i = 0; i < ARRAY_CARDINALITY(paths); ++i) {
+        if (virAsprintf(&path, paths[i], domid, device, str) < 0) {
+            virReportOOMError();
+            return -1;
+        }
 
-    snprintf (path, sizeof path,
-              "/sys/bus/xen-backend/devices/tap-%d-%d/statistics/%s",
-              domid, device, str);
-    r = read_stat (path);
-    if (r >= 0) return r;
+        r = read_stat(path);
 
-    snprintf (path, sizeof path,
-              "/sys/devices/xen-backend/vbd-%d-%d/statistics/%s",
-              domid, device, str);
-    r = read_stat (path);
-    if (r >= 0) return r;
+        VIR_FREE(path);
 
-    snprintf (path, sizeof path,
-              "/sys/devices/xen-backend/tap-%d-%d/statistics/%s",
-              domid, device, str);
-    r = read_stat (path);
-    return r;
+        if (r >= 0) {
+            return r;
+        }
+    }
+
+    return -1;
 }
 
 /* In Xenstore, /local/domain/0/backend/vbd/<domid>/<device>/state,
