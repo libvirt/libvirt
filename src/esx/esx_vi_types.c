@@ -183,32 +183,53 @@
 
 
 
-#define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(_type, _dispatch)                \
+#define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, _dest_type, _extra, \
+                                                   _dest_extra)               \
     int                                                                       \
-    esxVI_##_type##_CastFromAnyType(esxVI_AnyType *anyType,                   \
-                                    esxVI_##_type **ptrptr)                   \
+    esxVI_##_type##_Cast##_dest_extra##FromAnyType(esxVI_AnyType *anyType,    \
+                                                   _dest_type **ptrptr)       \
     {                                                                         \
+        _dest_type *item;                                                     \
+                                                                              \
         if (anyType == NULL || ptrptr == NULL || *ptrptr != NULL) {           \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
                          _("Invalid argument"));                              \
             return -1;                                                        \
         }                                                                     \
                                                                               \
-        switch (anyType->type) {                                              \
-          _dispatch                                                           \
+        item = *ptrptr;                                                       \
                                                                               \
-          case esxVI_Type_##_type:                                            \
-            break;                                                            \
+        _extra                                                                \
                                                                               \
-          default:                                                            \
+        return esxVI_##_type##_Deserialize##_dest_extra(anyType->node,        \
+                                                        ptrptr);              \
+    }
+
+
+
+#define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(_type)                           \
+    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, esxVI_##_type,          \
+    {                                                                         \
+        if (anyType->type != esxVI_Type_##_type) {                            \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
                          _("Call to %s for unexpected type '%s'"),            \
                          __FUNCTION__, anyType->other);                       \
             return -1;                                                        \
         }                                                                     \
-                                                                              \
-        return esxVI_##_type##_Deserialize(anyType->node, ptrptr);            \
-    }
+    }, /* nothing */)
+
+
+
+#define ESX_VI__TEMPLATE__CAST_VALUE_FROM_ANY_TYPE(_type, _value_type)        \
+    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, _value_type,            \
+    {                                                                         \
+        if (anyType->type != esxVI_Type_##_type) {                            \
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
+                         _("Call to %s for unexpected type '%s'"),            \
+                         __FUNCTION__, anyType->other);                       \
+            return -1;                                                        \
+        }                                                                     \
+    }, Value)
 
 
 
@@ -588,6 +609,13 @@
                                                                               \
         return NULL;                                                          \
     }
+
+
+
+#define ESX_VI__TEMPLATE__DYNAMIC_CAST_FROM_ANY_TYPE(__type, _dispatch)       \
+    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(__type, esxVI_##__type,        \
+      ESX_VI__TEMPLATE__DISPATCH(__type, _dispatch, -1),                      \
+      /* nothing */)
 
 
 
@@ -1111,6 +1139,12 @@ esxVI_String_DeepCopyValue(char **dest, const char *src)
     return 0;
 }
 
+/* esxVI_String_CastFromAnyType */
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(String)
+
+/* esxVI_String_CastValueFromAnyType */
+ESX_VI__TEMPLATE__CAST_VALUE_FROM_ANY_TYPE(String, char)
+
 int
 esxVI_String_Serialize(esxVI_String *string, const char *element,
                        virBufferPtr output)
@@ -1240,9 +1274,7 @@ ESX_VI__TEMPLATE__VALIDATE(Long,
 ESX_VI__TEMPLATE__LIST__APPEND(Long)
 
 /* esxVI_Long_CastFromAnyType */
-ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(Long,
-{
-})
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(Long)
 
 /* esxVI_Long_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(Long,
@@ -1522,9 +1554,7 @@ ESX_VI__TEMPLATE__DEEP_COPY(ManagedObjectReference,
 ESX_VI__TEMPLATE__LIST__APPEND(ManagedObjectReference)
 
 /* esxVI_ManagedObjectReference_CastFromAnyType */
-ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(ManagedObjectReference,
-{
-})
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(ManagedObjectReference)
 
 /* esxVI_ManagedObjectReference_CastListFromAnyType */
 ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(ManagedObjectReference)

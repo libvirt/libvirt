@@ -178,6 +178,8 @@ int esxVI_String_AppendValueListToList(esxVI_String **stringList,
 int esxVI_String_DeepCopy(esxVI_String **dest, esxVI_String *src);
 int esxVI_String_DeepCopyList(esxVI_String **destList, esxVI_String *srcList);
 int esxVI_String_DeepCopyValue(char **dest, const char *src);
+int esxVI_String_CastFromAnyType(esxVI_AnyType *anyType, esxVI_String **string);
+int esxVI_String_CastValueFromAnyType(esxVI_AnyType *anyType, char **string);
 int esxVI_String_Serialize(esxVI_String *string, const char *element,
                            virBufferPtr output);
 int esxVI_String_SerializeList(esxVI_String *stringList, const char *element,

@@ -773,12 +773,11 @@ class Object(Base):
         # cast from any type
         if self.features & Object.FEATURE__ANY_TYPE:
             source += "/* esxVI_%s_CastFromAnyType */\n" % self.name
-            source += "ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(%s,\n" % self.name
 
             if self.extended_by is None:
-                source += "{\n"
-                source += "})\n\n"
+                source += "ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(%s)\n\n" % self.name
             else:
+                source += "ESX_VI__TEMPLATE__DYNAMIC_CAST_FROM_ANY_TYPE(%s,\n" % self.name
                 source += "{\n"
 
                 for extended_by in self.extended_by:
