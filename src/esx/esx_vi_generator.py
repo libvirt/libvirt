@@ -41,6 +41,11 @@ valid_occurrences = [OCCURRENCE__REQUIRED_ITEM,
 
 
 
+def aligned(left, right):
+    while len(left) < 59:
+        left += " "
+
+    return left + right
 
 
 
@@ -64,9 +69,6 @@ class Parameter:
 
 
     def is_enum(self):
-        global predefined_enums
-        global enums_by_name
-
         return self.type in predefined_enums or self.type in enums_by_name
 
 
@@ -88,10 +90,7 @@ class Parameter:
             else:
                 string += ", "
 
-            while len(string) < 59:
-                string += " "
-
-            return string + self.get_occurrence_comment() + "\n"
+            return aligned(string, self.get_occurrence_comment() + "\n")
 
 
     def generate_return(self, offset = 0, end_of_line = ";"):
@@ -102,10 +101,7 @@ class Parameter:
             string += " " * offset
             string += "%s%s)%s" % (self.get_type_string(True), self.name, end_of_line)
 
-            while len(string) < 59:
-                string += " "
-
-            return string + self.get_occurrence_comment() + "\n"
+            return aligned(string, self.get_occurrence_comment() + "\n")
 
 
     def generate_require_code(self):
@@ -274,9 +270,6 @@ class Property:
 
 
     def is_enum(self):
-        global predefined_enums
-        global enums_by_name
-
         return self.type in predefined_enums or self.type in enums_by_name
 
 
@@ -286,10 +279,7 @@ class Property:
         else:
             string = "    %s%s; " % (self.get_type_string(), self.name)
 
-            while len(string) < 59:
-                string += " "
-
-            return string + self.get_occurrence_comment() + "\n"
+            return aligned(string, self.get_occurrence_comment() + "\n")
 
 
     def generate_free_code(self):
@@ -380,7 +370,37 @@ class Property:
 
 
 
-class Object:
+class Base:
+    def __init__(self, kind, name):
+        self.kind = kind
+        self.name = name
+
+
+    def generate_typedef(self):
+        return "typedef %s _esxVI_%s esxVI_%s;\n" % (self.kind, self.name, self.name)
+
+
+    def generate_typeenum(self):
+        return "    esxVI_Type_%s,\n" % self.name
+
+
+    def generate_typetostring(self):
+        string = "          case esxVI_Type_%s:\n" % self.name
+        string += "            return \"%s\";\n\n" % self.name
+
+        return string
+
+
+    def generate_typefromstring(self):
+        string =  "           else if (STREQ(type, \"%s\")) {\n" % self.name
+        string += "               return esxVI_Type_%s;\n" % self.name
+        string += "           }\n"
+
+        return string
+
+
+
+class Object(Base):
     FEATURE__DYNAMIC_CAST = (1 << 1)
     FEATURE__LIST         = (1 << 2)
     FEATURE__DEEP_COPY    = (1 << 3)
@@ -390,34 +410,24 @@ class Object:
 
 
     def __init__(self, name, extends, properties, features = 0, extended_by = None):
-        self.name = name
+        Base.__init__(self, "struct", name)
         self.extends = extends
         self.features = features | Object.FEATURE__SERIALIZE | Object.FEATURE__DESERIALIZE
         self.properties = properties
         self.extended_by = extended_by
 
         if self.extended_by is not None:
-            self.extended_by.sort();
+            self.extended_by.sort()
 
 
-    def generate_struct_members(self, add_banner = False, struct_gap = False):
-        global objects_by_name
+    def generate_struct_members(self, add_banner=False, struct_gap=False):
         members = ""
 
-        if self.extends is None:
-            struct_gap = True
-            string = "    esxVI_Type _type; "
-
-            while len(string) < 59:
-                string += " "
-
-            members += string + "/* required */\n"
-
-        if struct_gap and self.extends is None:
+        if struct_gap:
             members += "\n"
 
         if self.extends is not None:
-            members += objects_by_name[self.extends].generate_struct_members(add_banner = True, struct_gap = False) + "\n"
+            members += objects_by_name[self.extends].generate_struct_members(add_banner=True, struct_gap=False) + "\n"
 
         if self.extends is not None or add_banner:
             members += "    /* %s */\n" % self.name
@@ -431,12 +441,11 @@ class Object:
         return members
 
 
-    def generate_free_code(self, add_banner = False):
-        global objects_by_name
+    def generate_free_code(self, add_banner=False):
         source = ""
 
         if self.extends is not None:
-            source += objects_by_name[self.extends].generate_free_code(add_banner = True) + "\n"
+            source += objects_by_name[self.extends].generate_free_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -457,12 +466,11 @@ class Object:
         return source
 
 
-    def generate_validate_code(self, add_banner = False):
-        global objects_by_name
+    def generate_validate_code(self, add_banner=False):
         source = ""
 
         if self.extends is not None:
-            source += objects_by_name[self.extends].generate_validate_code(add_banner = True) + "\n"
+            source += objects_by_name[self.extends].generate_validate_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -484,7 +492,6 @@ class Object:
 
 
     def generate_dynamic_cast_code(self, is_first = True):
-        global objects_by_name
         source = ""
 
         if self.extended_by is not None:
@@ -503,7 +510,6 @@ class Object:
 
 
     def generate_deep_copy_code(self, add_banner = False):
-        global objects_by_name
         source = ""
 
         if self.extends is not None:
@@ -529,7 +535,6 @@ class Object:
 
 
     def generate_serialize_code(self, add_banner = False):
-        global objects_by_name
         source = ""
 
         if self.extends is not None:
@@ -548,11 +553,10 @@ class Object:
 
 
     def generate_deserialize_code(self, add_banner = False):
-        global objects_by_name
         source = ""
 
         if self.extends is not None:
-            source += objects_by_name[self.extends].generate_deserialize_code(add_banner = True) + "\n"
+            source += objects_by_name[self.extends].generate_deserialize_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -564,29 +568,6 @@ class Object:
                 source += property.generate_deserialize_code()
 
         return source
-
-
-    def generate_typedef(self):
-        return "typedef struct _esxVI_%s esxVI_%s;\n" % (self.name, self.name)
-
-
-    def generate_typeenum(self):
-        return "    esxVI_Type_%s,\n" % self.name
-
-
-    def generate_typetostring(self):
-        string = "          case esxVI_Type_%s:\n" % self.name
-        string += "            return \"%s\";\n\n" % self.name
-
-        return string
-
-
-    def generate_typefromstring(self):
-        string =  "           else if (STREQ(type, \"%s\")) {\n" % self.name
-        string += "               return esxVI_Type_%s;\n" % self.name
-        string += "           }\n"
-
-        return string
 
 
     def generate_header(self):
@@ -612,17 +593,12 @@ class Object:
         header += "struct _esxVI_%s {\n" % self.name
 
         if self.features & Object.FEATURE__LIST:
-            string = "    esxVI_%s *_next; " % self.name
+            header += aligned("    esxVI_%s *_next; " % self.name, "/* optional */\n")
         else:
-            string = "    esxVI_%s *_unused; " % self.name
+            header += aligned("    esxVI_%s *_unused; " % self.name, "/* optional */\n")
 
-        while len(string) < 59:
-            string += " "
-
-        header += string + "/* optional */\n"
-
-        header += self.generate_struct_members(struct_gap = True)
-
+        header += aligned("    esxVI_Type _type; ", "/* required */\n")
+        header += self.generate_struct_members(struct_gap=True)
         header += "};\n\n"
 
         # functions
@@ -888,39 +864,28 @@ class Object:
 
 
 
-class Enum:
+
+
+
+
+
+
+
+
+
+
+
+
+class Enum(Base):
     FEATURE__ANY_TYPE = (1 << 1)
     FEATURE__SERIALIZE = (1 << 2)
     FEATURE__DESERIALIZE = (1 << 3)
 
 
-    def __init__(self, name, values, features = 0):
-        self.name = name
+    def __init__(self, name, values, features=0):
+        Base.__init__(self, "enum", name)
         self.values = values
         self.features = features | Enum.FEATURE__SERIALIZE | Enum.FEATURE__DESERIALIZE
-
-
-    def generate_typedef(self):
-        return "typedef enum _esxVI_%s esxVI_%s;\n" % (self.name, self.name)
-
-
-    def generate_typeenum(self):
-        return "    esxVI_Type_%s,\n" % self.name
-
-
-    def generate_typetostring(self):
-        string = "          case esxVI_Type_%s:\n" % self.name
-        string += "            return \"%s\";\n\n" % self.name
-
-        return string
-
-
-    def generate_typefromstring(self):
-        string =  "           else if (STREQ(type, \"%s\")) {\n" % self.name
-        string += "               return esxVI_Type_%s;\n" % self.name
-        string += "           }\n"
-
-        return string
 
 
     def generate_header(self):
@@ -1027,8 +992,8 @@ def parse_object(block):
         if items[2] not in valid_occurrences:
             report_error("line %d: invalid occurrence" % line[0])
 
-        properties.append(Property(type = items[0], name = items[1],
-                                   occurrence = items[2]))
+        properties.append(Property(type=items[0], name=items[1],
+                                   occurrence=items[2]))
 
     return Object(name = name, extends = extends, properties = properties)
 
@@ -1051,7 +1016,7 @@ def parse_enum(block):
         # expected format: <value>
         values.append(line[1])
 
-    return Enum(name = name, values = values)
+    return Enum(name=name, values=values)
 
 
 
@@ -1071,8 +1036,8 @@ def parse_method(block):
         if header_items[2] != "returns":
             report_error("line %d: invalid block header" % (number))
         else:
-            returns = Parameter(type = header_items[3], name = "output",
-                                occurrence = header_items[4])
+            returns = Parameter(type=header_items[3], name="output",
+                                occurrence=header_items[4])
 
     parameters = []
 
@@ -1086,10 +1051,10 @@ def parse_method(block):
         if items[2] not in valid_occurrences:
             report_error("line %d: invalid occurrence" % line[0])
 
-        parameters.append(Parameter(type = items[0], name = items[1],
-                                    occurrence = items[2]))
+        parameters.append(Parameter(type=items[0], name=items[1],
+                                    occurrence=items[2]))
 
-    return Method(name = name, parameters = parameters, returns = returns)
+    return Method(name=name, parameters=parameters, returns=returns)
 
 
 
