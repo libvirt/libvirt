@@ -1807,7 +1807,7 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       <code>target</code> can have a <code>port</code> attribute, which
-      specifies the port number. Ports are numbered starting from 1. There are
+      specifies the port number. Ports are numbered starting from 0. There are
       usually 0, 1 or 2 parallel ports.
     </p>
 
@@ -1825,7 +1825,7 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       <code>target</code> can have a <code>port</code> attribute, which
-      specifies the port number. Ports are numbered starting from 1. There are
+      specifies the port number. Ports are numbered starting from 0. There are
       usually 0, 1 or 2 serial ports.
     </p>
 
