@@ -3,7 +3,7 @@
 #
 # esx_vi_generator.py: generates most of the SOAP type mapping code
 #
-# Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
+# Copyright (C) 2010-2011 Matthias Bolte <matthias.bolte@googlemail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -297,10 +297,15 @@ class Property:
                 return "    esxVI_%s_Free(&item->%s);\n" % (self.type, self.name)
 
 
-    def generate_validate_code(self):
+    def generate_validate_code(self, managed=False):
+        if managed:
+            macro = "ESX_VI__TEMPLATE__PROPERTY__MANAGED_REQUIRE"
+        else:
+            macro = "ESX_VI__TEMPLATE__PROPERTY__REQUIRE"
+
         if self.occurrence in [OCCURRENCE__REQUIRED_ITEM,
                                OCCURRENCE__REQUIRED_LIST]:
-            return "    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(%s)\n" % self.name
+            return "    %s(%s)\n" % (macro, self.name)
         elif self.occurrence == OCCURRENCE__IGNORED:
             return "    /* FIXME: %s is currently ignored */\n" % self.name
         else:
@@ -343,6 +348,18 @@ class Property:
             return "    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, %s)\n" % self.name
         else:
             return "    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(%s, %s)\n" % (self.type, self.name)
+
+
+    def generate_lookup_code(self):
+        if self.occurrence == OCCURRENCE__IGNORED:
+            return "    ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE_IGNORE(%s) /* FIXME */\n" % self.name
+        elif self.occurrence in [OCCURRENCE__REQUIRED_LIST,
+                                 OCCURRENCE__OPTIONAL_LIST]:
+            return "    ESX_VI__TEMPLATE__PROPERTY__CAST_LIST_FROM_ANY_TYPE(%s, %s)\n" % (self.type, self.name)
+        elif self.type == "String":
+            return "    ESX_VI__TEMPLATE__PROPERTY__CAST_VALUE_FROM_ANY_TYPE(String, %s)\n" % self.name
+        else:
+            return "    ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE(%s, %s)\n" % (self.type, self.name)
 
 
     def get_type_string(self):
@@ -572,20 +589,20 @@ class Object(Base):
 
     def generate_header(self):
         header = "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n"
-        header += " * VI Type: %s\n" % self.name
+        header += " * VI Object: %s\n" % self.name
 
         if self.extends is not None:
-            header += " *          extends %s\n" % self.extends
+            header += " *            extends %s\n" % self.extends
 
         first = True
 
         if self.extended_by is not None:
             for extended_by in self.extended_by:
                 if first:
-                    header += " *          extended by %s\n" % extended_by
+                    header += " *            extended by %s\n" % extended_by
                     first = False
                 else:
-                    header += " *                      %s\n" % extended_by
+                    header += " *                        %s\n" % extended_by
 
         header += " */\n\n"
 
@@ -646,20 +663,20 @@ class Object(Base):
 
     def generate_source(self):
         source = "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n"
-        source += " * VI Type: %s\n" % self.name
+        source += " * VI Object: %s\n" % self.name
 
         if self.extends is not None:
-            source += " *          extends %s\n" % self.extends
+            source += " *            extends %s\n" % self.extends
 
         first = True
 
         if self.extended_by is not None:
             for extended_by in self.extended_by:
                 if first:
-                    source += " *          extended by %s\n" % extended_by
+                    source += " *            extended by %s\n" % extended_by
                     first = False
                 else:
-                    source += " *                      %s\n" % extended_by
+                    source += " *                        %s\n" % extended_by
 
         source += " */\n\n"
 
@@ -863,15 +880,303 @@ class Object(Base):
 
 
 
+class ManagedObject(Base):
+    FEATURE__LIST = (1 << 2)
 
 
+    def __init__(self, name, extends, properties, features=0, extended_by=None):
+        Base.__init__(self, "struct", name)
+        self.extends = extends
+        self.features = features
+        self.properties = properties
+        self.extended_by = extended_by
+
+        if self.extended_by is not None:
+            self.extended_by.sort()
 
 
+    def generate_struct_members(self, add_banner=False, struct_gap=False):
+        members = ""
+
+        if struct_gap:
+            members += "\n"
+
+        if self.extends is not None:
+            members += managed_objects_by_name[self.extends].generate_struct_members(add_banner=True) + "\n"
+
+        if self.extends is not None or add_banner:
+            members += "    /* %s */\n" % self.name
+
+        for property in self.properties:
+            members += property.generate_struct_member()
+
+        if len(self.properties) < 1:
+            members += "    /* no properties */\n"
+
+        return members
 
 
+    def generate_free_code(self, add_banner=False):
+        source = ""
+
+        if self.extends is not None:
+            source += managed_objects_by_name[self.extends].generate_free_code(add_banner=True) + "\n"
+
+        if self.extends is not None or add_banner:
+            source += "    /* %s */\n" % self.name
+
+        if len(self.properties) < 1:
+            source += "    /* no properties */\n"
+        else:
+            string = ""
+
+            for property in self.properties:
+                string += property.generate_free_code()
+
+            if len(string) < 1:
+                source += "    /* no properties to be freed */\n"
+            else:
+                source += string
+
+        return source
 
 
+    def generate_validate_code(self, add_banner=False):
+        source = ""
 
+        if self.extends is not None:
+            source += managed_objects_by_name[self.extends].generate_validate_code(add_banner=True) + "\n"
+
+        if self.extends is not None or add_banner:
+            source += "    /* %s */\n" % self.name
+
+        if len(self.properties) < 1:
+            source += "    /* no properties */\n"
+        else:
+            string = ""
+
+            for property in self.properties:
+                string += property.generate_validate_code(managed=True)
+
+            if len(string) < 1:
+                source += "    /* no required properties */\n"
+            else:
+                source += string
+
+        return source
+
+
+    def generate_lookup_code1(self, add_banner=False):
+        source = ""
+
+        if self.extends is not None:
+            source += managed_objects_by_name[self.extends].generate_lookup_code1(add_banner=True) + "\n"
+
+        if self.extends is not None or add_banner:
+            source += "    /* %s */\n" % self.name
+
+        if len(self.properties) < 1:
+            source += "    /* no properties */\n"
+        else:
+            string = ""
+
+            for property in self.properties:
+                string += "    \"%s\\0\"\n" % property.name
+
+            if len(string) < 1:
+                source += "    /* no properties */\n"
+            else:
+                source += string
+
+        return source
+
+
+    def generate_lookup_code2(self, add_banner=False):
+        source = ""
+
+        if self.extends is not None:
+            source += managed_objects_by_name[self.extends].generate_lookup_code2(add_banner=True) + "\n"
+
+        if self.extends is not None or add_banner:
+            source += "    /* %s */\n" % self.name
+
+        if len(self.properties) < 1:
+            source += "    /* no properties */\n"
+        else:
+            string = ""
+
+            for property in self.properties:
+                string += property.generate_lookup_code()
+
+            if len(string) < 1:
+                source += "    /* no properties */\n"
+            else:
+                source += string
+
+        return source
+
+
+    def generate_comment(self):
+        comment = "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n"
+        comment += " * VI Managed Object: %s\n" % self.name
+
+        if self.extends is not None:
+            comment += " *                    extends %s\n" % self.extends
+
+        first = True
+
+        if self.extended_by is not None:
+            for extended_by in self.extended_by:
+                if first:
+                    comment += " *                    extended by %s\n" % extended_by
+                    first = False
+                else:
+                    comment += " *                                %s\n" % extended_by
+
+        comment += " */\n\n"
+
+        return comment
+
+
+    def generate_header(self):
+        header = self.generate_comment()
+
+        # struct
+        header += "struct _esxVI_%s {\n" % self.name
+
+        if self.features & Object.FEATURE__LIST:
+            header += aligned("    esxVI_%s *_next; " % self.name, "/* optional */\n")
+        else:
+            header += aligned("    esxVI_%s *_unused; " % self.name, "/* optional */\n")
+
+        header += aligned("    esxVI_Type _type; ", "/* required */\n")
+        header += aligned("    esxVI_ManagedObjectReference *_reference; ", "/* required */\n")
+        header += "\n"
+        header += self.generate_struct_members()
+
+        header += "};\n\n"
+
+        # functions
+        header += "int esxVI_%s_Alloc(esxVI_%s **item);\n" % (self.name, self.name)
+        header += "void esxVI_%s_Free(esxVI_%s **item);\n" % (self.name, self.name)
+        header += "int esxVI_%s_Validate(esxVI_%s *item, esxVI_String *selectedPropertyNameList);\n" % (self.name, self.name)
+
+        if self.features & Object.FEATURE__LIST:
+            header += "int esxVI_%s_AppendToList(esxVI_%s **list, esxVI_%s *item);\n" % (self.name, self.name, self.name)
+
+        header += "\n\n\n"
+
+        return header
+
+
+    def generate_helper_header(self):
+        header = ""
+
+        # functions
+        header += ("int esxVI_Lookup%s(esxVI_Context *ctx, " +
+                                      "const char *name, " +
+                                      "esxVI_ManagedObjectReference *root, " +
+                                      "esxVI_String *selectedPropertyNameList, " +
+                                      "esxVI_%s **item, " +
+                                      "esxVI_Occurrence occurrence);\n") % (self.name, self.name)
+
+        header += "\n"
+
+        return header
+
+
+    def generate_source(self):
+        source = self.generate_comment()
+
+        # functions
+        source += "/* esxVI_%s_Alloc */\n" % self.name
+        source += "ESX_VI__TEMPLATE__ALLOC(%s)\n\n" % self.name
+
+        # free
+        if self.extended_by is None:
+            source += "/* esxVI_%s_Free */\n" % self.name
+            source += "ESX_VI__TEMPLATE__FREE(%s,\n" % self.name
+            source += "{\n"
+
+            if self.features & ManagedObject.FEATURE__LIST:
+                if self.extends is not None:
+                    # avoid "dereferencing type-punned pointer will break strict-aliasing rules" warnings
+                    source += "    esxVI_%s *next = (esxVI_%s *)item->_next;\n\n" % (self.extends, self.extends)
+                    source += "    esxVI_%s_Free(&next);\n" % self.extends
+                    source += "    item->_next = (esxVI_%s *)next;\n\n" % self.name
+                else:
+                    source += "    esxVI_%s_Free(&item->_next);\n" % self.name
+
+            source += "    esxVI_ManagedObjectReference_Free(&item->_reference);\n\n"
+
+            source += self.generate_free_code()
+
+            source += "})\n\n"
+        else:
+            source += "/* esxVI_%s_Free */\n" % self.name
+            source += "ESX_VI__TEMPLATE__DYNAMIC_FREE(%s,\n" % self.name
+            source += "{\n"
+
+            for extended_by in self.extended_by:
+                source += "    ESX_VI__TEMPLATE__DISPATCH__FREE(%s)\n" % extended_by
+
+            source += "},\n"
+            source += "{\n"
+
+            if self.features & Object.FEATURE__LIST:
+                if self.extends is not None:
+                    # avoid "dereferencing type-punned pointer will break strict-aliasing rules" warnings
+                    source += "    esxVI_%s *next = (esxVI_%s *)item->_next;\n\n" % (self.extends, self.extends)
+                    source += "    esxVI_%s_Free(&next);\n" % self.extends
+                    source += "    item->_next = (esxVI_%s *)next;\n\n" % self.name
+                else:
+                    source += "    esxVI_%s_Free(&item->_next);\n" % self.name
+
+            source += "    esxVI_ManagedObjectReference_Free(&item->_reference);\n\n"
+
+            source += self.generate_free_code()
+
+            source += "})\n\n"
+
+        # validate
+        source += "/* esxVI_%s_Validate */\n" % self.name
+        source += "ESX_VI__TEMPLATE__MANAGED_VALIDATE(%s,\n" % self.name
+        source += "{\n"
+
+        source += self.generate_validate_code()
+
+        source += "})\n\n"
+
+        # append to list
+        if self.features & ManagedObject.FEATURE__LIST:
+            source += "/* esxVI_%s_AppendToList */\n" % self.name
+            source += "ESX_VI__TEMPLATE__LIST__APPEND(%s)\n\n" % self.name
+
+        source += "\n\n"
+
+        return source
+
+
+    def generate_helper_source(self):
+        source = ""
+
+        # lookup
+        source += "/* esxVI_Lookup%s */\n" % self.name
+        source += "ESX_VI__TEMPLATE__LOOKUP(%s,\n" % self.name
+        source += "{\n"
+
+        source += self.generate_lookup_code1()
+
+        source += "},\n"
+        source += "{\n"
+
+        source += self.generate_lookup_code2()
+
+        source += "})\n\n"
+
+        source += "\n\n"
+
+        return source
 
 
 
@@ -962,8 +1267,13 @@ def capitalize_first(string):
 
 
 def parse_object(block):
-    # expected format: object <name> [extends <name>]
+    # expected format: [managed] object <name> [extends <name>]
     header_items = block[0][1].split()
+    managed = False
+
+    if header_items[0] == "managed":
+        managed = True
+        del header_items[0]
 
     if len(header_items) < 2:
         report_error("line %d: invalid block header" % (number))
@@ -994,7 +1304,10 @@ def parse_object(block):
         properties.append(Property(type=items[0], name=items[1],
                                    occurrence=items[2]))
 
-    return Object(name = name, extends = extends, properties = properties)
+    if managed:
+        return ManagedObject(name=name, extends=extends, properties=properties)
+    else:
+        return Object(name=name, extends=extends, properties=properties)
 
 
 
@@ -1075,6 +1388,7 @@ def is_known_type(type):
     return type in predefined_objects or \
            type in predefined_enums or \
            type in objects_by_name or \
+           type in managed_objects_by_name or \
            type in enums_by_name
 
 
@@ -1169,11 +1483,14 @@ types_header = open_and_print(os.path.join(output_dirname, "esx_vi_types.generat
 types_source = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.c"))
 methods_header = open_and_print(os.path.join(output_dirname, "esx_vi_methods.generated.h"))
 methods_source = open_and_print(os.path.join(output_dirname, "esx_vi_methods.generated.c"))
+helpers_header = open_and_print(os.path.join(output_dirname, "esx_vi.generated.h"))
+helpers_source = open_and_print(os.path.join(output_dirname, "esx_vi.generated.c"))
 
 
 
 number = 0
 objects_by_name = {}
+managed_objects_by_name = {}
 enums_by_name = {}
 methods_by_name = {}
 block = None
@@ -1191,7 +1508,8 @@ for line in file(input_filename, "rb").readlines():
     if len(line) < 1:
         continue
 
-    if line.startswith("object") or line.startswith("enum") or line.startswith("method"):
+    if line.startswith("object") or line.startswith("managed object") or \
+       line.startswith("enum") or line.startswith("method"):
         if block is not None:
             report_error("line %d: nested block found" % (number))
         else:
@@ -1202,6 +1520,9 @@ for line in file(input_filename, "rb").readlines():
             if block[0][1].startswith("object"):
                 obj = parse_object(block)
                 objects_by_name[obj.name] = obj
+            elif block[0][1].startswith("managed object"):
+                obj = parse_object(block)
+                managed_objects_by_name[obj.name] = obj
             elif block[0][1].startswith("enum"):
                 enum = parse_enum(block)
                 enums_by_name[enum.name] = enum
@@ -1268,6 +1589,30 @@ for obj in objects_by_name.values():
 
 
 
+for obj in managed_objects_by_name.values():
+    for property in obj.properties:
+        if property.occurrence != OCCURRENCE__IGNORED and \
+           not is_known_type(property.type):
+            report_error("object '%s' contains unknown property type '%s'" % (obj.name, property.type))
+
+    if obj.extends is not None:
+        if not is_known_type(obj.extends):
+            report_error("object '%s' extends unknown object '%s'" % (obj.name, obj.extends))
+
+    # detect extended_by relation
+    if obj.extends is not None:
+        extended_obj = managed_objects_by_name[obj.extends]
+
+        if extended_obj.extended_by is None:
+            extended_obj.extended_by = [obj.name]
+        else:
+            extended_obj.extended_by.append(obj.name)
+            extended_obj.extended_by.sort()
+
+
+
+
+
 for obj in objects_by_name.values():
     inherit_features(obj)
 
@@ -1283,6 +1628,8 @@ types_header.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
 types_source.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
 methods_header.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
 methods_source.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
+helpers_header.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
+helpers_source.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
 
 
 # output enums
@@ -1306,7 +1653,7 @@ for name in names:
 # output objects
 types_typedef.write("\n\n\n" +
                     "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n" +
-                    " * VI Types\n" +
+                    " * VI Objects\n" +
                     " */\n\n")
 types_typeenum.write("\n")
 types_typetostring.write("\n")
@@ -1327,6 +1674,30 @@ for name in names:
 
 
 
+# output managed objects
+types_typedef.write("\n\n\n" +
+                    "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n" +
+                    " * VI Managed Objects\n" +
+                    " */\n\n")
+types_typeenum.write("\n")
+types_typetostring.write("\n")
+types_typefromstring.write("\n")
+
+
+
+names = managed_objects_by_name.keys()
+names.sort()
+
+for name in names:
+    types_typedef.write(managed_objects_by_name[name].generate_typedef())
+    types_typeenum.write(managed_objects_by_name[name].generate_typeenum())
+    types_typetostring.write(managed_objects_by_name[name].generate_typetostring())
+    types_typefromstring.write(managed_objects_by_name[name].generate_typefromstring())
+    types_header.write(managed_objects_by_name[name].generate_header())
+    types_source.write(managed_objects_by_name[name].generate_source())
+
+
+
 # output methods
 names = methods_by_name.keys()
 names.sort()
@@ -1334,3 +1705,13 @@ names.sort()
 for name in names:
     methods_header.write(methods_by_name[name].generate_header())
     methods_source.write(methods_by_name[name].generate_source())
+
+
+
+# output helpers
+names = managed_objects_by_name.keys()
+names.sort()
+
+for name in names:
+    helpers_header.write(managed_objects_by_name[name].generate_helper_header())
+    helpers_source.write(managed_objects_by_name[name].generate_helper_source())

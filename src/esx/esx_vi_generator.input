@@ -15,7 +15,7 @@
 #
 # Object definition:
 #
-# object <name> [extends <name>]
+# [managed] object <name> [extends <name>]
 #     <type> <name> <occurrence>
 #     ...
 # end
@@ -735,6 +735,32 @@ end
 
 object VmfsDatastoreInfo extends DatastoreInfo
     HostVmfsVolume                           vmfs                           o
+end
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Managed Objects
+#
+
+managed object ComputeResource extends ManagedEntity
+    ManagedObjectReference                   host                           ol
+    ManagedObjectReference                   resourcePool                   o
+end
+
+
+managed object Datacenter extends ManagedEntity
+    ManagedObjectReference                   hostFolder                     r
+    ManagedObjectReference                   vmFolder                       r
+end
+
+
+managed object HostSystem extends ManagedEntity
+    HostConfigManager                        configManager                  r
+end
+
+
+managed object ManagedEntity
+    String                                   name                           r
 end
 
 

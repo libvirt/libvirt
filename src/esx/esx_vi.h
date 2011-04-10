@@ -444,4 +444,6 @@ int esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
 
 int esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersion);
 
+# include "esx_vi.generated.h"
+
 #endif /* __ESX_VI_H__ */

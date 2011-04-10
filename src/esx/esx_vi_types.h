@@ -1,7 +1,8 @@
+
 /*
  * esx_vi_types.h: client for the VMware VI API 2.5 to manage ESX hosts
  *
- * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,15 +45,18 @@ typedef struct _esxVI_DateTime esxVI_DateTime;
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * VI Types
+ * SOAP
  */
 
 typedef struct _esxVI_Fault esxVI_Fault;
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Objects
+ */
 typedef struct _esxVI_MethodFault esxVI_MethodFault;
 typedef struct _esxVI_ManagedObjectReference esxVI_ManagedObjectReference;
-typedef struct _esxVI_Datacenter esxVI_Datacenter;
-typedef struct _esxVI_ComputeResource esxVI_ComputeResource;
-typedef struct _esxVI_HostSystem esxVI_HostSystem;
 
 # include "esx_vi_types.generated.typedef"
 
@@ -74,9 +78,6 @@ enum _esxVI_Type {
     esxVI_Type_Fault,
     esxVI_Type_MethodFault,
     esxVI_Type_ManagedObjectReference,
-    esxVI_Type_Datacenter,
-    esxVI_Type_ComputeResource,
-    esxVI_Type_HostSystem,
 
 # include "esx_vi_types.generated.typeenum"
 
@@ -170,6 +171,7 @@ struct _esxVI_String {
 int esxVI_String_Alloc(esxVI_String **string);
 void esxVI_String_Free(esxVI_String **stringList);
 int esxVI_String_Validate(esxVI_String *string);
+bool esxVI_String_ListContainsValue(esxVI_String *stringList, const char *value);
 int esxVI_String_AppendToList(esxVI_String **stringList, esxVI_String *string);
 int esxVI_String_AppendValueToList(esxVI_String **stringList,
                                    const char *value);
@@ -264,7 +266,7 @@ int esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * VI Type: Fault
+ * SOAP: Fault
  */
 
 struct _esxVI_Fault {
@@ -283,7 +285,7 @@ int esxVI_Fault_Deserialize(xmlNodePtr node, esxVI_Fault **fault);
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * VI Type: MethodFault
+ * VI Object: MethodFault
  */
 
 /*
@@ -306,7 +308,7 @@ int esxVI_MethodFault_Deserialize(xmlNodePtr node,
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * VI Type: ManagedObjectReference
+ * VI Object: ManagedObjectReference
  */
 
 struct _esxVI_ManagedObjectReference {
@@ -344,84 +346,6 @@ int esxVI_ManagedObjectReference_Deserialize
 
 
 # include "esx_vi_types.generated.h"
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * VI Managed Object: Datacenter
- *                    extends ManagedEntity
- */
-
-struct _esxVI_Datacenter {
-    esxVI_Datacenter *_next;                               /* optional */
-    esxVI_Type _type;                                      /* required */
-    esxVI_ManagedObjectReference *_reference;              /* required */
-
-    /* ManagedEntity */
-    char *name;                                            /* required */
-
-    /* Datacenter */
-    esxVI_ManagedObjectReference *hostFolder;              /* required */
-    esxVI_ManagedObjectReference *vmFolder;                /* required */
-};
-
-int esxVI_Datacenter_Alloc(esxVI_Datacenter **datacenter);
-void esxVI_Datacenter_Free(esxVI_Datacenter **datacenter);
-int esxVI_Datacenter_Validate(esxVI_Datacenter *datacenter);
-int esxVI_Datacenter_CastFromObjectContent(esxVI_ObjectContent *objectContent,
-                                           esxVI_Datacenter **datacenter);
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * VI Managed Object: ComputeResource
- *                    extends ManagedEntity
- */
-
-struct _esxVI_ComputeResource {
-    esxVI_ComputeResource *_next;                          /* optional */
-    esxVI_Type _type;                                      /* required */
-    esxVI_ManagedObjectReference *_reference;              /* required */
-
-    /* ManagedEntity */
-    char *name;                                            /* required */
-
-    /* ComputeResource */
-    esxVI_ManagedObjectReference *host;                    /* optional, list */
-    esxVI_ManagedObjectReference *resourcePool;            /* optional */
-};
-
-int esxVI_ComputeResource_Alloc(esxVI_ComputeResource **computeResource);
-void esxVI_ComputeResource_Free(esxVI_ComputeResource **computeResource);
-int esxVI_ComputeResource_Validate(esxVI_ComputeResource *computeResource);
-int esxVI_ComputeResource_CastFromObjectContent
-      (esxVI_ObjectContent *objectContent,
-       esxVI_ComputeResource **computeResource);
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * VI Managed Object: HostSystem
- *                    extends ManagedEntity
- */
-
-struct _esxVI_HostSystem {
-    esxVI_HostSystem *_next;                               /* optional */
-    esxVI_Type _type;                                      /* required */
-    esxVI_ManagedObjectReference *_reference;              /* required */
-
-    /* ManagedEntity */
-    char *name;                                            /* required */
-
-    /* HostSystem */
-    esxVI_HostConfigManager *configManager;                /* required */
-};
-
-int esxVI_HostSystem_Alloc(esxVI_HostSystem **hostSystem);
-void esxVI_HostSystem_Free(esxVI_HostSystem **hostSystem);
-int esxVI_HostSystem_Validate(esxVI_HostSystem *hostSystem);
-int esxVI_HostSystem_CastFromObjectContent(esxVI_ObjectContent *objectContent,
-                                           esxVI_HostSystem **hostSystem);
 
 
 
