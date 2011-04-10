@@ -2,7 +2,7 @@
 /*
  * esx_private.h: private driver struct for the VMware ESX driver
  *
- * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,8 +36,8 @@ typedef struct _esxPrivate {
     esxVI_Context *primary; /* points to host or vCenter */
     esxVI_Context *host;
     esxVI_Context *vCenter;
+    esxUtil_ParsedUri *parsedUri;
     virCapsPtr caps;
-    char *transport;
     int32_t maxVcpus;
     esxVI_Boolean supportsVMotion;
     esxVI_Boolean supportsLongMode; /* aka x86_64 */
