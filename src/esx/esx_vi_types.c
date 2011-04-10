@@ -77,12 +77,12 @@
     int                                                                       \
     esxVI_##__type##_Validate(esxVI_##__type *item)                           \
     {                                                                         \
-        const char *type_name = esxVI_Type_ToString(esxVI_Type_##__type);     \
+        const char *typeName = esxVI_Type_ToString(esxVI_Type_##__type);      \
                                                                               \
         if (item->_type <= esxVI_Type_Undefined ||                            \
             item->_type >= esxVI_Type_Other) {                                \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
-                         "%s object has invalid dynamic type", type_name);    \
+                         _("%s object has invalid dynamic type"), typeName);  \
             return -1;                                                        \
         }                                                                     \
                                                                               \
@@ -293,7 +293,7 @@
              childNode = childNode->next) {                                   \
             if (childNode->type != XML_ELEMENT_NODE) {                        \
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                          \
-                             "Wrong XML element type %d", childNode->type);   \
+                             _("Wrong XML element type %d"), childNode->type);\
                 goto failure;                                                 \
             }                                                                 \
                                                                               \
@@ -343,22 +343,22 @@
                                                                               \
         if (string == NULL) {                                                 \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
-                         "XML node doesn't contain text, expecting an "       \
-                         _xsdType" value");                                   \
+                         _("XML node doesn't contain text, expecting an %s "  \
+                           "value"), _xsdType);                               \
             goto cleanup;                                                     \
         }                                                                     \
                                                                               \
         if (virStrToLong_ll(string, NULL, 10, &value) < 0) {                  \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
-                         "Unknown value '%s' for "_xsdType, string);          \
+                         _("Unknown value '%s' for %s"), string, _xsdType);   \
             goto cleanup;                                                     \
         }                                                                     \
                                                                               \
         if (((_min) != INT64_MIN && value < (_min))                           \
             || ((_max) != INT64_MAX && value > (_max))) {                     \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
-                         "Value '%s' is not representable as "_xsdType,       \
-                         (const char *)string);                               \
+                         _("Value '%s' is not representable as %s"),          \
+                         string, _xsdType);                                   \
             goto cleanup;                                                     \
         }                                                                     \
                                                                               \
@@ -482,8 +482,8 @@
 #define ESX_VI__TEMPLATE__PROPERTY__REQUIRE(_name)                            \
     if (item->_name == 0) {                                                   \
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
-                     "%s object is missing the required '%s' property",       \
-                     type_name, #_name);                                      \
+                     _("%s object is missing the required '%s' property"),    \
+                     typeName, #_name);                                       \
         return -1;                                                            \
     }
 
