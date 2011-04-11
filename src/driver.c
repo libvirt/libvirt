@@ -1,7 +1,7 @@
 /*
  * driver.c: Helpers for loading drivers
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,7 @@
 
 #define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
-/* Make sure ... INTERNAL_CALL can not be set by the caller */
+/* Make sure ... INTERNAL_CALL cannot be set by the caller */
 verify((VIR_SECRET_GET_VALUE_INTERNAL_CALL &
         VIR_SECRET_GET_VALUE_FLAGS_MASK) == 0);
 

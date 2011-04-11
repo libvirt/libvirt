@@ -2326,7 +2326,7 @@ int qemuProcessStart(virConnectPtr conn,
     ret = virCommandRun(cmd, NULL);
     VIR_FREE(pidfile);
 
-    /* wait for qemu process to to show up */
+    /* wait for qemu process to show up */
     if (ret == 0) {
         if (virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,

@@ -1223,7 +1223,7 @@ initialize_gnutls(char *pkipath, int flags)
             goto out_of_memory;
 
         /* Use default location as long as one of CA certificate,
-         * client key, and client certificate can not be found in
+         * client key, and client certificate cannot be found in
          * $HOME/.pki/libvirt, we don't want to make user confused
          * with one file is here, the other is there.
          */

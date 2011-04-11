@@ -505,7 +505,7 @@ typedef virConnectCredential *virConnectCredentialPtr;
  * When authentication requires one or more interactions, this callback
  * is invoked. For each interaction supplied, data must be gathered
  * from the user and filled in to the 'result' and 'resultlen' fields.
- * If an interaction can not be filled, fill in NULL and 0.
+ * If an interaction cannot be filled, fill in NULL and 0.
  *
  * Returns 0 if all interactions were filled, or -1 upon error
  */

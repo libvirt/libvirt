@@ -703,7 +703,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             (!inputBackingPath ||
              STRNEQ(inputBackingPath, vol->backingStore.path))) {
             virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("a different backing store can not "
+                                  "%s", _("a different backing store cannot "
                                           "be specified."));
             return -1;
         }
@@ -1188,7 +1188,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                 *capacity = sb.st_size;
         } else {
             off_t end;
-            /* XXX this is POSIX compliant, but doesn't work for for CHAR files,
+            /* XXX this is POSIX compliant, but doesn't work for CHAR files,
              * only BLOCK. There is a Linux specific ioctl() for getting
              * size of both CHAR / BLOCK devices we should check for in
              * configure

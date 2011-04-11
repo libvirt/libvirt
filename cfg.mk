@@ -573,8 +573,12 @@ exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
 exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(bootstrap.conf$$|po/|src/util/util\.c$$|examples/domain-events/events-c/event-test\.c$$)
 
+exclude_file_name_regexp--sc_prohibit_can_not = ^po/
+
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.py$$|^docs/|(src/util/files\.c|src/libvirt\.c)$$)
+
+exclude_file_name_regexp--sc_prohibit_doubled_word = ^po/
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$)

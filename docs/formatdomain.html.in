@@ -774,7 +774,7 @@
         <span class="since">Since 0.0.3; "device" attribute since 0.1.4;
         "network" attribute since 0.8.7</span></dd>
       <dt><code>source</code></dt>
-      <dd>If the disk <code>type</code> is "file", then the
+      <dd>If the disk <code>type</code> is "file", then
         the <code>file</code> attribute specifies the fully-qualified
         path to the file holding the disk. If the disk
         <code>type</code> is "block", then the <code>dev</code>

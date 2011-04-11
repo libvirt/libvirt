@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1073,7 +1073,7 @@ remove_id:
      * ID table so that 'drivers_probe' works below.
      */
     if (pciDriverFile(&path, driver, "remove_id") < 0) {
-        /* We do not remove PCI ID from pci-stub, and we can not reprobe it */
+        /* We do not remove PCI ID from pci-stub, and we cannot reprobe it */
         if (dev->reprobe) {
             VIR_WARN("Could not remove PCI ID '%s' from %s, and the device "
                      "cannot be probed again.", dev->id, driver);
@@ -1087,7 +1087,7 @@ remove_id:
                              _("Failed to remove PCI ID '%s' from %s"),
                              dev->id, driver);
 
-        /* remove PCI ID from pci-stub failed, and we can not reprobe it */
+        /* remove PCI ID from pci-stub failed, and we cannot reprobe it */
         if (dev->reprobe) {
             VIR_WARN("Failed to remove PCI ID '%s' from %s, and the device "
                      "cannot be probed again.", dev->id, driver);

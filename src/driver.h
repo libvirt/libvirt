@@ -1063,7 +1063,7 @@ struct _virDeviceMonitor {
 
 enum {
     /* This getValue call is inside libvirt, override the "private" flag.
-       This flag can not be set by outside callers. */
+       This flag cannot be set by outside callers. */
     VIR_SECRET_GET_VALUE_INTERNAL_CALL = 1 << 16
 };
 
