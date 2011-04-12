@@ -432,11 +432,6 @@ remoteDispatchOpen(struct qemud_server *server,
     return rc;
 }
 
-#define CHECK_CONN(client)                                              \
-    if (!client->conn) {                                                \
-        remoteDispatchFormatError(rerr, "%s", _("connection not open")); \
-        return -1;                                                      \
-    }
 
 static int
 remoteDispatchClose(struct qemud_server *server ATTRIBUTE_UNUSED,
@@ -464,6 +459,12 @@ remoteDispatchSupportsFeature(struct qemud_server *server ATTRIBUTE_UNUSED,
                               remote_error *rerr,
                               remote_supports_feature_args *args, remote_supports_feature_ret *ret)
 {
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     ret->supported = virDrvSupportsFeature(conn, args->feature);
 
     if (ret->supported == -1) {
@@ -483,6 +484,11 @@ remoteDispatchGetType(struct qemud_server *server ATTRIBUTE_UNUSED,
                       void *args ATTRIBUTE_UNUSED, remote_get_type_ret *ret)
 {
     const char *type;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     type = virConnectGetType(conn);
     if (type == NULL) {
@@ -513,6 +519,11 @@ remoteDispatchGetVersion(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     unsigned long hvVer;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     if (virConnectGetVersion(conn, &hvVer) == -1) {
         remoteDispatchConnError(rerr, conn);
         return -1;
@@ -532,6 +543,11 @@ remoteDispatchGetLibVersion(struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_get_lib_version_ret *ret)
 {
     unsigned long libVer;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (virConnectGetLibVersion(conn, &libVer) == -1) {
         remoteDispatchConnError(rerr, conn);
@@ -553,6 +569,11 @@ remoteDispatchGetHostname(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     char *hostname;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     hostname = virConnectGetHostname(conn);
     if (hostname == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -573,7 +594,11 @@ remoteDispatchGetUri(struct qemud_server *server ATTRIBUTE_UNUSED,
                      remote_get_uri_ret *ret)
 {
     char *uri;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     uri = virConnectGetURI(conn);
     if (uri == NULL) {
@@ -597,6 +622,11 @@ remoteDispatchGetSysinfo(struct qemud_server *server ATTRIBUTE_UNUSED,
     unsigned int flags;
     char *sysinfo;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     flags = args->flags;
     sysinfo = virConnectGetSysinfo(conn, flags);
     if (sysinfo == NULL) {
@@ -619,6 +649,11 @@ remoteDispatchGetMaxVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     char *type;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     type = args->type ? *args->type : NULL;
     ret->max_vcpus = virConnectGetMaxVcpus(conn, type);
     if (ret->max_vcpus == -1) {
@@ -639,6 +674,11 @@ remoteDispatchNodeGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
                           remote_node_get_info_ret *ret)
 {
     virNodeInfo info;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (virNodeGetInfo(conn, &info) == -1) {
         remoteDispatchConnError(rerr, conn);
@@ -668,6 +708,11 @@ remoteDispatchGetCapabilities(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     char *caps;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     caps = virConnectGetCapabilities(conn);
     if (caps == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -688,6 +733,11 @@ remoteDispatchNodeGetCellsFreeMemory(struct qemud_server *server ATTRIBUTE_UNUSE
                                      remote_node_get_cells_free_memory_ret *ret)
 {
     int err;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxCells > REMOTE_NODE_MAX_CELLS) {
         remoteDispatchFormatError(rerr,
@@ -727,6 +777,11 @@ remoteDispatchNodeGetFreeMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     unsigned long long freeMem;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     freeMem = virNodeGetFreeMemory(conn);
     if (freeMem == 0) {
         remoteDispatchConnError(rerr, conn);
@@ -749,6 +804,11 @@ remoteDispatchDomainGetSchedulerType(struct qemud_server *server ATTRIBUTE_UNUSE
     virDomainPtr dom;
     char *type;
     int nparams;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -781,6 +841,11 @@ remoteDispatchDomainGetSchedulerParameters(struct qemud_server *server ATTRIBUTE
     virDomainPtr dom;
     virSchedParameterPtr params;
     int i, r, nparams;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     nparams = args->nparams;
 
@@ -866,6 +931,11 @@ remoteDispatchDomainSetSchedulerParameters(struct qemud_server *server ATTRIBUTE
     int i, r, nparams;
     virSchedParameterPtr params;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     nparams = args->params.params_len;
 
     if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
@@ -933,6 +1003,11 @@ remoteDispatchDomainBlockStats(struct qemud_server *server ATTRIBUTE_UNUSED,
     char *path;
     struct _virDomainBlockStats stats;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -968,6 +1043,11 @@ remoteDispatchDomainInterfaceStats(struct qemud_server *server ATTRIBUTE_UNUSED,
     virDomainPtr dom;
     char *path;
     struct _virDomainInterfaceStats stats;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1007,6 +1087,11 @@ remoteDispatchDomainMemoryStats(struct qemud_server *server ATTRIBUTE_UNUSED,
     virDomainPtr dom;
     struct _virDomainMemoryStat *stats;
     unsigned int nr_stats, i;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX) {
         remoteDispatchFormatError(rerr, "%s",
@@ -1068,6 +1153,11 @@ remoteDispatchDomainBlockPeek(struct qemud_server *server ATTRIBUTE_UNUSED,
     size_t size;
     unsigned int flags;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1118,6 +1208,11 @@ remoteDispatchDomainMemoryPeek(struct qemud_server *server ATTRIBUTE_UNUSED,
     size_t size;
     unsigned int flags;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1164,6 +1259,11 @@ remoteDispatchDomainAttachDevice(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1189,6 +1289,11 @@ remoteDispatchDomainAttachDeviceFlags(struct qemud_server *server ATTRIBUTE_UNUS
                                       void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1216,6 +1321,11 @@ remoteDispatchDomainUpdateDeviceFlags(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1241,6 +1351,11 @@ remoteDispatchDomainCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
                            void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1296,6 +1411,11 @@ remoteDispatchDomainCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = virDomainCreateXML(conn, args->xml_desc, args->flags);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1319,6 +1439,11 @@ remoteDispatchDomainDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = virDomainDefineXML(conn, args->xml);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1341,6 +1466,11 @@ remoteDispatchDomainDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1367,6 +1497,11 @@ remoteDispatchDomainDetachDevice(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1395,6 +1530,11 @@ remoteDispatchDomainDetachDeviceFlags(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1422,6 +1562,11 @@ remoteDispatchDomainDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1448,6 +1593,11 @@ remoteDispatchDomainXmlFromNative(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   remote_domain_xml_from_native_args *args,
                                   remote_domain_xml_from_native_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     /* remoteDispatchClientRequest will free this. */
     ret->domainXml = virConnectDomainXMLFromNative(conn,
                                                    args->nativeFormat,
@@ -1469,6 +1619,11 @@ remoteDispatchDomainXmlToNative(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 remote_domain_xml_to_native_args *args,
                                 remote_domain_xml_to_native_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     /* remoteDispatchClientRequest will free this. */
     ret->nativeConfig = virConnectDomainXMLToNative(conn,
                                                     args->nativeFormat,
@@ -1492,6 +1647,11 @@ remoteDispatchDomainGetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  remote_domain_get_autostart_ret *ret)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1519,6 +1679,11 @@ remoteDispatchDomainGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
     virDomainInfo info;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1554,6 +1719,11 @@ remoteDispatchDomainGetMaxMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1580,6 +1750,11 @@ remoteDispatchDomainGetMaxVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 remote_domain_get_max_vcpus_ret *ret)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1608,6 +1783,11 @@ remoteDispatchDomainGetSecurityLabel(struct qemud_server *server ATTRIBUTE_UNUSE
 {
     virDomainPtr dom;
     virSecurityLabelPtr seclabel;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1654,6 +1834,11 @@ remoteDispatchNodeGetSecurityModel(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virSecurityModel secmodel;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     memset(&secmodel, 0, sizeof secmodel);
     if (virNodeGetSecurityModel(conn, &secmodel) == -1) {
         remoteDispatchConnError(rerr, conn);
@@ -1688,6 +1873,11 @@ remoteDispatchDomainGetOsType(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1718,6 +1908,11 @@ remoteDispatchDomainGetVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
     virVcpuInfoPtr info = NULL;
     unsigned char *cpumaps = NULL;
     int info_len, i;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -1797,6 +1992,11 @@ remoteDispatchDomainGetVcpusFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1828,6 +2028,11 @@ remoteDispatchDomainMigratePrepare(struct qemud_server *server ATTRIBUTE_UNUSED,
     char *uri_in;
     char **uri_out;
     char *dname;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
     dname = args->dname == NULL ? NULL : *args->dname;
@@ -1875,6 +2080,11 @@ remoteDispatchDomainMigratePerform(struct qemud_server *server ATTRIBUTE_UNUSED,
     virDomainPtr dom;
     char *dname;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -1908,7 +2118,11 @@ remoteDispatchDomainMigrateFinish(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   remote_domain_migrate_finish_ret *ret)
 {
     virDomainPtr ddom;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ddom = virDomainMigrateFinish(conn, args->dname,
                                   args->cookie.cookie_val,
@@ -1940,7 +2154,11 @@ remoteDispatchDomainMigratePrepare2(struct qemud_server *server ATTRIBUTE_UNUSED
     char *uri_in;
     char **uri_out;
     char *dname;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
     dname = args->dname == NULL ? NULL : *args->dname;
@@ -1980,7 +2198,11 @@ remoteDispatchDomainMigrateFinish2(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    remote_domain_migrate_finish2_ret *ret)
 {
     virDomainPtr ddom;
-    CHECK_CONN (client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ddom = virDomainMigrateFinish2(conn, args->dname,
                                    args->cookie.cookie_val,
@@ -2011,7 +2233,11 @@ remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_U
     int r;
     char *dname;
     struct qemud_client_stream *stream;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dname = args->dname == NULL ? NULL : *args->dname;
 
@@ -2049,6 +2275,10 @@ remoteDispatchListDefinedDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  remote_list_defined_domains_args *args,
                                  remote_list_defined_domains_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -2085,6 +2315,11 @@ remoteDispatchDomainLookupById(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = virDomainLookupByID(conn, args->id);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2106,6 +2341,11 @@ remoteDispatchDomainLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  remote_domain_lookup_by_name_ret *ret)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = virDomainLookupByName(conn, args->name);
     if (dom == NULL) {
@@ -2129,6 +2369,11 @@ remoteDispatchDomainLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = virDomainLookupByUUID(conn, (unsigned char *) args->uuid);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2149,6 +2394,10 @@ remoteDispatchNumOfDefinedDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   void *args ATTRIBUTE_UNUSED,
                                   remote_num_of_defined_domains_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfDefinedDomains(conn);
     if (ret->num == -1) {
@@ -2170,6 +2419,11 @@ remoteDispatchDomainPinVcpu(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
     int rv;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -2206,6 +2460,11 @@ remoteDispatchDomainReboot(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2230,6 +2489,10 @@ remoteDispatchDomainRestore(struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_domain_restore_args *args,
                             void *ret ATTRIBUTE_UNUSED)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (virDomainRestore(conn, args->from) == -1) {
         remoteDispatchConnError(rerr, conn);
@@ -2249,6 +2512,11 @@ remoteDispatchDomainResume(struct qemud_server *server ATTRIBUTE_UNUSED,
                            void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -2276,6 +2544,11 @@ remoteDispatchDomainSave(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2301,6 +2574,11 @@ remoteDispatchDomainCoreDump(struct qemud_server *server ATTRIBUTE_UNUSED,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -2328,6 +2606,11 @@ remoteDispatchDomainSetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2353,6 +2636,11 @@ remoteDispatchDomainSetMaxMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -2380,6 +2668,11 @@ remoteDispatchDomainSetMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2405,6 +2698,11 @@ remoteDispatchDomainSetMemoryFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -2437,6 +2735,11 @@ remoteDispatchDomainSetMemoryParameters(struct qemud_server *server
     int i, r, nparams;
     virMemoryParameterPtr params;
     unsigned int flags;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     nparams = args->params.params_len;
     flags = args->flags;
@@ -2532,6 +2835,11 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
     virMemoryParameterPtr params;
     int i, r, nparams;
     unsigned int flags;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     nparams = args->nparams;
     flags = args->flags;
@@ -2649,6 +2957,11 @@ remoteDispatchDomainSetBlkioParameters(struct qemud_server *server
     virBlkioParameterPtr params;
     unsigned int flags;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     nparams = args->params.params_len;
     flags = args->flags;
 
@@ -2743,6 +3056,11 @@ remoteDispatchDomainGetBlkioParameters(struct qemud_server *server
     virBlkioParameterPtr params;
     int i, r, nparams;
     unsigned int flags;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     nparams = args->nparams;
     flags = args->flags;
@@ -2854,6 +3172,11 @@ remoteDispatchDomainSetVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2879,6 +3202,11 @@ remoteDispatchDomainSetVcpusFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -2906,6 +3234,11 @@ remoteDispatchDomainShutdown(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2931,6 +3264,11 @@ remoteDispatchDomainSuspend(struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -2958,6 +3296,11 @@ remoteDispatchDomainUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -2982,6 +3325,10 @@ remoteDispatchListDefinedNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   remote_list_defined_networks_args *args,
                                   remote_list_defined_networks_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -3016,6 +3363,10 @@ remoteDispatchListDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
                           remote_list_domains_args *args,
                           remote_list_domains_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -3051,6 +3402,11 @@ remoteDispatchDomainManagedSave(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3076,6 +3432,11 @@ remoteDispatchDomainHasManagedSaveImage(struct qemud_server *server ATTRIBUTE_UN
                                         remote_domain_has_managed_save_image_ret *ret)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -3104,6 +3465,11 @@ remoteDispatchDomainManagedSaveRemove(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3128,6 +3494,10 @@ remoteDispatchListNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
                            remote_list_networks_args *args,
                            remote_list_networks_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -3164,6 +3534,11 @@ remoteDispatchNetworkCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr net;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     net = get_nonnull_network(conn, args->net);
     if (net == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3190,6 +3565,11 @@ remoteDispatchNetworkCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr net;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     net = virNetworkCreateXML(conn, args->xml);
     if (net == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3212,6 +3592,11 @@ remoteDispatchNetworkDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr net;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     net = virNetworkDefineXML(conn, args->xml);
     if (net == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3233,6 +3618,11 @@ remoteDispatchNetworkDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virNetworkPtr net;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     net = get_nonnull_network(conn, args->net);
     if (net == NULL) {
@@ -3259,6 +3649,11 @@ remoteDispatchNetworkDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_network_dump_xml_ret *ret)
 {
     virNetworkPtr net;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     net = get_nonnull_network(conn, args->net);
     if (net == NULL) {
@@ -3288,6 +3683,11 @@ remoteDispatchNetworkGetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr net;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     net = get_nonnull_network(conn, args->net);
     if (net == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3313,6 +3713,11 @@ remoteDispatchNetworkGetBridgeName(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    remote_network_get_bridge_name_ret *ret)
 {
     virNetworkPtr net;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     net = get_nonnull_network(conn, args->net);
     if (net == NULL) {
@@ -3342,6 +3747,11 @@ remoteDispatchNetworkLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr net;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     net = virNetworkLookupByName(conn, args->name);
     if (net == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3364,6 +3774,11 @@ remoteDispatchNetworkLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr net;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     net = virNetworkLookupByUUID(conn, (unsigned char *) args->uuid);
     if (net == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3385,6 +3800,11 @@ remoteDispatchNetworkSetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virNetworkPtr net;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     net = get_nonnull_network(conn, args->net);
     if (net == NULL) {
@@ -3412,6 +3832,11 @@ remoteDispatchNetworkUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr net;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     net = get_nonnull_network(conn, args->net);
     if (net == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3436,6 +3861,10 @@ remoteDispatchNumOfDefinedNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    void *args ATTRIBUTE_UNUSED,
                                    remote_num_of_defined_networks_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfDefinedNetworks(conn);
     if (ret->num == -1) {
@@ -3455,6 +3884,10 @@ remoteDispatchNumOfDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
                            void *args ATTRIBUTE_UNUSED,
                            remote_num_of_domains_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfDomains(conn);
     if (ret->num == -1) {
@@ -3474,6 +3907,10 @@ remoteDispatchNumOfNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *args ATTRIBUTE_UNUSED,
                             remote_num_of_networks_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfNetworks(conn);
     if (ret->num == -1) {
@@ -3495,6 +3932,10 @@ remoteDispatchNumOfInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED,
                               void *args ATTRIBUTE_UNUSED,
                               remote_num_of_interfaces_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfInterfaces(conn);
     if (ret->num == -1) {
@@ -3514,6 +3955,10 @@ remoteDispatchListInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_list_interfaces_args *args,
                              remote_list_interfaces_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_INTERFACE_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -3548,6 +3993,10 @@ remoteDispatchNumOfDefinedInterfaces(struct qemud_server *server ATTRIBUTE_UNUSE
                                      void *args ATTRIBUTE_UNUSED,
                                      remote_num_of_defined_interfaces_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfDefinedInterfaces(conn);
     if (ret->num == -1) {
@@ -3567,6 +4016,10 @@ remoteDispatchListDefinedInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED
                                     remote_list_defined_interfaces_args *args,
                                     remote_list_defined_interfaces_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -3603,6 +4056,11 @@ remoteDispatchInterfaceLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED
 {
     virInterfacePtr iface;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     iface = virInterfaceLookupByName(conn, args->name);
     if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3625,6 +4083,11 @@ remoteDispatchInterfaceLookupByMacString(struct qemud_server *server ATTRIBUTE_U
 {
     virInterfacePtr iface;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     iface = virInterfaceLookupByMACString(conn, args->mac);
     if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3646,6 +4109,11 @@ remoteDispatchInterfaceGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   remote_interface_get_xml_desc_ret *ret)
 {
     virInterfacePtr iface;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     iface = get_nonnull_interface(conn, args->iface);
     if (iface == NULL) {
@@ -3675,6 +4143,11 @@ remoteDispatchInterfaceDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virInterfacePtr iface;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     iface = virInterfaceDefineXML(conn, args->xml, args->flags);
     if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3696,6 +4169,11 @@ remoteDispatchInterfaceUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 void *ret ATTRIBUTE_UNUSED)
 {
     virInterfacePtr iface;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     iface = get_nonnull_interface(conn, args->iface);
     if (iface == NULL) {
@@ -3723,6 +4201,11 @@ remoteDispatchInterfaceCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virInterfacePtr iface;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     iface = get_nonnull_interface(conn, args->iface);
     if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -3748,6 +4231,11 @@ remoteDispatchInterfaceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
                                void *ret ATTRIBUTE_UNUSED)
 {
     virInterfacePtr iface;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     iface = get_nonnull_interface(conn, args->iface);
     if (iface == NULL) {
@@ -4572,6 +5060,10 @@ remoteDispatchListDefinedStoragePools(struct qemud_server *server ATTRIBUTE_UNUS
                                       remote_list_defined_storage_pools_args *args,
                                       remote_list_defined_storage_pools_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr, "%s",
@@ -4606,6 +5098,10 @@ remoteDispatchListStoragePools(struct qemud_server *server ATTRIBUTE_UNUSED,
                                remote_list_storage_pools_args *args,
                                remote_list_storage_pools_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -4640,6 +5136,11 @@ remoteDispatchFindStoragePoolSources(struct qemud_server *server ATTRIBUTE_UNUSE
                                      remote_find_storage_pool_sources_args *args,
                                      remote_find_storage_pool_sources_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     ret->xml =
         virConnectFindStoragePoolSources(conn,
                                          args->type,
@@ -4664,6 +5165,11 @@ remoteDispatchStoragePoolCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
@@ -4691,6 +5197,11 @@ remoteDispatchStoragePoolCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = virStoragePoolCreateXML(conn, args->xml, args->flags);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -4713,6 +5224,11 @@ remoteDispatchStoragePoolDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = virStoragePoolDefineXML(conn, args->xml, args->flags);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -4734,6 +5250,11 @@ remoteDispatchStoragePoolBuild(struct qemud_server *server ATTRIBUTE_UNUSED,
                                void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
@@ -4762,6 +5283,11 @@ remoteDispatchStoragePoolDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -4787,6 +5313,11 @@ remoteDispatchStoragePoolDelete(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
@@ -4814,6 +5345,11 @@ remoteDispatchStoragePoolRefresh(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -4840,6 +5376,11 @@ remoteDispatchStoragePoolGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStoragePoolPtr pool;
     virStoragePoolInfo info;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
@@ -4874,6 +5415,11 @@ remoteDispatchStoragePoolDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -4902,6 +5448,11 @@ remoteDispatchStoragePoolGetAutostart(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -4929,6 +5480,11 @@ remoteDispatchStoragePoolLookupByName(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = virStoragePoolLookupByName(conn, args->name);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -4950,6 +5506,11 @@ remoteDispatchStoragePoolLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUS
                                       remote_storage_pool_lookup_by_uuid_ret *ret)
 {
     virStoragePoolPtr pool;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     pool = virStoragePoolLookupByUUID(conn, (unsigned char *) args->uuid);
     if (pool == NULL) {
@@ -4973,6 +5534,11 @@ remoteDispatchStoragePoolLookupByVolume(struct qemud_server *server ATTRIBUTE_UN
 {
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
@@ -5004,6 +5570,11 @@ remoteDispatchStoragePoolSetAutostart(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5030,6 +5601,11 @@ remoteDispatchStoragePoolUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5054,6 +5630,10 @@ remoteDispatchNumOfStoragePools(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 void *args ATTRIBUTE_UNUSED,
                                 remote_num_of_storage_pools_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfStoragePools(conn);
     if (ret->num == -1) {
@@ -5073,6 +5653,10 @@ remoteDispatchNumOfDefinedStoragePools(struct qemud_server *server ATTRIBUTE_UNU
                                        void *args ATTRIBUTE_UNUSED,
                                        remote_num_of_defined_storage_pools_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfDefinedStoragePools(conn);
     if (ret->num == -1) {
@@ -5093,6 +5677,11 @@ remoteDispatchStoragePoolListVolumes(struct qemud_server *server ATTRIBUTE_UNUSE
                                      remote_storage_pool_list_volumes_ret *ret)
 {
     virStoragePoolPtr pool;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -5139,6 +5728,11 @@ remoteDispatchStoragePoolNumOfVolumes(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5175,6 +5769,11 @@ remoteDispatchStorageVolCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5205,6 +5804,11 @@ remoteDispatchStorageVolCreateXmlFrom(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virStoragePoolPtr pool;
     virStorageVolPtr clonevol, newvol;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
@@ -5246,6 +5850,11 @@ remoteDispatchStorageVolDelete(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStorageVolPtr vol;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5272,6 +5881,11 @@ remoteDispatchStorageVolWipe(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     int retval = -1;
     virStorageVolPtr vol;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
@@ -5305,6 +5919,11 @@ remoteDispatchStorageVolGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
     virStorageVolPtr vol;
     virStorageVolInfo info;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5337,6 +5956,11 @@ remoteDispatchStorageVolDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virStorageVolPtr vol;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5365,6 +5989,11 @@ remoteDispatchStorageVolGetPath(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 remote_storage_vol_get_path_ret *ret)
 {
     virStorageVolPtr vol;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
@@ -5396,6 +6025,11 @@ remoteDispatchStorageVolLookupByName(struct qemud_server *server ATTRIBUTE_UNUSE
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5426,6 +6060,11 @@ remoteDispatchStorageVolLookupByKey(struct qemud_server *server ATTRIBUTE_UNUSED
 {
     virStorageVolPtr vol;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     vol = virStorageVolLookupByKey(conn, args->key);
     if (vol == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5448,6 +6087,11 @@ remoteDispatchStorageVolLookupByPath(struct qemud_server *server ATTRIBUTE_UNUSE
                                      remote_storage_vol_lookup_by_path_ret *ret)
 {
     virStorageVolPtr vol;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     vol = virStorageVolLookupByPath(conn, args->path);
     if (vol == NULL) {
@@ -5474,7 +6118,10 @@ remoteDispatchNodeNumOfDevices(struct qemud_server *server ATTRIBUTE_UNUSED,
                                remote_node_num_of_devices_args *args,
                                remote_node_num_of_devices_ret *ret)
 {
-    CHECK_CONN(client);
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virNodeNumOfDevices(conn,
                                    args->cap ? *args->cap : NULL,
@@ -5497,7 +6144,10 @@ remoteDispatchNodeListDevices(struct qemud_server *server ATTRIBUTE_UNUSED,
                               remote_node_list_devices_args *args,
                               remote_node_list_devices_ret *ret)
 {
-    CHECK_CONN(client);
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -5536,7 +6186,10 @@ remoteDispatchNodeDeviceLookupByName(struct qemud_server *server ATTRIBUTE_UNUSE
 {
     virNodeDevicePtr dev;
 
-    CHECK_CONN(client);
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5560,7 +6213,11 @@ remoteDispatchNodeDeviceDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 remote_node_device_dump_xml_ret *ret)
 {
     virNodeDevicePtr dev;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5591,7 +6248,11 @@ remoteDispatchNodeDeviceGetParent(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNodeDevicePtr dev;
     const char *parent;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5635,7 +6296,11 @@ remoteDispatchNodeDeviceNumOfCaps(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   remote_node_device_num_of_caps_ret *ret)
 {
     virNodeDevicePtr dev;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5665,7 +6330,11 @@ remoteDispatchNodeDeviceListCaps(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  remote_node_device_list_caps_ret *ret)
 {
     virNodeDevicePtr dev;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5712,7 +6381,11 @@ remoteDispatchNodeDeviceDettach(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 void *ret ATTRIBUTE_UNUSED)
 {
     virNodeDevicePtr dev;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5741,7 +6414,11 @@ remoteDispatchNodeDeviceReAttach(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  void *ret ATTRIBUTE_UNUSED)
 {
     virNodeDevicePtr dev;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5770,7 +6447,11 @@ remoteDispatchNodeDeviceReset(struct qemud_server *server ATTRIBUTE_UNUSED,
                               void *ret ATTRIBUTE_UNUSED)
 {
     virNodeDevicePtr dev;
-    CHECK_CONN(client);
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5800,6 +6481,11 @@ remoteDispatchNodeDeviceCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNodeDevicePtr dev;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dev = virNodeDeviceCreateXML(conn, args->xml_desc, args->flags);
     if (dev == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -5823,6 +6509,11 @@ remoteDispatchNodeDeviceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 void *ret ATTRIBUTE_UNUSED)
 {
     virNodeDevicePtr dev;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
@@ -5850,6 +6541,11 @@ static int remoteDispatchStorageVolUpload(struct qemud_server *server ATTRIBUTE_
     int rv = -1;
     struct qemud_client_stream *stream = NULL;
     virStorageVolPtr vol;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
@@ -5897,6 +6593,11 @@ static int remoteDispatchStorageVolDownload(struct qemud_server *server ATTRIBUT
     int rv = -1;
     struct qemud_client_stream *stream = NULL;
     virStorageVolPtr vol;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
     if (vol == NULL) {
@@ -5946,8 +6647,12 @@ remoteDispatchDomainEventsRegister(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    void *args ATTRIBUTE_UNUSED,
                                    remote_domain_events_register_ret *ret ATTRIBUTE_UNUSED)
 {
-    CHECK_CONN(client);
     int callbackID;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] != -1) {
         remoteDispatchFormatError(rerr, _("domain event %d already registered"), VIR_DOMAIN_EVENT_ID_LIFECYCLE);
@@ -5977,7 +6682,10 @@ remoteDispatchDomainEventsDeregister(struct qemud_server *server ATTRIBUTE_UNUSE
                                      void *args ATTRIBUTE_UNUSED,
                                      remote_domain_events_deregister_ret *ret ATTRIBUTE_UNUSED)
 {
-    CHECK_CONN(client);
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] == -1) {
         remoteDispatchFormatError(rerr, _("domain event %d not registered"), VIR_DOMAIN_EVENT_ID_LIFECYCLE);
@@ -6067,6 +6775,11 @@ remoteDispatchNumOfSecrets(struct qemud_server *server ATTRIBUTE_UNUSED,
                            void *args ATTRIBUTE_UNUSED,
                            remote_num_of_secrets_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     ret->num = virConnectNumOfSecrets(conn);
     if (ret->num == -1) {
         remoteDispatchConnError(rerr, conn);
@@ -6085,6 +6798,11 @@ remoteDispatchListSecrets(struct qemud_server *server ATTRIBUTE_UNUSED,
                           remote_list_secrets_args *args,
                           remote_list_secrets_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     if (args->maxuuids > REMOTE_SECRET_UUID_LIST_MAX) {
         remoteDispatchFormatError(rerr, "%s",
                                    _("maxuuids > REMOTE_SECRET_UUID_LIST_MAX"));
@@ -6118,6 +6836,11 @@ remoteDispatchSecretDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virSecretPtr secret;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     secret = virSecretDefineXML(conn, args->xml, args->flags);
     if (secret == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6141,6 +6864,11 @@ remoteDispatchSecretGetValue(struct qemud_server *server ATTRIBUTE_UNUSED,
     virSecretPtr secret;
     size_t value_size;
     unsigned char *value;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     secret = get_nonnull_secret(conn, args->secret);
     if (secret == NULL) {
@@ -6172,6 +6900,11 @@ remoteDispatchSecretGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virSecretPtr secret;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     secret = get_nonnull_secret(conn, args->secret);
     if (secret == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6198,6 +6931,11 @@ remoteDispatchSecretLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virSecretPtr secret;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     secret = virSecretLookupByUUID(conn, (unsigned char *)args->uuid);
     if (secret == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6219,6 +6957,11 @@ remoteDispatchSecretSetValue(struct qemud_server *server ATTRIBUTE_UNUSED,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virSecretPtr secret;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     secret = get_nonnull_secret(conn, args->secret);
     if (secret == NULL) {
@@ -6247,6 +6990,11 @@ remoteDispatchSecretUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virSecretPtr secret;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     secret = get_nonnull_secret(conn, args->secret);
     if (secret == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6273,6 +7021,11 @@ remoteDispatchSecretLookupByUsage(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virSecretPtr secret;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     secret = virSecretLookupByUsage(conn, args->usageType, args->usageID);
     if (secret == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6294,6 +7047,11 @@ static int remoteDispatchDomainIsActive(struct qemud_server *server ATTRIBUTE_UN
                                         remote_domain_is_active_ret *ret)
 {
     virDomainPtr domain;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     domain = get_nonnull_domain(conn, args->dom);
     if (domain == NULL) {
@@ -6323,6 +7081,11 @@ static int remoteDispatchDomainIsPersistent(struct qemud_server *server ATTRIBUT
 {
     virDomainPtr domain;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     domain = get_nonnull_domain(conn, args->dom);
     if (domain == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6350,6 +7113,11 @@ static int remoteDispatchDomainIsUpdated(struct qemud_server *server ATTRIBUTE_U
                                             remote_domain_is_updated_ret *ret)
 {
     virDomainPtr domain;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     domain = get_nonnull_domain(conn, args->dom);
     if (domain == NULL) {
@@ -6379,6 +7147,11 @@ static int remoteDispatchInterfaceIsActive(struct qemud_server *server ATTRIBUTE
 {
     virInterfacePtr iface;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     iface = get_nonnull_interface(conn, args->iface);
     if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6406,6 +7179,11 @@ static int remoteDispatchNetworkIsActive(struct qemud_server *server ATTRIBUTE_U
                                          remote_network_is_active_ret *ret)
 {
     virNetworkPtr network;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     network = get_nonnull_network(conn, args->net);
     if (network == NULL) {
@@ -6435,6 +7213,11 @@ static int remoteDispatchNetworkIsPersistent(struct qemud_server *server ATTRIBU
 {
     virNetworkPtr network;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     network = get_nonnull_network(conn, args->net);
     if (network == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6462,6 +7245,11 @@ static int remoteDispatchStoragePoolIsActive(struct qemud_server *server ATTRIBU
                                              remote_storage_pool_is_active_ret *ret)
 {
     virStoragePoolPtr pool;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
@@ -6491,6 +7279,11 @@ static int remoteDispatchStoragePoolIsPersistent(struct qemud_server *server ATT
 {
     virStoragePoolPtr pool;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     pool = get_nonnull_storage_pool(conn, args->pool);
     if (pool == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6518,6 +7311,11 @@ static int remoteDispatchIsSecure(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   void *args ATTRIBUTE_UNUSED,
                                   remote_is_secure_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     ret->secure = virConnectIsSecure(conn);
 
     if (ret->secure < 0) {
@@ -6540,6 +7338,11 @@ remoteDispatchCpuCompare(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     int result;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     result = virConnectCompareCPU(conn, args->xml, args->flags);
     if (result == VIR_CPU_COMPARE_ERROR) {
         remoteDispatchConnError(rerr, conn);
@@ -6561,6 +7364,11 @@ remoteDispatchCpuBaseline(struct qemud_server *server ATTRIBUTE_UNUSED,
                           remote_cpu_baseline_ret *ret)
 {
     char *cpu;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     cpu = virConnectBaselineCPU(conn,
                                 (const char **) args->xmlCPUs.xmlCPUs_val,
@@ -6588,6 +7396,11 @@ remoteDispatchDomainGetJobInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
     virDomainJobInfo info;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -6631,6 +7444,11 @@ remoteDispatchDomainAbortJob(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6660,6 +7478,11 @@ remoteDispatchDomainMigrateSetMaxDowntime(struct qemud_server *server ATTRIBUTE_
 {
     virDomainPtr dom;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6687,6 +7510,11 @@ remoteDispatchDomainMigrateSetMaxSpeed(struct qemud_server *server ATTRIBUTE_UNU
                                        void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -6716,6 +7544,11 @@ remoteDispatchDomainSnapshotCreateXml(struct qemud_server *server ATTRIBUTE_UNUS
 {
     virDomainSnapshotPtr snapshot;
     virDomainPtr domain;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     domain = get_nonnull_domain(conn, args->domain);
     if (domain == NULL) {
@@ -6750,6 +7583,11 @@ remoteDispatchDomainSnapshotDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED
     virDomainPtr domain = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     int rc = -1;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     domain = get_nonnull_domain(conn, args->snap.domain);
     if (domain == NULL)
@@ -6788,6 +7626,11 @@ remoteDispatchDomainSnapshotNum(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr domain;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     domain = get_nonnull_domain(conn, args->domain);
     if (domain == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6816,6 +7659,11 @@ remoteDispatchDomainSnapshotListNames(struct qemud_server *server ATTRIBUTE_UNUS
                                       remote_domain_snapshot_list_names_ret *ret)
 {
     virDomainPtr domain;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->nameslen > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
         remoteDispatchFormatError(rerr, "%s",
@@ -6864,6 +7712,11 @@ remoteDispatchDomainSnapshotLookupByName(struct qemud_server *server ATTRIBUTE_U
     virDomainSnapshotPtr snapshot;
     virDomainPtr domain;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     domain = get_nonnull_domain(conn, args->domain);
     if (domain == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6897,6 +7750,11 @@ remoteDispatchDomainHasCurrentSnapshot(struct qemud_server *server ATTRIBUTE_UNU
     virDomainPtr domain;
     int result;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     domain = get_nonnull_domain(conn, args->domain);
     if (domain == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -6928,6 +7786,11 @@ remoteDispatchDomainSnapshotCurrent(struct qemud_server *server ATTRIBUTE_UNUSED
 {
     virDomainSnapshotPtr snapshot;
     virDomainPtr domain;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     domain = get_nonnull_domain(conn, args->domain);
     if (domain == NULL) {
@@ -6962,6 +7825,11 @@ remoteDispatchDomainRevertToSnapshot(struct qemud_server *server ATTRIBUTE_UNUSE
     virDomainPtr domain = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     int rc = -1;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     domain = get_nonnull_domain(conn, args->snap.domain);
     if (domain == NULL)
@@ -7000,6 +7868,11 @@ remoteDispatchDomainSnapshotDelete(struct qemud_server *server ATTRIBUTE_UNUSED,
     virDomainSnapshotPtr snapshot = NULL;
     int rc = -1;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     domain = get_nonnull_domain(conn, args->snap.domain);
     if (domain == NULL)
         goto cleanup;
@@ -7034,8 +7907,12 @@ remoteDispatchDomainEventsRegisterAny(struct qemud_server *server ATTRIBUTE_UNUS
                                       remote_domain_events_register_any_args *args,
                                       void *ret ATTRIBUTE_UNUSED)
 {
-    CHECK_CONN(client);
     int callbackID;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->eventID >= VIR_DOMAIN_EVENT_ID_LAST ||
         args->eventID < 0) {
@@ -7072,8 +7949,12 @@ remoteDispatchDomainEventsDeregisterAny(struct qemud_server *server ATTRIBUTE_UN
                                         remote_domain_events_deregister_any_args *args,
                                         void *ret ATTRIBUTE_UNUSED)
 {
-    CHECK_CONN(client);
     int callbackID = -1;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->eventID >= VIR_DOMAIN_EVENT_ID_LAST ||
         args->eventID < 0) {
@@ -7109,6 +7990,11 @@ remoteDispatchNwfilterLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNWFilterPtr nwfilter;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     nwfilter = virNWFilterLookupByName(conn, args->name);
     if (nwfilter == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -7130,6 +8016,11 @@ remoteDispatchNwfilterLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    remote_nwfilter_lookup_by_uuid_ret *ret)
 {
     virNWFilterPtr nwfilter;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     nwfilter = virNWFilterLookupByUUID(conn, (unsigned char *) args->uuid);
     if (nwfilter == NULL) {
@@ -7154,6 +8045,11 @@ remoteDispatchNwfilterDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNWFilterPtr nwfilter;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     nwfilter = virNWFilterDefineXML(conn, args->xml);
     if (nwfilter == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -7176,6 +8072,11 @@ remoteDispatchNwfilterUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
                                void *ret ATTRIBUTE_UNUSED)
 {
     virNWFilterPtr nwfilter;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     nwfilter = get_nonnull_nwfilter(conn, args->nwfilter);
     if (nwfilter == NULL) {
@@ -7201,6 +8102,10 @@ remoteDispatchListNwfilters(struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_list_nwfilters_args *args,
                             remote_list_nwfilters_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     if (args->maxnames > REMOTE_NWFILTER_NAME_LIST_MAX) {
         remoteDispatchFormatError(rerr,
@@ -7238,6 +8143,11 @@ remoteDispatchNwfilterGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virNWFilterPtr nwfilter;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     nwfilter = get_nonnull_nwfilter(conn, args->nwfilter);
     if (nwfilter == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -7265,6 +8175,10 @@ remoteDispatchNumOfNwfilters(struct qemud_server *server ATTRIBUTE_UNUSED,
                              void *args ATTRIBUTE_UNUSED,
                              remote_num_of_nwfilters_ret *ret)
 {
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     ret->num = virConnectNumOfNWFilters(conn);
     if (ret->num == -1) {
@@ -7287,6 +8201,11 @@ remoteDispatchDomainGetBlockInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom;
     virDomainBlockInfo info;
+
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->dom);
     if (dom == NULL) {
@@ -7320,6 +8239,11 @@ qemuDispatchMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     virDomainPtr domain;
 
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
+
     domain = get_nonnull_domain(conn, args->domain);
     if (domain == NULL) {
         remoteDispatchConnError(rerr, conn);
@@ -7352,7 +8276,10 @@ remoteDispatchDomainOpenConsole(struct qemud_server *server ATTRIBUTE_UNUSED,
     struct qemud_client_stream *stream;
     virDomainPtr dom;
 
-    CHECK_CONN (client);
+    if (!conn) {
+        remoteDispatchFormatError(rerr, "%s", _("connection not open"));
+        return -1;
+    }
 
     dom = get_nonnull_domain(conn, args->domain);
     if (dom == NULL) {
