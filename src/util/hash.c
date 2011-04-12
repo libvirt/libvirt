@@ -585,10 +585,18 @@ int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
         while (entry) {
             virHashEntryPtr next = entry->next;
             if (entry->valid) {
+                void *name = (entry == table->table + i) ? entry->name : NULL;
+
                 table->current = entry;
                 iter(entry->payload, entry->name, data);
                 table->current = NULL;
                 count++;
+
+                /* revisit current entry if it was the first one in collision
+                 * list and its content changed, i.e. it was deleted by iter()
+                 */
+                if (name && name != entry->name)
+                    continue;
             }
             entry = next;
         }
