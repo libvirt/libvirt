@@ -1130,53 +1130,6 @@ struct _virDomainClockDef {
 # define VIR_DOMAIN_CPUMASK_LEN 1024
 
 
-/* Snapshot state */
-typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
-typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
-struct _virDomainSnapshotDef {
-    char *name;
-    char *description;
-    char *parent;
-    long long creationTime; /* in seconds */
-    int state;
-
-    long active;
-};
-
-typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
-typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
-struct _virDomainSnapshotObj {
-    virDomainSnapshotDefPtr def;
-};
-
-typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
-typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
-struct _virDomainSnapshotObjList {
-    /* name string -> virDomainSnapshotObj  mapping
-     * for O(1), lockless lookup-by-name */
-    virHashTable *objs;
-};
-
-virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
-                                                        int newSnapshot);
-void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
-char *virDomainSnapshotDefFormat(char *domain_uuid,
-                                 virDomainSnapshotDefPtr def,
-                                 int internal);
-virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                   const virDomainSnapshotDefPtr def);
-
-int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr objs);
-int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     char **const names, int maxnames);
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots);
-virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
-                                                    const char *name);
-void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
-                                    virDomainSnapshotObjPtr snapshot);
-int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
-                                virDomainSnapshotObjListPtr snapshots);
-
 typedef struct _virDomainVcpuPinDef virDomainVcpuPinDef;
 typedef virDomainVcpuPinDef *virDomainVcpuPinDefPtr;
 struct _virDomainVcpuPinDef {
@@ -1329,6 +1282,53 @@ enum virDomainTaintFlags {
 
     VIR_DOMAIN_TAINT_LAST
 };
+
+/* Snapshot state */
+typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
+typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
+struct _virDomainSnapshotDef {
+    char *name;
+    char *description;
+    char *parent;
+    long long creationTime; /* in seconds */
+    int state;
+
+    long active;
+};
+
+typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
+typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
+struct _virDomainSnapshotObj {
+    virDomainSnapshotDefPtr def;
+};
+
+typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
+typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
+struct _virDomainSnapshotObjList {
+    /* name string -> virDomainSnapshotObj  mapping
+     * for O(1), lockless lookup-by-name */
+    virHashTable *objs;
+};
+
+virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
+                                                        int newSnapshot);
+void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
+char *virDomainSnapshotDefFormat(char *domain_uuid,
+                                 virDomainSnapshotDefPtr def,
+                                 int internal);
+virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
+                                                   const virDomainSnapshotDefPtr def);
+
+int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr objs);
+int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
+                                     char **const names, int maxnames);
+int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots);
+virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
+                                                    const char *name);
+void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
+                                    virDomainSnapshotObjPtr snapshot);
+int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
+                                virDomainSnapshotObjListPtr snapshots);
 
 /* Guest VM runtime state */
 typedef struct _virDomainStateReason virDomainStateReason;
