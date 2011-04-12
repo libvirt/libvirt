@@ -10672,8 +10672,9 @@ remoteIOEventLoop(virConnectPtr conn,
                  */
                 VIR_DEBUG("Waking up sleep %d %p %p", tmp->proc_nr, tmp, priv->waitDispatch);
                 virCondSignal(&tmp->cond);
+            } else {
+                prev = tmp;
             }
-            prev = tmp;
             tmp = tmp->next;
         }
 
