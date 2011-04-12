@@ -50,14 +50,13 @@ struct _virHashEntry {
     struct _virHashEntry *next;
     void *name;
     void *payload;
-    int valid;
 };
 
 /*
  * The entire hash table
  */
 struct _virHashTable {
-    struct _virHashEntry *table;
+    virHashEntryPtr *table;
     int size;
     int nbElems;
     /* True iff we are iterating over hash entries. */
@@ -165,7 +164,7 @@ virHashTablePtr virHashCreateFull(int size,
  *
  * Create a new virHashTablePtr.
  *
- * Returns the newly created object, or NULL if an error occured.
+ * Returns the newly created object, or NULL if an error occurred.
  */
 virHashTablePtr virHashCreate(int size, virHashDataFree dataFree)
 {
@@ -189,10 +188,8 @@ virHashTablePtr virHashCreate(int size, virHashDataFree dataFree)
 static int
 virHashGrow(virHashTablePtr table, int size)
 {
-    unsigned long key;
     int oldsize, i;
-    virHashEntryPtr iter, next;
-    struct _virHashEntry *oldtable;
+    virHashEntryPtr *oldtable;
 
 #ifdef DEBUG_GROW
     unsigned long nbElem = 0;
@@ -217,43 +214,18 @@ virHashGrow(virHashTablePtr table, int size)
     }
     table->size = size;
 
-    /* If the two loops are merged, there would be situations where
-     * a new entry needs to allocated and data copied into it from
-     * the main table. So instead, we run through the array twice, first
-     * copying all the elements in the main array (where we can't get
-     * conflicts) and then the rest, so we only free (and don't allocate)
-     */
     for (i = 0; i < oldsize; i++) {
-        if (oldtable[i].valid == 0)
-            continue;
-        key = virHashComputeKey(table, oldtable[i].name);
-        memcpy(&(table->table[key]), &(oldtable[i]), sizeof(virHashEntry));
-        table->table[key].next = NULL;
-    }
-
-    for (i = 0; i < oldsize; i++) {
-        iter = oldtable[i].next;
+        virHashEntryPtr iter = oldtable[i];
         while (iter) {
-            next = iter->next;
+            virHashEntryPtr next = iter->next;
+            unsigned long key = virHashComputeKey(table, iter->name);
 
-            /*
-             * put back the entry in the new table
-             */
-
-            key = virHashComputeKey(table, iter->name);
-            if (table->table[key].valid == 0) {
-                memcpy(&(table->table[key]), iter, sizeof(virHashEntry));
-                table->table[key].next = NULL;
-                VIR_FREE(iter);
-            } else {
-                iter->next = table->table[key].next;
-                table->table[key].next = iter;
-            }
+            iter->next = table->table[key];
+            table->table[key] = iter;
 
 #ifdef DEBUG_GROW
             nbElem++;
 #endif
-
             iter = next;
         }
     }
@@ -279,36 +251,24 @@ void
 virHashFree(virHashTablePtr table)
 {
     int i;
-    virHashEntryPtr iter;
-    virHashEntryPtr next;
-    int inside_table = 0;
-    int nbElems;
 
     if (table == NULL)
         return;
-    if (table->table) {
-        nbElems = table->nbElems;
-        for (i = 0; (i < table->size) && (nbElems > 0); i++) {
-            iter = &(table->table[i]);
-            if (iter->valid == 0)
-                continue;
-            inside_table = 1;
-            while (iter) {
-                next = iter->next;
-                if ((table->dataFree != NULL) && (iter->payload != NULL))
-                    table->dataFree(iter->payload, iter->name);
-                if (table->keyFree)
-                    table->keyFree(iter->name);
-                iter->payload = NULL;
-                if (!inside_table)
-                    VIR_FREE(iter);
-                nbElems--;
-                inside_table = 0;
-                iter = next;
-            }
+
+    for (i = 0; i < table->size; i++) {
+        virHashEntryPtr iter = table->table[i];
+        while (iter) {
+            virHashEntryPtr next = iter->next;
+
+            if (table->dataFree)
+                table->dataFree(iter->payload, iter->name);
+            if (table->keyFree)
+                table->keyFree(iter->name);
+            VIR_FREE(iter);
+            iter = next;
         }
-        VIR_FREE(table->table);
     }
+
     VIR_FREE(table);
 }
 
@@ -319,9 +279,7 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
 {
     unsigned long key, len = 0;
     virHashEntryPtr entry;
-    virHashEntryPtr insert;
     char *new_name;
-    bool found;
 
     if ((table == NULL) || (name == NULL))
         return (-1);
@@ -329,67 +287,40 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
     if (table->iterating)
         virHashIterationError(-1);
 
-    /*
-     * Check for duplicate and insertion location.
-     */
-    found = false;
     key = virHashComputeKey(table, name);
-    if (table->table[key].valid == 0) {
-        insert = NULL;
-    } else {
-        for (insert = &(table->table[key]); insert->next != NULL;
-             insert = insert->next) {
-            if (table->keyEqual(insert->name, name)) {
-                found = true;
-                break;
+
+    /* Check for duplicate entry */
+    for (entry = table->table[key]; entry; entry = entry->next) {
+        if (table->keyEqual(entry->name, name)) {
+            if (is_update) {
+                if (table->dataFree)
+                    table->dataFree(entry->payload, entry->name);
+                entry->payload = userdata;
+                return 0;
+            } else {
+                return -1;
             }
-            len++;
         }
-        if (table->keyEqual(insert->name, name))
-            found = true;
+        len++;
     }
 
-    if (found) {
-        if (is_update) {
-            if (table->dataFree)
-                table->dataFree(insert->payload, insert->name);
-            insert->payload = userdata;
-            return (0);
-        } else {
-            return (-1);
-        }
-    }
-
-    if (insert == NULL) {
-        entry = &(table->table[key]);
-    } else {
-        if (VIR_ALLOC(entry) < 0) {
-            virReportOOMError();
-            return (-1);
-        }
-    }
-
-    new_name = table->keyCopy(name);
-    if (new_name == NULL) {
+    if (VIR_ALLOC(entry) < 0 || !(new_name = table->keyCopy(name))) {
         virReportOOMError();
-        if (insert != NULL)
-            VIR_FREE(entry);
-        return (-1);
+        VIR_FREE(entry);
+        return -1;
     }
+
     entry->name = new_name;
     entry->payload = userdata;
-    entry->next = NULL;
-    entry->valid = 1;
-
-    if (insert != NULL)
-        insert->next = entry;
+    entry->next = table->table[key];
+    table->table[key] = entry;
 
     table->nbElems++;
 
     if (len > MAX_HASH_LEN)
         virHashGrow(table, MAX_HASH_LEN * table->size);
 
-    return (0);
+    return 0;
 }
 
 /**
@@ -443,18 +374,15 @@ virHashLookup(virHashTablePtr table, const void *name)
     unsigned long key;
     virHashEntryPtr entry;
 
-    if (table == NULL)
-        return (NULL);
-    if (name == NULL)
-        return (NULL);
+    if (!table || !name)
+        return NULL;
+
     key = virHashComputeKey(table, name);
-    if (table->table[key].valid == 0)
-        return (NULL);
-    for (entry = &(table->table[key]); entry != NULL; entry = entry->next) {
+    for (entry = table->table[key]; entry; entry = entry->next) {
         if (table->keyEqual(entry->name, name))
-            return (entry->payload);
+            return entry->payload;
     }
-    return (NULL);
+    return NULL;
 }
 
 
@@ -530,47 +458,31 @@ virHashTableSize(virHashTablePtr table)
 int
 virHashRemoveEntry(virHashTablePtr table, const void *name)
 {
-    unsigned long key;
     virHashEntryPtr entry;
-    virHashEntryPtr prev = NULL;
+    virHashEntryPtr *nextptr;
 
     if (table == NULL || name == NULL)
         return (-1);
 
-    key = virHashComputeKey(table, name);
-    if (table->table[key].valid == 0) {
-        return (-1);
-    } else {
-        for (entry = &(table->table[key]); entry != NULL;
-             entry = entry->next) {
-            if (table->keyEqual(entry->name, name)) {
-                if (table->iterating && table->current != entry)
-                    virHashIterationError(-1);
-                if (table->dataFree && (entry->payload != NULL))
-                    table->dataFree(entry->payload, entry->name);
-                entry->payload = NULL;
-                if (table->keyFree)
-                    table->keyFree(entry->name);
-                if (prev) {
-                    prev->next = entry->next;
-                    VIR_FREE(entry);
-                } else {
-                    if (entry->next == NULL) {
-                        entry->valid = 0;
-                    } else {
-                        entry = entry->next;
-                        memcpy(&(table->table[key]), entry,
-                               sizeof(virHashEntry));
-                        VIR_FREE(entry);
-                    }
-                }
-                table->nbElems--;
-                return (0);
-            }
-            prev = entry;
+    nextptr = table->table + virHashComputeKey(table, name);
+    for (entry = *nextptr; entry; entry = entry->next) {
+        if (table->keyEqual(entry->name, name)) {
+            if (table->iterating && table->current != entry)
+                virHashIterationError(-1);
+
+            if (table->dataFree)
+                table->dataFree(entry->payload, entry->name);
+            if (table->keyFree)
+                table->keyFree(entry->name);
+            *nextptr = entry->next;
+            VIR_FREE(entry);
+            table->nbElems--;
+            return 0;
         }
-        return (-1);
+        nextptr = &entry->next;
     }
+
+    return -1;
 }
 
 
@@ -599,23 +511,15 @@ int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
     table->iterating = true;
     table->current = NULL;
     for (i = 0 ; i < table->size ; i++) {
-        virHashEntryPtr entry = table->table + i;
+        virHashEntryPtr entry = table->table[i];
         while (entry) {
             virHashEntryPtr next = entry->next;
-            if (entry->valid) {
-                void *name = (entry == table->table + i) ? entry->name : NULL;
 
-                table->current = entry;
-                iter(entry->payload, entry->name, data);
-                table->current = NULL;
-                count++;
+            table->current = entry;
+            iter(entry->payload, entry->name, data);
+            table->current = NULL;
 
-                /* revisit current entry if it was the first one in collision
-                 * list and its content changed, i.e. it was deleted by iter()
-                 */
-                if (name && name != entry->name)
-                    continue;
-            }
+            count++;
             entry = next;
         }
     }
@@ -638,7 +542,10 @@ int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
  *
  * Returns number of items removed on success, -1 on failure
  */
-int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data) {
+int virHashRemoveSet(virHashTablePtr table,
+                     virHashSearcher iter,
+                     const void *data)
+{
     int i, count = 0;
 
     if (table == NULL || iter == NULL)
@@ -650,44 +557,27 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *da
     table->iterating = true;
     table->current = NULL;
     for (i = 0 ; i < table->size ; i++) {
-        virHashEntryPtr prev = NULL;
-        virHashEntryPtr entry = &(table->table[i]);
+        virHashEntryPtr *nextptr = table->table + i;
 
-        while (entry && entry->valid) {
-            if (iter(entry->payload, entry->name, data)) {
+        while (*nextptr) {
+            virHashEntryPtr entry = *nextptr;
+            if (!iter(entry->payload, entry->name, data)) {
+                *nextptr = entry->next;
+            } else {
                 count++;
                 if (table->dataFree)
                     table->dataFree(entry->payload, entry->name);
                 if (table->keyFree)
                     table->keyFree(entry->name);
+                *nextptr = entry->next;
+                VIR_FREE(entry);
                 table->nbElems--;
-                if (prev) {
-                    prev->next = entry->next;
-                    VIR_FREE(entry);
-                    entry = prev;
-                } else {
-                    if (entry->next == NULL) {
-                        entry->valid = 0;
-                        entry->name = NULL;
-                    } else {
-                        entry = entry->next;
-                        memcpy(&(table->table[i]), entry,
-                               sizeof(virHashEntry));
-                        VIR_FREE(entry);
-                        entry = &(table->table[i]);
-                        continue;
-                    }
-                }
-            }
-            prev = entry;
-            if (entry) {
-                entry = entry->next;
             }
         }
     }
     table->iterating = false;
 
-    return (count);
+    return count;
 }
 
 /**
@@ -701,7 +591,10 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *da
  * returns non-zero will be returned by this function.
  * The elements are processed in a undefined order
  */
-void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data) {
+void *virHashSearch(virHashTablePtr table,
+                    virHashSearcher iter,
+                    const void *data)
+{
     int i;
 
     if (table == NULL || iter == NULL)
@@ -713,18 +606,15 @@ void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *dat
     table->iterating = true;
     table->current = NULL;
     for (i = 0 ; i < table->size ; i++) {
-        virHashEntryPtr entry = table->table + i;
-        while (entry) {
-            if (entry->valid) {
-                if (iter(entry->payload, entry->name, data)) {
-                    table->iterating = false;
-                    return entry->payload;
-                }
+        virHashEntryPtr entry;
+        for (entry = table->table[i]; entry; entry = entry->next) {
+            if (iter(entry->payload, entry->name, data)) {
+                table->iterating = false;
+                return entry->payload;
             }
-            entry = entry->next;
         }
     }
     table->iterating = false;
 
-    return (NULL);
+    return NULL;
 }
