@@ -140,6 +140,7 @@ test_scripts +=				\
 	undefine			\
 	vcpupin				\
 	virsh-all			\
+	virsh-optparse			\
 	virsh-schedinfo			\
 	virsh-synopsis
 endif

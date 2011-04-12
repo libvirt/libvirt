@@ -1,0 +1,72 @@
+#!/bin/sh
+# Ensure that virsh option parsing doesn't regress
+
+# Copyright (C) 2011 Red Hat, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+: ${srcdir=$(pwd)}
+: ${abs_top_srcdir=$(pwd)/..}
+: ${abs_top_builddir=$(pwd)/..}
+
+# If $abs_top_builddir/tools is not early in $PATH, put it there,
+# so that we can safely invoke "virsh" simply with its name.
+case $PATH in
+  $abs_top_builddir/tools/src:$abs_top_builddir/tools:*) ;;
+  $abs_top_builddir/tools:*) ;;
+  *) PATH=$abs_top_builddir/tools:$PATH; export PATH ;;
+esac
+
+if test "$VERBOSE" = yes; then
+  set -x
+  virsh --version
+fi
+
+. "$srcdir/test-lib.sh"
+
+cat <<\EOF > exp-out || framework_failure
+
+setvcpus: <domain> trying as domain NAME
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: found option <domain>: test
+EOF
+
+fail=0
+
+test_url=test:///default
+
+for args in \
+    'test 2' \
+    '--domain test 2' \
+    '--domain=test 2' \
+    'test --count 2' \
+    'test --count=2' \
+    '--domain test --count 2' \
+    '--domain=test --count 2' \
+    '--domain test --count=2' \
+    '--domain=test --count=2' \
+    '--count 2 --domain test' \
+    '--count 2 --domain=test' \
+    '--count=2 --domain test' \
+    '--count=2 --domain=test' \
+    '--count 2 test' \
+    '--count=2 test' \
+; do
+  virsh -d5 -c $test_url setvcpus $args >out 2>>err || fail=1
+  LC_ALL=C sort out | compare - exp-out || fail=1
+done
+test -s err && fail=1
+
+(exit $fail); exit $fail
