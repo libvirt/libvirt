@@ -6963,8 +6963,8 @@ static const vshCmdInfo info_vol_create_from[] = {
 static const vshCmdOptDef opts_vol_create_from[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML vol description")},
-    {"inputpool", VSH_OT_STRING, 0, N_("pool name or uuid of the input volume's pool")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("input vol name or key")},
+    {"inputpool", VSH_OT_STRING, 0, N_("pool name or uuid of the input volume's pool")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7059,9 +7059,9 @@ static const vshCmdInfo info_vol_clone[] = {
 };
 
 static const vshCmdOptDef opts_vol_clone[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("orig vol name or key")},
     {"newname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("clone name")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7136,9 +7136,9 @@ static const vshCmdInfo info_vol_upload[] = {
 };
 
 static const vshCmdOptDef opts_vol_upload[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"offset", VSH_OT_INT, 0, N_("volume offset to upload to") },
     {"length", VSH_OT_INT, 0, N_("amount of data to upload") },
     {NULL, 0, 0, NULL}
@@ -7236,9 +7236,9 @@ static const vshCmdInfo info_vol_download[] = {
 };
 
 static const vshCmdOptDef opts_vol_download[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"offset", VSH_OT_INT, 0, N_("volume offset to download from") },
     {"length", VSH_OT_INT, 0, N_("amount of data to download") },
     {NULL, 0, 0, NULL}
@@ -7342,8 +7342,8 @@ static const vshCmdInfo info_vol_delete[] = {
 };
 
 static const vshCmdOptDef opts_vol_delete[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7383,8 +7383,8 @@ static const vshCmdInfo info_vol_wipe[] = {
 };
 
 static const vshCmdOptDef opts_vol_wipe[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7424,8 +7424,8 @@ static const vshCmdInfo info_vol_info[] = {
 };
 
 static const vshCmdOptDef opts_vol_info[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7475,8 +7475,8 @@ static const vshCmdInfo info_vol_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_vol_dumpxml[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7888,8 +7888,8 @@ static const vshCmdInfo info_vol_key[] = {
 };
 
 static const vshCmdOptDef opts_vol_key[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("volume name or path")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7921,8 +7921,8 @@ static const vshCmdInfo info_vol_path[] = {
 };
 
 static const vshCmdOptDef opts_vol_path[] = {
-    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("volume name or key")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
