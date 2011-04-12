@@ -506,15 +506,17 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
 
     while (priv->jobActive) {
         if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
-            /* Safe to ignore value since ref count was incremented above */
-            ignore_value(virDomainObjUnref(obj));
             if (errno == ETIMEDOUT)
                 qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
                                 "%s", _("cannot acquire state change lock"));
             else
                 virReportSystemError(errno,
                                      "%s", _("cannot acquire job mutex"));
+            virDomainObjUnlock(obj);
             qemuDriverLock(driver);
+            virDomainObjLock(obj);
+            /* Safe to ignore value since ref count was incremented above */
+            ignore_value(virDomainObjUnref(obj));
             return -1;
         }
     }
