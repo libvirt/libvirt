@@ -57,6 +57,7 @@
 #include "configmake.h"
 #include "threads.h"
 #include "command.h"
+#include "count-one-bits.h"
 
 static char *progname;
 
@@ -10930,66 +10931,107 @@ vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
     return NULL;
 }
 
-static const vshCmdOptDef *
-vshCmddefGetOption(const vshCmdDef * cmd, const char *name)
+static int
+vshCmddefOptParse(const vshCmdDef *cmd, uint32_t* opts_need_arg,
+                  uint32_t *opts_required)
 {
-    const vshCmdOptDef *opt;
+    int i;
+    bool optional = false;
 
-    for (opt = cmd->opts; opt && opt->name; opt++)
-        if (STREQ(opt->name, name))
+    if (!cmd->opts)
+        return 0;
+
+    for (i = 0; cmd->opts[i].name; i++) {
+        const vshCmdOptDef *opt = &cmd->opts[i];
+
+        if (i > 31)
+            return -1; /* too many options */
+        if (opt->type == VSH_OT_BOOL) {
+            if (opt->flag & VSH_OFLAG_REQ)
+                return -1; /* bool options can't be mandatory */
+            continue;
+        }
+        *opts_need_arg |= 1 << i;
+        if (opt->flag & VSH_OFLAG_REQ) {
+            if (optional)
+                return -1; /* mandatory options must be listed first */
+            *opts_required |= 1 << i;
+        } else {
+            optional = true;
+        }
+    }
+    return 0;
+}
+
+static const vshCmdOptDef *
+vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
+                   uint32_t *opts_seen)
+{
+    int i;
+
+    for (i = 0; cmd->opts && cmd->opts[i].name; i++) {
+        const vshCmdOptDef *opt = &cmd->opts[i];
+
+        if (STREQ(opt->name, name)) {
+            if (*opts_seen & (1 << i)) {
+                vshError(ctl, _("option --%s already seen"), name);
+                return NULL;
+            }
+            *opts_seen |= 1 << i;
             return opt;
+        }
+    }
+
+    vshError(ctl, _("command '%s' doesn't support option --%s"),
+             cmd->name, name);
     return NULL;
 }
 
 static const vshCmdOptDef *
-vshCmddefGetData(const vshCmdDef * cmd, int data_ct)
+vshCmddefGetData(const vshCmdDef *cmd, uint32_t *opts_need_arg,
+                 uint32_t *opts_seen)
 {
+    int i;
     const vshCmdOptDef *opt;
 
-    for (opt = cmd->opts; opt && opt->name; opt++) {
-        if (opt->type >= VSH_OT_DATA ||
-            (opt->type == VSH_OT_INT && (opt->flag & VSH_OFLAG_REQ))) {
-            if (data_ct == 0 || opt->type == VSH_OT_ARGV)
-                return opt;
-            else
-                data_ct--;
-        }
-    }
-    return NULL;
+    if (!*opts_need_arg)
+        return NULL;
+
+    /* Grab least-significant set bit */
+    i = count_one_bits(*opts_need_arg ^ (*opts_need_arg - 1)) - 1;
+    opt = &cmd->opts[i];
+    if (opt->type != VSH_OT_ARGV)
+        *opts_need_arg &= ~(1 << i);
+    *opts_seen |= 1 << i;
+    return opt;
 }
 
 /*
  * Checks for required options
  */
 static int
-vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd)
+vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint32_t opts_required,
+                    uint32_t opts_seen)
 {
     const vshCmdDef *def = cmd->def;
-    const vshCmdOptDef *d;
-    int err = 0;
+    int i;
 
-    for (d = def->opts; d && d->name; d++) {
-        if (d->flag & VSH_OFLAG_REQ) {
-            vshCmdOpt *o = cmd->opts;
-            int ok = 0;
+    opts_required &= ~opts_seen;
+    if (!opts_required)
+        return 0;
 
-            while (o && ok == 0) {
-                if (o->def == d)
-                    ok = 1;
-                o = o->next;
-            }
-            if (!ok) {
-                vshError(ctl,
-                         d->type == VSH_OT_DATA ?
-                         _("command '%s' requires <%s> option") :
-                         _("command '%s' requires --%s option"),
-                         def->name, d->name);
-                err = 1;
-            }
+    for (i = 0; def->opts[i].name; i++) {
+        if (opts_required & (1 << i)) {
+            const vshCmdOptDef *opt = &def->opts[i];
 
+            vshError(ctl,
+                     opt->type == VSH_OT_DATA ?
+                     _("command '%s' requires <%s> option") :
+                     _("command '%s' requires --%s option"),
+                     def->name, opt->name);
         }
     }
-    return !err;
+    return -1;
 }
 
 static const vshCmdDef *
@@ -11055,6 +11097,14 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         const char *desc = _(vshCmddefGetInfo(def, "desc"));
         const char *help = _(vshCmddefGetInfo(def, "help"));
         char buf[256];
+        uint32_t opts_need_arg;
+        uint32_t opts_required;
+
+        if (vshCmddefOptParse(def, &opts_need_arg, &opts_required)) {
+            vshError(ctl, _("internal error: bad options in command: '%s'"),
+                     def->name);
+            return FALSE;
+        }
 
         fputs(_("  NAME\n"), stdout);
         fprintf(stdout, "    %s - %s\n", def->name, help);
@@ -11731,7 +11781,9 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
         const vshCmdDef *cmd = NULL;
         vshCommandToken tk;
         bool data_only = false;
-        int data_ct = 0;
+        uint32_t opts_need_arg = 0;
+        uint32_t opts_required = 0;
+        uint32_t opts_seen = 0;
 
         first = NULL;
 
@@ -11754,6 +11806,13 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                     vshError(ctl, _("unknown command: '%s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
+                if (vshCmddefOptParse(cmd, &opts_need_arg,
+                                      &opts_required) < 0) {
+                    vshError(ctl,
+                             _("internal error: bad options in command: '%s'"),
+                             tkdata);
+                    goto syntaxError;
+                }
                 VIR_FREE(tkdata);
             } else if (data_only) {
                 goto get_data;
@@ -11764,10 +11823,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                     *optstr = '\0'; /* convert the '=' to '\0' */
                     optstr = vshStrdup(ctl, optstr + 1);
                 }
-                if (!(opt = vshCmddefGetOption(cmd, tkdata + 2))) {
-                    vshError(ctl,
-                             _("command '%s' doesn't support option --%s"),
-                             cmd->name, tkdata + 2);
+                if (!(opt = vshCmddefGetOption(ctl, cmd, tkdata + 2,
+                                               &opts_seen))) {
                     VIR_FREE(optstr);
                     goto syntaxError;
                 }
@@ -11789,6 +11846,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                                  VSH_OT_INT ? _("number") : _("string"));
                         goto syntaxError;
                     }
+                    opts_need_arg &= ~opts_seen;
                 } else {
                     tkdata = NULL;
                     if (optstr) {
@@ -11804,7 +11862,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                 continue;
             } else {
 get_data:
-                if (!(opt = vshCmddefGetData(cmd, data_ct++))) {
+                if (!(opt = vshCmddefGetData(cmd, &opts_need_arg,
+                                             &opts_seen))) {
                     vshError(ctl, _("unexpected data '%s'"), tkdata);
                     goto syntaxError;
                 }
@@ -11840,7 +11899,7 @@ get_data:
             c->def = cmd;
             c->next = NULL;
 
-            if (!vshCommandCheckOpts(ctl, c)) {
+            if (vshCommandCheckOpts(ctl, c, opts_required, opts_seen) < 0) {
                 VIR_FREE(c);
                 goto syntaxError;
             }
