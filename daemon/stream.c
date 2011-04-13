@@ -403,7 +403,7 @@ remoteStreamHandleWriteData(struct qemud_client *client,
     } else {
         VIR_INFO0("Stream send failed");
         stream->closed = 1;
-        remoteDispatchConnError(&rerr, client->conn);
+        remoteDispatchError(&rerr);
         return remoteSerializeReplyError(client, &rerr, &msg->hdr);
     }
 
@@ -437,7 +437,7 @@ remoteStreamHandleFinish(struct qemud_client *client,
     ret = virStreamFinish(stream->st);
 
     if (ret < 0) {
-        remoteDispatchConnError(&rerr, client->conn);
+        remoteDispatchError(&rerr);
         return remoteSerializeReplyError(client, &rerr, &msg->hdr);
     } else {
         /* Send zero-length confirm */
@@ -569,7 +569,7 @@ remoteStreamHandleRead(struct qemud_client *client,
     } else if (ret < 0) {
         remote_error rerr;
         memset(&rerr, 0, sizeof rerr);
-        remoteDispatchConnError(&rerr, NULL);
+        remoteDispatchError(&rerr);
 
         ret = remoteSerializeStreamError(client, &rerr, stream->procedure, stream->serial);
     } else {

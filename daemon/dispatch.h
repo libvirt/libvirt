@@ -46,8 +46,7 @@ void remoteDispatchFormatError (remote_error *rerr,
 void remoteDispatchAuthError (remote_error *rerr);
 void remoteDispatchGenericError (remote_error *rerr);
 void remoteDispatchOOMError (remote_error *rerr);
-void remoteDispatchConnError (remote_error *rerr,
-                              virConnectPtr conn);
+void remoteDispatchError(remote_error *rerr);
 
 
 int

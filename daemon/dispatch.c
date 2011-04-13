@@ -112,8 +112,7 @@ void remoteDispatchOOMError (remote_error *rerr)
 }
 
 
-void remoteDispatchConnError (remote_error *rerr,
-                              virConnectPtr conn ATTRIBUTE_UNUSED)
+void remoteDispatchError(remote_error *rerr)
 {
     virErrorPtr verr = virGetLastError();
 
