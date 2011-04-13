@@ -624,7 +624,7 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
     }
 
     uuid_table->lpars[i]->id = id;
-    memmove(uuid_table->lpars[i]->uuid, uuid, VIR_UUID_BUFLEN);
+    memcpy(uuid_table->lpars[i]->uuid, uuid, VIR_UUID_BUFLEN);
 
     if (phypUUIDTable_WriteFile(conn) == -1)
         goto err;
@@ -1388,7 +1388,7 @@ phypGetLparUUID(unsigned char *uuid, int lpar_id, virConnectPtr conn)
 
     for (i = 0; i < uuid_table->nlpars; i++) {
         if (lpars[i]->id == lpar_id) {
-            memmove(uuid, lpars[i]->uuid, VIR_UUID_BUFLEN);
+            memcpy(uuid, lpars[i]->uuid, VIR_UUID_BUFLEN);
             return 0;
         }
     }
@@ -2609,7 +2609,7 @@ phypGetStoragePoolUUID(virConnectPtr conn, unsigned char *uuid,
     if (exit_status < 0 || ret == NULL)
         goto cleanup;
 
-    if (memmove(uuid, ret, VIR_UUID_BUFLEN) == NULL)
+    if (memcpy(uuid, ret, VIR_UUID_BUFLEN) == NULL)
         goto cleanup;
 
     result = 0;
@@ -2657,7 +2657,7 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
         goto err;
     }
 
-    if (memmove(pool.uuid, sp->uuid, VIR_UUID_BUFLEN) == NULL) {
+    if (memcpy(pool.uuid, sp->uuid, VIR_UUID_BUFLEN) == NULL) {
         VIR_ERROR0(_("Unable to determine storage sp's uuid."));
         goto err;
     }
@@ -3241,7 +3241,7 @@ phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
         goto err;
     }
 
-    if (memmove(def.uuid, pool->uuid, VIR_UUID_BUFLEN) == NULL) {
+    if (memcpy(def.uuid, pool->uuid, VIR_UUID_BUFLEN) == NULL) {
         VIR_ERROR0(_("Unable to determine storage pool's uuid."));
         goto err;
     }
