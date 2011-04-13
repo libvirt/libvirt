@@ -427,9 +427,8 @@ remoteDispatchOpen(struct qemud_server *server,
         ? virConnectOpenReadOnly(name)
         : virConnectOpen(name);
 
-    if (client->conn == NULL) {
+    if (client->conn == NULL)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -476,9 +475,8 @@ remoteDispatchSupportsFeature(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     ret->supported = virDrvSupportsFeature(conn, args->feature);
 
-    if (ret->supported < 0) {
+    if (ret->supported < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -505,9 +503,8 @@ remoteDispatchGetType(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     type = virConnectGetType(conn);
-    if (type == NULL) {
+    if (type == NULL)
         goto cleanup;
-    }
 
     /* We have to strdup because remoteDispatchClientRequest will
      * free this string after it's been serialised.
@@ -543,9 +540,8 @@ remoteDispatchGetVersion(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virConnectGetVersion(conn, &hvVer) < 0) {
+    if (virConnectGetVersion(conn, &hvVer) < 0)
         goto cleanup;
-    }
 
     ret->hv_ver = hvVer;
     rv = 0;
@@ -573,9 +569,8 @@ remoteDispatchGetLibVersion(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virConnectGetLibVersion(conn, &libVer) < 0) {
+    if (virConnectGetLibVersion(conn, &libVer) < 0)
         goto cleanup;
-    }
 
     ret->lib_ver = libVer;
     rv = 0;
@@ -604,9 +599,8 @@ remoteDispatchGetHostname(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     hostname = virConnectGetHostname(conn);
-    if (hostname == NULL) {
+    if (hostname == NULL)
         goto cleanup;
-    }
 
     ret->hostname = hostname;
     rv = 0;
@@ -635,9 +629,8 @@ remoteDispatchGetUri(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     uri = virConnectGetURI(conn);
-    if (uri == NULL) {
+    if (uri == NULL)
         goto cleanup;
-    }
 
     ret->uri = uri;
     rv = 0;
@@ -668,9 +661,8 @@ remoteDispatchGetSysinfo(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
     sysinfo = virConnectGetSysinfo(conn, flags);
-    if (sysinfo == NULL) {
+    if (sysinfo == NULL)
         goto cleanup;
-    }
 
     ret->sysinfo = sysinfo;
     rv = 0;
@@ -700,9 +692,8 @@ remoteDispatchGetMaxVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     type = args->type ? *args->type : NULL;
     ret->max_vcpus = virConnectGetMaxVcpus(conn, type);
-    if (ret->max_vcpus < 0) {
+    if (ret->max_vcpus < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -729,9 +720,8 @@ remoteDispatchNodeGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virNodeGetInfo(conn, &info) < 0) {
+    if (virNodeGetInfo(conn, &info) < 0)
         goto cleanup;
-    }
 
     memcpy(ret->model, info.model, sizeof ret->model);
     ret->memory = info.memory;
@@ -768,9 +758,8 @@ remoteDispatchGetCapabilities(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     caps = virConnectGetCapabilities(conn);
-    if (caps == NULL) {
+    if (caps == NULL)
         goto cleanup;
-    }
 
     ret->capabilities = caps;
     rv = 0;
@@ -814,9 +803,8 @@ remoteDispatchNodeGetCellsFreeMemory(struct qemud_server *server ATTRIBUTE_UNUSE
                                     (unsigned long long *)ret->freeMems.freeMems_val,
                                     args->startCell,
                                     args->maxCells);
-    if (err <= 0) {
+    if (err <= 0)
         goto cleanup;
-    }
     ret->freeMems.freeMems_len = err;
 
     rv = 0;
@@ -848,9 +836,8 @@ remoteDispatchNodeGetFreeMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     freeMem = virNodeGetFreeMemory(conn);
-    if (freeMem == 0) {
+    if (freeMem == 0)
         goto cleanup;
-    }
     ret->freeMem = freeMem;
     rv = 0;
 
@@ -881,14 +868,12 @@ remoteDispatchDomainGetSchedulerType(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     type = virDomainGetSchedulerType(dom, &nparams);
-    if (type == NULL) {
+    if (type == NULL)
         goto cleanup;
-    }
 
     ret->type = type;
     ret->nparams = nparams;
@@ -931,14 +916,12 @@ remoteDispatchDomainGetSchedulerParameters(struct qemud_server *server ATTRIBUTE
         goto no_memory;
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     r = virDomainGetSchedulerParameters(dom, params, &nparams);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
     /* Serialise the scheduler parameters. */
     ret->params.params_len = nparams;
@@ -1044,14 +1027,12 @@ remoteDispatchDomainSetSchedulerParameters(struct qemud_server *server ATTRIBUTE
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     r = virDomainSetSchedulerParameters(dom, params, nparams);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1084,14 +1065,12 @@ remoteDispatchDomainBlockStats(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
     path = args->path;
 
-    if (virDomainBlockStats(dom, path, &stats, sizeof stats) < 0) {
+    if (virDomainBlockStats(dom, path, &stats, sizeof stats) < 0)
         goto cleanup;
-    }
 
     ret->rd_req = stats.rd_req;
     ret->rd_bytes = stats.rd_bytes;
@@ -1129,14 +1108,12 @@ remoteDispatchDomainInterfaceStats(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
     path = args->path;
 
-    if (virDomainInterfaceStats(dom, path, &stats, sizeof stats) < 0) {
+    if (virDomainInterfaceStats(dom, path, &stats, sizeof stats) < 0)
         goto cleanup;
-    }
 
     ret->rx_bytes = stats.rx_bytes;
     ret->rx_packets = stats.rx_packets;
@@ -1183,9 +1160,8 @@ remoteDispatchDomainMemoryStats(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     /* Allocate stats array for making dispatch call */
     if (VIR_ALLOC_N(stats, args->maxStats) < 0) {
@@ -1194,9 +1170,8 @@ remoteDispatchDomainMemoryStats(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     nr_stats = virDomainMemoryStats(dom, stats, args->maxStats, 0);
-    if (nr_stats < 0) {
+    if (nr_stats < 0)
         goto cleanup;
-    }
 
     /* Allocate return buffer */
     if (VIR_ALLOC_N(ret->stats.stats_val, args->maxStats) < 0) {
@@ -1243,9 +1218,8 @@ remoteDispatchDomainBlockPeek(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
     path = args->path;
     offset = args->offset;
     size = args->size;
@@ -1264,9 +1238,8 @@ remoteDispatchDomainBlockPeek(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     if (virDomainBlockPeek(dom, path, offset, size,
-                           ret->buffer.buffer_val, flags) < 0) {
+                           ret->buffer.buffer_val, flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1301,9 +1274,8 @@ remoteDispatchDomainMemoryPeek(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
     offset = args->offset;
     size = args->size;
     flags = args->flags;
@@ -1321,9 +1293,8 @@ remoteDispatchDomainMemoryPeek(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     if (virDomainMemoryPeek(dom, offset, size,
-                            ret->buffer.buffer_val, flags) < 0) {
+                            ret->buffer.buffer_val, flags) < 0)
         goto cleanup;
-    }
     if (dom)
         virDomainFree(dom);
 
@@ -1357,13 +1328,11 @@ remoteDispatchDomainAttachDevice(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainAttachDevice(dom, args->xml) < 0) {
+    if (virDomainAttachDevice(dom, args->xml) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1393,13 +1362,11 @@ remoteDispatchDomainAttachDeviceFlags(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainAttachDeviceFlags(dom, args->xml, args->flags) < 0) {
+    if (virDomainAttachDeviceFlags(dom, args->xml, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1429,13 +1396,11 @@ remoteDispatchDomainUpdateDeviceFlags(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainUpdateDeviceFlags(dom, args->xml, args->flags) < 0) {
+    if (virDomainUpdateDeviceFlags(dom, args->xml, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1465,13 +1430,11 @@ remoteDispatchDomainCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainCreate(dom) < 0) {
+    if (virDomainCreate(dom) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1496,13 +1459,11 @@ remoteDispatchDomainCreateWithFlags(struct qemud_server *server ATTRIBUTE_UNUSED
     virDomainPtr dom = NULL;
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainCreateWithFlags(dom, args->flags) < 0) {
+    if (virDomainCreateWithFlags(dom, args->flags) < 0)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->dom, dom);
 
@@ -1534,9 +1495,8 @@ remoteDispatchDomainCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = virDomainCreateXML(conn, args->xml_desc, args->flags);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->dom, dom);
 
@@ -1568,9 +1528,8 @@ remoteDispatchDomainDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = virDomainDefineXML(conn, args->xml);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->dom, dom);
 
@@ -1602,13 +1561,11 @@ remoteDispatchDomainDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainDestroy(dom) < 0) {
+    if (virDomainDestroy(dom) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1638,13 +1595,11 @@ remoteDispatchDomainDetachDevice(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainDetachDevice(dom, args->xml) < 0) {
+    if (virDomainDetachDevice(dom, args->xml) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1674,13 +1629,11 @@ remoteDispatchDomainDetachDeviceFlags(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainDetachDeviceFlags(dom, args->xml, args->flags) < 0) {
+    if (virDomainDetachDeviceFlags(dom, args->xml, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1710,15 +1663,13 @@ remoteDispatchDomainDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virDomainGetXMLDesc(dom, args->flags);
-    if (!ret->xml) {
+    if (!ret->xml)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1751,9 +1702,8 @@ remoteDispatchDomainXmlFromNative(struct qemud_server *server ATTRIBUTE_UNUSED,
                                                    args->nativeFormat,
                                                    args->nativeConfig,
                                                    args->flags);
-    if (!ret->domainXml) {
+    if (!ret->domainXml)
         goto cleanup;
-    }
     rv = 0;
 
 cleanup:
@@ -1783,9 +1733,8 @@ remoteDispatchDomainXmlToNative(struct qemud_server *server ATTRIBUTE_UNUSED,
                                                     args->nativeFormat,
                                                     args->domainXml,
                                                     args->flags);
-    if (!ret->nativeConfig) {
+    if (!ret->nativeConfig)
         goto cleanup;
-    }
     rv = 0;
 
 cleanup:
@@ -1813,13 +1762,11 @@ remoteDispatchDomainGetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainGetAutostart(dom, &ret->autostart) < 0) {
+    if (virDomainGetAutostart(dom, &ret->autostart) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1850,13 +1797,11 @@ remoteDispatchDomainGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainGetInfo(dom, &info) < 0) {
+    if (virDomainGetInfo(dom, &info) < 0)
         goto cleanup;
-    }
 
     ret->state = info.state;
     ret->max_mem = info.maxMem;
@@ -1892,14 +1837,12 @@ remoteDispatchDomainGetMaxMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     ret->memory = virDomainGetMaxMemory(dom);
-    if (ret->memory == 0) {
+    if (ret->memory == 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1929,14 +1872,12 @@ remoteDispatchDomainGetMaxVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     ret->num = virDomainGetMaxVcpus(dom);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -1967,18 +1908,16 @@ remoteDispatchDomainGetSecurityLabel(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     if (VIR_ALLOC(seclabel) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if (virDomainGetSecurityLabel(dom, seclabel) < 0) {
+    if (virDomainGetSecurityLabel(dom, seclabel) < 0)
         goto cleanup;
-    }
 
     ret->label.label_len = strlen(seclabel->label) + 1;
     if (VIR_ALLOC_N(ret->label.label_val, ret->label.label_len) < 0) {
@@ -2017,9 +1956,8 @@ remoteDispatchNodeGetSecurityModel(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     memset(&secmodel, 0, sizeof secmodel);
-    if (virNodeGetSecurityModel(conn, &secmodel) < 0) {
+    if (virNodeGetSecurityModel(conn, &secmodel) < 0)
         goto cleanup;
-    }
 
     ret->model.model_len = strlen(secmodel.model) + 1;
     if (VIR_ALLOC_N(ret->model.model_val, ret->model.model_len) < 0) {
@@ -2061,15 +1999,13 @@ remoteDispatchDomainGetOsType(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this */
     ret->type = virDomainGetOSType(dom);
-    if (ret->type == NULL) {
+    if (ret->type == NULL)
         goto cleanup;
-    }
     rv = 0;
 
 cleanup:
@@ -2101,9 +2037,8 @@ remoteDispatchDomainGetVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     if (args->maxinfo > REMOTE_VCPUINFO_MAX) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("maxinfo > REMOTE_VCPUINFO_MAX"));
@@ -2125,9 +2060,8 @@ remoteDispatchDomainGetVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
     info_len = virDomainGetVcpus(dom,
                                  info, args->maxinfo,
                                  cpumaps, args->maplen);
-    if (info_len < 0) {
+    if (info_len < 0)
         goto cleanup;
-    }
 
     /* Allocate the return buffer for info. */
     ret->info.info_len = info_len;
@@ -2185,14 +2119,12 @@ remoteDispatchDomainGetVcpusFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     ret->num = virDomainGetVcpusFlags(dom, args->flags);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2238,9 +2170,8 @@ remoteDispatchDomainMigratePrepare(struct qemud_server *server ATTRIBUTE_UNUSED,
     r = virDomainMigratePrepare(conn, &cookie, &cookielen,
                                 uri_in, uri_out,
                                 args->flags, dname, args->resource);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free cookie, uri_out and
      * the string if there is one.
@@ -2283,9 +2214,8 @@ remoteDispatchDomainMigratePerform(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     dname = args->dname == NULL ? NULL : *args->dname;
 
@@ -2294,9 +2224,8 @@ remoteDispatchDomainMigratePerform(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 args->cookie.cookie_len,
                                 args->uri,
                                 args->flags, dname, args->resource);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2330,9 +2259,8 @@ remoteDispatchDomainMigrateFinish(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   args->cookie.cookie_len,
                                   args->uri,
                                   args->flags);
-    if (ddom == NULL) {
+    if (ddom == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->ddom, ddom);
     rv = 0;
@@ -2380,9 +2308,8 @@ remoteDispatchDomainMigratePrepare2(struct qemud_server *server ATTRIBUTE_UNUSED
                                  uri_in, uri_out,
                                  args->flags, dname, args->resource,
                                  args->dom_xml);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free cookie, uri_out and
      * the string if there is one.
@@ -2422,9 +2349,8 @@ remoteDispatchDomainMigrateFinish2(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    args->uri,
                                    args->flags,
                                    args->retcode);
-    if (ddom == NULL) {
+    if (ddom == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->ddom, ddom);
 
@@ -2468,13 +2394,11 @@ remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_U
     r = virDomainMigratePrepareTunnel(conn, stream->st,
                                       args->flags, dname, args->resource,
                                       args->dom_xml);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
-    if (remoteAddClientStream(client, stream, 0) < 0) {
+    if (remoteAddClientStream(client, stream, 0) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2520,9 +2444,8 @@ remoteDispatchListDefinedDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListDefinedDomains(conn,
                                        ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -2553,9 +2476,8 @@ remoteDispatchDomainLookupById(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = virDomainLookupByID(conn, args->id);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->dom, dom);
 
@@ -2587,9 +2509,8 @@ remoteDispatchDomainLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = virDomainLookupByName(conn, args->name);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->dom, dom);
 
@@ -2621,9 +2542,8 @@ remoteDispatchDomainLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = virDomainLookupByUUID(conn, (unsigned char *) args->uuid);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain(&ret->dom, dom);
 
@@ -2654,9 +2574,8 @@ remoteDispatchNumOfDefinedDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->num = virConnectNumOfDefinedDomains(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2684,9 +2603,8 @@ remoteDispatchDomainPinVcpu(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     if (args->cpumap.cpumap_len > REMOTE_CPUMAP_MAX) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("cpumap_len > REMOTE_CPUMAP_MAX"));
@@ -2696,9 +2614,8 @@ remoteDispatchDomainPinVcpu(struct qemud_server *server ATTRIBUTE_UNUSED,
     rv = virDomainPinVcpu(dom, args->vcpu,
                           (unsigned char *) args->cpumap.cpumap_val,
                           args->cpumap.cpumap_len);
-    if (rv < 0) {
+    if (rv < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2728,13 +2645,11 @@ remoteDispatchDomainReboot(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainReboot(dom, args->flags) < 0) {
+    if (virDomainReboot(dom, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2762,9 +2677,8 @@ remoteDispatchDomainRestore(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virDomainRestore(conn, args->from) < 0) {
+    if (virDomainRestore(conn, args->from) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2792,13 +2706,11 @@ remoteDispatchDomainResume(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainResume(dom) < 0) {
+    if (virDomainResume(dom) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2828,13 +2740,11 @@ remoteDispatchDomainSave(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSave(dom, args->to) < 0) {
+    if (virDomainSave(dom, args->to) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2864,13 +2774,11 @@ remoteDispatchDomainCoreDump(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainCoreDump(dom, args->to, args->flags) < 0) {
+    if (virDomainCoreDump(dom, args->to, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2900,13 +2808,11 @@ remoteDispatchDomainSetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSetAutostart(dom, args->autostart) < 0) {
+    if (virDomainSetAutostart(dom, args->autostart) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2936,13 +2842,11 @@ remoteDispatchDomainSetMaxMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSetMaxMemory(dom, args->memory) < 0) {
+    if (virDomainSetMaxMemory(dom, args->memory) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -2972,13 +2876,11 @@ remoteDispatchDomainSetMemory(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSetMemory(dom, args->memory) < 0) {
+    if (virDomainSetMemory(dom, args->memory) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3008,13 +2910,11 @@ remoteDispatchDomainSetMemoryFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSetMemoryFlags(dom, args->memory, args->flags) < 0) {
+    if (virDomainSetMemoryFlags(dom, args->memory, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3106,14 +3006,12 @@ remoteDispatchDomainSetMemoryParameters(struct qemud_server *server
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     r = virDomainSetMemoryParameters(dom, params, nparams, flags);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3164,14 +3062,12 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     r = virDomainGetMemoryParameters(dom, params, &nparams, flags);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
     /* In this case, we need to send back the number of parameters
      * supported
      */
@@ -3329,14 +3225,12 @@ remoteDispatchDomainSetBlkioParameters(struct qemud_server *server
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     r = virDomainSetBlkioParameters(dom, params, nparams, flags);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3387,14 +3281,12 @@ remoteDispatchDomainGetBlkioParameters(struct qemud_server *server
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     r = virDomainGetBlkioParameters(dom, params, &nparams, flags);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
     /* In this case, we need to send back the number of parameters
      * supported
      */
@@ -3490,13 +3382,11 @@ remoteDispatchDomainSetVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSetVcpus(dom, args->nvcpus) < 0) {
+    if (virDomainSetVcpus(dom, args->nvcpus) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3526,13 +3416,11 @@ remoteDispatchDomainSetVcpusFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSetVcpusFlags(dom, args->nvcpus, args->flags) < 0) {
+    if (virDomainSetVcpusFlags(dom, args->nvcpus, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3562,13 +3450,11 @@ remoteDispatchDomainShutdown(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainShutdown(dom) < 0) {
+    if (virDomainShutdown(dom) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3598,13 +3484,11 @@ remoteDispatchDomainSuspend(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainSuspend(dom) < 0) {
+    if (virDomainSuspend(dom) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3634,13 +3518,11 @@ remoteDispatchDomainUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainUndefine(dom) < 0) {
+    if (virDomainUndefine(dom) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3683,9 +3565,8 @@ remoteDispatchListDefinedNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListDefinedNetworks(conn,
                                       ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -3729,9 +3610,8 @@ remoteDispatchListDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListDomains(conn,
                                 ret->ids.ids_val, args->maxids);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->ids.ids_len = len;
 
     rv = 0;
@@ -3762,13 +3642,11 @@ remoteDispatchDomainManagedSave(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainManagedSave(dom, args->flags) < 0) {
+    if (virDomainManagedSave(dom, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3798,14 +3676,12 @@ remoteDispatchDomainHasManagedSaveImage(struct qemud_server *server ATTRIBUTE_UN
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     ret->ret = virDomainHasManagedSaveImage(dom, args->flags);
-    if (ret->ret < 0) {
+    if (ret->ret < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3835,13 +3711,11 @@ remoteDispatchDomainManagedSaveRemove(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainManagedSaveRemove(dom, args->flags) < 0) {
+    if (virDomainManagedSaveRemove(dom, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3884,9 +3758,8 @@ remoteDispatchListNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListNetworks(conn,
                                  ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -3917,13 +3790,11 @@ remoteDispatchNetworkCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = get_nonnull_network(conn, args->net);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
-    if (virNetworkCreate(net) < 0) {
+    if (virNetworkCreate(net) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -3953,9 +3824,8 @@ remoteDispatchNetworkCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = virNetworkCreateXML(conn, args->xml);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
     make_nonnull_network(&ret->net, net);
 
@@ -3987,9 +3857,8 @@ remoteDispatchNetworkDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = virNetworkDefineXML(conn, args->xml);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
     make_nonnull_network(&ret->net, net);
 
@@ -4021,13 +3890,11 @@ remoteDispatchNetworkDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = get_nonnull_network(conn, args->net);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
-    if (virNetworkDestroy(net) < 0) {
+    if (virNetworkDestroy(net) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4057,15 +3924,13 @@ remoteDispatchNetworkDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = get_nonnull_network(conn, args->net);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virNetworkGetXMLDesc(net, args->flags);
-    if (!ret->xml) {
+    if (!ret->xml)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4095,13 +3960,11 @@ remoteDispatchNetworkGetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = get_nonnull_network(conn, args->net);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
-    if (virNetworkGetAutostart(net, &ret->autostart) < 0) {
+    if (virNetworkGetAutostart(net, &ret->autostart) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4131,15 +3994,13 @@ remoteDispatchNetworkGetBridgeName(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = get_nonnull_network(conn, args->net);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->name = virNetworkGetBridgeName(net);
-    if (!ret->name) {
+    if (!ret->name)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4169,9 +4030,8 @@ remoteDispatchNetworkLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = virNetworkLookupByName(conn, args->name);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
     make_nonnull_network(&ret->net, net);
 
@@ -4203,9 +4063,8 @@ remoteDispatchNetworkLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = virNetworkLookupByUUID(conn, (unsigned char *) args->uuid);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
     make_nonnull_network(&ret->net, net);
 
@@ -4237,13 +4096,11 @@ remoteDispatchNetworkSetAutostart(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = get_nonnull_network(conn, args->net);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
-    if (virNetworkSetAutostart(net, args->autostart) < 0) {
+    if (virNetworkSetAutostart(net, args->autostart) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4273,13 +4130,11 @@ remoteDispatchNetworkUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     net = get_nonnull_network(conn, args->net);
-    if (net == NULL) {
+    if (net == NULL)
         goto cleanup;
-    }
 
-    if (virNetworkUndefine(net) < 0) {
+    if (virNetworkUndefine(net) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4309,9 +4164,8 @@ remoteDispatchNumOfDefinedNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     len = virConnectNumOfDefinedNetworks(conn);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->num = len;
 
     rv = 0;
@@ -4339,9 +4193,8 @@ remoteDispatchNumOfDomains(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->num = virConnectNumOfDomains(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4368,9 +4221,8 @@ remoteDispatchNumOfNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->num = virConnectNumOfNetworks(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4399,9 +4251,8 @@ remoteDispatchNumOfInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->num = virConnectNumOfInterfaces(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4442,9 +4293,8 @@ remoteDispatchListInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListInterfaces(conn,
                                    ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -4475,9 +4325,8 @@ remoteDispatchNumOfDefinedInterfaces(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     len = virConnectNumOfDefinedInterfaces(conn);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->num = len;
 
     rv = 0;
@@ -4519,9 +4368,8 @@ remoteDispatchListDefinedInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED
 
     len = virConnectListDefinedInterfaces(conn,
                                           ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -4552,9 +4400,8 @@ remoteDispatchInterfaceLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED
     }
 
     iface = virInterfaceLookupByName(conn, args->name);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
     make_nonnull_interface(&ret->iface, iface);
 
@@ -4586,9 +4433,8 @@ remoteDispatchInterfaceLookupByMacString(struct qemud_server *server ATTRIBUTE_U
     }
 
     iface = virInterfaceLookupByMACString(conn, args->mac);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
     make_nonnull_interface(&ret->iface, iface);
 
@@ -4620,15 +4466,13 @@ remoteDispatchInterfaceGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     iface = get_nonnull_interface(conn, args->iface);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virInterfaceGetXMLDesc(iface, args->flags);
-    if (!ret->xml) {
+    if (!ret->xml)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4658,9 +4502,8 @@ remoteDispatchInterfaceDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     iface = virInterfaceDefineXML(conn, args->xml, args->flags);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
     make_nonnull_interface(&ret->iface, iface);
 
@@ -4692,13 +4535,11 @@ remoteDispatchInterfaceUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     iface = get_nonnull_interface(conn, args->iface);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
-    if (virInterfaceUndefine(iface) < 0) {
+    if (virInterfaceUndefine(iface) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4728,13 +4569,11 @@ remoteDispatchInterfaceCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     iface = get_nonnull_interface(conn, args->iface);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
-    if (virInterfaceCreate(iface, args->flags) < 0) {
+    if (virInterfaceCreate(iface, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -4764,13 +4603,11 @@ remoteDispatchInterfaceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     iface = get_nonnull_interface(conn, args->iface);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
-    if (virInterfaceDestroy(iface, args->flags) < 0) {
+    if (virInterfaceDestroy(iface, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -5618,9 +5455,8 @@ remoteDispatchListDefinedStoragePools(struct qemud_server *server ATTRIBUTE_UNUS
 
     len = virConnectListDefinedStoragePools(conn,
                                             ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -5664,9 +5500,8 @@ remoteDispatchListStoragePools(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListStoragePools(conn,
                                      ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -5700,9 +5535,8 @@ remoteDispatchFindStoragePoolSources(struct qemud_server *server ATTRIBUTE_UNUSE
                                          args->type,
                                          args->srcSpec ? *args->srcSpec : NULL,
                                          args->flags);
-    if (ret->xml == NULL) {
+    if (ret->xml == NULL)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -5731,13 +5565,11 @@ remoteDispatchStoragePoolCreate(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolCreate(pool, args->flags) < 0) {
+    if (virStoragePoolCreate(pool, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -5767,9 +5599,8 @@ remoteDispatchStoragePoolCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = virStoragePoolCreateXML(conn, args->xml, args->flags);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_pool(&ret->pool, pool);
 
@@ -5801,9 +5632,8 @@ remoteDispatchStoragePoolDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = virStoragePoolDefineXML(conn, args->xml, args->flags);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_pool(&ret->pool, pool);
 
@@ -5835,13 +5665,11 @@ remoteDispatchStoragePoolBuild(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolBuild(pool, args->flags) < 0) {
+    if (virStoragePoolBuild(pool, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -5872,13 +5700,11 @@ remoteDispatchStoragePoolDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolDestroy(pool) < 0) {
+    if (virStoragePoolDestroy(pool) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -5908,13 +5734,11 @@ remoteDispatchStoragePoolDelete(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolDelete(pool, args->flags) < 0) {
+    if (virStoragePoolDelete(pool, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -5944,13 +5768,11 @@ remoteDispatchStoragePoolRefresh(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolRefresh(pool, args->flags) < 0) {
+    if (virStoragePoolRefresh(pool, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -5981,13 +5803,11 @@ remoteDispatchStoragePoolGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolGetInfo(pool, &info) < 0) {
+    if (virStoragePoolGetInfo(pool, &info) < 0)
         goto cleanup;
-    }
 
     ret->state = info.state;
     ret->capacity = info.capacity;
@@ -6022,15 +5842,13 @@ remoteDispatchStoragePoolDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virStoragePoolGetXMLDesc(pool, args->flags);
-    if (!ret->xml) {
+    if (!ret->xml)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6060,13 +5878,11 @@ remoteDispatchStoragePoolGetAutostart(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolGetAutostart(pool, &ret->autostart) < 0) {
+    if (virStoragePoolGetAutostart(pool, &ret->autostart) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6097,9 +5913,8 @@ remoteDispatchStoragePoolLookupByName(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     pool = virStoragePoolLookupByName(conn, args->name);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_pool(&ret->pool, pool);
 
@@ -6131,9 +5946,8 @@ remoteDispatchStoragePoolLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     pool = virStoragePoolLookupByUUID(conn, (unsigned char *) args->uuid);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_pool(&ret->pool, pool);
 
@@ -6166,14 +5980,12 @@ remoteDispatchStoragePoolLookupByVolume(struct qemud_server *server ATTRIBUTE_UN
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     pool = virStoragePoolLookupByVolume(vol);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_pool(&ret->pool, pool);
 
@@ -6207,13 +6019,11 @@ remoteDispatchStoragePoolSetAutostart(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolSetAutostart(pool, args->autostart) < 0) {
+    if (virStoragePoolSetAutostart(pool, args->autostart) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6243,13 +6053,11 @@ remoteDispatchStoragePoolUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
-    if (virStoragePoolUndefine(pool) < 0) {
+    if (virStoragePoolUndefine(pool) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6278,9 +6086,8 @@ remoteDispatchNumOfStoragePools(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->num = virConnectNumOfStoragePools(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6307,9 +6114,8 @@ remoteDispatchNumOfDefinedStoragePools(struct qemud_server *server ATTRIBUTE_UNU
     }
 
     ret->num = virConnectNumOfDefinedStoragePools(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6344,9 +6150,8 @@ remoteDispatchStoragePoolListVolumes(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     /* Allocate return buffer. */
     if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
@@ -6356,9 +6161,8 @@ remoteDispatchStoragePoolListVolumes(struct qemud_server *server ATTRIBUTE_UNUSE
 
     len = virStoragePoolListVolumes(pool,
                                     ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -6392,14 +6196,12 @@ remoteDispatchStoragePoolNumOfVolumes(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     ret->num = virStoragePoolNumOfVolumes(pool);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6437,14 +6239,12 @@ remoteDispatchStorageVolCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     vol = virStorageVolCreateXML(pool, args->xml, args->flags);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_vol(&ret->vol, vol);
     rv = 0;
@@ -6479,20 +6279,17 @@ remoteDispatchStorageVolCreateXmlFrom(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     clonevol = get_nonnull_storage_vol(conn, args->clonevol);
-    if (clonevol == NULL) {
+    if (clonevol == NULL)
         goto cleanup;
-    }
 
     newvol = virStorageVolCreateXMLFrom(pool, args->xml, clonevol,
                                         args->flags);
-    if (newvol == NULL) {
+    if (newvol == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_vol(&ret->vol, newvol);
     rv = 0;
@@ -6527,13 +6324,11 @@ remoteDispatchStorageVolDelete(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
-    if (virStorageVolDelete(vol, args->flags) < 0) {
+    if (virStorageVolDelete(vol, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6563,13 +6358,11 @@ remoteDispatchStorageVolWipe(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
-    if (virStorageVolWipe(vol, args->flags) < 0) {
+    if (virStorageVolWipe(vol, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6600,13 +6393,11 @@ remoteDispatchStorageVolGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
-    if (virStorageVolGetInfo(vol, &info) < 0) {
+    if (virStorageVolGetInfo(vol, &info) < 0)
         goto cleanup;
-    }
 
     ret->type = info.type;
     ret->capacity = info.capacity;
@@ -6640,15 +6431,13 @@ remoteDispatchStorageVolDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virStorageVolGetXMLDesc(vol, args->flags);
-    if (!ret->xml) {
+    if (!ret->xml)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6679,15 +6468,13 @@ remoteDispatchStorageVolGetPath(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->name = virStorageVolGetPath(vol);
-    if (!ret->name) {
+    if (!ret->name)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6719,14 +6506,12 @@ remoteDispatchStorageVolLookupByName(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     vol = virStorageVolLookupByName(pool, args->name);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_vol(&ret->vol, vol);
 
@@ -6760,9 +6545,8 @@ remoteDispatchStorageVolLookupByKey(struct qemud_server *server ATTRIBUTE_UNUSED
     }
 
     vol = virStorageVolLookupByKey(conn, args->key);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_vol(&ret->vol, vol);
 
@@ -6795,9 +6579,8 @@ remoteDispatchStorageVolLookupByPath(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     vol = virStorageVolLookupByPath(conn, args->path);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     make_nonnull_storage_vol(&ret->vol, vol);
 
@@ -6835,9 +6618,8 @@ remoteDispatchNodeNumOfDevices(struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->num = virNodeNumOfDevices(conn,
                                    args->cap ? *args->cap : NULL,
                                    args->flags);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6880,9 +6662,8 @@ remoteDispatchNodeListDevices(struct qemud_server *server ATTRIBUTE_UNUSED,
     len = virNodeListDevices(conn,
                              args->cap ? *args->cap : NULL,
                              ret->names.names_val, args->maxnames, args->flags);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -6914,9 +6695,8 @@ remoteDispatchNodeDeviceLookupByName(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
     make_nonnull_node_device(&ret->dev, dev);
 
@@ -6949,15 +6729,13 @@ remoteDispatchNodeDeviceDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virNodeDeviceGetXMLDesc(dev, args->flags);
-    if (!ret->xml) {
+    if (!ret->xml)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -6989,9 +6767,8 @@ remoteDispatchNodeDeviceGetParent(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
     parent = virNodeDeviceGetParent(dev);
 
@@ -7041,14 +6818,12 @@ remoteDispatchNodeDeviceNumOfCaps(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
     ret->num = virNodeDeviceNumOfCaps(dev);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7080,9 +6855,8 @@ remoteDispatchNodeDeviceListCaps(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
     if (args->maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
         virNetError(VIR_ERR_INTERNAL_ERROR,
@@ -7098,9 +6872,8 @@ remoteDispatchNodeDeviceListCaps(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virNodeDeviceListCaps(dev, ret->names.names_val,
                                 args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -7134,13 +6907,11 @@ remoteDispatchNodeDeviceDettach(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
-    if (virNodeDeviceDettach(dev) < 0) {
+    if (virNodeDeviceDettach(dev) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7171,13 +6942,11 @@ remoteDispatchNodeDeviceReAttach(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
-    if (virNodeDeviceReAttach(dev) < 0) {
+    if (virNodeDeviceReAttach(dev) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7208,13 +6977,11 @@ remoteDispatchNodeDeviceReset(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
-    if (virNodeDeviceReset(dev) < 0) {
+    if (virNodeDeviceReset(dev) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7245,9 +7012,8 @@ remoteDispatchNodeDeviceCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceCreateXML(conn, args->xml_desc, args->flags);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
     make_nonnull_node_device(&ret->dev, dev);
 
@@ -7280,13 +7046,11 @@ remoteDispatchNodeDeviceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dev = virNodeDeviceLookupByName(conn, args->name);
-    if (dev == NULL) {
+    if (dev == NULL)
         goto cleanup;
-    }
 
-    if (virNodeDeviceDestroy(dev) < 0) {
+    if (virNodeDeviceDestroy(dev) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7316,24 +7080,20 @@ static int remoteDispatchStorageVolUpload(struct qemud_server *server ATTRIBUTE_
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     stream = remoteCreateClientStream(conn, hdr);
-    if (!stream) {
+    if (!stream)
         goto cleanup;
-    }
 
     if (virStorageVolUpload(vol, stream->st,
                             args->offset, args->length,
-                            args->flags) < 0) {
+                            args->flags) < 0)
         goto cleanup;
-    }
 
-    if (remoteAddClientStream(client, stream, 0) < 0) {
+    if (remoteAddClientStream(client, stream, 0) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7367,24 +7127,20 @@ static int remoteDispatchStorageVolDownload(struct qemud_server *server ATTRIBUT
     }
 
     vol = get_nonnull_storage_vol(conn, args->vol);
-    if (vol == NULL) {
+    if (vol == NULL)
         goto cleanup;
-    }
 
     stream = remoteCreateClientStream(conn, hdr);
-    if (!stream) {
+    if (!stream)
         goto cleanup;
-    }
 
     if (virStorageVolDownload(vol, stream->st,
                               args->offset, args->length,
-                              args->flags) < 0) {
+                              args->flags) < 0)
         goto cleanup;
-    }
 
-    if (remoteAddClientStream(client, stream, 1) < 0) {
+    if (remoteAddClientStream(client, stream, 1) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7430,9 +7186,8 @@ remoteDispatchDomainEventsRegister(struct qemud_server *server ATTRIBUTE_UNUSED,
                                                        NULL,
                                                        VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                                        VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
-                                                       client, NULL)) < 0) {
+                                                       client, NULL)) < 0)
         goto cleanup;
-    }
 
     client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] = callbackID;
 
@@ -7466,9 +7221,8 @@ remoteDispatchDomainEventsDeregister(struct qemud_server *server ATTRIBUTE_UNUSE
     }
 
     if (virConnectDomainEventDeregisterAny(conn,
-                                           client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE]) < 0) {
+                                           client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE]) < 0)
         goto cleanup;
-    }
 
     client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] = -1;
     rv = 0;
@@ -7560,9 +7314,8 @@ remoteDispatchNumOfSecrets(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->num = virConnectNumOfSecrets(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7602,9 +7355,8 @@ remoteDispatchListSecrets(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListSecrets(conn, ret->uuids.uuids_val,
                                 args->maxuuids);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->uuids.uuids_len = len;
 
     rv = 0;
@@ -7635,9 +7387,8 @@ remoteDispatchSecretDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     secret = virSecretDefineXML(conn, args->xml, args->flags);
-    if (secret == NULL) {
+    if (secret == NULL)
         goto cleanup;
-    }
 
     make_nonnull_secret(&ret->secret, secret);
     rv = 0;
@@ -7670,14 +7421,12 @@ remoteDispatchSecretGetValue(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     secret = get_nonnull_secret(conn, args->secret);
-    if (secret == NULL) {
+    if (secret == NULL)
         goto cleanup;
-    }
 
     value = virSecretGetValue(secret, &value_size, args->flags);
-    if (value == NULL) {
+    if (value == NULL)
         goto cleanup;
-    }
 
     ret->value.value_len = value_size;
     ret->value.value_val = (char *)value;
@@ -7710,13 +7459,11 @@ remoteDispatchSecretGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     secret = get_nonnull_secret(conn, args->secret);
-    if (secret == NULL) {
+    if (secret == NULL)
         goto cleanup;
-    }
     ret->xml = virSecretGetXMLDesc(secret, args->flags);
-    if (ret->xml == NULL) {
+    if (ret->xml == NULL)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7746,9 +7493,8 @@ remoteDispatchSecretLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     secret = virSecretLookupByUUID(conn, (unsigned char *)args->uuid);
-    if (secret == NULL) {
+    if (secret == NULL)
         goto cleanup;
-    }
 
     make_nonnull_secret(&ret->secret, secret);
 
@@ -7780,13 +7526,11 @@ remoteDispatchSecretSetValue(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     secret = get_nonnull_secret(conn, args->secret);
-    if (secret == NULL) {
+    if (secret == NULL)
         goto cleanup;
-    }
     if (virSecretSetValue(secret, (const unsigned char *)args->value.value_val,
-                          args->value.value_len, args->flags) < 0) {
+                          args->value.value_len, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7816,12 +7560,10 @@ remoteDispatchSecretUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     secret = get_nonnull_secret(conn, args->secret);
-    if (secret == NULL) {
+    if (secret == NULL)
         goto cleanup;
-    }
-    if (virSecretUndefine(secret) < 0) {
+    if (virSecretUndefine(secret) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7851,9 +7593,8 @@ remoteDispatchSecretLookupByUsage(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     secret = virSecretLookupByUsage(conn, args->usageType, args->usageID);
-    if (secret == NULL) {
+    if (secret == NULL)
         goto cleanup;
-    }
 
     make_nonnull_secret(&ret->secret, secret);
 
@@ -7885,15 +7626,13 @@ static int remoteDispatchDomainIsActive(struct qemud_server *server ATTRIBUTE_UN
     }
 
     domain = get_nonnull_domain(conn, args->dom);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     ret->active = virDomainIsActive(domain);
 
-    if (ret->active < 0) {
+    if (ret->active < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7922,15 +7661,13 @@ static int remoteDispatchDomainIsPersistent(struct qemud_server *server ATTRIBUT
     }
 
     domain = get_nonnull_domain(conn, args->dom);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     ret->persistent = virDomainIsPersistent(domain);
 
-    if (ret->persistent < 0) {
+    if (ret->persistent < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7959,15 +7696,13 @@ static int remoteDispatchDomainIsUpdated(struct qemud_server *server ATTRIBUTE_U
     }
 
     domain = get_nonnull_domain(conn, args->dom);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     ret->updated = virDomainIsUpdated(domain);
 
-    if (ret->updated < 0) {
+    if (ret->updated < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -7996,15 +7731,13 @@ static int remoteDispatchInterfaceIsActive(struct qemud_server *server ATTRIBUTE
     }
 
     iface = get_nonnull_interface(conn, args->iface);
-    if (iface == NULL) {
+    if (iface == NULL)
         goto cleanup;
-    }
 
     ret->active = virInterfaceIsActive(iface);
 
-    if (ret->active < 0) {
+    if (ret->active < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8033,15 +7766,13 @@ static int remoteDispatchNetworkIsActive(struct qemud_server *server ATTRIBUTE_U
     }
 
     network = get_nonnull_network(conn, args->net);
-    if (network == NULL) {
+    if (network == NULL)
         goto cleanup;
-    }
 
     ret->active = virNetworkIsActive(network);
 
-    if (ret->active < 0) {
+    if (ret->active < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8070,15 +7801,13 @@ static int remoteDispatchNetworkIsPersistent(struct qemud_server *server ATTRIBU
     }
 
     network = get_nonnull_network(conn, args->net);
-    if (network == NULL) {
+    if (network == NULL)
         goto cleanup;
-    }
 
     ret->persistent = virNetworkIsPersistent(network);
 
-    if (ret->persistent < 0) {
+    if (ret->persistent < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8107,15 +7836,13 @@ static int remoteDispatchStoragePoolIsActive(struct qemud_server *server ATTRIBU
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     ret->active = virStoragePoolIsActive(pool);
 
-    if (ret->active < 0) {
+    if (ret->active < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8144,15 +7871,13 @@ static int remoteDispatchStoragePoolIsPersistent(struct qemud_server *server ATT
     }
 
     pool = get_nonnull_storage_pool(conn, args->pool);
-    if (pool == NULL) {
+    if (pool == NULL)
         goto cleanup;
-    }
 
     ret->persistent = virStoragePoolIsPersistent(pool);
 
-    if (ret->persistent < 0) {
+    if (ret->persistent < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8182,9 +7907,8 @@ static int remoteDispatchIsSecure(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     ret->secure = virConnectIsSecure(conn);
 
-    if (ret->secure < 0) {
+    if (ret->secure < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8213,9 +7937,8 @@ remoteDispatchCpuCompare(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     result = virConnectCompareCPU(conn, args->xml, args->flags);
-    if (result == VIR_CPU_COMPARE_ERROR) {
+    if (result == VIR_CPU_COMPARE_ERROR)
         goto cleanup;
-    }
 
     ret->result = result;
     rv = 0;
@@ -8248,9 +7971,8 @@ remoteDispatchCpuBaseline(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 (const char **) args->xmlCPUs.xmlCPUs_val,
                                 args->xmlCPUs.xmlCPUs_len,
                                 args->flags);
-    if (cpu == NULL) {
+    if (cpu == NULL)
         goto cleanup;
-    }
 
     ret->cpu = cpu;
 
@@ -8282,13 +8004,11 @@ remoteDispatchDomainGetJobInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainGetJobInfo(dom, &info) < 0) {
+    if (virDomainGetJobInfo(dom, &info) < 0)
         goto cleanup;
-    }
 
     ret->type = info.type;
     ret->timeElapsed = info.timeElapsed;
@@ -8332,13 +8052,11 @@ remoteDispatchDomainAbortJob(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainAbortJob(dom) < 0) {
+    if (virDomainAbortJob(dom) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8369,13 +8087,11 @@ remoteDispatchDomainMigrateSetMaxDowntime(struct qemud_server *server ATTRIBUTE_
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainMigrateSetMaxDowntime(dom, args->downtime, args->flags) < 0) {
+    if (virDomainMigrateSetMaxDowntime(dom, args->downtime, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8405,13 +8121,11 @@ remoteDispatchDomainMigrateSetMaxSpeed(struct qemud_server *server ATTRIBUTE_UNU
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainMigrateSetMaxSpeed(dom, args->bandwidth, args->flags) < 0) {
+    if (virDomainMigrateSetMaxSpeed(dom, args->bandwidth, args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8442,14 +8156,12 @@ remoteDispatchDomainSnapshotCreateXml(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     domain = get_nonnull_domain(conn, args->domain);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     snapshot = virDomainSnapshotCreateXML(domain, args->xml_desc, args->flags);
-    if (snapshot == NULL) {
+    if (snapshot == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain_snapshot(&ret->snap, snapshot);
 
@@ -8526,14 +8238,12 @@ remoteDispatchDomainSnapshotNum(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     domain = get_nonnull_domain(conn, args->domain);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     ret->num = virDomainSnapshotNum(domain, args->flags);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -8570,9 +8280,8 @@ remoteDispatchDomainSnapshotListNames(struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     domain = get_nonnull_domain(conn, args->domain);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     /* Allocate return buffer. */
     if (VIR_ALLOC_N(ret->names.names_val, args->nameslen) < 0) {
@@ -8584,9 +8293,8 @@ remoteDispatchDomainSnapshotListNames(struct qemud_server *server ATTRIBUTE_UNUS
                                      ret->names.names_val,
                                      args->nameslen,
                                      args->flags);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -8620,14 +8328,12 @@ remoteDispatchDomainSnapshotLookupByName(struct qemud_server *server ATTRIBUTE_U
     }
 
     domain = get_nonnull_domain(conn, args->domain);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     snapshot = virDomainSnapshotLookupByName(domain, args->name, args->flags);
-    if (snapshot == NULL) {
+    if (snapshot == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain_snapshot(&ret->snap, snapshot);
 
@@ -8662,14 +8368,12 @@ remoteDispatchDomainHasCurrentSnapshot(struct qemud_server *server ATTRIBUTE_UNU
     }
 
     domain = get_nonnull_domain(conn, args->domain);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     result = virDomainHasCurrentSnapshot(domain, args->flags);
-    if (result < 0) {
+    if (result < 0)
         goto cleanup;
-    }
 
     ret->result = result;
 
@@ -8702,14 +8406,12 @@ remoteDispatchDomainSnapshotCurrent(struct qemud_server *server ATTRIBUTE_UNUSED
     }
 
     domain = get_nonnull_domain(conn, args->domain);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     snapshot = virDomainSnapshotCurrent(domain, args->flags);
-    if (snapshot == NULL) {
+    if (snapshot == NULL)
         goto cleanup;
-    }
 
     make_nonnull_domain_snapshot(&ret->snap, snapshot);
 
@@ -8840,9 +8542,8 @@ remoteDispatchDomainEventsRegisterAny(struct qemud_server *server ATTRIBUTE_UNUS
                                                        NULL,
                                                        args->eventID,
                                                        domainEventCallbacks[args->eventID],
-                                                       client, NULL)) < 0) {
+                                                       client, NULL)) < 0)
         goto cleanup;
-    }
 
     client->domainEventCallbackID[args->eventID] = callbackID;
 
@@ -8884,9 +8585,8 @@ remoteDispatchDomainEventsDeregisterAny(struct qemud_server *server ATTRIBUTE_UN
         goto cleanup;
     }
 
-    if (virConnectDomainEventDeregisterAny(conn, callbackID) < 0) {
+    if (virConnectDomainEventDeregisterAny(conn, callbackID) < 0)
         goto cleanup;
-    }
 
     client->domainEventCallbackID[args->eventID] = -1;
     rv = 0;
@@ -8917,9 +8617,8 @@ remoteDispatchNwfilterLookupByName(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     nwfilter = virNWFilterLookupByName(conn, args->name);
-    if (nwfilter == NULL) {
+    if (nwfilter == NULL)
         goto cleanup;
-    }
 
     make_nonnull_nwfilter(&ret->nwfilter, nwfilter);
 
@@ -8951,9 +8650,8 @@ remoteDispatchNwfilterLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     nwfilter = virNWFilterLookupByUUID(conn, (unsigned char *) args->uuid);
-    if (nwfilter == NULL) {
+    if (nwfilter == NULL)
         goto cleanup;
-    }
 
     make_nonnull_nwfilter(&ret->nwfilter, nwfilter);
 
@@ -8986,9 +8684,8 @@ remoteDispatchNwfilterDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     nwfilter = virNWFilterDefineXML(conn, args->xml);
-    if (nwfilter == NULL) {
+    if (nwfilter == NULL)
         goto cleanup;
-    }
 
     make_nonnull_nwfilter(&ret->nwfilter, nwfilter);
 
@@ -9021,13 +8718,11 @@ remoteDispatchNwfilterUndefine(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     nwfilter = get_nonnull_nwfilter(conn, args->nwfilter);
-    if (nwfilter == NULL) {
+    if (nwfilter == NULL)
         goto cleanup;
-    }
 
-    if (virNWFilterUndefine(nwfilter) < 0) {
+    if (virNWFilterUndefine(nwfilter) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -9070,9 +8765,8 @@ remoteDispatchListNwfilters(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     len = virConnectListNWFilters(conn,
                                   ret->names.names_val, args->maxnames);
-    if (len < 0) {
+    if (len < 0)
         goto cleanup;
-    }
     ret->names.names_len = len;
 
     rv = 0;
@@ -9104,15 +8798,13 @@ remoteDispatchNwfilterGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     nwfilter = get_nonnull_nwfilter(conn, args->nwfilter);
-    if (nwfilter == NULL) {
+    if (nwfilter == NULL)
         goto cleanup;
-    }
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virNWFilterGetXMLDesc(nwfilter, args->flags);
-    if (!ret->xml) {
+    if (!ret->xml)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -9142,9 +8834,8 @@ remoteDispatchNumOfNwfilters(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->num = virConnectNumOfNWFilters(conn);
-    if (ret->num < 0) {
+    if (ret->num < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -9174,13 +8865,11 @@ remoteDispatchDomainGetBlockInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->dom);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
-    if (virDomainGetBlockInfo(dom, args->path, &info, args->flags) < 0) {
+    if (virDomainGetBlockInfo(dom, args->path, &info, args->flags) < 0)
         goto cleanup;
-    }
 
     ret->capacity = info.capacity;
     ret->allocation = info.allocation;
@@ -9214,14 +8903,12 @@ qemuDispatchMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     domain = get_nonnull_domain(conn, args->domain);
-    if (domain == NULL) {
+    if (domain == NULL)
         goto cleanup;
-    }
 
     if (virDomainQemuMonitorCommand(domain, args->cmd, &ret->result,
-                                    args->flags) < 0) {
+                                    args->flags) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
@@ -9254,9 +8941,8 @@ remoteDispatchDomainOpenConsole(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     dom = get_nonnull_domain(conn, args->domain);
-    if (dom == NULL) {
+    if (dom == NULL)
         goto cleanup;
-    }
 
     stream = remoteCreateClientStream(conn, hdr);
     if (!stream) {
@@ -9268,13 +8954,11 @@ remoteDispatchDomainOpenConsole(struct qemud_server *server ATTRIBUTE_UNUSED,
                              args->devname ? *args->devname : NULL,
                              stream->st,
                              args->flags);
-    if (r < 0) {
+    if (r < 0)
         goto cleanup;
-    }
 
-    if (remoteAddClientStream(client, stream, 1) < 0) {
+    if (remoteAddClientStream(client, stream, 1) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
