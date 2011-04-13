@@ -141,9 +141,23 @@ networkRadvdConfigFileName(const char *netname)
 static char *
 networkBridgeDummyNicName(const char *brname)
 {
+    static const char dummyNicSuffix[] = "-nic";
     char *nicname;
 
-    virAsprintf(&nicname, "%s-nic", brname);
+    if (strlen(brname) + sizeof(dummyNicSuffix) > IFNAMSIZ) {
+        /* because the length of an ifname is limited to IFNAMSIZ-1
+         * (usually 15), and we're adding 4 more characters, we must
+         * truncate the original name to 11 to fit. In order to catch
+         * a possible numeric ending (eg virbr0, virbr1, etc), we grab
+         * the first 8 and last 3 characters of the string.
+         */
+         virAsprintf(&nicname, "%.*s%s%s",
+                     /* space for last 3 chars + "-nic" + NULL */
+                     (int)(IFNAMSIZ - (3 + sizeof(dummyNicSuffix))),
+                     brname, brname + strlen(brname) - 3, dummyNicSuffix);
+    } else {
+         virAsprintf(&nicname, "%s%s", brname, dummyNicSuffix);
+    }
     return nicname;
 }
 
