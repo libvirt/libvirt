@@ -228,6 +228,29 @@ phypExecBuffer(LIBSSH2_SESSION *session, virBufferPtr buf, int *exit_status,
     return ret;
 }
 
+/* Convenience wrapper function */
+static int phypExecInt(LIBSSH2_SESSION *, virBufferPtr, virConnectPtr, int *)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+static int
+phypExecInt(LIBSSH2_SESSION *session, virBufferPtr buf, virConnectPtr conn,
+            int *result)
+{
+    char *str;
+    int ret;
+    char *char_ptr;
+
+    str = phypExecBuffer(session, buf, &ret, conn, true);
+    if (!str || ret) {
+        VIR_FREE(str);
+        return -1;
+    }
+    ret = virStrToLong_i(str, &char_ptr, 10, result);
+    if (ret == 0 && *char_ptr)
+        VIR_WARN("ignoring suffix during integer parsing of '%s'", str);
+    VIR_FREE(str);
+    return ret;
+}
+
 static int
 phypGetSystemType(virConnectPtr conn)
 {
@@ -255,10 +278,7 @@ phypGetVIOSPartitionID(virConnectPtr conn)
     phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     int system_type = phyp_driver->system_type;
-    char *ret = NULL;
-    int exit_status = 0;
     int id = -1;
-    char *char_ptr;
     char *managed_system = phyp_driver->managed_system;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -267,17 +287,7 @@ phypGetVIOSPartitionID(virConnectPtr conn)
         virBufferVSprintf(&buf, " -m %s", managed_system);
     virBufferAddLit(&buf, " -r lpar -F lpar_id,lpar_env"
                     "|sed -n '/vioserver/ {\n s/,.*$//\n p\n}'");
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &id) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &id);
     return id;
 }
 
@@ -340,10 +350,7 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
     phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     int system_type = phyp_driver->system_type;
-    int exit_status = 0;
     int ndom = -1;
-    char *char_ptr;
-    char *ret = NULL;
     char *managed_system = phyp_driver->managed_system;
     const char *state;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -362,19 +369,9 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F lpar_id,state %s |grep -c '^[0-9]*'",
+    virBufferVSprintf(&buf, " -F lpar_id,state %s |grep -c '^[0-9][0-9]*'",
                       state);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &ndom) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &ndom);
     return ndom;
 }
 
@@ -1298,27 +1295,14 @@ phypGetLparID(LIBSSH2_SESSION * session, const char *managed_system,
 {
     phyp_driverPtr phyp_driver = conn->privateData;
     int system_type = phyp_driver->system_type;
-    int exit_status = 0;
     int lpar_id = -1;
-    char *char_ptr;
-    char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
     virBufferVSprintf(&buf, " --filter lpar_names=%s -F lpar_id", name);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &lpar_id);
     return lpar_id;
 }
 
@@ -1382,10 +1366,7 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
     LIBSSH2_SESSION *session = connection_data->session;
     phyp_driverPtr phyp_driver = conn->privateData;
     int system_type = phyp_driver->system_type;
-    char *ret = NULL;
-    char *char_ptr;
     int memory = 0;
-    int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (type != 1 && type != 0)
@@ -1397,17 +1378,7 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
     virBufferVSprintf(&buf,
                       " -r mem --level lpar -F %s --filter lpar_ids=%d",
                       type ? "curr_mem" : "curr_max_mem", lpar_id);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &memory) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &memory);
     return memory;
 }
 
@@ -1419,9 +1390,6 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
     LIBSSH2_SESSION *session = connection_data->session;
     phyp_driverPtr phyp_driver = conn->privateData;
     int system_type = phyp_driver->system_type;
-    char *ret = NULL;
-    char *char_ptr;
-    int exit_status = 0;
     int vcpus = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -1431,17 +1399,7 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
     virBufferVSprintf(&buf,
                       " -r proc --level lpar -F %s --filter lpar_ids=%d",
                       type ? "curr_max_procs" : "curr_procs", lpar_id);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &vcpus) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &vcpus);
     return vcpus;
 }
 
@@ -1480,10 +1438,7 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
     LIBSSH2_SESSION *session = connection_data->session;
     phyp_driverPtr phyp_driver = conn->privateData;
     int system_type = phyp_driver->system_type;
-    char *ret = NULL;
-    char *char_ptr;
     int remote_slot = -1;
-    int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "lshwres");
@@ -1491,17 +1446,7 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
         virBufferVSprintf(&buf, " -m %s", managed_system);
     virBufferVSprintf(&buf, " -r virtualio --rsubtype scsi -F "
                       "remote_slot_num --filter lpar_names=%s", lpar_name);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &remote_slot) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &remote_slot);
     return remote_slot;
 }
 
@@ -1609,9 +1554,6 @@ phypGetVIOSNextSlotNumber(virConnectPtr conn)
     char *managed_system = phyp_driver->managed_system;
     int system_type = phyp_driver->system_type;
     int vios_id = phyp_driver->vios_id;
-    int exit_status = 0;
-    char *char_ptr;
-    char *ret = NULL;
     char *profile = NULL;
     int slot = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -1632,21 +1574,9 @@ phypGetVIOSNextSlotNumber(virConnectPtr conn)
                       "virtual_serial_adapters|sed -e 's/\"//g' -e "
                       "'s/,/\\n/g'|sed -e 's/\\(^[0-9][0-9]\\*\\).*$/\\1/'"
                       "|sort|tail -n 1", profile);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
-        goto cleanup;
-
-    slot += 1;
-
-cleanup:
-    VIR_FREE(profile);
-    VIR_FREE(ret);
-
-    return slot;
+    if (phypExecInt(session, &buf, conn, &slot) < 0)
+        return -1;
+    return slot + 1;
 }
 
 static int
@@ -1780,7 +1710,6 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     int system_type = phyp_driver->system_type;
     int vios_id = phyp_driver->vios_id;
     int exit_status = 0;
-    char *char_ptr = NULL;
     char *ret = NULL;
     char *scsi_adapter = NULL;
     int slot = 0;
@@ -1860,13 +1789,7 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     virBufferVSprintf(&buf,
                       " slot_num,backing_device|grep %s|cut -d, -f1",
                       dev->data.disk->src);
-    VIR_FREE(ret);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+    if (phypExecInt(session, &buf, conn, &slot) < 0)
         goto cleanup;
 
     /* Listing all the virtual_scsi_adapter interfaces, the new adapter must
@@ -1896,10 +1819,7 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
                       "\"virtual_scsi_adapters=%s,%d/client/%d/%s/0\"'",
                       domain_name, domain->id, ret, slot,
                       vios_id, vios_name);
-    VIR_FREE(ret);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+    if (phypExecInt(session, &buf, conn, &slot) < 0)
         goto cleanup;
 
     /* Finally I add the new scsi adapter to VIOS using the same slot
@@ -2003,11 +1923,8 @@ phypGetStoragePoolSize(virConnectPtr conn, char *name)
     LIBSSH2_SESSION *session = connection_data->session;
     char *managed_system = phyp_driver->managed_system;
     int system_type = phyp_driver->system_type;
-    int exit_status = 0;
     int vios_id = phyp_driver->vios_id;
-    char *ret = NULL;
     int sp_size = -1;
-    char *char_ptr;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
@@ -2020,17 +1937,7 @@ phypGetStoragePoolSize(virConnectPtr conn, char *name)
         virBufferAddChar(&buf, '\'');
 
     virBufferVSprintf(&buf, "|sed '1d; s/ //g'");
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &sp_size) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &sp_size);
     return sp_size;
 }
 
@@ -2461,7 +2368,7 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
     int i;
     char *ret = NULL;
     char *volumes_list = NULL;
-    char *char_ptr2 = NULL;
+    char *char_ptr = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
@@ -2483,16 +2390,16 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
         volumes_list = ret;
 
         while (got < nvolumes) {
-            char_ptr2 = strchr(volumes_list, '\n');
+            char_ptr = strchr(volumes_list, '\n');
 
-            if (char_ptr2) {
-                *char_ptr2 = '\0';
+            if (char_ptr) {
+                *char_ptr = '\0';
                 if ((volumes[got++] = strdup(volumes_list)) == NULL) {
                     virReportOOMError();
                     goto cleanup;
                 }
-                char_ptr2++;
-                volumes_list = char_ptr2;
+                char_ptr++;
+                volumes_list = char_ptr;
             } else
                 break;
         }
@@ -2519,12 +2426,9 @@ phypStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     int system_type = phyp_driver->system_type;
-    int exit_status = 0;
     int nvolumes = -1;
-    char *ret = NULL;
     char *managed_system = phyp_driver->managed_system;
     int vios_id = phyp_driver->vios_id;
-    char *char_ptr;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
@@ -2534,21 +2438,11 @@ phypStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
     virBufferVSprintf(&buf, "|grep -c '^.*$'");
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &nvolumes) == -1)
-        goto cleanup;
+    if (phypExecInt(session, &buf, conn, &nvolumes) < 0)
+        return -1;
 
     /* We need to remove 2 line from the header text output */
-    nvolumes -= 2;
-
-cleanup:
-    VIR_FREE(ret);
-
-    return nvolumes;
+    return nvolumes - 2;
 }
 
 static int
@@ -2636,12 +2530,9 @@ phypNumOfStoragePools(virConnectPtr conn)
     phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     int system_type = phyp_driver->system_type;
-    int exit_status = 0;
     int nsp = -1;
-    char *ret = NULL;
     char *managed_system = phyp_driver->managed_system;
     int vios_id = phyp_driver->vios_id;
-    char *char_ptr;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
@@ -2654,17 +2545,7 @@ phypNumOfStoragePools(virConnectPtr conn)
         virBufferAddChar(&buf, '\'');
 
     virBufferVSprintf(&buf, "|grep -c '^.*$'");
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &nsp) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
-
+    phypExecInt(session, &buf, conn, &nsp);
     return nsp;
 }
 
@@ -2683,7 +2564,7 @@ phypListStoragePools(virConnectPtr conn, char **const pools, int npools)
     int i;
     char *ret = NULL;
     char *storage_pools = NULL;
-    char *char_ptr2 = NULL;
+    char *char_ptr = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
@@ -2703,16 +2584,16 @@ phypListStoragePools(virConnectPtr conn, char **const pools, int npools)
         storage_pools = ret;
 
         while (got < npools) {
-            char_ptr2 = strchr(storage_pools, '\n');
+            char_ptr = strchr(storage_pools, '\n');
 
-            if (char_ptr2) {
-                *char_ptr2 = '\0';
+            if (char_ptr) {
+                *char_ptr = '\0';
                 if ((pools[got++] = strdup(storage_pools)) == NULL) {
                     virReportOOMError();
                     goto cleanup;
                 }
-                char_ptr2++;
-                storage_pools = char_ptr2;
+                char_ptr++;
+                storage_pools = char_ptr;
             } else
                 break;
         }
@@ -2888,7 +2769,6 @@ phypInterfaceDestroy(virInterfacePtr iface,
     int exit_status = 0;
     int slot_num = 0;
     int lpar_id = 0;
-    char *char_ptr;
     char *ret = NULL;
     int rv = -1;
 
@@ -2902,12 +2782,7 @@ phypInterfaceDestroy(virInterfacePtr iface,
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F mac_addr,slot_num|"
                       " sed -n '/%s/ s/^.*,//p'", iface->mac);
-    ret = phypExecBuffer(session, &buf, &exit_status, iface->conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &slot_num) == -1)
+    if (phypExecInt(session, &buf, iface->conn, &slot_num) < 0)
         goto cleanup;
 
     /* Getting the remote slot number */
@@ -2919,13 +2794,7 @@ phypInterfaceDestroy(virInterfacePtr iface,
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F mac_addr,lpar_id|"
                       " sed -n '/%s/ s/^.*,//p'", iface->mac);
-    VIR_FREE(ret);
-    ret = phypExecBuffer(session, &buf, &exit_status, iface->conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
+    if (phypExecInt(session, &buf, iface->conn, &lpar_id) < 0)
         goto cleanup;
 
     /* excluding interface */
@@ -2962,7 +2831,6 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     char *managed_system = phyp_driver->managed_system;
     int system_type = phyp_driver->system_type;
     int exit_status = 0;
-    char *char_ptr;
     int slot = 0;
     char *ret = NULL;
     char name[PHYP_IFACENAME_SIZE];
@@ -2982,12 +2850,7 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
                       " -r virtualio --rsubtype slot --level slot"
                       " -Fslot_num --filter lpar_names=%s"
                       " |sort|tail -n 1", def->name);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+    if (phypExecInt(session, &buf, conn, &slot) < 0)
         goto cleanup;
 
     /* The next free slot itself: */
@@ -3076,7 +2939,6 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     char *managed_system = phyp_driver->managed_system;
     int system_type = phyp_driver->system_type;
     int exit_status = 0;
-    char *char_ptr;
     char *ret = NULL;
     int slot = 0;
     int lpar_id = 0;
@@ -3092,12 +2954,7 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
                       " -r virtualio --rsubtype slot --level slot "
                       " -F drc_name,slot_num |"
                       " sed -n '/%s/ s/^.*,//p'", name);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+    if (phypExecInt(session, &buf, conn, &slot) < 0)
         goto cleanup;
 
     /*Getting the lpar_id for the interface */
@@ -3109,13 +2966,7 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
                       " -r virtualio --rsubtype slot --level slot "
                       " -F drc_name,lpar_id |"
                       " sed -n '/%s/ s/^.*,//p'", name);
-    VIR_FREE(ret);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
+    if (phypExecInt(session, &buf, conn, &lpar_id) < 0)
         goto cleanup;
 
     /*Getting the interface mac */
@@ -3127,7 +2978,6 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F lpar_id,slot_num,mac_addr|"
                       " sed -n '/%d,%d/ s/^.*,//p'", lpar_id, slot);
-    VIR_FREE(ret);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     if (exit_status < 0 || ret == NULL)
@@ -3151,10 +3001,7 @@ phypInterfaceIsActive(virInterfacePtr iface)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *managed_system = phyp_driver->managed_system;
     int system_type = phyp_driver->system_type;
-    int exit_status = 0;
     int state = -1;
-    char *char_ptr;
-    char *ret = NULL;
 
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
@@ -3164,16 +3011,7 @@ phypInterfaceIsActive(virInterfacePtr iface)
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F mac_addr,state |"
                       " sed -n '/%s/ s/^.*,//p'", iface->mac);
-    ret = phypExecBuffer(session, &buf, &exit_status, iface->conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &state) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
+    phypExecInt(session, &buf, iface->conn, &state);
     return state;
 }
 
@@ -3191,7 +3029,7 @@ phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
     int i;
     char *ret = NULL;
     char *networks = NULL;
-    char *char_ptr2 = NULL;
+    char *char_ptr = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool success = false;
 
@@ -3211,16 +3049,16 @@ phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
     networks = ret;
 
     while (got < nnames) {
-        char_ptr2 = strchr(networks, '\n');
+        char_ptr = strchr(networks, '\n');
 
-        if (char_ptr2) {
-            *char_ptr2 = '\0';
+        if (char_ptr) {
+            *char_ptr = '\0';
             if ((names[got++] = strdup(networks)) == NULL) {
                 virReportOOMError();
                 goto cleanup;
             }
-            char_ptr2++;
-            networks = char_ptr2;
+            char_ptr++;
+            networks = char_ptr;
         } else {
             break;
         }
@@ -3244,10 +3082,7 @@ phypNumOfInterfaces(virConnectPtr conn)
     char *managed_system = phyp_driver->managed_system;
     int system_type = phyp_driver->system_type;
     int vios_id = phyp_driver->vios_id;
-    int exit_status = 0;
     int nnets = -1;
-    char *char_ptr;
-    char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "lshwres ");
@@ -3257,16 +3092,7 @@ phypNumOfInterfaces(virConnectPtr conn)
     virBufferVSprintf(&buf,
                       "-r virtualio --rsubtype eth --level lpar|"
                       "grep -v lpar_id=%d|grep -c lpar_name", vios_id);
-    ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
-
-    if (exit_status < 0 || ret == NULL)
-        goto cleanup;
-
-    if (virStrToLong_i(ret, &char_ptr, 10, &nnets) == -1)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(ret);
+    phypExecInt(session, &buf, conn, &nnets);
     return nnets;
 }
 
@@ -3373,7 +3199,7 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
     int i;
     char *ret = NULL;
     char *domains = NULL;
-    char *char_ptr2 = NULL;
+    char *char_ptr = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
@@ -3390,16 +3216,16 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
         domains = ret;
 
         while (got < nnames) {
-            char_ptr2 = strchr(domains, '\n');
+            char_ptr = strchr(domains, '\n');
 
-            if (char_ptr2) {
-                *char_ptr2 = '\0';
+            if (char_ptr) {
+                *char_ptr = '\0';
                 if ((names[got++] = strdup(domains)) == NULL) {
                     virReportOOMError();
                     goto cleanup;
                 }
-                char_ptr2++;
-                domains = char_ptr2;
+                char_ptr++;
+                domains = char_ptr;
             } else
                 break;
         }
