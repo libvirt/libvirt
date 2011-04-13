@@ -3587,6 +3587,7 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     int slot = 0;
     int lpar_id = 0;
     char mac[PHYP_MAC_SIZE];
+    virInterfacePtr result = NULL;
 
     /*Getting the slot number for the interface */
     virBufferAddLit(&buf, "lshwres ");
@@ -3667,7 +3668,7 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
 
     memcpy(mac, ret, PHYP_MAC_SIZE-1);
 
-    virInterfacePtr result = virGetInterface(conn, name, ret);
+    result = virGetInterface(conn, name, ret);
 
     VIR_FREE(cmd);
     VIR_FREE(ret);
