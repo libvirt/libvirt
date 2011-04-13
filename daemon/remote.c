@@ -63,7 +63,6 @@
 #include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
-#define REMOTE_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
 
 static virDomainPtr get_nonnull_domain(virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network(virConnectPtr conn, remote_nonnull_network network);
@@ -134,7 +133,7 @@ static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!client)
         return -1;
 
-    REMOTE_DEBUG("Relaying domain lifecycle event %d %d", event, detail);
+    VIR_DEBUG("Relaying domain lifecycle event %d %d", event, detail);
 
     virMutexLock(&client->lock);
 
@@ -163,7 +162,7 @@ static int remoteRelayDomainEventReboot(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!client)
         return -1;
 
-    REMOTE_DEBUG("Relaying domain reboot event %s %d", dom->name, dom->id);
+    VIR_DEBUG("Relaying domain reboot event %s %d", dom->name, dom->id);
 
     virMutexLock(&client->lock);
 
@@ -192,7 +191,7 @@ static int remoteRelayDomainEventRTCChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!client)
         return -1;
 
-    REMOTE_DEBUG("Relaying domain rtc change event %s %d %lld", dom->name, dom->id, offset);
+    VIR_DEBUG("Relaying domain rtc change event %s %d %lld", dom->name, dom->id, offset);
 
     virMutexLock(&client->lock);
 
@@ -222,7 +221,7 @@ static int remoteRelayDomainEventWatchdog(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!client)
         return -1;
 
-    REMOTE_DEBUG("Relaying domain watchdog event %s %d %d", dom->name, dom->id, action);
+    VIR_DEBUG("Relaying domain watchdog event %s %d %d", dom->name, dom->id, action);
 
     virMutexLock(&client->lock);
 
@@ -254,7 +253,7 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!client)
         return -1;
 
-    REMOTE_DEBUG("Relaying domain io error %s %d %s %s %d", dom->name, dom->id, srcPath, devAlias, action);
+    VIR_DEBUG("Relaying domain io error %s %d %s %s %d", dom->name, dom->id, srcPath, devAlias, action);
 
     virMutexLock(&client->lock);
 
@@ -289,8 +288,8 @@ static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUS
     if (!client)
         return -1;
 
-    REMOTE_DEBUG("Relaying domain io error %s %d %s %s %d %s",
-                 dom->name, dom->id, srcPath, devAlias, action, reason);
+    VIR_DEBUG("Relaying domain io error %s %d %s %s %d %s",
+              dom->name, dom->id, srcPath, devAlias, action, reason);
 
     virMutexLock(&client->lock);
 
@@ -328,14 +327,14 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!client)
         return -1;
 
-    REMOTE_DEBUG("Relaying domain graphics event %s %d %d - %d %s %s  - %d %s %s - %s", dom->name, dom->id, phase,
-                 local->family, local->service, local->node,
-                 remote->family, remote->service, remote->node,
-                 authScheme);
+    VIR_DEBUG("Relaying domain graphics event %s %d %d - %d %s %s  - %d %s %s - %s", dom->name, dom->id, phase,
+              local->family, local->service, local->node,
+              remote->family, remote->service, remote->node,
+              authScheme);
 
-    REMOTE_DEBUG("Subject %d", subject->nidentity);
+    VIR_DEBUG("Subject %d", subject->nidentity);
     for (i = 0 ; i < subject->nidentity ; i++) {
-        REMOTE_DEBUG("  %s=%s", subject->identities[i].type, subject->identities[i].name);
+        VIR_DEBUG("  %s=%s", subject->identities[i].type, subject->identities[i].name);
     }
 
     virMutexLock(&client->lock);
@@ -4304,7 +4303,7 @@ remoteDispatchAuthSaslInit(struct qemud_server *server,
     virMutexLock(&client->lock);
     virMutexUnlock(&server->lock);
 
-    REMOTE_DEBUG("Initialize SASL auth %d", client->fd);
+    VIR_DEBUG("Initialize SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn != NULL) {
         VIR_ERROR0(_("client tried invalid SASL init request"));
@@ -4423,7 +4422,7 @@ remoteDispatchAuthSaslInit(struct qemud_server *server,
         client->saslconn = NULL;
         goto authfail;
     }
-    REMOTE_DEBUG("Available mechanisms for client: '%s'", mechlist);
+    VIR_DEBUG("Available mechanisms for client: '%s'", mechlist);
     ret->mechlist = strdup(mechlist);
     if (!ret->mechlist) {
         VIR_ERROR0(_("cannot allocate mechlist"));
@@ -4468,7 +4467,7 @@ remoteSASLCheckSSF(struct qemud_client *client,
         return -1;
     }
     ssf = *(const int *)val;
-    REMOTE_DEBUG("negotiated an SSF of %d", ssf);
+    VIR_DEBUG("negotiated an SSF of %d", ssf);
     if (ssf < 56) { /* 56 is good for Kerberos */
         VIR_ERROR(_("negotiated SSF %d was not strong enough"), ssf);
         remoteDispatchAuthError(rerr);
@@ -4516,7 +4515,7 @@ remoteSASLCheckAccess(struct qemud_server *server,
         client->saslconn = NULL;
         return -1;
     }
-    REMOTE_DEBUG("SASL client username %s", (const char *)val);
+    VIR_DEBUG("SASL client username %s", (const char *)val);
 
     client->saslUsername = strdup((const char*)val);
     if (client->saslUsername == NULL) {
@@ -4567,15 +4566,15 @@ remoteDispatchAuthSaslStart(struct qemud_server *server,
     virMutexLock(&client->lock);
     virMutexUnlock(&server->lock);
 
-    REMOTE_DEBUG("Start SASL auth %d", client->fd);
+    VIR_DEBUG("Start SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
         VIR_ERROR0(_("client tried invalid SASL start request"));
         goto authfail;
     }
 
-    REMOTE_DEBUG("Using SASL mechanism %s. Data %d bytes, nil: %d",
-                 args->mech, args->data.data_len, args->nil);
+    VIR_DEBUG("Using SASL mechanism %s. Data %d bytes, nil: %d",
+              args->mech, args->data.data_len, args->nil);
     err = sasl_server_start(client->saslconn,
                             args->mech,
                             /* NB, distinction of NULL vs "" is *critical* in SASL */
@@ -4611,7 +4610,7 @@ remoteDispatchAuthSaslStart(struct qemud_server *server,
     ret->nil = serverout ? 0 : 1;
     ret->data.data_len = serveroutlen;
 
-    REMOTE_DEBUG("SASL return data %d bytes, nil; %d", ret->data.data_len, ret->nil);
+    VIR_DEBUG("SASL return data %d bytes, nil; %d", ret->data.data_len, ret->nil);
     if (err == SASL_CONTINUE) {
         ret->complete = 0;
     } else {
@@ -4624,7 +4623,7 @@ remoteDispatchAuthSaslStart(struct qemud_server *server,
                 goto authfail;
         }
 
-        REMOTE_DEBUG("Authentication successful %d", client->fd);
+        VIR_DEBUG("Authentication successful %d", client->fd);
         PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
               client->fd, REMOTE_AUTH_SASL, client->saslUsername);
         ret->complete = 1;
@@ -4667,15 +4666,15 @@ remoteDispatchAuthSaslStep(struct qemud_server *server,
     virMutexLock(&client->lock);
     virMutexUnlock(&server->lock);
 
-    REMOTE_DEBUG("Step SASL auth %d", client->fd);
+    VIR_DEBUG("Step SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
         VIR_ERROR0(_("client tried invalid SASL start request"));
         goto authfail;
     }
 
-    REMOTE_DEBUG("Using SASL Data %d bytes, nil: %d",
-                 args->data.data_len, args->nil);
+    VIR_DEBUG("Using SASL Data %d bytes, nil: %d",
+              args->data.data_len, args->nil);
     err = sasl_server_step(client->saslconn,
                            /* NB, distinction of NULL vs "" is *critical* in SASL */
                            args->nil ? NULL : args->data.data_val,
@@ -4712,7 +4711,7 @@ remoteDispatchAuthSaslStep(struct qemud_server *server,
     ret->nil = serverout ? 0 : 1;
     ret->data.data_len = serveroutlen;
 
-    REMOTE_DEBUG("SASL return data %d bytes, nil; %d", ret->data.data_len, ret->nil);
+    VIR_DEBUG("SASL return data %d bytes, nil; %d", ret->data.data_len, ret->nil);
     if (err == SASL_CONTINUE) {
         ret->complete = 0;
     } else {
@@ -4725,7 +4724,7 @@ remoteDispatchAuthSaslStep(struct qemud_server *server,
                 goto authfail;
         }
 
-        REMOTE_DEBUG("Authentication successful %d", client->fd);
+        VIR_DEBUG("Authentication successful %d", client->fd);
         PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
               client->fd, REMOTE_AUTH_SASL, client->saslUsername);
         ret->complete = 1;
@@ -4835,7 +4834,7 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
       NULL
     };
 
-    REMOTE_DEBUG("Start PolicyKit auth %d", client->fd);
+    VIR_DEBUG("Start PolicyKit auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_POLKIT) {
         VIR_ERROR0(_("client tried invalid PolicyKit init request"));
         goto authfail;
@@ -4927,7 +4926,7 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
         "org.libvirt.unix.monitor" :
         "org.libvirt.unix.manage";
 
-    REMOTE_DEBUG("Start PolicyKit auth %d", client->fd);
+    VIR_DEBUG("Start PolicyKit auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_POLKIT) {
         VIR_ERROR0(_("client tried invalid PolicyKit init request"));
         goto authfail;
