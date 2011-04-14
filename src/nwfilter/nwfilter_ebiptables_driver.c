@@ -1634,7 +1634,7 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
                                     bool isIPv6)
 {
     int rc;
-    int directionIn = 0, directionOut = 0;
+    int directionIn = 0;
     char chainPrefix[2];
     bool maySkipICMP, inout = false;
     char *matchState = NULL;
@@ -1643,9 +1643,8 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
     if ((rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN) ||
         (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT)) {
         directionIn = 1;
-        directionOut = inout = (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
-    } else
-        directionOut = 1;
+        inout = (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
+    }
 
     chainPrefix[0] = 'F';
 

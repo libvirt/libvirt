@@ -467,7 +467,7 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
     }
 
     vmwareSetSentinal(cmd, vmw_types[driver->type]);
-    vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
+    vmwareSetSentinal(cmd, vmxPath);
 
 
     if (vm->state != VIR_DOMAIN_RUNNING) {

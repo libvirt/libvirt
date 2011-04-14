@@ -389,7 +389,7 @@ static void virLogDumpAllFD(const char *msg, int len) {
 void
 virLogEmergencyDumpAll(int signum) {
     int len;
-    int oldLogStart, oldLogLen, oldLogEnd;
+    int oldLogStart, oldLogLen;
 
     switch (signum) {
 #ifdef SIGFPE
@@ -444,7 +444,6 @@ virLogEmergencyDumpAll(int signum) {
      * so it's best to reset it first.
      */
     oldLogStart = virLogStart;
-    oldLogEnd = virLogEnd;
     oldLogLen = virLogLen;
     virLogEnd = 0;
     virLogLen = 0;
