@@ -2936,19 +2936,10 @@ phypDestroyStoragePool(virStoragePoolPtr pool)
         return -1;
     }
     cmd = virBufferContentAndReset(&buf);
-
-    if (virAsprintf(&cmd,
-                    "viosvrcmd -m %s --id %d -c "
-                    "'rmsp %s'", managed_system, vios_id,
-                    pool->name) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
-        VIR_ERROR(_("Unable to create Storage Pool: %s"), ret);
+        VIR_ERROR(_("Unable to destroy Storage Pool: %s"), ret);
         goto cleanup;
     }
 
