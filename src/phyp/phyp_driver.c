@@ -3294,6 +3294,7 @@ phypInterfaceDestroy(virInterfacePtr iface,
     char *char_ptr;
     char *cmd = NULL;
     char *ret = NULL;
+    int rv = -1;
 
     /* Getting the remote slot number */
 
@@ -3309,17 +3310,17 @@ phypInterfaceDestroy(virInterfacePtr iface,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, iface->conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     if (virStrToLong_i(ret, &char_ptr, 10, &slot_num) == -1)
-        goto err;
+        goto cleanup;
 
     /* Getting the remote slot number */
     VIR_FREE(cmd);
@@ -3337,7 +3338,7 @@ phypInterfaceDestroy(virInterfacePtr iface,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
@@ -3346,10 +3347,10 @@ phypInterfaceDestroy(virInterfacePtr iface,
     ret = phypExec(session, cmd, &exit_status, iface->conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
-        goto err;
+        goto cleanup;
 
     /* excluding interface */
     VIR_FREE(cmd);
@@ -3366,23 +3367,21 @@ phypInterfaceDestroy(virInterfacePtr iface,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, iface->conn);
 
     if (exit_status < 0 || ret != NULL)
-        goto err;
+        goto cleanup;
 
+    rv = 0;
+
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return 0;
-
-  err:
-    VIR_FREE(cmd);
-    VIR_FREE(ret);
-    return -1;
+    return rv;
 }
 
 static virInterfacePtr
@@ -3405,9 +3404,10 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     char name[PHYP_IFACENAME_SIZE];
     char mac[PHYP_MAC_SIZE];
     virInterfaceDefPtr def;
+    virInterfacePtr result = NULL;
 
     if (!(def = virInterfaceDefParseString(xml)))
-        goto err;
+        goto cleanup;
 
     /* Now need to get the next free slot number */
     virBufferAddLit(&buf, "lshwres ");
@@ -3422,17 +3422,17 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
-        goto err;
+        goto cleanup;
 
     /* The next free slot itself: */
     slot++;
@@ -3453,14 +3453,14 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret != NULL)
-        goto err;
+        goto cleanup;
 
     /* Need to sleep a little while to wait for the HMC to
      * complete the execution of the command.
@@ -3483,7 +3483,7 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
@@ -3505,13 +3505,13 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
         if (virBufferError(&buf)) {
             virBufferFreeAndReset(&buf);
             virReportOOMError();
-            goto err;
+            goto cleanup;
         }
 
         cmd = virBufferContentAndReset(&buf);
 
         ret = phypExec(session, cmd, &exit_status, conn);
-        goto err;
+        goto cleanup;
     }
 
     memcpy(name, ret, PHYP_IFACENAME_SIZE-1);
@@ -3532,27 +3532,24 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     memcpy(mac, ret, PHYP_MAC_SIZE-1);
 
-    VIR_FREE(cmd);
-    VIR_FREE(ret);
-    virInterfaceDefFree(def);
-    return virGetInterface(conn, name, mac);
+    result = virGetInterface(conn, name, mac);
 
-  err:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     virInterfaceDefFree(def);
-    return NULL;
+    return result;
 }
 
 static virInterfacePtr
@@ -3586,17 +3583,17 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
-        goto err;
+        goto cleanup;
 
     /*Getting the lpar_id for the interface */
     VIR_FREE(cmd);
@@ -3621,10 +3618,10 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
-        goto err;
+        goto cleanup;
 
     /*Getting the interface mac */
     virBufferAddLit(&buf, "lshwres ");
@@ -3639,7 +3636,7 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        return NULL;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
@@ -3648,21 +3645,16 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     memcpy(mac, ret, PHYP_MAC_SIZE-1);
 
     result = virGetInterface(conn, name, ret);
 
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return result;
-
-  err:
-    VIR_FREE(cmd);
-    VIR_FREE(ret);
-    return NULL;
-
 }
 
 static int
@@ -3675,7 +3667,7 @@ phypInterfaceIsActive(virInterfacePtr iface)
     char *managed_system = phyp_driver->managed_system;
     int system_type = phyp_driver->system_type;
     int exit_status = 0;
-    int state = 0;
+    int state = -1;
     char *char_ptr;
     char *cmd = NULL;
     char *ret = NULL;
@@ -3692,27 +3684,22 @@ phypInterfaceIsActive(virInterfacePtr iface)
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        return -1;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, iface->conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     if (virStrToLong_i(ret, &char_ptr, 10, &state) == -1)
-        goto err;
+        goto cleanup;
 
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return state;
-
-  err:
-    VIR_FREE(cmd);
-    VIR_FREE(ret);
-    return -1;
-
 }
 
 static int
@@ -3732,6 +3719,7 @@ phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
     char *networks = NULL;
     char *char_ptr2 = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool success = false;
 
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
@@ -3742,15 +3730,16 @@ phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
-    /* I need to parse the textual return in order to get the network interfaces */
+    /* I need to parse the textual return in order to get the network
+     * interfaces */
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     networks = ret;
 
@@ -3761,7 +3750,7 @@ phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
             *char_ptr2 = '\0';
             if ((names[got++] = strdup(networks)) == NULL) {
                 virReportOOMError();
-                goto err;
+                goto cleanup;
             }
             char_ptr2++;
             networks = char_ptr2;
@@ -3770,16 +3759,14 @@ phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
         }
     }
 
+cleanup:
+    if (!success) {
+        for (i = 0; i < got; i++)
+            VIR_FREE(names[i]);
+    }
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return got;
-
-  err:
-    for (i = 0; i < got; i++)
-        VIR_FREE(names[i]);
-    VIR_FREE(cmd);
-    VIR_FREE(ret);
-    return -1;
 }
 
 static int
@@ -3792,7 +3779,7 @@ phypNumOfInterfaces(virConnectPtr conn)
     int system_type = phyp_driver->system_type;
     int vios_id = phyp_driver->vios_id;
     int exit_status = 0;
-    int nnets = 0;
+    int nnets = -1;
     char *char_ptr;
     char *cmd = NULL;
     char *ret = NULL;
@@ -3809,27 +3796,22 @@ phypNumOfInterfaces(virConnectPtr conn)
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0 || ret == NULL)
-        goto err;
+        goto cleanup;
 
     if (virStrToLong_i(ret, &char_ptr, 10, &nnets) == -1)
-        goto err;
+        goto cleanup;
 
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return nnets;
-
-  err:
-    VIR_FREE(cmd);
-    VIR_FREE(ret);
-    return -1;
-
 }
 
 static int
