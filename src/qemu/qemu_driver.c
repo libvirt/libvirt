@@ -43,6 +43,7 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <sys/un.h>
+#include <byteswap.h>
 
 
 #include "qemu_driver.h"
@@ -1810,12 +1811,21 @@ VIR_ENUM_IMPL(qemudSaveCompression, QEMUD_SAVE_FORMAT_LAST,
 
 struct qemud_save_header {
     char magic[sizeof(QEMUD_SAVE_MAGIC)-1];
-    int version;
-    int xml_len;
-    int was_running;
-    int compressed;
-    int unused[15];
+    uint32_t version;
+    uint32_t xml_len;
+    uint32_t was_running;
+    uint32_t compressed;
+    uint32_t unused[15];
 };
+
+static inline void
+bswap_header(struct qemud_save_header *hdr) {
+    hdr->version = bswap_32(hdr->version);
+    hdr->xml_len = bswap_32(hdr->xml_len);
+    hdr->was_running = bswap_32(hdr->was_running);
+    hdr->compressed = bswap_32(hdr->compressed);
+}
+
 
 /* return -errno on failure, or 0 on success */
 static int
@@ -3023,6 +3033,11 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("image magic is incorrect"));
         goto error;
+    }
+
+    if (header.version > QEMUD_SAVE_VERSION) {
+        /* convert endianess and try again */
+        bswap_header(&header);
     }
 
     if (header.version > QEMUD_SAVE_VERSION) {
