@@ -36,6 +36,7 @@
 #include "c-ctype.h"
 #include "domain_nwfilter.h"
 #include "qemu_audit.h"
+#include "domain_conf.h"
 
 #include <sys/utsname.h>
 #include <sys/stat.h>
@@ -5327,8 +5328,8 @@ qemuParseCommandLineChr(const char *val)
 {
     virDomainChrDefPtr def;
 
-    if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+    if (!(def = virDomainChrDefNew()))
+        goto error;
 
     if (STREQ(val, "null")) {
         def->source.type = VIR_DOMAIN_CHR_TYPE_NULL;

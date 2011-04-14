@@ -1271,6 +1271,8 @@ void virDomainObjRef(virDomainObjPtr vm);
 /* Returns 1 if the object was freed, 0 if more refs exist */
 int virDomainObjUnref(virDomainObjPtr vm) ATTRIBUTE_RETURN_CHECK;
 
+virDomainChrDefPtr virDomainChrDefNew(void);
+
 /* live == true means def describes an active domain (being migrated or
  * restored) as opposed to a new persistent configuration of the domain */
 virDomainObjPtr virDomainAssignDef(virCapsPtr caps,

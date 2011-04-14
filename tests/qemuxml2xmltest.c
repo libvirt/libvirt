@@ -195,6 +195,7 @@ mymain(int argc, char **argv)
     DO_TEST_DIFFERENT("console-compat-auto");
     DO_TEST_DIFFERENT("disk-scsi-device-auto");
     DO_TEST_DIFFERENT("console-virtio");
+    DO_TEST_DIFFERENT("serial-target-port-auto");
 
     virCapabilitiesFree(driver.caps);
 

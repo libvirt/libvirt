@@ -168,10 +168,8 @@ xenParseSxprChar(const char *value,
     char *tmp;
     virDomainChrDefPtr def;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (!(def = virDomainChrDefNew()))
         return NULL;
-    }
 
     prefix = value;
 
@@ -1328,6 +1326,7 @@ xenParseSxpr(const struct sexpr *root,
                     goto no_memory;
                 }
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                chr->target.port = 0;
                 def->serials[def->nserials++] = chr;
             }
         }
@@ -1343,6 +1342,7 @@ xenParseSxpr(const struct sexpr *root,
                 goto no_memory;
             }
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
+            chr->target.port = 0;
             def->parallels[def->nparallels++] = chr;
         }
     } else {
@@ -1350,6 +1350,7 @@ xenParseSxpr(const struct sexpr *root,
         if (!(def->console = xenParseSxprChar("pty", tty)))
             goto error;
         def->console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        def->console->target.port = 0;
         def->console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
     }
     VIR_FREE(tty);

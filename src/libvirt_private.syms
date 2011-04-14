@@ -201,6 +201,7 @@ virDomainChrConsoleTargetTypeFromString;
 virDomainChrConsoleTargetTypeToString;
 virDomainChrDefForeach;
 virDomainChrDefFree;
+virDomainChrDefNew;
 virDomainChrSourceDefFree;
 virDomainChrSpicevmcTypeFromString;
 virDomainChrSpicevmcTypeToString;

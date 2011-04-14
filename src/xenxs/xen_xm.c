@@ -36,6 +36,7 @@
 #include "xenxs_private.h"
 #include "xen_xm.h"
 #include "xen_sxpr.h"
+#include "domain_conf.h"
 
 /* Convenience method to grab a int from the config file object */
 static int xenXMConfigGetBool(virConfPtr conf,
@@ -957,6 +958,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto no_memory;
             }
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
+            chr->target.port = 0;
             def->parallels[0] = chr;
             def->nparallels++;
             chr = NULL;
@@ -981,8 +983,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     continue;
                 }
 
-                if (VIR_ALLOC(chr) < 0)
-                    goto no_memory;
+                if (!(chr = virDomainChrDefNew()))
+                    goto cleanup;
                 if (!(chr = xenParseSxprChar(port, NULL)))
                     goto cleanup;
 
@@ -1010,6 +1012,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     goto no_memory;
                 }
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                chr->target.port = 0;
                 def->serials[0] = chr;
                 def->nserials++;
             }
@@ -1018,6 +1021,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         if (!(def->console = xenParseSxprChar("pty", NULL)))
             goto cleanup;
         def->console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        def->console->target.port = 0;
         def->console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
     }
 

@@ -3243,6 +3243,22 @@ error:
     goto cleanup;
 }
 
+/* Create a new character device definition and set
+ * default port.
+ */
+virDomainChrDefPtr
+virDomainChrDefNew(void) {
+    virDomainChrDefPtr def = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    def->target.port = -1;
+    return def;
+}
+
 /* Parse the XML definition for a character device
  * @param node XML nodeset to parse for net definition
  *
@@ -3291,10 +3307,8 @@ virDomainChrDefParseXML(virCapsPtr caps,
     virDomainChrDefPtr def;
     int remaining;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (!(def = virDomainChrDefNew()))
         return NULL;
-    }
 
     type = virXMLPropString(node, "type");
     if (type == NULL) {
