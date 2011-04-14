@@ -858,6 +858,7 @@ virDomainVcpupinDefFree(virDomainVcpupinDefPtr *def,
         return;
 
     for(i = 0; i < nvcpupin; i++) {
+        VIR_FREE(def[i]->cpumask);
         VIR_FREE(def[i]);
     }
 
