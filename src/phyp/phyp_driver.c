@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright IBM Corp. 2009
@@ -156,7 +155,7 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
             rc = libssh2_channel_read(channel, buffer, buffer_size);
             if (rc > 0) {
                 bytecount += rc;
-                virBufferVSprintf(&tex_ret, "%s", buffer);
+                virBufferAdd(&tex_ret, buffer, -1);
             }
         }
         while (rc > 0);
@@ -494,7 +493,7 @@ phypUUIDTable_Push(virConnectPtr conn)
     char *remote_file = NULL;
 
     if (conn->uri->user != NULL) {
-        virBufferVSprintf(&username, "%s", conn->uri->user);
+        virBufferAdd(&username, conn->uri->user, -1);
 
         if (virBufferError(&username)) {
             virBufferFreeAndReset(&username);
@@ -711,7 +710,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
     char *remote_file = NULL;
 
     if (conn->uri->user != NULL) {
-        virBufferVSprintf(&username, "%s", conn->uri->user);
+        virBufferAdd(&username, conn->uri->user, -1);
 
         if (virBufferError(&username)) {
             virBufferFreeAndReset(&username);

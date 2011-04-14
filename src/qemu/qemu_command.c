@@ -1798,8 +1798,7 @@ qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev,
         goto error;
     }
 
-    virBufferVSprintf(&buf, "%s", model);
-    virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+    virBufferVSprintf(&buf, "%s,id=%s", model, dev->info.alias);
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
         goto error;
 
@@ -1845,10 +1844,9 @@ qemuBuildUSBInputDevStr(virDomainInputDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferVSprintf(&buf, "%s",
+    virBufferVSprintf(&buf, "%s,id=%s",
                       dev->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ?
-                      "usb-mouse" : "usb-tablet");
-    virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+                      "usb-mouse" : "usb-tablet", dev->info.alias);
 
     if (virBufferError(&buf)) {
         virReportOOMError();
@@ -1884,8 +1882,7 @@ qemuBuildSoundDevStr(virDomainSoundDefPtr sound,
     else if (STREQ(model, "ich6"))
         model = "intel-hda";
 
-    virBufferVSprintf(&buf, "%s", model);
-    virBufferVSprintf(&buf, ",id=%s", sound->info.alias);
+    virBufferVSprintf(&buf, "%s,id=%s", model, sound->info.alias);
     if (qemuBuildDeviceAddressStr(&buf, &sound->info, qemuCaps) < 0)
         goto error;
 
@@ -1908,10 +1905,8 @@ qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int cad = 0;
 
-    virBufferVSprintf(&buf, "%s", codec);
-    virBufferVSprintf(&buf, ",id=%s-codec%d", sound->info.alias, cad);
-    virBufferVSprintf(&buf, ",bus=%s.0", sound->info.alias);
-    virBufferVSprintf(&buf, ",cad=%d", cad);
+    virBufferVSprintf(&buf, "%s,id=%s-codec%d,bus=%s.0,cad=%d",
+                      codec, sound->info.alias, cad, sound->info.alias, cad);
 
     if (virBufferError(&buf)) {
         virReportOOMError();
@@ -1938,8 +1933,7 @@ qemuBuildVideoDevStr(virDomainVideoDefPtr video,
         goto error;
     }
 
-    virBufferVSprintf(&buf, "%s", model);
-    virBufferVSprintf(&buf, ",id=%s", video->info.alias);
+    virBufferVSprintf(&buf, "%s,id=%s", model, video->info.alias);
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
         if (video->vram > (UINT_MAX / 1024)) {
@@ -2572,7 +2566,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             goto cleanup;
         *hasHwVirt = hasSVM > 0 ? true : false;
 
-        virBufferVSprintf(&buf, "%s", guest->model);
+        virBufferAdd(&buf, guest->model, -1);
         for (i = 0; i < guest->nfeatures; i++) {
             char sign;
             if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)
@@ -3128,7 +3122,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 else if (def->os.bootmenu == VIR_DOMAIN_BOOT_MENU_DISABLED)
                     virBufferVSprintf(&boot_buf, "order=%s,menu=off", boot);
             } else {
-                virBufferVSprintf(&boot_buf, "%s", boot);
+                virBufferAdd(&boot_buf, boot, -1);
             }
 
             virCommandAddArgBuffer(cmd, &boot_buf);
@@ -3291,8 +3285,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                           host->name,
                                           host->port);
                     } else {
-                        virBufferVSprintf(&rbd_hosts, "%s",
-                                          host->name);
+                        virBufferAdd(&rbd_hosts, host->name, -1);
                     }
                 }
             }
@@ -3414,8 +3407,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                               host->name,
                                               host->port);
                         } else {
-                            virBufferVSprintf(&rbd_hosts, "%s",
-                                              host->name);
+                            virBufferAdd(&rbd_hosts, host->name, -1);
                         }
                     }
                     break;

@@ -488,7 +488,7 @@ macProtocolIDFormatter(virBufferPtr buf,
     if (intMapGetByInt(macProtoMap,
                        nwf->p.ethHdrFilter.dataProtocolID.u.u16,
                        &str)) {
-        virBufferVSprintf(buf, "%s", str);
+        virBufferAdd(buf, str, -1);
     } else {
         if (nwf->p.ethHdrFilter.dataProtocolID.datatype == DATATYPE_UINT16)
             asHex = false;
@@ -591,7 +591,7 @@ arpOpcodeFormatter(virBufferPtr buf,
     if (intMapGetByInt(arpOpcodeMap,
                        nwf->p.arpHdrFilter.dataOpcode.u.u16,
                        &str)) {
-        virBufferVSprintf(buf, "%s", str);
+        virBufferAdd(buf, str, -1);
     } else {
         virBufferVSprintf(buf, "%d", nwf->p.arpHdrFilter.dataOpcode.u.u16);
     }
@@ -653,7 +653,7 @@ formatIPProtocolID(virBufferPtr buf,
     if (intMapGetByInt(ipProtoMap,
                        nwf->p.ipHdrFilter.ipHdr.dataProtocolID.u.u8,
                        &str)) {
-        virBufferVSprintf(buf, "%s", str);
+        virBufferAdd(buf, str, -1);
     } else {
         if (nwf->p.ipHdrFilter.ipHdr.dataProtocolID.datatype == DATATYPE_UINT8)
             asHex = false;
@@ -734,8 +734,8 @@ printStringItems(virBufferPtr buf, const struct int_map *int_map,
             for (i = 0; int_map[i].val; i++) {
                 if (mask == int_map[i].attr) {
                     if (c >= 1)
-                        virBufferVSprintf(buf, "%s", sep);
-                    virBufferVSprintf(buf, "%s", int_map[i].val);
+                        virBufferAdd(buf, sep, -1);
+                    virBufferAdd(buf, int_map[i].val, -1);
                     c++;
                 }
             }
@@ -769,7 +769,7 @@ virNWFilterPrintStateMatchFlags(virBufferPtr buf, const char *prefix,
     if (!disp_none && (flags & RULE_FLAG_STATE_NONE))
         return;
 
-    virBufferVSprintf(buf, "%s", prefix);
+    virBufferAdd(buf, prefix, -1);
 
     printStringItems(buf, stateMatchMap, flags, ",");
 }
@@ -2699,7 +2699,7 @@ virNWIPAddressFormat(virBufferPtr buf, virSocketAddrPtr ipaddr)
     char *output = virSocketFormatAddr(ipaddr);
 
     if (output) {
-        virBufferVSprintf(buf, "%s", output);
+        virBufferAdd(buf, output, -1);
         VIR_FREE(output);
     }
 }
@@ -2936,7 +2936,7 @@ virNWFilterDefFormat(virNWFilterDefPtr def)
         xml = virNWFilterEntryFormat(def->filterEntries[i]);
         if (!xml)
             goto err_exit;
-        virBufferVSprintf(&buf, "%s", xml);
+        virBufferAdd(&buf, xml, -1);
         VIR_FREE(xml);
     }
 

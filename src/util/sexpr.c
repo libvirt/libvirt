@@ -1,7 +1,7 @@
 /*
  * sexpr.c : S-Expression routines to communicate with the Xen Daemon
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
  *  This file is subject to the terms and conditions of the GNU Lesser General
@@ -234,7 +234,7 @@ sexpr2string(const struct sexpr *sexpr, virBufferPtr buffer)
             strchr(sexpr->u.value, '('))
             virBufferVSprintf(buffer, "'%s'", sexpr->u.value);
         else
-            virBufferVSprintf(buffer, "%s", sexpr->u.value);
+            virBufferAdd(buffer, sexpr->u.value, -1);
 
         break;
     case SEXPR_NIL:

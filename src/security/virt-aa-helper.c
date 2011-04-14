@@ -1204,7 +1204,7 @@ main(int argc, char **argv)
             virBufferVSprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
                               LOCALSTATEDIR, ctl->def->name);
             if (ctl->files)
-                virBufferVSprintf(&buf, "%s", ctl->files);
+                virBufferAdd(&buf, ctl->files, -1);
         }
 
         if (virBufferError(&buf)) {

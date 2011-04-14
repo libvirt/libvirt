@@ -1115,13 +1115,13 @@ static int xenFormatXMDisk(virConfValuePtr list,
                 goto cleanup;
             }
         }
-        virBufferVSprintf(&buf, "%s", disk->src);
+        virBufferAdd(&buf, disk->src, -1);
     }
     virBufferAddLit(&buf, ",");
     if (hvm && xendConfigVersion == 1)
         virBufferAddLit(&buf, "ioemu:");
 
-    virBufferVSprintf(&buf, "%s", disk->dst);
+    virBufferAdd(&buf, disk->dst, -1);
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
         virBufferAddLit(&buf, ":cdrom");
 

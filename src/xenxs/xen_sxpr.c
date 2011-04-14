@@ -1514,7 +1514,7 @@ xenFormatSxprChr(virDomainChrDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferVSprintf(buf, "%s", type);
+        virBufferAdd(buf, type, -1);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
