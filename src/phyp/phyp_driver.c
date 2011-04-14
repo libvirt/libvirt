@@ -2327,7 +2327,7 @@ phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
-        VIR_ERROR(_("Unable to create Volume: %s"), ret);
+        VIR_ERROR(_("Unable to create Volume: %s"), NULLSTR(ret));
         goto cleanup;
     }
 
@@ -2521,7 +2521,7 @@ phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
     int vios_id = phyp_driver->vios_id;
     int exit_status = 0;
     char *cmd = NULL;
-    char *spname = NULL;
+    char *ret = NULL;
     char *char_ptr;
     char *key = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -2545,12 +2545,12 @@ phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
     }
     cmd = virBufferContentAndReset(&buf);
 
-    spname = phypExec(session, cmd, &exit_status, conn);
+    ret = phypExec(session, cmd, &exit_status, conn);
 
-    if (exit_status < 0 || spname == NULL)
+    if (exit_status < 0 || ret == NULL)
         goto cleanup;
 
-    char_ptr = strchr(spname, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -2560,11 +2560,11 @@ phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
     if (key == NULL)
         goto cleanup;
 
-    vol = virGetStorageVol(conn, spname, volname, key);
+    vol = virGetStorageVol(conn, ret, volname, key);
 
 cleanup:
     VIR_FREE(cmd);
-    VIR_FREE(spname);
+    VIR_FREE(ret);
     VIR_FREE(key);
 
     return vol;
@@ -2725,7 +2725,7 @@ phypVolumeGetPath(virStorageVolPtr vol)
     int vios_id = phyp_driver->vios_id;
     int exit_status = 0;
     char *cmd = NULL;
-    char *sp = NULL;
+    char *ret = NULL;
     char *path = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *char_ptr;
@@ -2750,33 +2750,32 @@ phypVolumeGetPath(virStorageVolPtr vol)
     }
     cmd = virBufferContentAndReset(&buf);
 
-    sp = phypExec(session, cmd, &exit_status, conn);
+    ret = phypExec(session, cmd, &exit_status, conn);
 
-    if (exit_status < 0 || sp == NULL)
+    if (exit_status < 0 || ret == NULL)
         goto cleanup;
 
-    char_ptr = strchr(sp, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
 
-    pv = phypVolumeGetPhysicalVolumeByStoragePool(vol, sp);
+    pv = phypVolumeGetPhysicalVolumeByStoragePool(vol, ret);
 
     if (!pv)
         goto cleanup;
 
-    if (virAsprintf(&path, "/%s/%s/%s", pv, sp, vol->name) < 0) {
+    if (virAsprintf(&path, "/%s/%s/%s", pv, ret, vol->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
 cleanup:
     VIR_FREE(cmd);
-    VIR_FREE(sp);
+    VIR_FREE(ret);
     VIR_FREE(path);
 
     return path;
-
 }
 
 static int
@@ -2942,7 +2941,7 @@ phypDestroyStoragePool(virStoragePoolPtr pool)
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
-        VIR_ERROR(_("Unable to destroy Storage Pool: %s"), ret);
+        VIR_ERROR(_("Unable to destroy Storage Pool: %s"), NULLSTR(ret));
         goto cleanup;
     }
 
@@ -2991,7 +2990,7 @@ phypBuildStoragePool(virConnectPtr conn, virStoragePoolDefPtr def)
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
-        VIR_ERROR(_("Unable to create Storage Pool: %s"), ret);
+        VIR_ERROR(_("Unable to create Storage Pool: %s"), NULLSTR(ret));
         goto cleanup;
     }
 
@@ -3336,8 +3335,6 @@ phypInterfaceDestroy(virInterfacePtr iface,
         goto cleanup;
     }
     cmd = virBufferContentAndReset(&buf);
-
-    VIR_FREE(ret);
 
     ret = phypExec(session, cmd, &exit_status, iface->conn);
 
@@ -4311,7 +4308,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
-        VIR_ERROR(_("Unable to create LPAR. Reason: '%s'"), ret);
+        VIR_ERROR(_("Unable to create LPAR. Reason: '%s'"), NULLSTR(ret));
         goto cleanup;
     }
 
