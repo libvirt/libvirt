@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006, 2007, 2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -164,12 +164,12 @@ cleanup:
 static int parse_socket(unsigned int cpu)
 {
     int ret = get_cpu_value(cpu, "topology/physical_package_id", false);
-#if defined(__powerpc__) || \
+# if defined(__powerpc__) || \
     defined(__powerpc64__)
     /* ppc has -1 */
     if (ret < 0)
         ret = 0;
-#endif
+# endif
     return ret;
 }
 
@@ -213,7 +213,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 return -1;
             }
             nodeinfo->cpus++;
-#if defined(__x86_64__) || \
+# if defined(__x86_64__) || \
     defined(__amd64__)  || \
     defined(__i386__)
         } else if (STRPREFIX(buf, "cpu MHz")) {
@@ -247,7 +247,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 && id > nodeinfo->cores)
                 nodeinfo->cores = id;
         }
-#elif defined(__powerpc__) || \
+# elif defined(__powerpc__) || \
       defined(__powerpc64__)
         } else if (STRPREFIX(buf, "clock")) {
             char *p;
@@ -265,9 +265,9 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 && (*p == '\0' || *p == '.' || c_isspace(*p)))
                 nodeinfo->mhz = ui;
         }
-#else
-# warning Parser for /proc/cpuinfo needs to be adapted for your architecture
-#endif
+# else
+#  warning Parser for /proc/cpuinfo needs to be adapted for your architecture
+# endif
     }
 
     if (!nodeinfo->cpus) {
