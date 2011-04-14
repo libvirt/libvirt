@@ -3915,7 +3915,9 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             PRUnichar *mediumFileUtf16 = NULL;
             PRUint32   storageBus      = StorageBus_Null;
             PRUint32   deviceType      = DeviceType_Null;
+# if VBOX_API_VERSION >= 4000
             PRUint32   accessMode      = AccessMode_ReadOnly;
+# endif
             PRInt32    deviceInst      = 0;
             PRInt32    devicePort      = 0;
             PRInt32    deviceSlot      = 0;
@@ -3924,24 +3926,27 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
             if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                 deviceType = DeviceType_HardDisk;
-                accessMode = AccessMode_ReadWrite;
 # if VBOX_API_VERSION < 4000
                 data->vboxObj->vtbl->FindHardDisk(data->vboxObj,
                                                   mediumFileUtf16, &medium);
+# else
+                accessMode = AccessMode_ReadWrite;
 # endif
             } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                 deviceType = DeviceType_DVD;
-                accessMode = AccessMode_ReadOnly;
 # if VBOX_API_VERSION < 4000
                 data->vboxObj->vtbl->FindDVDImage(data->vboxObj,
                                                   mediumFileUtf16, &medium);
+# else
+                accessMode = AccessMode_ReadOnly;
 # endif
             } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
                 deviceType = DeviceType_Floppy;
-                accessMode = AccessMode_ReadWrite;
 # if VBOX_API_VERSION < 4000
                 data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
                                                      mediumFileUtf16, &medium);
+# else
+                accessMode = AccessMode_ReadWrite;
 # endif
             } else {
                 VBOX_UTF16_FREE(mediumFileUtf16);
