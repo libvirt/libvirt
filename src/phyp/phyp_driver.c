@@ -807,31 +807,35 @@ phypUUIDTable_Pull(virConnectPtr conn)
 static int
 phypUUIDTable_Init(virConnectPtr conn)
 {
-    uuid_tablePtr uuid_table;
+    uuid_tablePtr uuid_table = NULL;
     phyp_driverPtr phyp_driver;
     int nids_numdomains = 0;
     int nids_listdomains = 0;
     int *ids = NULL;
     unsigned int i = 0;
+    int ret = -1;
+    bool table_created = false;
 
     if ((nids_numdomains = phypNumDomainsGeneric(conn, 2)) < 0)
-        goto err;
+        goto cleanup;
 
     if (VIR_ALLOC_N(ids, nids_numdomains) < 0) {
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
 
     if ((nids_listdomains =
          phypListDomainsGeneric(conn, ids, nids_numdomains, 1)) < 0)
-        goto err;
+        goto cleanup;
 
     /* exit early if there are no domains */
-    if (nids_numdomains == 0 && nids_listdomains == 0)
-        goto exit;
-    else if (nids_numdomains != nids_listdomains) {
+    if (nids_numdomains == 0 && nids_listdomains == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+    if (nids_numdomains != nids_listdomains) {
         VIR_ERROR0(_("Unable to determine number of domains."));
-        goto err;
+        goto cleanup;
     }
 
     phyp_driver = conn->privateData;
@@ -841,11 +845,12 @@ phypUUIDTable_Init(virConnectPtr conn)
     /* try to get the table from server */
     if (phypUUIDTable_Pull(conn) == -1) {
         /* file not found in the server, creating a new one */
+        table_created = true;
         if (VIR_ALLOC_N(uuid_table->lpars, uuid_table->nlpars) >= 0) {
             for (i = 0; i < uuid_table->nlpars; i++) {
                 if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
                     virReportOOMError();
-                    goto err;
+                    goto cleanup;
                 }
                 uuid_table->lpars[i]->id = ids[i];
 
@@ -855,27 +860,30 @@ phypUUIDTable_Init(virConnectPtr conn)
             }
         } else {
             virReportOOMError();
-            goto err;
+            goto cleanup;
         }
 
         if (phypUUIDTable_WriteFile(conn) == -1)
-            goto err;
+            goto cleanup;
 
         if (phypUUIDTable_Push(conn) == -1)
-            goto err;
+            goto cleanup;
     } else {
         if (phypUUIDTable_ReadFile(conn) == -1)
-            goto err;
-        goto exit;
+            goto cleanup;
     }
 
-  exit:
-    VIR_FREE(ids);
-    return 0;
+    ret = 0;
 
-  err:
+cleanup:
+    if (ret < 0 && table_created) {
+        for (i = 0; i < uuid_table->nlpars; i++) {
+            VIR_FREE(uuid_table->lpars[i]);
+        }
+        VIR_FREE(uuid_table->lpars);
+    }
     VIR_FREE(ids);
-    return -1;
+    return ret;
 }
 
 static void
