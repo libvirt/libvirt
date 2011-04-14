@@ -58,7 +58,7 @@
     void                                                                      \
     esxVI_##_type##_Free(esxVI_##_type **ptrptr)                              \
     {                                                                         \
-        esxVI_##_type *item = NULL;                                           \
+        esxVI_##_type *item ATTRIBUTE_UNUSED;                                 \
                                                                               \
         if (ptrptr == NULL || *ptrptr == NULL) {                              \
             return;                                                           \
@@ -189,7 +189,7 @@
     esxVI_##_type##_Cast##_dest_extra##FromAnyType(esxVI_AnyType *anyType,    \
                                                    _dest_type **ptrptr)       \
     {                                                                         \
-        _dest_type *item;                                                     \
+        _dest_type *item ATTRIBUTE_UNUSED;                                    \
                                                                               \
         if (anyType == NULL || ptrptr == NULL || *ptrptr != NULL) {           \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \

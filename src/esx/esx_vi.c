@@ -60,7 +60,7 @@
     void                                                                      \
     esxVI_##_type##_Free(esxVI_##_type **ptrptr)                              \
     {                                                                         \
-        esxVI_##_type *item = NULL;                                           \
+        esxVI_##_type *item ATTRIBUTE_UNUSED;                                 \
                                                                               \
         if (ptrptr == NULL || *ptrptr == NULL) {                              \
             return;                                                           \
