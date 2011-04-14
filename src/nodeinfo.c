@@ -163,7 +163,14 @@ cleanup:
 
 static int parse_socket(unsigned int cpu)
 {
-    return get_cpu_value(cpu, "topology/physical_package_id", false);
+    int ret = get_cpu_value(cpu, "topology/physical_package_id", false);
+#if defined(__powerpc__) || \
+    defined(__powerpc64__)
+    /* ppc has -1 */
+    if (ret < 0)
+        ret = 0;
+#endif
+    return ret;
 }
 
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
@@ -206,6 +213,9 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 return -1;
             }
             nodeinfo->cpus++;
+#if defined(__x86_64__) || \
+    defined(__amd64__)  || \
+    defined(__i386__)
         } else if (STRPREFIX(buf, "cpu MHz")) {
             char *p;
             unsigned int ui;
@@ -237,6 +247,27 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 && id > nodeinfo->cores)
                 nodeinfo->cores = id;
         }
+#elif defined(__powerpc__) || \
+      defined(__powerpc64__)
+        } else if (STRPREFIX(buf, "clock")) {
+            char *p;
+            unsigned int ui;
+            buf += 5;
+            while (*buf && c_isspace(*buf))
+                buf++;
+            if (*buf != ':' || !buf[1]) {
+                nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("parsing cpuinfo cpu MHz"));
+                return -1;
+            }
+            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
+                /* Accept trailing fractional part.  */
+                && (*p == '\0' || *p == '.' || c_isspace(*p)))
+                nodeinfo->mhz = ui;
+        }
+#else
+# warning Parser for /proc/cpuinfo needs to be adapted for your architecture
+#endif
     }
 
     if (!nodeinfo->cpus) {
