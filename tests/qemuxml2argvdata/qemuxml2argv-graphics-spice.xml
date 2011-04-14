@@ -24,6 +24,10 @@
     <graphics type='spice' port='5903' tlsPort='5904' autoport='no' listen='127.0.0.1'>
       <channel name='main' mode='secure'/>
       <channel name='inputs' mode='insecure'/>
+      <image compression='auto_glz'/>
+      <jpeg compression='auto'/>
+      <zlib compression='auto'/>
+      <playback compression='on'/>
     </graphics>
     <video>
       <model type='qxl' vram='18432' heads='1'/>

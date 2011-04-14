@@ -1663,7 +1663,25 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;graphics type='spice' port='-1' tlsPort='-1' autoport='yes'&gt;
     &lt;channel name='main' mode='secure'/&gt;
     &lt;channel name='record' mode='insecure'/&gt;
+    &lt;image compression='auto_glz'/&gt;
   &lt;/graphics&gt;</pre>
+            <p>
+              Spice supports variable compression settings for audio,
+              images and streaming, <span class="since">since
+              0.9.1</span>.  These settings are accessible via
+              the <code>compression</code> attribute in all following
+              elements: <code>image</code> to set image compression
+              (accepts <code>auto_glz</code>, <code>auto_lz</code>,
+              <code>quic</code>, <code>glz</code>, <code>lz</code>,
+              <code>off</code>), <code>jpeg</code> for JPEG
+              compression for images over wan
+              (accepts <code>auto</code>, <code>never</code>,
+              <code>always</code>), <code>zlib</code> for configuring
+              wan image compression (accepts <code>auto</code>,
+              <code>never</code>, <code>always</code>)
+              and <code>playback</code> for enabling audio stream
+              compression (accepts <code>on</code> or <code>off</code>).
+            </p>
           </dd>
           <dt><code>"rdp"</code></dt>
           <dd>

@@ -1260,29 +1260,81 @@
               <text/>
             </attribute>
           </optional>
-          <zeroOrMore>
-            <element name="channel">
-              <attribute name="name">
-                <choice>
-                  <value>main</value>
-                  <value>display</value>
-                  <value>inputs</value>
-                  <value>cursor</value>
-                  <value>playback</value>
-                  <value>record</value>
-                  <value>smartcard</value>
-                </choice>
-              </attribute>
-              <attribute name="mode">
-                <choice>
-                  <value>any</value>
-                  <value>secure</value>
-                  <value>insecure</value>
-                </choice>
-              </attribute>
-              <empty/>
-            </element>
-          </zeroOrMore>
+          <interleave>
+            <zeroOrMore>
+              <element name="channel">
+                <attribute name="name">
+                  <choice>
+                    <value>main</value>
+                    <value>display</value>
+                    <value>inputs</value>
+                    <value>cursor</value>
+                    <value>playback</value>
+                    <value>record</value>
+                    <value>smartcard</value>
+                  </choice>
+                </attribute>
+                <attribute name="mode">
+                  <choice>
+                    <value>any</value>
+                    <value>secure</value>
+                    <value>insecure</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </zeroOrMore>
+            <optional>
+              <element name="image">
+                <attribute name="compression">
+                  <choice>
+                    <value>auto_glz</value>
+                    <value>auto_lz</value>
+                    <value>quic</value>
+                    <value>glz</value>
+                    <value>lz</value>
+                    <value>off</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
+            <optional>
+              <element name="jpeg">
+                <attribute name="compression">
+                  <choice>
+                    <value>auto</value>
+                    <value>never</value>
+                    <value>always</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
+            <optional>
+              <element name="zlib">
+                <attribute name="compression">
+                  <choice>
+                    <value>auto</value>
+                    <value>never</value>
+                    <value>always</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
+            <optional>
+              <element name="playback">
+                <attribute name="compression">
+                  <choice>
+                    <value>on</value>
+                    <value>off</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">

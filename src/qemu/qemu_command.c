@@ -4032,6 +4032,18 @@ qemuBuildCommandLine(virConnectPtr conn,
                 break;
             }
         }
+        if (def->graphics[0]->data.spice.image)
+            virBufferVSprintf(&opt, ",image-compression=%s",
+                              virDomainGraphicsSpiceImageCompressionTypeToString(def->graphics[0]->data.spice.image));
+        if (def->graphics[0]->data.spice.jpeg)
+            virBufferVSprintf(&opt, ",jpeg-wan-compression=%s",
+                              virDomainGraphicsSpiceJpegCompressionTypeToString(def->graphics[0]->data.spice.jpeg));
+        if (def->graphics[0]->data.spice.zlib)
+            virBufferVSprintf(&opt, ",zlib-glz-wan-compression=%s",
+                              virDomainGraphicsSpiceZlibCompressionTypeToString(def->graphics[0]->data.spice.zlib));
+        if (def->graphics[0]->data.spice.playback)
+            virBufferVSprintf(&opt, ",playback-compression=%s",
+                              virDomainGraphicsSpicePlaybackCompressionTypeToString(def->graphics[0]->data.spice.playback));
 
         virCommandAddArg(cmd, "-spice");
         virCommandAddArgBuffer(cmd, &opt);

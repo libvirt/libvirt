@@ -658,6 +658,44 @@ enum virDomainGraphicsSpiceChannelMode {
     VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_LAST
 };
 
+enum virDomainGraphicsSpiceImageCompression {
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_DEFAULT = 0,
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_AUTO_GLZ,
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_AUTO_LZ,
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_QUIC,
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_GLZ,
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_LZ,
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_OFF,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_LAST
+};
+
+enum virDomainGraphicsSpiceJpegCompression {
+    VIR_DOMAIN_GRAPHICS_SPICE_JPEG_COMPRESSION_DEFAULT = 0,
+    VIR_DOMAIN_GRAPHICS_SPICE_JPEG_COMPRESSION_AUTO,
+    VIR_DOMAIN_GRAPHICS_SPICE_JPEG_COMPRESSION_NEVER,
+    VIR_DOMAIN_GRAPHICS_SPICE_JPEG_COMPRESSION_ALWAYS,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_JPEG_COMPRESSION_LAST
+};
+
+enum virDomainGraphicsSpiceZlibCompression {
+    VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_DEFAULT = 0,
+    VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_AUTO,
+    VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_NEVER,
+    VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_ALWAYS,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_LAST
+};
+
+enum virDomainGraphicsSpicePlaybackCompression {
+    VIR_DOMAIN_GRAPHICS_SPICE_PLAYBACK_COMPRESSION_DEFAULT = 0,
+    VIR_DOMAIN_GRAPHICS_SPICE_PLAYBACK_COMPRESSION_ON,
+    VIR_DOMAIN_GRAPHICS_SPICE_PLAYBACK_COMPRESSION_OFF,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_PLAYBACK_COMPRESSION_LAST
+};
+
 typedef struct _virDomainGraphicsDef virDomainGraphicsDef;
 typedef virDomainGraphicsDef *virDomainGraphicsDefPtr;
 struct _virDomainGraphicsDef {
@@ -695,6 +733,10 @@ struct _virDomainGraphicsDef {
             virDomainGraphicsAuthDef auth;
             unsigned int autoport :1;
             int channels[VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST];
+            int image;
+            int jpeg;
+            int zlib;
+            int playback;
         } spice;
     } data;
 };
@@ -1423,6 +1465,10 @@ VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)
 VIR_ENUM_DECL(virDomainGraphicsSpiceChannelName)
 VIR_ENUM_DECL(virDomainGraphicsSpiceChannelMode)
+VIR_ENUM_DECL(virDomainGraphicsSpiceImageCompression)
+VIR_ENUM_DECL(virDomainGraphicsSpiceJpegCompression)
+VIR_ENUM_DECL(virDomainGraphicsSpiceZlibCompression)
+VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainSeclabel)

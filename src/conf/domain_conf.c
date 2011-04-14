@@ -322,6 +322,36 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelMode,
               "secure",
               "insecure");
 
+VIR_ENUM_IMPL(virDomainGraphicsSpiceImageCompression,
+              VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_LAST,
+              "default",
+              "auto_glz",
+              "auto_lz",
+              "quic",
+              "glz",
+              "lz",
+              "off");
+
+VIR_ENUM_IMPL(virDomainGraphicsSpiceJpegCompression,
+              VIR_DOMAIN_GRAPHICS_SPICE_JPEG_COMPRESSION_LAST,
+              "default",
+              "auto",
+              "never",
+              "always");
+
+VIR_ENUM_IMPL(virDomainGraphicsSpiceZlibCompression,
+              VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_LAST,
+              "default",
+              "auto",
+              "never",
+              "always");
+
+VIR_ENUM_IMPL(virDomainGraphicsSpicePlaybackCompression,
+              VIR_DOMAIN_GRAPHICS_SPICE_PLAYBACK_COMPRESSION_LAST,
+              "default",
+              "on",
+              "off");
+
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
               "capabilities")
@@ -3955,6 +3985,89 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
                     VIR_FREE(mode);
 
                     def->data.spice.channels[nameval] = modeval;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "image")) {
+                    const char *compression = virXMLPropString(cur, "compression");
+                    int compressionVal;
+
+                    if (!compression) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                             _("spice image missing compression"));
+                        goto error;
+                    }
+
+                    if ((compressionVal =
+                         virDomainGraphicsSpiceImageCompressionTypeFromString(compression)) <= 0) {
+                        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                             _("unknown spice image compression %s"),
+                                             compression);
+                        VIR_FREE(compression);
+                        goto error;
+                    }
+                    VIR_FREE(compression);
+
+                    def->data.spice.image = compressionVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "jpeg")) {
+                    const char *compression = virXMLPropString(cur, "compression");
+                    int compressionVal;
+
+                    if (!compression) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                             _("spice jpeg missing compression"));
+                        goto error;
+                    }
+
+                    if ((compressionVal =
+                         virDomainGraphicsSpiceJpegCompressionTypeFromString(compression)) <= 0) {
+                        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                             _("unknown spice jpeg compression %s"),
+                                             compression);
+                        VIR_FREE(compression);
+                        goto error;
+                    }
+                    VIR_FREE(compression);
+
+                    def->data.spice.jpeg = compressionVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "zlib")) {
+                    const char *compression = virXMLPropString(cur, "compression");
+                    int compressionVal;
+
+                    if (!compression) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                             _("spice zlib missing compression"));
+                        goto error;
+                    }
+
+                    if ((compressionVal =
+                         virDomainGraphicsSpiceZlibCompressionTypeFromString(compression)) <= 0) {
+                        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                             _("unknown spice zlib compression %s"),
+                                             compression);
+                        VIR_FREE(compression);
+                        goto error;
+                    }
+
+                    def->data.spice.zlib = compressionVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "playback")) {
+                    const char *compression = virXMLPropString(cur, "compression");
+                    int compressionVal;
+
+                    if (!compression) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                             _("spice playback missing compression"));
+                        goto error;
+                    }
+
+                    if ((compressionVal =
+                         virDomainGraphicsSpicePlaybackCompressionTypeFromString(compression)) <= 0) {
+                        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                             _("unknown spice playback compression"));
+                        VIR_FREE(compression);
+                        goto error;
+
+                    }
+                    VIR_FREE(compression);
+
+                    def->data.spice.playback = compressionVal;
                 }
             }
             cur = cur->next;
@@ -7818,6 +7931,18 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                               virDomainGraphicsSpiceChannelNameTypeToString(i),
                               virDomainGraphicsSpiceChannelModeTypeToString(mode));
         }
+        if (def->data.spice.image)
+            virBufferVSprintf(buf, "      <image compression='%s'/>\n",
+                              virDomainGraphicsSpiceImageCompressionTypeToString(def->data.spice.image));
+        if (def->data.spice.jpeg)
+            virBufferVSprintf(buf, "      <jpeg compression='%s'/>\n",
+                              virDomainGraphicsSpiceJpegCompressionTypeToString(def->data.spice.jpeg));
+        if (def->data.spice.zlib)
+            virBufferVSprintf(buf, "      <zlib compression='%s'/>\n",
+                              virDomainGraphicsSpiceZlibCompressionTypeToString(def->data.spice.zlib));
+        if (def->data.spice.playback)
+            virBufferVSprintf(buf, "      <playback compression='%s'/>\n",
+                              virDomainGraphicsSpicePlaybackCompressionTypeToString(def->data.spice.playback));
     }
 
     if (children) {
