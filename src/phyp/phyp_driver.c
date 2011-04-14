@@ -182,15 +182,6 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
     (*exit_status) = exitcode;
     libssh2_channel_free(channel);
     channel = NULL;
-    goto exit;
-
-  err:
-    (*exit_status) = SSH_CMD_ERR;
-    virBufferFreeAndReset(&tex_ret);
-    VIR_FREE(buffer);
-    return NULL;
-
-  exit:
     VIR_FREE(buffer);
 
     if (virBufferError(&tex_ret)) {
@@ -199,6 +190,12 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
         return NULL;
     }
     return virBufferContentAndReset(&tex_ret);
+
+err:
+    (*exit_status) = SSH_CMD_ERR;
+    virBufferFreeAndReset(&tex_ret);
+    VIR_FREE(buffer);
+    return NULL;
 }
 
 static int
@@ -256,7 +253,7 @@ phypGetVIOSPartitionID(virConnectPtr conn)
     if (virStrToLong_i(ret, &char_ptr, 10, &id) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -302,7 +299,7 @@ phypCapsInit(void)
 
     return caps;
 
-  no_memory:
+no_memory:
     virCapabilitiesFree(caps);
     return NULL;
 }
@@ -362,7 +359,7 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
     if (virStrToLong_i(ret, &char_ptr, 10, &ndom) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -430,7 +427,7 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
             line++; /* skip \n */
     }
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -471,7 +468,7 @@ phypUUIDTable_WriteFile(virConnectPtr conn)
     }
     return 0;
 
-  err:
+err:
     VIR_FORCE_CLOSE(fd);
     return -1;
 }
@@ -569,7 +566,7 @@ phypUUIDTable_Push(virConnectPtr conn)
     virBufferFreeAndReset(&username);
     return 0;
 
-  err:
+err:
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
@@ -602,7 +599,7 @@ phypUUIDTable_RemLpar(virConnectPtr conn, int id)
 
     return 0;
 
-  err:
+err:
     return -1;
 }
 
@@ -637,7 +634,7 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
 
     return 0;
 
-  err:
+err:
     return -1;
 }
 
@@ -686,7 +683,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
     VIR_FORCE_CLOSE(fd);
     return 0;
 
-  err:
+err:
     VIR_FORCE_CLOSE(fd);
     return -1;
 }
@@ -780,9 +777,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
                              local_file);
         goto err;
     }
-    goto exit;
 
-  exit:
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
@@ -793,7 +788,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
     virBufferFreeAndReset(&username);
     return 0;
 
-  err:
+err:
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
@@ -1041,7 +1036,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     freeaddrinfo(ai);
     goto err;
 
-  connected:
+connected:
 
     (*internal_socket) = sock;
 
@@ -1074,7 +1069,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
                                                 NULL)) ==
            LIBSSH2_ERROR_EAGAIN) ;
 
-  keyboard_interactive:
+keyboard_interactive:
     if (rc == LIBSSH2_ERROR_SOCKET_NONE
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
@@ -1112,10 +1107,10 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         goto err;
     }
 
-  disconnect:
+disconnect:
     libssh2_session_disconnect(session, "Disconnecting...");
     libssh2_session_free(session);
-  err:
+err:
     VIR_FREE(userhome);
     VIR_FREE(pubkey);
     VIR_FREE(pvtkey);
@@ -1123,7 +1118,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     VIR_FREE(password);
     return NULL;
 
-  exit:
+exit:
     VIR_FREE(userhome);
     VIR_FREE(pubkey);
     VIR_FREE(pvtkey);
@@ -1235,7 +1230,7 @@ phypOpen(virConnectPtr conn,
 
     return VIR_DRV_OPEN_SUCCESS;
 
-  failure:
+failure:
     if (phyp_driver != NULL) {
         virCapabilitiesFree(phyp_driver->caps);
         VIR_FREE(phyp_driver->managed_system);
@@ -1327,7 +1322,7 @@ phypGetLparID(LIBSSH2_SESSION * session, const char *managed_system,
     if (virStrToLong_i(ret, &char_ptr, 10, &lpar_id) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -1370,7 +1365,7 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
     if (char_ptr)
         *char_ptr = '\0';
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
 
     return ret;
@@ -1450,7 +1445,7 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
     if (virStrToLong_i(ret, &char_ptr, 10, &memory) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -1498,7 +1493,7 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
     if (virStrToLong_i(ret, &char_ptr, 10, &vcpus) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -1572,7 +1567,7 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
     if (virStrToLong_i(ret, &char_ptr, 10, &remote_slot) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -1651,7 +1646,7 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
     if (char_ptr)
         *char_ptr = '\0';
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -1697,7 +1692,7 @@ phypGetLparProfile(virConnectPtr conn, int lpar_id)
     if (char_ptr)
         *char_ptr = '\0';
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
 
     return ret;
@@ -1755,7 +1750,7 @@ phypGetVIOSNextSlotNumber(virConnectPtr conn)
 
     slot += 1;
 
-  cleanup:
+cleanup:
     VIR_FREE(profile);
     VIR_FREE(cmd);
     VIR_FREE(ret);
@@ -1869,7 +1864,7 @@ phypCreateServerSCSIAdapter(virConnectPtr conn)
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(profile);
     VIR_FREE(vios_name);
     VIR_FREE(cmd);
@@ -1923,7 +1918,7 @@ phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
     if (char_ptr)
         *char_ptr = '\0';
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
 
     return ret;
@@ -2133,7 +2128,7 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     virDomainDeviceDefFree(dev);
@@ -2191,7 +2186,7 @@ phypVolumeGetKey(virConnectPtr conn, const char *name)
     if (char_ptr)
         *char_ptr = '\0';
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
 
     return ret;
@@ -2242,7 +2237,7 @@ phypGetStoragePoolDevice(virConnectPtr conn, char *name)
     if (char_ptr)
         *char_ptr = '\0';
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
 
     return ret;
@@ -2290,7 +2285,7 @@ phypGetStoragePoolSize(virConnectPtr conn, char *name)
     if (virStrToLong_i(ret, &char_ptr, 10, &sp_size) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -2341,7 +2336,7 @@ phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
     if (key == NULL)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -2454,7 +2449,7 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
 
     return vol;
 
-  err:
+err:
     VIR_FREE(key);
     virStorageVolDefFree(voldef);
     virStoragePoolDefFree(spdef);
@@ -2509,7 +2504,7 @@ phypVolumeGetPhysicalVolumeByStoragePool(virStorageVolPtr vol, char *sp)
     if (char_ptr)
         *char_ptr = '\0';
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
 
     return ret;
@@ -2567,7 +2562,7 @@ phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
 
     vol = virGetStorageVol(conn, spname, volname, key);
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(spname);
     VIR_FREE(key);
@@ -2619,7 +2614,7 @@ phypGetStoragePoolUUID(virConnectPtr conn, unsigned char *uuid,
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -2706,7 +2701,7 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
     return xml;
 
-  err:
+err:
     return NULL;
 }
 
@@ -2775,7 +2770,7 @@ phypVolumeGetPath(virStorageVolPtr vol)
         goto cleanup;
     }
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(sp);
     VIR_FREE(path);
@@ -2849,7 +2844,7 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
 
     success = true;
 
-  cleanup:
+cleanup:
     if (!success) {
         for (i = 0; i < got; i++)
             VIR_FREE(volumes[i]);
@@ -2906,7 +2901,7 @@ phypStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     /* We need to remove 2 line from the header text output */
     nvolumes -= 2;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -2953,7 +2948,7 @@ phypDestroyStoragePool(virStoragePoolPtr pool)
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -3002,7 +2997,7 @@ phypBuildStoragePool(virConnectPtr conn, virStoragePoolDefPtr def)
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -3052,7 +3047,7 @@ phypNumOfStoragePools(virConnectPtr conn)
     if (virStrToLong_i(ret, &char_ptr, 10, &nsp) == -1)
         goto cleanup;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -3120,7 +3115,7 @@ phypListStoragePools(virConnectPtr conn, char **const pools, int npools)
 
     success = true;
 
-  cleanup:
+cleanup:
     if (!success) {
         for (i = 0; i < got; i++)
             VIR_FREE(pools[i]);
@@ -3186,7 +3181,7 @@ phypGetStoragePoolLookUpByUUID(virConnectPtr conn,
         }
     }
 
-  err:
+err:
     VIR_FREE(local_uuid);
     VIR_FREE(pools);
     return NULL;
@@ -3224,7 +3219,7 @@ phypStoragePoolCreateXML(virConnectPtr conn,
 
     return sp;
 
-  err:
+err:
     virStoragePoolDefFree(def);
     if (sp)
         virUnrefStoragePool(sp);
@@ -3272,7 +3267,7 @@ phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 
     return virStoragePoolDefFormat(&def);
 
-  err:
+err:
     return NULL;
 }
 
@@ -3857,7 +3852,7 @@ phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
     else if (STREQ(ret, "Shutting Down"))
         state = VIR_DOMAIN_SHUTDOWN;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return state;
@@ -3909,7 +3904,7 @@ phypDiskType(virConnectPtr conn, char *backing_device)
     else if (STREQ(ret, "FBPOOL"))
         disk_type = VIR_DOMAIN_DISK_TYPE_FILE;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return disk_type;
@@ -3989,7 +3984,7 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
 
     success = true;
 
-  cleanup:
+cleanup:
     if (!success) {
         for (i = 0; i < got; i++)
             VIR_FREE(names[i]);
@@ -4054,7 +4049,7 @@ phypDomainLookupByID(virConnectPtr conn, int lpar_id)
     if (dom)
         dom->id = lpar_id;
 
-  cleanup:
+cleanup:
     VIR_FREE(lpar_name);
 
     return dom;
@@ -4107,7 +4102,7 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
 
     return virDomainDefFormat(&def, flags);
 
-  err:
+err:
     return NULL;
 }
 
@@ -4144,7 +4139,7 @@ phypDomainResume(virDomainPtr dom)
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -4184,7 +4179,7 @@ phypDomainShutdown(virDomainPtr dom)
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -4250,7 +4245,7 @@ phypDomainDestroy(virDomainPtr dom)
     dom->id = -1;
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -4327,7 +4322,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
 
     result = 0;
 
-  cleanup:
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(ret);
 
@@ -4381,7 +4376,7 @@ phypDomainCreateAndStart(virConnectPtr conn,
 
     return dom;
 
-  err:
+err:
     virDomainDefFree(def);
     if (dom)
         virUnrefDomain(dom);
