@@ -77,7 +77,8 @@ EXTRA_DIST =		\
 
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
-	commandtest commandhelper seclabeltest
+	commandtest commandhelper seclabeltest \
+	hashtest
 
 if WITH_XEN
 check_PROGRAMS += xml2sexprtest sexpr2xmltest \
@@ -160,6 +161,7 @@ TESTS = virshtest \
 	sockettest \
 	commandtest \
 	seclabeltest \
+	hashtest \
 	$(test_scripts)
 
 if WITH_XEN
@@ -373,6 +375,10 @@ qparamtest_LDADD = $(LDADDS)
 virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c
 virbuftest_LDADD = $(LDADDS)
+
+hashtest_SOURCES = \
+	hashtest.c hashdata.h testutils.h testutils.c
+hashtest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
