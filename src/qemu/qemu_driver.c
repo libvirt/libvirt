@@ -2442,6 +2442,9 @@ static void processWatchdogEvent(void *data, void *opaque)
     struct qemuDomainWatchdogEvent *wdEvent = data;
     struct qemud_driver *driver = opaque;
 
+    qemuDriverLock(driver);
+    virDomainObjLock(wdEvent->vm);
+
     switch (wdEvent->action) {
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
         {
@@ -2452,19 +2455,19 @@ static void processWatchdogEvent(void *data, void *opaque)
                             wdEvent->vm->def->name,
                             (unsigned int)time(NULL)) < 0) {
                 virReportOOMError();
-                break;
+                goto unlock;
             }
 
-            qemuDriverLock(driver);
-            virDomainObjLock(wdEvent->vm);
-
-            if (qemuDomainObjBeginJobWithDriver(driver, wdEvent->vm) < 0)
-                break;
+            if (qemuDomainObjBeginJobWithDriver(driver, wdEvent->vm) < 0) {
+                VIR_FREE(dumpfile);
+                goto unlock;
+            }
 
             if (!virDomainObjIsActive(wdEvent->vm)) {
                 qemuReportError(VIR_ERR_OPERATION_INVALID,
                                 "%s", _("domain is not running"));
-                break;
+                VIR_FREE(dumpfile);
+                goto endjob;
             }
 
             ret = doCoreDump(driver,
@@ -2481,16 +2484,23 @@ static void processWatchdogEvent(void *data, void *opaque)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("Resuming after dump failed"));
 
-            if (qemuDomainObjEndJob(wdEvent->vm) > 0)
-                virDomainObjUnlock(wdEvent->vm);
-
-            qemuDriverUnlock(driver);
-
             VIR_FREE(dumpfile);
         }
         break;
+    default:
+        goto unlock;
     }
 
+endjob:
+    /* Safe to ignore value since ref count was incremented in
+     * qemuProcessHandleWatchdog().
+     */
+    ignore_value(qemuDomainObjEndJob(wdEvent->vm));
+
+unlock:
+    if (virDomainObjUnref(wdEvent->vm) > 0)
+        virDomainObjUnlock(wdEvent->vm);
+    qemuDriverUnlock(driver);
     VIR_FREE(wdEvent);
 }
 
