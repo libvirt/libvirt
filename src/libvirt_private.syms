@@ -437,6 +437,7 @@ virHashRemoveSet;
 virHashSearch;
 virHashSize;
 virHashSteal;
+virHashTableSize;
 
 
 # hooks.h

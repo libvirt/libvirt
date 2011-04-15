@@ -103,6 +103,7 @@ virHashTablePtr virHashCreateFull(int size,
                                   virHashKeyFree keyFree);
 void virHashFree(virHashTablePtr table);
 int virHashSize(virHashTablePtr table);
+int virHashTableSize(virHashTablePtr table);
 
 /*
  * Add a new entry to the hash table.

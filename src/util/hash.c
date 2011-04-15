@@ -499,6 +499,24 @@ virHashSize(virHashTablePtr table)
 }
 
 /**
+ * virHashTableSize:
+ * @table: the hash table
+ *
+ * Query the size of the hash @table, i.e., number of buckets in the table.
+ *
+ * Returns the number of keys in the hash table or
+ * -1 in case of error
+ */
+int
+virHashTableSize(virHashTablePtr table)
+{
+    if (table == NULL)
+        return -1;
+    return table->size;
+}
+
+
+/**
  * virHashRemoveEntry:
  * @table: the hash table
  * @name: the name of the userdata
