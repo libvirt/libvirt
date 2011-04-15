@@ -332,7 +332,9 @@ ESX_DRIVER_GENERATED =							\
 		esx/esx_vi_types.generated.typedef			\
 		esx/esx_vi_types.generated.typeenum			\
 		esx/esx_vi_types.generated.typetostring			\
-		esx/esx_vi_types.generated.typefromstring
+		esx/esx_vi_types.generated.typefromstring		\
+		esx/esx_vi.generated.c					\
+		esx/esx_vi.generated.h
 
 ESX_DRIVER_EXTRA_DIST =						\
 		esx/README						\
