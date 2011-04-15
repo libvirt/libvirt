@@ -42,6 +42,7 @@ URIS=default
 ON_BOOT=start
 ON_SHUTDOWN=suspend
 SHUTDOWN_TIMEOUT=0
+START_DELAY=0
 
 test -f "$sysconfdir"/sysconfig/libvirt-guests &&
     . "$sysconfdir"/sysconfig/libvirt-guests
@@ -141,6 +142,7 @@ start() {
         return 0
     fi
 
+    isfirst=true
     while read uri list; do
         configured=false
         set -f
@@ -165,6 +167,11 @@ start() {
                 if "$guest_running"; then
                     gettext "already active"; echo
                 else
+                    if "$isfirst"; then
+                        isfirst=false
+                    else
+                        sleep $START_DELAY
+                    fi
                     retval run_virsh "$uri" start "$name" >/dev/null && \
                     gettext "done"; echo
                 fi

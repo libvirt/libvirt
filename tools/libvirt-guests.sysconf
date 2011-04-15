@@ -10,6 +10,9 @@
 #           libvirtd
 #ON_BOOT=start
 
+# number of seconds to wait between each guest start
+#START_DELAY=0
+
 # action taken on host shutdown
 # - suspend   all running guests are suspended using virsh managedsave
 # - shutdown  all running guests are asked to shutdown. Please be careful with
