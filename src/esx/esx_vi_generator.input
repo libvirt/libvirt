@@ -209,16 +209,12 @@ object ElementDescription extends Description
 end
 
 
-object Event
-    Int                                      key                            r
-    Int                                      chainId                        r
-    DateTime                                 createdTime                    r
-    String                                   userName                       r
-    DatacenterEventArgument                  datacenter                     i
-    ComputeResourceEventArgument             computeResource                i
-    HostEventArgument                        host                           i
-    VmEventArgument                          vm                             i
-    String                                   fullFormattedMessage           o
+object EntityEventArgument extends EventArgument
+    String                                   name                           r
+end
+
+
+object EventArgument
 end
 
 
@@ -706,6 +702,11 @@ object VmDiskFileQueryFlags
     Boolean                                  hardwareVersion                r
     Boolean                                  controllerType                 o
     Boolean                                  diskExtents                    o
+end
+
+
+object VmEventArgument extends EntityEventArgument
+    ManagedObjectReference                   vm                             r
 end
 
 

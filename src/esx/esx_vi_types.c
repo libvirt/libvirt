@@ -271,13 +271,14 @@
 
 
 
-#define ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, _extra, _deserialize)      \
+#define ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, _extra1, _extra2,          \
+                                            _deserialize)                     \
     int                                                                       \
     esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **ptrptr)      \
     {                                                                         \
         xmlNodePtr childNode = NULL;                                          \
                                                                               \
-        _extra                                                                \
+        _extra1                                                               \
                                                                               \
         if (ptrptr == NULL || *ptrptr != NULL) {                              \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
@@ -288,6 +289,8 @@
         if (esxVI_##_type##_Alloc(ptrptr) < 0) {                              \
             return -1;                                                        \
         }                                                                     \
+                                                                              \
+        _extra2                                                               \
                                                                               \
         for (childNode = node->children; childNode != NULL;                   \
              childNode = childNode->next) {                                   \
@@ -317,7 +320,8 @@
 
 
 #define ESX_VI__TEMPLATE__DESERIALIZE(_type, _deserialize)                    \
-    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, /* nothing */, _deserialize)
+    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, /* nothing */, /* nothing */,  \
+                                        _deserialize)
 
 
 
@@ -649,6 +653,7 @@
                        __FUNCTION__, esxVI_Type_ToString(type));              \
           return -1;                                                          \
       },                                                                      \
+      /* nothing */,                                                          \
       _deserialize)
 
 
@@ -775,6 +780,9 @@ esxVI_Type_ToString(esxVI_Type type)
       case esxVI_Type_ManagedObjectReference:
         return "ManagedObjectReference";
 
+      case esxVI_Type_Event:
+        return "Event";
+
 #include "esx_vi_types.generated.typetostring"
 
       case esxVI_Type_Other:
@@ -807,6 +815,8 @@ esxVI_Type_FromString(const char *type)
         return esxVI_Type_MethodFault;
     } else if (STREQ(type, "ManagedObjectReference")) {
         return esxVI_Type_ManagedObjectReference;
+    } else if (STREQ(type, "Event")) {
+        return esxVI_Type_Event;
     }
 
 #include "esx_vi_types.generated.typefromstring"
@@ -1663,6 +1673,90 @@ esxVI_ManagedObjectReference_Deserialize
 
     return -1;
 }
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: Event
+ */
+
+/* esxVI_Event_Alloc */
+ESX_VI__TEMPLATE__ALLOC(Event)
+
+/* esxVI_Event_Free */
+ESX_VI__TEMPLATE__FREE(Event,
+{
+    esxVI_Event_Free(&item->_next);
+    VIR_FREE(item->_actualType);
+
+    esxVI_Int_Free(&item->key);
+    esxVI_Int_Free(&item->chainId);
+    esxVI_DateTime_Free(&item->createdTime);
+    VIR_FREE(item->userName);
+    /* FIXME: datacenter is currently ignored */
+    /* FIXME: computeResource is currently ignored */
+    /* FIXME: host is currently ignored */
+    esxVI_VmEventArgument_Free(&item->vm);
+    VIR_FREE(item->fullFormattedMessage);
+})
+
+/* esxVI_Event_Validate */
+ESX_VI__TEMPLATE__VALIDATE(Event,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(key)
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(chainId)
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(createdTime)
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(userName)
+    /* FIXME: datacenter is currently ignored */
+    /* FIXME: computeResource is currently ignored */
+    /* FIXME: host is currently ignored */
+})
+
+/* esxVI_Event_AppendToList */
+ESX_VI__TEMPLATE__LIST__APPEND(Event)
+
+/* esxVI_Event_CastFromAnyType */
+ESX_VI__TEMPLATE__DYNAMIC_CAST_FROM_ANY_TYPE(Event,
+{
+      case esxVI_Type_Other:
+        /* Just accept everything here */
+        break;
+})
+
+/* esxVI_Event_CastListFromAnyType */
+ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(Event)
+
+/* esxVI_Event_Deserialize */
+ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(Event, /* nothing */,
+{
+    (*ptrptr)->_actualType =
+      (char *)xmlGetNsProp(node, BAD_CAST "type",
+                           BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
+
+    if ((*ptrptr)->_actualType == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("%s is missing 'type' property"),
+                     esxVI_Type_ToString((*ptrptr)->_type));
+        goto failure;
+    }
+},
+{
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, key)
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, chainId)
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, createdTime)
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, userName)
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(datacenter) /* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(computeResource) /* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(host) /* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(VmEventArgument, vm)
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, fullFormattedMessage)
+
+    /* Don't warn about unexpected properties */
+    continue;
+})
+
+/* esxVI_Event_DeserializeList */
+ESX_VI__TEMPLATE__LIST__DESERIALIZE(Event)
 
 
 

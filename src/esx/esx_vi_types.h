@@ -55,8 +55,10 @@ typedef struct _esxVI_Fault esxVI_Fault;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VI Objects
  */
+
 typedef struct _esxVI_MethodFault esxVI_MethodFault;
 typedef struct _esxVI_ManagedObjectReference esxVI_ManagedObjectReference;
+typedef struct _esxVI_Event esxVI_Event;
 
 # include "esx_vi_types.generated.typedef"
 
@@ -78,6 +80,7 @@ enum _esxVI_Type {
     esxVI_Type_Fault,
     esxVI_Type_MethodFault,
     esxVI_Type_ManagedObjectReference,
+    esxVI_Type_Event,
 
 # include "esx_vi_types.generated.typeenum"
 
@@ -342,6 +345,37 @@ int esxVI_ManagedObjectReference_SerializeList
        const char *element, virBufferPtr output);
 int esxVI_ManagedObjectReference_Deserialize
       (xmlNodePtr node, esxVI_ManagedObjectReference **managedObjectReference);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: Event
+ */
+
+struct _esxVI_Event {
+    esxVI_Event *_next;                                    /* optional */
+    esxVI_Type _type;                                      /* required */
+    char *_actualType;                                     /* required */
+
+    esxVI_Int *key;                                        /* required */
+    esxVI_Int *chainId;                                    /* required */
+    esxVI_DateTime *createdTime;                           /* required */
+    char *userName;                                        /* required */
+    /* FIXME: datacenter is currently ignored */
+    /* FIXME: computeResource is currently ignored */
+    /* FIXME: host is currently ignored */
+    esxVI_VmEventArgument *vm;                             /* optional */
+    char *fullFormattedMessage;                            /* optional */
+};
+
+int esxVI_Event_Alloc(esxVI_Event **item);
+void esxVI_Event_Free(esxVI_Event **item);
+int esxVI_Event_Validate(esxVI_Event *item);
+int esxVI_Event_AppendToList(esxVI_Event **list, esxVI_Event *item);
+int esxVI_Event_CastFromAnyType(esxVI_AnyType *anyType, esxVI_Event **item);
+int esxVI_Event_CastListFromAnyType(esxVI_AnyType *anyType, esxVI_Event **list);
+int esxVI_Event_Deserialize(xmlNodePtr node, esxVI_Event **item);
+int esxVI_Event_DeserializeList(xmlNodePtr node, esxVI_Event **list);
 
 
 

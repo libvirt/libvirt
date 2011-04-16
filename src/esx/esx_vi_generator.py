@@ -1430,7 +1430,6 @@ additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__AN
                                "AutoStartPowerInfo"         : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "DatastoreHostMount"         : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
                                "DatastoreInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
-                               "Event"                      : Object.FEATURE__LIST,
                                "FileInfo"                   : Object.FEATURE__DYNAMIC_CAST,
                                "FileQuery"                  : Object.FEATURE__DYNAMIC_CAST,
                                "HostConfigManager"          : Object.FEATURE__ANY_TYPE,
