@@ -420,6 +420,7 @@ msg_gen_function += xenUnifiedError
 msg_gen_function += xenXMError
 msg_gen_function += VIR_ERROR
 msg_gen_function += VIR_ERROR0
+msg_gen_function += statsError
 
 # Uncomment the following and run "make syntax-check" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten

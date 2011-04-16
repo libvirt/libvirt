@@ -114,6 +114,7 @@ src/vbox/vbox_tmpl.c
 src/vmware/vmware_conf.c
 src/vmware/vmware_driver.c
 src/vmx/vmx.c
+src/xen/block_stats.c
 src/xen/xen_driver.c
 src/xen/xen_hypervisor.c
 src/xen/xen_inotify.c
