@@ -469,37 +469,37 @@ DllMain (HINSTANCE instance ATTRIBUTE_UNUSED,
 #endif
 
 #define virLibConnError(code, ...)                                \
-    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,     \
+    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,           \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibDomainError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_DOM, code, __FILE__,      \
+    virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibNetworkError(code, ...)                             \
-    virReportErrorHelper(NULL, VIR_FROM_NETWORK, code, __FILE__,  \
+    virReportErrorHelper(VIR_FROM_NETWORK, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibStoragePoolError(code, ...)                         \
-    virReportErrorHelper(NULL, VIR_FROM_STORAGE, code, __FILE__,  \
+    virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibStorageVolError(code, ...)                          \
-    virReportErrorHelper(NULL, VIR_FROM_STORAGE, code, __FILE__,  \
+    virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibInterfaceError(code, ...)                           \
-    virReportErrorHelper(NULL, VIR_FROM_INTERFACE, code, __FILE__,\
+    virReportErrorHelper(VIR_FROM_INTERFACE, code, __FILE__,      \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibNodeDeviceError(code, ...)                          \
-    virReportErrorHelper(NULL, VIR_FROM_NODEDEV, code, __FILE__,  \
+    virReportErrorHelper(VIR_FROM_NODEDEV, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibSecretError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_SECRET, code, __FILE__,   \
+    virReportErrorHelper(VIR_FROM_SECRET, code, __FILE__,         \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibStreamError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_STREAMS, code, __FILE__,  \
+    virReportErrorHelper(VIR_FROM_STREAMS, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibNWFilterError(code, ...)                            \
-    virReportErrorHelper(NULL, VIR_FROM_NWFILTER, code, __FILE__, \
+    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,       \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibDomainSnapshotError(code, ...)                            \
-    virReportErrorHelper(NULL, VIR_FROM_DOMAIN_SNAPSHOT, code, __FILE__, \
+#define virLibDomainSnapshotError(code, ...)                       \
+    virReportErrorHelper(VIR_FROM_DOMAIN_SNAPSHOT, code, __FILE__, \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
@@ -1056,7 +1056,7 @@ do_open (const char *name,
              STRCASEEQ(ret->uri->scheme, "xenapi") ||
 #endif
              false)) {
-            virReportErrorHelper(NULL, VIR_FROM_NONE, VIR_ERR_INVALID_ARG,
+            virReportErrorHelper(VIR_FROM_NONE, VIR_ERR_INVALID_ARG,
                                  __FILE__, __FUNCTION__, __LINE__,
                                  _("libvirt was built without the '%s' driver"),
                                  ret->uri->scheme);

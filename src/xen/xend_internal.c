@@ -68,7 +68,7 @@ virDomainXMLDevID(virDomainPtr domain,
                   int ref_len);
 
 #define virXendError(code, ...)                                            \
-        virReportErrorHelper(NULL, VIR_FROM_XEND, code, __FILE__,          \
+        virReportErrorHelper(VIR_FROM_XEND, code, __FILE__,                \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define virXendErrorInt(code, ival)                                        \

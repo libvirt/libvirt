@@ -57,7 +57,7 @@
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 # define XENXS_ERROR(code, ...)                                               \
-    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__, __FUNCTION__,   \
+    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__, __FUNCTION__,         \
                          __LINE__, __VA_ARGS__)
 
 #endif /* __VIR_XENXS_PRIVATE_H__ */

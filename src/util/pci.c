@@ -82,7 +82,7 @@ struct _pciDeviceList {
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define pciReportError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,  \
+    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Specifications referenced in comments:

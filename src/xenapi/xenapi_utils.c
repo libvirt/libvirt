@@ -386,11 +386,11 @@ xenapiSessionErrorHandle(virConnectPtr conn, virErrorNumber errNum,
 
     if (buf == NULL && priv != NULL && priv->session != NULL) {
         char *ret = returnErrorFromSession(priv->session);
-        virReportErrorHelper(conn, VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), ret);
+        virReportErrorHelper(VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), ret);
         xen_session_clear_error(priv->session);
         VIR_FREE(ret);
     } else {
-        virReportErrorHelper(conn, VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), buf);
+        virReportErrorHelper(VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), buf);
     }
 }
 

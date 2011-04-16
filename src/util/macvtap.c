@@ -63,7 +63,7 @@
 # define VIR_FROM_THIS VIR_FROM_NET
 
 # define macvtapError(code, ...)                                           \
-        virReportErrorHelper(NULL, VIR_FROM_NET, code, __FILE__,           \
+        virReportErrorHelper(VIR_FROM_NET, code, __FILE__,                 \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 # define MACVTAP_NAME_PREFIX	"macvtap"

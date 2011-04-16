@@ -66,7 +66,7 @@ static virDriver vboxDriverDummy;
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
 #define vboxError(code, ...) \
-        virReportErrorHelper(NULL, VIR_FROM_VBOX, code, __FILE__, \
+        virReportErrorHelper(VIR_FROM_VBOX, code, __FILE__, \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 int vboxRegister(void) {

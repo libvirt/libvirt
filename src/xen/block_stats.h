@@ -19,7 +19,7 @@ extern int xenLinuxDomainBlockStats (xenUnifiedPrivatePtr priv,
                                      virDomainPtr dom, const char *path,
                                      struct _virDomainBlockStats *stats);
 
-extern int xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *dev);
+extern int xenLinuxDomainDeviceID(int domid, const char *dev);
 
 # endif /* __linux__ */
 

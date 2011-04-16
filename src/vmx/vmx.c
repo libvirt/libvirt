@@ -471,7 +471,7 @@ def->parallels[0]...
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define VMX_ERROR(code, ...)                                                  \
-    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__, __FUNCTION__,   \
+    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__, __FUNCTION__,         \
                          __LINE__, __VA_ARGS__)
 
 #define VMX_BUILD_NAME_EXTRA(_suffix, _extra)                                 \

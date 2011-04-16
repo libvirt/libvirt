@@ -219,7 +219,7 @@ struct _virDeviceMonitorState {
 };
 
 # define virNodeDeviceReportError(code, ...)                             \
-    virReportErrorHelper(NULL, VIR_FROM_NODEDEV, code, __FILE__,	\
+    virReportErrorHelper(VIR_FROM_NODEDEV, code, __FILE__,               \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap);

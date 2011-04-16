@@ -647,9 +647,9 @@ void virNWFilterUnlockFilterUpdates(void);
 int virNWFilterConfLayerInit(virHashIterator domUpdateCB);
 void virNWFilterConfLayerShutdown(void);
 
-# define virNWFilterReportError(code, fmt...)				\
-        virReportErrorHelper(NULL, VIR_FROM_NWFILTER, code, __FILE__,	\
-                               __FUNCTION__, __LINE__, fmt)
+# define virNWFilterReportError(code, fmt...)                      \
+        virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,    \
+                             __FUNCTION__, __LINE__, fmt)
 
 
 typedef int (*virNWFilterRebuild)(virConnectPtr conn,

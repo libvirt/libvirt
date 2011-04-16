@@ -65,7 +65,7 @@
 #define VIR_FROM_THIS VIR_FROM_PHYP
 
 #define PHYP_ERROR(code, ...)                                                 \
-    virReportErrorHelper(NULL, VIR_FROM_PHYP, code, __FILE__, __FUNCTION__,   \
+    virReportErrorHelper(VIR_FROM_PHYP, code, __FILE__, __FUNCTION__,         \
                          __LINE__, __VA_ARGS__)
 
 /*

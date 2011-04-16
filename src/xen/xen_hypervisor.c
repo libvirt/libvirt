@@ -843,7 +843,7 @@ struct xenUnifiedDriver xenHypervisorDriver = {
 
 #define virXenError(code, ...)                                             \
         if (in_init == 0)                                                  \
-            virReportErrorHelper(NULL, VIR_FROM_XEN, code, __FILE__,       \
+            virReportErrorHelper(VIR_FROM_XEN, code, __FILE__,             \
                                  __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
@@ -870,11 +870,11 @@ virXenErrorFunc(virErrorNumber error, const char *func, const char *info,
     if (func != NULL) {
         snprintf(fullinfo, 999, "%s: %s", func, info);
         fullinfo[999] = 0;
-        virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+        virRaiseError(NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
                         errmsg, fullinfo, NULL, value, 0, errmsg, fullinfo,
                         value);
     } else {
-        virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+        virRaiseError(NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
                         errmsg, info, NULL, value, 0, errmsg, info,
                         value);
     }

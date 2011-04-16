@@ -42,7 +42,7 @@
 #define VIR_FROM_THIS VIR_FROM_HOOK
 
 #define virHookReportError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_HOOK, code, __FILE__,      \
+    virReportErrorHelper(VIR_FROM_HOOK, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define LIBVIRT_HOOK_DIR SYSCONFDIR "/libvirt/hooks"

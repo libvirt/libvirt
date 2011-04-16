@@ -27,7 +27,7 @@
 #define VIR_FROM_THIS VIR_FROM_LXC
 
 #define vethError(code, ...)                                  \
-    virReportErrorHelper(NULL, VIR_FROM_LXC, code, __FILE__,  \
+    virReportErrorHelper(VIR_FROM_LXC, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Functions */

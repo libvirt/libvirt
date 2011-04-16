@@ -232,8 +232,7 @@
     do {                                                                \
         unsigned long __unsuppflags = flags & ~(supported);             \
         if (__unsuppflags) {                                            \
-            virReportErrorHelper(NULL,                                  \
-                                 VIR_FROM_THIS,                         \
+            virReportErrorHelper(VIR_FROM_THIS,                         \
                                  VIR_ERR_INVALID_ARG,                   \
                                  __FILE__,                              \
                                  __FUNCTION__,                          \

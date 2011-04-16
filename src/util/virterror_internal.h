@@ -33,8 +33,7 @@ extern void *virUserData;
  *									*
  ************************************************************************/
 int virErrorInitialize(void);
-void virRaiseErrorFull(virConnectPtr conn,
-                       const char *filename,
+void virRaiseErrorFull(const char *filename,
                        const char *funcname,
                        size_t linenr,
                        int domain,
@@ -46,22 +45,22 @@ void virRaiseErrorFull(virConnectPtr conn,
                        int int1,
                        int int2,
                        const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(13, 14);
+    ATTRIBUTE_FMT_PRINTF(12, 13);
 
 /* Includes 'dom' and 'net' for compatbility, but they're ignored */
-# define virRaiseError(conn, dom, net, domain, code, level,              \
+# define virRaiseError(dom, net, domain, code, level,              \
                       str1, str2, str3, int1, int2, msg, ...)           \
-    virRaiseErrorFull(conn, __FILE__, __FUNCTION__, __LINE__,           \
+    virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,           \
                       domain, code, level, str1, str2, str3, int1, int2, \
                       msg, __VA_ARGS__)
 
 const char *virErrorMsg(virErrorNumber error, const char *info);
-void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
+void virReportErrorHelper(int domcode, int errcode,
                           const char *filename ATTRIBUTE_UNUSED,
                           const char *funcname ATTRIBUTE_UNUSED,
                           size_t linenr ATTRIBUTE_UNUSED,
                           const char *fmt, ...)
-  ATTRIBUTE_FMT_PRINTF(7, 8);
+  ATTRIBUTE_FMT_PRINTF(6, 7);
 
 void virReportSystemErrorFull(int domcode,
                               int theerrno,

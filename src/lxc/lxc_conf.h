@@ -66,7 +66,7 @@ int lxcLoadDriverConfig(lxc_driver_t *driver);
 virCapsPtr lxcCapsInit(void);
 
 # define lxcError(code, ...)                                             \
-    virReportErrorHelper(NULL, VIR_FROM_LXC, code, __FILE__,            \
+    virReportErrorHelper(VIR_FROM_LXC, code, __FILE__,                   \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #endif /* LXC_CONF_H */

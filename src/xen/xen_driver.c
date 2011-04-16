@@ -79,7 +79,7 @@ static int inside_daemon;
 #endif
 
 #define xenUnifiedError(code, ...)                                         \
-        virReportErrorHelper(NULL, VIR_FROM_XEN, code, __FILE__,           \
+        virReportErrorHelper(VIR_FROM_XEN, code, __FILE__,                 \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**

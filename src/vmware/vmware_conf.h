@@ -31,7 +31,7 @@
 # define PROGRAM_SENTINAL ((char *)0x1)
 
 # define vmwareError(code, ...) \
-         virReportErrorHelper(NULL, VIR_FROM_VMWARE, code, __FILE__, \
+         virReportErrorHelper(VIR_FROM_VMWARE, code, __FILE__, \
                               __FUNCTION__, __LINE__, __VA_ARGS__)
 
 # define TYPE_PLAYER        0

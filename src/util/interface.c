@@ -42,7 +42,7 @@
 #include "files.h"
 
 #define ifaceError(code, ...) \
-        virReportErrorHelper(NULL, VIR_FROM_NET, code, __FILE__, \
+        virReportErrorHelper(VIR_FROM_NET, code, __FILE__, \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #if __linux__

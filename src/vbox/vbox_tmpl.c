@@ -133,7 +133,7 @@ typedef IMediumAttachment IHardDiskAttachment;
 #endif /* VBOX_API_VERSION >= 3001 */
 
 #define vboxError(code, ...) \
-        virReportErrorHelper(NULL, VIR_FROM_VBOX, code, __FILE__, \
+        virReportErrorHelper(VIR_FROM_VBOX, code, __FILE__, \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define DEBUGPRUnichar(msg, strUtf16) \

@@ -146,7 +146,7 @@ struct _qemuDomainCmdlineDef {
 # define QEMUD_MIGRATION_NUM_PORTS 64
 
 # define qemuReportError(code, ...)                                      \
-    virReportErrorHelper(NULL, VIR_FROM_QEMU, code, __FILE__,           \
+    virReportErrorHelper(VIR_FROM_QEMU, code, __FILE__,                  \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 

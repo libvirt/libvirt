@@ -44,7 +44,7 @@
 #define VIR_FROM_THIS VIR_FROM_EVENT
 
 #define virEventError(code, ...)                                    \
-    virReportErrorHelper(NULL, VIR_FROM_EVENT, code, __FILE__,      \
+    virReportErrorHelper(VIR_FROM_EVENT, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static int virEventPollInterruptLocked(void);

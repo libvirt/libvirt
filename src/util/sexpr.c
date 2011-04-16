@@ -25,8 +25,8 @@
 #define VIR_FROM_THIS VIR_FROM_SEXPR
 
 #define virSexprError(code, ...)                                           \
-        virReportErrorHelper(NULL, VIR_FROM_SEXPR, code, __FILE__,         \
-                               __FUNCTION__, __LINE__, __VA_ARGS__)
+        virReportErrorHelper(VIR_FROM_SEXPR, code, __FILE__,               \
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
  * sexpr_new:

@@ -24,7 +24,7 @@
 # define VIR_SECURITY_MANAGER_H__
 
 # define virSecurityReportError(code, ...)                          \
-    virReportErrorHelper(NULL, VIR_FROM_SECURITY, code, __FILE__,   \
+    virReportErrorHelper(VIR_FROM_SECURITY, code, __FILE__,         \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 

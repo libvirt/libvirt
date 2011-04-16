@@ -34,7 +34,7 @@
 # include "threads.h"
 
 # define openvzError(code, ...)                                            \
-        virReportErrorHelper(NULL, VIR_FROM_OPENVZ, code, __FILE__,        \
+        virReportErrorHelper(VIR_FROM_OPENVZ, code, __FILE__,              \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 

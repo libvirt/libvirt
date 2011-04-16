@@ -415,7 +415,7 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
               "smpsafe");
 
 #define virDomainReportError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
+    virReportErrorHelper(VIR_FROM_DOMAIN, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE

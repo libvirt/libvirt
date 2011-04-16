@@ -29,7 +29,7 @@
 # include "esx_vi.h"
 
 # define ESX_ERROR(code, ...)                                                 \
-    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
+    virReportErrorHelper(VIR_FROM_ESX, code, __FILE__, __FUNCTION__,          \
                          __LINE__, __VA_ARGS__)
 
 typedef struct _esxPrivate {

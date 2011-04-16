@@ -46,7 +46,7 @@ virInterfaceDefDevFormat(virBufferPtr buf,
                          const virInterfaceDefPtr def, int level);
 
 #define virInterfaceReportError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_INTERFACE, code, __FILE__,      \
+    virReportErrorHelper(VIR_FROM_INTERFACE, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static

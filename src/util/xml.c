@@ -26,7 +26,7 @@
 #define VIR_FROM_THIS VIR_FROM_XML
 
 #define virGenericReportError(from, code, ...)                          \
-        virReportErrorHelper(NULL, from, code, __FILE__,                \
+        virReportErrorHelper(from, code, __FILE__,                      \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define virXMLError(code, ...)                                          \

@@ -242,7 +242,7 @@ static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int 
 #endif /* HAVE_POLKIT */
 
 #define remoteError(code, ...)                                    \
-    virReportErrorHelper(NULL, VIR_FROM_REMOTE, code, __FILE__,   \
+    virReportErrorHelper(VIR_FROM_REMOTE, code, __FILE__,         \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
@@ -8644,8 +8644,7 @@ remoteStreamHasError(virStreamPtr st) {
     }
 
     VIR_DEBUG0("Raising async error");
-    virRaiseErrorFull(st->conn,
-                      __FILE__, __FUNCTION__, __LINE__,
+    virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,
                       privst->err.domain,
                       privst->err.code,
                       privst->err.level,
@@ -10908,8 +10907,7 @@ cleanup:
              * convert missing remote entry points into the unsupported
              * feature error
              */
-            virRaiseErrorFull(flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
-                              __FILE__, __FUNCTION__, __LINE__,
+            virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,
                               thiscall->err.domain,
                               VIR_ERR_NO_SUPPORT,
                               thiscall->err.level,
@@ -10921,8 +10919,7 @@ cleanup:
                               "%s", *thiscall->err.message);
             rv = -1;
         } else {
-            virRaiseErrorFull(flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
-                              __FILE__, __FUNCTION__, __LINE__,
+            virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,
                               thiscall->err.domain,
                               thiscall->err.code,
                               thiscall->err.level,

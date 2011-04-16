@@ -117,7 +117,7 @@ static const virNodeInfo defaultNodeInfo = {
 
 
 #define testError(code, ...)                                      \
-        virReportErrorHelper(NULL, VIR_FROM_TEST, code, __FILE__, \
+        virReportErrorHelper(VIR_FROM_TEST, code, __FILE__,       \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static int testClose(virConnectPtr conn);

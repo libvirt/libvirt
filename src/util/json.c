@@ -37,7 +37,7 @@
 /* XXX fixme */
 #define VIR_FROM_THIS VIR_FROM_NONE
 #define virJSONError(code, ...)                                         \
-    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,           \
+    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                 \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 

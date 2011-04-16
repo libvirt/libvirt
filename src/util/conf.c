@@ -100,13 +100,13 @@ virConfError(virConfParserCtxtPtr ctxt,
 
     /* Construct the string 'filename:line: info' if we have that. */
     if (ctxt && ctxt->filename) {
-        virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
+        virRaiseError(NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
                         info, ctxt->filename, NULL,
                         ctxt->line, 0,
                         "%s:%d: %s", ctxt->filename, ctxt->line, info);
     } else {
         format = virErrorMsg(error, info);
-        virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
+        virRaiseError(NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
                         info, NULL, NULL,
                         ctxt ? ctxt->line : 0, 0,
                         format, info);

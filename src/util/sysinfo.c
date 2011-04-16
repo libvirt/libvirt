@@ -41,7 +41,7 @@
 #define VIR_FROM_THIS VIR_FROM_SYSINFO
 
 #define virSmbiosReportError(code, ...)                               \
-    virReportErrorHelper(NULL, VIR_FROM_SYSINFO, code, __FILE__,      \
+    virReportErrorHelper(VIR_FROM_SYSINFO, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define SYSINFO_SMBIOS_DECODER "dmidecode"

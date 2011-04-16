@@ -34,7 +34,7 @@
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
 #define interfaceReportError(code, ...)                               \
-    virReportErrorHelper(NULL, VIR_FROM_THIS, code, __FILE__,         \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,               \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Main driver state */

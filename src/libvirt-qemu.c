@@ -29,11 +29,11 @@
 #include "libvirt/libvirt-qemu.h"
 
 #define virLibConnError(conn, error, info)                               \
-    virReportErrorHelper(conn, VIR_FROM_NONE, error, NULL, __FUNCTION__, \
+    virReportErrorHelper(VIR_FROM_NONE, error, NULL, __FUNCTION__,       \
                          __LINE__, info)
 
 #define virLibDomainError(domain, error, info)                          \
-    virReportErrorHelper(NULL, VIR_FROM_DOM, error, NULL, __FUNCTION__, \
+    virReportErrorHelper(VIR_FROM_DOM, error, NULL, __FUNCTION__,       \
                          __LINE__, info)
 
 int

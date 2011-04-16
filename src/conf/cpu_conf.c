@@ -32,7 +32,7 @@
 #define VIR_FROM_THIS VIR_FROM_CPU
 
 #define virCPUReportError(code, ...)                              \
-    virReportErrorHelper(NULL, VIR_FROM_CPU, code, __FILE__,      \
+    virReportErrorHelper(VIR_FROM_CPU, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 VIR_ENUM_IMPL(virCPUMatch, VIR_CPU_MATCH_LAST,
