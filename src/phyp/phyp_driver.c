@@ -3485,28 +3485,28 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!def->mem.cur_balloon) {
-        PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
-                _("Field \"<memory>\" on the domain XML file is missing or has "
-                    "invalid value."));
+        PHYP_ERROR(VIR_ERR_XML_ERROR, "%s",
+                _("Field <memory> on the domain XML file is missing or has "
+                  "invalid value."));
         goto cleanup;
     }
 
     if (!def->mem.max_balloon) {
-        PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
-                _("Field \"<currentMemory>\" on the domain XML file is missing or"
-                    " has invalid value."));
+        PHYP_ERROR(VIR_ERR_XML_ERROR, "%s",
+                _("Field <currentMemory> on the domain XML file is missing or "
+                  "has invalid value."));
         goto cleanup;
     }
 
     if (def->ndisks < 1) {
         PHYP_ERROR(VIR_ERR_XML_ERROR, "%s",
-                   _("Domain XML must contain at least one \"<disk>\" element."));
+                   _("Domain XML must contain at least one <disk> element."));
         goto cleanup;
     }
 
     if (!def->disks[0]->src) {
-        PHYP_ERROR(VIR_ERR_XML_ERROR,"%s",
-                   _("Field \"<src>\" under \"<disk>\" on the domain XML file is "
+        PHYP_ERROR(VIR_ERR_XML_ERROR, "%s",
+                   _("Field <src> under <disk> on the domain XML file is "
                      "missing."));
         goto cleanup;
     }

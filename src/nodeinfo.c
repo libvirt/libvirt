@@ -239,7 +239,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 buf++;
             if (*buf != ':' || !buf[1]) {
                 nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                "parsing cpuinfo cpu cores %c", *buf);
+                                _("parsing cpuinfo cpu cores %c"), *buf);
                 return -1;
             }
             if (virStrToLong_ui(buf+1, &p, 10, &id) == 0
