@@ -1,5 +1,5 @@
 /*
- * storage_backend_logvol.c: storage backend for logical volume handling
+ * storage_backend_logical.c: storage backend for logical volume handling
  *
  * Copyright (C) 2007-2009 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange

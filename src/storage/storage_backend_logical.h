@@ -28,4 +28,4 @@
 
 extern virStorageBackend virStorageBackendLogical;
 
-#endif /* __VIR_STORAGE_BACKEND_LOGVOL_H__ */
+#endif /* __VIR_STORAGE_BACKEND_LOGICAL_H__ */
