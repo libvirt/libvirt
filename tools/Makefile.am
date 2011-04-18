@@ -64,7 +64,7 @@ BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c
 virsh-net-edit.c: virsh.c Makefile.am
 	$(AM_V_GEN)rm -f $@-tmp && \
 	echo '/* Automatically generated from: $^ */' > $@-tmp && \
-	echo 'static int' >> $@-tmp && \
+	echo 'static bool' >> $@-tmp && \
 	awk '/^cmdEdit/, /^}/' $< \
 	  | sed -e 's/domain/network/g' \
 	      -e 's/Domain/Network/g' \
@@ -79,7 +79,7 @@ virsh-net-edit.c: virsh.c Makefile.am
 virsh-pool-edit.c: virsh.c Makefile.am
 	$(AM_V_GEN)rm -f $@-tmp && \
 	echo '/* Automatically generated from: $^ */' > $@-tmp && \
-	echo 'static int' >> $@-tmp && \
+	echo 'static bool' >> $@-tmp && \
 	awk '/^cmdEdit/, /^}/' $< \
 	  | sed -e 's/domain/pool/g' \
 	      -e 's/vshCommandOptDomain/vshCommandOptPool/g' \
