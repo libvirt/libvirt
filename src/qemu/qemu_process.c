@@ -433,14 +433,17 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
              */
             virDomainObjRef(vm);
             if (virThreadPoolSendJob(driver->workerPool, wdEvent) < 0) {
-                virDomainObjUnref(vm);
+                if (virDomainObjUnref(vm) < 0)
+                    vm = NULL;
                 VIR_FREE(wdEvent);
             }
-        } else
+        } else {
             virReportOOMError();
+        }
     }
 
-    virDomainObjUnlock(vm);
+    if (vm)
+        virDomainObjUnlock(vm);
 
     if (watchdogEvent || lifecycleEvent) {
         qemuDriverLock(driver);
