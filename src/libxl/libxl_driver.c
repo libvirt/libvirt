@@ -199,6 +199,46 @@ libxlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
         virDomainObjUnlock(vm);
 }
 
+static int
+libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
+{
+    libxl_physinfo phy_info;
+    const libxl_version_info* ver_info;
+    struct utsname utsname;
+
+    if (libxl_get_physinfo(&driver->ctx, &phy_info)) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("libxl_get_physinfo_info failed"));
+        return -1;
+    }
+
+    if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("libxl_get_version_info failed"));
+        return -1;
+    }
+
+    uname(&utsname);
+    if (virStrncpy(info->model,
+                   utsname.machine,
+                   strlen(utsname.machine),
+                   sizeof(info->model)) == NULL) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("machine type %s too big for destination"),
+                   utsname.machine);
+        return -1;
+    }
+
+    info->memory = phy_info.total_pages * (ver_info->pagesize / 1024);
+    info->cpus = phy_info.nr_cpus;
+    info->nodes = phy_info.nr_nodes;
+    info->cores = phy_info.cores_per_socket;
+    info->threads = phy_info.threads_per_core;
+    info->sockets = 1;
+    info->mhz = phy_info.cpu_khz / 1000;
+    return 0;
+}
+
 /*
  * Cleanup function for domain that has reached shutoff state.
  *
@@ -210,6 +250,7 @@ libxlVmCleanup(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     libxlDomainObjPrivatePtr priv = vm->privateData;
     int vnc_port;
     char *file;
+    int i;
 
     if (priv->eventHdl >= 0) {
         virEventRemoveHandle(priv->eventHdl);
@@ -236,6 +277,16 @@ libxlVmCleanup(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
                                   vnc_port - LIBXL_VNC_PORT_MIN) < 0)
                 VIR_DEBUG("Could not mark port %d as unused", vnc_port);
         }
+    }
+
+    /* Remove any cputune settings */
+    if (vm->def->cputune.nvcpupin) {
+        for (i = 0; i < vm->def->cputune.nvcpupin; ++i) {
+            VIR_FREE(vm->def->cputune.vcpupin[i]->cpumask);
+            VIR_FREE(vm->def->cputune.vcpupin[i]);
+        }
+        VIR_FREE(vm->def->cputune.vcpupin);
+        vm->def->cputune.nvcpupin = 0;
     }
 
     if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) > 0) {
@@ -391,6 +442,62 @@ error:
     return -1;
 }
 
+static int
+libxlDomainSetVcpuAffinites(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
+{
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    libxl_cpumap map;
+    uint8_t *cpumask = NULL;
+    uint8_t *cpumap = NULL;
+    virNodeInfo nodeinfo;
+    size_t cpumaplen;
+    unsigned int pos;
+    int vcpu, i;
+    int ret = -1;
+
+    if (libxlDoNodeGetInfo(driver, &nodeinfo) < 0)
+        goto cleanup;
+
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+
+    for (vcpu = 0; vcpu < def->cputune.nvcpupin; ++vcpu) {
+        if (vcpu != def->cputune.vcpupin[vcpu]->vcpuid)
+            continue;
+
+        if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        cpumask = (uint8_t*) def->cputune.vcpupin[vcpu]->cpumask;
+
+        for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; ++i) {
+            if (cpumask[i]) {
+                pos = i / 8;
+                cpumap[pos] |= 1 << (i % 8);
+            }
+        }
+
+        map.size = cpumaplen;
+        map.map = cpumap;
+
+        if (libxl_set_vcpuaffinity(&priv->ctx, def->id, vcpu, &map) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to pin vcpu '%d' with libxenlight"), vcpu);
+            goto cleanup;
+        }
+
+        VIR_FREE(cpumap);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpumap);
+    return ret;
+}
+
 /*
  * Start a domain through libxenlight.
  *
@@ -438,6 +545,9 @@ libxlVmStart(libxlDriverPrivatePtr driver,
     }
 
     if (libxlCreateDomEvents(vm) < 0)
+        goto error;
+
+    if (libxlDomainSetVcpuAffinites(driver, vm) < 0)
         goto error;
 
     if (!start_paused) {
@@ -756,7 +866,7 @@ libxlReload(void)
                             &libxl_driver->domains,
                             libxl_driver->configDir,
                             libxl_driver->autostartDir,
-                            0, NULL, libxl_driver);
+                            1, NULL, libxl_driver);
 
     virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
                    libxl_driver);
@@ -869,42 +979,7 @@ libxlGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
 static int
 libxlNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 {
-    libxl_physinfo phy_info;
-    const libxl_version_info* ver_info;
-    libxlDriverPrivatePtr driver = conn->privateData;
-    struct utsname utsname;
-
-    if (libxl_get_physinfo(&driver->ctx, &phy_info)) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
-                   _("libxl_get_physinfo_info failed"));
-        return -1;
-    }
-
-    if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
-                   _("libxl_get_version_info failed"));
-        return -1;
-    }
-
-    uname(&utsname);
-    if (virStrncpy(info->model,
-                   utsname.machine,
-                   strlen(utsname.machine),
-                   sizeof(info->model)) == NULL) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
-                   _("machine type %s too big for destination"),
-                   utsname.machine);
-        return -1;
-    }
-
-    info->memory = phy_info.total_pages * (ver_info->pagesize / 1024);
-    info->cpus = phy_info.nr_cpus;
-    info->nodes = phy_info.nr_nodes;
-    info->cores = phy_info.cores_per_socket;
-    info->threads = phy_info.threads_per_core;
-    info->sockets = 1;
-    info->mhz = phy_info.cpu_khz / 1000;
-    return 0;
+    return libxlDoNodeGetInfo(conn->privateData, info);
 }
 
 static char *
@@ -1712,6 +1787,16 @@ libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
                    _("Failed to pin vcpu '%d' with libxenlight"), vcpu);
         goto cleanup;
     }
+
+    if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("failed to update or add vcpupin xml"));
+        goto cleanup;
+    }
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto cleanup;
+
     ret = 0;
 
 cleanup:
