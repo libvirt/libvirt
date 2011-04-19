@@ -3384,6 +3384,39 @@ cleanup:
 }
 
 static int
+phypDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
+{
+    int result = -1;
+    ConnectionData *connection_data = dom->conn->networkPrivateData;
+    virConnectPtr conn = dom->conn;
+    LIBSSH2_SESSION *session = connection_data->session;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    int system_type = phyp_driver->system_type;
+    char *managed_system = phyp_driver->managed_system;
+    int exit_status = 0;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "chsysstate");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf,
+                      " -r lpar -o shutdown --id %d --immed --restart",
+                      dom->id);
+    ret = phypExecBuffer(session, &buf, &exit_status, dom->conn, false);
+
+    if (exit_status < 0)
+        goto cleanup;
+
+    result = 0;
+
+  cleanup:
+    VIR_FREE(ret);
+
+    return result;
+}
+
+static int
 phypDomainShutdown(virDomainPtr dom)
 {
     int result = -1;
@@ -3707,7 +3740,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainSuspend */
     phypDomainResume,           /* domainResume */
     phypDomainShutdown,         /* domainShutdown */
-    NULL,                       /* domainReboot */
+    phypDomainReboot,           /* domainReboot */
     phypDomainDestroy,          /* domainDestroy */
     NULL,                       /* domainGetOSType */
     NULL,                       /* domainGetMaxMemory */
