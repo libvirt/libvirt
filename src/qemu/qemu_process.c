@@ -433,7 +433,7 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
              */
             virDomainObjRef(vm);
             if (virThreadPoolSendJob(driver->workerPool, wdEvent) < 0) {
-                if (virDomainObjUnref(vm) < 0)
+                if (virDomainObjUnref(vm) == 0)
                     vm = NULL;
                 VIR_FREE(wdEvent);
             }
