@@ -2357,7 +2357,7 @@ err_exit:
  */
 static int
 ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             enum virDomainNetType nettype,
+                             enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                              virNWFilterDefPtr nwfilter,
                              virNWFilterRuleDefPtr rule,
                              const char *ifname,
@@ -2409,13 +2409,6 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
     case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
-        if (nettype == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                          _("'%s' protocol not support for net type '%s'"),
-                          virNWFilterRuleProtocolTypeToString(rule->prtclType),
-                          virDomainNetTypeToString(nettype));
-            return 1;
-        }
         isIPv6 = 0;
         rc = iptablesCreateRuleInstance(nwfilter,
                                         rule,
@@ -2433,13 +2426,6 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6:
     case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
     case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
-        if (nettype == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
-                          _("'%s' protocol not support for net type '%s'"),
-                          virNWFilterRuleProtocolTypeToString(rule->prtclType),
-                          virDomainNetTypeToString(nettype));
-            return 1;
-        }
         isIPv6 = 1;
         rc = iptablesCreateRuleInstance(nwfilter,
                                         rule,

@@ -2841,7 +2841,6 @@ virDomainNetDefParseXML(virCapsPtr caps,
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        case VIR_DOMAIN_NET_TYPE_DIRECT:
             def->filter = filter;
             filter = NULL;
             def->filterparams = filterparams;

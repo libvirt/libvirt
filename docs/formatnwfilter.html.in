@@ -52,8 +52,6 @@
        <li><code>network</code></li>
        <li><code>ethernet</code> -- must be used in bridging mode</li>
        <li><code>bridge</code></li>
-       <li><code>direct</code> -- only protocols mac, arp, ip and ipv6
-            can be filtered</li>
       </ul>
     <p>
     The interface XML is used to reference a top-level filter. In the
