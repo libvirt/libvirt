@@ -1262,44 +1262,31 @@ static int doTunnelSendAll(virStreamPtr st,
     return 0;
 }
 
+
 static int doTunnelMigrate(struct qemud_driver *driver,
-                           virConnectPtr dconn,
                            virDomainObjPtr vm,
-                           const char *dom_xml,
-                           const char *uri,
+                           virStreamPtr st,
                            unsigned long flags,
-                           const char *dname,
-                           unsigned long resource)
+                           unsigned long resource ATTRIBUTE_UNUSED)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int client_sock = -1;
     int qemu_sock = -1;
     struct sockaddr_un sa_qemu, sa_client;
     socklen_t addrlen;
-    virDomainPtr ddomain = NULL;
-    int retval = -1;
-    virStreamPtr st = NULL;
-    char *unixfile = NULL;
-    int internalret;
     int status;
     unsigned long long transferred, remaining, total;
+    char *unixfile = NULL;
     unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
+    int ret = -1;
 
-    /*
-     * The order of operations is important here to avoid touching
-     * the source VM until we are very sure we can successfully
-     * start the migration operation.
-     *
-     *   1. setup local support infrastructure (eg sockets)
-     *   2. setup destination fully
-     *   3. start migration on source
-     */
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
+        !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("Source qemu is too old to support tunnelled migration"));
+        goto cleanup;
+    }
 
-    /*
-     * XXX need to support migration cookies
-     */
-
-    /* Stage 1. setup local support infrastructure */
 
     if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.src.%s",
                     driver->libDir, vm->def->name) < 0) {
@@ -1343,36 +1330,6 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    /* check that this qemu version supports the unix migration */
-
-    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
-        !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("Source qemu is too old to support tunnelled migration"));
-        goto cleanup;
-    }
-
-
-    /* Stage 2. setup destination fully
-     *
-     * Once stage 2 has completed successfully, we *must* call finish
-     * to cleanup the target whether we succeed or fail
-     */
-    st = virStreamNew(dconn, 0);
-    if (st == NULL)
-        /* virStreamNew only fails on OOM, and it reports the error itself */
-        goto cleanup;
-
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
-    internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st,
-                                                            flags, dname,
-                                                            resource, dom_xml);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
-
-    if (internalret < 0)
-        /* domainMigratePrepareTunnel sets the error for us */
-        goto cleanup;
-
     /* the domain may have shutdown or crashed while we had the locks dropped
      * in qemuDomainObjEnterRemoteWithDriver, so check again
      */
@@ -1384,26 +1341,28 @@ static int doTunnelMigrate(struct qemud_driver *driver,
 
     /*   3. start migration on source */
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
+
     if (flags & VIR_MIGRATE_NON_SHARED_DISK)
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
     if (flags & VIR_MIGRATE_NON_SHARED_INC)
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
+
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
-        internalret = qemuMonitorMigrateToUnix(priv->mon, background_flags,
+        ret = qemuMonitorMigrateToUnix(priv->mon, background_flags,
                                                unixfile);
-    }
-    else if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
+    } else if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
-        internalret = qemuMonitorMigrateToCommand(priv->mon, QEMU_MONITOR_MIGRATE_BACKGROUND, args);
+        ret = qemuMonitorMigrateToCommand(priv->mon, QEMU_MONITOR_MIGRATE_BACKGROUND, args);
     } else {
-        internalret = -1;
+        ret = -1;
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-    if (internalret < 0) {
+    if (ret < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("tunnelled migration monitor command failed"));
-        goto finish;
+        goto cleanup;
     }
+    ret = -1;
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1443,16 +1402,61 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         goto cancel;
     }
 
-    retval = doTunnelSendAll(st, client_sock);
+    ret = doTunnelSendAll(st, client_sock);
 
 cancel:
-    if (retval != 0 && virDomainObjIsActive(vm)) {
+    if (ret != 0 && virDomainObjIsActive(vm)) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         qemuMonitorMigrateCancel(priv->mon);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
-finish:
+cleanup:
+    VIR_FORCE_CLOSE(client_sock);
+    VIR_FORCE_CLOSE(qemu_sock);
+    if (unixfile) {
+        unlink(unixfile);
+        VIR_FREE(unixfile);
+    }
+
+    return ret;
+}
+
+
+static int doTunnelMigrate2(struct qemud_driver *driver,
+                            virConnectPtr dconn,
+                            virDomainObjPtr vm,
+                            const char *dom_xml,
+                            const char *uri,
+                            unsigned long flags,
+                            const char *dname,
+                            unsigned long resource)
+{
+    virDomainPtr ddomain = NULL;
+    int retval = -1;
+    virStreamPtr st = NULL;
+    int internalret;
+
+    /*
+     * Tunnelled Migrate Version 2 does not support cookies
+     * due to missing parameters in the prepareTunnel() API.
+     */
+
+    if (!(st = virStreamNew(dconn, 0)))
+        goto cleanup;
+
+    qemuDomainObjEnterRemoteWithDriver(driver, vm);
+    internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st,
+                                                            flags, dname,
+                                                            resource, dom_xml);
+    qemuDomainObjExitRemoteWithDriver(driver, vm);
+
+    if (internalret < 0)
+        /* domainMigratePrepareTunnel sets the error for us */
+        goto cleanup;
+
+    retval = doTunnelMigrate(driver, vm, st, flags, resource);
+
     dname = dname ? dname : vm->def->name;
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     ddomain = dconn->driver->domainMigrateFinish2
@@ -1460,16 +1464,9 @@ finish:
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
 cleanup:
-    VIR_FORCE_CLOSE(client_sock);
-    VIR_FORCE_CLOSE(qemu_sock);
 
     if (ddomain)
         virUnrefDomain(ddomain);
-
-    if (unixfile) {
-        unlink(unixfile);
-        VIR_FREE(unixfile);
-    }
 
     if (st)
         /* don't call virStreamFree(), because that resets any pending errors */
@@ -1481,14 +1478,14 @@ cleanup:
 /* This is essentially a simplified re-impl of
  * virDomainMigrateVersion2 from libvirt.c, but running in source
  * libvirtd context, instead of client app context */
-static int doNonTunnelMigrate(struct qemud_driver *driver,
-                              virConnectPtr dconn,
-                              virDomainObjPtr vm,
-                              const char *dom_xml,
-                              const char *uri ATTRIBUTE_UNUSED,
-                              unsigned long flags,
-                              const char *dname,
-                              unsigned long resource)
+static int doNonTunnelMigrate2(struct qemud_driver *driver,
+                               virConnectPtr dconn,
+                               virDomainObjPtr vm,
+                               const char *dom_xml,
+                               const char *uri ATTRIBUTE_UNUSED,
+                               unsigned long flags,
+                               const char *dname,
+                               unsigned long resource)
 {
     virDomainPtr ddomain = NULL;
     int retval = -1;
@@ -1603,9 +1600,9 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
     }
 
     if (flags & VIR_MIGRATE_TUNNELLED)
-        ret = doTunnelMigrate(driver, dconn, vm, dom_xml, uri, flags, dname, resource);
+        ret = doTunnelMigrate2(driver, dconn, vm, dom_xml, uri, flags, dname, resource);
     else
-        ret = doNonTunnelMigrate(driver, dconn, vm, dom_xml, uri, flags, dname, resource);
+        ret = doNonTunnelMigrate2(driver, dconn, vm, dom_xml, uri, flags, dname, resource);
 
 cleanup:
     VIR_FREE(dom_xml);
