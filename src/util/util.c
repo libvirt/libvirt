@@ -78,6 +78,7 @@
 #include "files.h"
 #include "command.h"
 #include "nonblocking.h"
+#include "passfd.h"
 
 #ifndef NSIG
 # define NSIG 32
@@ -1480,11 +1481,6 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
     int waitret, status, ret = 0;
     int fd = -1;
     int pair[2] = { -1, -1 };
-    struct msghdr msg;
-    struct cmsghdr *cmsg;
-    char buf[CMSG_SPACE(sizeof(fd))];
-    char dummy = 0;
-    struct iovec iov;
     int forkRet;
 
     if ((!(flags & VIR_FILE_OPEN_AS_UID))
@@ -1506,18 +1502,6 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
         return ret;
     }
 
-    memset(&msg, 0, sizeof(msg));
-    iov.iov_base = &dummy;
-    iov.iov_len = 1;
-    msg.msg_iov = &iov;
-    msg.msg_iovlen = 1;
-    msg.msg_control = buf;
-    msg.msg_controllen = sizeof(buf);
-    cmsg = CMSG_FIRSTHDR(&msg);
-    cmsg->cmsg_level = SOL_SOCKET;
-    cmsg->cmsg_type = SCM_RIGHTS;
-    cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
-
     forkRet = virFork(&pid);
 
     if (pid < 0) {
@@ -1529,25 +1513,19 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
         VIR_FORCE_CLOSE(pair[1]);
 
         do {
-            ret = recvmsg(pair[0], &msg, 0);
+            ret = recvfd(pair[0], 0);
         } while (ret < 0 && errno == EINTR);
 
-        if (ret < 0) {
+        if (ret < 0 && errno != EACCES) {
             ret = -errno;
             VIR_FORCE_CLOSE(pair[0]);
             while ((waitret = waitpid(pid, NULL, 0) == -1)
                    && (errno == EINTR));
             goto parenterror;
+        } else {
+            fd = ret;
         }
         VIR_FORCE_CLOSE(pair[0]);
-
-        /* See if fd was transferred.  */
-        cmsg = CMSG_FIRSTHDR(&msg);
-        if (cmsg && cmsg->cmsg_len == CMSG_LEN(sizeof(fd)) &&
-            cmsg->cmsg_level == SOL_SOCKET &&
-            cmsg->cmsg_type == SCM_RIGHTS) {
-            memcpy(&fd, CMSG_DATA(cmsg), sizeof(fd));
-        }
 
         /* wait for child to complete, and retrieve its exit code */
         while ((waitret = waitpid(pid, &status, 0) == -1)
@@ -1557,12 +1535,14 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
             virReportSystemError(errno,
                                  _("failed to wait for child creating '%s'"),
                                  path);
+            VIR_FORCE_CLOSE(fd);
             goto parenterror;
         }
         if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES ||
             fd == -1) {
             /* fall back to the simpler method, which works better in
              * some cases */
+            VIR_FORCE_CLOSE(fd);
             return virFileOpenAsNoFork(path, openflags, mode, uid, gid, flags);
         }
         if (!ret)
@@ -1627,10 +1607,9 @@ parenterror:
                              path, mode);
         goto childerror;
     }
-    memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
 
     do {
-        ret = sendmsg(pair[1], &msg, 0);
+        ret = sendfd(pair[1], fd);
     } while (ret < 0 && errno == EINTR);
 
     if (ret < 0) {
@@ -1638,7 +1617,6 @@ parenterror:
         goto childerror;
     }
 
-    ret = 0;
 childerror:
     /* ret tracks -errno on failure, but exit value must be positive.
      * If the child exits with EACCES, then the parent tries again.  */
