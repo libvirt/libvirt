@@ -316,9 +316,9 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
         goto endjob;
     }
     /* Start the QEMU daemon, with the same command-line arguments plus
-     * -incoming stdin (which qemu_command might convert to exec:cat or fd:n)
+     * -incoming stdio (which qemu_command might convert to exec:cat or fd:n)
      */
-    internalret = qemuProcessStart(dconn, driver, vm, "stdin", true, dataFD[1],
+    internalret = qemuProcessStart(dconn, driver, vm, "stdio", true, dataFD[1],
                                    NULL, VIR_VM_OP_MIGRATE_IN_START);
     if (internalret < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
