@@ -3597,6 +3597,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     int cookielen = 0, ret;
     virDomainInfo info;
     virErrorPtr orig_err = NULL;
+    int cancelled;
 
     /* Prepare the migration.
      *
@@ -3642,7 +3643,8 @@ virDomainMigrateVersion2 (virDomainPtr domain,
         virLibConnError(VIR_ERR_INTERNAL_ERROR,
                          _("domainMigratePrepare2 did not set uri"));
         virDispatchError(domain->conn);
-        goto done;
+        cancelled = 1;
+        goto finish;
     }
     if (uri_out)
         uri = uri_out; /* Did domainMigratePrepare2 change URI? */
@@ -3658,6 +3660,12 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     if (ret < 0)
         orig_err = virSaveLastError();
 
+    /* If Perform returns < 0, then we need to cancel the VM
+     * startup on the destination
+     */
+    cancelled = ret < 0 ? 1 : 0;
+
+finish:
     /* In version 2 of the migration protocol, we pass the
      * status code from the sender to the destination host,
      * so it can do any cleanup if the migration failed.
@@ -3665,7 +3673,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     dname = dname ? dname : domain->name;
     VIR_DEBUG("Finish2 %p ret=%d", dconn, ret);
     ddomain = dconn->driver->domainMigrateFinish2
-        (dconn, dname, cookie, cookielen, uri, flags, ret);
+        (dconn, dname, cookie, cookielen, uri, flags, cancelled);
 
  done:
     if (orig_err) {
@@ -3760,7 +3768,8 @@ virDomainMigrateVersion3(virDomainPtr domain,
         virLibConnError(VIR_ERR_INTERNAL_ERROR,
                         _("domainMigratePrepare3 did not set uri"));
         virDispatchError(domain->conn);
-        goto done;
+        cancelled = 1;
+        goto finish;
     }
     if (uri_out)
         uri = uri_out; /* Did domainMigratePrepare3 change URI? */
@@ -3789,6 +3798,7 @@ virDomainMigrateVersion3(virDomainPtr domain,
      */
     cancelled = ret < 0 ? 1 : 0;
 
+finish:
     /*
      * The status code from the source is passed to the destination.
      * The dest can cleanup if the source indicated it failed to
