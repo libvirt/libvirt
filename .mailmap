@@ -1,3 +1,6 @@
+# Format of each line:
+# <Preferred address in AUTHORS> <other alias used by same author>
+
 <amy.griffis@hp.com> <aron.griffis@hp.com>
 <bozzolan@gmail.com> <redshift@gmx.com>
 <charles_duffy@messageone.com> <charles@dyfis.net>
@@ -15,3 +18,4 @@
 <berrange@redhat.com> <dan@berrange.com>
 <soren@linux2go.dk> <soren@canonical.com>
 <cfergeau@redhat.com> <teuf@gnome.org>
+<wency@cn.fujitsu.com> <wency cn fujitsu com>
