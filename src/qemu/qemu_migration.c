@@ -583,14 +583,148 @@ qemuMigrationSetOffline(struct qemud_driver *driver,
 }
 
 
-int
-qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
+static int
+qemuMigrationProcessJobSignals(struct qemud_driver *driver,
+                               virDomainObjPtr vm,
+                               const char *job)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
+                        job, _("guest unexpectedly quit"));
+        return -1;
+    }
+
+    if (priv->jobSignals & QEMU_JOB_SIGNAL_CANCEL) {
+        priv->jobSignals ^= QEMU_JOB_SIGNAL_CANCEL;
+        VIR_DEBUG("Cancelling job at client request");
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        ret = qemuMonitorMigrateCancel(priv->mon);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        if (ret < 0) {
+            VIR_WARN("Unable to cancel job");
+        }
+    } else if (priv->jobSignals & QEMU_JOB_SIGNAL_SUSPEND) {
+        priv->jobSignals ^= QEMU_JOB_SIGNAL_SUSPEND;
+        VIR_DEBUG("Pausing domain for non-live migration");
+        if (qemuMigrationSetOffline(driver, vm) < 0)
+            VIR_WARN("Unable to pause domain");
+    } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME) {
+        unsigned long long ms = priv->jobSignalsData.migrateDowntime;
+
+        priv->jobSignals ^= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
+        priv->jobSignalsData.migrateDowntime = 0;
+        VIR_DEBUG("Setting migration downtime to %llums", ms);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        ret = qemuMonitorSetMigrationDowntime(priv->mon, ms);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        if (ret < 0)
+            VIR_WARN("Unable to set migration downtime");
+    } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_SPEED) {
+        unsigned long bandwidth = priv->jobSignalsData.migrateBandwidth;
+
+        priv->jobSignals ^= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
+        priv->jobSignalsData.migrateBandwidth = 0;
+        VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        if (ret < 0)
+            VIR_WARN("Unable to set migration speed");
+    } else {
+        ret = 0;
+    }
+
+    return ret;
+}
+
+
+static int
+qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
+                             virDomainObjPtr vm,
+                             const char *job)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     int status;
     unsigned long long memProcessed;
     unsigned long long memRemaining;
     unsigned long long memTotal;
+    struct timeval now;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
+                        job, _("guest unexpectedly quit"));
+        return -1;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorGetMigrationStatus(priv->mon,
+                                        &status,
+                                        &memProcessed,
+                                        &memRemaining,
+                                        &memTotal);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (ret < 0) {
+        priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
+        return -1;
+    }
+
+    if (gettimeofday(&now, NULL) < 0) {
+        priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
+        virReportSystemError(errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
+    priv->jobInfo.timeElapsed = timeval_to_ms(now) - priv->jobStart;
+
+    switch (status) {
+    case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
+        priv->jobInfo.type = VIR_DOMAIN_JOB_NONE;
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("%s: %s"), job, _("is not active"));
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+        priv->jobInfo.dataTotal = memTotal;
+        priv->jobInfo.dataRemaining = memRemaining;
+        priv->jobInfo.dataProcessed = memProcessed;
+
+        priv->jobInfo.memTotal = memTotal;
+        priv->jobInfo.memRemaining = memRemaining;
+        priv->jobInfo.memProcessed = memProcessed;
+
+        ret = 0;
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
+        priv->jobInfo.type = VIR_DOMAIN_JOB_COMPLETED;
+        ret = 0;
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
+        priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("%s: %s"), job, _("unexpectedly failed"));
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
+        priv->jobInfo.type = VIR_DOMAIN_JOB_CANCELLED;
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("%s: %s"), job, _("canceled by client"));
+        break;
+    }
+
+    return ret;
+}
+
+
+int
+qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
+{
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
@@ -598,8 +732,6 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
     while (priv->jobInfo.type == VIR_DOMAIN_JOB_UNBOUNDED) {
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
-        struct timeval now;
-        int rc;
         const char *job;
 
         switch (priv->jobActive) {
@@ -616,115 +748,12 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
                 job = _("job");
         }
 
-
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
-                            job, _("guest unexpectedly quit"));
+        if (qemuMigrationProcessJobSignals(driver, vm, job) < 0)
             goto cleanup;
-        }
 
-        if (priv->jobSignals & QEMU_JOB_SIGNAL_CANCEL) {
-            priv->jobSignals ^= QEMU_JOB_SIGNAL_CANCEL;
-            VIR_DEBUG("Cancelling job at client request");
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            rc = qemuMonitorMigrateCancel(priv->mon);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0) {
-                VIR_WARN("Unable to cancel job");
-            }
-        } else if (priv->jobSignals & QEMU_JOB_SIGNAL_SUSPEND) {
-            priv->jobSignals ^= QEMU_JOB_SIGNAL_SUSPEND;
-            VIR_DEBUG("Pausing domain for non-live migration");
-            if (qemuMigrationSetOffline(driver, vm) < 0)
-                VIR_WARN("Unable to pause domain");
-        } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME) {
-            unsigned long long ms = priv->jobSignalsData.migrateDowntime;
-
-            priv->jobSignals ^= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
-            priv->jobSignalsData.migrateDowntime = 0;
-            VIR_DEBUG("Setting migration downtime to %llums", ms);
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            rc = qemuMonitorSetMigrationDowntime(priv->mon, ms);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0)
-                VIR_WARN("Unable to set migration downtime");
-        } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_SPEED) {
-            unsigned long bandwidth = priv->jobSignalsData.migrateBandwidth;
-
-            priv->jobSignals ^= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
-            priv->jobSignalsData.migrateBandwidth = 0;
-            VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0)
-                VIR_WARN("Unable to set migration speed");
-        }
-
-        /* Repeat check because the job signals might have caused
-         * guest to die
-         */
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
-                            job, _("guest unexpectedly quit"));
+        if (qemuMigrationUpdateJobStatus(driver, vm, job) < 0)
             goto cleanup;
-        }
 
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorGetMigrationStatus(priv->mon,
-                                           &status,
-                                           &memProcessed,
-                                           &memRemaining,
-                                           &memTotal);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-        if (rc < 0) {
-            priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
-            goto cleanup;
-        }
-
-        if (gettimeofday(&now, NULL) < 0) {
-            priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
-            virReportSystemError(errno, "%s",
-                                 _("cannot get time of day"));
-            goto cleanup;
-        }
-        priv->jobInfo.timeElapsed = timeval_to_ms(now) - priv->jobStart;
-
-        switch (status) {
-        case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
-            priv->jobInfo.type = VIR_DOMAIN_JOB_NONE;
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            _("%s: %s"), job, _("is not active"));
-            break;
-
-        case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
-            priv->jobInfo.dataTotal = memTotal;
-            priv->jobInfo.dataRemaining = memRemaining;
-            priv->jobInfo.dataProcessed = memProcessed;
-
-            priv->jobInfo.memTotal = memTotal;
-            priv->jobInfo.memRemaining = memRemaining;
-            priv->jobInfo.memProcessed = memProcessed;
-            break;
-
-        case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
-            priv->jobInfo.type = VIR_DOMAIN_JOB_COMPLETED;
-            ret = 0;
-            break;
-
-        case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
-            priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            _("%s: %s"), job, _("unexpectedly failed"));
-            break;
-
-        case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
-            priv->jobInfo.type = VIR_DOMAIN_JOB_CANCELLED;
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            _("%s: %s"), job, _("canceled by client"));
-            break;
-        }
 
         virDomainObjUnlock(vm);
         qemuDriverUnlock(driver);
@@ -736,7 +765,10 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
     }
 
 cleanup:
-    return ret;
+    if (priv->jobInfo.type == VIR_DOMAIN_JOB_COMPLETED)
+        return 0;
+    else
+        return -1;
 }
 
 
