@@ -17,7 +17,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <assert.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <gcrypt.h>
@@ -3374,7 +3373,6 @@ virDomainMigrateVersion1 (virDomainPtr domain,
     }
     if (uri_out)
         uri = uri_out; /* Did domainMigratePrepare change URI? */
-    assert (uri != NULL);
 
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
@@ -3464,7 +3462,6 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     }
     if (uri_out)
         uri = uri_out; /* Did domainMigratePrepare2 change URI? */
-    assert (uri != NULL);
 
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
