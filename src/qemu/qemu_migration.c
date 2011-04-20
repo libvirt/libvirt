@@ -1299,7 +1299,6 @@ static int doTunnelSendAll(virStreamPtr st,
         return -1;
     }
 
-    /* XXX should honour the 'resource' parameter here */
     for (;;) {
         nbytes = saferead(sock, buffer, nbytes);
         if (nbytes < 0) {
@@ -1339,7 +1338,7 @@ static int doTunnelMigrate(struct qemud_driver *driver,
                            char **cookieout,
                            int *cookieoutlen,
                            unsigned long flags,
-                           unsigned long resource ATTRIBUTE_UNUSED)
+                           unsigned long resource)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int client_sock = -1;
@@ -1421,6 +1420,11 @@ static int doTunnelMigrate(struct qemud_driver *driver,
 
     /*   3. start migration on source */
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (resource > 0 &&
+        qemuMonitorSetMigrationSpeed(priv->mon, resource) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        goto cleanup;
+    }
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK)
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
