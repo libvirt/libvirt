@@ -40,6 +40,11 @@ void virThreadOnExit(void)
 {
 }
 
+int virOnce(virOnceControlPtr once, virOnceFunc init)
+{
+    return pthread_once(&once->once, init);
+}
+
 
 int virMutexInit(virMutexPtr m)
 {

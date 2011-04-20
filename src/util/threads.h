@@ -1,7 +1,7 @@
 /*
  * threads.h: basic thread synchronization primitives
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,10 @@ typedef virThreadLocal *virThreadLocalPtr;
 typedef struct virThread virThread;
 typedef virThread *virThreadPtr;
 
+typedef struct virOnceControl virOnceControl;
+typedef virOnceControl *virOnceControlPtr;
+
+typedef void (*virOnceFunc)(void);
 
 int virThreadInitialize(void) ATTRIBUTE_RETURN_CHECK;
 void virThreadOnExit(void);
@@ -56,6 +60,21 @@ void virThreadJoin(virThreadPtr thread);
  * value for the same thread. */
 int virThreadSelfID(void);
 int virThreadID(virThreadPtr thread);
+
+/* Static initialization of mutexes is not possible, so we instead
+ * provide for guaranteed one-time initialization via a callback
+ * function.  Usage:
+ * static virOnceControl once = VIR_ONCE_CONTROL_INITIALIZER;
+ * static void initializer(void) { ... }
+ * void myfunc()
+ * {
+ *     if (virOnce(&once, initializer) < 0)
+ *         goto error;
+ *     ...now guaranteed that initializer has completed exactly once
+ * }
+ */
+int virOnce(virOnceControlPtr once, virOnceFunc init)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virMutexInit(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
 int virMutexInitRecursive(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;

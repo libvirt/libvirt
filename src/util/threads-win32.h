@@ -1,7 +1,7 @@
 /*
  * threads-win32.h basic thread synchronization primitives
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,3 +41,10 @@ struct virThread {
 struct virThreadLocal {
     DWORD key;
 };
+
+struct virOnceControl {
+    volatile long init; /* 0 at startup, > 0 if init has started */
+    volatile long complete; /* 0 until first thread completes callback */
+};
+
+#define VIR_ONCE_CONTROL_INITIALIZER { 0, 0 }

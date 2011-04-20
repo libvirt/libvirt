@@ -866,6 +866,7 @@ virMutexInit;
 virMutexInitRecursive;
 virMutexLock;
 virMutexUnlock;
+virOnce;
 virThreadCreate;
 virThreadID;
 virThreadIsSelf;

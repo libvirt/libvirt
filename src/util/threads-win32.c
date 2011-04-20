@@ -1,7 +1,7 @@
 /*
  * threads-win32.c: basic thread synchronization primitives
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,6 +69,27 @@ void virThreadOnExit(void)
     virMutexUnlock(&virThreadLocalLock);
 }
 
+int virOnce(virOnceControlPtr once, virOnceFunc func)
+{
+    if (!once->complete) {
+        if (InterlockedIncrement(&once->init) == 1) {
+            /* We're the first thread. */
+            func();
+            once->complete = 1;
+        } else {
+            /* We're a later thread.  Decrement the init counter back
+             * to avoid overflow, then yield until the first thread
+             * marks that the function is complete.  It is rare that
+             * multiple threads will be waiting here, and since each
+             * thread is yielding except the first, we should get out
+             * soon enough.  */
+            InterlockedDecrement(&once->init);
+            while (!once->complete)
+                Sleep(0);
+        }
+    }
+    return 0;
+}
 
 int virMutexInit(virMutexPtr m)
 {
