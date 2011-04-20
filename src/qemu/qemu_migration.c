@@ -1423,90 +1423,63 @@ cleanup:
 }
 
 
-static int doTunnelMigrate2(struct qemud_driver *driver,
-                            virConnectPtr dconn,
-                            virDomainObjPtr vm,
-                            const char *dom_xml,
-                            const char *uri,
-                            unsigned long flags,
-                            const char *dname,
-                            unsigned long resource)
-{
-    virDomainPtr ddomain = NULL;
-    int retval = -1;
-    virStreamPtr st = NULL;
-    int internalret;
-
-    /*
-     * Tunnelled Migrate Version 2 does not support cookies
-     * due to missing parameters in the prepareTunnel() API.
-     */
-
-    if (!(st = virStreamNew(dconn, 0)))
-        goto cleanup;
-
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
-    internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st,
-                                                            flags, dname,
-                                                            resource, dom_xml);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
-
-    if (internalret < 0)
-        /* domainMigratePrepareTunnel sets the error for us */
-        goto cleanup;
-
-    retval = doTunnelMigrate(driver, vm, st, flags, resource);
-
-    dname = dname ? dname : vm->def->name;
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
-    ddomain = dconn->driver->domainMigrateFinish2
-        (dconn, dname, NULL, 0, uri, flags, retval);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
-
-cleanup:
-
-    if (ddomain)
-        virUnrefDomain(ddomain);
-
-    if (st)
-        /* don't call virStreamFree(), because that resets any pending errors */
-        virUnrefStream(st);
-    return retval;
-}
-
-
-/* This is essentially a simplified re-impl of
- * virDomainMigrateVersion2 from libvirt.c, but running in source
- * libvirtd context, instead of client app context */
-static int doNonTunnelMigrate2(struct qemud_driver *driver,
+/* This is essentially a re-impl of virDomainMigrateVersion2
+ * from libvirt.c, but running in source libvirtd context,
+ * instead of client app context & also adding in tunnel
+ * handling */
+static int doPeer2PeerMigrate2(struct qemud_driver *driver,
+                               virConnectPtr sconn,
                                virConnectPtr dconn,
                                virDomainObjPtr vm,
-                               const char *dom_xml,
-                               const char *uri ATTRIBUTE_UNUSED,
+                               const char *uri,
                                unsigned long flags,
                                const char *dname,
                                unsigned long resource)
 {
     virDomainPtr ddomain = NULL;
-    int retval = -1;
     char *uri_out = NULL;
     char *cookie = NULL;
-    int cookielen = 0;
-    int rc;
+    char *dom_xml = NULL;
+    int cookielen = 0, ret;
+    virErrorPtr orig_err = NULL;
+    int cancelled;
+    virStreamPtr st = NULL;
 
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
-    /* NB we don't pass 'uri' into this, since that's the libvirtd
-     * URI in this context - so we let dest pick it */
-    rc = dconn->driver->domainMigratePrepare2(dconn,
-                                              &cookie,
-                                              &cookielen,
-                                              NULL, /* uri */
-                                              &uri_out,
-                                              flags, dname,
-                                              resource, dom_xml);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
-    if (rc < 0)
-        /* domainMigratePrepare2 sets the error for us */
+    /* In version 2 of the protocol, the prepare step is slightly
+     * different.  We fetch the domain XML of the source domain
+     * and pass it to Prepare2.
+     */
+    if (!(dom_xml = qemuDomainFormatXML(driver, vm,
+                                        VIR_DOMAIN_XML_SECURE |
+                                        VIR_DOMAIN_XML_UPDATE_CPU)))
+        return -1;
+
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
+        flags |= VIR_MIGRATE_PAUSED;
+
+    VIR_DEBUG("Prepare2 %p", dconn);
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        /*
+         * Tunnelled Migrate Version 2 does not support cookies
+         * due to missing parameters in the prepareTunnel() API.
+         */
+
+        if (!(st = virStreamNew(dconn, 0)))
+            goto cleanup;
+
+        qemuDomainObjEnterRemoteWithDriver(driver, vm);
+        ret = dconn->driver->domainMigratePrepareTunnel
+            (dconn, st, flags, dname, resource, dom_xml);
+        qemuDomainObjExitRemoteWithDriver(driver, vm);
+    } else {
+        qemuDomainObjEnterRemoteWithDriver(driver, vm);
+        ret = dconn->driver->domainMigratePrepare2
+            (dconn, &cookie, &cookielen, NULL, &uri_out,
+             flags, dname, resource, dom_xml);
+        qemuDomainObjExitRemoteWithDriver(driver, vm);
+    }
+    VIR_FREE(dom_xml);
+    if (ret == -1)
         goto cleanup;
 
     /* the domain may have shutdown or crashed while we had the locks dropped
@@ -1518,37 +1491,72 @@ static int doNonTunnelMigrate2(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (uri_out == NULL) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+    if (!(flags & VIR_MIGRATE_TUNNELLED) &&
+        (uri_out == NULL)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("domainMigratePrepare2 did not set uri"));
-        goto cleanup;
+        cancelled = 1;
+        goto finish;
     }
 
-    if (doNativeMigrate(driver, vm, uri_out,
-                        cookie, cookielen,
-                        NULL, NULL, /* No out cookie with v2 migration */
-                        flags, dname, resource) < 0)
-        goto finish;
+    /* Perform the migration.  The driver isn't supposed to return
+     * until the migration is complete.
+     */
+    VIR_DEBUG("Perform %p", sconn);
+    if (flags & VIR_MIGRATE_TUNNELLED)
+        ret = doTunnelMigrate(driver, vm, st, flags, resource);
+    else
+        ret = doNativeMigrate(driver, vm, uri_out,
+                              cookie, cookielen,
+                              NULL, NULL, /* No out cookie with v2 migration */
+                              flags, dname, resource);
 
-    retval = 0;
+    /* Perform failed. Make sure Finish doesn't overwrite the error */
+    if (ret < 0)
+        orig_err = virSaveLastError();
+
+    /* If Perform returns < 0, then we need to cancel the VM
+     * startup on the destination
+     */
+    cancelled = ret < 0 ? 1 : 0;
 
 finish:
+    /* In version 2 of the migration protocol, we pass the
+     * status code from the sender to the destination host,
+     * so it can do any cleanup if the migration failed.
+     */
     dname = dname ? dname : vm->def->name;
+    VIR_DEBUG("Finish2 %p ret=%d", dconn, ret);
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     ddomain = dconn->driver->domainMigrateFinish2
-        (dconn, dname, cookie, cookielen, uri_out, flags, retval);
+        (dconn, dname, cookie, cookielen,
+         uri_out ? uri_out : uri, flags, cancelled);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
-    if (ddomain)
-        virUnrefDomain(ddomain);
-
 cleanup:
+    if (ddomain) {
+        virUnrefDomain(ddomain);
+        ret = 0;
+    } else {
+        ret = -1;
+    }
+
+    if (st)
+        virUnrefStream(st);
+
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+    VIR_FREE(uri_out);
     VIR_FREE(cookie);
-    return retval;
+
+    return ret;
 }
 
 
 static int doPeer2PeerMigrate(struct qemud_driver *driver,
+                              virConnectPtr sconn,
                               virDomainObjPtr vm,
                               const char *uri,
                               unsigned long flags,
@@ -1557,7 +1565,6 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
 {
     int ret = -1;
     virConnectPtr dconn = NULL;
-    char *dom_xml;
     bool p2p;
 
     /* the order of operations is important here; we make sure the
@@ -1590,22 +1597,10 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    dom_xml = qemuDomainFormatXML(driver, vm,
-                                  VIR_DOMAIN_XML_SECURE |
-                                  VIR_DOMAIN_XML_UPDATE_CPU);
-    if (!dom_xml) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("failed to get domain xml"));
-        goto cleanup;
-    }
-
-    if (flags & VIR_MIGRATE_TUNNELLED)
-        ret = doTunnelMigrate2(driver, dconn, vm, dom_xml, uri, flags, dname, resource);
-    else
-        ret = doNonTunnelMigrate2(driver, dconn, vm, dom_xml, uri, flags, dname, resource);
+    ret = doPeer2PeerMigrate2(driver, sconn, dconn, vm,
+                              uri, flags, dname, resource);
 
 cleanup:
-    VIR_FREE(dom_xml);
     /* don't call virConnectClose(), because that resets any pending errors */
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     virUnrefConnect(dconn);
@@ -1659,7 +1654,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
             goto endjob;
         }
 
-        if (doPeer2PeerMigrate(driver, vm, uri, flags, dname, resource) < 0)
+        if (doPeer2PeerMigrate(driver, conn, vm, uri, flags, dname, resource) < 0)
             /* doPeer2PeerMigrate already set the error, so just get out */
             goto endjob;
     } else {
