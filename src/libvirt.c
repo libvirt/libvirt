@@ -2738,7 +2738,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
-    if (memory < 4096) {
+    if (!memory) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -2792,7 +2792,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
-    if (memory < 4096) {
+    if (!memory) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -2861,7 +2861,7 @@ virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         goto error;
     }
 
-    if (memory < 4096) {
+    if (!memory) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
