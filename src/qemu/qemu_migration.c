@@ -1313,8 +1313,6 @@ static int doTunnelSendAll(virStreamPtr st,
             break;
 
         if (virStreamSend(st, buffer, nbytes) < 0) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                            _("Failed to write migration data to remote libvirtd"));
             VIR_FREE(buffer);
             return -1;
         }
