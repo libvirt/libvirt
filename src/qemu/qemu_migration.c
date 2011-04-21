@@ -301,7 +301,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     vm->def->id = -1;
 
     if (pipe(dataFD) < 0 ||
-        virSetCloseExec(dataFD[0]) < 0) {
+        virSetCloseExec(dataFD[1]) < 0) {
         virReportSystemError(errno, "%s",
                              _("cannot create pipe for tunnelled migration"));
         goto endjob;
@@ -318,7 +318,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     /* Start the QEMU daemon, with the same command-line arguments plus
      * -incoming stdio (which qemu_command might convert to exec:cat or fd:n)
      */
-    internalret = qemuProcessStart(dconn, driver, vm, "stdio", true, dataFD[1],
+    internalret = qemuProcessStart(dconn, driver, vm, "stdio", true, dataFD[0],
                                    NULL, VIR_VM_OP_MIGRATE_IN_START);
     if (internalret < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
@@ -332,7 +332,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
         goto endjob;
     }
 
-    if (virFDStreamOpen(st, dataFD[0]) < 0) {
+    if (virFDStreamOpen(st, dataFD[1]) < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
         qemuProcessStop(driver, vm, 0);
         if (!vm->persistent) {
@@ -344,6 +344,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                              _("cannot pass pipe for tunnelled migration"));
         goto endjob;
     }
+    dataFD[1] = -1; /* 'st' owns the FD now & will close it */
 
     qemuAuditDomainStart(vm, "migrated", true);
 
