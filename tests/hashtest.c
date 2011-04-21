@@ -112,7 +112,7 @@ testHashRemoveForEach(const void *data)
     if (count != ARRAY_CARDINALITY(uuids)) {
         if (virTestGetVerbose()) {
             testError("\nvirHashForEach didn't go through all entries,"
-                      " %d != %lu\n",
+                      " %d != %zu\n",
                       count, ARRAY_CARDINALITY(uuids));
         }
         goto cleanup;
