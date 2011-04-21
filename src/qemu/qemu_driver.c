@@ -3786,8 +3786,8 @@ cleanup:
 }
 
 
-static int qemudDomainAttachDevice(virDomainPtr dom,
-                                   const char *xml)
+static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                                       unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -3795,6 +3795,14 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     virBitmapPtr qemuCaps = NULL;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cannot modify the persistent configuration of a domain"));
+        return -1;
+    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3943,16 +3951,10 @@ cleanup:
     return ret;
 }
 
-static int qemudDomainAttachDeviceFlags(virDomainPtr dom,
-                                        const char *xml,
-                                        unsigned int flags) {
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot modify the persistent configuration of a domain"));
-        return -1;
-    }
-
-    return qemudDomainAttachDevice(dom, xml);
+static int qemuDomainAttachDevice(virDomainPtr dom, const char *xml)
+{
+    return qemuDomainAttachDeviceFlags(dom, xml,
+                                       VIR_DOMAIN_DEVICE_MODIFY_LIVE);
 }
 
 
@@ -4078,14 +4080,23 @@ cleanup:
 }
 
 
-static int qemudDomainDetachDevice(virDomainPtr dom,
-                                   const char *xml) {
+static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
+                                       unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virBitmapPtr qemuCaps = NULL;
     virDomainDeviceDefPtr dev = NULL;
     int ret = -1;
 
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE|
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cannot modify the persistent configuration of a domain:"));
+        return -1;
+    }
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
@@ -4164,16 +4175,10 @@ cleanup:
     return ret;
 }
 
-static int qemudDomainDetachDeviceFlags(virDomainPtr dom,
-                                        const char *xml,
-                                        unsigned int flags) {
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot modify the persistent configuration of a domain"));
-        return -1;
-    }
-
-    return qemudDomainDetachDevice(dom, xml);
+static int qemuDomainDetachDevice(virDomainPtr dom, const char *xml)
+{
+    return qemuDomainDetachDeviceFlags(dom, xml,
+                                       VIR_DOMAIN_DEVICE_MODIFY_LIVE);
 }
 
 static int qemudDomainGetAutostart(virDomainPtr dom,
@@ -6975,10 +6980,10 @@ static virDriver qemuDriver = {
     qemudDomainStartWithFlags, /* domainCreateWithFlags */
     qemudDomainDefine, /* domainDefineXML */
     qemudDomainUndefine, /* domainUndefine */
-    qemudDomainAttachDevice, /* domainAttachDevice */
-    qemudDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
-    qemudDomainDetachDevice, /* domainDetachDevice */
-    qemudDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
+    qemuDomainAttachDevice, /* domainAttachDevice */
+    qemuDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
+    qemuDomainDetachDevice, /* domainDetachDevice */
+    qemuDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
     qemuDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
     qemudDomainGetAutostart, /* domainGetAutostart */
     qemudDomainSetAutostart, /* domainSetAutostart */
