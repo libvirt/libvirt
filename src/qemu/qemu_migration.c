@@ -1494,6 +1494,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
 
 cancel:
     if (ret != 0 && virDomainObjIsActive(vm)) {
+        VIR_FORCE_CLOSE(client_sock);
+        VIR_FORCE_CLOSE(qemu_sock);
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         qemuMonitorMigrateCancel(priv->mon);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
