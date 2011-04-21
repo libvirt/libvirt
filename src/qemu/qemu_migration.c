@@ -1300,7 +1300,7 @@ static int doTunnelSendAll(virStreamPtr st,
     }
 
     for (;;) {
-        nbytes = saferead(sock, buffer, nbytes);
+        nbytes = saferead(sock, buffer, TUNNEL_SEND_BUF_SIZE);
         if (nbytes < 0) {
             virReportSystemError(errno, "%s",
                                  _("tunnelled migration failed to read from qemu"));
