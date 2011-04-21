@@ -165,8 +165,10 @@ static int parse_socket(unsigned int cpu)
 {
     int ret = get_cpu_value(cpu, "topology/physical_package_id", false);
 # if defined(__powerpc__) || \
-    defined(__powerpc64__)
-    /* ppc has -1 */
+    defined(__powerpc64__) || \
+    defined(__s390__) || \
+    defined(__s390x__)
+    /* ppc and s390(x) has -1 */
     if (ret < 0)
         ret = 0;
 # endif
@@ -264,6 +266,29 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 /* Accept trailing fractional part.  */
                 && (*p == '\0' || *p == '.' || c_isspace(*p)))
                 nodeinfo->mhz = ui;
+        }
+# elif defined(__s390__) || \
+        defined(__s390x__)
+        } else if (STRPREFIX(buf, "# processors")) {
+            char *p;
+            unsigned int ui;
+            buf += 12;
+            while (*buf && c_isspace(*buf))
+                buf++;
+            if (*buf != ':' || !buf[1]) {
+                nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("parsing number of processors %c"), *buf);
+                return -1;
+            }
+            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
+                && (*p == '\0' || c_isspace(*p)))
+                nodeinfo->cpus = ui;
+            /* No other interesting infos are available in /proc/cpuinfo.
+             * However, there is a line identifying processor's version,
+             * identification and machine, but we don't want it to be caught
+             * and parsed in next iteration, because it is not in expected
+             * format and thus lead to error. */
+            break;
         }
 # else
 #  warning Parser for /proc/cpuinfo needs to be adapted for your architecture
