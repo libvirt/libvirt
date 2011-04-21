@@ -2363,6 +2363,46 @@ cleanup:
 }
 
 
+void qemuProcessKill(virDomainObjPtr vm)
+{
+    int i;
+    int rc;
+    VIR_DEBUG("vm=%s pid=%d", vm->def->name, vm->pid);
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("VM '%s' not active", vm->def->name);
+        return;
+    }
+
+    /* This loop sends SIGTERM, then waits a few iterations
+     * (1.6 seconds) to see if it dies. If still alive then
+     * it does SIGKILL, and waits a few more iterations (1.6
+     * seconds more) to confirm that it has really gone.
+     */
+    for (i = 0 ; i < 15 ; i++) {
+        int signum;
+        if (i == 0)
+            signum = SIGTERM;
+        else if (i == 8)
+            signum = SIGKILL;
+        else
+            signum = 0; /* Just check for existence */
+
+        rc = virKillProcess(vm->pid, signum);
+        if (rc < 0) {
+            if (rc != -ESRCH) {
+                char ebuf[1024];
+                VIR_WARN("Failed to kill process %d %s",
+                         vm->pid, virStrerror(errno, ebuf, sizeof ebuf));
+            }
+            break;
+        }
+
+        usleep(200 * 1000);
+    }
+}
+
+
 void qemuProcessStop(struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      int migrated)
@@ -2430,13 +2470,6 @@ void qemuProcessStop(struct qemud_driver *driver,
         }
     }
 
-    /* This will safely handle a non-running guest with pid=0 or pid=-1*/
-    if (virKillProcess(vm->pid, 0) == 0 &&
-        virKillProcess(vm->pid, SIGTERM) < 0)
-        virReportSystemError(errno,
-                             _("Failed to send SIGTERM to %s (%d)"),
-                             vm->def->name, vm->pid);
-
     if (priv->mon)
         qemuMonitorClose(priv->mon);
 
@@ -2448,7 +2481,7 @@ void qemuProcessStop(struct qemud_driver *driver,
     }
 
     /* shut it off for sure */
-    virKillProcess(vm->pid, SIGKILL);
+    qemuProcessKill(vm);
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {

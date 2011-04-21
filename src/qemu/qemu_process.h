@@ -49,4 +49,6 @@ void qemuProcessStop(struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      int migrated);
 
+void qemuProcessKill(virDomainObjPtr vm);
+
 #endif /* __QEMU_PROCESS_H__ */

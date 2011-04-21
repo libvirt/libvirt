@@ -1482,6 +1482,13 @@ static int qemudDomainDestroy(virDomainPtr dom) {
         goto cleanup;
     }
 
+    /* Although qemuProcessStop does this already, there may
+     * be an outstanding job active. We want to make sure we
+     * can kill the process even if a job is active. Killing
+     * it now means the job will be released
+     */
+    qemuProcessKill(vm);
+
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
 
