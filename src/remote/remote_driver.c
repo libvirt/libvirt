@@ -2963,7 +2963,7 @@ remoteFindStoragePoolSources (virConnectPtr conn,
      * since srcSpec is a remote_string (not a remote_nonnull_string).
      *
      * But when srcSpec is NULL, this yields:
-     *    libvir: Remote error : marshalling args
+     *    libvir: Remote error : marshaling args
      *
      * So for now I'm working around this by turning NULL srcSpecs
      * into empty strings.
@@ -3860,10 +3860,10 @@ remoteDomainReadEventLifecycle(virConnectPtr conn, XDR *xdr)
     virDomainEventPtr event = NULL;
     memset (&msg, 0, sizeof msg);
 
-    /* unmarshall parameters, and process it*/
+    /* unmarshal parameters, and process it*/
     if (! xdr_remote_domain_event_lifecycle_msg(xdr, &msg) ) {
         remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall lifecycle event"));
+                    _("Unable to demarshal lifecycle event"));
         return NULL;
     }
 
@@ -3887,10 +3887,10 @@ remoteDomainReadEventReboot(virConnectPtr conn, XDR *xdr)
     virDomainEventPtr event = NULL;
     memset (&msg, 0, sizeof msg);
 
-    /* unmarshall parameters, and process it*/
+    /* unmarshal parameters, and process it*/
     if (! xdr_remote_domain_event_reboot_msg(xdr, &msg) ) {
         remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall reboot event"));
+                    _("Unable to demarshal reboot event"));
         return NULL;
     }
 
@@ -3914,10 +3914,10 @@ remoteDomainReadEventRTCChange(virConnectPtr conn, XDR *xdr)
     virDomainEventPtr event = NULL;
     memset (&msg, 0, sizeof msg);
 
-    /* unmarshall parameters, and process it*/
+    /* unmarshal parameters, and process it*/
     if (! xdr_remote_domain_event_rtc_change_msg(xdr, &msg) ) {
         remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall reboot event"));
+                    _("Unable to demarshal RTC change event"));
         return NULL;
     }
 
@@ -3941,10 +3941,10 @@ remoteDomainReadEventWatchdog(virConnectPtr conn, XDR *xdr)
     virDomainEventPtr event = NULL;
     memset (&msg, 0, sizeof msg);
 
-    /* unmarshall parameters, and process it*/
+    /* unmarshal parameters, and process it*/
     if (! xdr_remote_domain_event_watchdog_msg(xdr, &msg) ) {
         remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall reboot event"));
+                    _("Unable to demarshal watchdog event"));
         return NULL;
     }
 
@@ -3968,10 +3968,10 @@ remoteDomainReadEventIOError(virConnectPtr conn, XDR *xdr)
     virDomainEventPtr event = NULL;
     memset (&msg, 0, sizeof msg);
 
-    /* unmarshall parameters, and process it*/
+    /* unmarshal parameters, and process it*/
     if (! xdr_remote_domain_event_io_error_msg(xdr, &msg) ) {
         remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall reboot event"));
+                    _("Unable to demarshal IO error event"));
         return NULL;
     }
 
@@ -3998,10 +3998,10 @@ remoteDomainReadEventIOErrorReason(virConnectPtr conn, XDR *xdr)
     virDomainEventPtr event = NULL;
     memset (&msg, 0, sizeof msg);
 
-    /* unmarshall parameters, and process it*/
+    /* unmarshal parameters, and process it*/
     if (! xdr_remote_domain_event_io_error_reason_msg(xdr, &msg) ) {
         remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall reboot event"));
+                    _("Unable to demarshal IO error reason event"));
         return NULL;
     }
 
@@ -4034,10 +4034,10 @@ remoteDomainReadEventGraphics(virConnectPtr conn, XDR *xdr)
 
     memset (&msg, 0, sizeof msg);
 
-    /* unmarshall parameters, and process it*/
+    /* unmarshal parameters, and process it*/
     if (! xdr_remote_domain_event_graphics_msg(xdr, &msg) ) {
         remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall reboot event"));
+                    _("Unable to demarshal graphics event"));
         return NULL;
     }
 
@@ -5389,7 +5389,9 @@ prepareCall(struct private_data *priv,
     }
 
     if (!(*args_filter) (&xdr, args)) {
-        remoteError(VIR_ERR_RPC, "%s", _("marshalling args"));
+        remoteError(VIR_ERR_RPC,
+                    _("Unable to marshal arguments for program %d version %d procedure %d type %d status %d"),
+                    hdr.prog, hdr.vers, hdr.proc, hdr.type, hdr.status);
         goto error;
     }
 
@@ -5845,7 +5847,9 @@ processCallDispatchReply(virConnectPtr conn ATTRIBUTE_UNUSED,
     switch (hdr->status) {
     case REMOTE_OK:
         if (!(*thecall->ret_filter) (xdr, thecall->ret)) {
-            remoteError(VIR_ERR_RPC, "%s", _("unmarshalling ret"));
+            remoteError(VIR_ERR_RPC,
+                        _("Unable to marshal reply for program %d version %d procedure %d type %d status %d"),
+                        hdr->prog, hdr->vers, hdr->proc, hdr->type, hdr->status);
             return -1;
         }
         thecall->mode = REMOTE_MODE_COMPLETE;
@@ -5854,7 +5858,9 @@ processCallDispatchReply(virConnectPtr conn ATTRIBUTE_UNUSED,
     case REMOTE_ERROR:
         memset (&thecall->err, 0, sizeof thecall->err);
         if (!xdr_remote_error (xdr, &thecall->err)) {
-            remoteError(VIR_ERR_RPC, "%s", _("unmarshalling remote_error"));
+            remoteError(VIR_ERR_RPC,
+                        _("Unable to marshal error for program %d version %d procedure %d type %d status %d"),
+                        hdr->prog, hdr->vers, hdr->proc, hdr->type, hdr->status);
             return -1;
         }
         thecall->mode = REMOTE_MODE_ERROR;
@@ -6003,7 +6009,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
             /* Give the error straight to this call */
             memset (&thecall->err, 0, sizeof thecall->err);
             if (!xdr_remote_error (xdr, &thecall->err)) {
-                remoteError(VIR_ERR_RPC, "%s", _("unmarshalling remote_error"));
+                remoteError(VIR_ERR_RPC, "%s", _("unmarshaling remote_error"));
                 return -1;
             }
             thecall->mode = REMOTE_MODE_ERROR;
@@ -6017,7 +6023,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
             privst->has_error = 1;
             memset (&privst->err, 0, sizeof privst->err);
             if (!xdr_remote_error (xdr, &privst->err)) {
-                VIR_DEBUG("Failed to unmarshall error");
+                VIR_DEBUG("Failed to unmarshal error");
                 return -1;
             }
         }
