@@ -1329,6 +1329,7 @@ int virDomainVcpupinAdd(virDomainDefPtr def,
                         int maplen,
                         int vcpu);
 
+int virDomainDiskIndexByName(virDomainDefPtr def, const char *name);
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk);
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
@@ -1336,6 +1337,7 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
 int virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def);
 
 void virDomainDiskRemove(virDomainDefPtr def, size_t i);
+int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);

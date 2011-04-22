@@ -5007,6 +5007,19 @@ virVirtualPortProfileFormat(virBufferPtr buf,
     virBufferVSprintf(buf, "%s</virtualport>\n", indent);
 }
 
+int virDomainDiskIndexByName(virDomainDefPtr def, const char *name)
+{
+    virDomainDiskDefPtr vdisk;
+    int i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        vdisk = def->disks[i];
+        if (STREQ(vdisk->dst, name))
+            return i;
+    }
+    return -1;
+}
+
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk)
 {
@@ -5076,6 +5089,15 @@ void virDomainDiskRemove(virDomainDefPtr def, size_t i)
         VIR_FREE(def->disks);
         def->ndisks = 0;
     }
+}
+
+int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
+{
+    int i = virDomainDiskIndexByName(def, name);
+    if (i < 0)
+        return -1;
+    virDomainDiskRemove(def, i);
+    return 0;
 }
 
 

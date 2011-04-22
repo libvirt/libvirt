@@ -4077,10 +4077,32 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
 }
 
 static int
-qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev)
 {
+    virDomainDiskDefPtr disk;
+
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        disk = dev->data.disk;
+        if (virDomainDiskIndexByName(vmdef, disk->dst) >= 0) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("target %s already exists."), disk->dst);
+            return -1;
+        }
+        if (virDomainDiskInsert(vmdef, disk)) {
+            virReportOOMError();
+            return -1;
+        }
+        /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
+        dev->data.disk = NULL;
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
+            if (virDomainDefAddImplicitControllers(vmdef) < 0)
+                return -1;
+        if (qemuDomainAssignPCIAddresses(vmdef) < 0)
+            return -1;
+        break;
+
     default:
          qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                          _("persistent attach of device is not supported"));
@@ -4091,10 +4113,20 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev)
 {
+    virDomainDiskDefPtr disk;
+
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        disk = dev->data.disk;
+        if (virDomainDiskRemoveByName(vmdef, disk->dst)) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("no target device %s"), disk->dst);
+            return -1;
+        }
+        break;
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("persistent detach of device is not supported"));
