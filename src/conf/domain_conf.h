@@ -1288,6 +1288,9 @@ int virDomainObjSetDefTransient(virCapsPtr caps,
 virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainObjPtr domain);
+virDomainDefPtr
+virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom);
+
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 

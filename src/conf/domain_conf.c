@@ -9510,3 +9510,22 @@ cleanup:
 
     return ret;
 }
+
+
+virDomainDefPtr
+virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom)
+{
+    char *xml;
+    virDomainDefPtr cur, ret;
+
+    cur = virDomainObjGetPersistentDef(caps, dom);
+
+    xml = virDomainDefFormat(cur, VIR_DOMAIN_XML_WRITE_FLAGS);
+    if (!xml)
+        return NULL;
+
+    ret = virDomainDefParseString(caps, xml, VIR_DOMAIN_XML_READ_FLAGS);
+
+    VIR_FREE(xml);
+    return ret;
+}

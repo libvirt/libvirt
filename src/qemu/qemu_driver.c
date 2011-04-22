@@ -4076,6 +4076,46 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
     return ret;
 }
 
+static int
+qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+                             virDomainDeviceDefPtr dev)
+{
+    switch (dev->type) {
+    default:
+         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                         _("persistent attach of device is not supported"));
+         return -1;
+    }
+    return 0;
+}
+
+
+static int
+qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+                             virDomainDeviceDefPtr dev)
+{
+    switch (dev->type) {
+    default:
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("persistent detach of device is not supported"));
+        return -1;
+    }
+    return 0;
+}
+
+static int
+qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+                             virDomainDeviceDefPtr dev)
+{
+    switch (dev->type) {
+    default:
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                         _("persistent update of device is not supported"));
+        return -1;
+    }
+    return 0;
+}
+
 /* Actions for qemuDomainModifyDeviceFlags */
 enum {
     QEMU_DEVICE_ATTACH,
@@ -4091,6 +4131,7 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     struct qemud_driver *driver = dom->conn->privateData;
     virBitmapPtr qemuCaps = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
@@ -4099,12 +4140,6 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                   VIR_DOMAIN_DEVICE_MODIFY_CONFIG |
                   (action == QEMU_DEVICE_UPDATE ?
                    VIR_DOMAIN_DEVICE_MODIFY_FORCE : 0), -1);
-
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot modify the persistent configuration of a domain"));
-        return -1;
-    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4119,12 +4154,27 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot attach device on inactive domain"));
-        goto endjob;
+    if (virDomainObjIsActive(vm)) {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    } else {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        /* check consistency between flags and the vm state */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s",
+                            _("cannot do live update a device on "
+                              "inactive domain"));
+            goto endjob;
+        }
     }
 
+    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
+         qemuReportError(VIR_ERR_OPERATION_INVALID,
+                         "%s", _("cannot modify device on transient domain"));
+         goto endjob;
+    }
     dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
@@ -4135,35 +4185,68 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                                    &qemuCaps) < 0)
         goto endjob;
 
-    switch (action) {
-    case QEMU_DEVICE_ATTACH:
-        ret = qemuDomainAttachDeviceLive(vm, dev, dom, qemuCaps);
-        break;
-    case QEMU_DEVICE_DETACH:
-        ret = qemuDomainDetachDeviceLive(vm, dev, dom, qemuCaps);
-        break;
-    case QEMU_DEVICE_UPDATE:
-        ret = qemuDomainUpdateDeviceLive(vm, dev, dom, qemuCaps, force);
-        break;
-    default:
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unknown domain modify action %d"), action);
-        break;
-    }
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        /* Make a copy for updated domain. */
+        vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
+        if (!vmdef)
+            goto endjob;
+        switch (action) {
+        case QEMU_DEVICE_ATTACH:
+            ret = qemuDomainAttachDeviceConfig(vmdef, dev);
+            break;
+        case QEMU_DEVICE_DETACH:
+            ret = qemuDomainDetachDeviceConfig(vmdef, dev);
+            break;
+        case QEMU_DEVICE_UPDATE:
+            ret = qemuDomainUpdateDeviceConfig(vmdef, dev);
+            break;
+        default:
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("unknown domain modify action %d"), action);
+            break;
+        }
+    } else
+        ret = 0;
 
-    /*
-     * update domain status forcibly because the domain status may be changed
-     * even if we attach the device failed. For example, a new controller may
-     * be created.
-     */
-    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
-        ret = -1;
+    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
+        switch (action) {
+        case QEMU_DEVICE_ATTACH:
+            ret = qemuDomainAttachDeviceLive(vm, dev, dom, qemuCaps);
+            break;
+        case QEMU_DEVICE_DETACH:
+            ret = qemuDomainDetachDeviceLive(vm, dev, dom, qemuCaps);
+            break;
+        case QEMU_DEVICE_UPDATE:
+            ret = qemuDomainUpdateDeviceLive(vm, dev, dom, qemuCaps, force);
+            break;
+        default:
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("unknown domain modify action %d"), action);
+            break;
+        }
+        /*
+         * update domain status forcibly because the domain status may be
+         * changed even if we attach the device failed. For example, a
+         * For example, a new controller may be created.
+         */
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            ret = -1;
+    }
+    /* Finally, if no error until here, we can save config. */
+    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        if (!ret) {
+            virDomainObjAssignDef(vm, vmdef, false);
+            vmdef = NULL;
+        }
+    }
 
 endjob:
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
 
 cleanup:
+    virDomainDefFree(vmdef);
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
