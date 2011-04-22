@@ -3681,7 +3681,7 @@ remoteDispatchListNetworks(struct qemud_server *server ATTRIBUTE_UNUSED,
 cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
-        VIR_FREE(ret->names.names_len);
+        VIR_FREE(ret->names.names_val);
     }
     return rv;
 }
@@ -4200,7 +4200,7 @@ remoteDispatchListInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED,
 cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
-        VIR_FREE(ret->names.names_len);
+        VIR_FREE(ret->names.names_val);
     }
     return rv;
 }
@@ -4275,7 +4275,7 @@ remoteDispatchListDefinedInterfaces(struct qemud_server *server ATTRIBUTE_UNUSED
 cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
-        VIR_FREE(ret->names.names_len);
+        VIR_FREE(ret->names.names_val);
     }
     return rv;
 }
@@ -8544,7 +8544,7 @@ remoteDispatchListNwfilters(struct qemud_server *server ATTRIBUTE_UNUSED,
 cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
-        VIR_FREE(ret->names.names_len);
+        VIR_FREE(ret->names.names_val);
     }
     return rv;
 }
