@@ -3756,7 +3756,7 @@ xdr_remote_domain_snapshot_list_names_args (XDR *xdrs, remote_domain_snapshot_li
 
          if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
                  return FALSE;
-         if (!xdr_int (xdrs, &objp->nameslen))
+         if (!xdr_int (xdrs, &objp->maxnames))
                  return FALSE;
          if (!xdr_int (xdrs, &objp->flags))
                  return FALSE;

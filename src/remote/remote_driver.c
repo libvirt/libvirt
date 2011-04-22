@@ -9312,7 +9312,7 @@ done:
 
 static int
 remoteDomainSnapshotListNames (virDomainPtr domain, char **const names,
-                               int nameslen, unsigned int flags)
+                               int maxnames, unsigned int flags)
 {
     int rv = -1;
     int i;
@@ -9322,15 +9322,15 @@ remoteDomainSnapshotListNames (virDomainPtr domain, char **const names,
 
     remoteDriverLock(priv);
 
-    if (nameslen > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
+    if (maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
         remoteError(VIR_ERR_RPC,
                     _("too many remote domain snapshot names: %d > %d"),
-                    nameslen, REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX);
+                    maxnames, REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX);
         goto done;
     }
 
     make_nonnull_domain(&args.dom, domain);
-    args.nameslen = nameslen;
+    args.maxnames = maxnames;
     args.flags = flags;
 
     memset (&ret, 0, sizeof ret);
@@ -9339,10 +9339,10 @@ remoteDomainSnapshotListNames (virDomainPtr domain, char **const names,
               (xdrproc_t) xdr_remote_domain_snapshot_list_names_ret, (char *) &ret) == -1)
         goto done;
 
-    if (ret.names.names_len > nameslen) {
+    if (ret.names.names_len > maxnames) {
         remoteError(VIR_ERR_RPC,
                     _("too many remote domain snapshots: %d > %d"),
-                    ret.names.names_len, nameslen);
+                    ret.names.names_len, maxnames);
         goto cleanup;
     }
 

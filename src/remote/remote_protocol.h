@@ -2119,7 +2119,7 @@ typedef struct remote_domain_snapshot_num_ret remote_domain_snapshot_num_ret;
 
 struct remote_domain_snapshot_list_names_args {
         remote_nonnull_domain dom;
-        int nameslen;
+        int maxnames;
         int flags;
 };
 typedef struct remote_domain_snapshot_list_names_args remote_domain_snapshot_list_names_args;

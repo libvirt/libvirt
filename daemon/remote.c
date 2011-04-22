@@ -3796,9 +3796,9 @@ remoteDispatchDomainSnapshotListNames(struct qemud_server *server ATTRIBUTE_UNUS
         goto cleanup;
     }
 
-    if (args->nameslen > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
+    if (args->maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("nameslen > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX"));
+                    _("maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX"));
         goto cleanup;
     }
 
@@ -3806,14 +3806,14 @@ remoteDispatchDomainSnapshotListNames(struct qemud_server *server ATTRIBUTE_UNUS
         goto cleanup;
 
     /* Allocate return buffer. */
-    if (VIR_ALLOC_N(ret->names.names_val, args->nameslen) < 0) {
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
     len = virDomainSnapshotListNames(dom,
                                      ret->names.names_val,
-                                     args->nameslen,
+                                     args->maxnames,
                                      args->flags);
     if (len < 0)
         goto cleanup;
