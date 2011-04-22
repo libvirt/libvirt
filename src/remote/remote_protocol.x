@@ -247,7 +247,7 @@ struct remote_nonnull_secret {
 /* A snapshot which may not be NULL. */
 struct remote_nonnull_domain_snapshot {
     remote_nonnull_string name;
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
 };
 
 /* A domain or network which may be NULL. */
@@ -1836,7 +1836,7 @@ struct remote_domain_has_managed_save_image_args {
 };
 
 struct remote_domain_has_managed_save_image_ret {
-    int ret;
+    int result;
 };
 
 struct remote_domain_managed_save_remove_args {
@@ -1845,7 +1845,7 @@ struct remote_domain_managed_save_remove_args {
 };
 
 struct remote_domain_snapshot_create_xml_args {
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
     remote_nonnull_string xml_desc;
     int flags;
 };
@@ -1864,7 +1864,7 @@ struct remote_domain_snapshot_dump_xml_ret {
 };
 
 struct remote_domain_snapshot_num_args {
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
     int flags;
 };
 
@@ -1873,7 +1873,7 @@ struct remote_domain_snapshot_num_ret {
 };
 
 struct remote_domain_snapshot_list_names_args {
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
     int nameslen;
     int flags;
 };
@@ -1883,7 +1883,7 @@ struct remote_domain_snapshot_list_names_ret {
 };
 
 struct remote_domain_snapshot_lookup_by_name_args {
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
     remote_nonnull_string name;
     int flags;
 };
@@ -1893,7 +1893,7 @@ struct remote_domain_snapshot_lookup_by_name_ret {
 };
 
 struct remote_domain_has_current_snapshot_args {
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
     int flags;
 };
 
@@ -1902,7 +1902,7 @@ struct remote_domain_has_current_snapshot_ret {
 };
 
 struct remote_domain_snapshot_current_args {
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
     int flags;
 };
 
@@ -1921,7 +1921,7 @@ struct remote_domain_snapshot_delete_args {
 };
 
 struct remote_domain_open_console_args {
-    remote_nonnull_domain domain;
+    remote_nonnull_domain dom;
     remote_string devname;
     unsigned int flags;
 };

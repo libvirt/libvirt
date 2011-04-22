@@ -2881,7 +2881,7 @@ remoteDispatchDomainHasManagedSaveImage(struct qemud_server *server ATTRIBUTE_UN
     if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
-    if ((ret->ret = virDomainHasManagedSaveImage(dom, args->flags)) < 0)
+    if ((ret->result = virDomainHasManagedSaveImage(dom, args->flags)) < 0)
         goto cleanup;
 
     rv = 0;
@@ -6367,7 +6367,7 @@ remoteDispatchDomainSnapshotCreateXml(struct qemud_server *server ATTRIBUTE_UNUS
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (!(snapshot = virDomainSnapshotCreateXML(dom, args->xml_desc, args->flags)))
@@ -6405,7 +6405,7 @@ remoteDispatchDomainSnapshotDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->snap.domain)))
+    if (!(dom = get_nonnull_domain(conn, args->snap.dom)))
         goto cleanup;
 
     if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))
@@ -6444,7 +6444,7 @@ remoteDispatchDomainSnapshotNum(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if ((ret->num = virDomainSnapshotNum(dom, args->flags)) < 0)
@@ -6484,7 +6484,7 @@ remoteDispatchDomainSnapshotListNames(struct qemud_server *server ATTRIBUTE_UNUS
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     /* Allocate return buffer. */
@@ -6531,7 +6531,7 @@ remoteDispatchDomainSnapshotLookupByName(struct qemud_server *server ATTRIBUTE_U
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (!(snapshot = virDomainSnapshotLookupByName(dom, args->name, args->flags)))
@@ -6569,7 +6569,7 @@ remoteDispatchDomainHasCurrentSnapshot(struct qemud_server *server ATTRIBUTE_UNU
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     result = virDomainHasCurrentSnapshot(dom, args->flags);
@@ -6606,7 +6606,7 @@ remoteDispatchDomainSnapshotCurrent(struct qemud_server *server ATTRIBUTE_UNUSED
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (!(snapshot = virDomainSnapshotCurrent(dom, args->flags)))
@@ -6975,7 +6975,7 @@ qemuDispatchMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainQemuMonitorCommand(dom, args->cmd, &ret->result,
@@ -7011,7 +7011,7 @@ remoteDispatchDomainOpenConsole(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->domain)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (!(stream = remoteCreateClientStream(conn, hdr))) {
@@ -7174,5 +7174,5 @@ static void
 make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src)
 {
     snapshot_dst->name = strdup(snapshot_src->name);
-    make_nonnull_domain(&snapshot_dst->domain, snapshot_src->domain);
+    make_nonnull_domain(&snapshot_dst->dom, snapshot_src->domain);
 }

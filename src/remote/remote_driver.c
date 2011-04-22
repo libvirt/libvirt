@@ -4352,7 +4352,7 @@ remoteDomainHasManagedSaveImage (virDomainPtr domain, unsigned int flags)
               (xdrproc_t) xdr_remote_domain_has_managed_save_image_ret, (char *) &ret) == -1)
         goto done;
 
-    rv = ret.ret;
+    rv = ret.result;
 
 done:
     remoteDriverUnlock(priv);
@@ -9236,7 +9236,7 @@ remoteDomainSnapshotCreateXML(virDomainPtr domain,
 
     remoteDriverLock(priv);
 
-    make_nonnull_domain (&args.domain, domain);
+    make_nonnull_domain (&args.dom, domain);
     args.xml_desc = (char *) xmlDesc;
     args.flags = flags;
 
@@ -9293,7 +9293,7 @@ remoteDomainSnapshotNum (virDomainPtr domain, unsigned int flags)
 
     remoteDriverLock(priv);
 
-    make_nonnull_domain (&args.domain, domain);
+    make_nonnull_domain (&args.dom, domain);
     args.flags = flags;
 
     memset (&ret, 0, sizeof ret);
@@ -9329,7 +9329,7 @@ remoteDomainSnapshotListNames (virDomainPtr domain, char **const names,
         goto done;
     }
 
-    make_nonnull_domain(&args.domain, domain);
+    make_nonnull_domain(&args.dom, domain);
     args.nameslen = nameslen;
     args.flags = flags;
 
@@ -9385,7 +9385,7 @@ remoteDomainSnapshotLookupByName (virDomainPtr domain, const char *name,
 
     remoteDriverLock(priv);
 
-    make_nonnull_domain(&args.domain, domain);
+    make_nonnull_domain(&args.dom, domain);
     args.name = (char *) name;
     args.flags = flags;
 
@@ -9414,7 +9414,7 @@ remoteDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
 
     remoteDriverLock(priv);
 
-    make_nonnull_domain(&args.domain, domain);
+    make_nonnull_domain(&args.dom, domain);
     args.flags = flags;
 
     if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_HAS_CURRENT_SNAPSHOT,
@@ -9441,7 +9441,7 @@ remoteDomainSnapshotCurrent(virDomainPtr domain,
 
     remoteDriverLock(priv);
 
-    make_nonnull_domain(&args.domain, domain);
+    make_nonnull_domain(&args.dom, domain);
     args.flags = flags;
 
     memset(&ret, 0, sizeof ret);
@@ -9709,7 +9709,7 @@ remoteDomainOpenConsole(virDomainPtr dom,
     st->driver = &remoteStreamDrv;
     st->privateData = privst;
 
-    make_nonnull_domain (&args.domain, dom);
+    make_nonnull_domain (&args.dom, dom);
     args.devname = devname ? (char **)&devname : NULL;
     args.flags = flags;
 
@@ -9743,7 +9743,7 @@ remoteQemuDomainMonitorCommand (virDomainPtr domain, const char *cmd,
 
     remoteDriverLock(priv);
 
-    make_nonnull_domain(&args.domain, domain);
+    make_nonnull_domain(&args.dom, domain);
     args.cmd = (char *)cmd;
     args.flags = flags;
 
@@ -11177,7 +11177,7 @@ static void
 make_nonnull_domain_snapshot (remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src)
 {
     snapshot_dst->name = snapshot_src->name;
-    make_nonnull_domain(&snapshot_dst->domain, snapshot_src->domain);
+    make_nonnull_domain(&snapshot_dst->dom, snapshot_src->domain);
 }
 
 /*----------------------------------------------------------------------*/

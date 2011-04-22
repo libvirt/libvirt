@@ -630,7 +630,7 @@ remoteDispatchDomainRevertToSnapshot(
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->snap.domain)))
+    if (!(dom = get_nonnull_domain(conn, args->snap.dom)))
         goto cleanup;
 
     if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))
@@ -952,7 +952,7 @@ remoteDispatchDomainSnapshotDelete(
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(conn, args->snap.domain)))
+    if (!(dom = get_nonnull_domain(conn, args->snap.dom)))
         goto cleanup;
 
     if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))

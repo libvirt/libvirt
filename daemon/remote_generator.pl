@@ -368,7 +368,7 @@ elsif ($opt_b) {
                     push(@vars_list, "virDomainPtr dom = NULL");
                     push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
                     push(@getters_list,
-                         "    if (!(dom = get_nonnull_domain(conn, args->snap.domain)))\n" .
+                         "    if (!(dom = get_nonnull_domain(conn, args->snap.dom)))\n" .
                          "        goto cleanup;\n" .
                          "\n" .
                          "    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))\n" .

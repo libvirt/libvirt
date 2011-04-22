@@ -18,7 +18,7 @@ extern "C" {
 #include <arpa/inet.h>
 
 struct qemu_monitor_command_args {
-        remote_nonnull_domain domain;
+        remote_nonnull_domain dom;
         remote_nonnull_string cmd;
         int flags;
 };
