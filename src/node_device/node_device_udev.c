@@ -1421,8 +1421,12 @@ static int udevDeviceMonitorShutdown(void)
         ret = -1;
     }
 
+#if defined __s390__ || defined __s390x_
+    /* Nothing was initialized, nothing needs to be cleaned up */
+#else
     /* pci_system_cleanup returns void */
     pci_system_cleanup();
+#endif
 
     return ret;
 }
@@ -1593,6 +1597,11 @@ static int udevDeviceMonitorStartup(int privileged)
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
     int ret = 0;
+
+#if defined __s390__ || defined __s390x_
+    /* On s390(x) system there is no PCI bus.
+     * Therefore there is nothing to initialize here. */
+#else
     int pciret;
 
     if ((pciret = pci_system_init()) != 0) {
@@ -1607,6 +1616,7 @@ static int udevDeviceMonitorStartup(int privileged)
             goto out;
         }
     }
+#endif
 
     if (VIR_ALLOC(priv) < 0) {
         virReportOOMError();
