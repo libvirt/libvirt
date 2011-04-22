@@ -3757,6 +3757,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainSetBlkioParameters */
     NULL,                       /* domainGetBlkioParameters */
     phypDomainGetInfo,          /* domainGetInfo */
+    NULL,                       /* domainGetState */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */

@@ -2178,6 +2178,7 @@ static virDriver umlDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     umlDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

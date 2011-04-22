@@ -1813,6 +1813,7 @@ static virDriver xenapiDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     xenapiDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

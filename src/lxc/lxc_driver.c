@@ -2708,6 +2708,7 @@ static virDriver lxcDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     lxcDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

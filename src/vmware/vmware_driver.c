@@ -931,6 +931,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainSetBlkioParameters */
     NULL,                       /* domainGetBlkioParameters */
     vmwareDomainGetInfo,        /* domainGetInfo */
+    NULL,                       /* domainGetState */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */

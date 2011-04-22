@@ -7246,6 +7246,7 @@ static virDriver qemuDriver = {
     qemuDomainSetBlkioParameters, /* domainSetBlkioParameters */
     qemuDomainGetBlkioParameters, /* domainGetBlkioParameters */
     qemudDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     qemudDomainSave, /* domainSave */
     qemuDomainRestore, /* domainRestore */
     qemudDomainCoreDump, /* domainCoreDump */

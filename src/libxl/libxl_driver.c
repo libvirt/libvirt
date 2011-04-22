@@ -2679,6 +2679,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainSetBlkioParameters */
     NULL,                       /* domainGetBlkioParameters */
     libxlDomainGetInfo,         /* domainGetInfo */
+    NULL,                       /* domainGetState */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */

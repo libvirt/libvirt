@@ -2133,6 +2133,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     xenUnifiedDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     xenUnifiedDomainSave, /* domainSave */
     xenUnifiedDomainRestore, /* domainRestore */
     xenUnifiedDomainCoreDump, /* domainCoreDump */

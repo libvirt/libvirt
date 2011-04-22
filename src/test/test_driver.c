@@ -5310,6 +5310,7 @@ static virDriver testDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     testGetDomainInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     testDomainSave, /* domainSave */
     testDomainRestore, /* domainRestore */
     testDomainCoreDump, /* domainCoreDump */

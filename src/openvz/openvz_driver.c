@@ -1577,6 +1577,7 @@ static virDriver openvzDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     openvzDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

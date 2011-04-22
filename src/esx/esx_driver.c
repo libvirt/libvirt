@@ -4623,6 +4623,7 @@ static virDriver esxDriver = {
     NULL,                            /* domainSetBlkioParameters */
     NULL,                            /* domainGetBlkioParameters */
     esxDomainGetInfo,                /* domainGetInfo */
+    NULL,                            /* domainGetState */
     NULL,                            /* domainSave */
     NULL,                            /* domainRestore */
     NULL,                            /* domainCoreDump */

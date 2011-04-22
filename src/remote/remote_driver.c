@@ -6398,6 +6398,7 @@ static virDriver remote_driver = {
     remoteDomainSetBlkioParameters, /* domainSetBlkioParameters */
     remoteDomainGetBlkioParameters, /* domainGetBlkioParameters */
     remoteDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     remoteDomainSave, /* domainSave */
     remoteDomainRestore, /* domainRestore */
     remoteDomainCoreDump, /* domainCoreDump */

@@ -8695,6 +8695,7 @@ virDriver NAME(Driver) = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     vboxDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainGetState */
     vboxDomainSave, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
