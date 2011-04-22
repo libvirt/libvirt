@@ -89,6 +89,58 @@ typedef enum {
      VIR_DOMAIN_CRASHED = 6  /* the domain is crashed */
 } virDomainState;
 
+typedef enum {
+    VIR_DOMAIN_NOSTATE_UNKNOWN = 0,
+} virDomainNostateReason;
+
+typedef enum {
+    VIR_DOMAIN_RUNNING_UNKNOWN = 0,
+    VIR_DOMAIN_RUNNING_BOOTED = 1,          /* normal startup from boot */
+    VIR_DOMAIN_RUNNING_MIGRATED = 2,        /* migrated from another host */
+    VIR_DOMAIN_RUNNING_RESTORED = 3,        /* restored from a state file */
+    VIR_DOMAIN_RUNNING_FROM_SNAPSHOT = 4,   /* restored from snapshot */
+    VIR_DOMAIN_RUNNING_UNPAUSED = 5,        /* returned from paused state */
+    VIR_DOMAIN_RUNNING_MIGRATION_CANCELED = 6,  /* returned from migration */
+    VIR_DOMAIN_RUNNING_SAVE_CANCELED = 7,   /* returned from failed save process */
+} virDomainRunningReason;
+
+typedef enum {
+    VIR_DOMAIN_BLOCKED_UNKNOWN = 0,     /* the reason is unknown */
+} virDomainBlockedReason;
+
+typedef enum {
+    VIR_DOMAIN_PAUSED_UNKNOWN = 0,      /* the reason is unknown */
+    VIR_DOMAIN_PAUSED_USER = 1,         /* paused on user request */
+    VIR_DOMAIN_PAUSED_MIGRATION = 2,    /* paused for offline migration */
+    VIR_DOMAIN_PAUSED_SAVE = 3,         /* paused for save */
+    VIR_DOMAIN_PAUSED_DUMP = 4,         /* paused for offline core dump */
+    VIR_DOMAIN_PAUSED_IOERROR = 5,      /* paused due to a disk I/O error */
+    VIR_DOMAIN_PAUSED_WATCHDOG = 6,     /* paused due to a watchdog event */
+    VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* restored from a snapshot which was
+                                          * taken while domain was paused */
+} virDomainPausedReason;
+
+typedef enum {
+    VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0,    /* the reason is unknown */
+    VIR_DOMAIN_SHUTDOWN_USER = 1,       /* shutting down on user request */
+} virDomainShutdownReason;
+
+typedef enum {
+    VIR_DOMAIN_SHUTOFF_UNKNOWN = 0,     /* the reason is unknown */
+    VIR_DOMAIN_SHUTOFF_SHUTDOWN = 1,    /* normal shutdown */
+    VIR_DOMAIN_SHUTOFF_DESTROYED = 2,   /* forced poweroff */
+    VIR_DOMAIN_SHUTOFF_CRASHED = 3,     /* domain crashed */
+    VIR_DOMAIN_SHUTOFF_MIGRATED = 4,    /* migrated to another host */
+    VIR_DOMAIN_SHUTOFF_SAVED = 5,       /* saved to a file */
+    VIR_DOMAIN_SHUTOFF_FAILED = 6,      /* domain failed to start */
+    VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT = 7, /* restored from a snapshot which was
+                                           * taken while domain was shutoff */
+} virDomainShutoffReason;
+
+typedef enum {
+    VIR_DOMAIN_CRASHED_UNKNOWN = 0,     /* crashed for unknown reason */
+} virDomainCrashedReason;
+
 /**
  * virDomainInfoPtr:
  *
@@ -682,6 +734,10 @@ char *                  virDomainScreenshot     (virDomainPtr domain,
  */
 int                     virDomainGetInfo        (virDomainPtr domain,
                                                  virDomainInfoPtr info);
+int                     virDomainGetState       (virDomainPtr domain,
+                                                 int *state,
+                                                 int *reason,
+                                                 unsigned int flags);
 
 /*
  * Return scheduler type in effect 'sedf', 'credit', 'linux'

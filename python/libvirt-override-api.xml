@@ -48,6 +48,12 @@
       <return type='int *' info='the list of information or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
+    <function name='virDomainGetState' file='python'>
+      <info>Extract domain state.</info>
+      <return type='int *' info='the list containing state and reason or None in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='flags' type='unsigned int' info='additional flags'/>
+    </function>
     <function name='virDomainGetBlockInfo' file='python'>
       <info>Extract information about a domain block device size</info>
       <return type='int *' info='the list of information or None in case of error'/>
