@@ -1704,7 +1704,55 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainSnapshotListNames has to be implemented manually */
+static int
+remoteDispatchDomainSnapshotListNames(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_snapshot_list_names_args *args,
+    remote_domain_snapshot_list_names_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virDomainSnapshotListNames(dom, ret->names.names_val, args->maxnames, args->flags)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
 
 static int
 remoteDispatchDomainSnapshotLookupByName(
@@ -2490,25 +2538,445 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchListDefinedDomains has to be implemented manually */
+static int
+remoteDispatchListDefinedDomains(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_defined_domains_args *args,
+    remote_list_defined_domains_ret *ret)
+{
+    int rv = -1;
+    int len;
 
-/* remoteDispatchListDefinedInterfaces has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchListDefinedNetworks has to be implemented manually */
+    if (args->maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"));
+        goto cleanup;
+    }
 
-/* remoteDispatchListDefinedStoragePools has to be implemented manually */
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
-/* remoteDispatchListDomains has to be implemented manually */
+    if ((len = virConnectListDefinedDomains(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
 
-/* remoteDispatchListInterfaces has to be implemented manually */
+    ret->names.names_len = len;
+    rv = 0;
 
-/* remoteDispatchListNetworks has to be implemented manually */
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
 
-/* remoteDispatchListNWFilters has to be implemented manually */
+static int
+remoteDispatchListDefinedInterfaces(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_defined_interfaces_args *args,
+    remote_list_defined_interfaces_ret *ret)
+{
+    int rv = -1;
+    int len;
 
-/* remoteDispatchListSecrets has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchListStoragePools has to be implemented manually */
+    if (args->maxnames > REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListDefinedInterfaces(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
+
+static int
+remoteDispatchListDefinedNetworks(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_defined_networks_args *args,
+    remote_list_defined_networks_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_NETWORK_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListDefinedNetworks(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
+
+static int
+remoteDispatchListDefinedStoragePools(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_defined_storage_pools_args *args,
+    remote_list_defined_storage_pools_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListDefinedStoragePools(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
+
+static int
+remoteDispatchListDomains(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_domains_args *args,
+    remote_list_domains_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxids > REMOTE_DOMAIN_ID_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->ids.ids_val, args->maxids) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListDomains(conn, ret->ids.ids_val, args->maxids)) < 0)
+        goto cleanup;
+
+    ret->ids.ids_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->ids.ids_val);
+    return rv;
+}
+
+static int
+remoteDispatchListInterfaces(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_interfaces_args *args,
+    remote_list_interfaces_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_INTERFACE_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_INTERFACE_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListInterfaces(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
+
+static int
+remoteDispatchListNetworks(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_networks_args *args,
+    remote_list_networks_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_NETWORK_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListNetworks(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
+
+static int
+remoteDispatchListNWFilters(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_nwfilters_args *args,
+    remote_list_nwfilters_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_NWFILTER_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_NWFILTER_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListNWFilters(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
+
+static int
+remoteDispatchListSecrets(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_secrets_args *args,
+    remote_list_secrets_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxuuids > REMOTE_SECRET_UUID_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxuuids > REMOTE_SECRET_UUID_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->uuids.uuids_val, args->maxuuids) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListSecrets(conn, ret->uuids.uuids_val, args->maxuuids)) < 0)
+        goto cleanup;
+
+    ret->uuids.uuids_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->uuids.uuids_val);
+    return rv;
+}
+
+static int
+remoteDispatchListStoragePools(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_list_storage_pools_args *args,
+    remote_list_storage_pools_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virConnectListStoragePools(conn, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
 
 static int
 remoteDispatchNetworkCreate(
@@ -3092,7 +3560,55 @@ cleanup:
 
 /* remoteDispatchNodeDeviceGetParent has to be implemented manually */
 
-/* remoteDispatchNodeDeviceListCaps has to be implemented manually */
+static int
+remoteDispatchNodeDeviceListCaps(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_node_device_list_caps_args *args,
+    remote_node_device_list_caps_ret *ret)
+{
+    int rv = -1;
+    virNodeDevicePtr dev = NULL;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"));
+        goto cleanup;
+    }
+
+    if (!(dev = virNodeDeviceLookupByName(conn, args->name)))
+        goto cleanup;
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virNodeDeviceListCaps(dev, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dev)
+        virNodeDeviceFree(dev);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
 
 static int
 remoteDispatchNodeDeviceLookupByName(
@@ -3230,7 +3746,49 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchNodeGetCellsFreeMemory has to be implemented manually */
+static int
+remoteDispatchNodeGetCellsFreeMemory(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_node_get_cells_free_memory_args *args,
+    remote_node_get_cells_free_memory_ret *ret)
+{
+    int rv = -1;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxCells > REMOTE_NODE_MAX_CELLS) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxfreeMems > REMOTE_NODE_MAX_CELLS"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->freeMems.freeMems_val, args->maxCells) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virNodeGetCellsFreeMemory(conn, (unsigned long long *)ret->freeMems.freeMems_val, args->startCell, args->maxCells)) <= 0)
+        goto cleanup;
+
+    ret->freeMems.freeMems_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->freeMems.freeMems_val);
+    return rv;
+}
 
 static int
 remoteDispatchNodeGetFreeMemory(
@@ -3266,7 +3824,52 @@ cleanup:
 
 /* remoteDispatchNodeGetSecurityModel has to be implemented manually */
 
-/* remoteDispatchNodeListDevices has to be implemented manually */
+static int
+remoteDispatchNodeListDevices(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_node_list_devices_args *args,
+    remote_node_list_devices_ret *ret)
+{
+    int rv = -1;
+    char *cap;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    cap = args->cap ? *args->cap : NULL;
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virNodeListDevices(conn, cap, ret->names.names_val, args->maxnames, args->flags)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
 
 static int
 remoteDispatchNodeNumOfDevices(
@@ -4317,7 +4920,55 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchStoragePoolListVolumes has to be implemented manually */
+static int
+remoteDispatchStoragePoolListVolumes(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_pool_list_volumes_args *args,
+    remote_storage_pool_list_volumes_ret *ret)
+{
+    int rv = -1;
+    virStoragePoolPtr pool = NULL;
+    int len;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"));
+        goto cleanup;
+    }
+
+    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))
+        goto cleanup;
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virStoragePoolListVolumes(pool, ret->names.names_val, args->maxnames)) < 0)
+        goto cleanup;
+
+    ret->names.names_len = len;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (pool)
+        virStoragePoolFree(pool);
+    if (rv < 0)
+        VIR_FREE(ret->names.names_val);
+    return rv;
+}
 
 static int
 remoteDispatchStoragePoolLookupByName(

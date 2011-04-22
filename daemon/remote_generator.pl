@@ -278,27 +278,12 @@ elsif ($opt_b) {
                           "DomainMemoryStats",
                           "DomainMigratePrepare",
                           "DomainMigratePrepare2",
-                          "DomainSnapshotListNames",
                           "GetType",
-                          "ListDefinedDomains",
-                          "ListDefinedInterfaces",
-                          "ListDefinedNetworks",
-                          "ListDefinedStoragePools",
-                          "ListDomains",
-                          "ListInterfaces",
-                          "ListNetworks",
-                          "ListNWFilters",
-                          "ListSecrets",
-                          "ListStoragePools",
                           "NodeDeviceGetParent",
-                          "NodeDeviceListCaps",
-                          "NodeGetCellsFreeMemory",
                           "NodeGetInfo",
                           "NodeGetSecurityModel",
-                          "NodeListDevices",
                           "SecretGetValue",
                           "StoragePoolGetInfo",
-                          "StoragePoolListVolumes",
                           "StorageVolGetInfo");
     } elsif ($structprefix eq "qemu") {
         @ungeneratable = ("MonitorCommand");
@@ -481,12 +466,38 @@ elsif ($opt_b) {
         my $single_ret_var = "undefined";
         my $single_ret_by_ref = 0;
         my $single_ret_check = " == undefined";
+        my $single_ret_as_list = 0;
+        my $single_ret_list_name = "undefined";
+        my $single_ret_list_max_var = "undefined";
+        my $single_ret_list_max_define = "undefined";
 
         if ($calls{$_}->{ret} ne "void") {
             foreach my $ret_member (@{$calls{$_}->{ret_members}}) {
-                if ($ret_member =~ m/(\S+)<\S+>;/) {
-                    push(@ret_list, "ret->$1.$1_val");
-                    push(@ret_list, "ret->$1.$1_len");
+                if ($ret_member =~ m/remote_nonnull_string (\S+)<(\S+)>;/) {
+                    push(@vars_list, "int len");
+                    push(@ret_list, "ret->$1.$1_len = len;");
+                    push(@free_list,
+                         "    if (rv < 0)\n" .
+                         "        VIR_FREE(ret->$1.$1_val);");
+                    $single_ret_var = "len";
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " < 0";
+                    $single_ret_as_list = 1;
+                    $single_ret_list_name = $1;
+                    $single_ret_list_max_var = "max$1";
+                    $single_ret_list_max_define = $2;
+
+                    if ($calls{$_}->{ProcName} eq "NodeListDevices") {
+                        my $conn = shift(@args_list);
+                        my $cap = shift(@args_list);
+                        unshift(@args_list, "ret->$1.$1_val");
+                        unshift(@args_list, $cap);
+                        unshift(@args_list, $conn);
+                    } else {
+                        my $conn = shift(@args_list);
+                        unshift(@args_list, "ret->$1.$1_val");
+                        unshift(@args_list, $conn);
+                    }
                 } elsif ($ret_member =~ m/remote_nonnull_string (\S+);/) {
                     push(@vars_list, "char *$1");
                     push(@ret_list, "ret->$1 = $1;");
@@ -574,6 +585,23 @@ elsif ($opt_b) {
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/int (\S+)<(\S+)>;/) {
+                    push(@vars_list, "int len");
+                    push(@ret_list, "ret->$1.$1_len = len;");
+                    push(@free_list,
+                         "    if (rv < 0)\n" .
+                         "        VIR_FREE(ret->$1.$1_val);");
+                    $single_ret_var = "len";
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " < 0";
+                    $single_ret_as_list = 1;
+                    $single_ret_list_name = $1;
+                    $single_ret_list_max_var = "max$1";
+                    $single_ret_list_max_define = $2;
+
+                    my $conn = shift(@args_list);
+                    unshift(@args_list, "ret->$1.$1_val");
+                    unshift(@args_list, $conn);
                 } elsif ($ret_member =~ m/int (\S+);/) {
                     push(@vars_list, "int $1");
                     push(@ret_list, "ret->$1 = $1;");
@@ -587,6 +615,31 @@ elsif ($opt_b) {
                         $single_ret_by_ref = 0;
                         $single_ret_check = " < 0";
                     }
+                } elsif ($ret_member =~ m/hyper (\S+)<(\S+)>;/) {
+                    push(@vars_list, "int len");
+                    push(@ret_list, "ret->$1.$1_len = len;");
+                    push(@free_list,
+                         "    if (rv < 0)\n" .
+                         "        VIR_FREE(ret->$1.$1_val);");
+                    $single_ret_var = "len";
+                    $single_ret_by_ref = 0;
+                    $single_ret_as_list = 1;
+                    $single_ret_list_name = $1;
+                    $single_ret_list_max_define = $2;
+
+                    my $conn = shift(@args_list);
+
+                    if ($calls{$_}->{ProcName} eq "NodeGetCellsFreeMemory") {
+                        $single_ret_check = " <= 0";
+                        $single_ret_list_max_var = "maxCells";
+                        unshift(@args_list, "(unsigned long long *)ret->$1.$1_val");
+                    } else {
+                        $single_ret_check = " < 0";
+                        $single_ret_list_max_var = "max$1";
+                        unshift(@args_list, "ret->$1.$1_val");
+                    }
+
+                    unshift(@args_list, $conn);
                 } elsif ($ret_member =~ m/hyper (\S+);/) {
                     push(@vars_list, "unsigned long $1");
                     push(@ret_list, "ret->$1 = $1;");
@@ -613,6 +666,15 @@ elsif ($opt_b) {
         print "        goto cleanup;\n";
         print "    }\n";
         print "\n";
+
+        if ($single_ret_as_list) {
+            print "    if (args->$single_ret_list_max_var > $single_ret_list_max_define) {\n";
+            print "        virNetError(VIR_ERR_INTERNAL_ERROR,\n";
+            print "                    \"%s\", _(\"max$single_ret_list_name > $single_ret_list_max_define\"));\n";
+            print "        goto cleanup;\n";
+            print "    }\n";
+            print "\n";
+        }
 
         print join("\n", @getters_list);
 
@@ -650,7 +712,8 @@ elsif ($opt_b) {
                 $calls{$_}->{ProcName} eq "GetMaxVcpus" or
                 $calls{$_}->{ProcName} eq "DomainXMLFromNative" or
                 $calls{$_}->{ProcName} eq "DomainXMLToNative" or
-                $calls{$_}->{ProcName} eq "FindStoragePoolSources") {
+                $calls{$_}->{ProcName} eq "FindStoragePoolSources" or
+                $calls{$_}->{ProcName} =~ m/^List/) {
                 $prefix = "Connect"
             } elsif ($calls{$_}->{ProcName} eq "SupportsFeature") {
                 $prefix = "Drv"
@@ -668,6 +731,16 @@ elsif ($opt_b) {
                 $proc_name = "DomainSnapshotGetXMLDesc"
             } elsif ($calls{$_}->{ProcName} eq "DomainGetOsType") {
                 $proc_name = "DomainGetOSType"
+            }
+
+            if ($single_ret_as_list) {
+                print "    /* Allocate return buffer. */\n";
+                print "    if (VIR_ALLOC_N(ret->$single_ret_list_name.${single_ret_list_name}_val," .
+                      " args->$single_ret_list_max_var) < 0) {\n";
+                print "        virReportOOMError();\n";
+                print "        goto cleanup;\n";
+                print "    }\n";
+                print "\n";
             }
 
             if ($single_ret_by_ref) {
