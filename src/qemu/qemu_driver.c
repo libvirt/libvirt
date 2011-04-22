@@ -2345,13 +2345,16 @@ getCompressionType(struct qemud_driver *driver)
 
 static int qemudDomainCoreDump(virDomainPtr dom,
                                const char *path,
-                               int flags ATTRIBUTE_UNUSED) {
+                               int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int resume = 0, paused = 0;
     int ret = -1;
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
