@@ -301,7 +301,41 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainDumpXML has to be implemented manually */
+static int
+remoteDispatchDomainDumpXML(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_dump_xml_args *args,
+    remote_domain_dump_xml_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    char *xml;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((xml = virDomainGetXMLDesc(dom, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /* remoteDispatchDomainEventsDeregister has to be implemented manually */
 
@@ -311,7 +345,41 @@ cleanup:
 
 /* remoteDispatchDomainEventsRegisterAny has to be implemented manually */
 
-/* remoteDispatchDomainGetAutostart has to be implemented manually */
+static int
+remoteDispatchDomainGetAutostart(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_get_autostart_args *args,
+    remote_domain_get_autostart_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int autostart;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainGetAutostart(dom, &autostart) < 0)
+        goto cleanup;
+
+    ret->autostart = autostart;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /* remoteDispatchDomainGetBlkioParameters has to be implemented manually */
 
@@ -321,13 +389,115 @@ cleanup:
 
 /* remoteDispatchDomainGetJobInfo has to be implemented manually */
 
-/* remoteDispatchDomainGetMaxMemory has to be implemented manually */
+static int
+remoteDispatchDomainGetMaxMemory(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_get_max_memory_args *args,
+    remote_domain_get_max_memory_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    unsigned long memory;
 
-/* remoteDispatchDomainGetMaxVcpus has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((memory = virDomainGetMaxMemory(dom)) == 0)
+        goto cleanup;
+
+    ret->memory = memory;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainGetMaxVcpus(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_get_max_vcpus_args *args,
+    remote_domain_get_max_vcpus_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((num = virDomainGetMaxVcpus(dom)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /* remoteDispatchDomainGetMemoryParameters has to be implemented manually */
 
-/* remoteDispatchDomainGetOsType has to be implemented manually */
+static int
+remoteDispatchDomainGetOsType(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_get_os_type_args *args,
+    remote_domain_get_os_type_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    char *type;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((type = virDomainGetOSType(dom)) == NULL)
+        goto cleanup;
+
+    ret->type = type;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /* remoteDispatchDomainGetSchedulerParameters has to be implemented manually */
 
@@ -337,19 +507,223 @@ cleanup:
 
 /* remoteDispatchDomainGetVcpus has to be implemented manually */
 
-/* remoteDispatchDomainGetVcpusFlags has to be implemented manually */
+static int
+remoteDispatchDomainGetVcpusFlags(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_get_vcpus_flags_args *args,
+    remote_domain_get_vcpus_flags_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int num;
 
-/* remoteDispatchDomainHasCurrentSnapshot has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchDomainHasManagedSaveImage has to be implemented manually */
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((num = virDomainGetVcpusFlags(dom, args->flags)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainHasCurrentSnapshot(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_has_current_snapshot_args *args,
+    remote_domain_has_current_snapshot_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int result;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((result = virDomainHasCurrentSnapshot(dom, args->flags)) < 0)
+        goto cleanup;
+
+    ret->result = result;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainHasManagedSaveImage(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_has_managed_save_image_args *args,
+    remote_domain_has_managed_save_image_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int result;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((result = virDomainHasManagedSaveImage(dom, args->flags)) < 0)
+        goto cleanup;
+
+    ret->result = result;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /* remoteDispatchDomainInterfaceStats has to be implemented manually */
 
-/* remoteDispatchDomainIsActive has to be implemented manually */
+static int
+remoteDispatchDomainIsActive(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_is_active_args *args,
+    remote_domain_is_active_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int active;
 
-/* remoteDispatchDomainIsPersistent has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchDomainIsUpdated has to be implemented manually */
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((active = virDomainIsActive(dom)) < 0)
+        goto cleanup;
+
+    ret->active = active;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainIsPersistent(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_is_persistent_args *args,
+    remote_domain_is_persistent_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int persistent;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((persistent = virDomainIsPersistent(dom)) < 0)
+        goto cleanup;
+
+    ret->persistent = persistent;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainIsUpdated(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_is_updated_args *args,
+    remote_domain_is_updated_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int updated;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((updated = virDomainIsUpdated(dom)) < 0)
+        goto cleanup;
+
+    ret->updated = updated;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /* remoteDispatchDomainLookupById has to be implemented manually */
 
@@ -564,7 +938,6 @@ remoteDispatchDomainRestore(
         goto cleanup;
     }
 
-
     if (virDomainRestore(conn, args->from) < 0)
         goto cleanup;
 
@@ -573,7 +946,6 @@ remoteDispatchDomainRestore(
 cleanup:
     if (rv < 0)
         remoteDispatchError(rerr);
-
     return rv;
 }
 
@@ -973,13 +1345,87 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainSnapshotDumpXML has to be implemented manually */
+static int
+remoteDispatchDomainSnapshotDumpXML(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_snapshot_dump_xml_args *args,
+    remote_domain_snapshot_dump_xml_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    virDomainSnapshotPtr snapshot = NULL;
+    char *xml;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->snap.dom)))
+        goto cleanup;
+
+    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))
+        goto cleanup;
+
+    if ((xml = virDomainSnapshotGetXMLDesc(snapshot, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (snapshot)
+        virDomainSnapshotFree(snapshot);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /* remoteDispatchDomainSnapshotListNames has to be implemented manually */
 
 /* remoteDispatchDomainSnapshotLookupByName has to be implemented manually */
 
-/* remoteDispatchDomainSnapshotNum has to be implemented manually */
+static int
+remoteDispatchDomainSnapshotNum(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_snapshot_num_args *args,
+    remote_domain_snapshot_num_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((num = virDomainSnapshotNum(dom, args->flags)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 static int
 remoteDispatchDomainSuspend(
@@ -1083,27 +1529,251 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainXMLFromNative has to be implemented manually */
+static int
+remoteDispatchDomainXMLFromNative(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_xml_from_native_args *args,
+    remote_domain_xml_from_native_ret *ret)
+{
+    int rv = -1;
+    char *domainXml;
 
-/* remoteDispatchDomainXMLToNative has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((domainXml = virConnectDomainXMLFromNative(conn, args->nativeFormat, args->nativeConfig, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->domainXml = domainXml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchDomainXMLToNative(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_domain_xml_to_native_args *args,
+    remote_domain_xml_to_native_ret *ret)
+{
+    int rv = -1;
+    char *nativeConfig;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((nativeConfig = virConnectDomainXMLToNative(conn, args->nativeFormat, args->domainXml, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->nativeConfig = nativeConfig;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
 /* remoteDispatchFindStoragePoolSources has to be implemented manually */
 
-/* remoteDispatchGetCapabilities has to be implemented manually */
+static int
+remoteDispatchGetCapabilities(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_get_capabilities_ret *ret)
+{
+    int rv = -1;
+    char *capabilities;
 
-/* remoteDispatchGetHostname has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchGetLibVersion has to be implemented manually */
+    if ((capabilities = virConnectGetCapabilities(conn)) == NULL)
+        goto cleanup;
+
+    ret->capabilities = capabilities;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchGetHostname(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_get_hostname_ret *ret)
+{
+    int rv = -1;
+    char *hostname;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((hostname = virConnectGetHostname(conn)) == NULL)
+        goto cleanup;
+
+    ret->hostname = hostname;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchGetLibVersion(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_get_lib_version_ret *ret)
+{
+    int rv = -1;
+    unsigned long lib_ver;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (virConnectGetLibVersion(conn, &lib_ver) < 0)
+        goto cleanup;
+
+    ret->lib_ver = lib_ver;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
 /* remoteDispatchGetMaxVcpus has to be implemented manually */
 
-/* remoteDispatchGetSysinfo has to be implemented manually */
+static int
+remoteDispatchGetSysinfo(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_get_sysinfo_args *args,
+    remote_get_sysinfo_ret *ret)
+{
+    int rv = -1;
+    char *sysinfo;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((sysinfo = virConnectGetSysinfo(conn, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->sysinfo = sysinfo;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
 /* remoteDispatchGetType has to be implemented manually */
 
-/* remoteDispatchGetURI has to be implemented manually */
+static int
+remoteDispatchGetURI(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_get_uri_ret *ret)
+{
+    int rv = -1;
+    char *uri;
 
-/* remoteDispatchGetVersion has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((uri = virConnectGetURI(conn)) == NULL)
+        goto cleanup;
+
+    ret->uri = uri;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchGetVersion(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_get_version_ret *ret)
+{
+    int rv = -1;
+    unsigned long hv_ver;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (virConnectGetVersion(conn, &hv_ver) < 0)
+        goto cleanup;
+
+    ret->hv_ver = hv_ver;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
 static int
 remoteDispatchInterfaceCreate(
@@ -1175,9 +1845,77 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchInterfaceGetXMLDesc has to be implemented manually */
+static int
+remoteDispatchInterfaceGetXMLDesc(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_interface_get_xml_desc_args *args,
+    remote_interface_get_xml_desc_ret *ret)
+{
+    int rv = -1;
+    virInterfacePtr iface = NULL;
+    char *xml;
 
-/* remoteDispatchInterfaceIsActive has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(iface = get_nonnull_interface(conn, args->iface)))
+        goto cleanup;
+
+    if ((xml = virInterfaceGetXMLDesc(iface, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (iface)
+        virInterfaceFree(iface);
+    return rv;
+}
+
+static int
+remoteDispatchInterfaceIsActive(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_interface_is_active_args *args,
+    remote_interface_is_active_ret *ret)
+{
+    int rv = -1;
+    virInterfacePtr iface = NULL;
+    int active;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(iface = get_nonnull_interface(conn, args->iface)))
+        goto cleanup;
+
+    if ((active = virInterfaceIsActive(iface)) < 0)
+        goto cleanup;
+
+    ret->active = active;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (iface)
+        virInterfaceFree(iface);
+    return rv;
+}
 
 /* remoteDispatchInterfaceLookupByMacString has to be implemented manually */
 
@@ -1217,7 +1955,35 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchIsSecure has to be implemented manually */
+static int
+remoteDispatchIsSecure(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_is_secure_ret *ret)
+{
+    int rv = -1;
+    int secure;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((secure = virConnectIsSecure(conn)) < 0)
+        goto cleanup;
+
+    ret->secure = secure;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
 /* remoteDispatchListDefinedDomains has to be implemented manually */
 
@@ -1311,15 +2077,185 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchNetworkDumpXML has to be implemented manually */
+static int
+remoteDispatchNetworkDumpXML(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_network_dump_xml_args *args,
+    remote_network_dump_xml_ret *ret)
+{
+    int rv = -1;
+    virNetworkPtr net = NULL;
+    char *xml;
 
-/* remoteDispatchNetworkGetAutostart has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchNetworkGetBridgeName has to be implemented manually */
+    if (!(net = get_nonnull_network(conn, args->net)))
+        goto cleanup;
 
-/* remoteDispatchNetworkIsActive has to be implemented manually */
+    if ((xml = virNetworkGetXMLDesc(net, args->flags)) == NULL)
+        goto cleanup;
 
-/* remoteDispatchNetworkIsPersistent has to be implemented manually */
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (net)
+        virNetworkFree(net);
+    return rv;
+}
+
+static int
+remoteDispatchNetworkGetAutostart(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_network_get_autostart_args *args,
+    remote_network_get_autostart_ret *ret)
+{
+    int rv = -1;
+    virNetworkPtr net = NULL;
+    int autostart;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(net = get_nonnull_network(conn, args->net)))
+        goto cleanup;
+
+    if (virNetworkGetAutostart(net, &autostart) < 0)
+        goto cleanup;
+
+    ret->autostart = autostart;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (net)
+        virNetworkFree(net);
+    return rv;
+}
+
+static int
+remoteDispatchNetworkGetBridgeName(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_network_get_bridge_name_args *args,
+    remote_network_get_bridge_name_ret *ret)
+{
+    int rv = -1;
+    virNetworkPtr net = NULL;
+    char *name;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(net = get_nonnull_network(conn, args->net)))
+        goto cleanup;
+
+    if ((name = virNetworkGetBridgeName(net)) == NULL)
+        goto cleanup;
+
+    ret->name = name;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (net)
+        virNetworkFree(net);
+    return rv;
+}
+
+static int
+remoteDispatchNetworkIsActive(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_network_is_active_args *args,
+    remote_network_is_active_ret *ret)
+{
+    int rv = -1;
+    virNetworkPtr net = NULL;
+    int active;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(net = get_nonnull_network(conn, args->net)))
+        goto cleanup;
+
+    if ((active = virNetworkIsActive(net)) < 0)
+        goto cleanup;
+
+    ret->active = active;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (net)
+        virNetworkFree(net);
+    return rv;
+}
+
+static int
+remoteDispatchNetworkIsPersistent(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_network_is_persistent_args *args,
+    remote_network_is_persistent_ret *ret)
+{
+    int rv = -1;
+    virNetworkPtr net = NULL;
+    int persistent;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(net = get_nonnull_network(conn, args->net)))
+        goto cleanup;
+
+    if ((persistent = virNetworkIsPersistent(net)) < 0)
+        goto cleanup;
+
+    ret->persistent = persistent;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (net)
+        virNetworkFree(net);
+    return rv;
+}
 
 /* remoteDispatchNetworkLookupByName has to be implemented manually */
 
@@ -1463,7 +2399,41 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchNodeDeviceDumpXML has to be implemented manually */
+static int
+remoteDispatchNodeDeviceDumpXML(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_node_device_dump_xml_args *args,
+    remote_node_device_dump_xml_ret *ret)
+{
+    int rv = -1;
+    virNodeDevicePtr dev = NULL;
+    char *xml;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dev = virNodeDeviceLookupByName(conn, args->name)))
+        goto cleanup;
+
+    if ((xml = virNodeDeviceGetXMLDesc(dev, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dev)
+        virNodeDeviceFree(dev);
+    return rv;
+}
 
 /* remoteDispatchNodeDeviceGetParent has to be implemented manually */
 
@@ -1471,7 +2441,41 @@ cleanup:
 
 /* remoteDispatchNodeDeviceLookupByName has to be implemented manually */
 
-/* remoteDispatchNodeDeviceNumOfCaps has to be implemented manually */
+static int
+remoteDispatchNodeDeviceNumOfCaps(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_node_device_num_of_caps_args *args,
+    remote_node_device_num_of_caps_ret *ret)
+{
+    int rv = -1;
+    virNodeDevicePtr dev = NULL;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dev = virNodeDeviceLookupByName(conn, args->name)))
+        goto cleanup;
+
+    if ((num = virNodeDeviceNumOfCaps(dev)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dev)
+        virNodeDeviceFree(dev);
+    return rv;
+}
 
 static int
 remoteDispatchNodeDeviceReAttach(
@@ -1553,29 +2557,343 @@ cleanup:
 
 /* remoteDispatchNodeNumOfDevices has to be implemented manually */
 
-/* remoteDispatchNumOfDefinedDomains has to be implemented manually */
+static int
+remoteDispatchNumOfDefinedDomains(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_defined_domains_ret *ret)
+{
+    int rv = -1;
+    int num;
 
-/* remoteDispatchNumOfDefinedInterfaces has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchNumOfDefinedNetworks has to be implemented manually */
+    if ((num = virConnectNumOfDefinedDomains(conn)) < 0)
+        goto cleanup;
 
-/* remoteDispatchNumOfDefinedStoragePools has to be implemented manually */
+    ret->num = num;
+    rv = 0;
 
-/* remoteDispatchNumOfDomains has to be implemented manually */
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
-/* remoteDispatchNumOfInterfaces has to be implemented manually */
+static int
+remoteDispatchNumOfDefinedInterfaces(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_defined_interfaces_ret *ret)
+{
+    int rv = -1;
+    int num;
 
-/* remoteDispatchNumOfNetworks has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
-/* remoteDispatchNumOfNWFilters has to be implemented manually */
+    if ((num = virConnectNumOfDefinedInterfaces(conn)) < 0)
+        goto cleanup;
 
-/* remoteDispatchNumOfSecrets has to be implemented manually */
+    ret->num = num;
+    rv = 0;
 
-/* remoteDispatchNumOfStoragePools has to be implemented manually */
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfDefinedNetworks(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_defined_networks_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfDefinedNetworks(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfDefinedStoragePools(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_defined_storage_pools_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfDefinedStoragePools(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfDomains(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_domains_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfDomains(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfInterfaces(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_interfaces_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfInterfaces(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfNetworks(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_networks_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfNetworks(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfNWFilters(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_nwfilters_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfNWFilters(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfSecrets(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_secrets_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfSecrets(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchNumOfStoragePools(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    void *args ATTRIBUTE_UNUSED,
+    remote_num_of_storage_pools_ret *ret)
+{
+    int rv = -1;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((num = virConnectNumOfStoragePools(conn)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
 /* remoteDispatchNWFilterDefineXML has to be implemented manually */
 
-/* remoteDispatchNWFilterGetXMLDesc has to be implemented manually */
+static int
+remoteDispatchNWFilterGetXMLDesc(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_nwfilter_get_xml_desc_args *args,
+    remote_nwfilter_get_xml_desc_ret *ret)
+{
+    int rv = -1;
+    virNWFilterPtr nwfilter = NULL;
+    char *xml;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(nwfilter = get_nonnull_nwfilter(conn, args->nwfilter)))
+        goto cleanup;
+
+    if ((xml = virNWFilterGetXMLDesc(nwfilter, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (nwfilter)
+        virNWFilterFree(nwfilter);
+    return rv;
+}
 
 /* remoteDispatchNWFilterLookupByName has to be implemented manually */
 
@@ -1621,7 +2939,41 @@ cleanup:
 
 /* remoteDispatchSecretGetValue has to be implemented manually */
 
-/* remoteDispatchSecretGetXMLDesc has to be implemented manually */
+static int
+remoteDispatchSecretGetXMLDesc(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_secret_get_xml_desc_args *args,
+    remote_secret_get_xml_desc_ret *ret)
+{
+    int rv = -1;
+    virSecretPtr secret = NULL;
+    char *xml;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(secret = get_nonnull_secret(conn, args->secret)))
+        goto cleanup;
+
+    if ((xml = virSecretGetXMLDesc(secret, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (secret)
+        virSecretFree(secret);
+    return rv;
+}
 
 /* remoteDispatchSecretLookupByUsage has to be implemented manually */
 
@@ -1835,15 +3187,151 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchStoragePoolDumpXML has to be implemented manually */
+static int
+remoteDispatchStoragePoolDumpXML(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_pool_dump_xml_args *args,
+    remote_storage_pool_dump_xml_ret *ret)
+{
+    int rv = -1;
+    virStoragePoolPtr pool = NULL;
+    char *xml;
 
-/* remoteDispatchStoragePoolGetAutostart has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))
+        goto cleanup;
+
+    if ((xml = virStoragePoolGetXMLDesc(pool, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (pool)
+        virStoragePoolFree(pool);
+    return rv;
+}
+
+static int
+remoteDispatchStoragePoolGetAutostart(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_pool_get_autostart_args *args,
+    remote_storage_pool_get_autostart_ret *ret)
+{
+    int rv = -1;
+    virStoragePoolPtr pool = NULL;
+    int autostart;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))
+        goto cleanup;
+
+    if (virStoragePoolGetAutostart(pool, &autostart) < 0)
+        goto cleanup;
+
+    ret->autostart = autostart;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (pool)
+        virStoragePoolFree(pool);
+    return rv;
+}
 
 /* remoteDispatchStoragePoolGetInfo has to be implemented manually */
 
-/* remoteDispatchStoragePoolIsActive has to be implemented manually */
+static int
+remoteDispatchStoragePoolIsActive(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_pool_is_active_args *args,
+    remote_storage_pool_is_active_ret *ret)
+{
+    int rv = -1;
+    virStoragePoolPtr pool = NULL;
+    int active;
 
-/* remoteDispatchStoragePoolIsPersistent has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))
+        goto cleanup;
+
+    if ((active = virStoragePoolIsActive(pool)) < 0)
+        goto cleanup;
+
+    ret->active = active;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (pool)
+        virStoragePoolFree(pool);
+    return rv;
+}
+
+static int
+remoteDispatchStoragePoolIsPersistent(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_pool_is_persistent_args *args,
+    remote_storage_pool_is_persistent_ret *ret)
+{
+    int rv = -1;
+    virStoragePoolPtr pool = NULL;
+    int persistent;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))
+        goto cleanup;
+
+    if ((persistent = virStoragePoolIsPersistent(pool)) < 0)
+        goto cleanup;
+
+    ret->persistent = persistent;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (pool)
+        virStoragePoolFree(pool);
+    return rv;
+}
 
 /* remoteDispatchStoragePoolListVolumes has to be implemented manually */
 
@@ -1853,7 +3341,41 @@ cleanup:
 
 /* remoteDispatchStoragePoolLookupByVolume has to be implemented manually */
 
-/* remoteDispatchStoragePoolNumOfVolumes has to be implemented manually */
+static int
+remoteDispatchStoragePoolNumOfVolumes(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_pool_num_of_volumes_args *args,
+    remote_storage_pool_num_of_volumes_ret *ret)
+{
+    int rv = -1;
+    virStoragePoolPtr pool = NULL;
+    int num;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))
+        goto cleanup;
+
+    if ((num = virStoragePoolNumOfVolumes(pool)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (pool)
+        virStoragePoolFree(pool);
+    return rv;
+}
 
 static int
 remoteDispatchStoragePoolRefresh(
@@ -1997,11 +3519,79 @@ cleanup:
 
 /* remoteDispatchStorageVolDownload has to be implemented manually */
 
-/* remoteDispatchStorageVolDumpXML has to be implemented manually */
+static int
+remoteDispatchStorageVolDumpXML(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_vol_dump_xml_args *args,
+    remote_storage_vol_dump_xml_ret *ret)
+{
+    int rv = -1;
+    virStorageVolPtr vol = NULL;
+    char *xml;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))
+        goto cleanup;
+
+    if ((xml = virStorageVolGetXMLDesc(vol, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->xml = xml;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (vol)
+        virStorageVolFree(vol);
+    return rv;
+}
 
 /* remoteDispatchStorageVolGetInfo has to be implemented manually */
 
-/* remoteDispatchStorageVolGetPath has to be implemented manually */
+static int
+remoteDispatchStorageVolGetPath(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_storage_vol_get_path_args *args,
+    remote_storage_vol_get_path_ret *ret)
+{
+    int rv = -1;
+    virStorageVolPtr vol = NULL;
+    char *name;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))
+        goto cleanup;
+
+    if ((name = virStorageVolGetPath(vol)) == NULL)
+        goto cleanup;
+
+    ret->name = name;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (vol)
+        virStorageVolFree(vol);
+    return rv;
+}
 
 /* remoteDispatchStorageVolLookupByKey has to be implemented manually */
 
@@ -2045,4 +3635,32 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchSupportsFeature has to be implemented manually */
+static int
+remoteDispatchSupportsFeature(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_supports_feature_args *args,
+    remote_supports_feature_ret *ret)
+{
+    int rv = -1;
+    int supported;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((supported = virDrvSupportsFeature(conn, args->feature)) < 0)
+        goto cleanup;
+
+    ret->supported = supported;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}

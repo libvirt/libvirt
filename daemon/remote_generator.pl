@@ -54,6 +54,7 @@ if ($opt_c) {
 }
 
 my $collect_args_members = 0;
+my $collect_ret_members = 0;
 my $last_name;
 
 while (<>) {
@@ -62,6 +63,12 @@ while (<>) {
             $collect_args_members = 0;
         } elsif ($_ =~ m/^\s*(.*\S)\s*$/) {
             push(@{$calls{$name}->{args_members}}, $1);
+        }
+    } elsif ($collect_ret_members) {
+        if (/^};/) {
+            $collect_ret_members = 0;
+        } elsif ($_ =~ m/^\s*(.*\S)\s*$/) {
+            push(@{$calls{$name}->{ret_members}}, $1);
         }
     } elsif (/^struct ${structprefix}_(.*)_args/) {
         $name = $1;
@@ -80,6 +87,7 @@ while (<>) {
         };
 
         $collect_args_members = 1;
+        $collect_ret_members = 0;
         $last_name = $name;
     } elsif (/^struct ${structprefix}_(.*)_ret/) {
         $name = $1;
@@ -93,11 +101,14 @@ while (<>) {
                 ProcName => $ProcName,
                 UC_NAME => uc $name,
                 args => "void",
-                ret => "${structprefix}_${name}_ret"
+                ret => "${structprefix}_${name}_ret",
+                ret_members => []
             }
         }
 
         $collect_args_members = 0;
+        $collect_ret_members = 1;
+        $last_name = $name;
     } elsif (/^struct ${structprefix}_(.*)_msg/) {
         $name = $1;
         $ProcName = name_to_ProcName ($name);
@@ -110,6 +121,7 @@ while (<>) {
         };
 
         $collect_args_members = 0;
+        $collect_ret_members = 0;
     } elsif (/^\s*${procprefix}_PROC_(.*?)\s+=\s+(\d+),?$/) {
         $name = lc $1;
         $id = $2;
@@ -118,8 +130,10 @@ while (<>) {
         $calls[$id] = $calls{$name};
 
         $collect_args_members = 0;
+        $collect_ret_members = 0;
     } else {
         $collect_args_members = 0;
+        $collect_ret_members = 0;
     }
 }
 
@@ -235,7 +249,96 @@ elsif ($opt_b) {
                           "DomainSetBlkioParameters",
                           "Open",
                           "StorageVolUpload",
-                          "StorageVolDownload");
+                          "StorageVolDownload",
+
+                          "AuthList",
+                          "AuthSaslInit",
+                          "AuthSaslStart",
+                          "AuthSaslStep",
+                          "AuthPolkit",
+
+                          "CpuBaseline",
+                          "CpuCompare",
+                          "DomainBlockPeek",
+                          "DomainBlockStats",
+                          "DomainCreateWithFlags",
+                          "DomainCreateXML",
+                          "DomainDefineXML",
+                          "DomainEventsDeregister",
+                          "DomainEventsRegister",
+                          "DomainGetBlkioParameters",
+                          "DomainGetBlockInfo",
+                          "DomainGetInfo",
+                          "DomainGetJobInfo",
+                          "DomainGetMemoryParameters",
+                          "DomainGetSchedulerParameters",
+                          "DomainGetSchedulerType",
+                          "DomainGetSecurityLabel",
+                          "DomainGetVcpus",
+                          "DomainInterfaceStats",
+                          "DomainLookupById",
+                          "DomainLookupByName",
+                          "DomainLookupByUUID",
+                          "DomainMemoryPeek",
+                          "DomainMemoryStats",
+                          "DomainMigrateFinish",
+                          "DomainMigrateFinish2",
+                          "DomainMigratePrepare",
+                          "DomainMigratePrepare2",
+                          "DomainSnapshotCreateXML",
+                          "DomainSnapshotCurrent",
+                          "DomainSnapshotListNames",
+                          "DomainSnapshotLookupByName",
+                          "FindStoragePoolSources",
+                          "GetMaxVcpus",
+                          "GetType",
+                          "InterfaceLookupByMacString",
+                          "InterfaceLookupByName",
+                          "InterfaceDefineXML",
+                          "ListDefinedDomains",
+                          "ListDefinedInterfaces",
+                          "ListDefinedNetworks",
+                          "ListDefinedStoragePools",
+                          "ListDomains",
+                          "ListInterfaces",
+                          "ListNetworks",
+                          "ListNWFilters",
+                          "ListSecrets",
+                          "ListStoragePools",
+                          "NetworkLookupByName",
+                          "NetworkLookupByUUID",
+                          "NodeDeviceCreateXML",
+                          "NetworkCreateXML",
+                          "NodeDeviceGetParent",
+                          "NodeDeviceListCaps",
+                          "NodeDeviceLookupByName",
+                          "NodeGetCellsFreeMemory",
+                          "NodeGetFreeMemory",
+                          "NodeGetInfo",
+                          "NodeGetSecurityModel",
+                          "NetworkDefineXML",
+                          "NodeListDevices",
+                          "NodeNumOfDevices",
+                          "NWFilterLookupByName",
+                          "NWFilterLookupByUUID",
+                          "SecretDefineXML",
+                          "SecretGetValue",
+                          "NWFilterDefineXML",
+                          "SecretLookupByUsage",
+                          "SecretLookupByUUID",
+                          "StoragePoolCreateXML",
+                          "StoragePoolDefineXML",
+                          "StoragePoolGetInfo",
+                          "StoragePoolListVolumes",
+                          "StoragePoolLookupByName",
+                          "StoragePoolLookupByUUID",
+                          "StoragePoolLookupByVolume",
+                          "StorageVolCreateXML",
+                          "StorageVolCreateXMLFrom",
+                          "StorageVolGetInfo",
+                          "StorageVolLookupByKey",
+                          "StorageVolLookupByName",
+                          "StorageVolLookupByPath");
     } elsif ($structprefix eq "qemu") {
         @ungeneratable = ("MonitorCommand");
     }
@@ -248,8 +351,9 @@ elsif ($opt_b) {
         next if $calls{$_}->{msg};
 
         # FIXME: skip functions with explicit return value for now
-        if ($calls{$_}->{ret} ne "void" or exists($ug{$calls{$_}->{ProcName}})) {
-            print "\n/* ${structprefix}Dispatch$calls{$_}->{ProcName} has to be implemented manually */\n";
+        if (exists($ug{$calls{$_}->{ProcName}})) {
+            print "\n/* ${structprefix}Dispatch$calls{$_}->{ProcName} has " .
+                  "to be implemented manually */\n";
             next;
         }
 
@@ -282,6 +386,7 @@ elsif ($opt_b) {
         my @vars_list = ();
         my @getters_list = ();
         my @args_list = ();
+        my @ret_list = ();
         my @free_list = ();
 
         if ($calls{$_}->{args} ne "void") {
@@ -402,6 +507,49 @@ elsif ($opt_b) {
             }
         }
 
+        my $single_ret_var = "undefined";
+        my $single_ret_by_ref = 0;
+        my $single_ret_check = " == undefined";
+
+        if ($calls{$_}->{ret} ne "void") {
+            foreach my $ret_member (@{$calls{$_}->{ret_members}}) {
+                if ($ret_member =~ m/(\S+)<\S+>;/) {
+                    push(@ret_list, "ret->$1.$1_val");
+                    push(@ret_list, "ret->$1.$1_len");
+                } elsif ($ret_member =~ m/remote_nonnull_string (\S+);/) {
+                    push(@vars_list, "char *$1");
+                    push(@ret_list, "ret->$1 = $1;");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/int (\S+);/) {
+                    push(@vars_list, "int $1");
+                    push(@ret_list, "ret->$1 = $1;");
+                    $single_ret_var = $1;
+
+                    if ($calls{$_}->{ProcName} eq "DomainGetAutostart" or
+                        $calls{$_}->{ProcName} eq "NetworkGetAutostart" or
+                        $calls{$_}->{ProcName} eq "StoragePoolGetAutostart") {
+                        $single_ret_by_ref = 1;
+                    } else {
+                        $single_ret_by_ref = 0;
+                        $single_ret_check = " < 0";
+                    }
+                } elsif ($ret_member =~ m/hyper (\S+);/) {
+                    push(@vars_list, "unsigned long $1");
+                    push(@ret_list, "ret->$1 = $1;");
+                    $single_ret_var = $1;
+
+                    if ($calls{$_}->{ProcName} eq "DomainGetMaxMemory") {
+                        $single_ret_by_ref = 0;
+                        $single_ret_check = " == 0";
+                    } else {
+                        $single_ret_by_ref = 1;
+                    }
+                }
+            }
+        }
+
         foreach my $var (@vars_list) {
             print "    $var;\n";
         }
@@ -415,13 +563,65 @@ elsif ($opt_b) {
 
         print join("\n", @getters_list);
 
-        print "\n";
+        if (@getters_list) {
+            print "\n";
+        }
 
         if ($calls{$_}->{ret} eq "void") {
             print "    if (vir$calls{$_}->{ProcName}(";
             print join(', ', @args_list);
             print ") < 0)\n";
             print "        goto cleanup;\n";
+            print "\n";
+        } elsif (scalar(@{$calls{$_}->{ret_members}}) == 1) {
+            my $prefix = "";
+            my $proc_name = $calls{$_}->{ProcName};
+
+            if (! @args_list) {
+                push(@args_list, "conn");
+                $prefix = "Connect"
+            }
+
+            if ($calls{$_}->{ProcName} eq "GetSysinfo" or
+                $calls{$_}->{ProcName} eq "DomainXMLFromNative" or
+                $calls{$_}->{ProcName} eq "DomainXMLToNative") {
+                $prefix = "Connect"
+            } elsif ($calls{$_}->{ProcName} eq "SupportsFeature") {
+                $prefix = "Drv"
+            } elsif ($calls{$_}->{ProcName} eq "DomainDumpXML") {
+                $proc_name = "DomainGetXMLDesc"
+            } elsif ($calls{$_}->{ProcName} eq "NetworkDumpXML") {
+                $proc_name = "NetworkGetXMLDesc"
+            } elsif ($calls{$_}->{ProcName} eq "StoragePoolDumpXML") {
+                $proc_name = "StoragePoolGetXMLDesc"
+            } elsif ($calls{$_}->{ProcName} eq "StorageVolDumpXML") {
+                $proc_name = "StorageVolGetXMLDesc"
+            } elsif ($calls{$_}->{ProcName} eq "NodeDeviceDumpXML") {
+                $proc_name = "NodeDeviceGetXMLDesc"
+            } elsif ($calls{$_}->{ProcName} eq "DomainSnapshotDumpXML") {
+                $proc_name = "DomainSnapshotGetXMLDesc"
+            } elsif ($calls{$_}->{ProcName} eq "DomainGetOsType") {
+                $proc_name = "DomainGetOSType"
+            }
+
+            if ($single_ret_by_ref) {
+                print "    if (vir$prefix$proc_name(";
+                print join(', ', @args_list);
+                print ", &$single_ret_var) < 0)\n";
+            } else {
+                print "    if (($single_ret_var = vir$prefix$proc_name(";
+                print join(', ', @args_list);
+                print "))$single_ret_check)\n";
+            }
+
+            print "        goto cleanup;\n";
+            print "\n";
+
+            if (@ret_list) {
+                print "    ";
+            }
+
+            print join("    \n", @ret_list);
             print "\n";
         }
 
@@ -433,7 +633,10 @@ elsif ($opt_b) {
 
         print join("\n", @free_list);
 
-        print "\n";
+        if (@free_list) {
+            print "\n";
+        }
+
         print "    return rv;\n";
         print "}\n";
     }
