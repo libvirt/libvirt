@@ -1258,7 +1258,7 @@ static int remoteDispatchNumOfStoragePools(
     remote_error *rerr,
     void *args,
     remote_num_of_storage_pools_ret *ret);
-static int remoteDispatchNwfilterDefineXml(
+static int remoteDispatchNWFilterDefineXml(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1266,7 +1266,7 @@ static int remoteDispatchNwfilterDefineXml(
     remote_error *rerr,
     remote_nwfilter_define_xml_args *args,
     remote_nwfilter_define_xml_ret *ret);
-static int remoteDispatchNwfilterGetXmlDesc(
+static int remoteDispatchNWFilterGetXmlDesc(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1274,7 +1274,7 @@ static int remoteDispatchNwfilterGetXmlDesc(
     remote_error *rerr,
     remote_nwfilter_get_xml_desc_args *args,
     remote_nwfilter_get_xml_desc_ret *ret);
-static int remoteDispatchNwfilterLookupByName(
+static int remoteDispatchNWFilterLookupByName(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1282,7 +1282,7 @@ static int remoteDispatchNwfilterLookupByName(
     remote_error *rerr,
     remote_nwfilter_lookup_by_name_args *args,
     remote_nwfilter_lookup_by_name_ret *ret);
-static int remoteDispatchNwfilterLookupByUuid(
+static int remoteDispatchNWFilterLookupByUuid(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1290,7 +1290,7 @@ static int remoteDispatchNwfilterLookupByUuid(
     remote_error *rerr,
     remote_nwfilter_lookup_by_uuid_args *args,
     remote_nwfilter_lookup_by_uuid_ret *ret);
-static int remoteDispatchNwfilterUndefine(
+static int remoteDispatchNWFilterUndefine(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,

@@ -877,18 +877,18 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_update_device_flags_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* NwfilterLookupByName => 175 */
-    .fn = (dispatch_fn) remoteDispatchNwfilterLookupByName,
+{   /* NWFilterLookupByName => 175 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterLookupByName,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_name_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_name_ret,
 },
-{   /* NwfilterLookupByUuid => 176 */
-    .fn = (dispatch_fn) remoteDispatchNwfilterLookupByUuid,
+{   /* NWFilterLookupByUuid => 176 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterLookupByUuid,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_uuid_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_uuid_ret,
 },
-{   /* NwfilterGetXmlDesc => 177 */
-    .fn = (dispatch_fn) remoteDispatchNwfilterGetXmlDesc,
+{   /* NWFilterGetXmlDesc => 177 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterGetXmlDesc,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_get_xml_desc_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_get_xml_desc_ret,
 },
@@ -902,13 +902,13 @@
     .args_filter = (xdrproc_t) xdr_remote_list_nwfilters_args,
     .ret_filter = (xdrproc_t) xdr_remote_list_nwfilters_ret,
 },
-{   /* NwfilterDefineXml => 180 */
-    .fn = (dispatch_fn) remoteDispatchNwfilterDefineXml,
+{   /* NWFilterDefineXml => 180 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterDefineXml,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_define_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_define_xml_ret,
 },
-{   /* NwfilterUndefine => 181 */
-    .fn = (dispatch_fn) remoteDispatchNwfilterUndefine,
+{   /* NWFilterUndefine => 181 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterUndefine,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_undefine_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },

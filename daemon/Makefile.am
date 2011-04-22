@@ -24,6 +24,8 @@ AVAHI_SOURCES =						\
 DISTCLEANFILES =
 EXTRA_DIST =						\
 	remote_generator.pl				\
+	remote_dispatch_bodies.c			\
+	qemu_dispatch_bodies.c				\
 	libvirtd.conf					\
 	libvirtd.init.in				\
 	libvirtd.upstart				\
@@ -204,8 +206,10 @@ endif
 remote.c: \
 	remote_dispatch_prototypes.h \
 	remote_dispatch_table.h \
+	remote_dispatch_bodies.c \
 	qemu_dispatch_prototypes.h \
-	qemu_dispatch_table.h
+	qemu_dispatch_table.h \
+	qemu_dispatch_bodies.c
 
 remote.h: \
 	remote_dispatch_args.h \
@@ -228,6 +232,9 @@ remote_dispatch_args.h: $(srcdir)/remote_generator.pl $(REMOTE_PROTOCOL)
 remote_dispatch_ret.h: $(srcdir)/remote_generator.pl $(REMOTE_PROTOCOL)
 	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -r remote $(REMOTE_PROTOCOL) > $@
 
+remote_dispatch_bodies.c: $(srcdir)/remote_generator.pl $(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -b remote $(REMOTE_PROTOCOL) > $@
+
 qemu_dispatch_prototypes.h: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
 	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -p qemu $(QEMU_PROTOCOL) > $@
 
@@ -239,6 +246,9 @@ qemu_dispatch_args.h: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
 
 qemu_dispatch_ret.h: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
 	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -r qemu $(QEMU_PROTOCOL) > $@
+
+qemu_dispatch_bodies.c: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -b qemu $(QEMU_PROTOCOL) > $@
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
                   libvirtd.uml.logrotate libvirtd.logrotate

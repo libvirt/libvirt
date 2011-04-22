@@ -13,14 +13,15 @@
 # remote_generator.pl -t qemu ../src/remote/qemu_protocol.x
 #
 # By Richard Jones <rjones@redhat.com>
+# Extended by Matthias Bolte <matthias.bolte@googlemail.com>
 
 use strict;
 
 use Getopt::Std;
 
 # Command line options.
-our ($opt_p, $opt_t, $opt_a, $opt_r, $opt_d, $opt_c);
-getopts ('ptardc');
+our ($opt_p, $opt_t, $opt_a, $opt_r, $opt_d, $opt_c, $opt_b);
+getopts ('ptardcb');
 
 my $structprefix = $ARGV[0];
 my $procprefix = uc $structprefix;
@@ -31,6 +32,7 @@ sub name_to_ProcName {
     my $name = shift;
     my @elems = split /_/, $name;
     @elems = map ucfirst, @elems;
+    @elems = map { $_ eq "Nwfilter" ? "NWFilter" : $_ } @elems;
     join "", @elems
 }
 
@@ -50,8 +52,17 @@ if ($opt_c) {
     };
 }
 
+my $collect_args_members = 0;
+my $last_name;
+
 while (<>) {
-    if (/^struct ${structprefix}_(.*)_args/) {
+    if ($collect_args_members) {
+        if (/^};/) {
+            $collect_args_members = 0;
+        } elsif ($_ =~ m/^\s*(.*\S)\s*$/) {
+            push(@{$calls{$name}->{args_members}}, $1);
+        }
+    } elsif (/^struct ${structprefix}_(.*)_args/) {
         $name = $1;
         $ProcName = name_to_ProcName ($name);
 
@@ -63,9 +74,12 @@ while (<>) {
             ProcName => $ProcName,
             UC_NAME => uc $name,
             args => "${structprefix}_${name}_args",
-            ret => "void",
+            args_members => [],
+            ret => "void"
         };
 
+        $collect_args_members = 1;
+        $last_name = $name;
     } elsif (/^struct ${structprefix}_(.*)_ret/) {
         $name = $1;
         $ProcName = name_to_ProcName ($name);
@@ -81,6 +95,8 @@ while (<>) {
                 ret => "${structprefix}_${name}_ret"
             }
         }
+
+        $collect_args_members = 0;
     } elsif (/^struct ${structprefix}_(.*)_msg/) {
         $name = $1;
         $ProcName = name_to_ProcName ($name);
@@ -90,13 +106,19 @@ while (<>) {
             ProcName => $ProcName,
             UC_NAME => uc $name,
             msg => "${structprefix}_${name}_msg"
-        }
+        };
+
+        $collect_args_members = 0;
     } elsif (/^\s*${procprefix}_PROC_(.*?)\s+=\s+(\d+),?$/) {
         $name = lc $1;
         $id = $2;
         $ProcName = name_to_ProcName ($name);
 
         $calls[$id] = $calls{$name};
+
+        $collect_args_members = 0;
+    } else {
+        $collect_args_members = 0;
     }
 }
 
@@ -191,5 +213,227 @@ elsif ($opt_t) {
             print "    .ret_filter = (xdrproc_t) xdr_void,\n";
             print "},\n";
         }
+    }
+}
+
+# Bodies for dispatch functions ("remote_dispatch_bodies.c").
+elsif ($opt_b) {
+    # list of functions that currently are not generatable
+    my @ungeneratable;
+
+    if ($structprefix eq "remote") {
+        @ungeneratable = ("Close",
+                          "DomainEventsDeregisterAny",
+                          "DomainEventsRegisterAny",
+                          "DomainMigratePerform",
+                          "DomainMigratePrepareTunnel",
+                          "DomainOpenConsole",
+                          "DomainPinVcpu",
+                          "DomainSetSchedulerParameters",
+                          "DomainSetMemoryParameters",
+                          "DomainSetBlkioParameters",
+                          "Open",
+                          "StorageVolUpload",
+                          "StorageVolDownload");
+    } elsif ($structprefix eq "qemu") {
+        @ungeneratable = ("MonitorCommand");
+    }
+
+    my %ug = map { $_ => 1 } @ungeneratable;
+    my @keys = sort (keys %calls);
+
+    foreach (@keys) {
+        # skip things which are REMOTE_MESSAGE
+        next if $calls{$_}->{msg};
+
+        # FIXME: skip functions with explicit return value for now
+        if ($calls{$_}->{ret} ne "void" or exists($ug{$calls{$_}->{ProcName}})) {
+            print "\n/* ${structprefix}Dispatch$calls{$_}->{ProcName} has to be implemented manually */\n";
+            next;
+        }
+
+        print "\n";
+        print "static int\n";
+        print "${structprefix}Dispatch$calls{$_}->{ProcName}(\n";
+        print "    struct qemud_server *server ATTRIBUTE_UNUSED,\n";
+        print "    struct qemud_client *client ATTRIBUTE_UNUSED,\n";
+        print "    virConnectPtr conn,\n";
+        print "    remote_message_header *hdr ATTRIBUTE_UNUSED,\n";
+        print "    remote_error *rerr,\n";
+        print "    $calls{$_}->{args} *args";
+
+        if ($calls{$_}->{args} eq "void") {
+            print " ATTRIBUTE_UNUSED"
+        }
+
+        print ",\n";
+        print "    $calls{$_}->{ret} *ret";
+
+        if ($calls{$_}->{ret} eq "void") {
+            print " ATTRIBUTE_UNUSED"
+        }
+
+        print ")\n";
+        print "{\n";
+        print "    int rv = -1;\n";
+
+        my $has_node_device = 0;
+        my @vars_list = ();
+        my @getters_list = ();
+        my @args_list = ();
+        my @free_list = ();
+
+        if ($calls{$_}->{args} ne "void") {
+            # node device is special, as it's identified by name
+            if ($calls{$_}->{args} =~ m/^remote_node_device/) {
+                $has_node_device = 1;
+                push(@vars_list, "virNodeDevicePtr dev = NULL");
+                push(@getters_list,
+                     "    if (!(dev = virNodeDeviceLookupByName(conn, args->name)))\n" .
+                     "        goto cleanup;\n");
+                push(@args_list, "dev");
+                push(@free_list,
+                     "    if (dev)\n" .
+                     "        virNodeDeviceFree(dev);");
+            }
+
+            foreach my $args_member (@{$calls{$_}->{args_members}}) {
+                if ($args_member =~ m/^remote_nonnull_string name;/ and $has_node_device) {
+                    # ignore the name arg for node devices
+                    next
+                } elsif ($args_member =~ m/^remote_nonnull_domain /) {
+                    push(@vars_list, "virDomainPtr dom = NULL");
+                    push(@getters_list,
+                         "    if (!(dom = get_nonnull_domain(conn, args->dom)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "dom");
+                    push(@free_list,
+                         "    if (dom)\n" .
+                         "        virDomainFree(dom);");
+                } elsif ($args_member =~ m/^remote_nonnull_network /) {
+                    push(@vars_list, "virNetworkPtr net = NULL");
+                    push(@getters_list,
+                         "    if (!(net = get_nonnull_network(conn, args->net)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "net");
+                    push(@free_list,
+                         "    if (net)\n" .
+                         "        virNetworkFree(net);");
+                } elsif ($args_member =~ m/^remote_nonnull_storage_pool /) {
+                    push(@vars_list, "virStoragePoolPtr pool = NULL");
+                    push(@getters_list,
+                         "    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "pool");
+                    push(@free_list,
+                         "    if (pool)\n" .
+                         "        virStoragePoolFree(pool);");
+                } elsif ($args_member =~ m/^remote_nonnull_storage_vol /) {
+                    push(@vars_list, "virStorageVolPtr vol = NULL");
+                    push(@getters_list,
+                         "    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "vol");
+                    push(@free_list,
+                         "    if (vol)\n" .
+                         "        virStorageVolFree(vol);");
+                } elsif ($args_member =~ m/^remote_nonnull_interface /) {
+                    push(@vars_list, "virInterfacePtr iface = NULL");
+                    push(@getters_list,
+                         "    if (!(iface = get_nonnull_interface(conn, args->iface)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "iface");
+                    push(@free_list,
+                         "    if (iface)\n" .
+                         "        virInterfaceFree(iface);");
+                } elsif ($args_member =~ m/^remote_nonnull_secret /) {
+                    push(@vars_list, "virSecretPtr secret = NULL");
+                    push(@getters_list,
+                         "    if (!(secret = get_nonnull_secret(conn, args->secret)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "secret");
+                    push(@free_list,
+                         "    if (secret)\n" .
+                         "        virSecretFree(secret);");
+                } elsif ($args_member =~ m/^remote_nonnull_nwfilter /) {
+                    push(@vars_list, "virNWFilterPtr nwfilter = NULL");
+                    push(@getters_list,
+                         "    if (!(nwfilter = get_nonnull_nwfilter(conn, args->nwfilter)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "nwfilter");
+                    push(@free_list,
+                         "    if (nwfilter)\n" .
+                         "        virNWFilterFree(nwfilter);");
+                } elsif ($args_member =~ m/^remote_nonnull_domain_snapshot /) {
+                    push(@vars_list, "virDomainPtr dom = NULL");
+                    push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
+                    push(@getters_list,
+                         "    if (!(dom = get_nonnull_domain(conn, args->snap.domain)))\n" .
+                         "        goto cleanup;\n" .
+                         "\n" .
+                         "    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "snapshot");
+                    push(@free_list,
+                         "    if (snapshot)\n" .
+                         "        virDomainSnapshotFree(snapshot);\n" .
+                         "    if (dom)\n" .
+                         "        virDomainFree(dom);");
+                } elsif ($args_member =~ m/(\S+)<\S+>;/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
+                    }
+
+                    if ($calls{$_}->{ProcName} eq "SecretSetValue") {
+                        push(@args_list, "(const unsigned char *)args->$1.$1_val");
+                    } else {
+                        push(@args_list, "args->$1.$1_val");
+                    }
+
+                    push(@args_list, "args->$1.$1_len");
+                } elsif ($args_member =~ m/.* (\S+);/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
+                    }
+
+                    push(@args_list, "args->$1");
+                }
+            }
+        }
+
+        foreach my $var (@vars_list) {
+            print "    $var;\n";
+        }
+
+        print "\n";
+        print "    if (!conn) {\n";
+        print "        virNetError(VIR_ERR_INTERNAL_ERROR, \"%s\", _(\"connection not open\"));\n";
+        print "        goto cleanup;\n";
+        print "    }\n";
+        print "\n";
+
+        print join("\n", @getters_list);
+
+        print "\n";
+
+        if ($calls{$_}->{ret} eq "void") {
+            print "    if (vir$calls{$_}->{ProcName}(";
+            print join(', ', @args_list);
+            print ") < 0)\n";
+            print "        goto cleanup;\n";
+            print "\n";
+        }
+
+        print "    rv = 0;\n";
+        print "\n";
+        print "cleanup:\n";
+        print "    if (rv < 0)\n";
+        print "        remoteDispatchError(rerr);\n";
+
+        print join("\n", @free_list);
+
+        print "\n";
+        print "    return rv;\n";
+        print "}\n";
     }
 }

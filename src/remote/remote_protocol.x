@@ -540,9 +540,9 @@ struct remote_domain_interface_stats_ret {
 };
 
 struct remote_domain_memory_stats_args {
-        remote_nonnull_domain dom;
-        u_int maxStats;
-        u_int flags;
+    remote_nonnull_domain dom;
+    u_int maxStats;
+    u_int flags;
 };
 
 struct remote_domain_memory_stat {
