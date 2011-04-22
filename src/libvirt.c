@@ -2347,7 +2347,7 @@ error:
  * virDomainCoreDump:
  * @domain: a domain object
  * @to: path for the core file
- * @flags: extra flags, currently unused
+ * @flags: an OR'ed set of virDomainCoreDumpFlags
  *
  * This method will dump the core of a domain on a given file for analysis.
  * Note that for remote Xen Daemon the file path will be interpreted in
@@ -2376,6 +2376,12 @@ virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
     conn = domain->conn;
     if (to == NULL) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DUMP_CRASH) && (flags & VIR_DUMP_LIVE)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("crash and live flags are mutually exclusive"));
         goto error;
     }
 
