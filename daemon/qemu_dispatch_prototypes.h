@@ -7,6 +7,6 @@ static int qemuDispatchMonitorCommand(
     struct qemud_client *client,
     virConnectPtr conn,
     remote_message_header *hdr,
-    remote_error *err,
+    remote_error *rerr,
     qemu_monitor_command_args *args,
     qemu_monitor_command_ret *ret);

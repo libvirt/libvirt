@@ -132,7 +132,7 @@ elsif ($opt_p) {
 	print "    struct qemud_client *client,\n";
 	print "    virConnectPtr conn,\n";
 	print "    remote_message_header *hdr,\n";
-	print "    remote_error *err,\n";
+	print "    remote_error *rerr,\n";
 	print "    $calls{$_}->{args} *args,\n";
 	print "    $calls{$_}->{ret} *ret);\n";
     }
