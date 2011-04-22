@@ -33,7 +33,8 @@ sub name_to_ProcName {
     my @elems = split /_/, $name;
     @elems = map ucfirst, @elems;
     @elems = map { $_ =~ s/Nwfilter/NWFilter/; $_ =~ s/Xml/XML/;
-                   $_ =~ s/Uri/URI/; $_ =~ s/Uuid/UUID/; $_ } @elems;
+                   $_ =~ s/Uri/URI/; $_ =~ s/Uuid/UUID/; $_ =~ s/Id/ID/;
+                   $_ =~ s/Mac/MAC/; $_ } @elems;
     join "", @elems
 }
 
@@ -262,8 +263,6 @@ elsif ($opt_b) {
                           "DomainBlockPeek",
                           "DomainBlockStats",
                           "DomainCreateWithFlags",
-                          "DomainCreateXML",
-                          "DomainDefineXML",
                           "DomainEventsDeregister",
                           "DomainEventsRegister",
                           "DomainGetBlkioParameters",
@@ -276,25 +275,14 @@ elsif ($opt_b) {
                           "DomainGetSecurityLabel",
                           "DomainGetVcpus",
                           "DomainInterfaceStats",
-                          "DomainLookupById",
-                          "DomainLookupByName",
-                          "DomainLookupByUUID",
                           "DomainMemoryPeek",
                           "DomainMemoryStats",
-                          "DomainMigrateFinish",
-                          "DomainMigrateFinish2",
                           "DomainMigratePrepare",
                           "DomainMigratePrepare2",
-                          "DomainSnapshotCreateXML",
-                          "DomainSnapshotCurrent",
                           "DomainSnapshotListNames",
-                          "DomainSnapshotLookupByName",
                           "FindStoragePoolSources",
                           "GetMaxVcpus",
                           "GetType",
-                          "InterfaceLookupByMacString",
-                          "InterfaceLookupByName",
-                          "InterfaceDefineXML",
                           "ListDefinedDomains",
                           "ListDefinedInterfaces",
                           "ListDefinedNetworks",
@@ -305,40 +293,17 @@ elsif ($opt_b) {
                           "ListNWFilters",
                           "ListSecrets",
                           "ListStoragePools",
-                          "NetworkLookupByName",
-                          "NetworkLookupByUUID",
-                          "NodeDeviceCreateXML",
-                          "NetworkCreateXML",
                           "NodeDeviceGetParent",
                           "NodeDeviceListCaps",
-                          "NodeDeviceLookupByName",
                           "NodeGetCellsFreeMemory",
-                          "NodeGetFreeMemory",
                           "NodeGetInfo",
                           "NodeGetSecurityModel",
-                          "NetworkDefineXML",
                           "NodeListDevices",
                           "NodeNumOfDevices",
-                          "NWFilterLookupByName",
-                          "NWFilterLookupByUUID",
-                          "SecretDefineXML",
                           "SecretGetValue",
-                          "NWFilterDefineXML",
-                          "SecretLookupByUsage",
-                          "SecretLookupByUUID",
-                          "StoragePoolCreateXML",
-                          "StoragePoolDefineXML",
                           "StoragePoolGetInfo",
                           "StoragePoolListVolumes",
-                          "StoragePoolLookupByName",
-                          "StoragePoolLookupByUUID",
-                          "StoragePoolLookupByVolume",
-                          "StorageVolCreateXML",
-                          "StorageVolCreateXMLFrom",
-                          "StorageVolGetInfo",
-                          "StorageVolLookupByKey",
-                          "StorageVolLookupByName",
-                          "StorageVolLookupByPath");
+                          "StorageVolGetInfo");
     } elsif ($structprefix eq "qemu") {
         @ungeneratable = ("MonitorCommand");
     }
@@ -350,7 +315,6 @@ elsif ($opt_b) {
         # skip things which are REMOTE_MESSAGE
         next if $calls{$_}->{msg};
 
-        # FIXME: skip functions with explicit return value for now
         if (exists($ug{$calls{$_}->{ProcName}})) {
             print "\n/* ${structprefix}Dispatch$calls{$_}->{ProcName} has " .
                   "to be implemented manually */\n";
@@ -391,7 +355,9 @@ elsif ($opt_b) {
 
         if ($calls{$_}->{args} ne "void") {
             # node device is special, as it's identified by name
-            if ($calls{$_}->{args} =~ m/^remote_node_device/) {
+            if ($calls{$_}->{args} =~ m/^remote_node_device_/ and
+                !($calls{$_}->{args} =~ m/^remote_node_device_lookup_by_name_/) and
+                !($calls{$_}->{args} =~ m/^remote_node_device_create_xml_/)) {
                 $has_node_device = 1;
                 push(@vars_list, "virNodeDevicePtr dev = NULL");
                 push(@getters_list,
@@ -407,69 +373,69 @@ elsif ($opt_b) {
                 if ($args_member =~ m/^remote_nonnull_string name;/ and $has_node_device) {
                     # ignore the name arg for node devices
                     next
-                } elsif ($args_member =~ m/^remote_nonnull_domain /) {
-                    push(@vars_list, "virDomainPtr dom = NULL");
+                } elsif ($args_member =~ m/^remote_nonnull_domain (\S+);/) {
+                    push(@vars_list, "virDomainPtr $1 = NULL");
                     push(@getters_list,
-                         "    if (!(dom = get_nonnull_domain(conn, args->dom)))\n" .
+                         "    if (!($1 = get_nonnull_domain(conn, args->$1)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "dom");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    if (dom)\n" .
-                         "        virDomainFree(dom);");
-                } elsif ($args_member =~ m/^remote_nonnull_network /) {
-                    push(@vars_list, "virNetworkPtr net = NULL");
+                         "    if ($1)\n" .
+                         "        virDomainFree($1);");
+                } elsif ($args_member =~ m/^remote_nonnull_network (\S+);/) {
+                    push(@vars_list, "virNetworkPtr $1 = NULL");
                     push(@getters_list,
-                         "    if (!(net = get_nonnull_network(conn, args->net)))\n" .
+                         "    if (!($1 = get_nonnull_network(conn, args->$1)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "net");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    if (net)\n" .
-                         "        virNetworkFree(net);");
-                } elsif ($args_member =~ m/^remote_nonnull_storage_pool /) {
-                    push(@vars_list, "virStoragePoolPtr pool = NULL");
+                         "    if ($1)\n" .
+                         "        virNetworkFree($1);");
+                } elsif ($args_member =~ m/^remote_nonnull_storage_pool (\S+);/) {
+                    push(@vars_list, "virStoragePoolPtr $1 = NULL");
                     push(@getters_list,
-                         "    if (!(pool = get_nonnull_storage_pool(conn, args->pool)))\n" .
+                         "    if (!($1 = get_nonnull_storage_pool(conn, args->$1)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "pool");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    if (pool)\n" .
-                         "        virStoragePoolFree(pool);");
-                } elsif ($args_member =~ m/^remote_nonnull_storage_vol /) {
-                    push(@vars_list, "virStorageVolPtr vol = NULL");
+                         "    if ($1)\n" .
+                         "        virStoragePoolFree($1);");
+                } elsif ($args_member =~ m/^remote_nonnull_storage_vol (\S+);/) {
+                    push(@vars_list, "virStorageVolPtr $1 = NULL");
                     push(@getters_list,
-                         "    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))\n" .
+                         "    if (!($1 = get_nonnull_storage_vol(conn, args->$1)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "vol");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    if (vol)\n" .
-                         "        virStorageVolFree(vol);");
-                } elsif ($args_member =~ m/^remote_nonnull_interface /) {
-                    push(@vars_list, "virInterfacePtr iface = NULL");
+                         "    if ($1)\n" .
+                         "        virStorageVolFree($1);");
+                } elsif ($args_member =~ m/^remote_nonnull_interface (\S+);/) {
+                    push(@vars_list, "virInterfacePtr $1 = NULL");
                     push(@getters_list,
-                         "    if (!(iface = get_nonnull_interface(conn, args->iface)))\n" .
+                         "    if (!($1 = get_nonnull_interface(conn, args->$1)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "iface");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    if (iface)\n" .
-                         "        virInterfaceFree(iface);");
-                } elsif ($args_member =~ m/^remote_nonnull_secret /) {
-                    push(@vars_list, "virSecretPtr secret = NULL");
+                         "    if ($1)\n" .
+                         "        virInterfaceFree($1);");
+                } elsif ($args_member =~ m/^remote_nonnull_secret (\S+);/) {
+                    push(@vars_list, "virSecretPtr $1 = NULL");
                     push(@getters_list,
-                         "    if (!(secret = get_nonnull_secret(conn, args->secret)))\n" .
+                         "    if (!($1 = get_nonnull_secret(conn, args->$1)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "secret");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    if (secret)\n" .
-                         "        virSecretFree(secret);");
-                } elsif ($args_member =~ m/^remote_nonnull_nwfilter /) {
-                    push(@vars_list, "virNWFilterPtr nwfilter = NULL");
+                         "    if ($1)\n" .
+                         "        virSecretFree($1);");
+                } elsif ($args_member =~ m/^remote_nonnull_nwfilter (\S+);/) {
+                    push(@vars_list, "virNWFilterPtr $1 = NULL");
                     push(@getters_list,
-                         "    if (!(nwfilter = get_nonnull_nwfilter(conn, args->nwfilter)))\n" .
+                         "    if (!($1 = get_nonnull_nwfilter(conn, args->$1)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "nwfilter");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    if (nwfilter)\n" .
-                         "        virNWFilterFree(nwfilter);");
+                         "    if ($1)\n" .
+                         "        virNWFilterFree($1);");
                 } elsif ($args_member =~ m/^remote_nonnull_domain_snapshot /) {
                     push(@vars_list, "virDomainPtr dom = NULL");
                     push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
@@ -497,12 +463,16 @@ elsif ($opt_b) {
                     }
 
                     push(@args_list, "args->$1.$1_len");
-                } elsif ($args_member =~ m/.* (\S+);/) {
+                } elsif ($args_member =~ m/(\S+) (\S+);/) {
                     if (! @args_list) {
                         push(@args_list, "conn");
                     }
 
-                    push(@args_list, "args->$1");
+                    if ($1 eq "remote_uuid") {
+                        push(@args_list, "(unsigned char *) args->$2");
+                    } else {
+                        push(@args_list, "args->$2");
+                    }
                 }
             }
         }
@@ -519,6 +489,87 @@ elsif ($opt_b) {
                 } elsif ($ret_member =~ m/remote_nonnull_string (\S+);/) {
                     push(@vars_list, "char *$1");
                     push(@ret_list, "ret->$1 = $1;");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_domain (\S+);/) {
+                    push(@vars_list, "virDomainPtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_domain(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virDomainFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_network (\S+);/) {
+                    push(@vars_list, "virNetworkPtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_network(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virNetworkFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_storage_pool (\S+);/) {
+                    push(@vars_list, "virStoragePoolPtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_storage_pool(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virStoragePoolFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_storage_vol (\S+);/) {
+                    push(@vars_list, "virStorageVolPtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_storage_vol(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virStorageVolFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_interface (\S+);/) {
+                    push(@vars_list, "virInterfacePtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_interface(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virInterfaceFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_node_device (\S+);/) {
+                    push(@vars_list, "virNodeDevicePtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_node_device(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virNodeDeviceFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_secret (\S+);/) {
+                    push(@vars_list, "virSecretPtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_secret(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virSecretFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_nwfilter (\S+);/) {
+                    push(@vars_list, "virNWFilterPtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_nwfilter(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virNWFilterFree($1);");
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/remote_nonnull_domain_snapshot (\S+);/) {
+                    push(@vars_list, "virDomainSnapshotPtr $1 = NULL");
+                    push(@ret_list, "make_nonnull_domain_snapshot(&ret->$1, $1);");
+                    push(@free_list,
+                         "    if ($1)\n" .
+                         "        virDomainSnapshotFree($1);");
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
@@ -540,7 +591,8 @@ elsif ($opt_b) {
                     push(@ret_list, "ret->$1 = $1;");
                     $single_ret_var = $1;
 
-                    if ($calls{$_}->{ProcName} eq "DomainGetMaxMemory") {
+                    if ($calls{$_}->{ProcName} eq "DomainGetMaxMemory" or
+                        $calls{$_}->{ProcName} eq "NodeGetFreeMemory") {
                         $single_ret_by_ref = 0;
                         $single_ret_check = " == 0";
                     } else {
@@ -579,7 +631,10 @@ elsif ($opt_b) {
 
             if (! @args_list) {
                 push(@args_list, "conn");
-                $prefix = "Connect"
+
+                if ($calls{$_}->{ProcName} ne "NodeGetFreeMemory") {
+                    $prefix = "Connect"
+                }
             }
 
             if ($calls{$_}->{ProcName} eq "GetSysinfo" or

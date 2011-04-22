@@ -112,8 +112,8 @@
     .args_filter = (xdrproc_t) xdr_remote_list_defined_domains_args,
     .ret_filter = (xdrproc_t) xdr_remote_list_defined_domains_ret,
 },
-{   /* DomainLookupById => 22 */
-    .fn = (dispatch_fn) remoteDispatchDomainLookupById,
+{   /* DomainLookupByID => 22 */
+    .fn = (dispatch_fn) remoteDispatchDomainLookupByID,
     .args_filter = (xdrproc_t) xdr_remote_domain_lookup_by_id_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_lookup_by_id_ret,
 },
@@ -647,8 +647,8 @@
     .args_filter = (xdrproc_t) xdr_remote_interface_lookup_by_name_args,
     .ret_filter = (xdrproc_t) xdr_remote_interface_lookup_by_name_ret,
 },
-{   /* InterfaceLookupByMacString => 129 */
-    .fn = (dispatch_fn) remoteDispatchInterfaceLookupByMacString,
+{   /* InterfaceLookupByMACString => 129 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceLookupByMACString,
     .args_filter = (xdrproc_t) xdr_remote_interface_lookup_by_mac_string_args,
     .ret_filter = (xdrproc_t) xdr_remote_interface_lookup_by_mac_string_ret,
 },

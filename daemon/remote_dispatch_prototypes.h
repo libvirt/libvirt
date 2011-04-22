@@ -370,7 +370,7 @@ static int remoteDispatchDomainIsUpdated(
     remote_error *rerr,
     remote_domain_is_updated_args *args,
     remote_domain_is_updated_ret *ret);
-static int remoteDispatchDomainLookupById(
+static int remoteDispatchDomainLookupByID(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -834,7 +834,7 @@ static int remoteDispatchInterfaceIsActive(
     remote_error *rerr,
     remote_interface_is_active_args *args,
     remote_interface_is_active_ret *ret);
-static int remoteDispatchInterfaceLookupByMacString(
+static int remoteDispatchInterfaceLookupByMACString(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
