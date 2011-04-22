@@ -4136,10 +4136,48 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 }
 
 static int
-qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev)
 {
+    virDomainDiskDefPtr orig, disk;
+    int pos;
+
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        disk = dev->data.disk;
+        pos = virDomainDiskIndexByName(vmdef, disk->dst);
+        if (pos < 0) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("target %s doesn't exists."), disk->dst);
+            return -1;
+        }
+        orig = vmdef->disks[pos];
+        if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
+            !(orig->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("this disk doesn't support update"));
+            return -1;
+        }
+        /*
+         * Update 'orig'
+         * We allow updating src/type//driverType/cachemode/
+         */
+        VIR_FREE(orig->src);
+        orig->src = disk->src;
+        orig->type = disk->type;
+        orig->cachemode = disk->cachemode;
+        if (disk->driverName) {
+            VIR_FREE(orig->driverName);
+            orig->driverName = disk->driverName;
+            disk->driverName = NULL;
+        }
+        if (disk->driverType) {
+            VIR_FREE(orig->driverType);
+            orig->driverType = disk->driverType;
+            disk->driverType = NULL;
+        }
+        disk->src = NULL;
+        break;
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                          _("persistent update of device is not supported"));
