@@ -241,7 +241,6 @@ elsif ($opt_b) {
         @ungeneratable = ("Close",
                           "DomainEventsDeregisterAny",
                           "DomainEventsRegisterAny",
-                          "DomainMigratePerform",
                           "DomainMigratePrepareTunnel",
                           "DomainOpenConsole",
                           "DomainPinVcpu",
@@ -280,8 +279,6 @@ elsif ($opt_b) {
                           "DomainMigratePrepare",
                           "DomainMigratePrepare2",
                           "DomainSnapshotListNames",
-                          "FindStoragePoolSources",
-                          "GetMaxVcpus",
                           "GetType",
                           "ListDefinedDomains",
                           "ListDefinedInterfaces",
@@ -299,7 +296,6 @@ elsif ($opt_b) {
                           "NodeGetInfo",
                           "NodeGetSecurityModel",
                           "NodeListDevices",
-                          "NodeNumOfDevices",
                           "SecretGetValue",
                           "StoragePoolGetInfo",
                           "StoragePoolListVolumes",
@@ -348,6 +344,7 @@ elsif ($opt_b) {
 
         my $has_node_device = 0;
         my @vars_list = ();
+        my @optionals_list = ();
         my @getters_list = ();
         my @args_list = ();
         my @ret_list = ();
@@ -470,6 +467,10 @@ elsif ($opt_b) {
 
                     if ($1 eq "remote_uuid") {
                         push(@args_list, "(unsigned char *) args->$2");
+                    } elsif ($1 eq "remote_string") {
+                        push(@vars_list, "char *$2");
+                        push(@optionals_list, "$2");
+                        push(@args_list, "$2");
                     } else {
                         push(@args_list, "args->$2");
                     }
@@ -619,6 +620,14 @@ elsif ($opt_b) {
             print "\n";
         }
 
+        foreach my $optional (@optionals_list) {
+            print "    $optional = args->$optional ? *args->$optional : NULL;\n";
+        }
+
+        if (@optionals_list) {
+            print "\n";
+        }
+
         if ($calls{$_}->{ret} eq "void") {
             print "    if (vir$calls{$_}->{ProcName}(";
             print join(', ', @args_list);
@@ -638,8 +647,10 @@ elsif ($opt_b) {
             }
 
             if ($calls{$_}->{ProcName} eq "GetSysinfo" or
+                $calls{$_}->{ProcName} eq "GetMaxVcpus" or
                 $calls{$_}->{ProcName} eq "DomainXMLFromNative" or
-                $calls{$_}->{ProcName} eq "DomainXMLToNative") {
+                $calls{$_}->{ProcName} eq "DomainXMLToNative" or
+                $calls{$_}->{ProcName} eq "FindStoragePoolSources") {
                 $prefix = "Connect"
             } elsif ($calls{$_}->{ProcName} eq "SupportsFeature") {
                 $prefix = "Drv"

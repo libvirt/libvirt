@@ -494,35 +494,6 @@ cleanup:
 }
 
 static int
-remoteDispatchGetMaxVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
-                          struct qemud_client *client ATTRIBUTE_UNUSED,
-                          virConnectPtr conn,
-                          remote_message_header *hdr ATTRIBUTE_UNUSED,
-                          remote_error *rerr,
-                          remote_get_max_vcpus_args *args,
-                          remote_get_max_vcpus_ret *ret)
-{
-    char *type;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    type = args->type ? *args->type : NULL;
-    if ((ret->max_vcpus = virConnectGetMaxVcpus(conn, type)) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    return rv;
-}
-
-static int
 remoteDispatchNodeGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
                           struct qemud_client *client ATTRIBUTE_UNUSED,
                           virConnectPtr conn,
@@ -1356,46 +1327,6 @@ cleanup:
     if (rv < 0)
         remoteDispatchError(rerr);
     VIR_FREE(uri_out);
-    return rv;
-}
-
-static int
-remoteDispatchDomainMigratePerform(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client ATTRIBUTE_UNUSED,
-                                   virConnectPtr conn,
-                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
-                                   remote_error *rerr,
-                                   remote_domain_migrate_perform_args *args,
-                                   void *ret ATTRIBUTE_UNUSED)
-{
-    virDomainPtr dom = NULL;
-    char *dname;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    dname = args->dname == NULL ? NULL : *args->dname;
-
-    if (virDomainMigratePerform(dom,
-                                args->cookie.cookie_val,
-                                args->cookie.cookie_len,
-                                args->uri,
-                                args->flags, dname, args->resource) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (dom)
-        virDomainFree(dom);
     return rv;
 }
 
@@ -3140,37 +3071,6 @@ cleanup:
 }
 
 static int
-remoteDispatchFindStoragePoolSources(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                     struct qemud_client *client ATTRIBUTE_UNUSED,
-                                     virConnectPtr conn,
-                                     remote_message_header *hdr ATTRIBUTE_UNUSED,
-                                     remote_error *rerr,
-                                     remote_find_storage_pool_sources_args *args,
-                                     remote_find_storage_pool_sources_ret *ret)
-{
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(ret->xml =
-          virConnectFindStoragePoolSources(conn,
-                                           args->type,
-                                           args->srcSpec ? *args->srcSpec : NULL,
-                                           args->flags)))
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    return rv;
-}
-
-static int
 remoteDispatchStoragePoolGetInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client ATTRIBUTE_UNUSED,
                                  virConnectPtr conn,
@@ -3306,36 +3206,6 @@ cleanup:
 /***************************************************************
  *     NODE INFO APIS
  **************************************************************/
-
-static int
-remoteDispatchNodeNumOfDevices(struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client ATTRIBUTE_UNUSED,
-                               virConnectPtr conn,
-                               remote_message_header *hdr ATTRIBUTE_UNUSED,
-                               remote_error *rerr,
-                               remote_node_num_of_devices_args *args,
-                               remote_node_num_of_devices_ret *ret)
-{
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if ((ret->num = virNodeNumOfDevices(conn,
-                                        args->cap ? *args->cap : NULL,
-                                        args->flags)) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    return rv;
-}
-
 
 static int
 remoteDispatchNodeListDevices(struct qemud_server *server ATTRIBUTE_UNUSED,
