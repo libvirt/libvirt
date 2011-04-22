@@ -607,7 +607,7 @@ cleanup:
 }
 
 static int
-remoteDispatchGetUri(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchGetURI(struct qemud_server *server ATTRIBUTE_UNUSED,
                      struct qemud_client *client ATTRIBUTE_UNUSED,
                      virConnectPtr conn,
                      remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -1322,7 +1322,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainCreateXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                               struct qemud_client *client ATTRIBUTE_UNUSED,
                               virConnectPtr conn,
                               remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -1354,7 +1354,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainDefineXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                               struct qemud_client *client ATTRIBUTE_UNUSED,
                               virConnectPtr conn,
                               remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -1386,7 +1386,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainDumpXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                             struct qemud_client *client ATTRIBUTE_UNUSED,
                             virConnectPtr conn,
                             remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -1420,7 +1420,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainXmlFromNative(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainXMLFromNative(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client ATTRIBUTE_UNUSED,
                                   virConnectPtr conn,
                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -1451,7 +1451,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainXmlToNative(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainXMLToNative(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 struct qemud_client *client ATTRIBUTE_UNUSED,
                                 virConnectPtr conn,
                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -2237,7 +2237,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainLookupByUUID(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client ATTRIBUTE_UNUSED,
                                  virConnectPtr conn,
                                  remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -2940,7 +2940,7 @@ cleanup:
 }
 
 static int
-remoteDispatchNetworkCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNetworkCreateXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                struct qemud_client *client ATTRIBUTE_UNUSED,
                                virConnectPtr conn,
                                remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -2972,7 +2972,7 @@ cleanup:
 }
 
 static int
-remoteDispatchNetworkDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNetworkDefineXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                struct qemud_client *client ATTRIBUTE_UNUSED,
                                virConnectPtr conn,
                                remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -3004,7 +3004,7 @@ cleanup:
 }
 
 static int
-remoteDispatchNetworkDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNetworkDumpXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                              struct qemud_client *client ATTRIBUTE_UNUSED,
                              virConnectPtr conn,
                              remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -3137,7 +3137,7 @@ cleanup:
 }
 
 static int
-remoteDispatchNetworkLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNetworkLookupByUUID(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client ATTRIBUTE_UNUSED,
                                   virConnectPtr conn,
                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -3466,7 +3466,7 @@ cleanup:
 }
 
 static int
-remoteDispatchInterfaceGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchInterfaceGetXMLDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client ATTRIBUTE_UNUSED,
                                   virConnectPtr conn,
                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -3500,7 +3500,7 @@ cleanup:
 }
 
 static int
-remoteDispatchInterfaceDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchInterfaceDefineXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client ATTRIBUTE_UNUSED,
                                  virConnectPtr conn,
                                  remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -4458,7 +4458,7 @@ cleanup:
 }
 
 static int
-remoteDispatchStoragePoolCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchStoragePoolCreateXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    struct qemud_client *client ATTRIBUTE_UNUSED,
                                    virConnectPtr conn,
                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -4490,7 +4490,7 @@ cleanup:
 }
 
 static int
-remoteDispatchStoragePoolDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchStoragePoolDefineXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    struct qemud_client *client ATTRIBUTE_UNUSED,
                                    virConnectPtr conn,
                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -4561,7 +4561,7 @@ cleanup:
 }
 
 static int
-remoteDispatchStoragePoolDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchStoragePoolDumpXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client ATTRIBUTE_UNUSED,
                                  virConnectPtr conn,
                                  remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -4661,7 +4661,7 @@ cleanup:
 }
 
 static int
-remoteDispatchStoragePoolLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchStoragePoolLookupByUUID(struct qemud_server *server ATTRIBUTE_UNUSED,
                                       struct qemud_client *client ATTRIBUTE_UNUSED,
                                       virConnectPtr conn,
                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -4877,7 +4877,7 @@ cleanup:
 
 
 static int
-remoteDispatchStorageVolCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchStorageVolCreateXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client ATTRIBUTE_UNUSED,
                                   virConnectPtr conn,
                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -4914,7 +4914,7 @@ cleanup:
 }
 
 static int
-remoteDispatchStorageVolCreateXmlFrom(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchStorageVolCreateXMLFrom(struct qemud_server *server ATTRIBUTE_UNUSED,
                                       struct qemud_client *client ATTRIBUTE_UNUSED,
                                       virConnectPtr conn,
                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -4996,7 +4996,7 @@ cleanup:
 }
 
 static int
-remoteDispatchStorageVolDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchStorageVolDumpXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 struct qemud_client *client ATTRIBUTE_UNUSED,
                                 virConnectPtr conn,
                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -5284,7 +5284,7 @@ cleanup:
 
 
 static int
-remoteDispatchNodeDeviceDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNodeDeviceDumpXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 struct qemud_client *client ATTRIBUTE_UNUSED,
                                 virConnectPtr conn,
                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -5455,7 +5455,7 @@ cleanup:
 }
 
 static int
-remoteDispatchNodeDeviceCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNodeDeviceCreateXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client ATTRIBUTE_UNUSED,
                                   virConnectPtr conn,
                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -5789,7 +5789,7 @@ cleanup:
 }
 
 static int
-remoteDispatchSecretDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchSecretDefineXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                               struct qemud_client *client ATTRIBUTE_UNUSED,
                               virConnectPtr conn,
                               remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -5858,7 +5858,7 @@ cleanup:
 }
 
 static int
-remoteDispatchSecretGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchSecretGetXMLDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
                                struct qemud_client *client ATTRIBUTE_UNUSED,
                                virConnectPtr conn,
                                remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -5890,7 +5890,7 @@ cleanup:
 }
 
 static int
-remoteDispatchSecretLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchSecretLookupByUUID(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client ATTRIBUTE_UNUSED,
                                  virConnectPtr conn,
                                  remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -6350,7 +6350,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainSnapshotCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainSnapshotCreateXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                       struct qemud_client *client ATTRIBUTE_UNUSED,
                                       virConnectPtr conn,
                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -6388,7 +6388,7 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainSnapshotDumpXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainSnapshotDumpXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                     struct qemud_client *client ATTRIBUTE_UNUSED,
                                     virConnectPtr conn,
                                     remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -6747,7 +6747,7 @@ cleanup:
 }
 
 static int
-remoteDispatchNWFilterLookupByUuid(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNWFilterLookupByUUID(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    struct qemud_client *client ATTRIBUTE_UNUSED,
                                    virConnectPtr conn,
                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -6780,7 +6780,7 @@ cleanup:
 
 
 static int
-remoteDispatchNWFilterDefineXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNWFilterDefineXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 struct qemud_client *client ATTRIBUTE_UNUSED,
                                 virConnectPtr conn,
                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -6812,7 +6812,7 @@ cleanup:
 }
 
 static int
-remoteDispatchListNwfilters(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchListNWFilters(struct qemud_server *server ATTRIBUTE_UNUSED,
                             struct qemud_client *client ATTRIBUTE_UNUSED,
                             virConnectPtr conn,
                             remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -6858,7 +6858,7 @@ cleanup:
 
 
 static int
-remoteDispatchNWFilterGetXmlDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNWFilterGetXMLDesc(struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client ATTRIBUTE_UNUSED,
                                  virConnectPtr conn,
                                  remote_message_header *hdr ATTRIBUTE_UNUSED,
@@ -6893,7 +6893,7 @@ cleanup:
 
 
 static int
-remoteDispatchNumOfNwfilters(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchNumOfNWFilters(struct qemud_server *server ATTRIBUTE_UNUSED,
                              struct qemud_client *client ATTRIBUTE_UNUSED,
                              virConnectPtr conn,
                              remote_message_header *hdr ATTRIBUTE_UNUSED,

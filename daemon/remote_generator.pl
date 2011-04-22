@@ -32,7 +32,8 @@ sub name_to_ProcName {
     my $name = shift;
     my @elems = split /_/, $name;
     @elems = map ucfirst, @elems;
-    @elems = map { $_ eq "Nwfilter" ? "NWFilter" : $_ } @elems;
+    @elems = map { $_ =~ s/Nwfilter/NWFilter/; $_ =~ s/Xml/XML/;
+                   $_ =~ s/Uri/URI/; $_ =~ s/Uuid/UUID/; $_ } @elems;
     join "", @elems
 }
 

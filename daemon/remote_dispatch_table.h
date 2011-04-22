@@ -52,13 +52,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_create_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* DomainCreateXml => 10 */
-    .fn = (dispatch_fn) remoteDispatchDomainCreateXml,
+{   /* DomainCreateXML => 10 */
+    .fn = (dispatch_fn) remoteDispatchDomainCreateXML,
     .args_filter = (xdrproc_t) xdr_remote_domain_create_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_create_xml_ret,
 },
-{   /* DomainDefineXml => 11 */
-    .fn = (dispatch_fn) remoteDispatchDomainDefineXml,
+{   /* DomainDefineXML => 11 */
+    .fn = (dispatch_fn) remoteDispatchDomainDefineXML,
     .args_filter = (xdrproc_t) xdr_remote_domain_define_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_define_xml_ret,
 },
@@ -72,8 +72,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_detach_device_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* DomainDumpXml => 14 */
-    .fn = (dispatch_fn) remoteDispatchDomainDumpXml,
+{   /* DomainDumpXML => 14 */
+    .fn = (dispatch_fn) remoteDispatchDomainDumpXML,
     .args_filter = (xdrproc_t) xdr_remote_domain_dump_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_dump_xml_ret,
 },
@@ -122,8 +122,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_lookup_by_name_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_lookup_by_name_ret,
 },
-{   /* DomainLookupByUuid => 24 */
-    .fn = (dispatch_fn) remoteDispatchDomainLookupByUuid,
+{   /* DomainLookupByUUID => 24 */
+    .fn = (dispatch_fn) remoteDispatchDomainLookupByUUID,
     .args_filter = (xdrproc_t) xdr_remote_domain_lookup_by_uuid_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_lookup_by_uuid_ret,
 },
@@ -202,13 +202,13 @@
     .args_filter = (xdrproc_t) xdr_remote_network_create_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* NetworkCreateXml => 40 */
-    .fn = (dispatch_fn) remoteDispatchNetworkCreateXml,
+{   /* NetworkCreateXML => 40 */
+    .fn = (dispatch_fn) remoteDispatchNetworkCreateXML,
     .args_filter = (xdrproc_t) xdr_remote_network_create_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_network_create_xml_ret,
 },
-{   /* NetworkDefineXml => 41 */
-    .fn = (dispatch_fn) remoteDispatchNetworkDefineXml,
+{   /* NetworkDefineXML => 41 */
+    .fn = (dispatch_fn) remoteDispatchNetworkDefineXML,
     .args_filter = (xdrproc_t) xdr_remote_network_define_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_network_define_xml_ret,
 },
@@ -217,8 +217,8 @@
     .args_filter = (xdrproc_t) xdr_remote_network_destroy_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* NetworkDumpXml => 43 */
-    .fn = (dispatch_fn) remoteDispatchNetworkDumpXml,
+{   /* NetworkDumpXML => 43 */
+    .fn = (dispatch_fn) remoteDispatchNetworkDumpXML,
     .args_filter = (xdrproc_t) xdr_remote_network_dump_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_network_dump_xml_ret,
 },
@@ -237,8 +237,8 @@
     .args_filter = (xdrproc_t) xdr_remote_network_lookup_by_name_args,
     .ret_filter = (xdrproc_t) xdr_remote_network_lookup_by_name_ret,
 },
-{   /* NetworkLookupByUuid => 47 */
-    .fn = (dispatch_fn) remoteDispatchNetworkLookupByUuid,
+{   /* NetworkLookupByUUID => 47 */
+    .fn = (dispatch_fn) remoteDispatchNetworkLookupByUUID,
     .args_filter = (xdrproc_t) xdr_remote_network_lookup_by_uuid_args,
     .ret_filter = (xdrproc_t) xdr_remote_network_lookup_by_uuid_ret,
 },
@@ -382,13 +382,13 @@
     .args_filter = (xdrproc_t) xdr_remote_find_storage_pool_sources_args,
     .ret_filter = (xdrproc_t) xdr_remote_find_storage_pool_sources_ret,
 },
-{   /* StoragePoolCreateXml => 76 */
-    .fn = (dispatch_fn) remoteDispatchStoragePoolCreateXml,
+{   /* StoragePoolCreateXML => 76 */
+    .fn = (dispatch_fn) remoteDispatchStoragePoolCreateXML,
     .args_filter = (xdrproc_t) xdr_remote_storage_pool_create_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_pool_create_xml_ret,
 },
-{   /* StoragePoolDefineXml => 77 */
-    .fn = (dispatch_fn) remoteDispatchStoragePoolDefineXml,
+{   /* StoragePoolDefineXML => 77 */
+    .fn = (dispatch_fn) remoteDispatchStoragePoolDefineXML,
     .args_filter = (xdrproc_t) xdr_remote_storage_pool_define_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_pool_define_xml_ret,
 },
@@ -427,8 +427,8 @@
     .args_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_name_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_name_ret,
 },
-{   /* StoragePoolLookupByUuid => 85 */
-    .fn = (dispatch_fn) remoteDispatchStoragePoolLookupByUuid,
+{   /* StoragePoolLookupByUUID => 85 */
+    .fn = (dispatch_fn) remoteDispatchStoragePoolLookupByUUID,
     .args_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_uuid_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_uuid_ret,
 },
@@ -442,8 +442,8 @@
     .args_filter = (xdrproc_t) xdr_remote_storage_pool_get_info_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_pool_get_info_ret,
 },
-{   /* StoragePoolDumpXml => 88 */
-    .fn = (dispatch_fn) remoteDispatchStoragePoolDumpXml,
+{   /* StoragePoolDumpXML => 88 */
+    .fn = (dispatch_fn) remoteDispatchStoragePoolDumpXML,
     .args_filter = (xdrproc_t) xdr_remote_storage_pool_dump_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_pool_dump_xml_ret,
 },
@@ -467,8 +467,8 @@
     .args_filter = (xdrproc_t) xdr_remote_storage_pool_list_volumes_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_pool_list_volumes_ret,
 },
-{   /* StorageVolCreateXml => 93 */
-    .fn = (dispatch_fn) remoteDispatchStorageVolCreateXml,
+{   /* StorageVolCreateXML => 93 */
+    .fn = (dispatch_fn) remoteDispatchStorageVolCreateXML,
     .args_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_ret,
 },
@@ -497,8 +497,8 @@
     .args_filter = (xdrproc_t) xdr_remote_storage_vol_get_info_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_vol_get_info_ret,
 },
-{   /* StorageVolDumpXml => 99 */
-    .fn = (dispatch_fn) remoteDispatchStorageVolDumpXml,
+{   /* StorageVolDumpXML => 99 */
+    .fn = (dispatch_fn) remoteDispatchStorageVolDumpXML,
     .args_filter = (xdrproc_t) xdr_remote_storage_vol_dump_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_vol_dump_xml_ret,
 },
@@ -552,8 +552,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_migrate_finish2_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_migrate_finish2_ret,
 },
-{   /* GetUri => 110 */
-    .fn = (dispatch_fn) remoteDispatchGetUri,
+{   /* GetURI => 110 */
+    .fn = (dispatch_fn) remoteDispatchGetURI,
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_get_uri_ret,
 },
@@ -572,8 +572,8 @@
     .args_filter = (xdrproc_t) xdr_remote_node_device_lookup_by_name_args,
     .ret_filter = (xdrproc_t) xdr_remote_node_device_lookup_by_name_ret,
 },
-{   /* NodeDeviceDumpXml => 114 */
-    .fn = (dispatch_fn) remoteDispatchNodeDeviceDumpXml,
+{   /* NodeDeviceDumpXML => 114 */
+    .fn = (dispatch_fn) remoteDispatchNodeDeviceDumpXML,
     .args_filter = (xdrproc_t) xdr_remote_node_device_dump_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_node_device_dump_xml_ret,
 },
@@ -617,8 +617,8 @@
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_node_get_security_model_ret,
 },
-{   /* NodeDeviceCreateXml => 123 */
-    .fn = (dispatch_fn) remoteDispatchNodeDeviceCreateXml,
+{   /* NodeDeviceCreateXML => 123 */
+    .fn = (dispatch_fn) remoteDispatchNodeDeviceCreateXML,
     .args_filter = (xdrproc_t) xdr_remote_node_device_create_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_node_device_create_xml_ret,
 },
@@ -627,8 +627,8 @@
     .args_filter = (xdrproc_t) xdr_remote_node_device_destroy_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* StorageVolCreateXmlFrom => 125 */
-    .fn = (dispatch_fn) remoteDispatchStorageVolCreateXmlFrom,
+{   /* StorageVolCreateXMLFrom => 125 */
+    .fn = (dispatch_fn) remoteDispatchStorageVolCreateXMLFrom,
     .args_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_from_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_from_ret,
 },
@@ -652,13 +652,13 @@
     .args_filter = (xdrproc_t) xdr_remote_interface_lookup_by_mac_string_args,
     .ret_filter = (xdrproc_t) xdr_remote_interface_lookup_by_mac_string_ret,
 },
-{   /* InterfaceGetXmlDesc => 130 */
-    .fn = (dispatch_fn) remoteDispatchInterfaceGetXmlDesc,
+{   /* InterfaceGetXMLDesc => 130 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceGetXMLDesc,
     .args_filter = (xdrproc_t) xdr_remote_interface_get_xml_desc_args,
     .ret_filter = (xdrproc_t) xdr_remote_interface_get_xml_desc_ret,
 },
-{   /* InterfaceDefineXml => 131 */
-    .fn = (dispatch_fn) remoteDispatchInterfaceDefineXml,
+{   /* InterfaceDefineXML => 131 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceDefineXML,
     .args_filter = (xdrproc_t) xdr_remote_interface_define_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_interface_define_xml_ret,
 },
@@ -677,13 +677,13 @@
     .args_filter = (xdrproc_t) xdr_remote_interface_destroy_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* DomainXmlFromNative => 135 */
-    .fn = (dispatch_fn) remoteDispatchDomainXmlFromNative,
+{   /* DomainXMLFromNative => 135 */
+    .fn = (dispatch_fn) remoteDispatchDomainXMLFromNative,
     .args_filter = (xdrproc_t) xdr_remote_domain_xml_from_native_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_xml_from_native_ret,
 },
-{   /* DomainXmlToNative => 136 */
-    .fn = (dispatch_fn) remoteDispatchDomainXmlToNative,
+{   /* DomainXMLToNative => 136 */
+    .fn = (dispatch_fn) remoteDispatchDomainXMLToNative,
     .args_filter = (xdrproc_t) xdr_remote_domain_xml_to_native_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_xml_to_native_ret,
 },
@@ -707,18 +707,18 @@
     .args_filter = (xdrproc_t) xdr_remote_list_secrets_args,
     .ret_filter = (xdrproc_t) xdr_remote_list_secrets_ret,
 },
-{   /* SecretLookupByUuid => 141 */
-    .fn = (dispatch_fn) remoteDispatchSecretLookupByUuid,
+{   /* SecretLookupByUUID => 141 */
+    .fn = (dispatch_fn) remoteDispatchSecretLookupByUUID,
     .args_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_args,
     .ret_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_ret,
 },
-{   /* SecretDefineXml => 142 */
-    .fn = (dispatch_fn) remoteDispatchSecretDefineXml,
+{   /* SecretDefineXML => 142 */
+    .fn = (dispatch_fn) remoteDispatchSecretDefineXML,
     .args_filter = (xdrproc_t) xdr_remote_secret_define_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_secret_define_xml_ret,
 },
-{   /* SecretGetXmlDesc => 143 */
-    .fn = (dispatch_fn) remoteDispatchSecretGetXmlDesc,
+{   /* SecretGetXMLDesc => 143 */
+    .fn = (dispatch_fn) remoteDispatchSecretGetXMLDesc,
     .args_filter = (xdrproc_t) xdr_remote_secret_get_xml_desc_args,
     .ret_filter = (xdrproc_t) xdr_remote_secret_get_xml_desc_ret,
 },
@@ -882,28 +882,28 @@
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_name_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_name_ret,
 },
-{   /* NWFilterLookupByUuid => 176 */
-    .fn = (dispatch_fn) remoteDispatchNWFilterLookupByUuid,
+{   /* NWFilterLookupByUUID => 176 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterLookupByUUID,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_uuid_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_lookup_by_uuid_ret,
 },
-{   /* NWFilterGetXmlDesc => 177 */
-    .fn = (dispatch_fn) remoteDispatchNWFilterGetXmlDesc,
+{   /* NWFilterGetXMLDesc => 177 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterGetXMLDesc,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_get_xml_desc_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_get_xml_desc_ret,
 },
-{   /* NumOfNwfilters => 178 */
-    .fn = (dispatch_fn) remoteDispatchNumOfNwfilters,
+{   /* NumOfNWFilters => 178 */
+    .fn = (dispatch_fn) remoteDispatchNumOfNWFilters,
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_num_of_nwfilters_ret,
 },
-{   /* ListNwfilters => 179 */
-    .fn = (dispatch_fn) remoteDispatchListNwfilters,
+{   /* ListNWFilters => 179 */
+    .fn = (dispatch_fn) remoteDispatchListNWFilters,
     .args_filter = (xdrproc_t) xdr_remote_list_nwfilters_args,
     .ret_filter = (xdrproc_t) xdr_remote_list_nwfilters_ret,
 },
-{   /* NWFilterDefineXml => 180 */
-    .fn = (dispatch_fn) remoteDispatchNWFilterDefineXml,
+{   /* NWFilterDefineXML => 180 */
+    .fn = (dispatch_fn) remoteDispatchNWFilterDefineXML,
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_define_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_nwfilter_define_xml_ret,
 },
@@ -927,13 +927,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_managed_save_remove_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* DomainSnapshotCreateXml => 185 */
-    .fn = (dispatch_fn) remoteDispatchDomainSnapshotCreateXml,
+{   /* DomainSnapshotCreateXML => 185 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotCreateXML,
     .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_create_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_create_xml_ret,
 },
-{   /* DomainSnapshotDumpXml => 186 */
-    .fn = (dispatch_fn) remoteDispatchDomainSnapshotDumpXml,
+{   /* DomainSnapshotDumpXML => 186 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotDumpXML,
     .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_dump_xml_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_dump_xml_ret,
 },

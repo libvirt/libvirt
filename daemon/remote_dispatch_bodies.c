@@ -195,9 +195,9 @@ cleanup:
 
 /* remoteDispatchDomainCreateWithFlags has to be implemented manually */
 
-/* remoteDispatchDomainCreateXml has to be implemented manually */
+/* remoteDispatchDomainCreateXML has to be implemented manually */
 
-/* remoteDispatchDomainDefineXml has to be implemented manually */
+/* remoteDispatchDomainDefineXML has to be implemented manually */
 
 static int
 remoteDispatchDomainDestroy(
@@ -301,7 +301,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainDumpXml has to be implemented manually */
+/* remoteDispatchDomainDumpXML has to be implemented manually */
 
 /* remoteDispatchDomainEventsDeregister has to be implemented manually */
 
@@ -355,7 +355,7 @@ cleanup:
 
 /* remoteDispatchDomainLookupByName has to be implemented manually */
 
-/* remoteDispatchDomainLookupByUuid has to be implemented manually */
+/* remoteDispatchDomainLookupByUUID has to be implemented manually */
 
 static int
 remoteDispatchDomainManagedSave(
@@ -929,7 +929,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainSnapshotCreateXml has to be implemented manually */
+/* remoteDispatchDomainSnapshotCreateXML has to be implemented manually */
 
 /* remoteDispatchDomainSnapshotCurrent has to be implemented manually */
 
@@ -973,7 +973,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainSnapshotDumpXml has to be implemented manually */
+/* remoteDispatchDomainSnapshotDumpXML has to be implemented manually */
 
 /* remoteDispatchDomainSnapshotListNames has to be implemented manually */
 
@@ -1083,9 +1083,9 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchDomainXmlFromNative has to be implemented manually */
+/* remoteDispatchDomainXMLFromNative has to be implemented manually */
 
-/* remoteDispatchDomainXmlToNative has to be implemented manually */
+/* remoteDispatchDomainXMLToNative has to be implemented manually */
 
 /* remoteDispatchFindStoragePoolSources has to be implemented manually */
 
@@ -1101,7 +1101,7 @@ cleanup:
 
 /* remoteDispatchGetType has to be implemented manually */
 
-/* remoteDispatchGetUri has to be implemented manually */
+/* remoteDispatchGetURI has to be implemented manually */
 
 /* remoteDispatchGetVersion has to be implemented manually */
 
@@ -1139,7 +1139,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchInterfaceDefineXml has to be implemented manually */
+/* remoteDispatchInterfaceDefineXML has to be implemented manually */
 
 static int
 remoteDispatchInterfaceDestroy(
@@ -1175,7 +1175,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchInterfaceGetXmlDesc has to be implemented manually */
+/* remoteDispatchInterfaceGetXMLDesc has to be implemented manually */
 
 /* remoteDispatchInterfaceIsActive has to be implemented manually */
 
@@ -1233,7 +1233,7 @@ cleanup:
 
 /* remoteDispatchListNetworks has to be implemented manually */
 
-/* remoteDispatchListNwfilters has to be implemented manually */
+/* remoteDispatchListNWFilters has to be implemented manually */
 
 /* remoteDispatchListSecrets has to be implemented manually */
 
@@ -1273,9 +1273,9 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchNetworkCreateXml has to be implemented manually */
+/* remoteDispatchNetworkCreateXML has to be implemented manually */
 
-/* remoteDispatchNetworkDefineXml has to be implemented manually */
+/* remoteDispatchNetworkDefineXML has to be implemented manually */
 
 static int
 remoteDispatchNetworkDestroy(
@@ -1311,7 +1311,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchNetworkDumpXml has to be implemented manually */
+/* remoteDispatchNetworkDumpXML has to be implemented manually */
 
 /* remoteDispatchNetworkGetAutostart has to be implemented manually */
 
@@ -1323,7 +1323,7 @@ cleanup:
 
 /* remoteDispatchNetworkLookupByName has to be implemented manually */
 
-/* remoteDispatchNetworkLookupByUuid has to be implemented manually */
+/* remoteDispatchNetworkLookupByUUID has to be implemented manually */
 
 static int
 remoteDispatchNetworkSetAutostart(
@@ -1393,7 +1393,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchNodeDeviceCreateXml has to be implemented manually */
+/* remoteDispatchNodeDeviceCreateXML has to be implemented manually */
 
 static int
 remoteDispatchNodeDeviceDestroy(
@@ -1463,7 +1463,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchNodeDeviceDumpXml has to be implemented manually */
+/* remoteDispatchNodeDeviceDumpXML has to be implemented manually */
 
 /* remoteDispatchNodeDeviceGetParent has to be implemented manually */
 
@@ -1567,19 +1567,19 @@ cleanup:
 
 /* remoteDispatchNumOfNetworks has to be implemented manually */
 
-/* remoteDispatchNumOfNwfilters has to be implemented manually */
+/* remoteDispatchNumOfNWFilters has to be implemented manually */
 
 /* remoteDispatchNumOfSecrets has to be implemented manually */
 
 /* remoteDispatchNumOfStoragePools has to be implemented manually */
 
-/* remoteDispatchNWFilterDefineXml has to be implemented manually */
+/* remoteDispatchNWFilterDefineXML has to be implemented manually */
 
-/* remoteDispatchNWFilterGetXmlDesc has to be implemented manually */
+/* remoteDispatchNWFilterGetXMLDesc has to be implemented manually */
 
 /* remoteDispatchNWFilterLookupByName has to be implemented manually */
 
-/* remoteDispatchNWFilterLookupByUuid has to be implemented manually */
+/* remoteDispatchNWFilterLookupByUUID has to be implemented manually */
 
 static int
 remoteDispatchNWFilterUndefine(
@@ -1617,15 +1617,15 @@ cleanup:
 
 /* remoteDispatchOpen has to be implemented manually */
 
-/* remoteDispatchSecretDefineXml has to be implemented manually */
+/* remoteDispatchSecretDefineXML has to be implemented manually */
 
 /* remoteDispatchSecretGetValue has to be implemented manually */
 
-/* remoteDispatchSecretGetXmlDesc has to be implemented manually */
+/* remoteDispatchSecretGetXMLDesc has to be implemented manually */
 
 /* remoteDispatchSecretLookupByUsage has to be implemented manually */
 
-/* remoteDispatchSecretLookupByUuid has to be implemented manually */
+/* remoteDispatchSecretLookupByUUID has to be implemented manually */
 
 static int
 remoteDispatchSecretSetValue(
@@ -1763,9 +1763,9 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchStoragePoolCreateXml has to be implemented manually */
+/* remoteDispatchStoragePoolCreateXML has to be implemented manually */
 
-/* remoteDispatchStoragePoolDefineXml has to be implemented manually */
+/* remoteDispatchStoragePoolDefineXML has to be implemented manually */
 
 static int
 remoteDispatchStoragePoolDelete(
@@ -1835,7 +1835,7 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchStoragePoolDumpXml has to be implemented manually */
+/* remoteDispatchStoragePoolDumpXML has to be implemented manually */
 
 /* remoteDispatchStoragePoolGetAutostart has to be implemented manually */
 
@@ -1849,7 +1849,7 @@ cleanup:
 
 /* remoteDispatchStoragePoolLookupByName has to be implemented manually */
 
-/* remoteDispatchStoragePoolLookupByUuid has to be implemented manually */
+/* remoteDispatchStoragePoolLookupByUUID has to be implemented manually */
 
 /* remoteDispatchStoragePoolLookupByVolume has to be implemented manually */
 
@@ -1957,9 +1957,9 @@ cleanup:
     return rv;
 }
 
-/* remoteDispatchStorageVolCreateXml has to be implemented manually */
+/* remoteDispatchStorageVolCreateXML has to be implemented manually */
 
-/* remoteDispatchStorageVolCreateXmlFrom has to be implemented manually */
+/* remoteDispatchStorageVolCreateXMLFrom has to be implemented manually */
 
 static int
 remoteDispatchStorageVolDelete(
@@ -1997,7 +1997,7 @@ cleanup:
 
 /* remoteDispatchStorageVolDownload has to be implemented manually */
 
-/* remoteDispatchStorageVolDumpXml has to be implemented manually */
+/* remoteDispatchStorageVolDumpXML has to be implemented manually */
 
 /* remoteDispatchStorageVolGetInfo has to be implemented manually */
 

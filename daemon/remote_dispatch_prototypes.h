@@ -130,7 +130,7 @@ static int remoteDispatchDomainCreateWithFlags(
     remote_error *rerr,
     remote_domain_create_with_flags_args *args,
     remote_domain_create_with_flags_ret *ret);
-static int remoteDispatchDomainCreateXml(
+static int remoteDispatchDomainCreateXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -138,7 +138,7 @@ static int remoteDispatchDomainCreateXml(
     remote_error *rerr,
     remote_domain_create_xml_args *args,
     remote_domain_create_xml_ret *ret);
-static int remoteDispatchDomainDefineXml(
+static int remoteDispatchDomainDefineXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -170,7 +170,7 @@ static int remoteDispatchDomainDetachDeviceFlags(
     remote_error *rerr,
     remote_domain_detach_device_flags_args *args,
     void *ret);
-static int remoteDispatchDomainDumpXml(
+static int remoteDispatchDomainDumpXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -386,7 +386,7 @@ static int remoteDispatchDomainLookupByName(
     remote_error *rerr,
     remote_domain_lookup_by_name_args *args,
     remote_domain_lookup_by_name_ret *ret);
-static int remoteDispatchDomainLookupByUuid(
+static int remoteDispatchDomainLookupByUUID(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -626,7 +626,7 @@ static int remoteDispatchDomainShutdown(
     remote_error *rerr,
     remote_domain_shutdown_args *args,
     void *ret);
-static int remoteDispatchDomainSnapshotCreateXml(
+static int remoteDispatchDomainSnapshotCreateXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -650,7 +650,7 @@ static int remoteDispatchDomainSnapshotDelete(
     remote_error *rerr,
     remote_domain_snapshot_delete_args *args,
     void *ret);
-static int remoteDispatchDomainSnapshotDumpXml(
+static int remoteDispatchDomainSnapshotDumpXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -706,7 +706,7 @@ static int remoteDispatchDomainUpdateDeviceFlags(
     remote_error *rerr,
     remote_domain_update_device_flags_args *args,
     void *ret);
-static int remoteDispatchDomainXmlFromNative(
+static int remoteDispatchDomainXMLFromNative(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -714,7 +714,7 @@ static int remoteDispatchDomainXmlFromNative(
     remote_error *rerr,
     remote_domain_xml_from_native_args *args,
     remote_domain_xml_from_native_ret *ret);
-static int remoteDispatchDomainXmlToNative(
+static int remoteDispatchDomainXMLToNative(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -778,7 +778,7 @@ static int remoteDispatchGetType(
     remote_error *rerr,
     void *args,
     remote_get_type_ret *ret);
-static int remoteDispatchGetUri(
+static int remoteDispatchGetURI(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -802,7 +802,7 @@ static int remoteDispatchInterfaceCreate(
     remote_error *rerr,
     remote_interface_create_args *args,
     void *ret);
-static int remoteDispatchInterfaceDefineXml(
+static int remoteDispatchInterfaceDefineXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -818,7 +818,7 @@ static int remoteDispatchInterfaceDestroy(
     remote_error *rerr,
     remote_interface_destroy_args *args,
     void *ret);
-static int remoteDispatchInterfaceGetXmlDesc(
+static int remoteDispatchInterfaceGetXMLDesc(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -922,7 +922,7 @@ static int remoteDispatchListNetworks(
     remote_error *rerr,
     remote_list_networks_args *args,
     remote_list_networks_ret *ret);
-static int remoteDispatchListNwfilters(
+static int remoteDispatchListNWFilters(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -954,7 +954,7 @@ static int remoteDispatchNetworkCreate(
     remote_error *rerr,
     remote_network_create_args *args,
     void *ret);
-static int remoteDispatchNetworkCreateXml(
+static int remoteDispatchNetworkCreateXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -962,7 +962,7 @@ static int remoteDispatchNetworkCreateXml(
     remote_error *rerr,
     remote_network_create_xml_args *args,
     remote_network_create_xml_ret *ret);
-static int remoteDispatchNetworkDefineXml(
+static int remoteDispatchNetworkDefineXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -978,7 +978,7 @@ static int remoteDispatchNetworkDestroy(
     remote_error *rerr,
     remote_network_destroy_args *args,
     void *ret);
-static int remoteDispatchNetworkDumpXml(
+static int remoteDispatchNetworkDumpXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1026,7 +1026,7 @@ static int remoteDispatchNetworkLookupByName(
     remote_error *rerr,
     remote_network_lookup_by_name_args *args,
     remote_network_lookup_by_name_ret *ret);
-static int remoteDispatchNetworkLookupByUuid(
+static int remoteDispatchNetworkLookupByUUID(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1050,7 +1050,7 @@ static int remoteDispatchNetworkUndefine(
     remote_error *rerr,
     remote_network_undefine_args *args,
     void *ret);
-static int remoteDispatchNodeDeviceCreateXml(
+static int remoteDispatchNodeDeviceCreateXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1074,7 +1074,7 @@ static int remoteDispatchNodeDeviceDettach(
     remote_error *rerr,
     remote_node_device_dettach_args *args,
     void *ret);
-static int remoteDispatchNodeDeviceDumpXml(
+static int remoteDispatchNodeDeviceDumpXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1234,7 +1234,7 @@ static int remoteDispatchNumOfNetworks(
     remote_error *rerr,
     void *args,
     remote_num_of_networks_ret *ret);
-static int remoteDispatchNumOfNwfilters(
+static int remoteDispatchNumOfNWFilters(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1258,7 +1258,7 @@ static int remoteDispatchNumOfStoragePools(
     remote_error *rerr,
     void *args,
     remote_num_of_storage_pools_ret *ret);
-static int remoteDispatchNWFilterDefineXml(
+static int remoteDispatchNWFilterDefineXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1266,7 +1266,7 @@ static int remoteDispatchNWFilterDefineXml(
     remote_error *rerr,
     remote_nwfilter_define_xml_args *args,
     remote_nwfilter_define_xml_ret *ret);
-static int remoteDispatchNWFilterGetXmlDesc(
+static int remoteDispatchNWFilterGetXMLDesc(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1282,7 +1282,7 @@ static int remoteDispatchNWFilterLookupByName(
     remote_error *rerr,
     remote_nwfilter_lookup_by_name_args *args,
     remote_nwfilter_lookup_by_name_ret *ret);
-static int remoteDispatchNWFilterLookupByUuid(
+static int remoteDispatchNWFilterLookupByUUID(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1306,7 +1306,7 @@ static int remoteDispatchOpen(
     remote_error *rerr,
     remote_open_args *args,
     void *ret);
-static int remoteDispatchSecretDefineXml(
+static int remoteDispatchSecretDefineXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1322,7 +1322,7 @@ static int remoteDispatchSecretGetValue(
     remote_error *rerr,
     remote_secret_get_value_args *args,
     remote_secret_get_value_ret *ret);
-static int remoteDispatchSecretGetXmlDesc(
+static int remoteDispatchSecretGetXMLDesc(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1338,7 +1338,7 @@ static int remoteDispatchSecretLookupByUsage(
     remote_error *rerr,
     remote_secret_lookup_by_usage_args *args,
     remote_secret_lookup_by_usage_ret *ret);
-static int remoteDispatchSecretLookupByUuid(
+static int remoteDispatchSecretLookupByUUID(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1378,7 +1378,7 @@ static int remoteDispatchStoragePoolCreate(
     remote_error *rerr,
     remote_storage_pool_create_args *args,
     void *ret);
-static int remoteDispatchStoragePoolCreateXml(
+static int remoteDispatchStoragePoolCreateXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1386,7 +1386,7 @@ static int remoteDispatchStoragePoolCreateXml(
     remote_error *rerr,
     remote_storage_pool_create_xml_args *args,
     remote_storage_pool_create_xml_ret *ret);
-static int remoteDispatchStoragePoolDefineXml(
+static int remoteDispatchStoragePoolDefineXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1410,7 +1410,7 @@ static int remoteDispatchStoragePoolDestroy(
     remote_error *rerr,
     remote_storage_pool_destroy_args *args,
     void *ret);
-static int remoteDispatchStoragePoolDumpXml(
+static int remoteDispatchStoragePoolDumpXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1466,7 +1466,7 @@ static int remoteDispatchStoragePoolLookupByName(
     remote_error *rerr,
     remote_storage_pool_lookup_by_name_args *args,
     remote_storage_pool_lookup_by_name_ret *ret);
-static int remoteDispatchStoragePoolLookupByUuid(
+static int remoteDispatchStoragePoolLookupByUUID(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1514,7 +1514,7 @@ static int remoteDispatchStoragePoolUndefine(
     remote_error *rerr,
     remote_storage_pool_undefine_args *args,
     void *ret);
-static int remoteDispatchStorageVolCreateXml(
+static int remoteDispatchStorageVolCreateXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1522,7 +1522,7 @@ static int remoteDispatchStorageVolCreateXml(
     remote_error *rerr,
     remote_storage_vol_create_xml_args *args,
     remote_storage_vol_create_xml_ret *ret);
-static int remoteDispatchStorageVolCreateXmlFrom(
+static int remoteDispatchStorageVolCreateXMLFrom(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -1546,7 +1546,7 @@ static int remoteDispatchStorageVolDownload(
     remote_error *rerr,
     remote_storage_vol_download_args *args,
     void *ret);
-static int remoteDispatchStorageVolDumpXml(
+static int remoteDispatchStorageVolDumpXML(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
