@@ -1330,7 +1330,67 @@ done:
     return rv;
 }
 
-/* remoteDispatchDomainSnapshotListNames has to be implemented manually */
+static int
+remoteDomainSnapshotListNames(virDomainPtr dom, char **const names, int maxnames, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_snapshot_list_names_args args;
+    remote_domain_snapshot_list_names_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX);
+        goto done;
+    }
+
+    make_nonnull_domain(&args.dom, dom);
+    args.maxnames = maxnames;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_NAMES,
+             (xdrproc_t)xdr_remote_domain_snapshot_list_names_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_snapshot_list_names_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_domain_snapshot_list_names_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static virDomainSnapshotPtr
 remoteDomainSnapshotLookupByName(virDomainPtr dom, const char *name, unsigned int flags)
@@ -1875,25 +1935,547 @@ done:
 
 /* remoteDispatchIsSecure has to be implemented manually */
 
-/* remoteDispatchListDefinedDomains has to be implemented manually */
+static int
+remoteListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_list_defined_domains_args args;
+    remote_list_defined_domains_ret ret;
+    int i;
 
-/* remoteDispatchListDefinedInterfaces has to be implemented manually */
+    remoteDriverLock(priv);
 
-/* remoteDispatchListDefinedNetworks has to be implemented manually */
+    if (maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_DOMAIN_NAME_LIST_MAX);
+        goto done;
+    }
 
-/* remoteDispatchListDefinedStoragePools has to be implemented manually */
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_DEFINED_DOMAINS,
+             (xdrproc_t)xdr_remote_list_defined_domains_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_defined_domains_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_defined_domains_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListDefinedInterfaces(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->interfacePrivateData;
+    remote_list_defined_interfaces_args args;
+    remote_list_defined_interfaces_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX);
+        goto done;
+    }
+
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_DEFINED_INTERFACES,
+             (xdrproc_t)xdr_remote_list_defined_interfaces_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_defined_interfaces_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_defined_interfaces_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListDefinedNetworks(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->networkPrivateData;
+    remote_list_defined_networks_args args;
+    remote_list_defined_networks_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_NETWORK_NAME_LIST_MAX);
+        goto done;
+    }
+
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_DEFINED_NETWORKS,
+             (xdrproc_t)xdr_remote_list_defined_networks_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_defined_networks_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_defined_networks_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListDefinedStoragePools(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->storagePrivateData;
+    remote_list_defined_storage_pools_args args;
+    remote_list_defined_storage_pools_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_STORAGE_POOL_NAME_LIST_MAX);
+        goto done;
+    }
+
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_DEFINED_STORAGE_POOLS,
+             (xdrproc_t)xdr_remote_list_defined_storage_pools_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_defined_storage_pools_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_defined_storage_pools_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchListDomains has to be implemented manually */
 
-/* remoteDispatchListInterfaces has to be implemented manually */
+static int
+remoteListInterfaces(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->interfacePrivateData;
+    remote_list_interfaces_args args;
+    remote_list_interfaces_ret ret;
+    int i;
 
-/* remoteDispatchListNetworks has to be implemented manually */
+    remoteDriverLock(priv);
 
-/* remoteDispatchListNWFilters has to be implemented manually */
+    if (maxnames > REMOTE_INTERFACE_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_INTERFACE_NAME_LIST_MAX);
+        goto done;
+    }
 
-/* remoteDispatchListSecrets has to be implemented manually */
+    args.maxnames = maxnames;
 
-/* remoteDispatchListStoragePools has to be implemented manually */
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_INTERFACES,
+             (xdrproc_t)xdr_remote_list_interfaces_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_interfaces_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_interfaces_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListNetworks(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->networkPrivateData;
+    remote_list_networks_args args;
+    remote_list_networks_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_NETWORK_NAME_LIST_MAX);
+        goto done;
+    }
+
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_NETWORKS,
+             (xdrproc_t)xdr_remote_list_networks_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_networks_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_networks_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListNWFilters(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->nwfilterPrivateData;
+    remote_list_nwfilters_args args;
+    remote_list_nwfilters_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_NWFILTER_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_NWFILTER_NAME_LIST_MAX);
+        goto done;
+    }
+
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_NWFILTERS,
+             (xdrproc_t)xdr_remote_list_nwfilters_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_nwfilters_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_nwfilters_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListSecrets(virConnectPtr conn, char **const uuids, int maxuuids)
+{
+    int rv = -1;
+    struct private_data *priv = conn->secretPrivateData;
+    remote_list_secrets_args args;
+    remote_list_secrets_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxuuids > REMOTE_SECRET_UUID_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined uuids: %d > %d"),
+                    maxuuids, REMOTE_SECRET_UUID_LIST_MAX);
+        goto done;
+    }
+
+    args.maxuuids = maxuuids;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_SECRETS,
+             (xdrproc_t)xdr_remote_list_secrets_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_secrets_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.uuids.uuids_len > maxuuids) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.uuids.uuids_len, maxuuids);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.uuids.uuids_len; ++i) {
+        uuids[i] = strdup(ret.uuids.uuids_val[i]);
+
+        if (uuids[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(uuids[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.uuids.uuids_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_secrets_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListStoragePools(virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = conn->storagePrivateData;
+    remote_list_storage_pools_args args;
+    remote_list_storage_pools_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_STORAGE_POOL_NAME_LIST_MAX);
+        goto done;
+    }
+
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_STORAGE_POOLS,
+             (xdrproc_t)xdr_remote_list_storage_pools_args, (char *)&args,
+             (xdrproc_t)xdr_remote_list_storage_pools_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_list_storage_pools_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteNetworkCreate(virNetworkPtr net)
@@ -2310,7 +2892,66 @@ done:
 
 /* remoteDispatchNodeDeviceGetParent has to be implemented manually */
 
-/* remoteDispatchNodeDeviceListCaps has to be implemented manually */
+static int
+remoteNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = dev->conn->devMonPrivateData;
+    remote_node_device_list_caps_args args;
+    remote_node_device_list_caps_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_NODE_DEVICE_CAPS_LIST_MAX);
+        goto done;
+    }
+
+    args.name = dev->name;
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_LIST_CAPS,
+             (xdrproc_t)xdr_remote_node_device_list_caps_args, (char *)&args,
+             (xdrproc_t)xdr_remote_node_device_list_caps_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_node_device_list_caps_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static virNodeDevicePtr
 remoteNodeDeviceLookupByName(virConnectPtr conn, const char *name)
@@ -2427,7 +3068,67 @@ done:
 
 /* remoteDispatchNodeGetSecurityModel has to be implemented manually */
 
-/* remoteDispatchNodeListDevices has to be implemented manually */
+static int
+remoteNodeListDevices(virConnectPtr conn, const char *cap, char **const names, int maxnames, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = conn->devMonPrivateData;
+    remote_node_list_devices_args args;
+    remote_node_list_devices_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_NODE_DEVICE_NAME_LIST_MAX);
+        goto done;
+    }
+
+    args.cap = cap ? (char **)&cap : NULL;
+    args.maxnames = maxnames;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_LIST_DEVICES,
+             (xdrproc_t)xdr_remote_node_list_devices_args, (char *)&args,
+             (xdrproc_t)xdr_remote_node_list_devices_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_node_list_devices_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
@@ -3218,7 +3919,66 @@ done:
     return rv;
 }
 
-/* remoteDispatchStoragePoolListVolumes has to be implemented manually */
+static int
+remoteStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int maxnames)
+{
+    int rv = -1;
+    struct private_data *priv = pool->conn->storagePrivateData;
+    remote_storage_pool_list_volumes_args args;
+    remote_storage_pool_list_volumes_ret ret;
+    int i;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefined names: %d > %d"),
+                    maxnames, REMOTE_STORAGE_VOL_NAME_LIST_MAX);
+        goto done;
+    }
+
+    make_nonnull_storage_pool(&args.pool, pool);
+    args.maxnames = maxnames;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_LIST_VOLUMES,
+             (xdrproc_t)xdr_remote_storage_pool_list_volumes_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_pool_list_volumes_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        remoteError(VIR_ERR_RPC,
+                    _("too many remote undefineds: %d > %d"),
+                    ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here. */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup(ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free((xdrproc_t)xdr_remote_storage_pool_list_volumes_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static virStoragePoolPtr
 remoteStoragePoolLookupByName(virConnectPtr conn, const char *name)

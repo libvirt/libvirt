@@ -758,29 +758,16 @@ elsif ($opt_k) {
                           "NWFilterDefineXML", # public API and XDR protocol mismatch
                           "DomainMigratePerform",
                           "DomainMigrateFinish2",
-                          "DomainSnapshotListNames",
                           "FindStoragePoolSources",
                           "IsSecure",
-                          "ListDefinedDomains",
-                          "ListDefinedInterfaces",
-                          "ListNWFilters",
                           "SupportsFeature",
-                          "NodeListDevices",
                           "NodeGetCellsFreeMemory",
-                          "ListDefinedNetworks",
-                          "StoragePoolListVolumes",
                           "ListDomains",
-                          "ListStoragePools",
                           "SecretSetValue",
                           "GetURI",
-                          "ListInterfaces",
-                          "ListDefinedStoragePools",
                           "NodeDeviceDettach",
-                          "ListNetworks",
-                          "NodeDeviceListCaps",
                           "NodeDeviceReset",
                           "NodeDeviceReAttach",
-                          "ListSecrets",
 
                           "DomainBlockPeek",
                           "DomainCreateWithFlags",
@@ -928,8 +915,9 @@ elsif ($opt_k) {
 
         # fix priv_name for the NumOf* functions
         if ($priv_name eq "privateData" and
-            !($call->{ProcName} =~ m/Domains/) and
-            $call->{ProcName} =~ m/NumOf(Defined|Domain)*(\S+)s/) {
+            !($call->{ProcName} =~ m/(Domains|DomainSnapshot)/) and
+            ($call->{ProcName} =~ m/NumOf(Defined|Domain)*(\S+)s/ or
+             $call->{ProcName} =~ m/List(Defined|Domain)*(\S+)s/)) {
             my $prefix = lc $2;
             $prefix =~ s/(pool|vol)$//;
             $priv_name = "${prefix}PrivateData";
@@ -940,6 +928,11 @@ elsif ($opt_k) {
         my $call_ret = "&ret";
         my $single_ret_var = "int rv = -1";
         my $single_ret_type = "int";
+        my $single_ret_as_list = 0;
+        my $single_ret_list_error_msg_type = "undefined";
+        my $single_ret_list_name = "undefined";
+        my $single_ret_list_max_var = "undefined";
+        my $single_ret_list_max_define = "undefined";
         my $multi_ret = 0;
 
         if ($call->{ret} ne "void" and
@@ -964,6 +957,30 @@ elsif ($opt_k) {
                     } else {
                         die "unhandled type for multi-return-value: $ret_member";
                     }
+                } elsif ($ret_member =~ m/remote_nonnull_string (\S+)<(\S+)>;/) {
+                    $single_ret_as_list = 1;
+                    $single_ret_list_name = $1;
+                    $single_ret_list_max_var = "max$1";
+                    $single_ret_list_max_define = $2;
+
+                    my $first_arg = shift(@args_list);
+                    my $second_arg;
+
+                    if ($call->{ProcName} eq "NodeListDevices") {
+                        $second_arg = shift(@args_list);
+                    }
+
+                    unshift(@args_list, "char **const $1");
+
+                    if (defined $second_arg) {
+                        unshift(@args_list, $second_arg);
+                    }
+
+                    unshift(@args_list, $first_arg);
+
+                    push(@ret_list, "rv = ret.$1.$1_len;");
+                    $single_ret_var = "int rv = -1";
+                    $single_ret_type = "int";
                 } elsif ($ret_member =~ m/remote_nonnull_string (\S+);/) {
                     push(@ret_list, "rv = ret.$1;");
                     $single_ret_var = "char *rv = NULL";
@@ -1062,8 +1079,22 @@ elsif ($opt_k) {
             print "    $var;\n";
         }
 
+        if ($single_ret_as_list) {
+            print "    int i;\n";
+        }
+
         print "\n";
         print "    remoteDriverLock(priv);\n";
+
+        if ($single_ret_as_list) {
+            print "\n";
+            print "    if ($single_ret_list_max_var > $single_ret_list_max_define) {\n";
+            print "        remoteError(VIR_ERR_RPC,\n";
+            print "                    _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
+            print "                    $single_ret_list_max_var, $single_ret_list_max_define);\n";
+            print "        goto done;\n";
+            print "    }\n";
+        }
 
         if (@setters_list) {
             print "\n";
@@ -1088,6 +1119,32 @@ elsif ($opt_k) {
         print "        goto done;\n";
         print "\n";
 
+        if ($single_ret_as_list) {
+            print "    if (ret.$single_ret_list_name.${single_ret_list_name}_len > $single_ret_list_max_var) {\n";
+            print "        remoteError(VIR_ERR_RPC,\n";
+            print "                    _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
+            print "                    ret.$single_ret_list_name.${single_ret_list_name}_len, $single_ret_list_max_var);\n";
+            print "        goto cleanup;\n";
+            print "    }\n";
+            print "\n";
+            print "    /* This call is caller-frees (although that isn't clear from\n";
+            print "     * the documentation).  However xdr_free will free up both the\n";
+            print "     * names and the list of pointers, so we have to strdup the\n";
+            print "     * names here. */\n";
+            print "    for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; ++i) {\n";
+            print "        ${single_ret_list_name}[i] = strdup(ret.$single_ret_list_name.${single_ret_list_name}_val[i]);\n";
+            print "\n";
+            print "        if (${single_ret_list_name}[i] == NULL) {\n";
+            print "            for (--i; i >= 0; --i)\n";
+            print "                VIR_FREE(${single_ret_list_name}[i]);\n";
+            print "\n";
+            print "            virReportOOMError();\n";
+            print "            goto cleanup;\n";
+            print "        }\n";
+            print "    }\n";
+            print "\n";
+        }
+
         if (@ret_list) {
             print "    ";
             print join("\n    ", @ret_list);
@@ -1096,6 +1153,12 @@ elsif ($opt_k) {
 
         if ($multi_ret or !@ret_list) {
             print "    rv = 0;\n";
+        }
+
+        if ($single_ret_as_list) {
+            print "\n";
+            print "cleanup:\n";
+            print "    xdr_free((xdrproc_t)xdr_remote_$call->{name}_ret, (char *)&ret);\n";
         }
 
         print "\n";
