@@ -50,7 +50,7 @@ static int remoteDispatchClose(
     remote_error *rerr,
     void *args,
     void *ret);
-static int remoteDispatchCpuBaseline(
+static int remoteDispatchCPUBaseline(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -58,7 +58,7 @@ static int remoteDispatchCpuBaseline(
     remote_error *rerr,
     remote_cpu_baseline_args *args,
     remote_cpu_baseline_ret *ret);
-static int remoteDispatchCpuCompare(
+static int remoteDispatchCPUCompare(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
@@ -274,7 +274,7 @@ static int remoteDispatchDomainGetMemoryParameters(
     remote_error *rerr,
     remote_domain_get_memory_parameters_args *args,
     remote_domain_get_memory_parameters_ret *ret);
-static int remoteDispatchDomainGetOsType(
+static int remoteDispatchDomainGetOSType(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,

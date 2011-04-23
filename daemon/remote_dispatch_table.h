@@ -97,8 +97,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_get_max_vcpus_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_get_max_vcpus_ret,
 },
-{   /* DomainGetOsType => 19 */
-    .fn = (dispatch_fn) remoteDispatchDomainGetOsType,
+{   /* DomainGetOSType => 19 */
+    .fn = (dispatch_fn) remoteDispatchDomainGetOSType,
     .args_filter = (xdrproc_t) xdr_remote_domain_get_os_type_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_get_os_type_ret,
 },
@@ -792,8 +792,8 @@
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_get_lib_version_ret,
 },
-{   /* CpuCompare => 158 */
-    .fn = (dispatch_fn) remoteDispatchCpuCompare,
+{   /* CPUCompare => 158 */
+    .fn = (dispatch_fn) remoteDispatchCPUCompare,
     .args_filter = (xdrproc_t) xdr_remote_cpu_compare_args,
     .ret_filter = (xdrproc_t) xdr_remote_cpu_compare_ret,
 },
@@ -812,8 +812,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_detach_device_flags_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* CpuBaseline => 162 */
-    .fn = (dispatch_fn) remoteDispatchCpuBaseline,
+{   /* CPUBaseline => 162 */
+    .fn = (dispatch_fn) remoteDispatchCPUBaseline,
     .args_filter = (xdrproc_t) xdr_remote_cpu_baseline_args,
     .ret_filter = (xdrproc_t) xdr_remote_cpu_baseline_ret,
 },

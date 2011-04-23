@@ -15,9 +15,65 @@
 
 /* remoteDispatchClose has to be implemented manually */
 
-/* remoteDispatchCpuBaseline has to be implemented manually */
+static int
+remoteDispatchCPUBaseline(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_cpu_baseline_args *args,
+    remote_cpu_baseline_ret *ret)
+{
+    int rv = -1;
+    char *cpu;
 
-/* remoteDispatchCpuCompare has to be implemented manually */
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((cpu = virConnectBaselineCPU(conn, (const char **)args->xmlCPUs.xmlCPUs_val, args->xmlCPUs.xmlCPUs_len, args->flags)) == NULL)
+        goto cleanup;
+
+    ret->cpu = cpu;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchCPUCompare(
+    struct qemud_server *server ATTRIBUTE_UNUSED,
+    struct qemud_client *client ATTRIBUTE_UNUSED,
+    virConnectPtr conn,
+    remote_message_header *hdr ATTRIBUTE_UNUSED,
+    remote_error *rerr,
+    remote_cpu_compare_args *args,
+    remote_cpu_compare_ret *ret)
+{
+    int rv = -1;
+    int result;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((result = virConnectCompareCPU(conn, args->xml, args->flags)) == VIR_CPU_COMPARE_ERROR)
+        goto cleanup;
+
+    ret->result = result;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    return rv;
+}
 
 static int
 remoteDispatchDomainAbortJob(
@@ -524,7 +580,7 @@ cleanup:
 /* remoteDispatchDomainGetMemoryParameters has to be implemented manually */
 
 static int
-remoteDispatchDomainGetOsType(
+remoteDispatchDomainGetOSType(
     struct qemud_server *server ATTRIBUTE_UNUSED,
     struct qemud_client *client ATTRIBUTE_UNUSED,
     virConnectPtr conn,

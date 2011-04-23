@@ -34,7 +34,8 @@ sub name_to_ProcName {
     @elems = map ucfirst, @elems;
     @elems = map { $_ =~ s/Nwfilter/NWFilter/; $_ =~ s/Xml/XML/;
                    $_ =~ s/Uri/URI/; $_ =~ s/Uuid/UUID/; $_ =~ s/Id/ID/;
-                   $_ =~ s/Mac/MAC/; $_ } @elems;
+                   $_ =~ s/Mac/MAC/; $_ =~ s/Cpu/CPU/; $_ =~ s/Os/OS/;
+                   $_ } @elems;
     join "", @elems
 }
 
@@ -257,8 +258,6 @@ elsif ($opt_b) {
                           "AuthSaslStep",
                           "AuthPolkit",
 
-                          "CpuBaseline",
-                          "CpuCompare",
                           "DomainBlockPeek",
                           "DomainBlockStats",
                           "DomainCreateWithFlags",
@@ -388,6 +387,8 @@ elsif ($opt_b) {
 
                     if ($calls{$_}->{ProcName} eq "SecretSetValue") {
                         push(@args_list, "(const unsigned char *)args->$1.$1_val");
+                    } elsif ($calls{$_}->{ProcName} eq "CPUBaseline") {
+                        push(@args_list, "(const char **)args->$1.$1_val");
                     } else {
                         push(@args_list, "args->$1.$1_val");
                     }
@@ -491,7 +492,12 @@ elsif ($opt_b) {
                         $single_ret_by_ref = 1;
                     } else {
                         $single_ret_by_ref = 0;
-                        $single_ret_check = " < 0";
+
+                        if ($calls{$_}->{ProcName} eq "CPUCompare") {
+                            $single_ret_check = " == VIR_CPU_COMPARE_ERROR";
+                        } else {
+                            $single_ret_check = " < 0";
+                        }
                     }
                 } elsif ($ret_member =~ m/hyper (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
@@ -597,8 +603,10 @@ elsif ($opt_b) {
                 $prefix = "Drv"
             } elsif ($calls{$_}->{ProcName} =~ m/^(\S+)DumpXML$/) {
                 $proc_name = "${1}GetXMLDesc"
-            } elsif ($calls{$_}->{ProcName} eq "DomainGetOsType") {
-                $proc_name = "DomainGetOSType"
+            } elsif ($calls{$_}->{ProcName} eq "CPUBaseline") {
+                $proc_name = "ConnectBaselineCPU"
+            } elsif ($calls{$_}->{ProcName} eq "CPUCompare") {
+                $proc_name = "ConnectCompareCPU"
             }
 
             if ($single_ret_as_list) {
