@@ -1,7 +1,7 @@
 /*
  * memory.c: safer memory allocation
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -197,7 +197,11 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * Free the memory stored in 'ptr' and update to point
  * to NULL.
  */
-# define VIR_FREE(ptr) virFree(&(ptr))
+/* The ternary ensures that ptr is a pointer and not an integer type,
+ * while evaluating ptr only once.  For now, we intentionally cast
+ * away const, since a number of callers safely pass const char *.
+ */
+# define VIR_FREE(ptr) virFree((void *) (1 ? (const void *) &(ptr) : (ptr)))
 
 
 # if TEST_OOM
