@@ -293,31 +293,6 @@ elsif ($opt_b) {
             next;
         }
 
-        print "\n";
-        print "static int\n";
-        print "${structprefix}Dispatch$calls{$_}->{ProcName}(\n";
-        print "    struct qemud_server *server ATTRIBUTE_UNUSED,\n";
-        print "    struct qemud_client *client ATTRIBUTE_UNUSED,\n";
-        print "    virConnectPtr conn,\n";
-        print "    remote_message_header *hdr ATTRIBUTE_UNUSED,\n";
-        print "    remote_error *rerr,\n";
-        print "    $calls{$_}->{args} *args";
-
-        if ($calls{$_}->{args} eq "void") {
-            print " ATTRIBUTE_UNUSED"
-        }
-
-        print ",\n";
-        print "    $calls{$_}->{ret} *ret";
-
-        if ($calls{$_}->{ret} eq "void") {
-            print " ATTRIBUTE_UNUSED"
-        }
-
-        print ")\n";
-        print "{\n";
-        print "    int rv = -1;\n";
-
         my $has_node_device = 0;
         my @vars_list = ();
         my @optionals_list = ();
@@ -327,6 +302,7 @@ elsif ($opt_b) {
         my @free_list = ();
         my @free_list_on_error = ("remoteDispatchError(rerr);");
 
+        # handle arguments to the function
         if ($calls{$_}->{args} ne "void") {
             # node device is special, as it's identified by name
             if ($calls{$_}->{args} =~ m/^remote_node_device_/ and
@@ -409,6 +385,7 @@ elsif ($opt_b) {
             }
         }
 
+        # handle return values of the function
         my $single_ret_var = "undefined";
         my $single_ret_by_ref = 0;
         my $single_ret_check = " == undefined";
@@ -550,6 +527,7 @@ elsif ($opt_b) {
             }
         }
 
+        # select struct type for multi-return-value functions
         if ($multi_ret) {
             if (! @args_list) {
                 push(@args_list, "conn");
@@ -576,6 +554,34 @@ elsif ($opt_b) {
 
             push(@vars_list, "vir$struct_name tmp");
         }
+
+        # print functions signature
+        print "\n";
+        print "static int\n";
+        print "${structprefix}Dispatch$calls{$_}->{ProcName}(\n";
+        print "    struct qemud_server *server ATTRIBUTE_UNUSED,\n";
+        print "    struct qemud_client *client ATTRIBUTE_UNUSED,\n";
+        print "    virConnectPtr conn,\n";
+        print "    remote_message_header *hdr ATTRIBUTE_UNUSED,\n";
+        print "    remote_error *rerr,\n";
+        print "    $calls{$_}->{args} *args";
+
+        if ($calls{$_}->{args} eq "void") {
+            print " ATTRIBUTE_UNUSED"
+        }
+
+        print ",\n";
+        print "    $calls{$_}->{ret} *ret";
+
+        if ($calls{$_}->{ret} eq "void") {
+            print " ATTRIBUTE_UNUSED"
+        }
+
+        print ")\n";
+
+        # print function body
+        print "{\n";
+        print "    int rv = -1;\n";
 
         foreach my $var (@vars_list) {
             print "    $var;\n";
