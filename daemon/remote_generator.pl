@@ -756,82 +756,44 @@ elsif ($opt_k) {
                           "CPUBaseline",
                           "DomainBlockStats",
                           "DomainCreate",
-                          "DomainCreateXML",
-                          "DomainDefineXML",
                           "DomainDestroy",
                           "DomainGetAutostart",
                           "DomainGetBlockInfo",
                           "DomainGetInfo",
-                          "StoragePoolLookupByUUID",
-                          "NodeDeviceCreateXML",
                           "DomainGetJobInfo",
                           "DomainInterfaceStats",
-                          "DomainLookupByID",
-                          "DomainLookupByName",
-                          "DomainLookupByUIID",
                           "DomainMigrateFinish",
-                          "NWFilterDefineXML",
-                          "NWFilterLookupByName",
-                          "NWFilterLookupByUUID",
-                          "SecretLookupByUUID",
-                          "SecretLookupByUsage",
-                          "StoragePoolCreateXML",
-                          "DomainLookupByUUID",
+                          "NWFilterDefineXML", # public API and XDR protocol mismatch
                           "DomainMigratePerform",
                           "DomainMigrateFinish2",
-                          "DomainSnapshotCreateXML",
-                          "DomainSnapshotCurrent",
                           "DomainSnapshotListNames",
                           "GetLibVersion",
-                          "GetMaxVcpus",
-                          "DomainSnapshotLookupByName",
-                          "DomainXMLFromNative",
                           "FindStoragePoolSources",
                           "GetVersion",
-                          "GetLibVersion",
-                          "InterfaceDefineXML",
-                          "InterfaceLookupByName",
                           "IsSecure",
                           "ListDefinedDomains",
                           "ListDefinedInterfaces",
                           "ListNWFilters",
-                          "NetworkCreateXML",
                           "SupportsFeature",
-                          "StorageVolLookupByPath",
                           "StorageVolGetInfo",
-                          "StorageVolCreateXML",
-                          "StorageVolLookupByName",
-                          "StorageVolLookupByKey",
                           "StoragePoolGetInfo",
-                          "StorageVolCreateXMLFrom",
-                          "StoragePoolLookupByName",
                           "NodeListDevices",
                           "NodeGetCellsFreeMemory",
                           "ListDefinedNetworks",
-                          "DomainXMLToNative",
                           "StoragePoolListVolumes",
-                          "SecretDefineXML",
                           "ListDomains",
                           "ListStoragePools",
                           "NetworkGetAutostart",
-                          "StoragePoolLookupByVolume",
                           "StoragePoolGetAutostart",
                           "SecretSetValue",
-                          "StoragePoolDefineXML",
                           "NodeGetInfo",
                           "GetURI",
-                          "InterfaceLookupByMACString",
                           "ListInterfaces",
-                          "NetworkDefineXML",
-                          "NetworkLookupByName",
                           "ListDefinedStoragePools",
                           "NodeDeviceDettach",
-                          "NodeDeviceLookupByName",
-                          "NodeGetFreeMemory",
                           "ListNetworks",
                           "NodeDeviceListCaps",
                           "NodeDeviceReset",
-                          "NetworkLookupByUUID",
                           "NodeDeviceReAttach",
                           "ListSecrets",
 
@@ -892,7 +854,9 @@ elsif ($opt_k) {
             my $has_node_device = 0;
 
             # node device is special
-            if ($call->{args} =~ m/^remote_node_/) {
+            if ($call->{args} =~ m/^remote_node_/ and
+                !($call->{args} =~ m/^remote_node_device_lookup_by_name_/) and
+                !($call->{args} =~ m/^remote_node_device_create_xml_/)) {
                 $has_node_device = 1;
                 $priv_name = "devMonPrivateData";
             }
@@ -904,13 +868,14 @@ elsif ($opt_k) {
                     push(@setters_list, "args.name = dev->name;");
                 } elsif ($args_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|interface|secret|nwfilter|domain_snapshot) (\S+);/) {
                     my $name = $1;
+                    my $arg_name = $2;
                     my $type_name = name_to_ProcName($name);
 
                     if ($is_first_arg) {
                         if ($name eq "domain_snapshot") {
-                            $priv_src = "$2->domain->conn";
+                            $priv_src = "$arg_name->domain->conn";
                         } else {
-                            $priv_src = "$2->conn";
+                            $priv_src = "$arg_name->conn";
                         }
 
                         if ($name =~ m/^storage_/) {
@@ -920,8 +885,11 @@ elsif ($opt_k) {
                         }
                     }
 
-                    push(@args_list, "vir${type_name}Ptr $2");
-                    push(@setters_list, "make_nonnull_$1(&args.$2, $2);");
+                    push(@args_list, "vir${type_name}Ptr $arg_name");
+                    push(@setters_list, "make_nonnull_$1(&args.$arg_name, $arg_name);");
+                } elsif ($args_member =~ m/^remote_uuid (\S+);/) {
+                    push(@args_list, "const unsigned char *$1");
+                    push(@setters_list, "memcpy(args.$1, $1, VIR_UUID_BUFLEN);");
                 } elsif ($args_member =~ m/^remote_string (\S+);/) {
                     push(@args_list, "const char *$1");
                     push(@setters_list, "args.$1 = $1 ? (char **)&$1 : NULL;");
@@ -991,14 +959,42 @@ elsif ($opt_k) {
                     push(@ret_list, "rv = ret.$1;");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
+                } elsif ($ret_member =~ m/remote_nonnull_(domain|network|storage_pool|storage_vol|node_device|interface|secret|nwfilter|domain_snapshot) (\S+);/) {
+                    my $name = $1;
+                    my $arg_name = $2;
+                    my $type_name = name_to_ProcName($name);
+
+                    if ($name eq "node_device") {
+                        $priv_name = "devMonPrivateData";
+                    } elsif ($name =~ m/^storage_/) {
+                        $priv_name = "storagePrivateData";
+                    } elsif (!($name =~ m/^domain/)) {
+                        $priv_name = "${name}PrivateData";
+                    }
+
+                    if ($name eq "domain_snapshot") {
+                        push(@ret_list, "rv = get_nonnull_$name(dom, ret.$arg_name);");
+                    } else {
+                        push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
+                    }
+
+                    push(@ret_list, "xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);");
+                    $single_ret_var = "vir${type_name}Ptr rv = NULL";
+                    $single_ret_type = "vir${type_name}Ptr";
                 } elsif ($ret_member =~ m/^int (\S+);/) {
                     push(@ret_list, "rv = ret.$1;");
                     $single_ret_var = "int rv = -1";
                     $single_ret_type = "int";
                 } elsif ($ret_member =~ m/hyper (\S+);/) {
                     push(@ret_list, "rv = ret.$1;");
-                    $single_ret_var = "unsigned long rv = 0";
-                    $single_ret_type = "unsigned long";
+
+                    if ($call->{ProcName} eq "NodeGetFreeMemory") {
+                        $single_ret_var = "unsigned long long rv = 0";
+                        $single_ret_type = "unsigned long long";
+                    } else {
+                        $single_ret_var = "unsigned long rv = 0";
+                        $single_ret_type = "unsigned long";
+                    }
                 } else {
                     die "unhandled type for return value: $ret_member";
                 }
