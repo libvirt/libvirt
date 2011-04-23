@@ -1185,13 +1185,13 @@ xdr_remote_domain_get_info_ret (XDR *xdrs, remote_domain_get_info_ret *objp)
 
          if (!xdr_u_char (xdrs, &objp->state))
                  return FALSE;
-         if (!xdr_uint64_t (xdrs, &objp->max_mem))
+         if (!xdr_uint64_t (xdrs, &objp->maxMem))
                  return FALSE;
          if (!xdr_uint64_t (xdrs, &objp->memory))
                  return FALSE;
-         if (!xdr_u_short (xdrs, &objp->nr_virt_cpu))
+         if (!xdr_u_short (xdrs, &objp->nrVirtCpu))
                  return FALSE;
-         if (!xdr_uint64_t (xdrs, &objp->cpu_time))
+         if (!xdr_uint64_t (xdrs, &objp->cpuTime))
                  return FALSE;
         return TRUE;
 }

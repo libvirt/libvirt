@@ -2848,10 +2848,10 @@ remoteDomainGetInfo (virDomainPtr domain, virDomainInfoPtr info)
         goto done;
 
     info->state = ret.state;
-    info->maxMem = ret.max_mem;
+    info->maxMem = ret.maxMem;
     info->memory = ret.memory;
-    info->nrVirtCpu = ret.nr_virt_cpu;
-    info->cpuTime = ret.cpu_time;
+    info->nrVirtCpu = ret.nrVirtCpu;
+    info->cpuTime = ret.cpuTime;
 
     rv = 0;
 

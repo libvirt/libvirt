@@ -259,31 +259,23 @@ elsif ($opt_b) {
                           "AuthPolkit",
 
                           "DomainBlockPeek",
-                          "DomainBlockStats",
                           "DomainCreateWithFlags",
                           "DomainEventsDeregister",
                           "DomainEventsRegister",
                           "DomainGetBlkioParameters",
-                          "DomainGetBlockInfo",
-                          "DomainGetInfo",
-                          "DomainGetJobInfo",
                           "DomainGetMemoryParameters",
                           "DomainGetSchedulerParameters",
                           "DomainGetSchedulerType",
                           "DomainGetSecurityLabel",
                           "DomainGetVcpus",
-                          "DomainInterfaceStats",
                           "DomainMemoryPeek",
                           "DomainMemoryStats",
                           "DomainMigratePrepare",
                           "DomainMigratePrepare2",
                           "GetType",
                           "NodeDeviceGetParent",
-                          "NodeGetInfo",
                           "NodeGetSecurityModel",
-                          "SecretGetValue",
-                          "StoragePoolGetInfo",
-                          "StorageVolGetInfo");
+                          "SecretGetValue");
     } elsif ($structprefix eq "qemu") {
         @ungeneratable = ("MonitorCommand");
     }
@@ -409,6 +401,10 @@ elsif ($opt_b) {
                     } else {
                         push(@args_list, "args->$2");
                     }
+                } elsif ($args_member =~ m/^\/*/) {
+                    # ignore comments
+                } else {
+                    die "unhandled type for argument value: $args_member";
                 }
             }
         }
@@ -420,10 +416,27 @@ elsif ($opt_b) {
         my $single_ret_list_name = "undefined";
         my $single_ret_list_max_var = "undefined";
         my $single_ret_list_max_define = "undefined";
+        my $multi_ret = 0;
+
+        if ($calls{$_}->{ret} ne "void" and
+            scalar(@{$calls{$_}->{ret_members}}) > 1) {
+            $multi_ret = 1;
+        }
 
         if ($calls{$_}->{ret} ne "void") {
             foreach my $ret_member (@{$calls{$_}->{ret_members}}) {
-                if ($ret_member =~ m/remote_nonnull_string (\S+)<(\S+)>;/) {
+                if ($multi_ret) {
+                    if ($ret_member =~ m/(char|short|int|hyper) (\S+)\[\S+\];/) {
+                        push(@ret_list, "memcpy(ret->$2, tmp.$2, sizeof ret->$2);");
+                    } elsif ($ret_member =~ m/char (\S+);/ or
+                        $ret_member =~ m/short (\S+);/ or
+                        $ret_member =~ m/int (\S+);/ or
+                        $ret_member =~ m/hyper (\S+);/) {
+                        push(@ret_list, "ret->$1 = tmp.$1;");
+                    } else {
+                        die "unhandled type for multi-return-value: $ret_member";
+                    }
+                } elsif ($ret_member =~ m/remote_nonnull_string (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
@@ -531,8 +544,37 @@ elsif ($opt_b) {
                     } else {
                         $single_ret_by_ref = 1;
                     }
+                } else {
+                    die "unhandled type for return value: $ret_member";
                 }
             }
+        }
+
+        if ($multi_ret) {
+            if (! @args_list) {
+                push(@args_list, "conn");
+            }
+
+            my $struct_name = $calls{$_}->{ProcName};
+            $struct_name =~ s/Get//;
+
+            if ($calls{$_}->{ProcName} eq "DomainGetBlockInfo") {
+                my $flags = pop(@args_list);
+                push(@args_list, "&tmp");
+                push(@args_list, $flags);
+            } elsif ($calls{$_}->{ProcName} eq "DomainBlockStats") {
+                $struct_name .= "Struct";
+                push(@args_list, "&tmp");
+                push(@args_list, "sizeof tmp");
+            } elsif ($calls{$_}->{ProcName} eq "DomainInterfaceStats") {
+                $struct_name .= "Struct";
+                push(@args_list, "&tmp");
+                push(@args_list, "sizeof tmp");
+            } else {
+                push(@args_list, "&tmp");
+            }
+
+            push(@vars_list, "vir$struct_name tmp");
         }
 
         foreach my $var (@vars_list) {
@@ -575,7 +617,7 @@ elsif ($opt_b) {
             print ") < 0)\n";
             print "        goto cleanup;\n";
             print "\n";
-        } elsif (scalar(@{$calls{$_}->{ret_members}}) == 1) {
+        } elsif (!$multi_ret) {
             my $prefix = "";
             my $proc_name = $calls{$_}->{ProcName};
 
@@ -631,7 +673,21 @@ elsif ($opt_b) {
                 print "    ";
             }
 
-            print join("    \n", @ret_list);
+            print join("\n    ", @ret_list);
+            print "\n";
+        } else {
+            print "    if (vir$calls{$_}->{ProcName}(";
+            print join(', ', @args_list);
+            print ") < 0)\n";
+
+            print "        goto cleanup;\n";
+            print "\n";
+
+            if (@ret_list) {
+                print "    ";
+            }
+
+            print join("\n    ", @ret_list);
             print "\n";
         }
 

@@ -693,10 +693,10 @@ struct remote_domain_get_info_args {
 
 struct remote_domain_get_info_ret {
     unsigned char state;
-    unsigned hyper max_mem;
+    unsigned hyper maxMem;
     unsigned hyper memory;
-    unsigned short nr_virt_cpu;
-    unsigned hyper cpu_time;
+    unsigned short nrVirtCpu;
+    unsigned hyper cpuTime;
 };
 
 struct remote_domain_save_args {

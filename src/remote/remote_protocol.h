@@ -641,10 +641,10 @@ typedef struct remote_domain_get_info_args remote_domain_get_info_args;
 
 struct remote_domain_get_info_ret {
         u_char state;
-        uint64_t max_mem;
+        uint64_t maxMem;
         uint64_t memory;
-        u_short nr_virt_cpu;
-        uint64_t cpu_time;
+        u_short nrVirtCpu;
+        uint64_t cpuTime;
 };
 typedef struct remote_domain_get_info_ret remote_domain_get_info_ret;
 
