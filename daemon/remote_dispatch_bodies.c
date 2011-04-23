@@ -1801,12 +1801,12 @@ remoteDispatchDomainSnapshotListNames(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
+        VIR_FREE(ret->names.names_val);
+    }
     if (dom)
         virDomainFree(dom);
-    if (rv < 0)
-        VIR_FREE(ret->names.names_val);
     return rv;
 }
 
@@ -2631,10 +2631,10 @@ remoteDispatchListDefinedDomains(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -2675,10 +2675,10 @@ remoteDispatchListDefinedInterfaces(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -2719,10 +2719,10 @@ remoteDispatchListDefinedNetworks(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -2763,10 +2763,10 @@ remoteDispatchListDefinedStoragePools(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -2807,10 +2807,10 @@ remoteDispatchListDomains(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->ids.ids_val);
+    }
     return rv;
 }
 
@@ -2851,10 +2851,10 @@ remoteDispatchListInterfaces(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -2895,10 +2895,10 @@ remoteDispatchListNetworks(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -2939,10 +2939,10 @@ remoteDispatchListNWFilters(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -2983,10 +2983,10 @@ remoteDispatchListSecrets(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->uuids.uuids_val);
+    }
     return rv;
 }
 
@@ -3027,10 +3027,10 @@ remoteDispatchListStoragePools(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -3657,12 +3657,12 @@ remoteDispatchNodeDeviceListCaps(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
+        VIR_FREE(ret->names.names_val);
+    }
     if (dev)
         virNodeDeviceFree(dev);
-    if (rv < 0)
-        VIR_FREE(ret->names.names_val);
     return rv;
 }
 
@@ -3839,10 +3839,10 @@ remoteDispatchNodeGetCellsFreeMemory(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->freeMems.freeMems_val);
+    }
     return rv;
 }
 
@@ -3920,10 +3920,10 @@ remoteDispatchNodeListDevices(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
-    if (rv < 0)
         VIR_FREE(ret->names.names_val);
+    }
     return rv;
 }
 
@@ -5017,12 +5017,12 @@ remoteDispatchStoragePoolListVolumes(
     rv = 0;
 
 cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         remoteDispatchError(rerr);
+        VIR_FREE(ret->names.names_val);
+    }
     if (pool)
         virStoragePoolFree(pool);
-    if (rv < 0)
-        VIR_FREE(ret->names.names_val);
     return rv;
 }
 

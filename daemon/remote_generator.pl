@@ -333,6 +333,7 @@ elsif ($opt_b) {
         my @args_list = ();
         my @ret_list = ();
         my @free_list = ();
+        my @free_list_on_error = ("remoteDispatchError(rerr);");
 
         if ($calls{$_}->{args} ne "void") {
             # node device is special, as it's identified by name
@@ -425,9 +426,7 @@ elsif ($opt_b) {
                 if ($ret_member =~ m/remote_nonnull_string (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
-                    push(@free_list,
-                         "    if (rv < 0)\n" .
-                         "        VIR_FREE(ret->$1.$1_val);");
+                    push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
                     $single_ret_var = "len";
                     $single_ret_by_ref = 0;
                     $single_ret_check = " < 0";
@@ -467,9 +466,7 @@ elsif ($opt_b) {
                 } elsif ($ret_member =~ m/int (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
-                    push(@free_list,
-                         "    if (rv < 0)\n" .
-                         "        VIR_FREE(ret->$1.$1_val);");
+                    push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
                     $single_ret_var = "len";
                     $single_ret_by_ref = 0;
                     $single_ret_check = " < 0";
@@ -502,9 +499,7 @@ elsif ($opt_b) {
                 } elsif ($ret_member =~ m/hyper (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
-                    push(@free_list,
-                         "    if (rv < 0)\n" .
-                         "        VIR_FREE(ret->$1.$1_val);");
+                    push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
                     $single_ret_var = "len";
                     $single_ret_by_ref = 0;
                     $single_ret_as_list = 1;
@@ -643,8 +638,19 @@ elsif ($opt_b) {
         print "    rv = 0;\n";
         print "\n";
         print "cleanup:\n";
-        print "    if (rv < 0)\n";
-        print "        remoteDispatchError(rerr);\n";
+        print "    if (rv < 0)";
+
+        if (scalar(@free_list_on_error) > 1) {
+            print " {";
+        }
+
+        print "\n        ";
+        print join("\n        ", @free_list_on_error);
+        print "\n";
+
+        if (scalar(@free_list_on_error) > 1) {
+            print "    }\n";
+        }
 
         print join("\n", @free_list);
 
