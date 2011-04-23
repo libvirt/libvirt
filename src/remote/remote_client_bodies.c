@@ -16,7 +16,32 @@
 
 /* remoteDispatchCPUBaseline has to be implemented manually */
 
-/* remoteDispatchCPUCompare has to be implemented manually */
+static int
+remoteCPUCompare(virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_cpu_compare_args args;
+    remote_cpu_compare_ret ret;
+
+    remoteDriverLock(priv);
+
+    args.xml = (char *)xml;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_CPU_COMPARE,
+             (xdrproc_t)xdr_remote_cpu_compare_args, (char *)&args,
+             (xdrproc_t)xdr_remote_cpu_compare_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.result;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteDomainAbortJob(virDomainPtr dom)
@@ -178,7 +203,32 @@ done:
     return rv;
 }
 
-/* remoteDispatchDomainDumpXML has to be implemented manually */
+static char *
+remoteDomainDumpXML(virDomainPtr dom, int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_dump_xml_args args;
+    remote_domain_dump_xml_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_DUMP_XML,
+             (xdrproc_t)xdr_remote_domain_dump_xml_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_dump_xml_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchDomainEventsDeregister has to be implemented manually */
 
@@ -198,13 +248,85 @@ done:
 
 /* remoteDispatchDomainGetJobInfo has to be implemented manually */
 
-/* remoteDispatchDomainGetMaxMemory has to be implemented manually */
+static unsigned long
+remoteDomainGetMaxMemory(virDomainPtr dom)
+{
+    unsigned long rv = 0;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_max_memory_args args;
+    remote_domain_get_max_memory_ret ret;
 
-/* remoteDispatchDomainGetMaxVcpus has to be implemented manually */
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_MAX_MEMORY,
+             (xdrproc_t)xdr_remote_domain_get_max_memory_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_max_memory_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.memory;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainGetMaxVcpus(virDomainPtr dom)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_max_vcpus_args args;
+    remote_domain_get_max_vcpus_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_MAX_VCPUS,
+             (xdrproc_t)xdr_remote_domain_get_max_vcpus_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_max_vcpus_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchDomainGetMemoryParameters has to be implemented manually */
 
-/* remoteDispatchDomainGetOSType has to be implemented manually */
+static char *
+remoteDomainGetOSType(virDomainPtr dom)
+{
+    char *rv = NULL;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_os_type_args args;
+    remote_domain_get_os_type_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_OS_TYPE,
+             (xdrproc_t)xdr_remote_domain_get_os_type_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_os_type_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.type;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchDomainGetSchedulerParameters has to be implemented manually */
 
@@ -214,19 +336,166 @@ done:
 
 /* remoteDispatchDomainGetVcpus has to be implemented manually */
 
-/* remoteDispatchDomainGetVcpusFlags has to be implemented manually */
+static int
+remoteDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_vcpus_flags_args args;
+    remote_domain_get_vcpus_flags_ret ret;
 
-/* remoteDispatchDomainHasCurrentSnapshot has to be implemented manually */
+    remoteDriverLock(priv);
 
-/* remoteDispatchDomainHasManagedSaveImage has to be implemented manually */
+    make_nonnull_domain(&args.dom, dom);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS,
+             (xdrproc_t)xdr_remote_domain_get_vcpus_flags_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_vcpus_flags_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainHasCurrentSnapshot(virDomainPtr dom, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_has_current_snapshot_args args;
+    remote_domain_has_current_snapshot_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_HAS_CURRENT_SNAPSHOT,
+             (xdrproc_t)xdr_remote_domain_has_current_snapshot_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_has_current_snapshot_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.result;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_has_managed_save_image_args args;
+    remote_domain_has_managed_save_image_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_HAS_MANAGED_SAVE_IMAGE,
+             (xdrproc_t)xdr_remote_domain_has_managed_save_image_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_has_managed_save_image_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.result;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchDomainInterfaceStats has to be implemented manually */
 
-/* remoteDispatchDomainIsActive has to be implemented manually */
+static int
+remoteDomainIsActive(virDomainPtr dom)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_is_active_args args;
+    remote_domain_is_active_ret ret;
 
-/* remoteDispatchDomainIsPersistent has to be implemented manually */
+    remoteDriverLock(priv);
 
-/* remoteDispatchDomainIsUpdated has to be implemented manually */
+    make_nonnull_domain(&args.dom, dom);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_IS_ACTIVE,
+             (xdrproc_t)xdr_remote_domain_is_active_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_is_active_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainIsPersistent(virDomainPtr dom)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_is_persistent_args args;
+    remote_domain_is_persistent_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_IS_PERSISTENT,
+             (xdrproc_t)xdr_remote_domain_is_persistent_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_is_persistent_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.persistent;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainIsUpdated(virDomainPtr dom)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_is_updated_args args;
+    remote_domain_is_updated_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_IS_UPDATED,
+             (xdrproc_t)xdr_remote_domain_is_updated_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_is_updated_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.updated;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchDomainLookupByID has to be implemented manually */
 
@@ -673,13 +942,63 @@ done:
     return rv;
 }
 
-/* remoteDispatchDomainSnapshotDumpXML has to be implemented manually */
+static char *
+remoteDomainSnapshotDumpXML(virDomainSnapshotPtr snap, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = snap->domain->conn->privateData;
+    remote_domain_snapshot_dump_xml_args args;
+    remote_domain_snapshot_dump_xml_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain_snapshot(&args.snap, snap);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(snap->domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_DUMP_XML,
+             (xdrproc_t)xdr_remote_domain_snapshot_dump_xml_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_snapshot_dump_xml_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchDomainSnapshotListNames has to be implemented manually */
 
 /* remoteDispatchDomainSnapshotLookupByName has to be implemented manually */
 
-/* remoteDispatchDomainSnapshotNum has to be implemented manually */
+static int
+remoteDomainSnapshotNum(virDomainPtr dom, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_snapshot_num_args args;
+    remote_domain_snapshot_num_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_NUM,
+             (xdrproc_t)xdr_remote_domain_snapshot_num_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_snapshot_num_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteDomainSuspend(virDomainPtr dom)
@@ -758,15 +1077,81 @@ done:
 
 /* remoteDispatchFindStoragePoolSources has to be implemented manually */
 
-/* remoteDispatchGetCapabilities has to be implemented manually */
+static char *
+remoteGetCapabilities(virConnectPtr conn)
+{
+    char *rv = NULL;
+    struct private_data *priv = conn->privateData;
+    remote_get_capabilities_ret ret;
 
-/* remoteDispatchGetHostname has to be implemented manually */
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_GET_CAPABILITIES,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_get_capabilities_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.capabilities;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static char *
+remoteGetHostname(virConnectPtr conn)
+{
+    char *rv = NULL;
+    struct private_data *priv = conn->privateData;
+    remote_get_hostname_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_GET_HOSTNAME,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_get_hostname_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.hostname;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchGetLibVersion has to be implemented manually */
 
 /* remoteDispatchGetMaxVcpus has to be implemented manually */
 
-/* remoteDispatchGetSysinfo has to be implemented manually */
+static char *
+remoteGetSysinfo(virConnectPtr conn, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = conn->privateData;
+    remote_get_sysinfo_args args;
+    remote_get_sysinfo_ret ret;
+
+    remoteDriverLock(priv);
+
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_GET_SYSINFO,
+             (xdrproc_t)xdr_remote_get_sysinfo_args, (char *)&args,
+             (xdrproc_t)xdr_remote_get_sysinfo_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.sysinfo;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchGetType has to be implemented manually */
 
@@ -824,9 +1209,58 @@ done:
     return rv;
 }
 
-/* remoteDispatchInterfaceGetXMLDesc has to be implemented manually */
+static char *
+remoteInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = iface->conn->interfacePrivateData;
+    remote_interface_get_xml_desc_args args;
+    remote_interface_get_xml_desc_ret ret;
 
-/* remoteDispatchInterfaceIsActive has to be implemented manually */
+    remoteDriverLock(priv);
+
+    make_nonnull_interface(&args.iface, iface);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(iface->conn, priv, 0, REMOTE_PROC_INTERFACE_GET_XML_DESC,
+             (xdrproc_t)xdr_remote_interface_get_xml_desc_args, (char *)&args,
+             (xdrproc_t)xdr_remote_interface_get_xml_desc_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteInterfaceIsActive(virInterfacePtr iface)
+{
+    int rv = -1;
+    struct private_data *priv = iface->conn->interfacePrivateData;
+    remote_interface_is_active_args args;
+    remote_interface_is_active_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_interface(&args.iface, iface);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(iface->conn, priv, 0, REMOTE_PROC_INTERFACE_IS_ACTIVE,
+             (xdrproc_t)xdr_remote_interface_is_active_args, (char *)&args,
+             (xdrproc_t)xdr_remote_interface_is_active_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchInterfaceLookupByMACString has to be implemented manually */
 
@@ -927,15 +1361,112 @@ done:
     return rv;
 }
 
-/* remoteDispatchNetworkDumpXML has to be implemented manually */
+static char *
+remoteNetworkDumpXML(virNetworkPtr net, int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = net->conn->networkPrivateData;
+    remote_network_dump_xml_args args;
+    remote_network_dump_xml_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_network(&args.net, net);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(net->conn, priv, 0, REMOTE_PROC_NETWORK_DUMP_XML,
+             (xdrproc_t)xdr_remote_network_dump_xml_args, (char *)&args,
+             (xdrproc_t)xdr_remote_network_dump_xml_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchNetworkGetAutostart has to be implemented manually */
 
-/* remoteDispatchNetworkGetBridgeName has to be implemented manually */
+static char *
+remoteNetworkGetBridgeName(virNetworkPtr net)
+{
+    char *rv = NULL;
+    struct private_data *priv = net->conn->networkPrivateData;
+    remote_network_get_bridge_name_args args;
+    remote_network_get_bridge_name_ret ret;
 
-/* remoteDispatchNetworkIsActive has to be implemented manually */
+    remoteDriverLock(priv);
 
-/* remoteDispatchNetworkIsPersistent has to be implemented manually */
+    make_nonnull_network(&args.net, net);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(net->conn, priv, 0, REMOTE_PROC_NETWORK_GET_BRIDGE_NAME,
+             (xdrproc_t)xdr_remote_network_get_bridge_name_args, (char *)&args,
+             (xdrproc_t)xdr_remote_network_get_bridge_name_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.name;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNetworkIsActive(virNetworkPtr net)
+{
+    int rv = -1;
+    struct private_data *priv = net->conn->networkPrivateData;
+    remote_network_is_active_args args;
+    remote_network_is_active_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_network(&args.net, net);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(net->conn, priv, 0, REMOTE_PROC_NETWORK_IS_ACTIVE,
+             (xdrproc_t)xdr_remote_network_is_active_args, (char *)&args,
+             (xdrproc_t)xdr_remote_network_is_active_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNetworkIsPersistent(virNetworkPtr net)
+{
+    int rv = -1;
+    struct private_data *priv = net->conn->networkPrivateData;
+    remote_network_is_persistent_args args;
+    remote_network_is_persistent_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_network(&args.net, net);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(net->conn, priv, 0, REMOTE_PROC_NETWORK_IS_PERSISTENT,
+             (xdrproc_t)xdr_remote_network_is_persistent_args, (char *)&args,
+             (xdrproc_t)xdr_remote_network_is_persistent_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.persistent;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchNetworkLookupByName has to be implemented manually */
 
@@ -1015,7 +1546,32 @@ done:
 
 /* remoteDispatchNodeDeviceDettach has to be implemented manually */
 
-/* remoteDispatchNodeDeviceDumpXML has to be implemented manually */
+static char *
+remoteNodeDeviceDumpXML(virNodeDevicePtr dev, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = dev->conn->devMonPrivateData;
+    remote_node_device_dump_xml_args args;
+    remote_node_device_dump_xml_ret ret;
+
+    remoteDriverLock(priv);
+
+    args.name = dev->name;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_DUMP_XML,
+             (xdrproc_t)xdr_remote_node_device_dump_xml_args, (char *)&args,
+             (xdrproc_t)xdr_remote_node_device_dump_xml_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchNodeDeviceGetParent has to be implemented manually */
 
@@ -1023,7 +1579,31 @@ done:
 
 /* remoteDispatchNodeDeviceLookupByName has to be implemented manually */
 
-/* remoteDispatchNodeDeviceNumOfCaps has to be implemented manually */
+static int
+remoteNodeDeviceNumOfCaps(virNodeDevicePtr dev)
+{
+    int rv = -1;
+    struct private_data *priv = dev->conn->devMonPrivateData;
+    remote_node_device_num_of_caps_args args;
+    remote_node_device_num_of_caps_ret ret;
+
+    remoteDriverLock(priv);
+
+    args.name = dev->name;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS,
+             (xdrproc_t)xdr_remote_node_device_num_of_caps_args, (char *)&args,
+             (xdrproc_t)xdr_remote_node_device_num_of_caps_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchNodeDeviceReAttach has to be implemented manually */
 
@@ -1039,31 +1619,291 @@ done:
 
 /* remoteDispatchNodeListDevices has to be implemented manually */
 
-/* remoteDispatchNodeNumOfDevices has to be implemented manually */
+static int
+remoteNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = conn->devMonPrivateData;
+    remote_node_num_of_devices_args args;
+    remote_node_num_of_devices_ret ret;
 
-/* remoteDispatchNumOfDefinedDomains has to be implemented manually */
+    remoteDriverLock(priv);
 
-/* remoteDispatchNumOfDefinedInterfaces has to be implemented manually */
+    args.cap = cap ? (char **)&cap : NULL;
+    args.flags = flags;
 
-/* remoteDispatchNumOfDefinedNetworks has to be implemented manually */
+    memset(&ret, 0, sizeof ret);
 
-/* remoteDispatchNumOfDefinedStoragePools has to be implemented manually */
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_NUM_OF_DEVICES,
+             (xdrproc_t)xdr_remote_node_num_of_devices_args, (char *)&args,
+             (xdrproc_t)xdr_remote_node_num_of_devices_ret, (char *)&ret) == -1)
+        goto done;
 
-/* remoteDispatchNumOfDomains has to be implemented manually */
+    rv = ret.num;
 
-/* remoteDispatchNumOfInterfaces has to be implemented manually */
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
-/* remoteDispatchNumOfNetworks has to be implemented manually */
+static int
+remoteNumOfDefinedDomains(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_num_of_defined_domains_ret ret;
 
-/* remoteDispatchNumOfNWFilters has to be implemented manually */
+    remoteDriverLock(priv);
 
-/* remoteDispatchNumOfSecrets has to be implemented manually */
+    memset(&ret, 0, sizeof ret);
 
-/* remoteDispatchNumOfStoragePools has to be implemented manually */
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_DOMAINS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_defined_domains_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfDefinedInterfaces(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->interfacePrivateData;
+    remote_num_of_defined_interfaces_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_INTERFACES,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_defined_interfaces_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfDefinedNetworks(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->networkPrivateData;
+    remote_num_of_defined_networks_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_NETWORKS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_defined_networks_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfDefinedStoragePools(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->storagePrivateData;
+    remote_num_of_defined_storage_pools_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_STORAGE_POOLS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_defined_storage_pools_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfDomains(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_num_of_domains_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_DOMAINS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_domains_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfInterfaces(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->interfacePrivateData;
+    remote_num_of_interfaces_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_INTERFACES,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_interfaces_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfNetworks(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->networkPrivateData;
+    remote_num_of_networks_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_NETWORKS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_networks_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfNWFilters(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->nwfilterPrivateData;
+    remote_num_of_nwfilters_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_NWFILTERS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_nwfilters_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfSecrets(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->secretPrivateData;
+    remote_num_of_secrets_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_SECRETS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_secrets_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNumOfStoragePools(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->storagePrivateData;
+    remote_num_of_storage_pools_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_NUM_OF_STORAGE_POOLS,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_num_of_storage_pools_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchNWFilterDefineXML has to be implemented manually */
 
-/* remoteDispatchNWFilterGetXMLDesc has to be implemented manually */
+static char *
+remoteNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = nwfilter->conn->nwfilterPrivateData;
+    remote_nwfilter_get_xml_desc_args args;
+    remote_nwfilter_get_xml_desc_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_nwfilter(&args.nwfilter, nwfilter);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(nwfilter->conn, priv, 0, REMOTE_PROC_NWFILTER_GET_XML_DESC,
+             (xdrproc_t)xdr_remote_nwfilter_get_xml_desc_args, (char *)&args,
+             (xdrproc_t)xdr_remote_nwfilter_get_xml_desc_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchNWFilterLookupByName has to be implemented manually */
 
@@ -1098,7 +1938,32 @@ done:
 
 /* remoteDispatchSecretGetValue has to be implemented manually */
 
-/* remoteDispatchSecretGetXMLDesc has to be implemented manually */
+static char *
+remoteSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = secret->conn->secretPrivateData;
+    remote_secret_get_xml_desc_args args;
+    remote_secret_get_xml_desc_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_secret(&args.secret, secret);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(secret->conn, priv, 0, REMOTE_PROC_SECRET_GET_XML_DESC,
+             (xdrproc_t)xdr_remote_secret_get_xml_desc_args, (char *)&args,
+             (xdrproc_t)xdr_remote_secret_get_xml_desc_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchSecretLookupByUsage has to be implemented manually */
 
@@ -1228,15 +2093,88 @@ done:
     return rv;
 }
 
-/* remoteDispatchStoragePoolDumpXML has to be implemented manually */
+static char *
+remoteStoragePoolDumpXML(virStoragePoolPtr pool, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = pool->conn->storagePrivateData;
+    remote_storage_pool_dump_xml_args args;
+    remote_storage_pool_dump_xml_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool(&args.pool, pool);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_DUMP_XML,
+             (xdrproc_t)xdr_remote_storage_pool_dump_xml_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_pool_dump_xml_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchStoragePoolGetAutostart has to be implemented manually */
 
 /* remoteDispatchStoragePoolGetInfo has to be implemented manually */
 
-/* remoteDispatchStoragePoolIsActive has to be implemented manually */
+static int
+remoteStoragePoolIsActive(virStoragePoolPtr pool)
+{
+    int rv = -1;
+    struct private_data *priv = pool->conn->storagePrivateData;
+    remote_storage_pool_is_active_args args;
+    remote_storage_pool_is_active_ret ret;
 
-/* remoteDispatchStoragePoolIsPersistent has to be implemented manually */
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool(&args.pool, pool);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_IS_ACTIVE,
+             (xdrproc_t)xdr_remote_storage_pool_is_active_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_pool_is_active_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteStoragePoolIsPersistent(virStoragePoolPtr pool)
+{
+    int rv = -1;
+    struct private_data *priv = pool->conn->storagePrivateData;
+    remote_storage_pool_is_persistent_args args;
+    remote_storage_pool_is_persistent_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool(&args.pool, pool);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT,
+             (xdrproc_t)xdr_remote_storage_pool_is_persistent_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_pool_is_persistent_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.persistent;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchStoragePoolListVolumes has to be implemented manually */
 
@@ -1246,7 +2184,31 @@ done:
 
 /* remoteDispatchStoragePoolLookupByVolume has to be implemented manually */
 
-/* remoteDispatchStoragePoolNumOfVolumes has to be implemented manually */
+static int
+remoteStoragePoolNumOfVolumes(virStoragePoolPtr pool)
+{
+    int rv = -1;
+    struct private_data *priv = pool->conn->storagePrivateData;
+    remote_storage_pool_num_of_volumes_args args;
+    remote_storage_pool_num_of_volumes_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool(&args.pool, pool);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_NUM_OF_VOLUMES,
+             (xdrproc_t)xdr_remote_storage_pool_num_of_volumes_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_pool_num_of_volumes_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteStoragePoolRefresh(virStoragePoolPtr pool, unsigned int flags)
@@ -1349,11 +2311,60 @@ done:
 
 /* remoteDispatchStorageVolDownload has to be implemented manually */
 
-/* remoteDispatchStorageVolDumpXML has to be implemented manually */
+static char *
+remoteStorageVolDumpXML(virStorageVolPtr vol, unsigned int flags)
+{
+    char *rv = NULL;
+    struct private_data *priv = vol->conn->storagePrivateData;
+    remote_storage_vol_dump_xml_args args;
+    remote_storage_vol_dump_xml_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_vol(&args.vol, vol);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_DUMP_XML,
+             (xdrproc_t)xdr_remote_storage_vol_dump_xml_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_vol_dump_xml_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchStorageVolGetInfo has to be implemented manually */
 
-/* remoteDispatchStorageVolGetPath has to be implemented manually */
+static char *
+remoteStorageVolGetPath(virStorageVolPtr vol)
+{
+    char *rv = NULL;
+    struct private_data *priv = vol->conn->storagePrivateData;
+    remote_storage_vol_get_path_args args;
+    remote_storage_vol_get_path_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_vol(&args.vol, vol);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_GET_PATH,
+             (xdrproc_t)xdr_remote_storage_vol_get_path_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_vol_get_path_ret, (char *)&ret) == -1)
+        goto done;
+
+    rv = ret.name;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchStorageVolLookupByKey has to be implemented manually */
 

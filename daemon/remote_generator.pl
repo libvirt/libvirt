@@ -754,63 +754,42 @@ elsif ($opt_k) {
                           "AuthPolkit",
 
                           "CPUBaseline",
-                          "CPUCompare",
                           "DomainBlockStats",
                           "DomainCreate",
                           "DomainCreateXML",
                           "DomainDefineXML",
                           "DomainDestroy",
-                          "DomainDumpXML",
                           "DomainGetAutostart",
                           "DomainGetBlockInfo",
                           "DomainGetInfo",
                           "StoragePoolLookupByUUID",
-                          "StoragePoolNumOfVolumes",
                           "NodeDeviceCreateXML",
                           "DomainGetJobInfo",
-                          "DomainGetMaxMemory",
-                          "DomainGetOSType",
-                          "DomainGetVcpusFlags",
-                          "HasCurrentSnapshot",
                           "DomainInterfaceStats",
-                          "DomainIsActive",
-                          "DomainIsPersistent",
-                          "DomainIsUpdated",
                           "DomainLookupByID",
                           "DomainLookupByName",
                           "DomainLookupByUIID",
                           "DomainMigrateFinish",
-                          "DomainGetMaxVcpus",
-                          "DomainHasCurrentSnapshot",
                           "NWFilterDefineXML",
-                          "NumOfStoragePools",
                           "NWFilterLookupByName",
                           "NWFilterLookupByUUID",
                           "SecretLookupByUUID",
                           "SecretLookupByUsage",
                           "StoragePoolCreateXML",
-                          "StoragePoolIsActive",
-                          "DomainHasManagedSaveImage",
                           "DomainLookupByUUID",
                           "DomainMigratePerform",
                           "DomainMigrateFinish2",
                           "DomainSnapshotCreateXML",
-                          "DomainSnapshotDumpXML",
-                          "DomainSnapshotNum",
                           "DomainSnapshotCurrent",
                           "DomainSnapshotListNames",
-                          "GetCapabilities",
-                          "GetHostname",
                           "GetLibVersion",
                           "GetMaxVcpus",
                           "DomainSnapshotLookupByName",
                           "DomainXMLFromNative",
                           "FindStoragePoolSources",
-                          "GetSysinfo",
                           "GetVersion",
                           "GetLibVersion",
                           "InterfaceDefineXML",
-                          "InterfaceGetXMLDesc",
                           "InterfaceLookupByName",
                           "IsSecure",
                           "ListDefinedDomains",
@@ -823,40 +802,22 @@ elsif ($opt_k) {
                           "StorageVolCreateXML",
                           "StorageVolLookupByName",
                           "StorageVolLookupByKey",
-                          "StoragePoolIsPersistent",
                           "StoragePoolGetInfo",
-                          "StorageVolGetPath",
                           "StorageVolCreateXMLFrom",
                           "StoragePoolLookupByName",
-                          "SecretGetXMLDesc",
-                          "NWFilterGetXMLDesc",
-                          "NumOfNWFilters",
-                          "NumOfInterfaces",
-                          "NumOfDomains",
-                          "NumOfDefinedStoragePools",
                           "NodeListDevices",
                           "NodeGetCellsFreeMemory",
-                          "NodeDeviceDumpXML",
-                          "NetworkIsActive",
                           "ListDefinedNetworks",
                           "DomainXMLToNative",
-                          "StorageVolDumpXML",
                           "StoragePoolListVolumes",
-                          "StoragePoolDumpXML",
                           "SecretDefineXML",
-                          "NumOfDefinedNetworks",
-                          "InterfaceIsActive",
                           "ListDomains",
                           "ListStoragePools",
-                          "NetworkDumpXML",
                           "NetworkGetAutostart",
-                          "NetworkGetBridgeName",
                           "StoragePoolLookupByVolume",
                           "StoragePoolGetAutostart",
                           "SecretSetValue",
-                          "NumOfDefinedInterfaces",
                           "StoragePoolDefineXML",
-                          "NodeNumOfDevices",
                           "NodeGetInfo",
                           "GetURI",
                           "InterfaceLookupByMACString",
@@ -864,18 +825,13 @@ elsif ($opt_k) {
                           "NetworkDefineXML",
                           "NetworkLookupByName",
                           "ListDefinedStoragePools",
-                          "NetworkIsPersistent",
                           "NodeDeviceDettach",
                           "NodeDeviceLookupByName",
                           "NodeGetFreeMemory",
-                          "NumOfDefinedDomains",
                           "ListNetworks",
                           "NodeDeviceListCaps",
                           "NodeDeviceReset",
-                          "NumOfNetworks",
                           "NetworkLookupByUUID",
-                          "NodeDeviceNumOfCaps",
-                          "NumOfSecrets",
                           "NodeDeviceReAttach",
                           "ListSecrets",
 
@@ -919,13 +875,16 @@ elsif ($opt_k) {
         my @args_list = ();
         my @vars_list = ();
         my @setters_list = ();
+        my @ret_list = ();
         my $priv_src = "conn";
         my $priv_name = "privateData";
-        my $args = "&args";
-        my $ret = "&ret";
+        my $call_args = "&args";
+        my $call_ret = "&ret";
+        my $single_ret_var = "int rv = -1";
+        my $single_ret_type = "int";
 
         if ($call->{args} eq "void") {
-            $args = "NULL";
+            $call_args = "NULL";
         } else {
             push(@vars_list, "$call->{args} args");
 
@@ -933,14 +892,14 @@ elsif ($opt_k) {
             my $has_node_device = 0;
 
             # node device is special
-            if ($call->{args} =~ m/^remote_node_device_/) {
+            if ($call->{args} =~ m/^remote_node_/) {
                 $has_node_device = 1;
+                $priv_name = "devMonPrivateData";
             }
 
             foreach my $args_member (@{$call->{args_members}}) {
                 if ($args_member =~ m/^remote_nonnull_string name;/ and $has_node_device) {
                     $priv_src = "dev->conn";
-                    $priv_name = "devMonPrivateData";
                     push(@args_list, "virNodeDevicePtr dev");
                     push(@setters_list, "args.name = dev->name;");
                 } elsif ($args_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|interface|secret|nwfilter|domain_snapshot) (\S+);/) {
@@ -963,6 +922,9 @@ elsif ($opt_k) {
 
                     push(@args_list, "vir${type_name}Ptr $2");
                     push(@setters_list, "make_nonnull_$1(&args.$2, $2);");
+                } elsif ($args_member =~ m/^remote_string (\S+);/) {
+                    push(@args_list, "const char *$1");
+                    push(@setters_list, "args.$1 = $1 ? (char **)&$1 : NULL;");
                 } elsif ($args_member =~ m/^remote_nonnull_string (\S+);/) {
                     push(@args_list, "const char *$1");
                     push(@setters_list, "args.$1 = (char *)$1;");
@@ -979,7 +941,9 @@ elsif ($opt_k) {
                     if ($type_name eq "int") {
                         # fix bad decisions in the xdr protocol
                         if ($arg_name eq "flags" and
-                            $call->{ProcName} ne "DomainCoreDump") {
+                            $call->{ProcName} ne "DomainCoreDump" and
+                            $call->{ProcName} ne "DomainDumpXML" and
+                            $call->{ProcName} ne "NetworkDumpXML") {
                             $type_name = "unsigned int";
                         } elsif ($arg_name eq "nvcpus" and
                                  $call->{ProcName} eq "DomainSetVcpus") {
@@ -1008,22 +972,53 @@ elsif ($opt_k) {
             }
         }
 
+        # fix priv_name for the NumOf* functions
+        if ($priv_name eq "privateData" and
+            !($call->{ProcName} =~ m/Domains/) and
+            $call->{ProcName} =~ m/NumOf(Defined|Domain)*(\S+)s/) {
+            my $prefix = lc $2;
+            $prefix =~ s/(pool|vol)$//;
+            $priv_name = "${prefix}PrivateData";
+        }
+
         if ($call->{ret} eq "void") {
-            $ret = "NULL";
+            $call_ret = "NULL";
         } else {
             push(@vars_list, "$call->{ret} ret");
+
+            foreach my $ret_member (@{$call->{ret_members}}) {
+                if ($ret_member =~ m/remote_nonnull_string (\S+);/) {
+                    push(@ret_list, "rv = ret.$1;");
+                    $single_ret_var = "char *rv = NULL";
+                    $single_ret_type = "char *";
+                } elsif ($ret_member =~ m/^int (\S+);/) {
+                    push(@ret_list, "rv = ret.$1;");
+                    $single_ret_var = "int rv = -1";
+                    $single_ret_type = "int";
+                } elsif ($ret_member =~ m/hyper (\S+);/) {
+                    push(@ret_list, "rv = ret.$1;");
+                    $single_ret_var = "unsigned long rv = 0";
+                    $single_ret_type = "unsigned long";
+                } else {
+                    die "unhandled type for return value: $ret_member";
+                }
+            }
+        }
+
+        if (! @args_list) {
+            push(@args_list, "virConnectPtr conn");
         }
 
         # print function
         print "\n";
-        print "static int\n";
+        print "static $single_ret_type\n";
         print "remote$call->{ProcName}(";
 
         print join(", ", @args_list);
 
         print ")\n";
         print "{\n";
-        print "    int rv = -1;\n";
+        print "    $single_ret_var;\n";
         print "    struct private_data *priv = $priv_src->$priv_name;\n";
 
         foreach my $var (@vars_list) {
@@ -1032,9 +1027,9 @@ elsif ($opt_k) {
 
         print "\n";
         print "    remoteDriverLock(priv);\n";
-        print "\n";
 
         if (@setters_list) {
+            print "\n";
             print "    ";
         }
 
@@ -1044,13 +1039,26 @@ elsif ($opt_k) {
             print "\n";
         }
 
+        if ($call->{ret} ne "void") {
+            print "\n";
+            print "    memset(&ret, 0, sizeof ret);\n";
+        }
+
         print "\n";
         print "    if (call($priv_src, priv, 0, ${procprefix}_PROC_$call->{UC_NAME},\n";
-        print "             (xdrproc_t)xdr_$call->{args}, (char *)$args,\n";
-        print "             (xdrproc_t)xdr_$call->{ret}, (char *)$ret) == -1)\n";
+        print "             (xdrproc_t)xdr_$call->{args}, (char *)$call_args,\n";
+        print "             (xdrproc_t)xdr_$call->{ret}, (char *)$call_ret) == -1)\n";
         print "        goto done;\n";
         print "\n";
-        print "    rv = 0;\n";
+
+        if (@ret_list) {
+            print "    ";
+            print join("\n    ", @ret_list);
+            print "\n";
+        } else {
+            print "    rv = 0;\n";
+        }
+
         print "\n";
         print "done:\n";
         print "    remoteDriverUnlock(priv);\n";
