@@ -3049,9 +3049,8 @@ done:
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteNetworkOpen (virConnectPtr conn,
-                   virConnectAuthPtr auth,
-                   int flags)
+remoteGenericOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                  int flags, void **genericPrivateData)
 {
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
@@ -3060,45 +3059,48 @@ remoteNetworkOpen (virConnectPtr conn,
         STREQ (conn->driver->name, "remote")) {
         struct private_data *priv;
 
-       /* If we're here, the remote driver is already
+        /* If we're here, the remote driver is already
          * in use due to a) a QEMU uri, or b) a remote
-         * URI. So we can re-use existing connection
-         */
+         * URI. So we can re-use existing connection */
         priv = conn->privateData;
         remoteDriverLock(priv);
         priv->localUses++;
-        conn->networkPrivateData = priv;
+        *genericPrivateData = priv;
+        remoteDriverUnlock(priv);
+        return VIR_DRV_OPEN_SUCCESS;
+    } else if (conn->networkDriver &&
+               STREQ (conn->networkDriver->name, "remote")) {
+        struct private_data *priv = conn->networkPrivateData;
+        remoteDriverLock(priv);
+        *genericPrivateData = priv;
+        priv->localUses++;
         remoteDriverUnlock(priv);
         return VIR_DRV_OPEN_SUCCESS;
     } else {
         /* Using a non-remote driver, so we need to open a
          * new connection for network APIs, forcing it to
          * use the UNIX transport. This handles Xen driver
-         * which doesn't have its own impl of the network APIs.
-         */
+         * which doesn't have its own impl of the network APIs. */
         struct private_data *priv;
         int ret;
-        ret = remoteOpenSecondaryDriver(conn,
-                                        auth,
-                                        flags,
-                                        &priv);
+        ret = remoteOpenSecondaryDriver(conn, auth, flags, &priv);
         if (ret == VIR_DRV_OPEN_SUCCESS)
-            conn->networkPrivateData = priv;
+            *genericPrivateData = priv;
         return ret;
     }
 }
 
 static int
-remoteNetworkClose (virConnectPtr conn)
+remoteGenericClose(virConnectPtr conn, void **genericPrivateData)
 {
     int rv = 0;
-    struct private_data *priv = conn->networkPrivateData;
+    struct private_data *priv = *genericPrivateData;
 
     remoteDriverLock(priv);
     priv->localUses--;
     if (!priv->localUses) {
         rv = doRemoteClose(conn, priv);
-        conn->networkPrivateData = NULL;
+        *genericPrivateData = NULL;
         remoteDriverUnlock(priv);
         virMutexDestroy(&priv->lock);
         VIR_FREE(priv);
@@ -3106,6 +3108,18 @@ remoteNetworkClose (virConnectPtr conn)
     if (priv)
         remoteDriverUnlock(priv);
     return rv;
+}
+
+static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
+remoteNetworkOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
+{
+    return remoteGenericOpen(conn, auth, flags, &conn->networkPrivateData);
+}
+
+static int
+remoteNetworkClose(virConnectPtr conn)
+{
+    return remoteGenericClose(conn, &conn->networkPrivateData);
 }
 
 static int
@@ -3230,63 +3244,15 @@ done:
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteInterfaceOpen (virConnectPtr conn,
-                     virConnectAuthPtr auth,
-                     int flags)
+remoteInterfaceOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
-    if (inside_daemon)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->driver &&
-        STREQ (conn->driver->name, "remote")) {
-        struct private_data *priv;
-
-       /* If we're here, the remote driver is already
-         * in use due to a) a QEMU uri, or b) a remote
-         * URI. So we can re-use existing connection
-         */
-        priv = conn->privateData;
-        remoteDriverLock(priv);
-        priv->localUses++;
-        conn->interfacePrivateData = priv;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else {
-        /* Using a non-remote driver, so we need to open a
-         * new connection for interface APIs, forcing it to
-         * use the UNIX transport. This handles Xen driver
-         * which doesn't have its own impl of the interface APIs.
-         */
-        struct private_data *priv;
-        int ret;
-        ret = remoteOpenSecondaryDriver(conn,
-                                        auth,
-                                        flags,
-                                        &priv);
-        if (ret == VIR_DRV_OPEN_SUCCESS)
-            conn->interfacePrivateData = priv;
-        return ret;
-    }
+    return remoteGenericOpen(conn, auth, flags, &conn->interfacePrivateData);
 }
 
 static int
-remoteInterfaceClose (virConnectPtr conn)
+remoteInterfaceClose(virConnectPtr conn)
 {
-    int rv = 0;
-    struct private_data *priv = conn->interfacePrivateData;
-
-    remoteDriverLock(priv);
-    priv->localUses--;
-    if (!priv->localUses) {
-        rv = doRemoteClose(conn, priv);
-        conn->interfacePrivateData = NULL;
-        remoteDriverUnlock(priv);
-        virMutexDestroy(&priv->lock);
-        VIR_FREE(priv);
-    }
-    if (priv)
-        remoteDriverUnlock(priv);
-    return rv;
+    return remoteGenericClose(conn, &conn->interfacePrivateData);
 }
 
 static int
@@ -3410,70 +3376,15 @@ done:
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteStorageOpen (virConnectPtr conn,
-                   virConnectAuthPtr auth,
-                   int flags)
+remoteStorageOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
-    if (inside_daemon)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->driver &&
-        STREQ (conn->driver->name, "remote")) {
-        struct private_data *priv = conn->privateData;
-        /* If we're here, the remote driver is already
-         * in use due to a) a QEMU uri, or b) a remote
-         * URI. So we can re-use existing connection
-         */
-        remoteDriverLock(priv);
-        priv->localUses++;
-        conn->storagePrivateData = priv;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else if (conn->networkDriver &&
-               STREQ (conn->networkDriver->name, "remote")) {
-        struct private_data *priv = conn->networkPrivateData;
-        remoteDriverLock(priv);
-        conn->storagePrivateData = priv;
-        priv->localUses++;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else {
-        /* Using a non-remote driver, so we need to open a
-         * new connection for network APIs, forcing it to
-         * use the UNIX transport. This handles Xen driver
-         * which doesn't have its own impl of the network APIs.
-         */
-        struct private_data *priv;
-        int ret;
-        ret = remoteOpenSecondaryDriver(conn,
-                                        auth,
-                                        flags,
-                                        &priv);
-        if (ret == VIR_DRV_OPEN_SUCCESS)
-            conn->storagePrivateData = priv;
-        return ret;
-    }
+    return remoteGenericOpen(conn, auth, flags, &conn->storagePrivateData);
 }
 
 static int
-remoteStorageClose (virConnectPtr conn)
+remoteStorageClose(virConnectPtr conn)
 {
-    int ret = 0;
-    struct private_data *priv = conn->storagePrivateData;
-
-    remoteDriverLock(priv);
-    priv->localUses--;
-    if (!priv->localUses) {
-        ret = doRemoteClose(conn, priv);
-        conn->storagePrivateData = NULL;
-        remoteDriverUnlock(priv);
-        virMutexDestroy(&priv->lock);
-        VIR_FREE(priv);
-    }
-    if (priv)
-        remoteDriverUnlock(priv);
-
-    return ret;
+    return remoteGenericClose(conn, &conn->storagePrivateData);
 }
 
 static int
@@ -3691,68 +3602,15 @@ done:
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteDevMonOpen(virConnectPtr conn,
-                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                 int flags ATTRIBUTE_UNUSED)
+remoteDevMonOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
-    if (inside_daemon)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->driver &&
-        STREQ (conn->driver->name, "remote")) {
-        struct private_data *priv = conn->privateData;
-        /* If we're here, the remote driver is already
-         * in use due to a) a QEMU uri, or b) a remote
-         * URI. So we can re-use existing connection
-         */
-        remoteDriverLock(priv);
-        priv->localUses++;
-        conn->devMonPrivateData = priv;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else if (conn->networkDriver &&
-               STREQ (conn->networkDriver->name, "remote")) {
-        struct private_data *priv = conn->networkPrivateData;
-        remoteDriverLock(priv);
-        conn->devMonPrivateData = priv;
-        priv->localUses++;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else {
-        /* Using a non-remote driver, so we need to open a
-         * new connection for network APIs, forcing it to
-         * use the UNIX transport. This handles Xen driver
-         * which doesn't have its own impl of the network APIs.
-         */
-        struct private_data *priv;
-        int ret;
-        ret = remoteOpenSecondaryDriver(conn,
-                                        auth,
-                                        flags,
-                                        &priv);
-        if (ret == VIR_DRV_OPEN_SUCCESS)
-            conn->devMonPrivateData = priv;
-        return ret;
-    }
+    return remoteGenericOpen(conn, auth, flags, &conn->devMonPrivateData);
 }
 
-static int remoteDevMonClose(virConnectPtr conn)
+static int
+remoteDevMonClose(virConnectPtr conn)
 {
-    int ret = 0;
-    struct private_data *priv = conn->devMonPrivateData;
-
-    remoteDriverLock(priv);
-    priv->localUses--;
-    if (!priv->localUses) {
-        ret = doRemoteClose(conn, priv);
-        conn->devMonPrivateData = NULL;
-        remoteDriverUnlock(priv);
-        virMutexDestroy(&priv->lock);
-        VIR_FREE(priv);
-    }
-    if (priv)
-        remoteDriverUnlock(priv);
-    return ret;
+    return remoteGenericClose(conn, &conn->devMonPrivateData);
 }
 
 static int remoteNodeListDevices(virConnectPtr conn,
@@ -3976,63 +3834,15 @@ done:
 /* ------------------------------------------------------------- */
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteNWFilterOpen (virConnectPtr conn,
-                    virConnectAuthPtr auth,
-                    int flags)
+remoteNWFilterOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
-    if (inside_daemon)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->driver &&
-        STREQ (conn->driver->name, "remote")) {
-        struct private_data *priv;
-
-       /* If we're here, the remote driver is already
-         * in use due to a) a QEMU uri, or b) a remote
-         * URI. So we can re-use existing connection
-         */
-        priv = conn->privateData;
-        remoteDriverLock(priv);
-        priv->localUses++;
-        conn->nwfilterPrivateData = priv;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else {
-        /* Using a non-remote driver, so we need to open a
-         * new connection for network filtering APIs, forcing it to
-         * use the UNIX transport. This handles Xen driver
-         * which doesn't have its own impl of the network filtering APIs.
-         */
-        struct private_data *priv;
-        int ret;
-        ret = remoteOpenSecondaryDriver(conn,
-                                        auth,
-                                        flags,
-                                        &priv);
-        if (ret == VIR_DRV_OPEN_SUCCESS)
-            conn->nwfilterPrivateData = priv;
-        return ret;
-    }
+    return remoteGenericOpen(conn, auth, flags, &conn->nwfilterPrivateData);
 }
 
 static int
-remoteNWFilterClose (virConnectPtr conn)
+remoteNWFilterClose(virConnectPtr conn)
 {
-    int rv = 0;
-    struct private_data *priv = conn->nwfilterPrivateData;
-
-    remoteDriverLock(priv);
-    priv->localUses--;
-    if (!priv->localUses) {
-        rv = doRemoteClose(conn, priv);
-        conn->nwfilterPrivateData = NULL;
-        remoteDriverUnlock(priv);
-        virMutexDestroy(&priv->lock);
-        VIR_FREE(priv);
-    }
-    if (priv)
-        remoteDriverUnlock(priv);
-    return rv;
+    return remoteGenericClose(conn, &conn->nwfilterPrivateData);
 }
 
 static virNWFilterPtr
@@ -5116,70 +4926,15 @@ no_memory:
 
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteSecretOpen (virConnectPtr conn,
-                  virConnectAuthPtr auth,
-                  int flags)
+remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
-    if (inside_daemon)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->driver &&
-        STREQ (conn->driver->name, "remote")) {
-        struct private_data *priv;
-
-        /* If we're here, the remote driver is already
-         * in use due to a) a QEMU uri, or b) a remote
-         * URI. So we can re-use existing connection
-         */
-        priv = conn->privateData;
-        remoteDriverLock(priv);
-        priv->localUses++;
-        conn->secretPrivateData = priv;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else if (conn->networkDriver &&
-               STREQ (conn->networkDriver->name, "remote")) {
-        struct private_data *priv = conn->networkPrivateData;
-        remoteDriverLock(priv);
-        conn->secretPrivateData = priv;
-        priv->localUses++;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else {
-        /* Using a non-remote driver, so we need to open a
-         * new connection for secret APIs, forcing it to
-         * use the UNIX transport.
-         */
-        struct private_data *priv;
-        int ret;
-        ret = remoteOpenSecondaryDriver(conn,
-                                        auth,
-                                        flags,
-                                        &priv);
-        if (ret == VIR_DRV_OPEN_SUCCESS)
-            conn->secretPrivateData = priv;
-        return ret;
-    }
+    return remoteGenericOpen(conn, auth, flags, &conn->secretPrivateData);
 }
 
 static int
 remoteSecretClose (virConnectPtr conn)
 {
-    int rv = 0;
-    struct private_data *priv = conn->secretPrivateData;
-
-    conn->secretPrivateData = NULL;
-    remoteDriverLock(priv);
-    priv->localUses--;
-    if (!priv->localUses) {
-        rv = doRemoteClose(conn, priv);
-        remoteDriverUnlock(priv);
-        virMutexDestroy(&priv->lock);
-        VIR_FREE(priv);
-    }
-    if (priv)
-        remoteDriverUnlock(priv);
-    return rv;
+    return remoteGenericClose(conn, &conn->secretPrivateData);
 }
 
 static int
