@@ -754,14 +754,9 @@ elsif ($opt_k) {
                           "AuthPolkit",
 
                           "CPUBaseline",
-                          "DomainBlockStats",
                           "DomainCreate",
                           "DomainDestroy",
                           "DomainGetAutostart",
-                          "DomainGetBlockInfo",
-                          "DomainGetInfo",
-                          "DomainGetJobInfo",
-                          "DomainInterfaceStats",
                           "DomainMigrateFinish",
                           "NWFilterDefineXML", # public API and XDR protocol mismatch
                           "DomainMigratePerform",
@@ -775,8 +770,6 @@ elsif ($opt_k) {
                           "ListDefinedInterfaces",
                           "ListNWFilters",
                           "SupportsFeature",
-                          "StorageVolGetInfo",
-                          "StoragePoolGetInfo",
                           "NodeListDevices",
                           "NodeGetCellsFreeMemory",
                           "ListDefinedNetworks",
@@ -786,7 +779,6 @@ elsif ($opt_k) {
                           "NetworkGetAutostart",
                           "StoragePoolGetAutostart",
                           "SecretSetValue",
-                          "NodeGetInfo",
                           "GetURI",
                           "ListInterfaces",
                           "ListDefinedStoragePools",
@@ -834,16 +826,13 @@ elsif ($opt_k) {
             next;
         }
 
+        # handle arguments to the function
         my @args_list = ();
         my @vars_list = ();
         my @setters_list = ();
-        my @ret_list = ();
         my $priv_src = "conn";
         my $priv_name = "privateData";
         my $call_args = "&args";
-        my $call_ret = "&ret";
-        my $single_ret_var = "int rv = -1";
-        my $single_ret_type = "int";
 
         if ($call->{args} eq "void") {
             $call_args = "NULL";
@@ -940,6 +929,10 @@ elsif ($opt_k) {
             }
         }
 
+        if (! @args_list) {
+            push(@args_list, "virConnectPtr conn");
+        }
+
         # fix priv_name for the NumOf* functions
         if ($priv_name eq "privateData" and
             !($call->{ProcName} =~ m/Domains/) and
@@ -949,13 +942,36 @@ elsif ($opt_k) {
             $priv_name = "${prefix}PrivateData";
         }
 
+        # handle return values of the function
+        my @ret_list = ();
+        my $call_ret = "&ret";
+        my $single_ret_var = "int rv = -1";
+        my $single_ret_type = "int";
+        my $multi_ret = 0;
+
+        if ($call->{ret} ne "void" and
+            scalar(@{$call->{ret_members}}) > 1) {
+            $multi_ret = 1;
+        }
+
         if ($call->{ret} eq "void") {
             $call_ret = "NULL";
         } else {
             push(@vars_list, "$call->{ret} ret");
 
             foreach my $ret_member (@{$call->{ret_members}}) {
-                if ($ret_member =~ m/remote_nonnull_string (\S+);/) {
+                if ($multi_ret) {
+                    if ($ret_member =~ m/(char|short|int|hyper) (\S+)\[\S+\];/) {
+                        push(@ret_list, "memcpy(result->$2, ret.$2, sizeof result->$2);");
+                    } elsif ($ret_member =~ m/char (\S+);/ or
+                        $ret_member =~ m/short (\S+);/ or
+                        $ret_member =~ m/int (\S+);/ or
+                        $ret_member =~ m/hyper (\S+);/) {
+                        push(@ret_list, "result->$1 = ret.$1;");
+                    } else {
+                        die "unhandled type for multi-return-value: $ret_member";
+                    }
+                } elsif ($ret_member =~ m/remote_nonnull_string (\S+);/) {
                     push(@ret_list, "rv = ret.$1;");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
@@ -1001,8 +1017,21 @@ elsif ($opt_k) {
             }
         }
 
-        if (! @args_list) {
-            push(@args_list, "virConnectPtr conn");
+        # select struct type for multi-return-value functions
+        if ($multi_ret) {
+            my $last_arg;
+            my $struct_name = $call->{ProcName};
+            $struct_name =~ s/Get//;
+
+            if ($call->{ProcName} eq "DomainGetBlockInfo") {
+                $last_arg = pop(@args_list);
+            }
+
+            push(@args_list, "vir${struct_name}Ptr result");
+
+            if (defined $last_arg) {
+                push(@args_list, $last_arg);
+            }
         }
 
         # print function
@@ -1051,7 +1080,9 @@ elsif ($opt_k) {
             print "    ";
             print join("\n    ", @ret_list);
             print "\n";
-        } else {
+        }
+
+        if ($multi_ret or !@ret_list) {
             print "    rv = 0;\n";
         }
 

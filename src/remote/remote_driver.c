@@ -1811,37 +1811,6 @@ done:
 }
 
 static int
-remoteNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
-{
-    int rv = -1;
-    remote_node_get_info_ret ret;
-    struct private_data *priv = conn->privateData;
-
-    remoteDriverLock(priv);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_INFO,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_remote_node_get_info_ret, (char *) &ret) == -1)
-        goto done;
-
-    if (virStrcpyStatic(info->model, ret.model) == NULL)
-        goto done;
-    info->memory = ret.memory;
-    info->cpus = ret.cpus;
-    info->mhz = ret.mhz;
-    info->nodes = ret.nodes;
-    info->sockets = ret.sockets;
-    info->cores = ret.cores;
-    info->threads = ret.threads;
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
 remoteNodeGetCellsFreeMemory(virConnectPtr conn,
                             unsigned long long *freeMems,
                             int startCell,
@@ -2285,37 +2254,6 @@ remoteDomainGetBlkioParameters (virDomainPtr domain,
 cleanup:
     xdr_free ((xdrproc_t) xdr_remote_domain_get_blkio_parameters_ret,
               (char *) &ret);
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
-remoteDomainGetInfo (virDomainPtr domain, virDomainInfoPtr info)
-{
-    int rv = -1;
-    remote_domain_get_info_args args;
-    remote_domain_get_info_ret ret;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_INFO,
-              (xdrproc_t) xdr_remote_domain_get_info_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_get_info_ret, (char *) &ret) == -1)
-        goto done;
-
-    info->state = ret.state;
-    info->maxMem = ret.maxMem;
-    info->memory = ret.memory;
-    info->nrVirtCpu = ret.nrVirtCpu;
-    info->cpuTime = ret.cpuTime;
-
-    rv = 0;
-
 done:
     remoteDriverUnlock(priv);
     return rv;
@@ -3035,78 +2973,6 @@ done:
 }
 
 static int
-remoteDomainBlockStats (virDomainPtr domain, const char *path,
-                        struct _virDomainBlockStats *stats)
-{
-    int rv = -1;
-    remote_domain_block_stats_args args;
-    remote_domain_block_stats_ret ret;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-    args.path = (char *) path;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_BLOCK_STATS,
-              (xdrproc_t) xdr_remote_domain_block_stats_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_block_stats_ret, (char *) &ret)
-        == -1)
-        goto done;
-
-    stats->rd_req = ret.rd_req;
-    stats->rd_bytes = ret.rd_bytes;
-    stats->wr_req = ret.wr_req;
-    stats->wr_bytes = ret.wr_bytes;
-    stats->errs = ret.errs;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
-remoteDomainInterfaceStats (virDomainPtr domain, const char *path,
-                            struct _virDomainInterfaceStats *stats)
-{
-    int rv = -1;
-    remote_domain_interface_stats_args args;
-    remote_domain_interface_stats_ret ret;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-    args.path = (char *) path;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_INTERFACE_STATS,
-              (xdrproc_t) xdr_remote_domain_interface_stats_args,
-                (char *) &args,
-              (xdrproc_t) xdr_remote_domain_interface_stats_ret,
-                (char *) &ret) == -1)
-        goto done;
-
-    stats->rx_bytes = ret.rx_bytes;
-    stats->rx_packets = ret.rx_packets;
-    stats->rx_errs = ret.rx_errs;
-    stats->rx_drop = ret.rx_drop;
-    stats->tx_bytes = ret.tx_bytes;
-    stats->tx_packets = ret.tx_packets;
-    stats->tx_errs = ret.tx_errs;
-    stats->tx_drop = ret.tx_drop;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
 remoteDomainMemoryStats (virDomainPtr domain,
                          struct _virDomainMemoryStat *stats,
                          unsigned int nr_stats)
@@ -3247,40 +3113,6 @@ remoteDomainMemoryPeek (virDomainPtr domain,
 
 cleanup:
     VIR_FREE(ret.buffer.buffer_val);
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
-remoteDomainGetBlockInfo (virDomainPtr domain,
-                          const char *path,
-                          virDomainBlockInfoPtr info,
-                          unsigned int flags)
-{
-    int rv = -1;
-    remote_domain_get_block_info_args args;
-    remote_domain_get_block_info_ret ret;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-    args.path = (char*)path;
-    args.flags = flags;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_BLOCK_INFO,
-              (xdrproc_t) xdr_remote_domain_get_block_info_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_get_block_info_ret, (char *) &ret) == -1)
-        goto done;
-
-    info->allocation = ret.allocation;
-    info->capacity = ret.capacity;
-    info->physical = ret.physical;
-
-    rv = 0;
 
 done:
     remoteDriverUnlock(priv);
@@ -3901,36 +3733,6 @@ done:
 }
 
 static int
-remoteStoragePoolGetInfo (virStoragePoolPtr pool, virStoragePoolInfoPtr info)
-{
-    int rv = -1;
-    remote_storage_pool_get_info_args args;
-    remote_storage_pool_get_info_ret ret;
-    struct private_data *priv = pool->conn->storagePrivateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_storage_pool (&args.pool, pool);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_GET_INFO,
-              (xdrproc_t) xdr_remote_storage_pool_get_info_args, (char *) &args,
-              (xdrproc_t) xdr_remote_storage_pool_get_info_ret, (char *) &ret) == -1)
-        goto done;
-
-    info->state = ret.state;
-    info->capacity = ret.capacity;
-    info->allocation = ret.allocation;
-    info->available = ret.available;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
 remoteStoragePoolGetAutostart (virStoragePoolPtr pool, int *autostart)
 {
     int rv = -1;
@@ -4008,35 +3810,6 @@ remoteStoragePoolListVolumes (virStoragePoolPtr pool, char **const names, int ma
 
 cleanup:
     xdr_free ((xdrproc_t) xdr_remote_storage_pool_list_volumes_ret, (char *) &ret);
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
-remoteStorageVolGetInfo (virStorageVolPtr vol, virStorageVolInfoPtr info)
-{
-    int rv = -1;
-    remote_storage_vol_get_info_args args;
-    remote_storage_vol_get_info_ret ret;
-    struct private_data *priv = vol->conn->storagePrivateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_storage_vol (&args.vol, vol);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_GET_INFO,
-              (xdrproc_t) xdr_remote_storage_vol_get_info_args, (char *) &args,
-              (xdrproc_t) xdr_remote_storage_vol_get_info_ret, (char *) &ret) == -1)
-        goto done;
-
-    info->type = ret.type;
-    info->capacity = ret.capacity;
-    info->allocation = ret.allocation;
-
-    rv = 0;
 
 done:
     remoteDriverUnlock(priv);
@@ -6224,45 +5997,6 @@ remoteCPUBaseline(virConnectPtr conn,
 done:
     remoteDriverUnlock(priv);
     return cpu;
-}
-
-
-static int
-remoteDomainGetJobInfo (virDomainPtr domain, virDomainJobInfoPtr info)
-{
-    int rv = -1;
-    remote_domain_get_job_info_args args;
-    remote_domain_get_job_info_ret ret;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_JOB_INFO,
-              (xdrproc_t) xdr_remote_domain_get_job_info_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_get_job_info_ret, (char *) &ret) == -1)
-        goto done;
-
-    info->type = ret.type;
-    info->timeElapsed = ret.timeElapsed;
-    info->timeRemaining = ret.timeRemaining;
-    info->dataTotal = ret.dataTotal;
-    info->dataProcessed = ret.dataProcessed;
-    info->dataRemaining = ret.dataRemaining;
-    info->memTotal = ret.memTotal;
-    info->memProcessed = ret.memProcessed;
-    info->memRemaining = ret.memRemaining;
-    info->fileTotal = ret.fileTotal;
-    info->fileProcessed = ret.fileProcessed;
-    info->fileRemaining = ret.fileRemaining;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
 }
 
 static int
