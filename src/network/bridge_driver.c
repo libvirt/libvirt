@@ -662,6 +662,13 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
         goto cleanup;
     }
 
+    if ((err = virFileMakePath(DNSMASQ_STATE_DIR)) != 0) {
+        virReportSystemError(err,
+                             _("cannot create directory %s"),
+                             DNSMASQ_STATE_DIR);
+        goto cleanup;
+    }
+
     cmd = virCommandNew(DNSMASQ);
     if (networkBuildDnsmasqArgv(network, ipdef, pidfile, cmd) < 0) {
         goto cleanup;
