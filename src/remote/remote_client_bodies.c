@@ -319,7 +319,32 @@ done:
 
 /* remoteDispatchDomainEventsRegisterAny has to be implemented manually */
 
-/* remoteDispatchDomainGetAutostart has to be implemented manually */
+static int
+remoteDomainGetAutostart(virDomainPtr dom, int *autostart)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_autostart_args args;
+    remote_domain_get_autostart_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_AUTOSTART,
+             (xdrproc_t)xdr_remote_domain_get_autostart_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_autostart_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (autostart) *autostart = ret.autostart;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* remoteDispatchDomainGetBlkioParameters has to be implemented manually */
 
@@ -1538,7 +1563,29 @@ done:
     return rv;
 }
 
-/* remoteDispatchGetLibVersion has to be implemented manually */
+static int
+remoteGetLibVersion(virConnectPtr conn, unsigned long *lib_ver)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_get_lib_version_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_GET_LIB_VERSION,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_get_lib_version_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (lib_ver) *lib_ver = ret.lib_ver;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteGetMaxVcpus(virConnectPtr conn, const char *type)
@@ -1596,7 +1643,29 @@ done:
 
 /* remoteDispatchGetURI has to be implemented manually */
 
-/* remoteDispatchGetVersion has to be implemented manually */
+static int
+remoteGetVersion(virConnectPtr conn, unsigned long *hv_ver)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_get_version_ret ret;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(conn, priv, 0, REMOTE_PROC_GET_VERSION,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_remote_get_version_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (hv_ver) *hv_ver = ret.hv_ver;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteInterfaceCreate(virInterfacePtr iface, unsigned int flags)
@@ -1953,7 +2022,32 @@ done:
     return rv;
 }
 
-/* remoteDispatchNetworkGetAutostart has to be implemented manually */
+static int
+remoteNetworkGetAutostart(virNetworkPtr net, int *autostart)
+{
+    int rv = -1;
+    struct private_data *priv = net->conn->networkPrivateData;
+    remote_network_get_autostart_args args;
+    remote_network_get_autostart_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_network(&args.net, net);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(net->conn, priv, 0, REMOTE_PROC_NETWORK_GET_AUTOSTART,
+             (xdrproc_t)xdr_remote_network_get_autostart_args, (char *)&args,
+             (xdrproc_t)xdr_remote_network_get_autostart_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (autostart) *autostart = ret.autostart;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static char *
 remoteNetworkGetBridgeName(virNetworkPtr net)
@@ -3015,7 +3109,32 @@ done:
     return rv;
 }
 
-/* remoteDispatchStoragePoolGetAutostart has to be implemented manually */
+static int
+remoteStoragePoolGetAutostart(virStoragePoolPtr pool, int *autostart)
+{
+    int rv = -1;
+    struct private_data *priv = pool->conn->storagePrivateData;
+    remote_storage_pool_get_autostart_args args;
+    remote_storage_pool_get_autostart_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool(&args.pool, pool);
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_GET_AUTOSTART,
+             (xdrproc_t)xdr_remote_storage_pool_get_autostart_args, (char *)&args,
+             (xdrproc_t)xdr_remote_storage_pool_get_autostart_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (autostart) *autostart = ret.autostart;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int
 remoteStoragePoolGetInfo(virStoragePoolPtr pool, virStoragePoolInfoPtr result)

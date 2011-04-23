@@ -1698,53 +1698,6 @@ done:
     return rv;
 }
 
-static int
-remoteGetVersion (virConnectPtr conn, unsigned long *hvVer)
-{
-    int rv = -1;
-    remote_get_version_ret ret;
-    struct private_data *priv = conn->privateData;
-
-    remoteDriverLock(priv);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (conn, priv, 0, REMOTE_PROC_GET_VERSION,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_remote_get_version_ret, (char *) &ret) == -1)
-        goto done;
-
-    if (hvVer) *hvVer = ret.hv_ver;
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
-remoteGetLibVersion (virConnectPtr conn, unsigned long *libVer)
-{
-    int rv = -1;
-    remote_get_lib_version_ret ret;
-    struct private_data *priv = conn->privateData;
-
-    remoteDriverLock(priv);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (conn, priv, 0, REMOTE_PROC_GET_LIB_VERSION,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_remote_get_lib_version_ret,
-              (char *) &ret) == -1)
-        goto done;
-
-    if (libVer) *libVer = ret.lib_ver;
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
 static int remoteIsSecure(virConnectPtr conn)
 {
     int rv = -1;
@@ -2783,32 +2736,6 @@ done:
     return rv;
 }
 
-static int
-remoteDomainGetAutostart (virDomainPtr domain, int *autostart)
-{
-    int rv = -1;
-    remote_domain_get_autostart_args args;
-    remote_domain_get_autostart_ret ret;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_AUTOSTART,
-              (xdrproc_t) xdr_remote_domain_get_autostart_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_get_autostart_ret, (char *) &ret) == -1)
-        goto done;
-
-    if (autostart) *autostart = ret.autostart;
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
 static char *
 remoteDomainGetSchedulerType (virDomainPtr domain, int *nparams)
 {
@@ -3300,33 +3227,6 @@ done:
     return rv;
 }
 
-static int
-remoteNetworkGetAutostart (virNetworkPtr network, int *autostart)
-{
-    int rv = -1;
-    remote_network_get_autostart_args args;
-    remote_network_get_autostart_ret ret;
-    struct private_data *priv = network->conn->networkPrivateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_network (&args.net, network);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (network->conn, priv, 0, REMOTE_PROC_NETWORK_GET_AUTOSTART,
-              (xdrproc_t) xdr_remote_network_get_autostart_args, (char *) &args,
-              (xdrproc_t) xdr_remote_network_get_autostart_ret, (char *) &ret) == -1)
-        goto done;
-
-    if (autostart) *autostart = ret.autostart;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
@@ -3731,34 +3631,6 @@ done:
     remoteDriverUnlock(priv);
     return rv;
 }
-
-static int
-remoteStoragePoolGetAutostart (virStoragePoolPtr pool, int *autostart)
-{
-    int rv = -1;
-    remote_storage_pool_get_autostart_args args;
-    remote_storage_pool_get_autostart_ret ret;
-    struct private_data *priv = pool->conn->storagePrivateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_storage_pool (&args.pool, pool);
-
-    memset (&ret, 0, sizeof ret);
-    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_GET_AUTOSTART,
-              (xdrproc_t) xdr_remote_storage_pool_get_autostart_args, (char *) &args,
-              (xdrproc_t) xdr_remote_storage_pool_get_autostart_ret, (char *) &ret) == -1)
-        goto done;
-
-    if (autostart) *autostart = ret.autostart;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
 
 static int
 remoteStoragePoolListVolumes (virStoragePoolPtr pool, char **const names, int maxnames)
