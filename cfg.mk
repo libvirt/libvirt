@@ -611,7 +611,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
 exclude_file_name_regexp--sc_prohibit_doubled_word = ^po/
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$|daemon/.*_dispatch_bodies\.c$$)
+  (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$|^daemon/.*_dispatch_bodies\.c$$|^src/remote/.*_client_bodies\.c$$)
 
 _src2=src/(util/util|libvirt|lxc/lxc_controller)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
@@ -633,9 +633,11 @@ exclude_file_name_regexp--sc_prohibit_strncpy = \
 
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/xml\.c$$
 
-exclude_file_name_regexp--sc_require_config_h = ^(examples/|daemon/.*_dispatch_bodies\.c$$)
+exclude_file_name_regexp--sc_require_config_h = \
+  ^(examples/|daemon/.*_dispatch_bodies\.c$$|src/remote/.*_client_bodies\.c$$)
 
-exclude_file_name_regexp--sc_require_config_h_first = ^(examples/|daemon/.*_dispatch_bodies\.c$$)
+exclude_file_name_regexp--sc_require_config_h_first = \
+  ^(examples/|daemon/.*_dispatch_bodies\.c$$|src/remote/.*_client_bodies\.c$$)
 
 exclude_file_name_regexp--sc_trailing_blank = (^docs/|\.(fig|gif|ico|png)$$)
 

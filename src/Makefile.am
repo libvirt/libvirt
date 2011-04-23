@@ -162,8 +162,19 @@ REMOTE_DRIVER_SOURCES =						\
 		remote/qemu_protocol.c				\
 		remote/qemu_protocol.h
 
+remote/remote_driver.c: remote/remote_client_bodies.c remote/qemu_client_bodies.c
+
+REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
+QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
+
+remote/remote_client_bodies.c: $(top_srcdir)/daemon/remote_generator.pl $(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl -c -k remote $(REMOTE_PROTOCOL) > $@
+
+remote/qemu_client_bodies.c: $(top_srcdir)/daemon/remote_generator.pl $(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl -k remote $(QEMU_PROTOCOL) > $@
+
 EXTRA_DIST += remote/remote_protocol.x remote/qemu_protocol.x \
-		remote/rpcgen_fix.pl
+		remote/rpcgen_fix.pl remote/remote_client_bodies.c remote/qemu_client_bodies.c
 
 # Ensure that we don't change the struct or member names or member ordering
 # in remote_protocol.x  The embedded perl below needs a few comments, and
