@@ -1818,6 +1818,7 @@ int
 virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
                           int *virtualDev)
 {
+    int result = -1;
     char present_name[32];
     char virtualDev_name[32];
     char *virtualDev_string = NULL;
@@ -1840,16 +1841,17 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
              controller);
 
     if (virVMXGetConfigBoolean(conf, present_name, present, false, true) < 0) {
-        goto failure;
+        goto cleanup;
     }
 
     if (! *present) {
-        return 0;
+        result = 0;
+        goto cleanup;
     }
 
     if (virVMXGetConfigString(conf, virtualDev_name, &virtualDev_string,
                               true) < 0) {
-        goto failure;
+        goto cleanup;
     }
 
     if (virtualDev_string != NULL) {
@@ -1870,16 +1872,16 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
                       _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' "
                         "or 'lsisas1068' or 'pvscsi' but found '%s'"),
                        virtualDev_name, virtualDev_string);
-            goto failure;
+            goto cleanup;
         }
     }
 
-    return 0;
+    result = 0;
 
-  failure:
+  cleanup:
     VIR_FREE(virtualDev_string);
 
-    return -1;
+    return result;
 }
 
 

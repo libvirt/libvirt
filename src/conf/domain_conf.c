@@ -4058,6 +4058,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
                         VIR_FREE(compression);
                         goto error;
                     }
+                    VIR_FREE(compression);
 
                     def->data.spice.zlib = compressionVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "playback")) {

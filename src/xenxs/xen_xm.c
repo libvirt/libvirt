@@ -983,8 +983,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     continue;
                 }
 
-                if (!(chr = virDomainChrDefNew()))
-                    goto cleanup;
                 if (!(chr = xenParseSxprChar(port, NULL)))
                     goto cleanup;
 
@@ -1034,6 +1032,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
     }
 
+    VIR_FREE(script);
     return def;
 
 no_memory:
