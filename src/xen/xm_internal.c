@@ -388,7 +388,6 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
 
         /* Build the full file path */
         if (!(path = virFileBuildPath(priv->configDir, ent->d_name, NULL))) {
-            virReportOOMError();
             closedir(dh);
             return -1;
         }
@@ -1134,10 +1133,8 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
         entry = NULL;
     }
 
-    if (!(filename = virFileBuildPath(priv->configDir, def->name, NULL))) {
-        virReportOOMError();
+    if (!(filename = virFileBuildPath(priv->configDir, def->name, NULL)))
         goto error;
-    }
 
     if (xenXMConfigSaveFile(conn, filename, def) < 0)
         goto error;

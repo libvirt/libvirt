@@ -1829,10 +1829,12 @@ virFileBuildPath(const char *dir, const char *name, const char *ext)
 
     if (ext == NULL) {
         if (virAsprintf(&path, "%s/%s", dir, name) < 0) {
+            virReportOOMError();
             return NULL;
         }
     } else {
         if (virAsprintf(&path, "%s/%s%s", dir, name, ext) < 0) {
+            virReportOOMError();
             return NULL;
         }
     }

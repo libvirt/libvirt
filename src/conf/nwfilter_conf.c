@@ -2588,10 +2588,8 @@ virNWFilterLoadAllConfigs(virConnectPtr conn,
         if (!virFileHasSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL))) {
-            virReportOOMError();
+        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL)))
             continue;
-        }
 
         nwfilter = virNWFilterObjLoad(conn, nwfilters, entry->d_name, path);
         if (nwfilter)
@@ -2627,7 +2625,6 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
 
         if (!(nwfilter->configFile = virFileBuildPath(driver->configDir,
                                                       def->name, ".xml"))) {
-            virReportOOMError();
             return -1;
         }
     }

@@ -415,7 +415,6 @@ xenInotifyOpen(virConnectPtr conn,
 
             /* Build the full file path */
             if (!(path = virFileBuildPath(priv->configDir, ent->d_name, NULL))) {
-                virReportOOMError();
                 closedir(dh);
                 return -1;
             }

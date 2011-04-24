@@ -1483,14 +1483,11 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
         if (!virFileHasSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL))) {
-            virReportOOMError();
+        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL)))
             continue;
-        }
 
         if (!(autostartLink = virFileBuildPath(autostartDir, entry->d_name,
                                                NULL))) {
-            virReportOOMError();
             VIR_FREE(path);
             continue;
         }
@@ -1529,13 +1526,11 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
 
         if (!(pool->configFile = virFileBuildPath(driver->configDir,
                                                   def->name, ".xml"))) {
-            virReportOOMError();
             return -1;
         }
 
         if (!(pool->autostartLink = virFileBuildPath(driver->autostartDir,
                                                      def->name, ".xml"))) {
-            virReportOOMError();
             VIR_FREE(pool->configFile);
             return -1;
         }
