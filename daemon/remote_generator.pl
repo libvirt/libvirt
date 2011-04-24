@@ -737,7 +737,6 @@ elsif ($opt_k) {
                           "DomainEventsRegisterAny",
                           "DomainMigratePrepareTunnel",
                           "DomainOpenConsole",
-                          "DomainPinVcpu",
                           "DomainSetSchedulerParameters",
                           "DomainSetMemoryParameters",
                           "DomainSetBlkioParameters",
@@ -751,19 +750,13 @@ elsif ($opt_k) {
                           "AuthSaslStep",
                           "AuthPolkit",
 
-                          "CPUBaseline",
                           "DomainCreate",
                           "DomainDestroy",
-                          "DomainMigrateFinish",
-                          "NWFilterDefineXML", # public API and XDR protocol mismatch
-                          "DomainMigratePerform",
-                          "DomainMigrateFinish2",
                           "FindStoragePoolSources",
                           "IsSecure",
                           "SupportsFeature",
                           "NodeGetCellsFreeMemory",
                           "ListDomains",
-                          "SecretSetValue",
                           "GetURI",
                           "NodeDeviceDettach",
                           "NodeDeviceReset",
@@ -809,6 +802,7 @@ elsif ($opt_k) {
         # handle arguments to the function
         my @args_list = ();
         my @vars_list = ();
+        my @args_check_list = ();
         my @setters_list = ();
         my $priv_src = "conn";
         my $priv_name = "privateData";
@@ -862,11 +856,30 @@ elsif ($opt_k) {
                 } elsif ($args_member =~ m/^remote_string (\S+);/) {
                     push(@args_list, "const char *$1");
                     push(@setters_list, "args.$1 = $1 ? (char **)&$1 : NULL;");
+                } elsif ($args_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;/) {
+                    push(@args_list, "const char **$1");
+                    push(@args_list, "unsigned int ${1}len");
+                    push(@setters_list, "args.$1.${1}_val = (char **)$1;");
+                    push(@setters_list, "args.$1.${1}_len = ${1}len;");
+                    push(@args_check_list, { name => "\"$1\"", arg => "${1}len", limit => $2 });
                 } elsif ($args_member =~ m/^remote_nonnull_string (\S+);/) {
                     push(@args_list, "const char *$1");
                     push(@setters_list, "args.$1 = (char *)$1;");
-                } elsif ($args_member =~ m/(\S+)<\S+>;/) {
-                    # ignored for now
+                } elsif ($args_member =~ m/(\S+)<(\S+)>;/) {
+                    if ($call->{ProcName} eq "SecretSetValue") {
+                        push(@args_list, "const unsigned char *$1");
+                        push(@args_list, "size_t ${1}len");
+                    } elsif ($call->{ProcName} eq "DomainPinVcpu") {
+                        push(@args_list, "unsigned char *$1");
+                        push(@args_list, "int ${1}len");
+                    } else {
+                        push(@args_list, "const char *$1");
+                        push(@args_list, "int ${1}len");
+                    }
+
+                    push(@setters_list, "args.$1.${1}_val = (char *)$1;");
+                    push(@setters_list, "args.$1.${1}_len = ${1}len;");
+                    push(@args_check_list, { name => "\"$1\"", arg => "${1}len", limit => $2 });
                 } elsif ($args_member =~ m/^(.*) (\S+);/) {
                     my $type_name = $1;
                     my $arg_name = $2;
@@ -884,6 +897,9 @@ elsif ($opt_k) {
                             $type_name = "unsigned int";
                         } elsif ($arg_name eq "nvcpus" and
                                  $call->{ProcName} eq "DomainSetVcpus") {
+                            $type_name = "unsigned int";
+                        } elsif ($arg_name eq "vcpu" and
+                                 $call->{ProcName} eq "DomainPinVcpu") {
                             $type_name = "unsigned int";
                         }
                     }
@@ -911,6 +927,11 @@ elsif ($opt_k) {
 
         if (! @args_list) {
             push(@args_list, "virConnectPtr conn");
+        }
+
+        if ($call->{ProcName} eq "NWFilterDefineXML") {
+            # fix public API and XDR protocol mismatch
+            push(@args_list, "unsigned int flags ATTRIBUTE_UNUSED");
         }
 
         # fix priv_name for the NumOf* functions
@@ -1085,6 +1106,16 @@ elsif ($opt_k) {
 
         print "\n";
         print "    remoteDriverLock(priv);\n";
+
+        foreach my $args_check (@args_check_list) {
+            print "\n";
+            print "    if ($args_check->{arg} > $args_check->{limit}) {\n";
+            print "        remoteError(VIR_ERR_RPC,\n";
+            print "                    _(\"%s length greater than maximum: %d > %d\"),\n";
+            print "                    $args_check->{name}, (int)$args_check->{arg}, $args_check->{limit});\n";
+            print "        goto done;\n";
+            print "    }\n";
+        }
 
         if ($single_ret_as_list) {
             print "\n";

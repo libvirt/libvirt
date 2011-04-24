@@ -2213,42 +2213,6 @@ done:
 }
 
 static int
-remoteDomainPinVcpu (virDomainPtr domain,
-                     unsigned int vcpu,
-                     unsigned char *cpumap,
-                     int maplen)
-{
-    int rv = -1;
-    remote_domain_pin_vcpu_args args;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    if (maplen > REMOTE_CPUMAP_MAX) {
-        remoteError(VIR_ERR_RPC,
-                    _("map length greater than maximum: %d > %d"),
-                    maplen, REMOTE_CPUMAP_MAX);
-        goto done;
-    }
-
-    make_nonnull_domain (&args.dom, domain);
-    args.vcpu = vcpu;
-    args.cpumap.cpumap_len = maplen;
-    args.cpumap.cpumap_val = (char *) cpumap;
-
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_PIN_VCPU,
-              (xdrproc_t) xdr_remote_domain_pin_vcpu_args, (char *) &args,
-              (xdrproc_t) xdr_void, (char *) NULL) == -1)
-        goto done;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
 remoteDomainGetVcpus (virDomainPtr domain,
                       virVcpuInfoPtr info,
                       int maxinfo,
@@ -2442,76 +2406,6 @@ done:
 }
 
 static int
-remoteDomainMigratePerform (virDomainPtr domain,
-                            const char *cookie,
-                            int cookielen,
-                            const char *uri,
-                            unsigned long flags,
-                            const char *dname,
-                            unsigned long resource)
-{
-    int rv = -1;
-    remote_domain_migrate_perform_args args;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-    args.cookie.cookie_len = cookielen;
-    args.cookie.cookie_val = (char *) cookie;
-    args.uri = (char *) uri;
-    args.flags = flags;
-    args.dname = dname == NULL ? NULL : (char **) &dname;
-    args.resource = resource;
-
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PERFORM,
-              (xdrproc_t) xdr_remote_domain_migrate_perform_args, (char *) &args,
-              (xdrproc_t) xdr_void, (char *) NULL) == -1)
-        goto done;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static virDomainPtr
-remoteDomainMigrateFinish (virConnectPtr dconn,
-                           const char *dname,
-                           const char *cookie,
-                           int cookielen,
-                           const char *uri,
-                           unsigned long flags)
-{
-    virDomainPtr ddom = NULL;
-    remote_domain_migrate_finish_args args;
-    remote_domain_migrate_finish_ret ret;
-    struct private_data *priv = dconn->privateData;
-
-    remoteDriverLock(priv);
-
-    args.dname = (char *) dname;
-    args.cookie.cookie_len = cookielen;
-    args.cookie.cookie_val = (char *) cookie;
-    args.uri = (char *) uri;
-    args.flags = flags;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_FINISH,
-              (xdrproc_t) xdr_remote_domain_migrate_finish_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_migrate_finish_ret, (char *) &ret) == -1)
-        goto done;
-
-    ddom = get_nonnull_domain (dconn, ret.ddom);
-    xdr_free ((xdrproc_t) &xdr_remote_domain_migrate_finish_ret, (char *) &ret);
-
-done:
-    remoteDriverUnlock(priv);
-    return ddom;
-}
-
-static int
 remoteDomainMigratePrepare2 (virConnectPtr dconn,
                              char **cookie, int *cookielen,
                              const char *uri_in, char **uri_out,
@@ -2567,43 +2461,6 @@ error:
     if (ret.uri_out)
         VIR_FREE(*ret.uri_out);
     goto done;
-}
-
-static virDomainPtr
-remoteDomainMigrateFinish2 (virConnectPtr dconn,
-                            const char *dname,
-                            const char *cookie,
-                            int cookielen,
-                            const char *uri,
-                            unsigned long flags,
-                            int retcode)
-{
-    virDomainPtr ddom = NULL;
-    remote_domain_migrate_finish2_args args;
-    remote_domain_migrate_finish2_ret ret;
-    struct private_data *priv = dconn->privateData;
-
-    remoteDriverLock(priv);
-
-    args.dname = (char *) dname;
-    args.cookie.cookie_len = cookielen;
-    args.cookie.cookie_val = (char *) cookie;
-    args.uri = (char *) uri;
-    args.flags = flags;
-    args.retcode = retcode;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_FINISH2,
-              (xdrproc_t) xdr_remote_domain_migrate_finish2_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_migrate_finish2_ret, (char *) &ret) == -1)
-        goto done;
-
-    ddom = get_nonnull_domain (dconn, ret.ddom);
-    xdr_free ((xdrproc_t) &xdr_remote_domain_migrate_finish2_ret, (char *) &ret);
-
-done:
-    remoteDriverUnlock(priv);
-    return ddom;
 }
 
 static int
@@ -3263,33 +3120,6 @@ static int
 remoteNWFilterClose(virConnectPtr conn)
 {
     return remoteGenericClose(conn, &conn->nwfilterPrivateData);
-}
-
-static virNWFilterPtr
-remoteNWFilterDefineXML (virConnectPtr conn, const char *xmlDesc,
-                         unsigned int flags ATTRIBUTE_UNUSED)
-{
-    virNWFilterPtr net = NULL;
-    remote_nwfilter_define_xml_args args;
-    remote_nwfilter_define_xml_ret ret;
-    struct private_data *priv = conn->nwfilterPrivateData;
-
-    remoteDriverLock(priv);
-
-    args.xml = (char *) xmlDesc;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (conn, priv, 0, REMOTE_PROC_NWFILTER_DEFINE_XML,
-              (xdrproc_t) xdr_remote_nwfilter_define_xml_args, (char *) &args,
-              (xdrproc_t) xdr_remote_nwfilter_define_xml_ret, (char *) &ret) == -1)
-        goto done;
-
-    net = get_nonnull_nwfilter (conn, ret.nwfilter);
-    xdr_free ((xdrproc_t) &xdr_remote_nwfilter_define_xml_ret, (char *) &ret);
-
-done:
-    remoteDriverUnlock(priv);
-    return net;
 }
 
 /*----------------------------------------------------------------------*/
@@ -4298,33 +4128,6 @@ remoteSecretClose (virConnectPtr conn)
     return remoteGenericClose(conn, &conn->secretPrivateData);
 }
 
-static int
-remoteSecretSetValue (virSecretPtr secret, const unsigned char *value,
-                      size_t value_size, unsigned int flags)
-{
-    int rv = -1;
-    remote_secret_set_value_args args;
-    struct private_data *priv = secret->conn->secretPrivateData;
-
-    remoteDriverLock (priv);
-
-    make_nonnull_secret (&args.secret, secret);
-    args.value.value_len = value_size;
-    args.value.value_val = (char *) value;
-    args.flags = flags;
-
-    if (call (secret->conn, priv, 0, REMOTE_PROC_SECRET_SET_VALUE,
-              (xdrproc_t) xdr_remote_secret_set_value_args, (char *) &args,
-              (xdrproc_t) xdr_void, (char *) NULL) == -1)
-        goto done;
-
-    rv = 0;
-
-done:
-    remoteDriverUnlock (priv);
-    return rv;
-}
-
 static unsigned char *
 remoteSecretGetValue (virSecretPtr secret, size_t *value_size,
                       unsigned int flags)
@@ -4899,36 +4702,6 @@ done:
     remoteDriverUnlock(priv);
 
     return rv;
-}
-
-static char *
-remoteCPUBaseline(virConnectPtr conn,
-                  const char **xmlCPUs,
-                  unsigned int ncpus,
-                  unsigned int flags)
-{
-    struct private_data *priv = conn->privateData;
-    remote_cpu_baseline_args args;
-    remote_cpu_baseline_ret ret;
-    char *cpu = NULL;
-
-    remoteDriverLock(priv);
-
-    args.xmlCPUs.xmlCPUs_len = ncpus;
-    args.xmlCPUs.xmlCPUs_val = (char **) xmlCPUs;
-    args.flags = flags;
-
-    memset(&ret, 0, sizeof (ret));
-    if (call(conn, priv, 0, REMOTE_PROC_CPU_BASELINE,
-             (xdrproc_t) xdr_remote_cpu_baseline_args, (char *) &args,
-             (xdrproc_t) xdr_remote_cpu_baseline_ret, (char *) &ret) == -1)
-        goto done;
-
-    cpu = ret.cpu;
-
-done:
-    remoteDriverUnlock(priv);
-    return cpu;
 }
 
 static int remoteDomainEventRegisterAny(virConnectPtr conn,
