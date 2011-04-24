@@ -367,7 +367,7 @@ struct remote_memory_param {
  * connection).  Errors are returned implicitly in the RPC protocol.
  *
  * Please follow the naming convention carefully - this file is
- * parsed by 'remote_generate_stubs.pl'.
+ * parsed by 'remote_generator.pl'.
  */
 
 struct remote_open_args {

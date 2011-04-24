@@ -23,7 +23,7 @@ AVAHI_SOURCES =						\
 
 DISTCLEANFILES =
 EXTRA_DIST =						\
-	remote_generate_stubs.pl			\
+	remote_generator.pl				\
 	libvirtd.conf					\
 	libvirtd.init.in				\
 	libvirtd.upstart				\
@@ -216,29 +216,29 @@ remote.h: \
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
 
-remote_dispatch_prototypes.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -c -p remote $(REMOTE_PROTOCOL) > $@
+remote_dispatch_prototypes.h: $(srcdir)/remote_generator.pl $(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -p remote $(REMOTE_PROTOCOL) > $@
 
-remote_dispatch_table.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -c -t remote $(REMOTE_PROTOCOL) > $@
+remote_dispatch_table.h: $(srcdir)/remote_generator.pl $(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -t remote $(REMOTE_PROTOCOL) > $@
 
-remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -c -a remote $(REMOTE_PROTOCOL) > $@
+remote_dispatch_args.h: $(srcdir)/remote_generator.pl $(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -a remote $(REMOTE_PROTOCOL) > $@
 
-remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -c -r remote $(REMOTE_PROTOCOL) > $@
+remote_dispatch_ret.h: $(srcdir)/remote_generator.pl $(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -r remote $(REMOTE_PROTOCOL) > $@
 
-qemu_dispatch_prototypes.h: $(srcdir)/remote_generate_stubs.pl $(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -p qemu $(QEMU_PROTOCOL) > $@
+qemu_dispatch_prototypes.h: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -p qemu $(QEMU_PROTOCOL) > $@
 
-qemu_dispatch_table.h: $(srcdir)/remote_generate_stubs.pl $(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -t qemu $(QEMU_PROTOCOL) > $@
+qemu_dispatch_table.h: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -t qemu $(QEMU_PROTOCOL) > $@
 
-qemu_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl $(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -a qemu $(QEMU_PROTOCOL) > $@
+qemu_dispatch_args.h: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -a qemu $(QEMU_PROTOCOL) > $@
 
-qemu_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl $(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -r qemu $(QEMU_PROTOCOL) > $@
+qemu_dispatch_ret.h: $(srcdir)/remote_generator.pl $(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -r qemu $(QEMU_PROTOCOL) > $@
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
                   libvirtd.uml.logrotate libvirtd.logrotate
