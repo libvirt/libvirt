@@ -27,12 +27,8 @@ int virtTestRun(const char *title,
                 int nloops,
                 int (*body)(const void *data),
                 const void *data);
-int virtTestLoadFile(const char *name,
-                     char **buf,
-                     int buflen);
-int virtTestCaptureProgramOutput(const char *const argv[],
-                                 char **buf,
-                                 int buflen);
+int virtTestLoadFile(const char *file, char **buf);
+int virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen);
 
 int virtTestClearLineRegex(const char *pattern,
                            char *string);

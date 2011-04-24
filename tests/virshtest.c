@@ -6,9 +6,8 @@
 
 #include "internal.h"
 #include "xml.h"
+#include "util.h"
 #include "testutils.h"
-
-#define MAX_FILE 4096
 
 #define DOM_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
 
@@ -45,41 +44,31 @@ static int testFilterLine(char *buffer,
   return 0;
 }
 
-static int testCompareOutputLit(const char *expectData,
-                                const char *filter, const char *const argv[]) {
-  char actualData[MAX_FILE];
-  char *actualPtr = &(actualData[0]);
+static int
+testCompareOutputLit(const char *expectData,
+                     const char *filter, const char *const argv[])
+{
+    int result = -1;
+    char *actualData = NULL;
 
-  if (virtTestCaptureProgramOutput(argv, &actualPtr, MAX_FILE) < 0)
-    return -1;
+    if (virtTestCaptureProgramOutput(argv, &actualData, 4096) < 0)
+        goto cleanup;
 
-  if (filter)
-    if (testFilterLine(actualData, filter) < 0)
-      return -1;
+    if (filter && testFilterLine(actualData, filter) < 0)
+        goto cleanup;
 
-  if (STRNEQ(expectData, actualData)) {
-      virtTestDifference(stderr, expectData, actualData);
-      return -1;
-  }
+    if (STRNEQ(expectData, actualData)) {
+        virtTestDifference(stderr, expectData, actualData);
+        goto cleanup;
+    }
 
-  return 0;
+    result = 0;
+
+cleanup:
+    free(actualData);
+
+    return result;
 }
-
-#if unused
-static int testCompareOutput(const char *expect_rel, const char *filter,
-                             const char *const argv[]) {
-  char expectData[MAX_FILE];
-  char *expectPtr = &(expectData[0]);
-  char expect[PATH_MAX];
-
-  snprintf(expect, sizeof expect - 1, "%s/%s", abs_srcdir, expect_rel);
-
-  if (virtTestLoadFile(expect, &expectPtr, MAX_FILE) < 0)
-    return -1;
-
-  return testCompareOutputLit(expectData, filter, argv);
-}
-#endif
 
 #define VIRSH_DEFAULT     "../tools/virsh", \
     "--connect", \
@@ -233,16 +222,14 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char buffer[PATH_MAX];
 
 #ifdef WIN32
     exit (EXIT_AM_SKIP);
 #endif
 
-    snprintf(buffer, PATH_MAX-1,
-             "test://%s/../examples/xml/test/testnode.xml", abs_srcdir);
-    buffer[PATH_MAX-1] = '\0';
-    custom_uri = buffer;
+    if (virAsprintf(&custom_uri, "test://%s/../examples/xml/test/testnode.xml",
+                    abs_srcdir) < 0)
+        return EXIT_FAILURE;
 
     if (virtTestRun("virsh list (default)",
                     1, testCompareListDefault, NULL) != 0)
@@ -394,6 +381,7 @@ mymain(void)
 
 #undef DO_TEST
 
+    free(custom_uri);
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

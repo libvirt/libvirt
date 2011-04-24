@@ -16,23 +16,19 @@
 #include "nwfilter_conf.h"
 #include "testutilsqemu.h"
 
-#define MAX_FILE 4096
-
-
-static int testCompareXMLToXMLFiles(const char *inxml,
-                                    const char *outxml,
-                                    bool expect_error) {
-    char inXmlData[MAX_FILE];
-    char *inXmlPtr = &(inXmlData[0]);
-    char outXmlData[MAX_FILE];
-    char *outXmlPtr = &(outXmlData[0]);
+static int
+testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
+                         bool expect_error)
+{
+    char *inXmlData = NULL;
+    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virNWFilterDefPtr dev = NULL;
 
-    if (virtTestLoadFile(inxml, &inXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(inxml, &inXmlData) < 0)
         goto fail;
-    if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
     virResetLastError();
@@ -59,6 +55,8 @@ static int testCompareXMLToXMLFiles(const char *inxml,
     ret = 0;
 
  fail:
+    free(inXmlData);
+    free(outXmlData);
     free(actual);
     virNWFilterDefFree(dev);
     return ret;
@@ -69,17 +67,29 @@ typedef struct test_parms {
     bool expect_warning;
 } test_parms;
 
-static int testCompareXMLToXMLHelper(const void *data) {
+static int
+testCompareXMLToXMLHelper(const void *data)
+{
+    int result = -1;
     const test_parms *tp = data;
-    char inxml[PATH_MAX];
-    char outxml[PATH_MAX];
-    snprintf(inxml, PATH_MAX, "%s/nwfilterxml2xmlin/%s.xml",
-             abs_srcdir, tp->name);
-    snprintf(outxml, PATH_MAX, "%s/nwfilterxml2xmlout/%s.xml",
-             abs_srcdir, tp->name);
-    return testCompareXMLToXMLFiles(inxml, outxml, tp->expect_warning);
-}
+    char *inxml = NULL;
+    char *outxml = NULL;
 
+    if (virAsprintf(&inxml, "%s/nwfilterxml2xmlin/%s.xml",
+                    abs_srcdir, tp->name) < 0 ||
+        virAsprintf(&outxml, "%s/nwfilterxml2xmlout/%s.xml",
+                    abs_srcdir, tp->name) < 0) {
+        goto cleanup;
+    }
+
+    result = testCompareXMLToXMLFiles(inxml, outxml, tp->expect_warning);
+
+cleanup:
+    free(inxml);
+    free(outxml);
+
+    return result;
+}
 
 static int
 mymain(void)

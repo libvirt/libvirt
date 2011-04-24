@@ -13,28 +13,23 @@
 #include "storage_conf.h"
 #include "testutilsqemu.h"
 
-#define MAX_FILE 4096
-
-
-static int testCompareXMLToXMLFiles(const char *poolxml,
-                                    const char *inxml,
-                                    const char *outxml) {
-    char poolXmlData[MAX_FILE];
-    char *poolXmlPtr = &(poolXmlData[0]);
-    char inXmlData[MAX_FILE];
-    char *inXmlPtr = &(inXmlData[0]);
-    char outXmlData[MAX_FILE];
-    char *outXmlPtr = &(outXmlData[0]);
+static int
+testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,
+                         const char *outxml)
+{
+    char *poolXmlData = NULL;
+    char *inXmlData = NULL;
+    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virStoragePoolDefPtr pool = NULL;
     virStorageVolDefPtr dev = NULL;
 
-    if (virtTestLoadFile(poolxml, &poolXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(poolxml, &poolXmlData) < 0)
         goto fail;
-    if (virtTestLoadFile(inxml, &inXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(inxml, &inXmlData) < 0)
         goto fail;
-    if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
     if (!(pool = virStoragePoolDefParseString(poolXmlData)))
@@ -54,6 +49,9 @@ static int testCompareXMLToXMLFiles(const char *poolxml,
     ret = 0;
 
  fail:
+    free(poolXmlData);
+    free(inXmlData);
+    free(outXmlData);
     free(actual);
     virStoragePoolDefFree(pool);
     virStorageVolDefFree(dev);
@@ -65,19 +63,32 @@ struct testInfo {
     const char *name;
 };
 
-static int testCompareXMLToXMLHelper(const void *data) {
-    char poolxml[PATH_MAX];
-    char inxml[PATH_MAX];
-    char outxml[PATH_MAX];
+static int
+testCompareXMLToXMLHelper(const void *data)
+{
+    int result = -1;
     const struct testInfo *info = data;
+    char *poolxml = NULL;
+    char *inxml = NULL;
+    char *outxml = NULL;
 
-    snprintf(poolxml, PATH_MAX, "%s/storagepoolxml2xmlin/%s.xml",
-             abs_srcdir, (const char*)info->pool);
-    snprintf(inxml, PATH_MAX, "%s/storagevolxml2xmlin/%s.xml",
-             abs_srcdir, (const char*)info->name);
-    snprintf(outxml, PATH_MAX, "%s/storagevolxml2xmlout/%s.xml",
-             abs_srcdir, (const char*)info->name);
-    return testCompareXMLToXMLFiles(poolxml, inxml, outxml);
+    if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
+                    abs_srcdir, info->pool) < 0 ||
+        virAsprintf(&inxml, "%s/storagevolxml2xmlin/%s.xml",
+                    abs_srcdir, info->name) < 0 ||
+        virAsprintf(&outxml, "%s/storagevolxml2xmlout/%s.xml",
+                    abs_srcdir, info->name) < 0) {
+        goto cleanup;
+    }
+
+    result = testCompareXMLToXMLFiles(poolxml, inxml, outxml);
+
+cleanup:
+    free(poolxml);
+    free(inxml);
+    free(outxml);
+
+    return result;
 }
 
 

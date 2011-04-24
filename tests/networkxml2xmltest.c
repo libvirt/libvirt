@@ -13,21 +13,18 @@
 #include "network_conf.h"
 #include "testutilsqemu.h"
 
-#define MAX_FILE 4096
-
-
-static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
-    char inXmlData[MAX_FILE];
-    char *inXmlPtr = &(inXmlData[0]);
-    char outXmlData[MAX_FILE];
-    char *outXmlPtr = &(outXmlData[0]);
+static int
+testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
+{
+    char *inXmlData = NULL;
+    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virNetworkDefPtr dev = NULL;
 
-    if (virtTestLoadFile(inxml, &inXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(inxml, &inXmlData) < 0)
         goto fail;
-    if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
     if (!(dev = virNetworkDefParseString(inXmlData)))
@@ -44,21 +41,35 @@ static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
     ret = 0;
 
  fail:
+    free(inXmlData);
+    free(outXmlData);
     free(actual);
     virNetworkDefFree(dev);
     return ret;
 }
 
-static int testCompareXMLToXMLHelper(const void *data) {
-    char inxml[PATH_MAX];
-    char outxml[PATH_MAX];
-    snprintf(inxml, PATH_MAX, "%s/networkxml2xmlin/%s.xml",
-             abs_srcdir, (const char*)data);
-    snprintf(outxml, PATH_MAX, "%s/networkxml2xmlout/%s.xml",
-             abs_srcdir, (const char*)data);
-    return testCompareXMLToXMLFiles(inxml, outxml);
-}
+static int
+testCompareXMLToXMLHelper(const void *data)
+{
+    int result = -1;
+    char *inxml = NULL;
+    char *outxml = NULL;
 
+    if (virAsprintf(&inxml, "%s/networkxml2xmlin/%s.xml",
+                    abs_srcdir, (const char*)data) < 0 ||
+        virAsprintf(&outxml, "%s/networkxml2xmlout/%s.xml",
+                    abs_srcdir, (const char*)data) < 0) {
+        goto cleanup;
+    }
+
+    result = testCompareXMLToXMLFiles(inxml, outxml);
+
+cleanup:
+    free(inxml);
+    free(outxml);
+
+    return result;
+}
 
 static int
 mymain(void)

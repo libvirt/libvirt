@@ -173,17 +173,16 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
     return ret;
 }
 
-/* Read FILE into buffer BUF of length BUFLEN.
-   Upon any failure, or if FILE appears to contain more than BUFLEN bytes,
-   diagnose it and return -1, but don't bother trying to preserve errno.
-   Otherwise, return the number of bytes copied into BUF. */
-int virtTestLoadFile(const char *file,
-                     char **buf,
-                     int buflen) {
+/* Allocate BUF to the size of FILE. Read FILE into buffer BUF.
+   Upon any failure, diagnose it and return -1, but don't bother trying
+   to preserve errno. Otherwise, return the number of bytes copied into BUF. */
+int
+virtTestLoadFile(const char *file, char **buf)
+{
     FILE *fp = fopen(file, "r");
     struct stat st;
-    char *tmp = *buf;
-    int len, tmplen = buflen;
+    char *tmp;
+    int len, tmplen, buflen;
 
     if (!fp) {
         fprintf (stderr, "%s: failed to open: %s\n", file, strerror(errno));
@@ -196,17 +195,23 @@ int virtTestLoadFile(const char *file,
         return -1;
     }
 
-    if (st.st_size > (buflen-1)) {
-        fprintf (stderr, "%s: larger than buffer (> %d)\n", file, buflen-1);
+    tmplen = buflen = st.st_size + 1;
+
+    if (VIR_ALLOC_N(*buf, buflen) < 0) {
+        fprintf (stderr, "%s: larger than available memory (> %d)\n", file, buflen);
         VIR_FORCE_FCLOSE(fp);
         return -1;
     }
 
+    tmp = *buf;
     (*buf)[0] = '\0';
     if (st.st_size) {
         /* read the file line by line */
         while (fgets(tmp, tmplen, fp) != NULL) {
             len = strlen(tmp);
+            /* stop on an empty line */
+            if (len == 0)
+                break;
             /* remove trailing backslash-newline pair */
             if (len >= 2 && tmp[len-2] == '\\' && tmp[len-1] == '\n') {
                 len -= 2;
@@ -219,6 +224,7 @@ int virtTestLoadFile(const char *file,
         if (ferror(fp)) {
             fprintf (stderr, "%s: read failed: %s\n", file, strerror(errno));
             VIR_FORCE_FCLOSE(fp);
+            free(*buf);
             return -1;
         }
     }
@@ -268,10 +274,11 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
     VIR_FORCE_CLOSE(stdinfd);
 }
 
-int virtTestCaptureProgramOutput(const char *const argv[],
-                                 char **buf,
-                                 int buflen) {
+int
+virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
+{
     int pipefd[2];
+    int len;
 
     if (pipe(pipefd) < 0)
         return -1;
@@ -289,34 +296,20 @@ int virtTestCaptureProgramOutput(const char *const argv[],
         return -1;
 
     default:
-        {
-            int got = 0;
-            int ret = -1;
-            int want = buflen-1;
+        VIR_FORCE_CLOSE(pipefd[1]);
+        len = virFileReadLimFD(pipefd[0], maxlen, buf);
+        VIR_FORCE_CLOSE(pipefd[0]);
+        waitpid(pid, NULL, 0);
 
-            VIR_FORCE_CLOSE(pipefd[1]);
-
-            while (want) {
-                if ((ret = read(pipefd[0], (*buf)+got, want)) <= 0)
-                    break;
-                got += ret;
-                want -= ret;
-            }
-            VIR_FORCE_CLOSE(pipefd[0]);
-
-            if (!ret)
-                (*buf)[got] = '\0';
-
-            waitpid(pid, NULL, 0);
-
-            return ret;
-        }
+        return len;
     }
 }
 #else /* !WIN32 */
-int virtTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
-                                 char **buf ATTRIBUTE_UNUSED,
-                                 int buflen ATTRIBUTE_UNUSED) {
+int
+virtTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
+                             char **buf ATTRIBUTE_UNUSED,
+                             int maxlen ATTRIBUTE_UNUSED)
+{
     return -1;
 }
 #endif /* !WIN32 */

@@ -88,12 +88,10 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         # that one off, so we need to manually enable this again
         gl_WARN_ADD([-Wjump-misses-init])
 
-        # This should be < 256 really, but with PATH_MAX everywhere
-        # we have doom, even with 4096. In fact we have some functions
-        # with several PATH_MAX sized variables :-( We should kill off
-        # all PATH_MAX usage and then lower this limit
-        gl_WARN_ADD([-Wframe-larger-than=65700])
-        dnl gl_WARN_ADD([-Wframe-larger-than=4096])
+        # This should be < 256 really. Currently we're down to 4096,
+        # but using 1024 bytes sized buffers (mostly for virStrerror)
+        # stops us from going down further
+        gl_WARN_ADD([-Wframe-larger-than=4096])
         dnl gl_WARN_ADD([-Wframe-larger-than=256])
 
         # Extra special flags

@@ -11,32 +11,27 @@
 #include "xen/xen_hypervisor.h"
 #include "files.h"
 
-#define MAX_FILE 4096
-
-static int testCompareFiles(const char *hostmachine,
-                            const char *xml_rel,
-                            const char *cpuinfo_rel,
-                            const char *capabilities_rel) {
-  char xmlData[MAX_FILE];
-  char *expectxml = &(xmlData[0]);
+static int
+testCompareFiles(const char *hostmachine, const char *xml_rel,
+                 const char *cpuinfo_rel, const char *capabilities_rel)
+{
+  char *expectxml = NULL;
   char *actualxml = NULL;
   FILE *fp1 = NULL, *fp2 = NULL;
   virCapsPtr caps = NULL;
 
   int ret = -1;
 
-  char xml[PATH_MAX];
-  char cpuinfo[PATH_MAX];
-  char capabilities[PATH_MAX];
+  char *xml = NULL;
+  char *cpuinfo = NULL;
+  char *capabilities = NULL;
 
-  snprintf(xml, sizeof xml - 1, "%s/%s",
-           abs_srcdir, xml_rel);
-  snprintf(cpuinfo, sizeof cpuinfo - 1, "%s/%s",
-           abs_srcdir, cpuinfo_rel);
-  snprintf(capabilities, sizeof capabilities - 1, "%s/%s",
-           abs_srcdir, capabilities_rel);
+  if (virAsprintf(&xml, "%s/%s", abs_srcdir, xml_rel) < 0 ||
+      virAsprintf(&cpuinfo, "%s/%s", abs_srcdir, cpuinfo_rel) < 0 ||
+      virAsprintf(&capabilities, "%s/%s", abs_srcdir, capabilities_rel) < 0)
+      goto fail;
 
-  if (virtTestLoadFile(xml, &expectxml, MAX_FILE) < 0)
+  if (virtTestLoadFile(xml, &expectxml) < 0)
       goto fail;
 
   if (!(fp1 = fopen(cpuinfo, "r")))
@@ -59,8 +54,11 @@ static int testCompareFiles(const char *hostmachine,
   ret = 0;
 
  fail:
-
+  free(expectxml);
   free(actualxml);
+  free(xml);
+  free(cpuinfo);
+  free(capabilities);
   VIR_FORCE_FCLOSE(fp1);
   VIR_FORCE_FCLOSE(fp2);
 

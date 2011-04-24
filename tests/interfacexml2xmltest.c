@@ -13,17 +13,16 @@
 #include "interface_conf.h"
 #include "testutilsqemu.h"
 
-#define MAX_FILE 4096
 
-
-static int testCompareXMLToXMLFiles(const char *xml) {
-    char xmlData[MAX_FILE];
-    char *xmlPtr = &(xmlData[0]);
+static int
+testCompareXMLToXMLFiles(const char *xml)
+{
+    char *xmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virInterfaceDefPtr dev = NULL;
 
-    if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(xml, &xmlData) < 0)
         goto fail;
 
     if (!(dev = virInterfaceDefParseString(xmlData)))
@@ -40,16 +39,26 @@ static int testCompareXMLToXMLFiles(const char *xml) {
     ret = 0;
 
  fail:
+    free(xmlData);
     free(actual);
     virInterfaceDefFree(dev);
     return ret;
 }
 
-static int testCompareXMLToXMLHelper(const void *data) {
-    char xml[PATH_MAX];
-    snprintf(xml, PATH_MAX, "%s/interfaceschemadata/%s.xml",
-             abs_srcdir, (const char*)data);
-    return testCompareXMLToXMLFiles(xml);
+static int
+testCompareXMLToXMLHelper(const void *data)
+{
+    int result = -1;
+    char *xml = NULL;
+
+    if (virAsprintf(&xml, "%s/interfaceschemadata/%s.xml",
+                    abs_srcdir, (const char*)data) < 0)
+        return -1;
+
+    result = testCompareXMLToXMLFiles(xml);
+
+    free (xml);
+    return result;
 }
 
 

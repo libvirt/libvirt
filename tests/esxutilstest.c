@@ -273,6 +273,7 @@ testEscapeDatastoreItem(const void *data ATTRIBUTE_UNUSED)
         }
     }
 
+    VIR_FREE(escaped);
     return 0;
 }
 
@@ -314,6 +315,7 @@ testConvertWindows1252ToUTF8(const void *data ATTRIBUTE_UNUSED)
         }
     }
 
+    VIR_FREE(utf8);
     return 0;
 }
 

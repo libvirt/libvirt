@@ -17,21 +17,18 @@
 
 static struct qemud_driver driver;
 
-# define MAX_FILE 4096
-
-
-static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
-    char inXmlData[MAX_FILE];
-    char *inXmlPtr = &(inXmlData[0]);
-    char outXmlData[MAX_FILE];
-    char *outXmlPtr = &(outXmlData[0]);
+static int
+testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
+{
+    char *inXmlData = NULL;
+    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
 
-    if (virtTestLoadFile(inxml, &inXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(inxml, &inXmlData) < 0)
         goto fail;
-    if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
     if (!(def = virDomainDefParseString(driver.caps, inXmlData,
@@ -49,6 +46,8 @@ static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
 
     ret = 0;
  fail:
+    free(inXmlData);
+    free(outXmlData);
     free(actual);
     virDomainDefFree(def);
     return ret;
@@ -59,16 +58,19 @@ struct testInfo {
     int different;
 };
 
-static int testCompareXMLToXMLHelper(const void *data) {
+static int
+testCompareXMLToXMLHelper(const void *data)
+{
     const struct testInfo *info = data;
-    char xml_in[PATH_MAX];
-    char xml_out[PATH_MAX];
-    int ret;
+    char *xml_in = NULL;
+    char *xml_out = NULL;
+    int ret = -1;
 
-    snprintf(xml_in, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
-             abs_srcdir, info->name);
-    snprintf(xml_out, PATH_MAX, "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
-             abs_srcdir, info->name);
+    if (virAsprintf(&xml_in, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+                    abs_srcdir, info->name) < 0 ||
+        virAsprintf(&xml_out, "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+                    abs_srcdir, info->name) < 0)
+        goto cleanup;
 
     if (info->different) {
         ret = testCompareXMLToXMLFiles(xml_in, xml_out);
@@ -76,6 +78,9 @@ static int testCompareXMLToXMLHelper(const void *data) {
         ret = testCompareXMLToXMLFiles(xml_in, xml_in);
     }
 
+cleanup:
+    free(xml_in);
+    free(xml_out);
     return ret;
 }
 

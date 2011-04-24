@@ -18,8 +18,6 @@
 
 static struct qemud_driver driver;
 
-# define MAX_FILE 4096
-
 static int blankProblemElements(char *data)
 {
     if (virtTestClearLineRegex("<name>[[:alnum:]]+</name>", data) < 0 ||
@@ -35,18 +33,16 @@ static int blankProblemElements(char *data)
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdfile,
                                      bool expect_warning) {
-    char xmlData[MAX_FILE];
-    char cmdData[MAX_FILE];
-    char *expectxml = &(xmlData[0]);
+    char *expectxml = NULL;
     char *actualxml = NULL;
-    char *cmd = &(cmdData[0]);
+    char *cmd = NULL;
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
     char *log;
 
-    if (virtTestLoadFile(cmdfile, &cmd, MAX_FILE) < 0)
+    if (virtTestLoadFile(cmdfile, &cmd) < 0)
         goto fail;
-    if (virtTestLoadFile(xml, &expectxml, MAX_FILE) < 0)
+    if (virtTestLoadFile(xml, &expectxml) < 0)
         goto fail;
 
     if (!(vmdef = qemuParseCommandLineString(driver.caps, cmd)))
@@ -75,7 +71,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  fail:
+    free(expectxml);
     free(actualxml);
+    free(cmd);
     virDomainDefFree(vmdef);
     return ret;
 }
@@ -87,15 +85,26 @@ struct testInfo {
     const char *migrateFrom;
 };
 
-static int testCompareXMLToArgvHelper(const void *data) {
+static int
+testCompareXMLToArgvHelper(const void *data)
+{
+    int result = -1;
     const struct testInfo *info = data;
-    char xml[PATH_MAX];
-    char args[PATH_MAX];
-    snprintf(xml, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
-             abs_srcdir, info->name);
-    snprintf(args, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
-             abs_srcdir, info->name);
-    return testCompareXMLToArgvFiles(xml, args, !!info->extraFlags);
+    char *xml = NULL;
+    char *args = NULL;
+
+    if (virAsprintf(&xml, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+                    abs_srcdir, info->name) < 0 ||
+        virAsprintf(&args, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
+                    abs_srcdir, info->name) < 0)
+        goto cleanup;
+
+    result = testCompareXMLToArgvFiles(xml, args, !!info->extraFlags);
+
+cleanup:
+    free(xml);
+    free(args);
+    return result;
 }
 
 

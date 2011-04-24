@@ -11,10 +11,8 @@
 # include "testutils.h"
 # include "vmx/vmx.h"
 
-static virCapsPtr caps = NULL;
+static virCapsPtr caps;
 static virVMXContext ctx;
-
-# define MAX_FILE 4096
 
 static void
 testCapsInit(void)
@@ -69,19 +67,17 @@ static int
 testCompareFiles(const char *vmx, const char *xml)
 {
     int result = -1;
-    char vmxData[MAX_FILE];
-    char xmlData[MAX_FILE];
+    char *vmxData = NULL;
+    char *xmlData = NULL;
     char *formatted = NULL;
-    char *vmxPtr = &(vmxData[0]);
-    char *xmlPtr = &(xmlData[0]);
     virDomainDefPtr def = NULL;
     virErrorPtr err = NULL;
 
-    if (virtTestLoadFile(vmx, &vmxPtr, MAX_FILE) < 0) {
+    if (virtTestLoadFile(vmx, &vmxData) < 0) {
         goto failure;
     }
 
-    if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0) {
+    if (virtTestLoadFile(xml, &xmlData) < 0) {
         goto failure;
     }
 
@@ -109,6 +105,8 @@ testCompareFiles(const char *vmx, const char *xml)
     result = 0;
 
   failure:
+    VIR_FREE(vmxData);
+    VIR_FREE(xmlData);
     VIR_FREE(formatted);
     virDomainDefFree(def);
 
@@ -123,16 +121,25 @@ struct testInfo {
 static int
 testCompareHelper(const void *data)
 {
+    int result = -1;
     const struct testInfo *info = data;
-    char vmx[PATH_MAX];
-    char xml[PATH_MAX];
+    char *vmx = NULL;
+    char *xml = NULL;
 
-    snprintf(vmx, PATH_MAX, "%s/vmx2xmldata/vmx2xml-%s.vmx", abs_srcdir,
-             info->input);
-    snprintf(xml, PATH_MAX, "%s/vmx2xmldata/vmx2xml-%s.xml", abs_srcdir,
-             info->output);
+    if (virAsprintf(&vmx, "%s/vmx2xmldata/vmx2xml-%s.vmx", abs_srcdir,
+                    info->input) < 0 ||
+        virAsprintf(&xml, "%s/vmx2xmldata/vmx2xml-%s.xml", abs_srcdir,
+                    info->output) < 0) {
+        goto cleanup;
+    }
 
-    return testCompareFiles(vmx, xml);
+    result = testCompareFiles(vmx, xml);
+
+  cleanup:
+    VIR_FREE(vmx);
+    VIR_FREE(xml);
+
+    return result;
 }
 
 static char *
