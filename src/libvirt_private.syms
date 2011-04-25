@@ -377,6 +377,7 @@ virDomainEventQueuePop;
 virDomainEventQueuePush;
 virDomainEventRTCChangeNewFromDom;
 virDomainEventRTCChangeNewFromObj;
+virDomainEventRebootNew;
 virDomainEventRebootNewFromDom;
 virDomainEventRebootNewFromObj;
 virDomainEventWatchdogNewFromDom;

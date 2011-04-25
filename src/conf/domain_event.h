@@ -112,6 +112,7 @@ virDomainEventPtr virDomainEventNewFromDom(virDomainPtr dom, int type, int detai
 virDomainEventPtr virDomainEventNewFromObj(virDomainObjPtr obj, int type, int detail);
 virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int detail);
 
+virDomainEventPtr virDomainEventRebootNew(int id, const char *name, const unsigned char *uuid);
 virDomainEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom);
 virDomainEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj);
 

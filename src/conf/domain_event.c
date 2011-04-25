@@ -572,11 +572,19 @@ virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int de
     return virDomainEventNew(def->id, def->name, def->uuid, type, detail);
 }
 
+virDomainEventPtr virDomainEventRebootNew(int id, const char *name,
+                                          const unsigned char *uuid)
+{
+    return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
+                                     id, name, uuid);
+}
+
 virDomainEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom)
 {
     return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
                                      dom->id, dom->name, dom->uuid);
 }
+
 virDomainEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj)
 {
     return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
