@@ -529,8 +529,9 @@
  * Macros to implement dynamic dispatched functions
  */
 
-#define ESX_VI__TEMPLATE__DISPATCH(__type, _dispatch, _error_return)          \
-    switch (item->_type) {                                                    \
+#define ESX_VI__TEMPLATE__DISPATCH(_actual_type, __type, _dispatch,           \
+                                   _error_return)                             \
+    switch (_actual_type) {                                                   \
       _dispatch                                                               \
                                                                               \
       case esxVI_Type_##__type:                                               \
@@ -539,7 +540,7 @@
       default:                                                                \
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
                      _("Call to %s for unexpected type '%s'"), __FUNCTION__,  \
-                     esxVI_Type_ToString(item->_type));                       \
+                     esxVI_Type_ToString(_actual_type));                      \
         return _error_return;                                                 \
     }
 
@@ -581,7 +582,8 @@
 
 #define ESX_VI__TEMPLATE__DYNAMIC_FREE(__type, _dispatch, _body)              \
     ESX_VI__TEMPLATE__FREE(__type,                                            \
-      ESX_VI__TEMPLATE__DISPATCH(__type, _dispatch, /* nothing */)            \
+      ESX_VI__TEMPLATE__DISPATCH(item->_type, __type, _dispatch,              \
+                                 /* nothing */)                               \
       _body)
 
 
@@ -614,14 +616,14 @@
 
 #define ESX_VI__TEMPLATE__DYNAMIC_CAST_FROM_ANY_TYPE(__type, _dispatch)       \
     ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(__type, esxVI_##__type,        \
-      ESX_VI__TEMPLATE__DISPATCH(__type, _dispatch, -1),                      \
+      ESX_VI__TEMPLATE__DISPATCH(anyType->type, __type, _dispatch, -1),       \
       /* nothing */)
 
 
 
 #define ESX_VI__TEMPLATE__DYNAMIC_SERIALIZE(__type, _dispatch, _serialize)    \
     ESX_VI__TEMPLATE__SERIALIZE_EXTRA(__type,                                 \
-      ESX_VI__TEMPLATE__DISPATCH(__type, _dispatch, -1),                      \
+      ESX_VI__TEMPLATE__DISPATCH(item->_type, __type, _dispatch, -1),         \
       _serialize)
 
 
