@@ -3269,6 +3269,57 @@ error:
 }
 
 /**
+ * virDomainGetState:
+ * @domain: a domain object
+ * @state: returned state of the domain (one of virDomainState)
+ * @reason: returned reason which led to @state (one of virDomain*Reason
+ * corresponding to the current state); it is allowed to be NULL
+ * @flags: additional flags, 0 for now.
+ *
+ * Extract domain state. Each state can be accompanied with a reason (if known)
+ * which led to the state.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainGetState(virDomainPtr domain,
+                  int *state,
+                  int *reason,
+                  unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "state=%p, reason=%p", state, reason);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (!state) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+    if (conn->driver->domainGetState) {
+        int ret;
+        ret = conn->driver->domainGetState(domain, state, reason, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainGetXMLDesc:
  * @domain: a domain object
  * @flags: an OR'ed set of virDomainXMLFlags
