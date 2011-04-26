@@ -147,6 +147,7 @@ int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
     char *drivestr = NULL;
+    bool releaseaddr = false;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
@@ -163,6 +164,7 @@ int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
             goto error;
+        releaseaddr = true;
         if (qemuAssignDeviceDiskAlias(disk, qemuCaps) < 0)
             goto error;
 
@@ -221,6 +223,7 @@ error:
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
         (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        releaseaddr &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &disk->info) < 0)
         VIR_WARN("Unable to release PCI address on %s", disk->src);
 
@@ -242,6 +245,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
     const char* type = virDomainControllerTypeToString(controller->type);
     char *devstr = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool releaseaddr = false;
 
     for (i = 0 ; i < vm->def->ncontrollers ; i++) {
         if ((vm->def->controllers[i]->type == controller->type) &&
@@ -256,6 +260,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
             goto cleanup;
+        releaseaddr = true;
         if (qemuAssignDeviceControllerAlias(controller) < 0)
             goto cleanup;
 
@@ -288,6 +293,7 @@ cleanup:
     if ((ret != 0) &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
         (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        releaseaddr &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &controller->info) < 0)
         VIR_WARN0("Unable to release PCI address on controller");
 
@@ -559,6 +565,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     int ret = -1;
     virDomainDevicePCIAddress guestAddr;
     int vlan;
+    bool releaseaddr = false;
 
     if (!qemuCapsGet(qemuCaps, QEMU_CAPS_HOST_NET_ADD)) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -594,6 +601,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
         goto cleanup;
+
+    releaseaddr = true;
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -694,6 +703,7 @@ cleanup:
     if ((ret != 0) &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
         (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        releaseaddr &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &net->info) < 0)
         VIR_WARN0("Unable to release PCI address on NIC");
 
@@ -757,6 +767,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
     char *devstr = NULL;
     int configfd = -1;
     char *configfd_name = NULL;
+    bool releaseaddr = false;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError();
@@ -771,6 +782,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
             goto error;
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &hostdev->info) < 0)
             goto error;
+        releaseaddr = true;
         if (qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
             configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {
@@ -823,6 +835,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
 error:
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
         (hostdev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        releaseaddr &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &hostdev->info) < 0)
         VIR_WARN0("Unable to release PCI address on host device");
 
