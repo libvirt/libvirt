@@ -945,8 +945,11 @@ remoteDispatchDomainGetSchedulerParameters(struct qemud_server *server ATTRIBUTE
 cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
-        for (i = 0 ; i < nparams ; i++)
-            VIR_FREE(ret->params.params_val[i].field);
+        if (ret->params.params_val) {
+            for (i = 0 ; i < nparams ; i++)
+                VIR_FREE(ret->params.params_val[i].field);
+            VIR_FREE(ret->params.params_val);
+        }
     }
     if (dom)
         virDomainFree(dom);
