@@ -1593,7 +1593,7 @@ static const vshCmdOptDef opts_schedinfo[] = {
     {NULL, 0, 0, NULL}
 };
 
-static bool
+static int
 cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
                    virSchedParameterPtr param)
 {
@@ -1696,7 +1696,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     int nparams = 0;
     int update = 0;
     int i, ret;
-    int ret_val = false;
+    bool ret_val = false;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -2288,7 +2288,7 @@ static const vshCmdOptDef opts_freecell[] = {
 static bool
 cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 {
-    int func_ret = false;
+    bool func_ret = false;
     int ret;
     int cell = -1, cell_given;
     unsigned long long memory;
@@ -3847,6 +3847,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     int p[2] = {-1, -1};
     int ret = -1;
+    bool functionReturn = false;
     virThread workerThread;
     struct pollfd pollfd;
     char retchar;
@@ -3921,15 +3922,15 @@ repoll:
         if (ret > 0) {
             if (saferead(p[0], &retchar, sizeof(retchar)) > 0) {
                 if (retchar == '0') {
-                    ret = true;
+                    functionReturn = true;
                     if (verbose) {
                         /* print [100 %] */
                         print_job_progress(0, 1);
                     }
                 } else
-                    ret = false;
+                    functionReturn = false;
             } else
-                ret = false;
+                functionReturn = false;
             break;
         }
 
@@ -3937,11 +3938,11 @@ repoll:
             if (errno == EINTR) {
                 if (intCaught) {
                     virDomainAbortJob(dom);
-                    ret = false;
                     intCaught = 0;
                 } else
                     goto repoll;
             }
+            functionReturn = false;
             break;
         }
 
@@ -3975,7 +3976,7 @@ cleanup:
     virDomainFree(dom);
     VIR_FORCE_CLOSE(p[0]);
     VIR_FORCE_CLOSE(p[1]);
-    return ret;
+    return functionReturn;
 }
 
 /*
@@ -5952,7 +5953,8 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virStoragePoolInfo info;
     char **poolNames = NULL;
-    int i, functionReturn, ret;
+    int i, ret;
+    bool functionReturn;
     int numActivePools = 0, numInactivePools = 0, numAllPools = 0;
     size_t stringLength = 0, nameStrLength = 0;
     size_t autostartStrLength = 0, persistStrLength = 0;
@@ -7525,7 +7527,8 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     double val;
     int details = vshCommandOptBool(cmd, "details");
     int numVolumes = 0, i;
-    int ret, functionReturn;
+    int ret;
+    bool functionReturn;
     int stringLength = 0;
     size_t allocStrLength = 0, capStrLength = 0;
     size_t nameStrLength = 0, pathStrLength = 0;
@@ -8904,7 +8907,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *from = NULL;
     char *buffer;
-    bool ret = true;
+    int ret;
     unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -8969,7 +8972,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *from = NULL;
     char *buffer;
-    bool ret = true;
+    int ret;
     unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -9035,7 +9038,7 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *from = NULL;
     char *buffer;
-    bool ret = true;
+    int ret;
     unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -9110,7 +9113,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     const char *mac = NULL, *target = NULL, *script = NULL,
                 *type = NULL, *source = NULL, *model = NULL;
     int typ;
-    bool ret = false;
+    int ret;
+    bool functionReturn = false;
     unsigned int flags;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *xml;
@@ -9165,7 +9169,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     if (virBufferError(&buf)) {
         vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
-        return false;
+        goto cleanup;
     }
 
     xml = virBufferContentAndReset(&buf);
@@ -9183,17 +9187,16 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach interface"));
-        ret = false;
     } else {
         vshPrint(ctl, "%s", _("Interface attached successfully\n"));
-        ret = true;
+        functionReturn = true;
     }
 
  cleanup:
     if (dom)
         virDomainFree(dom);
     virBufferFreeAndReset(&buf);
-    return ret;
+    return functionReturn;
 }
 
 /*
@@ -9226,7 +9229,8 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     char *doc;
     char buf[64];
     int i = 0, diff_mac;
-    bool ret = false;
+    int ret;
+    int functionReturn = false;
     unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -9322,10 +9326,9 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to detach interface"));
-        ret = false;
     } else {
         vshPrint(ctl, "%s", _("Interface detached successfully\n"));
-        ret = true;
+        functionReturn = true;
     }
 
  cleanup:
@@ -9337,7 +9340,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         xmlFreeDoc(xml);
     if (xml_buf)
         xmlBufferFree(xml_buf);
-    return ret;
+    return functionReturn;
 }
 
 /*
@@ -9368,7 +9371,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *source = NULL, *target = NULL, *driver = NULL,
                 *subdriver = NULL, *type = NULL, *mode = NULL;
-    bool isFile = false, ret = false;
+    bool isFile = false, functionReturn = false;
+    int ret;
     unsigned int flags;
     const char *stype = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -9460,17 +9464,16 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach disk"));
-        ret = false;
     } else {
         vshPrint(ctl, "%s", _("Disk attached successfully\n"));
-        ret = true;
+        functionReturn = true;
     }
 
  cleanup:
     if (dom)
         virDomainFree(dom);
     virBufferFreeAndReset(&buf);
-    return ret;
+    return functionReturn;
 }
 
 /*
@@ -9501,7 +9504,8 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *target = NULL;
     char *doc;
     int i = 0, diff_tgt;
-    bool ret = false;
+    int ret;
+    bool functionReturn = false;
     unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -9582,10 +9586,9 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to detach disk"));
-        ret = false;
     } else {
         vshPrint(ctl, "%s", _("Disk detached successfully\n"));
-        ret = true;
+        functionReturn = true;
     }
 
  cleanup:
@@ -9597,7 +9600,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
         xmlBufferFree(xml_buf);
     if (dom)
         virDomainFree(dom);
-    return ret;
+    return functionReturn;
 }
 
 /*
