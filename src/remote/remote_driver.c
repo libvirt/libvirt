@@ -2284,6 +2284,39 @@ done:
 }
 
 static int
+remoteDomainGetState(virDomainPtr domain,
+                     int *state,
+                     int *reason,
+                     unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_state_args args;
+    remote_domain_get_state_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_STATE,
+             (xdrproc_t) xdr_remote_domain_get_state_args, (char *) &args,
+             (xdrproc_t) xdr_remote_domain_get_state_ret, (char *) &ret) == -1)
+        goto done;
+
+    *state = ret.state;
+    if (reason)
+        *reason = ret.reason;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
 {
     remote_node_get_security_model_ret ret;
@@ -6398,7 +6431,7 @@ static virDriver remote_driver = {
     remoteDomainSetBlkioParameters, /* domainSetBlkioParameters */
     remoteDomainGetBlkioParameters, /* domainGetBlkioParameters */
     remoteDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    remoteDomainGetState, /* domainGetState */
     remoteDomainSave, /* domainSave */
     remoteDomainRestore, /* domainRestore */
     remoteDomainCoreDump, /* domainCoreDump */

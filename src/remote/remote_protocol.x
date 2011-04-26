@@ -1955,6 +1955,16 @@ struct remote_storage_vol_download_args {
     unsigned int flags;
 };
 
+struct remote_domain_get_state_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_state_ret {
+    int state;
+    int reason;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -2197,7 +2207,9 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_INJECT_NMI = 210, /* autogen autogen */
 
-    REMOTE_PROC_DOMAIN_SCREENSHOT = 211 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SCREENSHOT = 211, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_STATE = 212 /* skipgen skipgen */
+
     /*
      * Notice how the entries are grouped in sets of 10 ?
      * Nice isn't it. Please keep it this way when adding more.
