@@ -1927,11 +1927,70 @@ out:
 }
 
 static int
+xenUnifiedNodeDeviceAssignedDomainId (virNodeDevicePtr dev)
+{
+    int numdomains;
+    int ret = -1, i;
+    int *ids = NULL;
+    char *bdf = NULL;
+    char *xref = NULL;
+    unsigned int domain, bus, slot, function;
+    virConnectPtr conn = dev->conn;
+    xenUnifiedPrivatePtr priv = conn->privateData;
+
+    /* Get active domains */
+    numdomains = xenUnifiedNumOfDomains(conn);
+    if (numdomains < 0) {
+        return ret;
+    }
+    if (numdomains > 0){
+        if (VIR_ALLOC_N(ids, numdomains) < 0) {
+            virReportOOMError();
+            goto out;
+        }
+        if ((numdomains = xenUnifiedListDomains(conn, &ids[0], numdomains)) < 0) {
+            goto out;
+        }
+    }
+
+    /* Get pci bdf */
+    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+        goto out;
+
+    if (virAsprintf(&bdf, "%04x:%02x:%02x.%0x",
+                    domain, bus, slot, function) < 0) {
+        virReportOOMError();
+        goto out;
+    }
+
+    xenUnifiedLock(priv);
+    /* Check if bdf is assigned to one of active domains */
+    for (i = 0; i < numdomains; i++ ) {
+        xref = xenStoreDomainGetPCIID(conn, ids[i], bdf);
+        if (xref == NULL) {
+            continue;
+        } else {
+            ret = ids[i];
+            break;
+        }
+    }
+    xenUnifiedUnlock(priv);
+
+    VIR_FREE(xref);
+    VIR_FREE(bdf);
+out:
+    VIR_FREE(ids);
+
+    return ret;
+}
+
+static int
 xenUnifiedNodeDeviceReAttach (virNodeDevicePtr dev)
 {
     pciDevice *pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
+    int domid;
 
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
@@ -1939,6 +1998,14 @@ xenUnifiedNodeDeviceReAttach (virNodeDevicePtr dev)
     pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
+
+    /* Check if device is assigned to an active guest */
+    if ((domid = xenUnifiedNodeDeviceAssignedDomainId(dev)) >= 0) {
+        xenUnifiedError(VIR_ERR_INTERNAL_ERROR,
+                        _("Device %s has been assigned to guest %d"),
+                        dev->name, domid);
+        goto out;
+    }
 
     if (pciReAttachDevice(pci, NULL) < 0)
         goto out;
