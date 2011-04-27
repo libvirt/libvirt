@@ -39,7 +39,7 @@ struct _virBuffer {
  * freeing the content and setting the error flag.
  */
 static void
-virBufferNoMemory(const virBufferPtr buf)
+virBufferSetError(const virBufferPtr buf)
 {
     VIR_FREE(buf->content);
     buf->size = 0;
@@ -70,7 +70,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
     size = buf->use + len + 1000;
 
     if (VIR_REALLOC_N(buf->content, size) < 0) {
-        virBufferNoMemory(buf);
+        virBufferSetError(buf);
         return -1;
     }
     buf->size = size;
@@ -241,7 +241,7 @@ virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
     size = buf->size - buf->use;
     if ((count = vsnprintf(&buf->content[buf->use],
                            size, format, argptr)) < 0) {
-        buf->error = 1;
+        virBufferSetError(buf);
         goto err;
     }
 
@@ -259,7 +259,7 @@ virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
         size = buf->size - buf->use;
         if ((count = vsnprintf(&buf->content[buf->use],
                                size, format, argptr)) < 0) {
-            buf->error = 1;
+            virBufferSetError(buf);
             goto err;
         }
     }
@@ -299,7 +299,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
     }
 
     if (VIR_ALLOC_N(escaped, 6 * len + 1) < 0) {
-        virBufferNoMemory(buf);
+        virBufferSetError(buf);
         return;
     }
 
@@ -386,7 +386,7 @@ virBufferEscapeSexpr(const virBufferPtr buf,
     }
 
     if (VIR_ALLOC_N(escaped, 2 * len + 1) < 0) {
-        virBufferNoMemory(buf);
+        virBufferSetError(buf);
         return;
     }
 
