@@ -68,6 +68,7 @@ DEVMAPPER_REQUIRED=1.0.0
 LIBCURL_REQUIRED="7.18.0"
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
+LIBSSH2_REQUIRED="1.0"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -258,7 +259,7 @@ AC_ARG_WITH([openvz],
 AC_ARG_WITH([vmware],
   AC_HELP_STRING([--with-vmware], [add VMware support @<:@default=yes@:>@]),[],[with_vmware=yes])
 AC_ARG_WITH([libssh2],
-  AC_HELP_STRING([--with-libssh2=@<:@PFX@:>@], [libssh2 location @<:@default=/usr/local/lib@:>@]),[],[with_libssh2=yes])
+  AC_HELP_STRING([--with-libssh2], [libssh2 location @<:@default=check@:>@]),[],[with_libssh2=check])
 AC_ARG_WITH([phyp],
   AC_HELP_STRING([--with-phyp], [add PHYP support @<:@default=check@:>@]),[],[with_phyp=check])
 AC_ARG_WITH([xenapi],
@@ -1328,77 +1329,32 @@ AM_CONDITIONAL([WITH_UML], [test "$with_uml" = "yes"])
 
 
 dnl
-dnl libssh checks
+dnl check for libssh2 (PHYP)
 dnl
 
-if test "$with_libssh2" != "yes" && test "$with_libssh2" != "no"; then
-		libssh2_path="$with_libssh2"
-elif test "$with_libssh2" = "yes"; then
-		libssh2_path="/usr/local/lib/"
-elif test "$with_libssh2" = "no"; then
-		with_phyp="no";
+LIBSSH2_CFLAGS=""
+LIBSSH2_LIBS=""
+
+if test "$with_phyp" = "yes" || test "$with_phyp" = "check"; then
+    PKG_CHECK_MODULES([LIBSSH2], [libssh2 >= $LIBSSH2_REQUIRED], [
+        with_phyp=yes
+    ], [
+        if test "$with_phyp" = "check"; then
+            with_phyp=no
+            AC_MSG_NOTICE([libssh2 is required for Phyp driver, disabling it])
+        else
+            AC_MSG_ERROR([libssh2 >= $LIBSSH2_REQUIRED is required for Phyp driver])
+        fi
+    ])
 fi
 
-if test "$with_phyp" = "check"; then
-    AC_CHECK_LIB([ssh2],[libssh2_session_startup],[
-        LIBSSH2_LIBS="$LIBSSH2_LIBS -lssh2 -L$libssh2_path"
-        AC_SUBST([LIBSSH2_LIBS])
-    ],[
-        with_phyp="no"
-        with_libssh2="no";
-    ],[])
-
-    if test "$with_phyp" != "no"; then
-        AC_CHECK_HEADERS([libssh2.h],[
-            with_phyp="yes"
-            LIBSSH2_CFLAGS="-I/usr/local/include"
-            AC_SUBST([LIBSSH2_CFLAGS])
-        ],[
-            with_phyp="no"
-            with_libssh2="no";
-        ],[
-        ])
-    fi
-
-    if test "$with_phyp" != "no"; then
-        saved_libs="$LIBS"
-        LIBS="$LIBS -L$libssh2_path -lssh2"
-        AC_TRY_LINK([#include <libssh2.h>], [
-            (void) libssh2_session_block_directions(NULL);
-        ], [
-            AC_DEFINE_UNQUOTED([WITH_PHYP], 1, [whether IBM HMC / IVM driver is enabled])
-        ], [
-            with_phyp=no
-            AC_MSG_NOTICE([Function libssh2_session_block_directions() not present in  your version of libssh2 but required for Phyp driver, disabling it])
-        ])
-        LIBS="$saved_libs"
-    fi
-elif test "$with_phyp" = "yes"; then
-  AC_CHECK_LIB([ssh2],[libssh2_session_startup],[
-        LIBSSH2_LIBS="$LIBSSH2_LIBS -lssh2 -L$libssh2_path"
-        AC_SUBST([LIBSSH2_LIBS])],[
-        AC_MSG_ERROR([You must install the libssh2 to compile Phyp driver.])
-				])
-
-  AC_CHECK_HEADERS([libssh2.h],[
-        LIBSSH2_CFLAGS="-I/usr/local/include"
-        AC_SUBST([LIBSSH2_CFLAGS])],[
-        AC_MSG_ERROR([Cannot find libssh2 headers. Is libssh2 installed ?])
-				],[])
-
-  saved_libs="$LIBS"
-  LIBS="$LIBS -lssh2"
-  AC_TRY_LINK([#include <libssh2.h>], [
-  (void) libssh2_session_block_directions(NULL);
-  ], [], [
-  AC_MSG_ERROR([Function libssh2_session_block_directions() not present in your version of libssh2. Need >= 1.0])
-  ])
-  LIBS="$saved_libs"
-
-  AC_DEFINE_UNQUOTED([WITH_PHYP], 1,
-        [whether IBM HMC / IVM driver is enabled])
+if test "$with_phyp" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_PHYP], 1, [whether IBM HMC / IVM driver is enabled])
 fi
 AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
+
+AC_SUBST([LIBSSH2_CFLAGS])
+AC_SUBST([LIBSSH2_LIBS])
 
 dnl libcap-ng
 AC_ARG_WITH([capng],
