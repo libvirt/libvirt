@@ -1026,7 +1026,7 @@ if test "$with_audit" != "no" ; then
   LIBS="$LIBS $AUDIT_LIBS"
   fail=0
   AC_CHECK_HEADER([libaudit.h], [], [fail=1])
-  AC_CHECK_LIB([audit], [audit_is_enabled], [], [fail=1])
+  AC_CHECK_LIB([audit], [audit_encode_nv_string], [], [fail=1])
 
   if test $fail = 1 ; then
     if test "$with_audit" = "yes" ; then
