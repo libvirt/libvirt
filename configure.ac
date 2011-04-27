@@ -1917,15 +1917,13 @@ if test "$with_python" != "no" ; then
                         then
                             PYTHON_INCLUDES=-I/usr/include/python$PYTHON_VERSION
                         else
-                            AC_MSG_NOTICE([Could not find python$PYTHON_VERSION/Python.h, disabling bindings])
-                            with_python=no
+                            AC_MSG_ERROR([You must install python-devel to build Python bindings])
                         fi
                     fi
                 fi
             fi
         else
-            AC_MSG_NOTICE([Could not find python interpreter, disabling bindings])
-            with_python=no
+            AC_MSG_ERROR([You must install python to build Python bindings])
         fi
     else
         AC_MSG_NOTICE([Could not find python in $with_python, disabling bindings])
