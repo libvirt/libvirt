@@ -159,19 +159,19 @@ hostsfileWrite(const char *path,
         return rc;
 
     if (virAsprintf(&tmp, "%s.new", path) < 0)
-        return ENOMEM;
+        return -ENOMEM;
 
     if (!(f = fopen(tmp, "w"))) {
         istmp = false;
         if (!(f = fopen(path, "w"))) {
-            rc = errno;
+            rc = -errno;
             goto cleanup;
         }
     }
 
     for (i = 0; i < nhosts; i++) {
         if (fputs(hosts[i].host, f) == EOF || fputc('\n', f) == EOF) {
-            rc = errno;
+            rc = -errno;
             VIR_FORCE_FCLOSE(f);
 
             if (istmp)
@@ -182,19 +182,19 @@ hostsfileWrite(const char *path,
     }
 
     if (VIR_FCLOSE(f) == EOF) {
-        rc = errno;
+        rc = -errno;
         goto cleanup;
     }
 
     if (istmp) {
         if (rename(tmp, path) < 0) {
-            rc = errno;
+            rc = -errno;
             unlink(tmp);
             goto cleanup;
         }
 
         if (unlink(tmp) < 0) {
-            rc = errno;
+            rc = -errno;
             goto cleanup;
         }
     }
