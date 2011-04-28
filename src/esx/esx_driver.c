@@ -2402,7 +2402,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
             VIR_DEBUG("usedCpuTimeCounterId %d END", priv->usedCpuTimeCounterId);
 
             /*
-             * FIXME: Cannot map between realtive used-cpu-time and absolute
+             * FIXME: Cannot map between relative used-cpu-time and absolute
              *        info->cpuTime
              */
         }

@@ -2047,7 +2047,7 @@ cleanup:
 
 
 /*
- * Creates an absolute path for a potentialy realtive path.
+ * Creates an absolute path for a potentially relative path.
  * Return 0 if the path was not relative, or on success.
  * Return -1 on error.
  *
