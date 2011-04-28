@@ -209,7 +209,8 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
      */
     if ((virHooksFound == -1) ||
         ((driver == VIR_HOOK_DRIVER_DAEMON) &&
-         (op == VIR_HOOK_DAEMON_OP_RELOAD)))
+         (op == VIR_HOOK_DAEMON_OP_RELOAD ||
+         op == VIR_HOOK_DAEMON_OP_SHUTDOWN)))
         virHookInitialize();
 
     if ((virHooksFound & (1 << driver)) == 0)
