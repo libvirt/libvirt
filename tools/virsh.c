@@ -12096,6 +12096,7 @@ static void
 vshDebug(vshControl *ctl, int level, const char *format, ...)
 {
     va_list ap;
+    char *str;
 
     va_start(ap, format);
     vshOutputLogFile(ctl, VSH_ERR_DEBUG, format, ap);
@@ -12105,8 +12106,14 @@ vshDebug(vshControl *ctl, int level, const char *format, ...)
         return;
 
     va_start(ap, format);
-    vfprintf(stdout, format, ap);
+    if (virVasprintf(&str, format, ap) < 0) {
+        /* Skip debug messages on low memory */
+        va_end(ap);
+        return;
+    }
     va_end(ap);
+    fputs(str, stdout);
+    VIR_FREE(str);
 }
 
 static void
@@ -12125,7 +12132,7 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
         return;
     }
     va_end(ap);
-    fprintf(stdout, "%s", str);
+    fputs(str, stdout);
     VIR_FREE(str);
 }
 
