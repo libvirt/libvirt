@@ -901,6 +901,7 @@ virArgvToString;
 virAsprintf;
 virBuildPathInternal;
 virDirCreate;
+virEmitXMLWarning;
 virEnumFromString;
 virEnumToString;
 virEventAddHandle;

@@ -925,6 +925,8 @@ int virNetworkSaveXML(const char *configDir,
         goto cleanup;
     }
 
+    virEmitXMLWarning(fd, def->name, "net-edit");
+
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
         virReportSystemError(errno,

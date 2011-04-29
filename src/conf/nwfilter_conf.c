@@ -2249,6 +2249,8 @@ int virNWFilterSaveXML(const char *configDir,
         goto cleanup;
     }
 
+    virEmitXMLWarning(fd, def->name, "nwfilter-edit");
+
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
         virReportSystemError(errno,
@@ -2644,6 +2646,8 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
                              nwfilter->configFile);
         goto cleanup;
     }
+
+    virEmitXMLWarning(fd, def->name, "nwfilter-edit");
 
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) != towrite) {

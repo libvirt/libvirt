@@ -3207,3 +3207,40 @@ bool virIsDevMapperDevice(const char *devname ATTRIBUTE_UNUSED)
     return false;
 }
 #endif
+
+int virEmitXMLWarning(int fd,
+                      const char *name,
+                      const char *cmd) {
+    size_t len;
+    const char *prologue = "<!--\n\
+WARNING: THIS IS AN AUTO-GENERATED FILE. CHANGES TO IT ARE LIKELY TO BE \n\
+OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:\n\
+  virsh ";
+    const char *epilogue = "\n\
+or other application using the libvirt API.\n\
+-->\n\n";
+
+    if (fd < 0 || !name || !cmd)
+        return -1;
+
+    len = strlen(prologue);
+    if (safewrite(fd, prologue, len) != len)
+        return -1;
+
+    len = strlen(cmd);
+    if (safewrite(fd, cmd, len) != len)
+        return -1;
+
+    if (safewrite(fd, " ", 1) != 1)
+        return -1;
+
+    len = strlen(name);
+    if (safewrite(fd, name, len) != len)
+        return -1;
+
+    len = strlen(epilogue);
+    if (safewrite(fd, epilogue, len) != len)
+        return -1;
+
+    return 0;
+}

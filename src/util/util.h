@@ -299,4 +299,8 @@ int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
 char *virTimestamp(void);
 
 bool virIsDevMapperDevice(const char *devname) ATTRIBUTE_NONNULL(1);
+
+int virEmitXMLWarning(int fd,
+                      const char *name,
+                      const char *cmd) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 #endif /* __VIR_UTIL_H__ */

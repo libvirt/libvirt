@@ -27,6 +27,7 @@ The primary maintainers and people with commit access rights:
   Justin Clift         <jclift@redhat.com>
   Osier Yang           <jyang@redhat.com>
   Wen Congyang         <wency@cn.fujitsu.com>
+  Michal Prívozník     <mprivozn@redhat.com>
 
 Previous maintainers:
   Karel Zak            <kzak@redhat.com>
@@ -146,7 +147,6 @@ Patches have also been contributed by:
   Paweł Krześniak      <pawel.krzesniak@gmail.com>
   Kay Schubert         <kayegypt@web.de>
   Marc-André Lureau    <marcandre.lureau@redhat.com>
-  Michal Prívozník     <mprivozn@redhat.com>
   Juerg Haefliger      <juerg.haefliger@hp.com>
   Matthias Dahl        <mdvirt@designassembly.de>
   Niels de Vos         <ndevos@redhat.com>

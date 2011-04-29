@@ -1551,6 +1551,8 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
         goto cleanup;
     }
 
+    virEmitXMLWarning(fd, def->name, "pool-edit");
+
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) != towrite) {
         virReportSystemError(errno,
