@@ -903,6 +903,113 @@
       </dd>
     </dl>
 
+    <h4><a name="elementsFilesystems">Filesystems</a></h4>
+
+    <p>
+      A directory on the host that can be accessed directly from the guest.
+      <span class="since">since 0.3.3, since 0.8.5 for QEMU/KVM</span>
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;filesystem type='template'&gt;
+      &lt;source name='my-vm-template'/&gt;
+      &lt;target dir='/'/&gt;
+    &lt;/filesystem&gt;
+    &lt;filesystem type='mount' &gt;
+      &lt;source dir='/export/to/guest'/&gt;
+      &lt;target dir='/import/from/host'/&gt;
+      &lt;readonly/&gt;
+    &lt;/filesystem&gt;
+    ...
+  &lt;/devices&gt;
+  ...</pre>
+
+    <dl>
+      <dt><code>filesystem</code></dt>
+      <dd>
+
+      The filesystem attribute <code>type</code> specifies the type of the
+      <code>source</code>. The possible values are:
+
+        <dl>
+        <dt><code>type='mount'</code></dt>
+        <dd>
+        A host directory to mount in the guest. Used by LXC,
+        OpenVZ <span class="since">(since 0.6.2)</span>
+        and QEMU/KVM <span class="since">(since 0.8.5)</span>.
+        This is the default <code>mode</code> if one is not specified.
+        </dd>
+        <dt><code>type='template'</code></dt>
+        <dd>
+        OpenVZ filesystem template. Only used by OpenVZ driver.
+        </dd>
+        <dt><code>type='file'</code></dt>
+        <dd>
+        Currently unused.
+        </dd>
+        <dt><code>type='block'</code></dt>
+        <dd>
+        Currently unused.
+        </dd>
+        </dl>
+
+      The filesystem block has an optional attribute <code>mode</code>
+      which specifies the security mode for accessing the source
+      <span class="since">(since 0.8.5)</span>. Currently this only works
+      with <code>type='mount'</code> for the QEMU/KVM driver. The possible
+      values are:
+
+        <dl>
+        <dt><code>mode='passthrough'</code></dt>
+        <dd>
+        The <code>source</code> is accessed with the permissions of the
+        user inside the guest. This is the default <code>mode</code> if
+        one is not specified.
+        <a href="http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html">More info</a>
+        </dd>
+        <dt><code>mode='mapped'</code></dt>
+        <dd>
+        The <code>source</code> is accessed with the permissions of the
+        hypervisor (QEMU process).
+        <a href="http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html">More info</a>
+        </dd>
+        <dt><code>mode='squash'</code></dt>
+        <dd>
+        Similar to 'passthrough', the exception is that failure of
+        privileged operations like 'chown' are ignored. This makes a
+        passthrough-like mode usable for people who run the hypervisor
+        as non-root.
+        <a href="http://lists.gnu.org/archive/html/qemu-devel/2010-09/msg00121.html">More info</a>
+        </dd>
+        </dl>
+
+      </dd>
+
+      <dt><code>source</code></dt>
+      <dd>
+        The resource on the host that is being accessed in the guest. The
+        <code>name</code> attribute must be used with
+        <code>type='template'</code>, and the <code>dir</code> attribute must
+        be used with <code>type='mount'</code>
+      </dd>
+
+      <dt><code>target</code></dt>
+      <dd>
+        Where the <code>source</code> can be accessed in the guest. For
+        most drivers this is an automatic mount point, but for QEMU/KVM
+        this is merely an arbitrary string tag that is exported to the
+        guest as a hint for where to mount.
+      </dd>
+
+      <dt><code>readonly</code></dt>
+      <dd>
+      An optional <code>readonly</code> attribute is available but currently
+      unused.
+      </dd>
+    </dl>
+
     <h4><a name="elementsControllers">Controllers</a></h4>
 
     <p>
