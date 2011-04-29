@@ -46,10 +46,6 @@ mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 
 #else
 
-static char *progname;
-static char *abs_srcdir;
-
-
 static int checkoutput(const char *testname)
 {
     int ret = -1;
@@ -754,22 +750,10 @@ cleanup:
 }
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
     int fd;
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return(EXIT_FAILURE);
-    }
 
     if (chdir("/tmp") < 0)
         return(EXIT_FAILURE);

@@ -259,19 +259,11 @@ resetAll(void)
 }
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
-    char *progname;
     int i;
     pthread_t eventThread;
     char one = '1';
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return EXIT_FAILURE;
-    }
 
     for (i = 0 ; i < NUM_FDS ; i++) {
         if (pipe(handles[i].pipeFD) < 0) {
@@ -482,6 +474,5 @@ mymain(int argc, char **argv)
 
     return EXIT_SUCCESS;
 }
-
 
 VIRT_TEST_MAIN(mymain)

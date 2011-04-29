@@ -8,8 +8,6 @@
 #include "xml.h"
 #include "testutils.h"
 
-static char *progname;
-static char *abs_srcdir;
 #define MAX_FILE 4096
 
 #define DOM_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
@@ -232,29 +230,19 @@ static int testCompareEcho(const void *data) {
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
     char buffer[PATH_MAX];
-    char cwd[PATH_MAX];
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
 #ifdef WIN32
     exit (EXIT_AM_SKIP);
 #endif
 
-    snprintf(buffer, PATH_MAX-1, "test://%s/../examples/xml/test/testnode.xml", abs_srcdir);
+    snprintf(buffer, PATH_MAX-1,
+             "test://%s/../examples/xml/test/testnode.xml", abs_srcdir);
     buffer[PATH_MAX-1] = '\0';
-    progname = argv[0];
     custom_uri = buffer;
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return(EXIT_FAILURE);
-    }
 
     if (virtTestRun("virsh list (default)",
                     1, testCompareListDefault, NULL) != 0)

@@ -41,8 +41,7 @@ static int testDeviceHelper(const void *data)
 }
 
 static int
-mymain(int argc ATTRIBUTE_UNUSED,
-       char **argv ATTRIBUTE_UNUSED)
+mymain(void)
 {
     int ret = 0;
     /* Some of our tests delibrately test failure cases, so

@@ -55,6 +55,9 @@ static unsigned int testVerbose = -1;
 static unsigned int testOOM = 0;
 static unsigned int testCounter = 0;
 
+char *progname;
+char *abs_srcdir;
+
 double
 virtTestCountAverage(double *items, int nitems)
 {
@@ -472,9 +475,10 @@ virTestGetVerbose(void) {
 
 int virtTestMain(int argc,
                  char **argv,
-                 int (*func)(int, char **))
+                 int (*func)(void))
 {
     int ret;
+    char cwd[PATH_MAX];
 #if TEST_OOM
     int approxAlloc = 0;
     int n;
@@ -485,7 +489,20 @@ int virtTestMain(int argc,
     int worker = 0;
 #endif
 
-    fprintf(stderr, "TEST: %s\n", STRPREFIX(argv[0], "./") ? argv[0] + 2 : argv[0]);
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(cwd, sizeof(cwd));
+    if (!abs_srcdir)
+        exit(EXIT_AM_HARDFAIL);
+
+    progname = argv[0];
+    if (STRPREFIX(progname, "./"))
+        progname += 2;
+    if (argc > 1) {
+        fprintf(stderr, "Usage: %s\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+    fprintf(stderr, "TEST: %s\n", progname);
     if (!virTestGetVerbose())
         fprintf(stderr, "      ");
 
@@ -520,7 +537,7 @@ int virtTestMain(int argc,
     }
 
     /* Run once to prime any static allocations & ensure it passes */
-    ret = (func)(argc, argv);
+    ret = (func)();
     if (ret != EXIT_SUCCESS)
         goto cleanup;
 
@@ -537,7 +554,7 @@ int virtTestMain(int argc,
         virAllocTestInit();
 
         /* Run again to count allocs, and ensure it passes :-) */
-        ret = (func)(argc, argv);
+        ret = (func)();
         if (ret != EXIT_SUCCESS)
             goto cleanup;
 
@@ -574,7 +591,7 @@ int virtTestMain(int argc,
             }
             virAllocTestOOM(n+1, oomCount);
 
-            if (((func)(argc, argv)) != EXIT_FAILURE) {
+            if (((func)()) != EXIT_FAILURE) {
                 ret = EXIT_FAILURE;
                 break;
             }
@@ -604,7 +621,7 @@ int virtTestMain(int argc,
     }
 cleanup:
 #else
-    ret = (func)(argc, argv);
+    ret = (func)();
 #endif
 
     virResetLastError();

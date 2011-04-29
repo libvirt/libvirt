@@ -1,7 +1,7 @@
 /*
  * xmconfigtest.c: Test backend for xm_internal config file handling
  *
- * Copyright (C) 2007, 2010 Red Hat, Inc.
+ * Copyright (C) 2007, 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,8 +36,6 @@
 #include "testutilsxen.h"
 #include "memory.h"
 
-static char *progname;
-static char *abs_srcdir;
 static virCapsPtr caps;
 
 #define MAX_FILE 4096
@@ -174,21 +172,9 @@ static int testCompareHelper(const void *data) {
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return(EXIT_FAILURE);
-    }
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     if (!(caps = testXenCapsInit()))
         return(EXIT_FAILURE);

@@ -183,8 +183,7 @@ static const struct qparamParseDataEntry params5[] = { { "foo", "one two" } };
 static const struct qparamParseDataEntry params6[] = { { "foo", "one" } };
 
 static int
-mymain(int argc ATTRIBUTE_UNUSED,
-       char **argv ATTRIBUTE_UNUSED)
+mymain(void)
 {
     int ret = 0;
 

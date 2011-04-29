@@ -21,9 +21,6 @@ mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 
 #else
 
-static char *progname;
-static char *abs_srcdir;
-
 # define MAX_FILE 4096
 
 extern int linuxNodeInfoCPUPopulate(FILE *cpuinfo, virNodeInfoPtr nodeinfo,
@@ -89,7 +86,7 @@ static int linuxTestNodeInfo(const void *data) {
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
     int i;
@@ -101,18 +98,6 @@ mymain(int argc, char **argv)
         "nodeinfo-5",
         "nodeinfo-6",
     };
-    char cwd[PATH_MAX];
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return(EXIT_FAILURE);
-    }
 
     if (virInitialize() < 0)
         return EXIT_FAILURE;

@@ -19,8 +19,6 @@
 
 # include "testutilsqemu.h"
 
-static char *progname;
-static char *abs_srcdir;
 static const char *abs_top_srcdir;
 static struct qemud_driver driver;
 
@@ -190,22 +188,10 @@ static int testCompareXMLToArgvHelper(const void *data) {
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
     char map[PATH_MAX];
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return (EXIT_FAILURE);
-    }
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)

@@ -11,8 +11,6 @@
 # include "testutils.h"
 # include "vmx/vmx.h"
 
-static char *progname = NULL;
-static char *abs_srcdir = NULL;
 static virCapsPtr caps = NULL;
 static virVMXContext ctx;
 
@@ -198,28 +196,9 @@ testFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int result = 0;
-    char cwd[PATH_MAX];
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return EXIT_FAILURE;
-    }
-
-    abs_srcdir = getenv("abs_srcdir");
-
-    if (abs_srcdir == NULL) {
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
-    }
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return EXIT_FAILURE;
-    }
 
 # define DO_TEST(_in, _out, _version)                                         \
         do {                                                                  \

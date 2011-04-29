@@ -11,9 +11,6 @@
 #include "xen/xen_hypervisor.h"
 #include "files.h"
 
-static char *progname;
-static char *abs_srcdir;
-
 #define MAX_FILE 4096
 
 static int testCompareFiles(const char *hostmachine,
@@ -151,21 +148,9 @@ static int testXenppc64(const void *data ATTRIBUTE_UNUSED) {
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return(EXIT_FAILURE);
-    }
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     virInitialize();
 

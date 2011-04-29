@@ -14,8 +14,6 @@
 #include "testutils.h"
 #include "testutilsxen.h"
 
-static char *progname;
-static char *abs_srcdir;
 static virCapsPtr caps;
 
 #define MAX_FILE 4096
@@ -77,21 +75,9 @@ static int testCompareHelper(const void *data) {
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
-
-    progname = argv[0];
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return(EXIT_FAILURE);
-    }
 
 #define DO_TEST(in, out, name, version)                                \
     do {                                                               \

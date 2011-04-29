@@ -14,9 +14,6 @@
 # include "esx/esx_util.h"
 # include "esx/esx_vi_types.h"
 
-static char *progname;
-
-
 
 static void
 testQuietError(void *userData ATTRIBUTE_UNUSED,
@@ -323,21 +320,9 @@ testConvertWindows1252ToUTF8(const void *data ATTRIBUTE_UNUSED)
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int result = 0;
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return EXIT_FAILURE;
-    }
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return EXIT_FAILURE;
-    }
 
     virSetErrorFunc(NULL, testQuietError);
 

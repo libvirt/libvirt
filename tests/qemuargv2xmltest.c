@@ -16,8 +16,6 @@
 
 # include "testutilsqemu.h"
 
-static char *progname;
-static char *abs_srcdir;
 static struct qemud_driver driver;
 
 # define MAX_FILE 4096
@@ -103,21 +101,9 @@ static int testCompareXMLToArgvHelper(const void *data) {
 
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return (EXIT_FAILURE);
-    }
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;

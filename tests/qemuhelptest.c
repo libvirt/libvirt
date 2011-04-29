@@ -19,9 +19,6 @@ struct testInfo {
     unsigned int kvm_version;
 };
 
-static char *progname;
-static char *abs_srcdir;
-
 static void printMismatchedFlags(virBitmapPtr got,
                                  virBitmapPtr expect)
 {
@@ -121,21 +118,9 @@ cleanup:
 }
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return (EXIT_FAILURE);
-    }
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
 # define DO_TEST(name, version, is_kvm, kvm_version, ...)                   \
     do {                                                                    \

@@ -1,7 +1,7 @@
 /*
  * cputest.c: Test the libvirtd internal CPU APIs
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,8 +39,6 @@
 #include "cpu/cpu.h"
 #include "cpu/cpu_map.h"
 
-static const char *progname;
-static const char *abs_srcdir;
 static const char *abs_top_srcdir;
 
 #define VIR_FROM_THIS VIR_FROM_CPU
@@ -494,22 +492,10 @@ static const char *nomodel[]    = { "nomodel" };
 static const char *models[]     = { "qemu64", "core2duo", "Nehalem" };
 
 static int
-mymain(int argc, char **argv)
+mymain(void)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
     char map[PATH_MAX];
-
-    progname = argv[0];
-
-    if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname);
-        return EXIT_FAILURE;
-    }
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)

@@ -1,7 +1,7 @@
 /*
  * utils.c: test utils
  *
- * Copyright (C) 2005, 2008-2010 Red Hat, Inc.
+ * Copyright (C) 2005, 2008-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -14,6 +14,10 @@
 # include <stdio.h>
 
 # define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
+# define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */
+
+extern char *progname;
+extern char *abs_srcdir;
 
 double virtTestCountAverage(double *items,
                             int nitems);
@@ -44,11 +48,12 @@ char *virtTestLogContentAndReset(void);
 
 int virtTestMain(int argc,
                  char **argv,
-                 int (*func)(int, char **));
+                 int (*func)(void));
 
-# define VIRT_TEST_MAIN(func)                    \
-    int main(int argc, char **argv)  {          \
-        return virtTestMain(argc,argv, func);   \
+/* Setup, then call func() */
+# define VIRT_TEST_MAIN(func)                   \
+    int main(int argc, char **argv) {           \
+        return virtTestMain(argc, argv, func);  \
     }
 
 #endif /* __VIT_TEST_UTILS_H__ */
