@@ -61,13 +61,28 @@ testHashInit(int size)
     return hash;
 }
 
+static void
+testHashCheckForEachCount(void *payload ATTRIBUTE_UNUSED,
+                          const void *name ATTRIBUTE_UNUSED,
+                          void *data ATTRIBUTE_UNUSED)
+{
+}
 
 static int
 testHashCheckCount(virHashTablePtr hash, int count)
 {
+    int iter_count = 0;
+
     if (virHashSize(hash) != count) {
         testError("\nhash contains %d instead of %d elements\n",
                   virHashSize(hash), count);
+        return -1;
+    }
+
+    iter_count = virHashForEach(hash, testHashCheckForEachCount, NULL);
+    if (count != iter_count) {
+        testError("\nhash claims to have %d elements but iteration finds %d\n",
+                  count, iter_count);
         return -1;
     }
 

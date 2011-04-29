@@ -269,6 +269,7 @@ virHashFree(virHashTablePtr table)
         }
     }
 
+    VIR_FREE(table->table);
     VIR_FREE(table);
 }
 
@@ -532,13 +533,12 @@ int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
  * virHashRemoveSet
  * @table: the hash table to process
  * @iter: callback to identify elements for removal
- * @f: callback to free memory from element payload
  * @data: opaque data to pass to the iterator
  *
  * Iterates over all elements in the hash table, invoking the 'iter'
  * callback. If the callback returns a non-zero value, the element
  * will be removed from the hash table & its payload passed to the
- * callback 'f' for de-allocation.
+ * data freer callback registered at creation.
  *
  * Returns number of items removed on success, -1 on failure
  */
@@ -562,7 +562,7 @@ int virHashRemoveSet(virHashTablePtr table,
         while (*nextptr) {
             virHashEntryPtr entry = *nextptr;
             if (!iter(entry->payload, entry->name, data)) {
-                *nextptr = entry->next;
+                nextptr = &entry->next;
             } else {
                 count++;
                 if (table->dataFree)
