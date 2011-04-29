@@ -478,7 +478,7 @@ int virtTestMain(int argc,
                  int (*func)(void))
 {
     int ret;
-    char cwd[PATH_MAX];
+    bool abs_srcdir_cleanup = false;
 #if TEST_OOM
     int approxAlloc = 0;
     int n;
@@ -490,8 +490,10 @@ int virtTestMain(int argc,
 #endif
 
     abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(cwd, sizeof(cwd));
+    if (!abs_srcdir) {
+        abs_srcdir = getcwd(NULL, 0);
+        abs_srcdir_cleanup = true;
+    }
     if (!abs_srcdir)
         exit(EXIT_AM_HARDFAIL);
 
@@ -624,6 +626,8 @@ cleanup:
     ret = (func)();
 #endif
 
+    if (abs_srcdir_cleanup)
+        VIR_FREE(abs_srcdir);
     virResetLastError();
     if (!virTestGetVerbose()) {
         int i;

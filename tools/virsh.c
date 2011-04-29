@@ -9893,7 +9893,6 @@ editReadBackFile (vshControl *ctl, const char *filename)
 }
 
 
-#ifndef WIN32
 /*
  * "cd" command
  */
@@ -9936,9 +9935,6 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return ret;
 }
 
-#endif
-
-#ifndef WIN32
 /*
  * "pwd" command
  */
@@ -9952,30 +9948,20 @@ static bool
 cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     char *cwd;
-    size_t path_max;
-    bool err = true;
+    bool ret = true;
 
-    path_max = (size_t) PATH_MAX + 2;
-    cwd = vshMalloc (ctl, path_max);
-    while (cwd) {
-        err = getcwd (cwd, path_max) == NULL;
-        if (!err || errno != ERANGE)
-            break;
-
-        path_max *= 2;
-        cwd = vshRealloc (ctl, cwd, path_max);
-    }
-
-    if (err)
+    cwd = getcwd(NULL, 0);
+    if (!cwd) {
         vshError(ctl, _("pwd: cannot get current directory: %s"),
                  strerror(errno));
-    else
+        ret = false;
+    } else {
         vshPrint (ctl, _("%s\n"), cwd);
+        VIR_FREE(cwd);
+    }
 
-    VIR_FREE(cwd);
-    return !err;
+    return ret;
 }
-#endif
 
 /*
  * "echo" command
@@ -10862,15 +10848,11 @@ static const vshCmdDef secretCmds[] = {
 };
 
 static const vshCmdDef virshCmds[] = {
-#ifndef WIN32
     {"cd", cmdCd, opts_cd, info_cd},
-#endif
     {"echo", cmdEcho, opts_echo, info_echo},
     {"exit", cmdQuit, NULL, info_quit},
     {"help", cmdHelp, opts_help, info_help},
-#ifndef WIN32
     {"pwd", cmdPwd, NULL, info_pwd},
-#endif
     {"quit", cmdQuit, NULL, info_quit},
     {NULL, NULL, NULL, NULL}
 };

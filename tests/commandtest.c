@@ -49,14 +49,10 @@ mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 static int checkoutput(const char *testname)
 {
     int ret = -1;
-    char cwd[1024];
     char *expectname = NULL;
     char *expectlog = NULL;
     char *actualname = NULL;
     char *actuallog = NULL;
-
-    if (!getcwd(cwd, sizeof(cwd)))
-        return -1;
 
     if (virAsprintf(&expectname, "%s/commanddata/%s.log", abs_srcdir,
                     testname) < 0)

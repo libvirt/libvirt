@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
     int i, n;
     char **origenv;
     char **newenv;
+    char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
 
     if (!log)
@@ -99,13 +100,13 @@ int main(int argc, char **argv) {
     }
 
     fprintf(log, "DAEMON:%s\n", getpgrp() == getsid(0) ? "yes" : "no");
-    char cwd[1024];
-    if (!getcwd(cwd, sizeof(cwd)))
+    if (!(cwd = getcwd(NULL, 0)))
         return EXIT_FAILURE;
-    if (strlen(cwd) > strlen("/commanddata") &&
+    if (strlen(cwd) > strlen(".../commanddata") &&
         STREQ(cwd + strlen(cwd) - strlen("/commanddata"), "/commanddata"))
         strcpy(cwd, ".../commanddata");
     fprintf(log, "CWD:%s\n", cwd);
+    VIR_FREE(cwd);
 
     VIR_FORCE_FCLOSE(log);
 
