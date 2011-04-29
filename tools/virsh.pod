@@ -430,9 +430,10 @@ Returns information about jobs running on a domain.
 
 Convert a domain Id (or UUID) to domain name
 
-=item B<domstate> I<domain-id>
+=item B<domstate> I<domain-id> optional I<--reason>
 
-Returns state about a running domain.
+Returns state about a domain.  I<--reason> tells virsh to also print
+reason for the state.
 
 =item B<domxml-from-native> I<format> I<config>
 

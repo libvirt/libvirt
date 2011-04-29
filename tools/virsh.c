@@ -223,6 +223,8 @@ typedef struct __vshControl {
     int log_fd;                 /* log file descriptor */
     char *historydir;           /* readline history directory name */
     char *historyfile;          /* readline history file name */
+    bool useGetInfo;            /* must use virDomainGetInfo, since
+                                   virDomainGetState is not supported */
 } __vshControl;
 
 typedef struct vshCmdGrp {
@@ -334,7 +336,9 @@ static void vshDebug(vshControl *ctl, int level, const char *format, ...)
 /* XXX: add batch support */
 #define vshPrint(_ctl, ...)   vshPrintExtra(NULL, __VA_ARGS__)
 
+static int vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
 static const char *vshDomainStateToString(int state);
+static const char *vshDomainStateReasonToString(int state, int reason);
 static const char *vshDomainVcpuStateToString(int state);
 static bool vshConnectionUsability(vshControl *ctl, virConnectPtr conn);
 
@@ -571,6 +575,7 @@ vshReconnect(vshControl *ctl) {
     else
         vshError(ctl, "%s", _("Reconnected to the hypervisor"));
     disconnected = 0;
+    ctl->useGetInfo = false;
 }
 
 /* ---------------
@@ -717,6 +722,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     }
     ctl->name = vshStrdup(ctl, name);
 
+    ctl->useGetInfo = false;
     ctl->readonly = ro;
 
     ctl->conn = virConnectOpenAuth(ctl->name, virConnectAuthPtrDefault,
@@ -750,14 +756,14 @@ static bool
 cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *name)
 {
     bool ret = false;
-    virDomainInfo dominfo;
+    int state;
 
-    if (virDomainGetInfo(dom, &dominfo) < 0) {
+    if ((state = vshDomainState(ctl, dom, NULL)) < 0) {
         vshError(ctl, "%s", _("Unable to get domain status"));
         goto cleanup;
     }
 
-    if (dominfo.state == VIR_DOMAIN_SHUTOFF) {
+    if (state == VIR_DOMAIN_SHUTOFF) {
         vshError(ctl, "%s", _("The domain is not running"));
         goto cleanup;
     }
@@ -872,29 +878,20 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     vshPrintExtra(ctl, "----------------------------------\n");
 
     for (i = 0; i < maxid; i++) {
-        virDomainInfo info;
         virDomainPtr dom = virDomainLookupByID(ctl->conn, ids[i]);
-        const char *state;
 
         /* this kind of work with domains is not atomic operation */
         if (!dom)
             continue;
 
-        if (virDomainGetInfo(dom, &info) < 0)
-            state = _("no state");
-        else
-            state = _(vshDomainStateToString(info.state));
-
         vshPrint(ctl, "%3d %-20s %s\n",
                  virDomainGetID(dom),
                  virDomainGetName(dom),
-                 state);
+                 vshDomainStateToString(vshDomainState(ctl, dom, NULL)));
         virDomainFree(dom);
     }
     for (i = 0; i < maxname; i++) {
-        virDomainInfo info;
         virDomainPtr dom = virDomainLookupByName(ctl->conn, names[i]);
-        const char *state;
 
         /* this kind of work with domains is not atomic operation */
         if (!dom) {
@@ -902,12 +899,10 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             continue;
         }
 
-        if (virDomainGetInfo(dom, &info) < 0)
-            state = _("no state");
-        else
-            state = _(vshDomainStateToString(info.state));
-
-        vshPrint(ctl, "%3s %-20s %s\n", "-", names[i], state);
+        vshPrint(ctl, "%3s %-20s %s\n",
+                 "-",
+                 names[i],
+                 vshDomainStateToString(vshDomainState(ctl, dom, NULL)));
 
         virDomainFree(dom);
         VIR_FREE(names[i]);
@@ -928,15 +923,17 @@ static const vshCmdInfo info_domstate[] = {
 
 static const vshCmdOptDef opts_domstate[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"reason", VSH_OT_BOOL, 0, N_("also print reason for the state")},
     {NULL, 0, 0, NULL}
 };
 
 static bool
 cmdDomstate(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainInfo info;
     virDomainPtr dom;
     bool ret = true;
+    int showReason = vshCommandOptBool(cmd, "reason");
+    int state, reason;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -944,12 +941,21 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (virDomainGetInfo(dom, &info) == 0)
-        vshPrint(ctl, "%s\n",
-                 _(vshDomainStateToString(info.state)));
-    else
+    if ((state = vshDomainState(ctl, dom, &reason)) < 0) {
         ret = false;
+        goto cleanup;
+    }
 
+    if (showReason) {
+        vshPrint(ctl, "%s (%s)\n",
+                 _(vshDomainStateToString(state)),
+                 vshDomainStateReasonToString(state, reason));
+    } else {
+        vshPrint(ctl, "%s\n",
+                 _(vshDomainStateToString(state)));
+    }
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -3057,7 +3063,6 @@ static bool
 cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    virDomainInfo info;
     int kilobytes = 0;
     bool ret = true;
     int config = vshCommandOptBool(cmd, "config");
@@ -3094,12 +3099,6 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     if (kilobytes <= 0) {
         virDomainFree(dom);
         vshError(ctl, _("Invalid value of %d for memory size"), kilobytes);
-        return false;
-    }
-
-    if (virDomainGetInfo(dom, &info) != 0) {
-        virDomainFree(dom);
-        vshError(ctl, "%s", _("Unable to verify current MemorySize"));
         return false;
     }
 
@@ -12059,10 +12058,38 @@ vshCommandStringParse(vshControl *ctl, char *cmdstr)
  * Misc utils
  * ---------------
  */
+static int
+vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason)
+{
+    virDomainInfo info;
+
+    if (reason)
+        *reason = -1;
+
+    if (!ctl->useGetInfo) {
+        int state;
+        if (virDomainGetState(dom, &state, reason, 0) < 0) {
+            virErrorPtr err = virGetLastError();
+            if (err && err->code == VIR_ERR_NO_SUPPORT)
+                ctl->useGetInfo = true;
+            else
+                return -1;
+        } else {
+            return state;
+        }
+    }
+
+    /* fall back to virDomainGetInfo if virDomainGetState is not supported */
+    if (virDomainGetInfo(dom, &info) < 0)
+        return -1;
+    else
+        return info.state;
+}
+
 static const char *
 vshDomainStateToString(int state)
 {
-    switch (state) {
+    switch ((virDomainState) state) {
     case VIR_DOMAIN_RUNNING:
         return N_("running");
     case VIR_DOMAIN_BLOCKED:
@@ -12075,10 +12102,111 @@ vshDomainStateToString(int state)
         return N_("shut off");
     case VIR_DOMAIN_CRASHED:
         return N_("crashed");
-    default:
+    case VIR_DOMAIN_NOSTATE:
         ;/*FALLTHROUGH*/
     }
     return N_("no state");  /* = dom0 state */
+}
+
+static const char *
+vshDomainStateReasonToString(int state, int reason)
+{
+    switch ((virDomainState) state) {
+    case VIR_DOMAIN_NOSTATE:
+        switch ((virDomainNostateReason) reason) {
+        case VIR_DOMAIN_NOSTATE_UNKNOWN:
+            ;
+        }
+        break;
+
+    case VIR_DOMAIN_RUNNING:
+        switch ((virDomainRunningReason) reason) {
+        case VIR_DOMAIN_RUNNING_BOOTED:
+            return N_("booted");
+        case VIR_DOMAIN_RUNNING_MIGRATED:
+            return N_("migrated");
+        case VIR_DOMAIN_RUNNING_RESTORED:
+            return N_("restored");
+        case VIR_DOMAIN_RUNNING_FROM_SNAPSHOT:
+            return N_("from snapshot");
+        case VIR_DOMAIN_RUNNING_UNPAUSED:
+            return N_("unpaused");
+        case VIR_DOMAIN_RUNNING_MIGRATION_CANCELED:
+            return N_("migration canceled");
+        case VIR_DOMAIN_RUNNING_SAVE_CANCELED:
+            return N_("save canceled");
+        case VIR_DOMAIN_RUNNING_UNKNOWN:
+            ;
+        }
+        break;
+
+    case VIR_DOMAIN_BLOCKED:
+        switch ((virDomainBlockedReason) reason) {
+        case VIR_DOMAIN_BLOCKED_UNKNOWN:
+            ;
+        }
+        break;
+
+    case VIR_DOMAIN_PAUSED:
+        switch ((virDomainPausedReason) reason) {
+        case VIR_DOMAIN_PAUSED_USER:
+            return N_("user");
+        case VIR_DOMAIN_PAUSED_MIGRATION:
+            return N_("migrating");
+        case VIR_DOMAIN_PAUSED_SAVE:
+            return N_("saving");
+        case VIR_DOMAIN_PAUSED_DUMP:
+            return N_("dumping");
+        case VIR_DOMAIN_PAUSED_IOERROR:
+            return N_("I/O error");
+        case VIR_DOMAIN_PAUSED_WATCHDOG:
+            return N_("watchdog");
+        case VIR_DOMAIN_PAUSED_FROM_SNAPSHOT:
+            return N_("from snapshot");
+        case VIR_DOMAIN_PAUSED_UNKNOWN:
+            ;
+        }
+        break;
+
+    case VIR_DOMAIN_SHUTDOWN:
+        switch ((virDomainShutdownReason) reason) {
+        case VIR_DOMAIN_SHUTDOWN_USER:
+            return N_("user");
+        case VIR_DOMAIN_SHUTDOWN_UNKNOWN:
+            ;
+        }
+        break;
+
+    case VIR_DOMAIN_SHUTOFF:
+        switch ((virDomainShutoffReason) reason) {
+        case VIR_DOMAIN_SHUTOFF_SHUTDOWN:
+            return N_("shutdown");
+        case VIR_DOMAIN_SHUTOFF_DESTROYED:
+            return N_("destroyed");
+        case VIR_DOMAIN_SHUTOFF_CRASHED:
+            return N_("crashed");
+        case VIR_DOMAIN_SHUTOFF_MIGRATED:
+            return N_("migrated");
+        case VIR_DOMAIN_SHUTOFF_SAVED:
+            return N_("saved");
+        case VIR_DOMAIN_SHUTOFF_FAILED:
+            return N_("failed");
+        case VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT:
+            return N_("from snapshot");
+        case VIR_DOMAIN_SHUTOFF_UNKNOWN:
+            ;
+        }
+        break;
+
+    case VIR_DOMAIN_CRASHED:
+        switch ((virDomainCrashedReason) reason) {
+        case VIR_DOMAIN_CRASHED_UNKNOWN:
+            ;
+        }
+        break;
+    }
+
+    return N_("unknown");
 }
 
 static const char *
@@ -12178,6 +12306,7 @@ vshError(vshControl *ctl, const char *format, ...)
     fprintf(stderr, "%s\n", NULLSTR(str));
     VIR_FREE(str);
 }
+
 
 /*
  * Initialize connection.
