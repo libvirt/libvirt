@@ -568,6 +568,10 @@ __virExec(const char *const*argv,
         }
 
         *retpid = pid;
+
+        if (binary != argv[0])
+            VIR_FREE(binary);
+
         return 0;
     }
 
