@@ -12231,15 +12231,15 @@ static void
 vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
                  va_list ap)
 {
-    char *msg_buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *str;
+    size_t len;
     const char *lvl = "";
     struct timeval stTimeval;
     struct tm *stTm;
 
     if (ctl->log_fd == -1)
         return;
-
-    msg_buf = vshMalloc(ctl, MSG_BUFFER);
 
     /**
      * create log format
@@ -12248,16 +12248,14 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     */
     gettimeofday(&stTimeval, NULL);
     stTm = localtime(&stTimeval.tv_sec);
-    snprintf(msg_buf, MSG_BUFFER,
-             "[%d.%02d.%02d %02d:%02d:%02d ",
-             (1900 + stTm->tm_year),
-             (1 + stTm->tm_mon),
-             (stTm->tm_mday),
-             (stTm->tm_hour),
-             (stTm->tm_min),
-             (stTm->tm_sec));
-    snprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf),
-             "%s] ", SIGN_NAME);
+    virBufferAsprintf(&buf, "[%d.%02d.%02d %02d:%02d:%02d %s] ",
+                      (1900 + stTm->tm_year),
+                      (1 + stTm->tm_mon),
+                      stTm->tm_mday,
+                      stTm->tm_hour,
+                      stTm->tm_min,
+                      stTm->tm_sec,
+                      SIGN_NAME);
     switch (log_level) {
         case VSH_ERR_DEBUG:
             lvl = LVL_DEBUG;
@@ -12278,21 +12276,31 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
             lvl = LVL_DEBUG;
             break;
     }
-    snprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf),
-             "%s ", lvl);
-    vsnprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf),
-              msg_format, ap);
+    virBufferAsprintf(&buf, "%s ", lvl);
+    virBufferVasprintf(&buf, msg_format, ap);
+    virBufferAddChar(&buf, '\n');
 
-    if (msg_buf[strlen(msg_buf) - 1] != '\n')
-        snprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf), "\n");
+    if (virBufferError(&buf))
+        goto error;
 
-    /* write log */
-    if (safewrite(ctl->log_fd, msg_buf, strlen(msg_buf)) < 0) {
-        vshCloseLogFile(ctl);
-        vshError(ctl, "%s", _("failed to write the log file"));
+    str = virBufferContentAndReset(&buf);
+    len = strlen(str);
+    if (len > 1 && str[len - 2] == '\n') {
+        str[len - 1] = '\0';
+        len--;
     }
 
-    VIR_FREE(msg_buf);
+    /* write log */
+    if (safewrite(ctl->log_fd, str, len) < 0)
+        goto error;
+
+    return;
+
+error:
+    vshCloseLogFile(ctl);
+    vshError(ctl, "%s", _("failed to write the log file"));
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(str);
 }
 
 /**
