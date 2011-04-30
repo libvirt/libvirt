@@ -4316,6 +4316,7 @@ endjob:
         vm = NULL;
 
 cleanup:
+    qemuCapsFree(qemuCaps);
     virDomainDefFree(vmdef);
     virDomainDeviceDefFree(dev);
     if (vm)
