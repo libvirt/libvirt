@@ -873,7 +873,10 @@ virNWFilterLearnThreadsTerminate(bool allowNewThreads) {
  * Shutdown of this layer
  */
 void
-virNWFilterLearnShutdown(void) {
+virNWFilterLearnShutdown(void)
+{
+    if (!pendingLearnReq)
+        return;
 
     virNWFilterLearnThreadsTerminate(false);
 

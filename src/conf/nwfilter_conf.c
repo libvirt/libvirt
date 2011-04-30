@@ -125,6 +125,7 @@ struct int_map {
  * only one filter update allowed
  */
 static virMutex updateMutex;
+static bool initialized = false;
 
 void
 virNWFilterLockFilterUpdates(void) {
@@ -2971,6 +2972,8 @@ int virNWFilterConfLayerInit(virHashIterator domUpdateCB)
 {
     virNWFilterDomainFWUpdateCB = domUpdateCB;
 
+    initialized = true;
+
     if (virMutexInitRecursive(&updateMutex))
         return 1;
 
@@ -2980,7 +2983,12 @@ int virNWFilterConfLayerInit(virHashIterator domUpdateCB)
 
 void virNWFilterConfLayerShutdown(void)
 {
+    if (!initialized)
+        return;
+
     virMutexDestroy(&updateMutex);
+
+    initialized = false;
 }
 
 

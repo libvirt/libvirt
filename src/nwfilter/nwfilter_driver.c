@@ -199,6 +199,8 @@ nwfilterDriverShutdown(void) {
     if (!driverState)
         return -1;
 
+    virNWFilterConfLayerShutdown();
+    virNWFilterTechDriversShutdown();
     virNWFilterLearnShutdown();
 
     nwfilterDriverLock(driverState);
