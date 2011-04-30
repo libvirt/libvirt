@@ -12227,7 +12227,8 @@ vshOpenLogFile(vshControl *ctl)
  * Outputting an error to log file.
  */
 static void
-vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list ap)
+vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
+                 va_list ap)
 {
     char *msg_buf;
     const char *lvl = "";
@@ -12246,7 +12247,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list
     */
     gettimeofday(&stTimeval, NULL);
     stTm = localtime(&stTimeval.tv_sec);
-    snprintf(msg_buf, sizeof(msg_buf),
+    snprintf(msg_buf, MSG_BUFFER,
              "[%d.%02d.%02d %02d:%02d:%02d ",
              (1900 + stTm->tm_year),
              (1 + stTm->tm_mon),
@@ -12254,7 +12255,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list
              (stTm->tm_hour),
              (stTm->tm_min),
              (stTm->tm_sec));
-    snprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf),
+    snprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf),
              "%s] ", SIGN_NAME);
     switch (log_level) {
         case VSH_ERR_DEBUG:
@@ -12276,13 +12277,13 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list
             lvl = LVL_DEBUG;
             break;
     }
-    snprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf),
+    snprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf),
              "%s ", lvl);
-    vsnprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf),
+    vsnprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf),
               msg_format, ap);
 
     if (msg_buf[strlen(msg_buf) - 1] != '\n')
-        snprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf), "\n");
+        snprintf(msg_buf + strlen(msg_buf), MSG_BUFFER - strlen(msg_buf), "\n");
 
     /* write log */
     if (safewrite(ctl->log_fd, msg_buf, strlen(msg_buf)) < 0) {
