@@ -260,7 +260,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         union _virNodeDevCapData *data = &caps->data;
 
-        virBufferVSprintf(&buf, "  <capability type='%s'>\n",
+        virBufferAsprintf(&buf, "  <capability type='%s'>\n",
                           virNodeDevCapTypeToString(caps->type));
         switch (caps->type) {
         case VIR_NODE_DEV_CAP_SYSTEM:
@@ -278,7 +278,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
                 virBufferEscapeString(&buf, "      <serial>%s</serial>\n",
                                       data->system.hardware.serial);
             virUUIDFormat(data->system.hardware.uuid, uuidstr);
-            virBufferVSprintf(&buf, "      <uuid>%s</uuid>\n", uuidstr);
+            virBufferAsprintf(&buf, "      <uuid>%s</uuid>\n", uuidstr);
             virBufferAddLit(&buf, "    </hardware>\n");
             virBufferAddLit(&buf, "    <firmware>\n");
             if (data->system.firmware.vendor_name)
@@ -294,21 +294,21 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
             virBufferAddLit(&buf, "    </firmware>\n");
             break;
         case VIR_NODE_DEV_CAP_PCI_DEV:
-            virBufferVSprintf(&buf, "    <domain>%d</domain>\n",
+            virBufferAsprintf(&buf, "    <domain>%d</domain>\n",
                               data->pci_dev.domain);
-            virBufferVSprintf(&buf, "    <bus>%d</bus>\n", data->pci_dev.bus);
-            virBufferVSprintf(&buf, "    <slot>%d</slot>\n",
+            virBufferAsprintf(&buf, "    <bus>%d</bus>\n", data->pci_dev.bus);
+            virBufferAsprintf(&buf, "    <slot>%d</slot>\n",
                               data->pci_dev.slot);
-            virBufferVSprintf(&buf, "    <function>%d</function>\n",
+            virBufferAsprintf(&buf, "    <function>%d</function>\n",
                               data->pci_dev.function);
-            virBufferVSprintf(&buf, "    <product id='0x%04x'",
+            virBufferAsprintf(&buf, "    <product id='0x%04x'",
                                   data->pci_dev.product);
             if (data->pci_dev.product_name)
                 virBufferEscapeString(&buf, ">%s</product>\n",
                                       data->pci_dev.product_name);
             else
                 virBufferAddLit(&buf, " />\n");
-            virBufferVSprintf(&buf, "    <vendor id='0x%04x'",
+            virBufferAsprintf(&buf, "    <vendor id='0x%04x'",
                                   data->pci_dev.vendor);
             if (data->pci_dev.vendor_name)
                 virBufferEscapeString(&buf, ">%s</vendor>\n",
@@ -317,7 +317,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
                 virBufferAddLit(&buf, " />\n");
             if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION) {
                 virBufferAddLit(&buf, "    <capability type='phys_function'>\n");
-                virBufferVSprintf(&buf,
+                virBufferAsprintf(&buf,
                                   "      <address domain='0x%.4x' bus='0x%.2x' "
                                   "slot='0x%.2x' function='0x%.1x'/>\n",
                                   data->pci_dev.physical_function->domain,
@@ -329,7 +329,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
             if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION) {
                 virBufferAddLit(&buf, "    <capability type='virt_functions'>\n");
                 for (i = 0 ; i < data->pci_dev.num_virtual_functions ; i++) {
-                    virBufferVSprintf(&buf,
+                    virBufferAsprintf(&buf,
                                       "      <address domain='0x%.4x' bus='0x%.2x' "
                                       "slot='0x%.2x' function='0x%.1x'/>\n",
                                       data->pci_dev.virtual_functions[i]->domain,
@@ -341,17 +341,17 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
             }
             break;
         case VIR_NODE_DEV_CAP_USB_DEV:
-            virBufferVSprintf(&buf, "    <bus>%d</bus>\n", data->usb_dev.bus);
-            virBufferVSprintf(&buf, "    <device>%d</device>\n",
+            virBufferAsprintf(&buf, "    <bus>%d</bus>\n", data->usb_dev.bus);
+            virBufferAsprintf(&buf, "    <device>%d</device>\n",
                               data->usb_dev.device);
-            virBufferVSprintf(&buf, "    <product id='0x%04x'",
+            virBufferAsprintf(&buf, "    <product id='0x%04x'",
                                   data->usb_dev.product);
             if (data->usb_dev.product_name)
                 virBufferEscapeString(&buf, ">%s</product>\n",
                                       data->usb_dev.product_name);
             else
                 virBufferAddLit(&buf, " />\n");
-            virBufferVSprintf(&buf, "    <vendor id='0x%04x'",
+            virBufferAsprintf(&buf, "    <vendor id='0x%04x'",
                                   data->usb_dev.vendor);
             if (data->usb_dev.vendor_name)
                 virBufferEscapeString(&buf, ">%s</vendor>\n",
@@ -360,13 +360,13 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
                 virBufferAddLit(&buf, " />\n");
             break;
         case VIR_NODE_DEV_CAP_USB_INTERFACE:
-            virBufferVSprintf(&buf, "    <number>%d</number>\n",
+            virBufferAsprintf(&buf, "    <number>%d</number>\n",
                               data->usb_if.number);
-            virBufferVSprintf(&buf, "    <class>%d</class>\n",
+            virBufferAsprintf(&buf, "    <class>%d</class>\n",
                               data->usb_if._class);
-            virBufferVSprintf(&buf, "    <subclass>%d</subclass>\n",
+            virBufferAsprintf(&buf, "    <subclass>%d</subclass>\n",
                               data->usb_if.subclass);
-            virBufferVSprintf(&buf, "    <protocol>%d</protocol>\n",
+            virBufferAsprintf(&buf, "    <protocol>%d</protocol>\n",
                               data->usb_if.protocol);
             if (data->usb_if.description)
                 virBufferEscapeString(&buf,
@@ -387,7 +387,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
             }
             break;
         case VIR_NODE_DEV_CAP_SCSI_HOST:
-            virBufferVSprintf(&buf, "    <host>%d</host>\n",
+            virBufferAsprintf(&buf, "    <host>%d</host>\n",
                               data->scsi_host.host);
             if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
                 virBufferAddLit(&buf, "    <capability type='fc_host'>\n");
@@ -409,11 +409,11 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
             break;
 
         case VIR_NODE_DEV_CAP_SCSI:
-            virBufferVSprintf(&buf, "    <host>%d</host>\n", data->scsi.host);
-            virBufferVSprintf(&buf, "    <bus>%d</bus>\n", data->scsi.bus);
-            virBufferVSprintf(&buf, "    <target>%d</target>\n",
+            virBufferAsprintf(&buf, "    <host>%d</host>\n", data->scsi.host);
+            virBufferAsprintf(&buf, "    <bus>%d</bus>\n", data->scsi.bus);
+            virBufferAsprintf(&buf, "    <target>%d</target>\n",
                               data->scsi.target);
-            virBufferVSprintf(&buf, "    <lun>%d</lun>\n", data->scsi.lun);
+            virBufferAsprintf(&buf, "    <lun>%d</lun>\n", data->scsi.lun);
             if (data->scsi.type)
                 virBufferEscapeString(&buf, "    <type>%s</type>\n",
                                       data->scsi.type);
@@ -434,16 +434,16 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
                 virBufferEscapeString(&buf, "    <vendor>%s</vendor>\n",
                                   data->storage.vendor);
             if (data->storage.serial)
-                virBufferVSprintf(&buf, "    <serial>%s</serial>\n",
+                virBufferAsprintf(&buf, "    <serial>%s</serial>\n",
                                   data->storage.serial);
             if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_REMOVABLE) {
                 int avl = data->storage.flags &
                     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
                 virBufferAddLit(&buf, "    <capability type='removable'>\n");
-                virBufferVSprintf(&buf,
+                virBufferAsprintf(&buf,
                                   "      <media_available>%d"
                                   "</media_available>\n", avl ? 1 : 0);
-                virBufferVSprintf(&buf, "      <media_size>%llu</media_size>\n",
+                virBufferAsprintf(&buf, "      <media_size>%llu</media_size>\n",
                                   data->storage.removable_media_size);
                 if (data->storage.media_label)
                     virBufferEscapeString(&buf,
@@ -451,23 +451,23 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
                                       data->storage.media_label);
 
                 if (data->storage.logical_block_size > 0)
-                    virBufferVSprintf(&buf, "      <logical_block_size>%llu"
+                    virBufferAsprintf(&buf, "      <logical_block_size>%llu"
                                       "</logical_block_size>\n",
                                       data->storage.logical_block_size);
                 if (data->storage.num_blocks > 0)
-                    virBufferVSprintf(&buf,
+                    virBufferAsprintf(&buf,
                                       "      <num_blocks>%llu</num_blocks>\n",
                                       data->storage.num_blocks);
                 virBufferAddLit(&buf, "    </capability>\n");
             } else {
-                virBufferVSprintf(&buf, "    <size>%llu</size>\n",
+                virBufferAsprintf(&buf, "    <size>%llu</size>\n",
                                   data->storage.size);
                 if (data->storage.logical_block_size > 0)
-                    virBufferVSprintf(&buf, "    <logical_block_size>%llu"
+                    virBufferAsprintf(&buf, "    <logical_block_size>%llu"
                                       "</logical_block_size>\n",
                                       data->storage.logical_block_size);
                 if (data->storage.num_blocks > 0)
-                    virBufferVSprintf(&buf,
+                    virBufferAsprintf(&buf,
                                       "    <num_blocks>%llu</num_blocks>\n",
                                       data->storage.num_blocks);
             }

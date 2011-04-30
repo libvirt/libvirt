@@ -269,7 +269,7 @@ _formatParameterAttrs(void *payload, const void *name, void *data)
 {
     struct formatterParam *fp = (struct formatterParam *)data;
 
-    virBufferVSprintf(fp->buf, "%s<parameter name='%s' value='%s'/>\n",
+    virBufferAsprintf(fp->buf, "%s<parameter name='%s' value='%s'/>\n",
                       fp->indent,
                       (const char *)name,
                       (char *)payload);

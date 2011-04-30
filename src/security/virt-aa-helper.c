@@ -827,10 +827,10 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
         goto clean;
     }
 
-    virBufferVSprintf(buf, "  \"%s\" %s,\n", tmp, perms);
+    virBufferAsprintf(buf, "  \"%s\" %s,\n", tmp, perms);
     if (readonly) {
-        virBufferVSprintf(buf, "  # don't audit writes to readonly files\n");
-        virBufferVSprintf(buf, "  deny \"%s\" w,\n", tmp);
+        virBufferAsprintf(buf, "  # don't audit writes to readonly files\n");
+        virBufferAsprintf(buf, "  deny \"%s\" w,\n", tmp);
     }
 
   clean:
@@ -1197,11 +1197,11 @@ main(int argc, char **argv)
             if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
                 goto clean;
         } else {
-            virBufferVSprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
+            virBufferAsprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
                               LOCALSTATEDIR, ctl->def->name);
-            virBufferVSprintf(&buf, "  \"%s/lib/libvirt/**/%s.monitor\" rw,\n",
+            virBufferAsprintf(&buf, "  \"%s/lib/libvirt/**/%s.monitor\" rw,\n",
                               LOCALSTATEDIR, ctl->def->name);
-            virBufferVSprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
+            virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
                               LOCALSTATEDIR, ctl->def->name);
             if (ctl->files)
                 virBufferAdd(&buf, ctl->files, -1);

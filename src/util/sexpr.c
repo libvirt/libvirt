@@ -232,7 +232,7 @@ sexpr2string(const struct sexpr *sexpr, virBufferPtr buffer)
         if (strchr(sexpr->u.value, ' ') ||
             strchr(sexpr->u.value, ')') ||
             strchr(sexpr->u.value, '('))
-            virBufferVSprintf(buffer, "'%s'", sexpr->u.value);
+            virBufferAsprintf(buffer, "'%s'", sexpr->u.value);
         else
             virBufferAdd(buffer, sexpr->u.value, -1);
 

@@ -323,12 +323,12 @@ static int udevGenerateDeviceName(struct udev_device *device,
     int ret = 0, i = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferVSprintf(&buf, "%s_%s",
+    virBufferAsprintf(&buf, "%s_%s",
                       udev_device_get_subsystem(device),
                       udev_device_get_sysname(device));
 
     if (s != NULL) {
-        virBufferVSprintf(&buf, "_%s", s);
+        virBufferAsprintf(&buf, "_%s", s);
     }
 
     if (virBufferError(&buf)) {

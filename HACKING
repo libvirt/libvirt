@@ -545,7 +545,7 @@ Typical usage is as follows:
      ...
 
      virBufferAddLit(&buf, "<domain>\n");
-     virBufferVSprintf(&buf, "  <memory>%d</memory>\n", memory);
+     virBufferAsprintf(&buf, "  <memory>%d</memory>\n", memory);
      ...
      virBufferAddLit(&buf, "</domain>\n");
 

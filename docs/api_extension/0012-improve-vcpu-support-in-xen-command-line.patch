@@ -88,21 +88,21 @@ index 456b477..dfc6415 100644
  }
 
 @@ -5668,6 +5675,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
-     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
+     virBufferAsprintf(&buf, "(memory %lu)(maxmem %lu)",
                        def->mem.cur_balloon/1024, def->mem.max_balloon/1024);
-     virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
+     virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
 +    /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is 32.  */
 +    if (def->vcpus < def->maxvcpus)
-+        virBufferVSprintf(&buf, "(vcpu_avail %u)", (1U << def->vcpus) - 1);
++        virBufferAsprintf(&buf, "(vcpu_avail %u)", (1U << def->vcpus) - 1);
 
      if (def->cpumask) {
          char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
 @@ -5763,6 +5773,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
-                 virBufferVSprintf(&buf, "(kernel '%s')", def->os.loader);
+                 virBufferAsprintf(&buf, "(kernel '%s')", def->os.loader);
 
-             virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
+             virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
 +            if (def->vcpus < def->maxvcpus)
-+                virBufferVSprintf(&buf, "(vcpu_avail %u)",
++                virBufferAsprintf(&buf, "(vcpu_avail %u)",
 +                                  (1U << def->vcpus) - 1);
 
              for (i = 0 ; i < def->os.nBootDevs ; i++) {

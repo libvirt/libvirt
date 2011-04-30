@@ -284,7 +284,7 @@ phypGetVIOSPartitionID(virConnectPtr conn)
 
     virBufferAddLit(&buf, "lssyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
+        virBufferAsprintf(&buf, " -m %s", managed_system);
     virBufferAddLit(&buf, " -r lpar -F lpar_id,lpar_env"
                     "|sed -n '/vioserver/ {\n s/,.*$//\n p\n}'");
     phypExecInt(session, &buf, conn, &id);
@@ -368,8 +368,8 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F lpar_id,state %s |grep -c '^[0-9][0-9]*'",
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -F lpar_id,state %s |grep -c '^[0-9][0-9]*'",
                       state);
     phypExecInt(session, &buf, conn, &ndom);
     return ndom;
@@ -405,8 +405,8 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F lpar_id,state %s | sed -e 's/,.*$//'",
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -F lpar_id,state %s | sed -e 's/,.*$//'",
                       state);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
@@ -1300,8 +1300,8 @@ phypGetLparID(LIBSSH2_SESSION * session, const char *managed_system,
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " --filter lpar_names=%s -F lpar_id", name);
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " --filter lpar_names=%s -F lpar_id", name);
     phypExecInt(session, &buf, conn, &lpar_id);
     return lpar_id;
 }
@@ -1319,8 +1319,8 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " --filter lpar_ids=%d -F name", lpar_id);
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " --filter lpar_ids=%d -F name", lpar_id);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -1374,8 +1374,8 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
 
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -r mem --level lpar -F %s --filter lpar_ids=%d",
                       type ? "curr_mem" : "curr_max_mem", lpar_id);
     phypExecInt(session, &buf, conn, &memory);
@@ -1395,8 +1395,8 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
 
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -r proc --level lpar -F %s --filter lpar_ids=%d",
                       type ? "curr_max_procs" : "curr_procs", lpar_id);
     phypExecInt(session, &buf, conn, &vcpus);
@@ -1443,8 +1443,8 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
 
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r virtualio --rsubtype scsi -F "
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r virtualio --rsubtype scsi -F "
                       "remote_slot_num --filter lpar_names=%s", lpar_name);
     phypExecInt(session, &buf, conn, &remote_slot);
     return remote_slot;
@@ -1474,8 +1474,8 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
 
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r virtualio --rsubtype scsi -F "
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r virtualio --rsubtype scsi -F "
                       "backing_devices --filter slots=%d", remote_slot);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
@@ -1534,8 +1534,8 @@ phypGetLparProfile(virConnectPtr conn, int lpar_id)
 
     virBufferAddLit(&buf, "lssyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -r prof --filter lpar_ids=%d -F name|head -n 1",
                       lpar_id);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
@@ -1566,9 +1566,9 @@ phypGetVIOSNextSlotNumber(virConnectPtr conn)
     virBufferAddLit(&buf, "lssyscfg");
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
+        virBufferAsprintf(&buf, " -m %s", managed_system);
 
-    virBufferVSprintf(&buf, " -r prof --filter "
+    virBufferAsprintf(&buf, " -r prof --filter "
                       "profile_names=%s -F virtual_eth_adapters,"
                       "virtual_opti_pool_id,virtual_scsi_adapters,"
                       "virtual_serial_adapters|sed -e 's/\"//g' -e "
@@ -1618,8 +1618,8 @@ phypCreateServerSCSIAdapter(virConnectPtr conn)
      * */
     virBufferAddLit(&buf, "lssyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r prof --filter lpar_ids=%d,profile_names=%s"
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r prof --filter lpar_ids=%d,profile_names=%s"
                       " -F virtual_scsi_adapters|sed -e s/\\\"//g",
                       vios_id, profile);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
@@ -1632,8 +1632,8 @@ phypCreateServerSCSIAdapter(virConnectPtr conn)
      * */
     virBufferAddLit(&buf, "chsyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r prof -i 'name=%s,lpar_id=%d,"
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r prof -i 'name=%s,lpar_id=%d,"
                       "\"virtual_scsi_adapters=%s,%d/server/any/any/1\"'",
                       vios_name, vios_id, ret, slot);
     VIR_FREE(ret);
@@ -1647,8 +1647,8 @@ phypCreateServerSCSIAdapter(virConnectPtr conn)
      * */
     virBufferAddLit(&buf, "chhwres -r virtualio --rsubtype scsi");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -p %s -o a -s %d -d 0 -a \"adapter_type=server\"",
                       vios_name, slot);
     VIR_FREE(ret);
@@ -1681,15 +1681,15 @@ phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lsmap -all -field svsa backing -fmt , ");
+    virBufferAsprintf(&buf, "lsmap -all -field svsa backing -fmt , ");
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed '/,[^.*]/d; s/,//g; q'");
+    virBufferAsprintf(&buf, "|sed '/,[^.*]/d; s/,//g; q'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -1763,10 +1763,10 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     }
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "mkvdev -vdev %s -vadapter %s",
+    virBufferAsprintf(&buf, "mkvdev -vdev %s -vadapter %s",
                       dev->data.disk->src, scsi_adapter);
 
     if (system_type == HMC)
@@ -1785,8 +1785,8 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
      * */
     virBufferAddLit(&buf, "lshwres -r virtualio --rsubtype scsi");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " slot_num,backing_device|grep %s|cut -d, -f1",
                       dev->data.disk->src);
     if (phypExecInt(session, &buf, conn, &slot) < 0)
@@ -1797,8 +1797,8 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
      * */
     virBufferAddLit(&buf, "lssyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -r prof --filter lpar_ids=%d,profile_names=%s"
                       " -F virtual_scsi_adapters|sed -e 's/\"//g'",
                       vios_id, profile);
@@ -1813,8 +1813,8 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
      * */
     virBufferAddLit(&buf, "chsyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -r prof -i 'name=%s,lpar_id=%d,"
                       "\"virtual_scsi_adapters=%s,%d/client/%d/%s/0\"'",
                       domain_name, domain->id, ret, slot,
@@ -1827,8 +1827,8 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
      * */
     virBufferAddLit(&buf, "chhwres -r virtualio --rsubtype scsi");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -p %s -o a -s %d -d 0 -a \"adapter_type=server\"",
                       domain_name, slot);
     VIR_FREE(ret);
@@ -1869,15 +1869,15 @@ phypVolumeGetKey(virConnectPtr conn, const char *name)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lslv %s -field lvid", name);
+    virBufferAsprintf(&buf, "lslv %s -field lvid", name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed -e 's/^LV IDENTIFIER://' -e 's/ //g'");
+    virBufferAsprintf(&buf, "|sed -e 's/^LV IDENTIFIER://' -e 's/ //g'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -1899,15 +1899,15 @@ phypGetStoragePoolDevice(virConnectPtr conn, char *name)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lssp -detail -sp %s -field name", name);
+    virBufferAsprintf(&buf, "lssp -detail -sp %s -field name", name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed '1d; s/ //g'");
+    virBufferAsprintf(&buf, "|sed '1d; s/ //g'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -1928,15 +1928,15 @@ phypGetStoragePoolSize(virConnectPtr conn, char *name)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lssp -detail -sp %s -field size", name);
+    virBufferAsprintf(&buf, "lssp -detail -sp %s -field size", name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed '1d; s/ //g'");
+    virBufferAsprintf(&buf, "|sed '1d; s/ //g'");
     phypExecInt(session, &buf, conn, &sp_size);
     return sp_size;
 }
@@ -1957,10 +1957,10 @@ phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
     char *key = NULL;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "mklv -lv %s %s %d", lvname, spname, capacity);
+    virBufferAsprintf(&buf, "mklv -lv %s %s %d", lvname, spname, capacity);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
@@ -2109,15 +2109,15 @@ phypVolumeGetPhysicalVolumeByStoragePool(virStorageVolPtr vol, char *sp)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lssp -detail -sp %s -field pvname", sp);
+    virBufferAsprintf(&buf, "lssp -detail -sp %s -field pvname", sp);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed 1d");
+    virBufferAsprintf(&buf, "|sed 1d");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -2141,15 +2141,15 @@ phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
     virStorageVolPtr vol = NULL;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lslv %s -field vgname", volname);
+    virBufferAsprintf(&buf, "lslv %s -field vgname", volname);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed -e 's/^VOLUME GROUP://g' -e 's/ //g'");
+    virBufferAsprintf(&buf, "|sed -e 's/^VOLUME GROUP://g' -e 's/ //g'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0 || ret == NULL)
@@ -2185,15 +2185,15 @@ phypGetStoragePoolUUID(virConnectPtr conn, unsigned char *uuid,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lsdev -dev %s -attr vgserial_id", name);
+    virBufferAsprintf(&buf, "lsdev -dev %s -attr vgserial_id", name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed '1,2d'");
+    virBufferAsprintf(&buf, "|sed '1,2d'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     if (exit_status < 0 || ret == NULL)
@@ -2319,15 +2319,15 @@ phypVolumeGetPath(virStorageVolPtr vol)
     char *pv;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lslv %s -field vgname", vol->name);
+    virBufferAsprintf(&buf, "lslv %s -field vgname", vol->name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       "|sed -e 's/^VOLUME GROUP://g' -e 's/ //g'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
@@ -2372,15 +2372,15 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lsvg -lv %s -field lvname", pool->name);
+    virBufferAsprintf(&buf, "lsvg -lv %s -field lvname", pool->name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|sed '1,2d'");
+    virBufferAsprintf(&buf, "|sed '1,2d'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     /* I need to parse the textual return in order to get the volumes */
@@ -2432,12 +2432,12 @@ phypStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
-    virBufferVSprintf(&buf, "lsvg -lv %s -field lvname", pool->name);
+    virBufferAsprintf(&buf, "lsvg -lv %s -field lvname", pool->name);
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
-    virBufferVSprintf(&buf, "|grep -c '^.*$'");
+    virBufferAsprintf(&buf, "|grep -c '^.*$'");
     if (phypExecInt(session, &buf, conn, &nvolumes) < 0)
         return -1;
 
@@ -2461,10 +2461,10 @@ phypDestroyStoragePool(virStoragePoolPtr pool)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "rmsp %s", pool->name);
+    virBufferAsprintf(&buf, "rmsp %s", pool->name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
@@ -2499,10 +2499,10 @@ phypBuildStoragePool(virConnectPtr conn, virStoragePoolDefPtr def)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "mksp -f %schild %s", def->name,
+    virBufferAsprintf(&buf, "mksp -f %schild %s", def->name,
                       source.adapter);
 
     if (system_type == HMC)
@@ -2536,15 +2536,15 @@ phypNumOfStoragePools(virConnectPtr conn)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lsvg");
+    virBufferAsprintf(&buf, "lsvg");
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|grep -c '^.*$'");
+    virBufferAsprintf(&buf, "|grep -c '^.*$'");
     phypExecInt(session, &buf, conn, &nsp);
     return nsp;
 }
@@ -2568,10 +2568,10 @@ phypListStoragePools(virConnectPtr conn, char **const pools, int npools)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+        virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferVSprintf(&buf, "lsvg");
+    virBufferAsprintf(&buf, "lsvg");
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
@@ -2776,9 +2776,9 @@ phypInterfaceDestroy(virInterfacePtr iface,
 
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F mac_addr,slot_num|"
                       " sed -n '/%s/ s/^.*,//p'", iface->mac);
@@ -2788,9 +2788,9 @@ phypInterfaceDestroy(virInterfacePtr iface,
     /* Getting the remote slot number */
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F mac_addr,lpar_id|"
                       " sed -n '/%s/ s/^.*,//p'", iface->mac);
@@ -2800,9 +2800,9 @@ phypInterfaceDestroy(virInterfacePtr iface,
     /* excluding interface */
     virBufferAddLit(&buf, "chhwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype eth"
                       " --id %d -o r -s %d", lpar_id, slot_num);
     VIR_FREE(ret);
@@ -2844,9 +2844,9 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     /* Now need to get the next free slot number */
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype slot --level slot"
                       " -Fslot_num --filter lpar_names=%s"
                       " |sort|tail -n 1", def->name);
@@ -2859,9 +2859,9 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     /* Now adding the new network interface */
     virBufferAddLit(&buf, "chhwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype eth"
                       " -p %s -o a -s %d -a port_vlan_id=1,"
                       "ieee_virtual_eth=0", def->name, slot);
@@ -2879,9 +2879,9 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     /* Getting the new interface name */
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype slot --level slot"
                       " |sed '/lpar_name=%s/!d; /slot_num=%d/!d; "
                       "s/^.*drc_name=//'", def->name, slot);
@@ -2892,9 +2892,9 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
         /* roll back and excluding interface if error*/
         virBufferAddLit(&buf, "chhwres ");
         if (system_type == HMC)
-            virBufferVSprintf(&buf, "-m %s ", managed_system);
+            virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-        virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf,
                 " -r virtualio --rsubtype eth"
                 " -p %s -o r -s %d", def->name, slot);
         VIR_FREE(ret);
@@ -2907,9 +2907,9 @@ phypInterfaceDefineXML(virConnectPtr conn, const char *xml,
     /* Getting the new interface mac addr */
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       "-r virtualio --rsubtype eth --level lpar "
                       " |sed '/lpar_name=%s/!d; /slot_num=%d/!d; "
                       "s/^.*mac_addr=//'", def->name, slot);
@@ -2948,9 +2948,9 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     /*Getting the slot number for the interface */
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype slot --level slot "
                       " -F drc_name,slot_num |"
                       " sed -n '/%s/ s/^.*,//p'", name);
@@ -2960,9 +2960,9 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     /*Getting the lpar_id for the interface */
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype slot --level slot "
                       " -F drc_name,lpar_id |"
                       " sed -n '/%s/ s/^.*,//p'", name);
@@ -2972,9 +2972,9 @@ phypInterfaceLookupByName(virConnectPtr conn, const char *name)
     /*Getting the interface mac */
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F lpar_id,slot_num,mac_addr|"
                       " sed -n '/%d,%d/ s/^.*,//p'", lpar_id, slot);
@@ -3005,9 +3005,9 @@ phypInterfaceIsActive(virInterfacePtr iface)
 
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       " -r virtualio --rsubtype eth --level lpar "
                       " -F mac_addr,state |"
                       " sed -n '/%s/ s/^.*,//p'", iface->mac);
@@ -3035,8 +3035,8 @@ phypListInterfaces(virConnectPtr conn, char **const names, int nnames)
 
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r virtualio --rsubtype slot  --level slot|"
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r virtualio --rsubtype slot  --level slot|"
                       " sed '/eth/!d; /lpar_id=%d/d; s/^.*drc_name=//g'",
                       vios_id);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
@@ -3087,9 +3087,9 @@ phypNumOfInterfaces(virConnectPtr conn)
 
     virBufferAddLit(&buf, "lshwres ");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, "-m %s ", managed_system);
+        virBufferAsprintf(&buf, "-m %s ", managed_system);
 
-    virBufferVSprintf(&buf,
+    virBufferAsprintf(&buf,
                       "-r virtualio --rsubtype eth --level lpar|"
                       "grep -v lpar_id=%d|grep -c lpar_name", vios_id);
     phypExecInt(session, &buf, conn, &nnets);
@@ -3111,8 +3111,8 @@ phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F state --filter lpar_ids=%d", lpar_id);
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -F state --filter lpar_ids=%d", lpar_id);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0 || ret == NULL)
@@ -3148,8 +3148,8 @@ phypDiskType(virConnectPtr conn, char *backing_device)
 
     virBufferAddLit(&buf, "viosvrcmd");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -p %d -c \"lssp -field name type "
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -p %d -c \"lssp -field name type "
                       "-fmt , -all|sed -n '/%s/ {\n s/^.*,//\n p\n}'\"",
                       vios_id, backing_device);
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
@@ -3204,8 +3204,8 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F name,state"
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -F name,state"
                       "|sed -n '/Not Activated/ {\n s/,.*$//\n p\n}'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
@@ -3367,8 +3367,8 @@ phypDomainResume(virDomainPtr dom)
 
     virBufferAddLit(&buf, "chsysstate");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r lpar -o on --id %d -f %s",
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r lpar -o on --id %d -f %s",
                       dom->id, dom->name);
     ret = phypExecBuffer(session, &buf, &exit_status, dom->conn, false);
 
@@ -3399,8 +3399,8 @@ phypDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
 
     virBufferAddLit(&buf, "chsysstate");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf,
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf,
                       " -r lpar -o shutdown --id %d --immed --restart",
                       dom->id);
     ret = phypExecBuffer(session, &buf, &exit_status, dom->conn, false);
@@ -3432,8 +3432,8 @@ phypDomainShutdown(virDomainPtr dom)
 
     virBufferAddLit(&buf, "chsysstate");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r lpar -o shutdown --id %d", dom->id);
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r lpar -o shutdown --id %d", dom->id);
     ret = phypExecBuffer(session, &buf, &exit_status, dom->conn, false);
 
     if (exit_status < 0)
@@ -3485,8 +3485,8 @@ phypDomainDestroy(virDomainPtr dom)
 
     virBufferAddLit(&buf, "rmsyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r lpar --id %d", dom->id);
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r lpar --id %d", dom->id);
     ret = phypExecBuffer(session, &buf, &exit_status, dom->conn, false);
 
     if (exit_status < 0)
@@ -3546,8 +3546,8 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
 
     virBufferAddLit(&buf, "mksyscfg");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r lpar -p %s -i min_mem=%d,desired_mem=%d,"
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " -r lpar -p %s -i min_mem=%d,desired_mem=%d,"
                       "max_mem=%d,desired_procs=%d,virtual_scsi_adapters=%s",
                       def->name, (int) def->mem.cur_balloon,
                       (int) def->mem.cur_balloon, (int) def->mem.max_balloon,
@@ -3679,8 +3679,8 @@ phypDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     virBufferAddLit(&buf, "chhwres -r proc");
     if (system_type == HMC)
-        virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " --id %d -o %c --procunits %d 2>&1 |sed "
+        virBufferAsprintf(&buf, " -m %s", managed_system);
+    virBufferAsprintf(&buf, " --id %d -o %c --procunits %d 2>&1 |sed "
                       "-e 's/^.*\\([0-9][0-9]*.[0-9][0-9]*\\).*$/\\1/'",
                       dom->id, operation, amount);
     ret = phypExecBuffer(session, &buf, &exit_status, dom->conn, false);

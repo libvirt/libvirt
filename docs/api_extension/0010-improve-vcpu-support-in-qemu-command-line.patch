@@ -23,17 +23,17 @@ index 38c8351..ffe184b 100644
 --- a/src/qemu/qemu_conf.c
 +++ b/src/qemu/qemu_conf.c
 @@ -3714,6 +3714,8 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
-     virBufferVSprintf(&buf, "%u", def->vcpus);
+     virBufferAsprintf(&buf, "%u", def->vcpus);
 
      if ((qemuCmdFlags & QEMUD_CMD_FLAG_SMP_TOPOLOGY)) {
 +        if (def->vcpus != def->maxvcpus)
-+            virBufferVSprintf(&buf, ",maxcpus=%u", def->maxvcpus);
++            virBufferAsprintf(&buf, ",maxcpus=%u", def->maxvcpus);
          /* sockets, cores, and threads are either all zero
           * or all non-zero, thus checking one of them is enough */
          if (def->cpu && def->cpu->sockets) {
 @@ -3726,12 +3728,12 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
-             virBufferVSprintf(&buf, ",cores=%u", 1);
-             virBufferVSprintf(&buf, ",threads=%u", 1);
+             virBufferAsprintf(&buf, ",cores=%u", 1);
+             virBufferAsprintf(&buf, ",threads=%u", 1);
          }
 -    }
 -    if (def->vcpus != def->maxvcpus) {

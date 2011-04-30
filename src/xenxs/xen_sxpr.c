@@ -1432,24 +1432,24 @@ xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         virBufferAddLit(buf, "(type sdl)");
         if (def->data.sdl.display)
-            virBufferVSprintf(buf, "(display '%s')", def->data.sdl.display);
+            virBufferAsprintf(buf, "(display '%s')", def->data.sdl.display);
         if (def->data.sdl.xauth)
-            virBufferVSprintf(buf, "(xauthority '%s')", def->data.sdl.xauth);
+            virBufferAsprintf(buf, "(xauthority '%s')", def->data.sdl.xauth);
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBufferAddLit(buf, "(type vnc)");
         if (def->data.vnc.autoport) {
             virBufferAddLit(buf, "(vncunused 1)");
         } else {
             virBufferAddLit(buf, "(vncunused 0)");
-            virBufferVSprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
+            virBufferAsprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
         }
 
         if (def->data.vnc.listenAddr)
-            virBufferVSprintf(buf, "(vnclisten '%s')", def->data.vnc.listenAddr);
+            virBufferAsprintf(buf, "(vnclisten '%s')", def->data.vnc.listenAddr);
         if (def->data.vnc.auth.passwd)
-            virBufferVSprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
+            virBufferAsprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
         if (def->data.vnc.keymap)
-            virBufferVSprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
+            virBufferAsprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
     }
 
     virBufferAddLit(buf, "))");
@@ -1474,9 +1474,9 @@ xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         virBufferAddLit(buf, "(sdl 1)");
         if (def->data.sdl.display)
-            virBufferVSprintf(buf, "(display '%s')", def->data.sdl.display);
+            virBufferAsprintf(buf, "(display '%s')", def->data.sdl.display);
         if (def->data.sdl.xauth)
-            virBufferVSprintf(buf, "(xauthority '%s')", def->data.sdl.xauth);
+            virBufferAsprintf(buf, "(xauthority '%s')", def->data.sdl.xauth);
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBufferAddLit(buf, "(vnc 1)");
         if (xendConfigVersion >= 2) {
@@ -1484,15 +1484,15 @@ xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
                 virBufferAddLit(buf, "(vncunused 1)");
             } else {
                 virBufferAddLit(buf, "(vncunused 0)");
-                virBufferVSprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
+                virBufferAsprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
             }
 
             if (def->data.vnc.listenAddr)
-                virBufferVSprintf(buf, "(vnclisten '%s')", def->data.vnc.listenAddr);
+                virBufferAsprintf(buf, "(vnclisten '%s')", def->data.vnc.listenAddr);
             if (def->data.vnc.auth.passwd)
-                virBufferVSprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
+                virBufferAsprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
             if (def->data.vnc.keymap)
-                virBufferVSprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
+                virBufferAsprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
 
         }
     }
@@ -1522,7 +1522,7 @@ xenFormatSxprChr(virDomainChrDefPtr def,
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferVSprintf(buf, "%s:", type);
+        virBufferAsprintf(buf, "%s:", type);
         virBufferEscapeSexpr(buf, "%s", def->source.data.file.path);
         break;
 
@@ -1531,7 +1531,7 @@ xenFormatSxprChr(virDomainChrDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        virBufferVSprintf(buf, "%s:%s:%s%s",
+        virBufferAsprintf(buf, "%s:%s:%s%s",
                           (def->source.data.tcp.protocol
                            == VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW ?
                            "tcp" : "telnet"),
@@ -1544,7 +1544,7 @@ xenFormatSxprChr(virDomainChrDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        virBufferVSprintf(buf, "%s:%s:%s@%s:%s", type,
+        virBufferAsprintf(buf, "%s:%s:%s@%s:%s", type,
                           (def->source.data.udp.connectHost ?
                            def->source.data.udp.connectHost : ""),
                           (def->source.data.udp.connectService ?
@@ -1556,7 +1556,7 @@ xenFormatSxprChr(virDomainChrDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferVSprintf(buf, "%s:", type);
+        virBufferAsprintf(buf, "%s:", type);
         virBufferEscapeSexpr(buf, "%s", def->source.data.nix.path);
         if (def->source.data.nix.listen)
             virBufferAddLit(buf, ",server,nowait");
@@ -1639,7 +1639,7 @@ xenFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
         } else {
             /* But newer does not */
             virBufferEscapeSexpr(buf, "(dev '%s:", def->dst);
-            virBufferVSprintf(buf, "%s')",
+            virBufferAsprintf(buf, "%s')",
                               def->device == VIR_DOMAIN_DISK_DEVICE_CDROM ?
                               "cdrom" : "disk");
         }
@@ -1730,7 +1730,7 @@ xenFormatSxprNet(virConnectPtr conn,
 
     virBufferAddLit(buf, "(vif ");
 
-    virBufferVSprintf(buf,
+    virBufferAsprintf(buf,
                       "(mac '%02x:%02x:%02x:%02x:%02x:%02x')",
                       def->mac[0], def->mac[1], def->mac[2],
                       def->mac[3], def->mac[4], def->mac[5]);
@@ -1827,7 +1827,7 @@ static void
 xenFormatSxprPCI(virDomainHostdevDefPtr def,
                  virBufferPtr buf)
 {
-    virBufferVSprintf(buf, "(dev (domain 0x%04x)(bus 0x%02x)(slot 0x%02x)(func 0x%x))",
+    virBufferAsprintf(buf, "(dev (domain 0x%04x)(bus 0x%02x)(slot 0x%02x)(func 0x%x))",
                       def->source.subsys.u.pci.domain,
                       def->source.subsys.u.pci.bus,
                       def->source.subsys.u.pci.slot,
@@ -1945,7 +1945,7 @@ xenFormatSxprInput(virDomainInputDefPtr input,
         return -1;
     }
 
-    virBufferVSprintf(buf, "(usbdevice %s)",
+    virBufferAsprintf(buf, "(usbdevice %s)",
                       input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ?
                       "mouse" : "tablet");
 
@@ -1983,14 +1983,14 @@ xenFormatSxpr(virConnectPtr conn,
 
     virBufferAddLit(&buf, "(vm ");
     virBufferEscapeSexpr(&buf, "(name '%s')", def->name);
-    virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)",
+    virBufferAsprintf(&buf, "(memory %lu)(maxmem %lu)",
                       VIR_DIV_UP(def->mem.cur_balloon, 1024),
                       VIR_DIV_UP(def->mem.max_balloon, 1024));
-    virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
+    virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */
     if (def->vcpus < def->maxvcpus)
-        virBufferVSprintf(&buf, "(vcpu_avail %lu)", (1UL << def->vcpus) - 1);
+        virBufferAsprintf(&buf, "(vcpu_avail %lu)", (1UL << def->vcpus) - 1);
 
     if (def->cpumask) {
         char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
@@ -2001,7 +2001,7 @@ xenFormatSxpr(virConnectPtr conn,
     }
 
     virUUIDFormat(def->uuid, uuidstr);
-    virBufferVSprintf(&buf, "(uuid '%s')", uuidstr);
+    virBufferAsprintf(&buf, "(uuid '%s')", uuidstr);
 
     if (def->description)
         virBufferEscapeSexpr(&buf, "(description '%s')", def->description);
@@ -2021,21 +2021,21 @@ xenFormatSxpr(virConnectPtr conn,
                      _("unexpected lifecycle value %d"), def->onPoweroff);
         goto error;
     }
-    virBufferVSprintf(&buf, "(on_poweroff '%s')", tmp);
+    virBufferAsprintf(&buf, "(on_poweroff '%s')", tmp);
 
     if (!(tmp = virDomainLifecycleTypeToString(def->onReboot))) {
         XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("unexpected lifecycle value %d"), def->onReboot);
         goto error;
     }
-    virBufferVSprintf(&buf, "(on_reboot '%s')", tmp);
+    virBufferAsprintf(&buf, "(on_reboot '%s')", tmp);
 
     if (!(tmp = virDomainLifecycleCrashTypeToString(def->onCrash))) {
         XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("unexpected lifecycle value %d"), def->onCrash);
         goto error;
     }
-    virBufferVSprintf(&buf, "(on_crash '%s')", tmp);
+    virBufferAsprintf(&buf, "(on_crash '%s')", tmp);
 
     /* Set localtime here for current XenD (both PV & HVM) */
     if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
@@ -2085,9 +2085,9 @@ xenFormatSxpr(virConnectPtr conn,
             else
                 virBufferEscapeSexpr(&buf, "(kernel '%s')", def->os.loader);
 
-            virBufferVSprintf(&buf, "(vcpus %u)", def->maxvcpus);
+            virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
             if (def->vcpus < def->maxvcpus)
-                virBufferVSprintf(&buf, "(vcpu_avail %lu)",
+                virBufferAsprintf(&buf, "(vcpu_avail %lu)",
                                   (1UL << def->vcpus) - 1);
 
             for (i = 0 ; i < def->os.nBootDevs ; i++) {
@@ -2113,7 +2113,7 @@ xenFormatSxpr(virConnectPtr conn,
             } else {
                 bootorder[def->os.nBootDevs] = '\0';
             }
-            virBufferVSprintf(&buf, "(boot %s)", bootorder);
+            virBufferAsprintf(&buf, "(boot %s)", bootorder);
 
             /* some disk devices are defined here */
             for (i = 0 ; i < def->ndisks ; i++) {

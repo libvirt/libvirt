@@ -3551,7 +3551,7 @@ esxVI_HandleVirtualMachineQuestion
         for (elementDescription = questionInfo->choice->choiceInfo;
              elementDescription != NULL;
              elementDescription = elementDescription->_next) {
-            virBufferVSprintf(&buffer, "'%s'", elementDescription->label);
+            virBufferAsprintf(&buffer, "'%s'", elementDescription->label);
 
             if (elementDescription->_next != NULL) {
                 virBufferAddLit(&buffer, ", ");

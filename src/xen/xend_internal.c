@@ -487,7 +487,7 @@ xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
     while (k) {
         v = va_arg(ap, const char *);
 
-        virBufferVSprintf(&buf, "%s=%s", k, v);
+        virBufferAsprintf(&buf, "%s=%s", k, v);
         k = va_arg(ap, const char *);
 
         if (k)

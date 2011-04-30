@@ -241,10 +241,10 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
         return NULL;
     }
 
-    virBufferVSprintf(&buf, "%s<sysinfo type='%s'>\n", prefix, type);
+    virBufferAsprintf(&buf, "%s<sysinfo type='%s'>\n", prefix, type);
     if ((def->bios_vendor != NULL) || (def->bios_version != NULL) ||
         (def->bios_date != NULL) || (def->bios_release != NULL)) {
-        virBufferVSprintf(&buf, "%s  <bios>\n", prefix);
+        virBufferAsprintf(&buf, "%s  <bios>\n", prefix);
         if (def->bios_vendor != NULL) {
             virBufferAdd(&buf, prefix, len);
             virBufferEscapeString(&buf,
@@ -269,13 +269,13 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
                                   "    <entry name='release'>%s</entry>\n",
                                   def->bios_release);
         }
-        virBufferVSprintf(&buf, "%s  </bios>\n", prefix);
+        virBufferAsprintf(&buf, "%s  </bios>\n", prefix);
     }
     if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
         (def->system_version != NULL) || (def->system_serial != NULL) ||
         (def->system_uuid != NULL) || (def->system_sku != NULL) ||
         (def->system_family != NULL)) {
-        virBufferVSprintf(&buf, "%s  <system>\n", prefix);
+        virBufferAsprintf(&buf, "%s  <system>\n", prefix);
         if (def->system_manufacturer != NULL) {
             virBufferAdd(&buf, prefix, len);
             virBufferEscapeString(&buf,
@@ -318,10 +318,10 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
                                   "    <entry name='family'>%s</entry>\n",
                                   def->system_family);
         }
-        virBufferVSprintf(&buf, "%s  </system>\n", prefix);
+        virBufferAsprintf(&buf, "%s  </system>\n", prefix);
     }
 
-    virBufferVSprintf(&buf, "%s</sysinfo>\n", prefix);
+    virBufferAsprintf(&buf, "%s</sysinfo>\n", prefix);
 
     return virBufferContentAndReset(&buf);
 }

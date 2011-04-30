@@ -299,11 +299,11 @@ cpuTestGuestData(const void *arg)
         goto cleanup;
     }
 
-    virBufferVSprintf(&buf, "%s+%s", data->host, data->name);
+    virBufferAsprintf(&buf, "%s+%s", data->host, data->name);
     if (data->nmodels)
-        virBufferVSprintf(&buf, ",%s", data->modelsName);
+        virBufferAsprintf(&buf, ",%s", data->modelsName);
     if (data->preferred)
-        virBufferVSprintf(&buf, ",%s", data->preferred);
+        virBufferAsprintf(&buf, ",%s", data->preferred);
     virBufferAddLit(&buf, "-result");
 
     if (virBufferError(&buf)) {

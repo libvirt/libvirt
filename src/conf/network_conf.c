@@ -756,24 +756,24 @@ virNetworkIpDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "  <ip");
 
     if (def->family) {
-        virBufferVSprintf(buf, " family='%s'", def->family);
+        virBufferAsprintf(buf, " family='%s'", def->family);
     }
     if (VIR_SOCKET_HAS_ADDR(&def->address)) {
         char *addr = virSocketFormatAddr(&def->address);
         if (!addr)
             goto error;
-        virBufferVSprintf(buf, " address='%s'", addr);
+        virBufferAsprintf(buf, " address='%s'", addr);
         VIR_FREE(addr);
     }
     if (VIR_SOCKET_HAS_ADDR(&def->netmask)) {
         char *addr = virSocketFormatAddr(&def->netmask);
         if (!addr)
             goto error;
-        virBufferVSprintf(buf, " netmask='%s'", addr);
+        virBufferAsprintf(buf, " netmask='%s'", addr);
         VIR_FREE(addr);
     }
     if (def->prefix > 0) {
-        virBufferVSprintf(buf," prefix='%u'", def->prefix);
+        virBufferAsprintf(buf," prefix='%u'", def->prefix);
     }
     virBufferAddLit(buf, ">\n");
 
@@ -793,7 +793,7 @@ virNetworkIpDefFormat(virBufferPtr buf,
                 VIR_FREE(saddr);
                 goto error;
             }
-            virBufferVSprintf(buf, "      <range start='%s' end='%s' />\n",
+            virBufferAsprintf(buf, "      <range start='%s' end='%s' />\n",
                               saddr, eaddr);
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
@@ -801,14 +801,14 @@ virNetworkIpDefFormat(virBufferPtr buf,
         for (ii = 0 ; ii < def->nhosts ; ii++) {
             virBufferAddLit(buf, "      <host ");
             if (def->hosts[ii].mac)
-                virBufferVSprintf(buf, "mac='%s' ", def->hosts[ii].mac);
+                virBufferAsprintf(buf, "mac='%s' ", def->hosts[ii].mac);
             if (def->hosts[ii].name)
-                virBufferVSprintf(buf, "name='%s' ", def->hosts[ii].name);
+                virBufferAsprintf(buf, "name='%s' ", def->hosts[ii].name);
             if (VIR_SOCKET_HAS_ADDR(&def->hosts[ii].ip)) {
                 char *ipaddr = virSocketFormatAddr(&def->hosts[ii].ip);
                 if (!ipaddr)
                     goto error;
-                virBufferVSprintf(buf, "ip='%s' ", ipaddr);
+                virBufferAsprintf(buf, "ip='%s' ", ipaddr);
                 VIR_FREE(ipaddr);
             }
             virBufferAddLit(buf, "/>\n");
@@ -848,7 +848,7 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
-    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virBufferAsprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
     if (def->forwardType != VIR_NETWORK_FORWARD_NONE) {
         const char *mode = virNetworkForwardTypeToString(def->forwardType);
@@ -859,24 +859,24 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
             } else {
                 virBufferAddLit(&buf, "  <forward");
             }
-            virBufferVSprintf(&buf, " mode='%s'/>\n", mode);
+            virBufferAsprintf(&buf, " mode='%s'/>\n", mode);
         }
     }
 
     virBufferAddLit(&buf, "  <bridge");
     if (def->bridge)
         virBufferEscapeString(&buf, " name='%s'", def->bridge);
-    virBufferVSprintf(&buf, " stp='%s' delay='%ld' />\n",
+    virBufferAsprintf(&buf, " stp='%s' delay='%ld' />\n",
                       def->stp ? "on" : "off",
                       def->delay);
     if (def->mac_specified) {
         char macaddr[VIR_MAC_STRING_BUFLEN];
         virFormatMacAddr(def->mac, macaddr);
-        virBufferVSprintf(&buf, "  <mac address='%s'/>\n", macaddr);
+        virBufferAsprintf(&buf, "  <mac address='%s'/>\n", macaddr);
     }
 
     if (def->domain)
-        virBufferVSprintf(&buf, "  <domain name='%s'/>\n", def->domain);
+        virBufferAsprintf(&buf, "  <domain name='%s'/>\n", def->domain);
 
     for (ii = 0; ii < def->nips; ii++) {
         if (virNetworkIpDefFormat(&buf, &def->ips[ii]) < 0)

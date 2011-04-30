@@ -1098,7 +1098,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       </li>
       <li> Documentation:<br/>
       updated c# bindings with arnauds latest changes (Justin Clift),<br/>
-      Fix spelling of virBufferVSprintf (Jiri Denemark),<br/>
+      Fix spelling of virBufferAsprintf (Jiri Denemark),<br/>
       Fix broken XML entity for '&gt;' (Philipp Hahn),<br/>
       removed outdated reference to virt-mem (Justin Clift),<br/>
       Add doc for missed options of migrate (Osier Yang),<br/>
@@ -2806,7 +2806,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh.c: avoid all leaks in OOM path in cmdCPUBaseline (Jiri Denemark),<br/>
       Fixed reference count in virsh pool-build command (David Allan),<br/>
       Fix daemon-conf invalid failures (David Allan),<br/>
-      virBufferVSprintf: do not omit va_end(argptr) call (Jim Meyering),<br/>
+      virBufferAsprintf: do not omit va_end(argptr) call (Jim Meyering),<br/>
       xend_internal.c: don't dereference NULL for unexpected input (Jim Meyering),<br/>
       virsh: be careful to return "FALSE" upon OOM (Jim Meyering),<br/>
       virBufferStrcat: do not skip va_end (Jim Meyering),<br/>

@@ -168,7 +168,7 @@ char *virBitmapString(virBitmapPtr bitmap)
           VIR_BITMAP_BITS_PER_UNIT;
 
     while (sz--) {
-        virBufferVSprintf(&buf, "%0*lx",
+        virBufferAsprintf(&buf, "%0*lx",
                           VIR_BITMAP_BITS_PER_UNIT / 4,
                           bitmap->map[sz]);
     }

@@ -1089,7 +1089,7 @@ char *virLogGetFilters(void) {
 
     virLogLock();
     for (i = 0; i < virLogNbFilters; i++) {
-        virBufferVSprintf(&filterbuf, "%d:%s ", virLogFilters[i].priority,
+        virBufferAsprintf(&filterbuf, "%d:%s ", virLogFilters[i].priority,
                           virLogFilters[i].match);
     }
     virLogUnlock();
@@ -1117,17 +1117,17 @@ char *virLogGetOutputs(void) {
     for (i = 0; i < virLogNbOutputs; i++) {
         int dest = virLogOutputs[i].dest;
         if (i)
-            virBufferVSprintf(&outputbuf, " ");
+            virBufferAsprintf(&outputbuf, " ");
         switch (dest) {
             case VIR_LOG_TO_SYSLOG:
             case VIR_LOG_TO_FILE:
-                virBufferVSprintf(&outputbuf, "%d:%s:%s",
+                virBufferAsprintf(&outputbuf, "%d:%s:%s",
                                   virLogOutputs[i].priority,
                                   virLogOutputString(dest),
                                   virLogOutputs[i].name);
                 break;
             default:
-                virBufferVSprintf(&outputbuf, "%d:%s",
+                virBufferAsprintf(&outputbuf, "%d:%s",
                                   virLogOutputs[i].priority,
                                   virLogOutputString(dest));
         }

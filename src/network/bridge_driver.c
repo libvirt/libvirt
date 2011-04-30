@@ -742,7 +742,7 @@ networkStartRadvd(virNetworkObjPtr network)
     }
 
     /* create radvd config file appropriate for this network */
-    virBufferVSprintf(&configbuf, "interface %s\n"
+    virBufferAsprintf(&configbuf, "interface %s\n"
                       "{\n"
                       "  AdvSendAdvert on;\n"
                       "  AdvManagedFlag off;\n"
@@ -764,7 +764,7 @@ networkStartRadvd(virNetworkObjPtr network)
         }
         if (!(netaddr = virSocketFormatAddr(&ipdef->address)))
             goto cleanup;
-        virBufferVSprintf(&configbuf,
+        virBufferAsprintf(&configbuf,
                           "  prefix %s/%d\n"
                           "  {\n"
                           "    AdvOnLink on;\n"

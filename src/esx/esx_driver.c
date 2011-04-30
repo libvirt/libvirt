@@ -2651,7 +2651,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         goto cleanup;
     }
 
-    virBufferVSprintf(&buffer, "%s://%s:%d/folder/", priv->parsedUri->transport,
+    virBufferAsprintf(&buffer, "%s://%s:%d/folder/", priv->parsedUri->transport,
                       domain->conn->uri->server, domain->conn->uri->port);
     virBufferURIEncodeString(&buffer, directoryAndFileName);
     virBufferAddLit(&buffer, "?dcPath=");
@@ -3102,7 +3102,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    virBufferVSprintf(&buffer, "%s://%s:%d/folder/", priv->parsedUri->transport,
+    virBufferAsprintf(&buffer, "%s://%s:%d/folder/", priv->parsedUri->transport,
                       conn->uri->server, conn->uri->port);
 
     if (directoryName != NULL) {

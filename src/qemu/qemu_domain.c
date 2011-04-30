@@ -149,7 +149,7 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         virBufferEscapeString(buf, "  <monitor path='%s'", monitorpath);
         if (priv->monJSON)
             virBufferAddLit(buf, " json='1'");
-        virBufferVSprintf(buf, " type='%s'/>\n",
+        virBufferAsprintf(buf, " type='%s'/>\n",
                           virDomainChrTypeToString(priv->monConfig->type));
     }
 
@@ -158,7 +158,7 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         int i;
         virBufferAddLit(buf, "  <vcpus>\n");
         for (i = 0 ; i < priv->nvcpupids ; i++) {
-            virBufferVSprintf(buf, "    <vcpu pid='%d'/>\n", priv->vcpupids[i]);
+            virBufferAsprintf(buf, "    <vcpu pid='%d'/>\n", priv->vcpupids[i]);
         }
         virBufferAddLit(buf, "  </vcpus>\n");
     }
@@ -168,7 +168,7 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         virBufferAddLit(buf, "  <qemuCaps>\n");
         for (i = 0 ; i < QEMU_CAPS_LAST ; i++) {
             if (qemuCapsGet(priv->qemuCaps, i)) {
-                virBufferVSprintf(buf, "    <flag name='%s'/>\n",
+                virBufferAsprintf(buf, "    <flag name='%s'/>\n",
                                   qemuCapsTypeToString(i));
             }
         }
@@ -440,7 +440,7 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
         virBufferEscapeString(buf, "    <qemu:arg value='%s'/>\n",
                               cmd->args[i]);
     for (i = 0; i < cmd->num_env; i++) {
-        virBufferVSprintf(buf, "    <qemu:env name='%s'", cmd->env_name[i]);
+        virBufferAsprintf(buf, "    <qemu:env name='%s'", cmd->env_name[i]);
         if (cmd->env_value[i])
             virBufferEscapeString(buf, " value='%s'", cmd->env_value[i]);
         virBufferAddLit(buf, "/>\n");

@@ -213,7 +213,7 @@ virBufferUse(const virBufferPtr buf)
 }
 
 /**
- * virBufferVSprintf:
+ * virBufferAsprintf:
  * @buf:  the buffer to dump
  * @format:  the format
  * @...:  the variable list of arguments
@@ -221,7 +221,7 @@ virBufferUse(const virBufferPtr buf)
  * Do a formatted print to an XML buffer.
  */
 void
-virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
+virBufferAsprintf(const virBufferPtr buf, const char *format, ...)
 {
     int size, count, grow_size;
     va_list argptr;
@@ -294,7 +294,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
 
     len = strlen(str);
     if (strcspn(str, "<>&'\"") == len) {
-        virBufferVSprintf(buf, format, str);
+        virBufferAsprintf(buf, format, str);
         return;
     }
 
@@ -350,7 +350,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
     }
     *out = 0;
 
-    virBufferVSprintf(buf, format, escaped);
+    virBufferAsprintf(buf, format, escaped);
     VIR_FREE(escaped);
 }
 
@@ -381,7 +381,7 @@ virBufferEscapeSexpr(const virBufferPtr buf,
 
     len = strlen(str);
     if (strcspn(str, "\\'") == len) {
-        virBufferVSprintf(buf, format, str);
+        virBufferAsprintf(buf, format, str);
         return;
     }
 
@@ -405,7 +405,7 @@ virBufferEscapeSexpr(const virBufferPtr buf,
     }
     *out = 0;
 
-    virBufferVSprintf(buf, format, escaped);
+    virBufferAsprintf(buf, format, escaped);
     VIR_FREE(escaped);
 }
 

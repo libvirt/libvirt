@@ -5566,27 +5566,27 @@ static int buildPoolXML(const vshCmd *cmd, const char **retname, char **xml) {
         goto cleanup;
     }
 
-    virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
-    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
+    virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
+    virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
     if (srcHost || srcPath || srcDev) {
         virBufferAddLit(&buf, "  <source>\n");
 
         if (srcHost)
-            virBufferVSprintf(&buf, "    <host name='%s'/>\n", srcHost);
+            virBufferAsprintf(&buf, "    <host name='%s'/>\n", srcHost);
         if (srcPath)
-            virBufferVSprintf(&buf, "    <dir path='%s'/>\n", srcPath);
+            virBufferAsprintf(&buf, "    <dir path='%s'/>\n", srcPath);
         if (srcDev)
-            virBufferVSprintf(&buf, "    <device path='%s'/>\n", srcDev);
+            virBufferAsprintf(&buf, "    <device path='%s'/>\n", srcDev);
         if (srcFormat)
-            virBufferVSprintf(&buf, "    <format type='%s'/>\n", srcFormat);
+            virBufferAsprintf(&buf, "    <format type='%s'/>\n", srcFormat);
         if (srcName)
-            virBufferVSprintf(&buf, "    <name>%s</name>\n", srcName);
+            virBufferAsprintf(&buf, "    <name>%s</name>\n", srcName);
 
         virBufferAddLit(&buf, "  </source>\n");
     }
     if (target) {
         virBufferAddLit(&buf, "  <target>\n");
-        virBufferVSprintf(&buf, "    <path>%s</path>\n", target);
+        virBufferAsprintf(&buf, "    <path>%s</path>\n", target);
         virBufferAddLit(&buf, "  </target>\n");
     }
     virBufferAddLit(&buf, "</pool>\n");
@@ -6387,13 +6387,13 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
             return false;
         }
         virBufferAddLit(&buf, "<source>\n");
-        virBufferVSprintf(&buf, "  <host name='%s'", host);
+        virBufferAsprintf(&buf, "  <host name='%s'", host);
         if (port)
-            virBufferVSprintf(&buf, " port='%s'", port);
+            virBufferAsprintf(&buf, " port='%s'", port);
         virBufferAddLit(&buf, "/>\n");
         if (initiator) {
             virBufferAddLit(&buf, "  <initiator>\n");
-            virBufferVSprintf(&buf, "    <iqn name='%s'/>\n", initiator);
+            virBufferAsprintf(&buf, "    <iqn name='%s'/>\n", initiator);
             virBufferAddLit(&buf, "  </initiator>\n");
         }
         virBufferAddLit(&buf, "</source>\n");
@@ -6721,14 +6721,14 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
 
     virBufferAddLit(&buf, "<volume>\n");
-    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
-    virBufferVSprintf(&buf, "  <capacity>%llu</capacity>\n", capacity);
+    virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
+    virBufferAsprintf(&buf, "  <capacity>%llu</capacity>\n", capacity);
     if (allocationStr)
-        virBufferVSprintf(&buf, "  <allocation>%llu</allocation>\n", allocation);
+        virBufferAsprintf(&buf, "  <allocation>%llu</allocation>\n", allocation);
 
     if (format) {
         virBufferAddLit(&buf, "  <target>\n");
-        virBufferVSprintf(&buf, "    <format type='%s'/>\n",format);
+        virBufferAsprintf(&buf, "    <format type='%s'/>\n",format);
         virBufferAddLit(&buf, "  </target>\n");
     }
 
@@ -6776,9 +6776,9 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
         /* Create XML for the backing store */
         virBufferAddLit(&buf, "  <backingStore>\n");
-        virBufferVSprintf(&buf, "    <path>%s</path>\n",snapshotStrVolPath);
+        virBufferAsprintf(&buf, "    <path>%s</path>\n",snapshotStrVolPath);
         if (snapshotStrFormat)
-            virBufferVSprintf(&buf, "    <format type='%s'/>\n",snapshotStrFormat);
+            virBufferAsprintf(&buf, "    <format type='%s'/>\n",snapshotStrFormat);
         virBufferAddLit(&buf, "  </backingStore>\n");
 
         /* Cleanup snapshot allocations */
@@ -9150,21 +9150,21 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Make XML of interface */
-    virBufferVSprintf(&buf, "<interface type='%s'>\n", type);
+    virBufferAsprintf(&buf, "<interface type='%s'>\n", type);
 
     if (typ == 1)
-        virBufferVSprintf(&buf, "  <source network='%s'/>\n", source);
+        virBufferAsprintf(&buf, "  <source network='%s'/>\n", source);
     else if (typ == 2)
-        virBufferVSprintf(&buf, "  <source bridge='%s'/>\n", source);
+        virBufferAsprintf(&buf, "  <source bridge='%s'/>\n", source);
 
     if (target != NULL)
-        virBufferVSprintf(&buf, "  <target dev='%s'/>\n", target);
+        virBufferAsprintf(&buf, "  <target dev='%s'/>\n", target);
     if (mac != NULL)
-        virBufferVSprintf(&buf, "  <mac address='%s'/>\n", mac);
+        virBufferAsprintf(&buf, "  <mac address='%s'/>\n", mac);
     if (script != NULL)
-        virBufferVSprintf(&buf, "  <script path='%s'/>\n", script);
+        virBufferAsprintf(&buf, "  <script path='%s'/>\n", script);
     if (model != NULL)
-        virBufferVSprintf(&buf, "  <model type='%s'/>\n", model);
+        virBufferAsprintf(&buf, "  <model type='%s'/>\n", model);
 
     virBufferAddLit(&buf, "</interface>\n");
 
@@ -9419,29 +9419,29 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Make XML of disk */
-    virBufferVSprintf(&buf, "<disk type='%s'",
+    virBufferAsprintf(&buf, "<disk type='%s'",
                       (isFile) ? "file" : "block");
     if (type)
-        virBufferVSprintf(&buf, " device='%s'", type);
+        virBufferAsprintf(&buf, " device='%s'", type);
     virBufferAddLit(&buf, ">\n");
 
     if (driver || subdriver)
-        virBufferVSprintf(&buf, "  <driver");
+        virBufferAsprintf(&buf, "  <driver");
 
     if (driver)
-        virBufferVSprintf(&buf, " name='%s'", driver);
+        virBufferAsprintf(&buf, " name='%s'", driver);
     if (subdriver)
-        virBufferVSprintf(&buf, " type='%s'", subdriver);
+        virBufferAsprintf(&buf, " type='%s'", subdriver);
 
     if (driver || subdriver)
         virBufferAddLit(&buf, "/>\n");
 
-    virBufferVSprintf(&buf, "  <source %s='%s'/>\n",
+    virBufferAsprintf(&buf, "  <source %s='%s'/>\n",
                       (isFile) ? "file" : "dev",
                       source);
-    virBufferVSprintf(&buf, "  <target dev='%s'/>\n", target);
+    virBufferAsprintf(&buf, "  <target dev='%s'/>\n", target);
     if (mode)
-        virBufferVSprintf(&buf, "  <%s/>\n", mode);
+        virBufferAsprintf(&buf, "  <%s/>\n", mode);
 
     virBufferAddLit(&buf, "</disk>\n");
 

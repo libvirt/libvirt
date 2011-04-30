@@ -228,7 +228,7 @@ virSecretDefFormatUsage(virBufferPtr buf,
                              def->usage_type);
         return -1;
     }
-    virBufferVSprintf(buf, "  <usage type='%s'>\n", type);
+    virBufferAsprintf(buf, "  <usage type='%s'>\n", type);
     switch (def->usage_type) {
     case VIR_SECRET_USAGE_TYPE_NONE:
         break;
@@ -257,7 +257,7 @@ virSecretDefFormat(const virSecretDefPtr def)
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    virBufferVSprintf(&buf, "<secret ephemeral='%s' private='%s'>\n",
+    virBufferAsprintf(&buf, "<secret ephemeral='%s' private='%s'>\n",
                       def->ephemeral ? "yes" : "no",
                       def->private ? "yes" : "no");
 

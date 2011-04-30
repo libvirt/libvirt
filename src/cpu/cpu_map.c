@@ -107,7 +107,7 @@ int cpuMapLoad(const char *arch,
     if ((ctxt = xmlXPathNewContext(xml)) == NULL)
         goto no_memory;
 
-    virBufferVSprintf(&buf, "./arch[@name='%s']", arch);
+    virBufferAsprintf(&buf, "./arch[@name='%s']", arch);
     if (virBufferError(&buf))
         goto no_memory;
 

@@ -292,7 +292,7 @@ mapDomainPinVcpu(unsigned char *cpumap, int maplen)
     for (i = 0; i < maplen; i++) {
         for (j = 0; j < 8; j++) {
             if (cpumap[i] & (1 << j)) {
-                virBufferVSprintf(&buf, "%d,", (8*i)+j);
+                virBufferAsprintf(&buf, "%d,", (8*i)+j);
             }
         }
     }

@@ -857,7 +857,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
                     virBufferAddLit (&mapbuf, ",");
                 comma = 1;
 
-                virBufferVSprintf (&mapbuf, "%d", n);
+                virBufferAsprintf (&mapbuf, "%d", n);
             }
 
     if (virBufferError(&mapbuf)) {

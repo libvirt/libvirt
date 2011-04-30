@@ -744,19 +744,19 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         }
 
         virBufferAdd(&buf, net->data.ethernet.dev, -1); /* Guest dev */
-        virBufferVSprintf(&buf, ",%s", macaddr); /* Guest dev mac */
-        virBufferVSprintf(&buf, ",%s", net->ifname); /* Host dev */
-        virBufferVSprintf(&buf, ",%s", host_macaddr); /* Host dev mac */
+        virBufferAsprintf(&buf, ",%s", macaddr); /* Guest dev mac */
+        virBufferAsprintf(&buf, ",%s", net->ifname); /* Host dev */
+        virBufferAsprintf(&buf, ",%s", host_macaddr); /* Host dev mac */
 
         if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             if (driver->version >= VZCTL_BRIDGE_MIN_VERSION) {
-                virBufferVSprintf(&buf, ",%s", net->data.bridge.brname); /* Host bridge */
+                virBufferAsprintf(&buf, ",%s", net->data.bridge.brname); /* Host bridge */
             } else {
-                virBufferVSprintf(configBuf, "ifname=%s", net->data.ethernet.dev);
-                virBufferVSprintf(configBuf, ",mac=%s", macaddr); /* Guest dev mac */
-                virBufferVSprintf(configBuf, ",host_ifname=%s", net->ifname); /* Host dev */
-                virBufferVSprintf(configBuf, ",host_mac=%s", host_macaddr); /* Host dev mac */
-                virBufferVSprintf(configBuf, ",bridge=%s", net->data.bridge.brname); /* Host bridge */
+                virBufferAsprintf(configBuf, "ifname=%s", net->data.ethernet.dev);
+                virBufferAsprintf(configBuf, ",mac=%s", macaddr); /* Guest dev mac */
+                virBufferAsprintf(configBuf, ",host_ifname=%s", net->ifname); /* Host dev */
+                virBufferAsprintf(configBuf, ",host_mac=%s", host_macaddr); /* Host dev mac */
+                virBufferAsprintf(configBuf, ",bridge=%s", net->data.bridge.brname); /* Host bridge */
             }
         }
 

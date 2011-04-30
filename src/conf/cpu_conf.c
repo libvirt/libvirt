@@ -353,28 +353,28 @@ virCPUDefFormatBuf(virBufferPtr buf,
                 return -1;
             }
 
-            virBufferVSprintf(buf, "%s<cpu match='%s'>\n", indent, match);
+            virBufferAsprintf(buf, "%s<cpu match='%s'>\n", indent, match);
         }
         else
-            virBufferVSprintf(buf, "%s<cpu>\n", indent);
+            virBufferAsprintf(buf, "%s<cpu>\n", indent);
 
         if (def->arch)
-            virBufferVSprintf(buf, "%s  <arch>%s</arch>\n", indent, def->arch);
+            virBufferAsprintf(buf, "%s  <arch>%s</arch>\n", indent, def->arch);
     }
 
     if (def->model)
-        virBufferVSprintf(buf, "%s  <model>%s</model>\n", indent, def->model);
+        virBufferAsprintf(buf, "%s  <model>%s</model>\n", indent, def->model);
 
     if (def->vendor) {
-        virBufferVSprintf(buf, "%s  <vendor>%s</vendor>\n",
+        virBufferAsprintf(buf, "%s  <vendor>%s</vendor>\n",
                           indent, def->vendor);
     }
 
     if (def->sockets && def->cores && def->threads) {
-        virBufferVSprintf(buf, "%s  <topology", indent);
-        virBufferVSprintf(buf, " sockets='%u'", def->sockets);
-        virBufferVSprintf(buf, " cores='%u'", def->cores);
-        virBufferVSprintf(buf, " threads='%u'", def->threads);
+        virBufferAsprintf(buf, "%s  <topology", indent);
+        virBufferAsprintf(buf, " sockets='%u'", def->sockets);
+        virBufferAsprintf(buf, " cores='%u'", def->cores);
+        virBufferAsprintf(buf, " threads='%u'", def->threads);
         virBufferAddLit(buf, "/>\n");
     }
 
@@ -396,17 +396,17 @@ virCPUDefFormatBuf(virBufferPtr buf,
                         _("Unexpected CPU feature policy %d"), feature->policy);
                 return -1;
             }
-            virBufferVSprintf(buf, "%s  <feature policy='%s' name='%s'/>\n",
+            virBufferAsprintf(buf, "%s  <feature policy='%s' name='%s'/>\n",
                     indent, policy, feature->name);
         }
         else {
-            virBufferVSprintf(buf, "%s  <feature name='%s'/>\n",
+            virBufferAsprintf(buf, "%s  <feature name='%s'/>\n",
                     indent, feature->name);
         }
     }
 
     if (!(flags & VIR_CPU_FORMAT_EMBEDED))
-        virBufferVSprintf(buf, "%s</cpu>\n", indent);
+        virBufferAsprintf(buf, "%s</cpu>\n", indent);
 
     return 0;
 }

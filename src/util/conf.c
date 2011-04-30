@@ -260,17 +260,17 @@ virConfSaveValue(virBufferPtr buf, virConfValuePtr val)
         case VIR_CONF_NONE:
             return(-1);
         case VIR_CONF_LONG:
-            virBufferVSprintf(buf, "%ld", val->l);
+            virBufferAsprintf(buf, "%ld", val->l);
             break;
         case VIR_CONF_STRING:
             if (strchr(val->str, '\n') != NULL) {
-                virBufferVSprintf(buf, "\"\"\"%s\"\"\"", val->str);
+                virBufferAsprintf(buf, "\"\"\"%s\"\"\"", val->str);
             } else if (strchr(val->str, '"') == NULL) {
-                virBufferVSprintf(buf, "\"%s\"", val->str);
+                virBufferAsprintf(buf, "\"%s\"", val->str);
             } else if (strchr(val->str, '\'') == NULL) {
-                virBufferVSprintf(buf, "'%s'", val->str);
+                virBufferAsprintf(buf, "'%s'", val->str);
             } else {
-                virBufferVSprintf(buf, "\"\"\"%s\"\"\"", val->str);
+                virBufferAsprintf(buf, "\"\"\"%s\"\"\"", val->str);
             }
             break;
         case VIR_CONF_LIST: {

@@ -1280,7 +1280,7 @@ ESX_VI__TEMPLATE__DEEP_COPY(Int,
 /* esxVI_Int_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(Int,
 {
-    virBufferVSprintf(output, "%d", (int)item->value);
+    virBufferAsprintf(output, "%d", (int)item->value);
 })
 
 /* esxVI_Int_SerializeList */
@@ -1318,7 +1318,7 @@ ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(Long)
 /* esxVI_Long_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(Long,
 {
-    virBufferVSprintf(output, "%lld", (long long int)item->value);
+    virBufferAsprintf(output, "%lld", (long long int)item->value);
 })
 
 /* esxVI_Long_SerializeList */
@@ -1614,7 +1614,7 @@ esxVI_ManagedObjectReference_Serialize
 
     virBufferAddLit(output, "<");
     virBufferAdd(output, element, -1);
-    virBufferVSprintf(output,
+    virBufferAsprintf(output,
                       " xmlns=\"urn:vim25\" "
                       "xsi:type=\"ManagedObjectReference\" type=\"%s\">",
                       managedObjectReference->type);

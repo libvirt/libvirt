@@ -184,9 +184,9 @@ static char * qemuMonitorEscapeNonPrintable(const char *text)
         if (c_isprint(text[i]) ||
             text[i] == '\n' ||
             (text[i] == '\r' && text[i+1] == '\n'))
-            virBufferVSprintf(&buf,"%c", text[i]);
+            virBufferAsprintf(&buf,"%c", text[i]);
         else
-            virBufferVSprintf(&buf, "0x%02x", text[i]);
+            virBufferAsprintf(&buf, "0x%02x", text[i]);
     }
     return virBufferContentAndReset(&buf);
 }

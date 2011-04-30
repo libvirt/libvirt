@@ -30,7 +30,7 @@ virBufferFreeAndReset;
 virBufferStrcat;
 virBufferURIEncodeString;
 virBufferUse;
-virBufferVSprintf;
+virBufferAsprintf;
 
 
 # caps.h
