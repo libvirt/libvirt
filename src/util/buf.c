@@ -1,7 +1,7 @@
 /*
  * buf.c: buffers for libvirt
  *
- * Copyright (C) 2005-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2005-2008, 2010-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -223,8 +223,25 @@ virBufferUse(const virBufferPtr buf)
 void
 virBufferAsprintf(const virBufferPtr buf, const char *format, ...)
 {
-    int size, count, grow_size;
     va_list argptr;
+    va_start(argptr, format);
+    virBufferVasprintf(buf, format, argptr);
+    va_end(argptr);
+}
+
+/**
+ * virBufferVasprintf:
+ * @buf:  the buffer to dump
+ * @format:  the format
+ * @argptr:  the variable list of arguments
+ *
+ * Do a formatted print to an XML buffer.
+ */
+void
+virBufferVasprintf(const virBufferPtr buf, const char *format, va_list argptr)
+{
+    int size, count, grow_size;
+    va_list copy;
 
     if ((format == NULL) || (buf == NULL))
         return;
@@ -236,38 +253,34 @@ virBufferAsprintf(const virBufferPtr buf, const char *format, ...)
         virBufferGrow(buf, 100) < 0)
         return;
 
-    va_start(argptr, format);
+    va_copy(copy, argptr);
 
     size = buf->size - buf->use;
     if ((count = vsnprintf(&buf->content[buf->use],
-                           size, format, argptr)) < 0) {
+                           size, format, copy)) < 0) {
         virBufferSetError(buf);
-        goto err;
+        va_end(copy);
+        return;
     }
+    va_end(copy);
 
     /* Grow buffer if necessary and retry */
     if (count >= size) {
         buf->content[buf->use] = 0;
-        va_end(argptr);
-        va_start(argptr, format);
 
         grow_size = (count + 1 > 1000) ? count + 1 : 1000;
         if (virBufferGrow(buf, grow_size) < 0) {
-            goto err;
+            return;
         }
 
         size = buf->size - buf->use;
         if ((count = vsnprintf(&buf->content[buf->use],
                                size, format, argptr)) < 0) {
             virBufferSetError(buf);
-            goto err;
+            return;
         }
     }
     buf->use += count;
-
-err:
-    va_end(argptr);
-    return;
 }
 
 /**

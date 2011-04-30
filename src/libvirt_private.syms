@@ -22,6 +22,7 @@ virBitmapString;
 # buf.h
 virBufferAdd;
 virBufferAddChar;
+virBufferAsprintf;
 virBufferContentAndReset;
 virBufferError;
 virBufferEscapeSexpr;
@@ -30,7 +31,7 @@ virBufferFreeAndReset;
 virBufferStrcat;
 virBufferURIEncodeString;
 virBufferUse;
-virBufferAsprintf;
+virBufferVasprintf;
 
 
 # caps.h
