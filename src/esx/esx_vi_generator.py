@@ -1428,7 +1428,7 @@ additional_enum_features = { "ManagedEntityStatus"      : Enum.FEATURE__ANY_TYPE
                              "VirtualMachinePowerState" : Enum.FEATURE__ANY_TYPE }
 
 additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__ANY_TYPE,
-                               "AutoStartPowerInfo"         : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
+                               "AutoStartPowerInfo"         : Object.FEATURE__ANY_TYPE,
                                "DatastoreHostMount"         : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
                                "DatastoreInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
                                "FileInfo"                   : Object.FEATURE__DYNAMIC_CAST,
@@ -1437,12 +1437,9 @@ additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__AN
                                "HostCpuIdInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "HostDatastoreBrowserSearchResults" : Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
                                "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
-                               "ObjectContent"              : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST,
-                               "PerfCounterInfo"            : Object.FEATURE__LIST,
-                               "PerfEntityMetric"           : Object.FEATURE__LIST | Object.FEATURE__DYNAMIC_CAST,
-                               "PerfQuerySpec"              : Object.FEATURE__LIST,
+                               "ObjectContent"              : Object.FEATURE__DEEP_COPY,
+                               "PerfEntityMetric"           : Object.FEATURE__DYNAMIC_CAST,
                                "PerfMetricIntSeries"        : Object.FEATURE__DYNAMIC_CAST,
-                               "PropertyFilterSpec"         : Object.FEATURE__LIST,
                                "ResourcePoolResourceUsage"  : Object.FEATURE__ANY_TYPE,
                                "SelectionSpec"              : Object.FEATURE__DYNAMIC_CAST,
                                "ServiceContent"             : Object.FEATURE__DESERIALIZE,
@@ -1541,12 +1538,30 @@ for method in methods_by_name.values():
         else:
             objects_by_name[parameter.type].features |= Object.FEATURE__SERIALIZE
 
+        # detect list usage
+        if parameter.occurrence == OCCURRENCE__REQUIRED_LIST or \
+           parameter.occurrence == OCCURRENCE__OPTIONAL_LIST:
+            if parameter.is_enum():
+                report_error("unsupported usage of enum '%s' as list in '%s'"
+                             % (parameter.type, method.name))
+            else:
+                objects_by_name[parameter.type].features |= Object.FEATURE__LIST
+
     # method return types must be deserializable
     if method.returns and method.returns.is_type_generated():
         if method.returns.is_enum():
             enums_by_name[method.returns.type].features |= Enum.FEATURE__DESERIALIZE
         else:
             objects_by_name[method.returns.type].features |= Object.FEATURE__DESERIALIZE
+
+        # detect list usage
+        if method.returns.occurrence == OCCURRENCE__REQUIRED_LIST or \
+           method.returns.occurrence == OCCURRENCE__OPTIONAL_LIST:
+            if method.returns.is_enum():
+                report_error("unsupported usage of enum '%s' as list in '%s'"
+                             % (method.returns.type, method.name))
+            else:
+                objects_by_name[method.returns.type].features |= Object.FEATURE__LIST
 
 
 
@@ -1572,10 +1587,16 @@ for obj in objects_by_name.values():
 
     # detect list usage
     for property in obj.properties:
-        if (property.occurrence == OCCURRENCE__REQUIRED_LIST or \
-            property.occurrence == OCCURRENCE__OPTIONAL_LIST) and \
-           property.type not in predefined_objects:
-            objects_by_name[property.type].features |= Object.FEATURE__LIST
+        if not property.is_type_generated():
+            continue
+
+        if property.occurrence == OCCURRENCE__REQUIRED_LIST or \
+           property.occurrence == OCCURRENCE__OPTIONAL_LIST:
+            if property.is_enum():
+                report_error("unsupported usage of enum '%s' as list in '%s'"
+                             % (property.type, obj.type))
+            else:
+                objects_by_name[property.type].features |= Object.FEATURE__LIST
 
     # apply/remove additional features
     if obj.name in additional_object_features:
