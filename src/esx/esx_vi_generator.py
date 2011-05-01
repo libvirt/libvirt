@@ -38,14 +38,7 @@ valid_occurrences = [OCCURRENCE__REQUIRED_ITEM,
                      OCCURRENCE__OPTIONAL_LIST,
                      OCCURRENCE__IGNORED]
 
-autobind_map = { "FileManager"        : "fileManager",
-                 "PerformanceManager" : "perfManager",
-                 "PropertyCollector"  : "propertyCollector",
-                 "SearchIndex"        : "searchIndex",
-                 "SessionManager"     : "sessionManager",
-                 "VirtualDiskManager" : "virtualDiskManager" }
-
-autobind_map_usage = set()
+autobind_names = set()
 
 
 
@@ -94,16 +87,16 @@ class Parameter(Member):
         Member.__init__(self, type, occurrence)
 
         if ':' in name and name.startswith("_this"):
-            self.name, self.autobind_type = name.split(":")
+            self.name, self.autobind_name = name.split(":")
         else:
             self.name = name
-            self.autobind_type = None
+            self.autobind_name = None
 
 
     def generate_parameter(self, is_last = False, is_header = True, offset = 0):
         if self.occurrence == OCCURRENCE__IGNORED:
             raise ValueError("invalid function parameter occurrence value '%s'" % self.occurrence)
-        elif self.autobind_type is not None:
+        elif self.autobind_name is not None:
             return ""
         else:
             string = "       "
@@ -193,7 +186,7 @@ class Method:
         self.returns = returns
 
         for parameter in parameters:
-            if parameter.autobind_type is None:
+            if parameter.autobind_name is None:
                 self.parameters.append(parameter)
             else:
                 self.autobind_parameter = parameter
@@ -227,8 +220,8 @@ class Method:
         source += "ESX_VI__METHOD(%s," % self.name
 
         if self.autobind_parameter is not None:
-            autobind_map_usage.add(self.autobind_parameter.autobind_type)
-            source += " %s,\n" % autobind_map[self.autobind_parameter.autobind_type]
+            autobind_names.add(self.autobind_parameter.autobind_name)
+            source += " %s,\n" % self.autobind_parameter.autobind_name
         else:
             source += " /* explicit _this */,\n"
 
@@ -1785,11 +1778,10 @@ for name in names:
     methods_header.write(methods_by_name[name].generate_header())
     methods_source.write(methods_by_name[name].generate_source())
 
-sorted_usage = list(autobind_map_usage)
-sorted_usage.sort()
+names = list(autobind_names)
+names.sort()
 
-for usage in sorted_usage:
-    name = autobind_map[usage]
+for name in names:
     string = aligned("#define ESX_VI__METHOD__PARAMETER__THIS__%s " % name, "\\\n", 78)
     string += "    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \\\n"
     string += aligned("", "%s)\n\n\n\n" % name, 49)

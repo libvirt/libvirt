@@ -40,9 +40,9 @@
 #
 # The _this parameter can have a type attached to it:
 #
-# _this:<type>
+# _this:<member>
 #
-# The <type> refers to one of the ServiceContent members. This make the
+# The <member> refers to one of the ServiceContent members. This make the
 # generator auto-bind _this to the corresponding ServiceContent member.
 #
 
@@ -782,7 +782,7 @@ end
 
 
 method CopyVirtualDisk_Task returns ManagedObjectReference r
-    ManagedObjectReference                   _this:VirtualDiskManager       r
+    ManagedObjectReference                   _this:virtualDiskManager       r
     String                                   sourceName                     r
     ManagedObjectReference                   sourceDatacenter               o
     String                                   destName                       r
@@ -793,7 +793,7 @@ end
 
 
 method CreateFilter returns ManagedObjectReference r
-    ManagedObjectReference                   _this:PropertyCollector        r
+    ManagedObjectReference                   _this:propertyCollector        r
     PropertyFilterSpec                       spec                           r
     Boolean                                  partialUpdates                 r
 end
@@ -809,7 +809,7 @@ end
 
 
 method CreateVirtualDisk_Task returns ManagedObjectReference r
-    ManagedObjectReference                   _this:VirtualDiskManager       r
+    ManagedObjectReference                   _this:virtualDiskManager       r
     String                                   name                           r
     ManagedObjectReference                   datacenter                     o
     VirtualDiskSpec                          spec                           r
@@ -817,7 +817,7 @@ end
 
 
 method DeleteVirtualDisk_Task returns ManagedObjectReference r
-    ManagedObjectReference                   _this:VirtualDiskManager       r
+    ManagedObjectReference                   _this:virtualDiskManager       r
     String                                   name                           r
     ManagedObjectReference                   datacenter                     o
 end
@@ -829,7 +829,7 @@ end
 
 
 method FindByIp returns ManagedObjectReference o
-    ManagedObjectReference                   _this:SearchIndex              r
+    ManagedObjectReference                   _this:searchIndex              r
     ManagedObjectReference                   datacenter                     o
     String                                   ip                             r
     Boolean                                  vmSearch                       r
@@ -837,7 +837,7 @@ end
 
 
 method FindByUuid returns ManagedObjectReference o
-    ManagedObjectReference                   _this:SearchIndex              r
+    ManagedObjectReference                   _this:searchIndex              r
     ManagedObjectReference                   datacenter                     o
     String                                   uuid                           r
     Boolean                                  vmSearch                       r
@@ -845,7 +845,7 @@ end
 
 
 method Login returns UserSession r
-    ManagedObjectReference                   _this:SessionManager           r
+    ManagedObjectReference                   _this:sessionManager           r
     String                                   userName                       r
     String                                   password                       r
     String                                   locale                         o
@@ -853,12 +853,12 @@ end
 
 
 method Logout
-    ManagedObjectReference                   _this:SessionManager           r
+    ManagedObjectReference                   _this:sessionManager           r
 end
 
 
 method MakeDirectory
-    ManagedObjectReference                   _this:FileManager              r
+    ManagedObjectReference                   _this:fileManager              r
     String                                   name                           r
     ManagedObjectReference                   datacenter                     o
     Boolean                                  createParentDirectories        o
@@ -886,7 +886,7 @@ end
 
 
 method QueryAvailablePerfMetric returns PerfMetricId ol
-    ManagedObjectReference                   _this:PerformanceManager       r
+    ManagedObjectReference                   _this:perfManager              r
     ManagedObjectReference                   entity                         r
     DateTime                                 beginTime                      o
     DateTime                                 endTime                        o
@@ -895,19 +895,19 @@ end
 
 
 method QueryPerf returns PerfEntityMetricBase ol
-    ManagedObjectReference                   _this:PerformanceManager       r
+    ManagedObjectReference                   _this:perfManager              r
     PerfQuerySpec                            querySpec                      rl
 end
 
 
 method QueryPerfCounter returns PerfCounterInfo ol
-    ManagedObjectReference                   _this:PerformanceManager       r
+    ManagedObjectReference                   _this:perfManager              r
     Int                                      counterId                      rl
 end
 
 
 method QueryVirtualDiskUuid returns String r
-    ManagedObjectReference                   _this:VirtualDiskManager       r
+    ManagedObjectReference                   _this:virtualDiskManager       r
     String                                   name                           r
     ManagedObjectReference                   datacenter                     o
 end
@@ -952,7 +952,7 @@ end
 
 
 method RetrieveProperties returns ObjectContent ol
-    ManagedObjectReference                   _this:PropertyCollector        r
+    ManagedObjectReference                   _this:propertyCollector        r
     PropertyFilterSpec                       specSet                        rl
 end
 
@@ -978,7 +978,7 @@ end
 
 
 method SessionIsActive returns Boolean r
-    ManagedObjectReference                   _this:SessionManager           r
+    ManagedObjectReference                   _this:sessionManager           r
     String                                   sessionID                      r
     String                                   userName                       r
 end
@@ -1000,13 +1000,13 @@ end
 
 
 method WaitForUpdates returns UpdateSet r
-    ManagedObjectReference                   _this:PropertyCollector        r
+    ManagedObjectReference                   _this:propertyCollector        r
     String                                   version                        o
 end
 
 
 method ZeroFillVirtualDisk_Task returns ManagedObjectReference r
-    ManagedObjectReference                   _this:VirtualDiskManager       r
+    ManagedObjectReference                   _this:virtualDiskManager       r
     String                                   name                           r
     ManagedObjectReference                   datacenter                     o
 end
