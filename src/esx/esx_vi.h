@@ -396,7 +396,7 @@ int esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
 int esxVI_LookupVirtualMachineByUuidAndPrepareForTask
       (esxVI_Context *ctx, const unsigned char *uuid,
        esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,
-       esxVI_Boolean autoAnswer);
+       bool autoAnswer);
 
 int esxVI_LookupDatastoreList(esxVI_Context *ctx, esxVI_String *propertyNameList,
                               esxVI_ObjectContent **datastoreList);
@@ -427,7 +427,7 @@ int esxVI_LookupPendingTaskInfoListByVirtualMachine
 int esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
                                                 const unsigned char *uuid,
                                                 esxVI_Occurrence occurrence,
-                                                esxVI_Boolean autoAnswer,
+                                                bool autoAnswer,
                                                 esxVI_Boolean *blocked);
 
 int esxVI_LookupRootSnapshotTreeList
@@ -463,13 +463,13 @@ int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx,
        esxVI_ManagedObjectReference *virtualMachine,
        esxVI_VirtualMachineQuestionInfo *questionInfo,
-       esxVI_Boolean autoAnswer, esxVI_Boolean *blocked);
+       bool autoAnswer, esxVI_Boolean *blocked);
 
 int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                                 esxVI_ManagedObjectReference *task,
                                 const unsigned char *virtualMachineUuid,
                                 esxVI_Occurrence virtualMachineOccurrence,
-                                esxVI_Boolean autoAnswer,
+                                bool autoAnswer,
                                 esxVI_TaskInfoState *finalState,
                                 char **errorMessage);
 

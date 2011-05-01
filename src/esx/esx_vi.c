@@ -2472,7 +2472,7 @@ int
 esxVI_LookupVirtualMachineByUuidAndPrepareForTask
   (esxVI_Context *ctx, const unsigned char *uuid,
    esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,
-   esxVI_Boolean autoAnswer)
+   bool autoAnswer)
 {
     int result = -1;
     esxVI_String *completePropertyNameList = NULL;
@@ -2874,7 +2874,7 @@ int
 esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
                                             const unsigned char *uuid,
                                             esxVI_Occurrence occurrence,
-                                            esxVI_Boolean autoAnswer,
+                                            bool autoAnswer,
                                             esxVI_Boolean *blocked)
 {
     int result = -1;
@@ -3194,7 +3194,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                                    datastorePathWithoutFileName, searchSpec,
                                    &task) < 0 ||
         esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
-                                    esxVI_Boolean_False, &taskInfoState,
+                                    false, &taskInfoState,
                                     &taskInfoErrorMessage) < 0) {
         goto cleanup;
     }
@@ -3339,7 +3339,7 @@ esxVI_LookupDatastoreContentByDatastoreName
                                              datastorePath, searchSpec,
                                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
-                                    esxVI_Boolean_False, &taskInfoState,
+                                    false, &taskInfoState,
                                     &taskInfoErrorMessage) < 0) {
         goto cleanup;
     }
@@ -3544,7 +3544,7 @@ int
 esxVI_HandleVirtualMachineQuestion
   (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachine,
    esxVI_VirtualMachineQuestionInfo *questionInfo,
-   esxVI_Boolean autoAnswer, esxVI_Boolean *blocked)
+   bool autoAnswer, esxVI_Boolean *blocked)
 {
     int result = -1;
     esxVI_ElementDescription *elementDescription = NULL;
@@ -3587,7 +3587,7 @@ esxVI_HandleVirtualMachineQuestion
         possibleAnswers = virBufferContentAndReset(&buffer);
     }
 
-    if (autoAnswer == esxVI_Boolean_True) {
+    if (autoAnswer) {
         if (possibleAnswers == NULL) {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                          _("Pending question blocks virtual machine execution, "
@@ -3652,8 +3652,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                             esxVI_ManagedObjectReference *task,
                             const unsigned char *virtualMachineUuid,
                             esxVI_Occurrence virtualMachineOccurrence,
-                            esxVI_Boolean autoAnswer,
-                            esxVI_TaskInfoState *finalState,
+                            bool autoAnswer, esxVI_TaskInfoState *finalState,
                             char **errorMessage)
 {
     int result = -1;

@@ -1114,7 +1114,8 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
                esxVI_VirtualDiskSpec_DynamicCast(virtualDiskSpec), &task) < 0 ||
             esxVI_WaitForTaskCompletion(priv->primary, task, NULL,
                                         esxVI_Occurrence_None,
-                                        priv->autoAnswer, &taskInfoState,
+                                        priv->parsedUri->autoAnswer,
+                                        &taskInfoState,
                                         &taskInfoErrorMessage) < 0) {
             goto cleanup;
         }
@@ -1315,7 +1316,8 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
                                        NULL, esxVI_Boolean_False, &task) < 0 ||
             esxVI_WaitForTaskCompletion(priv->primary, task, NULL,
                                         esxVI_Occurrence_None,
-                                        priv->autoAnswer, &taskInfoState,
+                                        priv->parsedUri->autoAnswer,
+                                        &taskInfoState,
                                         &taskInfoErrorMessage) < 0) {
             goto cleanup;
         }
@@ -1402,7 +1404,8 @@ esxStorageVolumeDelete(virStorageVolPtr volume, unsigned int flags)
                                      priv->primary->datacenter->_reference,
                                      &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, NULL,
-                                    esxVI_Occurrence_None, priv->autoAnswer,
+                                    esxVI_Occurrence_None,
+                                    priv->parsedUri->autoAnswer,
                                     &taskInfoState, &taskInfoErrorMessage) < 0) {
         goto cleanup;
     }
@@ -1450,7 +1453,8 @@ esxStorageVolumeWipe(virStorageVolPtr volume, unsigned int flags)
                                        priv->primary->datacenter->_reference,
                                        &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, NULL,
-                                    esxVI_Occurrence_None, priv->autoAnswer,
+                                    esxVI_Occurrence_None,
+                                    priv->parsedUri->autoAnswer,
                                     &taskInfoState, &taskInfoErrorMessage) < 0) {
         goto cleanup;
     }
