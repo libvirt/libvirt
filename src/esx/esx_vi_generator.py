@@ -449,6 +449,7 @@ class Object(Base):
         self.features = features
         self.properties = properties
         self.extended_by = extended_by
+        self.candidate_for_dynamic_cast = False
 
         if self.extended_by is not None:
             self.extended_by.sort()
@@ -1406,13 +1407,6 @@ def open_and_print(filename):
 
 
 
-
-
-
-
-
-
-
 predefined_enums = ["Boolean"]
 
 predefined_objects = ["AnyType",
@@ -1431,22 +1425,16 @@ additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__AN
                                "AutoStartPowerInfo"         : Object.FEATURE__ANY_TYPE,
                                "DatastoreHostMount"         : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
                                "DatastoreInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
-                               "FileInfo"                   : Object.FEATURE__DYNAMIC_CAST,
-                               "FileQuery"                  : Object.FEATURE__DYNAMIC_CAST,
                                "HostConfigManager"          : Object.FEATURE__ANY_TYPE,
                                "HostCpuIdInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "HostDatastoreBrowserSearchResults" : Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
                                "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
                                "ObjectContent"              : Object.FEATURE__DEEP_COPY,
-                               "PerfEntityMetric"           : Object.FEATURE__DYNAMIC_CAST,
-                               "PerfMetricIntSeries"        : Object.FEATURE__DYNAMIC_CAST,
                                "ResourcePoolResourceUsage"  : Object.FEATURE__ANY_TYPE,
-                               "SelectionSpec"              : Object.FEATURE__DYNAMIC_CAST,
                                "ServiceContent"             : Object.FEATURE__DESERIALIZE,
                                "SharesInfo"                 : Object.FEATURE__ANY_TYPE,
                                "TaskInfo"                   : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "UserSession"                : Object.FEATURE__ANY_TYPE,
-                               "VirtualDiskSpec"            : Object.FEATURE__DYNAMIC_CAST,
                                "VirtualMachineQuestionInfo" : Object.FEATURE__ANY_TYPE,
                                "VirtualMachineSnapshotTree" : Object.FEATURE__DEEP_COPY | Object.FEATURE__ANY_TYPE,
                                "VmEventArgument"            : Object.FEATURE__DESERIALIZE }
@@ -1537,6 +1525,7 @@ for method in methods_by_name.values():
             enums_by_name[parameter.type].features |= Enum.FEATURE__SERIALIZE
         else:
             objects_by_name[parameter.type].features |= Object.FEATURE__SERIALIZE
+            objects_by_name[parameter.type].candidate_for_dynamic_cast = True
 
         # detect list usage
         if parameter.occurrence == OCCURRENCE__REQUIRED_LIST or \
@@ -1553,6 +1542,7 @@ for method in methods_by_name.values():
             enums_by_name[method.returns.type].features |= Enum.FEATURE__DESERIALIZE
         else:
             objects_by_name[method.returns.type].features |= Object.FEATURE__DESERIALIZE
+            objects_by_name[method.returns.type].candidate_for_dynamic_cast = True
 
         # detect list usage
         if method.returns.occurrence == OCCURRENCE__REQUIRED_LIST or \
@@ -1585,11 +1575,16 @@ for obj in objects_by_name.values():
         if not is_known_type(obj.extends):
             report_error("object '%s' extends unknown object '%s'" % (obj.name, obj.extends))
 
-    # detect list usage
     for property in obj.properties:
         if not property.is_type_generated():
             continue
 
+        if property.is_enum():
+            enums_by_name[property.type].candidate_for_dynamic_cast = True
+        else:
+            objects_by_name[property.type].candidate_for_dynamic_cast = True
+
+        # detect list usage
         if property.occurrence == OCCURRENCE__REQUIRED_LIST or \
            property.occurrence == OCCURRENCE__OPTIONAL_LIST:
             if property.is_enum():
@@ -1617,6 +1612,15 @@ for obj in objects_by_name.values():
         else:
             extended_obj.extended_by.append(obj.name)
             extended_obj.extended_by.sort()
+
+
+
+for obj in objects_by_name.values():
+    # if an object is a candidate (it is used directly as parameter or return
+    # type or is a member of another object) and it is extended by another
+    # object then this type needs the dynamic cast feature
+    if obj.candidate_for_dynamic_cast and obj.extended_by:
+        obj.features |= Object.FEATURE__DYNAMIC_CAST
 
 
 
