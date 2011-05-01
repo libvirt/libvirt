@@ -347,6 +347,7 @@ ESX_DRIVER_SOURCES =						\
 ESX_DRIVER_GENERATED =							\
 		esx/esx_vi_methods.generated.c				\
 		esx/esx_vi_methods.generated.h				\
+		esx/esx_vi_methods.generated.macro			\
 		esx/esx_vi_types.generated.c				\
 		esx/esx_vi_types.generated.h				\
 		esx/esx_vi_types.generated.typedef			\

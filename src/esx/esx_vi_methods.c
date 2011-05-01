@@ -175,42 +175,6 @@
 
 
 
-#define ESX_VI__METHOD__PARAMETER__THIS__fileManager                          \
-    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
-                                                 fileManager)
-
-
-
-#define ESX_VI__METHOD__PARAMETER__THIS__perfManager                          \
-    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
-                                                 perfManager)
-
-
-
-#define ESX_VI__METHOD__PARAMETER__THIS__propertyCollector                    \
-    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
-                                                 propertyCollector)
-
-
-
-#define ESX_VI__METHOD__PARAMETER__THIS__searchIndex                          \
-    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
-                                                 searchIndex)
-
-
-
-#define ESX_VI__METHOD__PARAMETER__THIS__sessionManager                       \
-    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
-                                                 sessionManager)
-
-
-
-#define ESX_VI__METHOD__PARAMETER__THIS__virtualDiskManager                   \
-    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
-                                                 virtualDiskManager)
-
-
-
 /*
  * A required parameter must be != 0 (NULL for pointers, "undefined" == 0 for
  * enumeration values).
@@ -245,6 +209,10 @@
     if (esxVI_##_type##_SerializeValue(_name, #_name, &buffer) < 0) {         \
         goto cleanup;                                                         \
     }
+
+
+
+#include "esx_vi_methods.generated.macro"
 
 
 
