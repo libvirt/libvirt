@@ -73,6 +73,14 @@ class Parameter:
         return self.type in predefined_enums or self.type in enums_by_name
 
 
+    def is_object(self):
+        return self.type in predefined_objects or self.type in objects_by_name
+
+
+    def is_type_generated(self):
+        return self.type in enums_by_name or self.type in objects_by_name
+
+
     def generate_parameter(self, is_last = False, is_header = True, offset = 0):
         if self.occurrence == OCCURRENCE__IGNORED:
             raise ValueError("invalid function parameter occurrence value '%s'" % self.occurrence)
@@ -275,6 +283,14 @@ class Property:
         return self.type in predefined_enums or self.type in enums_by_name
 
 
+    def is_object(self):
+        return self.type in predefined_objects or self.type in objects_by_name
+
+
+    def is_type_generated(self):
+        return self.type in enums_by_name or self.type in objects_by_name
+
+
     def generate_struct_member(self):
         if self.occurrence == OCCURRENCE__IGNORED:
             return "    /* FIXME: %s is currently ignored */\n" % self.name
@@ -427,11 +443,10 @@ class Object(Base):
     FEATURE__SERIALIZE    = (1 << 5)
     FEATURE__DESERIALIZE  = (1 << 6)
 
-
     def __init__(self, name, extends, properties, features = 0, extended_by = None):
         Base.__init__(self, "struct", name)
         self.extends = extends
-        self.features = features | Object.FEATURE__SERIALIZE | Object.FEATURE__DESERIALIZE
+        self.features = features
         self.properties = properties
         self.extended_by = extended_by
 
@@ -1191,7 +1206,7 @@ class Enum(Base):
     def __init__(self, name, values, features=0):
         Base.__init__(self, "enum", name)
         self.values = values
-        self.features = features | Enum.FEATURE__SERIALIZE | Enum.FEATURE__DESERIALIZE
+        self.features = features
 
 
     def generate_header(self):
@@ -1372,20 +1387,6 @@ def parse_method(block):
 
 
 
-def inherit_features(obj):
-    if obj.extended_by is not None:
-        for extended_by in obj.extended_by:
-            objects_by_name[extended_by].features |= obj.features
-
-    if obj.extends is not None:
-        objects_by_name[obj.extends].features |= obj.features
-
-    if obj.extended_by is not None:
-        for extended_by in obj.extended_by:
-            inherit_features(objects_by_name[extended_by])
-
-
-
 def is_known_type(type):
     return type in predefined_objects or \
            type in predefined_enums or \
@@ -1422,11 +1423,9 @@ predefined_objects = ["AnyType",
                       "MethodFault",
                       "ManagedObjectReference"]
 
-
 additional_enum_features = { "ManagedEntityStatus"      : Enum.FEATURE__ANY_TYPE,
                              "TaskInfoState"            : Enum.FEATURE__ANY_TYPE,
                              "VirtualMachinePowerState" : Enum.FEATURE__ANY_TYPE }
-
 
 additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__ANY_TYPE,
                                "AutoStartPowerInfo"         : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
@@ -1446,24 +1445,16 @@ additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__AN
                                "PropertyFilterSpec"         : Object.FEATURE__LIST,
                                "ResourcePoolResourceUsage"  : Object.FEATURE__ANY_TYPE,
                                "SelectionSpec"              : Object.FEATURE__DYNAMIC_CAST,
+                               "ServiceContent"             : Object.FEATURE__DESERIALIZE,
                                "SharesInfo"                 : Object.FEATURE__ANY_TYPE,
                                "TaskInfo"                   : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "UserSession"                : Object.FEATURE__ANY_TYPE,
                                "VirtualDiskSpec"            : Object.FEATURE__DYNAMIC_CAST,
                                "VirtualMachineQuestionInfo" : Object.FEATURE__ANY_TYPE,
-                               "VirtualMachineSnapshotTree" : Object.FEATURE__DEEP_COPY | Object.FEATURE__ANY_TYPE }
+                               "VirtualMachineSnapshotTree" : Object.FEATURE__DEEP_COPY | Object.FEATURE__ANY_TYPE,
+                               "VmEventArgument"            : Object.FEATURE__DESERIALIZE }
 
-
-removed_object_features = { "DynamicProperty"            : Object.FEATURE__SERIALIZE,
-                            "LocalizedMethodFault"       : Object.FEATURE__SERIALIZE,
-                            "ObjectContent"              : Object.FEATURE__SERIALIZE,
-                            "ObjectUpdate"               : Object.FEATURE__SERIALIZE,
-                            "PropertyChange"             : Object.FEATURE__SERIALIZE,
-                            "PropertyFilterUpdate"       : Object.FEATURE__SERIALIZE,
-                            "TaskInfo"                   : Object.FEATURE__SERIALIZE,
-                            "UpdateSet"                  : Object.FEATURE__SERIALIZE,
-                            "VirtualMachineConfigInfo"   : Object.FEATURE__SERIALIZE,
-                            "VirtualMachineSnapshotTree" : Object.FEATURE__SERIALIZE }
+removed_object_features = {}
 
 
 
@@ -1499,6 +1490,7 @@ block = None
 
 
 
+# parse input file
 for line in file(input_filename, "rb").readlines():
     number += 1
 
@@ -1538,10 +1530,33 @@ for line in file(input_filename, "rb").readlines():
 
 
 
+for method in methods_by_name.values():
+    # method parameter types must be serializable
+    for parameter in method.parameters:
+        if not parameter.is_type_generated():
+            continue
+
+        if parameter.is_enum():
+            enums_by_name[parameter.type].features |= Enum.FEATURE__SERIALIZE
+        else:
+            objects_by_name[parameter.type].features |= Object.FEATURE__SERIALIZE
+
+    # method return types must be deserializable
+    if method.returns and method.returns.is_type_generated():
+        if method.returns.is_enum():
+            enums_by_name[method.returns.type].features |= Enum.FEATURE__DESERIALIZE
+        else:
+            objects_by_name[method.returns.type].features |= Object.FEATURE__DESERIALIZE
+
+
+
 for enum in enums_by_name.values():
     # apply additional features
     if enum.name in additional_enum_features:
         enum.features |= additional_enum_features[enum.name]
+
+        if additional_enum_features[enum.name] & Enum.FEATURE__ANY_TYPE:
+            enum.features |= Enum.FEATURE__DESERIALIZE
 
 
 
@@ -1566,16 +1581,11 @@ for obj in objects_by_name.values():
     if obj.name in additional_object_features:
         obj.features |= additional_object_features[obj.name]
 
+        if additional_object_features[obj.name] & Object.FEATURE__ANY_TYPE:
+            obj.features |= Object.FEATURE__DESERIALIZE
+
     if obj.name in removed_object_features:
         obj.features &= ~removed_object_features[obj.name]
-
-    # spread deep copy onto properties
-    if obj.features & Object.FEATURE__DEEP_COPY:
-        for property in obj.properties:
-            if property.occurrence != OCCURRENCE__IGNORED and \
-               property.type not in predefined_objects and \
-               property.type in objects_by_name:
-                objects_by_name[property.type].features |= Object.FEATURE__DEEP_COPY
 
     # detect extended_by relation
     if obj.extends is not None:
@@ -1586,6 +1596,80 @@ for obj in objects_by_name.values():
         else:
             extended_obj.extended_by.append(obj.name)
             extended_obj.extended_by.sort()
+
+
+
+def propagate_feature(obj, feature):
+    global features_have_changed
+
+    if not (obj.features & feature):
+        return
+
+    for property in obj.properties:
+        if property.occurrence == OCCURRENCE__IGNORED or \
+           not property.is_type_generated():
+            continue
+
+        if property.is_enum():
+            if feature == Object.FEATURE__SERIALIZE and \
+               not (enums_by_name[property.type].features & Enum.FEATURE__SERIALIZE):
+                enums_by_name[property.type].features |= Enum.FEATURE__SERIALIZE
+                features_have_changed = True
+            elif feature == Object.FEATURE__DESERIALIZE and \
+               not (enums_by_name[property.type].features & Enum.FEATURE__DESERIALIZE):
+                enums_by_name[property.type].features |= Enum.FEATURE__DESERIALIZE
+                features_have_changed = True
+        elif property.is_object():
+            if not (objects_by_name[property.type].features & feature):
+                objects_by_name[property.type].features |= feature
+                features_have_changed = True
+
+            if obj.name != property.type:
+                propagate_feature(objects_by_name[property.type], feature)
+
+
+
+def inherit_features(obj):
+    global features_have_changed
+
+    if obj.extended_by is not None:
+        for extended_by in obj.extended_by:
+            previous = objects_by_name[extended_by].features
+            objects_by_name[extended_by].features |= obj.features
+
+            if objects_by_name[extended_by].features != previous:
+                features_have_changed = True
+
+    if obj.extends is not None:
+        previous = objects_by_name[obj.extends].features
+        objects_by_name[obj.extends].features |= obj.features
+
+        if objects_by_name[obj.extends].features != previous:
+            features_have_changed = True
+
+    if obj.extended_by is not None:
+        for extended_by in obj.extended_by:
+            inherit_features(objects_by_name[extended_by])
+
+
+
+# there are two directions to spread features:
+# 1) up and down the inheritance chain
+# 2) from object types to their member property types
+# spreading needs to be done alternating on both directions because they can
+# affect each other
+features_have_changed = True
+
+while features_have_changed:
+    features_have_changed = False
+
+    for obj in objects_by_name.values():
+        propagate_feature(obj, Object.FEATURE__DEEP_COPY)
+        propagate_feature(obj, Object.FEATURE__SERIALIZE)
+        propagate_feature(obj, Object.FEATURE__DESERIALIZE)
+
+    for obj in objects_by_name.values():
+        inherit_features(obj)
 
 
 
@@ -1608,11 +1692,6 @@ for obj in managed_objects_by_name.values():
         else:
             extended_obj.extended_by.append(obj.name)
             extended_obj.extended_by.sort()
-
-
-
-for obj in objects_by_name.values():
-    inherit_features(obj)
 
 
 
