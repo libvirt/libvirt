@@ -1511,8 +1511,7 @@ esxNumberOfDomains(virConnectPtr conn)
     }
 
     return esxVI_LookupNumberOfDomainsByPowerState
-             (priv->primary, esxVI_VirtualMachinePowerState_PoweredOn,
-              esxVI_Boolean_False);
+             (priv->primary, esxVI_VirtualMachinePowerState_PoweredOn, false);
 }
 
 
@@ -2935,8 +2934,7 @@ esxNumberOfDefinedDomains(virConnectPtr conn)
     }
 
     return esxVI_LookupNumberOfDomainsByPowerState
-             (priv->primary, esxVI_VirtualMachinePowerState_PoweredOn,
-              esxVI_Boolean_True);
+             (priv->primary, esxVI_VirtualMachinePowerState_PoweredOn, true);
 }
 
 

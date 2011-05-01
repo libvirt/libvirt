@@ -2006,7 +2006,7 @@ esxVI_GetManagedObjectReference(esxVI_ObjectContent *objectContent,
 int
 esxVI_LookupNumberOfDomainsByPowerState(esxVI_Context *ctx,
                                         esxVI_VirtualMachinePowerState powerState,
-                                        esxVI_Boolean inverse)
+                                        bool inverse)
 {
     bool success = false;
     esxVI_String *propertyNameList = NULL;
@@ -2034,10 +2034,8 @@ esxVI_LookupNumberOfDomainsByPowerState(esxVI_Context *ctx,
                     goto cleanup;
                 }
 
-                if ((inverse != esxVI_Boolean_True &&
-                     powerState_ == powerState) ||
-                    (inverse == esxVI_Boolean_True &&
-                     powerState_ != powerState)) {
+                if ((!inverse && powerState_ == powerState) ||
+                    ( inverse && powerState_ != powerState)) {
                     count++;
                 }
             } else {
@@ -2478,7 +2476,7 @@ esxVI_LookupVirtualMachineByUuidAndPrepareForTask
     esxVI_String *completePropertyNameList = NULL;
     esxVI_VirtualMachineQuestionInfo *questionInfo = NULL;
     esxVI_TaskInfo *pendingTaskInfoList = NULL;
-    esxVI_Boolean blocked = esxVI_Boolean_Undefined;
+    bool blocked;
 
     if (esxVI_String_DeepCopyList(&completePropertyNameList,
                                   propertyNameList) < 0 ||
@@ -2874,8 +2872,7 @@ int
 esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
                                             const unsigned char *uuid,
                                             esxVI_Occurrence occurrence,
-                                            bool autoAnswer,
-                                            esxVI_Boolean *blocked)
+                                            bool autoAnswer, bool *blocked)
 {
     int result = -1;
     esxVI_ObjectContent *virtualMachine = NULL;
@@ -3543,8 +3540,8 @@ esxVI_LookupAutoStartPowerInfoList(esxVI_Context *ctx,
 int
 esxVI_HandleVirtualMachineQuestion
   (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachine,
-   esxVI_VirtualMachineQuestionInfo *questionInfo,
-   bool autoAnswer, esxVI_Boolean *blocked)
+   esxVI_VirtualMachineQuestionInfo *questionInfo, bool autoAnswer,
+   bool *blocked)
 {
     int result = -1;
     esxVI_ElementDescription *elementDescription = NULL;
@@ -3553,12 +3550,12 @@ esxVI_HandleVirtualMachineQuestion
     int answerIndex = 0;
     char *possibleAnswers = NULL;
 
-    if (blocked == NULL || *blocked != esxVI_Boolean_Undefined) {
+    if (blocked == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    *blocked = esxVI_Boolean_False;
+    *blocked = false;
 
     if (questionInfo->choice->choiceInfo != NULL) {
         for (elementDescription = questionInfo->choice->choiceInfo;
@@ -3594,7 +3591,7 @@ esxVI_HandleVirtualMachineQuestion
                            "question is '%s', no possible answers"),
                          questionInfo->text);
 
-            *blocked = esxVI_Boolean_True;
+            *blocked = true;
             goto cleanup;
         } else if (answerChoice == NULL) {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -3603,7 +3600,7 @@ esxVI_HandleVirtualMachineQuestion
                            "default answer is specified"), questionInfo->text,
                          possibleAnswers);
 
-            *blocked = esxVI_Boolean_True;
+            *blocked = true;
             goto cleanup;
         }
 
@@ -3629,7 +3626,7 @@ esxVI_HandleVirtualMachineQuestion
                          questionInfo->text);
         }
 
-        *blocked = esxVI_Boolean_True;
+        *blocked = true;
         goto cleanup;
     }
 
@@ -3667,7 +3664,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
     esxVI_PropertyChange *propertyChange = NULL;
     esxVI_AnyType *propertyValue = NULL;
     esxVI_TaskInfoState state = esxVI_TaskInfoState_Undefined;
-    esxVI_Boolean blocked = esxVI_Boolean_Undefined;
+    bool blocked;
     esxVI_TaskInfo *taskInfo = NULL;
 
     if (errorMessage == NULL || *errorMessage != NULL) {
@@ -3725,13 +3722,12 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                 }
 
                 if (taskInfo->cancelable == esxVI_Boolean_True) {
-                    if (esxVI_CancelTask(ctx, task) < 0 &&
-                        blocked == esxVI_Boolean_True) {
+                    if (esxVI_CancelTask(ctx, task) < 0 && blocked) {
                         VIR_ERROR(_("Cancelable task is blocked by an "
                                      "unanswered question but cancelation "
                                      "failed"));
                     }
-                } else if (blocked == esxVI_Boolean_True) {
+                } else if (blocked) {
                     VIR_ERROR(_("Non-cancelable task is blocked by an "
                                  "unanswered question"));
                 }
