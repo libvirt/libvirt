@@ -185,6 +185,7 @@ int esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl);
  */
 
 struct _esxVI_Context {
+    /* All members are used read-only after esxVI_Context_Connect ... */
     esxVI_CURL *curl;
     char *url;
     char *ipAddress;
@@ -193,7 +194,8 @@ struct _esxVI_Context {
     esxVI_ServiceContent *service;
     esxVI_APIVersion apiVersion;
     esxVI_ProductVersion productVersion;
-    esxVI_UserSession *session;
+    esxVI_UserSession *session; /* ... except the session ... */
+    virMutexPtr sessionLock; /* ... that is protected by this mutex */
     esxVI_Datacenter *datacenter;
     esxVI_ComputeResource *computeResource;
     esxVI_HostSystem *hostSystem;

@@ -603,6 +603,10 @@ ESX_VI__TEMPLATE__ALLOC(Context)
 /* esxVI_Context_Free */
 ESX_VI__TEMPLATE__FREE(Context,
 {
+    if (item->sessionLock != NULL) {
+        virMutexDestroy(item->sessionLock);
+    }
+
     esxVI_CURL_Free(&item->curl);
     VIR_FREE(item->url);
     VIR_FREE(item->ipAddress);
@@ -610,6 +614,7 @@ ESX_VI__TEMPLATE__FREE(Context,
     VIR_FREE(item->password);
     esxVI_ServiceContent_Free(&item->service);
     esxVI_UserSession_Free(&item->session);
+    VIR_FREE(item->sessionLock);
     esxVI_Datacenter_Free(&item->datacenter);
     esxVI_ComputeResource_Free(&item->computeResource);
     esxVI_HostSystem_Free(&item->hostSystem);
@@ -639,6 +644,17 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         esxVI_String_DeepCopyValue(&ctx->ipAddress, ipAddress) < 0 ||
         esxVI_String_DeepCopyValue(&ctx->username, username) < 0 ||
         esxVI_String_DeepCopyValue(&ctx->password, password) < 0) {
+        return -1;
+    }
+
+    if (VIR_ALLOC(ctx->sessionLock) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virMutexInit(ctx->sessionLock) < 0) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not initialize session mutex"));
         return -1;
     }
 
@@ -1548,9 +1564,16 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_UserSession *currentSession = NULL;
 
-    if (ctx->session == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));
+    if (ctx->sessionLock == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call, no mutex"));
         return -1;
+    }
+
+    virMutexLock(ctx->sessionLock);
+
+    if (ctx->session == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call, no session"));
+        goto cleanup;
     }
 
     if (ctx->hasSessionIsActive) {
@@ -1560,7 +1583,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
          */
         if (esxVI_SessionIsActive(ctx, ctx->session->key,
                                   ctx->session->userName, &active) < 0) {
-            return -1;
+            goto cleanup;
         }
 
         if (active != esxVI_Boolean_True) {
@@ -1568,11 +1591,9 @@ esxVI_EnsureSession(esxVI_Context *ctx)
 
             if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
                             &ctx->session) < 0) {
-                return -1;
+                goto cleanup;
             }
         }
-
-        return 0;
     } else {
         /*
          * Query the session manager for the current session of this connection
@@ -1614,16 +1635,18 @@ esxVI_EnsureSession(esxVI_Context *ctx)
                            "last login"));
             goto cleanup;
         }
+    }
 
-        result = 0;
+    result = 0;
 
   cleanup:
-        esxVI_String_Free(&propertyNameList);
-        esxVI_ObjectContent_Free(&sessionManager);
-        esxVI_UserSession_Free(&currentSession);
+    virMutexUnlock(ctx->sessionLock);
 
-        return result;
-    }
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&sessionManager);
+    esxVI_UserSession_Free(&currentSession);
+
+    return result;
 }
 
 
