@@ -57,16 +57,10 @@ def aligned(left, right, length=59):
 
 
 
-class Parameter:
-    def __init__(self, type, name, occurrence):
+class Member:
+    def __init__(self, type, occurrence):
         self.type = type
         self.occurrence = occurrence
-
-        if ':' in name and name.startswith("_this"):
-            self.name, self.autobind_type = name.split(":")
-        else:
-            self.name = name
-            self.autobind_type = None
 
 
     def is_enum(self):
@@ -79,6 +73,31 @@ class Parameter:
 
     def is_type_generated(self):
         return self.type in enums_by_name or self.type in objects_by_name
+
+
+    def get_occurrence_comment(self):
+        if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
+            return "/* required */"
+        elif self.occurrence == OCCURRENCE__REQUIRED_LIST:
+            return "/* required, list */"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_ITEM:
+            return "/* optional */"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_LIST:
+            return "/* optional, list */"
+
+        raise ValueError("unknown occurrence value '%s'" % self.occurrence)
+
+
+
+class Parameter(Member):
+    def __init__(self, type, name, occurrence):
+        Member.__init__(self, type, occurrence)
+
+        if ':' in name and name.startswith("_this"):
+            self.name, self.autobind_type = name.split(":")
+        else:
+            self.name = name
+            self.autobind_type = None
 
 
     def generate_parameter(self, is_last = False, is_header = True, offset = 0):
@@ -131,7 +150,7 @@ class Parameter:
             return "    ESX_VI__METHOD__PARAMETER__SERIALIZE(%s, %s)\n" % (self.type, self.name)
 
 
-    def get_type_string(self, as_return_value = False):
+    def get_type_string(self, as_return_value=False):
         string = ""
 
         if self.type == "String" and \
@@ -150,19 +169,6 @@ class Parameter:
             string += "*"
 
         return string
-
-
-    def get_occurrence_comment(self):
-        if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
-            return "/* required */"
-        elif self.occurrence == OCCURRENCE__REQUIRED_LIST:
-            return "/* required, list */"
-        elif self.occurrence == OCCURRENCE__OPTIONAL_ITEM:
-            return "/* optional */"
-        elif self.occurrence == OCCURRENCE__OPTIONAL_LIST:
-            return "/* optional, list */"
-
-        raise ValueError("unknown occurrence value '%s'" % self.occurrence)
 
 
     def get_occurrence_short_enum(self):
@@ -272,23 +278,11 @@ class Method:
 
 
 
-class Property:
+class Property(Member):
     def __init__(self, type, name, occurrence):
-        self.type = type
+        Member.__init__(self, type, occurrence)
+
         self.name = name
-        self.occurrence = occurrence
-
-
-    def is_enum(self):
-        return self.type in predefined_enums or self.type in enums_by_name
-
-
-    def is_object(self):
-        return self.type in predefined_objects or self.type in objects_by_name
-
-
-    def is_type_generated(self):
-        return self.type in enums_by_name or self.type in objects_by_name
 
 
     def generate_struct_member(self):
@@ -391,21 +385,8 @@ class Property:
             return "esxVI_%s *" % self.type
 
 
-    def get_occurrence_comment(self):
-        if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
-            return "/* required */"
-        elif self.occurrence == OCCURRENCE__REQUIRED_LIST:
-            return "/* required, list */"
-        elif self.occurrence == OCCURRENCE__OPTIONAL_ITEM:
-            return "/* optional */"
-        elif self.occurrence == OCCURRENCE__OPTIONAL_LIST:
-            return "/* optional, list */"
 
-        raise ValueError("unknown occurrence value '%s'" % self.occurrence)
-
-
-
-class Base:
+class Type:
     def __init__(self, kind, name):
         self.kind = kind
         self.name = name
@@ -435,7 +416,7 @@ class Base:
 
 
 
-class Object(Base):
+class Object(Type):
     FEATURE__DYNAMIC_CAST = (1 << 1)
     FEATURE__LIST         = (1 << 2)
     FEATURE__DEEP_COPY    = (1 << 3)
@@ -444,7 +425,7 @@ class Object(Base):
     FEATURE__DESERIALIZE  = (1 << 6)
 
     def __init__(self, name, extends, properties, features = 0, extended_by = None):
-        Base.__init__(self, "struct", name)
+        Type.__init__(self, "struct", name)
         self.extends = extends
         self.features = features
         self.properties = properties
@@ -898,12 +879,12 @@ class Object(Base):
 
 
 
-class ManagedObject(Base):
+class ManagedObject(Type):
     FEATURE__LIST = (1 << 2)
 
 
     def __init__(self, name, extends, properties, features=0, extended_by=None):
-        Base.__init__(self, "struct", name)
+        Type.__init__(self, "struct", name)
         self.extends = extends
         self.features = features
         self.properties = properties
@@ -1198,14 +1179,14 @@ class ManagedObject(Base):
 
 
 
-class Enum(Base):
+class Enum(Type):
     FEATURE__ANY_TYPE = (1 << 1)
     FEATURE__SERIALIZE = (1 << 2)
     FEATURE__DESERIALIZE = (1 << 3)
 
 
     def __init__(self, name, values, features=0):
-        Base.__init__(self, "enum", name)
+        Type.__init__(self, "enum", name)
         self.values = values
         self.features = features
 
