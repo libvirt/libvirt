@@ -46,7 +46,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     char *gotxmcfgData = NULL;
     virConfPtr conf = NULL;
     int ret = -1;
-    virConnectPtr conn;
+    virConnectPtr conn = NULL;
     int wrote = 4096;
     struct _xenUnifiedPrivate priv;
     virDomainDefPtr def = NULL;
