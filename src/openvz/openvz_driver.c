@@ -377,6 +377,41 @@ cleanup:
 }
 
 
+static int
+openvzDomainGetState(virDomainPtr dom,
+                     int *state,
+                     int *reason,
+                     unsigned int flags)
+{
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    openvzDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
+
+    if (!vm) {
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
+                    _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    *state = vm->state;
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static int openvzDomainIsActive(virDomainPtr dom)
 {
     struct openvz_driver *driver = dom->conn->privateData;
@@ -1577,7 +1612,7 @@ static virDriver openvzDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     openvzDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    openvzDomainGetState, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

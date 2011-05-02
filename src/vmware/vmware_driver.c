@@ -896,6 +896,40 @@ vmwareDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     return ret;
 }
 
+static int
+vmwareDomainGetState(virDomainPtr dom,
+                     int *state,
+                     int *reason,
+                     unsigned int flags)
+{
+    struct vmware_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    vmwareDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vmwareDriverUnlock(driver);
+
+    if (!vm) {
+        vmwareError(VIR_ERR_NO_DOMAIN, "%s",
+                    _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    *state = vm->state;
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+  cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static virDriver vmwareDriver = {
     VIR_DRV_VMWARE,
     "VMWARE",
@@ -931,7 +965,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainSetBlkioParameters */
     NULL,                       /* domainGetBlkioParameters */
     vmwareDomainGetInfo,        /* domainGetInfo */
-    NULL,                       /* domainGetState */
+    vmwareDomainGetState,       /* domainGetState */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */

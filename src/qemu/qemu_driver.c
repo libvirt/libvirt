@@ -1829,6 +1829,42 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainGetState(virDomainPtr dom,
+                   int *state,
+                   int *reason,
+                   unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    *state = vm->state;
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 
 #define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
 #define QEMUD_SAVE_VERSION 2
@@ -7246,7 +7282,7 @@ static virDriver qemuDriver = {
     qemuDomainSetBlkioParameters, /* domainSetBlkioParameters */
     qemuDomainGetBlkioParameters, /* domainGetBlkioParameters */
     qemudDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    qemuDomainGetState, /* domainGetState */
     qemudDomainSave, /* domainSave */
     qemuDomainRestore, /* domainRestore */
     qemudDomainCoreDump, /* domainCoreDump */

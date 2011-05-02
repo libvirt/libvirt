@@ -1522,6 +1522,41 @@ cleanup:
 }
 
 
+static int
+umlDomainGetState(virDomainPtr dom,
+                  int *state,
+                  int *reason,
+                  unsigned int flags)
+{
+    struct uml_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    umlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    umlDriverUnlock(driver);
+
+    if (!vm) {
+        umlReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    *state = vm->state;
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static char *umlDomainGetXMLDesc(virDomainPtr dom,
                                  int flags ATTRIBUTE_UNUSED) {
     struct uml_driver *driver = dom->conn->privateData;
@@ -2178,7 +2213,7 @@ static virDriver umlDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     umlDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    umlDomainGetState, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

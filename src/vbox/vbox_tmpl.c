@@ -1915,6 +1915,65 @@ cleanup:
     return ret;
 }
 
+static int
+vboxDomainGetState(virDomainPtr dom,
+                   int *state,
+                   int *reason,
+                   unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID domiid = VBOX_IID_INITIALIZER;
+    IMachine *machine = NULL;
+    PRUint32 mstate = MachineState_Null;
+    nsresult rc;
+
+    virCheckFlags(0, -1);
+
+    vboxIIDFromUUID(&domiid, dom->uuid);
+    rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    machine->vtbl->GetState(machine, &mstate);
+
+    switch (mstate) {
+    case MachineState_Running:
+        *state = VIR_DOMAIN_RUNNING;
+        break;
+    case MachineState_Stuck:
+        *state = VIR_DOMAIN_BLOCKED;
+        break;
+    case MachineState_Paused:
+        *state = VIR_DOMAIN_PAUSED;
+        break;
+    case MachineState_Stopping:
+        *state = VIR_DOMAIN_SHUTDOWN;
+        break;
+    case MachineState_PoweredOff:
+        *state = VIR_DOMAIN_SHUTOFF;
+        break;
+    case MachineState_Aborted:
+        *state = VIR_DOMAIN_CRASHED;
+        break;
+    case MachineState_Null:
+    default:
+        *state = VIR_DOMAIN_NOSTATE;
+        break;
+    }
+
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+cleanup:
+    vboxIIDUnalloc(&domiid);
+    return ret;
+}
+
 static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IConsole *console    = NULL;
@@ -8695,7 +8754,7 @@ virDriver NAME(Driver) = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     vboxDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    vboxDomainGetState, /* domainGetState */
     vboxDomainSave, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

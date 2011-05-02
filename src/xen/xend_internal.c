@@ -1020,6 +1020,43 @@ xend_detect_config_version(virConnectPtr conn) {
 
 
 /**
+ * sexpr_to_xend_domain_state:
+ * @root: an S-Expression describing a domain
+ *
+ * Internal routine getting the domain's state from the domain root provided.
+ *
+ * Returns domain's state.
+ */
+static int
+ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+sexpr_to_xend_domain_state(virDomainPtr domain, const struct sexpr *root)
+{
+    const char *flags;
+    int state = VIR_DOMAIN_NOSTATE;
+
+    if ((flags = sexpr_node(root, "domain/state"))) {
+        if (strchr(flags, 'c'))
+            state = VIR_DOMAIN_CRASHED;
+        else if (strchr(flags, 's'))
+            state = VIR_DOMAIN_SHUTOFF;
+        else if (strchr(flags, 'd'))
+            state = VIR_DOMAIN_SHUTDOWN;
+        else if (strchr(flags, 'p'))
+            state = VIR_DOMAIN_PAUSED;
+        else if (strchr(flags, 'b'))
+            state = VIR_DOMAIN_BLOCKED;
+        else if (strchr(flags, 'r'))
+            state = VIR_DOMAIN_RUNNING;
+    } else if (domain->id < 0) {
+        /* Inactive domains don't have a state reported, so
+           mark them SHUTOFF, rather than NOSTATE */
+        state = VIR_DOMAIN_SHUTOFF;
+    }
+
+    return state;
+}
+
+/**
  * sexpr_to_xend_domain_info:
  * @root: an S-Expression describing a domain
  * @info: a info data structure to fill=up
@@ -1033,38 +1070,16 @@ static int
 sexpr_to_xend_domain_info(virDomainPtr domain, const struct sexpr *root,
                           virDomainInfoPtr info)
 {
-    const char *flags;
     int vcpus;
 
     if ((root == NULL) || (info == NULL))
         return (-1);
 
+    info->state = sexpr_to_xend_domain_state(domain, root);
     info->memory = sexpr_u64(root, "domain/memory") << 10;
     info->maxMem = sexpr_u64(root, "domain/maxmem") << 10;
-    flags = sexpr_node(root, "domain/state");
-
-    if (flags) {
-        if (strchr(flags, 'c'))
-            info->state = VIR_DOMAIN_CRASHED;
-        else if (strchr(flags, 's'))
-            info->state = VIR_DOMAIN_SHUTOFF;
-        else if (strchr(flags, 'd'))
-            info->state = VIR_DOMAIN_SHUTDOWN;
-        else if (strchr(flags, 'p'))
-            info->state = VIR_DOMAIN_PAUSED;
-        else if (strchr(flags, 'b'))
-            info->state = VIR_DOMAIN_BLOCKED;
-        else if (strchr(flags, 'r'))
-            info->state = VIR_DOMAIN_RUNNING;
-    } else {
-        /* Inactive domains don't have a state reported, so
-           mark them SHUTOFF, rather than NOSTATE */
-        if (domain->id < 0)
-            info->state = VIR_DOMAIN_SHUTOFF;
-        else
-            info->state = VIR_DOMAIN_NOSTATE;
-    }
     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
+
     vcpus = sexpr_int(root, "domain/vcpus");
     info->nrVirtCpu = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
     if (!info->nrVirtCpu || vcpus < info->nrVirtCpu)
@@ -1890,6 +1905,42 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     ret = sexpr_to_xend_domain_info(domain, root, info);
     sexpr_free(root);
     return (ret);
+}
+
+
+/**
+ * xenDaemonDomainGetState:
+ * @domain: a domain object
+ * @state: returned domain's state
+ * @reason: returned reason for the state
+ * @flags: additional flags, 0 for now
+ *
+ * This method looks up domain state and reason.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+xenDaemonDomainGetState(virDomainPtr domain,
+                        int *state,
+                        int *reason,
+                        unsigned int flags ATTRIBUTE_UNUSED)
+{
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    struct sexpr *root;
+
+    if (domain->id < 0 && priv->xendConfigVersion < 3)
+        return -1;
+
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (!root)
+        return -1;
+
+    *state = sexpr_to_xend_domain_state(domain, root);
+    if (reason)
+        *reason = 0;
+
+    sexpr_free(root);
+    return 0;
 }
 
 

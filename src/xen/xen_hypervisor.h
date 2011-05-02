@@ -66,6 +66,11 @@ int     xenHypervisorPauseDomain        (virDomainPtr domain)
 int     xenHypervisorGetDomainInfo        (virDomainPtr domain,
                                            virDomainInfoPtr info)
           ATTRIBUTE_NONNULL (1);
+int     xenHypervisorGetDomainState     (virDomainPtr domain,
+                                         int *state,
+                                         int *reason,
+                                         unsigned int flags)
+          ATTRIBUTE_NONNULL (1);
 int     xenHypervisorGetDomInfo         (virConnectPtr conn,
                                          int id,
                                          virDomainInfoPtr info);

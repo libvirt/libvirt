@@ -470,6 +470,26 @@ int xenXMClose(virConnectPtr conn) {
 }
 
 /*
+ * Since these are all offline domains, the state is always SHUTOFF.
+ */
+int
+xenXMDomainGetState(virDomainPtr domain,
+                    int *state,
+                    int *reason,
+                    unsigned int flags ATTRIBUTE_UNUSED)
+{
+    if (domain->id != -1)
+        return -1;
+
+    *state = VIR_DOMAIN_SHUTOFF;
+    if (reason)
+        *reason = 0;
+
+    return 0;
+}
+
+
+/*
  * Since these are all offline domains, we only return info about
  * VCPUs and memory.
  */

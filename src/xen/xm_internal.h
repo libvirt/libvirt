@@ -40,6 +40,10 @@ virDrvOpenStatus xenXMOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags
 int xenXMClose(virConnectPtr conn);
 const char *xenXMGetType(virConnectPtr conn);
 int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
+int xenXMDomainGetState(virDomainPtr domain,
+                        int *state,
+                        int *reason,
+                        unsigned int flags);
 char *xenXMDomainGetXMLDesc(virDomainPtr domain, int flags);
 int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);

@@ -994,6 +994,54 @@ xenapiDomainGetInfo (virDomainPtr dom, virDomainInfoPtr info)
     return -1;
 }
 
+/*
+ * xenapiDomainGetState:
+ *
+ * Retrieves domain status and its reason.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int
+xenapiDomainGetState(virDomainPtr dom,
+                     int *state,
+                     int *reason,
+                     unsigned int flags)
+{
+    struct _xenapiPrivate *priv = dom->conn->privateData;
+    enum xen_vm_power_state powerState = XEN_VM_POWER_STATE_UNDEFINED;
+    xen_vm_set *vms = NULL;
+    xen_vm vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!xen_vm_get_by_name_label(priv->session, &vms, dom->name) ||
+        vms->size == 0) {
+        xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+
+    if (vms->size != 1) {
+        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Domain name is not unique"));
+        goto cleanup;
+    }
+
+    vm = vms->contents[0];
+    xen_vm_get_power_state(priv->session, &powerState, vm);
+
+    *state = mapPowerState(powerState);
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+cleanup:
+    if (vms)
+        xen_vm_set_free(vms);
+    return ret;
+}
+
 
 /*
  * xenapiDomainSetVcpusFlags
@@ -1813,7 +1861,7 @@ static virDriver xenapiDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     xenapiDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    xenapiDomainGetState, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

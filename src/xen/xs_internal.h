@@ -23,6 +23,10 @@ virDrvOpenStatus	xenStoreOpen	(virConnectPtr conn,
 int		xenStoreClose		(virConnectPtr conn);
 int		xenStoreGetDomainInfo	(virDomainPtr domain,
                                          virDomainInfoPtr info);
+int		xenStoreDomainGetState	(virDomainPtr domain,
+                                         int *state,
+                                         int *reason,
+                                         unsigned int flags);
 int		xenStoreNumOfDomains	(virConnectPtr conn);
 int		xenStoreListDomains	(virConnectPtr conn,
                                          int *ids,

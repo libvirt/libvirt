@@ -3239,6 +3239,42 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 }
 
 /**
+ * xenHypervisorGetDomainState:
+ * @domain: pointer to the domain block
+ * @state: returned state of the domain
+ * @reason: returned reason for the state
+ * @flags: additional flags, 0 for now
+ *
+ * Do a hypervisor call to get the related set of domain information.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenHypervisorGetDomainState(virDomainPtr domain,
+                            int *state,
+                            int *reason,
+                            unsigned int flags ATTRIBUTE_UNUSED)
+{
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    virDomainInfo info;
+
+    if (domain->conn == NULL)
+        return -1;
+
+    if (priv->handle < 0 || domain->id < 0)
+        return -1;
+
+    if (xenHypervisorGetDomInfo(domain->conn, domain->id, &info) < 0)
+        return -1;
+
+    *state = info.state;
+    if (reason)
+        *reason = 0;
+
+    return 0;
+}
+
+/**
  * xenHypervisorNodeGetCellsFreeMemory:
  * @conn: pointer to the hypervisor connection
  * @freeMems: pointer to the array of unsigned long long

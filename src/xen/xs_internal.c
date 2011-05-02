@@ -450,6 +450,40 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 }
 
 /**
+ * xenStoreDomainGetState:
+ * @domain: pointer to the domain block
+ * @state: returned domain's state
+ * @reason: returned state reason
+ * @flags: additional flags, 0 for now
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenStoreDomainGetState(virDomainPtr domain,
+                       int *state,
+                       int *reason,
+                       unsigned int flags ATTRIBUTE_UNUSED)
+{
+    char *running;
+
+    if (domain->id == -1)
+        return -1;
+
+    running = virDomainDoStoreQuery(domain->conn, domain->id, "running");
+
+    if (running && *running == '1')
+        *state = VIR_DOMAIN_RUNNING;
+    else
+        *state = VIR_DOMAIN_NOSTATE;
+    if (reason)
+        *reason = 0;
+
+    VIR_FREE(running);
+
+    return 0;
+}
+
+/**
  * xenStoreDomainSetMemory:
  * @domain: pointer to the domain block
  * @memory: the max memory size in kilobytes.

@@ -567,6 +567,42 @@ cleanup:
     return ret;
 }
 
+static int
+lxcDomainGetState(virDomainPtr dom,
+                  int *state,
+                  int *reason,
+                  unsigned int flags)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    *state = vm->state;
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static char *lxcGetOSType(virDomainPtr dom)
 {
     lxc_driver_t *driver = dom->conn->privateData;
@@ -2708,7 +2744,7 @@ static virDriver lxcDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     lxcDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    lxcDomainGetState, /* domainGetState */
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */

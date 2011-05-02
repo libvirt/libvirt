@@ -1582,6 +1582,40 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 }
 
 static int
+libxlDomainGetState(virDomainPtr dom,
+                    int *state,
+                    int *reason,
+                    unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s",
+                   _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    *state = vm->state;
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+  cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
 libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                          unsigned int flags)
 {
@@ -2679,7 +2713,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainSetBlkioParameters */
     NULL,                       /* domainGetBlkioParameters */
     libxlDomainGetInfo,         /* domainGetInfo */
-    NULL,                       /* domainGetState */
+    libxlDomainGetState,        /* domainGetState */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */

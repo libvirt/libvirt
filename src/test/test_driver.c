@@ -1674,6 +1674,40 @@ cleanup:
     return ret;
 }
 
+static int
+testDomainGetState(virDomainPtr domain,
+                   int *state,
+                   int *reason,
+                   unsigned int flags)
+{
+    testConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    testDriverLock(privconn);
+    privdom = virDomainFindByName(&privconn->domains,
+                                  domain->name);
+    testDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        testError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    *state = privdom->state;
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
 #define TEST_SAVE_MAGIC "TestGuestMagic"
 
 static int testDomainSave(virDomainPtr domain,
@@ -5310,7 +5344,7 @@ static virDriver testDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     testGetDomainInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    testDomainGetState, /* domainGetState */
     testDomainSave, /* domainSave */
     testDomainRestore, /* domainRestore */
     testDomainCoreDump, /* domainCoreDump */

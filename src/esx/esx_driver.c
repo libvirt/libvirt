@@ -2452,6 +2452,49 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
 
 static int
+esxDomainGetState(virDomainPtr domain,
+                  int *state,
+                  int *reason,
+                  unsigned int flags)
+{
+    int result = -1;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_VirtualMachinePowerState powerState;
+
+    virCheckFlags(0, -1);
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "runtime.powerState") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         propertyNameList, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0) {
+        goto cleanup;
+    }
+
+    *state = esxVI_VirtualMachinePowerState_ConvertToLibvirt(powerState);
+
+    if (reason)
+        *reason = 0;
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachine);
+
+    return result;
+}
+
+
+
+static int
 esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
                        unsigned int flags)
 {
@@ -4623,7 +4666,7 @@ static virDriver esxDriver = {
     NULL,                            /* domainSetBlkioParameters */
     NULL,                            /* domainGetBlkioParameters */
     esxDomainGetInfo,                /* domainGetInfo */
-    NULL,                            /* domainGetState */
+    esxDomainGetState,               /* domainGetState */
     NULL,                            /* domainSave */
     NULL,                            /* domainRestore */
     NULL,                            /* domainCoreDump */

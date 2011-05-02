@@ -1010,6 +1010,47 @@ xenUnifiedDomainGetInfo (virDomainPtr dom, virDomainInfoPtr info)
 }
 
 static int
+xenUnifiedDomainGetState(virDomainPtr dom,
+                         int *state,
+                         int *reason,
+                         unsigned int flags)
+{
+    GET_PRIVATE(dom->conn);
+    int ret;
+
+    virCheckFlags(0, -1);
+
+    /* trying drivers in the same order as GetInfo for consistent results:
+     * hypervisor, xend, xs, and xm */
+
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
+        ret = xenHypervisorGetDomainState(dom, state, reason, flags);
+        if (ret >= 0)
+            return ret;
+    }
+
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        ret = xenDaemonDomainGetState(dom, state, reason, flags);
+        if (ret >= 0)
+            return ret;
+    }
+
+    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
+        ret = xenStoreDomainGetState(dom, state, reason, flags);
+        if (ret >= 0)
+            return ret;
+    }
+
+    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
+        ret = xenXMDomainGetState(dom, state, reason, flags);
+        if (ret >= 0)
+            return ret;
+    }
+
+    return -1;
+}
+
+static int
 xenUnifiedDomainSave (virDomainPtr dom, const char *to)
 {
     GET_PRIVATE(dom->conn);
@@ -2133,7 +2174,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainSetBlkioParameters */
     NULL, /* domainGetBlkioParameters */
     xenUnifiedDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainGetState */
+    xenUnifiedDomainGetState, /* domainGetState */
     xenUnifiedDomainSave, /* domainSave */
     xenUnifiedDomainRestore, /* domainRestore */
     xenUnifiedDomainCoreDump, /* domainCoreDump */

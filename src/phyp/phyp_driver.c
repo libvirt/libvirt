@@ -3476,6 +3476,21 @@ phypDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 }
 
 static int
+phypDomainGetState(virDomainPtr dom,
+                   int *state,
+                   int *reason,
+                   unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    *state = phypGetLparState(dom->conn, dom->id);
+    if (reason)
+        *reason = 0;
+
+    return 0;
+}
+
+static int
 phypDomainDestroy(virDomainPtr dom)
 {
     int result = -1;
@@ -3757,7 +3772,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainSetBlkioParameters */
     NULL,                       /* domainGetBlkioParameters */
     phypDomainGetInfo,          /* domainGetInfo */
-    NULL,                       /* domainGetState */
+    phypDomainGetState,         /* domainGetState */
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */
