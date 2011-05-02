@@ -4010,11 +4010,11 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
 {
     virDomainDiskDefPtr disk = dev->data.disk;
     virCgroupPtr cgroup = NULL;
-    int ret;
+    int ret = -1;
 
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup,
-                               vm->def->name, &cgroup, 0) !=0 ) {
+                               vm->def->name, &cgroup, 0) != 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Unable to find cgroup for %s"),
                             vm->def->name);
