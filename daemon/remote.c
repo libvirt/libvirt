@@ -886,15 +886,14 @@ remoteDispatchDomainGetSchedulerParameters(struct qemud_server *server ATTRIBUTE
 {
     virDomainPtr dom = NULL;
     virSchedParameterPtr params = NULL;
-    int i, nparams;
+    int i;
+    int nparams = args->nparams;
     int rv = -1;
 
     if (!conn) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    nparams = args->nparams;
 
     if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
@@ -2970,7 +2969,8 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
 {
     virDomainPtr dom = NULL;
     virMemoryParameterPtr params = NULL;
-    int i, nparams;
+    int i;
+    int nparams = args->nparams;
     unsigned int flags;
     int rv = -1;
 
@@ -2979,7 +2979,6 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
         goto cleanup;
     }
 
-    nparams = args->nparams;
     flags = args->flags;
 
     if (nparams > REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX) {
@@ -3060,9 +3059,11 @@ success:
 cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
-        for (i = 0; i < nparams; i++)
-            VIR_FREE(ret->params.params_val[i].field);
-        VIR_FREE(ret->params.params_val);
+        if (ret->params.params_val) {
+            for (i = 0; i < nparams; i++)
+                VIR_FREE(ret->params.params_val[i].field);
+            VIR_FREE(ret->params.params_val);
+        }
     }
     if (dom)
         virDomainFree(dom);
@@ -3186,7 +3187,8 @@ remoteDispatchDomainGetBlkioParameters(struct qemud_server *server
 {
     virDomainPtr dom = NULL;
     virBlkioParameterPtr params = NULL;
-    int i, nparams;
+    int i;
+    int nparams = args->nparams;
     unsigned int flags;
     int rv = -1;
 
@@ -3195,7 +3197,6 @@ remoteDispatchDomainGetBlkioParameters(struct qemud_server *server
         goto cleanup;
     }
 
-    nparams = args->nparams;
     flags = args->flags;
 
     if (nparams > REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX) {
@@ -3276,9 +3277,11 @@ success:
 cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
-        for (i = 0; i < nparams; i++)
-            VIR_FREE(ret->params.params_val[i].field);
-        VIR_FREE(ret->params.params_val);
+        if (ret->params.params_val) {
+            for (i = 0; i < nparams; i++)
+                VIR_FREE(ret->params.params_val[i].field);
+            VIR_FREE(ret->params.params_val);
+        }
     }
     VIR_FREE(params);
     if (dom)
