@@ -1351,7 +1351,9 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
     int killedAny = 0;
     char *keypath = NULL;
     bool done = false;
-    VIR_DEBUG("group=%p path=%s signum=%d pids=%p", group, group->path, signum, pids);
+    FILE *fp = NULL;
+    VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
+              group, group->path, signum, pids);
 
     rc = virCgroupPathOfController(group, -1, "tasks", &keypath);
     if (rc != 0) {
@@ -1364,7 +1366,6 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
      */
     while (!done) {
         done = true;
-        FILE *fp;
         if (!(fp = fopen(keypath, "r"))) {
             rc = -errno;
             VIR_DEBUG("Failed to read %s: %m\n", keypath);
@@ -1376,7 +1377,8 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
                     if (feof(fp))
                         break;
                     rc = -errno;
-                    break;
+                    VIR_DEBUG("Failed to read %s: %m\n", keypath);
+                    goto cleanup;
                 }
                 if (virHashLookup(pids, (void*)pid))
                     continue;
@@ -1403,6 +1405,7 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
 
 cleanup:
     VIR_FREE(keypath);
+    VIR_FORCE_FCLOSE(fp);
 
     return rc;
 }
