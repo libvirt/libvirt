@@ -7259,10 +7259,10 @@ cmdVolDownload (vshControl *ctl, const vshCmd *cmd)
     virStreamPtr st = NULL;
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
-    bool created = true;
+    bool created = false;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
         vshError(ctl, _("Unable to parse integer"));
@@ -7283,12 +7283,13 @@ cmdVolDownload (vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((fd = open(file, O_WRONLY|O_CREAT|O_EXCL, 0666)) < 0) {
-        created = false;
         if (errno != EEXIST ||
             (fd = open(file, O_WRONLY|O_TRUNC, 0666)) < 0) {
             vshError(ctl, _("cannot create %s"), file);
             goto cleanup;
         }
+    } else {
+        created = true;
     }
 
     st = virStreamNew(ctl->conn, 0);
@@ -7316,13 +7317,13 @@ cmdVolDownload (vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    VIR_FORCE_CLOSE(fd);
     if (ret == false && created)
         unlink(file);
     if (vol)
         virStorageVolFree(vol);
     if (st)
         virStreamFree(st);
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
