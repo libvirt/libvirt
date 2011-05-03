@@ -1311,7 +1311,6 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
         if (virSecurityManagerSetFDLabel(driver->securityManager, vm,
                                          compressor ? pipeFD[1] : fd) < 0)
             goto cleanup;
-        is_reg = true;
         bypassSecurityDriver = true;
     } else {
         /* Phooey - we have to fall back on exec migration, where qemu
