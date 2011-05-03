@@ -1992,6 +1992,9 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 
     virDomainObjLock(vm);
 
+    if (!virDomainObjIsActive(vm))
+        goto cleanup;
+
     priv = vm->privateData;
     if ((priv->monitor = lxcMonitorClient(driver, vm)) < 0) {
         goto cleanup;
