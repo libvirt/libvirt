@@ -78,7 +78,8 @@ static int checkoutput(const char *testname)
     ret = 0;
 
 cleanup:
-    unlink(actualname);
+    if (actualname)
+        unlink(actualname);
     VIR_FREE(actuallog);
     VIR_FREE(actualname);
     VIR_FREE(expectlog);
@@ -240,7 +241,8 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
 
 cleanup:
     virCommandFree(cmd);
-    unlink(pidfile);
+    if (pidfile)
+        unlink(pidfile);
     VIR_FREE(pidfile);
     return ret;
 }
@@ -703,7 +705,8 @@ static int test18(const void *unused ATTRIBUTE_UNUSED)
 
 cleanup:
     virCommandFree(cmd);
-    unlink(pidfile);
+    if (pidfile)
+        unlink(pidfile);
     VIR_FREE(pidfile);
     return ret;
 }
