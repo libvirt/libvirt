@@ -43,16 +43,18 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
-int qemuCgroupControllerActive(struct qemud_driver *driver,
-                               int controller)
+bool qemuCgroupControllerActive(struct qemud_driver *driver,
+                                int controller)
 {
     if (driver->cgroup == NULL)
-        return 0;
+        return false;
     if (!virCgroupMounted(driver->cgroup, controller))
-        return 0;
+        return false;
+    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
+        return false;
     if (driver->cgroupControllers & (1 << controller))
-        return 1;
-    return 0;
+        return true;
+    return false;
 }
 
 static int
@@ -312,7 +314,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
     if (vm->def->mem.hard_limit != 0 ||
         vm->def->mem.soft_limit != 0 ||
         vm->def->mem.swap_hard_limit != 0) {
-        if ((rc = qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY))) {
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
             if (vm->def->mem.hard_limit != 0) {
                 rc = virCgroupSetMemoryHardLimit(cgroup, vm->def->mem.hard_limit);
                 if (rc != 0) {

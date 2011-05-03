@@ -34,8 +34,8 @@ struct _qemuCgroupData {
 };
 typedef struct _qemuCgroupData qemuCgroupData;
 
-int qemuCgroupControllerActive(struct qemud_driver *driver,
-                               int controller);
+bool qemuCgroupControllerActive(struct qemud_driver *driver,
+                                int controller);
 int qemuSetupDiskCgroup(struct qemud_driver *driver,
                         virDomainObjPtr vm,
                         virCgroupPtr cgroup,
