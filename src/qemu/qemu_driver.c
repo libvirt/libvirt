@@ -1640,6 +1640,8 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         }
 
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
+            /* Help clang 2.8 decipher the logic flow.  */
+            sa_assert(persistentDef);
             persistentDef->mem.max_balloon = newmem;
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
@@ -1675,6 +1677,7 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         }
 
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
+            sa_assert(persistentDef);
             persistentDef->mem.cur_balloon = newmem;
             ret = virDomainSaveConfig(driver->configDir, persistentDef);
             goto endjob;
