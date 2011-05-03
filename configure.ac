@@ -878,6 +878,7 @@ AC_ARG_WITH([yajl],
 
 YAJL_CFLAGS=
 YAJL_LIBS=
+with_yajl2=no
 if test "x$with_yajl" != "xno"; then
   if test "x$with_yajl" != "xyes" && test "x$with_yajl" != "xcheck"; then
     YAJL_CFLAGS="-I$with_yajl/include"
@@ -898,6 +899,9 @@ if test "x$with_yajl" != "xno"; then
     AC_CHECK_LIB([yajl], [yajl_parse],[
       YAJL_LIBS="$YAJL_LIBS -lyajl"
       with_yajl=yes
+      AC_CHECK_LIB([yajl], [yajl_tree_parse],[
+        with_yajl2=yes
+      ],[])
     ],[
       if test "x$with_yajl" = "xcheck" ; then
         with_yajl=no
@@ -913,6 +917,10 @@ if test "x$with_yajl" != "xno"; then
   if test "x$with_yajl" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_YAJL], 1,
       [whether YAJL is available for JSON parsing/formatting])
+  fi
+  if test "x$with_yajl2" = "xyes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_YAJL2], 1,
+      [whether YAJL has API version 2])
   fi
 fi
 AM_CONDITIONAL([HAVE_YAJL], [test "x$with_yajl" = "xyes"])
