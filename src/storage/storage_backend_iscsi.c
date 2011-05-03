@@ -42,6 +42,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "files.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -348,28 +349,11 @@ virStorageBackendISCSIConnection(const char *portal,
         "--targetname", target,
         NULL
     };
-    int i;
-    int nargs = 0;
+    virCommandPtr cmd;
     char *ifacename = NULL;
-    const char **cmdargv;
 
-    for (i = 0 ; baseargv[i] != NULL ; i++)
-        nargs++;
-    for (i = 0 ; extraargv[i] != NULL ; i++)
-        nargs++;
-    if (initiatoriqn)
-        nargs += 2;
-
-    if (VIR_ALLOC_N(cmdargv, nargs+1) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    nargs = 0;
-    for (i = 0 ; baseargv[i] != NULL ; i++)
-        cmdargv[nargs++] = baseargv[i];
-    for (i = 0 ; extraargv[i] != NULL ; i++)
-        cmdargv[nargs++] = extraargv[i];
+    cmd = virCommandNewArgs(baseargv);
+    virCommandAddArgSet(cmd, extraargv);
 
     if (initiatoriqn) {
         switch (virStorageBackendIQNFound(initiatoriqn, &ifacename)) {
@@ -377,7 +361,8 @@ virStorageBackendISCSIConnection(const char *portal,
             VIR_DEBUG("ifacename: '%s'", ifacename);
             break;
         case IQN_MISSING:
-            if (virStorageBackendCreateIfaceIQN(initiatoriqn, &ifacename) != 0) {
+            if (virStorageBackendCreateIfaceIQN(initiatoriqn,
+                                                &ifacename) != 0) {
                 goto cleanup;
             }
             break;
@@ -385,19 +370,16 @@ virStorageBackendISCSIConnection(const char *portal,
         default:
             goto cleanup;
         }
-
-        cmdargv[nargs++] = "--interface";
-        cmdargv[nargs++] = ifacename;
+        virCommandAddArgList(cmd, "--interface", ifacename, NULL);
     }
-    cmdargv[nargs++] = NULL;
 
-    if (virRun(cmdargv, NULL) < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     ret = 0;
 
 cleanup:
-    VIR_FREE(cmdargv);
+    virCommandFree(cmd);
     VIR_FREE(ifacename);
 
     return ret;
