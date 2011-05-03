@@ -1,7 +1,7 @@
 /*
  * storage_driver.c: core driver for storage APIs
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1319,8 +1319,12 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     pool->volumes.objs[pool->volumes.count++] = voldef;
     volobj = virGetStorageVol(obj->conn, pool->def->name, voldef->name,
                               voldef->key);
+    if (!volobj) {
+        pool->volumes.count--;
+        goto cleanup;
+    }
 
-    if (volobj && backend->buildVol) {
+    if (backend->buildVol) {
         int buildret;
         virStorageVolDefPtr buildvoldef = NULL;
 
