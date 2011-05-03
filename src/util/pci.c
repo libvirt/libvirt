@@ -879,15 +879,16 @@ pciUnbindDeviceFromStub(pciDevice *dev, const char *driver)
     char *drvdir = NULL;
     char *path = NULL;
 
+    if (pciDriverDir(&drvdir, driver) < 0)
+        goto cleanup;
+
     if (!dev->unbind_from_stub)
         goto remove_slot;
 
     /* If the device is bound to stub, unbind it.
      */
-    if (pciDriverDir(&drvdir, driver) < 0 ||
-        pciDeviceFile(&path, dev->name, "driver") < 0) {
+    if (pciDeviceFile(&path, dev->name, "driver") < 0)
         goto cleanup;
-    }
 
     if (virFileExists(drvdir) && virFileLinkPointsTo(path, drvdir)) {
         if (pciDriverFile(&path, driver, "unbind") < 0) {
