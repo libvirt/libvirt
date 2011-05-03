@@ -1100,10 +1100,9 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         }
 
         if ((ret = brAddInterface(brctl, bridge, parentVeth)) != 0) {
-            virReportSystemError(rc,
+            virReportSystemError(ret,
                                  _("Failed to add %s device to %s"),
                                  parentVeth, bridge);
-            rc = -1;
             goto error_exit;
         }
 
