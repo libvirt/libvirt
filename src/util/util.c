@@ -1523,8 +1523,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
         if (ret < 0 && errno != EACCES) {
             ret = -errno;
             VIR_FORCE_CLOSE(pair[0]);
-            while ((waitret = waitpid(pid, NULL, 0) == -1)
-                   && (errno == EINTR));
+            while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
             goto parenterror;
         } else {
             fd = ret;
