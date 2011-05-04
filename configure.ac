@@ -2297,7 +2297,7 @@ cp -f COPYING.LIB COPYING
 
 # Detect when running under the clang static analyzer's scan-build driver
 # or Coverity-prevent's cov-build.  Define STATIC_ANALYSIS accordingly.
-test -n "$CCC_ANALYZER_ANALYSIS$COVERITY_BUILD_COMMAND" && t=1 || t=0
+test -n "${CCC_ANALYZER_ANALYSIS+set}$COVERITY_BUILD_COMMAND" && t=1 || t=0
 AC_DEFINE_UNQUOTED([STATIC_ANALYSIS], [$t],
   [Define to 1 when performing static analysis.])
 
