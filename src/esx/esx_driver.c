@@ -2163,6 +2163,15 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
 
 
+/*
+ * libvirt exposed virtual CPU usage in absolute time, ESX doesn't provide this
+ * information in this format. It exposes it in 20 seconds slots, but it's hard
+ * to get a reliable absolute time from this. Therefore, disable the code that
+ * queries the performance counters here for now, but keep it as example for how
+ * to query a selected performance counter for its values.
+ */
+#define ESX_QUERY_FOR_USED_CPU_TIME 0
+
 static int
 esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
@@ -2173,6 +2182,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int64_t memory_limit = -1;
+#if ESX_QUERY_FOR_USED_CPU_TIME
     esxVI_PerfMetricId *perfMetricId = NULL;
     esxVI_PerfMetricId *perfMetricIdList = NULL;
     esxVI_Int *counterId = NULL;
@@ -2185,6 +2195,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     esxVI_PerfEntityMetric *perfEntityMetric = NULL;
     esxVI_PerfMetricIntSeries *perfMetricIntSeries = NULL;
     esxVI_Long *value = NULL;
+#endif
 
     memset(info, 0, sizeof (*info));
 
@@ -2249,6 +2260,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     /* memory_limit < 0 means no memory limit is set */
     info->memory = memory_limit < 0 ? info->maxMem : memory_limit;
 
+#if ESX_QUERY_FOR_USED_CPU_TIME
     /* Verify the cached 'used CPU time' performance counter ID */
     /* FIXME: Currently no host for a vpx:// connection */
     if (priv->host != NULL) {
@@ -2404,10 +2416,12 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
              */
         }
     }
+#endif
 
     result = 0;
 
   cleanup:
+#if ESX_QUERY_FOR_USED_CPU_TIME
     /*
      * Remove values owned by data structures to prevent them from being freed
      * by the call to esxVI_PerfQuerySpec_Free().
@@ -2420,14 +2434,17 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
             querySpec->metricId->instance = NULL;
         }
     }
+#endif
 
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
+#if ESX_QUERY_FOR_USED_CPU_TIME
     esxVI_PerfMetricId_Free(&perfMetricIdList);
     esxVI_Int_Free(&counterIdList);
     esxVI_PerfCounterInfo_Free(&perfCounterInfoList);
     esxVI_PerfQuerySpec_Free(&querySpec);
     esxVI_PerfEntityMetricBase_Free(&perfEntityMetricBaseList);
+#endif
 
     return result;
 }
