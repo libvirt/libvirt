@@ -3877,6 +3877,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
+        qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk);
         ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev);
         if (!ret)
             dev->data.disk = NULL;
@@ -3889,6 +3890,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
+        qemuDomainObjCheckNetTaint(driver, vm, dev->data.net);
         ret = qemuDomainAttachNetDevice(dom->conn, driver, vm,
                                         dev->data.net);
         if (!ret)
@@ -6982,11 +6984,7 @@ static int qemuDomainMonitorCommand(virDomainPtr domain, const char *cmd,
 
     priv = vm->privateData;
 
-    if (!priv->monitor_warned) {
-        VIR_INFO("Qemu monitor command '%s' executed; libvirt results may be unpredictable!",
-                 cmd);
-        priv->monitor_warned = 1;
-    }
+    qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_CUSTOM_MONITOR);
 
     hmp = !!(flags & VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP);
 

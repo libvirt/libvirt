@@ -2229,7 +2229,6 @@ int qemuProcessStart(virConnectPtr conn,
 #endif
         priv->monJSON = 0;
 
-    priv->monitor_warned = 0;
     priv->gotShutdown = false;
 
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
@@ -2315,6 +2314,8 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     virCommandWriteArgLog(cmd, logfile);
+
+    qemuDomainObjCheckTaint(driver, vm);
 
     if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
         VIR_WARN("Unable to seek to end of logfile: %s",
@@ -2595,6 +2596,7 @@ retry:
         qemuProcessReturnPort(driver, vm->def->graphics[0]->data.spice.tlsPort);
     }
 
+    vm->taint = 0;
     vm->pid = -1;
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;

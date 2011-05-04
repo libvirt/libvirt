@@ -33,6 +33,7 @@
 #include "event.h"
 #include "cpu/cpu.h"
 #include "ignore-value.h"
+#include "uuid.h"
 
 #include <sys/time.h>
 
@@ -741,4 +742,66 @@ cleanup:
     def->cpu = def_cpu;
     virCPUDefFree(cpu);
     return ret;
+}
+
+void qemuDomainObjTaint(struct qemud_driver *driver ATTRIBUTE_UNUSED,
+                        virDomainObjPtr obj,
+                        enum virDomainTaintFlags taint)
+{
+    if (virDomainObjTaint(obj, taint)) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(obj->def->uuid, uuidstr);
+
+        VIR_WARN("Domain id=%d name='%s' uuid=%s is tainted: %s",
+                 obj->def->id,
+                 obj->def->name,
+                 uuidstr,
+                 virDomainTaintTypeToString(taint));
+    }
+}
+
+
+void qemuDomainObjCheckTaint(struct qemud_driver *driver,
+                             virDomainObjPtr obj)
+{
+    int i;
+
+    if (!driver->clearEmulatorCapabilities ||
+        driver->user == 0 ||
+        driver->group == 0)
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES);
+
+    if (obj->def->namespaceData) {
+        qemuDomainCmdlineDefPtr qemucmd = obj->def->namespaceData;
+        if (qemucmd->num_args || qemucmd->num_env)
+            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV);
+    }
+
+    for (i = 0 ; i < obj->def->ndisks ; i++)
+        qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i]);
+
+    for (i = 0 ; i < obj->def->nnets ; i++)
+        qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i]);
+}
+
+
+void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
+                                 virDomainObjPtr obj,
+                                 virDomainDiskDefPtr disk)
+{
+    if (!disk->driverType &&
+        driver->allowDiskFormatProbing)
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING);
+}
+
+
+void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
+                                virDomainObjPtr obj,
+                                virDomainNetDefPtr net)
+{
+    if ((net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
+         net->data.ethernet.script != NULL) ||
+        (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+         net->data.bridge.script != NULL))
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS);
 }

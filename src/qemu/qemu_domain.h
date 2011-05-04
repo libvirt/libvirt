@@ -70,7 +70,6 @@ struct _qemuDomainObjPrivate {
     qemuMonitorPtr mon;
     virDomainChrSourceDefPtr monConfig;
     int monJSON;
-    int monitor_warned;
     bool gotShutdown;
 
     int nvcpupids;
@@ -115,5 +114,18 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
                           int flags);
+
+void qemuDomainObjTaint(struct qemud_driver *driver,
+                        virDomainObjPtr obj,
+                        enum virDomainTaintFlags taint);
+
+void qemuDomainObjCheckTaint(struct qemud_driver *driver,
+                             virDomainObjPtr obj);
+void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
+                                 virDomainObjPtr obj,
+                                 virDomainDiskDefPtr disk);
+void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
+                                virDomainObjPtr obj,
+                                virDomainNetDefPtr net);
 
 #endif /* __QEMU_DOMAIN_H__ */
