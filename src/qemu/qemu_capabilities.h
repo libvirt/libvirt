@@ -141,5 +141,6 @@ int qemuCapsParseHelpStr(const char *qemu,
 int qemuCapsParseDeviceStr(const char *str,
                            virBitmapPtr qemuCaps);
 
+VIR_ENUM_DECL(qemuCaps);
 
 #endif /* __QEMU_CAPABILITIES_H__*/

@@ -43,6 +43,84 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+/* While not public, these strings must not change. They
+ * are used in domain status files which are read on
+ * daemon restarts
+ */
+VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
+              "kqemu",  /* 0 */
+              "vnc-colon",
+              "no-reboot",
+              "drive",
+              "drive-boot",
+
+              "name", /* 5 */
+              "uuid",
+              "domid",
+              "vnet-hdr",
+              "migrate-kvm-stdio",
+
+              "migrate-qemu-tcp", /* 10 */
+              "migrate-qemu-exec",
+              "drive-cache-v2",
+              "kvm",
+              "drive-format",
+
+              "vga", /* 15 */
+              "0.10",
+              "pci-device",
+              "mem-path",
+              "drive-serial",
+
+              "xen-domid", /* 20 */
+              "migrate-qemu-unix",
+              "chardev",
+              "enable-kvm",
+              "monitor-json",
+
+              "balloon", /* 25 */
+              "device",
+              "sdl",
+              "smp-topology",
+              "netdev",
+
+              "rtc", /* 30 */
+              "vnet-host",
+              "rtc-td-hack",
+              "no-hpet",
+              "no-kvm-pit",
+
+              "tdf", /* 35 */
+              "pci-configfd",
+              "nodefconfig",
+              "boot-menu",
+              "enable-kqemu",
+
+              "fsdev", /* 40 */
+              "nesting",
+              "name-process",
+              "drive-readonly",
+              "smbios-type",
+
+              "vga-qxl", /* 45 */
+              "spice",
+              "vga-none",
+              "migrate-qemu-fd",
+              "boot-index",
+
+              "hda-duplex", /* 50 */
+              "drive-aio",
+              "pci-multibus",
+              "pci-bootindex",
+              "ccid-emulated",
+
+              "ccid-passthru", /* 55 */
+              "chardev-spicevmc",
+              "device-spicevmc",
+              "virtio-tx-alg",
+              "device-qxl-vga",
+    );
+
 struct qemu_feature_flags {
     const char *name;
     const int default_on;

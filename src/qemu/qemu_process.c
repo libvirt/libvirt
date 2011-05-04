@@ -1288,8 +1288,7 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
 static int
 qemuProcessInitPasswords(virConnectPtr conn,
                          struct qemud_driver *driver,
-                         virDomainObjPtr vm,
-                         virBitmapPtr qemuCaps)
+                         virDomainObjPtr vm)
 {
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1311,7 +1310,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
     if (ret < 0)
         goto cleanup;
 
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         int i;
 
         for (i = 0 ; i < vm->def->ndisks ; i++) {
@@ -1965,7 +1964,6 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
     struct qemuProcessReconnectData *data = opaque;
     struct qemud_driver *driver = data->driver;
     qemuDomainObjPrivatePtr priv;
-    virBitmapPtr qemuCaps = NULL;
     virConnectPtr conn = data->conn;
 
     virDomainObjLock(obj);
@@ -1986,13 +1984,16 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
         goto error;
     }
 
-    /* XXX we should be persisting the original flags in the XML
-     * not re-detecting them, since the binary may have changed
-     * since launch time */
-    if (qemuCapsExtractVersionInfo(obj->def->emulator, obj->def->os.arch,
+    /* If upgrading from old libvirtd we won't have found any
+     * caps in the domain status, so re-query them
+     */
+    if (!priv->qemuCaps &&
+        qemuCapsExtractVersionInfo(obj->def->emulator, obj->def->os.arch,
                                    NULL,
-                                   &qemuCaps) >= 0 &&
-        qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                                   &priv->qemuCaps) < 0)
+        goto error;
+
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         priv->persistentAddrs = 1;
 
         if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)) ||
@@ -2012,11 +2013,9 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
     if (virDomainObjUnref(obj) > 0)
         virDomainObjUnlock(obj);
 
-    qemuCapsFree(qemuCaps);
     return;
 
 error:
-    qemuCapsFree(qemuCaps);
     if (!virDomainObjIsActive(obj)) {
         if (virDomainObjUnref(obj) > 0)
             virDomainObjUnlock(obj);
@@ -2058,7 +2057,6 @@ int qemuProcessStart(virConnectPtr conn,
                      enum virVMOperationType vmop)
 {
     int ret;
-    virBitmapPtr qemuCaps = NULL;
     off_t pos = -1;
     char ebuf[1024];
     char *pidfile = NULL;
@@ -2204,9 +2202,11 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG0("Determining emulator version");
+    qemuCapsFree(priv->qemuCaps);
+    priv->qemuCaps = NULL;
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
                                    NULL,
-                                   &qemuCaps) < 0)
+                                   &priv->qemuCaps) < 0)
         goto cleanup;
 
     VIR_DEBUG0("Setting up domain cgroup (if required)");
@@ -2223,7 +2223,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
 #if HAVE_YAJL
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON))
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON))
         priv->monJSON = 1;
     else
 #endif
@@ -2252,7 +2252,7 @@ int qemuProcessStart(virConnectPtr conn,
      * we also need to populate the PCi address set cache for later
      * use in hotplug
      */
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG0("Assigning domain PCI addresses");
         /* Populate cache with current addresses */
         if (priv->pciaddrs) {
@@ -2274,7 +2274,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG0("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
-                                     priv->monJSON != 0, qemuCaps,
+                                     priv->monJSON != 0, priv->qemuCaps,
                                      migrateFrom, stdin_fd,
                                      vm->current_snapshot, vmop)))
         goto cleanup;
@@ -2385,12 +2385,12 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG0("Setting any required VM passwords");
-    if (qemuProcessInitPasswords(conn, driver, vm, qemuCaps) < 0)
+    if (qemuProcessInitPasswords(conn, driver, vm) < 0)
         goto cleanup;
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
-    if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG0("Determining domain device PCI addresses");
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
             goto cleanup;
@@ -2421,7 +2421,6 @@ int qemuProcessStart(virConnectPtr conn,
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
 
-    qemuCapsFree(qemuCaps);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
 
@@ -2431,7 +2430,6 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
-    qemuCapsFree(qemuCaps);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
     qemuProcessStop(driver, vm, 0);
@@ -2602,6 +2600,8 @@ retry:
     vm->state = VIR_DOMAIN_SHUTOFF;
     VIR_FREE(priv->vcpupids);
     priv->nvcpupids = 0;
+    qemuCapsFree(priv->qemuCaps);
+    priv->qemuCaps = NULL;
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {

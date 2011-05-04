@@ -28,6 +28,7 @@
 # include "domain_conf.h"
 # include "qemu_monitor.h"
 # include "qemu_conf.h"
+# include "bitmap.h"
 
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
@@ -77,6 +78,8 @@ struct _qemuDomainObjPrivate {
 
     qemuDomainPCIAddressSetPtr pciaddrs;
     int persistentAddrs;
+
+    virBitmapPtr qemuCaps;
 };
 
 struct qemuDomainWatchdogEvent
