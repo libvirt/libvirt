@@ -3,7 +3,7 @@
  * esx_util.c: utility functions for the VMware ESX driver
  *
  * Copyright (C) 2010 Red Hat, Inc.
- * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -284,7 +284,6 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
     char *saveptr = NULL;
     char *preliminaryDatastoreName = NULL;
     char *preliminaryDirectoryAndFileName = NULL;
-    char *preliminaryFileName = NULL;
 
     if ((datastoreName != NULL && *datastoreName != NULL) ||
         (directoryName != NULL && *directoryName != NULL) ||
@@ -328,11 +327,11 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
     }
 
     if (directoryName != NULL) {
-        /* Split <path> into <directory>/<file> */
-        preliminaryFileName = strrchr(preliminaryDirectoryAndFileName, '/');
+        /* Split <path> into <directory>/<file> and remove /<file> */
+        tmp = strrchr(preliminaryDirectoryAndFileName, '/');
 
-        if (preliminaryFileName != NULL) {
-            *preliminaryFileName++ = '\0';
+        if (tmp != NULL) {
+            *tmp = '\0';
         }
 
         if (esxVI_String_DeepCopyValue(directoryName,
