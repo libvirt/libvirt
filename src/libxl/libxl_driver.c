@@ -1348,7 +1348,6 @@ libxlDomainDestroy(virDomainPtr dom)
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    libxlDomainObjPrivatePtr priv;
     virDomainEventPtr event = NULL;
 
     libxlDriverLock(driver);
@@ -1370,7 +1369,6 @@ libxlDomainDestroy(virDomainPtr dom)
     event = virDomainEventNewFromObj(vm,VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    priv = vm->privateData;
     if (libxlVmReap(driver, vm, 1) != 0) {
         libxlError(VIR_ERR_INTERNAL_ERROR,
                    _("Failed to destroy domain '%d'"), dom->id);
