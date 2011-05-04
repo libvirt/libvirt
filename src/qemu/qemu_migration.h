@@ -61,7 +61,6 @@ virDomainPtr qemuMigrationFinish(struct qemud_driver *driver,
 
 
 int qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
-                        virBitmapPtr qemuCaps,
                         int fd, off_t offset, const char *path,
                         const char *compressor,
                         bool is_reg, bool bypassSecurityDriver)

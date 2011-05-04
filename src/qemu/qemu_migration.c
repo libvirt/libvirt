@@ -255,7 +255,6 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     int ret = -1;
     int internalret;
     int dataFD[2] = { -1, -1 };
-    virBitmapPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
 
@@ -307,14 +306,6 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
         goto endjob;
     }
 
-    /* check that this qemu version supports the interactive exec */
-    if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
-                                   NULL, &qemuCaps) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Cannot determine QEMU argv syntax %s"),
-                        vm->def->emulator);
-        goto endjob;
-    }
     /* Start the QEMU daemon, with the same command-line arguments plus
      * -incoming stdio (which qemu_command might convert to exec:cat or fd:n)
      */
@@ -371,7 +362,6 @@ endjob:
     }
 
 cleanup:
-    qemuCapsFree(qemuCaps);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(dataFD[0]);
     VIR_FORCE_CLOSE(dataFD[1]);
@@ -703,7 +693,6 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     virStreamPtr st = NULL;
     char *unixfile = NULL;
     int internalret;
-    virBitmapPtr qemuCaps = NULL;
     int status;
     unsigned long long transferred, remaining, total;
     unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
@@ -764,16 +753,9 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     }
 
     /* check that this qemu version supports the unix migration */
-    if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
-                                   NULL, &qemuCaps) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Cannot extract Qemu version from '%s'"),
-                        vm->def->emulator);
-        goto cleanup;
-    }
 
-    if (!qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
-        !qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
+        !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("Source qemu is too old to support tunnelled migration"));
         goto cleanup;
@@ -815,11 +797,11 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
     if (flags & VIR_MIGRATE_NON_SHARED_INC)
         background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
         internalret = qemuMonitorMigrateToUnix(priv->mon, background_flags,
                                                unixfile);
     }
-    else if (qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
+    else if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
         internalret = qemuMonitorMigrateToCommand(priv->mon, QEMU_MONITOR_MIGRATE_BACKGROUND, args);
     } else {
@@ -889,7 +871,6 @@ finish:
 cleanup:
     VIR_FORCE_CLOSE(client_sock);
     VIR_FORCE_CLOSE(qemu_sock);
-    qemuCapsFree(qemuCaps);
 
     if (ddomain)
         virUnrefDomain(ddomain);
@@ -1289,7 +1270,6 @@ cleanup:
 /* Helper function called while driver lock is held and vm is active.  */
 int
 qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
-                    virBitmapPtr qemuCaps,
                     int fd, off_t offset, const char *path,
                     const char *compressor,
                     bool is_reg, bool bypassSecurityDriver)
@@ -1302,7 +1282,7 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     virCommandPtr cmd = NULL;
     int pipeFD[2] = { -1, -1 };
 
-    if (qemuCaps && qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
         (!compressor || pipe(pipeFD) == 0)) {
         /* All right! We can use fd migration, which means that qemu
          * doesn't have to open() the file, so while we still have to
@@ -1348,7 +1328,7 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     if (!compressor) {
         const char *args[] = { "cat", NULL };
 
-        if (qemuCaps && qemuCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+        if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
             priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
             rc = qemuMonitorMigrateToFd(priv->mon,
                                         QEMU_MONITOR_MIGRATE_BACKGROUND,

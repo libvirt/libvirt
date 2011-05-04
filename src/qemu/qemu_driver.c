@@ -1881,7 +1881,6 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     struct stat sb;
     bool is_reg = false;
     unsigned long long offset;
-    virBitmapPtr qemuCaps = NULL;
     int fd = -1;
 
     memset(&header, 0, sizeof(header));
@@ -1912,11 +1911,6 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
             goto endjob;
         }
     }
-
-    if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
-                                   NULL,
-                                   &qemuCaps) < 0)
-        goto endjob;
 
     /* Get XML for the domain */
     xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
@@ -2043,7 +2037,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     }
 
     /* Perform the migration */
-    if (qemuMigrationToFile(driver, vm, qemuCaps, fd, offset, path,
+    if (qemuMigrationToFile(driver, vm, fd, offset, path,
                             qemuCompressProgramName(compressed),
                             is_reg, bypassSecurityDriver) < 0)
         goto endjob;
@@ -2081,7 +2075,6 @@ endjob:
     }
 
 cleanup:
-    qemuCapsFree(qemuCaps);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(xml);
     if (ret != 0 && is_reg)
@@ -2299,7 +2292,7 @@ static int doCoreDump(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (qemuMigrationToFile(driver, vm, NULL, fd, 0, path,
+    if (qemuMigrationToFile(driver, vm, fd, 0, path,
                             qemuCompressProgramName(compress), true, false) < 0)
         goto cleanup;
 
