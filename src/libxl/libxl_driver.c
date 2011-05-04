@@ -1703,7 +1703,6 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         def->maxvcpus = nvcpus;
         if (nvcpus < def->vcpus)
             def->vcpus = nvcpus;
-        ret = 0;
         break;
 
     case VIR_DOMAIN_VCPU_CONFIG:

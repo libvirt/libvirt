@@ -2396,7 +2396,6 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
     } else if (STRPREFIX(reply, "Device '") && (strstr(reply, "not found"))) {
         /* NB: device not found errors mean the drive was auto-deleted and we
          * ignore the error */
-        ret = 0;
     } else if (STRNEQ(reply, "")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("deleting %s drive failed: %s"), drivestr, reply);
