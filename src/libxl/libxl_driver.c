@@ -498,6 +498,46 @@ cleanup:
     return ret;
 }
 
+static int
+libxlFreeMem(libxlDomainObjPrivatePtr priv, libxl_domain_config *d_config)
+{
+    uint32_t needed_mem;
+    uint32_t free_mem;
+    int i;
+    int ret = -1;
+    int tries = 3;
+    int wait_secs = 10;
+
+    if ((ret = libxl_domain_need_memory(&priv->ctx, &d_config->b_info,
+                                        &d_config->dm_info,
+                                        &needed_mem)) >= 0) {
+        for (i = 0; i < tries; ++i) {
+            if ((ret = libxl_get_free_memory(&priv->ctx, &free_mem)) < 0)
+                break;
+
+            if (free_mem >= needed_mem) {
+                ret = 0;
+                break;
+            }
+
+            if ((ret = libxl_set_memory_target(&priv->ctx, 0,
+                                               free_mem - needed_mem,
+                                               /* relative */ 1, 0)) < 0)
+                break;
+
+            ret = libxl_wait_for_free_memory(&priv->ctx, 0, needed_mem,
+                                             wait_secs);
+            if (ret == 0 || ret != ERROR_NOMEM)
+                break;
+
+            if ((ret = libxl_wait_for_memory_target(&priv->ctx, 0, 1)) < 0)
+                break;
+        }
+    }
+
+    return ret;
+}
+
 /*
  * Start a domain through libxenlight.
  *
@@ -521,8 +561,12 @@ libxlVmStart(libxlDriverPrivatePtr driver,
     if (libxlBuildDomainConfig(driver, def, &d_config) < 0 )
         return -1;
 
-    //TODO: Balloon dom0 ??
-    //ret = freemem(&d_config->b_info, &d_config->dm_info);
+    if (libxlFreeMem(priv, &d_config) < 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("libxenlight failed to get free memory for domain '%s'"),
+                   d_config.c_info.name);
+        goto error;
+    }
 
     ret = libxl_domain_create_new(&priv->ctx, &d_config,
                                   NULL, &child_console_pid, &domid);
