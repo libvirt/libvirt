@@ -2356,9 +2356,6 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
             if (esxVI_QueryPerf(priv->host, querySpec,
                                 &perfEntityMetricBaseList) < 0) {
-                querySpec->entity = NULL;
-                querySpec->metricId->instance = NULL;
-                querySpec->format = NULL;
                 goto cleanup;
             }
 
@@ -2371,16 +2368,20 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                   esxVI_PerfEntityMetric_DynamicCast(perfEntityMetricBase);
 
                 if (perfEntityMetric == NULL) {
-                    VIR_ERROR(_("QueryPerf returned object with unexpected type '%s'"),
+                    ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                              _("QueryPerf returned object with unexpected type '%s'"),
                               esxVI_Type_ToString(perfEntityMetricBase->_type));
+                    goto cleanup;
                 }
 
                 perfMetricIntSeries =
                   esxVI_PerfMetricIntSeries_DynamicCast(perfEntityMetric->value);
 
                 if (perfMetricIntSeries == NULL) {
-                    VIR_ERROR(_("QueryPerf returned object with unexpected type '%s'"),
+                    ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                              _("QueryPerf returned object with unexpected type '%s'"),
                               esxVI_Type_ToString(perfEntityMetric->value->_type));
+                    goto cleanup;
                 }
 
                 for (; perfMetricIntSeries != NULL;
@@ -2395,10 +2396,6 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                 }
             }
 
-            querySpec->entity = NULL;
-            querySpec->metricId->instance = NULL;
-            querySpec->format = NULL;
-
             VIR_DEBUG("usedCpuTimeCounterId %d END", priv->usedCpuTimeCounterId);
 
             /*
@@ -2411,6 +2408,19 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     result = 0;
 
   cleanup:
+    /*
+     * Remove values owned by data structures to prevent them from being freed
+     * by the call to esxVI_PerfQuerySpec_Free().
+     */
+    if (querySpec != NULL) {
+        querySpec->entity = NULL;
+        querySpec->format = NULL;
+
+        if (querySpec->metricId != NULL) {
+            querySpec->metricId->instance = NULL;
+        }
+    }
+
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_PerfMetricId_Free(&perfMetricIdList);
