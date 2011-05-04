@@ -1182,6 +1182,16 @@ struct _virDomainDef {
     virDomainXMLNamespace ns;
 };
 
+enum virDomainTaintFlags {
+    VIR_DOMAIN_TAINT_CUSTOM_ARGV,      /* Custom ARGV passthrough from XML */
+    VIR_DOMAIN_TAINT_CUSTOM_MONITOR,   /* Custom monitor commands issued */
+    VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,  /* Running with undesirably high privileges */
+    VIR_DOMAIN_TAINT_SHELL_SCRIPTS,    /* Network configuration using opaque shell scripts */
+    VIR_DOMAIN_TAINT_DISK_PROBING,     /* Relying on potentially unsafe disk format probing */
+
+    VIR_DOMAIN_TAINT_LAST
+};
+
 /* Guest VM runtime state */
 typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
@@ -1204,6 +1214,8 @@ struct _virDomainObj {
 
     void *privateData;
     void (*privateDataFreeFunc)(void *);
+
+    int taint;
 };
 
 typedef struct _virDomainObjList virDomainObjList;
@@ -1231,6 +1243,8 @@ virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
 virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
                                     const char *name);
 
+bool virDomainObjTaint(virDomainObjPtr obj,
+                       enum virDomainTaintFlags taint);
 
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
@@ -1428,6 +1442,8 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
 
 typedef const char* (*virLifecycleToStringFunc)(int type);
 typedef int (*virLifecycleFromStringFunc)(const char *type);
+
+VIR_ENUM_DECL(virDomainTaint)
 
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)

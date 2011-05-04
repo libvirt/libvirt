@@ -50,6 +50,13 @@
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
+VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
+              "custom-argv",
+              "custom-monitor",
+              "high-privileges",
+              "shell-scripts",
+              "disk-probing");
+
 VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "qemu",
               "kqemu",
@@ -509,6 +516,20 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
         virDomainObjLock(obj);
     return obj;
 }
+
+
+bool virDomainObjTaint(virDomainObjPtr obj,
+                       enum virDomainTaintFlags taint)
+{
+    int flag = (1 << taint);
+
+    if (obj->taint & flag)
+        return false;
+
+    obj->taint |= flag;
+    return true;
+}
+
 
 static void
 virDomainGraphicsAuthDefClear(virDomainGraphicsAuthDefPtr def)
@@ -6250,6 +6271,8 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
     xmlNodePtr config;
     xmlNodePtr oldnode;
     virDomainObjPtr obj;
+    xmlNodePtr *nodes = NULL;
+    int i, n;
 
     if (!(obj = virDomainObjNew(caps)))
         return NULL;
@@ -6288,6 +6311,26 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
     }
     obj->pid = (pid_t)val;
 
+    if ((n = virXPathNodeSet("./taint", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("failed to parse taint flags"));
+        goto error;
+    }
+    for (i = 0 ; i < n ; i++) {
+        char *str = virXMLPropString(nodes[i], "flag");
+        if (str) {
+            int flag = virDomainTaintTypeFromString(str);
+            VIR_FREE(str);
+            if (flag < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Unknown taint flag %s"), str);
+                goto error;
+            }
+            virDomainObjTaint(obj, flag);
+        }
+    }
+    VIR_FREE(nodes);
+
     if (caps->privateDataXMLParse &&
         ((caps->privateDataXMLParse)(ctxt, obj->privateData)) < 0)
         goto error;
@@ -6297,6 +6340,7 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
 error:
     /* obj was never shared, so unref should return 0 */
     ignore_value(virDomainObjUnref(obj));
+    VIR_FREE(nodes);
     return NULL;
 }
 
@@ -8454,10 +8498,17 @@ static char *virDomainObjFormat(virCapsPtr caps,
 {
     char *config_xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int i;
 
     virBufferAsprintf(&buf, "<domstatus state='%s' pid='%d'>\n",
                       virDomainStateTypeToString(obj->state),
                       obj->pid);
+
+    for (i = 0 ; i < VIR_DOMAIN_TAINT_LAST ; i++) {
+        if (obj->taint & (1 << i))
+            virBufferAsprintf(&buf, "  <taint flag='%s'/>\n",
+                              virDomainTaintTypeToString(i));
+    }
 
     if (caps->privateDataXMLFormat &&
         ((caps->privateDataXMLFormat)(&buf, obj->privateData)) < 0)
