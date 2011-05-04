@@ -454,7 +454,8 @@ cleanup:
 
 static void
 testDomainShutdownState(virDomainPtr domain,
-                        virDomainObjPtr privdom)
+                        virDomainObjPtr privdom,
+                        virDomainShutoffReason reason)
 {
     if (privdom->newDef) {
         virDomainDefFree(privdom->def);
@@ -462,7 +463,7 @@ testDomainShutdownState(virDomainPtr domain,
         privdom->newDef = NULL;
     }
 
-    privdom->state = VIR_DOMAIN_SHUTOFF;
+    virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF, reason);
     privdom->def->id = -1;
     if (domain)
         domain->id = -1;
@@ -471,7 +472,8 @@ testDomainShutdownState(virDomainPtr domain,
 /* Set up domain runtime state */
 static int
 testDomainStartState(virConnectPtr conn,
-                     virDomainObjPtr dom)
+                     virDomainObjPtr dom,
+                     virDomainRunningReason reason)
 {
     testConnPtr privconn = conn->privateData;
     int ret = -1;
@@ -479,7 +481,7 @@ testDomainStartState(virConnectPtr conn,
     if (testDomainUpdateVCPUs(conn, dom, dom->def->vcpus, 1) < 0)
         goto cleanup;
 
-    dom->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(dom, VIR_DOMAIN_RUNNING, reason);
     dom->def->id = privconn->nextDomID++;
 
     if (virDomainObjSetDefTransient(privconn->caps, dom, false) < 0) {
@@ -489,7 +491,7 @@ testDomainStartState(virConnectPtr conn,
     ret = 0;
 cleanup:
     if (ret < 0)
-        testDomainShutdownState(NULL, dom);
+        testDomainShutdownState(NULL, dom, VIR_DOMAIN_SHUTOFF_FAILED);
     return ret;
 }
 
@@ -560,7 +562,7 @@ static int testOpenDefault(virConnectPtr conn) {
     domdef = NULL;
 
     domobj->persistent = 1;
-    if (testDomainStartState(conn, domobj) < 0) {
+    if (testDomainStartState(conn, domobj, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainObjUnlock(domobj);
         goto error;
     }
@@ -905,7 +907,7 @@ static int testOpenFromFile(virConnectPtr conn,
         }
 
         dom->persistent = 1;
-        if (testDomainStartState(conn, dom) < 0) {
+        if (testDomainStartState(conn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
             virDomainObjUnlock(dom);
             goto error;
         }
@@ -1297,7 +1299,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     def = NULL;
 
-    if (testDomainStartState(conn, dom) < 0)
+    if (testDomainStartState(conn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0)
         goto cleanup;
 
     event = virDomainEventNewFromObj(dom,
@@ -1427,7 +1429,7 @@ static int testDestroyDomain (virDomainPtr domain)
         goto cleanup;
     }
 
-    testDomainShutdownState(domain, privdom);
+    testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_DESTROYED);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
@@ -1465,13 +1467,14 @@ static int testResumeDomain (virDomainPtr domain)
         goto cleanup;
     }
 
-    if (privdom->state != VIR_DOMAIN_PAUSED) {
+    if (virDomainObjGetState(privdom, NULL) != VIR_DOMAIN_PAUSED) {
         testError(VIR_ERR_INTERNAL_ERROR, _("domain '%s' not paused"),
                   domain->name);
         goto cleanup;
     }
 
-    privdom->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
+                         VIR_DOMAIN_RUNNING_UNPAUSED);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_RESUMED,
                                      VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
@@ -1494,6 +1497,7 @@ static int testPauseDomain (virDomainPtr domain)
     virDomainObjPtr privdom;
     virDomainEventPtr event = NULL;
     int ret = -1;
+    int state;
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -1505,14 +1509,14 @@ static int testPauseDomain (virDomainPtr domain)
         goto cleanup;
     }
 
-    if (privdom->state == VIR_DOMAIN_SHUTOFF ||
-        privdom->state == VIR_DOMAIN_PAUSED) {
+    state = virDomainObjGetState(privdom, NULL);
+    if (state == VIR_DOMAIN_SHUTOFF || state == VIR_DOMAIN_PAUSED) {
         testError(VIR_ERR_INTERNAL_ERROR, _("domain '%s' not running"),
                   domain->name);
         goto cleanup;
     }
 
-    privdom->state = VIR_DOMAIN_PAUSED;
+    virDomainObjSetState(privdom, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_SUSPENDED,
                                      VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
@@ -1546,13 +1550,13 @@ static int testShutdownDomain (virDomainPtr domain)
         goto cleanup;
     }
 
-    if (privdom->state == VIR_DOMAIN_SHUTOFF) {
+    if (virDomainObjGetState(privdom, NULL) == VIR_DOMAIN_SHUTOFF) {
         testError(VIR_ERR_INTERNAL_ERROR,
                   _("domain '%s' not running"), domain->name);
         goto cleanup;
     }
 
-    testDomainShutdownState(domain, privdom);
+    testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
@@ -1591,31 +1595,38 @@ static int testRebootDomain (virDomainPtr domain,
         goto cleanup;
     }
 
-    privdom->state = VIR_DOMAIN_SHUTDOWN;
+    virDomainObjSetState(privdom, VIR_DOMAIN_SHUTDOWN,
+                         VIR_DOMAIN_SHUTDOWN_USER);
+
     switch (privdom->def->onReboot) {
     case VIR_DOMAIN_LIFECYCLE_DESTROY:
-        privdom->state = VIR_DOMAIN_SHUTOFF;
+        virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         break;
 
     case VIR_DOMAIN_LIFECYCLE_RESTART:
-        privdom->state = VIR_DOMAIN_RUNNING;
+        virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_BOOTED);
         break;
 
     case VIR_DOMAIN_LIFECYCLE_PRESERVE:
-        privdom->state = VIR_DOMAIN_SHUTOFF;
+        virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         break;
 
     case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
-        privdom->state = VIR_DOMAIN_RUNNING;
+        virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_BOOTED);
         break;
 
     default:
-        privdom->state = VIR_DOMAIN_SHUTOFF;
+        virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         break;
     }
 
-    if (privdom->state == VIR_DOMAIN_SHUTOFF) {
-        testDomainShutdownState(domain, privdom);
+    if (virDomainObjGetState(privdom, NULL) == VIR_DOMAIN_SHUTOFF) {
+        testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         event = virDomainEventNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
@@ -1661,7 +1672,7 @@ static int testGetDomainInfo (virDomainPtr domain,
         goto cleanup;
     }
 
-    info->state = privdom->state;
+    info->state = virDomainObjGetState(privdom, NULL);
     info->memory = privdom->def->mem.cur_balloon;
     info->maxMem = privdom->def->mem.max_balloon;
     info->nrVirtCpu = privdom->def->vcpus;
@@ -1696,10 +1707,7 @@ testDomainGetState(virDomainPtr domain,
         goto cleanup;
     }
 
-    *state = privdom->state;
-    if (reason)
-        *reason = 0;
-
+    *state = virDomainObjGetState(privdom, reason);
     ret = 0;
 
 cleanup:
@@ -1774,7 +1782,7 @@ static int testDomainSave(virDomainPtr domain,
     }
     fd = -1;
 
-    testDomainShutdownState(domain, privdom);
+    testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SAVED);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
@@ -1872,7 +1880,7 @@ static int testDomainRestore(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (testDomainStartState(conn, dom) < 0)
+    if (testDomainStartState(conn, dom, VIR_DOMAIN_RUNNING_RESTORED) < 0)
         goto cleanup;
 
     event = virDomainEventNewFromObj(dom,
@@ -1931,7 +1939,7 @@ static int testDomainCoreDump(virDomainPtr domain,
     }
 
     if (flags & VIR_DUMP_CRASH) {
-        testDomainShutdownState(domain, privdom);
+        testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_CRASHED);
         event = virDomainEventNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
@@ -2484,13 +2492,14 @@ static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
         goto cleanup;
     }
 
-    if (privdom->state != VIR_DOMAIN_SHUTOFF) {
+    if (virDomainObjGetState(privdom, NULL) != VIR_DOMAIN_SHUTOFF) {
         testError(VIR_ERR_INTERNAL_ERROR,
                   _("Domain '%s' is already running"), domain->name);
         goto cleanup;
     }
 
-    if (testDomainStartState(domain->conn, privdom) < 0)
+    if (testDomainStartState(domain->conn, privdom,
+                             VIR_DOMAIN_RUNNING_BOOTED) < 0)
         goto cleanup;
     domain->id = privdom->def->id;
 
@@ -2527,13 +2536,12 @@ static int testDomainUndefine(virDomainPtr domain) {
         goto cleanup;
     }
 
-    if (privdom->state != VIR_DOMAIN_SHUTOFF) {
+    if (virDomainObjGetState(privdom, NULL) != VIR_DOMAIN_SHUTOFF) {
         testError(VIR_ERR_INTERNAL_ERROR,
                   _("Domain '%s' is still running"), domain->name);
         goto cleanup;
     }
 
-    privdom->state = VIR_DOMAIN_SHUTOFF;
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);

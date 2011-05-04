@@ -225,7 +225,9 @@ libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
  * virDomainObjPtr should be locked on invocation
  */
 static void
-libxlVmCleanup(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
+libxlVmCleanup(libxlDriverPrivatePtr driver,
+               virDomainObjPtr vm,
+               virDomainShutoffReason reason)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
     int vnc_port;
@@ -245,7 +247,7 @@ libxlVmCleanup(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 
     if (vm->persistent) {
         vm->def->id = -1;
-        vm->state = VIR_DOMAIN_SHUTOFF;
+        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     }
 
     if ((vm->def->ngraphics == 1) &&
@@ -282,7 +284,10 @@ libxlVmCleanup(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
  * virDomainObjPtr should be locked on invocation
  */
 static int
-libxlVmReap(libxlDriverPrivatePtr driver, virDomainObjPtr vm, int force)
+libxlVmReap(libxlDriverPrivatePtr driver,
+            virDomainObjPtr vm,
+            int force,
+            virDomainShutoffReason reason)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
 
@@ -292,7 +297,7 @@ libxlVmReap(libxlDriverPrivatePtr driver, virDomainObjPtr vm, int force)
         return -1;
     }
 
-    libxlVmCleanup(driver, vm);
+    libxlVmCleanup(driver, vm, reason);
     return 0;
 }
 
@@ -333,6 +338,8 @@ static void libxlEventHandler(int watch,
         goto cleanup;
 
     if (event.type == LIBXL_EVENT_DOMAIN_DEATH) {
+        virDomainShutoffReason reason;
+
         /* libxl_event_get_domain_death_info returns 1 if death
          * event was for this domid */
         if (libxl_event_get_domain_death_info(&priv->ctx,
@@ -346,18 +353,22 @@ static void libxlEventHandler(int watch,
         switch (info.shutdown_reason) {
             case SHUTDOWN_poweroff:
             case SHUTDOWN_crash:
-                if (info.shutdown_reason == SHUTDOWN_crash)
+                if (info.shutdown_reason == SHUTDOWN_crash) {
                     dom_event = virDomainEventNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-                libxlVmReap(driver, vm, 0);
+                    reason = VIR_DOMAIN_SHUTOFF_CRASHED;
+                } else {
+                    reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+                }
+                libxlVmReap(driver, vm, 0, reason);
                 if (!vm->persistent) {
                     virDomainRemoveInactive(&driver->domains, vm);
                     vm = NULL;
                 }
                 break;
             case SHUTDOWN_reboot:
-                libxlVmReap(driver, vm, 0);
+                libxlVmReap(driver, vm, 0, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
                 libxlVmStart(driver, vm, 0);
                 break;
             default:
@@ -576,9 +587,9 @@ libxlVmStart(libxlDriverPrivatePtr driver,
 
     if (!start_paused) {
         libxl_domain_unpause(&priv->ctx, domid);
-        vm->state = VIR_DOMAIN_RUNNING;
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
     } else {
-        vm->state = VIR_DOMAIN_PAUSED;
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
     }
 
 
@@ -597,7 +608,7 @@ error:
     if (domid > 0) {
         libxl_domain_destroy(&priv->ctx, domid, 0);
         def->id = -1;
-        vm->state = VIR_DOMAIN_SHUTOFF;
+        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
     }
     libxl_domain_config_destroy(&d_config);
     VIR_FREE(dom_xml);
@@ -642,7 +653,7 @@ libxlReconnectDomain(void *payload,
 
     /* Update domid in case it changed (e.g. reboot) while we were gone? */
     vm->def->id = d_info.domid;
-    vm->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNKNOWN);
 
     /* Recreate domain death et. al. events */
     libxlCreateDomEvents(vm);
@@ -650,7 +661,7 @@ libxlReconnectDomain(void *payload,
     return;
 
 out:
-    libxlVmCleanup(driver, vm);
+    libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains, vm);
     else
@@ -1187,7 +1198,7 @@ libxlDomainSuspend(virDomainPtr dom)
 
     priv = vm->privateData;
 
-    if (vm->state != VIR_DOMAIN_PAUSED) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         if (libxl_domain_pause(&priv->ctx, dom->id) != 0) {
             libxlError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to suspend domain '%d' with libxenlight"),
@@ -1195,7 +1206,7 @@ libxlDomainSuspend(virDomainPtr dom)
             goto cleanup;
         }
 
-        vm->state = VIR_DOMAIN_PAUSED;
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
 
         event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
@@ -1246,7 +1257,7 @@ libxlDomainResume(virDomainPtr dom)
 
     priv = vm->privateData;
 
-    if (vm->state == VIR_DOMAIN_PAUSED) {
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         if (libxl_domain_unpause(&priv->ctx, dom->id) != 0) {
             libxlError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to resume domain '%d' with libxenlight"),
@@ -1254,7 +1265,8 @@ libxlDomainResume(virDomainPtr dom)
             goto cleanup;
         }
 
-        vm->state = VIR_DOMAIN_RUNNING;
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_UNPAUSED);
 
         event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
@@ -1387,7 +1399,7 @@ libxlDomainDestroy(virDomainPtr dom)
     event = virDomainEventNewFromObj(vm,VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (libxlVmReap(driver, vm, 1) != 0) {
+    if (libxlVmReap(driver, vm, 1, VIR_DOMAIN_SHUTOFF_DESTROYED) != 0) {
         libxlError(VIR_ERR_INTERNAL_ERROR,
                    _("Failed to destroy domain '%d'"), dom->id);
         goto cleanup;
@@ -1570,7 +1582,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         info->memory = d_info.current_memkb;
     }
 
-    info->state = vm->state;
+    info->state = virDomainObjGetState(vm, NULL);
     info->maxMem = vm->def->mem.max_balloon;
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
@@ -1603,10 +1615,7 @@ libxlDomainGetState(virDomainPtr dom,
         goto cleanup;
     }
 
-    *state = vm->state;
-    if (reason)
-        *reason = 0;
-
+    *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
   cleanup:

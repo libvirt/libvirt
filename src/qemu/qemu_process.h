@@ -28,8 +28,13 @@ int qemuProcessPrepareMonitorChr(struct qemud_driver *driver,
                                  virDomainChrSourceDefPtr monConfig,
                                  const char *vm);
 
-int qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm, virConnectPtr conn);
-int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm);
+int qemuProcessStartCPUs(struct qemud_driver *driver,
+                         virDomainObjPtr vm,
+                         virConnectPtr conn,
+                         virDomainRunningReason reason);
+int qemuProcessStopCPUs(struct qemud_driver *driver,
+                        virDomainObjPtr vm,
+                        virDomainPausedReason reason);
 
 void qemuProcessAutostartAll(struct qemud_driver *driver);
 void qemuProcessReconnectAll(virConnectPtr conn, struct qemud_driver *driver);
@@ -47,7 +52,8 @@ int qemuProcessStart(virConnectPtr conn,
 
 void qemuProcessStop(struct qemud_driver *driver,
                      virDomainObjPtr vm,
-                     int migrated);
+                     int migrated,
+                     virDomainShutoffReason reason);
 
 void qemuProcessKill(virDomainObjPtr vm);
 

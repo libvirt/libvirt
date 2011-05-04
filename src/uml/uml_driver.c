@@ -133,7 +133,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
 static void umlShutdownVMDaemon(virConnectPtr conn,
                                 struct uml_driver *driver,
-                                virDomainObjPtr vm);
+                                virDomainObjPtr vm,
+                                virDomainShutoffReason reason);
 
 
 static int umlMonitorCommand(const struct uml_driver *driver,
@@ -305,7 +306,7 @@ reread:
                 continue;
             }
 
-            umlShutdownVMDaemon(NULL, driver, dom);
+            umlShutdownVMDaemon(NULL, driver, dom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         } else if (e->mask & (IN_CREATE | IN_MODIFY)) {
             VIR_DEBUG("Got inotify domain startup '%s'", name);
             if (virDomainObjIsActive(dom)) {
@@ -319,14 +320,17 @@ reread:
             }
 
             dom->def->id = driver->nextvmid++;
-            dom->state = VIR_DOMAIN_RUNNING;
+            virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_RUNNING_BOOTED);
 
             if (umlOpenMonitor(driver, dom) < 0) {
                 VIR_WARN("Could not open monitor for new domain");
-                umlShutdownVMDaemon(NULL, driver, dom);
+                umlShutdownVMDaemon(NULL, driver, dom,
+                                    VIR_DOMAIN_SHUTOFF_FAILED);
             } else if (umlIdentifyChrPTY(driver, dom) < 0) {
                 VIR_WARN("Could not identify charater devices for new domain");
-                umlShutdownVMDaemon(NULL, driver, dom);
+                umlShutdownVMDaemon(NULL, driver, dom,
+                                    VIR_DOMAIN_SHUTOFF_FAILED);
             }
         }
         virDomainObjUnlock(dom);
@@ -515,7 +519,7 @@ umlShutdownOneVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 
     virDomainObjLock(dom);
     if (virDomainObjIsActive(dom))
-        umlShutdownVMDaemon(NULL, driver, dom);
+        umlShutdownVMDaemon(NULL, driver, dom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     virDomainObjUnlock(dom);
 }
 
@@ -907,7 +911,8 @@ cleanup:
 
 static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 struct uml_driver *driver ATTRIBUTE_UNUSED,
-                                virDomainObjPtr vm)
+                                virDomainObjPtr vm,
+                                virDomainShutoffReason reason)
 {
     int ret;
     umlDomainObjPrivatePtr priv = vm->privateData;
@@ -926,7 +931,7 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     vm->pid = -1;
     vm->def->id = -1;
-    vm->state = VIR_DOMAIN_SHUTOFF;
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
 
     virDomainConfVMNWFilterTeardown(vm);
     umlCleanupTapDevices(conn, vm);
@@ -1345,7 +1350,7 @@ static int umlDomainDestroy(virDomainPtr dom) {
         goto cleanup;
     }
 
-    umlShutdownVMDaemon(dom->conn, driver, vm);
+    umlShutdownVMDaemon(dom->conn, driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
     if (!vm->persistent) {
         virDomainRemoveInactive(&driver->domains,
                                 vm);
@@ -1498,7 +1503,7 @@ static int umlDomainGetInfo(virDomainPtr dom,
         goto cleanup;
     }
 
-    info->state = vm->state;
+    info->state = virDomainObjGetState(vm, NULL);
 
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
@@ -1544,10 +1549,7 @@ umlDomainGetState(virDomainPtr dom,
         goto cleanup;
     }
 
-    *state = vm->state;
-    if (reason)
-        *reason = 0;
-
+    *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
 cleanup:

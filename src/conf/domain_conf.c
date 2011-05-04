@@ -376,6 +376,56 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_CRASHED+1,
               "shutoff",
               "crashed")
 
+#define VIR_DOMAIN_NOSTATE_LAST (VIR_DOMAIN_NOSTATE_UNKNOWN + 1)
+VIR_ENUM_IMPL(virDomainNostateReason, VIR_DOMAIN_NOSTATE_LAST,
+              "unknown")
+
+#define VIR_DOMAIN_RUNNING_LAST (VIR_DOMAIN_RUNNING_SAVE_CANCELED + 1)
+VIR_ENUM_IMPL(virDomainRunningReason, VIR_DOMAIN_RUNNING_LAST,
+              "unknown",
+              "booted",
+              "migrated",
+              "restored",
+              "from snapshot",
+              "unpaused",
+              "migration canceled",
+              "save canceled")
+
+#define VIR_DOMAIN_BLOCKED_LAST (VIR_DOMAIN_BLOCKED_UNKNOWN + 1)
+VIR_ENUM_IMPL(virDomainBlockedReason, VIR_DOMAIN_BLOCKED_LAST,
+              "unknown")
+
+#define VIR_DOMAIN_PAUSED_LAST (VIR_DOMAIN_PAUSED_FROM_SNAPSHOT + 1)
+VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
+              "unknown",
+              "user",
+              "migration",
+              "save",
+              "dump",
+              "ioerror",
+              "watchdog",
+              "from snapshot")
+
+#define VIR_DOMAIN_SHUTDOWN_LAST (VIR_DOMAIN_SHUTDOWN_USER + 1)
+VIR_ENUM_IMPL(virDomainShutdownReason, VIR_DOMAIN_SHUTDOWN_LAST,
+              "unknown",
+              "user")
+
+#define VIR_DOMAIN_SHUTOFF_LAST (VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT + 1)
+VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
+              "unknown",
+              "shutdown",
+              "destroyed",
+              "crashed",
+              "migrated",
+              "saved",
+              "failed",
+              "from snapshot")
+
+#define VIR_DOMAIN_CRASHED_LAST (VIR_DOMAIN_CRASHED_UNKNOWN + 1)
+VIR_ENUM_IMPL(virDomainCrashedReason, VIR_DOMAIN_CRASHED_LAST,
+              "unknown")
+
 VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
               "dynamic",
               "static")
@@ -1080,7 +1130,8 @@ static virDomainObjPtr virDomainObjNew(virCapsPtr caps)
     }
 
     virDomainObjLock(domain);
-    domain->state = VIR_DOMAIN_SHUTOFF;
+    virDomainObjSetState(domain, VIR_DOMAIN_SHUTOFF,
+                                 VIR_DOMAIN_SHUTOFF_UNKNOWN);
     domain->refs = 1;
 
     virDomainSnapshotObjListInit(&domain->snapshots);
@@ -6240,6 +6291,8 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
     virDomainObjPtr obj;
     xmlNodePtr *nodes = NULL;
     int i, n;
+    int state;
+    int reason = 0;
 
     if (!(obj = virDomainObjNew(caps)))
         return NULL;
@@ -6263,13 +6316,25 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
                              "%s", _("missing domain state"));
         goto error;
     }
-    if ((obj->state = virDomainStateTypeFromString(tmp)) < 0) {
+    if ((state = virDomainStateTypeFromString(tmp)) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("invalid domain state '%s'"), tmp);
         VIR_FREE(tmp);
         goto error;
     }
     VIR_FREE(tmp);
+
+    if ((tmp = virXPathString("string(./@reason)", ctxt))) {
+        if ((reason = virDomainStateReasonFromString(state, tmp)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("invalid domain state reason '%s'"), tmp);
+            VIR_FREE(tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    virDomainObjSetState(obj, state, reason);
 
     if ((virXPathLong("string(./@pid)", ctxt, &val)) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -8463,10 +8528,14 @@ static char *virDomainObjFormat(virCapsPtr caps,
 {
     char *config_xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int state;
+    int reason;
     int i;
 
-    virBufferAsprintf(&buf, "<domstatus state='%s' pid='%d'>\n",
-                      virDomainStateTypeToString(obj->state),
+    state = virDomainObjGetState(obj, &reason);
+    virBufferAsprintf(&buf, "<domstatus state='%s' reason='%s' pid='%d'>\n",
+                      virDomainStateTypeToString(state),
+                      virDomainStateReasonToString(state, reason),
                       obj->pid);
 
     for (i = 0 ; i < VIR_DOMAIN_TAINT_LAST ; i++) {
@@ -9558,4 +9627,90 @@ virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom)
 
     VIR_FREE(xml);
     return ret;
+}
+
+
+virDomainState
+virDomainObjGetState(virDomainObjPtr dom, int *reason)
+{
+    if (reason)
+        *reason = dom->state.reason;
+
+    return dom->state.state;
+}
+
+
+void
+virDomainObjSetState(virDomainObjPtr dom, virDomainState state, int reason)
+{
+    int last = -1;
+
+    switch (state) {
+    case VIR_DOMAIN_NOSTATE:    last = VIR_DOMAIN_NOSTATE_LAST;     break;
+    case VIR_DOMAIN_RUNNING:    last = VIR_DOMAIN_RUNNING_LAST;     break;
+    case VIR_DOMAIN_BLOCKED:    last = VIR_DOMAIN_BLOCKED_LAST;     break;
+    case VIR_DOMAIN_PAUSED:     last = VIR_DOMAIN_PAUSED_LAST;      break;
+    case VIR_DOMAIN_SHUTDOWN:   last = VIR_DOMAIN_SHUTDOWN_LAST;    break;
+    case VIR_DOMAIN_SHUTOFF:    last = VIR_DOMAIN_SHUTOFF_LAST;     break;
+    case VIR_DOMAIN_CRASHED:    last = VIR_DOMAIN_CRASHED_LAST;     break;
+    }
+
+    if (last < 0) {
+        VIR_ERROR(_("invalid domain state: %d"), state);
+        return;
+    }
+
+    dom->state.state = state;
+    if (reason > 0 && reason < last)
+        dom->state.reason = reason;
+    else
+        dom->state.reason = 0;
+}
+
+
+const char *
+virDomainStateReasonToString(virDomainState state, int reason)
+{
+    switch (state) {
+    case VIR_DOMAIN_NOSTATE:
+        return virDomainNostateReasonTypeToString(reason);
+    case VIR_DOMAIN_RUNNING:
+        return virDomainRunningReasonTypeToString(reason);
+    case VIR_DOMAIN_BLOCKED:
+        return virDomainBlockedReasonTypeToString(reason);
+    case VIR_DOMAIN_PAUSED:
+        return virDomainPausedReasonTypeToString(reason);
+    case VIR_DOMAIN_SHUTDOWN:
+        return virDomainShutdownReasonTypeToString(reason);
+    case VIR_DOMAIN_SHUTOFF:
+        return virDomainShutoffReasonTypeToString(reason);
+    case VIR_DOMAIN_CRASHED:
+        return virDomainCrashedReasonTypeToString(reason);
+    }
+
+    return NULL;
+}
+
+
+int
+virDomainStateReasonFromString(virDomainState state, const char *reason)
+{
+    switch (state) {
+    case VIR_DOMAIN_NOSTATE:
+        return virDomainNostateReasonTypeFromString(reason);
+    case VIR_DOMAIN_RUNNING:
+        return virDomainRunningReasonTypeFromString(reason);
+    case VIR_DOMAIN_BLOCKED:
+        return virDomainBlockedReasonTypeFromString(reason);
+    case VIR_DOMAIN_PAUSED:
+        return virDomainPausedReasonTypeFromString(reason);
+    case VIR_DOMAIN_SHUTDOWN:
+        return virDomainShutdownReasonTypeFromString(reason);
+    case VIR_DOMAIN_SHUTOFF:
+        return virDomainShutoffReasonTypeFromString(reason);
+    case VIR_DOMAIN_CRASHED:
+        return virDomainCrashedReasonTypeFromString(reason);
+    }
+
+    return -1;
 }

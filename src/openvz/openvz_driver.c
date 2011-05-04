@@ -353,7 +353,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
         goto cleanup;
     }
 
-    info->state = vm->state;
+    info->state = virDomainObjGetState(vm, NULL);
 
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
@@ -399,10 +399,7 @@ openvzDomainGetState(virDomainPtr dom,
         goto cleanup;
     }
 
-    *state = vm->state;
-    if (reason)
-        *reason = 0;
-
+    *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
 cleanup:
@@ -525,12 +522,12 @@ static int openvzDomainSuspend(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (vm->state != VIR_DOMAIN_PAUSED) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         openvzSetProgramSentinal(prog, vm->def->name);
         if (virRun(prog, NULL) < 0) {
             goto cleanup;
         }
-        vm->state = VIR_DOMAIN_PAUSED;
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
     }
 
     ret = 0;
@@ -563,12 +560,12 @@ static int openvzDomainResume(virDomainPtr dom) {
       goto cleanup;
   }
 
-  if (vm->state == VIR_DOMAIN_PAUSED) {
+  if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
       openvzSetProgramSentinal(prog, vm->def->name);
       if (virRun(prog, NULL) < 0) {
           goto cleanup;
       }
-      vm->state = VIR_DOMAIN_RUNNING;
+      virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
   }
 
   ret = 0;
@@ -596,7 +593,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
     }
 
     openvzSetProgramSentinal(prog, vm->def->name);
-    if (vm->state != VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("domain is not in running state"));
         goto cleanup;
@@ -606,7 +603,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
         goto cleanup;
 
     vm->def->id = -1;
-    vm->state = VIR_DOMAIN_SHUTOFF;
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     dom->id = -1;
     ret = 0;
 
@@ -634,7 +631,7 @@ static int openvzDomainReboot(virDomainPtr dom,
     }
 
     openvzSetProgramSentinal(prog, vm->def->name);
-    if (vm->state != VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("domain is not in running state"));
         goto cleanup;
@@ -643,6 +640,8 @@ static int openvzDomainReboot(virDomainPtr dom,
     if (virRun(prog, NULL) < 0)
         goto cleanup;
     ret = 0;
+
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
 
 cleanup:
     if (vm)
@@ -1008,7 +1007,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     vm->pid = strtoI(vm->def->name);
     vm->def->id = vm->pid;
-    vm->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
 
     if (vm->def->maxvcpus > 0) {
         if (openvzDomainSetVcpusInternal(vm, vm->def->maxvcpus) < 0) {
@@ -1050,7 +1049,7 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    if (vm->state != VIR_DOMAIN_SHUTOFF) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTOFF) {
         openvzError(VIR_ERR_OPERATION_DENIED, "%s",
                     _("domain is not in shutoff state"));
         goto cleanup;
@@ -1064,7 +1063,7 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     vm->pid = strtoI(vm->def->name);
     vm->def->id = vm->pid;
     dom->id = vm->pid;
-    vm->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
     ret = 0;
 
 cleanup:

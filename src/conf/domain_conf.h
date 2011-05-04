@@ -1193,6 +1193,12 @@ enum virDomainTaintFlags {
 };
 
 /* Guest VM runtime state */
+typedef struct _virDomainStateReason virDomainStateReason;
+struct _virDomainStateReason {
+    int state;
+    int reason;
+};
+
 typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
@@ -1200,7 +1206,7 @@ struct _virDomainObj {
     int refs;
 
     int pid;
-    int state;
+    virDomainStateReason state;
 
     unsigned int autostart : 1;
     unsigned int persistent : 1;
@@ -1440,6 +1446,13 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
                                 virDomainDiskDefPathIterator iter,
                                 void *opaque);
 
+void
+virDomainObjSetState(virDomainObjPtr obj, virDomainState state, int reason)
+        ATTRIBUTE_NONNULL(1);
+virDomainState
+virDomainObjGetState(virDomainObjPtr obj, int *reason)
+        ATTRIBUTE_NONNULL(1);
+
 typedef const char* (*virLifecycleToStringFunc)(int type);
 typedef int (*virLifecycleFromStringFunc)(const char *type);
 
@@ -1494,6 +1507,17 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceZlibCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
+VIR_ENUM_DECL(virDomainNostateReason)
+VIR_ENUM_DECL(virDomainRunningReason)
+VIR_ENUM_DECL(virDomainBlockedReason)
+VIR_ENUM_DECL(virDomainPausedReason)
+VIR_ENUM_DECL(virDomainShutdownReason)
+VIR_ENUM_DECL(virDomainShutoffReason)
+VIR_ENUM_DECL(virDomainCrashedReason)
+
+const char *virDomainStateReasonToString(virDomainState state, int reason);
+int virDomainStateReasonFromString(virDomainState state, const char *reason);
+
 VIR_ENUM_DECL(virDomainSeclabel)
 VIR_ENUM_DECL(virDomainClockOffset)
 

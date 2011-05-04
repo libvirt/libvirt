@@ -65,7 +65,7 @@ qemuMigrationSetOffline(struct qemud_driver *driver,
 {
     int ret;
 
-    ret = qemuProcessStopCPUs(driver, vm);
+    ret = qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION);
     if (ret == 0) {
         virDomainEventPtr event;
 
@@ -325,7 +325,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
 
     if (virFDStreamOpen(st, dataFD[1]) < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
-        qemuProcessStop(driver, vm, 0);
+        qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FAILED);
         if (!vm->persistent) {
             if (qemuDomainObjEndJob(vm) > 0)
                 virDomainRemoveInactive(&driver->domains, vm);
@@ -1047,8 +1047,9 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
     priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
 
-    resume = vm->state == VIR_DOMAIN_RUNNING;
-    if (!(flags & VIR_MIGRATE_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
+    resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
+    if (!(flags & VIR_MIGRATE_LIVE) &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         if (qemuMigrationSetOffline(driver, vm) < 0)
             goto endjob;
     }
@@ -1063,7 +1064,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     }
 
     /* Clean up the source domain. */
-    qemuProcessStop(driver, vm, 1);
+    qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_MIGRATED);
     qemuAuditDomainStop(vm, "migrated");
     resume = 0;
 
@@ -1079,9 +1080,10 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     ret = 0;
 
 endjob:
-    if (resume && vm->state == VIR_DOMAIN_PAUSED) {
+    if (resume && virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         /* we got here through some sort of failure; start the domain again */
-        if (qemuProcessStartCPUs(driver, vm, conn) < 0) {
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
@@ -1220,7 +1222,8 @@ qemuMigrationFinish(struct qemud_driver *driver,
              * >= 0.10.6 to work properly.  This isn't strictly necessary on
              * older qemu's, but it also doesn't hurt anything there
              */
-            if (qemuProcessStartCPUs(driver, vm, dconn) < 0) {
+            if (qemuProcessStartCPUs(driver, vm, dconn,
+                                     VIR_DOMAIN_RUNNING_MIGRATED) < 0) {
                 if (virGetLastError() == NULL)
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     "%s", _("resume operation failed"));
@@ -1231,7 +1234,8 @@ qemuMigrationFinish(struct qemud_driver *driver,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-        if (vm->state == VIR_DOMAIN_PAUSED) {
+        if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+            virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
             qemuDomainEventQueue(driver, event);
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_SUSPENDED,
@@ -1242,7 +1246,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
             goto endjob;
         }
     } else {
-        qemuProcessStop(driver, vm, 1);
+        qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
         qemuAuditDomainStop(vm, "failed");
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,

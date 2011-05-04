@@ -525,7 +525,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
         goto cleanup;
     }
 
-    info->state = vm->state;
+    info->state = virDomainObjGetState(vm, NULL);
 
     if (!virDomainObjIsActive(vm) || driver->cgroup == NULL) {
         info->cpuTime = 0;
@@ -591,10 +591,7 @@ lxcDomainGetState(virDomainPtr dom,
         goto cleanup;
     }
 
-    *state = vm->state;
-    if (reason)
-        *reason = 0;
-
+    *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
 cleanup:
@@ -987,15 +984,16 @@ cleanup:
 
 /**
  * lxcVmCleanup:
- * @conn: pointer to connection
  * @driver: pointer to driver structure
  * @vm: pointer to VM to clean up
+ * @reason: reason for switching the VM to shutoff state
  *
  * Cleanout resources associated with the now dead VM
  *
  */
 static void lxcVmCleanup(lxc_driver_t *driver,
-                        virDomainObjPtr  vm)
+                         virDomainObjPtr vm,
+                         virDomainShutoffReason reason)
 {
     virCgroupPtr cgroup;
     int i;
@@ -1017,7 +1015,7 @@ static void lxcVmCleanup(lxc_driver_t *driver,
     virFileDeletePid(driver->stateDir, vm->def->name);
     virDomainDeleteConfig(driver->stateDir, NULL, vm);
 
-    vm->state = VIR_DOMAIN_SHUTOFF;
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     vm->pid = -1;
     vm->def->id = -1;
     priv->monitor = -1;
@@ -1201,7 +1199,8 @@ error:
 
 
 static int lxcVmTerminate(lxc_driver_t *driver,
-                          virDomainObjPtr vm)
+                          virDomainObjPtr vm,
+                          virDomainShutoffReason reason)
 {
     virCgroupPtr group = NULL;
     int rc;
@@ -1228,7 +1227,7 @@ static int lxcVmTerminate(lxc_driver_t *driver,
         rc = -1;
         goto cleanup;
     }
-    lxcVmCleanup(driver, vm);
+    lxcVmCleanup(driver, vm, reason);
 
     rc = 0;
 
@@ -1258,7 +1257,7 @@ static void lxcMonitorEvent(int watch,
         goto cleanup;
     }
 
-    if (lxcVmTerminate(driver, vm) < 0) {
+    if (lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN) < 0) {
         virEventRemoveHandle(watch);
     } else {
         event = virDomainEventNewFromObj(vm,
@@ -1392,6 +1391,7 @@ cleanup:
  * @conn: pointer to connection
  * @driver: pointer to driver structure
  * @vm: pointer to virtual machine structure
+ * @reason: reason for switching vm to running state
  *
  * Starts a vm
  *
@@ -1399,7 +1399,8 @@ cleanup:
  */
 static int lxcVmStart(virConnectPtr conn,
                       lxc_driver_t * driver,
-                      virDomainObjPtr  vm)
+                      virDomainObjPtr vm,
+                      virDomainRunningReason reason)
 {
     int rc = -1, r;
     unsigned int i;
@@ -1499,14 +1500,14 @@ static int lxcVmStart(virConnectPtr conn,
     }
 
     vm->def->id = vm->pid;
-    vm->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
 
     if ((priv->monitorWatch = virEventAddHandle(
              priv->monitor,
              VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
              lxcMonitorEvent,
              vm, NULL)) < 0) {
-        lxcVmTerminate(driver, vm);
+        lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
         goto cleanup;
     }
 
@@ -1579,7 +1580,7 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    ret = lxcVmStart(dom->conn, driver, vm);
+    ret = lxcVmStart(dom->conn, driver, vm, VIR_DOMAIN_RUNNING_BOOTED);
 
     if (ret == 0)
         event = virDomainEventNewFromObj(vm,
@@ -1650,7 +1651,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (lxcVmStart(conn, driver, vm) < 0) {
+    if (lxcVmStart(conn, driver, vm, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
         goto cleanup;
@@ -1815,7 +1816,7 @@ static int lxcDomainDestroy(virDomainPtr dom)
         goto cleanup;
     }
 
-    ret = lxcVmTerminate(driver, vm);
+    ret = lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
@@ -1863,7 +1864,8 @@ lxcAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaqu
     virDomainObjLock(vm);
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
-        int ret = lxcVmStart(data->conn, data->driver, vm);
+        int ret = lxcVmStart(data->conn, data->driver, vm,
+                             VIR_DOMAIN_RUNNING_BOOTED);
         if (ret < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
@@ -1937,14 +1939,15 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 
     if (vm->pid != 0) {
         vm->def->id = vm->pid;
-        vm->state = VIR_DOMAIN_RUNNING;
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_UNKNOWN);
 
         if ((priv->monitorWatch = virEventAddHandle(
                  priv->monitor,
                  VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
                  lxcMonitorEvent,
                  vm, NULL)) < 0) {
-            lxcVmTerminate(driver, vm);
+            lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
             goto cleanup;
         }
     } else {
@@ -2551,13 +2554,13 @@ static int lxcDomainSuspend(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (vm->state != VIR_DOMAIN_PAUSED) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         if (lxcFreezeContainer(driver, vm) < 0) {
             lxcError(VIR_ERR_OPERATION_FAILED,
                      "%s", _("Suspend operation failed"));
             goto cleanup;
         }
-        vm->state = VIR_DOMAIN_PAUSED;
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
 
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
@@ -2616,13 +2619,14 @@ static int lxcDomainResume(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (vm->state == VIR_DOMAIN_PAUSED) {
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         if (lxcUnfreezeContainer(driver, vm) < 0) {
             lxcError(VIR_ERR_OPERATION_FAILED,
                      "%s", _("Resume operation failed"));
             goto cleanup;
         }
-        vm->state = VIR_DOMAIN_RUNNING;
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_UNPAUSED);
 
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,

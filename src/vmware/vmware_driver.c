@@ -178,7 +178,9 @@ vmwareGetVersion(virConnectPtr conn, unsigned long *version)
 }
 
 static int
-vmwareStopVM(struct vmware_driver *driver, virDomainObjPtr vm)
+vmwareStopVM(struct vmware_driver *driver,
+             virDomainObjPtr vm,
+             virDomainShutoffReason reason)
 {
     const char *cmd[] = {
         VMRUN, "-T", PROGRAM_SENTINAL, "stop",
@@ -193,7 +195,7 @@ vmwareStopVM(struct vmware_driver *driver, virDomainObjPtr vm)
     }
 
     vm->def->id = -1;
-    vm->state = VIR_DOMAIN_SHUTOFF;
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
 
     return 0;
 }
@@ -207,7 +209,7 @@ vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
     };
     const char *vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
 
-    if (vm->state != VIR_DOMAIN_SHUTOFF) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTOFF) {
         vmwareError(VIR_ERR_OPERATION_INVALID, "%s",
                     _("domain is not in shutoff state"));
         return -1;
@@ -225,11 +227,11 @@ vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
     }
 
     if ((vm->def->id = vmwareExtractPid(vmxPath)) < 0) {
-        vmwareStopVM(driver, vm);
+        vmwareStopVM(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
         return -1;
     }
 
-    vm->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
 
     return 0;
 }
@@ -322,13 +324,13 @@ vmwareDomainShutdown(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (vm->state != VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         vmwareError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("domain is not in running state"));
         goto cleanup;
     }
 
-    if (vmwareStopVM(driver, vm) < 0)
+    if (vmwareStopVM(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN) < 0)
         goto cleanup;
 
     if (!vm->persistent) {
@@ -375,7 +377,7 @@ vmwareDomainSuspend(virDomainPtr dom)
 
     vmwareSetSentinal(cmd, vmw_types[driver->type]);
     vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
-    if (vm->state != VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         vmwareError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("domain is not in running state"));
         goto cleanup;
@@ -384,7 +386,7 @@ vmwareDomainSuspend(virDomainPtr dom)
     if (virRun(cmd, NULL) < 0)
         goto cleanup;
 
-    vm->state = VIR_DOMAIN_PAUSED;
+    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
     ret = 0;
 
   cleanup:
@@ -424,7 +426,7 @@ vmwareDomainResume(virDomainPtr dom)
 
     vmwareSetSentinal(cmd, vmw_types[driver->type]);
     vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
-    if (vm->state != VIR_DOMAIN_PAUSED) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         vmwareError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("domain is not in suspend state"));
         goto cleanup;
@@ -433,7 +435,7 @@ vmwareDomainResume(virDomainPtr dom)
     if (virRun(cmd, NULL) < 0)
         goto cleanup;
 
-    vm->state = VIR_DOMAIN_RUNNING;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
     ret = 0;
 
   cleanup:
@@ -470,7 +472,7 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
     vmwareSetSentinal(cmd, vmxPath);
 
 
-    if (vm->state != VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         vmwareError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("domain is not in running state"));
         goto cleanup;
@@ -883,7 +885,7 @@ vmwareDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         goto cleanup;
     }
 
-    info->state = vm->state;
+    info->state = virDomainObjGetState(vm, NULL);
     info->cpuTime = 0;
     info->maxMem = vm->def->mem.max_balloon;
     info->memory = vm->def->mem.cur_balloon;
@@ -918,10 +920,7 @@ vmwareDomainGetState(virDomainPtr dom,
         goto cleanup;
     }
 
-    *state = vm->state;
-    if (reason)
-        *reason = 0;
-
+    *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
   cleanup:

@@ -1320,7 +1320,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     priv = vm->privateData;
 
     if (priv->jobActive == QEMU_JOB_MIGRATION_OUT) {
-        if (vm->state != VIR_DOMAIN_PAUSED) {
+        if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
             VIR_DEBUG("Requesting domain pause on %s",
                       vm->def->name);
             priv->jobSignals |= QEMU_JOB_SIGNAL_SUSPEND;
@@ -1336,8 +1336,8 @@ static int qemudDomainSuspend(virDomainPtr dom) {
                             "%s", _("domain is not running"));
             goto endjob;
         }
-        if (vm->state != VIR_DOMAIN_PAUSED) {
-            if (qemuProcessStopCPUs(driver, vm) < 0) {
+        if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
+            if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_USER) < 0) {
                 goto endjob;
             }
             event = virDomainEventNewFromObj(vm,
@@ -1389,8 +1389,9 @@ static int qemudDomainResume(virDomainPtr dom) {
                         "%s", _("domain is not running"));
         goto endjob;
     }
-    if (vm->state == VIR_DOMAIN_PAUSED) {
-        if (qemuProcessStartCPUs(driver, vm, dom->conn) < 0) {
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+        if (qemuProcessStartCPUs(driver, vm, dom->conn,
+                                 VIR_DOMAIN_RUNNING_UNPAUSED) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("resume operation failed"));
@@ -1493,7 +1494,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
         goto endjob;
     }
 
-    qemuProcessStop(driver, vm, 0);
+    qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_DESTROYED);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
@@ -1771,7 +1772,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         goto cleanup;
     }
 
-    info->state = vm->state;
+    info->state = virDomainObjGetState(vm, NULL);
 
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
@@ -1853,10 +1854,7 @@ qemuDomainGetState(virDomainPtr dom,
         goto cleanup;
     }
 
-    *state = vm->state;
-    if (reason)
-        *reason = 0;
-
+    *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
 cleanup:
@@ -1982,9 +1980,9 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
 
     /* Pause */
-    if (vm->state == VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         header.was_running = 1;
-        if (qemuProcessStopCPUs(driver, vm) < 0)
+        if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE) < 0)
             goto endjob;
 
         if (!virDomainObjIsActive(vm)) {
@@ -2131,7 +2129,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     ret = 0;
 
     /* Shut it down */
-    qemuProcessStop(driver, vm, 0);
+    qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_SAVED);
     qemuAuditDomainStop(vm, "saved");
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
@@ -2147,7 +2145,8 @@ endjob:
     if (vm) {
         if (ret != 0) {
             if (header.was_running && virDomainObjIsActive(vm)) {
-                rc = qemuProcessStartCPUs(driver, vm, dom->conn);
+                rc = qemuProcessStartCPUs(driver, vm, dom->conn,
+                                          VIR_DOMAIN_RUNNING_SAVE_CANCELED);
                 if (rc < 0)
                     VIR_WARN("Unable to resume guest CPUs after save failure");
             }
@@ -2459,11 +2458,12 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
     /* Migrate will always stop the VM, so the resume condition is
        independent of whether the stop command is issued.  */
-    resume = (vm->state == VIR_DOMAIN_RUNNING);
+    resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
 
     /* Pause domain for non-live dump */
-    if (!(flags & VIR_DUMP_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
-        if (qemuProcessStopCPUs(driver, vm) < 0)
+    if (!(flags & VIR_DUMP_LIVE) &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_DUMP) < 0)
             goto endjob;
         paused = 1;
 
@@ -2482,7 +2482,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
 endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
-        qemuProcessStop(driver, vm, 0);
+        qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_CRASHED);
         qemuAuditDomainStop(vm, "crashed");
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
@@ -2493,7 +2493,8 @@ endjob:
        will support synchronous operations so we always get here after
        the migration is complete.  */
     else if (resume && paused && virDomainObjIsActive(vm)) {
-        if (qemuProcessStartCPUs(driver, vm, dom->conn) < 0) {
+        if (qemuProcessStartCPUs(driver, vm, dom->conn,
+                                 VIR_DOMAIN_RUNNING_UNPAUSED) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("resuming after dump failed"));
@@ -2647,7 +2648,8 @@ static void processWatchdogEvent(void *data, void *opaque)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("Dump failed"));
 
-            ret = qemuProcessStartCPUs(driver, wdEvent->vm, NULL);
+            ret = qemuProcessStartCPUs(driver, wdEvent->vm, NULL,
+                                       VIR_DOMAIN_RUNNING_UNPAUSED);
 
             if (ret < 0)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -3345,7 +3347,8 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
     /* If it was running before, resume it now. */
     if (header->was_running) {
-        if (qemuProcessStartCPUs(driver, vm, conn) < 0) {
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_RESTORED) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("failed to resume domain"));
@@ -6474,12 +6477,12 @@ qemuDomainSnapshotCreateActive(virConnectPtr conn,
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         return -1;
 
-    if (vm->state == VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         /* savevm monitor command pauses the domain emitting an event which
          * confuses libvirt since it's not notified when qemu resumes the
          * domain. Thus we stop and start CPUs ourselves.
          */
-        if (qemuProcessStopCPUs(driver, vm) < 0)
+        if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE) < 0)
             goto cleanup;
 
         resume = true;
@@ -6496,7 +6499,8 @@ qemuDomainSnapshotCreateActive(virConnectPtr conn,
 
 cleanup:
     if (resume && virDomainObjIsActive(vm) &&
-        qemuProcessStartCPUs(driver, vm, conn) < 0 &&
+        qemuProcessStartCPUs(driver, vm, conn,
+                             VIR_DOMAIN_RUNNING_UNPAUSED) < 0 &&
         virGetLastError() == NULL) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("resuming after snapshot failed"));
@@ -6546,7 +6550,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
         goto cleanup;
 
-    snap->def->state = vm->state;
+    snap->def->state = virDomainObjGetState(vm, NULL);
 
     /* actually do the snapshot */
     if (!virDomainObjIsActive(vm)) {
@@ -6846,9 +6850,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* qemu unconditionally starts the domain running again after
              * loadvm, so let's pause it to keep consistency
              */
-            rc = qemuProcessStopCPUs(driver, vm);
+            rc = qemuProcessStopCPUs(driver, vm,
+                                     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
             if (rc < 0)
                 goto endjob;
+        } else {
+            virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_RUNNING_FROM_SNAPSHOT);
         }
 
         event = virDomainEventNewFromObj(vm,
@@ -6867,7 +6875,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          */
 
         if (virDomainObjIsActive(vm)) {
-            qemuProcessStop(driver, vm, 0);
+            qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
             qemuAuditDomainStop(vm, "from-snapshot");
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
@@ -6883,8 +6891,6 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         if (qemuDomainSnapshotSetCurrentActive(vm, driver->snapshotDir) < 0)
             goto endjob;
     }
-
-    vm->state = snap->def->state;
 
     ret = 0;
 

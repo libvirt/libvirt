@@ -132,7 +132,10 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      VIR_DOMAIN_EVENT_STOPPED_FAILED :
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
-    qemuProcessStop(driver, vm, 0);
+    qemuProcessStop(driver, vm, 0,
+                    hasError ?
+                    VIR_DOMAIN_SHUTOFF_CRASHED :
+                    VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     qemuAuditDomainStop(vm, hasError ? "failed" : "shutdown");
 
     if (!vm->persistent)
@@ -340,11 +343,11 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventPtr event = NULL;
 
     virDomainObjLock(vm);
-    if (vm->state == VIR_DOMAIN_RUNNING) {
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         VIR_DEBUG("Transitioned guest %s to paused state due to unknown event",
                   vm->def->name);
 
-        vm->state = VIR_DOMAIN_PAUSED;
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
@@ -409,10 +412,10 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     watchdogEvent = virDomainEventWatchdogNewFromObj(vm, action);
 
     if (action == VIR_DOMAIN_EVENT_WATCHDOG_PAUSE &&
-        vm->state == VIR_DOMAIN_RUNNING) {
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         VIR_DEBUG("Transitioned guest %s to paused state due to watchdog", vm->def->name);
 
-        vm->state = VIR_DOMAIN_PAUSED;
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_WATCHDOG);
         lifecycleEvent = virDomainEventNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG);
@@ -488,10 +491,10 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, srcPath, devAlias, action, reason);
 
     if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
-        vm->state == VIR_DOMAIN_RUNNING) {
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         VIR_DEBUG("Transitioned guest %s to paused state due to IO error", vm->def->name);
 
-        vm->state = VIR_DOMAIN_PAUSED;
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_IOERROR);
         lifecycleEvent = virDomainEventNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED_IOERROR);
@@ -1816,7 +1819,7 @@ qemuProcessPrepareMonitorChr(struct qemud_driver *driver,
 
 int
 qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
-                     virConnectPtr conn)
+                     virConnectPtr conn, virDomainRunningReason reason)
 {
     int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1824,27 +1827,32 @@ qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorStartCPUs(priv->mon, conn);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-    if (ret == 0) {
-        vm->state = VIR_DOMAIN_RUNNING;
-    }
+
+    if (ret == 0)
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
 
     return ret;
 }
 
 
-int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm)
+int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
+                        virDomainPausedReason reason)
 {
     int ret;
-    int oldState = vm->state;
+    int oldState;
+    int oldReason;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    vm->state = VIR_DOMAIN_PAUSED;
+    oldState = virDomainObjGetState(vm, &oldReason);
+    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorStopCPUs(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-    if (ret < 0) {
-        vm->state = oldState;
-    }
+
+    if (ret < 0)
+        virDomainObjSetState(vm, oldState, oldReason);
+
     return ret;
 }
 
@@ -1950,7 +1958,7 @@ error:
         /* We can't get the monitor back, so must kill the VM
          * to remove danger of it ending up running twice if
          * user tries to start it again later */
-        qemuProcessStop(driver, obj, 0);
+        qemuProcessStop(driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
         if (!obj->persistent)
             virDomainRemoveInactive(&driver->domains, obj);
         else
@@ -2289,7 +2297,6 @@ int qemuProcessStart(virConnectPtr conn,
 
     if (migrateFrom)
         start_paused = true;
-    vm->state = start_paused ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
 
     if (ret == -1) /* The VM failed to start; tear filters before taps */
         virDomainConfVMNWFilterTeardown(vm);
@@ -2333,14 +2340,19 @@ int qemuProcessStart(virConnectPtr conn,
     if (!start_paused) {
         VIR_DEBUG("Starting domain CPUs");
         /* Allow the CPUS to start executing */
-        if (qemuProcessStartCPUs(driver, vm, conn) < 0) {
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_BOOTED) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("resume operation failed"));
             goto cleanup;
         }
+    } else {
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                             migrateFrom ?
+                             VIR_DOMAIN_PAUSED_MIGRATION :
+                             VIR_DOMAIN_PAUSED_USER);
     }
-
 
     VIR_DEBUG("Writing domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
@@ -2357,7 +2369,7 @@ cleanup:
      * pretend we never started it */
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
-    qemuProcessStop(driver, vm, 0);
+    qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FAILED);
 
     return -1;
 }
@@ -2405,7 +2417,8 @@ void qemuProcessKill(virDomainObjPtr vm)
 
 void qemuProcessStop(struct qemud_driver *driver,
                      virDomainObjPtr vm,
-                     int migrated)
+                     int migrated,
+                     virDomainShutoffReason reason)
 {
     int ret;
     int retries = 0;
@@ -2556,7 +2569,7 @@ retry:
     vm->taint = 0;
     vm->pid = -1;
     vm->def->id = -1;
-    vm->state = VIR_DOMAIN_SHUTOFF;
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     VIR_FREE(priv->vcpupids);
     priv->nvcpupids = 0;
     qemuCapsFree(priv->qemuCaps);
