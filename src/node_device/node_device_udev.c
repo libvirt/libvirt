@@ -1236,8 +1236,10 @@ static int udevSetParent(struct udev_device *device,
 
         parent_sysfs_path = udev_device_get_syspath(parent_device);
         if (parent_sysfs_path == NULL) {
-            VIR_DEBUG("Could not get syspath for parent of '%s'",
-                      udev_device_get_syspath(parent_device));
+            virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Could not get syspath for parent of '%s'"),
+                                     udev_device_get_syspath(parent_device));
+            goto out;
         }
 
         dev = virNodeDeviceFindBySysfsPath(&driverState->devs,
