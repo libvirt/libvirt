@@ -7318,7 +7318,7 @@ cmdVolDownload (vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-    if (ret == false && created)
+    if (!ret && created)
         unlink(file);
     if (vol)
         virStorageVolFree(vol);
@@ -11697,11 +11697,11 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
         if (enable_timing)
             GETTIMEOFDAY(&after);
 
-        if (ret == false)
+        if (!ret)
             virshReportError(ctl);
 
         /* try to automatically catch disconnections */
-        if ((ret == false) &&
+        if (!ret &&
             ((disconnected != 0) ||
              ((last_error != NULL) &&
               (((last_error->code == VIR_ERR_SYSTEM_ERROR) &&
@@ -12105,7 +12105,7 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
     va_list ap;
     char *str;
 
-    if (ctl && ctl->quiet == true)
+    if (ctl && ctl->quiet)
         return;
 
     va_start(ap, format);

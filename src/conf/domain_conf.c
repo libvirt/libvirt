@@ -2602,7 +2602,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 dev  = virXMLPropString(cur, "dev");
                 mode = virXMLPropString(cur, "mode");
-            } else if ((virtPortParsed == false) &&
+            } else if (!virtPortParsed &&
                        (def->type == VIR_DOMAIN_NET_TYPE_DIRECT) &&
                        xmlStrEqual(cur->name, BAD_CAST "virtualport")) {
                 if (virVirtualPortProfileParamsParseXML(cur, &virtPort))

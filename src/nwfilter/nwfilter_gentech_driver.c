@@ -1032,7 +1032,7 @@ virNWFilterDomainFWUpdateCB(void *payload,
                     cb->err = virNWFilterUpdateInstantiateFilter(cb->conn,
                                                                  net,
                                                                  &skipIface);
-                    if (cb->err == 0 && skipIface == true) {
+                    if (cb->err == 0 && skipIface) {
                         /* filter tree unchanged -- no update needed */
                         cb->err = virHashAddEntry(cb->skipInterfaces,
                                                   net->ifname,
