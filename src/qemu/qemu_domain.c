@@ -34,8 +34,10 @@
 #include "cpu/cpu.h"
 #include "ignore-value.h"
 #include "uuid.h"
+#include "files.h"
 
 #include <sys/time.h>
+#include <fcntl.h>
 
 #include <libxml/xpathInternals.h>
 
@@ -805,3 +807,87 @@ void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
          net->data.bridge.script != NULL))
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS);
 }
+
+
+static int
+qemuDomainOpenLogHelper(struct qemud_driver *driver,
+                        virDomainObjPtr vm,
+                        int flags,
+                        mode_t mode)
+{
+    char *logfile;
+    int fd = -1;
+
+    if (virAsprintf(&logfile, "%s/%s.log", driver->logDir, vm->def->name) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if ((fd = open(logfile, flags, mode)) < 0) {
+        virReportSystemError(errno, _("failed to create logfile %s"),
+                             logfile);
+        goto cleanup;
+    }
+    if (virSetCloseExec(fd) < 0) {
+        virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
+                             logfile);
+        VIR_FORCE_CLOSE(fd);
+        goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(logfile);
+    return fd;
+}
+
+
+int
+qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm, bool append)
+{
+    int flags;
+
+    flags = O_CREAT | O_WRONLY;
+    /* Only logrotate files in /var/log, so only append if running privileged */
+    if (driver->privileged || append)
+        flags |= O_APPEND;
+    else
+        flags |= O_TRUNC;
+
+    return qemuDomainOpenLogHelper(driver, vm, flags, S_IRUSR | S_IWUSR);
+}
+
+
+int
+qemuDomainOpenLog(struct qemud_driver *driver, virDomainObjPtr vm, off_t pos)
+{
+    int fd;
+    off_t off;
+    int whence;
+
+    if ((fd = qemuDomainOpenLogHelper(driver, vm, O_RDONLY, 0)) < 0)
+        return -1;
+
+    if (pos < 0) {
+        off = 0;
+        whence = SEEK_END;
+    } else {
+        off = pos;
+        whence = SEEK_SET;
+    }
+
+    if (lseek(fd, off, whence) < 0) {
+        if (whence == SEEK_END)
+            virReportSystemError(errno,
+                                 _("unable to seek to end of log for %s"),
+                                 vm->def->name);
+        else
+            virReportSystemError(errno,
+                                 _("unable to seek to %lld from start for %s"),
+                                 (long long)off, vm->def->name);
+        VIR_FORCE_CLOSE(fd);
+    }
+
+    return fd;
+}
+
+

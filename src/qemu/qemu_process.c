@@ -679,82 +679,6 @@ error:
     return ret;
 }
 
-static int
-qemuProcessLogFD(struct qemud_driver *driver, const char* name, bool append)
-{
-    char *logfile;
-    mode_t logmode;
-    int fd = -1;
-
-    if (virAsprintf(&logfile, "%s/%s.log", driver->logDir, name) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    logmode = O_CREAT | O_WRONLY;
-    /* Only logrotate files in /var/log, so only append if running privileged */
-    if (driver->privileged || append)
-        logmode |= O_APPEND;
-    else
-        logmode |= O_TRUNC;
-
-    if ((fd = open(logfile, logmode, S_IRUSR | S_IWUSR)) < 0) {
-        virReportSystemError(errno,
-                             _("failed to create logfile %s"),
-                             logfile);
-        VIR_FREE(logfile);
-        return -1;
-    }
-    VIR_FREE(logfile);
-    if (virSetCloseExec(fd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to set VM logfile close-on-exec flag"));
-        VIR_FORCE_CLOSE(fd);
-        return -1;
-    }
-    return fd;
-}
-
-
-static int
-qemuProcessLogReadFD(const char* logDir, const char* name, off_t pos)
-{
-    char *logfile;
-    mode_t logmode = O_RDONLY;
-    int fd = -1;
-
-    if (virAsprintf(&logfile, "%s/%s.log", logDir, name) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("failed to build logfile name %s/%s.log"),
-                        logDir, name);
-        return -1;
-    }
-
-    if ((fd = open(logfile, logmode)) < 0) {
-        virReportSystemError(errno,
-                             _("failed to create logfile %s"),
-                             logfile);
-        VIR_FREE(logfile);
-        return -1;
-    }
-    if (virSetCloseExec(fd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to set VM logfile close-on-exec flag"));
-        VIR_FORCE_CLOSE(fd);
-        VIR_FREE(logfile);
-        return -1;
-    }
-    if (pos < 0 || lseek(fd, pos, SEEK_SET) < 0) {
-        virReportSystemError(pos < 0 ? 0 : errno,
-                             _("Unable to seek to %lld in %s"),
-                             (long long) pos, logfile);
-        VIR_FORCE_CLOSE(fd);
-    }
-    VIR_FREE(logfile);
-    return fd;
-}
-
-
 typedef int qemuProcessLogHandleOutput(virDomainObjPtr vm,
                                        const char *output,
                                        int fd);
@@ -1051,7 +975,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
     virHashTablePtr paths = NULL;
     qemuDomainObjPrivatePtr priv;
 
-    if ((logfd = qemuProcessLogReadFD(driver->logDir, vm->def->name, pos)) < 0)
+    if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
         return -1;
 
     if (VIR_ALLOC_N(buf, buf_size) < 0) {
@@ -2198,7 +2122,7 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG0("Creating domain log file");
-    if ((logfile = qemuProcessLogFD(driver, vm->def->name, false)) < 0)
+    if ((logfile = qemuDomainCreateLog(driver, vm, false)) < 0)
         goto cleanup;
 
     VIR_DEBUG0("Determining emulator version");
@@ -2461,7 +2385,7 @@ void qemuProcessStop(struct qemud_driver *driver,
         return;
     }
 
-    if ((logfile = qemuProcessLogFD(driver, vm->def->name, true)) < 0) {
+    if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0) {
         /* To not break the normal domain shutdown process, skip the
          * timestamp log writing if failed on opening log file. */
         VIR_WARN("Unable to open logfile: %s",

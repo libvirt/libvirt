@@ -128,4 +128,8 @@ void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
                                 virDomainObjPtr obj,
                                 virDomainNetDefPtr net);
 
+
+int qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm, bool append);
+int qemuDomainOpenLog(struct qemud_driver *driver, virDomainObjPtr vm, off_t pos);
+
 #endif /* __QEMU_DOMAIN_H__ */
