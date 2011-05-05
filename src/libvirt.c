@@ -8506,7 +8506,18 @@ error:
  * @xml: the XML description for the interface, preferably in UTF-8
  * @flags: and OR'ed set of extraction flags, not used yet
  *
- * Define an interface (or modify existing interface configuration)
+
+ * Define an interface (or modify existing interface configuration).
+ *
+ * Normally this change in the interface configuration is immediately
+ * permanent/persistent, but if virInterfaceChangeBegin() has been
+ * previously called (i.e. if an interface config transaction is
+ * open), the new interface definition will only become permanent if
+ * virInterfaceChangeCommit() is called prior to the next reboot of
+ * the system running libvirtd. Prior to that time, it can be
+ * explicitly removed using virInterfaceChangeRollback(), or will be
+ * automatically removed during the next reboot of the system running
+ * libvirtd.
  *
  * Returns NULL in case of error, a pointer to the interface otherwise
  */
@@ -8553,6 +8564,16 @@ error:
  * Undefine an interface, ie remove it from the config.
  * This does not free the associated virInterfacePtr object.
  *
+ * Normally this change in the interface configuration is
+ * permanent/persistent, but if virInterfaceChangeBegin() has been
+ * previously called (i.e. if an interface config transaction is
+ * open), the removal of the interface definition will only become
+ * permanent if virInterfaceChangeCommit() is called prior to the next
+ * reboot of the system running libvirtd. Prior to that time, the
+ * definition can be explicitly restored using
+ * virInterfaceChangeRollback(), or will be automatically restored
+ * during the next reboot of the system running libvirtd.
+ *
  * Returns 0 in case of success, -1 in case of error
  */
 int
@@ -8593,8 +8614,13 @@ error:
  * @iface: pointer to a defined interface
  * @flags: and OR'ed set of extraction flags, not used yet
  *
- * Activate an interface (ie call "ifup")
+ * Activate an interface (i.e. call "ifup").
  *
+ * If there was an open network config transaction at the time this
+ * interface was defined (that is, if virInterfaceChangeBegin() had
+ * been called), the interface will be brought back down (and then
+ * undefined) if virInterfaceChangeRollback() is called.
+p *
  * Returns 0 in case of success, -1 in case of error
  */
 int
@@ -8639,6 +8665,13 @@ error:
  * deactivate an interface (ie call "ifdown")
  * This does not remove the interface from the config, and
  * does not free the associated virInterfacePtr object.
+ *
+
+ * If there is an open network config transaction at the time this
+ * interface is destroyed (that is, if virInterfaceChangeBegin() had
+ * been called), and if the interface is later undefined and then
+ * virInterfaceChangeRollback() is called, the restoral of the
+ * interface definition will also bring the interface back up.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -8735,6 +8768,151 @@ virInterfaceFree(virInterfacePtr iface)
         return -1;
     }
     return 0;
+}
+
+/**
+ * virInterfaceChangeBegin:
+ * @conn: pointer to hypervisor connection
+ * @flags: flags, not used yet
+ *
+ * This functions creates a restore point to which one can return
+ * later by calling virInterfaceChangeRollback(). This function should
+ * be called before any transaction with interface configuration.
+ * Once knowing, new configuration works, it can be commited via
+ * virInterfaceChangeCommit(), which frees the restore point.
+ *
+ * If virInterfaceChangeBegin() is called when a transaction is
+ * already opened, this function will fail, and a
+ * VIR_ERR_INVALID_OPERATION will be logged.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, flags=%d", conn, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceChangeBegin) {
+        int ret;
+        ret = conn->interfaceDriver->interfaceChangeBegin(conn, flags);
+        if (ret < 0)
+           goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virInterfaceChangeCommit:
+ * @conn: pointer to hypervisor connection
+ * @flags: flags, not used yet
+ *
+ * This commits the changes made to interfaces and frees the restore point
+ * created by virInterfaceChangeBegin().
+ *
+ * If virInterfaceChangeCommit() is called when a transaction is not
+ * opened, this function will fail, and a VIR_ERR_INVALID_OPERATION
+ * will be logged.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, flags=%d", conn, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceChangeCommit) {
+        int ret;
+        ret = conn->interfaceDriver->interfaceChangeCommit(conn, flags);
+        if (ret < 0)
+           goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virInterfaceChangeRollback:
+ * @conn: pointer to hypervisor connection
+ * @flags: flags, not used yet
+ *
+ * This cancels changes made to interfaces settings by restoring previous
+ * state created by virInterfaceChangeBegin().
+ *
+ * If virInterfaceChangeRollback() is called when a transaction is not
+ * opened, this function will fail, and a VIR_ERR_INVALID_OPERATION
+ * will be logged.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, flags=%d", conn, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver &&
+        conn->interfaceDriver->interfaceChangeRollback) {
+        int ret;
+        ret = conn->interfaceDriver->interfaceChangeRollback(conn, flags);
+        if (ret < 0)
+           goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
 }
 
 
