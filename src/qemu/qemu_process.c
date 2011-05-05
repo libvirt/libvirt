@@ -1881,6 +1881,37 @@ qemuProcessFiltersInstantiate(virConnectPtr conn,
     return err;
 }
 
+static int
+qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainState state;
+    bool running;
+    int ret;
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorGetStatus(priv->mon, &running);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (ret < 0 || !virDomainObjIsActive(vm))
+        return -1;
+
+    state = virDomainObjGetState(vm, NULL);
+
+    if (state == VIR_DOMAIN_PAUSED && running) {
+        VIR_DEBUG("Domain %s was unpaused while its monitor was disconnected;"
+                  " changing state to running", vm->def->name);
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_UNPAUSED);
+    } else if (state == VIR_DOMAIN_RUNNING && !running) {
+        VIR_DEBUG("Domain %s was paused while its monitor was disconnected;"
+                  " changing state to paused", vm->def->name);
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
+    }
+
+    return 0;
+}
+
 struct qemuProcessReconnectData {
     virConnectPtr conn;
     struct qemud_driver *driver;
@@ -1916,6 +1947,9 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
         goto error;
     }
 
+    if (qemuProcessUpdateState(driver, obj) < 0)
+        goto error;
+
     /* If upgrading from old libvirtd we won't have found any
      * caps in the domain status, so re-query them
      */
@@ -1937,6 +1971,10 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
         goto error;
 
     if (qemuProcessFiltersInstantiate(conn, obj->def))
+        goto error;
+
+    /* update domain state XML with possibly updated state in virDomainObj */
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, obj) < 0)
         goto error;
 
     if (obj->def->id >= driver->nextvmid)

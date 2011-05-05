@@ -46,6 +46,7 @@ int qemuMonitorJSONCheckHMP(qemuMonitorPtr mon);
 int qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
                              virConnectPtr conn);
 int qemuMonitorJSONStopCPUs(qemuMonitorPtr mon);
+int qemuMonitorJSONGetStatus(qemuMonitorPtr mon, bool *running);
 
 int qemuMonitorJSONSystemPowerdown(qemuMonitorPtr mon);
 

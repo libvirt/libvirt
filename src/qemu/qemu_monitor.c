@@ -981,6 +981,26 @@ qemuMonitorStopCPUs(qemuMonitorPtr mon)
 }
 
 
+int
+qemuMonitorGetStatus(qemuMonitorPtr mon, bool *running)
+{
+    int ret;
+    VIR_DEBUG("mon=%p, running=%p", mon, running);
+
+    if (!mon || !running) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("both monitor and running must not be NULL"));
+        return -1;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONGetStatus(mon, running);
+    else
+        ret = qemuMonitorTextGetStatus(mon, running);
+    return ret;
+}
+
+
 int qemuMonitorSystemPowerdown(qemuMonitorPtr mon)
 {
     int ret;

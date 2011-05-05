@@ -373,6 +373,36 @@ qemuMonitorTextStopCPUs(qemuMonitorPtr mon) {
 }
 
 
+int
+qemuMonitorTextGetStatus(qemuMonitorPtr mon, bool *running)
+{
+    char *reply;
+    int ret = -1;
+
+    if (qemuMonitorHMPCommand(mon, "info status", &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("cannot get status info"));
+        return -1;
+    }
+
+    if (strstr(reply, "running")) {
+        *running = true;
+    } else if (strstr(reply, "paused")) {
+        *running = false;
+    } else {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("unexpected reply from info status: %s"), reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    return ret;
+}
+
+
 int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon) {
     char *info;
 

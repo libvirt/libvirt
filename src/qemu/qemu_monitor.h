@@ -178,6 +178,7 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);
 int qemuMonitorStopCPUs(qemuMonitorPtr mon);
+int qemuMonitorGetStatus(qemuMonitorPtr mon, bool *running);
 
 int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
 

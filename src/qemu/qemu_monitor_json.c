@@ -852,6 +852,48 @@ qemuMonitorJSONStopCPUs(qemuMonitorPtr mon)
 }
 
 
+int
+qemuMonitorJSONGetStatus(qemuMonitorPtr mon, bool *running)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-status", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("query-status reply was missing return data"));
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectGetBoolean(data, "running", running) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("query-status reply was missing running state"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONSystemPowerdown(qemuMonitorPtr mon)
 {
     int ret;
