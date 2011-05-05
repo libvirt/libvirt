@@ -54,6 +54,7 @@
 #include "veth.h"
 #include "uuid.h"
 #include "files.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -103,33 +104,19 @@ struct __lxc_child_argv {
  */
 static int lxcContainerExecInit(virDomainDefPtr vmDef)
 {
-    char *uuidenv, *nameenv;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virCommandPtr cmd;
 
     virUUIDFormat(vmDef->uuid, uuidstr);
 
-    if (virAsprintf(&uuidenv, "LIBVIRT_LXC_UUID=%s", uuidstr) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-    if (virAsprintf(&nameenv, "LIBVIRT_LXC_NAME=%s", vmDef->name) < 0) {
-        virReportOOMError();
-        return -1;
-    }
+    cmd = virCommandNew(vmDef->os.init);
 
-    const char *const argv[] = {
-        vmDef->os.init,
-        NULL,
-    };
-    const char *const envp[] = {
-        "PATH=/bin:/sbin",
-        "TERM=linux",
-        uuidenv,
-        nameenv,
-        NULL,
-    };
+    virCommandAddEnvString(cmd, "PATH=/bin:/sbin");
+    virCommandAddEnvString(cmd, "TERM=linux");
+    virCommandAddEnvPair(cmd, "LIBVIRT_LXC_UUID", uuidstr);
+    virCommandAddEnvPair(cmd, "LIBVIRT_LXC_NAME", vmDef->name);
 
-    return execve(argv[0], (char **)argv,(char**)envp);
+    return virCommandExec(cmd);
 }
 
 /**
