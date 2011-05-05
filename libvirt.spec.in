@@ -1067,6 +1067,14 @@ fi
 %endif
 
 %changelog
+* Thu May  5 2011 Daniel Veillard <veillard@redhat.com> - 0.9.1-1
+- support various persistent domain updates
+- improvements on memory APIs
+- Add virDomainEventRebootNew
+- various improvements to libxl driver
+- Spice: support audio, images and stream compression
+- Various improvements and bug fixes
+
 * Mon Apr  4 2011 Daniel Veillard <veillard@redhat.com> - 0.9.0-1
 - Support cputune cpu usage tuning
 - Add public APIs for storage volume upload/download

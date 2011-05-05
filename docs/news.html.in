@@ -8,6 +8,234 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>0.9.1: May 5 2011</h3>
+    <ul>
+      <li> Features:<br/>
+       support various persistent domain updates (KAMEZAWA Hiroyuki),<br/>
+       improvements on memory APIs (Taku Izumi),<br/>
+       Add virDomainEventRebootNew (Matthias Bolte),<br/>
+       various improvements to libxl driver (Markus Groß),<br/>
+       Spice: support audio, images and stream compression (Michal Privoznik)<br/>
+      </li>
+      <li> Documentation:<br/>
+       fix missing VLAN id for Qbg example (Gerhard Stenzel),<br/>
+       docs: Document filesystem tag device (Cole Robinson),<br/>
+       maint: fix comment typos (Eric Blake),<br/>
+       Fix two out-of-date comments in LVM backend (Richard Laager),<br/>
+       docs: Serial and parallel device target ports actually start from 0 (Matthias Bolte),<br/>
+       maint: fix grammar errors (Eric Blake),<br/>
+       docs: document freecell --all (Eric Blake),<br/>
+       docs: remove "returns" word from beginning of lines (Jean-Baptiste Rouault),<br/>
+       docs: add an IPv6 address to network XML examples (Laine Stump)<br/>
+      </li>
+      <li> Portability:<br/>
+       build: fix getcwd portability problems (Eric Blake),<br/>
+       build: avoid test warnings on mingw (Eric Blake),<br/>
+       virsh: avoid compiler warning on mingw (Eric Blake),<br/>
+       build: Use pkg-config for libssh2 check (Jiri Denemark),<br/>
+       build: Ignore old audit library (Jiri Denemark),<br/>
+       build: fix 32-bit test failure (Eric Blake),<br/>
+       build: Fix problem of building Python bindings (Osier Yang),<br/>
+       build: fix 32-bit test failure (Eric Blake),<br/>
+       ppc: Enable starting of Qemu VMs on ppc host (Stefan Berger),<br/>
+       Migrate VMs between different-endianess hosts (Stefan Berger),<br/>
+       build: really fix mingw startup (Eric Blake),<br/>
+       build: fix mingw build (Eric Blake),<br/>
+       do not build libvirt_iohelper when building without libvirtd (Wen Congyang),<br/>
+       virsh: fix mingw startup (Eric Blake),<br/>
+       build: avoid compiler warning on cygwin (Eric Blake),<br/>
+       Fix build for older gcc (Jim Fehlig),<br/>
+       Don't try to enable stack protector on Win32 (Daniel P. Berrange)<br/>
+      </li>
+      <li> Bug Fixes:<br/>
+       storage: avoid null deref and leak on failure (Eric Blake),<br/>
+       esx: Avoid null dereference on error in esxDomainGetInfo (Matthias Bolte),<br/>
+       remote: avoid null dereference on error (Eric Blake),<br/>
+       cgroup: avoid leaking a file (Eric Blake),<br/>
+       virsh: avoid null pointer dereference (Eric Blake),<br/>
+       pci: fix null pointer dereference (Eric Blake),<br/>
+       qemu: avoid null pointer dereference (Eric Blake),<br/>
+       tests: avoid null pointer dereference (Eric Blake),<br/>
+       Fix disability to run on systems with no PCI bus (Michal Privoznik),<br/>
+       virsh: fix regression in log to file (Supriya Kannery),<br/>
+       nwfilter: Fix memory leak in the ebtables subdriver (Matthias Bolte),<br/>
+       qemu: Fix qemuDomainModifyDeviceFlags leaking the caps bitmap (Matthias Bolte),<br/>
+       Fix memory leak in __virExec (Matthias Bolte),<br/>
+       hash: fix memory leak regression (Eric Blake),<br/>
+       Xen: Do not generate net ifname if domain is inactive (Jim Fehlig),<br/>
+       xen: check if device is assigned to guest before reattaching (Yufang Zhang),<br/>
+       util: Initialize hooks at daemon shutdown if no hooks defined (Osier Yang),<br/>
+       fix virsh's regression (Wen Congyang),<br/>
+       release PCI address only when we have ensured it successfully (Wen Congyang),<br/>
+       free memory properly in cleanup patch (Hu Tao),<br/>
+       free buf content when vsnprintf() failed (Wen Congyang),<br/>
+       esx: Fix dynamic dispatch for CastFromAnyType functions (Matthias Bolte),<br/>
+       Make crash and live flags mutually exclusive in virDomainCoreDump (Mark Wu),<br/>
+       Fix small memory leaks in config parsing related functions (Matthias Bolte),<br/>
+       daemon: Don't try to free an unsigned int in error paths (Matthias Bolte),<br/>
+       Fix QEMU tunnelled migration FD handling (Daniel P. Berrange),<br/>
+       Remove artificial minimum limit for guest memory (Jiri Denemark),<br/>
+       fix tunnelled migration's regression (Wen Congyang),<br/>
+       qemu: fix the check of virDomainObjUnref()'s return value (Wen Congyang),<br/>
+       Fix checking of return codes in dispatcher (Daniel P. Berrange),<br/>
+       qemu: avoid qemu_driver being unlocked twice when virThreadPoolNew() failed (Wen Congyang),<br/>
+       virsh: fix regression in parsing optional integer (Eric Blake),<br/>
+       phyp: avoid memory leaks in command values (Eric Blake),<br/>
+       phyp: avoid memory leak on failure (Eric Blake),<br/>
+       phyp: avoid a logic bug (Eric Blake),<br/>
+       free cpumask of vcpupinDef (Hu Tao),<br/>
+       network: Fix NULL dereference during error recovery (Michal Privoznik),<br/>
+       Add missing checks for QEMU domain state in tunables APIs (Daniel P. Berrange),<br/>
+       phyp: Fix too small buffer allocation in phypAttachDevice (Matthias Bolte),<br/>
+       phyp: Don't overwrite error from virDomainDeviceDefParse by OOM error (Matthias Bolte),<br/>
+       phyp: Don't try to use a string from a failed virAsprintf (Matthias Bolte),<br/>
+       phyp: Remove stack allocating a 4kb volume key and fix related memory leaks (Matthias Bolte),<br/>
+       qemu: fix a dead-lock problem (Hu Tao),<br/>
+       util: Fix crash when removing entries during hash iteration (Jiri Denemark),<br/>
+       Fix possible infinite loop in remote driver (Michal Privoznik),<br/>
+       qemu: Remove the managed state file only if restoring succeeded (Osier Yang),<br/>
+       reattach pci devices when qemuPrepareHostdevPCIDevices() failed (Wen Congyang),<br/>
+       reattach pci device when pciBindDeviceToStub() failed (Wen Congyang),<br/>
+       remove devices from driver activePciHostdevs when qemuPrepareHostdevPCIDevices() failed (Wen Congyang),<br/>
+       pci: avoid invalid free, init path to NULL (Wen Congyang),<br/>
+       qemu: Support for overriding NPROC limit (Jiri Denemark),<br/>
+       qemu: Always reserves slot 0x02 for primary VGA. (Osier Yang),<br/>
+       Fix typo in systemtap tapset directory name (Daniel P. Berrange),<br/>
+       qemu: Ignore unusable binaries (Jiri Denemark)<br/>
+      </li>
+      <li> Improvements:<br/>
+       maint: detect clang 2.9 (Eric Blake),<br/>
+       qemu: update qemuCgroupControllerActive signature (Eric Blake),<br/>
+       lxc: report correct error (Eric Blake),<br/>
+       libxl: avoid compiler warning (Eric Blake),<br/>
+       storage: use virCommand to avoid compiler warning (Eric Blake),<br/>
+       tests: Lower stack usage below 4096 bytes (Matthias Bolte),<br/>
+       tests: Update valgrind suppressions file (Matthias Bolte),<br/>
+       tests: simplify common setup (Eric Blake),<br/>
+       network: fix return value of hostsFileWrite (Laine Stump),<br/>
+       libvirt/qemu - support persistent attach/detach disks (KAMEZAWA Hiroyuki),<br/>
+       libvirt/qemu - support persistent modification of devices (KAMEZAWA Hiroyuki),<br/>
+       util: Simplify hash implementation (Jiri Denemark),<br/>
+       tests: More unit tests for internal hash APIs (Jiri Denemark),<br/>
+       Move call to virReportOOMError into virFileBuildPath (Matthias Bolte),<br/>
+       build: use gnulib passfd for simpler SCM_RIGHTS code (Eric Blake),<br/>
+       qemu: Add flags checking in DomainCoreDump (Jiri Denemark),<br/>
+       Make sure DNSMASQ_STATE_DIR exists (Guido Günther),<br/>
+       build: make VIR_FREE do some type checking (Eric Blake),<br/>
+       threads: add one-time initialization support (Eric Blake),<br/>
+       esx: Add a wrapper for shared CURL handles (Matthias Bolte),<br/>
+       esx: Move CURL handling code to it's own type (Matthias Bolte),<br/>
+       daemon: Honor error variable name change in the generator (Matthias Bolte),<br/>
+       libvirt/qemu - clean up UpdateDevice for consolidation. (KAMEZAWA Hiroyuki),<br/>
+       libvirt/qemu - clean up At(De)tachDeviceFlags() for consolidation. (KAMEZAWA Hiroyuki),<br/>
+       libvirt/qemu - Centralize device modification in the more flexible APIs (KAMEZAWA Hiroyuki),<br/>
+       Add support for s390(x) cpu options parsing (Michal Privoznik),<br/>
+       PHYP: Adding reboot domain function (Eduardo Otubo),<br/>
+       nwfilter: no support for direct type of interface (Stefan Berger),<br/>
+       Add cputune support to libxl driver (Markus Groß),<br/>
+       Update and sort msg_gen_function list and mark unmarked messages (Matthias Bolte),<br/>
+       Write error check conditionals in more compact form for dispatcher (Daniel P. Berrange),<br/>
+       Merge all returns paths from dispatcher into single path (Daniel P. Berrange),<br/>
+       Experimental libvirtd upstart job (Alan Pevec),<br/>
+       enhance processWatchdogEvent() (Wen Congyang),<br/>
+       xen: Replace statsErrorFunc with a macro (Matthias Bolte),<br/>
+       tests: Unit tests for internal hash APIs (Jiri Denemark),<br/>
+       build: include esx_vi.generated.* into dist file (Wen Congyang),<br/>
+       tests: test recent virsh option parsing changes (Eric Blake),<br/>
+       virsh: list required options first (Eric Blake),<br/>
+       phyp: use consistent return string handling (Eric Blake),<br/>
+       maint: use lighter-weight function for straight appends (Eric Blake),<br/>
+       libvirt-guests: implement START_DELAY (Alexander Todorov),<br/>
+       network: truncate bridges' dummy tap device names to IFNAMSIZ (15) chars (Laine Stump),<br/>
+       Introduce virDomainChrDefNew() (Michal Novotny),<br/>
+       esx: Make the parsed URI part of the private connection data (Matthias Bolte),<br/>
+       esx: Mark error message in macros for translation (Matthias Bolte),<br/>
+       esx: Extend VI generator to cover managed object types (Matthias Bolte),<br/>
+       esx: Cleanup and refactor CastFromAnyType macros (Matthias Bolte),<br/>
+       esx: Cleanup VI generator code (Matthias Bolte),<br/>
+       phyp: Reduce code duplication in error and success paths (Matthias Bolte),<br/>
+       Replace REMOTE_DEBUG with VIR_DEBUG in daemon dispatcher (Daniel P. Berrange),<br/>
+       Add missing checks for whether the connection is open in dispatcher (Daniel P. Berrange),<br/>
+       PHYP: Adding network interface (Eduardo Otubo),<br/>
+       xen: Remove PATH_MAX sized stack allocation from block stats code (Matthias Bolte),<br/>
+       setmaxmem: add the new options to "virsh setmaxmem" command (Taku Izumi),<br/>
+       maxmem: implement virDomainSetMaxMemory API of the qemu driver (Taku Izumi),<br/>
+       maxmem: introduces VIR_DOMAIN_MEM_MAXIMUM flag (Taku Izumi),<br/>
+       nwfilters: support for TCP flags evaluation (Stefan Berger),<br/>
+       setmem: add --current option to virsh setmem command (Taku Izumi),<br/>
+       setmem: add VIR_DOMAIN_MEM_CURRENT support to qemu (Taku Izumi),<br/>
+       setmem: introduce VIR_DOMAIN_MEM_CURRENT flag (Taku Izumi),<br/>
+       build: Install libxenlight log dir (Jim Fehlig),<br/>
+       Add domainSet/GetSchedulerParameters to libxl driver (Markus Groß),<br/>
+       rename pciUnBindDeviceFromStub() to pciUnbindDeviceFromStub() and float it up (Wen Congyang),<br/>
+       Add domainIsUpdated to libxl driver (Markus Groß),<br/>
+       Change locking for udev monitor and callbacks (Serge Hallyn),<br/>
+       Improve SCSI volume key generation (Daniel P. Berrange),<br/>
+       qemu: Rewrite LOOKUP_PTYS macro into a function (Jiri Denemark),<br/>
+       Enable use of -Wold-style-definition compiler flag (Daniel P. Berrange),<br/>
+       Enable use of -Wmissing-noreturn (Daniel P. Berrange),<br/>
+       Enable -Wmissing-format-attribute warning (Daniel P. Berrange),<br/>
+       Use gnulib's manywarnings and warnings modules (Daniel P. Berrange),<br/>
+       Use virBufferPtr for sexpr2string instead of manual buffer handling (Matthias Bolte),<br/>
+       xend: Remove 4kb stack allocation (Matthias Bolte),<br/>
+       uml: Remove PATH_MAX sized stack allocation from /proc parsing code (Matthias Bolte),<br/>
+       storage: Remove PATH_MAX sized stack allocation from iSCSI backend (Matthias Bolte),<br/>
+       qemu: Remove PATH_MAX sized stack allocation used in commandline building (Matthias Bolte),<br/>
+       Remove PATH_MAX sized stack allocation from virFileOpenTtyAt (Matthias Bolte),<br/>
+       openvz: Remove several larger stack allocations (Matthias Bolte),<br/>
+       daemon: Remove 4kb stack allocation of security label (Matthias Bolte),<br/>
+       virsh: Remove two 4kb stack allocations (Matthias Bolte),<br/>
+       Use virFileAbsPath instead of manually creating the absolute path (Matthias Bolte),<br/>
+       xenxs: Remove PATH_MAX sized stack allocation in XM script parsing (Matthias Bolte),<br/>
+       sasl: Remove stack allocated 8kb temporary buffers (Matthias Bolte),<br/>
+       qemu: Use heap allocated memory to read the monitor greeting (Matthias Bolte),<br/>
+       phyp: Remove 16kb stack allocation (Matthias Bolte),<br/>
+       virt-aa-helper: Remove PATH_MAX sized stack allocations (Matthias Bolte),<br/>
+       ebtables: Remove PATH_MAX sized stack allocation (Matthias Bolte),<br/>
+       pci: Remove PATH_MAX sized stack allocations (Matthias Bolte),<br/>
+       Remove PATH_MAX sized stack allocations related to virFileBuildPath (Matthias Bolte),<br/>
+       vmx: Use case-insensitive compare functions for all content (Matthias Bolte),<br/>
+       vmx: Support persistent CPU shares (Matthias Bolte),<br/>
+       Add autostart support to libxl driver (Markus Groß),<br/>
+       Allow relative path for qemu backing file (Jesse Cook),<br/>
+       build: detect potentential uninitialized variables (Eric Blake)<br/>
+      </li>
+      <li> Cleanups:<br/>
+       esx: Disable performance counter queries in esxDomainGetInfo (Matthias Bolte),<br/>
+       esx: Remove dead store in esxUtil_ParseDatastorePath (Matthias Bolte),<br/>
+       util: remove dead assignment (Eric Blake),<br/>
+       qemu: remove dead assignment (Eric Blake),<br/>
+       qemu: silence clang false positives (Eric Blake),<br/>
+       tests: suppress more valgrind situations (Eric Blake),<br/>
+       tests: avoid compiler warning (Eric Blake),<br/>
+       qemu: fix uninitialized variable warning (Christophe Fergeau),<br/>
+       build: fix syntax-check failure (Eric Blake),<br/>
+       virsh: nuke use of TRUE and FALSE (Eric Blake),<br/>
+       phyp: another simplification (Eric Blake),<br/>
+       maint: ignore built file (Eric Blake),<br/>
+       Change some variable names to follow standard in daemon dispatcher (Daniel P. Berrange),<br/>
+       Remove curly braces on all single-line conditional jumps in dispatcher (Daniel P. Berrange),<br/>
+       Remove virConnectPtr from virRaiseErrorFull (Matthias Bolte),<br/>
+       phyp: prefer memcpy over memmove when legal (Eric Blake),<br/>
+       phyp: use consistent style for labels (Eric Blake),<br/>
+       phyp: more return handling cleanup (Eric Blake),<br/>
+       esx: Fix gcc 4.6 warning about initialized but unused variables (Matthias Bolte),<br/>
+       maint: silence cppi warnings (Eric Blake),<br/>
+       Fix gcc 4.6 warnings in vbox_tmpl.c (Christophe Fergeau),<br/>
+       Fix gcc 4.6 warnings (Christophe Fergeau),<br/>
+       Remove C99 variable declare in PHYP network driver (Daniel P. Berrange),<br/>
+       Standard on error variable name in libvirtd dispatcher (Daniel P. Berrange),<br/>
+       Remove all whitespace before function brackets in daemon dispatcher (Daniel P. Berrange),<br/>
+       docs: tweak virsh restore warning (Eric Blake),<br/>
+       setmaxmem: remove the code to invoke virDomainSetMemory in cmdSetmaxmem (Taku Izumi),<br/>
+       build: fix gitignore sorting (Eric Blake),<br/>
+       tests: fix recent test failures (Eric Blake),<br/>
+       libxl: avoid compiler warning (Eric Blake),<br/>
+       Avoid compiler warnings about int to void * casts (Daniel P. Berrange),<br/>
+       Remove acinclude.m4 file (Daniel P. Berrange),<br/>
+       Remove possible uninitialized variable in openvz driver (Daniel P. Berrange)<br/>
+      </li>
+    </ul>
     <h3>0.9.0: Apr 4 2011</h3>
     <ul>
       <li> Features:<br/>
