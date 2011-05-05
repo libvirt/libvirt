@@ -56,6 +56,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+#define START_POSTFIX ": starting up\n"
+
 #define LXC_NB_MEM_PARAM  3
 
 typedef struct _lxcDomainObjPrivate lxcDomainObjPrivate;
@@ -1254,6 +1256,9 @@ static int lxcControllerStart(lxc_driver_t *driver,
     char *filterstr;
     char *outputstr;
     virCommandPtr cmd;
+    off_t pos = -1;
+    char ebuf[1024];
+    char *timestamp;
 
     cmd = virCommandNew(vm->def->emulator);
 
@@ -1314,6 +1319,24 @@ static int lxcControllerStart(lxc_driver_t *driver,
         if (hookret < 0)
             goto cleanup;
     }
+
+    /* Log timestamp */
+    if ((timestamp = virTimestamp()) == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
+        safewrite(logfile, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
+        VIR_WARN("Unable to write timestamp to logfile: %s",
+                 virStrerror(errno, ebuf, sizeof ebuf));
+    }
+    VIR_FREE(timestamp);
+
+    /* Log generated command line */
+    virCommandWriteArgLog(cmd, logfile);
+    if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
+        VIR_WARN("Unable to seek to end of logfile: %s",
+                 virStrerror(errno, ebuf, sizeof ebuf));
 
     virCommandPreserveFD(cmd, appPty);
     virCommandSetOutputFD(cmd, &logfile);
