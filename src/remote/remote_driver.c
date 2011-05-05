@@ -1268,8 +1268,8 @@ initialize_gnutls(char *pkipath, int flags)
                                                 GNUTLS_X509_FMT_PEM);
     if (err < 0) {
         remoteError(VIR_ERR_GNUTLS_ERROR,
-                    _("unable to load CA certificate: %s"),
-                    gnutls_strerror (err));
+                    _("unable to load CA certificate '%s': %s"),
+                    libvirt_cacert, gnutls_strerror (err));
         goto error;
     }
 
@@ -1283,8 +1283,9 @@ initialize_gnutls(char *pkipath, int flags)
                                               GNUTLS_X509_FMT_PEM);
     if (err < 0) {
         remoteError(VIR_ERR_GNUTLS_ERROR,
-                    _("unable to load private key/certificate: %s"),
-                    gnutls_strerror (err));
+                    _("unable to load private key '%s' and/or "
+                    "certificate '%s': %s"), libvirt_clientkey,
+                    libvirt_clientcert, gnutls_strerror (err));
         goto error;
     }
 
