@@ -117,16 +117,20 @@ char *qemuDomainFormatXML(struct qemud_driver *driver,
 
 void qemuDomainObjTaint(struct qemud_driver *driver,
                         virDomainObjPtr obj,
-                        enum virDomainTaintFlags taint);
+                        enum virDomainTaintFlags taint,
+                        int logFD);
 
 void qemuDomainObjCheckTaint(struct qemud_driver *driver,
-                             virDomainObjPtr obj);
+                             virDomainObjPtr obj,
+                             int logFD);
 void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
                                  virDomainObjPtr obj,
-                                 virDomainDiskDefPtr disk);
+                                 virDomainDiskDefPtr disk,
+                                 int logFD);
 void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
                                 virDomainObjPtr obj,
-                                virDomainNetDefPtr net);
+                                virDomainNetDefPtr net,
+                                int logFD);
 
 
 int qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm, bool append);

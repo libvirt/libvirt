@@ -746,10 +746,13 @@ cleanup:
     return ret;
 }
 
-void qemuDomainObjTaint(struct qemud_driver *driver ATTRIBUTE_UNUSED,
+void qemuDomainObjTaint(struct qemud_driver *driver,
                         virDomainObjPtr obj,
-                        enum virDomainTaintFlags taint)
+                        enum virDomainTaintFlags taint,
+                        int logFD)
 {
+    virErrorPtr orig_err = NULL;
+
     if (virDomainObjTaint(obj, taint)) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(obj->def->uuid, uuidstr);
@@ -759,53 +762,70 @@ void qemuDomainObjTaint(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                  obj->def->name,
                  uuidstr,
                  virDomainTaintTypeToString(taint));
+
+        /* We don't care about errors logging taint info, so
+         * preserve original error, and clear any error that
+         * is raised */
+        orig_err = virSaveLastError();
+        if (qemuDomainAppendLog(driver, obj, logFD,
+                                "Domain id=%d is tainted: %s\n",
+                                obj->def->id,
+                                virDomainTaintTypeToString(taint)) < 0)
+            virResetLastError();
+        if (orig_err) {
+            virSetError(orig_err);
+            virFreeError(orig_err);
+        }
     }
 }
 
 
 void qemuDomainObjCheckTaint(struct qemud_driver *driver,
-                             virDomainObjPtr obj)
+                             virDomainObjPtr obj,
+                             int logFD)
 {
     int i;
 
     if (!driver->clearEmulatorCapabilities ||
         driver->user == 0 ||
         driver->group == 0)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
 
     if (obj->def->namespaceData) {
         qemuDomainCmdlineDefPtr qemucmd = obj->def->namespaceData;
         if (qemucmd->num_args || qemucmd->num_env)
-            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV);
+            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logFD);
     }
 
     for (i = 0 ; i < obj->def->ndisks ; i++)
-        qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i]);
+        qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i], logFD);
 
     for (i = 0 ; i < obj->def->nnets ; i++)
-        qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i]);
+        qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i], logFD);
 }
 
 
 void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
                                  virDomainObjPtr obj,
-                                 virDomainDiskDefPtr disk)
+                                 virDomainDiskDefPtr disk,
+                                 int logFD)
 {
     if (!disk->driverType &&
         driver->allowDiskFormatProbing)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logFD);
 }
 
 
 void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
                                 virDomainObjPtr obj,
-                                virDomainNetDefPtr net)
+                                virDomainNetDefPtr net,
+                                int logFD)
 {
     if ((net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
          net->data.ethernet.script != NULL) ||
         (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
          net->data.bridge.script != NULL))
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS, logFD);
 }
 
 

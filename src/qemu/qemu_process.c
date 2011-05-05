@@ -2239,7 +2239,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     virCommandWriteArgLog(cmd, logfile);
 
-    qemuDomainObjCheckTaint(driver, vm);
+    qemuDomainObjCheckTaint(driver, vm, logfile);
 
     if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
         VIR_WARN("Unable to seek to end of logfile: %s",
