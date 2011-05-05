@@ -891,3 +891,39 @@ qemuDomainOpenLog(struct qemud_driver *driver, virDomainObjPtr vm, off_t pos)
 }
 
 
+int qemuDomainAppendLog(struct qemud_driver *driver,
+                        virDomainObjPtr obj,
+                        int logFD,
+                        const char *fmt, ...)
+{
+    int fd = logFD;
+    va_list argptr;
+    char *message = NULL;
+    int ret = -1;
+
+    va_start(argptr, fmt);
+
+    if ((fd == -1) &&
+        (fd = qemuDomainCreateLog(driver, obj, true)) < 0)
+        goto cleanup;
+
+    if (virVasprintf(&message, fmt, argptr) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (safewrite(fd, message, strlen(message)) < 0) {
+        virReportSystemError(errno, _("Unable to write to domain logfile %s"),
+                             obj->def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    va_end(argptr);
+
+    if (fd != logFD)
+        VIR_FORCE_CLOSE(fd);
+
+    return ret;
+}

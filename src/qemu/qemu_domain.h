@@ -131,5 +131,9 @@ void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
 
 int qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm, bool append);
 int qemuDomainOpenLog(struct qemud_driver *driver, virDomainObjPtr vm, off_t pos);
+int qemuDomainAppendLog(struct qemud_driver *driver,
+                        virDomainObjPtr vm,
+                        int logFD,
+                        const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(4, 5);
 
 #endif /* __QEMU_DOMAIN_H__ */
