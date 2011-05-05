@@ -6657,6 +6657,9 @@ static virInterfaceDriver interface_driver = {
     .interfaceCreate = remoteInterfaceCreate, /* 0.7.2 */
     .interfaceDestroy = remoteInterfaceDestroy, /* 0.7.2 */
     .interfaceIsActive = remoteInterfaceIsActive, /* 0.7.3 */
+    .interfaceChangeBegin = remoteInterfaceChangeBegin, /* 0.9.2 */
+    .interfaceChangeCommit = remoteInterfaceChangeCommit, /* 0.9.2 */
+    .interfaceChangeRollback = remoteInterfaceChangeRollback, /* 0.9.2 */
 };
 
 static virStorageDriver storage_driver = {

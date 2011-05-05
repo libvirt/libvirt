@@ -803,6 +803,15 @@ struct remote_interface_destroy_args {
         remote_nonnull_interface   iface;
         u_int                      flags;
 };
+struct remote_interface_change_begin_args {
+        unsigned int flags;
+};
+struct remote_interface_change_commit_args {
+        unsigned int flags;
+};
+struct remote_interface_change_rollback_args {
+        unsigned int flags;
+};
 struct remote_auth_list_ret {
         struct {
                 u_int              types_len;

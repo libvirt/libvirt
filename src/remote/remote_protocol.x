@@ -1167,6 +1167,18 @@ struct remote_interface_destroy_args {
     unsigned int flags;
 };
 
+struct remote_interface_change_begin_args {
+    unsigned int flags;
+};
+
+struct remote_interface_change_commit_args {
+    unsigned int flags;
+};
+
+struct remote_interface_change_rollback_args {
+    unsigned int flags;
+};
+
 
 /* Auth calls: */
 
@@ -2305,9 +2317,13 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3 = 216, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_FINISH3 = 217, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3 = 218, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS_FLAGS = 219 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS_FLAGS = 219, /* skipgen skipgen */
+    REMOTE_PROC_INTERFACE_CHANGE_BEGIN = 220, /* autogen autogen */
 
-    /* Notice how the entries are grouped in sets of 10 ?
+    REMOTE_PROC_INTERFACE_CHANGE_COMMIT = 221, /* autogen autogen */
+    REMOTE_PROC_INTERFACE_CHANGE_ROLLBACK = 222 /* autogen autogen */
+    /*
+     * Notice how the entries are grouped in sets of 10 ?
      * Nice isn't it. Please keep it this way when adding more.
      *
      * Each function must have a two-word comment.  The first word is
