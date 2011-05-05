@@ -1247,133 +1247,57 @@ static int lxcControllerStart(lxc_driver_t *driver,
                               int nveths,
                               char **veths,
                               int appPty,
-                              int logfd)
+                              int logfile)
 {
     int i;
-    int rc;
-    int largc = 0, larga = 0;
-    const char **largv = NULL;
-    int lenvc = 0, lenva = 0;
-    const char **lenv = NULL;
+    int ret = -1;
     char *filterstr;
     char *outputstr;
-    char *tmp;
-    int log_level;
-    pid_t child;
-    int status;
-    fd_set keepfd;
-    char appPtyStr[30];
-    const char *emulator;
+    virCommandPtr cmd;
 
-    FD_ZERO(&keepfd);
+    cmd = virCommandNew(vm->def->emulator);
 
-#define ADD_ARG_SPACE                                                   \
-    do { \
-        if (largc == larga) {                                           \
-            larga += 10;                                                \
-            if (VIR_REALLOC_N(largv, larga) < 0)                        \
-                goto no_memory;                                         \
-        }                                                               \
-    } while (0)
+    /* The controller may call ip command, so we have to retain PATH. */
+    virCommandAddEnvPass(cmd, "PATH");
 
-#define ADD_ARG(thisarg)                                                \
-    do {                                                                \
-        ADD_ARG_SPACE;                                                  \
-        largv[largc++] = thisarg;                                       \
-    } while (0)
-
-#define ADD_ARG_LIT(thisarg)                                            \
-    do {                                                                \
-        ADD_ARG_SPACE;                                                  \
-        if ((largv[largc++] = strdup(thisarg)) == NULL)                 \
-            goto no_memory;                                             \
-    } while (0)
-
-#define ADD_ENV_SPACE                                                   \
-    do {                                                                \
-        if (lenvc == lenva) {                                           \
-            lenva += 10;                                                \
-            if (VIR_REALLOC_N(lenv, lenva) < 0)                         \
-                goto no_memory;                                         \
-        }                                                               \
-    } while (0)
-
-#define ADD_ENV(thisarg)                                                \
-    do {                                                                \
-        ADD_ENV_SPACE;                                                  \
-        lenv[lenvc++] = thisarg;                                        \
-    } while (0)
-
-#define ADD_ENV_PAIR(envname, val)                                      \
-    do {                                                                \
-        char *envval;                                                   \
-        ADD_ENV_SPACE;                                                  \
-        if (virAsprintf(&envval, "%s=%s", envname, val) < 0)            \
-            goto no_memory;                                             \
-        lenv[lenvc++] = envval;                                         \
-    } while (0)
-
-#define ADD_ENV_COPY(envname)                                           \
-    do {                                                                \
-        char *val = getenv(envname);                                    \
-        if (val != NULL) {                                              \
-            ADD_ENV_PAIR(envname, val);                                 \
-        }                                                               \
-    } while (0)
-
-    /*
-     * The controller may call ip command, so we have to remain PATH.
-     */
-    ADD_ENV_COPY("PATH");
-
-    log_level = virLogGetDefaultPriority();
-    if (virAsprintf(&tmp, "LIBVIRT_DEBUG=%d", log_level) < 0)
-        goto no_memory;
-    ADD_ENV(tmp);
+    virCommandAddEnvFormat(cmd, "LIBVIRT_DEBUG=%d",
+                           virLogGetDefaultPriority());
 
     if (virLogGetNbFilters() > 0) {
         filterstr = virLogGetFilters();
-        if (!filterstr)
-            goto no_memory;
-        ADD_ENV_PAIR("LIBVIRT_LOG_FILTERS", filterstr);
+        if (!filterstr) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        virCommandAddEnvPair(cmd, "LIBVIRT_LOG_FILTERS", filterstr);
         VIR_FREE(filterstr);
     }
 
     if (driver->log_libvirtd) {
         if (virLogGetNbOutputs() > 0) {
             outputstr = virLogGetOutputs();
-            if (!outputstr)
-                goto no_memory;
-            ADD_ENV_PAIR("LIBVIRT_LOG_OUTPUTS", outputstr);
+            if (!outputstr) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            virCommandAddEnvPair(cmd, "LIBVIRT_LOG_OUTPUTS", outputstr);
             VIR_FREE(outputstr);
         }
     } else {
-        if (virAsprintf(&tmp, "LIBVIRT_LOG_OUTPUTS=%d:stderr", log_level) < 0)
-            goto no_memory;
-        ADD_ENV(tmp);
+        virCommandAddEnvFormat(cmd,
+                               "LIBVIRT_LOG_OUTPUTS=%d:stderr",
+                               virLogGetDefaultPriority());
     }
 
-    ADD_ENV(NULL);
-
-    snprintf(appPtyStr, sizeof(appPtyStr), "%d", appPty);
-
-    emulator = vm->def->emulator;
-
-    ADD_ARG_LIT(emulator);
-    ADD_ARG_LIT("--name");
-    ADD_ARG_LIT(vm->def->name);
-    ADD_ARG_LIT("--console");
-    ADD_ARG_LIT(appPtyStr);
-    ADD_ARG_LIT("--background");
+    virCommandAddArgList(cmd, "--name", vm->def->name, "--console", NULL);
+    virCommandAddArgFormat(cmd, "%d", appPty);
+    virCommandAddArg(cmd, "--background");
 
     for (i = 0 ; i < nveths ; i++) {
-        ADD_ARG_LIT("--veth");
-        ADD_ARG_LIT(veths[i]);
+        virCommandAddArgList(cmd, "--veth", veths[i], NULL);
     }
-
-    ADD_ARG(NULL);
-
-    FD_SET(appPty, &keepfd);
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
@@ -1391,52 +1315,15 @@ static int lxcControllerStart(lxc_driver_t *driver,
             goto cleanup;
     }
 
-    if (virExec(largv, lenv, &keepfd, &child,
-                -1, &logfd, &logfd,
-                VIR_EXEC_NONE) < 0)
-        goto cleanup;
+    virCommandPreserveFD(cmd, appPty);
+    virCommandSetOutputFD(cmd, &logfile);
+    virCommandSetErrorFD(cmd, &logfile);
 
-    /* We now wait for the process to exit - the controller
-     * will fork() itself into the background - waiting for
-     * it to exit thus guarentees it has written its pidfile
-     */
-    while ((rc = waitpid(child, &status, 0) == -1) && errno == EINTR);
-    if (rc == -1) {
-        virReportSystemError(errno,
-                             _("Cannot wait for '%s'"),
-                             largv[0]);
-        goto cleanup;
-    }
+    ret = virCommandRun(cmd, NULL);
 
-    if (!(WIFEXITED(status) && WEXITSTATUS(status) == 0)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Container '%s' unexpectedly shutdown during startup"),
-                 largv[0]);
-        goto cleanup;
-    }
-
-#undef ADD_ARG
-#undef ADD_ARG_LIT
-#undef ADD_ARG_SPACE
-#undef ADD_ENV_SPACE
-#undef ADD_ENV_PAIR
-
-    return 0;
-
-no_memory:
-    virReportOOMError();
 cleanup:
-    if (largv) {
-        for (i = 0 ; i < largc ; i++)
-            VIR_FREE(largv[i]);
-        VIR_FREE(largv);
-    }
-    if (lenv) {
-        for (i=0 ; i < lenvc ; i++)
-            VIR_FREE(lenv[i]);
-        VIR_FREE(lenv);
-    }
-    return -1;
+    virCommandFree(cmd);
+    return ret;
 }
 
 
