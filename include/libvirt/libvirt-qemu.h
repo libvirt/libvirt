@@ -28,6 +28,10 @@ typedef enum {
 int virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
                                 char **result, unsigned int flags);
 
+virDomainPtr virDomainQemuAttach(virConnectPtr domain,
+                                 unsigned int pid,
+                                 unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

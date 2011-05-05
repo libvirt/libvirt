@@ -566,6 +566,11 @@ typedef int
     (*virDrvDomainQemuMonitorCommand)(virDomainPtr domain, const char *cmd,
                                       char **result, unsigned int flags);
 
+typedef virDomainPtr
+    (*virDrvDomainQemuAttach)(virConnectPtr conn,
+                              unsigned int pid,
+                              unsigned int flags);
+
 typedef int
     (*virDrvDomainOpenConsole)(virDomainPtr dom,
                                const char *devname,
@@ -786,6 +791,7 @@ struct _virDriver {
     virDrvDomainRevertToSnapshot domainRevertToSnapshot;
     virDrvDomainSnapshotDelete domainSnapshotDelete;
     virDrvDomainQemuMonitorCommand qemuDomainMonitorCommand;
+    virDrvDomainQemuAttach qemuDomainAttach;
     virDrvDomainOpenConsole domainOpenConsole;
     virDrvDomainInjectNMI domainInjectNMI;
     virDrvDomainMigrateBegin3	domainMigrateBegin3;

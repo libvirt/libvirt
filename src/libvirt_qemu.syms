@@ -14,3 +14,8 @@ LIBVIRT_QEMU_0.8.3 {
     global:
         virDomainQemuMonitorCommand;
 };
+
+LIBVIRT_QEMU_0.9.4 {
+    global:
+        virDomainQemuAttach;
+} LIBVIRT_QEMU_0.8.3;
