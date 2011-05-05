@@ -4237,6 +4237,7 @@ static virDriver remote_driver = {
     .domainRevertToSnapshot = remoteDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = remoteDomainSnapshotDelete, /* 0.8.0 */
     .qemuDomainMonitorCommand = remoteQemuDomainMonitorCommand, /* 0.8.3 */
+    .qemuDomainAttach = qemuDomainAttach, /* 0.9.4 */
     .domainOpenConsole = remoteDomainOpenConsole, /* 0.8.6 */
     .domainInjectNMI = remoteDomainInjectNMI, /* 0.9.2 */
     .domainMigrateBegin3 = remoteDomainMigrateBegin3, /* 0.9.2 */

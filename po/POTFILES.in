@@ -1,4 +1,5 @@
 daemon/libvirtd.c
+daemon/qemu_dispatch.h
 daemon/remote.c
 daemon/remote_dispatch.h
 daemon/stream.c

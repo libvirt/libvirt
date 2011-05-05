@@ -37,6 +37,16 @@ struct qemu_monitor_command_ret {
     remote_nonnull_string result;
 };
 
+
+struct qemu_domain_attach_args {
+    unsigned int pid;
+    unsigned int flags;
+};
+
+struct qemu_domain_attach_ret {
+    remote_nonnull_domain dom;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const QEMU_PROGRAM = 0x20008087;
 const QEMU_PROTOCOL_VERSION = 1;
@@ -45,5 +55,6 @@ enum qemu_procedure {
     /* Each function must have a two-word comment.  The first word is
      * whether remote_generator.pl handles daemon, the second whether
      * it handles src/remote.  */
-    QEMU_PROC_MONITOR_COMMAND = 1 /* skipgen skipgen */
+    QEMU_PROC_MONITOR_COMMAND = 1, /* skipgen skipgen */
+    QEMU_PROC_DOMAIN_ATTACH = 2 /* autogen autogen */
 };

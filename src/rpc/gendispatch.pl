@@ -821,6 +821,8 @@ elsif ($opt_b) {
                 $proc_name = "ConnectBaselineCPU"
             } elsif ($call->{ProcName} eq "CPUCompare") {
                 $proc_name = "ConnectCompareCPU"
+            } elsif ($structprefix eq "qemu" && $call->{ProcName} =~ /^Domain/) {
+                $proc_name =~ s/^(Domain)/${1}Qemu/;
             }
 
             if ($single_ret_as_list) {
@@ -1323,7 +1325,7 @@ elsif ($opt_k) {
         # print function
         print "\n";
         print "static $single_ret_type\n";
-        print "remote$call->{ProcName}(";
+        print "$structprefix$call->{ProcName}(";
 
         print join(", ", @args_list);
 
@@ -1417,8 +1419,13 @@ elsif ($opt_k) {
             print "    memset(&ret, 0, sizeof ret);\n";
         }
 
+        my $callflags = "0";
+        if ($structprefix eq "qemu") {
+            $callflags = "REMOTE_CALL_QEMU";
+        }
+
         print "\n";
-        print "    if (call($priv_src, priv, 0, ${procprefix}_PROC_$call->{UC_NAME},\n";
+        print "    if (call($priv_src, priv, $callflags, ${procprefix}_PROC_$call->{UC_NAME},\n";
         print "             (xdrproc_t)xdr_$argtype, (char *)$call_args,\n";
         print "             (xdrproc_t)xdr_$rettype, (char *)$call_ret) == -1) {\n";
 
