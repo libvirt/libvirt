@@ -259,23 +259,26 @@ virCommandNonblockingFDs(virCommandPtr cmd)
 }
 
 /*
- * Add an environment variable to the child
- * using separate name & value strings
+ * Add an environment variable to the child created by a printf-style format
  */
 void
-virCommandAddEnvPair(virCommandPtr cmd, const char *name, const char *value)
+virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
 {
     char *env;
+    va_list list;
 
     if (!cmd || cmd->has_error)
         return;
 
-    if (virAsprintf(&env, "%s=%s", name, value ? value : "") < 0) {
+    va_start(list, format);
+    if (virVasprintf(&env, format, list) < 0) {
         cmd->has_error = ENOMEM;
+        va_end(list);
         return;
     }
+    va_end(list);
 
-    /* env plus trailing NULL */
+    /* Arg plus trailing NULL. */
     if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
         VIR_FREE(env);
         cmd->has_error = ENOMEM;
@@ -283,6 +286,16 @@ virCommandAddEnvPair(virCommandPtr cmd, const char *name, const char *value)
     }
 
     cmd->env[cmd->nenv++] = env;
+}
+
+/*
+ * Add an environment variable to the child
+ * using separate name & value strings
+ */
+void
+virCommandAddEnvPair(virCommandPtr cmd, const char *name, const char *value)
+{
+    virCommandAddEnvFormat(cmd, "%s=%s", name, value);
 }
 
 

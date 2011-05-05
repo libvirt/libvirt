@@ -98,6 +98,13 @@ void virCommandDaemonize(virCommandPtr cmd);
 void virCommandNonblockingFDs(virCommandPtr cmd);
 
 /*
+ * Add an environment variable to the child created by a printf-style format
+ */
+void
+virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
+                       ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 3);
+
+/*
  * Add an environment variable to the child
  * using separate name & value strings
  */

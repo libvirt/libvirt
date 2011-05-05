@@ -100,6 +100,7 @@ virCommandAddArgList;
 virCommandAddArgPair;
 virCommandAddArgSet;
 virCommandAddEnvBuffer;
+virCommandAddEnvFormat;
 virCommandAddEnvPair;
 virCommandAddEnvPass;
 virCommandAddEnvPassCommon;
