@@ -1424,6 +1424,13 @@ int                     virInterfaceDestroy       (virInterfacePtr iface,
 int                     virInterfaceRef           (virInterfacePtr iface);
 int                     virInterfaceFree          (virInterfacePtr iface);
 
+int                     virInterfaceChangeBegin   (virConnectPtr conn,
+                                                   unsigned int flags);
+int                     virInterfaceChangeCommit  (virConnectPtr conn,
+                                                   unsigned int flags);
+int                     virInterfaceChangeRollback(virConnectPtr conn,
+                                                   unsigned int flags);
+
 /**
  * virStoragePool:
  *
