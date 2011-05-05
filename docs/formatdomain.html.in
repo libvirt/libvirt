@@ -917,7 +917,7 @@
       &lt;source name='my-vm-template'/&gt;
       &lt;target dir='/'/&gt;
     &lt;/filesystem&gt;
-    &lt;filesystem type='mount' &gt;
+    &lt;filesystem type='mount' accessmode='passthrough'&gt;
       &lt;source dir='/export/to/guest'/&gt;
       &lt;target dir='/import/from/host'/&gt;
       &lt;readonly/&gt;
@@ -939,7 +939,7 @@
         A host directory to mount in the guest. Used by LXC,
         OpenVZ <span class="since">(since 0.6.2)</span>
         and QEMU/KVM <span class="since">(since 0.8.5)</span>.
-        This is the default <code>mode</code> if one is not specified.
+        This is the default <code>type</code> if one is not specified.
         </dd>
         <dt><code>type='template'</code></dt>
         <dd>
@@ -955,27 +955,27 @@
         </dd>
         </dl>
 
-      The filesystem block has an optional attribute <code>mode</code>
+      The filesystem block has an optional attribute <code>accessmode</code>
       which specifies the security mode for accessing the source
       <span class="since">(since 0.8.5)</span>. Currently this only works
       with <code>type='mount'</code> for the QEMU/KVM driver. The possible
       values are:
 
         <dl>
-        <dt><code>mode='passthrough'</code></dt>
+        <dt><code>accessmode='passthrough'</code></dt>
         <dd>
         The <code>source</code> is accessed with the permissions of the
-        user inside the guest. This is the default <code>mode</code> if
+        user inside the guest. This is the default <code>accessmode</code> if
         one is not specified.
         <a href="http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html">More info</a>
         </dd>
-        <dt><code>mode='mapped'</code></dt>
+        <dt><code>accessmode='mapped'</code></dt>
         <dd>
         The <code>source</code> is accessed with the permissions of the
         hypervisor (QEMU process).
         <a href="http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html">More info</a>
         </dd>
-        <dt><code>mode='squash'</code></dt>
+        <dt><code>accessmode='squash'</code></dt>
         <dd>
         Similar to 'passthrough', the exception is that failure of
         privileged operations like 'chown' are ignored. This makes a
