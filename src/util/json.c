@@ -491,12 +491,13 @@ int virJSONValueGetNumberDouble(virJSONValuePtr number, double *value)
 }
 
 
-int virJSONValueGetBoolean(virJSONValuePtr val)
+int virJSONValueGetBoolean(virJSONValuePtr val, bool *value)
 {
-    if (val->type != VIR_JSON_TYPE_NUMBER)
+    if (val->type != VIR_JSON_TYPE_BOOLEAN)
         return -1;
 
-    return val->data.boolean;
+    *value = val->data.boolean;
+    return 0;
 }
 
 
@@ -593,7 +594,7 @@ int virJSONValueObjectGetNumberDouble(virJSONValuePtr object, const char *key, d
 }
 
 
-int virJSONValueObjectGetBoolean(virJSONValuePtr object, const char *key)
+int virJSONValueObjectGetBoolean(virJSONValuePtr object, const char *key, bool *value)
 {
     virJSONValuePtr val;
     if (object->type != VIR_JSON_TYPE_OBJECT)
@@ -603,7 +604,7 @@ int virJSONValueObjectGetBoolean(virJSONValuePtr object, const char *key)
     if (!val)
         return -1;
 
-    return virJSONValueGetBoolean(val);
+    return virJSONValueGetBoolean(val, value);
 }
 
 
