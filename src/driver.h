@@ -868,6 +868,15 @@ typedef int
 typedef int
         (*virDrvInterfaceIsActive)(virInterfacePtr iface);
 
+typedef int
+        (*virDrvInterfaceChangeBegin)   (virConnectPtr conn,
+                                         unsigned int flags);
+typedef int
+        (*virDrvInterfaceChangeCommit)  (virConnectPtr conn,
+                                         unsigned int flags);
+typedef int
+        (*virDrvInterfaceChangeRollback)(virConnectPtr conn,
+                                         unsigned int flags);
 
 typedef struct _virInterfaceDriver virInterfaceDriver;
 typedef virInterfaceDriver *virInterfaceDriverPtr;
@@ -898,6 +907,9 @@ struct _virInterfaceDriver {
     virDrvInterfaceCreate            interfaceCreate;
     virDrvInterfaceDestroy           interfaceDestroy;
     virDrvInterfaceIsActive          interfaceIsActive;
+    virDrvInterfaceChangeBegin       interfaceChangeBegin;
+    virDrvInterfaceChangeCommit      interfaceChangeCommit;
+    virDrvInterfaceChangeRollback    interfaceChangeRollback;
 };
 
 
