@@ -4142,7 +4142,7 @@ qemudCanonicalizeMachineFromInfo(virDomainDefPtr def,
         if (!machine->canonical)
             continue;
 
-        if (STRNEQ(def->os.machine, machine->name))
+        if (def->os.machine && STRNEQ(def->os.machine, machine->name))
             continue;
 
         if (!(*canonical = strdup(machine->canonical))) {
@@ -4169,7 +4169,7 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
         if (!machines[i]->canonical)
             continue;
 
-        if (STRNEQ(def->os.machine, machines[i]->name))
+        if (def->os.machine && STRNEQ(def->os.machine, machines[i]->name))
             continue;
 
         *canonical = machines[i]->canonical;
@@ -8359,6 +8359,92 @@ cleanup:
 }
 
 
+static virDomainPtr qemuDomainAttach(virConnectPtr conn,
+                                     unsigned int pid,
+                                     unsigned int flags)
+{
+    struct qemud_driver *driver = conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainPtr dom = NULL;
+    virDomainChrSourceDefPtr monConfig = NULL;
+    bool monJSON = false;
+    char *pidfile;
+
+    virCheckFlags(0, NULL);
+
+    qemuDriverLock(driver);
+
+    if (!(def = qemuParseCommandLinePid(driver->caps, pid,
+                                        &pidfile, &monConfig, &monJSON)))
+        goto cleanup;
+
+    if (!monConfig) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("No monitor connection for pid %u"),
+                        pid);
+        goto cleanup;
+    }
+    if (monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("Cannot connect to monitor connection of type '%s' for pid %u"),
+                        virDomainChrTypeToString(monConfig->type), pid);
+        goto cleanup;
+    }
+
+    if (!(def->name) &&
+        virAsprintf(&def->name, "attach-pid-%u", pid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+        goto cleanup;
+
+    if (qemudCanonicalizeMachine(driver, def) < 0)
+        goto cleanup;
+
+    if (qemuDomainAssignPCIAddresses(def) < 0)
+        goto cleanup;
+
+    if (!(vm = virDomainAssignDef(driver->caps,
+                                  &driver->domains,
+                                  def, false)))
+        goto cleanup;
+
+    def = NULL;
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+        goto cleanup;
+
+    if (qemuProcessAttach(conn, driver, vm, pid,
+                          pidfile, monConfig, monJSON) < 0) {
+        monConfig = NULL;
+        goto endjob;
+    }
+
+    monConfig = NULL;
+
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
+    if (dom) dom->id = vm->def->id;
+
+endjob:
+    if (qemuDomainObjEndJob(vm) == 0) {
+        vm = NULL;
+        goto cleanup;
+    }
+
+cleanup:
+    virDomainDefFree(def);
+    virDomainChrSourceDefFree(monConfig);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    VIR_FREE(pidfile);
+    return dom;
+}
+
+
 static int
 qemuDomainOpenConsole(virDomainPtr dom,
                       const char *devname,
@@ -8551,6 +8637,7 @@ static virDriver qemuDriver = {
     .domainRevertToSnapshot = qemuDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = qemuDomainSnapshotDelete, /* 0.8.0 */
     .qemuDomainMonitorCommand = qemuDomainMonitorCommand, /* 0.8.3 */
+    .qemuDomainAttach = qemuDomainAttach, /* 0.9.4 */
     .domainOpenConsole = qemuDomainOpenConsole, /* 0.8.6 */
     .domainInjectNMI = qemuDomainInjectNMI, /* 0.9.2 */
     .domainMigrateBegin3 = qemuDomainMigrateBegin3, /* 0.9.2 */

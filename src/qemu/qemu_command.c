@@ -6202,6 +6202,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 if (!(def->name = strndup(val, process - val)))
                     goto no_memory;
             }
+            if (STREQ(def->name, ""))
+                VIR_FREE(def->name);
         } else if (STREQ(arg, "-M")) {
             WANT_VALUE();
             if (!(def->os.machine = strdup(val)))

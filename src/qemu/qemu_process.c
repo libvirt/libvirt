@@ -61,6 +61,7 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 #define START_POSTFIX ": starting up\n"
+#define ATTACH_POSTFIX ": attaching\n"
 #define SHUTDOWN_POSTFIX ": shutting down\n"
 
 /**
@@ -1125,31 +1126,34 @@ qemuProcessReadLogFD(int logfd, char *buf, int maxlen, int off)
     tmpbuf[ret] = '\0';
 }
 
+
 static int
 qemuProcessWaitForMonitor(struct qemud_driver* driver,
                           virDomainObjPtr vm,
                           virBitmapPtr qemuCaps,
                           off_t pos)
 {
-    char *buf;
+    char *buf = NULL;
     size_t buf_size = 4096; /* Plenty of space to get startup greeting */
-    int logfd;
+    int logfd = -1;
     int ret = -1;
     virHashTablePtr paths = NULL;
     qemuDomainObjPrivatePtr priv;
 
-    if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
-        return -1;
+    if (pos != -1) {
+        if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
+            return -1;
 
-    if (VIR_ALLOC_N(buf, buf_size) < 0) {
-        virReportOOMError();
-        return -1;
+        if (VIR_ALLOC_N(buf, buf_size) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+
+        if (qemuProcessReadLogOutput(vm, logfd, buf, buf_size,
+                                     qemuProcessFindCharDevicePTYs,
+                                     "console", 30) < 0)
+            goto closelog;
     }
-
-    if (qemuProcessReadLogOutput(vm, logfd, buf, buf_size,
-                                 qemuProcessFindCharDevicePTYs,
-                                 "console", 30) < 0)
-        goto closelog;
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
     if (qemuConnectMonitor(driver, vm) < 0) {
@@ -1194,6 +1198,8 @@ closelog:
         VIR_WARN("Unable to close logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
+
+    VIR_FREE(buf);
 
     return ret;
 }
@@ -2971,6 +2977,189 @@ retry:
         virSetError(orig_err);
         virFreeError(orig_err);
     }
+}
+
+
+int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      struct qemud_driver *driver,
+                      virDomainObjPtr vm,
+                      int pid,
+                      const char *pidfile,
+                      virDomainChrSourceDefPtr monConfig,
+                      bool monJSON)
+{
+    char ebuf[1024];
+    int logfile = -1;
+    char *timestamp;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool running = true;
+    virSecurityLabelPtr seclabel = NULL;
+
+    VIR_DEBUG("Beginning VM attach process");
+
+    if (virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("VM is already active"));
+        return -1;
+    }
+
+    /* Do this upfront, so any part of the startup process can add
+     * runtime state to vm->def that won't be persisted. This let's us
+     * report implicit runtime defaults in the XML, like vnc listen/socket
+     */
+    VIR_DEBUG("Setting current domain def as transient");
+    if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
+        goto cleanup;
+
+    vm->def->id = driver->nextvmid++;
+
+    if (virFileMakePath(driver->logDir) < 0) {
+        virReportSystemError(errno,
+                             _("cannot create log directory %s"),
+                             driver->logDir);
+        goto cleanup;
+    }
+
+    VIR_FREE(priv->pidfile);
+    if (pidfile &&
+        !(priv->pidfile = strdup(pidfile)))
+        goto no_memory;
+
+    VIR_DEBUG("Detect security driver config");
+    vm->def->seclabel.type = VIR_DOMAIN_SECLABEL_STATIC;
+    if (VIR_ALLOC(seclabel) < 0)
+        goto no_memory;
+    if (virSecurityManagerGetProcessLabel(driver->securityManager,
+                                          vm, seclabel) < 0)
+        goto cleanup;
+    if (!(vm->def->seclabel.model = strdup(driver->caps->host.secModel.model)))
+        goto no_memory;
+    if (!(vm->def->seclabel.label = strdup(seclabel->label)))
+        goto no_memory;
+
+    VIR_DEBUG("Creating domain log file");
+    if ((logfile = qemuDomainCreateLog(driver, vm, false)) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Determining emulator version");
+    qemuCapsFree(priv->qemuCaps);
+    priv->qemuCaps = NULL;
+    if (qemuCapsExtractVersionInfo(vm->def->emulator,
+                                   vm->def->os.arch,
+                                   NULL,
+                                   &priv->qemuCaps) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Preparing monitor state");
+    priv->monConfig = monConfig;
+    monConfig = NULL;
+    priv->monJSON = monJSON;
+
+    priv->gotShutdown = false;
+
+    /*
+     * Normally PCI addresses are assigned in the virDomainCreate
+     * or virDomainDefine methods. We might still need to assign
+     * some here to cope with the question of upgrades. Regardless
+     * we also need to populate the PCi address set cache for later
+     * use in hotplug
+     */
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        VIR_DEBUG("Assigning domain PCI addresses");
+        /* Populate cache with current addresses */
+        if (priv->pciaddrs) {
+            qemuDomainPCIAddressSetFree(priv->pciaddrs);
+            priv->pciaddrs = NULL;
+        }
+        if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(vm->def)))
+            goto cleanup;
+
+        /* Assign any remaining addresses */
+        if (qemuAssignDevicePCISlots(vm->def, priv->pciaddrs) < 0)
+            goto cleanup;
+
+        priv->persistentAddrs = 1;
+    } else {
+        priv->persistentAddrs = 0;
+    }
+
+    if ((timestamp = virTimestamp()) == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    } else {
+        if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
+            safewrite(logfile, ATTACH_POSTFIX, strlen(ATTACH_POSTFIX)) < 0) {
+            VIR_WARN("Unable to write timestamp to logfile: %s",
+                     virStrerror(errno, ebuf, sizeof ebuf));
+        }
+
+        VIR_FREE(timestamp);
+    }
+
+    qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH, logfile);
+
+    vm->pid = pid;
+
+    VIR_DEBUG("Waiting for monitor to show up");
+    if (qemuProcessWaitForMonitor(driver, vm, priv->qemuCaps, -1) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Detecting VCPU PIDs");
+    if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)
+        goto cleanup;
+
+    /* If we have -device, then addresses are assigned explicitly.
+     * If not, then we have to detect dynamic ones here */
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        VIR_DEBUG("Determining domain device PCI addresses");
+        if (qemuProcessInitPCIAddresses(driver, vm) < 0)
+            goto cleanup;
+    }
+
+    VIR_DEBUG("Getting initial memory amount");
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuMonitorGetBalloonInfo(priv->mon, &vm->def->mem.cur_balloon) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        goto cleanup;
+    }
+    if (qemuMonitorGetStatus(priv->mon, &running) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        goto cleanup;
+    }
+    if (qemuMonitorGetVirtType(priv->mon, &vm->def->virtType) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        goto cleanup;
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (!virDomainObjIsActive(vm))
+        goto cleanup;
+
+    if (running)
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_UNPAUSED);
+    else
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
+
+    VIR_DEBUG("Writing domain status to disk");
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto cleanup;
+
+    VIR_FORCE_CLOSE(logfile);
+    VIR_FREE(seclabel);
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+cleanup:
+    /* We jump here if we failed to start the VM for any reason, or
+     * if we failed to initialize the now running VM. kill it off and
+     * pretend we never started it */
+    VIR_FORCE_CLOSE(logfile);
+    VIR_FREE(seclabel);
+    virDomainChrSourceDefFree(monConfig);
+    return -1;
 }
 
 

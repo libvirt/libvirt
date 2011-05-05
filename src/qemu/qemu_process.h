@@ -56,6 +56,14 @@ void qemuProcessStop(struct qemud_driver *driver,
                      int migrated,
                      virDomainShutoffReason reason);
 
+int qemuProcessAttach(virConnectPtr conn,
+                      struct qemud_driver *driver,
+                      virDomainObjPtr vm,
+                      int pid,
+                      const char *pidfile,
+                      virDomainChrSourceDefPtr monConfig,
+                      bool monJSON);
+
 void qemuProcessKill(virDomainObjPtr vm);
 
 int qemuProcessAutoDestroyInit(struct qemud_driver *driver);
