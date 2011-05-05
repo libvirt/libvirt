@@ -11552,8 +11552,8 @@ cleanup:
  * "qemu-monitor-command" command
  */
 static const vshCmdInfo info_qemu_monitor_command[] = {
-    {"help", N_("Qemu Monitor Command")},
-    {"desc", N_("Qemu Monitor Command")},
+    {"help", N_("QEMU Monitor Command")},
+    {"desc", N_("QEMU Monitor Command")},
     {NULL, NULL}
 };
 
@@ -11600,6 +11600,52 @@ cleanup:
     if (dom)
         virDomainFree(dom);
 
+    return ret;
+}
+
+/*
+ * "qemu-attach" command
+ */
+static const vshCmdInfo info_qemu_attach[] = {
+    {"help", N_("QEMU Attach")},
+    {"desc", N_("QEMU Attach")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_qemu_attach[] = {
+    {"pid", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pid")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    unsigned int flags = 0;
+    unsigned int pid;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    if (vshCommandOptUInt(cmd, "pid", &pid) <= 0) {
+        vshError(ctl, "%s", _("missing pid value"));
+        goto cleanup;
+    }
+
+    if (!(dom = virDomainQemuAttach(ctl->conn, pid, flags)))
+        goto cleanup;
+
+    if (dom != NULL) {
+        vshPrint(ctl, _("Domain %s attached to pid %u\n"),
+                 virDomainGetName(dom), pid);
+        virDomainFree(dom);
+        ret = true;
+    } else {
+        vshError(ctl, _("Failed to attach to pid %u"), pid);
+    }
+
+cleanup:
     return ret;
 }
 
@@ -11866,6 +11912,7 @@ static const vshCmdDef hostAndHypervisorCmds[] = {
     {"nodecpustats", cmdNodeCpuStats, opts_node_cpustats, info_nodecpustats, 0},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
     {"nodememstats", cmdNodeMemStats, opts_node_memstats, info_nodememstats, 0},
+    {"qemu-attach", cmdQemuAttach, opts_qemu_attach, info_qemu_attach},
     {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
      info_qemu_monitor_command, 0},
     {"sysinfo", cmdSysinfo, NULL, info_sysinfo, 0},

@@ -131,7 +131,8 @@ group as an option.  For example:
      connect                        (re)connect to hypervisor
      freecell                       NUMA free memory
      hostname                       print the hypervisor hostname
-     qemu-monitor-command           Qemu Monitor Command
+     qemu-attach                    Attach to existing QEMU process
+     qemu-monitor-command           QEMU Monitor Command
      sysinfo                        print the hypervisor sysinfo
      uri                            print the hypervisor canonical URI
 
@@ -1518,6 +1519,29 @@ operations.  Once you have used this command, please do not report
 problems to the libvirt developers; the reports will be ignored.
 
 =over 4
+
+=item B<qemu-attach> I<pid>
+
+Attach an externally launched QEMU process to the libvirt QEMU driver.
+The QEMU process must have been created with a monitor connection
+using the UNIX driver. Ideally the process will also have had the
+'-name' argument specified.
+
+=over 4
+
+     $ qemu-kvm -cdrom ~/demo.iso \
+         -monitor unix:/tmp/demo,server,nowait \
+         -name foo \
+         -uuid cece4f9f-dff0-575d-0e8e-01fe380f12ea  &
+     $ QEMUPID=$!
+     $ virsh qemu-attach $QEMUPID
+
+=back
+
+Not all functions of libvirt are expected to work reliably after
+attaching to an externally launched QEMU process. There may be
+issues with the guest ABI changing upon migration, and hotunplug
+may not work.
 
 =item B<qemu-monitor-command> I<domain> I<command> optional I<--hmp>
 
