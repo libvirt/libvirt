@@ -58,15 +58,6 @@ int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
  * after fork() but before execve() */
 typedef int (*virExecHook)(void *data);
 
-int virExecDaemonize(const char *const*argv,
-                     const char *const*envp,
-                     const fd_set *keepfd,
-                     pid_t *retpid,
-                     int infd, int *outfd, int *errfd,
-                     int flags,
-                     virExecHook hook,
-                     void *data,
-                     char *pidfile) ATTRIBUTE_RETURN_CHECK;
 int virExecWithHook(const char *const*argv,
                     const char *const*envp,
                     const fd_set *keepfd,

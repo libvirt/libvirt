@@ -83,6 +83,7 @@
 #include "event.h"
 #include "ignore-value.h"
 #include "files.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -319,8 +320,8 @@ static int
 remoteForkDaemon(void)
 {
     const char *daemonPath = remoteFindDaemonPath();
-    const char *const daemonargs[] = { daemonPath, "--timeout=30", NULL };
-    pid_t pid;
+    virCommandPtr cmd = NULL;
+    int ret;
 
     if (!daemonPath) {
         remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -328,13 +329,14 @@ remoteForkDaemon(void)
         return -1;
     }
 
-    if (virExecDaemonize(daemonargs, NULL, NULL,
-                         &pid, -1, NULL, NULL,
-                         VIR_EXEC_CLEAR_CAPS,
-                         NULL, NULL, NULL) < 0)
-        return -1;
+    cmd = virCommandNewArgList(daemonPath, "--timeout", "30", NULL);
+    virCommandClearCaps(cmd);
+    virCommandDaemonize(cmd);
 
-    return 0;
+    ret = virCommandRun(cmd, NULL);
+    virCommandFree(cmd);
+
+    return ret;
 }
 #endif
 

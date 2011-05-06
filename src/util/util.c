@@ -443,8 +443,7 @@ cleanup:
  * @flags possible combination of the following:
  *        VIR_EXEC_NONE     : Default function behavior
  *        VIR_EXEC_NONBLOCK : Set child process output fd's as non-blocking
- *        VIR_EXEC_DAEMON   : Daemonize the child process (don't use directly,
- *                            use virExecDaemonize wrapper)
+ *        VIR_EXEC_DAEMON   : Daemonize the child process
  * @hook optional virExecHook function to call prior to exec
  * @data data to pass to the hook function
  * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
@@ -789,57 +788,6 @@ virExec(const char *const*argv,
                            flags, NULL, NULL, NULL);
 }
 
-/*
- * See __virExec for explanation of the arguments.
- *
- * This function will wait for the intermediate process (between the caller
- * and the daemon) to exit. retpid will be the pid of the daemon, which can
- * be checked for example to see if the daemon crashed immediately.
- *
- * Returns 0 on success
- *         -1 if initial fork failed (will have a reported error)
- *         -2 if intermediate process failed
- *         (won't have a reported error. pending on where the failure
- *          occured and when in the process occured, the error output
- *          could have gone to stderr or the passed errfd).
- */
-int virExecDaemonize(const char *const*argv,
-                     const char *const*envp,
-                     const fd_set *keepfd,
-                     pid_t *retpid,
-                     int infd, int *outfd, int *errfd,
-                     int flags,
-                     virExecHook hook,
-                     void *data,
-                     char *pidfile) {
-    int ret;
-    int childstat = 0;
-
-    ret = virExecWithHook(argv, envp, keepfd, retpid,
-                          infd, outfd, errfd,
-                          flags | VIR_EXEC_DAEMON,
-                          hook, data, pidfile);
-
-    /* __virExec should have set an error */
-    if (ret != 0)
-        return -1;
-
-    /* Wait for intermediate process to exit */
-    while (waitpid(*retpid, &childstat, 0) == -1 &&
-                   errno == EINTR);
-
-    if (childstat != 0) {
-        char *str = virCommandTranslateStatus(childstat);
-        virUtilError(VIR_ERR_INTERNAL_ERROR,
-                     _("Intermediate daemon process status unexpected: %s"),
-                     NULLSTR(str));
-        VIR_FREE(str);
-        ret = -2;
-    }
-
-    return ret;
-}
-
 /**
  * @argv NULL terminated argv to run
  * @status optional variable to return exit status in
@@ -980,25 +928,6 @@ virExecWithHook(const char *const*argv ATTRIBUTE_UNUSED,
      * run hook code in the child.  */
     virUtilError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("virExec is not implemented for WIN32"));
-    return -1;
-}
-
-int
-virExecDaemonize(const char *const*argv ATTRIBUTE_UNUSED,
-                 const char *const*envp ATTRIBUTE_UNUSED,
-                 const fd_set *keepfd ATTRIBUTE_UNUSED,
-                 pid_t *retpid ATTRIBUTE_UNUSED,
-                 int infd ATTRIBUTE_UNUSED,
-                 int *outfd ATTRIBUTE_UNUSED,
-                 int *errfd ATTRIBUTE_UNUSED,
-                 int flags ATTRIBUTE_UNUSED,
-                 virExecHook hook ATTRIBUTE_UNUSED,
-                 void *data ATTRIBUTE_UNUSED,
-                 char *pidfile ATTRIBUTE_UNUSED)
-{
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virExecDaemonize is not implemented for WIN32"));
-
     return -1;
 }
 
