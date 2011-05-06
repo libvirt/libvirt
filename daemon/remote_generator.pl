@@ -236,7 +236,7 @@ elsif ($opt_t) {
     }
 }
 
-# Bodies for dispatch functions ("remote_dispatch_bodies.c").
+# Bodies for dispatch functions ("remote_dispatch_bodies.h").
 elsif ($opt_b) {
     # list of functions that currently are not generatable
     my @ungeneratable;
@@ -726,7 +726,7 @@ elsif ($opt_b) {
     }
 }
 
-# Bodies for client functions ("remote_client_bodies.c").
+# Bodies for client functions ("remote_client_bodies.h").
 elsif ($opt_k) {
     # list of functions that currently are not generatable
     my @ungeneratable;

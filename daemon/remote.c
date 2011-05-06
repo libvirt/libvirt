@@ -2985,8 +2985,8 @@ cleanup:
     return rv;
 }
 
-#include "remote_dispatch_bodies.c"
-#include "qemu_dispatch_bodies.c"
+#include "remote_dispatch_bodies.h"
+#include "qemu_dispatch_bodies.h"
 
 
 /*----- Helpers. -----*/

@@ -4962,8 +4962,8 @@ done:
     return rv;
 }
 
-#include "remote_client_bodies.c"
-#include "qemu_client_bodies.c"
+#include "remote_client_bodies.h"
+#include "qemu_client_bodies.h"
 
 /*----------------------------------------------------------------------*/
 
