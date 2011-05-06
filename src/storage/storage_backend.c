@@ -1404,8 +1404,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                               void *data,
                               int *outexit)
 {
-    int fd = -1, exitstatus, err, failed = 1;
-    pid_t child = 0;
+    int fd = -1, err, ret = -1;
     FILE *list = NULL;
     regex_t *reg;
     regmatch_t *vars = NULL;
@@ -1413,6 +1412,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
     int maxReg = 0, i, j;
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
+    virCommandPtr cmd = NULL;
 
     /* Compile all regular expressions */
     if (VIR_ALLOC_N(reg, nregex) < 0) {
@@ -1449,10 +1449,9 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
-
-    /* Run the program and capture its output */
-    if (virExec(prog, NULL, NULL,
-                &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
+    cmd = virCommandNewArgs(prog);
+    virCommandSetOutputFD(cmd, &fd);
+    if (virCommandRunAsync(cmd, NULL) < 0) {
         goto cleanup;
     }
 
@@ -1501,9 +1500,8 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         }
     }
 
-    failed = 0;
-
- cleanup:
+    ret = virCommandWait(cmd, outexit);
+cleanup:
     if (groups) {
         for (j = 0 ; j < totgroups ; j++)
             VIR_FREE(groups[j]);
@@ -1515,33 +1513,12 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         regfree(&reg[i]);
 
     VIR_FREE(reg);
+    virCommandFree(cmd);
 
     VIR_FORCE_FCLOSE(list);
     VIR_FORCE_CLOSE(fd);
 
-    while ((err = waitpid(child, &exitstatus, 0) == -1) && errno == EINTR);
-
-    /* Don't bother checking exit status if we already failed */
-    if (failed)
-        return -1;
-
-    if (err == -1) {
-        virReportSystemError(errno,
-                             _("failed to wait for command '%s'"),
-                             prog[0]);
-        return -1;
-    } else {
-        if (WIFEXITED(exitstatus)) {
-            if (outexit != NULL)
-                *outexit = WEXITSTATUS(exitstatus);
-        } else {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("command did not exit cleanly"));
-            return -1;
-        }
-    }
-
-    return 0;
+    return ret;
 }
 
 /*
@@ -1563,13 +1540,12 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
                             void *data)
 {
     size_t n_tok = 0;
-    int fd = -1, exitstatus;
-    pid_t child = 0;
+    int fd = -1;
     FILE *fp = NULL;
     char **v;
-    int err = -1;
-    int w_err;
+    int ret = -1;
     int i;
+    virCommandPtr cmd = NULL;
 
     if (n_columns == 0)
         return -1;
@@ -1581,9 +1557,9 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
     for (i = 0; i < n_columns; i++)
         v[i] = NULL;
 
-    /* Run the program and capture its output */
-    if (virExec(prog, NULL, NULL,
-                &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
+    cmd = virCommandNewArgs(prog);
+    virCommandSetOutputFD(cmd, &fd);
+    if (virCommandRunAsync(cmd, NULL) < 0) {
         goto cleanup;
     }
 
@@ -1618,48 +1594,23 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
         }
     }
 
-    if (feof (fp))
-        err = 0;
-    else
+    if (feof (fp) < 0) {
         virReportSystemError(errno,
                              _("read error on pipe to '%s'"), prog[0]);
+        goto cleanup;
+    }
 
+    ret = virCommandWait(cmd, NULL);
  cleanup:
     for (i = 0; i < n_columns; i++)
         VIR_FREE(v[i]);
     VIR_FREE(v);
+    virCommandFree(cmd);
 
     VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(fd);
 
-    while ((w_err = waitpid (child, &exitstatus, 0) == -1) && errno == EINTR)
-        /* empty */ ;
-
-    /* Don't bother checking exit status if we already failed */
-    if (err < 0)
-        return -1;
-
-    if (w_err == -1) {
-        virReportSystemError(errno,
-                             _("failed to wait for command '%s'"),
-                             prog[0]);
-        return -1;
-    } else {
-        if (WIFEXITED(exitstatus)) {
-            if (WEXITSTATUS(exitstatus) != 0) {
-                virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                      _("non-zero exit status from command %d"),
-                                      WEXITSTATUS(exitstatus));
-                return -1;
-            }
-        } else {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("command did not exit cleanly"));
-            return -1;
-        }
-    }
-
-    return 0;
+    return ret;
 }
 
 #else /* WIN32 */
