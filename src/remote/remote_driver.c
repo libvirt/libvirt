@@ -426,8 +426,8 @@ doRemoteOpen (virConnectPtr conn,
     char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
     char *port = NULL, *authtype = NULL, *username = NULL;
     int no_verify = 0, no_tty = 0;
-    char **cmd_argv = NULL;
     char *pkipath = NULL;
+    virCommandPtr cmd = NULL;
 
     /* Return code from this function, and the private data. */
     int retcode = VIR_DRV_OPEN_ERROR;
@@ -741,50 +741,26 @@ doRemoteOpen (virConnectPtr conn,
     }
 
     case trans_ssh: {
-        int j, nr_args = 6;
-
-        if (username) nr_args += 2; /* For -l username */
-        if (no_tty) nr_args += 5;   /* For -T -o BatchMode=yes -e none */
-        if (port) nr_args += 2;     /* For -p port */
-
-        command = command ? command : strdup ("ssh");
-        if (command == NULL)
-            goto out_of_memory;
+        cmd = virCommandNew(command ? command : "ssh");
 
         /* Generate the final command argv[] array.
-         *   ssh [-p $port] [-l $username] $hostname $netcat -U $sockname [NULL] */
-        if (VIR_ALLOC_N(cmd_argv, nr_args) < 0)
-            goto out_of_memory;
+         *   ssh [-p $port] [-l $username] $hostname $netcat -U $sockname */
 
-        j = 0;
-        cmd_argv[j++] = strdup (command);
         if (port) {
-            cmd_argv[j++] = strdup ("-p");
-            cmd_argv[j++] = strdup (port);
+            virCommandAddArgList(cmd, "-p", port, NULL);
         }
         if (username) {
-            cmd_argv[j++] = strdup ("-l");
-            cmd_argv[j++] = strdup (username);
+            virCommandAddArgList(cmd, "-l", username, NULL);
         }
         if (no_tty) {
-            cmd_argv[j++] = strdup ("-T");
-            cmd_argv[j++] = strdup ("-o");
-            cmd_argv[j++] = strdup ("BatchMode=yes");
-            cmd_argv[j++] = strdup ("-e");
-            cmd_argv[j++] = strdup ("none");
+            virCommandAddArgList(cmd, "-T", "-o", "BatchMode=yes", "-e",
+                                 "none", NULL);
         }
-        cmd_argv[j++] = strdup (priv->hostname);
-        cmd_argv[j++] = strdup (netcat ? netcat : "nc");
-        cmd_argv[j++] = strdup ("-U");
-        cmd_argv[j++] = strdup (sockname ? sockname :
-                                (flags & VIR_CONNECT_RO
-                                 ? LIBVIRTD_PRIV_UNIX_SOCKET_RO
-                                 : LIBVIRTD_PRIV_UNIX_SOCKET));
-        cmd_argv[j++] = 0;
-        assert (j == nr_args);
-        for (j = 0; j < (nr_args-1); j++)
-            if (cmd_argv[j] == NULL)
-                goto out_of_memory;
+        virCommandAddArgList(cmd, priv->hostname, netcat ? netcat : "nc",
+                             "-U", (sockname ? sockname :
+                                    (flags & VIR_CONNECT_RO
+                                     ? LIBVIRTD_PRIV_UNIX_SOCKET_RO
+                                     : LIBVIRTD_PRIV_UNIX_SOCKET)), NULL);
 
         priv->is_secure = 1;
     }
@@ -811,9 +787,11 @@ doRemoteOpen (virConnectPtr conn,
             goto failed;
         }
 
-        if (virExec((const char**)cmd_argv, NULL, NULL,
-                    &pid, sv[1], &(sv[1]), &(errfd[1]),
-                    VIR_EXEC_CLEAR_CAPS) < 0)
+        virCommandSetInputFD(cmd, sv[1]);
+        virCommandSetOutputFD(cmd, &(sv[1]));
+        virCommandSetErrorFD(cmd, &(errfd[1]));
+        virCommandClearCaps(cmd);
+        if (virCommandRunAsync(cmd, &pid) < 0)
             goto failed;
 
         /* Parent continues here. */
@@ -942,14 +920,7 @@ doRemoteOpen (virConnectPtr conn,
     VIR_FREE(netcat);
     VIR_FREE(username);
     VIR_FREE(port);
-    if (cmd_argv) {
-        char **cmd_argv_ptr = cmd_argv;
-        while (*cmd_argv_ptr) {
-            VIR_FREE(*cmd_argv_ptr);
-            cmd_argv_ptr++;
-        }
-        VIR_FREE(cmd_argv);
-    }
+    virCommandFree(cmd);
     VIR_FREE(pkipath);
 
     return retcode;
