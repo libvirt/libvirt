@@ -155,24 +155,24 @@ CONF_SOURCES =							\
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_GENERATED = \
-		remote/remote_protocol.c			\
-		remote/remote_protocol.h			\
-		remote/remote_client_bodies.h			\
-		remote/qemu_protocol.c				\
-		remote/qemu_protocol.h				\
-		remote/qemu_client_bodies.h
+		$(srcdir)/remote/remote_protocol.c		\
+		$(srcdir)/remote/remote_protocol.h		\
+		$(srcdir)/remote/remote_client_bodies.h		\
+		$(srcdir)/remote/qemu_protocol.c		\
+		$(srcdir)/remote/qemu_protocol.h		\
+		$(srcdir)/remote/qemu_client_bodies.h
 
-REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
-QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
+REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
+QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
 REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL)
 
-remote/remote_client_bodies.h: $(top_srcdir)/daemon/remote_generator.pl \
-		$(REMOTE_PROTOCOL)
+$(srcdir)/remote/remote_client_bodies.h: $(REMOTE_PROTOCOL) \
+		$(top_srcdir)/daemon/remote_generator.pl
 	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl \
 	  -c -k remote $(REMOTE_PROTOCOL) > $@
 
-remote/qemu_client_bodies.h: $(top_srcdir)/daemon/remote_generator.pl \
-		$(QEMU_PROTOCOL)
+$(srcdir)/remote/qemu_client_bodies.h: $(QEMU_PROTOCOL) \
+		$(top_srcdir)/daemon/remote_generator.pl
 	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl \
 	  -k qemu $(QEMU_PROTOCOL) > $@
 
@@ -549,15 +549,16 @@ endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
 
-remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
+$(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 
-remote/%_protocol.c: remote/%_protocol.x remote/%_protocol.h
+$(srcdir)/remote/%_protocol.c: $(srcdir)/remote/%_protocol.x \
+		$(srcdir)/remote/%_protocol.h
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -c \
-               $< $@
+	       $< $@
 
-remote/%_protocol.h: remote/%_protocol.x
+$(srcdir)/remote/%_protocol.h: $(srcdir)/remote/%_protocol.x
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -h \
-               $< $@
+	       $< $@
 
 endif
 
