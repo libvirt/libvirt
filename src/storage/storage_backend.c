@@ -602,28 +602,19 @@ enum {
 
 static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
 {
-    const char *const qemuarg[] = { qemuimg, "-h", NULL };
-    const char *const qemuenv[] = { "LC_ALL=C", NULL };
-    pid_t child = 0;
-    int status;
-    int newstdout = -1;
     char *help = NULL;
-    enum { MAX_HELP_OUTPUT_SIZE = 1024*8 };
     char *start;
     char *end;
     char *tmp;
     int ret = -1;
+    virCommandPtr cmd = virCommandNewArgList(qemuimg, "-h", NULL);
 
-    if (virExec(qemuarg, qemuenv, NULL,
-                &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
-        goto cleanup;
+    virCommandAddEnvString(cmd, "LC_ALL=C");
+    virCommandSetOutputBuffer(cmd, &help);
+    virCommandClearCaps(cmd);
 
-    if (virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to read '%s -h' output"),
-                             qemuimg);
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     start = strstr(help, " create ");
     end = strstr(start, "\n");
@@ -636,18 +627,8 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
         ret = QEMU_IMG_BACKING_FORMAT_NONE;
 
 cleanup:
+    virCommandFree(cmd);
     VIR_FREE(help);
-    VIR_FORCE_CLOSE(newstdout);
-    if (child) {
-        while (waitpid(child, &status, 0) == -1 && errno == EINTR);
-        if (status) {
-            tmp = virCommandTranslateStatus(status);
-            VIR_WARN("Unexpected status, qemu probably failed: %s",
-                     NULLSTR(tmp));
-            VIR_FREE(tmp);
-        }
-    }
-
     return ret;
 }
 
