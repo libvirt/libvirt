@@ -395,10 +395,13 @@ next section.
     </p>
     <ul>
       <li> For a non-root user, libvirt tries to find the certificates
-        in $HOME/.pki/libvirt. If any of the required certificates can
-        not be found, then the global default locations
-        (/etc/pki/CA/cacert.pem, /etc/pki/libvirt/private/clientkey,
-        /etc/pki/libvirt/clientcert.pem) will be used.
+        in $HOME/.pki/libvirt. If the required CA certificate cannot
+        be found, then the global default location
+        (/etc/pki/CA/cacert.pem) will be used.
+        Likewise, if either the client certificate
+        or the client key cannot be found, then the global default
+        locations (/etc/pki/libvirt/clientcert.pem,
+        /etc/pki/libvirt/private/clientkey.pem) will be used.
       </li>
       <li> For the root user, the global default locations will be used.</li>
     </ul>
