@@ -752,26 +752,6 @@ virExecWithHook(const char *const*argv,
     return -1;
 }
 
-/*
- * See virExecWithHook for explanation of the arguments.
- *
- * Wrapper function for virExecWithHook, with a simpler set of parameters.
- * Used to insulate the numerous callers from changes to virExecWithHook
- * argument list.
- */
-int
-virExec(const char *const*argv,
-        const char *const*envp,
-        const fd_set *keepfd,
-        pid_t *retpid,
-        int infd, int *outfd, int *errfd,
-        int flags)
-{
-    return virExecWithHook(argv, envp, keepfd, retpid,
-                           infd, outfd, errfd,
-                           flags, NULL, NULL, NULL);
-}
-
 /**
  * @argv NULL terminated argv to run
  * @status optional variable to return exit status in
@@ -878,21 +858,6 @@ virRun(const char *const *argv ATTRIBUTE_UNUSED,
     else
         virUtilError(VIR_ERR_INTERNAL_ERROR,
                      "%s", _("virRun is not implemented for WIN32"));
-    return -1;
-}
-
-int
-virExec(const char *const*argv ATTRIBUTE_UNUSED,
-        const char *const*envp ATTRIBUTE_UNUSED,
-        const fd_set *keepfd ATTRIBUTE_UNUSED,
-        int *retpid ATTRIBUTE_UNUSED,
-        int infd ATTRIBUTE_UNUSED,
-        int *outfd ATTRIBUTE_UNUSED,
-        int *errfd ATTRIBUTE_UNUSED,
-        int flags ATTRIBUTE_UNUSED)
-{
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virExec is not implemented for WIN32"));
     return -1;
 }
 

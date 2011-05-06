@@ -263,7 +263,6 @@ sc_prohibit_close:
 	  $(_sc_search_regexp)
 
 # Prefer virCommand for all child processes.
-# XXX - eventually, we want to enhance this to also prohibit virExec.
 sc_prohibit_fork_wrappers:
 	@prohibit='= *\<(fork|popen|system) *\('			\
 	halt='use virCommand for child processes'			\

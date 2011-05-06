@@ -968,7 +968,6 @@ virEnumFromString;
 virEnumToString;
 virEventAddHandle;
 virEventRemoveHandle;
-virExec;
 virExecWithHook;
 virFileAbsPath;
 virFileBuildPath;
