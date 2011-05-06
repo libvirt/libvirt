@@ -2378,7 +2378,7 @@ int qemuProcessStart(virConnectPtr conn,
          * because the child no longer exists.
          */
 
-        /* The virExec process that launches the daemon failed. Pending on
+        /* The virCommand process that launches the daemon failed. Pending on
          * when it failed (we can't determine for sure), there may be
          * extra info in the domain log (if the hook failed for example).
          *

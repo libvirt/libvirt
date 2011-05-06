@@ -3298,11 +3298,9 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     int ret = -1;
     virDomainEventPtr event;
     int intermediatefd = -1;
-    pid_t intermediate_pid = -1;
-    int childstat;
+    virCommandPtr cmd = NULL;
 
     if (header->version == 2) {
-        const char *intermediate_argv[3] = { NULL, "-dc", NULL };
         const char *prog = qemudSaveCompressionTypeToString(header->compressed);
         if (prog == NULL) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -3312,14 +3310,17 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         }
 
         if (header->compressed != QEMUD_SAVE_FORMAT_RAW) {
-            intermediate_argv[0] = prog;
+            cmd = virCommandNewArgList(prog, "-dc", NULL);
             intermediatefd = *fd;
             *fd = -1;
-            if (virExec(intermediate_argv, NULL, NULL,
-                        &intermediate_pid, intermediatefd, fd, NULL, 0) < 0) {
+
+            virCommandSetInputFD(cmd, intermediatefd);
+            virCommandSetOutputFD(cmd, fd);
+
+            if (virCommandRunAsync(cmd, NULL) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("Failed to start decompression binary %s"),
-                                intermediate_argv[0]);
+                                prog);
                 *fd = intermediatefd;
                 goto out;
             }
@@ -3330,7 +3331,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     ret = qemuProcessStart(conn, driver, vm, "stdio", true, *fd, path,
                            VIR_VM_OP_RESTORE);
 
-    if (intermediate_pid != -1) {
+    if (intermediatefd != -1) {
         if (ret < 0) {
             /* if there was an error setting up qemu, the intermediate
              * process will wait forever to write to stdout, so we
@@ -3338,14 +3339,10 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
              */
             VIR_FORCE_CLOSE(intermediatefd);
             VIR_FORCE_CLOSE(*fd);
-            kill(intermediate_pid, SIGTERM);
         }
 
-        /* Wait for intermediate process to exit */
-        while (waitpid(intermediate_pid, &childstat, 0) == -1 &&
-               errno == EINTR) {
-            /* empty */
-        }
+        if (virCommandWait(cmd, NULL) < 0)
+            ret = -1;
     }
     VIR_FORCE_CLOSE(intermediatefd);
 
@@ -3385,6 +3382,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     ret = 0;
 
 out:
+    virCommandFree(cmd);
     if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
                                                  vm, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
