@@ -86,6 +86,11 @@ static int netcf_to_vir_err(int netcf_errcode)
         case NETCF_EEXEC:
             /* external program execution failed or returned non-0 */
             return VIR_ERR_INTERNAL_ERROR;
+#ifdef NETCF_EINVALIDOP
+        case NETCF_EINVALIDOP:
+            /* attempted operation is invalid while the system is in the current state. */
+            return VIR_ERR_OPERATION_INVALID;
+#endif
         default:
             return VIR_ERR_INTERNAL_ERROR;
     }
@@ -540,6 +545,74 @@ cleanup:
     return ret;
 }
 
+#ifdef HAVE_NETCF_TRANSACTIONS
+static int interfaceChangeBegin(virConnectPtr conn, unsigned int flags)
+{
+    struct interface_driver *driver = conn->interfacePrivateData;
+    int ret;
+
+    virCheckFlags(0, -1); /* currently flags must be 0 */
+
+    interfaceDriverLock(driver);
+
+    ret = ncf_change_begin(driver->netcf, 0);
+    if (ret < 0) {
+        const char *errmsg, *details;
+        int errcode = ncf_error(driver->netcf, &errmsg, &details);
+        interfaceReportError(netcf_to_vir_err(errcode),
+                             _("failed to begin transaction: %s%s%s)"),
+                             errmsg, details ? " - " : "", details ? details : "");
+    }
+
+    interfaceDriverUnlock(driver);
+    return ret;
+}
+
+static int interfaceChangeCommit(virConnectPtr conn, unsigned int flags)
+{
+    struct interface_driver *driver = conn->interfacePrivateData;
+    int ret;
+
+    virCheckFlags(0, -1); /* currently flags must be 0 */
+
+    interfaceDriverLock(driver);
+
+    ret = ncf_change_commit(driver->netcf, 0);
+    if (ret < 0) {
+        const char *errmsg, *details;
+        int errcode = ncf_error(driver->netcf, &errmsg, &details);
+        interfaceReportError(netcf_to_vir_err(errcode),
+                             _("failed to commit transaction: %s%s%s)"),
+                             errmsg, details ? " - " : "", details ? details : "");
+    }
+
+    interfaceDriverUnlock(driver);
+    return ret;
+}
+
+static int interfaceChangeRollback(virConnectPtr conn, unsigned int flags)
+{
+    struct interface_driver *driver = conn->interfacePrivateData;
+    int ret;
+
+    virCheckFlags(0, -1); /* currently flags must be 0 */
+
+    interfaceDriverLock(driver);
+
+    ret = ncf_change_rollback(driver->netcf, 0);
+    if (ret < 0) {
+        const char *errmsg, *details;
+        int errcode = ncf_error(driver->netcf, &errmsg, &details);
+        interfaceReportError(netcf_to_vir_err(errcode),
+                             _("failed to rollback transaction: %s%s%s)"),
+                             errmsg, details ? " - " : "", details ? details : "");
+    }
+
+    interfaceDriverUnlock(driver);
+    return ret;
+}
+#endif /* HAVE_NETCF_TRANSACTIONS */
+
 static virInterfaceDriver interfaceDriver = {
     "Interface",
     .open = interfaceOpenInterface, /* 0.7.0 */
@@ -556,6 +629,11 @@ static virInterfaceDriver interfaceDriver = {
     .interfaceCreate = interfaceCreate, /* 0.7.0 */
     .interfaceDestroy = interfaceDestroy, /* 0.7.0 */
     .interfaceIsActive = interfaceIsActive, /* 0.7.3 */
+#ifdef HAVE_NETCF_TRANSACTIONS
+    .interfaceChangeBegin = interfaceChangeBegin, /* 0.9.2 */
+    .interfaceChangeCommit = interfaceChangeCommit, /* 0.9.2 */
+    .interfaceChangeRollback = interfaceChangeRollback, /* 0.9.2 */
+#endif /* HAVE_NETCF_TRANSACTIONS */
 };
 
 int interfaceRegister(void) {

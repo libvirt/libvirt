@@ -1491,6 +1491,11 @@ if test "$with_netcf" = "yes" || test "$with_netcf" = "check"; then
   if test "$with_netcf" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_NETCF], 1,
       [whether libnetcf is available to configure physical host network interfaces])
+    AC_CHECK_LIB([netcf], [ncf_change_begin], [netcf_transactions=1], [netcf_transactions=0])
+    if test "$netcf_transactions" = "1" ; then
+        AC_DEFINE_UNQUOTED([HAVE_NETCF_TRANSACTIONS], 1,
+          [we have sufficiently new version of netcf for transaction network API])
+    fi
   fi
 fi
 AM_CONDITIONAL([WITH_NETCF], [test "$with_netcf" = "yes"])
