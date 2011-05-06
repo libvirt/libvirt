@@ -2,21 +2,26 @@
 
 CLEANFILES =
 
+DAEMON_GENERATED =					\
+		remote_dispatch_prototypes.h		\
+		remote_dispatch_table.h			\
+		remote_dispatch_args.h			\
+		remote_dispatch_ret.h			\
+		remote_dispatch_bodies.h		\
+		qemu_dispatch_prototypes.h		\
+		qemu_dispatch_table.h			\
+		qemu_dispatch_args.h			\
+		qemu_dispatch_ret.h			\
+		qemu_dispatch_bodies.h
+
 DAEMON_SOURCES =					\
 		libvirtd.c libvirtd.h			\
 		remote.c remote.h			\
 		dispatch.c dispatch.h			\
 		stream.c stream.h			\
-		remote_dispatch_prototypes.h		\
-		remote_dispatch_table.h			\
-		remote_dispatch_args.h			\
-		remote_dispatch_ret.h			\
-		qemu_dispatch_prototypes.h		\
-		qemu_dispatch_table.h			\
-		qemu_dispatch_args.h			\
-		qemu_dispatch_ret.h			\
 		../src/remote/remote_protocol.c		\
-		../src/remote/qemu_protocol.c
+		../src/remote/qemu_protocol.c		\
+		$(DAEMON_GENERATED)
 
 AVAHI_SOURCES =						\
 		mdns.c mdns.h
@@ -202,20 +207,8 @@ install-data-polkit::
 uninstall-data-polkit::
 endif
 
-
-remote.c: \
-	remote_dispatch_prototypes.h \
-	remote_dispatch_table.h \
-	remote_dispatch_bodies.h \
-	qemu_dispatch_prototypes.h \
-	qemu_dispatch_table.h \
-	qemu_dispatch_bodies.h
-
-remote.h: \
-	remote_dispatch_args.h \
-	remote_dispatch_ret.h \
-	qemu_dispatch_args.h \
-	qemu_dispatch_ret.h
+remote.c: $(DAEMON_GENERATED)
+remote.h: $(DAEMON_GENERATED)
 
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
@@ -360,4 +353,4 @@ endif
 
 CLEANFILES += $(BUILT_SOURCES) $(man8_MANS)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
-MAINTAINERCLEANFILES = $(srcdir)/libvirtd.8.in
+MAINTAINERCLEANFILES = $(srcdir)/libvirtd.8.in $(DAEMON_GENERATED)

@@ -154,27 +154,36 @@ CONF_SOURCES =							\
 		$(CPU_CONF_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc
-REMOTE_DRIVER_SOURCES =						\
-		gnutls_1_0_compat.h			\
-		remote/remote_driver.c remote/remote_driver.h	\
+REMOTE_DRIVER_GENERATED = \
 		remote/remote_protocol.c			\
 		remote/remote_protocol.h			\
+		remote/remote_client_bodies.h			\
 		remote/qemu_protocol.c				\
-		remote/qemu_protocol.h
-
-remote/remote_driver.c: remote/remote_client_bodies.h remote/qemu_client_bodies.h
+		remote/qemu_protocol.h				\
+		remote/qemu_client_bodies.h
 
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
+REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL)
 
-remote/remote_client_bodies.h: $(top_srcdir)/daemon/remote_generator.pl $(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl -c -k remote $(REMOTE_PROTOCOL) > $@
+remote/remote_client_bodies.h: $(top_srcdir)/daemon/remote_generator.pl \
+		$(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl \
+	  -c -k remote $(REMOTE_PROTOCOL) > $@
 
-remote/qemu_client_bodies.h: $(top_srcdir)/daemon/remote_generator.pl $(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl -k remote $(QEMU_PROTOCOL) > $@
+remote/qemu_client_bodies.h: $(top_srcdir)/daemon/remote_generator.pl \
+		$(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(top_srcdir)/daemon/remote_generator.pl \
+	  -k qemu $(QEMU_PROTOCOL) > $@
 
-EXTRA_DIST += remote/remote_protocol.x remote/qemu_protocol.x \
-		remote/rpcgen_fix.pl remote/remote_client_bodies.h remote/qemu_client_bodies.h
+REMOTE_DRIVER_SOURCES =						\
+		gnutls_1_0_compat.h				\
+		remote/remote_driver.c remote/remote_driver.h	\
+		$(REMOTE_DRIVER_GENERATED)
+
+EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
+		$(REMOTE_DRIVER_GENERATED) \
+		remote/rpcgen_fix.pl
 
 # Ensure that we don't change the struct or member names or member ordering
 # in remote_protocol.x  The embedded perl below needs a few comments, and
@@ -539,68 +548,17 @@ libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
-if HAVE_RPCGEN
-#
-# Maintainer-only target for re-generating the derived .c/.h source
-# files, which are actually derived from the .x file.
-#
-# For committing protocol changes to GIT, the GLIBC rpcgen *must*
-# be used.
-#
-# Support for non-GLIB rpcgen is here as a convenience for
-# non-Linux people needing to test changes during dev.
-#
-rpcgen-normal:
-	rm -f rp.c-t rp.h-t rp.c-t1 rp.c-t2 rp.h-t1
-	$(RPCGEN) -h -o rp.h-t $(srcdir)/remote/remote_protocol.x
-	$(RPCGEN) -c -o rp.c-t $(srcdir)/remote/remote_protocol.x
-if HAVE_GLIBC_RPCGEN
-	perl -w $(srcdir)/remote/rpcgen_fix.pl rp.h-t > rp.h-t1
-	perl -w $(srcdir)/remote/rpcgen_fix.pl rp.c-t > rp.c-t1
-	(echo '#include <config.h>'; cat rp.c-t1) > rp.c-t2
-	chmod 0444 rp.c-t2 rp.h-t1
-	mv -f rp.h-t1 $(srcdir)/remote/remote_protocol.h
-	mv -f rp.c-t2 $(srcdir)/remote/remote_protocol.c
-	rm -f rp.c-t rp.h-t rp.c-t1
-else
-	chmod 0444 rp.c-t rp.h-t
-	mv -f rp.h-t $(srcdir)/remote/remote_protocol.h
-	mv -f rp.c-t $(srcdir)/remote/remote_protocol.c
-endif
 
-rpcgen-qemu:
-	rm -f rp_qemu.c-t rp_qemu.h-t rp_qemu.c-t1 rp_qemu.c-t2 rp_qemu.h-t1
-	$(RPCGEN) -h -o rp_qemu.h-t $(srcdir)/remote/qemu_protocol.x
-	$(RPCGEN) -c -o rp_qemu.c-t $(srcdir)/remote/qemu_protocol.x
-if HAVE_GLIBC_RPCGEN
-	perl -w $(srcdir)/remote/rpcgen_fix.pl rp_qemu.h-t > rp_qemu.h-t1
-	perl -w $(srcdir)/remote/rpcgen_fix.pl rp_qemu.c-t > rp_qemu.c-t1
-	(echo '#include <config.h>'; cat rp_qemu.c-t1) > rp_qemu.c-t2
-	chmod 0444 rp_qemu.c-t2 rp_qemu.h-t1
-	mv -f rp_qemu.h-t1 $(srcdir)/remote/qemu_protocol.h
-	mv -f rp_qemu.c-t2 $(srcdir)/remote/qemu_protocol.c
-	rm -f rp_qemu.c-t rp_qemu.h-t rp_qemu.c-t1
-else
-	chmod 0444 rp_qemu.c-t rp_qemu.h-t
-	mv -f rp_qemu.h-t $(srcdir)/remote/qemu_protocol.h
-	mv -f rp_qemu.c-t $(srcdir)/remote/qemu_protocol.c
-endif
+remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 
-#
-# Maintainer-only target for re-generating the derived .c/.h source
-# files, which are actually derived from the .x file.
-#
-# For committing protocol changes to GIT, the GLIBC rpcgen *must*
-# be used.
-#
-# Support for non-GLIB rpcgen is here as a convenience for
-# non-Linux people needing to test changes during dev.
-#
-rpcgen: rpcgen-normal rpcgen-qemu
+remote/%_protocol.c: remote/%_protocol.x remote/%_protocol.h
+	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -c \
+               $< $@
 
-endif
+remote/%_protocol.h: remote/%_protocol.x
+	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -h \
+               $< $@
 
-remote/remote_protocol.c: remote/remote_protocol.h
 endif
 
 if WITH_XEN
@@ -1350,3 +1308,4 @@ endif
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES = $(BUILT_SOURCES)
+MAINTAINERCLEANFILES = $(REMOTE_DRIVER_GENERATED)
