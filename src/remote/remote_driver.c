@@ -1140,8 +1140,7 @@ static gnutls_certificate_credentials_t x509_cred;
 static int
 check_cert_file(const char *type, const char *file)
 {
-    struct stat sb;
-    if (stat(file, &sb) < 0) {
+    if (access(file, R_OK)) {
         virReportSystemError(errno,
                              _("Cannot access %s '%s'"),
                              type, file);
