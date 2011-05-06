@@ -980,6 +980,28 @@ cleanup:
     return ret;
 }
 
+/*
+ * Exec the command, replacing the current process. Meant to be called
+ * after already forking / cloning, so does not attempt to daemonize or
+ * preserve any FDs.
+ *
+ * Returns -1 on any error executing the command.
+ * Will not return on success.
+ */
+int virCommandExec(virCommandPtr cmd)
+{
+    if (!cmd ||cmd->has_error == ENOMEM) {
+        virReportOOMError();
+        return -1;
+    }
+    if (cmd->has_error) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("invalid use of command API"));
+        return -1;
+    }
+
+    return execve(cmd->args[0], cmd->args, cmd->env);
+}
 
 /*
  * Run the command and wait for completion.

@@ -256,6 +256,16 @@ char *virCommandToString(virCommandPtr cmd) ATTRIBUTE_RETURN_CHECK;
 char *virCommandTranslateStatus(int exitstatus) ATTRIBUTE_RETURN_CHECK;
 
 /*
+ * Exec the command, replacing the current process. Meant to be called
+ * after already forking / cloning, so does not attempt to daemonize or
+ * preserve any FDs.
+ *
+ * Returns -1 on any error executing the command.
+ * Will not return on success.
+ */
+int virCommandExec(virCommandPtr cmd) ATTRIBUTE_RETURN_CHECK;
+
+/*
  * Run the command and wait for completion.
  * Returns -1 on any error executing the
  * command. Returns 0 if the command executed,
