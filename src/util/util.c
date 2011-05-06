@@ -787,10 +787,8 @@ virExec(const char *const*argv,
  * only if the command could not be run.
  */
 int
-virRunWithHook(const char *const*argv,
-               virExecHook hook,
-               void *data,
-               int *status) {
+virRun(const char *const*argv, int *status)
+{
     pid_t childpid;
     int exitstatus, execret, waitret;
     int ret = -1;
@@ -807,7 +805,7 @@ virRunWithHook(const char *const*argv,
 
     if ((execret = virExecWithHook(argv, NULL, NULL,
                                    &childpid, -1, &outfd, &errfd,
-                                   VIR_EXEC_NONE, hook, data, NULL)) < 0) {
+                                   VIR_EXEC_NONE, NULL, NULL, NULL)) < 0) {
         ret = execret;
         goto error;
     }
@@ -871,17 +869,14 @@ int virSetInherit(int fd ATTRIBUTE_UNUSED, bool inherit ATTRIBUTE_UNUSED)
     return -1;
 }
 
-int
-virRunWithHook(const char *const *argv ATTRIBUTE_UNUSED,
-               virExecHook hook ATTRIBUTE_UNUSED,
-               void *data ATTRIBUTE_UNUSED,
-               int *status)
+virRun(const char *const *argv ATTRIBUTE_UNUSED,
+       int *status)
 {
     if (status)
         *status = ENOTSUP;
     else
         virUtilError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("virRunWithHook is not implemented for WIN32"));
+                     "%s", _("virRun is not implemented for WIN32"));
     return -1;
 }
 
@@ -1016,12 +1011,6 @@ error:
     VIR_FREE(*outbuf);
     VIR_FREE(*errbuf);
     return -1;
-}
-
-int
-virRun(const char *const*argv,
-       int *status) {
-    return virRunWithHook(argv, NULL, NULL, status);
 }
 
 /* Like gnulib's fread_file, but read no more than the specified maximum

@@ -78,9 +78,6 @@ int virExec(const char *const*argv,
             int *errfd,
             int flags) ATTRIBUTE_RETURN_CHECK;
 int virRun(const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
-int virRunWithHook(const char *const*argv,
-                   virExecHook hook, void *data,
-                   int *status) ATTRIBUTE_RETURN_CHECK;
 int virPipeReadUntilEOF(int outfd, int errfd,
                         char **outbuf, char **errbuf);
 int virFork(pid_t *pid);
