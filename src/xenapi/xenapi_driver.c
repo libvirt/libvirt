@@ -1224,13 +1224,13 @@ xenapiDomainGetMaxVcpus (virDomainPtr dom)
 }
 
 /*
- * xenapiDomainDumpXML
+ * xenapiDomainGetXMLDesc
  *
  *
  * Returns XML string of the domain configuration on success or -1 in case of error
  */
 static char *
-xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
+xenapiDomainGetXMLDesc(virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
 {
     xen_vm vm=NULL;
     xen_vm_set *vms;
@@ -1824,7 +1824,7 @@ static virDriver xenapiDriver = {
     xenapiDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
-    xenapiDomainDumpXML, /* domainDumpXML */
+    xenapiDomainGetXMLDesc, /* domainGetXMLDesc */
     NULL, /* domainXmlFromNative */
     NULL, /* domainXmlToNative */
     xenapiListDefinedDomains, /* listDefinedDomains */
@@ -1879,7 +1879,7 @@ static virDriver xenapiDriver = {
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
     NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotGetXMLDesc */
     NULL, /* domainSnapshotNum */
     NULL, /* domainSnapshotListNames */
     NULL, /* domainSnapshotLookupByName */

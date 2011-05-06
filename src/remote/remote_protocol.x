@@ -714,12 +714,12 @@ struct remote_domain_core_dump_args {
     int flags;
 };
 
-struct remote_domain_dump_xml_args {
+struct remote_domain_get_xml_desc_args {
     remote_nonnull_domain dom;
     int flags;
 };
 
-struct remote_domain_dump_xml_ret {
+struct remote_domain_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
@@ -992,12 +992,12 @@ struct remote_network_destroy_args {
     remote_nonnull_network net;
 };
 
-struct remote_network_dump_xml_args {
+struct remote_network_get_xml_desc_args {
     remote_nonnull_network net;
     int flags;
 };
 
-struct remote_network_dump_xml_ret {
+struct remote_network_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
@@ -1294,12 +1294,12 @@ struct remote_storage_pool_refresh_args {
     unsigned flags;
 };
 
-struct remote_storage_pool_dump_xml_args {
+struct remote_storage_pool_get_xml_desc_args {
     remote_nonnull_storage_pool pool;
     unsigned flags;
 };
 
-struct remote_storage_pool_dump_xml_ret {
+struct remote_storage_pool_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
@@ -1404,12 +1404,12 @@ struct remote_storage_vol_wipe_args {
     unsigned flags;
 };
 
-struct remote_storage_vol_dump_xml_args {
+struct remote_storage_vol_get_xml_desc_args {
     remote_nonnull_storage_vol vol;
     unsigned flags;
 };
 
-struct remote_storage_vol_dump_xml_ret {
+struct remote_storage_vol_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
@@ -1460,12 +1460,12 @@ struct remote_node_device_lookup_by_name_ret {
     remote_nonnull_node_device dev;
 };
 
-struct remote_node_device_dump_xml_args {
+struct remote_node_device_get_xml_desc_args {
     remote_nonnull_string name;
     unsigned flags;
 };
 
-struct remote_node_device_dump_xml_ret {
+struct remote_node_device_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
@@ -1859,12 +1859,12 @@ struct remote_domain_snapshot_create_xml_ret {
     remote_nonnull_domain_snapshot snap;
 };
 
-struct remote_domain_snapshot_dump_xml_args {
+struct remote_domain_snapshot_get_xml_desc_args {
     remote_nonnull_domain_snapshot snap;
     int flags;
 };
 
-struct remote_domain_snapshot_dump_xml_ret {
+struct remote_domain_snapshot_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
@@ -1967,7 +1967,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_DEFINE_XML = 11,
     REMOTE_PROC_DOMAIN_DESTROY = 12,
     REMOTE_PROC_DOMAIN_DETACH_DEVICE = 13,
-    REMOTE_PROC_DOMAIN_DUMP_XML = 14,
+    REMOTE_PROC_DOMAIN_GET_XML_DESC = 14,
     REMOTE_PROC_DOMAIN_GET_AUTOSTART = 15,
     REMOTE_PROC_DOMAIN_GET_INFO = 16,
     REMOTE_PROC_DOMAIN_GET_MAX_MEMORY = 17,
@@ -1999,7 +1999,7 @@ enum remote_procedure {
 
     REMOTE_PROC_NETWORK_DEFINE_XML = 41,
     REMOTE_PROC_NETWORK_DESTROY = 42,
-    REMOTE_PROC_NETWORK_DUMP_XML = 43,
+    REMOTE_PROC_NETWORK_GET_XML_DESC = 43,
     REMOTE_PROC_NETWORK_GET_AUTOSTART = 44,
     REMOTE_PROC_NETWORK_GET_BRIDGE_NAME = 45,
     REMOTE_PROC_NETWORK_LOOKUP_BY_NAME = 46,
@@ -2048,7 +2048,7 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_UUID = 85,
     REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_VOLUME = 86,
     REMOTE_PROC_STORAGE_POOL_GET_INFO = 87,
-    REMOTE_PROC_STORAGE_POOL_DUMP_XML = 88,
+    REMOTE_PROC_STORAGE_POOL_GET_XML_DESC = 88,
     REMOTE_PROC_STORAGE_POOL_GET_AUTOSTART = 89,
     REMOTE_PROC_STORAGE_POOL_SET_AUTOSTART = 90,
 
@@ -2060,7 +2060,7 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_KEY = 96,
     REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_PATH = 97,
     REMOTE_PROC_STORAGE_VOL_GET_INFO = 98,
-    REMOTE_PROC_STORAGE_VOL_DUMP_XML = 99,
+    REMOTE_PROC_STORAGE_VOL_GET_XML_DESC = 99,
     REMOTE_PROC_STORAGE_VOL_GET_PATH = 100,
 
     REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY = 101,
@@ -2077,7 +2077,7 @@ enum remote_procedure {
     REMOTE_PROC_NODE_NUM_OF_DEVICES = 111,
     REMOTE_PROC_NODE_LIST_DEVICES = 112,
     REMOTE_PROC_NODE_DEVICE_LOOKUP_BY_NAME = 113,
-    REMOTE_PROC_NODE_DEVICE_DUMP_XML = 114,
+    REMOTE_PROC_NODE_DEVICE_GET_XML_DESC = 114,
     REMOTE_PROC_NODE_DEVICE_GET_PARENT = 115,
     REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS = 116,
     REMOTE_PROC_NODE_DEVICE_LIST_CAPS = 117,
@@ -2156,7 +2156,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_HAS_MANAGED_SAVE_IMAGE = 183,
     REMOTE_PROC_DOMAIN_MANAGED_SAVE_REMOVE = 184,
     REMOTE_PROC_DOMAIN_SNAPSHOT_CREATE_XML = 185,
-    REMOTE_PROC_DOMAIN_SNAPSHOT_DUMP_XML = 186,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_GET_XML_DESC = 186,
     REMOTE_PROC_DOMAIN_SNAPSHOT_NUM = 187,
     REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_NAMES = 188,
     REMOTE_PROC_DOMAIN_SNAPSHOT_LOOKUP_BY_NAME = 189,

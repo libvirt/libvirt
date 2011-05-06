@@ -939,8 +939,8 @@ cleanup:
 }
 
 static char *
-storagePoolDumpXML(virStoragePoolPtr obj,
-                   unsigned int flags ATTRIBUTE_UNUSED) {
+storagePoolGetXMLDesc(virStoragePoolPtr obj,
+                      unsigned int flags ATTRIBUTE_UNUSED) {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     char *ret = NULL;
@@ -2122,7 +2122,7 @@ static virStorageDriver storageDriver = {
     .poolDelete = storagePoolDelete,
     .poolRefresh = storagePoolRefresh,
     .poolGetInfo = storagePoolGetInfo,
-    .poolGetXMLDesc = storagePoolDumpXML,
+    .poolGetXMLDesc = storagePoolGetXMLDesc,
     .poolGetAutostart = storagePoolGetAutostart,
     .poolSetAutostart = storagePoolSetAutostart,
     .poolNumOfVolumes = storagePoolNumVolumes,

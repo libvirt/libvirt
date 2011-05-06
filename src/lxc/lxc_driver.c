@@ -918,8 +918,8 @@ cleanup:
     return ret;
 }
 
-static char *lxcDomainDumpXML(virDomainPtr dom,
-                              int flags)
+static char *lxcDomainGetXMLDesc(virDomainPtr dom,
+                                 int flags)
 {
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -2750,7 +2750,7 @@ static virDriver lxcDriver = {
     NULL, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
-    lxcDomainDumpXML, /* domainDumpXML */
+    lxcDomainGetXMLDesc, /* domainGetXMLDesc */
     NULL, /* domainXMLFromNative */
     NULL, /* domainXMLToNative */
     lxcListDefinedDomains, /* listDefinedDomains */
@@ -2805,7 +2805,7 @@ static virDriver lxcDriver = {
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
     NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotGetXMLDesc */
     NULL, /* domainSnapshotNum */
     NULL, /* domainSnapshotListNames */
     NULL, /* domainSnapshotLookupByName */

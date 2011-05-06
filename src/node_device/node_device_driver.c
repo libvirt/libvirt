@@ -251,8 +251,8 @@ out:
 }
 
 
-static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
-                               unsigned int flags ATTRIBUTE_UNUSED)
+static char *nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
+                                  unsigned int flags ATTRIBUTE_UNUSED)
 {
     virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
     virNodeDeviceObjPtr obj;
@@ -657,7 +657,7 @@ void registerCommonNodeFuncs(virDeviceMonitorPtr driver)
     driver->numOfDevices = nodeNumOfDevices;
     driver->listDevices = nodeListDevices;
     driver->deviceLookupByName = nodeDeviceLookupByName;
-    driver->deviceDumpXML = nodeDeviceDumpXML;
+    driver->deviceGetXMLDesc = nodeDeviceGetXMLDesc;
     driver->deviceGetParent = nodeDeviceGetParent;
     driver->deviceNumOfCaps = nodeDeviceNumOfCaps;
     driver->deviceListCaps = nodeDeviceListCaps;

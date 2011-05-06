@@ -2336,7 +2336,7 @@ cleanup:
     return ret;
 }
 
-static char *testDomainDumpXML(virDomainPtr domain, int flags)
+static char *testDomainGetXMLDesc(virDomainPtr domain, int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainDefPtr def;
@@ -3137,7 +3137,7 @@ cleanup:
     return ret;
 }
 
-static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
+static char *testNetworkGetXMLDesc(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     char *ret = NULL;
@@ -4162,8 +4162,8 @@ cleanup:
 }
 
 static char *
-testStoragePoolDumpXML(virStoragePoolPtr pool,
-                       unsigned int flags ATTRIBUTE_UNUSED) {
+testStoragePoolGetXMLDesc(virStoragePoolPtr pool,
+                          unsigned int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     char *ret = NULL;
@@ -4914,8 +4914,8 @@ cleanup:
 }
 
 static char *
-testNodeDeviceDumpXML(virNodeDevicePtr dev,
-                      unsigned int flags ATTRIBUTE_UNUSED)
+testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
+                         unsigned int flags ATTRIBUTE_UNUSED)
 {
     testConnPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
@@ -5382,7 +5382,7 @@ static virDriver testDriver = {
     testDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
-    testDomainDumpXML, /* domainDumpXML */
+    testDomainGetXMLDesc, /* domainGetXMLDesc */
     NULL, /* domainXMLFromNative */
     NULL, /* domainXMLToNative */
     testListDefinedDomains, /* listDefinedDomains */
@@ -5437,7 +5437,7 @@ static virDriver testDriver = {
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
     NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotGetXMLDesc */
     NULL, /* domainSnapshotNum */
     NULL, /* domainSnapshotListNames */
     NULL, /* domainSnapshotLookupByName */
@@ -5465,7 +5465,7 @@ static virNetworkDriver testNetworkDriver = {
     testNetworkUndefine, /* networkUndefine */
     testNetworkStart, /* networkCreate */
     testNetworkDestroy, /* networkDestroy */
-    testNetworkDumpXML, /* networkDumpXML */
+    testNetworkGetXMLDesc, /* networkGetXMLDesc */
     testNetworkGetBridgeName, /* networkGetBridgeName */
     testNetworkGetAutostart, /* networkGetAutostart */
     testNetworkSetAutostart, /* networkSetAutostart */
@@ -5514,7 +5514,7 @@ static virStorageDriver testStorageDriver = {
     .poolDelete = testStoragePoolDelete,
     .poolRefresh = testStoragePoolRefresh,
     .poolGetInfo = testStoragePoolGetInfo,
-    .poolGetXMLDesc = testStoragePoolDumpXML,
+    .poolGetXMLDesc = testStoragePoolGetXMLDesc,
     .poolGetAutostart = testStoragePoolGetAutostart,
     .poolSetAutostart = testStoragePoolSetAutostart,
     .poolNumOfVolumes = testStoragePoolNumVolumes,
@@ -5541,7 +5541,7 @@ static virDeviceMonitor testDevMonitor = {
     .numOfDevices = testNodeNumOfDevices,
     .listDevices = testNodeListDevices,
     .deviceLookupByName = testNodeDeviceLookupByName,
-    .deviceDumpXML = testNodeDeviceDumpXML,
+    .deviceGetXMLDesc = testNodeDeviceGetXMLDesc,
     .deviceGetParent = testNodeDeviceGetParent,
     .deviceNumOfCaps = testNodeDeviceNumOfCaps,
     .deviceListCaps = testNodeDeviceListCaps,

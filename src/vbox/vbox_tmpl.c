@@ -2066,7 +2066,7 @@ vboxDomainGetMaxVcpus(virDomainPtr dom)
                                          VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
-static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
+static char *vboxDomainGetXMLDesc(virDomainPtr dom, int flags) {
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
     virDomainDefPtr def  = NULL;
     IMachine *machine    = NULL;
@@ -5638,8 +5638,8 @@ cleanup:
 }
 
 static char *
-vboxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
-                          unsigned int flags)
+vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                             unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
@@ -7510,7 +7510,7 @@ static int vboxNetworkDestroy(virNetworkPtr network) {
     return vboxNetworkUndefineDestroy(network, false);
 }
 
-static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
+static char *vboxNetworkGetXMLDesc(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
     VBOX_OBJECT_HOST_CHECK(network->conn, char *, NULL);
     virNetworkDefPtr def  = NULL;
     virNetworkIpDefPtr ipdef = NULL;
@@ -8577,7 +8577,7 @@ virDriver NAME(Driver) = {
     vboxDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
-    vboxDomainDumpXML, /* domainDumpXML */
+    vboxDomainGetXMLDesc, /* domainGetXMLDesc */
     NULL, /* domainXMLFromNative */
     NULL, /* domainXMLToNative */
     vboxListDefinedDomains, /* listDefinedDomains */
@@ -8642,7 +8642,7 @@ virDriver NAME(Driver) = {
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
     vboxDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
-    vboxDomainSnapshotDumpXML, /* domainSnapshotDumpXML */
+    vboxDomainSnapshotGetXMLDesc, /* domainSnapshotGetXMLDesc */
     vboxDomainSnapshotNum, /* domainSnapshotNum */
     vboxDomainSnapshotListNames, /* domainSnapshotListNames */
     vboxDomainSnapshotLookupByName, /* domainSnapshotLookupByName */
@@ -8670,7 +8670,7 @@ virNetworkDriver NAME(NetworkDriver) = {
     .networkUndefine        = vboxNetworkUndefine,
     .networkCreate          = vboxNetworkCreate,
     .networkDestroy         = vboxNetworkDestroy,
-    .networkDumpXML         = vboxNetworkDumpXML,
+    .networkGetXMLDesc      = vboxNetworkGetXMLDesc,
     .networkGetBridgeName   = NULL,
     .networkGetAutostart    = NULL,
     .networkSetAutostart    = NULL

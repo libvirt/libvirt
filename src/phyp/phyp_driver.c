@@ -3302,7 +3302,7 @@ cleanup:
 }
 
 static char *
-phypDomainDumpXML(virDomainPtr dom, int flags)
+phypDomainGetXMLDesc(virDomainPtr dom, int flags)
 {
     ConnectionData *connection_data = dom->conn->networkPrivateData;
     phyp_driverPtr phyp_driver = dom->conn->privateData;
@@ -3763,7 +3763,7 @@ static virDriver phypDriver = {
     phypGetLparCPUMAX,          /* domainGetMaxVcpus */
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
-    phypDomainDumpXML,          /* domainDumpXML */
+    phypDomainGetXMLDesc,       /* domainGetXMLDesc */
     NULL,                       /* domainXMLFromNative */
     NULL,                       /* domainXMLToNative */
     phypListDefinedDomains,     /* listDefinedDomains */
@@ -3818,7 +3818,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainHasManagedSaveImage */
     NULL,                       /* domainManagedSaveRemove */
     NULL,                       /* domainSnapshotCreateXML */
-    NULL,                       /* domainSnapshotDumpXML */
+    NULL,                       /* domainSnapshotGetXMLDesc */
     NULL,                       /* domainSnapshotNum */
     NULL,                       /* domainSnapshotListNames */
     NULL,                       /* domainSnapshotLookupByName */

@@ -789,7 +789,7 @@ vmwareDomainIsPersistent(virDomainPtr dom)
 
 
 static char *
-vmwareDomainDumpXML(virDomainPtr dom, int flags)
+vmwareDomainGetXMLDesc(virDomainPtr dom, int flags)
 {
     struct vmware_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -942,7 +942,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainGetMaxVcpus */
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
-    vmwareDomainDumpXML,        /* domainDumpXML */
+    vmwareDomainGetXMLDesc,     /* domainGetXMLDesc */
     NULL,                       /* domainXmlFromNative */
     NULL,                       /* domainXmlToNative */
     vmwareListDefinedDomains,   /* listDefinedDomains */
@@ -997,7 +997,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainHasManagedSaveImage */
     NULL,                       /* domainManagedSaveRemove */
     NULL,                       /* domainSnapshotCreateXML */
-    NULL,                       /* domainSnapshotDumpXML */
+    NULL,                       /* domainSnapshotGetXMLDesc */
     NULL,                       /* domainSnapshotNum */
     NULL,                       /* domainSnapshotListNames */
     NULL,                       /* domainSnapshotLookupByName */

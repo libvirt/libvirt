@@ -2610,7 +2610,7 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
 
 
 static char *
-esxDomainDumpXML(virDomainPtr domain, int flags)
+esxDomainGetXMLDesc(virDomainPtr domain, int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
@@ -4137,8 +4137,8 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
 
 
 static char *
-esxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
-                         unsigned int flags)
+esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                            unsigned int flags)
 {
     esxPrivate *priv = snapshot->domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotList = NULL;
@@ -4634,7 +4634,7 @@ static virDriver esxDriver = {
     esxDomainGetMaxVcpus,            /* domainGetMaxVcpus */
     NULL,                            /* domainGetSecurityLabel */
     NULL,                            /* nodeGetSecurityModel */
-    esxDomainDumpXML,                /* domainDumpXML */
+    esxDomainGetXMLDesc,             /* domainGetXMLDesc */
     esxDomainXMLFromNative,          /* domainXMLFromNative */
     esxDomainXMLToNative,            /* domainXMLToNative */
     esxListDefinedDomains,           /* listDefinedDomains */
@@ -4689,7 +4689,7 @@ static virDriver esxDriver = {
     NULL,                            /* domainHasManagedSaveImage */
     NULL,                            /* domainManagedSaveRemove */
     esxDomainSnapshotCreateXML,      /* domainSnapshotCreateXML */
-    esxDomainSnapshotDumpXML,        /* domainSnapshotDumpXML */
+    esxDomainSnapshotGetXMLDesc,     /* domainSnapshotGetXMLDesc */
     esxDomainSnapshotNum,            /* domainSnapshotNum */
     esxDomainSnapshotListNames,      /* domainSnapshotListNames */
     esxDomainSnapshotLookupByName,   /* domainSnapshotLookupByName */

@@ -1523,7 +1523,7 @@ esxStorageVolumeGetInfo(virStorageVolPtr volume, virStorageVolInfoPtr info)
 
 
 static char *
-esxStorageVolumeDumpXML(virStorageVolPtr volume, unsigned int flags)
+esxStorageVolumeGetXMLDesc(virStorageVolPtr volume, unsigned int flags)
 {
     esxPrivate *priv = volume->conn->storagePrivateData;
     virStoragePoolDef pool;
@@ -1676,7 +1676,7 @@ static virStorageDriver esxStorageDriver = {
     esxStorageVolumeDelete,                /* volDelete */
     esxStorageVolumeWipe,                  /* volWipe */
     esxStorageVolumeGetInfo,               /* volGetInfo */
-    esxStorageVolumeDumpXML,               /* volGetXMLDesc */
+    esxStorageVolumeGetXMLDesc,            /* volGetXMLDesc */
     esxStorageVolumeGetPath,               /* volGetPath */
     esxStoragePoolIsActive,                /* poolIsActive */
     esxStoragePoolIsPersistent,            /* poolIsPersistent */

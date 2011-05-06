@@ -80,7 +80,7 @@ static virNetworkDriver esxNetworkDriver = {
     NULL,                                  /* networkUndefine */
     NULL,                                  /* networkCreate */
     NULL,                                  /* networkDestroy */
-    NULL,                                  /* networkDumpXML */
+    NULL,                                  /* networkGetXMLDesc */
     NULL,                                  /* networkGetBridgeName */
     NULL,                                  /* networkGetAutostart */
     NULL,                                  /* networkSetAutostart */

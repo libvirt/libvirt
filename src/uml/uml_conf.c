@@ -132,7 +132,7 @@ umlConnectTapDevice(virConnectPtr conn,
         VIR_FREE(net->ifname);
         if (!(net->ifname = strdup("vnet%d")))
             goto no_memory;
-        /* avoid exposing vnet%d in dumpxml or error outputs */
+        /* avoid exposing vnet%d in getXMLDesc or error outputs */
         template_ifname = 1;
     }
 

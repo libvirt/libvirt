@@ -645,8 +645,6 @@ elsif ($opt_b) {
                 $prefix = "Connect"
             } elsif ($calls{$_}->{ProcName} eq "SupportsFeature") {
                 $prefix = "Drv"
-            } elsif ($calls{$_}->{ProcName} =~ m/^(\S+)DumpXML$/) {
-                $proc_name = "${1}GetXMLDesc"
             } elsif ($calls{$_}->{ProcName} eq "CPUBaseline") {
                 $proc_name = "ConnectBaselineCPU"
             } elsif ($calls{$_}->{ProcName} eq "CPUCompare") {
@@ -892,8 +890,8 @@ elsif ($opt_k) {
                         # fix bad decisions in the xdr protocol
                         if ($arg_name eq "flags" and
                             $call->{ProcName} ne "DomainCoreDump" and
-                            $call->{ProcName} ne "DomainDumpXML" and
-                            $call->{ProcName} ne "NetworkDumpXML") {
+                            $call->{ProcName} ne "DomainGetXMLDesc" and
+                            $call->{ProcName} ne "NetworkGetXMLDesc") {
                             $type_name = "unsigned int";
                         } elsif ($arg_name eq "nvcpus" and
                                  $call->{ProcName} eq "DomainSetVcpus") {

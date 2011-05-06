@@ -1813,7 +1813,7 @@ cleanup:
 
 
 /**
- * xenDaemonDomainDumpXML:
+ * xenDaemonDomainGetXMLDesc:
  * @domain: a domain object
  * @flags: potential dump flags
  * @cpus: list of cpu the domain is pinned to.
@@ -1824,7 +1824,7 @@ cleanup:
  *         the caller must free() the returned value.
  */
 char *
-xenDaemonDomainDumpXML(virDomainPtr domain, int flags, const char *cpus)
+xenDaemonDomainGetXMLDesc(virDomainPtr domain, int flags, const char *cpus)
 {
     xenUnifiedPrivatePtr priv;
     virDomainDefPtr def;

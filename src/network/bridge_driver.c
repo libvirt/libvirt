@@ -2356,7 +2356,7 @@ cleanup:
     return ret;
 }
 
-static char *networkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
+static char *networkGetXMLDesc(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     char *ret = NULL;
@@ -2517,7 +2517,7 @@ static virNetworkDriver networkDriver = {
     networkUndefine, /* networkUndefine */
     networkStart, /* networkCreate */
     networkDestroy, /* networkDestroy */
-    networkDumpXML, /* networkDumpXML */
+    networkGetXMLDesc, /* networkGetXMLDesc */
     networkGetBridgeName, /* networkGetBridgeName */
     networkGetAutostart, /* networkGetAutostart */
     networkSetAutostart, /* networkSetAutostart */

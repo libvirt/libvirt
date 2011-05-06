@@ -3207,9 +3207,9 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
 
     flags &= VIR_DOMAIN_XML_FLAGS_MASK;
 
-    if (conn->driver->domainDumpXML) {
+    if (conn->driver->domainGetXMLDesc) {
         char *ret;
-        ret = conn->driver->domainDumpXML (domain, flags);
+        ret = conn->driver->domainGetXMLDesc(domain, flags);
         if (!ret)
             goto error;
         return ret;
@@ -3431,14 +3431,14 @@ virDomainMigrateVersion2 (virDomainPtr domain,
      * different.  We fetch the domain XML of the source domain
      * and pass it to Prepare2.
      */
-    if (!domain->conn->driver->domainDumpXML) {
+    if (!domain->conn->driver->domainGetXMLDesc) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
         virDispatchError(domain->conn);
         return NULL;
     }
-    dom_xml = domain->conn->driver->domainDumpXML (domain,
-                                                   VIR_DOMAIN_XML_SECURE |
-                                                   VIR_DOMAIN_XML_UPDATE_CPU);
+    dom_xml = domain->conn->driver->domainGetXMLDesc(domain,
+                                                     VIR_DOMAIN_XML_SECURE |
+                                                     VIR_DOMAIN_XML_UPDATE_CPU);
     if (!dom_xml)
         return NULL;
 
@@ -6760,9 +6760,9 @@ virNetworkGetXMLDesc(virNetworkPtr network, int flags)
 
     conn = network->conn;
 
-    if (conn->networkDriver && conn->networkDriver->networkDumpXML) {
+    if (conn->networkDriver && conn->networkDriver->networkGetXMLDesc) {
         char *ret;
-        ret = conn->networkDriver->networkDumpXML (network, flags);
+        ret = conn->networkDriver->networkGetXMLDesc(network, flags);
         if (!ret)
             goto error;
         return ret;
@@ -9677,9 +9677,9 @@ char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
         return NULL;
     }
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceDumpXML) {
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceGetXMLDesc) {
         char *ret;
-        ret = dev->conn->deviceMonitor->deviceDumpXML (dev, flags);
+        ret = dev->conn->deviceMonitor->deviceGetXMLDesc(dev, flags);
         if (!ret)
             goto error;
         return ret;
@@ -13098,9 +13098,9 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         goto error;
     }
 
-    if (conn->driver->domainSnapshotDumpXML) {
+    if (conn->driver->domainSnapshotGetXMLDesc) {
         char *ret;
-        ret = conn->driver->domainSnapshotDumpXML(snapshot, flags);
+        ret = conn->driver->domainSnapshotGetXMLDesc(snapshot, flags);
         if (!ret)
             goto error;
         return ret;

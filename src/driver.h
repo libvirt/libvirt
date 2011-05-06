@@ -176,7 +176,7 @@ typedef int
                                          const char *to,
                                          int flags);
 typedef char *
-        (*virDrvDomainDumpXML)		(virDomainPtr dom,
+        (*virDrvDomainGetXMLDesc)		(virDomainPtr dom,
                                          int flags);
 typedef char *
         (*virDrvConnectDomainXMLFromNative) (virConnectPtr conn,
@@ -474,8 +474,8 @@ typedef virDomainSnapshotPtr
                                      unsigned int flags);
 
 typedef char *
-    (*virDrvDomainSnapshotDumpXML)(virDomainSnapshotPtr snapshot,
-                                   unsigned int flags);
+    (*virDrvDomainSnapshotGetXMLDesc)(virDomainSnapshotPtr snapshot,
+                                      unsigned int flags);
 
 typedef int
     (*virDrvDomainSnapshotNum)(virDomainPtr domain, unsigned int flags);
@@ -577,7 +577,7 @@ struct _virDriver {
     virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
     virDrvDomainGetSecurityLabel     domainGetSecurityLabel;
     virDrvNodeGetSecurityModel  nodeGetSecurityModel;
-    virDrvDomainDumpXML		domainDumpXML;
+    virDrvDomainGetXMLDesc		domainGetXMLDesc;
     virDrvConnectDomainXMLFromNative domainXMLFromNative;
     virDrvConnectDomainXMLToNative domainXMLToNative;
     virDrvListDefinedDomains	listDefinedDomains;
@@ -632,7 +632,7 @@ struct _virDriver {
     virDrvDomainHasManagedSaveImage domainHasManagedSaveImage;
     virDrvDomainManagedSaveRemove domainManagedSaveRemove;
     virDrvDomainSnapshotCreateXML domainSnapshotCreateXML;
-    virDrvDomainSnapshotDumpXML domainSnapshotDumpXML;
+    virDrvDomainSnapshotGetXMLDesc domainSnapshotGetXMLDesc;
     virDrvDomainSnapshotNum domainSnapshotNum;
     virDrvDomainSnapshotListNames domainSnapshotListNames;
     virDrvDomainSnapshotLookupByName domainSnapshotLookupByName;
@@ -676,7 +676,7 @@ typedef int
 typedef int
         (*virDrvNetworkDestroy)		(virNetworkPtr network);
 typedef char *
-        (*virDrvNetworkDumpXML)		(virNetworkPtr network,
+        (*virDrvNetworkGetXMLDesc)		(virNetworkPtr network,
                                          int flags);
 typedef char *
         (*virDrvNetworkGetBridgeName)	(virNetworkPtr network);
@@ -722,7 +722,7 @@ struct _virNetworkDriver {
         virDrvNetworkUndefine		networkUndefine;
         virDrvNetworkCreate		networkCreate;
         virDrvNetworkDestroy		networkDestroy;
-        virDrvNetworkDumpXML		networkDumpXML;
+        virDrvNetworkGetXMLDesc		networkGetXMLDesc;
         virDrvNetworkGetBridgeName	networkGetBridgeName;
         virDrvNetworkGetAutostart	networkGetAutostart;
         virDrvNetworkSetAutostart	networkSetAutostart;
@@ -1021,8 +1021,8 @@ typedef int (*virDevMonListDevices)(virConnectPtr conn,
 typedef virNodeDevicePtr (*virDevMonDeviceLookupByName)(virConnectPtr conn,
                                                         const char *name);
 
-typedef char * (*virDevMonDeviceDumpXML)(virNodeDevicePtr dev,
-                                         unsigned int flags);
+typedef char * (*virDevMonDeviceGetXMLDesc)(virNodeDevicePtr dev,
+                                            unsigned int flags);
 
 typedef char * (*virDevMonDeviceGetParent)(virNodeDevicePtr dev);
 
@@ -1051,7 +1051,7 @@ struct _virDeviceMonitor {
     virDevMonNumOfDevices numOfDevices;
     virDevMonListDevices listDevices;
     virDevMonDeviceLookupByName deviceLookupByName;
-    virDevMonDeviceDumpXML deviceDumpXML;
+    virDevMonDeviceGetXMLDesc deviceGetXMLDesc;
     virDevMonDeviceGetParent deviceGetParent;
     virDevMonDeviceNumOfCaps deviceNumOfCaps;
     virDevMonDeviceListCaps deviceListCaps;

@@ -1916,7 +1916,7 @@ cleanup:
 }
 
 static char *
-libxlDomainDumpXML(virDomainPtr dom, int flags)
+libxlDomainGetXMLDesc(virDomainPtr dom, int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -2725,7 +2725,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainGetMaxVcpus */
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
-    libxlDomainDumpXML,         /* domainDumpXML */
+    libxlDomainGetXMLDesc,      /* domainGetXMLDesc */
     libxlDomainXMLFromNative,   /* domainXmlFromNative */
     libxlDomainXMLToNative,     /* domainXmlToNative */
     libxlListDefinedDomains,    /* listDefinedDomains */
@@ -2780,7 +2780,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainHasManagedSaveImage */
     NULL,                       /* domainManagedSaveRemove */
     NULL,                       /* domainSnapshotCreateXML */
-    NULL,                       /* domainSnapshotDumpXML */
+    NULL,                       /* domainSnapshotGetXMLDesc */
     NULL,                       /* domainSnapshotNum */
     NULL,                       /* domainSnapshotListNames */
     NULL,                       /* domainSnapshotLookupByName */

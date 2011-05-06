@@ -1522,8 +1522,8 @@ cleanup:
 }
 
 
-static char *umlDomainDumpXML(virDomainPtr dom,
-                                int flags ATTRIBUTE_UNUSED) {
+static char *umlDomainGetXMLDesc(virDomainPtr dom,
+                                 int flags ATTRIBUTE_UNUSED) {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
@@ -2188,7 +2188,7 @@ static virDriver umlDriver = {
     NULL, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
-    umlDomainDumpXML, /* domainDumpXML */
+    umlDomainGetXMLDesc, /* domainGetXMLDesc */
     NULL, /* domainXMLFromNative */
     NULL, /* domainXMLToNative */
     umlListDefinedDomains, /* listDefinedDomains */
@@ -2243,7 +2243,7 @@ static virDriver umlDriver = {
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
     NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotGetXMLDesc */
     NULL, /* domainSnapshotNum */
     NULL, /* domainSnapshotListNames */
     NULL, /* domainSnapshotLookupByName */

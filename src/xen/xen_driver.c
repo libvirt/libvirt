@@ -1192,20 +1192,20 @@ xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
 }
 
 static char *
-xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
+xenUnifiedDomainGetXMLDesc(virDomainPtr dom, int flags)
 {
     GET_PRIVATE(dom->conn);
 
     if (dom->id == -1 && priv->xendConfigVersion < 3 ) {
         if (priv->opened[XEN_UNIFIED_XM_OFFSET])
-            return xenXMDomainDumpXML(dom, flags);
+            return xenXMDomainGetXMLDesc(dom, flags);
     } else {
         if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
             char *cpus, *res;
             xenUnifiedLock(priv);
             cpus = xenDomainUsedCpus(dom);
             xenUnifiedUnlock(priv);
-            res = xenDaemonDomainDumpXML(dom, flags, cpus);
+            res = xenDaemonDomainGetXMLDesc(dom, flags, cpus);
             VIR_FREE(cpus);
             return(res);
         }
@@ -1374,7 +1374,7 @@ xenUnifiedDomainMigrateFinish (virConnectPtr dconn,
     }
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
-        domain_xml = xenDaemonDomainDumpXML (dom, 0, NULL);
+        domain_xml = xenDaemonDomainGetXMLDesc(dom, 0, NULL);
         if (! domain_xml) {
             xenUnifiedError(VIR_ERR_MIGRATE_PERSIST_FAILED,
                             "%s", _("failed to get XML representation of migrated domain"));
@@ -2143,7 +2143,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
-    xenUnifiedDomainDumpXML, /* domainDumpXML */
+    xenUnifiedDomainGetXMLDesc, /* domainGetXMLDesc */
     xenUnifiedDomainXMLFromNative, /* domainXMLFromNative */
     xenUnifiedDomainXMLToNative, /* domainXMLToNative */
     xenUnifiedListDefinedDomains, /* listDefinedDomains */
@@ -2198,7 +2198,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
     NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotGetXMLDesc */
     NULL, /* domainSnapshotNum */
     NULL, /* domainSnapshotListNames */
     NULL, /* domainSnapshotLookupByName */

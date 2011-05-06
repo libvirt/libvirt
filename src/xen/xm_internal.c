@@ -513,7 +513,7 @@ error:
  * Turn a config record into a lump of XML describing the
  * domain, suitable for later feeding for virDomainCreateXML
  */
-char *xenXMDomainDumpXML(virDomainPtr domain, int flags) {
+char *xenXMDomainGetXMLDesc(virDomainPtr domain, int flags) {
     xenUnifiedPrivatePtr priv;
     const char *filename;
     xenXMConfCachePtr entry;

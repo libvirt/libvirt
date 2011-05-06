@@ -425,7 +425,7 @@ static int openvzDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
+static char *openvzDomainGetXMLDesc(virDomainPtr dom, int flags) {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
@@ -1602,7 +1602,7 @@ static virDriver openvzDriver = {
     openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
-    openvzDomainDumpXML, /* domainDumpXML */
+    openvzDomainGetXMLDesc, /* domainGetXMLDesc */
     NULL, /* domainXmlFromNative */
     NULL, /* domainXmlToNative */
     openvzListDefinedDomains, /* listDefinedDomains */
@@ -1657,7 +1657,7 @@ static virDriver openvzDriver = {
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
     NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotGetXMLDesc */
     NULL, /* domainSnapshotNum */
     NULL, /* domainSnapshotListNames */
     NULL, /* domainSnapshotLookupByName */

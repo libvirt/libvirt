@@ -241,7 +241,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
             virReportOOMError();
             goto cleanup;
         }
-        /* avoid exposing vnet%d in dumpxml or error outputs */
+        /* avoid exposing vnet%d in getXMLDesc or error outputs */
         template_ifname = 1;
     }
 

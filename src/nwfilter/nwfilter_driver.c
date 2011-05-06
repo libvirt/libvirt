@@ -406,8 +406,8 @@ cleanup:
 
 
 static char *
-nwfilterDumpXML(virNWFilterPtr obj,
-                unsigned int flags) {
+nwfilterGetXMLDesc(virNWFilterPtr obj,
+                   unsigned int flags) {
     virNWFilterDriverStatePtr driver = obj->conn->nwfilterPrivateData;
     virNWFilterObjPtr nwfilter;
     char *ret = NULL;
@@ -457,7 +457,7 @@ static virNWFilterDriver nwfilterDriver = {
     .nwfilterLookupByUUID = nwfilterLookupByUUID,
     .defineXML = nwfilterDefine,
     .undefine = nwfilterUndefine,
-    .getXMLDesc = nwfilterDumpXML,
+    .getXMLDesc = nwfilterGetXMLDesc,
 };
 
 

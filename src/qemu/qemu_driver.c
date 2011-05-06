@@ -3331,8 +3331,8 @@ cleanup:
 }
 
 
-static char *qemudDomainDumpXML(virDomainPtr dom,
-                                int flags) {
+static char *qemuDomainGetXMLDesc(virDomainPtr dom,
+                                  int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
@@ -6624,8 +6624,8 @@ cleanup:
     return snapshot;
 }
 
-static char *qemuDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
-                                       unsigned int flags)
+static char *qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                                          unsigned int flags)
 {
     struct qemud_driver *driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -7171,7 +7171,7 @@ static virDriver qemuDriver = {
     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
     qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
     qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
-    qemudDomainDumpXML, /* domainDumpXML */
+    qemuDomainGetXMLDesc, /* domainGetXMLDesc */
     qemuDomainXMLFromNative, /* domainXmlFromNative */
     qemuDomainXMLToNative, /* domainXMLToNative */
     qemudListDefinedDomains, /* listDefinedDomains */
@@ -7226,7 +7226,7 @@ static virDriver qemuDriver = {
     qemuDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
     qemuDomainManagedSaveRemove, /* domainManagedSaveRemove */
     qemuDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
-    qemuDomainSnapshotDumpXML, /* domainSnapshotDumpXML */
+    qemuDomainSnapshotGetXMLDesc, /* domainSnapshotGetXMLDesc */
     qemuDomainSnapshotNum, /* domainSnapshotNum */
     qemuDomainSnapshotListNames, /* domainSnapshotListNames */
     qemuDomainSnapshotLookupByName, /* domainSnapshotLookupByName */

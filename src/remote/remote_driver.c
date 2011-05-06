@@ -6428,7 +6428,7 @@ static virDriver remote_driver = {
     remoteDomainGetMaxVcpus, /* domainGetMaxVcpus */
     remoteDomainGetSecurityLabel, /* domainGetSecurityLabel */
     remoteNodeGetSecurityModel, /* nodeGetSecurityModel */
-    remoteDomainDumpXML, /* domainDumpXML */
+    remoteDomainGetXMLDesc, /* domainGetXMLDesc */
     remoteDomainXMLFromNative, /* domainXMLFromNative */
     remoteDomainXMLToNative, /* domainXMLToNative */
     remoteListDefinedDomains, /* listDefinedDomains */
@@ -6483,7 +6483,7 @@ static virDriver remote_driver = {
     remoteDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
     remoteDomainManagedSaveRemove, /* domainManagedSaveRemove */
     remoteDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
-    remoteDomainSnapshotDumpXML, /* domainSnapshotDumpXML */
+    remoteDomainSnapshotGetXMLDesc, /* domainSnapshotGetXMLDesc */
     remoteDomainSnapshotNum, /* domainSnapshotNum */
     remoteDomainSnapshotListNames, /* domainSnapshotListNames */
     remoteDomainSnapshotLookupByName, /* domainSnapshotLookupByName */
@@ -6511,7 +6511,7 @@ static virNetworkDriver network_driver = {
     .networkUndefine = remoteNetworkUndefine,
     .networkCreate = remoteNetworkCreate,
     .networkDestroy = remoteNetworkDestroy,
-    .networkDumpXML = remoteNetworkDumpXML,
+    .networkGetXMLDesc = remoteNetworkGetXMLDesc,
     .networkGetBridgeName = remoteNetworkGetBridgeName,
     .networkGetAutostart = remoteNetworkGetAutostart,
     .networkSetAutostart = remoteNetworkSetAutostart,
@@ -6558,7 +6558,7 @@ static virStorageDriver storage_driver = {
     .poolDelete = remoteStoragePoolDelete,
     .poolRefresh = remoteStoragePoolRefresh,
     .poolGetInfo = remoteStoragePoolGetInfo,
-    .poolGetXMLDesc = remoteStoragePoolDumpXML,
+    .poolGetXMLDesc = remoteStoragePoolGetXMLDesc,
     .poolGetAutostart = remoteStoragePoolGetAutostart,
     .poolSetAutostart = remoteStoragePoolSetAutostart,
     .poolNumOfVolumes = remoteStoragePoolNumOfVolumes,
@@ -6574,7 +6574,7 @@ static virStorageDriver storage_driver = {
     .volDelete = remoteStorageVolDelete,
     .volWipe = remoteStorageVolWipe,
     .volGetInfo = remoteStorageVolGetInfo,
-    .volGetXMLDesc = remoteStorageVolDumpXML,
+    .volGetXMLDesc = remoteStorageVolGetXMLDesc,
     .volGetPath = remoteStorageVolGetPath,
     .poolIsActive = remoteStoragePoolIsActive,
     .poolIsPersistent = remoteStoragePoolIsPersistent,
@@ -6602,7 +6602,7 @@ static virDeviceMonitor dev_monitor = {
     .numOfDevices = remoteNodeNumOfDevices,
     .listDevices = remoteNodeListDevices,
     .deviceLookupByName = remoteNodeDeviceLookupByName,
-    .deviceDumpXML = remoteNodeDeviceDumpXML,
+    .deviceGetXMLDesc = remoteNodeDeviceGetXMLDesc,
     .deviceGetParent = remoteNodeDeviceGetParent,
     .deviceNumOfCaps = remoteNodeDeviceNumOfCaps,
     .deviceListCaps = remoteNodeDeviceListCaps,

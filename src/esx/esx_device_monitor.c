@@ -72,7 +72,7 @@ static virDeviceMonitor esxDeviceMonitor = {
     NULL,                                  /* numOfDevices */
     NULL,                                  /* listDevices */
     NULL,                                  /* deviceLookupByName */
-    NULL,                                  /* deviceDumpXML */
+    NULL,                                  /* deviceGetXMLDesc */
     NULL,                                  /* deviceGetParent */
     NULL,                                  /* deviceNumOfCaps */
     NULL,                                  /* deviceListCaps */
