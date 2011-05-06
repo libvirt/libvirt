@@ -2,7 +2,6 @@ daemon/dispatch.c
 daemon/libvirtd.c
 daemon/remote.c
 daemon/stream.c
-daemon/remote_dispatch_bodies.h
 src/conf/cpu_conf.c
 src/conf/domain_conf.c
 src/conf/domain_event.c
@@ -64,7 +63,6 @@ src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
 src/qemu/qemu_monitor_text.c
 src/qemu/qemu_process.c
-src/remote/remote_client_bodies.h
 src/remote/remote_driver.c
 src/secret/secret_driver.c
 src/security/security_apparmor.c

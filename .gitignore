@@ -34,6 +34,7 @@
 /config.sub
 /configure
 /configure.lineno
+/daemon/*_dispatch_*.h
 /gnulib/
 /libtool
 /libvirt-*.tar.gz
@@ -49,6 +50,8 @@
 /po/*
 /proxy/
 /src/libvirt_iohelper
+/src/remote/*_client_bodies.h
+/src/remote/*_protocol.[ch]
 /tests/*.log
 /tests/cputest
 /tests/hashtest

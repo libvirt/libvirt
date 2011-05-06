@@ -495,13 +495,10 @@ sc_prohibit_newline_at_end_of_diagnostic:
 	  && { echo '$(ME): newline at end of message(s)' 1>&2;		\
 	    exit 1; } || :
 
-# Regex for grep -E that exempts generated files from style rules.
-preprocessor_exempt = ((qemu|remote)_(driver|protocol)\.h)$$
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
 	@if cppi --version >/dev/null 2>&1; then			\
-	  $(VC_LIST_EXCEPT) | grep '\.[ch]$$'				\
-	    | grep -vE '$(preprocessor_exempt)' | xargs cppi -a -c	\
+	  $(VC_LIST_EXCEPT) | grep '\.[ch]$$' | xargs cppi -a -c	\
 	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2;	\
 		exit 1; };						\
 	else								\
@@ -614,7 +611,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
 exclude_file_name_regexp--sc_prohibit_doubled_word = ^po/
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$|^daemon/.*_dispatch_bodies\.h$$|^src/remote/.*_client_bodies\.h$$)
+  (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$)
 
 _src2=src/(util/util|libvirt|lxc/lxc_controller)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
