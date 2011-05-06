@@ -552,11 +552,12 @@ libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 $(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 
 $(srcdir)/remote/%_protocol.c: $(srcdir)/remote/%_protocol.x \
-		$(srcdir)/remote/%_protocol.h
+		$(srcdir)/remote/%_protocol.h $(srcdir)/remote/rpcgen_fix.pl
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -c \
 	       $< $@
 
-$(srcdir)/remote/%_protocol.h: $(srcdir)/remote/%_protocol.x
+$(srcdir)/remote/%_protocol.h: $(srcdir)/remote/%_protocol.x \
+		$(srcdir)/remote/rpcgen_fix.pl
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -h \
 	       $< $@
 
