@@ -74,53 +74,40 @@ strtoI(const char *str)
 
 
 static int
-openvzExtractVersionInfo(const char *cmd, int *retversion)
+openvzExtractVersionInfo(const char *cmdstr, int *retversion)
 {
-    const char *const vzarg[] = { cmd, "--help", NULL };
-    const char *const vzenv[] = { "LC_ALL=C", NULL };
-    pid_t child;
-    int newstdout = -1;
-    int ret = -1, status;
+    int ret = -1;
     unsigned long version;
+    char *help = NULL;
     char *tmp;
+    virCommandPtr cmd = virCommandNewArgList(cmdstr, "--help", NULL);
 
     if (retversion)
         *retversion = 0;
 
-    if (virExec(vzarg, vzenv, NULL,
-                &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
-        return -1;
+    virCommandAddEnvString(cmd, "LC_ALL=C");
+    virCommandSetOutputBuffer(cmd, &help);
 
-    char *help = NULL;
-    int len = virFileReadLimFD(newstdout, 4096, &help);
-    if (len < 0)
-        goto cleanup2;
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
 
     tmp = help;
 
     /* expected format: vzctl version <major>.<minor>.<micro> */
     if ((tmp = STRSKIP(tmp, "vzctl version ")) == NULL)
-        goto cleanup2;
+        goto cleanup;
 
     if (virParseVersionString(tmp, &version) < 0)
-        goto cleanup2;
+        goto cleanup;
 
     if (retversion)
         *retversion = version;
 
     ret = 0;
 
-cleanup2:
+cleanup:
+    virCommandFree(cmd);
     VIR_FREE(help);
-    if (VIR_CLOSE(newstdout) < 0)
-        ret = -1;
-
-rewait:
-    if (waitpid(child, &status, 0) != child) {
-        if (errno == EINTR)
-            goto rewait;
-        ret = -1;
-    }
 
     return ret;
 }

@@ -41,7 +41,6 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <signal.h>
 #include <paths.h>
 #include <pwd.h>
 #include <stdio.h>
@@ -59,6 +58,7 @@
 #include "bridge.h"
 #include "files.h"
 #include "logging.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -1397,21 +1397,16 @@ static int openvzListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
                              int *ids, int nids) {
     int got = 0;
     int veid;
-    pid_t pid;
     int outfd = -1;
+    int rc = -1;
     int ret;
     char buf[32];
     char *endptr;
-    const char *cmd[] = {VZLIST, "-ovpsid", "-H" , NULL};
+    virCommandPtr cmd = virCommandNewArgList(VZLIST, "-ovpsid", "-H" , NULL);
 
-    ret = virExec(cmd, NULL, NULL,
-                  &pid, -1, &outfd, NULL, VIR_EXEC_NONE);
-    if (ret == -1) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZLIST);
-        VIR_FORCE_CLOSE(outfd);
-        return -1;
-    }
+    virCommandSetOutputFD(cmd, &outfd);
+    if (virCommandRunAsync(cmd, NULL) < 0)
+        goto cleanup;
 
     while (got < nids) {
         ret = openvz_readline(outfd, buf, 32);
@@ -1425,13 +1420,20 @@ static int openvzListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
         ids[got] = veid;
         got ++;
     }
-    waitpid(pid, NULL, 0);
+
+    if (virCommandWait(cmd, NULL) < 0)
+        goto cleanup;
 
     if (VIR_CLOSE(outfd) < 0) {
         virReportSystemError(errno, "%s", _("failed to close file"));
-        return -1;
+        goto cleanup;
     }
-    return got;
+
+    rc = got;
+cleanup:
+    VIR_FORCE_CLOSE(outfd);
+    virCommandFree(cmd);
+    return rc;
 }
 
 static int openvzNumDomains(virConnectPtr conn) {
@@ -1449,20 +1451,17 @@ static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     char **const names, int nnames) {
     int got = 0;
     int veid, outfd = -1, ret;
-    pid_t pid;
+    int rc = -1;
     char vpsname[32];
     char buf[32];
     char *endptr;
-    const char *cmd[] = {VZLIST, "-ovpsid", "-H", "-S", NULL};
+    virCommandPtr cmd = virCommandNewArgList(VZLIST,
+                                             "-ovpsid", "-H", "-S", NULL);
 
     /* the -S options lists only stopped domains */
-    ret = virExec(cmd, NULL, NULL,
-                  &pid, -1, &outfd, NULL, VIR_EXEC_NONE);
-    if (ret == -1) {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZLIST);
+    virCommandSetOutputFD(cmd, &outfd);
+    if (virCommandRunAsync(cmd, NULL) < 0)
         goto out;
-    }
 
     while (got < nnames) {
         ret = openvz_readline(outfd, buf, 32);
@@ -1480,18 +1479,24 @@ static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
         got ++;
     }
-    waitpid(pid, NULL, 0);
+
+    if (virCommandWait(cmd, NULL) < 0)
+        goto out;
+
     if (VIR_CLOSE(outfd) < 0) {
         virReportSystemError(errno, "%s", _("failed to close file"));
         goto out;
     }
-    return got;
 
+    rc = got;
 out:
     VIR_FORCE_CLOSE(outfd);
-    for ( ; got >= 0 ; got--)
-        VIR_FREE(names[got]);
-    return -1;
+    virCommandFree(cmd);
+    if (rc >= 0) {
+        for ( ; got >= 0 ; got--)
+            VIR_FREE(names[got]);
+    }
+    return rc;
 }
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid)
