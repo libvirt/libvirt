@@ -166,15 +166,9 @@ load_profile(virSecurityManagerPtr mgr,
     int rc = -1, status, ret;
     bool create = true;
     char *xml = NULL;
-    int pipefd[2];
-    pid_t child;
+    virCommandPtr cmd;
     const char *probe = virSecurityManagerGetAllowDiskFormatProbing(mgr)
         ? "1" : "0";
-
-    if (pipe(pipefd) < -1) {
-        virReportSystemError(errno, "%s", _("unable to create pipe"));
-        return rc;
-    }
 
     xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
     if (!xml)
@@ -183,57 +177,19 @@ load_profile(virSecurityManagerPtr mgr,
     if (profile_status_file(profile) >= 0)
         create = false;
 
-    if (create) {
-        const char *const argv[] = {
-            VIRT_AA_HELPER, "-p", probe, "-c", "-u", profile, NULL
-        };
-        ret = virExec(argv, NULL, NULL, &child,
-                      pipefd[0], NULL, NULL, VIR_EXEC_NONE);
-    } else if (fn && append) {
-        const char *const argv[] = {
-            VIRT_AA_HELPER, "-p", probe, "-r", "-u", profile, "-F", fn, NULL
-        };
-        ret = virExec(argv, NULL, NULL, &child,
-                      pipefd[0], NULL, NULL, VIR_EXEC_NONE);
-    } else if (fn) {
-        const char *const argv[] = {
-            VIRT_AA_HELPER, "-p", probe, "-r", "-u", profile, "-f", fn, NULL
-        };
-        ret = virExec(argv, NULL, NULL, &child,
-                      pipefd[0], NULL, NULL, VIR_EXEC_NONE);
-    } else {
-        const char *const argv[] = {
-            VIRT_AA_HELPER, "-p", probe, "-r", "-u", profile, NULL
-        };
-        ret = virExec(argv, NULL, NULL, &child,
-                      pipefd[0], NULL, NULL, VIR_EXEC_NONE);
+    cmd = virCommandNewArgList(VIRT_AA_HELPER, "-p", probe,
+                               create ? "-c" : "-r",
+                               "-u", profile, NULL);
+    if (!create && fn) {
+        if (append) {
+            virCommandAddArgList(cmd, "-F", fn, NULL);
+        } else {
+            virCommandAddArgList(cmd, "-f", fn, NULL);
+        }
     }
-    if (ret < 0)
-        goto clean;
 
-    /* parent continues here */
-    if (safewrite(pipefd[1], xml, strlen(xml)) < 0) {
-        virReportSystemError(errno, "%s", _("unable to write to pipe"));
-        goto clean;
-    }
-    VIR_FORCE_CLOSE(pipefd[1]);
-    rc = 0;
-
-    while ((ret = waitpid(child, &status, 0)) < 0 && errno == EINTR);
-    if (ret < 0) {
-        virReportSystemError(errno,
-                             _("Failed to reap virt-aa-helper pid %lu"),
-                             (unsigned long)child);
-        rc = -1;
-    } else if (status) {
-        char *str = virCommandTranslateStatus(status);
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected status from virt-aa-helper "
-                                 "pid %lu: %s"),
-                               (unsigned long)child, NULLSTR(str));
-        VIR_FREE(str);
-        rc = -1;
-    }
+    virCommandSetInputBuffer(cmd, xml);
+    rc = virCommandRun(cmd, NULL);
 
   clean:
     VIR_FREE(xml);
@@ -580,7 +536,7 @@ AppArmorRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return rc;
 }
 
-/* Called via virExecWithHook. Output goes to
+/* Called via virCommand hook. Output goes to
  * LOCALSTATEDIR/log/libvirt/qemu/<vm name>.log
  */
 static int
