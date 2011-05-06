@@ -5138,6 +5138,91 @@ cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "iface-begin" command
+ */
+static const vshCmdInfo info_interface_begin[] = {
+    {"help", N_("create a snapshot of current interfaces settings, "
+                "which can be later commited (iface-commit) or "
+                "restored (iface-rollback)")},
+    {"desc", N_("Create a restore point for interfaces settings")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_begin[] = {
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdInterfaceBegin(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (virInterfaceChangeBegin(ctl->conn, 0) < 0) {
+        vshError(ctl, "%s", _("Failed to begin network config change transaction"));
+        return false;
+    }
+
+    vshPrint(ctl, "%s", _("Network config change transaction started\n"));
+    return true;
+}
+
+/*
+ * "iface-commit" command
+ */
+static const vshCmdInfo info_interface_commit[] = {
+    {"help", N_("commit changes made since iface-begin and free restore point")},
+    {"desc", N_("commit changes and free restore point")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_commit[] = {
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdInterfaceCommit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (virInterfaceChangeCommit(ctl->conn, 0) < 0) {
+        vshError(ctl, "%s", _("Failed to commit network config change transaction"));
+        return false;
+    }
+
+    vshPrint(ctl, "%s", _("Network config change transaction committed\n"));
+    return true;
+}
+
+/*
+ * "iface-rollback" command
+ */
+static const vshCmdInfo info_interface_rollback[] = {
+    {"help", N_("rollback to previous saved configuration created via iface-begin")},
+    {"desc", N_("rollback to previous restore point")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_rollback[] = {
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdInterfaceRollback(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (virInterfaceChangeRollback(ctl->conn, 0) < 0) {
+        vshError(ctl, "%s", _("Failed to rollback network config change transaction"));
+        return false;
+    }
+
+    vshPrint(ctl, "%s", _("Network config change transaction rolled back\n"));
+    return true;
+}
 
 /*
  * "nwfilter-define" command
@@ -10959,6 +11044,12 @@ static const vshCmdDef ifaceCmds[] = {
      info_interface_start, 0},
     {"iface-undefine", cmdInterfaceUndefine, opts_interface_undefine,
      info_interface_undefine, 0},
+    {"iface-begin", cmdInterfaceBegin, opts_interface_begin,
+     info_interface_begin, 0},
+    {"iface-commit", cmdInterfaceCommit, opts_interface_commit,
+     info_interface_commit, 0},
+    {"iface-rollback", cmdInterfaceRollback, opts_interface_rollback,
+     info_interface_rollback, 0},
     {NULL, NULL, NULL, NULL, 0}
 };
 
