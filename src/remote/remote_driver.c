@@ -1221,20 +1221,25 @@ initialize_gnutls(char *pkipath, int flags)
                         "clientcert.pem")) < 0)
             goto out_of_memory;
 
-        /* Use default location as long as one of CA certificate,
+        /* Use the default location of the CA certificate if it
+         * cannot be found in $HOME/.pki/libvirt
+         */
+        if (!virFileExists(libvirt_cacert)) {
+            VIR_FREE(libvirt_cacert);
+
+            libvirt_cacert = strdup(LIBVIRT_CACERT);
+            if (!libvirt_cacert) goto out_of_memory;
+        }
+
+        /* Use default location as long as one of
          * client key, and client certificate cannot be found in
          * $HOME/.pki/libvirt, we don't want to make user confused
          * with one file is here, the other is there.
          */
-        if (!virFileExists(libvirt_cacert) ||
-            !virFileExists(libvirt_clientkey) ||
+        if (!virFileExists(libvirt_clientkey) ||
             !virFileExists(libvirt_clientcert)) {
-            VIR_FREE(libvirt_cacert);
             VIR_FREE(libvirt_clientkey);
             VIR_FREE(libvirt_clientcert);
-
-            libvirt_cacert = strdup(LIBVIRT_CACERT);
-            if (!libvirt_cacert) goto out_of_memory;
 
             libvirt_clientkey = strdup(LIBVIRT_CLIENTKEY);
             if (!libvirt_clientkey) goto out_of_memory;
