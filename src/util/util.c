@@ -769,76 +769,11 @@ virExecWithHook(const char *const*argv,
 int
 virRun(const char *const*argv, int *status)
 {
-    pid_t childpid;
-    int exitstatus, execret, waitret;
-    int ret = -1;
-    int errfd = -1, outfd = -1;
-    char *outbuf = NULL;
-    char *errbuf = NULL;
-    char *argv_str = NULL;
+    int ret;
+    virCommandPtr cmd = virCommandNewArgs(argv);
 
-    if ((argv_str = virArgvToString(argv)) == NULL) {
-        virReportOOMError();
-        goto error;
-    }
-    VIR_DEBUG("%s", argv_str);
-
-    if ((execret = virExecWithHook(argv, NULL, NULL,
-                                   &childpid, -1, &outfd, &errfd,
-                                   VIR_EXEC_NONE, NULL, NULL, NULL)) < 0) {
-        ret = execret;
-        goto error;
-    }
-
-    if (virPipeReadUntilEOF(outfd, errfd, &outbuf, &errbuf) < 0) {
-        while (waitpid(childpid, &exitstatus, 0) == -1 && errno == EINTR)
-            ;
-        goto error;
-    }
-
-    if (outbuf)
-        VIR_DEBUG("Command stdout: %s", outbuf);
-    if (errbuf)
-        VIR_DEBUG("Command stderr: %s", errbuf);
-
-    while ((waitret = waitpid(childpid, &exitstatus, 0) == -1) &&
-            errno == EINTR);
-    if (waitret == -1) {
-        virReportSystemError(errno,
-                             _("cannot wait for '%s'"),
-                             argv[0]);
-        goto error;
-    }
-
-    if (status == NULL) {
-        errno = EINVAL;
-        if (exitstatus) {
-            char *str = virCommandTranslateStatus(exitstatus);
-            char *argvstr = virArgvToString(argv);
-            if (!argv_str) {
-                virReportOOMError();
-                goto error;
-            }
-
-            virUtilError(VIR_ERR_INTERNAL_ERROR,
-                         _("'%s' exited unexpectedly: %s"),
-                         argv_str, NULLSTR(str));
-
-            VIR_FREE(str);
-            VIR_FREE(argvstr);
-            goto error;
-        }
-    } else {
-        *status = exitstatus;
-    }
-
-    ret = 0;
-
-  error:
-    VIR_FREE(outbuf);
-    VIR_FREE(errbuf);
-    VIR_FORCE_CLOSE(outfd);
-    VIR_FORCE_CLOSE(errfd);
+    ret = virCommandRun(cmd, status);
+    virCommandFree(cmd);
     return ret;
 }
 
