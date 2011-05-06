@@ -94,15 +94,14 @@ struct __lxc_child_argv {
 
 
 /**
- * lxcContainerExecInit:
+ * lxcContainerBuildInitCmd:
  * @vmDef: pointer to vm definition structure
  *
- * Exec the container init string. The container init will replace then
- * be running in the current process
+ * Build a virCommandPtr for launching the container 'init' process
  *
- * Does not return
+ * Returns a virCommandPtr
  */
-static int lxcContainerExecInit(virDomainDefPtr vmDef)
+static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virCommandPtr cmd;
@@ -116,7 +115,7 @@ static int lxcContainerExecInit(virDomainDefPtr vmDef)
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_UUID", uuidstr);
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_NAME", vmDef->name);
 
-    return virCommandExec(cmd);
+    return cmd;
 }
 
 /**
@@ -753,28 +752,34 @@ static int lxcContainerChild( void *data )
     lxc_child_argv_t *argv = data;
     virDomainDefPtr vmDef = argv->config;
     int ttyfd;
+    int ret = -1;
     char *ttyPath;
     virDomainFSDefPtr root;
+    virCommandPtr cmd = NULL;
 
     if (NULL == vmDef) {
         lxcError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("lxcChild() passed invalid vm definition"));
-        return -1;
+        goto cleanup;
     }
+
+    cmd = lxcContainerBuildInitCmd(vmDef);
+    virCommandWriteArgLog(cmd, 1);
 
     root = virDomainGetRootFilesystem(vmDef);
 
     if (root) {
         if (virAsprintf(&ttyPath, "%s%s", root->src, argv->ttyPath) < 0) {
             virReportOOMError();
-            return -1;
+            goto cleanup;
         }
     } else {
         if (!(ttyPath = strdup(argv->ttyPath))) {
             virReportOOMError();
-            return -1;
+            goto cleanup;
         }
     }
+    VIR_DEBUG("Container TTY path: %s", ttyPath);
 
     ttyfd = open(ttyPath, O_RDWR|O_NOCTTY);
     if (ttyfd < 0) {
@@ -782,34 +787,38 @@ static int lxcContainerChild( void *data )
                              _("Failed to open tty %s"),
                              ttyPath);
         VIR_FREE(ttyPath);
-        return -1;
+        goto cleanup;
     }
     VIR_FREE(ttyPath);
 
     if (lxcContainerSetStdio(argv->monitor, ttyfd) < 0) {
         VIR_FORCE_CLOSE(ttyfd);
-        return -1;
+        goto cleanup;
     }
     VIR_FORCE_CLOSE(ttyfd);
 
     if (lxcContainerSetupMounts(vmDef, root) < 0)
-        return -1;
+        goto cleanup;
 
     /* Wait for interface devices to show up */
     if (lxcContainerWaitForContinue(argv->monitor) < 0)
-        return -1;
+        goto cleanup;
 
     /* rename and enable interfaces */
     if (lxcContainerRenameAndEnableInterfaces(argv->nveths,
                                               argv->veths) < 0)
-        return -1;
+        goto cleanup;
 
     /* drop a set of root capabilities */
     if (lxcContainerDropCapabilities() < 0)
-        return -1;
+        goto cleanup;
 
     /* this function will only return if an error occured */
-    return lxcContainerExecInit(vmDef);
+    ret = virCommandExec(cmd);
+
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 
 static int userns_supported(void)
