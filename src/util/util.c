@@ -448,8 +448,8 @@ cleanup:
  * @data data to pass to the hook function
  * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
  */
-static int
-__virExec(const char *const*argv,
+int
+virExecWithHook(const char *const*argv,
           const char *const*envp,
           const fd_set *keepfd,
           pid_t *retpid,
@@ -468,6 +468,26 @@ __virExec(const char *const*argv,
     int tmpfd;
     const char *binary = NULL;
     int forkRet;
+    char *argv_str = NULL;
+    char *envp_str = NULL;
+
+    if ((argv_str = virArgvToString(argv)) == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (envp) {
+        if ((envp_str = virArgvToString(envp)) == NULL) {
+            VIR_FREE(argv_str);
+            virReportOOMError();
+            return -1;
+        }
+        VIR_DEBUG("%s %s", envp_str, argv_str);
+        VIR_FREE(envp_str);
+    } else {
+        VIR_DEBUG("%s", argv_str);
+    }
+    VIR_FREE(argv_str);
 
     if (argv[0][0] != '/') {
         if (!(binary = virFindFileInPath(argv[0]))) {
@@ -732,48 +752,12 @@ __virExec(const char *const*argv,
     return -1;
 }
 
-int
-virExecWithHook(const char *const*argv,
-                const char *const*envp,
-                const fd_set *keepfd,
-                pid_t *retpid,
-                int infd, int *outfd, int *errfd,
-                int flags,
-                virExecHook hook,
-                void *data,
-                char *pidfile)
-{
-    char *argv_str;
-    char *envp_str;
-
-    if ((argv_str = virArgvToString(argv)) == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (envp) {
-        if ((envp_str = virArgvToString(envp)) == NULL) {
-            VIR_FREE(argv_str);
-            virReportOOMError();
-            return -1;
-        }
-        VIR_DEBUG("%s %s", envp_str, argv_str);
-        VIR_FREE(envp_str);
-    } else {
-        VIR_DEBUG("%s", argv_str);
-    }
-    VIR_FREE(argv_str);
-
-    return __virExec(argv, envp, keepfd, retpid, infd, outfd, errfd,
-                     flags, hook, data, pidfile);
-}
-
 /*
- * See __virExec for explanation of the arguments.
+ * See virExecWithHook for explanation of the arguments.
  *
- * Wrapper function for __virExec, with a simpler set of parameters.
- * Used to insulate the numerous callers from changes to __virExec argument
- * list.
+ * Wrapper function for virExecWithHook, with a simpler set of parameters.
+ * Used to insulate the numerous callers from changes to virExecWithHook
+ * argument list.
  */
 int
 virExec(const char *const*argv,
@@ -821,9 +805,9 @@ virRunWithHook(const char *const*argv,
     }
     VIR_DEBUG("%s", argv_str);
 
-    if ((execret = __virExec(argv, NULL, NULL,
-                             &childpid, -1, &outfd, &errfd,
-                             VIR_EXEC_NONE, hook, data, NULL)) < 0) {
+    if ((execret = virExecWithHook(argv, NULL, NULL,
+                                   &childpid, -1, &outfd, &errfd,
+                                   VIR_EXEC_NONE, hook, data, NULL)) < 0) {
         ret = execret;
         goto error;
     }
@@ -852,10 +836,18 @@ virRunWithHook(const char *const*argv,
         errno = EINVAL;
         if (exitstatus) {
             char *str = virCommandTranslateStatus(exitstatus);
+            char *argvstr = virArgvToString(argv);
+            if (!argv_str) {
+                virReportOOMError();
+                goto error;
+            }
+
             virUtilError(VIR_ERR_INTERNAL_ERROR,
                          _("'%s' exited unexpectedly: %s"),
                          argv_str, NULLSTR(str));
+
             VIR_FREE(str);
+            VIR_FREE(argvstr);
             goto error;
         }
     } else {
@@ -867,7 +859,6 @@ virRunWithHook(const char *const*argv,
   error:
     VIR_FREE(outbuf);
     VIR_FREE(errbuf);
-    VIR_FREE(argv_str);
     VIR_FORCE_CLOSE(outfd);
     VIR_FORCE_CLOSE(errfd);
     return ret;
