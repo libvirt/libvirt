@@ -380,7 +380,7 @@ elsif ($opt_b) {
                     } else {
                         push(@args_list, "args->$2");
                     }
-                } elsif ($args_member =~ m/^\/*/) {
+                } elsif ($args_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
                     die "unhandled type for argument value: $args_member";
@@ -909,7 +909,7 @@ elsif ($opt_k) {
 
                     push(@args_list, "$type_name $arg_name");
                     push(@setters_list, "args.$arg_name = $arg_name;");
-                } elsif ($args_member =~ m/^\/*/) {
+                } elsif ($args_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
                     die "unhandled type for argument value: $args_member";
