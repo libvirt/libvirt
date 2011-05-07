@@ -352,34 +352,49 @@ elsif ($opt_b) {
                          "        virDomainSnapshotFree(snapshot);\n" .
                          "    if (dom)\n" .
                          "        virDomainFree(dom);");
-                } elsif ($args_member =~ m/(\S+)<\S+>;/) {
+                } elsif ($args_member =~ m/^(remote_string|remote_nonnull_string|remote_uuid|opaque) (\S+)<\S+>;/) {
                     if (! @args_list) {
                         push(@args_list, "conn");
                     }
 
                     if ($calls{$_}->{ProcName} eq "SecretSetValue") {
-                        push(@args_list, "(const unsigned char *)args->$1.$1_val");
+                        push(@args_list, "(const unsigned char *)args->$2.$2_val");
                     } elsif ($calls{$_}->{ProcName} eq "CPUBaseline") {
-                        push(@args_list, "(const char **)args->$1.$1_val");
+                        push(@args_list, "(const char **)args->$2.$2_val");
                     } else {
-                        push(@args_list, "args->$1.$1_val");
+                        push(@args_list, "args->$2.$2_val");
                     }
 
-                    push(@args_list, "args->$1.$1_len");
-                } elsif ($args_member =~ m/(\S+) (\S+);/) {
+                    push(@args_list, "args->$2.$2_len");
+                } elsif ($args_member =~ m/<\S+>;/ or $args_member =~ m/\[\S+\];/) {
+                    # just make all other array types fail
+                    die "unhandled type for argument value: $args_member";
+                } elsif ($args_member =~ m/^remote_uuid (\S+);/) {
                     if (! @args_list) {
                         push(@args_list, "conn");
                     }
 
-                    if ($1 eq "remote_uuid") {
-                        push(@args_list, "(unsigned char *) args->$2");
-                    } elsif ($1 eq "remote_string") {
-                        push(@vars_list, "char *$2");
-                        push(@optionals_list, "$2");
-                        push(@args_list, "$2");
-                    } else {
-                        push(@args_list, "args->$2");
+                    push(@args_list, "(unsigned char *) args->$1");
+                } elsif ($args_member =~ m/^remote_string (\S+);/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
                     }
+
+                    push(@vars_list, "char *$1");
+                    push(@optionals_list, "$1");
+                    push(@args_list, "$1");
+                } elsif ($args_member =~ m/^remote_nonnull_string (\S+);/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
+                    }
+
+                    push(@args_list, "args->$1");
+                } elsif ($args_member =~ m/^(unsigned )?(int|hyper) (\S+);/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
+                    }
+
+                    push(@args_list, "args->$3");
                 } elsif ($args_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
@@ -406,17 +421,14 @@ elsif ($opt_b) {
         if ($calls{$_}->{ret} ne "void") {
             foreach my $ret_member (@{$calls{$_}->{ret_members}}) {
                 if ($multi_ret) {
-                    if ($ret_member =~ m/(char|short|int|hyper) (\S+)\[\S+\];/) {
-                        push(@ret_list, "memcpy(ret->$2, tmp.$2, sizeof ret->$2);");
-                    } elsif ($ret_member =~ m/char (\S+);/ or
-                        $ret_member =~ m/short (\S+);/ or
-                        $ret_member =~ m/int (\S+);/ or
-                        $ret_member =~ m/hyper (\S+);/) {
-                        push(@ret_list, "ret->$1 = tmp.$1;");
+                    if ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+)\[\S+\];/) {
+                        push(@ret_list, "memcpy(ret->$3, tmp.$3, sizeof ret->$3);");
+                    } elsif ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+);/) {
+                        push(@ret_list, "ret->$3 = tmp.$3;");
                     } else {
                         die "unhandled type for multi-return-value: $ret_member";
                     }
-                } elsif ($ret_member =~ m/remote_nonnull_string (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
@@ -439,13 +451,13 @@ elsif ($opt_b) {
                         unshift(@args_list, "ret->$1.$1_val");
                         unshift(@args_list, $conn);
                     }
-                } elsif ($ret_member =~ m/remote_nonnull_string (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+);/) {
                     push(@vars_list, "char *$1");
                     push(@ret_list, "ret->$1 = $1;");
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
-                } elsif ($ret_member =~ m/remote_nonnull_(domain|network|storage_pool|storage_vol|interface|node_device|secret|nwfilter|domain_snapshot) (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|interface|node_device|secret|nwfilter|domain_snapshot) (\S+);/) {
                     my $type_name = name_to_ProcName($1);
 
                     push(@vars_list, "vir${type_name}Ptr $2 = NULL");
@@ -456,7 +468,7 @@ elsif ($opt_b) {
                     $single_ret_var = $2;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
-                } elsif ($ret_member =~ m/int (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^int (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
@@ -471,7 +483,7 @@ elsif ($opt_b) {
                     my $conn = shift(@args_list);
                     unshift(@args_list, "ret->$1.$1_val");
                     unshift(@args_list, $conn);
-                } elsif ($ret_member =~ m/int (\S+);/) {
+                } elsif ($ret_member =~ m/^int (\S+);/) {
                     push(@vars_list, "int $1");
                     push(@ret_list, "ret->$1 = $1;");
                     $single_ret_var = $1;
@@ -487,7 +499,7 @@ elsif ($opt_b) {
                             $single_ret_check = " < 0";
                         }
                     }
-                } elsif ($ret_member =~ m/hyper (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^hyper (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
@@ -510,13 +522,29 @@ elsif ($opt_b) {
                     }
 
                     unshift(@args_list, $conn);
-                } elsif ($ret_member =~ m/hyper (\S+);/) {
-                    push(@vars_list, "unsigned long $1");
-                    push(@ret_list, "ret->$1 = $1;");
-                    $single_ret_var = $1;
+                } elsif ($ret_member =~ m/^(unsigned )?hyper (\S+);/) {
+                    my $type_name;
+                    my $ret_name = $2;
+
+                    $type_name = $1 if ($1);
+                    $type_name .= "long";
+
+                    if ($type_name eq "long" and
+                        $calls{$_}->{ProcName} =~ m/^Get(Lib)?Version$/) {
+                        # SPECIAL: virConnectGet(Lib)?Version uses unsigned long
+                        #          in public API but hyper in XDR protocol
+                        $type_name = "unsigned long";
+                    }
+
+                    push(@vars_list, "$type_name $ret_name");
+                    push(@ret_list, "ret->$ret_name = $ret_name;");
+                    $single_ret_var = $ret_name;
 
                     if ($calls{$_}->{ProcName} eq "DomainGetMaxMemory" or
                         $calls{$_}->{ProcName} eq "NodeGetFreeMemory") {
+                        # SPECIAL: virDomainGetMaxMemory and virNodeGetFreeMemory
+                        #          return the actual value directly and 0 indicates
+                        #          an error
                         $single_ret_by_ref = 0;
                         $single_ret_check = " == 0";
                     } else {
@@ -538,14 +566,16 @@ elsif ($opt_b) {
             $struct_name =~ s/Get//;
 
             if ($calls{$_}->{ProcName} eq "DomainGetBlockInfo") {
+                # SPECIAL: virDomainGetBlockInfo has flags parameter after
+                #          the struct parameter in its signature
                 my $flags = pop(@args_list);
                 push(@args_list, "&tmp");
                 push(@args_list, $flags);
-            } elsif ($calls{$_}->{ProcName} eq "DomainBlockStats") {
-                $struct_name .= "Struct";
-                push(@args_list, "&tmp");
-                push(@args_list, "sizeof tmp");
-            } elsif ($calls{$_}->{ProcName} eq "DomainInterfaceStats") {
+            } elsif ($calls{$_}->{ProcName} eq "DomainBlockStats" ||
+                     $calls{$_}->{ProcName} eq "DomainInterfaceStats") {
+                # SPECIAL: virDomainBlockStats and virDomainInterfaceStats
+                #          have a 'Struct' suffix on the actual struct name
+                #          and take the struct size as additional argument
                 $struct_name .= "Struct";
                 push(@args_list, "&tmp");
                 push(@args_list, "sizeof tmp");
@@ -863,21 +893,25 @@ elsif ($opt_k) {
                 } elsif ($args_member =~ m/^remote_nonnull_string (\S+);/) {
                     push(@args_list, "const char *$1");
                     push(@setters_list, "args.$1 = (char *)$1;");
-                } elsif ($args_member =~ m/(\S+)<(\S+)>;/) {
+                } elsif ($args_member =~ m/^(remote_string|opaque) (\S+)<(\S+)>;/) {
+                    my $type_name = $1;
+                    my $arg_name = $2;
+                    my $limit = $3;
+
                     if ($call->{ProcName} eq "SecretSetValue") {
-                        push(@args_list, "const unsigned char *$1");
-                        push(@args_list, "size_t ${1}len");
+                        push(@args_list, "const unsigned char *$arg_name");
+                        push(@args_list, "size_t ${arg_name}len");
                     } elsif ($call->{ProcName} eq "DomainPinVcpu") {
-                        push(@args_list, "unsigned char *$1");
-                        push(@args_list, "int ${1}len");
+                        push(@args_list, "unsigned char *$arg_name");
+                        push(@args_list, "int ${arg_name}len");
                     } else {
-                        push(@args_list, "const char *$1");
-                        push(@args_list, "int ${1}len");
+                        push(@args_list, "const char *$arg_name");
+                        push(@args_list, "int ${arg_name}len");
                     }
 
-                    push(@setters_list, "args.$1.${1}_val = (char *)$1;");
-                    push(@setters_list, "args.$1.${1}_len = ${1}len;");
-                    push(@args_check_list, { name => "\"$1\"", arg => "${1}len", limit => $2 });
+                    push(@setters_list, "args.$arg_name.${arg_name}_val = (char *)$arg_name;");
+                    push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
+                    push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });
                 } elsif ($args_member =~ m/^(unsigned )?(int|hyper) (\S+);/) {
                     my $type_name;
                     my $arg_name = $3;
@@ -928,7 +962,8 @@ elsif ($opt_k) {
         }
 
         if ($call->{ProcName} eq "NWFilterDefineXML") {
-            # fix public API and XDR protocol mismatch
+            # SPECIAL: virNWFilterDefineXML has a flags parameter in the
+            #          public API that is missing in the XDR protocol
             push(@args_list, "unsigned int flags ATTRIBUTE_UNUSED");
         }
 
@@ -966,17 +1001,17 @@ elsif ($opt_k) {
 
             foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
-                    if ($ret_member =~ m/(char|short|int|hyper) (\S+)\[\S+\];/) {
-                        push(@ret_list, "memcpy(result->$2, ret.$2, sizeof result->$2);");
-                    } elsif ($ret_member =~ m/char (\S+);/ or
-                        $ret_member =~ m/short (\S+);/ or
-                        $ret_member =~ m/int (\S+);/ or
-                        $ret_member =~ m/hyper (\S+);/) {
-                        push(@ret_list, "result->$1 = ret.$1;");
+                    if ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+)\[\S+\];/) {
+                        push(@ret_list, "memcpy(result->$3, ret.$3, sizeof result->$3);");
+                    } elsif ($ret_member =~ m/<\S+>;/ or $ret_member =~ m/\[\S+\];/) {
+                        # just make all other array types fail
+                        die "unhandled type for multi-return-value: $ret_member";
+                    } elsif ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+);/) {
+                        push(@ret_list, "result->$3 = ret.$3;");
                     } else {
                         die "unhandled type for multi-return-value: $ret_member";
                     }
-                } elsif ($ret_member =~ m/remote_nonnull_string (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;/) {
                     $single_ret_as_list = 1;
                     $single_ret_list_name = $1;
                     $single_ret_list_max_var = "max$1";
@@ -1000,11 +1035,11 @@ elsif ($opt_k) {
                     push(@ret_list, "rv = ret.$1.$1_len;");
                     $single_ret_var = "int rv = -1";
                     $single_ret_type = "int";
-                } elsif ($ret_member =~ m/remote_nonnull_string (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+);/) {
                     push(@ret_list, "rv = ret.$1;");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
-                } elsif ($ret_member =~ m/remote_nonnull_(domain|network|storage_pool|storage_vol|node_device|interface|secret|nwfilter|domain_snapshot) (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|node_device|interface|secret|nwfilter|domain_snapshot) (\S+);/) {
                     my $name = $1;
                     my $arg_name = $2;
                     my $type_name = name_to_ProcName($name);
@@ -1039,7 +1074,12 @@ elsif ($opt_k) {
 
                     $single_ret_var = "int rv = -1";
                     $single_ret_type = "int";
-                } elsif ($ret_member =~ m/hyper (\S+);/) {
+                } elsif ($ret_member =~ m/^unsigned hyper (\S+);/) {
+                    my $arg_name = $1;
+                    push(@ret_list, "rv = ret.$arg_name;");
+                    $single_ret_var = "unsigned long rv = 0";
+                    $single_ret_type = "unsigned long";
+                } elsif ($ret_member =~ m/^hyper (\S+);/) {
                     my $arg_name = $1;
 
                     if ($call->{ProcName} =~ m/Get(Lib)?Version/) {
@@ -1048,16 +1088,12 @@ elsif ($opt_k) {
                         push(@ret_list, "rv = 0;");
                         $single_ret_var = "int rv = -1";
                         $single_ret_type = "int";
-                    } else {
+                    } elsif ($call->{ProcName} eq "NodeGetFreeMemory") {
                         push(@ret_list, "rv = ret.$arg_name;");
-
-                        if ($call->{ProcName} eq "NodeGetFreeMemory") {
-                            $single_ret_var = "unsigned long long rv = 0";
-                            $single_ret_type = "unsigned long long";
-                        } else {
-                            $single_ret_var = "unsigned long rv = 0";
-                            $single_ret_type = "unsigned long";
-                        }
+                        $single_ret_var = "unsigned long long rv = 0";
+                        $single_ret_type = "unsigned long long";
+                    } else {
+                        die "unhandled type for return value: $ret_member";
                     }
                 } else {
                     die "unhandled type for return value: $ret_member";
@@ -1072,6 +1108,8 @@ elsif ($opt_k) {
             $struct_name =~ s/Get//;
 
             if ($call->{ProcName} eq "DomainGetBlockInfo") {
+                # SPECIAL: virDomainGetBlockInfo has flags parameter after
+                #          the struct parameter in its signature
                 $last_arg = pop(@args_list);
             }
 
