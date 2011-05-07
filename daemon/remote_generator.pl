@@ -878,13 +878,13 @@ elsif ($opt_k) {
                     push(@setters_list, "args.$1.${1}_val = (char *)$1;");
                     push(@setters_list, "args.$1.${1}_len = ${1}len;");
                     push(@args_check_list, { name => "\"$1\"", arg => "${1}len", limit => $2 });
-                } elsif ($args_member =~ m/^(.*) (\S+);/) {
-                    my $type_name = $1;
-                    my $arg_name = $2;
+                } elsif ($args_member =~ m/^(unsigned )?(int|hyper) (\S+);/) {
+                    my $type_name;
+                    my $arg_name = $3;
 
+                    $type_name = $1 if ($1);
+                    $type_name .= $2;
                     $type_name =~ s/hyper/long/;
-                    $type_name =~ s/^unsigned$/unsigned int/;
-                    $type_name =~ s/u_int/unsigned int/;
 
                     if ($type_name eq "int") {
                         # fix bad decisions in the xdr protocol

@@ -541,8 +541,8 @@ struct remote_domain_interface_stats_ret {
 
 struct remote_domain_memory_stats_args {
     remote_nonnull_domain dom;
-    u_int maxStats;
-    u_int flags;
+    unsigned int maxStats;
+    unsigned int flags;
 };
 
 struct remote_domain_memory_stat {
@@ -558,8 +558,8 @@ struct remote_domain_block_peek_args {
     remote_nonnull_domain dom;
     remote_nonnull_string path;
     unsigned hyper offset;
-    unsigned size;
-    unsigned flags;
+    unsigned int size;
+    unsigned int flags;
 };
 
 struct remote_domain_block_peek_ret {
@@ -569,8 +569,8 @@ struct remote_domain_block_peek_ret {
 struct remote_domain_memory_peek_args {
     remote_nonnull_domain dom;
     unsigned hyper offset;
-    unsigned size;
-    unsigned flags;
+    unsigned int size;
+    unsigned int flags;
 };
 
 struct remote_domain_memory_peek_ret {
@@ -580,7 +580,7 @@ struct remote_domain_memory_peek_ret {
 struct remote_domain_get_block_info_args {
     remote_nonnull_domain dom;
     remote_nonnull_string path;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_get_block_info_ret {
@@ -1217,7 +1217,7 @@ struct remote_list_defined_storage_pools_ret {
 struct remote_find_storage_pool_sources_args {
     remote_nonnull_string type;
     remote_string srcSpec;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_find_storage_pool_sources_ret {
@@ -1250,7 +1250,7 @@ struct remote_storage_pool_lookup_by_volume_ret {
 
 struct remote_storage_pool_create_xml_args {
     remote_nonnull_string xml;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_pool_create_xml_ret {
@@ -1259,7 +1259,7 @@ struct remote_storage_pool_create_xml_ret {
 
 struct remote_storage_pool_define_xml_args {
     remote_nonnull_string xml;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_pool_define_xml_ret {
@@ -1268,7 +1268,7 @@ struct remote_storage_pool_define_xml_ret {
 
 struct remote_storage_pool_build_args {
     remote_nonnull_storage_pool pool;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_pool_undefine_args {
@@ -1277,7 +1277,7 @@ struct remote_storage_pool_undefine_args {
 
 struct remote_storage_pool_create_args {
     remote_nonnull_storage_pool pool;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_pool_destroy_args {
@@ -1286,17 +1286,17 @@ struct remote_storage_pool_destroy_args {
 
 struct remote_storage_pool_delete_args {
     remote_nonnull_storage_pool pool;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_pool_refresh_args {
     remote_nonnull_storage_pool pool;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_pool_get_xml_desc_args {
     remote_nonnull_storage_pool pool;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_pool_get_xml_desc_ret {
@@ -1376,7 +1376,7 @@ struct remote_storage_vol_lookup_by_path_ret {
 struct remote_storage_vol_create_xml_args {
     remote_nonnull_storage_pool pool;
     remote_nonnull_string xml;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_vol_create_xml_ret {
@@ -1387,7 +1387,7 @@ struct remote_storage_vol_create_xml_from_args {
     remote_nonnull_storage_pool pool;
     remote_nonnull_string xml;
     remote_nonnull_storage_vol clonevol;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_vol_create_xml_from_ret {
@@ -1396,17 +1396,17 @@ struct remote_storage_vol_create_xml_from_ret {
 
 struct remote_storage_vol_delete_args {
     remote_nonnull_storage_vol vol;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_vol_wipe_args {
     remote_nonnull_storage_vol vol;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_vol_get_xml_desc_args {
     remote_nonnull_storage_vol vol;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_storage_vol_get_xml_desc_ret {
@@ -1435,7 +1435,7 @@ struct remote_storage_vol_get_path_ret {
 
 struct remote_node_num_of_devices_args {
     remote_string cap;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_node_num_of_devices_ret {
@@ -1445,7 +1445,7 @@ struct remote_node_num_of_devices_ret {
 struct remote_node_list_devices_args {
     remote_string cap;
     int maxnames;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_node_list_devices_ret {
@@ -1462,7 +1462,7 @@ struct remote_node_device_lookup_by_name_ret {
 
 struct remote_node_device_get_xml_desc_args {
     remote_nonnull_string name;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_node_device_get_xml_desc_ret {
@@ -1544,7 +1544,7 @@ struct remote_domain_event_lifecycle_msg {
 struct remote_domain_xml_from_native_args {
     remote_nonnull_string nativeFormat;
     remote_nonnull_string nativeConfig;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_xml_from_native_ret {
@@ -1555,7 +1555,7 @@ struct remote_domain_xml_from_native_ret {
 struct remote_domain_xml_to_native_args {
     remote_nonnull_string nativeFormat;
     remote_nonnull_string domainXml;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_xml_to_native_ret {
@@ -1585,7 +1585,7 @@ struct remote_secret_lookup_by_uuid_ret {
 
 struct remote_secret_define_xml_args {
     remote_nonnull_string xml;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_secret_define_xml_ret {
@@ -1594,7 +1594,7 @@ struct remote_secret_define_xml_ret {
 
 struct remote_secret_get_xml_desc_args {
     remote_nonnull_secret secret;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_secret_get_xml_desc_ret {
@@ -1604,12 +1604,12 @@ struct remote_secret_get_xml_desc_ret {
 struct remote_secret_set_value_args {
     remote_nonnull_secret secret;
     opaque value<REMOTE_SECRET_VALUE_MAX>;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_secret_get_value_args {
     remote_nonnull_secret secret;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_secret_get_value_ret {
@@ -1712,7 +1712,7 @@ struct remote_interface_is_active_ret {
 
 struct remote_cpu_compare_args {
     remote_nonnull_string xml;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_cpu_compare_ret {
@@ -1722,7 +1722,7 @@ struct remote_cpu_compare_ret {
 
 struct remote_cpu_baseline_args {
     remote_nonnull_string xmlCPUs<REMOTE_CPU_BASELINE_MAX>;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_cpu_baseline_ret {
@@ -1762,13 +1762,13 @@ struct remote_domain_abort_job_args {
 struct remote_domain_migrate_set_max_downtime_args {
     remote_nonnull_domain dom;
     unsigned hyper downtime;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_migrate_set_max_speed_args {
     remote_nonnull_domain dom;
     unsigned hyper bandwidth;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_events_register_any_args {
@@ -1832,12 +1832,12 @@ struct remote_domain_event_graphics_msg {
 
 struct remote_domain_managed_save_args {
     remote_nonnull_domain dom;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_has_managed_save_image_args {
     remote_nonnull_domain dom;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_has_managed_save_image_ret {
@@ -1846,7 +1846,7 @@ struct remote_domain_has_managed_save_image_ret {
 
 struct remote_domain_managed_save_remove_args {
     remote_nonnull_domain dom;
-    unsigned flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_create_xml_args {
