@@ -245,7 +245,7 @@ update_include_file(const char *include_file, const char *included_files,
                     bool append)
 {
     int rc = -1;
-    int plen, flen;
+    int plen, flen = 0;
     int fd;
     char *pcontent = NULL;
     char *existing = NULL;
