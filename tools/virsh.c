@@ -12406,8 +12406,31 @@ vshError(vshControl *ctl, const char *format, ...)
 static bool
 vshInit(vshControl *ctl)
 {
+    char *debugEnv;
+
     if (ctl->conn)
         return false;
+
+    if (ctl->debug == -1) {
+        /* log level not set from commandline, check env variable */
+        debugEnv = getenv("VIRSH_DEBUG");
+        if (debugEnv) {
+            if (virStrToLong_i(debugEnv, NULL, 10, &ctl->debug) < 0 ||
+                ctl->debug < VSH_ERR_DEBUG || ctl->debug > VSH_ERR_ERROR) {
+                vshError(ctl, "%s",
+                         _("VIRSH_DEBUG not set with a valid numeric value"));
+                ctl->debug = VSH_ERR_DEBUG;
+            }
+        }
+    }
+
+    if (ctl->logfile == NULL) {
+        /* log file not set from cmdline */
+        debugEnv = getenv("VIRSH_LOG_FILE");
+        if (debugEnv && *debugEnv) {
+            ctl->logfile = vshStrdup(ctl, debugEnv);
+        }
+    }
 
     vshOpenLogFile(ctl);
 
@@ -12507,14 +12530,15 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     */
     gettimeofday(&stTimeval, NULL);
     stTm = localtime(&stTimeval.tv_sec);
-    virBufferAsprintf(&buf, "[%d.%02d.%02d %02d:%02d:%02d %s] ",
+    virBufferAsprintf(&buf, "[%d.%02d.%02d %02d:%02d:%02d %s %d] ",
                       (1900 + stTm->tm_year),
                       (1 + stTm->tm_mon),
                       stTm->tm_mday,
                       stTm->tm_hour,
                       stTm->tm_min,
                       stTm->tm_sec,
-                      SIGN_NAME);
+                      SIGN_NAME,
+                      (int) getpid());
     switch (log_level) {
         case VSH_ERR_DEBUG:
             lvl = LVL_DEBUG;
@@ -12835,7 +12859,7 @@ vshUsage(void)
                       "  options:\n"
                       "    -c | --connect <uri>    hypervisor connection URI\n"
                       "    -r | --readonly         connect readonly\n"
-                      "    -d | --debug <num>      debug level [0-5]\n"
+                      "    -d | --debug <num>      debug level [0-4]\n"
                       "    -h | --help             this help\n"
                       "    -q | --quiet            quiet mode\n"
                       "    -t | --timing           print timing information\n"
@@ -13083,6 +13107,7 @@ main(int argc, char **argv)
     memset(ctl, 0, sizeof(vshControl));
     ctl->imode = true;          /* default is interactive mode */
     ctl->log_fd = -1;           /* Initialize log file descriptor */
+    ctl->debug = -1;            /* Initialize log level */
 
     if (!setlocale(LC_ALL, "")) {
         perror("setlocale");
