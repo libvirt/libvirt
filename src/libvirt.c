@@ -369,6 +369,9 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
  * in multithreaded applications to avoid potential race when initializing
  * the library.
  *
+ * Calling virInitialize is mandatory, unless your first API call is one of
+ * virConnectOpen*.
+ *
  * Returns 0 in case of success, -1 in case of error
  */
 int

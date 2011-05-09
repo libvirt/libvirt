@@ -12985,6 +12985,10 @@ main(int argc, char **argv)
     char *defaultConn;
     bool ret = true;
 
+    memset(ctl, 0, sizeof(vshControl));
+    ctl->imode = true;          /* default is interactive mode */
+    ctl->log_fd = -1;           /* Initialize log file descriptor */
+
     if (!setlocale(LC_ALL, "")) {
         perror("setlocale");
         /* failure to setup locale is not fatal */
@@ -12998,14 +13002,15 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    if (virInitialize() < 0) {
+        vshError(ctl, "%s", _("Failed to initialize libvirt"));
+        return EXIT_FAILURE;
+    }
+
     if (!(progname = strrchr(argv[0], '/')))
         progname = argv[0];
     else
         progname++;
-
-    memset(ctl, 0, sizeof(vshControl));
-    ctl->imode = true;          /* default is interactive mode */
-    ctl->log_fd = -1;           /* Initialize log file descriptor */
 
     if ((defaultConn = getenv("VIRSH_DEFAULT_CONNECT_URI"))) {
         ctl->name = vshStrdup(ctl, defaultConn);
