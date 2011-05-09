@@ -430,7 +430,8 @@ mymain(void)
             QEMU_CAPS_VGA_NONE,
             QEMU_CAPS_MIGRATE_QEMU_FD,
             QEMU_CAPS_DRIVE_AIO,
-            QEMU_CAPS_DEVICE_SPICEVMC);
+            QEMU_CAPS_DEVICE_SPICEVMC,
+            QEMU_CAPS_PCI_MULTIFUNCTION);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,

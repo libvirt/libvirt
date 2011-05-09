@@ -119,6 +119,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "device-spicevmc",
               "virtio-tx-alg",
               "device-qxl-vga",
+
+              "pci-multifunction", /* 60 */
     );
 
 struct qemu_feature_flags {
@@ -1024,6 +1026,9 @@ qemuCapsComputeCmdFlags(const char *help,
      */
      if (version >= 13000)
         qemuCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
+
+    if (version >= 13000)
+        qemuCapsSet(flags, QEMU_CAPS_PCI_MULTIFUNCTION);
 }
 
 /* We parse the output of 'qemu -help' to get the QEMU
