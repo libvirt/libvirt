@@ -16,7 +16,7 @@ XML_EXAMPLES = \
 
 EXTRA_DIST = \
   ChangeLog-old \
-  libvirt.spec.in \
+  libvirt.spec libvirt.spec.in \
   mingw32-libvirt.spec.in \
   libvirt.pc.in \
   autobuild.sh \
