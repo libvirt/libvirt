@@ -85,6 +85,8 @@ struct _testConn {
     virDomainObjList domains;
     virNetworkObjList networks;
     virInterfaceObjList ifaces;
+    bool transaction_running;
+    virInterfaceObjList backupIfaces;
     virStoragePoolObjList pools;
     virNodeDeviceObjList devs;
     int numCells;
@@ -3455,6 +3457,84 @@ cleanup:
     return ret;
 }
 
+static int testInterfaceChangeBegin(virConnectPtr conn,
+                                    unsigned int flags ATTRIBUTE_UNUSED)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    if (privconn->transaction_running) {
+        testError(VIR_ERR_OPERATION_INVALID,
+                  _("there is another transaction running."));
+        goto cleanup;
+    }
+
+    privconn->transaction_running = true;
+
+    if (virInterfaceObjListClone(&privconn->ifaces,
+                                 &privconn->backupIfaces) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    testDriverUnlock(privconn);
+    return ret;
+}
+
+static int testInterfaceChangeCommit(virConnectPtr conn,
+                                     unsigned int flags ATTRIBUTE_UNUSED)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    testDriverLock(privconn);
+
+    if (!privconn->transaction_running) {
+        testError(VIR_ERR_OPERATION_INVALID, _("no transaction running, "
+                  "nothing to be commited."));
+        goto cleanup;
+    }
+
+    virInterfaceObjListFree(&privconn->backupIfaces);
+    privconn->transaction_running = false;
+
+    ret = 0;
+
+cleanup:
+    testDriverUnlock(privconn);
+
+    return ret;
+}
+
+static int testInterfaceChangeRollback(virConnectPtr conn,
+                                       unsigned int flags ATTRIBUTE_UNUSED)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    testDriverLock(privconn);
+
+    if (!privconn->transaction_running) {
+        testError(VIR_ERR_OPERATION_INVALID, _("no transaction running, "
+                  "nothing to rollback."));
+        goto cleanup;
+    }
+
+    virInterfaceObjListFree(&privconn->ifaces);
+    privconn->ifaces.count = privconn->backupIfaces.count;
+    privconn->ifaces.objs = privconn->backupIfaces.objs;
+    privconn->backupIfaces.count = 0;
+    privconn->backupIfaces.objs = NULL;
+
+    privconn->transaction_running = false;
+
+    ret = 0;
+
+cleanup:
+    testDriverUnlock(privconn);
+    return ret;
+}
 
 static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
                                      unsigned int flags ATTRIBUTE_UNUSED)
@@ -5428,6 +5508,9 @@ static virInterfaceDriver testInterfaceDriver = {
     .interfaceCreate = testInterfaceCreate, /* 0.7.0 */
     .interfaceDestroy = testInterfaceDestroy, /* 0.7.0 */
     .interfaceIsActive = testInterfaceIsActive, /* 0.7.3 */
+    .interfaceChangeBegin = testInterfaceChangeBegin,   /* 0.9.2 */
+    .interfaceChangeCommit = testInterfaceChangeCommit,  /* 0.9.2 */
+    .interfaceChangeRollback = testInterfaceChangeRollback, /* 0.9.2 */
 };
 
 

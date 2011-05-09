@@ -488,6 +488,7 @@ virInterfaceDefParseNode;
 virInterfaceDefParseString;
 virInterfaceFindByMACString;
 virInterfaceFindByName;
+virInterfaceObjListClone;
 virInterfaceObjListFree;
 virInterfaceObjLock;
 virInterfaceObjUnlock;

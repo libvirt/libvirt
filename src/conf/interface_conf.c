@@ -1227,6 +1227,44 @@ void virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
     interfaces->count = 0;
 }
 
+int virInterfaceObjListClone(virInterfaceObjListPtr src,
+                             virInterfaceObjListPtr dest)
+{
+    int ret = -1;
+    unsigned int i, cnt;
+
+    if (!src || !dest)
+        goto cleanup;
+
+    virInterfaceObjListFree(dest); /* start with an empty list */
+    cnt = src->count;
+    for (i = 0; i < cnt; i++) {
+        virInterfaceDefPtr def = src->objs[i]->def;
+        virInterfaceDefPtr backup;
+        virInterfaceObjPtr iface;
+        char *xml = virInterfaceDefFormat(def);
+
+        if (!xml)
+            goto cleanup;
+
+        if ((backup = virInterfaceDefParseString(xml)) == NULL) {
+            VIR_FREE(xml);
+            goto cleanup;
+        }
+
+        VIR_FREE(xml);
+        if ((iface = virInterfaceAssignDef(dest, backup)) == NULL)
+            goto cleanup;
+        virInterfaceObjUnlock(iface); /* was locked by virInterfaceAssignDef */
+    }
+
+    ret = cnt;
+cleanup:
+    if ((ret < 0) && dest)
+       virInterfaceObjListFree(dest);
+    return ret;
+}
+
 virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
                                          const virInterfaceDefPtr def)
 {
