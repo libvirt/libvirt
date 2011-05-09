@@ -1157,6 +1157,30 @@ static inline int qemuFindDisk(virDomainDefPtr def, const char *dst)
     return -1;
 }
 
+static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                virDomainDeviceInfoPtr dev1,
+                                void *opaque)
+{
+    virDomainDeviceInfoPtr dev2 = opaque;
+
+    if (dev1->type !=  VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI ||
+        dev2->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+        return 0;
+
+    if (dev1->addr.pci.slot == dev2->addr.pci.slot &&
+        dev1->addr.pci.function != dev2->addr.pci.function)
+        return -1;
+    return 0;
+}
+
+static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
+                                      virDomainDeviceInfoPtr dev)
+{
+    if (virDomainDeviceInfoIterate(def, qemuComparePCIDevice, dev) < 0)
+        return true;
+    return false;
+}
+
 
 int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
@@ -1177,6 +1201,13 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
     }
 
     detach = vm->def->disks[i];
+
+    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot hot unplug multifunction PCI device: %s"),
+                        dev->data.disk->dst);
+        goto cleanup;
+    }
 
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
@@ -1417,6 +1448,13 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
         goto cleanup;
     }
 
+    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot hot unplug multifunction PCI device: %s"),
+                        dev->data.disk->dst);
+        goto cleanup;
+    }
+
     if (qemuDomainControllerIsBusy(vm, detach)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("device cannot be detached: device is busy"));
@@ -1501,6 +1539,13 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
                                        VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("device cannot be detached without a PCI address"));
+        goto cleanup;
+    }
+
+    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot hot unplug multifunction PCI device :%s"),
+                        dev->data.disk->dst);
         goto cleanup;
     }
 
@@ -1630,6 +1675,13 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
                         dev->data.hostdev->source.subsys.u.pci.bus,
                         dev->data.hostdev->source.subsys.u.pci.slot,
                         dev->data.hostdev->source.subsys.u.pci.function);
+        return -1;
+    }
+
+    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot hot unplug multifunction PCI device: %s"),
+                        dev->data.disk->dst);
         return -1;
     }
 
