@@ -357,7 +357,7 @@ virInitialize(void)
 
     virLogSetFromEnv();
 
-    VIR_DEBUG0("register drivers");
+    VIR_DEBUG("register drivers");
 
 #if HAVE_WINSOCK2_H
     if (winsock_init () == -1) return -1;
@@ -1026,7 +1026,7 @@ do_open (const char *name,
               NULLSTR(ret->uri->user), ret->uri->port,
               NULLSTR(ret->uri->path));
     } else {
-        VIR_DEBUG0("no name, allowing driver auto-select");
+        VIR_DEBUG("no name, allowing driver auto-select");
     }
 
     /* Cleansing flags */

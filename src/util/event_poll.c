@@ -687,7 +687,7 @@ static int virEventPollInterruptLocked(void)
         return 0;
     }
 
-    VIR_DEBUG0("Interrupting");
+    VIR_DEBUG("Interrupting");
     if (safewrite(eventLoop.wakeupfd[1], &c, sizeof(c)) != sizeof(c))
         return -1;
     return 0;

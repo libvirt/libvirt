@@ -572,7 +572,7 @@ virCommandSetWorkingDirectory(virCommandPtr cmd, const char *pwd)
 
     if (cmd->pwd) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot set directory twice");
+        VIR_DEBUG("cannot set directory twice");
     } else {
         cmd->pwd = strdup(pwd);
         if (!cmd->pwd)
@@ -592,7 +592,7 @@ virCommandSetInputBuffer(virCommandPtr cmd, const char *inbuf)
 
     if (cmd->infd != -1 || cmd->inbuf) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify input twice");
+        VIR_DEBUG("cannot specify input twice");
         return;
     }
 
@@ -617,7 +617,7 @@ virCommandSetOutputBuffer(virCommandPtr cmd, char **outbuf)
 
     if (cmd->outfdptr) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify output twice");
+        VIR_DEBUG("cannot specify output twice");
         return;
     }
 
@@ -641,7 +641,7 @@ virCommandSetErrorBuffer(virCommandPtr cmd, char **errbuf)
 
     if (cmd->errfdptr) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify stderr twice");
+        VIR_DEBUG("cannot specify stderr twice");
         return;
     }
 
@@ -661,12 +661,12 @@ virCommandSetInputFD(virCommandPtr cmd, int infd)
 
     if (cmd->infd != -1 || cmd->inbuf) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify input twice");
+        VIR_DEBUG("cannot specify input twice");
         return;
     }
     if (infd < 0) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify invalid input fd");
+        VIR_DEBUG("cannot specify invalid input fd");
         return;
     }
 
@@ -685,7 +685,7 @@ virCommandSetOutputFD(virCommandPtr cmd, int *outfd)
 
     if (cmd->outfdptr) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify output twice");
+        VIR_DEBUG("cannot specify output twice");
         return;
     }
 
@@ -704,7 +704,7 @@ virCommandSetErrorFD(virCommandPtr cmd, int *errfd)
 
     if (cmd->errfdptr) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify stderr twice");
+        VIR_DEBUG("cannot specify stderr twice");
         return;
     }
 
@@ -725,7 +725,7 @@ virCommandSetPreExecHook(virCommandPtr cmd, virExecHook hook, void *opaque)
 
     if (cmd->hook) {
         cmd->has_error = -1;
-        VIR_DEBUG0("cannot specify hook twice");
+        VIR_DEBUG("cannot specify hook twice");
         return;
     }
     cmd->hook = hook;

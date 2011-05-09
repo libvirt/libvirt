@@ -729,14 +729,14 @@ libxlStartup(int privileged) {
 
     /* Disable libxl driver if non-root */
     if (!privileged) {
-        VIR_INFO0("Not running privileged, disabling libxenlight driver");
+        VIR_INFO("Not running privileged, disabling libxenlight driver");
         return 0;
     }
 
     /* Disable driver if legacy xen toolstack (xend) is in use */
     cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
     if (virCommandRun(cmd, &status) == 0 && status == 0) {
-        VIR_INFO0("Legacy xen tool stack seems to be in use, disabling "
+        VIR_INFO("Legacy xen tool stack seems to be in use, disabling "
                   "libxenlight driver.");
         virCommandFree(cmd);
         return 0;
@@ -747,7 +747,7 @@ libxlStartup(int privileged) {
         return -1;
 
     if (virMutexInit(&libxl_driver->lock) < 0) {
-        VIR_ERROR0(_("cannot initialize mutex"));
+        VIR_ERROR(_("cannot initialize mutex"));
         VIR_FREE(libxl_driver);
         return -1;
     }
@@ -835,19 +835,19 @@ libxlStartup(int privileged) {
     libxl_driver->logger =
             (xentoollog_logger *)xtl_createlogger_stdiostream(libxl_driver->logger_file, XTL_DEBUG,  0);
     if (!libxl_driver->logger) {
-        VIR_ERROR0(_("cannot create logger for libxenlight"));
+        VIR_ERROR(_("cannot create logger for libxenlight"));
         goto fail;
     }
 
     if (libxl_ctx_init(&libxl_driver->ctx,
                        LIBXL_VERSION,
                        libxl_driver->logger)) {
-        VIR_ERROR0(_("cannot initialize libxenlight context"));
+        VIR_ERROR(_("cannot initialize libxenlight context"));
         goto fail;
     }
 
     if ((ver_info = libxl_get_version_info(&libxl_driver->ctx)) == NULL) {
-        VIR_ERROR0(_("cannot version information from libxenlight"));
+        VIR_ERROR(_("cannot version information from libxenlight"));
         goto fail;
     }
     libxl_driver->version = (ver_info->xen_version_major * 1000000) +
@@ -855,7 +855,7 @@ libxlStartup(int privileged) {
 
     if ((libxl_driver->caps =
          libxlMakeCapabilities(&libxl_driver->ctx)) == NULL) {
-        VIR_ERROR0(_("cannot create capabilities for libxenlight"));
+        VIR_ERROR(_("cannot create capabilities for libxenlight"));
         goto error;
     }
 
@@ -1957,7 +1957,7 @@ libxlDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
     }
 
     if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
-        VIR_ERROR0(_("cannot get version information from libxenlight"));
+        VIR_ERROR(_("cannot get version information from libxenlight"));
         goto cleanup;
     }
 
@@ -1998,7 +1998,7 @@ libxlDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
     }
 
     if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
-        VIR_ERROR0(_("cannot get version information from libxenlight"));
+        VIR_ERROR(_("cannot get version information from libxenlight"));
         goto cleanup;
     }
 

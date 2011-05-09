@@ -359,7 +359,7 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     data.subject.subject_len = subject->nidentity;
     if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0) {
-        VIR_WARN0("cannot allocate memory for graphics event subject");
+        VIR_WARN("cannot allocate memory for graphics event subject");
         return -1;
     }
     for (i = 0 ; i < data.subject.subject_len ; i++) {
@@ -1754,7 +1754,7 @@ remoteDispatchAuthSaslInit(struct qemud_server *server,
     VIR_DEBUG("Initialize SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn != NULL) {
-        VIR_ERROR0(_("client tried invalid SASL init request"));
+        VIR_ERROR(_("client tried invalid SASL init request"));
         goto authfail;
     }
 
@@ -1808,7 +1808,7 @@ remoteDispatchAuthSaslInit(struct qemud_server *server,
 
         cipher = gnutls_cipher_get(client->tlssession);
         if (!(ssf = (sasl_ssf_t)gnutls_cipher_get_key_size(cipher))) {
-            VIR_ERROR0(_("cannot get TLS cipher size"));
+            VIR_ERROR(_("cannot get TLS cipher size"));
             sasl_dispose(&client->saslconn);
             client->saslconn = NULL;
             goto authfail;
@@ -1870,7 +1870,7 @@ remoteDispatchAuthSaslInit(struct qemud_server *server,
     VIR_DEBUG("Available mechanisms for client: '%s'", mechlist);
     ret->mechlist = strdup(mechlist);
     if (!ret->mechlist) {
-        VIR_ERROR0(_("cannot allocate mechlist"));
+        VIR_ERROR(_("cannot allocate mechlist"));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
@@ -1954,7 +1954,7 @@ remoteSASLCheckAccess(struct qemud_server *server,
         return -1;
     }
     if (val == NULL) {
-        VIR_ERROR0(_("no client username was found"));
+        VIR_ERROR(_("no client username was found"));
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -1964,7 +1964,7 @@ remoteSASLCheckAccess(struct qemud_server *server,
 
     client->saslUsername = strdup((const char*)val);
     if (client->saslUsername == NULL) {
-        VIR_ERROR0(_("out of memory copying username"));
+        VIR_ERROR(_("out of memory copying username"));
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2014,7 +2014,7 @@ remoteDispatchAuthSaslStart(struct qemud_server *server,
     VIR_DEBUG("Start SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
-        VIR_ERROR0(_("client tried invalid SASL start request"));
+        VIR_ERROR(_("client tried invalid SASL start request"));
         goto authfail;
     }
 
@@ -2115,7 +2115,7 @@ remoteDispatchAuthSaslStep(struct qemud_server *server,
     VIR_DEBUG("Step SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
-        VIR_ERROR0(_("client tried invalid SASL start request"));
+        VIR_ERROR(_("client tried invalid SASL start request"));
         goto authfail;
     }
 
@@ -2207,7 +2207,7 @@ remoteDispatchAuthSaslInit(struct qemud_server *server ATTRIBUTE_UNUSED,
                            void *args ATTRIBUTE_UNUSED,
                            remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
 {
-    VIR_ERROR0(_("client tried unsupported SASL init request"));
+    VIR_ERROR(_("client tried unsupported SASL init request"));
     PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     return -1;
@@ -2222,7 +2222,7 @@ remoteDispatchAuthSaslStart(struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_auth_sasl_start_args *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
 {
-    VIR_ERROR0(_("client tried unsupported SASL start request"));
+    VIR_ERROR(_("client tried unsupported SASL start request"));
     PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     return -1;
@@ -2237,7 +2237,7 @@ remoteDispatchAuthSaslStep(struct qemud_server *server ATTRIBUTE_UNUSED,
                            remote_auth_sasl_step_args *args ATTRIBUTE_UNUSED,
                            remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
 {
-    VIR_ERROR0(_("client tried unsupported SASL step request"));
+    VIR_ERROR(_("client tried unsupported SASL step request"));
     PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d", client->fd, REMOTE_AUTH_SASL);
     remoteDispatchAuthError(rerr);
     return -1;
@@ -2283,12 +2283,12 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
 
     VIR_DEBUG("Start PolicyKit auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_POLKIT) {
-        VIR_ERROR0(_("client tried invalid PolicyKit init request"));
+        VIR_ERROR(_("client tried invalid PolicyKit init request"));
         goto authfail;
     }
 
     if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
-        VIR_ERROR0(_("cannot get peer socket identity"));
+        VIR_ERROR(_("cannot get peer socket identity"));
         goto authfail;
     }
 
@@ -2375,12 +2375,12 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
 
     VIR_DEBUG("Start PolicyKit auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_POLKIT) {
-        VIR_ERROR0(_("client tried invalid PolicyKit init request"));
+        VIR_ERROR(_("client tried invalid PolicyKit init request"));
         goto authfail;
     }
 
     if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
-        VIR_ERROR0(_("cannot get peer socket identity"));
+        VIR_ERROR(_("cannot get peer socket identity"));
         goto authfail;
     }
 
@@ -2485,7 +2485,7 @@ remoteDispatchAuthPolkit(struct qemud_server *server ATTRIBUTE_UNUSED,
                          void *args ATTRIBUTE_UNUSED,
                          remote_auth_polkit_ret *ret ATTRIBUTE_UNUSED)
 {
-    VIR_ERROR0(_("client tried unsupported PolicyKit init request"));
+    VIR_ERROR(_("client tried unsupported PolicyKit init request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }

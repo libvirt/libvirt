@@ -1164,7 +1164,7 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
 
         if ((privconn->domainEventTimer =
              virEventAddTimeout(-1, testDomainEventFlush, privconn, NULL)) < 0)
-            VIR_DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
+            VIR_DEBUG("virEventAddTimeout failed: No addTimeoutImpl defined. "
                    "continuing without events.");
         testDriverUnlock(privconn);
     }

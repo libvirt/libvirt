@@ -428,13 +428,13 @@ brProbeVnetHdr(int tapfd)
     struct ifreq dummy;
 
     if (ioctl(tapfd, TUNGETFEATURES, &features) != 0) {
-        VIR_INFO0(_("Not enabling IFF_VNET_HDR; "
+        VIR_INFO(_("Not enabling IFF_VNET_HDR; "
                     "TUNGETFEATURES ioctl() not implemented"));
         return 0;
     }
 
     if (!(features & IFF_VNET_HDR)) {
-        VIR_INFO0(_("Not enabling IFF_VNET_HDR; "
+        VIR_INFO(_("Not enabling IFF_VNET_HDR; "
                     "TUNGETFEATURES ioctl() reports no IFF_VNET_HDR"));
         return 0;
     }
@@ -443,17 +443,17 @@ brProbeVnetHdr(int tapfd)
      * If TUNGETIFF is not implemented then errno == EBADFD.
      */
     if (ioctl(tapfd, TUNGETIFF, &dummy) != -1 || errno != EBADFD) {
-        VIR_INFO0(_("Not enabling IFF_VNET_HDR; "
+        VIR_INFO(_("Not enabling IFF_VNET_HDR; "
                     "TUNGETIFF ioctl() not implemented"));
         return 0;
     }
 
-    VIR_INFO0(_("Enabling IFF_VNET_HDR"));
+    VIR_INFO(_("Enabling IFF_VNET_HDR"));
 
     return 1;
 #  else
     (void) tapfd;
-    VIR_INFO0(_("Not enabling IFF_VNET_HDR; disabled at build time"));
+    VIR_INFO(_("Not enabling IFF_VNET_HDR; disabled at build time"));
     return 0;
 #  endif
 }

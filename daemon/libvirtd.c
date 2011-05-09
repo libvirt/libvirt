@@ -413,11 +413,11 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
 
     switch (siginfo.si_signo) {
     case SIGHUP:
-        VIR_INFO0(_("Reloading configuration on SIGHUP"));
+        VIR_INFO(_("Reloading configuration on SIGHUP"));
         virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
                     VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL);
         if (virStateReload() < 0)
-            VIR_WARN0("Error while reloading drivers");
+            VIR_WARN("Error while reloading drivers");
 
         break;
 
@@ -566,7 +566,7 @@ static int qemudListenUnix(struct qemud_server *server,
     char ebuf[1024];
 
     if (VIR_ALLOC(sock) < 0) {
-        VIR_ERROR0(_("Failed to allocate memory for struct qemud_socket"));
+        VIR_ERROR(_("Failed to allocate memory for struct qemud_socket"));
         return -1;
     }
 
@@ -875,7 +875,7 @@ static struct qemud_server *qemudInitialize(void) {
     struct qemud_server *server;
 
     if (VIR_ALLOC(server) < 0) {
-        VIR_ERROR0(_("Failed to allocate struct qemud_server"));
+        VIR_ERROR(_("Failed to allocate struct qemud_server"));
         return NULL;
     }
 
@@ -883,12 +883,12 @@ static struct qemud_server *qemudInitialize(void) {
     server->sigread = server->sigwrite = -1;
 
     if (virMutexInit(&server->lock) < 0) {
-        VIR_ERROR0(_("cannot initialize mutex"));
+        VIR_ERROR(_("cannot initialize mutex"));
         VIR_FREE(server);
         return NULL;
     }
     if (virCondInit(&server->job) < 0) {
-        VIR_ERROR0(_("cannot initialize condition variable"));
+        VIR_ERROR(_("cannot initialize condition variable"));
         virMutexDestroy(&server->lock);
         VIR_FREE(server);
         return NULL;
@@ -1103,7 +1103,7 @@ static int qemudNetworkEnable(struct qemud_server *server) {
                                              VIR_EVENT_HANDLE_HANGUP,
                                              qemudDispatchServerEvent,
                                              server, NULL)) < 0) {
-            VIR_ERROR0(_("Failed to add server event callback"));
+            VIR_ERROR(_("Failed to add server event callback"));
             return -1;
         }
 
@@ -1189,29 +1189,29 @@ remoteCheckCertificate(struct qemud_client *client)
 
     if (status != 0) {
         if (status & GNUTLS_CERT_INVALID)
-            VIR_ERROR0(_("The client certificate is not trusted."));
+            VIR_ERROR(_("The client certificate is not trusted."));
 
         if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
-            VIR_ERROR0(_("The client certificate has unknown issuer."));
+            VIR_ERROR(_("The client certificate has unknown issuer."));
 
         if (status & GNUTLS_CERT_REVOKED)
-            VIR_ERROR0(_("The client certificate has been revoked."));
+            VIR_ERROR(_("The client certificate has been revoked."));
 
 #ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
-            VIR_ERROR0(_("The client certificate uses an insecure algorithm."));
+            VIR_ERROR(_("The client certificate uses an insecure algorithm."));
 #endif
 
         goto authdeny;
     }
 
     if (gnutls_certificate_type_get(client->tlssession) != GNUTLS_CRT_X509) {
-        VIR_ERROR0(_("Only x509 certificates are supported"));
+        VIR_ERROR(_("Only x509 certificates are supported"));
         goto authdeny;
     }
 
     if (!(certs = gnutls_certificate_get_peers(client->tlssession, &nCerts))) {
-        VIR_ERROR0(_("The certificate has no peers"));
+        VIR_ERROR(_("The certificate has no peers"));
         goto authdeny;
     }
 
@@ -1221,12 +1221,12 @@ remoteCheckCertificate(struct qemud_client *client)
         gnutls_x509_crt_t cert;
 
         if (gnutls_x509_crt_init (&cert) < 0) {
-            VIR_ERROR0(_("Unable to initialize certificate"));
+            VIR_ERROR(_("Unable to initialize certificate"));
             goto authfail;
         }
 
         if (gnutls_x509_crt_import(cert, &certs[i], GNUTLS_X509_FMT_DER) < 0) {
-            VIR_ERROR0(_("Unable to load certificate"));
+            VIR_ERROR(_("Unable to load certificate"));
             gnutls_x509_crt_deinit (cert);
             goto authfail;
         }
@@ -1242,7 +1242,7 @@ remoteCheckCertificate(struct qemud_client *client)
 
             if (!remoteCheckDN (name)) {
                 /* This is the most common error: make it informative. */
-                VIR_ERROR0(_("Client's Distinguished Name is not on the list "
+                VIR_ERROR(_("Client's Distinguished Name is not on the list "
                              "of allowed clients (tls_allowed_dn_list).  Use "
                              "'certtool -i --infile clientcert.pem' to view the"
                              "Distinguished Name field in the client certificate,"
@@ -1253,13 +1253,13 @@ remoteCheckCertificate(struct qemud_client *client)
         }
 
         if (gnutls_x509_crt_get_expiration_time (cert) < now) {
-            VIR_ERROR0(_("The client certificate has expired"));
+            VIR_ERROR(_("The client certificate has expired"));
             gnutls_x509_crt_deinit (cert);
             goto authdeny;
         }
 
         if (gnutls_x509_crt_get_activation_time (cert) > now) {
-            VIR_ERROR0(_("The client certificate is not yet active"));
+            VIR_ERROR(_("The client certificate is not yet active"));
             gnutls_x509_crt_deinit (cert);
             goto authdeny;
         }
@@ -1285,10 +1285,10 @@ remoteCheckAccess (struct qemud_client *client)
 
     /* Verify client certificate. */
     if (remoteCheckCertificate (client) == -1) {
-        VIR_ERROR0(_("remoteCheckCertificate: "
+        VIR_ERROR(_("remoteCheckCertificate: "
                      "failed to verify client's certificate"));
         if (!tls_no_verify_certificate) return -1;
-        else VIR_INFO0(_("remoteCheckCertificate: tls_no_verify_certificate "
+        else VIR_INFO(_("remoteCheckCertificate: tls_no_verify_certificate "
                           "is set so the bad certificate is ignored"));
     }
 
@@ -1356,7 +1356,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         return -1;
     }
     if (!(addrstr = virSocketFormatAddrFull(&addr, true, ";"))) {
-        VIR_ERROR0(_("Failed to format addresss: out of memory"));
+        VIR_ERROR(_("Failed to format addresss: out of memory"));
         goto error;
     }
 
@@ -1371,7 +1371,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
     if (VIR_RESIZE_N(server->clients, server->nclients_max,
                      server->nclients, 1) < 0) {
-        VIR_ERROR0(_("Out of memory allocating clients"));
+        VIR_ERROR(_("Out of memory allocating clients"));
         goto error;
     }
 
@@ -1408,7 +1408,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     if (VIR_ALLOC(client) < 0)
         goto error;
     if (virMutexInit(&client->lock) < 0) {
-        VIR_ERROR0(_("cannot initialize mutex"));
+        VIR_ERROR(_("cannot initialize mutex"));
         goto error;
     }
 
@@ -1845,7 +1845,7 @@ readmore:
 
         if (!xdr_u_int(&x, &len)) {
             xdr_destroy (&x);
-            VIR_DEBUG0("Failed to decode packet length");
+            VIR_DEBUG("Failed to decode packet length");
             qemudDispatchClientFailure(client);
             return;
         }
@@ -2298,10 +2298,10 @@ static void qemudInactiveTimer(int timerid, void *data) {
 
     if (virStateActive() ||
         server->clients) {
-        VIR_DEBUG0("Timer expired but still active, not shutting down");
+        VIR_DEBUG("Timer expired but still active, not shutting down");
         virEventUpdateTimeout(timerid, -1);
     } else {
-        VIR_DEBUG0("Timer expired and inactive, shutting down");
+        VIR_DEBUG("Timer expired and inactive, shutting down");
         server->quitEventThread = 1;
     }
 }
@@ -2345,7 +2345,7 @@ static void *qemudRunLoop(void *opaque) {
         (timerid = virEventAddTimeout(-1,
                                       qemudInactiveTimer,
                                       server, NULL)) < 0) {
-        VIR_ERROR0(_("Failed to register shutdown timeout"));
+        VIR_ERROR(_("Failed to register shutdown timeout"));
         return NULL;
     }
 
@@ -2354,7 +2354,7 @@ static void *qemudRunLoop(void *opaque) {
 
     server->nworkers = max_workers;
     if (VIR_ALLOC_N(server->workers, server->nworkers) < 0) {
-        VIR_ERROR0(_("Failed to allocate workers"));
+        VIR_ERROR(_("Failed to allocate workers"));
         return NULL;
     }
 
@@ -2389,7 +2389,7 @@ static void *qemudRunLoop(void *opaque) {
         virMutexUnlock(&server->lock);
         if (qemudOneLoop() < 0) {
             virMutexLock(&server->lock);
-            VIR_DEBUG0("Loop iteration error, exiting");
+            VIR_DEBUG("Loop iteration error, exiting");
             break;
         }
         virMutexLock(&server->lock);
@@ -2879,7 +2879,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_STR (conf, filename, unix_sock_group);
     if (unix_sock_group) {
         if (!server->privileged) {
-            VIR_WARN0("Cannot set group when not running as root");
+            VIR_WARN("Cannot set group when not running as root");
         } else {
             int ret;
             struct group grpdata, *grp;
@@ -2889,7 +2889,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
                 maxbuf = 1024;
 
             if (VIR_ALLOC_N(buf, maxbuf) < 0) {
-                VIR_ERROR0(_("Failed to allocate memory for buffer"));
+                VIR_ERROR(_("Failed to allocate memory for buffer"));
                 goto free_and_fail;
             }
 
@@ -2898,7 +2898,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
                                      &grp)) == ERANGE) {
                     maxbuf *= 2;
                     if (maxbuf > 65536 || VIR_REALLOC_N(buf, maxbuf) < 0) {
-                        VIR_ERROR0(_("Failed to reallocate enough memory for buffer"));
+                        VIR_ERROR(_("Failed to reallocate enough memory for buffer"));
                         goto free_and_fail;
                     }
             }
@@ -3012,13 +3012,13 @@ qemudSetupPrivs (void)
 
     if (__init_daemon_priv (PU_RESETGROUPS | PU_CLEARLIMITSET,
         SYSTEM_UID, SYSTEM_UID, PRIV_XVM_CONTROL, NULL)) {
-        VIR_ERROR0(_("additional privileges are required"));
+        VIR_ERROR(_("additional privileges are required"));
         return -1;
     }
 
     if (priv_set (PRIV_OFF, PRIV_ALLSETS, PRIV_FILE_LINK_ANY, PRIV_PROC_INFO,
         PRIV_PROC_SESSION, PRIV_PROC_EXEC, PRIV_PROC_FORK, NULL)) {
-        VIR_ERROR0(_("failed to set reduced privileges"));
+        VIR_ERROR(_("failed to set reduced privileges"));
         return -1;
     }
 
@@ -3084,7 +3084,7 @@ daemonSetupSignals(struct qemud_server *server)
                           VIR_EVENT_HANDLE_READABLE,
                           qemudDispatchSignalEvent,
                           server, NULL) < 0) {
-        VIR_ERROR0(_("Failed to register callback for signal pipe"));
+        VIR_ERROR(_("Failed to register callback for signal pipe"));
         goto error;
     }
 
@@ -3374,7 +3374,7 @@ int main(int argc, char **argv) {
     /* Start the event loop in a background thread, since
      * state initialization needs events to be being processed */
     if (qemudStartEventLoop(server) < 0) {
-        VIR_ERROR0(_("Event thread startup failed"));
+        VIR_ERROR(_("Event thread startup failed"));
         goto error;
     }
 
@@ -3383,14 +3383,14 @@ int main(int argc, char **argv) {
      * we're ready, since it can take a long time and this will
      * seriously delay OS bootup process */
     if (virStateInitialize(server->privileged) < 0) {
-        VIR_ERROR0(_("Driver state initialization failed"));
+        VIR_ERROR(_("Driver state initialization failed"));
         goto shutdown;
     }
 
     /* Start accepting new clients from network */
     virMutexLock(&server->lock);
     if (qemudNetworkEnable(server) < 0) {
-        VIR_ERROR0(_("Network event loop enablement failed"));
+        VIR_ERROR(_("Network event loop enablement failed"));
         goto shutdown;
     }
     virMutexUnlock(&server->lock);

@@ -69,20 +69,20 @@ qemuAuditDisk(virDomainObjPtr vm,
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 
     if (!(oldsrc = virAuditEncode("old-disk",
                                   oldDef && oldDef->src ?
                                   oldDef->src : "?"))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
     if (!(newsrc = virAuditEncode("new-disk",
                                   newDef && newDef->src ?
                                   newDef->src : "?"))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
 
@@ -114,7 +114,7 @@ qemuAuditNet(virDomainObjPtr vm,
     if (newDef)
         virFormatMacAddr(newDef->mac, newMacstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 
@@ -155,7 +155,7 @@ qemuAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
 
     if (!(vmname = virAuditEncode("vm", vmDef->name)) ||
         !(devname = virAuditEncode("path", device))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
 
@@ -189,7 +189,7 @@ qemuAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 
@@ -200,7 +200,7 @@ qemuAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
                         hostdev->source.subsys.u.pci.bus,
                         hostdev->source.subsys.u.pci.slot,
                         hostdev->source.subsys.u.pci.function) < 0) {
-            VIR_WARN0("OOM while encoding audit message");
+            VIR_WARN("OOM while encoding audit message");
             goto cleanup;
         }
         break;
@@ -208,7 +208,7 @@ qemuAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
         if (virAsprintf(&address, "%.3d.%.3d",
                         hostdev->source.subsys.u.usb.bus,
                         hostdev->source.subsys.u.usb.device) < 0) {
-            VIR_WARN0("OOM while encoding audit message");
+            VIR_WARN("OOM while encoding audit message");
             goto cleanup;
         }
         break;
@@ -219,7 +219,7 @@ qemuAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     }
 
     if (!(device = virAuditEncode("device", VIR_AUDIT_STR(address)))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
 
@@ -260,7 +260,7 @@ qemuAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup,
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 
@@ -299,7 +299,7 @@ qemuAuditCgroupMajor(virDomainObjPtr vm, virCgroupPtr cgroup,
 
     if (virAsprintf(&extra, "major category=%s maj=%02X acl=%s",
                     name, maj, perms) < 0) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 
@@ -338,7 +338,7 @@ qemuAuditCgroupPath(virDomainObjPtr vm, virCgroupPtr cgroup,
     if (!(detail = virAuditEncode("path", path)) ||
         virAsprintf(&extra, "path path=%s rdev=%s acl=%s",
                     path, VIR_AUDIT_STR(rdev), perms) < 0) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
 
@@ -371,7 +371,7 @@ qemuAuditResource(virDomainObjPtr vm, const char *resource,
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 
@@ -409,7 +409,7 @@ qemuAuditLifecycle(virDomainObjPtr vm, const char *op,
     virUUIDFormat(vm->def->uuid, uuidstr);
 
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 
@@ -462,7 +462,7 @@ qemuAuditSecurityLabel(virDomainObjPtr vm, bool success)
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN0("OOM while encoding audit message");
+        VIR_WARN("OOM while encoding audit message");
         return;
     }
 

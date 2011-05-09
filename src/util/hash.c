@@ -37,7 +37,7 @@
 
 #define virHashIterationError(ret)                                      \
     do {                                                                \
-        VIR_ERROR0(_("Hash operation not allowed during iteration"));   \
+        VIR_ERROR(_("Hash operation not allowed during iteration"));   \
         return ret;                                                     \
     } while (0)
 

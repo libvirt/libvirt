@@ -3303,7 +3303,7 @@ iptablesCheckBridgeNFCallEnabled(bool isIPv6)
                               "'echo 1 > %s'"),
                              isIPv6 ? "6" : "",
                              pathname);
-                    VIR_WARN0(msg);
+                    VIR_WARN("%s", msg);
                     if (isIPv6)
                         lastReportIPv6 = now;
                     else

@@ -287,7 +287,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             int ctl;
             if (pp->type != VIR_CONF_STRING) {
-                VIR_ERROR0(_("cgroup_controllers must be a list of strings"));
+                VIR_ERROR(_("cgroup_controllers must be a list of strings"));
                 virConfFree(conf);
                 return -1;
             }
@@ -327,7 +327,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
-                VIR_ERROR0(_("cgroup_device_acl must be a list of strings"));
+                VIR_ERROR(_("cgroup_device_acl must be a list of strings"));
                 virConfFree(conf);
                 return -1;
             }

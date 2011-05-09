@@ -123,7 +123,7 @@ static int umlSetCloseExec(int fd) {
         goto error;
     return 0;
  error:
-    VIR_ERROR0(_("Failed to set close-on-exec file descriptor flag"));
+    VIR_ERROR(_("Failed to set close-on-exec file descriptor flag"));
     return -1;
 }
 
@@ -322,10 +322,10 @@ reread:
             dom->state = VIR_DOMAIN_RUNNING;
 
             if (umlOpenMonitor(driver, dom) < 0) {
-                VIR_WARN0("Could not open monitor for new domain");
+                VIR_WARN("Could not open monitor for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom);
             } else if (umlIdentifyChrPTY(driver, dom) < 0) {
-                VIR_WARN0("Could not identify charater devices for new domain");
+                VIR_WARN("Could not identify charater devices for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom);
             }
         }
@@ -413,7 +413,7 @@ umlStartup(int privileged)
     uml_driver->caps->privateDataFreeFunc = umlDomainObjPrivateFree;
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {
-        VIR_ERROR0(_("cannot initialize inotify"));
+        VIR_ERROR(_("cannot initialize inotify"));
         goto error;
     }
 
@@ -451,7 +451,7 @@ umlStartup(int privileged)
     return 0;
 
 out_of_memory:
-    VIR_ERROR0(_("umlStartup: out of memory"));
+    VIR_ERROR(_("umlStartup: out of memory"));
 
 error:
     VIR_FREE(userdir);
@@ -782,7 +782,7 @@ static int umlCleanupTapDevices(virConnectPtr conn ATTRIBUTE_UNUSED,
     int err;
     int ret = 0;
     brControl *brctl = NULL;
-    VIR_ERROR0(_("Cleanup tap"));
+    VIR_ERROR(_("Cleanup tap"));
     if (brInit(&brctl) < 0)
         return -1;
 
@@ -800,7 +800,7 @@ static int umlCleanupTapDevices(virConnectPtr conn ATTRIBUTE_UNUSED,
             ret = -1;
         }
     }
-    VIR_ERROR0(_("Cleanup tap done"));
+    VIR_ERROR(_("Cleanup tap done"));
     brShutdown(brctl);
     return ret;
 }

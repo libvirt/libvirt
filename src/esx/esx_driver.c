@@ -734,7 +734,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
 
     /* Warn if host is in maintenance mode */
     if (inMaintenanceMode == esxVI_Boolean_True) {
-        VIR_WARN0("The server is in maintenance mode");
+        VIR_WARN("The server is in maintenance mode");
     }
 
     if (*vCenterIpAddress != NULL) {
@@ -2342,7 +2342,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
             }
 
             if (priv->usedCpuTimeCounterId < 0) {
-                VIR_WARN0("Could not find 'used CPU time' performance counter");
+                VIR_WARN("Could not find 'used CPU time' performance counter");
             }
         }
 
@@ -2374,7 +2374,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
             for (perfEntityMetricBase = perfEntityMetricBaseList;
                  perfEntityMetricBase != NULL;
                  perfEntityMetricBase = perfEntityMetricBase->_next) {
-                VIR_DEBUG0("perfEntityMetric ...");
+                VIR_DEBUG("perfEntityMetric ...");
 
                 perfEntityMetric =
                   esxVI_PerfEntityMetric_DynamicCast(perfEntityMetricBase);
@@ -2398,7 +2398,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
                 for (; perfMetricIntSeries != NULL;
                      perfMetricIntSeries = perfMetricIntSeries->_next) {
-                    VIR_DEBUG0("perfMetricIntSeries ...");
+                    VIR_DEBUG("perfMetricIntSeries ...");
 
                     for (value = perfMetricIntSeries->value;
                          value != NULL;

@@ -84,7 +84,7 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
            not consumed anything. We'll restart when more data arrives. */
         if (!offset) {
 #if DEBUG_IO
-            VIR_DEBUG0("Partial greeting seen, getting out & waiting for more");
+            VIR_DEBUG("Partial greeting seen, getting out & waiting for more");
 #endif
             return 0;
         }
@@ -92,7 +92,7 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         used = offset - data + strlen(GREETING_POSTFIX);
 
 #if DEBUG_IO
-        VIR_DEBUG0("Discarded monitor greeting");
+        VIR_DEBUG("Discarded monitor greeting");
 #endif
     }
 
@@ -191,7 +191,7 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 #if DEBUG_IO
                 VIR_DEBUG("Finished %d byte reply [%s]", want, msg->rxBuffer);
             } else {
-                VIR_DEBUG0("Finished 0 byte reply");
+                VIR_DEBUG("Finished 0 byte reply");
 #endif
             }
             msg->finished = 1;
@@ -2386,7 +2386,7 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
     }
 
     if (strstr(reply, "unknown command:")) {
-        VIR_ERROR0(_("deleting drive is not supported.  "
+        VIR_ERROR(_("deleting drive is not supported.  "
                     "This may leak data if disk is reassigned"));
         ret = 1;
         goto cleanup;

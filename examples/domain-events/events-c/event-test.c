@@ -8,10 +8,8 @@
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
-#define VIR_DEBUG0(fmt) printf("%s:%d :: " fmt "\n", \
-        __func__, __LINE__)
 #define VIR_DEBUG(fmt, ...) printf("%s:%d: " fmt "\n", \
-        __func__, __LINE__, __VA_ARGS__)
+        __func__, __LINE__, ##__VA_ARGS__)
 #define STREQ(a,b) (strcmp(a,b) == 0)
 
 #ifndef ATTRIBUTE_UNUSED
@@ -304,7 +302,7 @@ int main(int argc, char **argv)
     sigaction(SIGTERM, &action_stop, NULL);
     sigaction(SIGINT, &action_stop, NULL);
 
-    VIR_DEBUG0("Registering domain event cbs");
+    VIR_DEBUG("Registering domain event cbs");
 
     /* Add 2 callbacks to prove this works with more than just one */
     callback1ret = virConnectDomainEventRegister(dconn, myDomainEventCallback1,
@@ -355,7 +353,7 @@ int main(int argc, char **argv)
             }
         }
 
-        VIR_DEBUG0("Deregistering event handlers");
+        VIR_DEBUG("Deregistering event handlers");
         virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
         virConnectDomainEventDeregisterAny(dconn, callback2ret);
         virConnectDomainEventDeregisterAny(dconn, callback3ret);
@@ -365,7 +363,7 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback7ret);
     }
 
-    VIR_DEBUG0("Closing connection");
+    VIR_DEBUG("Closing connection");
     if (dconn && virConnectClose(dconn) < 0) {
         printf("error closing\n");
     }

@@ -125,7 +125,7 @@ static void qemuDomainObjPrivateFree(void *data)
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->mon) {
-        VIR_ERROR0(_("Unexpected QEMU monitor still active during domain deletion"));
+        VIR_ERROR(_("Unexpected QEMU monitor still active during domain deletion"));
         qemuMonitorClose(priv->mon);
     }
     VIR_FREE(priv);

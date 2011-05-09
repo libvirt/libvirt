@@ -230,7 +230,7 @@ static int lxcContainerWaitForContinue(int control)
     }
     VIR_FORCE_CLOSE(control);
 
-    VIR_DEBUG0("Received container continue message");
+    VIR_DEBUG("Received container continue message");
 
     return 0;
 }
@@ -729,7 +729,7 @@ static int lxcContainerDropCapabilities(void)
      * be unmasked  - they can never escape the bounding set. */
 
 #else
-    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
+    VIR_WARN("libcap-ng support not compiled in, unable to clear capabilities");
 #endif
     return 0;
 }
@@ -888,12 +888,12 @@ int lxcContainerStart(virDomainDefPtr def,
     flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
 
     if (userns_supported()) {
-        VIR_DEBUG0("Enable user namespaces");
+        VIR_DEBUG("Enable user namespaces");
         flags |= CLONE_NEWUSER;
     }
 
     if (def->nets != NULL) {
-        VIR_DEBUG0("Enable network namespaces");
+        VIR_DEBUG("Enable network namespaces");
         flags |= CLONE_NEWNET;
     }
 
@@ -932,7 +932,7 @@ int lxcContainerAvailable(int features)
         flags |= CLONE_NEWNET;
 
     if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0) {
-        VIR_DEBUG0("Unable to allocate stack");
+        VIR_DEBUG("Unable to allocate stack");
         return -1;
     }
 

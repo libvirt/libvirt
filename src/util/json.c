@@ -638,7 +638,7 @@ static int virJSONParserInsertValue(virJSONParserPtr parser,
     } else {
         virJSONParserStatePtr state;
         if (!parser->nstate) {
-            VIR_DEBUG0("got a value to insert without a container");
+            VIR_DEBUG("got a value to insert without a container");
             return -1;
         }
 
@@ -647,7 +647,7 @@ static int virJSONParserInsertValue(virJSONParserPtr parser,
         switch (state->value->type) {
         case VIR_JSON_TYPE_OBJECT: {
             if (!state->key) {
-                VIR_DEBUG0("missing key when inserting object value");
+                VIR_DEBUG("missing key when inserting object value");
                 return -1;
             }
 
@@ -661,7 +661,7 @@ static int virJSONParserInsertValue(virJSONParserPtr parser,
 
         case VIR_JSON_TYPE_ARRAY: {
             if (state->key) {
-                VIR_DEBUG0("unexpected key when inserting array value");
+                VIR_DEBUG("unexpected key when inserting array value");
                 return -1;
             }
 
@@ -671,7 +671,7 @@ static int virJSONParserInsertValue(virJSONParserPtr parser,
         }   break;
 
         default:
-            VIR_DEBUG0("unexpected value type, not a container");
+            VIR_DEBUG("unexpected value type, not a container");
             return -1;
         }
     }

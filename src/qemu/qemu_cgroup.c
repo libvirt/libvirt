@@ -218,7 +218,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         qemuAuditCgroup(vm, cgroup, "deny", "all", rc == 0);
         if (rc != 0) {
             if (rc == -EPERM) {
-                VIR_WARN0("Group devices ACL is not accessible, disabling whitelisting");
+                VIR_WARN("Group devices ACL is not accessible, disabling whitelisting");
                 goto done;
             }
 

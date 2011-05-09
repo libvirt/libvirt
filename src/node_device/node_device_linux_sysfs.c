@@ -290,7 +290,7 @@ static int get_sriov_function(const char *device_link,
     VIR_DEBUG("SR IOV device path is '%s'", device_path);
     config_address = basename(device_path);
     if (VIR_ALLOC(*bdf) != 0) {
-        VIR_ERROR0(_("Failed to allocate memory for PCI device name"));
+        VIR_ERROR(_("Failed to allocate memory for PCI device name"));
         goto out;
     }
 

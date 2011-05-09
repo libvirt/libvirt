@@ -401,7 +401,7 @@ remoteStreamHandleWriteData(struct qemud_client *client,
         /* Blocking, so indicate we have more todo later */
         return 1;
     } else {
-        VIR_INFO0("Stream send failed");
+        VIR_INFO("Stream send failed");
         stream->closed = 1;
         remoteDispatchError(&rerr);
         return remoteSerializeReplyError(client, &rerr, &msg->hdr);

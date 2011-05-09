@@ -1021,7 +1021,7 @@ secretDriverStartup(int privileged)
     return 0;
 
  out_of_memory:
-    VIR_ERROR0(_("Out of memory initializing secrets"));
+    VIR_ERROR(_("Out of memory initializing secrets"));
  error:
     VIR_FREE(base);
     secretDriverUnlock(driverState);

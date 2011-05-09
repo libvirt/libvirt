@@ -32,35 +32,27 @@
  */
 # ifdef ENABLE_DEBUG
 #  define VIR_DEBUG_INT(category, f, l, fmt,...)                             \
-    virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, fmt, __VA_ARGS__)
+    virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, fmt, ##__VA_ARGS__)
 # else
 #  define VIR_DEBUG_INT(category, f, l, fmt,...) \
     do { } while (0)
 # endif /* !ENABLE_DEBUG */
 
 # define VIR_INFO_INT(category, f, l, fmt,...)                              \
-    virLogMessage(category, VIR_LOG_INFO, f, l, 0, fmt, __VA_ARGS__)
+    virLogMessage(category, VIR_LOG_INFO, f, l, 0, fmt, ##__VA_ARGS__)
 # define VIR_WARN_INT(category, f, l, fmt,...)                              \
-    virLogMessage(category, VIR_LOG_WARN, f, l, 0, fmt, __VA_ARGS__)
+    virLogMessage(category, VIR_LOG_WARN, f, l, 0, fmt, ##__VA_ARGS__)
 # define VIR_ERROR_INT(category, f, l, fmt,...)                             \
-    virLogMessage(category, VIR_LOG_ERROR, f, l, 0, fmt, __VA_ARGS__)
+    virLogMessage(category, VIR_LOG_ERROR, f, l, 0, fmt, ##__VA_ARGS__)
 
 # define VIR_DEBUG(fmt,...)                                                  \
-        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-# define VIR_DEBUG0(msg)                                                     \
-        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
+        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
 # define VIR_INFO(fmt,...)                                                   \
-        VIR_INFO_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-# define VIR_INFO0(msg)                                                      \
-        VIR_INFO_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
+        VIR_INFO_INT("file." __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
 # define VIR_WARN(fmt,...)                                                   \
-        VIR_WARN_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-# define VIR_WARN0(msg)                                                      \
-        VIR_WARN_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
+        VIR_WARN_INT("file." __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
 # define VIR_ERROR(fmt,...)                                                  \
-        VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-# define VIR_ERROR0(msg)                                                     \
-        VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
+        VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
 
 /*
  * To be made public

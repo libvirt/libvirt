@@ -1197,7 +1197,7 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
                                          network->def->bridge, 68) < 0)) {
         VIR_WARN("Could not add rule to fixup DHCP response checksums "
                  "on network '%s'.", network->def->name);
-        VIR_WARN0("May need to update iptables package & kernel to support CHECKSUM rule.");
+        VIR_WARN("May need to update iptables package & kernel to support CHECKSUM rule.");
     }
 
     /* allow DNS requests through to dnsmasq */
@@ -1407,7 +1407,7 @@ networkReloadIptablesRules(struct network_driver *driver)
 {
     unsigned int i;
 
-    VIR_INFO0(_("Reloading iptables rules"));
+    VIR_INFO(_("Reloading iptables rules"));
 
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);

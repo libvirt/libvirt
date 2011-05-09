@@ -3279,7 +3279,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     if (ret == 0 && undefined_source)
         xenDaemonDomainUndefine (domain);
 
-    VIR_DEBUG0("migration done");
+    VIR_DEBUG("migration done");
 
     return ret;
 }

@@ -1076,7 +1076,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             goto error_exit;
         }
 
-        VIR_DEBUG0("calling vethCreate()");
+        VIR_DEBUG("calling vethCreate()");
         parentVeth = def->nets[i]->ifname;
         if (vethCreate(&parentVeth, &containerVeth) < 0)
             goto error_exit;
@@ -1957,19 +1957,19 @@ static int lxcStartup(int privileged)
      */
     ld = getenv("LD_PRELOAD");
     if (ld && strstr(ld, "vgpreload")) {
-        VIR_INFO0("Running under valgrind, disabling driver");
+        VIR_INFO("Running under valgrind, disabling driver");
         return 0;
     }
 
     /* Check that the user is root, silently disable if not */
     if (!privileged) {
-        VIR_INFO0("Not running privileged, disabling driver");
+        VIR_INFO("Not running privileged, disabling driver");
         return 0;
     }
 
     /* Check that this is a container enabled kernel */
     if (lxcContainerAvailable(0) < 0) {
-        VIR_INFO0("LXC support not available in this kernel, disabling driver");
+        VIR_INFO("LXC support not available in this kernel, disabling driver");
         return 0;
     }
 
@@ -2467,7 +2467,7 @@ static int lxcFreezeContainer(lxc_driver_t *driver, virDomainObjPtr vm)
             goto error;
         }
         if (r == -EBUSY)
-            VIR_DEBUG0("Writing freezer.state gets EBUSY");
+            VIR_DEBUG("Writing freezer.state gets EBUSY");
 
         /*
          * Unfortunately, returning 0 (success) is likely to happen
@@ -2507,7 +2507,7 @@ static int lxcFreezeContainer(lxc_driver_t *driver, virDomainObjPtr vm)
         check_interval *= exp;
         VIR_FREE(state);
     }
-    VIR_DEBUG0("lxcFreezeContainer timeout");
+    VIR_DEBUG("lxcFreezeContainer timeout");
 error:
     /*
      * If timeout or an error on reading the state occurs,

@@ -122,18 +122,18 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
 
         if (priv->jobSignals & QEMU_JOB_SIGNAL_CANCEL) {
             priv->jobSignals ^= QEMU_JOB_SIGNAL_CANCEL;
-            VIR_DEBUG0("Cancelling job at client request");
+            VIR_DEBUG("Cancelling job at client request");
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             rc = qemuMonitorMigrateCancel(priv->mon);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0) {
-                VIR_WARN0("Unable to cancel job");
+                VIR_WARN("Unable to cancel job");
             }
         } else if (priv->jobSignals & QEMU_JOB_SIGNAL_SUSPEND) {
             priv->jobSignals ^= QEMU_JOB_SIGNAL_SUSPEND;
-            VIR_DEBUG0("Pausing domain for non-live migration");
+            VIR_DEBUG("Pausing domain for non-live migration");
             if (qemuMigrationSetOffline(driver, vm) < 0)
-                VIR_WARN0("Unable to pause domain");
+                VIR_WARN("Unable to pause domain");
         } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME) {
             unsigned long long ms = priv->jobSignalsData.migrateDowntime;
 
@@ -144,7 +144,7 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
             rc = qemuMonitorSetMigrationDowntime(priv->mon, ms);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0)
-                VIR_WARN0("Unable to set migration downtime");
+                VIR_WARN("Unable to set migration downtime");
         } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_SPEED) {
             unsigned long bandwidth = priv->jobSignalsData.migrateBandwidth;
 
@@ -155,7 +155,7 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
             rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0)
-                VIR_WARN0("Unable to set migration speed");
+                VIR_WARN("Unable to set migration speed");
         }
 
         /* Repeat check because the job signals might have caused
@@ -1364,7 +1364,7 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
                                         pipeFD[1]);
             if (VIR_CLOSE(pipeFD[0]) < 0 ||
                 VIR_CLOSE(pipeFD[1]) < 0)
-                VIR_WARN0("failed to close intermediate pipe");
+                VIR_WARN("failed to close intermediate pipe");
         } else {
             rc = qemuMonitorMigrateToFile(priv->mon,
                                           QEMU_MONITOR_MIGRATE_BACKGROUND,

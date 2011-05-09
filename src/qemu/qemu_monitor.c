@@ -1429,7 +1429,7 @@ int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
 
     if (ret < 0) {
         if (qemuMonitorCloseFileHandle(mon, "migrate") < 0)
-            VIR_WARN0("failed to close migration handle");
+            VIR_WARN("failed to close migration handle");
     }
 
     return ret;

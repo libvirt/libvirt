@@ -217,7 +217,7 @@ int virLogStartup(void) {
     virLogDefaultPriority = VIR_LOG_DEFAULT;
     virLogUnlock();
     if (pbm)
-        VIR_WARN0(pbm);
+        VIR_WARN("%s", pbm);
     return 0;
 }
 
@@ -478,7 +478,7 @@ virLogEmergencyDumpAll(int signum) {
  */
 int virLogSetDefaultPriority(int priority) {
     if ((priority < VIR_LOG_DEBUG) || (priority > VIR_LOG_ERROR)) {
-        VIR_WARN0("Ignoring invalid log level setting.");
+        VIR_WARN("Ignoring invalid log level setting.");
         return -1;
     }
     if (!virLogInitialized)
@@ -1007,7 +1007,7 @@ int virLogParseOutputs(const char *outputs) {
     ret = count;
 cleanup:
     if (ret == -1)
-        VIR_WARN0("Ignoring invalid log output setting.");
+        VIR_WARN("Ignoring invalid log output setting.");
     return ret;
 }
 
@@ -1063,7 +1063,7 @@ int virLogParseFilters(const char *filters) {
     ret = count;
 cleanup:
     if (ret == -1)
-        VIR_WARN0("Ignoring invalid log filter setting.");
+        VIR_WARN("Ignoring invalid log filter setting.");
     return ret;
 }
 
@@ -1185,7 +1185,7 @@ int virLogParseDefaultPriority(const char *priority) {
     else if (STREQ(priority, "4") || STREQ(priority, "error"))
         ret = virLogSetDefaultPriority(VIR_LOG_ERROR);
     else
-        VIR_WARN0("Ignoring invalid log level setting");
+        VIR_WARN("Ignoring invalid log level setting");
 
     return ret;
 }

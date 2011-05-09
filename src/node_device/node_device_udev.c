@@ -1454,7 +1454,7 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 
     device = udev_monitor_receive_device(udev_monitor);
     if (device == NULL) {
-        VIR_ERROR0(_("udev_monitor_receive_device returned NULL"));
+        VIR_ERROR(_("udev_monitor_receive_device returned NULL"));
         goto out;
     }
 
@@ -1636,7 +1636,7 @@ static int udevDeviceMonitorStartup(int privileged)
     }
 
     if (virMutexInit(&driverState->lock) < 0) {
-        VIR_ERROR0(_("Failed to initialize mutex for driverState"));
+        VIR_ERROR(_("Failed to initialize mutex for driverState"));
         VIR_FREE(priv);
         VIR_FREE(driverState);
         ret = -1;
@@ -1657,7 +1657,7 @@ static int udevDeviceMonitorStartup(int privileged)
     priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (priv->udev_monitor == NULL) {
         VIR_FREE(priv);
-        VIR_ERROR0(_("udev_monitor_new_from_netlink returned NULL"));
+        VIR_ERROR(_("udev_monitor_new_from_netlink returned NULL"));
         ret = -1;
         goto out_unlock;
     }
@@ -1755,7 +1755,7 @@ static virStateDriver udevStateDriver = {
 
 int udevNodeRegister(void)
 {
-    VIR_DEBUG0("Registering udev node device backend");
+    VIR_DEBUG("Registering udev node device backend");
 
     registerCommonNodeFuncs(&udevDeviceMonitor);
     if (virRegisterDeviceMonitor(&udevDeviceMonitor) < 0) {

@@ -293,7 +293,7 @@ pciIterDevices(pciIterPredicate predicate,
 
     dir = opendir(PCI_SYSFS "devices");
     if (!dir) {
-        VIR_WARN0("Failed to open " PCI_SYSFS "devices");
+        VIR_WARN("Failed to open " PCI_SYSFS "devices");
         return -1;
     }
 
@@ -1195,7 +1195,7 @@ pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher)
          * unbind might succeed anyway, and besides, it's very likely we have
          * no way to report the error
          */
-        VIR_DEBUG0("Failed to open /proc/iomem, trying to continue anyway");
+        VIR_DEBUG("Failed to open /proc/iomem, trying to continue anyway");
         return 0;
     }
 

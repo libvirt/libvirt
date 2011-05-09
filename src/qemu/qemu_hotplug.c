@@ -291,7 +291,7 @@ cleanup:
         (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &controller->info) < 0)
-        VIR_WARN0("Unable to release PCI address on controller");
+        VIR_WARN("Unable to release PCI address on controller");
 
     VIR_FREE(devstr);
     return ret;
@@ -326,7 +326,7 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
     cont->idx = controller;
     cont->model = -1;
 
-    VIR_INFO0("No SCSI controller present, hotplugging one");
+    VIR_INFO("No SCSI controller present, hotplugging one");
     if (qemuDomainAttachPciControllerDevice(driver,
                                             vm, cont) < 0) {
         VIR_FREE(cont);
@@ -698,7 +698,7 @@ cleanup:
         (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &net->info) < 0)
-        VIR_WARN0("Unable to release PCI address on NIC");
+        VIR_WARN("Unable to release PCI address on NIC");
 
     if (ret != 0)
         virDomainConfNWFilterTeardown(net);
@@ -729,7 +729,7 @@ try_remove:
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             VIR_FREE(netdev_name);
         } else {
-            VIR_WARN0("Unable to remove network backend");
+            VIR_WARN("Unable to remove network backend");
         }
     } else {
         char *hostnet_name;
@@ -829,7 +829,7 @@ error:
         (hostdev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &hostdev->info) < 0)
-        VIR_WARN0("Unable to release PCI address on host device");
+        VIR_WARN("Unable to release PCI address on host device");
 
     qemuDomainReAttachHostdevDevices(driver, &hostdev, 1);
 
@@ -964,7 +964,7 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
 error:
     if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
                                               vm, hostdev) < 0)
-        VIR_WARN0("Unable to restore host device labelling on hotplug fail");
+        VIR_WARN("Unable to restore host device labelling on hotplug fail");
 
     return -1;
 }
@@ -1072,7 +1072,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
             olddev->data.spice.auth.validTo = dev->data.spice.auth.validTo;
             olddev->data.spice.auth.expires = dev->data.spice.auth.expires;
         } else {
-            VIR_DEBUG0("Not updating since password didn't change");
+            VIR_DEBUG("Not updating since password didn't change");
             ret = 0;
         }
 
@@ -1393,7 +1393,7 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
-        VIR_WARN0("Unable to release PCI address on controller");
+        VIR_WARN("Unable to release PCI address on controller");
 
     virDomainControllerDefFree(detach);
 
@@ -1485,7 +1485,7 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
-        VIR_WARN0("Unable to release PCI address on NIC");
+        VIR_WARN("Unable to release PCI address on NIC");
 
     virDomainConfNWFilterTeardown(detach);
 
@@ -1602,7 +1602,7 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
-        VIR_WARN0("Unable to release PCI address on host device");
+        VIR_WARN("Unable to release PCI address on host device");
 
     if (vm->def->nhostdevs > 1) {
         memmove(vm->def->hostdevs + i,
@@ -1731,7 +1731,7 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
 
     if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
                                               vm, dev->data.hostdev) < 0)
-        VIR_WARN0("Failed to restore host device labelling");
+        VIR_WARN("Failed to restore host device labelling");
 
     return ret;
 }

@@ -332,7 +332,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
      * worst that happens is that scanning doesn't pick everything up
      */
     if (virRun(scanprog, &exitstatus) < 0) {
-        VIR_WARN0("Failure when running vgscan to refresh physical volumes");
+        VIR_WARN("Failure when running vgscan to refresh physical volumes");
     }
 
     memset(&sourceList, 0, sizeof(sourceList));

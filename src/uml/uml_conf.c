@@ -73,7 +73,7 @@ virCapsPtr umlCapsInit(void) {
      */
     if (nodeCapsInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
-        VIR_WARN0("Failed to query host NUMA topology, disabling NUMA capabilities");
+        VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
     if (virGetHostUUID(caps->host.host_uuid)) {

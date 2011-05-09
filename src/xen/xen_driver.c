@@ -350,35 +350,35 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
     /* Hypervisor is only run with privilege & required to succeed */
     if (xenHavePrivilege()) {
-        VIR_DEBUG0("Trying hypervisor sub-driver");
+        VIR_DEBUG("Trying hypervisor sub-driver");
         if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->open(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
-            VIR_DEBUG0("Activated hypervisor sub-driver");
+            VIR_DEBUG("Activated hypervisor sub-driver");
             priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] = 1;
         }
     }
 
     /* XenD is required to succeed if privileged */
-    VIR_DEBUG0("Trying XenD sub-driver");
+    VIR_DEBUG("Trying XenD sub-driver");
     if (drivers[XEN_UNIFIED_XEND_OFFSET]->open(conn, auth, flags) ==
         VIR_DRV_OPEN_SUCCESS) {
-        VIR_DEBUG0("Activated XenD sub-driver");
+        VIR_DEBUG("Activated XenD sub-driver");
         priv->opened[XEN_UNIFIED_XEND_OFFSET] = 1;
 
         /* XenD is active, so try the xm & xs drivers too, both requird to
          * succeed if root, optional otherwise */
         if (priv->xendConfigVersion <= 2) {
-            VIR_DEBUG0("Trying XM sub-driver");
+            VIR_DEBUG("Trying XM sub-driver");
             if (drivers[XEN_UNIFIED_XM_OFFSET]->open(conn, auth, flags) ==
                 VIR_DRV_OPEN_SUCCESS) {
-                VIR_DEBUG0("Activated XM sub-driver");
+                VIR_DEBUG("Activated XM sub-driver");
                 priv->opened[XEN_UNIFIED_XM_OFFSET] = 1;
             }
         }
-        VIR_DEBUG0("Trying XS sub-driver");
+        VIR_DEBUG("Trying XS sub-driver");
         if (drivers[XEN_UNIFIED_XS_OFFSET]->open(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
-            VIR_DEBUG0("Activated XS sub-driver");
+            VIR_DEBUG("Activated XS sub-driver");
             priv->opened[XEN_UNIFIED_XS_OFFSET] = 1;
         } else {
             if (xenHavePrivilege())
@@ -388,7 +388,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
         if (xenHavePrivilege()) {
             goto fail; /* XenD is mandatory when privileged */
         } else {
-            VIR_DEBUG0("Handing off for remote driver");
+            VIR_DEBUG("Handing off for remote driver");
             ret = VIR_DRV_OPEN_DECLINED; /* Let remote_driver try instead */
             goto clean;
         }
@@ -397,16 +397,16 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
     xenNumaInit(conn);
 
     if (!(priv->caps = xenHypervisorMakeCapabilities(conn))) {
-        VIR_DEBUG0("Failed to make capabilities");
+        VIR_DEBUG("Failed to make capabilities");
         goto fail;
     }
 
 #if WITH_XEN_INOTIFY
     if (xenHavePrivilege()) {
-        VIR_DEBUG0("Trying Xen inotify sub-driver");
+        VIR_DEBUG("Trying Xen inotify sub-driver");
         if (drivers[XEN_UNIFIED_INOTIFY_OFFSET]->open(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
-            VIR_DEBUG0("Activated Xen inotify sub-driver");
+            VIR_DEBUG("Activated Xen inotify sub-driver");
             priv->opened[XEN_UNIFIED_INOTIFY_OFFSET] = 1;
         }
     }
@@ -417,7 +417,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 fail:
     ret = VIR_DRV_OPEN_ERROR;
 clean:
-    VIR_DEBUG0("Failed to activate a mandatory sub-driver");
+    VIR_DEBUG("Failed to activate a mandatory sub-driver");
     for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
         if (priv->opened[i]) drivers[i]->close(conn);
     virMutexDestroy(&priv->lock);
@@ -2271,7 +2271,7 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     for (n=0; n < list->count; n++) {
         if (STREQ(list->doms[n]->name, name) &&
             !memcmp(list->doms[n]->uuid, uuid, VIR_UUID_BUFLEN)) {
-            VIR_DEBUG0("WARNING: dom already tracked");
+            VIR_DEBUG("WARNING: dom already tracked");
             return -1;
         }
     }

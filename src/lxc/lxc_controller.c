@@ -315,7 +315,7 @@ static int lxcControllerClearCapabilities(void)
         return -1;
     }
 #else
-    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
+    VIR_WARN("libcap-ng support not compiled in, unable to clear capabilities");
 #endif
     return 0;
 }
@@ -655,7 +655,7 @@ lxcControllerRun(virDomainDefPtr def,
      * marked as shared
      */
     if (root) {
-        VIR_DEBUG0("Setting up private /dev/pts");
+        VIR_DEBUG("Setting up private /dev/pts");
         if (unshare(CLONE_NEWNS) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Cannot unshare mount namespace"));
@@ -691,7 +691,7 @@ lxcControllerRun(virDomainDefPtr def,
         }
 
         if (access(devptmx, R_OK) < 0) {
-            VIR_WARN0("Kernel does not support private devpts, using shared devpts");
+            VIR_WARN("Kernel does not support private devpts, using shared devpts");
             VIR_FREE(devptmx);
         }
     }
@@ -707,7 +707,7 @@ lxcControllerRun(virDomainDefPtr def,
             goto cleanup;
         }
     } else {
-        VIR_DEBUG0("Opening tty on shared /dev/ptmx");
+        VIR_DEBUG("Opening tty on shared /dev/ptmx");
         if (virFileOpenTty(&containerPty,
                            &containerPtyPath,
                            0) < 0) {

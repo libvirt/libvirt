@@ -309,7 +309,7 @@ phypCapsInit(void)
      */
     if (nodeCapsInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
-        VIR_WARN0
+        VIR_WARN
             ("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
@@ -449,13 +449,13 @@ phypUUIDTable_WriteFile(virConnectPtr conn)
         if (safewrite(fd, &uuid_table->lpars[i]->id,
                       sizeof(uuid_table->lpars[i]->id)) !=
             sizeof(uuid_table->lpars[i]->id)) {
-            VIR_ERROR0(_("Unable to write information to local file."));
+            VIR_ERROR(_("Unable to write information to local file."));
             goto err;
         }
 
         if (safewrite(fd, uuid_table->lpars[i]->uuid, VIR_UUID_BUFLEN) !=
             VIR_UUID_BUFLEN) {
-            VIR_ERROR0(_("Unable to write information to local file."));
+            VIR_ERROR(_("Unable to write information to local file."));
             goto err;
         }
     }
@@ -507,12 +507,12 @@ phypUUIDTable_Push(virConnectPtr conn)
     }
 
     if (stat(local_file, &local_fileinfo) == -1) {
-        VIR_WARN0("Unable to stat local file.");
+        VIR_WARN("Unable to stat local file.");
         goto err;
     }
 
     if (!(fd = fopen(local_file, "rb"))) {
-        VIR_WARN0("Unable to open local file.");
+        VIR_WARN("Unable to open local file.");
         goto err;
     }
 
@@ -649,7 +649,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
     int id;
 
     if ((fd = open(local_file, O_RDONLY)) == -1) {
-        VIR_WARN0("Unable to write information to local file.");
+        VIR_WARN("Unable to write information to local file.");
         goto err;
     }
 
@@ -665,14 +665,14 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
                 }
                 uuid_table->lpars[i]->id = id;
             } else {
-                VIR_WARN0
+                VIR_WARN
                     ("Unable to read from information to local file.");
                 goto err;
             }
 
             rc = read(fd, uuid_table->lpars[i]->uuid, VIR_UUID_BUFLEN);
             if (rc != VIR_UUID_BUFLEN) {
-                VIR_WARN0("Unable to read information to local file.");
+                VIR_WARN("Unable to read information to local file.");
                 goto err;
             }
         }
@@ -753,7 +753,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
             rc = libssh2_channel_read(channel, buffer, amount);
             if (rc > 0) {
                 if (safewrite(fd, buffer, rc) != rc)
-                    VIR_WARN0
+                    VIR_WARN
                         ("Unable to write information to local file.");
 
                 got += rc;
@@ -828,7 +828,7 @@ phypUUIDTable_Init(virConnectPtr conn)
         goto cleanup;
     }
     if (nids_numdomains != nids_listdomains) {
-        VIR_ERROR0(_("Unable to determine number of domains."));
+        VIR_ERROR(_("Unable to determine number of domains."));
         goto cleanup;
     }
 
@@ -1559,7 +1559,7 @@ phypGetVIOSNextSlotNumber(virConnectPtr conn)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!(profile = phypGetLparProfile(conn, vios_id))) {
-        VIR_ERROR0(_("Unable to get VIOS profile name."));
+        VIR_ERROR(_("Unable to get VIOS profile name."));
         return -1;
     }
 
@@ -1599,17 +1599,17 @@ phypCreateServerSCSIAdapter(virConnectPtr conn)
     if (!
         (vios_name =
          phypGetLparNAME(session, managed_system, vios_id, conn))) {
-        VIR_ERROR0(_("Unable to get VIOS name"));
+        VIR_ERROR(_("Unable to get VIOS name"));
         goto cleanup;
     }
 
     if (!(profile = phypGetLparProfile(conn, vios_id))) {
-        VIR_ERROR0(_("Unable to get VIOS profile name."));
+        VIR_ERROR(_("Unable to get VIOS profile name."));
         goto cleanup;
     }
 
     if ((slot = phypGetVIOSNextSlotNumber(conn)) == -1) {
-        VIR_ERROR0(_("Unable to get free slot number"));
+        VIR_ERROR(_("Unable to get free slot number"));
         goto cleanup;
     }
 
@@ -1742,7 +1742,7 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     if (!
         (vios_name =
          phypGetLparNAME(session, managed_system, vios_id, conn))) {
-        VIR_ERROR0(_("Unable to get VIOS name"));
+        VIR_ERROR(_("Unable to get VIOS name"));
         goto cleanup;
     }
 
@@ -1752,11 +1752,11 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
         /* If not found, let's create one.
          * */
         if (phypCreateServerSCSIAdapter(conn) == -1) {
-            VIR_ERROR0(_("Unable to create new virtual adapter"));
+            VIR_ERROR(_("Unable to create new virtual adapter"));
             goto cleanup;
         } else {
             if (!(scsi_adapter = phypGetVIOSFreeSCSIAdapter(conn))) {
-                VIR_ERROR0(_("Unable to create new virtual adapter"));
+                VIR_ERROR(_("Unable to create new virtual adapter"));
                 goto cleanup;
             }
         }
@@ -1777,7 +1777,7 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
         goto cleanup;
 
     if (!(profile = phypGetLparProfile(conn, domain->id))) {
-        VIR_ERROR0(_("Unable to get VIOS profile name."));
+        VIR_ERROR(_("Unable to get VIOS profile name."));
         goto cleanup;
     }
 
@@ -1835,7 +1835,7 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     if (exit_status < 0 || ret == NULL) {
-        VIR_ERROR0(_
+        VIR_ERROR(_
                    ("Possibly you don't have IBM Tools installed in your LPAR."
                     "Contact your support to enable this feature."));
         goto cleanup;
@@ -2018,18 +2018,18 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
     if (pool->name != NULL) {
         spdef->name = pool->name;
     } else {
-        VIR_ERROR0(_("Unable to determine storage pool's name."));
+        VIR_ERROR(_("Unable to determine storage pool's name."));
         goto err;
     }
 
     if (memcpy(spdef->uuid, pool->uuid, VIR_UUID_BUFLEN) == NULL) {
-        VIR_ERROR0(_("Unable to determine storage pool's uuid."));
+        VIR_ERROR(_("Unable to determine storage pool's uuid."));
         goto err;
     }
 
     if ((spdef->capacity =
          phypGetStoragePoolSize(pool->conn, pool->name)) == -1) {
-        VIR_ERROR0(_("Unable to determine storage pools's size."));
+        VIR_ERROR(_("Unable to determine storage pools's size."));
         goto err;
     }
 
@@ -2042,18 +2042,18 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
     /*XXX source adapter not working properly, should show hdiskX */
     if ((spdef->source.adapter =
          phypGetStoragePoolDevice(pool->conn, pool->name)) == NULL) {
-        VIR_ERROR0(_("Unable to determine storage pools's source adapter."));
+        VIR_ERROR(_("Unable to determine storage pools's source adapter."));
         goto err;
     }
 
     if ((voldef = virStorageVolDefParseString(spdef, xml)) == NULL) {
-        VIR_ERROR0(_("Error parsing volume XML."));
+        VIR_ERROR(_("Error parsing volume XML."));
         goto err;
     }
 
     /* checking if this name already exists on this system */
     if (phypVolumeLookupByName(pool, voldef->name) != NULL) {
-        VIR_ERROR0(_("StoragePool name already exists."));
+        VIR_ERROR(_("StoragePool name already exists."));
         goto err;
     }
 
@@ -2061,12 +2061,12 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
      * in the moment you create the volume.
      * */
     if (voldef->key) {
-        VIR_ERROR0(_("Key must be empty, Power Hypervisor will create one for you."));
+        VIR_ERROR(_("Key must be empty, Power Hypervisor will create one for you."));
         goto err;
     }
 
     if (voldef->capacity) {
-        VIR_ERROR0(_("Capacity cannot be empty."));
+        VIR_ERROR(_("Capacity cannot be empty."));
         goto err;
     }
 
@@ -2242,17 +2242,17 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     if (sp->name != NULL) {
         pool.name = sp->name;
     } else {
-        VIR_ERROR0(_("Unable to determine storage sp's name."));
+        VIR_ERROR(_("Unable to determine storage sp's name."));
         goto err;
     }
 
     if (memcpy(pool.uuid, sp->uuid, VIR_UUID_BUFLEN) == NULL) {
-        VIR_ERROR0(_("Unable to determine storage sp's uuid."));
+        VIR_ERROR(_("Unable to determine storage sp's uuid."));
         goto err;
     }
 
     if ((pool.capacity = phypGetStoragePoolSize(sp->conn, sp->name)) == -1) {
-        VIR_ERROR0(_("Unable to determine storage sps's size."));
+        VIR_ERROR(_("Unable to determine storage sps's size."));
         goto err;
     }
 
@@ -2264,14 +2264,14 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
     if ((pool.source.adapter =
          phypGetStoragePoolDevice(sp->conn, sp->name)) == NULL) {
-        VIR_ERROR0(_("Unable to determine storage sps's source adapter."));
+        VIR_ERROR(_("Unable to determine storage sps's source adapter."));
         goto err;
     }
 
     if (vol->name != NULL)
         voldef.name = vol->name;
     else {
-        VIR_ERROR0(_("Unable to determine storage pool's name."));
+        VIR_ERROR(_("Unable to determine storage pool's name."));
         goto err;
     }
 
@@ -2684,13 +2684,13 @@ phypStoragePoolCreateXML(virConnectPtr conn,
 
     /* checking if this name already exists on this system */
     if (phypStoragePoolLookupByName(conn, def->name) != NULL) {
-        VIR_WARN0("StoragePool name already exists.");
+        VIR_WARN("StoragePool name already exists.");
         goto err;
     }
 
     /* checking if ID or UUID already exists on this system */
     if (phypGetStoragePoolLookUpByUUID(conn, def->uuid) != NULL) {
-        VIR_WARN0("StoragePool uuid already exists.");
+        VIR_WARN("StoragePool uuid already exists.");
         goto err;
     }
 
@@ -2720,18 +2720,18 @@ phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     if (pool->name != NULL)
         def.name = pool->name;
     else {
-        VIR_ERROR0(_("Unable to determine storage pool's name."));
+        VIR_ERROR(_("Unable to determine storage pool's name."));
         goto err;
     }
 
     if (memcpy(def.uuid, pool->uuid, VIR_UUID_BUFLEN) == NULL) {
-        VIR_ERROR0(_("Unable to determine storage pool's uuid."));
+        VIR_ERROR(_("Unable to determine storage pool's uuid."));
         goto err;
     }
 
     if ((def.capacity =
          phypGetStoragePoolSize(pool->conn, pool->name)) == -1) {
-        VIR_ERROR0(_("Unable to determine storage pools's size."));
+        VIR_ERROR(_("Unable to determine storage pools's size."));
         goto err;
     }
 
@@ -2744,7 +2744,7 @@ phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     /*XXX source adapter not working properly, should show hdiskX */
     if ((def.source.adapter =
          phypGetStoragePoolDevice(pool->conn, pool->name)) == NULL) {
-        VIR_ERROR0(_("Unable to determine storage pools's source adapter."));
+        VIR_ERROR(_("Unable to determine storage pools's source adapter."));
         goto err;
     }
 
@@ -3319,30 +3319,30 @@ phypDomainGetXMLDesc(virDomainPtr dom, int flags)
                                       dom->conn);
 
     if (lpar_name == NULL) {
-        VIR_ERROR0(_("Unable to determine domain's name."));
+        VIR_ERROR(_("Unable to determine domain's name."));
         goto err;
     }
 
     if (phypGetLparUUID(def.uuid, dom->id, dom->conn) == -1) {
-        VIR_ERROR0(_("Unable to generate random uuid."));
+        VIR_ERROR(_("Unable to generate random uuid."));
         goto err;
     }
 
     if ((def.mem.max_balloon =
          phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0) {
-        VIR_ERROR0(_("Unable to determine domain's max memory."));
+        VIR_ERROR(_("Unable to determine domain's max memory."));
         goto err;
     }
 
     if ((def.mem.cur_balloon =
          phypGetLparMem(dom->conn, managed_system, dom->id, 1)) == 0) {
-        VIR_ERROR0(_("Unable to determine domain's memory."));
+        VIR_ERROR(_("Unable to determine domain's memory."));
         goto err;
     }
 
     if ((def.maxvcpus = def.vcpus =
          phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0) {
-        VIR_ERROR0(_("Unable to determine domain's CPU."));
+        VIR_ERROR(_("Unable to determine domain's CPU."));
         goto err;
     }
 
@@ -3457,15 +3457,15 @@ phypDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 
     if ((info->maxMem =
          phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0)
-        VIR_WARN0("Unable to determine domain's max memory.");
+        VIR_WARN("Unable to determine domain's max memory.");
 
     if ((info->memory =
          phypGetLparMem(dom->conn, managed_system, dom->id, 1)) == 0)
-        VIR_WARN0("Unable to determine domain's memory.");
+        VIR_WARN("Unable to determine domain's memory.");
 
     if ((info->nrVirtCpu =
          phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0)
-        VIR_WARN0("Unable to determine domain's CPU.");
+        VIR_WARN("Unable to determine domain's CPU.");
 
     return 0;
 }
@@ -3560,7 +3560,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     }
 
     if (phypUUIDTable_AddLpar(conn, def->uuid, def->id) == -1) {
-        VIR_ERROR0(_("Unable to add LPAR to the table"));
+        VIR_ERROR(_("Unable to add LPAR to the table"));
         goto cleanup;
     }
 
@@ -3596,14 +3596,14 @@ phypDomainCreateAndStart(virConnectPtr conn,
 
     /* checking if this name already exists on this system */
     if (phypGetLparID(session, managed_system, def->name, conn) != -1) {
-        VIR_WARN0("LPAR name already exists.");
+        VIR_WARN("LPAR name already exists.");
         goto err;
     }
 
     /* checking if ID or UUID already exists on this system */
     for (i = 0; i < uuid_table->nlpars; i++) {
         if (lpars[i]->id == def->id || lpars[i]->uuid == def->uuid) {
-            VIR_WARN0("LPAR ID or UUID already exists.");
+            VIR_WARN("LPAR ID or UUID already exists.");
             goto err;
         }
     }
@@ -3663,7 +3663,7 @@ phypDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         return 0;
 
     if (nvcpus > phypGetLparCPUMAX(dom)) {
-        VIR_ERROR0(_("You are trying to set a number of CPUs bigger than "
+        VIR_ERROR(_("You are trying to set a number of CPUs bigger than "
                      "the max possible."));
         return 0;
     }
@@ -3686,7 +3686,7 @@ phypDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     ret = phypExecBuffer(session, &buf, &exit_status, dom->conn, false);
 
     if (exit_status < 0) {
-        VIR_ERROR0(_
+        VIR_ERROR(_
                    ("Possibly you don't have IBM Tools installed in your LPAR."
                     " Contact your support to enable this feature."));
     }

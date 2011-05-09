@@ -1996,7 +1996,7 @@ xenFormatSxpr(virConnectPtr conn,
     char *bufout;
     int hvm = 0, i;
 
-    VIR_DEBUG0("Formatting domain sexpr");
+    VIR_DEBUG("Formatting domain sexpr");
 
     virBufferAddLit(&buf, "(vm ");
     virBufferEscapeSexpr(&buf, "(name '%s')", def->name);

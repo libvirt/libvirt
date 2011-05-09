@@ -923,21 +923,21 @@ doRemoteOpen (virConnectPtr conn,
         goto failed;
     }
 
-    VIR_DEBUG0("Adding Handler for remote events");
+    VIR_DEBUG("Adding Handler for remote events");
     /* Set up a callback to listen on the socket data */
     if ((priv->watch = virEventAddHandle(priv->sock,
                                          VIR_EVENT_HANDLE_READABLE,
                                          remoteDomainEventFired,
                                          conn, NULL)) < 0) {
-        VIR_DEBUG0("virEventAddHandle failed: No addHandleImpl defined."
+        VIR_DEBUG("virEventAddHandle failed: No addHandleImpl defined."
                " continuing without events.");
     } else {
 
-        VIR_DEBUG0("Adding Timeout for remote event queue flushing");
+        VIR_DEBUG("Adding Timeout for remote event queue flushing");
         if ( (priv->eventFlushTimer = virEventAddTimeout(-1,
                                                          remoteDomainEventQueueFlush,
                                                          conn, NULL)) < 0) {
-            VIR_DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
+            VIR_DEBUG("virEventAddTimeout failed: No addTimeoutImpl defined. "
                     "continuing without events.");
             virEventRemoveHandle(priv->watch);
             priv->watch = -1;
@@ -1086,7 +1086,7 @@ remoteOpen (virConnectPtr conn,
         (STREQ(conn->uri->path, "/session") ||
          STRPREFIX(conn->uri->scheme, "test+")) &&
         getuid() > 0) {
-        VIR_DEBUG0("Auto-spawn user daemon instance");
+        VIR_DEBUG("Auto-spawn user daemon instance");
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
         if (!autostart ||
             STRNEQ(autostart, "0"))
@@ -1100,10 +1100,10 @@ remoteOpen (virConnectPtr conn,
      * to the UNIX socket anyway.
      */
     if (!conn->uri) {
-        VIR_DEBUG0("Auto-probe remote URI");
+        VIR_DEBUG("Auto-probe remote URI");
 #ifndef __sun
         if (getuid() > 0) {
-            VIR_DEBUG0("Auto-spawn user daemon instance");
+            VIR_DEBUG("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
             if (!autostart ||
                 STRNEQ(autostart, "0"))
@@ -1406,7 +1406,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
 
     /* Verify certificate. */
     if (verify_certificate (conn, priv, session) == -1) {
-        VIR_DEBUG0("failed to verify peer's certificate");
+        VIR_DEBUG("failed to verify peer's certificate");
         if (!no_verify)
             goto cleanup;
     }
@@ -3415,7 +3415,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     int ret = -1;
     const char *mechlist;
 
-    VIR_DEBUG0("Client initialize SASL authentication");
+    VIR_DEBUG("Client initialize SASL authentication");
     /* Sets up the SASL library as a whole */
     err = sasl_client_init(NULL);
     if (err != SASL_OK) {
@@ -3697,7 +3697,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         priv->is_secure = 1;
     }
 
-    VIR_DEBUG0("SASL authentication complete");
+    VIR_DEBUG("SASL authentication complete");
     priv->saslconn = saslconn;
     ret = 0;
 
@@ -3723,7 +3723,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED)
 {
     remote_auth_polkit_ret ret;
-    VIR_DEBUG0("Client initialize PolicyKit-1 authentication");
+    VIR_DEBUG("Client initialize PolicyKit-1 authentication");
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,
@@ -3732,7 +3732,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         return -1; /* virError already set by call */
     }
 
-    VIR_DEBUG0("PolicyKit-1 authentication complete");
+    VIR_DEBUG("PolicyKit-1 authentication complete");
     return 0;
 }
 # elif HAVE_POLKIT0
@@ -3752,7 +3752,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         NULL,
         0,
     };
-    VIR_DEBUG0("Client initialize PolicyKit-0 authentication");
+    VIR_DEBUG("Client initialize PolicyKit-0 authentication");
 
     if (auth && auth->cb) {
         /* Check if the necessary credential type for PolicyKit is supported */
@@ -3762,7 +3762,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         }
 
         if (allowcb) {
-            VIR_DEBUG0("Client run callback for PolicyKit authentication");
+            VIR_DEBUG("Client run callback for PolicyKit authentication");
             /* Run the authentication callback */
             if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
                 remoteError(VIR_ERR_AUTH_FAILED, "%s",
@@ -3770,10 +3770,10 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                 return -1;
             }
         } else {
-            VIR_DEBUG0("Client auth callback does not support PolicyKit");
+            VIR_DEBUG("Client auth callback does not support PolicyKit");
         }
     } else {
-        VIR_DEBUG0("No auth callback provided");
+        VIR_DEBUG("No auth callback provided");
     }
 
     memset (&ret, 0, sizeof ret);
@@ -3783,7 +3783,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         return -1; /* virError already set by call */
     }
 
-    VIR_DEBUG0("PolicyKit-0 authentication complete");
+    VIR_DEBUG("PolicyKit-0 authentication complete");
     return 0;
 }
 # endif /* HAVE_POLKIT0 */
@@ -4195,10 +4195,10 @@ remoteStreamEventTimerUpdate(struct private_stream_data *privst)
     if ((privst->incomingOffset &&
          (privst->cbEvents & VIR_STREAM_EVENT_READABLE)) ||
         (privst->cbEvents & VIR_STREAM_EVENT_WRITABLE)) {
-        VIR_DEBUG0("Enabling event timer");
+        VIR_DEBUG("Enabling event timer");
         virEventUpdateTimeout(privst->cbTimer, 0);
     } else {
-        VIR_DEBUG0("Disabling event timer");
+        VIR_DEBUG("Disabling event timer");
         virEventUpdateTimeout(privst->cbTimer, -1);
     }
 }
@@ -4308,7 +4308,7 @@ remoteStreamHasError(virStreamPtr st) {
         return 0;
     }
 
-    VIR_DEBUG0("Raising async error");
+    VIR_DEBUG("Raising async error");
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,
                       privst->err.domain,
                       privst->err.code,
@@ -4400,7 +4400,7 @@ remoteStreamRecv(virStreamPtr st,
         int ret;
 
         if (st->flags & VIR_STREAM_NONBLOCK) {
-            VIR_DEBUG0("Non-blocking mode and no data available");
+            VIR_DEBUG("Non-blocking mode and no data available");
             rv = -2;
             goto cleanup;
         }
@@ -5555,7 +5555,7 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
 
     if (virDomainEventQueuePush(priv->domainEvents,
                                 event) < 0) {
-        VIR_DEBUG0("Error adding event to queue");
+        VIR_DEBUG("Error adding event to queue");
         virDomainEventFree(event);
     }
     virEventUpdateTimeout(priv->eventFlushTimer, 0);
@@ -5599,7 +5599,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
     case REMOTE_CONTINUE: {
         int avail = privst->incomingLength - privst->incomingOffset;
         int need = priv->bufferLength - priv->bufferOffset;
-        VIR_DEBUG0("Got a stream data packet");
+        VIR_DEBUG("Got a stream data packet");
 
         /* XXX flag stream as complete somwhere if need==0 */
 
@@ -5607,7 +5607,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
             int extra = need - avail;
             if (VIR_REALLOC_N(privst->incoming,
                               privst->incomingLength + extra) < 0) {
-                VIR_DEBUG0("Out of memory handling stream data");
+                VIR_DEBUG("Out of memory handling stream data");
                 return -1;
             }
             privst->incomingLength += extra;
@@ -5629,9 +5629,9 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     case REMOTE_OK:
-        VIR_DEBUG0("Got a synchronous confirm");
+        VIR_DEBUG("Got a synchronous confirm");
         if (!thecall) {
-            VIR_DEBUG0("Got unexpected stream finish confirmation");
+            VIR_DEBUG("Got unexpected stream finish confirmation");
             return -1;
         }
         thecall->mode = REMOTE_MODE_COMPLETE;
@@ -5639,7 +5639,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     case REMOTE_ERROR:
         if (thecall && thecall->want_reply) {
-            VIR_DEBUG0("Got a synchronous error");
+            VIR_DEBUG("Got a synchronous error");
             /* Give the error straight to this call */
             memset (&thecall->err, 0, sizeof thecall->err);
             if (!xdr_remote_error (xdr, &thecall->err)) {
@@ -5648,16 +5648,16 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
             }
             thecall->mode = REMOTE_MODE_ERROR;
         } else {
-            VIR_DEBUG0("Got a asynchronous error");
+            VIR_DEBUG("Got a asynchronous error");
             /* No call, so queue the error against the stream */
             if (privst->has_error) {
-                VIR_DEBUG0("Got unexpected duplicate stream error");
+                VIR_DEBUG("Got unexpected duplicate stream error");
                 return -1;
             }
             privst->has_error = 1;
             memset (&privst->err, 0, sizeof privst->err);
             if (!xdr_remote_error (xdr, &privst->err)) {
-                VIR_DEBUG0("Failed to unmarshall error");
+                VIR_DEBUG("Failed to unmarshall error");
                 return -1;
             }
         }
@@ -5818,7 +5818,7 @@ remoteIOEventLoop(virConnectPtr conn,
 
         if (fds[1].revents) {
             ssize_t s;
-            VIR_DEBUG0("Woken up from poll by other thread");
+            VIR_DEBUG("Woken up from poll by other thread");
             s = saferead(priv->wakeupReadFD, &ignore, sizeof(ignore));
             if (s < 0) {
                 virReportSystemError(errno, "%s",
@@ -6204,7 +6204,7 @@ remoteDomainEventFired(int watch,
     }
 
     if (remoteIOHandleInput(conn, priv, 0) < 0)
-        VIR_DEBUG0("Something went wrong during async message processing");
+        VIR_DEBUG("Something went wrong during async message processing");
 
 done:
     remoteDriverUnlock(priv);

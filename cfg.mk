@@ -390,7 +390,6 @@ msg_gen_function += ESX_ERROR
 msg_gen_function += ESX_VI_ERROR
 msg_gen_function += PHYP_ERROR
 msg_gen_function += VIR_ERROR
-msg_gen_function += VIR_ERROR0
 msg_gen_function += VMX_ERROR
 msg_gen_function += XENXS_ERROR
 msg_gen_function += eventReportError
@@ -525,7 +524,7 @@ sc_copyright_format:
 # Some functions/macros produce messages intended solely for developers
 # and maintainers.  Do not mark them for translation.
 sc_prohibit_gettext_markup:
-	@prohibit='\<VIR_(WARN|DEBUG)0? *\(_\('				\
+	@prohibit='\<VIR_(WARN|DEBUG) *\(_\('				\
 	halt='do not mark these strings for translation'		\
 	  $(_sc_search_regexp)
 

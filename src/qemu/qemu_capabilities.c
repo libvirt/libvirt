@@ -806,12 +806,12 @@ virCapsPtr qemuCapsInit(virCapsPtr old_caps)
      */
     if (nodeCapsInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
-        VIR_WARN0("Failed to query host NUMA topology, disabling NUMA capabilities");
+        VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
     if (old_caps == NULL || old_caps->host.cpu == NULL) {
         if (qemuCapsInitCPU(caps, utsname.machine) < 0)
-            VIR_WARN0("Failed to get host CPU");
+            VIR_WARN("Failed to get host CPU");
     }
     else {
         caps->host.cpu = old_caps->host.cpu;

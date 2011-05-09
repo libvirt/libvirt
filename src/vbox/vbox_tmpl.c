@@ -1026,7 +1026,7 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
 #endif /* !(VBOX_API_VERSION == 2002) */
 
     conn->privateData = data;
-    VIR_DEBUG0("in vboxOpen");
+    VIR_DEBUG("in vboxOpen");
 
     return VIR_DRV_OPEN_SUCCESS;
 }
@@ -3733,15 +3733,15 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                         if (def->disks[i]->readonly) {
                             hardDisk->vtbl->SetType(hardDisk,
                                                     HardDiskType_Immutable);
-                            VIR_DEBUG0("setting harddisk to readonly");
+                            VIR_DEBUG("setting harddisk to readonly");
                         } else if (!def->disks[i]->readonly) {
                             hardDisk->vtbl->SetType(hardDisk,
                                                     HardDiskType_Normal);
-                            VIR_DEBUG0("setting harddisk type to normal");
+                            VIR_DEBUG("setting harddisk type to normal");
                         }
                         if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
                             if (STREQ(def->disks[i]->dst, "hdc")) {
-                                VIR_DEBUG0("Not connecting harddisk to hdc as hdc"
+                                VIR_DEBUG("Not connecting harddisk to hdc as hdc"
                                        " is taken by CD/DVD Drive");
                             } else {
                                 PRInt32 channel          = 0;
@@ -4021,10 +4021,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                 if (def->disks[i]->readonly) {
                     medium->vtbl->SetType(medium, MediumType_Immutable);
-                    VIR_DEBUG0("setting harddisk to immutable");
+                    VIR_DEBUG("setting harddisk to immutable");
                 } else if (!def->disks[i]->readonly) {
                     medium->vtbl->SetType(medium, MediumType_Normal);
-                    VIR_DEBUG0("setting harddisk type to normal");
+                    VIR_DEBUG("setting harddisk type to normal");
                 }
             }
 
@@ -4450,7 +4450,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 #endif /* VBOX_API_VERSION >= 4000 */
             if (VRDxServer) {
                 VRDxServer->vtbl->SetEnabled(VRDxServer, PR_TRUE);
-                VIR_DEBUG0("VRDP Support turned ON.");
+                VIR_DEBUG("VRDP Support turned ON.");
 
 #if VBOX_API_VERSION < 3001
                 if (def->graphics[i]->data.rdp.port) {
@@ -4463,7 +4463,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                      * the default one which is 3389 currently
                      */
                     VRDxServer->vtbl->SetPort(VRDxServer, 0);
-                    VIR_DEBUG0("VRDP Port changed to default, which is 3389 currently");
+                    VIR_DEBUG("VRDP Port changed to default, which is 3389 currently");
                 }
 #elif VBOX_API_VERSION < 4000 /* 3001 <= VBOX_API_VERSION < 4000 */
                 PRUnichar *portUtf16 = NULL;
@@ -4484,13 +4484,13 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 if (def->graphics[i]->data.rdp.replaceUser) {
                     VRDxServer->vtbl->SetReuseSingleConnection(VRDxServer,
                                                                PR_TRUE);
-                    VIR_DEBUG0("VRDP set to reuse single connection");
+                    VIR_DEBUG("VRDP set to reuse single connection");
                 }
 
                 if (def->graphics[i]->data.rdp.multiUser) {
                     VRDxServer->vtbl->SetAllowMultiConnection(VRDxServer,
                                                               PR_TRUE);
-                    VIR_DEBUG0("VRDP set to allow multiple connection");
+                    VIR_DEBUG("VRDP set to allow multiple connection");
                 }
 
                 if (def->graphics[i]->data.rdp.listenAddr) {
@@ -6885,7 +6885,7 @@ static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
         (data->vboxSession == NULL))
         goto cleanup;
 
-    VIR_DEBUG0("network initialized");
+    VIR_DEBUG("network initialized");
     /* conn->networkPrivateData = some network specific data */
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -6894,7 +6894,7 @@ cleanup:
 }
 
 static int vboxNetworkClose(virConnectPtr conn) {
-    VIR_DEBUG0("network uninitialized");
+    VIR_DEBUG("network uninitialized");
     conn->networkPrivateData = NULL;
     return 0;
 }
@@ -7239,7 +7239,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
                 data->vboxObj->vtbl->CreateDHCPServer(data->vboxObj,
                                                       networkNameUtf16,
                                                       &dhcpServer);
-                VIR_DEBUG0("couldn't find dhcp server so creating one");
+                VIR_DEBUG("couldn't find dhcp server so creating one");
             }
             if (dhcpServer) {
                 PRUnichar *ipAddressUtf16     = NULL;
@@ -7696,7 +7696,7 @@ static virDrvOpenStatus vboxStorageOpen (virConnectPtr conn,
         (data->vboxSession == NULL))
         goto cleanup;
 
-    VIR_DEBUG0("vbox storage initialized");
+    VIR_DEBUG("vbox storage initialized");
     /* conn->storagePrivateData = some storage specific data */
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -7705,7 +7705,7 @@ cleanup:
 }
 
 static int vboxStorageClose (virConnectPtr conn) {
-    VIR_DEBUG0("vbox storage uninitialized");
+    VIR_DEBUG("vbox storage uninitialized");
     conn->storagePrivateData = NULL;
     return 0;
 }
@@ -8245,7 +8245,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
 #endif /* VBOX_API_VERSION >= 3001 */
                                             if (NS_SUCCEEDED(rc)) {
                                                 rc = machine->vtbl->SaveSettings(machine);
-                                                VIR_DEBUG0("saving machine settings");
+                                                VIR_DEBUG("saving machine settings");
                                             }
 
                                             if (NS_SUCCEEDED(rc)) {

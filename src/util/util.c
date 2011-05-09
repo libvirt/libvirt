@@ -295,7 +295,7 @@ static int virClearCapabilities(void)
 # else
 static int virClearCapabilities(void)
 {
-//    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
+//    VIR_WARN("libcap-ng support not compiled in, unable to clear capabilities");
     return 0;
 }
 # endif
@@ -682,7 +682,7 @@ __virExec(const char *const*argv,
         }
 
         if ((hook)(data) != 0) {
-            VIR_DEBUG0("Hook function failed.");
+            VIR_DEBUG("Hook function failed.");
             goto fork_error;
         }
 
@@ -761,7 +761,7 @@ virExecWithHook(const char *const*argv,
         VIR_DEBUG("%s %s", envp_str, argv_str);
         VIR_FREE(envp_str);
     } else {
-        VIR_DEBUG0(argv_str);
+        VIR_DEBUG("%s", argv_str);
     }
     VIR_FREE(argv_str);
 
@@ -871,7 +871,7 @@ virRunWithHook(const char *const*argv,
         virReportOOMError();
         goto error;
     }
-    VIR_DEBUG0(argv_str);
+    VIR_DEBUG("%s", argv_str);
 
     if ((execret = __virExec(argv, NULL, NULL,
                              &childpid, -1, &outfd, &errfd,

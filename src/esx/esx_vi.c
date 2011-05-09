@@ -200,7 +200,7 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
         break;
 
       default:
-        VIR_DEBUG0("unknown");
+        VIR_DEBUG("unknown");
         break;
     }
 
@@ -497,7 +497,7 @@ ESX_VI__TEMPLATE__FREE(SharedCURL,
 
     if (item->count > 0) {
         /* Better leak than crash */
-        VIR_ERROR0(_("Trying to free SharedCURL object that is still in use"));
+        VIR_ERROR(_("Trying to free SharedCURL object that is still in use"));
         return;
     }
 
@@ -2143,7 +2143,7 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
         } else {
             memset(uuid, 0, VIR_UUID_BUFLEN);
 
-            VIR_WARN0("Cannot access UUID, because 'configStatus' property "
+            VIR_WARN("Cannot access UUID, because 'configStatus' property "
                       "indicates a config problem");
         }
     }
@@ -3715,12 +3715,12 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                 if (taskInfo->cancelable == esxVI_Boolean_True) {
                     if (esxVI_CancelTask(ctx, task) < 0 &&
                         blocked == esxVI_Boolean_True) {
-                        VIR_ERROR0(_("Cancelable task is blocked by an "
+                        VIR_ERROR(_("Cancelable task is blocked by an "
                                      "unanswered question but cancelation "
                                      "failed"));
                     }
                 } else if (blocked == esxVI_Boolean_True) {
-                    VIR_ERROR0(_("Non-cancelable task is blocked by an "
+                    VIR_ERROR(_("Non-cancelable task is blocked by an "
                                  "unanswered question"));
                 }
 
@@ -3776,7 +3776,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
     }
 
     if (esxVI_DestroyPropertyFilter(ctx, propertyFilter) < 0) {
-        VIR_DEBUG0("DestroyPropertyFilter failed");
+        VIR_DEBUG("DestroyPropertyFilter failed");
     }
 
     if (esxVI_TaskInfoState_CastFromAnyType(propertyValue, finalState) < 0) {

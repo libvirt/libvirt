@@ -217,7 +217,7 @@ qemuSecurityInit(struct qemud_driver *driver)
     return 0;
 
 error:
-    VIR_ERROR0(_("Failed to initialize security drivers"));
+    VIR_ERROR(_("Failed to initialize security drivers"));
     virSecurityManagerFree(mgr);
     return -1;
 }
@@ -318,7 +318,7 @@ static void qemuDomainSnapshotLoad(void *payload,
         VIR_INFO("Loading snapshot file '%s'", entry->d_name);
 
         if (virAsprintf(&fullpath, "%s/%s", snapDir, entry->d_name) < 0) {
-            VIR_ERROR0(_("Failed to allocate memory for path"));
+            VIR_ERROR(_("Failed to allocate memory for path"));
             continue;
         }
 
@@ -380,7 +380,7 @@ qemudStartup(int privileged) {
         return -1;
 
     if (virMutexInit(&qemu_driver->lock) < 0) {
-        VIR_ERROR0(_("cannot initialize mutex"));
+        VIR_ERROR(_("cannot initialize mutex"));
         VIR_FREE(qemu_driver);
         return -1;
     }
@@ -1015,7 +1015,7 @@ qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid,
                "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u %*d %d",
                &usertime, &systime, &cpu) != 3) {
         VIR_FORCE_FCLOSE(pidinfo);
-        VIR_WARN0("cannot parse process status data");
+        VIR_WARN("cannot parse process status data");
         errno = -EINVAL;
         return -1;
     }
@@ -2118,7 +2118,7 @@ endjob:
             if (header.was_running && virDomainObjIsActive(vm)) {
                 rc = qemuProcessStartCPUs(driver, vm, dom->conn);
                 if (rc < 0)
-                    VIR_WARN0("Unable to resume guest CPUs after save failure");
+                    VIR_WARN("Unable to resume guest CPUs after save failure");
             }
         }
         if (qemuDomainObjEndJob(vm) == 0)

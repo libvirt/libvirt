@@ -60,7 +60,7 @@ virCapsPtr lxcCapsInit(void)
      */
     if (nodeCapsInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
-        VIR_WARN0("Failed to query host NUMA topology, disabling NUMA capabilities");
+        VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
     if (virGetHostUUID(caps->host.host_uuid)) {
@@ -151,7 +151,7 @@ int lxcLoadDriverConfig(lxc_driver_t *driver)
     p = virConfGetValue(conf, "log_with_libvirtd");
     if (p) {
         if (p->type != VIR_CONF_LONG)
-            VIR_WARN0("lxcLoadDriverConfig: invalid setting: log_with_libvirtd");
+            VIR_WARN("lxcLoadDriverConfig: invalid setting: log_with_libvirtd");
         else
             driver->log_libvirtd = p->l;
     }

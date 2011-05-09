@@ -84,7 +84,7 @@ qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
 
     type = virJSONValueObjectGetString(obj, "event");
     if (!type) {
-        VIR_WARN0("missing event type in message");
+        VIR_WARN("missing event type in message");
         errno = EINVAL;
         return -1;
     }
@@ -112,18 +112,18 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
     VIR_DEBUG("Line [%s]", line);
 
     if (!(obj = virJSONValueFromString(line))) {
-        VIR_DEBUG0("Parsing JSON string failed");
+        VIR_DEBUG("Parsing JSON string failed");
         errno = EINVAL;
         goto cleanup;
     }
 
     if (obj->type != VIR_JSON_TYPE_OBJECT) {
-        VIR_DEBUG0("Parsed JSON string isn't an object");
+        VIR_DEBUG("Parsed JSON string isn't an object");
         errno = EINVAL;
     }
 
     if (virJSONValueObjectHasKey(obj, "QMP") == 1) {
-        VIR_DEBUG0("Got QMP capabilities data");
+        VIR_DEBUG("Got QMP capabilities data");
         ret = 0;
         goto cleanup;
     }
@@ -537,7 +537,7 @@ static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr d
 {
     long long offset = 0;
     if (virJSONValueObjectGetNumberLong(data, "offset", &offset) < 0) {
-        VIR_WARN0("missing offset in RTC change event");
+        VIR_WARN("missing offset in RTC change event");
         offset = 0;
     }
     qemuMonitorEmitRTCChange(mon, offset);
@@ -552,7 +552,7 @@ static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr da
     const char *action;
     int actionID;
     if (!(action = virJSONValueObjectGetString(data, "action"))) {
-        VIR_WARN0("missing action in watchdog event");
+        VIR_WARN("missing action in watchdog event");
     }
     if (action) {
         if ((actionID = qemuMonitorWatchdogActionTypeFromString(action)) < 0) {
@@ -582,17 +582,17 @@ static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr dat
        to the application */
 
     if ((action = virJSONValueObjectGetString(data, "action")) == NULL) {
-        VIR_WARN0("Missing action in disk io error event");
+        VIR_WARN("Missing action in disk io error event");
         action = "ignore";
     }
 
     if ((device = virJSONValueObjectGetString(data, "device")) == NULL) {
-        VIR_WARN0("missing device in disk io error event");
+        VIR_WARN("missing device in disk io error event");
     }
 
 #if 0
     if ((reason = virJSONValueObjectGetString(data, "reason")) == NULL) {
-        VIR_WARN0("missing reason in disk io error event");
+        VIR_WARN("missing reason in disk io error event");
         reason = "";
     }
 #else
@@ -622,11 +622,11 @@ static void qemuMonitorJSONHandleVNC(qemuMonitorPtr mon, virJSONValuePtr data, i
     virJSONValuePtr server;
 
     if (!(client = virJSONValueObjectGet(data, "client"))) {
-        VIR_WARN0("missing client info in VNC event");
+        VIR_WARN("missing client info in VNC event");
         return;
     }
     if (!(server = virJSONValueObjectGet(data, "server"))) {
-        VIR_WARN0("missing server info in VNC event");
+        VIR_WARN("missing server info in VNC event");
         return;
     }
 
@@ -1504,7 +1504,7 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
         qemuMonitorCheckHMP(mon, "cpu_set")) {
-        VIR_DEBUG0("cpu_set command not found, trying HMP");
+        VIR_DEBUG("cpu_set command not found, trying HMP");
         ret = qemuMonitorTextSetCPU(mon, cpu, online);
         goto cleanup;
     }
@@ -2301,7 +2301,7 @@ int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
         qemuMonitorCheckHMP(mon, "drive_add")) {
-        VIR_DEBUG0("drive_add command not found, trying HMP");
+        VIR_DEBUG("drive_add command not found, trying HMP");
         ret = qemuMonitorTextAddDrive(mon, drivestr);
         goto cleanup;
     }
@@ -2334,10 +2334,10 @@ int qemuMonitorJSONDriveDel(qemuMonitorPtr mon,
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
         if (qemuMonitorCheckHMP(mon, "drive_del")) {
-            VIR_DEBUG0("drive_del command not found, trying HMP");
+            VIR_DEBUG("drive_del command not found, trying HMP");
             ret = qemuMonitorTextDriveDel(mon, drivestr);
         } else {
-            VIR_ERROR0(_("deleting disk is not supported.  "
+            VIR_ERROR(_("deleting disk is not supported.  "
                         "This may leak data if disk is reassigned"));
             ret = 1;
         }
@@ -2404,7 +2404,7 @@ int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name)
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
         qemuMonitorCheckHMP(mon, "savevm")) {
-        VIR_DEBUG0("savevm command not found, trying HMP");
+        VIR_DEBUG("savevm command not found, trying HMP");
         ret = qemuMonitorTextCreateSnapshot(mon, name);
         goto cleanup;
     }
@@ -2434,7 +2434,7 @@ int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name)
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
         qemuMonitorCheckHMP(mon, "loadvm")) {
-        VIR_DEBUG0("loadvm command not found, trying HMP");
+        VIR_DEBUG("loadvm command not found, trying HMP");
         ret = qemuMonitorTextLoadSnapshot(mon, name);
         goto cleanup;
     }
@@ -2464,7 +2464,7 @@ int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
         qemuMonitorCheckHMP(mon, "delvm")) {
-        VIR_DEBUG0("delvm command not found, trying HMP");
+        VIR_DEBUG("delvm command not found, trying HMP");
         ret = qemuMonitorTextDeleteSnapshot(mon, name);
         goto cleanup;
     }
@@ -2529,7 +2529,7 @@ int qemuMonitorJSONInjectNMI(qemuMonitorPtr mon)
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
         qemuMonitorCheckHMP(mon, "inject-nmi")) {
-        VIR_DEBUG0("inject-nmi command not found, trying HMP");
+        VIR_DEBUG("inject-nmi command not found, trying HMP");
         ret = qemuMonitorTextInjectNMI(mon);
     } else {
         ret = qemuMonitorJSONCheckError(cmd, reply);
