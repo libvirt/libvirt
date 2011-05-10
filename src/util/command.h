@@ -29,6 +29,20 @@
 typedef struct _virCommand virCommand;
 typedef virCommand *virCommandPtr;
 
+/* This will execute in the context of the first child
+ * after fork() but before execve() */
+typedef int (*virExecHook)(void *data);
+
+/*
+ * Fork wrapper with extra error checking
+ */
+int virFork(pid_t *pid) ATTRIBUTE_RETURN_CHECK;
+
+/*
+ * Simple synchronous command wrapper
+ */
+int virRun(const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
+
 /*
  * Create a new command for named binary
  */

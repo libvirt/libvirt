@@ -29,6 +29,7 @@
 #include "files.h"
 #include "memory.h"
 #include "uuid.h"
+#include "command.h"
 #include "vmx.h"
 #include "vmware_conf.h"
 #include "vmware_driver.h"

@@ -41,7 +41,7 @@
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
 #include "storage_file.h"
-#include "util.h"
+#include "command.h"
 #include "memory.h"
 #include "xml.h"
 #include "files.h"

@@ -27,6 +27,11 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <fcntl.h>
+
+#if HAVE_CAPNG
+# include <cap-ng.h>
+#endif
 
 #include "command.h"
 #include "memory.h"
@@ -35,6 +40,7 @@
 #include "logging.h"
 #include "files.h"
 #include "buf.h"
+#include "ignore-value.h"
 
 #include <stdlib.h>
 
@@ -44,9 +50,13 @@
     virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                 \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+/* Flags for virExecWithHook */
 enum {
-    /* Internal-use extension beyond public VIR_EXEC_ flags */
-    VIR_EXEC_RUN_SYNC = 0x40000000,
+    VIR_EXEC_NONE   = 0,
+    VIR_EXEC_NONBLOCK = (1 << 0),
+    VIR_EXEC_DAEMON = (1 << 1),
+    VIR_EXEC_CLEAR_CAPS = (1 << 2),
+    VIR_EXEC_RUN_SYNC = (1 << 3),
 };
 
 struct _virCommand {
@@ -90,6 +100,558 @@ struct _virCommand {
     char *pidfile;
     bool reap;
 };
+
+#ifndef WIN32
+
+# if HAVE_CAPNG
+static int virClearCapabilities(void)
+{
+    int ret;
+
+    capng_clear(CAPNG_SELECT_BOTH);
+
+    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot clear process capabilities %d"), ret);
+        return -1;
+    }
+
+    return 0;
+}
+# else
+static int virClearCapabilities(void)
+{
+//    VIR_WARN("libcap-ng support not compiled in, unable to clear "
+//             "capabilities");
+    return 0;
+}
+# endif
+
+
+/* virFork() - fork a new process while avoiding various race/deadlock
+               conditions
+
+   @pid - a pointer to a pid_t that will receive the return value from
+          fork()
+
+   on return from virFork(), if *pid < 0, the fork failed and there is
+   no new process. Otherwise, just like fork(), if *pid == 0, it is the
+   child process returning, and if *pid > 0, it is the parent.
+
+   Even if *pid >= 0, if the return value from virFork() is < 0, it
+   indicates a failure that occurred in the parent or child process
+   after the fork. In this case, the child process should call
+   _exit(EXIT_FAILURE) after doing any additional error reporting.
+
+ */
+int virFork(pid_t *pid) {
+# ifdef HAVE_PTHREAD_SIGMASK
+    sigset_t oldmask, newmask;
+# endif
+    struct sigaction sig_action;
+    int saved_errno, ret = -1;
+
+    *pid = -1;
+
+    /*
+     * Need to block signals now, so that child process can safely
+     * kill off caller's signal handlers without a race.
+     */
+# ifdef HAVE_PTHREAD_SIGMASK
+    sigfillset(&newmask);
+    if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
+        saved_errno = errno;
+        virReportSystemError(errno,
+                             "%s", _("cannot block signals"));
+        goto cleanup;
+    }
+# endif
+
+    /* Ensure we hold the logging lock, to protect child processes
+     * from deadlocking on another thread's inherited mutex state */
+    virLogLock();
+
+    *pid = fork();
+    saved_errno = errno; /* save for caller */
+
+    /* Unlock for both parent and child process */
+    virLogUnlock();
+
+    if (*pid < 0) {
+# ifdef HAVE_PTHREAD_SIGMASK
+        /* attempt to restore signal mask, but ignore failure, to
+           avoid obscuring the fork failure */
+        ignore_value (pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+# endif
+        virReportSystemError(saved_errno,
+                             "%s", _("cannot fork child process"));
+        goto cleanup;
+    }
+
+    if (*pid) {
+
+        /* parent process */
+
+# ifdef HAVE_PTHREAD_SIGMASK
+        /* Restore our original signal mask now that the child is
+           safely running */
+        if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
+            saved_errno = errno; /* save for caller */
+            virReportSystemError(errno, "%s", _("cannot unblock signals"));
+            goto cleanup;
+        }
+# endif
+        ret = 0;
+
+    } else {
+
+        /* child process */
+
+        int logprio;
+        int i;
+
+        /* Remove any error callback so errors in child now
+           get sent to stderr where they stand a fighting chance
+           of being seen / logged */
+        virSetErrorFunc(NULL, NULL);
+        virSetErrorLogPriorityFunc(NULL);
+
+        /* Make sure any hook logging is sent to stderr, since child
+         * process may close the logfile FDs */
+        logprio = virLogGetDefaultPriority();
+        virLogReset();
+        virLogSetDefaultPriority(logprio);
+
+        /* Clear out all signal handlers from parent so nothing
+           unexpected can happen in our child once we unblock
+           signals */
+        sig_action.sa_handler = SIG_DFL;
+        sig_action.sa_flags = 0;
+        sigemptyset(&sig_action.sa_mask);
+
+        for (i = 1; i < NSIG; i++) {
+            /* Only possible errors are EFAULT or EINVAL
+               The former wont happen, the latter we
+               expect, so no need to check return value */
+
+            sigaction(i, &sig_action, NULL);
+        }
+
+# ifdef HAVE_PTHREAD_SIGMASK
+        /* Unmask all signals in child, since we've no idea
+           what the caller's done with their signal mask
+           and don't want to propagate that to children */
+        sigemptyset(&newmask);
+        if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
+            saved_errno = errno; /* save for caller */
+            virReportSystemError(errno, "%s", _("cannot unblock signals"));
+            goto cleanup;
+        }
+# endif
+        ret = 0;
+    }
+
+cleanup:
+    if (ret < 0)
+        errno = saved_errno;
+    return ret;
+}
+
+/*
+ * @argv argv to exec
+ * @envp optional environment to use for exec
+ * @keepfd options fd_ret to keep open for child process
+ * @retpid optional pointer to store child process pid
+ * @infd optional file descriptor to use as child input, otherwise /dev/null
+ * @outfd optional pointer to communicate output fd behavior
+ *        outfd == NULL : Use /dev/null
+ *        *outfd == -1  : Use a new fd
+ *        *outfd != -1  : Use *outfd
+ * @errfd optional pointer to communcate error fd behavior. See outfd
+ * @flags possible combination of the following:
+ *        VIR_EXEC_NONE     : Default function behavior
+ *        VIR_EXEC_NONBLOCK : Set child process output fd's as non-blocking
+ *        VIR_EXEC_DAEMON   : Daemonize the child process
+ * @hook optional virExecHook function to call prior to exec
+ * @data data to pass to the hook function
+ * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
+ */
+static int
+virExecWithHook(const char *const*argv,
+          const char *const*envp,
+          const fd_set *keepfd,
+          pid_t *retpid,
+          int infd, int *outfd, int *errfd,
+          int flags,
+          virExecHook hook,
+          void *data,
+          char *pidfile)
+{
+    pid_t pid;
+    int null, i, openmax;
+    int pipeout[2] = {-1,-1};
+    int pipeerr[2] = {-1,-1};
+    int childout = -1;
+    int childerr = -1;
+    int tmpfd;
+    const char *binary = NULL;
+    int forkRet;
+    char *argv_str = NULL;
+    char *envp_str = NULL;
+
+    if ((argv_str = virArgvToString(argv)) == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (envp) {
+        if ((envp_str = virArgvToString(envp)) == NULL) {
+            VIR_FREE(argv_str);
+            virReportOOMError();
+            return -1;
+        }
+        VIR_DEBUG("%s %s", envp_str, argv_str);
+        VIR_FREE(envp_str);
+    } else {
+        VIR_DEBUG("%s", argv_str);
+    }
+    VIR_FREE(argv_str);
+
+    if (argv[0][0] != '/') {
+        if (!(binary = virFindFileInPath(argv[0]))) {
+            virReportSystemError(ENOENT,
+                                 _("Cannot find '%s' in path"),
+                                 argv[0]);
+            return -1;
+        }
+    } else {
+        binary = argv[0];
+    }
+
+    if ((null = open("/dev/null", O_RDWR)) < 0) {
+        virReportSystemError(errno,
+                             _("cannot open %s"),
+                             "/dev/null");
+        goto cleanup;
+    }
+
+    if (outfd != NULL) {
+        if (*outfd == -1) {
+            if (pipe(pipeout) < 0) {
+                virReportSystemError(errno,
+                                     "%s", _("cannot create pipe"));
+                goto cleanup;
+            }
+
+            if ((flags & VIR_EXEC_NONBLOCK) &&
+                virSetNonBlock(pipeout[0]) == -1) {
+                virReportSystemError(errno,
+                                     "%s", _("Failed to set non-blocking file descriptor flag"));
+                goto cleanup;
+            }
+
+            if (virSetCloseExec(pipeout[0]) == -1) {
+                virReportSystemError(errno,
+                                     "%s", _("Failed to set close-on-exec file descriptor flag"));
+                goto cleanup;
+            }
+
+            childout = pipeout[1];
+        } else {
+            childout = *outfd;
+        }
+    } else {
+        childout = null;
+    }
+
+    if (errfd != NULL) {
+        if (*errfd == -1) {
+            if (pipe(pipeerr) < 0) {
+                virReportSystemError(errno,
+                                     "%s", _("Failed to create pipe"));
+                goto cleanup;
+            }
+
+            if ((flags & VIR_EXEC_NONBLOCK) &&
+                virSetNonBlock(pipeerr[0]) == -1) {
+                virReportSystemError(errno,
+                                     "%s", _("Failed to set non-blocking file descriptor flag"));
+                goto cleanup;
+            }
+
+            if (virSetCloseExec(pipeerr[0]) == -1) {
+                virReportSystemError(errno,
+                                     "%s", _("Failed to set close-on-exec file descriptor flag"));
+                goto cleanup;
+            }
+
+            childerr = pipeerr[1];
+        } else {
+            childerr = *errfd;
+        }
+    } else {
+        childerr = null;
+    }
+
+    forkRet = virFork(&pid);
+
+    if (pid < 0) {
+        goto cleanup;
+    }
+
+    if (pid) { /* parent */
+        VIR_FORCE_CLOSE(null);
+        if (outfd && *outfd == -1) {
+            VIR_FORCE_CLOSE(pipeout[1]);
+            *outfd = pipeout[0];
+        }
+        if (errfd && *errfd == -1) {
+            VIR_FORCE_CLOSE(pipeerr[1]);
+            *errfd = pipeerr[0];
+        }
+
+        if (forkRet < 0) {
+            goto cleanup;
+        }
+
+        *retpid = pid;
+
+        if (binary != argv[0])
+            VIR_FREE(binary);
+
+        return 0;
+    }
+
+    /* child */
+
+    if (forkRet < 0) {
+        /* The fork was successful, but after that there was an error
+         * in the child (which was already logged).
+        */
+        goto fork_error;
+    }
+
+    openmax = sysconf(_SC_OPEN_MAX);
+    for (i = 3; i < openmax; i++)
+        if (i != infd &&
+            i != null &&
+            i != childout &&
+            i != childerr &&
+            (!keepfd || i >= FD_SETSIZE || !FD_ISSET(i, keepfd))) {
+            tmpfd = i;
+            VIR_FORCE_CLOSE(tmpfd);
+        }
+
+    if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
+        virReportSystemError(errno,
+                             "%s", _("failed to setup stdin file handle"));
+        goto fork_error;
+    }
+    if (childout > 0 &&
+        dup2(childout, STDOUT_FILENO) < 0) {
+        virReportSystemError(errno,
+                             "%s", _("failed to setup stdout file handle"));
+        goto fork_error;
+    }
+    if (childerr > 0 &&
+        dup2(childerr, STDERR_FILENO) < 0) {
+        virReportSystemError(errno,
+                             "%s", _("failed to setup stderr file handle"));
+        goto fork_error;
+    }
+
+    if (infd != STDIN_FILENO)
+        VIR_FORCE_CLOSE(infd);
+    VIR_FORCE_CLOSE(null);
+    if (childout > STDERR_FILENO) {
+        tmpfd = childout;   /* preserve childout value */
+        VIR_FORCE_CLOSE(tmpfd);
+    }
+    if (childerr > STDERR_FILENO &&
+        childerr != childout) {
+        VIR_FORCE_CLOSE(childerr);
+    }
+
+    /* Initialize full logging for a while */
+    virLogSetFromEnv();
+
+    /* Daemonize as late as possible, so the parent process can detect
+     * the above errors with wait* */
+    if (flags & VIR_EXEC_DAEMON) {
+        if (setsid() < 0) {
+            virReportSystemError(errno,
+                                 "%s", _("cannot become session leader"));
+            goto fork_error;
+        }
+
+        if (chdir("/") < 0) {
+            virReportSystemError(errno,
+                                 "%s", _("cannot change to root directory"));
+            goto fork_error;
+        }
+
+        pid = fork();
+        if (pid < 0) {
+            virReportSystemError(errno,
+                                 "%s", _("cannot fork child process"));
+            goto fork_error;
+        }
+
+        if (pid > 0) {
+            if (pidfile && virFileWritePidPath(pidfile,pid)) {
+                kill(pid, SIGTERM);
+                usleep(500*1000);
+                kill(pid, SIGTERM);
+                virReportSystemError(errno,
+                                     _("could not write pidfile %s for %d"),
+                                     pidfile, pid);
+                goto fork_error;
+            }
+            _exit(0);
+        }
+    }
+
+    if (hook) {
+        /* virFork reset all signal handlers to the defaults.
+         * This is good for the child process, but our hook
+         * risks running something that generates SIGPIPE,
+         * so we need to temporarily block that again
+         */
+        struct sigaction waxon, waxoff;
+        waxoff.sa_handler = SIG_IGN;
+        waxoff.sa_flags = 0;
+        sigemptyset(&waxoff.sa_mask);
+        memset(&waxon, 0, sizeof(waxon));
+        if (sigaction(SIGPIPE, &waxoff, &waxon) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Could not disable SIGPIPE"));
+            goto fork_error;
+        }
+
+        if ((hook)(data) != 0) {
+            VIR_DEBUG("Hook function failed.");
+            goto fork_error;
+        }
+
+        if (sigaction(SIGPIPE, &waxon, NULL) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Could not re-enable SIGPIPE"));
+            goto fork_error;
+        }
+    }
+
+    /* The steps above may need todo something privileged, so
+     * we delay clearing capabilities until the last minute */
+    if ((flags & VIR_EXEC_CLEAR_CAPS) &&
+        virClearCapabilities() < 0)
+        goto fork_error;
+
+    /* Close logging again to ensure no FDs leak to child */
+    virLogReset();
+
+    if (envp)
+        execve(binary, (char **) argv, (char**)envp);
+    else
+        execv(binary, (char **) argv);
+
+    virReportSystemError(errno,
+                         _("cannot execute binary %s"),
+                         argv[0]);
+
+ fork_error:
+    virDispatchError(NULL);
+    _exit(EXIT_FAILURE);
+
+ cleanup:
+    /* This is cleanup of parent process only - child
+       should never jump here on error */
+
+    if (binary != argv[0])
+        VIR_FREE(binary);
+
+    /* NB we don't virCommandError() on any failures here
+       because the code which jumped hre already raised
+       an error condition which we must not overwrite */
+    VIR_FORCE_CLOSE(pipeerr[0]);
+    VIR_FORCE_CLOSE(pipeerr[1]);
+    VIR_FORCE_CLOSE(pipeout[0]);
+    VIR_FORCE_CLOSE(pipeout[1]);
+    VIR_FORCE_CLOSE(null);
+    return -1;
+}
+
+/**
+ * @argv NULL terminated argv to run
+ * @status optional variable to return exit status in
+ *
+ * Run a command without using the shell.
+ *
+ * If status is NULL, then return 0 if the command run and
+ * exited with 0 status; Otherwise return -1
+ *
+ * If status is not-NULL, then return 0 if the command ran.
+ * The status variable is filled with the command exit status
+ * and should be checked by caller for success. Return -1
+ * only if the command could not be run.
+ */
+int
+virRun(const char *const*argv, int *status)
+{
+    int ret;
+    virCommandPtr cmd = virCommandNewArgs(argv);
+
+    ret = virCommandRun(cmd, status);
+    virCommandFree(cmd);
+    return ret;
+}
+
+#else /* WIN32 */
+
+int
+virRun(const char *const *argv ATTRIBUTE_UNUSED,
+       int *status)
+{
+    if (status)
+        *status = ENOTSUP;
+    else
+        virCommandError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("virRun is not implemented for WIN32"));
+    return -1;
+}
+
+static int
+virExecWithHook(const char *const*argv ATTRIBUTE_UNUSED,
+                const char *const*envp ATTRIBUTE_UNUSED,
+                const fd_set *keepfd ATTRIBUTE_UNUSED,
+                pid_t *retpid ATTRIBUTE_UNUSED,
+                int infd ATTRIBUTE_UNUSED,
+                int *outfd ATTRIBUTE_UNUSED,
+                int *errfd ATTRIBUTE_UNUSED,
+                int flags ATTRIBUTE_UNUSED,
+                virExecHook hook ATTRIBUTE_UNUSED,
+                void *data ATTRIBUTE_UNUSED,
+                char *pidfile ATTRIBUTE_UNUSED)
+{
+    /* XXX: Some day we can implement pieces of virCommand/virExec on
+     * top of _spawn() or CreateProcess(), but we can't implement
+     * everything, since mingw completely lacks fork(), so we cannot
+     * run hook code in the child.  */
+    virCommandError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("virExec is not implemented for WIN32"));
+    return -1;
+}
+
+int
+virFork(pid_t *pid)
+{
+    *pid = -1;
+    errno = ENOTSUP;
+
+    return -1;
+}
+
+#endif /* WIN32 */
+
 
 /*
  * Create a new command for named binary

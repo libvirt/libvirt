@@ -34,7 +34,7 @@
 #include "virterror_internal.h"
 #include "storage_backend_logical.h"
 #include "storage_conf.h"
-#include "util.h"
+#include "command.h"
 #include "memory.h"
 #include "logging.h"
 #include "files.h"

@@ -42,37 +42,13 @@ ssize_t safewrite(int fd, const void *buf, size_t count)
 int safezero(int fd, int flags, off_t offset, off_t len)
     ATTRIBUTE_RETURN_CHECK;
 
-enum {
-    VIR_EXEC_NONE   = 0,
-    VIR_EXEC_NONBLOCK = (1 << 0),
-    VIR_EXEC_DAEMON = (1 << 1),
-    VIR_EXEC_CLEAR_CAPS = (1 << 2),
-};
-
 int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;
 int virSetNonBlock(int fd) ATTRIBUTE_RETURN_CHECK;
 int virSetInherit(int fd, bool inherit) ATTRIBUTE_RETURN_CHECK;
 int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
 
-/* This will execute in the context of the first child
- * after fork() but before execve() */
-typedef int (*virExecHook)(void *data);
-
-int virExecWithHook(const char *const*argv,
-                    const char *const*envp,
-                    const fd_set *keepfd,
-                    pid_t *retpid,
-                    int infd,
-                    int *outfd,
-                    int *errfd,
-                    int flags,
-                    virExecHook hook,
-                    void *data,
-                    char *pidfile) ATTRIBUTE_RETURN_CHECK;
-int virRun(const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
 int virPipeReadUntilEOF(int outfd, int errfd,
                         char **outbuf, char **errbuf);
-int virFork(pid_t *pid);
 
 int virSetUIDGID(uid_t uid, gid_t gid);
 

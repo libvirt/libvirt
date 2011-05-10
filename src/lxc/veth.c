@@ -21,7 +21,7 @@
 #include "internal.h"
 #include "logging.h"
 #include "memory.h"
-#include "util.h"
+#include "command.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC

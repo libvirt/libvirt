@@ -35,7 +35,7 @@
 
 #include "logging.h"
 #include "memory.h"
-#include "util.h"
+#include "command.h"
 #include "virterror_internal.h"
 #include "files.h"
 

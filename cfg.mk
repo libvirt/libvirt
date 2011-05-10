@@ -622,7 +622,7 @@ exclude_file_name_regexp--sc_prohibit_doubled_word = ^po/
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$)
 
-_src2=src/(util/util|libvirt|lxc/lxc_controller)
+_src2=src/(util/command|libvirt|lxc/lxc_controller)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^docs|^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
 

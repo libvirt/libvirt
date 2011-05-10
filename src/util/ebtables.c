@@ -41,7 +41,7 @@
 
 #include "internal.h"
 #include "ebtables.h"
-#include "util.h"
+#include "command.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
