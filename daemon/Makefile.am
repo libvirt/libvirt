@@ -87,7 +87,7 @@ libvirtd_CFLAGS = \
 	-I$(top_srcdir)/src/conf \
 	-I$(top_srcdir)/src/remote \
 	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
-	$(POLKIT_CFLAGS) \
+	$(XDR_CFLAGS) $(POLKIT_CFLAGS) \
 	$(WARN_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
