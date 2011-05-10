@@ -406,7 +406,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         for (i = 0; i < def->clock.ntimers; i++) {
             if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
                 def->clock.timers[i]->present == 1) {
-                b_info->u.hvm.acpi.hpet = 1;
+                b_info->u.hvm.hpet = 1;
             }
         }
 
