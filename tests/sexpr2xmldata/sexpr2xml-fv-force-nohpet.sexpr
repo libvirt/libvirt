@@ -1,0 +1,9 @@
+(domain (domid 1)(name 'fvtest')(memory 400)(maxmem 400)(vcpus 1)\
+(uuid 'b5d70dd275cdaca517769660b059d8bc')(on_poweroff 'destroy')\
+(on_reboot 'restart')(on_crash 'restart')\
+(image (hvm (kernel '/usr/lib/xen/boot/hvmloader')(vcpus 1)(boot c)\
+(cdrom '/root/boot.iso')(acpi 1)(usb 1)(parallel none)(serial none)\
+(device_model '/usr/lib64/xen/bin/qemu-dm')(hpet 0)(vnc 1)))\
+(device (vbd (dev 'ioemu:hda')(uname 'file:/root/foo.img')(mode 'w')))\
+(device (vif (mac '00:16:3e:1b:b1:47')(bridge 'xenbr0')(script 'vif-bridge')\
+(model 'e1000')(type ioemu))))\

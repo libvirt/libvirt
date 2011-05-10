@@ -231,6 +231,9 @@ mymain(void)
     DO_TEST("fullvirt-serial-udp", 2);
     DO_TEST("fullvirt-serial-unix", 2);
 
+    DO_TEST("fullvirt-force-hpet", 2);
+    DO_TEST("fullvirt-force-nohpet", 2);
+
     DO_TEST("fullvirt-parallel-tcp", 2);
 
     DO_TEST("fullvirt-sound", 2);

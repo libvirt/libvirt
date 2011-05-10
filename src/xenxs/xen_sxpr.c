@@ -1175,6 +1175,23 @@ xenParseSxpr(const struct sexpr *root,
         /* Old XenD only allows localtime here for HVM */
         if (sexpr_int(root, "domain/image/hvm/localtime"))
             def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+
+        if (sexpr_lookup(root, "domain/image/hvm/hpet")) {
+            virDomainTimerDefPtr timer;
+
+            if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
+                VIR_ALLOC(timer) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+
+            timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
+            timer->present = sexpr_int(root, "domain/image/hvm/hpet");
+            timer->tickpolicy = -1;
+
+            def->clock.ntimers = 1;
+            def->clock.timers[0] = timer;
+        }
     }
 
     /* Current XenD allows localtime here, for PV and HVM */
@@ -2220,6 +2237,15 @@ xenFormatSxpr(virConnectPtr conn,
         if (def->emulator && (hvm || xendConfigVersion >= 3))
             virBufferEscapeSexpr(&buf, "(device_model '%s')", def->emulator);
 
+        /* look for HPET in order to override the hypervisor/xend default */
+        for (i = 0; i < def->clock.ntimers; i++) {
+            if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
+                def->clock.timers[i]->present != -1) {
+                virBufferAsprintf(&buf, "(hpet %d)",
+                                  def->clock.timers[i]->present);
+                break;
+            }
+        }
 
         /* PV graphics for xen <= 3.0.4, or HVM graphics for xen <= 3.1.0 */
         if ((!hvm && xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF) ||

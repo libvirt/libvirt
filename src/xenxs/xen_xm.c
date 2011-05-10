@@ -369,6 +369,25 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
         else if (val)
             def->features |= (1 << VIR_DOMAIN_FEATURE_HAP);
+
+        if (xenXMConfigGetBool(conf, "hpet", &val, -1) < 0)
+            goto cleanup;
+        else if (val != -1) {
+            virDomainTimerDefPtr timer;
+
+            if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
+                VIR_ALLOC(timer) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
+            timer->present = val;
+            timer->tickpolicy = -1;
+
+            def->clock.ntimers = 1;
+            def->clock.timers[0] = timer;
+        }
     }
     if (xenXMConfigGetBool(conf, "localtime", &vmlocaltime, 0) < 0)
         goto cleanup;
@@ -1512,6 +1531,13 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                        _("unsupported clock offset '%s'"),
                        virDomainClockOffsetTypeToString(def->clock.offset));
             goto cleanup;
+        }
+
+        for (i = 0; i < def->clock.ntimers; i++) {
+            if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
+                def->clock.timers[i]->present != -1 &&
+                xenXMConfigSetInt(conf, "hpet", def->clock.timers[i]->present) < 0)
+                    break;
         }
 
         if (xendConfigVersion == 1) {

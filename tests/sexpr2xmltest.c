@@ -157,6 +157,8 @@ mymain(void)
     DO_TEST("fv-usbmouse", "fv-usbmouse", 1);
     DO_TEST("fv-usbtablet", "fv-usbtablet", 1);
     DO_TEST("fv-kernel", "fv-kernel", 1);
+    DO_TEST("fv-force-hpet", "fv-force-hpet", 1);
+    DO_TEST("fv-force-nohpet", "fv-force-nohpet", 1);
 
     DO_TEST("fv-serial-null", "fv-serial-null", 1);
     DO_TEST("fv-serial-file", "fv-serial-file", 1);
