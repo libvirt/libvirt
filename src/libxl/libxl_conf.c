@@ -377,6 +377,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
 {
     libxl_domain_build_info *b_info = &d_config->b_info;
     int hvm = STREQ(def->os.type, "hvm");
+    int i;
 
     libxl_init_build_info(b_info, &d_config->c_info);
 
@@ -402,6 +403,13 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         b_info->u.hvm.pae = def->features & (1 << VIR_DOMAIN_FEATURE_PAE);
         b_info->u.hvm.apic = def->features & (1 << VIR_DOMAIN_FEATURE_APIC);
         b_info->u.hvm.acpi = def->features & (1 << VIR_DOMAIN_FEATURE_ACPI);
+        for (i = 0; i < def->clock.ntimers; i++) {
+            if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
+                def->clock.timers[i]->present == 1) {
+                b_info->u.hvm.acpi.hpet = 1;
+            }
+        }
+
         /*
          * The following comment and calculation were taken directly from
          * libxenlight's internal function libxl_get_required_shadow_memory():
