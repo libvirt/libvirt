@@ -2519,6 +2519,8 @@ int virDomainOpenConsole(virDomainPtr dom,
                          virStreamPtr st,
                          unsigned int flags);
 
+int virDomainInjectNMI(virDomainPtr domain, unsigned int flags);
+
 #ifdef __cplusplus
 }
 #endif

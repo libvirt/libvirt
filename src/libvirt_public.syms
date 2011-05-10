@@ -436,4 +436,9 @@ LIBVIRT_0.9.0 {
         virStorageVolUpload;
 } LIBVIRT_0.8.8;
 
+LIBVIRT_0.9.2 {
+    global:
+        virDomainInjectNMI;
+} LIBVIRT_0.9.0;
+
 # .... define new API here using predicted next version number ....
