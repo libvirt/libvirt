@@ -817,6 +817,11 @@ struct remote_domain_undefine_args {
     remote_nonnull_domain dom;
 };
 
+struct remote_domain_inject_nmi_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
 struct remote_domain_set_vcpus_args {
     remote_nonnull_domain dom;
     int nvcpus;
@@ -2176,7 +2181,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206,
     REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207,
     REMOTE_PROC_STORAGE_VOL_UPLOAD = 208,
-    REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209
+    REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209,
+    REMOTE_PROC_DOMAIN_INJECT_NMI = 210
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

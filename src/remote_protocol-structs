@@ -504,6 +504,10 @@ struct remote_domain_define_xml_ret {
 struct remote_domain_undefine_args {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_inject_nmi_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
 struct remote_domain_set_vcpus_args {
         remote_nonnull_domain      dom;
         int                        nvcpus;

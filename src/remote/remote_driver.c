@@ -6493,7 +6493,7 @@ static virDriver remote_driver = {
     remoteDomainSnapshotDelete, /* domainSnapshotDelete */
     remoteQemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
     remoteDomainOpenConsole, /* domainOpenConsole */
-    NULL, /* domainInjectNMI */
+    remoteDomainInjectNMI, /* domainInjectNMI */
 };
 
 static virNetworkDriver network_driver = {
