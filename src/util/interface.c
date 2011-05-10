@@ -91,7 +91,7 @@ ifaceGetFlags(const char *ifname, short *flags) {
 
 int
 ifaceIsUp(const char *ifname, bool *up) {
-    short flags;
+    short flags = 0;
     int rc = ifaceGetFlags(ifname, &flags);
 
     if (rc)

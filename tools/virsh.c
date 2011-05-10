@@ -2857,7 +2857,7 @@ static bool
 cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    int count;
+    int count = 0;
     bool ret = true;
     int maximum = vshCommandOptBool(cmd, "maximum");
     int config = vshCommandOptBool(cmd, "config");
