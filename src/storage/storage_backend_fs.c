@@ -233,7 +233,6 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     };
     const char *prog[] = { SHOWMOUNT, "--no-headers", "--exports", NULL, NULL };
     virStoragePoolSourcePtr source = NULL;
-    int exitstatus;
     char *retval = NULL;
     unsigned int i;
 
@@ -246,8 +245,8 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     prog[3] = source->host.name;
 
     if (virStorageBackendRunProgRegex(NULL, prog, 1, regexes, vars,
-                                      virStorageBackendFileSystemNetFindPoolSourcesFunc,
-                                      &state, &exitstatus) < 0)
+                            virStorageBackendFileSystemNetFindPoolSourcesFunc,
+                            &state) < 0)
         goto cleanup;
 
     retval = virStoragePoolSourceListFormat(&state.list);

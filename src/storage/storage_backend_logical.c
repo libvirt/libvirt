@@ -205,25 +205,13 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
         pool->def->source.name, NULL
     };
 
-    int exitstatus;
-
     if (virStorageBackendRunProgRegex(pool,
                                       prog,
                                       1,
                                       regexes,
                                       vars,
                                       virStorageBackendLogicalMakeVol,
-                                      vol,
-                                      &exitstatus) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("lvs command failed"));
-                              return -1;
-    }
-
-    if (exitstatus != 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("lvs command failed with exitstatus %d"),
-                              exitstatus);
+                                      vol) < 0) {
         return -1;
     }
 
@@ -321,7 +309,6 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     };
     const char *const prog[] = { PVS, "--noheadings", "-o", "pv_name,vg_name", NULL };
     const char *const scanprog[] = { VGSCAN, NULL };
-    int exitstatus;
     char *retval = NULL;
     virStoragePoolSourceList sourceList;
     int i;
@@ -331,7 +318,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
      * that might be hanging around, so if this fails for some reason, the
      * worst that happens is that scanning doesn't pick everything up
      */
-    if (virRun(scanprog, &exitstatus) < 0) {
+    if (virRun(scanprog, NULL) < 0) {
         VIR_WARN("Failure when running vgscan to refresh physical volumes");
     }
 
@@ -339,8 +326,8 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     sourceList.type = VIR_STORAGE_POOL_LOGICAL;
 
     if (virStorageBackendRunProgRegex(NULL, prog, 1, regexes, vars,
-                                      virStorageBackendLogicalFindPoolSourcesFunc,
-                                      &sourceList, &exitstatus) < 0)
+                                virStorageBackendLogicalFindPoolSourcesFunc,
+                                &sourceList) < 0)
         return NULL;
 
     retval = virStoragePoolSourceListFormat(&sourceList);
@@ -489,7 +476,6 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         "--nosuffix", "--options", "vg_size,vg_free",
         pool->def->source.name, NULL
     };
-    int exitstatus;
 
     virFileWaitForDevices();
 
@@ -506,13 +492,7 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                       regexes,
                                       vars,
                                       virStorageBackendLogicalRefreshPoolFunc,
-                                      NULL,
-                                      &exitstatus) < 0) {
-        virStoragePoolObjClearVols(pool);
-        return -1;
-    }
-
-    if (exitstatus != 0) {
+                                      NULL) < 0) {
         virStoragePoolObjClearVols(pool);
         return -1;
     }

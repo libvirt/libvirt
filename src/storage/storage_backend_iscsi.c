@@ -160,8 +160,7 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
                                       regexes,
                                       vars,
                                       virStorageBackendISCSIExtractSession,
-                                      &session,
-                                      NULL) < 0)
+                                      &session) < 0)
         return NULL;
 
     if (session == NULL &&
@@ -503,7 +502,6 @@ virStorageBackendISCSIScanTargets(const char *portal,
     };
     struct virStorageBackendISCSITargetList list;
     int i;
-    int exitstatus;
 
     memset(&list, 0, sizeof(list));
 
@@ -513,17 +511,7 @@ virStorageBackendISCSIScanTargets(const char *portal,
                                       regexes,
                                       vars,
                                       virStorageBackendISCSIGetTargets,
-                                      &list,
-                                      &exitstatus) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("iscsiadm command failed"));
-                              return -1;
-    }
-
-    if (exitstatus != 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("iscsiadm sendtargets command failed with exitstatus %d"),
-                              exitstatus);
+                                      &list) < 0) {
         return -1;
     }
 

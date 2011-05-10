@@ -135,8 +135,7 @@ int virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                                   const char **regex,
                                   int *nvars,
                                   virStorageBackendListVolRegexFunc func,
-                                  void *data,
-                                  int *exitstatus);
+                                  void *data);
 
 int virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
                                 const char **prog,

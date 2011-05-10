@@ -1401,8 +1401,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                               const char **regex,
                               int *nvars,
                               virStorageBackendListVolRegexFunc func,
-                              void *data,
-                              int *outexit)
+                              void *data)
 {
     int fd = -1, err, ret = -1;
     FILE *list = NULL;
@@ -1500,7 +1499,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         }
     }
 
-    ret = virCommandWait(cmd, outexit);
+    ret = virCommandWait(cmd, NULL);
 cleanup:
     if (groups) {
         for (j = 0 ; j < totgroups ; j++)
@@ -1623,10 +1622,10 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
                               const char **regex ATTRIBUTE_UNUSED,
                               int *nvars ATTRIBUTE_UNUSED,
                               virStorageBackendListVolRegexFunc func ATTRIBUTE_UNUSED,
-                              void *data ATTRIBUTE_UNUSED,
-                              int *outexit ATTRIBUTE_UNUSED)
+                              void *data ATTRIBUTE_UNUSED)
 {
-    virStorageReportError(VIR_ERR_INTERNAL_ERROR, _("%s not implemented on Win32"), __FUNCTION__);
+    virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                          _("%s not implemented on Win32"), __FUNCTION__);
     return -1;
 }
 
