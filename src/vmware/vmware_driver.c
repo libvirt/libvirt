@@ -1007,6 +1007,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainSnapshotDelete */
     NULL,                       /* qemuDomainMonitorCommand */
     NULL,                       /* domainOpenConsole */
+    NULL,                       /* domainInjectNMI */
 };
 
 int

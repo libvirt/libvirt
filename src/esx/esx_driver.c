@@ -4699,6 +4699,7 @@ static virDriver esxDriver = {
     esxDomainSnapshotDelete,         /* domainSnapshotDelete */
     NULL,                            /* qemuDomainMonitorCommand */
     NULL,                            /* domainOpenConsole */
+    NULL,                            /* domainInjectNMI */
 };
 
 

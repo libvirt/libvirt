@@ -3827,7 +3827,8 @@ static virDriver phypDriver = {
     NULL,                       /* domainRevertToSnapshot */
     NULL,                       /* domainSnapshotDelete */
     NULL,                       /* qemuMonitorCommand */
-    NULL, /* domainOpenConsole */
+    NULL,                       /* domainOpenConsole */
+    NULL,                       /* domainInjectNMI */
 };
 
 static virStorageDriver phypStorageDriver = {

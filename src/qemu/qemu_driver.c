@@ -7192,6 +7192,7 @@ static virDriver qemuDriver = {
     qemuDomainSnapshotDelete, /* domainSnapshotDelete */
     qemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
     qemuDomainOpenConsole, /* domainOpenConsole */
+    NULL, /* domainInjectNMI */
 };
 
 

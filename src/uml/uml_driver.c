@@ -2253,6 +2253,7 @@ static virDriver umlDriver = {
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
     umlDomainOpenConsole, /* domainOpenConsole */
+    NULL, /* domainInjectNMI */
 };
 
 static int

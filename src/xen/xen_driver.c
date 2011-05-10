@@ -2208,6 +2208,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
     xenUnifiedDomainOpenConsole, /* domainOpenConsole */
+    NULL, /* domainInjectNMI */
 };
 
 /**

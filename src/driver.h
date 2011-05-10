@@ -515,6 +515,9 @@ typedef int
                                virStreamPtr st,
                                unsigned int flags);
 
+typedef int
+    (*virDrvDomainInjectNMI)(virDomainPtr dom, unsigned int flags);
+
 
 /**
  * _virDriver:
@@ -639,6 +642,7 @@ struct _virDriver {
     virDrvDomainSnapshotDelete domainSnapshotDelete;
     virDrvQemuDomainMonitorCommand qemuDomainMonitorCommand;
     virDrvDomainOpenConsole domainOpenConsole;
+    virDrvDomainInjectNMI domainInjectNMI;
 };
 
 typedef int

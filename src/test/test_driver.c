@@ -5447,6 +5447,7 @@ static virDriver testDriver = {
     NULL, /* domainSnapshotDelete */
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainOpenConsole */
+    NULL, /* domainInjectNMI */
 };
 
 static virNetworkDriver testNetworkDriver = {

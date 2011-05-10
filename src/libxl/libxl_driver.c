@@ -2790,6 +2790,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainSnapshotDelete */
     NULL,                       /* qemuDomainMonitorCommand */
     NULL,                       /* domainOpenConsole */
+    NULL,                       /* domainInjectNMI */
 };
 
 static virStateDriver libxlStateDriver = {
