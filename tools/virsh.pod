@@ -290,6 +290,10 @@ running B<virsh suspend>.  When in a paused state the domain will still
 consume allocated resources like memory, but will not be eligible for
 scheduling by the hypervisor.
 
+=item B<inject-nmi> I<domain-id>
+
+Inject NMI to the guest
+
 =item B<shutdown>
 
 The domain is in the process of shutting down, i.e. the guest operating system

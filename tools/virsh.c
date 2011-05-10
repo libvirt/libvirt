@@ -2912,6 +2912,40 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "inject-nmi" command
+ */
+static const vshCmdInfo info_inject_nmi[] = {
+    {"help", N_("Inject NMI to the guest")},
+    {"desc", N_("Inject NMI to the guest domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_inject_nmi[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+
+static bool
+cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int ret = true;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainInjectNMI(dom, 0) < 0)
+            ret = false;
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "setmemory" command
  */
 static const vshCmdInfo info_setmem[] = {
@@ -10720,6 +10754,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem},
     {"setmem", cmdSetmem, opts_setmem, info_setmem},
     {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus},
+    {"inject-nmi", cmdInjectNMI, opts_inject_nmi, info_inject_nmi},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
     {"start", cmdStart, opts_start, info_start},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
