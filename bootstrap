@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2011-05-03.08; # UTC
+scriptversion=2011-05-11.17; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -425,16 +425,27 @@ check_versions() {
         GZIP) ;; # Do not use $GZIP:  it contains gzip options.
         *) eval "app=\${$appvar-$app}" ;;
     esac
-    inst_ver=$(get_version $app)
-    if [ ! "$inst_ver" ]; then
-      echo "$me: Error: '$app' not found" >&2
-      ret=1
-    elif [ ! "$req_ver" = "-" ]; then
-      latest_ver=$(sort_ver $req_ver $inst_ver | cut -d' ' -f2)
-      if [ ! "$latest_ver" = "$inst_ver" ]; then
-        echo "$me: Error: '$app' version == $inst_ver is too old" >&2
-        echo "       '$app' version >= $req_ver is required" >&2
+    if [ "$req_ver" = "-" ]; then
+      # Merely require app to exist; not all prereq apps are well-behaved
+      # so we have to rely on $? rather than get_version.
+      $app --version >/dev/null 2>&1
+      if [ 126 -le $? ]; then
+        echo "$me: Error: '$app' not found" >&2
         ret=1
+      fi
+    else
+      # Require app to produce a new enough version string.
+      inst_ver=$(get_version $app)
+      if [ ! "$inst_ver" ]; then
+        echo "$me: Error: '$app' not found" >&2
+        ret=1
+      else
+        latest_ver=$(sort_ver $req_ver $inst_ver | cut -d' ' -f2)
+        if [ ! "$latest_ver" = "$inst_ver" ]; then
+          echo "$me: Error: '$app' version == $inst_ver is too old" >&2
+          echo "       '$app' version >= $req_ver is required" >&2
+          ret=1
+        fi
       fi
     fi
   done
