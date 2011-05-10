@@ -2228,3 +2228,17 @@ int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
         ret = qemuMonitorTextArbitraryCommand(mon, cmd, reply);
     return ret;
 }
+
+
+int qemuMonitorInjectNMI(qemuMonitorPtr mon)
+{
+    int ret;
+
+    VIR_DEBUG("mon=%p", mon);
+
+    if (mon->json)
+        ret = qemuMonitorJSONInjectNMI(mon);
+    else
+        ret = qemuMonitorTextInjectNMI(mon);
+    return ret;
+}

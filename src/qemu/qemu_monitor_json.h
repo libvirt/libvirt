@@ -204,4 +204,5 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     char **reply_str,
                                     bool hmp);
 
+int qemuMonitorJSONInjectNMI(qemuMonitorPtr mon);
 #endif /* QEMU_MONITOR_JSON_H */
