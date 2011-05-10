@@ -5217,6 +5217,50 @@ error:
 }
 
 /**
+ * virDomainInjectNMI:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @flags:  the flags for controlling behavior, pass 0 for now
+ *
+ * Send NMI to the guest
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+
+int virDomainInjectNMI(virDomainPtr domain, unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DOMAIN_DEBUG(domain, "flags=%u", flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainInjectNMI) {
+        int ret;
+        ret = conn->driver->domainInjectNMI(domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainSetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0
  * @nvcpus: the new number of virtual CPUs for this domain
