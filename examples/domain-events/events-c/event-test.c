@@ -8,8 +8,7 @@
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
-#define VIR_DEBUG(fmt, ...) printf("%s:%d: " fmt "\n", \
-        __func__, __LINE__, ##__VA_ARGS__)
+#define VIR_DEBUG(fmt) printf("%s:%d: " fmt "\n", __func__, __LINE__)
 #define STREQ(a,b) (strcmp(a,b) == 0)
 
 #ifndef ATTRIBUTE_UNUSED
