@@ -313,7 +313,12 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
 
 /* Helper macros to implement VIR_DOMAIN_DEBUG using just C99.  This
  * assumes you pass fewer than 10 arguments to VIR_DOMAIN_DEBUG, but
- * can easily be expanded if needed.  */
+ * can easily be expanded if needed.
+ *
+ * Note that gcc provides extensions of "define a(b...) b" or
+ * "define a(b,...) b,##__VA_ARGS__" as a means of eliding a comma
+ * when no var-args are present, but we don't want to require gcc.
+ */
 #define VIR_ARG10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, ...) _10
 #define VIR_HAS_COMMA(...) VIR_ARG10(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
@@ -330,19 +335,21 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
     VIR_DOMAIN_DEBUG_1(dom, "%s", "")
 
 /* Internal use only, when VIR_DOMAIN_DEBUG has three or more arguments.  */
-#define VIR_DOMAIN_DEBUG_1(dom, fmt, ...)                 \
-    char _uuidstr[VIR_UUID_STRING_BUFLEN];                \
-    const char *_domname = NULL;                          \
-                                                          \
-    if (!VIR_IS_DOMAIN(dom)) {                            \
-        memset(_uuidstr, 0, sizeof(_uuidstr));            \
-    } else {                                              \
-        virUUIDFormat((dom)->uuid, _uuidstr);             \
-        _domname = (dom)->name;                           \
-    }                                                     \
-                                                          \
-    VIR_DEBUG("dom=%p, (VM: name=%s, uuid=%s), " fmt,         \
-          dom, NULLSTR(_domname), _uuidstr, __VA_ARGS__)
+#define VIR_DOMAIN_DEBUG_1(dom, fmt, ...)                               \
+    do {                                                                \
+        char _uuidstr[VIR_UUID_STRING_BUFLEN];                          \
+        const char *_domname = NULL;                                    \
+                                                                        \
+        if (!VIR_IS_DOMAIN(dom)) {                                      \
+            memset(_uuidstr, 0, sizeof(_uuidstr));                      \
+        } else {                                                        \
+            virUUIDFormat((dom)->uuid, _uuidstr);                       \
+            _domname = (dom)->name;                                     \
+        }                                                               \
+                                                                        \
+        VIR_DEBUG("dom=%p, (VM: name=%s, uuid=%s), " fmt,               \
+                  dom, NULLSTR(_domname), _uuidstr, __VA_ARGS__);       \
+    } while (0)
 
 /**
  * VIR_DOMAIN_DEBUG:
