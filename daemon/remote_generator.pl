@@ -23,9 +23,11 @@ use Getopt::Std;
 our ($opt_p, $opt_t, $opt_a, $opt_r, $opt_d, $opt_c, $opt_b, $opt_k);
 getopts ('ptardcbk');
 
-my $structprefix = $ARGV[0];
+my $structprefix = shift or die "missing prefix argument";
+my $protocol = shift or die "missing protocol argument";
+my @autogen;
+
 my $procprefix = uc $structprefix;
-shift;
 
 # Convert name_of_call to NameOfCall.
 sub name_to_ProcName {
@@ -41,7 +43,7 @@ sub name_to_ProcName {
 
 # Read the input file (usually remote_protocol.x) and form an
 # opinion about the name, args and return type of each RPC.
-my ($name, $ProcName, $id, %calls, @calls);
+my ($name, $ProcName, $id, $flags, $gen, %calls, @calls);
 
 # only generate a close method if -c was passed
 if ($opt_c) {
@@ -59,7 +61,9 @@ my $collect_args_members = 0;
 my $collect_ret_members = 0;
 my $last_name;
 
-while (<>) {
+open PROTOCOL, "<$protocol" or die "cannot open $protocol: $!";
+
+while (<PROTOCOL>) {
     if ($collect_args_members) {
         if (/^};/) {
             $collect_args_members = 0;
@@ -124,10 +128,27 @@ while (<>) {
 
         $collect_args_members = 0;
         $collect_ret_members = 0;
-    } elsif (/^\s*${procprefix}_PROC_(.*?)\s+=\s+(\d+),?$/) {
+    } elsif (/^\s*${procprefix}_PROC_(.*?)\s*=\s*(\d+)\s*,?(.*)$/) {
         $name = lc $1;
         $id = $2;
+        $flags = $3;
         $ProcName = name_to_ProcName ($name);
+
+        if ($opt_b or $opt_k) {
+            if (!($flags =~ m/^\s*\/\*\s*(\S+)\s+(\S+)\s*\*\/\s*$/)) {
+                die "invalid generator flags for ${procprefix}_PROC_${name}"
+            }
+
+            $gen = $opt_b ? $1 : $2;
+
+            if ($gen eq "autogen") {
+                push(@autogen, $ProcName);
+            } elsif ($gen eq "skipgen") {
+                # ignore it
+            } else {
+                die "invalid generator flags for ${procprefix}_PROC_${name}"
+            }
+        }
 
         $calls[$id] = $calls{$name};
 
@@ -138,6 +159,8 @@ while (<>) {
         $collect_ret_members = 0;
     }
 }
+
+close(PROTOCOL);
 
 #----------------------------------------------------------------------
 # Output
@@ -238,63 +261,15 @@ elsif ($opt_t) {
 
 # Bodies for dispatch functions ("remote_dispatch_bodies.h").
 elsif ($opt_b) {
-    # list of functions that currently are not generatable
-    my @ungeneratable;
-
-    if ($structprefix eq "remote") {
-        @ungeneratable = ("Close",
-                          "DomainEventsDeregisterAny",
-                          "DomainEventsRegisterAny",
-                          "DomainMigratePrepareTunnel",
-                          "DomainOpenConsole",
-                          "DomainPinVcpu",
-                          "DomainSetSchedulerParameters",
-                          "DomainSetMemoryParameters",
-                          "DomainSetBlkioParameters",
-                          "Open",
-                          "StorageVolUpload",
-                          "StorageVolDownload",
-
-                          "AuthList",
-                          "AuthSaslInit",
-                          "AuthSaslStart",
-                          "AuthSaslStep",
-                          "AuthPolkit",
-
-                          "DomainBlockPeek",
-                          "DomainCreateWithFlags",
-                          "DomainEventsDeregister",
-                          "DomainEventsRegister",
-                          "DomainGetBlkioParameters",
-                          "DomainGetMemoryParameters",
-                          "DomainGetSchedulerParameters",
-                          "DomainGetSchedulerType",
-                          "DomainGetSecurityLabel",
-                          "DomainGetVcpus",
-                          "DomainMemoryPeek",
-                          "DomainMemoryStats",
-                          "DomainMigratePrepare",
-                          "DomainMigratePrepare2",
-                          "GetType",
-                          "NodeDeviceGetParent",
-                          "NodeGetSecurityModel",
-                          "SecretGetValue");
-    } elsif ($structprefix eq "qemu") {
-        @ungeneratable = ("MonitorCommand");
-    }
-
-    my %ug = map { $_ => 1 } @ungeneratable;
+    my %generate = map { $_ => 1 } @autogen;
     my @keys = sort (keys %calls);
 
     foreach (@keys) {
         # skip things which are REMOTE_MESSAGE
         next if $calls{$_}->{msg};
 
-        if (exists($ug{$calls{$_}->{ProcName}})) {
-            print "\n/* ${structprefix}Dispatch$calls{$_}->{ProcName} has " .
-                  "to be implemented manually */\n";
-            next;
-        }
+        # skip procedures not on generate list
+        next if ! exists($generate{$calls{$_}->{ProcName}});
 
         my $has_node_device = 0;
         my @vars_list = ();
@@ -550,6 +525,8 @@ elsif ($opt_b) {
                     } else {
                         $single_ret_by_ref = 1;
                     }
+                } elsif ($ret_member =~ m/^(\/)?\*/) {
+                    # ignore comments
                 } else {
                     die "unhandled type for return value: $ret_member";
                 }
@@ -756,63 +733,7 @@ elsif ($opt_b) {
 
 # Bodies for client functions ("remote_client_bodies.h").
 elsif ($opt_k) {
-    # list of functions that currently are not generatable
-    my @ungeneratable;
-
-    if ($structprefix eq "remote") {
-        @ungeneratable = ("Close",
-                          "DomainEventsDeregisterAny",
-                          "DomainEventsRegisterAny",
-                          "DomainMigratePrepareTunnel",
-                          "DomainOpenConsole",
-                          "DomainSetSchedulerParameters",
-                          "DomainSetMemoryParameters",
-                          "DomainSetBlkioParameters",
-                          "Open",
-                          "StorageVolUpload",
-                          "StorageVolDownload",
-
-                          "AuthList",
-                          "AuthSaslInit",
-                          "AuthSaslStart",
-                          "AuthSaslStep",
-                          "AuthPolkit",
-
-                          "DomainCreate",
-                          "DomainDestroy",
-                          "FindStoragePoolSources",
-                          "IsSecure",
-                          "SupportsFeature",
-                          "NodeGetCellsFreeMemory",
-                          "ListDomains",
-                          "GetURI",
-                          "NodeDeviceDettach",
-                          "NodeDeviceReset",
-                          "NodeDeviceReAttach",
-
-                          "DomainBlockPeek",
-                          "DomainCreateWithFlags",
-                          "DomainEventsDeregister",
-                          "DomainEventsRegister",
-                          "DomainGetBlkioParameters",
-                          "DomainGetMemoryParameters",
-                          "DomainGetSchedulerParameters",
-                          "DomainGetSchedulerType",
-                          "DomainGetSecurityLabel",
-                          "DomainGetVcpus",
-                          "DomainMemoryPeek",
-                          "DomainMemoryStats",
-                          "DomainMigratePrepare",
-                          "DomainMigratePrepare2",
-                          "GetType",
-                          "NodeDeviceGetParent",
-                          "NodeGetSecurityModel",
-                          "SecretGetValue");
-    } elsif ($structprefix eq "qemu") {
-        @ungeneratable = ("MonitorCommand");
-    }
-
-    my %ug = map { $_ => 1 } @ungeneratable;
+    my %generate = map { $_ => 1 } @autogen;
     my @keys = sort (keys %calls);
 
     foreach (@keys) {
@@ -821,11 +742,8 @@ elsif ($opt_k) {
         # skip things which are REMOTE_MESSAGE
         next if $call->{msg};
 
-        if (exists($ug{$call->{ProcName}})) {
-            print "\n/* ${structprefix}Dispatch$call->{ProcName} has to " .
-                  "be implemented manually */\n";
-            next;
-        }
+        # skip procedures not on generate list
+        next if ! exists($generate{$call->{ProcName}});
 
         # handle arguments to the function
         my @args_list = ();
@@ -999,11 +917,13 @@ elsif ($opt_k) {
                         push(@ret_list, "memcpy(result->$3, ret.$3, sizeof result->$3);");
                     } elsif ($ret_member =~ m/<\S+>;/ or $ret_member =~ m/\[\S+\];/) {
                         # just make all other array types fail
-                        die "unhandled type for multi-return-value: $ret_member";
+                        die "unhandled type for multi-return-value for " .
+                            "procedure $call->{name}: $ret_member";
                     } elsif ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+);/) {
                         push(@ret_list, "result->$3 = ret.$3;");
                     } else {
-                        die "unhandled type for multi-return-value: $ret_member";
+                        die "unhandled type for multi-return-value for " .
+                            "procedure $call->{name}: $ret_member";
                     }
                 } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;/) {
                     $single_ret_as_list = 1;
@@ -1089,8 +1009,11 @@ elsif ($opt_k) {
                     } else {
                         die "unhandled type for return value: $ret_member";
                     }
+                } elsif ($ret_member =~ m/^(\/)?\*/) {
+                    # ignore comments
                 } else {
-                    die "unhandled type for return value: $ret_member";
+                    die "unhandled type for return value for procedure " .
+                        "$call->{name}: $ret_member";
                 }
             }
         }

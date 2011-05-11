@@ -613,7 +613,7 @@ exclude_file_name_regexp--sc_prohibit_asprintf = \
 exclude_file_name_regexp--sc_prohibit_can_not = ^po/
 
 exclude_file_name_regexp--sc_prohibit_close = \
-  (\.py$$|^docs/|(src/util/files\.c|src/libvirt\.c)$$)
+  (\.p[yl]$$|^docs/|(src/util/files\.c|src/libvirt\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_doubled_word = ^po/
 

@@ -42,5 +42,8 @@ const QEMU_PROGRAM = 0x20008087;
 const QEMU_PROTOCOL_VERSION = 1;
 
 enum qemu_procedure {
-    QEMU_PROC_MONITOR_COMMAND = 1
+    /* Each function must have a two-word comment.  The first word is
+     * whether remote_generator.pl handles daemon, the second whether
+     * it handles src/remote.  */
+    QEMU_PROC_MONITOR_COMMAND = 1 /* skipgen skipgen */
 };
