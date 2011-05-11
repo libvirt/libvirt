@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1>libvirt TCK  : Technology Compatibility Kit</h1>
+    <p>The libvirt TCK provides a framework for performing testing
+    of the integration between libvirt drivers, the underlying virt
+    hypervisor technology, related operating system services and system
+    configuration. The idea (and name) is motivated by the Java TCK.</p>
+    <p>In particular the libvirt TCK is intended to address the following
+    scenarios:</p>
+    <ul>
+      <li>Validate that a new libvirt driver is in compliance
+          with the (possibly undocumented!) driver API semantics</li>
+      <li>Validate that an update to an existing driver does not
+         change the API semantics in a non-compliant manner</li>
+      <li>Validate that a new hypervisor release is still providing
+         compatibility with the corresponding libvirt driver usage</li>
+      <li>Validate that an OS distro deployment consisting of a
+         hypervisor and libvirt release is configured correctly</li>
+    </ul>
+    <p>Thus the libvirt TCK will allow developers, administrators and users
+    to determine the level of compatibility of their platform, and
+    evaluate whether it will meet their needs, and get awareness of any
+    regressions that may have occurred since a previous test run.</p>
+    <p>For more details you can look at:</p>
+    <ul>
+      <li> The initial
+<a href="http://www.redhat.com/archives/libvir-list/2009-April/msg00176.html">mail
+           from Daniel Berrange</a> presenting the project.
+      <li> The <a href="http://fedoraproject.org/wiki/Features/VirtTCK">page
+           describing VirtTCK</a> the inclusion of libvirt-TCK as a
+           Fedora Feature.</li>
+    </ul>
+    <p> Libvirt-TCK is maintained using
+        <a href="http://libvirt.org/git/?p=libvirt-tck.git">a GIT
+        repository</a>, and comment, patches and reviews are carried
+        on the <a href="contact.html">libvir-list</a> development list.</p>
+  </body>
+</html>

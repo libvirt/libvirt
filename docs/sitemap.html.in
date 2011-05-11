@@ -319,6 +319,20 @@
         <span>How to contact the developers via email and IRC</span>
       </li>
       <li>
+        <a href="testsuites.html">Test suites</a>
+        <span>Available test suites for libvirt</span>
+        <ul>
+          <li>
+            <a href="testtck.html">TCK test suite</a>
+            <span>Virtualization functional test suite in Perl</span>
+          </li>
+          <li>
+            <a href="testapi.html">Libvirt-test-API</a>
+            <span>Libvirt functional API test suite in Python</span>
+          </li>
+        </ul>
+      </li>
+      <li>
         <a href="relatedlinks.html">Related Links</a>
         <span>Miscellaneous links of interest related to libvirt</span>
       </li>

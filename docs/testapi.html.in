@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1>libvirt-test-API:  Python based test suite </h1>
+    <p>Libvirt-test-API is a powerful test tool designed to complement
+       existing libvirt test tools such as libvirt-TCK and the internal
+       test suite. It aims at functional regression testing, trying to
+       exercise nearly all the API by the way of the Python bindings.</p>
+    <p>The test API currently covers:</p>
+    <ul>
+      <li>domain: all classical lifetime operations, installation of
+          various guests OSes, snapshots</li>
+      <li>interfaces: define, create, destroy, undefine, NPIV</li>
+      <li>virtual networks: define, create, destroy, undefine</li>
+      <li>storage: regression tests for most storage types and configurations
+          dir, disk, netfs, iSCSI, multipath</li>
+    </ul>
+    <p>Some of the tests need dedicated local resources whose definitions
+       are stored in a configuration file. The tests are defined using
+       Python modules defining the code for the test, this is called
+       a <tt>test case</tt>, and test <tt>configuration files</tt> using one
+       or more test case to define a given test scenario.</p>
+    <p>For more details you can look at:</p>
+    <ul>
+      <li> A <a href="http://libvirt.org/sources/libvirt-test-API/Libvirt-test-API.pdf">documentation PDF</a>
+           file describing the test suite and how to write test cases
+           and test scenarios.
+    </ul>
+    <p> Libvirt-test-API is maintained using
+        <a href="http://libvirt.org/git/?p=libvirt-test-API.git">a GIT
+        repository</a>, and comment, patches and reviews are carried
+        on the <a href="contact.html">libvir-list</a> development list.</p>
+  </body>
+</html>
