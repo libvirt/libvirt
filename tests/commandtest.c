@@ -748,6 +748,18 @@ cleanup:
     return ret;
 }
 
+static const char *const newenv[] = {
+    "PATH=/usr/bin:/bin",
+    "HOSTNAME=test",
+    "LANG=C",
+    "HOME=/home/test",
+    "USER=test",
+    "LOGNAME=test"
+    "TMPDIR=/tmp",
+    "DISPLAY=:0.0",
+    NULL
+};
+
 static int
 mymain(void)
 {
@@ -771,17 +783,6 @@ mymain(void)
 
     virInitialize();
 
-    const char *const newenv[] = {
-        "PATH=/usr/bin:/bin",
-        "HOSTNAME=test",
-        "LANG=C",
-        "HOME=/home/test",
-        "USER=test",
-        "LOGNAME=test"
-        "TMPDIR=/tmp",
-        "DISPLAY=:0.0",
-        NULL
-    };
     environ = (char **)newenv;
 
 # define DO_TEST(NAME)                                                \
