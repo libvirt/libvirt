@@ -12253,7 +12253,7 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->defineXML) {
         virNWFilterPtr ret;
-        ret = conn->nwfilterDriver->defineXML (conn, xmlDesc, 0);
+        ret = conn->nwfilterDriver->defineXML (conn, xmlDesc);
         if (!ret)
             goto error;
         return ret;

@@ -1181,8 +1181,7 @@ typedef virNWFilterPtr
                                                const unsigned char *uuid);
 typedef virNWFilterPtr
     (*virDrvNWFilterDefineXML)                (virConnectPtr conn,
-                                               const char *xmlDesc,
-                                               unsigned int flags);
+                                               const char *xmlDesc);
 typedef int
     (*virDrvNWFilterUndefine)                 (virNWFilterPtr nwfilter);
 

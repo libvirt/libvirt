@@ -961,12 +961,6 @@ elsif ($opt_k) {
             push(@args_list, "virConnectPtr conn");
         }
 
-        if ($call->{ProcName} eq "NWFilterDefineXML") {
-            # SPECIAL: virNWFilterDefineXML has a flags parameter in the
-            #          public API that is missing in the XDR protocol
-            push(@args_list, "unsigned int flags ATTRIBUTE_UNUSED");
-        }
-
         # fix priv_name for the NumOf* functions
         if ($priv_name eq "privateData" and
             !($call->{ProcName} =~ m/(Domains|DomainSnapshot)/) and

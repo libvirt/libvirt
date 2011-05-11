@@ -2,7 +2,7 @@
  * nwfilter_driver.c: core driver for network filter APIs
  *                    (based on storage_driver.c)
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
@@ -327,8 +327,8 @@ nwfilterListNWFilters(virConnectPtr conn,
 
 static virNWFilterPtr
 nwfilterDefine(virConnectPtr conn,
-               const char *xml,
-               unsigned int flags ATTRIBUTE_UNUSED) {
+               const char *xml)
+{
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     virNWFilterDefPtr def;
     virNWFilterObjPtr nwfilter = NULL;
