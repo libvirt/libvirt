@@ -391,11 +391,11 @@ struct remote_get_type_ret {
 };
 
 struct remote_get_version_ret {
-    hyper hv_ver;
+    unsigned hyper hv_ver;
 };
 
 struct remote_get_lib_version_ret {
-    hyper lib_ver;
+    unsigned hyper lib_ver;
 };
 
 struct remote_get_hostname_ret {

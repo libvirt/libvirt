@@ -504,13 +504,6 @@ elsif ($opt_b) {
                     $type_name = $1 if ($1);
                     $type_name .= "long";
 
-                    if ($type_name eq "long" and
-                        $calls{$_}->{ProcName} =~ m/^Get(Lib)?Version$/) {
-                        # SPECIAL: virConnectGet(Lib)?Version uses unsigned long
-                        #          in public API but hyper in XDR protocol
-                        $type_name = "unsigned long";
-                    }
-
                     push(@vars_list, "$type_name $ret_name");
                     push(@ret_list, "ret->$ret_name = $ret_name;");
                     $single_ret_var = $ret_name;
@@ -995,19 +988,21 @@ elsif ($opt_k) {
                     $single_ret_type = "int";
                 } elsif ($ret_member =~ m/^unsigned hyper (\S+);/) {
                     my $arg_name = $1;
-                    push(@ret_list, "rv = ret.$arg_name;");
-                    $single_ret_var = "unsigned long rv = 0";
-                    $single_ret_type = "unsigned long";
-                } elsif ($ret_member =~ m/^hyper (\S+);/) {
-                    my $arg_name = $1;
-
                     if ($call->{ProcName} =~ m/Get(Lib)?Version/) {
                         push(@args_list, "unsigned long *$arg_name");
                         push(@ret_list, "if ($arg_name) *$arg_name = ret.$arg_name;");
                         push(@ret_list, "rv = 0;");
                         $single_ret_var = "int rv = -1";
                         $single_ret_type = "int";
-                    } elsif ($call->{ProcName} eq "NodeGetFreeMemory") {
+                    } else {
+                        push(@ret_list, "rv = ret.$arg_name;");
+                        $single_ret_var = "unsigned long rv = 0";
+                        $single_ret_type = "unsigned long";
+                    }
+                } elsif ($ret_member =~ m/^hyper (\S+);/) {
+                    my $arg_name = $1;
+
+                    if ($call->{ProcName} eq "NodeGetFreeMemory") {
                         push(@ret_list, "rv = ret.$arg_name;");
                         $single_ret_var = "unsigned long long rv = 0";
                         $single_ret_type = "unsigned long long";

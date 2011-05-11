@@ -115,10 +115,10 @@ struct remote_get_type_ret {
         remote_nonnull_string      type;
 };
 struct remote_get_version_ret {
-        int64_t                    hv_ver;
+        uint64_t                   hv_ver;
 };
 struct remote_get_lib_version_ret {
-        int64_t                    lib_ver;
+        uint64_t                   lib_ver;
 };
 struct remote_get_hostname_ret {
         remote_nonnull_string      hostname;
