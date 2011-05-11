@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007, 2009 Red Hat, Inc.
+ * Copyright (C) 2007, 2009, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -428,14 +428,14 @@ brProbeVnetHdr(int tapfd)
     struct ifreq dummy;
 
     if (ioctl(tapfd, TUNGETFEATURES, &features) != 0) {
-        VIR_INFO(_("Not enabling IFF_VNET_HDR; "
-                    "TUNGETFEATURES ioctl() not implemented"));
+        VIR_INFO("Not enabling IFF_VNET_HDR; "
+                 "TUNGETFEATURES ioctl() not implemented");
         return 0;
     }
 
     if (!(features & IFF_VNET_HDR)) {
-        VIR_INFO(_("Not enabling IFF_VNET_HDR; "
-                    "TUNGETFEATURES ioctl() reports no IFF_VNET_HDR"));
+        VIR_INFO("Not enabling IFF_VNET_HDR; "
+                 "TUNGETFEATURES ioctl() reports no IFF_VNET_HDR");
         return 0;
     }
 
@@ -443,17 +443,17 @@ brProbeVnetHdr(int tapfd)
      * If TUNGETIFF is not implemented then errno == EBADFD.
      */
     if (ioctl(tapfd, TUNGETIFF, &dummy) != -1 || errno != EBADFD) {
-        VIR_INFO(_("Not enabling IFF_VNET_HDR; "
-                    "TUNGETIFF ioctl() not implemented"));
+        VIR_INFO("Not enabling IFF_VNET_HDR; "
+                 "TUNGETIFF ioctl() not implemented");
         return 0;
     }
 
-    VIR_INFO(_("Enabling IFF_VNET_HDR"));
+    VIR_INFO("Enabling IFF_VNET_HDR");
 
     return 1;
 #  else
     (void) tapfd;
-    VIR_INFO(_("Not enabling IFF_VNET_HDR; disabled at build time"));
+    VIR_INFO("Not enabling IFF_VNET_HDR; disabled at build time");
     return 0;
 #  endif
 }

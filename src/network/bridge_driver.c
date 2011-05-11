@@ -1407,7 +1407,7 @@ networkReloadIptablesRules(struct network_driver *driver)
 {
     unsigned int i;
 
-    VIR_INFO(_("Reloading iptables rules"));
+    VIR_INFO("Reloading iptables rules");
 
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
@@ -1752,7 +1752,7 @@ networkStartNetworkDaemon(struct network_driver *driver,
     }
 
     VIR_FREE(macTapIfName);
-    VIR_INFO(_("Starting up network '%s'"), network->def->name);
+    VIR_INFO("Starting up network '%s'", network->def->name);
     network->active = 1;
 
     return 0;
@@ -1825,7 +1825,7 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
     char *stateFile;
     char *macTapIfName;
 
-    VIR_INFO(_("Shutting down network '%s'"), network->def->name);
+    VIR_INFO("Shutting down network '%s'", network->def->name);
 
     if (!virNetworkObjIsActive(network))
         return 0;
@@ -2127,7 +2127,7 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
-    VIR_INFO(_("Creating network '%s'"), network->def->name);
+    VIR_INFO("Creating network '%s'", network->def->name);
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
 cleanup:
@@ -2199,7 +2199,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         dnsmasqContextFree(dctx);
     }
 
-    VIR_INFO(_("Defining network '%s'"), network->def->name);
+    VIR_INFO("Defining network '%s'", network->def->name);
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
 cleanup:
@@ -2286,7 +2286,7 @@ static int networkUndefine(virNetworkPtr net) {
 
     }
 
-    VIR_INFO(_("Undefining network '%s'"), network->def->name);
+    VIR_INFO("Undefining network '%s'", network->def->name);
     virNetworkRemoveInactive(&driver->networks,
                              network);
     network = NULL;

@@ -413,7 +413,7 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
 
     switch (siginfo.si_signo) {
     case SIGHUP:
-        VIR_INFO(_("Reloading configuration on SIGHUP"));
+        VIR_INFO("Reloading configuration on SIGHUP");
         virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
                     VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL);
         if (virStateReload() < 0)
@@ -429,7 +429,7 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
         break;
 
     default:
-        VIR_INFO(_("Received unexpected signal %d"), siginfo.si_signo);
+        VIR_INFO("Received unexpected signal %d", siginfo.si_signo);
         break;
     }
 
@@ -1288,8 +1288,8 @@ remoteCheckAccess (struct qemud_client *client)
         VIR_ERROR(_("remoteCheckCertificate: "
                      "failed to verify client's certificate"));
         if (!tls_no_verify_certificate) return -1;
-        else VIR_INFO(_("remoteCheckCertificate: tls_no_verify_certificate "
-                          "is set so the bad certificate is ignored"));
+        else VIR_INFO("remoteCheckCertificate: tls_no_verify_certificate "
+                      "is set so the bad certificate is ignored");
     }
 
     if (client->tx) {
@@ -1445,7 +1445,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
         /* Client is running as root, so disable auth */
         if (uid == 0) {
-            VIR_INFO(_("Turn off polkit auth for privileged client pid %d from %s"),
+            VIR_INFO("Turn off polkit auth for privileged client pid %d from %s",
                      pid, client->addrstr);
             client->auth = REMOTE_AUTH_NONE;
         }

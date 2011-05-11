@@ -2292,7 +2292,7 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
         goto authfail;
     }
 
-    VIR_INFO(_("Checking PID %d running as %d"), callerPid, callerUid);
+    VIR_INFO("Checking PID %d running as %d", callerPid, callerUid);
 
     rv = snprintf(pidbuf, sizeof pidbuf, "%d", callerPid);
     if (rv < 0 || rv >= sizeof pidbuf) {
@@ -2319,7 +2319,7 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
     }
     PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
           client->fd, REMOTE_AUTH_POLKIT, (char *)ident);
-    VIR_INFO(_("Policy allowed action %s from pid %d, uid %d"),
+    VIR_INFO("Policy allowed action %s from pid %d, uid %d",
              action, callerPid, callerUid);
     ret->complete = 1;
     client->auth = REMOTE_AUTH_NONE;
@@ -2390,7 +2390,7 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
         goto authfail;
     }
 
-    VIR_INFO(_("Checking PID %d running as %d"), callerPid, callerUid);
+    VIR_INFO("Checking PID %d running as %d", callerPid, callerUid);
     dbus_error_init(&err);
     if (!(pkcaller = polkit_caller_new_from_pid(server->sysbus,
                                                 callerPid, &err))) {
@@ -2450,7 +2450,7 @@ remoteDispatchAuthPolkit(struct qemud_server *server,
     }
     PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
           client->fd, REMOTE_AUTH_POLKIT, ident);
-    VIR_INFO(_("Policy allowed action %s from pid %d, uid %d, result %s"),
+    VIR_INFO("Policy allowed action %s from pid %d, uid %d, result %s",
              action, callerPid, callerUid,
              polkit_result_to_string_representation(pkresult));
     ret->complete = 1;
