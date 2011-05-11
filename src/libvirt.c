@@ -311,10 +311,26 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
-/* Helper macro to print debugging information about a domain DOM,
- * followed by a literal string FMT and any other printf arguments.
- */
-#define VIR_DOMAIN_DEBUG(dom, fmt, ...)                   \
+/* Helper macros to implement VIR_DOMAIN_DEBUG using just C99.  This
+ * assumes you pass fewer than 10 arguments to VIR_DOMAIN_DEBUG, but
+ * can easily be expanded if needed.  */
+#define VIR_ARG10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, ...) _10
+#define VIR_HAS_COMMA(...) VIR_ARG10(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+/* Form the name VIR_DOMAIN_DEBUG_[01], then call that macro,
+ * according to how many arguments are present.  Two-phase due to
+ * macro expansion rules.  */
+#define VIR_DOMAIN_DEBUG_EXPAND(a, b, ...)      \
+    VIR_DOMAIN_DEBUG_PASTE(a, b, __VA_ARGS__)
+#define VIR_DOMAIN_DEBUG_PASTE(a, b, ...)       \
+    a##b(__VA_ARGS__)
+
+/* Internal use only, when VIR_DOMAIN_DEBUG has one argument.  */
+#define VIR_DOMAIN_DEBUG_0(dom)                 \
+    VIR_DOMAIN_DEBUG_1(dom, "%s", "")
+
+/* Internal use only, when VIR_DOMAIN_DEBUG has three or more arguments.  */
+#define VIR_DOMAIN_DEBUG_1(dom, fmt, ...)                 \
     char _uuidstr[VIR_UUID_STRING_BUFLEN];                \
     const char *_domname = NULL;                          \
                                                           \
@@ -328,7 +344,16 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
     VIR_DEBUG("dom=%p, (VM: name=%s, uuid=%s), " fmt,         \
           dom, NULLSTR(_domname), _uuidstr, __VA_ARGS__)
 
-#define VIR_DOMAIN_DEBUG0(dom) VIR_DOMAIN_DEBUG(dom, "%s", "")
+/**
+ * VIR_DOMAIN_DEBUG:
+ * @dom: domain
+ * @fmt: optional format for additional information
+ * @...: optional arguments corresponding to @fmt.
+ */
+#define VIR_DOMAIN_DEBUG(...)                           \
+    VIR_DOMAIN_DEBUG_EXPAND(VIR_DOMAIN_DEBUG_,          \
+                            VIR_HAS_COMMA(__VA_ARGS__), \
+                            __VA_ARGS__)
 
 /**
  * virInitialize:
@@ -1767,7 +1792,7 @@ error:
 virConnectPtr
 virDomainGetConnect (virDomainPtr dom)
 {
-    VIR_DOMAIN_DEBUG0(dom);
+    VIR_DOMAIN_DEBUG(dom);
 
     virResetLastError();
 
@@ -2036,7 +2061,7 @@ virDomainDestroy(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -2079,7 +2104,7 @@ error:
 int
 virDomainFree(virDomainPtr domain)
 {
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -2145,7 +2170,7 @@ virDomainSuspend(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -2191,7 +2216,7 @@ virDomainResume(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -2429,7 +2454,7 @@ virDomainShutdown(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -2614,7 +2639,7 @@ error:
 unsigned int
 virDomainGetID(virDomainPtr domain)
 {
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -2640,7 +2665,7 @@ virDomainGetOSType(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -2682,7 +2707,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -4923,7 +4948,7 @@ int
 virDomainUndefine(virDomainPtr domain) {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -5046,7 +5071,7 @@ int
 virDomainCreate(virDomainPtr domain) {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -5596,7 +5621,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -11661,7 +11686,7 @@ error:
  */
 int virDomainIsPersistent(virDomainPtr dom)
 {
-    VIR_DOMAIN_DEBUG0(dom);
+    VIR_DOMAIN_DEBUG(dom);
 
     virResetLastError();
 
@@ -11694,7 +11719,7 @@ error:
  */
 int virDomainIsUpdated(virDomainPtr dom)
 {
-    VIR_DOMAIN_DEBUG0(dom);
+    VIR_DOMAIN_DEBUG(dom);
 
     virResetLastError();
 
@@ -12633,7 +12658,7 @@ virDomainAbortJob(virDomainPtr domain)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
@@ -13126,7 +13151,7 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG0(domain);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 
