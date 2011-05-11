@@ -206,7 +206,10 @@ r1 = (?:/\* \d+ \*/\n)?
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
 
 .PHONY: remote_protocol-structs
-remote_protocol-structs:
+if WITH_REMOTE
+# The .o file that pdwtags parses is created as a side effect of running
+# libtool; but from make's perspective we depend on the .lo file.
+remote_protocol-structs: libvirt_driver_remote_la-remote_protocol.lo
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
 	  pdwtags --verbose libvirt_driver_remote_la-remote_protocol.$(OBJEXT) \
 	    | perl -0777 -n						\
@@ -232,12 +235,17 @@ remote_protocol-structs:
 		-e '  }'						\
 		-e '}'							\
 		> $@-t;							\
-          case $$? in 8) exit 0;; 0) ;; *) exit 1;; esac;		\
+	  case $$? in 8) exit 0;; 0) ;; *) exit 1;; esac;		\
 	  diff -u $@-t $(srcdir)/$@; st=$$?; rm -f $@-t; exit $$st;	\
 	else								\
 	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
 	fi
+else !WITH_REMOTE
+# This generated file must live in git, because it cannot be re-generated
+# when configured --without-remote.
+remote_protocol-structs:
+endif
 EXTRA_DIST += remote_protocol-structs
 check-local: remote_protocol-structs
 
@@ -552,6 +560,8 @@ libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
 $(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 
+endif WITH_REMOTE
+
 $(srcdir)/remote/%_protocol.c: $(srcdir)/remote/%_protocol.x \
 		$(srcdir)/remote/%_protocol.h $(srcdir)/remote/rpcgen_fix.pl
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -c \
@@ -561,8 +571,6 @@ $(srcdir)/remote/%_protocol.h: $(srcdir)/remote/%_protocol.x \
 		$(srcdir)/remote/rpcgen_fix.pl
 	$(AM_V_GEN)perl -w $(srcdir)/remote/rpcgen_fix.pl $(RPCGEN) -h \
 	       $< $@
-
-endif
 
 if WITH_XEN
 if WITH_DRIVER_MODULES
