@@ -4402,9 +4402,9 @@ virNodeGetFreeMemory(virConnectPtr conn)
         return 0;
     }
 
-    if (conn->driver->getFreeMemory) {
+    if (conn->driver->nodeGetFreeMemory) {
         unsigned long long ret;
-        ret = conn->driver->getFreeMemory (conn);
+        ret = conn->driver->nodeGetFreeMemory (conn);
         if (ret == 0)
             goto error;
         return ret;

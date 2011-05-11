@@ -978,8 +978,8 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
     vmwareDomainGetXMLDesc,     /* domainGetXMLDesc */
-    NULL,                       /* domainXmlFromNative */
-    NULL,                       /* domainXmlToNative */
+    NULL,                       /* domainXMLFromNative */
+    NULL,                       /* domainXMLToNative */
     vmwareListDefinedDomains,   /* listDefinedDomains */
     vmwareNumDefinedDomains,    /* numOfDefinedDomains */
     vmwareDomainCreate,         /* domainCreate */
@@ -1006,7 +1006,7 @@ static virDriver vmwareDriver = {
     NULL,                       /* domainMemoryPeek */
     NULL,                       /* domainGetBlockInfo */
     NULL,                       /* nodeGetCellsFreeMemory */
-    NULL,                       /* getFreeMemory */
+    NULL,                       /* nodeGetFreeMemory */
     NULL,                       /* domainEventRegister */
     NULL,                       /* domainEventDeregister */
     NULL,                       /* domainMigratePrepare2 */
@@ -1015,10 +1015,10 @@ static virDriver vmwareDriver = {
     NULL,                       /* nodeDeviceReAttach */
     NULL,                       /* nodeDeviceReset */
     NULL,                       /* domainMigratePrepareTunnel */
-    NULL,                       /* IsEncrypted */
-    NULL,                       /* IsSecure */
-    vmwareDomainIsActive,       /* DomainIsActive */
-    vmwareDomainIsPersistent,   /* DomainIsPersistent */
+    NULL,                       /* isEncrypted */
+    NULL,                       /* isSecure */
+    vmwareDomainIsActive,       /* domainIsActive */
+    vmwareDomainIsPersistent,   /* domainIsPersistent */
     NULL,                       /* domainIsUpdated */
     NULL,                       /* cpuCompare */
     NULL,                       /* cpuBaseline */

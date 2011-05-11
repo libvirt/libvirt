@@ -2736,8 +2736,8 @@ static virDriver libxlDriver = {
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
     libxlDomainGetXMLDesc,      /* domainGetXMLDesc */
-    libxlDomainXMLFromNative,   /* domainXmlFromNative */
-    libxlDomainXMLToNative,     /* domainXmlToNative */
+    libxlDomainXMLFromNative,   /* domainXMLFromNative */
+    libxlDomainXMLToNative,     /* domainXMLToNative */
     libxlListDefinedDomains,    /* listDefinedDomains */
     libxlNumDefinedDomains,     /* numOfDefinedDomains */
     libxlDomainCreate,          /* domainCreate */
@@ -2764,7 +2764,7 @@ static virDriver libxlDriver = {
     NULL,                       /* domainMemoryPeek */
     NULL,                       /* domainGetBlockInfo */
     NULL,                       /* nodeGetCellsFreeMemory */
-    libxlNodeGetFreeMemory,     /* getFreeMemory */
+    libxlNodeGetFreeMemory,     /* nodeGetFreeMemory */
     libxlDomainEventRegister,   /* domainEventRegister */
     libxlDomainEventDeregister, /* domainEventDeregister */
     NULL,                       /* domainMigratePrepare2 */
@@ -2773,10 +2773,10 @@ static virDriver libxlDriver = {
     NULL,                       /* nodeDeviceReAttach */
     NULL,                       /* nodeDeviceReset */
     NULL,                       /* domainMigratePrepareTunnel */
-    NULL,                       /* IsEncrypted */
-    NULL,                       /* IsSecure */
-    libxlDomainIsActive,        /* DomainIsActive */
-    libxlDomainIsPersistent,    /* DomainIsPersistent */
+    NULL,                       /* isEncrypted */
+    NULL,                       /* isSecure */
+    libxlDomainIsActive,        /* domainIsActive */
+    libxlDomainIsPersistent,    /* domainIsPersistent */
     libxlDomainIsUpdated,       /* domainIsUpdated */
     NULL,                       /* cpuCompare */
     NULL,                       /* cpuBaseline */

@@ -3814,7 +3814,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainMemoryPeek */
     NULL,                       /* domainGetBlockInfo */
     NULL,                       /* nodeGetCellsFreeMemory */
-    NULL,                       /* getFreeMemory */
+    NULL,                       /* nodeGetFreeMemory */
     NULL,                       /* domainEventRegister */
     NULL,                       /* domainEventDeregister */
     NULL,                       /* domainMigratePrepare2 */
@@ -3848,7 +3848,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainSnapshotCurrent */
     NULL,                       /* domainRevertToSnapshot */
     NULL,                       /* domainSnapshotDelete */
-    NULL,                       /* qemuMonitorCommand */
+    NULL,                       /* qemuDomainMonitorCommand */
     NULL,                       /* domainOpenConsole */
     NULL,                       /* domainInjectNMI */
 };

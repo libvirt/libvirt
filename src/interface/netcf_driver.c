@@ -549,7 +549,7 @@ static virInterfaceDriver interfaceDriver = {
     interfaceNumOfDefinedInterfaces, /* numOfInterfaces */
     interfaceListDefinedInterfaces,  /* listInterfaces */
     interfaceLookupByName,           /* interfaceLookupByName */
-    interfaceLookupByMACString,      /* interfaceLookupByMACSTring */
+    interfaceLookupByMACString,      /* interfaceLookupByMACString */
     interfaceGetXMLDesc,             /* interfaceGetXMLDesc */
     interfaceDefineXML,              /* interfaceDefineXML */
     interfaceUndefine,               /* interfaceUndefine */

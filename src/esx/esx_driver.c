@@ -4640,7 +4640,7 @@ static virDriver esxDriver = {
     esxGetType,                      /* type */
     esxGetVersion,                   /* version */
     NULL,                            /* libvirtVersion (impl. in libvirt.c) */
-    esxGetHostname,                  /* hostname */
+    esxGetHostname,                  /* getHostname */
     NULL,                            /* getSysinfo */
     NULL,                            /* getMaxVcpus */
     esxNodeGetInfo,                  /* nodeGetInfo */

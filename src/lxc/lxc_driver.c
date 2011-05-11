@@ -2714,8 +2714,8 @@ cleanup:
 
 /* Function Tables */
 static virDriver lxcDriver = {
-    VIR_DRV_LXC, /* the number virDrvNo */
-    "LXC", /* the name of the driver */
+    VIR_DRV_LXC,
+    "LXC",
     lxcOpen, /* open */
     lxcClose, /* close */
     NULL, /* supports_feature */
@@ -2790,7 +2790,7 @@ static virDriver lxcDriver = {
     NULL, /* domainMemoryPeek */
     NULL, /* domainGetBlockInfo */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    nodeGetFreeMemory,  /* getFreeMemory */
+    nodeGetFreeMemory,  /* nodeGetFreeMemory */
     lxcDomainEventRegister, /* domainEventRegister */
     lxcDomainEventDeregister, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */

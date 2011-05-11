@@ -5394,7 +5394,7 @@ static virDriver testDriver = {
     NULL, /* domainMemoryPeek */
     NULL, /* domainGetBlockInfo */
     testNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    NULL, /* getFreeMemory */
+    NULL, /* nodeGetFreeMemory */
     testDomainEventRegister, /* domainEventRegister */
     testDomainEventDeregister, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */

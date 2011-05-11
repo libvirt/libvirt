@@ -2216,7 +2216,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainMemoryPeek */
     NULL, /* domainGetBlockInfo */
     xenUnifiedNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    xenUnifiedNodeGetFreeMemory, /* getFreeMemory */
+    xenUnifiedNodeGetFreeMemory, /* nodeGetFreeMemory */
     xenUnifiedDomainEventRegister, /* domainEventRegister */
     xenUnifiedDomainEventDeregister, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */

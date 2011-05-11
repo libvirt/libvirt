@@ -6473,7 +6473,7 @@ static virDriver remote_driver = {
     remoteDomainMemoryPeek, /* domainMemoryPeek */
     remoteDomainGetBlockInfo, /* domainGetBlockInfo */
     remoteNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    remoteNodeGetFreeMemory, /* getFreeMemory */
+    remoteNodeGetFreeMemory, /* nodeGetFreeMemory */
     remoteDomainEventRegister, /* domainEventRegister */
     remoteDomainEventDeregister, /* domainEventDeregister */
     remoteDomainMigratePrepare2, /* domainMigratePrepare2 */
@@ -6490,7 +6490,7 @@ static virDriver remote_driver = {
     remoteCPUCompare, /* cpuCompare */
     remoteCPUBaseline, /* cpuBaseline */
     remoteDomainGetJobInfo, /* domainGetJobInfo */
-    remoteDomainAbortJob, /* domainFinishJob */
+    remoteDomainAbortJob, /* domainAbortJob */
     remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
     remoteDomainMigrateSetMaxSpeed, /* domainMigrateSetMaxSpeed */
     remoteDomainEventRegisterAny, /* domainEventRegisterAny */

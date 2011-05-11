@@ -1625,8 +1625,8 @@ static virDriver openvzDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     openvzDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXmlFromNative */
-    NULL, /* domainXmlToNative */
+    NULL, /* domainXMLFromNative */
+    NULL, /* domainXMLToNative */
     openvzListDefinedDomains, /* listDefinedDomains */
     openvzNumDefinedDomains, /* numOfDefinedDomains */
     openvzDomainCreate, /* domainCreate */
@@ -1653,7 +1653,7 @@ static virDriver openvzDriver = {
     NULL, /* domainMemoryPeek */
     NULL, /* domainGetBlockInfo */
     NULL, /* nodeGetCellsFreeMemory */
-    NULL, /* getFreeMemory */
+    NULL, /* nodeGetFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */

@@ -432,11 +432,11 @@ typedef int
     (*virDrvDomainIsUpdated)(virDomainPtr dom);
 
 typedef int
-    (*virDrvCPUCompare)(virConnectPtr conn,
+    (*virDrvCompareCPU)(virConnectPtr conn,
                         const char *cpu,
                         unsigned int flags);
 typedef char *
-    (*virDrvCPUBaseline)(virConnectPtr conn,
+    (*virDrvBaselineCPU)(virConnectPtr conn,
                          const char **xmlCPUs,
                          unsigned int ncpus,
                          unsigned int flags);
@@ -516,7 +516,7 @@ typedef int
                                   unsigned int flags);
 
 typedef int
-    (*virDrvQemuDomainMonitorCommand)(virDomainPtr domain, const char *cmd,
+    (*virDrvDomainQemuMonitorCommand)(virDomainPtr domain, const char *cmd,
                                       char **result, unsigned int flags);
 
 typedef int
@@ -618,7 +618,7 @@ struct _virDriver {
     virDrvDomainMemoryPeek      domainMemoryPeek;
     virDrvDomainGetBlockInfo    domainGetBlockInfo;
     virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
-    virDrvNodeGetFreeMemory		getFreeMemory;
+    virDrvNodeGetFreeMemory		nodeGetFreeMemory;
     virDrvDomainEventRegister         domainEventRegister;
     virDrvDomainEventDeregister       domainEventDeregister;
     virDrvDomainMigratePrepare2	domainMigratePrepare2;
@@ -632,8 +632,8 @@ struct _virDriver {
     virDrvDomainIsActive       domainIsActive;
     virDrvDomainIsPersistent   domainIsPersistent;
     virDrvDomainIsUpdated      domainIsUpdated;
-    virDrvCPUCompare            cpuCompare;
-    virDrvCPUBaseline           cpuBaseline;
+    virDrvCompareCPU            cpuCompare;
+    virDrvBaselineCPU           cpuBaseline;
     virDrvDomainGetJobInfo     domainGetJobInfo;
     virDrvDomainAbortJob     domainAbortJob;
     virDrvDomainMigrateSetMaxDowntime  domainMigrateSetMaxDowntime;
@@ -652,7 +652,7 @@ struct _virDriver {
     virDrvDomainSnapshotCurrent domainSnapshotCurrent;
     virDrvDomainRevertToSnapshot domainRevertToSnapshot;
     virDrvDomainSnapshotDelete domainSnapshotDelete;
-    virDrvQemuDomainMonitorCommand qemuDomainMonitorCommand;
+    virDrvDomainQemuMonitorCommand qemuDomainMonitorCommand;
     virDrvDomainOpenConsole domainOpenConsole;
     virDrvDomainInjectNMI domainInjectNMI;
 };
@@ -1109,9 +1109,9 @@ typedef unsigned char *
 typedef int
     (*virDrvSecretUndefine)                  (virSecretPtr secret);
 typedef int
-    (*virDrvSecretNumOfSecrets)              (virConnectPtr conn);
+    (*virDrvNumOfSecrets)              (virConnectPtr conn);
 typedef int
-    (*virDrvSecretListSecrets)               (virConnectPtr conn,
+    (*virDrvListSecrets)               (virConnectPtr conn,
                                               char **uuids,
                                               int maxuuids);
 
@@ -1133,8 +1133,8 @@ struct _virSecretDriver {
     virDrvOpen open;
     virDrvClose close;
 
-    virDrvSecretNumOfSecrets numOfSecrets;
-    virDrvSecretListSecrets listSecrets;
+    virDrvNumOfSecrets numOfSecrets;
+    virDrvListSecrets listSecrets;
     virDrvSecretLookupByUUID lookupByUUID;
     virDrvSecretLookupByUsage lookupByUsage;
     virDrvSecretDefineXML defineXML;

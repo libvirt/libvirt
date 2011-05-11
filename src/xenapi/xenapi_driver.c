@@ -1834,7 +1834,7 @@ static virDriver xenapiDriver = {
     xenapiSupportsFeature, /* supports_feature */
     xenapiType, /* type */
     xenapiGetVersion, /* version */
-    NULL, /*getlibvirtVersion */
+    NULL, /* libvirtVersion */
     xenapiGetHostname, /* getHostname */
     NULL, /* getSysinfo */
     xenapiGetMaxVcpus, /* getMaxVcpus */
@@ -1875,8 +1875,8 @@ static virDriver xenapiDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     xenapiDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXmlFromNative */
-    NULL, /* domainXmlToNative */
+    NULL, /* domainXMLFromNative */
+    NULL, /* domainXMLToNative */
     xenapiListDefinedDomains, /* listDefinedDomains */
     xenapiNumOfDefinedDomains, /* numOfDefinedDomains */
     xenapiDomainCreate, /* domainCreate */
@@ -1903,7 +1903,7 @@ static virDriver xenapiDriver = {
     NULL, /* domainMemoryPeek */
     NULL, /* domainGetBlockInfo */
     xenapiNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    xenapiNodeGetFreeMemory, /* getFreeMemory */
+    xenapiNodeGetFreeMemory, /* nodeGetFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */

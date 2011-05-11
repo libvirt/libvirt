@@ -7302,7 +7302,7 @@ static virDriver qemuDriver = {
     qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
     qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
     qemuDomainGetXMLDesc, /* domainGetXMLDesc */
-    qemuDomainXMLFromNative, /* domainXmlFromNative */
+    qemuDomainXMLFromNative, /* domainXMLFromNative */
     qemuDomainXMLToNative, /* domainXMLToNative */
     qemudListDefinedDomains, /* listDefinedDomains */
     qemudNumDefinedDomains, /* numOfDefinedDomains */
@@ -7330,7 +7330,7 @@ static virDriver qemuDriver = {
     qemudDomainMemoryPeek, /* domainMemoryPeek */
     qemuDomainGetBlockInfo, /* domainGetBlockInfo */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    nodeGetFreeMemory,  /* getFreeMemory */
+    nodeGetFreeMemory,  /* nodeGetFreeMemory */
     qemuDomainEventRegister, /* domainEventRegister */
     qemuDomainEventDeregister, /* domainEventDeregister */
     qemudDomainMigratePrepare2, /* domainMigratePrepare2 */
