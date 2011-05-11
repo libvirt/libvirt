@@ -29,7 +29,7 @@
           <a href="python.html">Python bindings</a>
           of libvirt. It is available separately as a
           <a href="ftp://libvirt.org/libvirt/libvirt-test-API/">download</a>,
-          or directly get the
+          or directly get
           the <a href="http://libvirt.org/git/?p=libvirt-test-API.git">version
           from GIT</a>.
     </ul>
