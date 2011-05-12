@@ -808,7 +808,8 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->nodes = l;
     } else if (ret == -2) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node cpu numa nodes"));
+        testError(VIR_ERR_XML_ERROR, "%s",
+                  _("invalid node cpu nodes value"));
         goto error;
     }
 
@@ -816,7 +817,8 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->sockets = l;
     } else if (ret == -2) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node cpu sockets"));
+        testError(VIR_ERR_XML_ERROR, "%s",
+                  _("invalid node cpu sockets value"));
         goto error;
     }
 
@@ -824,7 +826,8 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->cores = l;
     } else if (ret == -2) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node cpu cores"));
+        testError(VIR_ERR_XML_ERROR, "%s",
+                  _("invalid node cpu cores value"));
         goto error;
     }
 
@@ -832,7 +835,8 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->threads = l;
     } else if (ret == -2) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node cpu threads"));
+        testError(VIR_ERR_XML_ERROR, "%s",
+                  _("invalid node cpu threads value"));
         goto error;
     }
 
@@ -843,14 +847,16 @@ static int testOpenFromFile(virConnectPtr conn,
             nodeInfo->cpus = l;
         }
     } else if (ret == -2) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node active cpu"));
+        testError(VIR_ERR_XML_ERROR, "%s",
+                  _("invalid node cpu active value"));
         goto error;
     }
     ret = virXPathLong("string(/node/cpu/mhz[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->mhz = l;
     } else if (ret == -2) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node cpu mhz"));
+        testError(VIR_ERR_XML_ERROR, "%s",
+                  _("invalid node cpu mhz value"));
         goto error;
     }
 
@@ -869,7 +875,8 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->memory = l;
     } else if (ret == -2) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node memory"));
+        testError(VIR_ERR_XML_ERROR, "%s",
+                  _("invalid node memory value"));
         goto error;
     }
 

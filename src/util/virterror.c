@@ -925,9 +925,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_XML_ERROR:
             if (info == NULL)
-                errmsg = _("XML description not well formed or invalid");
+                errmsg = _("XML description is invalid or not well formed");
             else
-                errmsg = _("XML description for %s is not well formed or invalid");
+                errmsg = _("XML error: %s");
             break;
         case VIR_ERR_DOM_EXIST:
             if (info == NULL)

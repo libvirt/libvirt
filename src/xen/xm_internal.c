@@ -1536,8 +1536,9 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
         break;
     }
     default:
-        xenXMError(VIR_ERR_XML_ERROR,
-                   "%s", _("unknown device"));
+        xenXMError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("device type '%s' cannot be detached"),
+                   virDomainDeviceTypeToString(dev->type));
         goto cleanup;
     }
 
