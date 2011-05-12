@@ -638,7 +638,7 @@ if test "$with_libvirtd" = "no" ; then
   with_lxc=no
 fi
 if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
-    AC_TRY_LINK([#define _GNU_SOURCE
+    AC_TRY_LINK([
         #include <sched.h>
     ], [
         unshare (1);
