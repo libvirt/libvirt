@@ -90,12 +90,7 @@ struct _testConn {
     int numCells;
     testCell cells[MAX_CELLS];
 
-
-    /* An array of callbacks */
-    virDomainEventCallbackListPtr domainEventCallbacks;
-    virDomainEventQueuePtr domainEventQueue;
-    int domainEventTimer;
-    int domainEventDispatching;
+    virDomainEventStatePtr domainEventState;
 };
 typedef struct _testConn testConn;
 typedef struct _testConn *testConnPtr;
@@ -1104,6 +1099,7 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
                     int flags ATTRIBUTE_UNUSED)
 {
     int ret;
+    testConnPtr privconn;
 
     if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
@@ -1130,26 +1126,25 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
         ret = testOpenFromFile(conn,
                                conn->uri->path);
 
-    if (ret == VIR_DRV_OPEN_SUCCESS) {
-        testConnPtr privconn = conn->privateData;
-        testDriverLock(privconn);
-        /* Init callback list */
-        if (VIR_ALLOC(privconn->domainEventCallbacks) < 0 ||
-            !(privconn->domainEventQueue = virDomainEventQueueNew())) {
-            virReportOOMError();
-            testDriverUnlock(privconn);
-            testClose(conn);
-            return VIR_DRV_OPEN_ERROR;
-        }
+    if (ret != VIR_DRV_OPEN_SUCCESS)
+        return ret;
 
-        if ((privconn->domainEventTimer =
-             virEventAddTimeout(-1, testDomainEventFlush, privconn, NULL)) < 0)
-            VIR_DEBUG("virEventAddTimeout failed: No addTimeoutImpl defined. "
-                   "continuing without events.");
+    privconn = conn->privateData;
+    testDriverLock(privconn);
+
+    privconn->domainEventState = virDomainEventStateNew(testDomainEventFlush,
+                                                        privconn,
+                                                        NULL,
+                                                        false);
+    if (!privconn->domainEventState) {
         testDriverUnlock(privconn);
+        testClose(conn);
+        return VIR_DRV_OPEN_ERROR;
     }
 
-    return (ret);
+    testDriverUnlock(privconn);
+
+    return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int testClose(virConnectPtr conn)
@@ -1162,12 +1157,7 @@ static int testClose(virConnectPtr conn)
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
-
-    virDomainEventCallbackListFree(privconn->domainEventCallbacks);
-    virDomainEventQueueFree(privconn->domainEventQueue);
-
-    if (privconn->domainEventTimer != -1)
-        virEventRemoveTimeout(privconn->domainEventTimer);
+    virDomainEventStateFree(privconn->domainEventState);
 
     testDriverUnlock(privconn);
     virMutexDestroy(&privconn->lock);
@@ -5157,7 +5147,8 @@ testDomainEventRegister(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn, driver->domainEventCallbacks,
+    ret = virDomainEventCallbackListAdd(conn,
+                                        driver->domainEventState->callbacks,
                                         callback, opaque, freecb);
     testDriverUnlock(driver);
 
@@ -5173,12 +5164,9 @@ testDomainEventDeregister(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDelete(conn, driver->domainEventCallbacks,
-                                                   callback);
-    else
-        ret = virDomainEventCallbackListRemove(conn, driver->domainEventCallbacks,
-                                               callback);
+    ret = virDomainEventStateDeregister(conn,
+                                        driver->domainEventState,
+                                        callback);
     testDriverUnlock(driver);
 
     return ret;
@@ -5197,7 +5185,8 @@ testDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    ret = virDomainEventCallbackListAddID(conn, driver->domainEventCallbacks,
+    ret = virDomainEventCallbackListAddID(conn,
+                                          driver->domainEventState->callbacks,
                                           dom, eventID,
                                           callback, opaque, freecb);
     testDriverUnlock(driver);
@@ -5213,12 +5202,9 @@ testDomainEventDeregisterAny(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDeleteID(conn, driver->domainEventCallbacks,
-                                                     callbackID);
-    else
-        ret = virDomainEventCallbackListRemoveID(conn, driver->domainEventCallbacks,
-                                                 callbackID);
+    ret = virDomainEventStateDeregisterAny(conn,
+                                           driver->domainEventState,
+                                           callbackID);
     testDriverUnlock(driver);
 
     return ret;
@@ -5242,28 +5228,11 @@ static void testDomainEventDispatchFunc(virConnectPtr conn,
 static void testDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
     testConnPtr driver = opaque;
-    virDomainEventQueue tempQueue;
 
     testDriverLock(driver);
-
-    driver->domainEventDispatching = 1;
-
-    /* Copy the queue, so we're reentrant safe */
-    tempQueue.count = driver->domainEventQueue->count;
-    tempQueue.events = driver->domainEventQueue->events;
-    driver->domainEventQueue->count = 0;
-    driver->domainEventQueue->events = NULL;
-
-    virEventUpdateTimeout(driver->domainEventTimer, -1);
-    virDomainEventQueueDispatch(&tempQueue,
-                                driver->domainEventCallbacks,
-                                testDomainEventDispatchFunc,
-                                driver);
-
-    /* Purge any deleted callbacks */
-    virDomainEventCallbackListPurgeMarked(driver->domainEventCallbacks);
-
-    driver->domainEventDispatching = 0;
+    virDomainEventStateFlush(driver->domainEventState,
+                             testDomainEventDispatchFunc,
+                             driver);
     testDriverUnlock(driver);
 }
 
@@ -5272,17 +5241,7 @@ static void testDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 static void testDomainEventQueue(testConnPtr driver,
                                  virDomainEventPtr event)
 {
-    if (driver->domainEventTimer < 0) {
-        virDomainEventFree(event);
-        return;
-    }
-
-    if (virDomainEventQueuePush(driver->domainEventQueue,
-                                event) < 0)
-        virDomainEventFree(event);
-
-    if (driver->domainEventQueue->count == 1)
-        virEventUpdateTimeout(driver->domainEventTimer, 0);
+    virDomainEventStateQueue(driver->domainEventState, event);
 }
 
 static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
