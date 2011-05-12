@@ -130,28 +130,11 @@ static void
 libxlDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
     libxlDriverPrivatePtr driver = opaque;
-    virDomainEventQueue tempQueue;
 
     libxlDriverLock(driver);
-
-    driver->domainEventDispatching = 1;
-
-    /* Copy the queue, so we're reentrant safe */
-    tempQueue.count = driver->domainEventQueue->count;
-    tempQueue.events = driver->domainEventQueue->events;
-    driver->domainEventQueue->count = 0;
-    driver->domainEventQueue->events = NULL;
-
-    virEventUpdateTimeout(driver->domainEventTimer, -1);
-    virDomainEventQueueDispatch(&tempQueue,
-                                driver->domainEventCallbacks,
-                                libxlDomainEventDispatchFunc,
-                                driver);
-
-    /* Purge any deleted callbacks */
-    virDomainEventCallbackListPurgeMarked(driver->domainEventCallbacks);
-
-    driver->domainEventDispatching = 0;
+    virDomainEventStateFlush(driver->domainEventState,
+                             libxmlDomainEventDispatchFunc,
+                             driver);
     libxlDriverUnlock(driver);
 }
 
@@ -159,10 +142,7 @@ libxlDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 static void
 libxlDomainEventQueue(libxlDriverPrivatePtr driver, virDomainEventPtr event)
 {
-    if (virDomainEventQueuePush(driver->domainEventQueue, event) < 0)
-        virDomainEventFree(event);
-    if (driver->domainEventQueue->count == 1)
-        virEventUpdateTimeout(driver->domainEventTimer, 0);
+    virDomainEventStateQueue(driver->domainEventState, event);
 }
 
 /*
@@ -706,12 +686,7 @@ libxlShutdown(void)
     VIR_FREE(libxl_driver->libDir);
     VIR_FREE(libxl_driver->saveDir);
 
-    /* Free domain callback list */
-    virDomainEventCallbackListFree(libxl_driver->domainEventCallbacks);
-    virDomainEventQueueFree(libxl_driver->domainEventQueue);
-
-    if (libxl_driver->domainEventTimer != -1)
-        virEventRemoveTimeout(libxl_driver->domainEventTimer);
+    virDomainEventStateFree(privconn->domainEventState);
 
     libxlDriverUnlock(libxl_driver);
     virMutexDestroy(&libxl_driver->lock);
@@ -822,15 +797,13 @@ libxlStartup(int privileged) {
     }
     VIR_FREE(log_file);
 
-    /* Init callback list */
-    if (VIR_ALLOC(libxl_driver->domainEventCallbacks) < 0)
-        goto out_of_memory;
-    if (!(libxl_driver->domainEventQueue = virDomainEventQueueNew()))
-        goto out_of_memory;
-    if ((libxl_driver->domainEventTimer =
-         virEventAddTimeout(-1, libxlDomainEventFlush, libxl_driver, NULL)) < 0)
+    libxl_driver->domainEventState = virDomainEventStateNew(
+                                                        libxlDomainEventFlush,
+                                                        libxml_driver,
+                                                        NULL,
+                                                        false);
+    if (!libxml_driver->domainEventState)
         goto error;
-
 
     libxl_driver->logger =
             (xentoollog_logger *)xtl_createlogger_stdiostream(libxl_driver->logger_file, XTL_DEBUG,  0);
@@ -982,7 +955,8 @@ libxlClose(virConnectPtr conn ATTRIBUTE_UNUSED)
     libxlDriverPrivatePtr driver = conn->privateData;
 
     libxlDriverLock(driver);
-    virDomainEventCallbackListRemoveConn(conn, driver->domainEventCallbacks);
+    virDomainEventCallbackListRemoveConn(conn,
+                                         driver->domainEventState->callbacks);
     libxlDriverUnlock(driver);
     conn->privateData = NULL;
     return 0;
@@ -2224,7 +2198,8 @@ libxlDomainEventRegister(virConnectPtr conn,
     int ret;
 
     libxlDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn, driver->domainEventCallbacks,
+    ret = virDomainEventCallbackListAdd(conn,
+                                        driver->domainEventState->callbacks,
                                         callback, opaque, freecb);
     libxlDriverUnlock(driver);
 
@@ -2240,14 +2215,9 @@ libxlDomainEventDeregister(virConnectPtr conn,
     int ret;
 
     libxlDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDelete(conn,
-                                                   driver->domainEventCallbacks,
-                                                   callback);
-    else
-        ret = virDomainEventCallbackListRemove(conn,
-                                               driver->domainEventCallbacks,
-                                               callback);
+    ret = virDomainEventStateDeregister(conn,
+                                        driver->domainEventState,
+                                        callback);
     libxlDriverUnlock(driver);
 
     return ret;
@@ -2648,7 +2618,8 @@ libxlDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
     int ret;
 
     libxlDriverLock(driver);
-    ret = virDomainEventCallbackListAddID(conn, driver->domainEventCallbacks,
+    ret = virDomainEventCallbackListAddID(conn,
+                                          driver->domainEventState->callbacks,
                                           dom, eventID, callback, opaque,
                                           freecb);
     libxlDriverUnlock(driver);
@@ -2664,14 +2635,9 @@ libxlDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
     int ret;
 
     libxlDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDeleteID(conn,
-                                                     driver->domainEventCallbacks,
-                                                     callbackID);
-    else
-        ret = virDomainEventCallbackListRemoveID(conn,
-                                                 driver->domainEventCallbacks,
-                                                 callbackID);
+    ret = virDomainEventStateDeregisterAny(conn,
+                                           driver->domainEventState,
+                                           callbackID);
     libxlDriverUnlock(driver);
 
     return ret;

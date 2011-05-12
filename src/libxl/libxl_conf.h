@@ -61,11 +61,7 @@ struct _libxlDriverPrivate {
     virBitmapPtr reservedVNCPorts;
     virDomainObjList domains;
 
-    /* A list of callbacks */
-    virDomainEventCallbackListPtr domainEventCallbacks;
-    virDomainEventQueuePtr domainEventQueue;
-    int domainEventTimer;
-    int domainEventDispatching;
+    virDomainEventStatePtr domainEventState;
 
     char *configDir;
     char *autostartDir;
