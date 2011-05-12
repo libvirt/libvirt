@@ -264,6 +264,9 @@ static bool vshCmdGrpHelp(vshControl *ctl, const char *name);
 static vshCmdOpt *vshCommandOpt(const vshCmd *cmd, const char *name);
 static int vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+static int vshCommandOptUInt(const vshCmd *cmd, const char *name,
+                             unsigned int *value)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 static int vshCommandOptUL(const vshCmd *cmd, const char *name,
                            unsigned long *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
@@ -1935,6 +1938,153 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     }
 
     virDomainFree(dom);
+    return ret;
+}
+
+static const vshCmdInfo info_screenshot[] = {
+    {"help", N_("take a screenshot of a current domain console and store it "
+                "into a file")},
+    {"desc", N_("screenshot of a current domain console")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_screenshot[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_NONE, N_("where to store the screenshot")},
+    {"screen", VSH_OT_INT, VSH_OFLAG_NONE, N_("ID of a screen to take screenshot of")},
+    {NULL, 0, 0, NULL}
+};
+
+static int vshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
+                         const char *bytes, size_t nbytes, void *opaque)
+{
+    int *fd = opaque;
+
+    return safewrite(*fd, bytes, nbytes);
+}
+
+/**
+ * Generate string: '<domain name>-<timestamp>[<extension>]'
+ */
+static char *
+vshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
+{
+    char timestr[100];
+    struct timeval cur_time;
+    struct tm time_info;
+    const char *ext = NULL;
+    char *ret = NULL;
+
+    /* We should be already connected, but doesn't
+     * hurt to check */
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return NULL;
+
+    if (!dom) {
+        vshError(ctl, "%s", _("Invalid domain supplied"));
+        return NULL;
+    }
+
+    if (STREQ(mime, "image/x-portable-pixmap"))
+        ext = ".ppm";
+    else if (STREQ(mime, "image/png"))
+        ext = ".png";
+    /* add mime type here */
+
+    gettimeofday(&cur_time, NULL);
+    localtime_r(&cur_time.tv_sec, &time_info);
+    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
+
+    if (virAsprintf(&ret, "%s-%s%s", virDomainGetName(dom),
+                    timestr, ext ? ext : "") < 0) {
+        vshError(ctl, "%s", _("Out of memory"));
+        return NULL;
+    }
+
+    return ret;
+}
+
+static bool
+cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *name = NULL;
+    char *file = NULL;
+    int fd = -1;
+    virStreamPtr st = NULL;
+    unsigned int screen = 0;
+    unsigned int flags = 0; /* currently unused */
+    int ret = false;
+    bool created = true;
+    bool generated = false;
+    char *mime = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptString(cmd, "file", (const char **) &file) < 0) {
+        vshError(ctl, "%s", _("file must not be empty"));
+        return false;
+    }
+
+    if (vshCommandOptUInt(cmd, "screen", &screen) < 0) {
+        vshError(ctl, "%s", _("invalid screen ID"));
+        return false;
+    }
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    st = virStreamNew(ctl->conn, 0);
+
+    mime = virDomainScreenshot(dom, st, screen, flags);
+    if (!mime) {
+        vshError(ctl, _("could not take a screenshot of %s"), name);
+        goto cleanup;
+    }
+
+    if (!file) {
+        if (!(file=vshGenFileName(ctl, dom, mime)))
+            return false;
+        generated = true;
+    }
+
+    if ((fd = open(file, O_WRONLY|O_CREAT|O_EXCL, 0666)) < 0) {
+        created = false;
+        if (errno != EEXIST ||
+            (fd = open(file, O_WRONLY|O_TRUNC, 0666)) < 0) {
+            vshError(ctl, _("cannot create file %s"), file);
+            goto cleanup;
+        }
+    }
+
+    if (virStreamRecvAll(st, vshStreamSink, &fd) < 0) {
+        vshError(ctl, _("could not receive data from domain %s"), name);
+        goto cleanup;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        vshError(ctl, _("cannot close file %s"), file);
+        goto cleanup;
+    }
+
+    if (virStreamFinish(st) < 0) {
+        vshError(ctl, _("cannot close stream on domain %s"), name);
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Screenshot saved to %s, with type of %s"), file, mime);
+    ret = true;
+
+cleanup:
+    if (!ret && created)
+        unlink(file);
+    if (generated)
+        VIR_FREE(file);
+    virDomainFree(dom);
+    if (st)
+        virStreamFree(st);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -7451,16 +7601,6 @@ static const vshCmdOptDef opts_vol_download[] = {
     {NULL, 0, 0, NULL}
 };
 
-
-static int
-cmdVolDownloadSink(virStreamPtr st ATTRIBUTE_UNUSED,
-                   const char *bytes, size_t nbytes, void *opaque)
-{
-    int *fd = opaque;
-
-    return safewrite(*fd, bytes, nbytes);
-}
-
 static bool
 cmdVolDownload (vshControl *ctl, const vshCmd *cmd)
 {
@@ -7510,7 +7650,7 @@ cmdVolDownload (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virStreamRecvAll(st, cmdVolDownloadSink, &fd) < 0) {
+    if (virStreamRecvAll(st, vshStreamSink, &fd) < 0) {
         vshError(ctl, _("cannot receive data from volume %s"), name);
         goto cleanup;
     }
@@ -10945,6 +11085,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"resume", cmdResume, opts_resume, info_resume, 0},
     {"save", cmdSave, opts_save, info_save, 0},
     {"schedinfo", cmdSchedinfo, opts_schedinfo, info_schedinfo, 0},
+    {"screenshot", cmdScreenshot, opts_screenshot, info_screenshot, 0},
     {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem, 0},
     {"setmem", cmdSetmem, opts_setmem, info_setmem, 0},
     {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus, 0},
@@ -11526,6 +11667,30 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
     }
     return ret;
 }
+
+
+/*
+ * Convert option to unsigned int
+ * See vshCommandOptInt()
+ */
+static int
+vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
+{
+    vshCmdOpt *arg = vshCommandOpt(cmd, name);
+    unsigned int ret = 0, num;
+    char *end_p = NULL;
+
+    if ((arg != NULL) && (arg->data != NULL)) {
+        num = strtoul(arg->data, &end_p, 10);
+        ret = -1;
+        if ((arg->data != end_p) && (*end_p == 0)) {
+            *value = num;
+            ret = 1;
+        }
+    }
+    return ret;
+}
+
 
 /*
  * Convert option to unsigned long

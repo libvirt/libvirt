@@ -2464,7 +2464,7 @@ error:
  * The screen ID is the sequential number of screen. In case of multiple
  * graphics cards, heads are enumerated before devices, e.g. having
  * two graphics cards, both with four heads, screen ID 5 addresses
- * the first head on the second card.
+ * the second head on the second card.
  *
  * Returns a string representing the mime-type of the image format, or
  * NULL upon error. The caller must free() the returned value.

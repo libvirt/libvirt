@@ -596,6 +596,15 @@ Therefore, -1 is a useful shorthand for 262144.
 B<Note>: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler and are now I<DEPRECATED>.
 
+=item B<screenshot> I<domain-id> optional I<imagefilepath> I<--screen> B<screenID>
+
+Takes a screenshot of a current domain console and stores it into a file.
+Optionally, if hypervisor supports more displays for a domain, I<screenID>
+allows to specify which screen will be captured. It is the sequential number
+of screen. In case of multiple graphics cards, heads are enumerated before
+devices, e.g. having two graphics cards, both with four heads, screen ID 5
+addresses the second head on the second card.
+
 =item B<setmem> I<domain-id> B<kilobytes> optional I<--config> I<--live>
 I<--current>
 
