@@ -2066,28 +2066,6 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
 }
 
 
-/* Called from SAX on parsing errors in the XML. */
-static void
-catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-
-    if (ctxt) {
-        virConnectPtr conn = ctxt->_private;
-
-        if (conn &&
-            conn->err.code == VIR_ERR_NONE &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-            virNWFilterReportError(VIR_ERR_XML_DETAIL,
-                                   _("at line %d: %s"),
-                                   ctxt->lastError.line,
-                                   ctxt->lastError.message);
-        }
-    }
-}
-
-
 virNWFilterDefPtr
 virNWFilterDefParseNode(xmlDocPtr xml,
                         xmlNodePtr root) {
@@ -2117,58 +2095,18 @@ cleanup:
 
 
 static virNWFilterDefPtr
-virNWFilterDefParse(virConnectPtr conn,
+virNWFilterDefParse(virConnectPtr conn ATTRIBUTE_UNUSED,
                     const char *xmlStr,
                     const char *filename) {
-    virNWFilterDefPtr ret = NULL;
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr node = NULL;
+    virNWFilterDefPtr def = NULL;
+    xmlDocPtr xml;
 
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-    pctxt->_private = conn;
-
-    if (conn) virResetError (&conn->err);
-    if (filename) {
-        xml = xmlCtxtReadFile (pctxt, filename, NULL,
-                               XML_PARSE_NOENT | XML_PARSE_NONET |
-                               XML_PARSE_NOWARNING);
-    } else {
-        xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr,
-                              "nwfilter.xml", NULL,
-                              XML_PARSE_NOENT | XML_PARSE_NONET |
-                              XML_PARSE_NOWARNING);
+    if ((xml = virXMLParse(filename, xmlStr, "nwfilter.xml"))) {
+        def = virNWFilterDefParseNode(xml, xmlDocGetRootElement(xml));
+        xmlFreeDoc(xml);
     }
 
-    if (!xml) {
-        if (conn && conn->err.code == VIR_ERR_NONE)
-              virNWFilterReportError(VIR_ERR_XML_ERROR,
-                                     "%s",_("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    node = xmlDocGetRootElement(xml);
-    if (node == NULL) {
-        virNWFilterReportError(VIR_ERR_XML_ERROR,
-                               "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    ret = virNWFilterDefParseNode(xml, node);
-
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc(xml);
-
-    return ret;
-
- cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc(xml);
-    return NULL;
+    return def;
 }
 
 

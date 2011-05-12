@@ -4877,26 +4877,17 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     xmlXPathContextPtr ctxt = NULL;
     virDomainDeviceDefPtr dev = NULL;
 
-    if (!(xml = xmlReadDoc(BAD_CAST xmlStr, "device.xml", NULL,
-                           XML_PARSE_NOENT | XML_PARSE_NONET |
-                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        virDomainReportError(VIR_ERR_XML_ERROR, NULL);
+    if (!(xml = virXMLParseString(xmlStr, "device.xml"))) {
         goto error;
     }
-
     node = xmlDocGetRootElement(xml);
-    if (node == NULL) {
-        virDomainReportError(VIR_ERR_XML_ERROR,
-                             "%s", _("missing root element"));
-        goto error;
-    }
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
         virReportOOMError();
         goto error;
     }
-    ctxt->node = node;
+    ctxt->node = xmlDocGetRootElement(xml);
 
     if (VIR_ALLOC(dev) < 0) {
         virReportOOMError();
@@ -9048,7 +9039,6 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
 {
     xmlXPathContextPtr ctxt = NULL;
     xmlDocPtr xml = NULL;
-    xmlNodePtr root;
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotDefPtr ret = NULL;
     char *creation = NULL, *state = NULL;
@@ -9056,20 +9046,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
 
     xml = virXMLParse(NULL, xmlStr, "domainsnapshot.xml");
     if (!xml) {
-        virDomainReportError(VIR_ERR_XML_ERROR,
-                             "%s",_("failed to parse snapshot xml document"));
         return NULL;
-    }
-
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    if (!xmlStrEqual(root->name, BAD_CAST "domainsnapshot")) {
-        virDomainReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
-        goto cleanup;
     }
 
     ctxt = xmlXPathNewContext(xml);
@@ -9083,7 +9060,11 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
         goto cleanup;
     }
 
-    ctxt->node = root;
+    ctxt->node = xmlDocGetRootElement(xml);
+    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "domainsnapshot")) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
+        goto cleanup;
+    }
 
     gettimeofday(&tv, NULL);
 

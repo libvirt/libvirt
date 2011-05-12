@@ -505,13 +505,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
     xmlXPathContextPtr xpath_ctxt = NULL;
     virStoragePoolSourcePtr def = NULL, ret = NULL;
 
-    doc = xmlReadDoc((const xmlChar *)srcSpec, "srcSpec.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
-
-    if (doc == NULL) {
-        virStorageReportError(VIR_ERR_XML_ERROR,
-                              "%s", _("bad <source> spec"));
+    if (!(doc = virXMLParseString(srcSpec, "srcSpec.xml"))) {
         goto cleanup;
     }
 

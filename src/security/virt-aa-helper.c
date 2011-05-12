@@ -42,6 +42,8 @@
 #include "files.h"
 #include "configmake.h"
 
+#define VIR_FROM_THIS VIR_FROM_SECURITY
+
 static char *progname;
 
 typedef struct {
@@ -592,29 +594,6 @@ valid_path(const char *path, const bool readonly)
     return 0;
 }
 
-/* Called from SAX on parsing errors in the XML. */
-static void
-catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-
-    if (ctxt) {
-        if (virGetLastError() == NULL &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-                char *err_str = NULL;
-                if (virAsprintf(&err_str, "XML error at line %d: %s",
-                                ctxt->lastError.line,
-                                ctxt->lastError.message) == -1)
-                    vah_error(NULL, 0, _("could not get XML error"));
-                else {
-                    vah_error(NULL, 0, err_str);
-                    VIR_FREE(err_str);
-                }
-        }
-    }
-}
-
 static int
 verify_xpath_context(xmlXPathContextPtr ctxt)
 {
@@ -658,31 +637,15 @@ static int
 caps_mockup(vahControl * ctl, const char *xmlStr)
 {
     int rc = -1;
-    xmlParserCtxtPtr pctxt = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr root;
 
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr, "domain.xml", NULL,
-                          XML_PARSE_NOENT | XML_PARSE_NONET |
-                          XML_PARSE_NOWARNING);
-    if (!xml) {
-        if (virGetLastError() == NULL)
-            vah_error(NULL, 0, _("failed to parse xml document"));
+    if (!(xml = virXMLParseString(xmlStr, "domain.xml"))) {
         goto cleanup;
     }
 
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        vah_error(NULL, 0, _("missing root element"));
-        goto cleanup;
-    }
-
+    root = xmlDocGetRootElement(xml);
     if (!xmlStrEqual(root->name, BAD_CAST "domain")) {
         vah_error(NULL, 0, _("incorrect root element"));
         goto cleanup;
@@ -725,7 +688,6 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     rc = 0;
 
   cleanup:
-    xmlFreeParserCtxt (pctxt);
     xmlFreeDoc (xml);
     xmlXPathFreeContext(ctxt);
 

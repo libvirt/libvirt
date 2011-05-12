@@ -746,7 +746,7 @@ error:
 
 static int testOpenFromFile(virConnectPtr conn,
                             const char *file) {
-    int fd = -1, i, ret;
+    int i, ret;
     long l;
     char *str;
     xmlDocPtr xml = NULL;
@@ -779,21 +779,9 @@ static int testOpenFromFile(virConnectPtr conn,
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
 
-    if ((fd = open(file, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("loading host definition file '%s'"),
-                             file);
+    if (!(xml = virXMLParseFile(file))) {
         goto error;
     }
-
-    if (!(xml = xmlReadFd(fd, file, NULL,
-                          XML_PARSE_NOENT | XML_PARSE_NONET |
-                          XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        testError(VIR_ERR_INTERNAL_ERROR,
-                  _("Invalid XML in file '%s'"), file);
-        goto error;
-    }
-    VIR_FORCE_CLOSE(fd);
 
     root = xmlDocGetRootElement(xml);
     if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "node"))) {
@@ -1100,7 +1088,6 @@ static int testOpenFromFile(virConnectPtr conn,
     VIR_FREE(networks);
     VIR_FREE(ifaces);
     VIR_FREE(pools);
-    VIR_FORCE_CLOSE(fd);
     virDomainObjListDeinit(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);

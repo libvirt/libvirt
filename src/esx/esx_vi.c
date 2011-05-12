@@ -894,20 +894,10 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     (*response)->content = virBufferContentAndReset(&buffer);
 
     if ((*response)->responseCode == 500 || (*response)->responseCode == 200) {
-        (*response)->document = xmlReadDoc(BAD_CAST (*response)->content, "",
-                                           NULL, XML_PARSE_NONET);
+        (*response)->document = virXMLParseString((*response)->content,
+                                                  "esx.xml");
 
         if ((*response)->document == NULL) {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         _("Response for call to '%s' could not be parsed"),
-                         methodName);
-            goto cleanup;
-        }
-
-        if (xmlDocGetRootElement((*response)->document) == NULL) {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         _("Response for call to '%s' is an empty XML document"),
-                         methodName);
             goto cleanup;
         }
 
