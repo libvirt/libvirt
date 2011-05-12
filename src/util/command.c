@@ -989,6 +989,7 @@ cleanup:
  * Returns -1 on any error executing the command.
  * Will not return on success.
  */
+#ifndef WIN32
 int virCommandExec(virCommandPtr cmd)
 {
     if (!cmd ||cmd->has_error == ENOMEM) {
@@ -1003,6 +1004,18 @@ int virCommandExec(virCommandPtr cmd)
 
     return execve(cmd->args[0], cmd->args, cmd->env);
 }
+#else
+int virCommandExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
+{
+    /* Mingw execve() has a broken signature. Disable this
+     * function until gnulib fixes the signature, since we
+     * don't really need this on Win32 anyway.
+     */
+    virReportSystemError(ENOSYS, "%s",
+                         _("Executing new processes is not supported on Win32 platform"));
+    return -1;
+}
+#endif
 
 /*
  * Run the command and wait for completion.
