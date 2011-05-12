@@ -1535,6 +1535,8 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long memory,
     ret = 0;
 
     if (flags & VIR_DOMAIN_MEM_CONFIG) {
+        /* clang 2.9 needs an extra hint.  */
+        sa_assert(def);
         def->mem.cur_balloon = memory;
         ret = virDomainSaveConfig(driver->configDir, def);
     }
