@@ -796,7 +796,7 @@ endif
 BUILT_SOURCES += $(ESX_DRIVER_GENERATED)
 
 $(ESX_DRIVER_GENERATED): $(srcdir)/esx/esx_vi_generator.input $(srcdir)/esx/esx_vi_generator.py
-	-srcdir=$(srcdir) $(srcdir)/esx/esx_vi_generator.py
+	$(AM_V_GEN)srcdir=$(srcdir) $(srcdir)/esx/esx_vi_generator.py
 
 if WITH_ESX
 if WITH_DRIVER_MODULES

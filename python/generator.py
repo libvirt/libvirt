@@ -11,6 +11,8 @@ import sys
 import string
 import re
 
+quiet=True
+
 if __name__ == "__main__":
     # launched as a script
     srcPref = os.path.dirname(sys.argv[0])
@@ -617,7 +619,8 @@ def buildStubs():
             sys.exit(1)
 
     n = len(functions.keys())
-    print "Found %d functions in libvirt-api.xml" % (n)
+    if not quiet:
+        print "Found %d functions in libvirt-api.xml" % (n)
 
     py_types['pythonObject'] = ('O', "pythonObject", "pythonObject", "pythonObject")
     try:
@@ -629,8 +632,8 @@ def buildStubs():
     except IOError, msg:
         print file, ":", msg
 
-
-    print "Found %d functions in libvirt-override-api.xml" % (
+    if not quiet:
+        print "Found %d functions in libvirt-override-api.xml" % (
           len(functions.keys()) - n)
     nb_wrap = 0
     failed = 0
@@ -662,19 +665,20 @@ def buildStubs():
     export.close()
     wrapper.close()
 
-    print "Generated %d wrapper functions" % nb_wrap
+    if not quiet:
+        print "Generated %d wrapper functions" % nb_wrap
 
     if unknown_types:
         print "Missing type converters: "
         for type in unknown_types.keys():
             print "%s:%d " % (type, len(unknown_types[type])),
 
-    print
-
     for f in functions_failed:
         print "ERROR: failed %s" % f
 
     if failed > 0:
+        return -1
+    if len(unknown_types) > 0:
         return -1
     return 0
 

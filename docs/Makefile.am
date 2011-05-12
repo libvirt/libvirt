@@ -153,21 +153,18 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 
 
 html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
-	-@if [ -x $(XSLTPROC) ] ; then \
-	  echo "Rebuilding the HTML pages from the XML API" ; \
+	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o $(srcdir)/ \
-	  $(srcdir)/newapi.xsl $(srcdir)/libvirt-api.xml ; fi
-	-@if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
+	  $(srcdir)/newapi.xsl $(srcdir)/libvirt-api.xml ; fi ; \
+	if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
 	  if $(XMLCATALOG) '$(XML_CATALOG_FILE)' "-//W3C//DTD XHTML 1.0 Strict//EN" \
 	    > /dev/null ; then \
-	  echo "Validating the resulting XHTML pages" ; \
 	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
 	  $(XMLLINT) --catalogs --nonet --valid --noout $(srcdir)/html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi
 
 $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
-	-@echo Rebuilding devhelp files
-	-@if [ -x $(XSLTPROC) ] ; then \
+	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o $(srcdir)/devhelp/ \
 	  $(top_srcdir)/docs/devhelp/devhelp.xsl $(srcdir)/libvirt-api.xml ; fi
 

@@ -53,11 +53,11 @@ GENERATED= libvirt-export.c \
 	   libvirt.h \
 	   libvirt.py
 
-generated.stamp: $(srcdir)/$(GENERATE) $(API_DESC)
-	$(PYTHON) $(srcdir)/$(GENERATE) $(PYTHON)
+$(GENERATE).stamp: $(srcdir)/$(GENERATE) $(API_DESC)
+	$(AM_V_GEN)$(PYTHON) $(srcdir)/$(GENERATE) $(PYTHON) && \
 	touch $@
 
-$(GENERATED): generated.stamp
+$(GENERATED): $(GENERATE).stamp
 
 $(libvirtmod_la_OBJECTS): $(GENERATED)
 

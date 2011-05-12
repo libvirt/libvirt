@@ -11,7 +11,9 @@ import os, sys
 import string
 import glob
 
-debug=0
+quiet=True
+warnings=0
+debug=False
 debugsym=None
 
 #
@@ -95,7 +97,7 @@ class identifier:
             self.conditionals = None
         else:
             self.conditionals = conditionals[:]
-        if self.name == debugsym:
+        if self.name == debugsym and not quiet:
             print "=> define %s : %s" % (debugsym, (module, type, info,
                                          extra, conditionals))
 
@@ -155,7 +157,7 @@ class identifier:
 
     def update(self, header, module, type = None, info = None, extra=None,
                conditionals=None):
-        if self.name == debugsym:
+        if self.name == debugsym and not quiet:
             print "=> update %s : %s" % (debugsym, (module, type, info,
                                          extra, conditionals))
         if header != None and self.header == None:
@@ -203,7 +205,7 @@ class index:
         if d != None and name != None and type != None:
             self.references[name] = d
 
-        if name == debugsym:
+        if name == debugsym and not quiet:
             print "New ref: %s" % (d)
 
         return d
@@ -244,9 +246,9 @@ class index:
             elif type == "macro":
                 self.macros[name] = d
             else:
-                print "Unable to register type ", type
+                self.warning("Unable to register type ", type)
 
-        if name == debugsym:
+        if name == debugsym and not quiet:
             print "New symbol: %s" % (d)
 
         return d
@@ -260,8 +262,8 @@ class index:
              if self.macros.has_key(id):
                  del self.macros[id]
              if self.functions.has_key(id):
-                 print "function %s from %s redeclared in %s" % (
-                    id, self.functions[id].header, idx.functions[id].header)
+                 self.warning("function %s from %s redeclared in %s" % (
+                    id, self.functions[id].header, idx.functions[id].header))
              else:
                  self.functions[id] = idx.functions[id]
                  self.identifiers[id] = idx.functions[id]
@@ -273,15 +275,15 @@ class index:
              if self.macros.has_key(id):
                  del self.macros[id]
              if self.variables.has_key(id):
-                 print "variable %s from %s redeclared in %s" % (
-                    id, self.variables[id].header, idx.variables[id].header)
+                 self.warning("variable %s from %s redeclared in %s" % (
+                    id, self.variables[id].header, idx.variables[id].header))
              else:
                  self.variables[id] = idx.variables[id]
                  self.identifiers[id] = idx.variables[id]
         for id in idx.structs.keys():
              if self.structs.has_key(id):
-                 print "struct %s from %s redeclared in %s" % (
-                    id, self.structs[id].header, idx.structs[id].header)
+                 self.warning("struct %s from %s redeclared in %s" % (
+                    id, self.structs[id].header, idx.structs[id].header))
              else:
                  self.structs[id] = idx.structs[id]
                  self.identifiers[id] = idx.structs[id]
@@ -294,8 +296,8 @@ class index:
                  self.identifiers[id] = idx.unions[id]
         for id in idx.typedefs.keys():
              if self.typedefs.has_key(id):
-                 print "typedef %s from %s redeclared in %s" % (
-                    id, self.typedefs[id].header, idx.typedefs[id].header)
+                 self.warning("typedef %s from %s redeclared in %s" % (
+                    id, self.typedefs[id].header, idx.typedefs[id].header))
              else:
                  self.typedefs[id] = idx.typedefs[id]
                  self.identifiers[id] = idx.typedefs[id]
@@ -311,15 +313,15 @@ class index:
              if self.enums.has_key(id):
                  continue
              if self.macros.has_key(id):
-                 print "macro %s from %s redeclared in %s" % (
-                    id, self.macros[id].header, idx.macros[id].header)
+                 self.warning("macro %s from %s redeclared in %s" % (
+                    id, self.macros[id].header, idx.macros[id].header))
              else:
                  self.macros[id] = idx.macros[id]
                  self.identifiers[id] = idx.macros[id]
         for id in idx.enums.keys():
              if self.enums.has_key(id):
-                 print "enum %s from %s redeclared in %s" % (
-                    id, self.enums[id].header, idx.enums[id].header)
+                 self.warning("enum %s from %s redeclared in %s" % (
+                    id, self.enums[id].header, idx.enums[id].header))
              else:
                  self.enums[id] = idx.enums[id]
                  self.identifiers[id] = idx.enums[id]
@@ -330,10 +332,10 @@ class index:
                  # check that function condition agrees with header
                  if idx.functions[id].conditionals != \
                     self.functions[id].conditionals:
-                     print "Header condition differs from Function for %s:" \
-                        % id
-                     print "  H: %s" % self.functions[id].conditionals
-                     print "  C: %s" % idx.functions[id].conditionals
+                     self.warning("Header condition differs from Function for %s:" \
+                                      % id)
+                     self.warning("  H: %s" % self.functions[id].conditionals)
+                     self.warning("  C: %s" % idx.functions[id].conditionals)
                  up = idx.functions[id]
                  self.functions[id].update(None, up.module, up.type, up.info, up.extra)
          #     else:
@@ -356,12 +358,13 @@ class index:
 
 
     def analyze(self):
-        self.analyze_dict("functions", self.functions)
-        self.analyze_dict("variables", self.variables)
-        self.analyze_dict("structs", self.structs)
-        self.analyze_dict("unions", self.unions)
-        self.analyze_dict("typedefs", self.typedefs)
-        self.analyze_dict("macros", self.macros)
+        if not quiet:
+            self.analyze_dict("functions", self.functions)
+            self.analyze_dict("variables", self.variables)
+            self.analyze_dict("structs", self.structs)
+            self.analyze_dict("unions", self.unions)
+            self.analyze_dict("typedefs", self.typedefs)
+            self.analyze_dict("macros", self.macros)
 
 class CLexer:
     """A lexer for the C language, tokenize the input by reading and
@@ -621,6 +624,8 @@ class CParser:
                                info, extra, self.conditionals)
 
     def warning(self, msg):
+        global warnings
+        warnings = warnings + 1
         if self.no_error:
             return
         print msg
@@ -1802,7 +1807,8 @@ class CParser:
         return token
 
     def parse(self):
-        self.warning("Parsing %s" % (self.filename))
+        if not quiet:
+            print "Parsing %s" % (self.filename)
         token = self.token()
         while token != None:
             if token[0] == 'name':
@@ -1869,7 +1875,8 @@ class docBuilder:
                 pass
 
     def analyze(self):
-        print "Project %s : %d headers, %d modules" % (self.name, len(self.headers.keys()), len(self.modules.keys()))
+        if not quiet:
+            print "Project %s : %d headers, %d modules" % (self.name, len(self.headers.keys()), len(self.modules.keys()))
         self.idx.analyze()
 
     def scanHeaders(self):
@@ -1995,7 +2002,7 @@ class docBuilder:
                         else:
                             output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1] , field[0], desc))
                 except:
-                    print "Failed to serialize struct %s" % (name)
+                    self.warning("Failed to serialize struct %s" % (name))
                 output.write("    </struct>\n")
             else:
                 output.write("/>\n");
@@ -2023,7 +2030,7 @@ class docBuilder:
 
     def serialize_function(self, output, name):
         id = self.idx.functions[name]
-        if name == debugsym:
+        if name == debugsym and not quiet:
             print "=>", id
 
         output.write("    <%s name='%s' file='%s' module='%s'>\n" % (id.type,
@@ -2059,7 +2066,7 @@ class docBuilder:
                     output.write("      <arg name='%s' type='%s' info='%s'/>\n" % (param[1], param[0], escape(param[2])))
                     self.indexString(name, param[2])
         except:
-            print "Failed to save function %s info: " % name, `id.info`
+            self.warning("Failed to save function %s info: " % name, `id.info`)
         output.write("    </%s>\n" % (id.type))
 
     def serialize_exports(self, output, file):
@@ -2074,7 +2081,7 @@ class docBuilder:
                                  escape(dict.info[data]),
                                  string.lower(data)))
                 except:
-                    print "Header %s lacks a %s description" % (module, data)
+                    self.warning("Header %s lacks a %s description" % (module, data))
             if dict.info.has_key('Description'):
                 desc = dict.info['Description']
                 if string.find(desc, "DEPRECATED") != -1:
@@ -2287,7 +2294,8 @@ class docBuilder:
 
     def serialize(self):
         filename = "%s/%s-api.xml" % (self.path, self.name)
-        print "Saving XML description %s" % (filename)
+        if not quiet:
+            print "Saving XML description %s" % (filename)
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         output.write("<api name='%s'>\n" % self.name)
@@ -2323,7 +2331,8 @@ class docBuilder:
         output.close()
 
         filename = "%s/%s-refs.xml" % (self.path, self.name)
-        print "Saving XML Cross References %s" % (filename)
+        if not quiet:
+            print "Saving XML Cross References %s" % (filename)
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         output.write("<apirefs name='%s'>\n" % self.name)
@@ -2336,7 +2345,8 @@ def rebuild():
     builder = None
     srcdir = os.environ["srcdir"]
     if glob.glob(srcdir + "/../src/libvirt.c") != [] :
-        print "Rebuilding API description for libvirt"
+        if not quiet:
+            print "Rebuilding API description for libvirt"
         dirs = [srcdir + "/../src",
                 srcdir + "/../src/util",
                 srcdir + "/../include/libvirt"]
@@ -2344,12 +2354,13 @@ def rebuild():
             dirs.append("../include/libvirt")
         builder = docBuilder("libvirt", srcdir, dirs, [])
     elif glob.glob("src/libvirt.c") != [] :
-        print "Rebuilding API description for libvirt"
+        if not quiet:
+            print "Rebuilding API description for libvirt"
         builder = docBuilder("libvirt", srcdir,
                              ["src", "src/util", "include/libvirt"],
                              [])
     else:
-        print "rebuild() failed, unable to guess the module"
+        self.warning("rebuild() failed, unable to guess the module")
         return None
     builder.scan()
     builder.analyze()
@@ -2370,3 +2381,7 @@ if __name__ == "__main__":
         parse(sys.argv[1])
     else:
         rebuild()
+    if warnings > 0:
+        sys.exit(2)
+    else:
+        sys.exit(0)
