@@ -150,6 +150,7 @@ struct _virCaps {
     int (*privateDataXMLFormat)(virBufferPtr, void *);
     int (*privateDataXMLParse)(xmlXPathContextPtr, void *);
     bool hasWideScsiBus;
+    const char *defaultInitPath;
 
     virDomainXMLNamespace ns;
 };

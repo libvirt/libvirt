@@ -174,8 +174,10 @@ virCapsPtr openvzCapsInit(void)
                                       0,
                                       NULL) == NULL)
         goto no_memory;
-    return caps;
 
+    caps->defaultInitPath = "/sbin/init";
+
+    return caps;
 no_memory:
     virCapabilitiesFree(caps);
     return NULL;

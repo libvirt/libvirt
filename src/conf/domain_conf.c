@@ -5708,6 +5708,18 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     if (STREQ(def->os.type, "exe")) {
         def->os.init = virXPathString("string(./os/init[1])", ctxt);
+        if (!def->os.init) {
+            if (caps->defaultInitPath) {
+                def->os.init = strdup(caps->defaultInitPath);
+                if (!def->os.init) {
+                    goto no_memory;
+                }
+            } else {
+                virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                     _("init binary must be specified"));
+                goto error;
+            }
+        }
     }
 
     if (STREQ(def->os.type, "xen") ||
