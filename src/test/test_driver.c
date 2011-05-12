@@ -681,8 +681,6 @@ static int testOpenVolumesForPool(xmlDocPtr xml,
     ret = virXPathNodeSet(vol_xpath, ctxt, &vols);
     VIR_FREE(vol_xpath);
     if (ret < 0) {
-        testError(VIR_ERR_XML_ERROR,
-                  _("node vol list for pool '%s'"), pool->def->name);
         goto error;
     }
 
@@ -892,7 +890,6 @@ static int testOpenFromFile(virConnectPtr conn,
 
     ret = virXPathNodeSet("/node/domain", ctxt, &domains);
     if (ret < 0) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node domain list"));
         goto error;
     }
 
@@ -936,7 +933,6 @@ static int testOpenFromFile(virConnectPtr conn,
 
     ret = virXPathNodeSet("/node/network", ctxt, &networks);
     if (ret < 0) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node network list"));
         goto error;
     }
     for (i = 0 ; i < ret ; i++) {
@@ -972,7 +968,6 @@ static int testOpenFromFile(virConnectPtr conn,
     /* Parse interface definitions */
     ret = virXPathNodeSet("/node/interface", ctxt, &ifaces);
     if (ret < 0) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node interface list"));
         goto error;
     }
     for (i = 0 ; i < ret ; i++) {
@@ -1008,7 +1003,6 @@ static int testOpenFromFile(virConnectPtr conn,
     /* Parse Storage Pool list */
     ret = virXPathNodeSet("/node/pool", ctxt, &pools);
     if (ret < 0) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node pool list"));
         goto error;
     }
     for (i = 0 ; i < ret ; i++) {
@@ -1059,7 +1053,6 @@ static int testOpenFromFile(virConnectPtr conn,
 
     ret = virXPathNodeSet("/node/device", ctxt, &devs);
     if (ret < 0) {
-        testError(VIR_ERR_XML_ERROR, "%s", _("node device list"));
         goto error;
     }
     for (i = 0 ; i < ret ; i++) {

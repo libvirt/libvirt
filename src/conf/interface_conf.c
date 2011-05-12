@@ -424,7 +424,10 @@ virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
     save = ctxt->node;
 
     nProtoNodes = virXPathNodeSet("./protocol", ctxt, &protoNodes);
-    if (nProtoNodes <= 0) {
+    if (nProtoNodes < 0)
+        goto error;
+
+    if (nProtoNodes == 0) {
         /* no protocols is an acceptable outcome */
         return 0;
     }
@@ -495,8 +498,6 @@ virInterfaceDefParseBridge(virInterfaceDefPtr def,
     bridge = ctxt->node;
     nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
     if (nbItf < 0) {
-        virInterfaceReportError(VIR_ERR_XML_ERROR,
-                                "%s", _("bridge interfaces"));
         ret = -1;
         goto error;
     }
@@ -536,12 +537,18 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
     int ret = 0;
 
     nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
-    if (nbItf <= 0) {
+    if (nbItf < 0) {
+        ret = -1;
+        goto error;
+    }
+
+    if (nbItf == 0) {
         virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 "%s", _("bond has no interfaces"));
         ret = -1;
         goto error;
     }
+
     if (VIR_ALLOC_N(def->data.bond.itf, nbItf) < 0) {
         virReportOOMError();
         ret = -1;

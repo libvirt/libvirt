@@ -5228,8 +5228,6 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the boot devices */
     if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract boot device"));
         goto cleanup;
     }
 
@@ -5517,8 +5515,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         def->cputune.shares = 0;
 
     if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract vcpupin nodes"));
         goto error;
     }
 
@@ -5613,8 +5609,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
 
     if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("failed to parse timers"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->clock.timers, n) < 0)
@@ -5742,8 +5736,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract disk devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->disks, n) < 0)
@@ -5762,8 +5754,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the controller devices */
     if ((n = virXPathNodeSet("./devices/controller", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract controller devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->controllers, n) < 0)
@@ -5780,8 +5770,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the filesystems */
     if ((n = virXPathNodeSet("./devices/filesystem", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract filesystem devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->fss, n) < 0)
@@ -5798,8 +5786,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the network devices */
     if ((n = virXPathNodeSet("./devices/interface", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract network devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->nets, n) < 0)
@@ -5820,8 +5806,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the smartcard devices */
     if ((n = virXPathNodeSet("./devices/smartcard", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract smartcard devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->smartcards, n) < 0)
@@ -5840,8 +5824,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the character devices */
     if ((n = virXPathNodeSet("./devices/parallel", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract parallel devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->parallels, n) < 0)
@@ -5868,8 +5850,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./devices/serial", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract serial devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->serials, n) < 0)
@@ -5926,8 +5906,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
 
     if ((n = virXPathNodeSet("./devices/channel", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract channel devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->channels, n) < 0)
@@ -5967,8 +5945,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the input devices */
     if ((n = virXPathNodeSet("./devices/input", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract input devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->inputs, n) < 0)
@@ -6001,8 +5977,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the graphics devices */
     if ((n = virXPathNodeSet("./devices/graphics", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract graphics devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->graphics, n) < 0)
@@ -6044,8 +6018,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the sound devices */
     if ((n = virXPathNodeSet("./devices/sound", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract sound devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->sounds, n) < 0)
@@ -6062,8 +6034,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the video devices */
     if ((n = virXPathNodeSet("./devices/video", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract video devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
@@ -6102,8 +6072,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of the host devices */
     if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract host devices"));
         goto error;
     }
     if (n && VIR_ALLOC_N(def->hostdevs, n) < 0)
@@ -6122,8 +6090,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     /* analysis of the watchdog devices */
     def->watchdog = NULL;
     if ((n = virXPathNodeSet("./devices/watchdog", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract watchdog devices"));
         goto error;
     }
     if (n > 1) {
@@ -6144,8 +6110,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     /* analysis of the memballoon devices */
     def->memballoon = NULL;
     if ((n = virXPathNodeSet("./devices/memballoon", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cannot extract memory balloon devices"));
         goto error;
     }
     if (n > 1) {
@@ -6312,8 +6276,6 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
     obj->pid = (pid_t)val;
 
     if ((n = virXPathNodeSet("./taint", ctxt, &nodes)) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("failed to parse taint flags"));
         goto error;
     }
     for (i = 0 ; i < n ; i++) {

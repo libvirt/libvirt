@@ -601,10 +601,14 @@ virXPathNodeSet(const char *xpath,
     ctxt->node = relnode;
     if (obj == NULL)
         return(0);
+
     if (obj->type != XPATH_NODESET) {
+        virXMLError(VIR_ERR_INTERNAL_ERROR,
+                    _("Incorrect xpath '%s'"), xpath);
         xmlXPathFreeObject(obj);
         return (-1);
     }
+
     if ((obj->nodesetval == NULL)  || (obj->nodesetval->nodeNr < 0)) {
         xmlXPathFreeObject(obj);
         return (0);

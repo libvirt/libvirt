@@ -159,8 +159,6 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
 
     n = virXPathNodeSet("./secret", ctxt, &nodes);
     if (n < 0){
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("cannot extract volume encryption secrets"));
         goto cleanup;
     }
     if (n != 0 && VIR_ALLOC_N(ret->secrets, n) < 0) {

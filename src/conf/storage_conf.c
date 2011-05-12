@@ -438,6 +438,9 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     source->initiator.iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
 
     nsource = virXPathNodeSet("./device", ctxt, &nodeset);
+    if (nsource < 0)
+        goto cleanup;
+
     if (nsource > 0) {
         if (VIR_ALLOC_N(source->devices, nsource) < 0) {
             VIR_FREE(nodeset);

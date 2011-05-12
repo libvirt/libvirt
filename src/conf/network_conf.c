@@ -642,6 +642,9 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     nIps = virXPathNodeSet("./ip", ctxt, &ipNodes);
+    if (nIps < 0)
+        goto error;
+
     if (nIps > 0) {
         int ii;
 

@@ -351,7 +351,6 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml,
     /* first handle the extra command-line arguments */
     n = virXPathNodeSet("./qemu:commandline/qemu:arg", ctxt, &nodes);
     if (n < 0)
-        /* virXPathNodeSet already set the error */
         goto error;
 
     if (n && VIR_ALLOC_N(cmd->args, n) < 0)
@@ -372,7 +371,6 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml,
     /* now handle the extra environment variables */
     n = virXPathNodeSet("./qemu:commandline/qemu:env", ctxt, &nodes);
     if (n < 0)
-        /* virXPathNodeSet already set the error */
         goto error;
 
     if (n && VIR_ALLOC_N(cmd->env_name, n) < 0)

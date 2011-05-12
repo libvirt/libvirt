@@ -570,9 +570,6 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
     data->storage.serial     = virXPathString("string(./serial[1])", ctxt);
 
     if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0) {
-        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("error parsing storage capabilities for '%s'"),
-                                 def->name);
         goto out;
     }
 
@@ -735,9 +732,6 @@ virNodeDevCapScsiHostParseXML(xmlXPathContextPtr ctxt,
     }
 
     if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0) {
-        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("error parsing SCSI host capabilities for '%s'"),
-                                 def->name);
         goto out;
     }
 
@@ -1170,7 +1164,11 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt, int create)
 
     /* Parse device capabilities */
     nodes = NULL;
-    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) <= 0) {
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+
+    if (n == 0) {
         virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("no device capabilities for '%s'"),
                                  def->name);
