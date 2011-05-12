@@ -109,11 +109,7 @@ struct qemud_driver {
 
     virCapsPtr caps;
 
-    /* An array of callbacks */
-    virDomainEventCallbackListPtr domainEventCallbacks;
-    virDomainEventQueuePtr domainEventQueue;
-    int domainEventTimer;
-    int domainEventDispatching;
+    virDomainEventStatePtr domainEventState;
 
     char *securityDriverName;
     virSecurityManagerPtr securityManager;

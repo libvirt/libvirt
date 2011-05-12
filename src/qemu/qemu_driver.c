@@ -393,14 +393,12 @@ qemudStartup(int privileged) {
     if (virDomainObjListInit(&qemu_driver->domains) < 0)
         goto out_of_memory;
 
-    /* Init callback list */
-    if (VIR_ALLOC(qemu_driver->domainEventCallbacks) < 0)
-        goto out_of_memory;
-    if (!(qemu_driver->domainEventQueue = virDomainEventQueueNew()))
-        goto out_of_memory;
-
-    if ((qemu_driver->domainEventTimer =
-         virEventAddTimeout(-1, qemuDomainEventFlush, qemu_driver, NULL)) < 0)
+    /* Init domain events */
+    qemu_driver->domainEventState = virDomainEventStateNew(qemuDomainEventFlush,
+                                                           qemu_driver,
+                                                           NULL,
+                                                           true);
+    if (!qemu_driver->domainEventState)
         goto error;
 
     /* Allocate bitmap for vnc port reservation */
@@ -764,11 +762,7 @@ qemudShutdown(void) {
     }
 
     /* Free domain callback list */
-    virDomainEventCallbackListFree(qemu_driver->domainEventCallbacks);
-    virDomainEventQueueFree(qemu_driver->domainEventQueue);
-
-    if (qemu_driver->domainEventTimer != -1)
-        virEventRemoveTimeout(qemu_driver->domainEventTimer);
+    virDomainEventStateFree(qemu_driver->domainEventState);
 
     if (qemu_driver->brctl)
         brShutdown(qemu_driver->brctl);
@@ -856,7 +850,8 @@ static int qemudClose(virConnectPtr conn) {
 
     /* Get rid of callbacks registered for this conn */
     qemuDriverLock(driver);
-    virDomainEventCallbackListRemoveConn(conn, driver->domainEventCallbacks);
+    virDomainEventCallbackListRemoveConn(conn,
+                                         driver->domainEventState->callbacks);
     qemuDriverUnlock(driver);
 
     conn->privateData = NULL;
@@ -5651,7 +5646,8 @@ qemuDomainEventRegister(virConnectPtr conn,
     int ret;
 
     qemuDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn, driver->domainEventCallbacks,
+    ret = virDomainEventCallbackListAdd(conn,
+                                        driver->domainEventState->callbacks,
                                         callback, opaque, freecb);
     qemuDriverUnlock(driver);
 
@@ -5667,12 +5663,9 @@ qemuDomainEventDeregister(virConnectPtr conn,
     int ret;
 
     qemuDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDelete(conn, driver->domainEventCallbacks,
-                                                   callback);
-    else
-        ret = virDomainEventCallbackListRemove(conn, driver->domainEventCallbacks,
-                                               callback);
+    ret = virDomainEventStateDeregister(conn,
+                                        driver->domainEventState,
+                                        callback);
     qemuDriverUnlock(driver);
 
     return ret;
@@ -5692,7 +5685,7 @@ qemuDomainEventRegisterAny(virConnectPtr conn,
 
     qemuDriverLock(driver);
     ret = virDomainEventCallbackListAddID(conn,
-                                          driver->domainEventCallbacks,
+                                          driver->domainEventState->callbacks,
                                           dom, eventID,
                                           callback, opaque, freecb);
     qemuDriverUnlock(driver);
@@ -5709,12 +5702,9 @@ qemuDomainEventDeregisterAny(virConnectPtr conn,
     int ret;
 
     qemuDriverLock(driver);
-    if (driver->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDeleteID(conn, driver->domainEventCallbacks,
-                                                     callbackID);
-    else
-        ret = virDomainEventCallbackListRemoveID(conn, driver->domainEventCallbacks,
-                                                 callbackID);
+    ret = virDomainEventStateDeregisterAny(conn,
+                                           driver->domainEventState,
+                                           callbackID);
     qemuDriverUnlock(driver);
 
     return ret;

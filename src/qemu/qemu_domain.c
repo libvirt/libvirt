@@ -65,28 +65,11 @@ static void qemuDomainEventDispatchFunc(virConnectPtr conn,
 void qemuDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
     struct qemud_driver *driver = opaque;
-    virDomainEventQueue tempQueue;
 
     qemuDriverLock(driver);
-
-    driver->domainEventDispatching = 1;
-
-    /* Copy the queue, so we're reentrant safe */
-    tempQueue.count = driver->domainEventQueue->count;
-    tempQueue.events = driver->domainEventQueue->events;
-    driver->domainEventQueue->count = 0;
-    driver->domainEventQueue->events = NULL;
-
-    virEventUpdateTimeout(driver->domainEventTimer, -1);
-    virDomainEventQueueDispatch(&tempQueue,
-                                driver->domainEventCallbacks,
-                                qemuDomainEventDispatchFunc,
-                                driver);
-
-    /* Purge any deleted callbacks */
-    virDomainEventCallbackListPurgeMarked(driver->domainEventCallbacks);
-
-    driver->domainEventDispatching = 0;
+    virDomainEventStateFlush(driver->domainEventState,
+                             qemuDomainEventDispatchFunc,
+                             driver);
     qemuDriverUnlock(driver);
 }
 
@@ -95,11 +78,7 @@ void qemuDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 void qemuDomainEventQueue(struct qemud_driver *driver,
                           virDomainEventPtr event)
 {
-    if (virDomainEventQueuePush(driver->domainEventQueue,
-                                event) < 0)
-        virDomainEventFree(event);
-    if (driver->domainEventQueue->count == 1)
-        virEventUpdateTimeout(driver->domainEventTimer, 0);
+    virDomainEventStateQueue(driver->domainEventState, event);
 }
 
 
