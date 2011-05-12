@@ -1984,13 +1984,9 @@ AM_CONDITIONAL([WITH_CIL],[test "$enable_locking" = "yes"])
 dnl Enable building libvirtd?
 AM_CONDITIONAL([WITH_LIBVIRTD],[test "x$with_libvirtd" = "xyes"])
 
-dnl Check for gettext
-AM_GNU_GETTEXT_VERSION([0.14.1])
+dnl Check for gettext - don't go any newer than what RHEL 5 supports
+AM_GNU_GETTEXT_VERSION([0.17])
 AM_GNU_GETTEXT([external])
-dnl Since we're using such an old version of gettext, we must also define
-dnl this symbol, in order to make the autopoint-supplied Makefile.in.in
-dnl work properly.
-AC_SUBST([MKINSTALLDIRS], ["\$(top_builddir)/$ac_aux_dir/mkinstalldirs"])
 
 ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
 
