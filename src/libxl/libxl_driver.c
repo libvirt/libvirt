@@ -133,7 +133,7 @@ libxlDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 
     libxlDriverLock(driver);
     virDomainEventStateFlush(driver->domainEventState,
-                             libxmlDomainEventDispatchFunc,
+                             libxlDomainEventDispatchFunc,
                              driver);
     libxlDriverUnlock(driver);
 }
@@ -686,7 +686,7 @@ libxlShutdown(void)
     VIR_FREE(libxl_driver->libDir);
     VIR_FREE(libxl_driver->saveDir);
 
-    virDomainEventStateFree(privconn->domainEventState);
+    virDomainEventStateFree(libxl_driver->domainEventState);
 
     libxlDriverUnlock(libxl_driver);
     virMutexDestroy(&libxl_driver->lock);
@@ -799,10 +799,10 @@ libxlStartup(int privileged) {
 
     libxl_driver->domainEventState = virDomainEventStateNew(
                                                         libxlDomainEventFlush,
-                                                        libxml_driver,
+                                                        libxl_driver,
                                                         NULL,
                                                         false);
-    if (!libxml_driver->domainEventState)
+    if (!libxl_driver->domainEventState)
         goto error;
 
     libxl_driver->logger =
