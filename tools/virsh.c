@@ -11131,7 +11131,7 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         if (def->opts) {
             const vshCmdOptDef *opt;
             for (opt = def->opts; opt->name; opt++) {
-                const char *fmt;
+                const char *fmt = "%s";
                 switch (opt->type) {
                 case VSH_OT_BOOL:
                     fmt = "[--%s]";
