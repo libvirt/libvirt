@@ -405,8 +405,8 @@ struct remote_domain_core_dump_args {
 };
 struct remote_domain_screenshot_args {
         remote_nonnull_domain      dom;
-        unsigned int               screen;
-        unsigned int               flags;
+        u_int                      screen;
+        u_int                      flags;
 };
 struct remote_domain_screenshot_ret {
         remote_string              mime;
