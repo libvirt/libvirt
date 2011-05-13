@@ -47,11 +47,19 @@ enum qemuDomainJobSignals {
     QEMU_JOB_SIGNAL_SUSPEND = 1 << 1, /* Request VM suspend to finish live migration offline */
     QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME = 1 << 2, /* Request migration downtime change */
     QEMU_JOB_SIGNAL_MIGRATE_SPEED = 1 << 3, /* Request migration speed change */
+    QEMU_JOB_SIGNAL_BLKSTAT = 1 << 4, /* Request blkstat during migration */
+    QEMU_JOB_SIGNAL_BLKINFO = 1 << 5, /* Request blkinfo during migration */
 };
 
 struct qemuDomainJobSignalsData {
     unsigned long long migrateDowntime; /* Data for QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME */
     unsigned long migrateBandwidth; /* Data for QEMU_JOB_SIGNAL_MIGRATE_SPEED */
+    char *statDevName; /* Device name used by blkstat calls */
+    virDomainBlockStatsPtr blockStat; /* Block statistics for QEMU_JOB_SIGNAL_BLKSTAT */
+    int *statRetCode; /* Return code for the blkstat calls */
+    char *infoDevName; /* Device name used by blkinfo calls */
+    virDomainBlockInfoPtr blockInfo; /* Block information for QEMU_JOB_SIGNAL_BLKINFO */
+    int *infoRetCode; /* Return code for the blkinfo calls */
 };
 
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
@@ -61,6 +69,7 @@ typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
     virCond jobCond; /* Use in conjunction with main virDomainObjPtr lock */
+    virCond signalCond; /* Use to coordinate the safe queries during migration */
     enum qemuDomainJob jobActive;   /* Currently running job */
     unsigned int jobSignals;        /* Signals for running job */
     struct qemuDomainJobSignalsData jobSignalsData; /* Signal specific data */

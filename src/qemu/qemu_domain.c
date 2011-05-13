@@ -89,7 +89,19 @@ static void *qemuDomainObjPrivateAlloc(void)
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
+    if (virCondInit(&priv->jobCond) < 0)
+        goto initfail;
+
+    if (virCondInit(&priv->signalCond) < 0) {
+        ignore_value(virCondDestroy(&priv->jobCond));
+        goto initfail;
+    }
+
     return priv;
+
+initfail:
+    VIR_FREE(priv);
+    return NULL;
 }
 
 static void qemuDomainObjPrivateFree(void *data)
@@ -101,6 +113,8 @@ static void qemuDomainObjPrivateFree(void *data)
     qemuDomainPCIAddressSetFree(priv->pciaddrs);
     virDomainChrSourceDefFree(priv->monConfig);
     VIR_FREE(priv->vcpupids);
+    ignore_value(virCondDestroy(&priv->jobCond));
+    ignore_value(virCondDestroy(&priv->signalCond));
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->mon) {

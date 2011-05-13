@@ -5278,15 +5278,6 @@ qemudDomainBlockStats (virDomainPtr dom,
         goto cleanup;
     }
 
-    if (qemuDomainObjBeginJob(vm) < 0)
-        goto cleanup;
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto endjob;
-    }
-
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(path, vm->def->disks[i]->dst)) {
             disk = vm->def->disks[i];
@@ -5297,29 +5288,56 @@ qemudDomainBlockStats (virDomainPtr dom,
     if (!disk) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid path: %s"), path);
-        goto endjob;
+        goto cleanup;
     }
 
     if (!disk->info.alias) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("missing disk device alias name for %s"), disk->dst);
-        goto endjob;
+        goto cleanup;
     }
 
     priv = vm->privateData;
-    qemuDomainObjEnterMonitor(vm);
-    ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                       disk->info.alias,
-                                       &stats->rd_req,
-                                       &stats->rd_bytes,
-                                       &stats->wr_req,
-                                       &stats->wr_bytes,
-                                       &stats->errs);
-    qemuDomainObjExitMonitor(vm);
+    if ((priv->jobActive == QEMU_JOB_MIGRATION_OUT)
+        || (priv->jobActive == QEMU_JOB_SAVE)) {
+        virDomainObjRef(vm);
+        while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKSTAT)
+            ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+
+        priv->jobSignalsData.statDevName = disk->info.alias;
+        priv->jobSignalsData.blockStat = stats;
+        priv->jobSignalsData.statRetCode = &ret;
+        priv->jobSignals |= QEMU_JOB_SIGNAL_BLKSTAT;
+
+        while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKSTAT)
+            ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+
+        if (virDomainObjUnref(vm) == 0)
+            vm = NULL;
+    } else {
+        if (qemuDomainObjBeginJob(vm) < 0)
+            goto cleanup;
+
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto endjob;
+        }
+
+        qemuDomainObjEnterMonitor(vm);
+        ret = qemuMonitorGetBlockStatsInfo(priv->mon,
+                                           disk->info.alias,
+                                           &stats->rd_req,
+                                           &stats->rd_bytes,
+                                           &stats->wr_req,
+                                           &stats->wr_bytes,
+                                           &stats->errs);
+        qemuDomainObjExitMonitor(vm);
 
 endjob:
-    if (qemuDomainObjEndJob(vm) == 0)
-        vm = NULL;
+        if (qemuDomainObjEndJob(vm) == 0)
+            vm = NULL;
+    }
 
 cleanup:
     if (vm)
@@ -5725,20 +5743,43 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
-        if (qemuDomainObjBeginJob(vm) < 0)
-            goto cleanup;
-        if (!virDomainObjIsActive(vm))
-            ret = 0;
-        else {
+
+        if ((priv->jobActive == QEMU_JOB_MIGRATION_OUT)
+            || (priv->jobActive == QEMU_JOB_SAVE)) {
+            virDomainObjRef(vm);
+            while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKINFO)
+                ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+
+            priv->jobSignalsData.infoDevName = disk->info.alias;
+            priv->jobSignalsData.blockInfo = info;
+            priv->jobSignalsData.infoRetCode = &ret;
+            priv->jobSignals |= QEMU_JOB_SIGNAL_BLKINFO;
+
+            while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKINFO)
+                ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+
+            if (virDomainObjUnref(vm) == 0)
+                vm = NULL;
+        } else {
+            if (qemuDomainObjBeginJob(vm) < 0)
+                goto cleanup;
+
+            if (!virDomainObjIsActive(vm)) {
+                qemuReportError(VIR_ERR_OPERATION_INVALID,
+                                "%s", _("domain is not running"));
+                goto endjob;
+            }
+
             qemuDomainObjEnterMonitor(vm);
             ret = qemuMonitorGetBlockExtent(priv->mon,
                                             disk->info.alias,
                                             &info->allocation);
             qemuDomainObjExitMonitor(vm);
-        }
 
-        if (qemuDomainObjEndJob(vm) == 0)
-            vm = NULL;
+endjob:
+            if (qemuDomainObjEndJob(vm) == 0)
+                vm = NULL;
+        }
     } else {
         ret = 0;
     }
@@ -6637,8 +6678,8 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
     }
 
     VIR_DEBUG("Requesting migration downtime change to %llums", downtime);
-    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
     priv->jobSignalsData.migrateDowntime = downtime;
+    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
     ret = 0;
 
 cleanup:
@@ -6686,8 +6727,8 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     }
 
     VIR_DEBUG("Requesting migration speed change to %luMbs", bandwidth);
-    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
     priv->jobSignalsData.migrateBandwidth = bandwidth;
+    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
     ret = 0;
 
 cleanup:
