@@ -144,6 +144,24 @@ test_scripts +=				\
 	virsh-optparse			\
 	virsh-schedinfo			\
 	virsh-synopsis
+else
+EXTRA_DIST += 				\
+	test_conf.sh			\
+	cpuset				\
+	daemon-conf			\
+	define-dev-segfault		\
+	int-overflow			\
+	libvirtd-fail			\
+	libvirtd-pool			\
+	read-bufsiz			\
+	read-non-seekable		\
+	start				\
+	undefine			\
+	vcpupin				\
+	virsh-all			\
+	virsh-optparse			\
+	virsh-schedinfo			\
+	virsh-synopsis
 endif
 
 if WITH_SECDRIVER_APPARMOR
