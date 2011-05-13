@@ -10442,7 +10442,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char *doc = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     char *state = NULL;
-    long creation;
+    long long creation_longlong;
+    time_t creation_time_t;
     char timestr[100];
     struct tm time_info;
 
@@ -10501,10 +10502,15 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             state = virXPathString("string(/domainsnapshot/state)", ctxt);
             if (state == NULL)
                 continue;
-            if (virXPathLong("string(/domainsnapshot/creationTime)", ctxt,
-                             &creation) < 0)
+            if (virXPathLongLong("string(/domainsnapshot/creationTime)", ctxt,
+                                 &creation_longlong) < 0)
                 continue;
-            localtime_r(&creation, &time_info);
+            creation_time_t = creation_longlong;
+            if (creation_time_t != creation_longlong) {
+                vshError(ctl, "%s", _("time_t overflow"));
+                continue;
+            }
+            localtime_r(&creation_time_t, &time_info);
             strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z", &time_info);
 
             vshPrint(ctl, " %-20s %-25s %s\n", names[i], timestr, state);
