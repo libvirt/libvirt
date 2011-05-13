@@ -210,9 +210,20 @@ cleanup:
     return ret;
 }
 
-static int virFDStreamFree(struct virFDStreamData *fdst)
+
+static int
+virFDStreamClose(virStreamPtr st)
 {
+    struct virFDStreamData *fdst = st->privateData;
     int ret;
+
+    VIR_DEBUG("st=%p", st);
+
+    if (!fdst)
+        return 0;
+
+    virMutexLock(&fdst->lock);
+
     ret = VIR_CLOSE(fdst->fd);
     if (fdst->cmd) {
         char buf[1024];
@@ -243,29 +254,12 @@ static int virFDStreamFree(struct virFDStreamData *fdst)
         }
         virCommandFree(fdst->cmd);
     }
-    VIR_FREE(fdst);
-    return ret;
-}
-
-
-static int
-virFDStreamClose(virStreamPtr st)
-{
-    struct virFDStreamData *fdst = st->privateData;
-    int ret;
-
-    VIR_DEBUG("st=%p", st);
-
-    if (!fdst)
-        return 0;
-
-    virMutexLock(&fdst->lock);
-
-    ret = virFDStreamFree(fdst);
 
     st->privateData = NULL;
 
     virMutexUnlock(&fdst->lock);
+    virMutexDestroy(&fdst->lock);
+    VIR_FREE(fdst);
 
     return ret;
 }
