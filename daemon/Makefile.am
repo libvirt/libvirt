@@ -53,6 +53,59 @@ EXTRA_DIST =						\
 
 BUILT_SOURCES =
 
+REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
+QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
+
+$(srcdir)/remote_dispatch_prototypes.h: $(srcdir)/remote_generator.pl \
+		$(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -p remote \
+	  $(REMOTE_PROTOCOL) > $@
+
+$(srcdir)/remote_dispatch_table.h: $(srcdir)/remote_generator.pl \
+		$(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -t remote \
+	  $(REMOTE_PROTOCOL) > $@
+
+$(srcdir)/remote_dispatch_args.h: $(srcdir)/remote_generator.pl \
+		$(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -a remote \
+	  $(REMOTE_PROTOCOL) > $@
+
+$(srcdir)/remote_dispatch_ret.h: $(srcdir)/remote_generator.pl \
+		$(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -r remote \
+	  $(REMOTE_PROTOCOL) > $@
+
+$(srcdir)/remote_dispatch_bodies.h: $(srcdir)/remote_generator.pl \
+		$(REMOTE_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -b remote \
+	  $(REMOTE_PROTOCOL) > $@
+
+$(srcdir)/qemu_dispatch_prototypes.h: $(srcdir)/remote_generator.pl \
+		$(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -p qemu \
+	  $(QEMU_PROTOCOL) > $@
+
+$(srcdir)/qemu_dispatch_table.h: $(srcdir)/remote_generator.pl \
+		$(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -t qemu \
+	  $(QEMU_PROTOCOL) > $@
+
+$(srcdir)/qemu_dispatch_args.h: $(srcdir)/remote_generator.pl \
+		$(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -a qemu \
+	  $(QEMU_PROTOCOL) > $@
+
+$(srcdir)/qemu_dispatch_ret.h: $(srcdir)/remote_generator.pl \
+		$(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -r qemu \
+	  $(QEMU_PROTOCOL) > $@
+
+$(srcdir)/qemu_dispatch_bodies.h: $(srcdir)/remote_generator.pl \
+		$(QEMU_PROTOCOL)
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -b qemu \
+	  $(QEMU_PROTOCOL) > $@
+
 if WITH_LIBVIRTD
 
 man8_MANS = libvirtd.8
@@ -207,59 +260,6 @@ endif
 
 remote.c: $(DAEMON_GENERATED)
 remote.h: $(DAEMON_GENERATED)
-
-REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
-QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
-
-$(srcdir)/remote_dispatch_prototypes.h: $(srcdir)/remote_generator.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -p remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_table.h: $(srcdir)/remote_generator.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -t remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_args.h: $(srcdir)/remote_generator.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -a remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_ret.h: $(srcdir)/remote_generator.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -r remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_bodies.h: $(srcdir)/remote_generator.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -c -b remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_prototypes.h: $(srcdir)/remote_generator.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -p qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_table.h: $(srcdir)/remote_generator.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -t qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_args.h: $(srcdir)/remote_generator.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -a qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_ret.h: $(srcdir)/remote_generator.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -r qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_bodies.h: $(srcdir)/remote_generator.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/remote_generator.pl -b qemu \
-	  $(QEMU_PROTOCOL) > $@
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 		  libvirtd.uml.logrotate libvirtd.logrotate
