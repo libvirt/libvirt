@@ -2504,25 +2504,25 @@ cleanup:
 
 static virNetworkDriver networkDriver = {
     "Network",
-    .open = networkOpenNetwork,
-    .close = networkCloseNetwork,
-    .numOfNetworks = networkNumNetworks,
-    .listNetworks = networkListNetworks,
-    .numOfDefinedNetworks = networkNumDefinedNetworks,
-    .listDefinedNetworks = networkListDefinedNetworks,
-    .networkLookupByUUID = networkLookupByUUID,
-    .networkLookupByName = networkLookupByName,
-    .networkCreateXML = networkCreate,
-    .networkDefineXML = networkDefine,
-    .networkUndefine = networkUndefine,
-    .networkCreate = networkStart,
-    .networkDestroy = networkDestroy,
-    .networkGetXMLDesc = networkGetXMLDesc,
-    .networkGetBridgeName = networkGetBridgeName,
-    .networkGetAutostart = networkGetAutostart,
-    .networkSetAutostart = networkSetAutostart,
-    networkIsActive,
-    networkIsPersistent,
+    .open = networkOpenNetwork, /* 0.2.0 */
+    .close = networkCloseNetwork, /* 0.2.0 */
+    .numOfNetworks = networkNumNetworks, /* 0.2.0 */
+    .listNetworks = networkListNetworks, /* 0.2.0 */
+    .numOfDefinedNetworks = networkNumDefinedNetworks, /* 0.2.0 */
+    .listDefinedNetworks = networkListDefinedNetworks, /* 0.2.0 */
+    .networkLookupByUUID = networkLookupByUUID, /* 0.2.0 */
+    .networkLookupByName = networkLookupByName, /* 0.2.0 */
+    .networkCreateXML = networkCreate, /* 0.2.0 */
+    .networkDefineXML = networkDefine, /* 0.2.0 */
+    .networkUndefine = networkUndefine, /* 0.2.0 */
+    .networkCreate = networkStart, /* 0.2.0 */
+    .networkDestroy = networkDestroy, /* 0.2.0 */
+    .networkGetXMLDesc = networkGetXMLDesc, /* 0.2.0 */
+    .networkGetBridgeName = networkGetBridgeName, /* 0.2.0 */
+    .networkGetAutostart = networkGetAutostart, /* 0.2.1 */
+    .networkSetAutostart = networkSetAutostart, /* 0.2.1 */
+    .networkIsActive = networkIsActive, /* 0.7.3 */
+    .networkIsPersistent = networkIsPersistent, /* 0.7.3 */
 };
 
 static virStateDriver networkStateDriver = {

@@ -1062,17 +1062,17 @@ secretDriverReload(void)
 
 static virSecretDriver secretDriver = {
     .name = "secret",
-    .open = secretOpen,
-    .close = secretClose,
-    .numOfSecrets = secretNumOfSecrets,
-    .listSecrets = secretListSecrets,
-    .lookupByUUID = secretLookupByUUID,
-    .lookupByUsage = secretLookupByUsage,
-    .defineXML = secretDefineXML,
-    .getXMLDesc = secretGetXMLDesc,
-    .setValue = secretSetValue,
-    .getValue = secretGetValue,
-    .undefine = secretUndefine
+    .open = secretOpen, /* 0.7.1 */
+    .close = secretClose, /* 0.7.1 */
+    .numOfSecrets = secretNumOfSecrets, /* 0.7.1 */
+    .listSecrets = secretListSecrets, /* 0.7.1 */
+    .lookupByUUID = secretLookupByUUID, /* 0.7.1 */
+    .lookupByUsage = secretLookupByUsage, /* 0.7.1 */
+    .defineXML = secretDefineXML, /* 0.7.1 */
+    .getXMLDesc = secretGetXMLDesc, /* 0.7.1 */
+    .setValue = secretSetValue, /* 0.7.1 */
+    .getValue = secretGetValue, /* 0.7.1 */
+    .undefine = secretUndefine, /* 0.7.1 */
 };
 
 static virStateDriver stateDriver = {

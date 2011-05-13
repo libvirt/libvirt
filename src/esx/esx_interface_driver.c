@@ -67,8 +67,8 @@ esxInterfaceClose(virConnectPtr conn)
 
 static virInterfaceDriver esxInterfaceDriver = {
     "ESX",                                 /* name */
-    .open = esxInterfaceOpen,
-    .close = esxInterfaceClose,
+    .open = esxInterfaceOpen, /* 0.7.0 */
+    .close = esxInterfaceClose, /* 0.7.0 */
 };
 
 

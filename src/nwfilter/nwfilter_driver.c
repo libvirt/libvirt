@@ -449,15 +449,15 @@ nwfilterTeardownFilter(virDomainNetDefPtr net) {
 
 static virNWFilterDriver nwfilterDriver = {
     .name = "nwfilter",
-    .open = nwfilterOpen,
-    .close = nwfilterClose,
-    .numOfNWFilters = nwfilterNumNWFilters,
-    .listNWFilters = nwfilterListNWFilters,
-    .nwfilterLookupByName = nwfilterLookupByName,
-    .nwfilterLookupByUUID = nwfilterLookupByUUID,
-    .defineXML = nwfilterDefine,
-    .undefine = nwfilterUndefine,
-    .getXMLDesc = nwfilterGetXMLDesc,
+    .open = nwfilterOpen, /* 0.8.0 */
+    .close = nwfilterClose, /* 0.8.0 */
+    .numOfNWFilters = nwfilterNumNWFilters, /* 0.8.0 */
+    .listNWFilters = nwfilterListNWFilters, /* 0.8.0 */
+    .nwfilterLookupByName = nwfilterLookupByName, /* 0.8.0 */
+    .nwfilterLookupByUUID = nwfilterLookupByUUID, /* 0.8.0 */
+    .defineXML = nwfilterDefine, /* 0.8.0 */
+    .undefine = nwfilterUndefine, /* 0.8.0 */
+    .getXMLDesc = nwfilterGetXMLDesc, /* 0.8.0 */
 };
 
 

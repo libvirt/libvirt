@@ -542,20 +542,20 @@ cleanup:
 
 static virInterfaceDriver interfaceDriver = {
     "Interface",
-    .open = interfaceOpenInterface,
-    .close = interfaceCloseInterface,
-    .numOfInterfaces = interfaceNumOfInterfaces,
-    .listInterfaces = interfaceListInterfaces,
-    .numOfDefinedInterfaces = interfaceNumOfDefinedInterfaces,
-    .listDefinedInterfaces = interfaceListDefinedInterfaces,
-    .interfaceLookupByName = interfaceLookupByName,
-    .interfaceLookupByMACString = interfaceLookupByMACString,
-    .interfaceGetXMLDesc = interfaceGetXMLDesc,
-    .interfaceDefineXML = interfaceDefineXML,
-    .interfaceUndefine = interfaceUndefine,
-    .interfaceCreate = interfaceCreate,
-    .interfaceDestroy = interfaceDestroy,
-    .interfaceIsActive = interfaceIsActive,
+    .open = interfaceOpenInterface, /* 0.7.0 */
+    .close = interfaceCloseInterface, /* 0.7.0 */
+    .numOfInterfaces = interfaceNumOfInterfaces, /* 0.7.0 */
+    .listInterfaces = interfaceListInterfaces, /* 0.7.0 */
+    .numOfDefinedInterfaces = interfaceNumOfDefinedInterfaces, /* 0.7.0 */
+    .listDefinedInterfaces = interfaceListDefinedInterfaces, /* 0.7.0 */
+    .interfaceLookupByName = interfaceLookupByName, /* 0.7.0 */
+    .interfaceLookupByMACString = interfaceLookupByMACString, /* 0.7.0 */
+    .interfaceGetXMLDesc = interfaceGetXMLDesc, /* 0.7.0 */
+    .interfaceDefineXML = interfaceDefineXML, /* 0.7.0 */
+    .interfaceUndefine = interfaceUndefine, /* 0.7.0 */
+    .interfaceCreate = interfaceCreate, /* 0.7.0 */
+    .interfaceDestroy = interfaceDestroy, /* 0.7.0 */
+    .interfaceIsActive = interfaceIsActive, /* 0.7.3 */
 };
 
 int interfaceRegister(void) {

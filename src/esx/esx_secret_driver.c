@@ -65,8 +65,8 @@ esxSecretClose(virConnectPtr conn)
 
 static virSecretDriver esxSecretDriver = {
     "ESX",                                 /* name */
-    .open = esxSecretOpen,
-    .close = esxSecretClose,
+    .open = esxSecretOpen, /* 0.7.1 */
+    .close = esxSecretClose, /* 0.7.1 */
 };
 
 
