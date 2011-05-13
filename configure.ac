@@ -1667,11 +1667,15 @@ if test "$with_storage_scsi" = "check"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
 
-if test "$with_storage_mpath" = "check" && test "$with_linux" = "yes"; then
-   with_storage_mpath=yes
+if test "$with_storage_mpath" = "check"; then
+   if test "$with_linux" = "yes"; then
+      with_storage_mpath=yes
 
-   AC_DEFINE_UNQUOTED([WITH_STORAGE_MPATH], 1,
-     [whether mpath backend for storage driver is enabled])
+      AC_DEFINE_UNQUOTED([WITH_STORAGE_MPATH], 1,
+        [whether mpath backend for storage driver is enabled])
+   else
+      with_storage_mpath=no
+   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_MPATH], [test "$with_storage_mpath" = "yes"])
 
