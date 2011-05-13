@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <poll.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <sys/stat.h>
