@@ -1042,7 +1042,7 @@ struct _virDomainSnapshotDef {
     char *name;
     char *description;
     char *parent;
-    time_t creationTime;
+    long long creationTime; /* in seconds */
     int state;
 
     long active;

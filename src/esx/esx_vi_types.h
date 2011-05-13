@@ -264,7 +264,7 @@ int esxVI_DateTime_Serialize(esxVI_DateTime *dateTime, const char *element,
                              virBufferPtr output);
 int esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime);
 int esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
-                                         time_t *secondsSinceEpoch);
+                                         long long *secondsSinceEpoch);
 
 
 

@@ -9183,7 +9183,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
 
     def->name = virXPathString("string(./name)", ctxt);
     if (def->name == NULL)
-        ignore_value(virAsprintf(&def->name, "%ld", tv.tv_sec));
+        ignore_value(virAsprintf(&def->name, "%lld", (long long)tv.tv_sec));
 
     if (def->name == NULL) {
         virReportOOMError();
@@ -9193,8 +9193,8 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
     def->description = virXPathString("string(./description)", ctxt);
 
     if (!newSnapshot) {
-        if (virXPathLong("string(./creationTime)", ctxt,
-                         &def->creationTime) < 0) {
+        if (virXPathLongLong("string(./creationTime)", ctxt,
+                             &def->creationTime) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                  _("missing creationTime from existing snapshot"));
             goto cleanup;
@@ -9259,7 +9259,7 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
         virBufferAsprintf(&buf, "    <name>%s</name>\n", def->parent);
         virBufferAddLit(&buf, "  </parent>\n");
     }
-    virBufferAsprintf(&buf, "  <creationTime>%ld</creationTime>\n",
+    virBufferAsprintf(&buf, "  <creationTime>%lld</creationTime>\n",
                       def->creationTime);
     virBufferAddLit(&buf, "  <domain>\n");
     virBufferAsprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);

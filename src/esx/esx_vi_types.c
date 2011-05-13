@@ -1402,7 +1402,7 @@ esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
 
 int
 esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
-                                     time_t *secondsSinceEpoch)
+                                     long long *secondsSinceEpoch)
 {
     char value[64] = "";
     char *tmp;

@@ -169,7 +169,7 @@ testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
 
 struct testDateTime {
     const char *dateTime;
-    time_t calendarTime;
+    long long calendarTime;
 };
 
 static struct testDateTime times[] = {
@@ -205,7 +205,7 @@ testConvertDateTimeToCalendarTime(const void *data ATTRIBUTE_UNUSED)
 {
     int i;
     esxVI_DateTime dateTime;
-    time_t calendarTime;
+    long long calendarTime;
 
     for (i = 0; i < ARRAY_CARDINALITY(times); ++i) {
         dateTime.value = (char *)times[i].dateTime;
