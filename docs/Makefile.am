@@ -60,7 +60,7 @@ gif = \
   architecture.gif \
   node.gif
 
-dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in \
+dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in hvsupport.html.in \
       $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
@@ -86,7 +86,7 @@ EXTRA_DIST=					\
   $(xml) $(fig) $(png) $(css) \
   $(patches) \
   sitemap.html.in \
-  todo.pl todo.cfg-example
+  todo.pl hvsupport.pl todo.cfg-example
 
 MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(dot_html)) \
@@ -112,6 +112,10 @@ todo.html.in: todo.pl
 todo:
 	rm -f todo.html.in
 	$(MAKE) todo.html
+
+hvsupport.html.in: $(srcdir)/hvsupport.pl $(srcdir)/../src/libvirt_public.syms \
+	 $(srcdir)/../src/libvirt_qemu.syms $(srcdir)/../src/driver.h
+	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(srcdir)/../src > $@ || { rm $@ && exit 1; }
 
 .PHONY: todo
 
@@ -183,7 +187,7 @@ clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html
 
 maintainer-clean-local: clean-local
-	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml todo.html.in
+	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml todo.html.in hvsupport.html.in
 
 rebuild: api all
 
