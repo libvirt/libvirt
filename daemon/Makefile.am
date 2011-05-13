@@ -165,8 +165,6 @@ libvirtd_CFLAGS += $(AVAHI_CFLAGS)
 libvirtd_LDADD += $(AVAHI_LIBS)
 endif
 
-EXTRA_DIST += probes.d libvirtd.stp
-
 if WITH_DTRACE
 libvirtd_LDADD += probes.o
 nodist_libvirtd_SOURCES = probes.h
@@ -349,6 +347,8 @@ uninstall-local:: uninstall-data-sasl
 endif # WITH_LIBVIRTD
 
 # This is needed for 'make dist' too, so can't wrap in WITH_LIBVIRTD.
+EXTRA_DIST += probes.d libvirtd.stp
+
 POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8
 
