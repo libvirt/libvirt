@@ -2688,119 +2688,60 @@ libxlDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
 
 
 static virDriver libxlDriver = {
-    VIR_DRV_LIBXL,
-    "xenlight",
-    libxlOpen,                  /* open */
-    libxlClose,                 /* close */
-    NULL,                       /* supports_feature */
-    libxlGetType,               /* type */
-    libxlGetVersion,            /* version */
-    NULL,                       /* libvirtVersion (impl. in libvirt.c) */
-    virGetHostname,             /* getHostname */
-    NULL,                       /* getSysinfo */
-    libxlGetMaxVcpus,           /* getMaxVcpus */
-    libxlNodeGetInfo,           /* nodeGetInfo */
-    libxlGetCapabilities,       /* getCapabilities */
-    libxlListDomains,           /* listDomains */
-    libxlNumDomains,            /* numOfDomains */
-    libxlDomainCreateXML,       /* domainCreateXML */
-    libxlDomainLookupByID,      /* domainLookupByID */
-    libxlDomainLookupByUUID,    /* domainLookupByUUID */
-    libxlDomainLookupByName,    /* domainLookupByName */
-    libxlDomainSuspend,         /* domainSuspend */
-    libxlDomainResume,          /* domainResume */
-    libxlDomainShutdown,        /* domainShutdown */
-    libxlDomainReboot,          /* domainReboot */
-    libxlDomainDestroy,         /* domainDestroy */
-    libxlDomainGetOSType,       /* domainGetOSType */
-    libxlDomainGetMaxMemory,    /* domainGetMaxMemory */
-    NULL,                       /* domainSetMaxMemory */
-    libxlDomainSetMemory,       /* domainSetMemory */
-    libxlDomainSetMemoryFlags,  /* domainSetMemoryFlags */
-    NULL,                       /* domainSetMemoryParameters */
-    NULL,                       /* domainGetMemoryParameters */
-    NULL,                       /* domainSetBlkioParameters */
-    NULL,                       /* domainGetBlkioParameters */
-    libxlDomainGetInfo,         /* domainGetInfo */
-    libxlDomainGetState,        /* domainGetState */
-    NULL,                       /* domainSave */
-    NULL,                       /* domainRestore */
-    NULL,                       /* domainCoreDump */
-    NULL,                       /* domainScreenshot */
-    libxlDomainSetVcpus,        /* domainSetVcpus */
-    libxlDomainSetVcpusFlags,   /* domainSetVcpusFlags */
-    libxlDomainGetVcpusFlags,   /* domainGetVcpusFlags */
-    libxlDomainPinVcpu,         /* domainPinVcpu */
-    libxlDomainGetVcpus,        /* domainGetVcpus */
-    NULL,                       /* domainGetMaxVcpus */
-    NULL,                       /* domainGetSecurityLabel */
-    NULL,                       /* nodeGetSecurityModel */
-    libxlDomainGetXMLDesc,      /* domainGetXMLDesc */
-    libxlDomainXMLFromNative,   /* domainXMLFromNative */
-    libxlDomainXMLToNative,     /* domainXMLToNative */
-    libxlListDefinedDomains,    /* listDefinedDomains */
-    libxlNumDefinedDomains,     /* numOfDefinedDomains */
-    libxlDomainCreate,          /* domainCreate */
-    libxlDomainCreateWithFlags, /* domainCreateWithFlags */
-    libxlDomainDefineXML,       /* domainDefineXML */
-    libxlDomainUndefine,        /* domainUndefine */
-    NULL,                       /* domainAttachDevice */
-    NULL,                       /* domainAttachDeviceFlags */
-    NULL,                       /* domainDetachDevice */
-    NULL,                       /* domainDetachDeviceFlags */
-    NULL,                       /* domainUpdateDeviceFlags */
-    libxlDomainGetAutostart,    /* domainGetAutostart */
-    libxlDomainSetAutostart,    /* domainSetAutostart */
-    libxlDomainGetSchedulerType,/* domainGetSchedulerType */
-    libxlDomainGetSchedulerParameters,/* domainGetSchedulerParameters */
-    libxlDomainSetSchedulerParameters,/* domainSetSchedulerParameters */
-    NULL,                       /* domainMigratePrepare */
-    NULL,                       /* domainMigratePerform */
-    NULL,                       /* domainMigrateFinish */
-    NULL,                       /* domainBlockStats */
-    NULL,                       /* domainInterfaceStats */
-    NULL,                       /* domainMemoryStats */
-    NULL,                       /* domainBlockPeek */
-    NULL,                       /* domainMemoryPeek */
-    NULL,                       /* domainGetBlockInfo */
-    NULL,                       /* nodeGetCellsFreeMemory */
-    libxlNodeGetFreeMemory,     /* nodeGetFreeMemory */
-    libxlDomainEventRegister,   /* domainEventRegister */
-    libxlDomainEventDeregister, /* domainEventDeregister */
-    NULL,                       /* domainMigratePrepare2 */
-    NULL,                       /* domainMigrateFinish2 */
-    NULL,                       /* nodeDeviceDettach */
-    NULL,                       /* nodeDeviceReAttach */
-    NULL,                       /* nodeDeviceReset */
-    NULL,                       /* domainMigratePrepareTunnel */
-    NULL,                       /* isEncrypted */
-    NULL,                       /* isSecure */
-    libxlDomainIsActive,        /* domainIsActive */
-    libxlDomainIsPersistent,    /* domainIsPersistent */
-    libxlDomainIsUpdated,       /* domainIsUpdated */
-    NULL,                       /* cpuCompare */
-    NULL,                       /* cpuBaseline */
-    NULL,                       /* domainGetJobInfo */
-    NULL,                       /* domainAbortJob */
-    NULL,                       /* domainMigrateSetMaxDowntime */
-    NULL,                       /* domainMigrateSetMaxSpeed */
-    libxlDomainEventRegisterAny,/* domainEventRegisterAny */
-    libxlDomainEventDeregisterAny,/* domainEventDeregisterAny */
-    NULL,                       /* domainManagedSave */
-    NULL,                       /* domainHasManagedSaveImage */
-    NULL,                       /* domainManagedSaveRemove */
-    NULL,                       /* domainSnapshotCreateXML */
-    NULL,                       /* domainSnapshotGetXMLDesc */
-    NULL,                       /* domainSnapshotNum */
-    NULL,                       /* domainSnapshotListNames */
-    NULL,                       /* domainSnapshotLookupByName */
-    NULL,                       /* domainHasCurrentSnapshot */
-    NULL,                       /* domainSnapshotCurrent */
-    NULL,                       /* domainRevertToSnapshot */
-    NULL,                       /* domainSnapshotDelete */
-    NULL,                       /* qemuDomainMonitorCommand */
-    NULL,                       /* domainOpenConsole */
-    NULL,                       /* domainInjectNMI */
+    .no = VIR_DRV_LIBXL,
+    .name = "xenlight",
+    .open = libxlOpen,
+    .close = libxlClose,
+    .type = libxlGetType,
+    .version = libxlGetVersion,
+    .getHostname = virGetHostname,
+    .getMaxVcpus = libxlGetMaxVcpus,
+    .nodeGetInfo = libxlNodeGetInfo,
+    .getCapabilities = libxlGetCapabilities,
+    .listDomains = libxlListDomains,
+    .numOfDomains = libxlNumDomains,
+    .domainCreateXML = libxlDomainCreateXML,
+    .domainLookupByID = libxlDomainLookupByID,
+    .domainLookupByUUID = libxlDomainLookupByUUID,
+    .domainLookupByName = libxlDomainLookupByName,
+    .domainSuspend = libxlDomainSuspend,
+    .domainResume = libxlDomainResume,
+    .domainShutdown = libxlDomainShutdown,
+    .domainReboot = libxlDomainReboot,
+    .domainDestroy = libxlDomainDestroy,
+    .domainGetOSType = libxlDomainGetOSType,
+    .domainGetMaxMemory = libxlDomainGetMaxMemory,
+    .domainSetMemory = libxlDomainSetMemory,
+    .domainSetMemoryFlags = libxlDomainSetMemoryFlags,
+    .domainGetInfo = libxlDomainGetInfo,
+    .domainGetState = libxlDomainGetState,
+    .domainSetVcpus = libxlDomainSetVcpus,
+    .domainSetVcpusFlags = libxlDomainSetVcpusFlags,
+    .domainGetVcpusFlags = libxlDomainGetVcpusFlags,
+    .domainPinVcpu = libxlDomainPinVcpu,
+    .domainGetVcpus = libxlDomainGetVcpus,
+    .domainGetXMLDesc = libxlDomainGetXMLDesc,
+    .domainXMLFromNative = libxlDomainXMLFromNative,
+    .domainXMLToNative = libxlDomainXMLToNative,
+    .listDefinedDomains = libxlListDefinedDomains,
+    .numOfDefinedDomains = libxlNumDefinedDomains,
+    .domainCreate = libxlDomainCreate,
+    .domainCreateWithFlags = libxlDomainCreateWithFlags,
+    .domainDefineXML = libxlDomainDefineXML,
+    .domainUndefine = libxlDomainUndefine,
+    .domainGetAutostart = libxlDomainGetAutostart,
+    .domainSetAutostart = libxlDomainSetAutostart,
+    .domainGetSchedulerType = libxlDomainGetSchedulerType,
+    .domainGetSchedulerParameters = libxlDomainGetSchedulerParameters,
+    .domainSetSchedulerParameters = libxlDomainSetSchedulerParameters,
+    .nodeGetFreeMemory = libxlNodeGetFreeMemory,
+    .domainEventRegister = libxlDomainEventRegister,
+    .domainEventDeregister = libxlDomainEventDeregister,
+    .domainIsActive = libxlDomainIsActive,
+    .domainIsPersistent = libxlDomainIsPersistent,
+    .domainIsUpdated = libxlDomainIsUpdated,
+    .domainEventRegisterAny = libxlDomainEventRegisterAny,
+    .domainEventDeregisterAny = libxlDomainEventDeregisterAny,
 };
 
 static virStateDriver libxlStateDriver = {

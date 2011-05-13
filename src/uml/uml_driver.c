@@ -2181,119 +2181,51 @@ cleanup:
 
 
 static virDriver umlDriver = {
-    VIR_DRV_UML,
-    "UML",
-    umlOpen, /* open */
-    umlClose, /* close */
-    NULL, /* supports_feature */
-    umlGetType, /* type */
-    umlGetVersion, /* version */
-    NULL, /* libvirtVersion (impl. in libvirt.c) */
-    virGetHostname, /* getHostname */
-    NULL, /* getSysinfo */
-    NULL, /* getMaxVcpus */
-    nodeGetInfo, /* nodeGetInfo */
-    umlGetCapabilities, /* getCapabilities */
-    umlListDomains, /* listDomains */
-    umlNumDomains, /* numOfDomains */
-    umlDomainCreate, /* domainCreateXML */
-    umlDomainLookupByID, /* domainLookupByID */
-    umlDomainLookupByUUID, /* domainLookupByUUID */
-    umlDomainLookupByName, /* domainLookupByName */
-    NULL, /* domainSuspend */
-    NULL, /* domainResume */
-    umlDomainShutdown, /* domainShutdown */
-    NULL, /* domainReboot */
-    umlDomainDestroy, /* domainDestroy */
-    umlDomainGetOSType, /* domainGetOSType */
-    umlDomainGetMaxMemory, /* domainGetMaxMemory */
-    umlDomainSetMaxMemory, /* domainSetMaxMemory */
-    umlDomainSetMemory, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
-    umlDomainGetInfo, /* domainGetInfo */
-    umlDomainGetState, /* domainGetState */
-    NULL, /* domainSave */
-    NULL, /* domainRestore */
-    NULL, /* domainCoreDump */
-    NULL, /* domainScreenshot */
-    NULL, /* domainSetVcpus */
-    NULL, /* domainSetVcpusFlags */
-    NULL, /* domainGetVcpusFlags */
-    NULL, /* domainPinVcpu */
-    NULL, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
-    NULL, /* domainGetSecurityLabel */
-    NULL, /* nodeGetSecurityModel */
-    umlDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXMLFromNative */
-    NULL, /* domainXMLToNative */
-    umlListDefinedDomains, /* listDefinedDomains */
-    umlNumDefinedDomains, /* numOfDefinedDomains */
-    umlDomainStart, /* domainCreate */
-    umlDomainStartWithFlags, /* domainCreateWithFlags */
-    umlDomainDefine, /* domainDefineXML */
-    umlDomainUndefine, /* domainUndefine */
-    umlDomainAttachDevice, /* domainAttachDevice */
-    umlDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
-    umlDomainDetachDevice, /* domainDetachDevice */
-    umlDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
-    umlDomainGetAutostart, /* domainGetAutostart */
-    umlDomainSetAutostart, /* domainSetAutostart */
-    NULL, /* domainGetSchedulerType */
-    NULL, /* domainGetSchedulerParameters */
-    NULL, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare */
-    NULL, /* domainMigratePerform */
-    NULL, /* domainMigrateFinish */
-    NULL, /* domainBlockStats */
-    NULL, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
-    umlDomainBlockPeek, /* domainBlockPeek */
-    NULL, /* domainMemoryPeek */
-    NULL, /* domainGetBlockInfo */
-    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    nodeGetFreeMemory,  /* nodeGetFreeMemory */
-    NULL, /* domainEventRegister */
-    NULL, /* domainEventDeregister */
-    NULL, /* domainMigratePrepare2 */
-    NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
-    NULL, /* domainMigratePrepareTunnel */
-    umlIsEncrypted, /* isEncrypted */
-    umlIsSecure, /* isSecure */
-    umlDomainIsActive, /* domainIsActive */
-    umlDomainIsPersistent, /* domainIsPersistent */
-    umlDomainIsUpdated, /* domainIsUpdated */
-    NULL, /* cpuCompare */
-    NULL, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
-    NULL, /* domainAbortJob */
-    NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
-    NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotGetXMLDesc */
-    NULL, /* domainSnapshotNum */
-    NULL, /* domainSnapshotListNames */
-    NULL, /* domainSnapshotLookupByName */
-    NULL, /* domainHasCurrentSnapshot */
-    NULL, /* domainSnapshotCurrent */
-    NULL, /* domainRevertToSnapshot */
-    NULL, /* domainSnapshotDelete */
-    NULL, /* qemuDomainMonitorCommand */
-    umlDomainOpenConsole, /* domainOpenConsole */
-    NULL, /* domainInjectNMI */
+    .no = VIR_DRV_UML,
+    .name = "UML",
+    .open = umlOpen,
+    .close = umlClose,
+    .type = umlGetType,
+    .version = umlGetVersion,
+    .getHostname = virGetHostname,
+    .nodeGetInfo = nodeGetInfo,
+    .getCapabilities = umlGetCapabilities,
+    .listDomains = umlListDomains,
+    .numOfDomains = umlNumDomains,
+    .domainCreateXML = umlDomainCreate,
+    .domainLookupByID = umlDomainLookupByID,
+    .domainLookupByUUID = umlDomainLookupByUUID,
+    .domainLookupByName = umlDomainLookupByName,
+    .domainShutdown = umlDomainShutdown,
+    .domainDestroy = umlDomainDestroy,
+    .domainGetOSType = umlDomainGetOSType,
+    .domainGetMaxMemory = umlDomainGetMaxMemory,
+    .domainSetMaxMemory = umlDomainSetMaxMemory,
+    .domainSetMemory = umlDomainSetMemory,
+    .domainGetInfo = umlDomainGetInfo,
+    .domainGetState = umlDomainGetState,
+    .domainGetXMLDesc = umlDomainGetXMLDesc,
+    .listDefinedDomains = umlListDefinedDomains,
+    .numOfDefinedDomains = umlNumDefinedDomains,
+    .domainCreate = umlDomainStart,
+    .domainCreateWithFlags = umlDomainStartWithFlags,
+    .domainDefineXML = umlDomainDefine,
+    .domainUndefine = umlDomainUndefine,
+    .domainAttachDevice = umlDomainAttachDevice,
+    .domainAttachDeviceFlags = umlDomainAttachDeviceFlags,
+    .domainDetachDevice = umlDomainDetachDevice,
+    .domainDetachDeviceFlags = umlDomainDetachDeviceFlags,
+    .domainGetAutostart = umlDomainGetAutostart,
+    .domainSetAutostart = umlDomainSetAutostart,
+    .domainBlockPeek = umlDomainBlockPeek,
+    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory,
+    .nodeGetFreeMemory = nodeGetFreeMemory,
+    .isEncrypted = umlIsEncrypted,
+    .isSecure = umlIsSecure,
+    .domainIsActive = umlDomainIsActive,
+    .domainIsPersistent = umlDomainIsPersistent,
+    .domainIsUpdated = umlDomainIsUpdated,
+    .domainOpenConsole = umlDomainOpenConsole,
 };
 
 static int

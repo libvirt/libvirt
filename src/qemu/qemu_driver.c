@@ -7254,119 +7254,115 @@ cleanup:
 
 
 static virDriver qemuDriver = {
-    VIR_DRV_QEMU,
-    "QEMU",
-    qemudOpen, /* open */
-    qemudClose, /* close */
-    qemudSupportsFeature, /* supports_feature */
-    qemudGetType, /* type */
-    qemudGetVersion, /* version */
-    NULL, /* libvirtVersion (impl. in libvirt.c) */
-    virGetHostname, /* getHostname */
-    qemuGetSysinfo, /* getSysinfo */
-    qemudGetMaxVCPUs, /* getMaxVcpus */
-    nodeGetInfo, /* nodeGetInfo */
-    qemudGetCapabilities, /* getCapabilities */
-    qemudListDomains, /* listDomains */
-    qemudNumDomains, /* numOfDomains */
-    qemudDomainCreate, /* domainCreateXML */
-    qemudDomainLookupByID, /* domainLookupByID */
-    qemudDomainLookupByUUID, /* domainLookupByUUID */
-    qemudDomainLookupByName, /* domainLookupByName */
-    qemudDomainSuspend, /* domainSuspend */
-    qemudDomainResume, /* domainResume */
-    qemudDomainShutdown, /* domainShutdown */
-    NULL, /* domainReboot */
-    qemudDomainDestroy, /* domainDestroy */
-    qemudDomainGetOSType, /* domainGetOSType */
-    qemudDomainGetMaxMemory, /* domainGetMaxMemory */
-    qemudDomainSetMaxMemory, /* domainSetMaxMemory */
-    qemudDomainSetMemory, /* domainSetMemory */
-    qemudDomainSetMemoryFlags, /* domainSetMemoryFlags */
-    qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    qemuDomainGetMemoryParameters, /* domainGetMemoryParameters */
-    qemuDomainSetBlkioParameters, /* domainSetBlkioParameters */
-    qemuDomainGetBlkioParameters, /* domainGetBlkioParameters */
-    qemudDomainGetInfo, /* domainGetInfo */
-    qemuDomainGetState, /* domainGetState */
-    qemudDomainSave, /* domainSave */
-    qemuDomainRestore, /* domainRestore */
-    qemudDomainCoreDump, /* domainCoreDump */
-    qemuDomainScreenshot, /* domainScreenshot */
-    qemudDomainSetVcpus, /* domainSetVcpus */
-    qemudDomainSetVcpusFlags, /* domainSetVcpusFlags */
-    qemudDomainGetVcpusFlags, /* domainGetVcpusFlags */
-    qemudDomainPinVcpu, /* domainPinVcpu */
-    qemudDomainGetVcpus, /* domainGetVcpus */
-    qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
-    qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
-    qemuDomainGetXMLDesc, /* domainGetXMLDesc */
-    qemuDomainXMLFromNative, /* domainXMLFromNative */
-    qemuDomainXMLToNative, /* domainXMLToNative */
-    qemudListDefinedDomains, /* listDefinedDomains */
-    qemudNumDefinedDomains, /* numOfDefinedDomains */
-    qemudDomainStart, /* domainCreate */
-    qemudDomainStartWithFlags, /* domainCreateWithFlags */
-    qemudDomainDefine, /* domainDefineXML */
-    qemudDomainUndefine, /* domainUndefine */
-    qemuDomainAttachDevice, /* domainAttachDevice */
-    qemuDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
-    qemuDomainDetachDevice, /* domainDetachDevice */
-    qemuDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    qemuDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
-    qemudDomainGetAutostart, /* domainGetAutostart */
-    qemudDomainSetAutostart, /* domainSetAutostart */
-    qemuGetSchedulerType, /* domainGetSchedulerType */
-    qemuGetSchedulerParameters, /* domainGetSchedulerParameters */
-    qemuSetSchedulerParameters, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare (v1) */
-    qemudDomainMigratePerform, /* domainMigratePerform */
-    NULL, /* domainMigrateFinish */
-    qemudDomainBlockStats, /* domainBlockStats */
-    qemudDomainInterfaceStats, /* domainInterfaceStats */
-    qemudDomainMemoryStats, /* domainMemoryStats */
-    qemudDomainBlockPeek, /* domainBlockPeek */
-    qemudDomainMemoryPeek, /* domainMemoryPeek */
-    qemuDomainGetBlockInfo, /* domainGetBlockInfo */
-    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    nodeGetFreeMemory,  /* nodeGetFreeMemory */
-    qemuDomainEventRegister, /* domainEventRegister */
-    qemuDomainEventDeregister, /* domainEventDeregister */
-    qemudDomainMigratePrepare2, /* domainMigratePrepare2 */
-    qemudDomainMigrateFinish2, /* domainMigrateFinish2 */
-    qemudNodeDeviceDettach, /* nodeDeviceDettach */
-    qemudNodeDeviceReAttach, /* nodeDeviceReAttach */
-    qemudNodeDeviceReset, /* nodeDeviceReset */
-    qemudDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
-    qemuIsEncrypted, /* isEncrypted */
-    qemuIsSecure, /* isSecure */
-    qemuDomainIsActive, /* domainIsActive */
-    qemuDomainIsPersistent, /* domainIsPersistent */
-    qemuDomainIsUpdated, /* domainIsUpdated */
-    qemuCPUCompare, /* cpuCompare */
-    qemuCPUBaseline, /* cpuBaseline */
-    qemuDomainGetJobInfo, /* domainGetJobInfo */
-    qemuDomainAbortJob, /* domainAbortJob */
-    qemuDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
-    qemuDomainMigrateSetMaxSpeed, /* domainMigrateSetMaxSpeed */
-    qemuDomainEventRegisterAny, /* domainEventRegisterAny */
-    qemuDomainEventDeregisterAny, /* domainEventDeregisterAny */
-    qemuDomainManagedSave, /* domainManagedSave */
-    qemuDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
-    qemuDomainManagedSaveRemove, /* domainManagedSaveRemove */
-    qemuDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
-    qemuDomainSnapshotGetXMLDesc, /* domainSnapshotGetXMLDesc */
-    qemuDomainSnapshotNum, /* domainSnapshotNum */
-    qemuDomainSnapshotListNames, /* domainSnapshotListNames */
-    qemuDomainSnapshotLookupByName, /* domainSnapshotLookupByName */
-    qemuDomainHasCurrentSnapshot, /* domainHasCurrentSnapshot */
-    qemuDomainSnapshotCurrent, /* domainSnapshotCurrent */
-    qemuDomainRevertToSnapshot, /* domainRevertToSnapshot */
-    qemuDomainSnapshotDelete, /* domainSnapshotDelete */
-    qemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
-    qemuDomainOpenConsole, /* domainOpenConsole */
-    qemuDomainInjectNMI, /* domainInjectNMI */
+    .no = VIR_DRV_QEMU,
+    .name = "QEMU",
+    .open = qemudOpen,
+    .close = qemudClose,
+    .supports_feature = qemudSupportsFeature,
+    .type = qemudGetType,
+    .version = qemudGetVersion,
+    .getHostname = virGetHostname,
+    .getSysinfo = qemuGetSysinfo,
+    .getMaxVcpus = qemudGetMaxVCPUs,
+    .nodeGetInfo = nodeGetInfo,
+    .getCapabilities = qemudGetCapabilities,
+    .listDomains = qemudListDomains,
+    .numOfDomains = qemudNumDomains,
+    .domainCreateXML = qemudDomainCreate,
+    .domainLookupByID = qemudDomainLookupByID,
+    .domainLookupByUUID = qemudDomainLookupByUUID,
+    .domainLookupByName = qemudDomainLookupByName,
+    .domainSuspend = qemudDomainSuspend,
+    .domainResume = qemudDomainResume,
+    .domainShutdown = qemudDomainShutdown,
+    .domainDestroy = qemudDomainDestroy,
+    .domainGetOSType = qemudDomainGetOSType,
+    .domainGetMaxMemory = qemudDomainGetMaxMemory,
+    .domainSetMaxMemory = qemudDomainSetMaxMemory,
+    .domainSetMemory = qemudDomainSetMemory,
+    .domainSetMemoryFlags = qemudDomainSetMemoryFlags,
+    .domainSetMemoryParameters = qemuDomainSetMemoryParameters,
+    .domainGetMemoryParameters = qemuDomainGetMemoryParameters,
+    .domainSetBlkioParameters = qemuDomainSetBlkioParameters,
+    .domainGetBlkioParameters = qemuDomainGetBlkioParameters,
+    .domainGetInfo = qemudDomainGetInfo,
+    .domainGetState = qemuDomainGetState,
+    .domainSave = qemudDomainSave,
+    .domainRestore = qemuDomainRestore,
+    .domainCoreDump = qemudDomainCoreDump,
+    .domainScreenshot = qemuDomainScreenshot,
+    .domainSetVcpus = qemudDomainSetVcpus,
+    .domainSetVcpusFlags = qemudDomainSetVcpusFlags,
+    .domainGetVcpusFlags = qemudDomainGetVcpusFlags,
+    .domainPinVcpu = qemudDomainPinVcpu,
+    .domainGetVcpus = qemudDomainGetVcpus,
+    .domainGetMaxVcpus = qemudDomainGetMaxVcpus,
+    .domainGetSecurityLabel = qemudDomainGetSecurityLabel,
+    .nodeGetSecurityModel = qemudNodeGetSecurityModel,
+    .domainGetXMLDesc = qemuDomainGetXMLDesc,
+    .domainXMLFromNative = qemuDomainXMLFromNative,
+    .domainXMLToNative = qemuDomainXMLToNative,
+    .listDefinedDomains = qemudListDefinedDomains,
+    .numOfDefinedDomains = qemudNumDefinedDomains,
+    .domainCreate = qemudDomainStart,
+    .domainCreateWithFlags = qemudDomainStartWithFlags,
+    .domainDefineXML = qemudDomainDefine,
+    .domainUndefine = qemudDomainUndefine,
+    .domainAttachDevice = qemuDomainAttachDevice,
+    .domainAttachDeviceFlags = qemuDomainAttachDeviceFlags,
+    .domainDetachDevice = qemuDomainDetachDevice,
+    .domainDetachDeviceFlags = qemuDomainDetachDeviceFlags,
+    .domainUpdateDeviceFlags = qemuDomainUpdateDeviceFlags,
+    .domainGetAutostart = qemudDomainGetAutostart,
+    .domainSetAutostart = qemudDomainSetAutostart,
+    .domainGetSchedulerType = qemuGetSchedulerType,
+    .domainGetSchedulerParameters = qemuGetSchedulerParameters,
+    .domainSetSchedulerParameters = qemuSetSchedulerParameters,
+    .domainMigratePerform = qemudDomainMigratePerform,
+    .domainBlockStats = qemudDomainBlockStats,
+    .domainInterfaceStats = qemudDomainInterfaceStats,
+    .domainMemoryStats = qemudDomainMemoryStats,
+    .domainBlockPeek = qemudDomainBlockPeek,
+    .domainMemoryPeek = qemudDomainMemoryPeek,
+    .domainGetBlockInfo = qemuDomainGetBlockInfo,
+    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory,
+    .nodeGetFreeMemory = nodeGetFreeMemory,
+    .domainEventRegister = qemuDomainEventRegister,
+    .domainEventDeregister = qemuDomainEventDeregister,
+    .domainMigratePrepare2 = qemudDomainMigratePrepare2,
+    .domainMigrateFinish2 = qemudDomainMigrateFinish2,
+    .nodeDeviceDettach = qemudNodeDeviceDettach,
+    .nodeDeviceReAttach = qemudNodeDeviceReAttach,
+    .nodeDeviceReset = qemudNodeDeviceReset,
+    .domainMigratePrepareTunnel = qemudDomainMigratePrepareTunnel,
+    .isEncrypted = qemuIsEncrypted,
+    .isSecure = qemuIsSecure,
+    .domainIsActive = qemuDomainIsActive,
+    .domainIsPersistent = qemuDomainIsPersistent,
+    .domainIsUpdated = qemuDomainIsUpdated,
+    .cpuCompare = qemuCPUCompare,
+    .cpuBaseline = qemuCPUBaseline,
+    .domainGetJobInfo = qemuDomainGetJobInfo,
+    .domainAbortJob = qemuDomainAbortJob,
+    .domainMigrateSetMaxDowntime = qemuDomainMigrateSetMaxDowntime,
+    .domainMigrateSetMaxSpeed = qemuDomainMigrateSetMaxSpeed,
+    .domainEventRegisterAny = qemuDomainEventRegisterAny,
+    .domainEventDeregisterAny = qemuDomainEventDeregisterAny,
+    .domainManagedSave = qemuDomainManagedSave,
+    .domainHasManagedSaveImage = qemuDomainHasManagedSaveImage,
+    .domainManagedSaveRemove = qemuDomainManagedSaveRemove,
+    .domainSnapshotCreateXML = qemuDomainSnapshotCreateXML,
+    .domainSnapshotGetXMLDesc = qemuDomainSnapshotGetXMLDesc,
+    .domainSnapshotNum = qemuDomainSnapshotNum,
+    .domainSnapshotListNames = qemuDomainSnapshotListNames,
+    .domainSnapshotLookupByName = qemuDomainSnapshotLookupByName,
+    .domainHasCurrentSnapshot = qemuDomainHasCurrentSnapshot,
+    .domainSnapshotCurrent = qemuDomainSnapshotCurrent,
+    .domainRevertToSnapshot = qemuDomainRevertToSnapshot,
+    .domainSnapshotDelete = qemuDomainSnapshotDelete,
+    .qemuDomainMonitorCommand = qemuDomainMonitorCommand,
+    .domainOpenConsole = qemuDomainOpenConsole,
+    .domainInjectNMI = qemuDomainInjectNMI,
 };
 
 

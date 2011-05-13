@@ -1577,119 +1577,47 @@ cleanup:
 }
 
 static virDriver openvzDriver = {
-    VIR_DRV_OPENVZ,
-    "OPENVZ",
-    openvzOpen, /* open */
-    openvzClose, /* close */
-    NULL, /* supports_feature */
-    openvzGetType, /* type */
-    openvzGetVersion, /* version */
-    NULL, /* libvirtVersion (impl. in libvirt.c) */
-    NULL, /* getHostname */
-    NULL, /* getSysinfo */
-    openvzGetMaxVCPUs, /* getMaxVcpus */
-    nodeGetInfo, /* nodeGetInfo */
-    openvzGetCapabilities, /* getCapabilities */
-    openvzListDomains, /* listDomains */
-    openvzNumDomains, /* numOfDomains */
-    openvzDomainCreateXML, /* domainCreateXML */
-    openvzDomainLookupByID, /* domainLookupByID */
-    openvzDomainLookupByUUID, /* domainLookupByUUID */
-    openvzDomainLookupByName, /* domainLookupByName */
-    openvzDomainSuspend, /* domainSuspend */
-    openvzDomainResume, /* domainResume */
-    openvzDomainShutdown, /* domainShutdown */
-    openvzDomainReboot, /* domainReboot */
-    openvzDomainShutdown, /* domainDestroy */
-    openvzGetOSType, /* domainGetOSType */
-    NULL, /* domainGetMaxMemory */
-    NULL, /* domainSetMaxMemory */
-    NULL, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
-    openvzDomainGetInfo, /* domainGetInfo */
-    openvzDomainGetState, /* domainGetState */
-    NULL, /* domainSave */
-    NULL, /* domainRestore */
-    NULL, /* domainCoreDump */
-    NULL, /* domainScreenshot */
-    openvzDomainSetVcpus, /* domainSetVcpus */
-    openvzDomainSetVcpusFlags, /* domainSetVcpusFlags */
-    openvzDomainGetVcpusFlags, /* domainGetVcpusFlags */
-    NULL, /* domainPinVcpu */
-    NULL, /* domainGetVcpus */
-    openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    NULL, /* domainGetSecurityLabel */
-    NULL, /* nodeGetSecurityModel */
-    openvzDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXMLFromNative */
-    NULL, /* domainXMLToNative */
-    openvzListDefinedDomains, /* listDefinedDomains */
-    openvzNumDefinedDomains, /* numOfDefinedDomains */
-    openvzDomainCreate, /* domainCreate */
-    openvzDomainCreateWithFlags, /* domainCreateWithFlags */
-    openvzDomainDefineXML, /* domainDefineXML */
-    openvzDomainUndefine, /* domainUndefine */
-    NULL, /* domainAttachDevice */
-    NULL, /* domainAttachDeviceFlags */
-    NULL, /* domainDetachDevice */
-    NULL, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
-    openvzDomainGetAutostart, /* domainGetAutostart */
-    openvzDomainSetAutostart, /* domainSetAutostart */
-    NULL, /* domainGetSchedulerType */
-    NULL, /* domainGetSchedulerParameters */
-    NULL, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare */
-    NULL, /* domainMigratePerform */
-    NULL, /* domainMigrateFinish */
-    NULL, /* domainBlockStats */
-    NULL, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
-    NULL, /* domainBlockPeek */
-    NULL, /* domainMemoryPeek */
-    NULL, /* domainGetBlockInfo */
-    NULL, /* nodeGetCellsFreeMemory */
-    NULL, /* nodeGetFreeMemory */
-    NULL, /* domainEventRegister */
-    NULL, /* domainEventDeregister */
-    NULL, /* domainMigratePrepare2 */
-    NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
-    NULL, /* domainMigratePrepareTunnel */
-    openvzIsEncrypted,
-    openvzIsSecure,
-    openvzDomainIsActive,
-    openvzDomainIsPersistent,
-    openvzDomainIsUpdated, /* domainIsUpdated */
-    NULL, /* cpuCompare */
-    NULL, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
-    NULL, /* domainAbortJob */
-    NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
-    NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotGetXMLDesc */
-    NULL, /* domainSnapshotNum */
-    NULL, /* domainSnapshotListNames */
-    NULL, /* domainSnapshotLookupByName */
-    NULL, /* domainHasCurrentSnapshot */
-    NULL, /* domainSnapshotCurrent */
-    NULL, /* domainRevertToSnapshot */
-    NULL, /* domainSnapshotDelete */
-    NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainOpenConsole */
-    NULL, /* domainInjectNMI */
+    .no = VIR_DRV_OPENVZ,
+    .name = "OPENVZ",
+    .open = openvzOpen,
+    .close = openvzClose,
+    .type = openvzGetType,
+    .version = openvzGetVersion,
+    .getMaxVcpus = openvzGetMaxVCPUs,
+    .nodeGetInfo = nodeGetInfo,
+    .getCapabilities = openvzGetCapabilities,
+    .listDomains = openvzListDomains,
+    .numOfDomains = openvzNumDomains,
+    .domainCreateXML = openvzDomainCreateXML,
+    .domainLookupByID = openvzDomainLookupByID,
+    .domainLookupByUUID = openvzDomainLookupByUUID,
+    .domainLookupByName = openvzDomainLookupByName,
+    .domainSuspend = openvzDomainSuspend,
+    .domainResume = openvzDomainResume,
+    .domainShutdown = openvzDomainShutdown,
+    .domainReboot = openvzDomainReboot,
+    .domainDestroy = openvzDomainShutdown,
+    .domainGetOSType = openvzGetOSType,
+    .domainGetInfo = openvzDomainGetInfo,
+    .domainGetState = openvzDomainGetState,
+    .domainSetVcpus = openvzDomainSetVcpus,
+    .domainSetVcpusFlags = openvzDomainSetVcpusFlags,
+    .domainGetVcpusFlags = openvzDomainGetVcpusFlags,
+    .domainGetMaxVcpus = openvzDomainGetMaxVcpus,
+    .domainGetXMLDesc = openvzDomainGetXMLDesc,
+    .listDefinedDomains = openvzListDefinedDomains,
+    .numOfDefinedDomains = openvzNumDefinedDomains,
+    .domainCreate = openvzDomainCreate,
+    .domainCreateWithFlags = openvzDomainCreateWithFlags,
+    .domainDefineXML = openvzDomainDefineXML,
+    .domainUndefine = openvzDomainUndefine,
+    .domainGetAutostart = openvzDomainGetAutostart,
+    .domainSetAutostart = openvzDomainSetAutostart,
+    .isEncrypted = openvzIsEncrypted,
+    .isSecure = openvzIsSecure,
+    .domainIsActive = openvzDomainIsActive,
+    .domainIsPersistent = openvzDomainIsPersistent,
+    .domainIsUpdated = openvzDomainIsUpdated,
 };
 
 int openvzRegister(void) {

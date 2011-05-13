@@ -4632,119 +4632,70 @@ esxDomainGetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
 
 
 static virDriver esxDriver = {
-    VIR_DRV_ESX,
-    "ESX",
-    esxOpen,                         /* open */
-    esxClose,                        /* close */
-    esxSupportsFeature,              /* supports_feature */
-    esxGetType,                      /* type */
-    esxGetVersion,                   /* version */
-    NULL,                            /* libvirtVersion (impl. in libvirt.c) */
-    esxGetHostname,                  /* getHostname */
-    NULL,                            /* getSysinfo */
-    NULL,                            /* getMaxVcpus */
-    esxNodeGetInfo,                  /* nodeGetInfo */
-    esxGetCapabilities,              /* getCapabilities */
-    esxListDomains,                  /* listDomains */
-    esxNumberOfDomains,              /* numOfDomains */
-    NULL,                            /* domainCreateXML */
-    esxDomainLookupByID,             /* domainLookupByID */
-    esxDomainLookupByUUID,           /* domainLookupByUUID */
-    esxDomainLookupByName,           /* domainLookupByName */
-    esxDomainSuspend,                /* domainSuspend */
-    esxDomainResume,                 /* domainResume */
-    esxDomainShutdown,               /* domainShutdown */
-    esxDomainReboot,                 /* domainReboot */
-    esxDomainDestroy,                /* domainDestroy */
-    esxDomainGetOSType,              /* domainGetOSType */
-    esxDomainGetMaxMemory,           /* domainGetMaxMemory */
-    esxDomainSetMaxMemory,           /* domainSetMaxMemory */
-    esxDomainSetMemory,              /* domainSetMemory */
-    NULL,                            /* domainSetMemoryFlags */
-    esxDomainSetMemoryParameters,    /* domainSetMemoryParameters */
-    esxDomainGetMemoryParameters,    /* domainGetMemoryParameters */
-    NULL,                            /* domainSetBlkioParameters */
-    NULL,                            /* domainGetBlkioParameters */
-    esxDomainGetInfo,                /* domainGetInfo */
-    esxDomainGetState,               /* domainGetState */
-    NULL,                            /* domainSave */
-    NULL,                            /* domainRestore */
-    NULL,                            /* domainCoreDump */
-    NULL,                            /* domainScreenshot */
-    esxDomainSetVcpus,               /* domainSetVcpus */
-    esxDomainSetVcpusFlags,          /* domainSetVcpusFlags */
-    esxDomainGetVcpusFlags,          /* domainGetVcpusFlags */
-    NULL,                            /* domainPinVcpu */
-    NULL,                            /* domainGetVcpus */
-    esxDomainGetMaxVcpus,            /* domainGetMaxVcpus */
-    NULL,                            /* domainGetSecurityLabel */
-    NULL,                            /* nodeGetSecurityModel */
-    esxDomainGetXMLDesc,             /* domainGetXMLDesc */
-    esxDomainXMLFromNative,          /* domainXMLFromNative */
-    esxDomainXMLToNative,            /* domainXMLToNative */
-    esxListDefinedDomains,           /* listDefinedDomains */
-    esxNumberOfDefinedDomains,       /* numOfDefinedDomains */
-    esxDomainCreate,                 /* domainCreate */
-    esxDomainCreateWithFlags,        /* domainCreateWithFlags */
-    esxDomainDefineXML,              /* domainDefineXML */
-    esxDomainUndefine,               /* domainUndefine */
-    NULL,                            /* domainAttachDevice */
-    NULL,                            /* domainAttachDeviceFlags */
-    NULL,                            /* domainDetachDevice */
-    NULL,                            /* domainDetachDeviceFlags */
-    NULL,                            /* domainUpdateDeviceFlags */
-    esxDomainGetAutostart,           /* domainGetAutostart */
-    esxDomainSetAutostart,           /* domainSetAutostart */
-    esxDomainGetSchedulerType,       /* domainGetSchedulerType */
-    esxDomainGetSchedulerParameters, /* domainGetSchedulerParameters */
-    esxDomainSetSchedulerParameters, /* domainSetSchedulerParameters */
-    esxDomainMigratePrepare,         /* domainMigratePrepare */
-    esxDomainMigratePerform,         /* domainMigratePerform */
-    esxDomainMigrateFinish,          /* domainMigrateFinish */
-    NULL,                            /* domainBlockStats */
-    NULL,                            /* domainInterfaceStats */
-    NULL,                            /* domainMemoryStats */
-    NULL,                            /* domainBlockPeek */
-    NULL,                            /* domainMemoryPeek */
-    NULL,                            /* domainGetBlockInfo */
-    NULL,                            /* nodeGetCellsFreeMemory */
-    esxNodeGetFreeMemory,            /* nodeGetFreeMemory */
-    NULL,                            /* domainEventRegister */
-    NULL,                            /* domainEventDeregister */
-    NULL,                            /* domainMigratePrepare2 */
-    NULL,                            /* domainMigrateFinish2 */
-    NULL,                            /* nodeDeviceDettach */
-    NULL,                            /* nodeDeviceReAttach */
-    NULL,                            /* nodeDeviceReset */
-    NULL,                            /* domainMigratePrepareTunnel */
-    esxIsEncrypted,                  /* isEncrypted */
-    esxIsSecure,                     /* isSecure */
-    esxDomainIsActive,               /* domainIsActive */
-    esxDomainIsPersistent,           /* domainIsPersistent */
-    esxDomainIsUpdated,              /* domainIsUpdated */
-    NULL,                            /* cpuCompare */
-    NULL,                            /* cpuBaseline */
-    NULL,                            /* domainGetJobInfo */
-    NULL,                            /* domainAbortJob */
-    NULL,                            /* domainMigrateSetMaxDowntime */
-    NULL,                            /* domainMigrateSetMaxSpeed */
-    NULL,                            /* domainEventRegisterAny */
-    NULL,                            /* domainEventDeregisterAny */
-    NULL,                            /* domainManagedSave */
-    NULL,                            /* domainHasManagedSaveImage */
-    NULL,                            /* domainManagedSaveRemove */
-    esxDomainSnapshotCreateXML,      /* domainSnapshotCreateXML */
-    esxDomainSnapshotGetXMLDesc,     /* domainSnapshotGetXMLDesc */
-    esxDomainSnapshotNum,            /* domainSnapshotNum */
-    esxDomainSnapshotListNames,      /* domainSnapshotListNames */
-    esxDomainSnapshotLookupByName,   /* domainSnapshotLookupByName */
-    esxDomainHasCurrentSnapshot,     /* domainHasCurrentSnapshot */
-    esxDomainSnapshotCurrent,        /* domainSnapshotCurrent */
-    esxDomainRevertToSnapshot,       /* domainRevertToSnapshot */
-    esxDomainSnapshotDelete,         /* domainSnapshotDelete */
-    NULL,                            /* qemuDomainMonitorCommand */
-    NULL,                            /* domainOpenConsole */
-    NULL,                            /* domainInjectNMI */
+    .no = VIR_DRV_ESX,
+    .name = "ESX",
+    .open = esxOpen,
+    .close = esxClose,
+    .supports_feature = esxSupportsFeature,
+    .type = esxGetType,
+    .version = esxGetVersion,
+    .getHostname = esxGetHostname,
+    .nodeGetInfo = esxNodeGetInfo,
+    .getCapabilities = esxGetCapabilities,
+    .listDomains = esxListDomains,
+    .numOfDomains = esxNumberOfDomains,
+    .domainLookupByID = esxDomainLookupByID,
+    .domainLookupByUUID = esxDomainLookupByUUID,
+    .domainLookupByName = esxDomainLookupByName,
+    .domainSuspend = esxDomainSuspend,
+    .domainResume = esxDomainResume,
+    .domainShutdown = esxDomainShutdown,
+    .domainReboot = esxDomainReboot,
+    .domainDestroy = esxDomainDestroy,
+    .domainGetOSType = esxDomainGetOSType,
+    .domainGetMaxMemory = esxDomainGetMaxMemory,
+    .domainSetMaxMemory = esxDomainSetMaxMemory,
+    .domainSetMemory = esxDomainSetMemory,
+    .domainSetMemoryParameters = esxDomainSetMemoryParameters,
+    .domainGetMemoryParameters = esxDomainGetMemoryParameters,
+    .domainGetInfo = esxDomainGetInfo,
+    .domainGetState = esxDomainGetState,
+    .domainSetVcpus = esxDomainSetVcpus,
+    .domainSetVcpusFlags = esxDomainSetVcpusFlags,
+    .domainGetVcpusFlags = esxDomainGetVcpusFlags,
+    .domainGetMaxVcpus = esxDomainGetMaxVcpus,
+    .domainGetXMLDesc = esxDomainGetXMLDesc,
+    .domainXMLFromNative = esxDomainXMLFromNative,
+    .domainXMLToNative = esxDomainXMLToNative,
+    .listDefinedDomains = esxListDefinedDomains,
+    .numOfDefinedDomains = esxNumberOfDefinedDomains,
+    .domainCreate = esxDomainCreate,
+    .domainCreateWithFlags = esxDomainCreateWithFlags,
+    .domainDefineXML = esxDomainDefineXML,
+    .domainUndefine = esxDomainUndefine,
+    .domainGetAutostart = esxDomainGetAutostart,
+    .domainSetAutostart = esxDomainSetAutostart,
+    .domainGetSchedulerType = esxDomainGetSchedulerType,
+    .domainGetSchedulerParameters = esxDomainGetSchedulerParameters,
+    .domainSetSchedulerParameters = esxDomainSetSchedulerParameters,
+    .domainMigratePrepare = esxDomainMigratePrepare,
+    .domainMigratePerform = esxDomainMigratePerform,
+    .domainMigrateFinish = esxDomainMigrateFinish,
+    .nodeGetFreeMemory = esxNodeGetFreeMemory,
+    .isEncrypted = esxIsEncrypted,
+    .isSecure = esxIsSecure,
+    .domainIsActive = esxDomainIsActive,
+    .domainIsPersistent = esxDomainIsPersistent,
+    .domainIsUpdated = esxDomainIsUpdated,
+    .domainSnapshotCreateXML = esxDomainSnapshotCreateXML,
+    .domainSnapshotGetXMLDesc = esxDomainSnapshotGetXMLDesc,
+    .domainSnapshotNum = esxDomainSnapshotNum,
+    .domainSnapshotListNames = esxDomainSnapshotListNames,
+    .domainSnapshotLookupByName = esxDomainSnapshotLookupByName,
+    .domainHasCurrentSnapshot = esxDomainHasCurrentSnapshot,
+    .domainSnapshotCurrent = esxDomainSnapshotCurrent,
+    .domainRevertToSnapshot = esxDomainRevertToSnapshot,
+    .domainSnapshotDelete = esxDomainSnapshotDelete,
 };
 
 

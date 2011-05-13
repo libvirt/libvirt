@@ -1642,44 +1642,34 @@ esxStoragePoolIsPersistent(virStoragePoolPtr pool ATTRIBUTE_UNUSED)
 
 static virStorageDriver esxStorageDriver = {
     "ESX",                                 /* name */
-    esxStorageOpen,                        /* open */
-    esxStorageClose,                       /* close */
-    esxNumberOfStoragePools,               /* numOfPools */
-    esxListStoragePools,                   /* listPools */
-    esxNumberOfDefinedStoragePools,        /* numOfDefinedPools */
-    esxListDefinedStoragePools,            /* listDefinedPools */
-    NULL,                                  /* findPoolSources */
-    esxStoragePoolLookupByName,            /* poolLookupByName */
-    esxStoragePoolLookupByUUID,            /* poolLookupByUUID */
-    esxStoragePoolLookupByVolume,          /* poolLookupByVolume */
-    NULL,                                  /* poolCreateXML */
-    NULL,                                  /* poolDefineXML */
-    NULL,                                  /* poolBuild */
-    NULL,                                  /* poolUndefine */
-    NULL,                                  /* poolCreate */
-    NULL,                                  /* poolDestroy */
-    NULL,                                  /* poolDelete */
-    esxStoragePoolRefresh,                 /* poolRefresh */
-    esxStoragePoolGetInfo,                 /* poolGetInfo */
-    esxStoragePoolGetXMLDesc,              /* poolGetXMLDesc */
-    esxStoragePoolGetAutostart,            /* poolGetAutostart */
-    esxStoragePoolSetAutostart,            /* poolSetAutostart */
-    esxStoragePoolNumberOfStorageVolumes,  /* poolNumOfVolumes */
-    esxStoragePoolListStorageVolumes,      /* poolListVolumes */
-    esxStorageVolumeLookupByName,          /* volLookupByName */
-    esxStorageVolumeLookupByKey,           /* volLookupByKey */
-    esxStorageVolumeLookupByPath,          /* volLookupByPath */
-    esxStorageVolumeCreateXML,             /* volCreateXML */
-    esxStorageVolumeCreateXMLFrom,         /* volCreateXMLFrom */
-    NULL, /* volDownload */
-    NULL, /* volUpload */
-    esxStorageVolumeDelete,                /* volDelete */
-    esxStorageVolumeWipe,                  /* volWipe */
-    esxStorageVolumeGetInfo,               /* volGetInfo */
-    esxStorageVolumeGetXMLDesc,            /* volGetXMLDesc */
-    esxStorageVolumeGetPath,               /* volGetPath */
-    esxStoragePoolIsActive,                /* poolIsActive */
-    esxStoragePoolIsPersistent,            /* poolIsPersistent */
+    .open = esxStorageOpen,
+    .close = esxStorageClose,
+    .numOfPools = esxNumberOfStoragePools,
+    .listPools = esxListStoragePools,
+    .numOfDefinedPools = esxNumberOfDefinedStoragePools,
+    .listDefinedPools = esxListDefinedStoragePools,
+    .poolLookupByName = esxStoragePoolLookupByName,
+    .poolLookupByUUID = esxStoragePoolLookupByUUID,
+    .poolLookupByVolume = esxStoragePoolLookupByVolume,
+    .poolRefresh = esxStoragePoolRefresh,
+    .poolGetInfo = esxStoragePoolGetInfo,
+    .poolGetXMLDesc = esxStoragePoolGetXMLDesc,
+    .poolGetAutostart = esxStoragePoolGetAutostart,
+    .poolSetAutostart = esxStoragePoolSetAutostart,
+    .poolNumOfVolumes = esxStoragePoolNumberOfStorageVolumes,
+    .poolListVolumes = esxStoragePoolListStorageVolumes,
+    .volLookupByName = esxStorageVolumeLookupByName,
+    .volLookupByKey = esxStorageVolumeLookupByKey,
+    .volLookupByPath = esxStorageVolumeLookupByPath,
+    .volCreateXML = esxStorageVolumeCreateXML,
+    .volCreateXMLFrom = esxStorageVolumeCreateXMLFrom,
+    .volDelete = esxStorageVolumeDelete,
+    .volWipe = esxStorageVolumeWipe,
+    .volGetInfo = esxStorageVolumeGetInfo,
+    .volGetXMLDesc = esxStorageVolumeGetXMLDesc,
+    .volGetPath = esxStorageVolumeGetPath,
+    .poolIsActive = esxStoragePoolIsActive,
+    .poolIsPersistent = esxStoragePoolIsPersistent,
 };
 
 

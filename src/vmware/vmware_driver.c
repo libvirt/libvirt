@@ -930,119 +930,35 @@ vmwareDomainGetState(virDomainPtr dom,
 }
 
 static virDriver vmwareDriver = {
-    VIR_DRV_VMWARE,
-    "VMWARE",
-    vmwareOpen,                 /* open */
-    vmwareClose,                /* close */
-    NULL,                       /* supports_feature */
-    vmwareGetType,              /* type */
-    vmwareGetVersion,           /* version */
-    NULL,                       /* libvirtVersion (impl. in libvirt.c) */
-    NULL,                       /* getHostname */
-    NULL,                       /* getSysinfo */
-    NULL,                       /* getMaxVcpus */
-    NULL,                       /* nodeGetInfo */
-    NULL,                       /* getCapabilities */
-    vmwareListDomains,          /* listDomains */
-    vmwareNumDomains,           /* numOfDomains */
-    vmwareDomainCreateXML,      /* domainCreateXML */
-    vmwareDomainLookupByID,     /* domainLookupByID */
-    vmwareDomainLookupByUUID,   /* domainLookupByUUID */
-    vmwareDomainLookupByName,   /* domainLookupByName */
-    vmwareDomainSuspend,        /* domainSuspend */
-    vmwareDomainResume,         /* domainResume */
-    vmwareDomainShutdown,       /* domainShutdown */
-    vmwareDomainReboot,         /* domainReboot */
-    vmwareDomainShutdown,        /* domainDestroy */
-    vmwareGetOSType,            /* domainGetOSType */
-    NULL,                       /* domainGetMaxMemory */
-    NULL,                       /* domainSetMaxMemory */
-    NULL,                       /* domainSetMemory */
-    NULL,                       /* domainSetMemoryFlags */
-    NULL,                       /* domainSetMemoryParameters */
-    NULL,                       /* domainGetMemoryParameters */
-    NULL,                       /* domainSetBlkioParameters */
-    NULL,                       /* domainGetBlkioParameters */
-    vmwareDomainGetInfo,        /* domainGetInfo */
-    vmwareDomainGetState,       /* domainGetState */
-    NULL,                       /* domainSave */
-    NULL,                       /* domainRestore */
-    NULL,                       /* domainCoreDump */
-    NULL,                       /* domainScreenshot */
-    NULL,                       /* domainSetVcpus */
-    NULL,                       /* domainSetVcpusFlags */
-    NULL,                       /* domainGetVcpusFlags */
-    NULL,                       /* domainPinVcpu */
-    NULL,                       /* domainGetVcpus */
-    NULL,                       /* domainGetMaxVcpus */
-    NULL,                       /* domainGetSecurityLabel */
-    NULL,                       /* nodeGetSecurityModel */
-    vmwareDomainGetXMLDesc,     /* domainGetXMLDesc */
-    NULL,                       /* domainXMLFromNative */
-    NULL,                       /* domainXMLToNative */
-    vmwareListDefinedDomains,   /* listDefinedDomains */
-    vmwareNumDefinedDomains,    /* numOfDefinedDomains */
-    vmwareDomainCreate,         /* domainCreate */
-    vmwareDomainCreateWithFlags,/* domainCreateWithFlags */
-    vmwareDomainDefineXML,      /* domainDefineXML */
-    vmwareDomainUndefine,       /* domainUndefine */
-    NULL,                       /* domainAttachDevice */
-    NULL,                       /* domainAttachDeviceFlags */
-    NULL,                       /* domainDetachDevice */
-    NULL,                       /* domainDetachDeviceFlags */
-    NULL,                       /* domainUpdateDeviceFlags */
-    NULL,                       /* domainGetAutostart */
-    NULL,                       /* domainSetAutostart */
-    NULL,                       /* domainGetSchedulerType */
-    NULL,                       /* domainGetSchedulerParameters */
-    NULL,                       /* domainSetSchedulerParameters */
-    NULL,                       /* domainMigratePrepare */
-    NULL,                       /* domainMigratePerform */
-    NULL,                       /* domainMigrateFinish */
-    NULL,                       /* domainBlockStats */
-    NULL,                       /* domainInterfaceStats */
-    NULL,                       /* domainMemoryStats */
-    NULL,                       /* domainBlockPeek */
-    NULL,                       /* domainMemoryPeek */
-    NULL,                       /* domainGetBlockInfo */
-    NULL,                       /* nodeGetCellsFreeMemory */
-    NULL,                       /* nodeGetFreeMemory */
-    NULL,                       /* domainEventRegister */
-    NULL,                       /* domainEventDeregister */
-    NULL,                       /* domainMigratePrepare2 */
-    NULL,                       /* domainMigrateFinish2 */
-    NULL,                       /* nodeDeviceDettach */
-    NULL,                       /* nodeDeviceReAttach */
-    NULL,                       /* nodeDeviceReset */
-    NULL,                       /* domainMigratePrepareTunnel */
-    NULL,                       /* isEncrypted */
-    NULL,                       /* isSecure */
-    vmwareDomainIsActive,       /* domainIsActive */
-    vmwareDomainIsPersistent,   /* domainIsPersistent */
-    NULL,                       /* domainIsUpdated */
-    NULL,                       /* cpuCompare */
-    NULL,                       /* cpuBaseline */
-    NULL,                       /* domainGetJobInfo */
-    NULL,                       /* domainAbortJob */
-    NULL,                       /* domainMigrateSetMaxDowntime */
-    NULL,                       /* domainMigrateSetMaxSpeed */
-    NULL,                       /* domainEventRegisterAny */
-    NULL,                       /* domainEventDeregisterAny */
-    NULL,                       /* domainManagedSave */
-    NULL,                       /* domainHasManagedSaveImage */
-    NULL,                       /* domainManagedSaveRemove */
-    NULL,                       /* domainSnapshotCreateXML */
-    NULL,                       /* domainSnapshotGetXMLDesc */
-    NULL,                       /* domainSnapshotNum */
-    NULL,                       /* domainSnapshotListNames */
-    NULL,                       /* domainSnapshotLookupByName */
-    NULL,                       /* domainHasCurrentSnapshot */
-    NULL,                       /* domainSnapshotCurrent */
-    NULL,                       /* domainRevertToSnapshot */
-    NULL,                       /* domainSnapshotDelete */
-    NULL,                       /* qemuDomainMonitorCommand */
-    NULL,                       /* domainOpenConsole */
-    NULL,                       /* domainInjectNMI */
+    .no = VIR_DRV_VMWARE,
+    .name = "VMWARE",
+    .open = vmwareOpen,
+    .close = vmwareClose,
+    .type = vmwareGetType,
+    .version = vmwareGetVersion,
+    .listDomains = vmwareListDomains,
+    .numOfDomains = vmwareNumDomains,
+    .domainCreateXML = vmwareDomainCreateXML,
+    .domainLookupByID = vmwareDomainLookupByID,
+    .domainLookupByUUID = vmwareDomainLookupByUUID,
+    .domainLookupByName = vmwareDomainLookupByName,
+    .domainSuspend = vmwareDomainSuspend,
+    .domainResume = vmwareDomainResume,
+    .domainShutdown = vmwareDomainShutdown,
+    .domainReboot = vmwareDomainReboot,
+    .domainDestroy = vmwareDomainShutdown,
+    .domainGetOSType = vmwareGetOSType,
+    .domainGetInfo = vmwareDomainGetInfo,
+    .domainGetState = vmwareDomainGetState,
+    .domainGetXMLDesc = vmwareDomainGetXMLDesc,
+    .listDefinedDomains = vmwareListDefinedDomains,
+    .numOfDefinedDomains = vmwareNumDefinedDomains,
+    .domainCreate = vmwareDomainCreate,
+    .domainCreateWithFlags = vmwareDomainCreateWithFlags,
+    .domainDefineXML = vmwareDomainDefineXML,
+    .domainUndefine = vmwareDomainUndefine,
+    .domainIsActive = vmwareDomainIsActive,
+    .domainIsPersistent = vmwareDomainIsPersistent,
 };
 
 int

@@ -67,20 +67,8 @@ esxInterfaceClose(virConnectPtr conn)
 
 static virInterfaceDriver esxInterfaceDriver = {
     "ESX",                                 /* name */
-    esxInterfaceOpen,                      /* open */
-    esxInterfaceClose,                     /* close */
-    NULL,                                  /* numOfInterfaces */
-    NULL,                                  /* listInterfaces */
-    NULL,                                  /* numOfDefinedInterfaces */
-    NULL,                                  /* listDefinedInterfaces */
-    NULL,                                  /* interfaceLookupByName */
-    NULL,                                  /* interfaceLookupByMACString */
-    NULL,                                  /* interfaceGetXMLDesc */
-    NULL,                                  /* interfaceDefineXML */
-    NULL,                                  /* interfaceUndefine */
-    NULL,                                  /* interfaceCreate */
-    NULL,                                  /* interfaceDestroy */
-    NULL,                                  /* interfaceIsActive */
+    .open = esxInterfaceOpen,
+    .close = esxInterfaceClose,
 };
 
 

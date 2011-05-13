@@ -1827,119 +1827,52 @@ xenapiNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMems,
 
 /* The interface which we export upwards to libvirt.c. */
 static virDriver xenapiDriver = {
-    VIR_DRV_XENAPI,
-    "XenAPI",
-    xenapiOpen, /* open */
-    xenapiClose, /* close */
-    xenapiSupportsFeature, /* supports_feature */
-    xenapiType, /* type */
-    xenapiGetVersion, /* version */
-    NULL, /* libvirtVersion */
-    xenapiGetHostname, /* getHostname */
-    NULL, /* getSysinfo */
-    xenapiGetMaxVcpus, /* getMaxVcpus */
-    xenapiNodeGetInfo, /* nodeGetInfo */
-    xenapiGetCapabilities, /* getCapabilities */
-    xenapiListDomains, /* listDomains */
-    xenapiNumOfDomains, /* numOfDomains */
-    xenapiDomainCreateXML, /* domainCreateXML */
-    xenapiDomainLookupByID, /* domainLookupByID */
-    xenapiDomainLookupByUUID, /* domainLookupByUUID */
-    xenapiDomainLookupByName, /* domainLookupByName */
-    xenapiDomainSuspend, /* domainSuspend */
-    xenapiDomainResume, /* domainResume */
-    xenapiDomainShutdown, /* domainShutdown */
-    xenapiDomainReboot, /* domainReboot */
-    xenapiDomainDestroy, /* domainDestroy */
-    xenapiDomainGetOSType, /* domainGetOSType */
-    xenapiDomainGetMaxMemory, /* domainGetMaxMemory */
-    xenapiDomainSetMaxMemory, /* domainSetMaxMemory */
-    NULL, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
-    xenapiDomainGetInfo, /* domainGetInfo */
-    xenapiDomainGetState, /* domainGetState */
-    NULL, /* domainSave */
-    NULL, /* domainRestore */
-    NULL, /* domainCoreDump */
-    NULL, /* domainScreenshot */
-    xenapiDomainSetVcpus, /* domainSetVcpus */
-    xenapiDomainSetVcpusFlags, /* domainSetVcpusFlags */
-    xenapiDomainGetVcpusFlags, /* domainGetVcpusFlags */
-    xenapiDomainPinVcpu, /* domainPinVcpu */
-    xenapiDomainGetVcpus, /* domainGetVcpus */
-    xenapiDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    NULL, /* domainGetSecurityLabel */
-    NULL, /* nodeGetSecurityModel */
-    xenapiDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXMLFromNative */
-    NULL, /* domainXMLToNative */
-    xenapiListDefinedDomains, /* listDefinedDomains */
-    xenapiNumOfDefinedDomains, /* numOfDefinedDomains */
-    xenapiDomainCreate, /* domainCreate */
-    xenapiDomainCreateWithFlags, /* domainCreateWithFlags */
-    xenapiDomainDefineXML, /* domainDefineXML */
-    xenapiDomainUndefine, /* domainUndefine */
-    NULL, /* domainAttachDevice */
-    NULL, /* domainAttachDeviceFlags */
-    NULL, /* domainDetachDevice */
-    NULL, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
-    xenapiDomainGetAutostart, /* domainGetAutostart */
-    xenapiDomainSetAutostart, /* domainSetAutostart */
-    xenapiDomainGetSchedulerType, /* domainGetSchedulerType */
-    NULL, /* domainGetSchedulerParameters */
-    NULL, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare */
-    NULL, /* domainMigratePerform */
-    NULL, /* domainMigrateFinish */
-    NULL, /* domainBlockStats */
-    NULL, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
-    NULL, /* domainBlockPeek */
-    NULL, /* domainMemoryPeek */
-    NULL, /* domainGetBlockInfo */
-    xenapiNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    xenapiNodeGetFreeMemory, /* nodeGetFreeMemory */
-    NULL, /* domainEventRegister */
-    NULL, /* domainEventDeregister */
-    NULL, /* domainMigratePrepare2 */
-    NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
-    NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
-    xenapiDomainIsUpdated, /* domainIsUpdated */
-    NULL, /* cpuCompare */
-    NULL, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
-    NULL, /* domainAbortJob */
-    NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
-    NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotGetXMLDesc */
-    NULL, /* domainSnapshotNum */
-    NULL, /* domainSnapshotListNames */
-    NULL, /* domainSnapshotLookupByName */
-    NULL, /* domainHasCurrentSnapshot */
-    NULL, /* domainSnapshotCurrent */
-    NULL, /* domainRevertToSnapshot */
-    NULL, /* domainSnapshotDelete */
-    NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainOpenConsole */
-    NULL, /* domainInjectNMI */
+    .no = VIR_DRV_XENAPI,
+    .name = "XenAPI",
+    .open = xenapiOpen,
+    .close = xenapiClose,
+    .supports_feature = xenapiSupportsFeature,
+    .type = xenapiType,
+    .version = xenapiGetVersion,
+    .getHostname = xenapiGetHostname,
+    .getMaxVcpus = xenapiGetMaxVcpus,
+    .nodeGetInfo = xenapiNodeGetInfo,
+    .getCapabilities = xenapiGetCapabilities,
+    .listDomains = xenapiListDomains,
+    .numOfDomains = xenapiNumOfDomains,
+    .domainCreateXML = xenapiDomainCreateXML,
+    .domainLookupByID = xenapiDomainLookupByID,
+    .domainLookupByUUID = xenapiDomainLookupByUUID,
+    .domainLookupByName = xenapiDomainLookupByName,
+    .domainSuspend = xenapiDomainSuspend,
+    .domainResume = xenapiDomainResume,
+    .domainShutdown = xenapiDomainShutdown,
+    .domainReboot = xenapiDomainReboot,
+    .domainDestroy = xenapiDomainDestroy,
+    .domainGetOSType = xenapiDomainGetOSType,
+    .domainGetMaxMemory = xenapiDomainGetMaxMemory,
+    .domainSetMaxMemory = xenapiDomainSetMaxMemory,
+    .domainGetInfo = xenapiDomainGetInfo,
+    .domainGetState = xenapiDomainGetState,
+    .domainSetVcpus = xenapiDomainSetVcpus,
+    .domainSetVcpusFlags = xenapiDomainSetVcpusFlags,
+    .domainGetVcpusFlags = xenapiDomainGetVcpusFlags,
+    .domainPinVcpu = xenapiDomainPinVcpu,
+    .domainGetVcpus = xenapiDomainGetVcpus,
+    .domainGetMaxVcpus = xenapiDomainGetMaxVcpus,
+    .domainGetXMLDesc = xenapiDomainGetXMLDesc,
+    .listDefinedDomains = xenapiListDefinedDomains,
+    .numOfDefinedDomains = xenapiNumOfDefinedDomains,
+    .domainCreate = xenapiDomainCreate,
+    .domainCreateWithFlags = xenapiDomainCreateWithFlags,
+    .domainDefineXML = xenapiDomainDefineXML,
+    .domainUndefine = xenapiDomainUndefine,
+    .domainGetAutostart = xenapiDomainGetAutostart,
+    .domainSetAutostart = xenapiDomainSetAutostart,
+    .domainGetSchedulerType = xenapiDomainGetSchedulerType,
+    .nodeGetCellsFreeMemory = xenapiNodeGetCellsFreeMemory,
+    .nodeGetFreeMemory = xenapiNodeGetFreeMemory,
+    .domainIsUpdated = xenapiDomainIsUpdated,
 };
 
 /**

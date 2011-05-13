@@ -8720,133 +8720,74 @@ endjob:
  */
 
 virDriver NAME(Driver) = {
-    VIR_DRV_VBOX,
-    "VBOX",
-    vboxOpen, /* open */
-    vboxClose, /* close */
-    NULL, /* supports_feature */
-    NULL, /* type */
-    vboxGetVersion, /* version */
-    NULL, /* libvirtVersion (impl. in libvirt.c) */
-    virGetHostname, /* getHostname */
-    NULL, /* getSysinfo */
-    vboxGetMaxVcpus, /* getMaxVcpus */
-    nodeGetInfo, /* nodeGetInfo */
-    vboxGetCapabilities, /* getCapabilities */
-    vboxListDomains, /* listDomains */
-    vboxNumOfDomains, /* numOfDomains */
-    vboxDomainCreateXML, /* domainCreateXML */
-    vboxDomainLookupByID, /* domainLookupByID */
-    vboxDomainLookupByUUID, /* domainLookupByUUID */
-    vboxDomainLookupByName, /* domainLookupByName */
-    vboxDomainSuspend, /* domainSuspend */
-    vboxDomainResume, /* domainResume */
-    vboxDomainShutdown, /* domainShutdown */
-    vboxDomainReboot, /* domainReboot */
-    vboxDomainDestroy, /* domainDestroy */
-    vboxDomainGetOSType, /* domainGetOSType */
-    NULL, /* domainGetMaxMemory */
-    NULL, /* domainSetMaxMemory */
-    vboxDomainSetMemory, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
-    vboxDomainGetInfo, /* domainGetInfo */
-    vboxDomainGetState, /* domainGetState */
-    vboxDomainSave, /* domainSave */
-    NULL, /* domainRestore */
-    NULL, /* domainCoreDump */
+    .no = VIR_DRV_VBOX,
+    .name = "VBOX",
+    .open = vboxOpen,
+    .close = vboxClose,
+    .version = vboxGetVersion,
+    .getHostname = virGetHostname,
+    .getMaxVcpus = vboxGetMaxVcpus,
+    .nodeGetInfo = nodeGetInfo,
+    .getCapabilities = vboxGetCapabilities,
+    .listDomains = vboxListDomains,
+    .numOfDomains = vboxNumOfDomains,
+    .domainCreateXML = vboxDomainCreateXML,
+    .domainLookupByID = vboxDomainLookupByID,
+    .domainLookupByUUID = vboxDomainLookupByUUID,
+    .domainLookupByName = vboxDomainLookupByName,
+    .domainSuspend = vboxDomainSuspend,
+    .domainResume = vboxDomainResume,
+    .domainShutdown = vboxDomainShutdown,
+    .domainReboot = vboxDomainReboot,
+    .domainDestroy = vboxDomainDestroy,
+    .domainGetOSType = vboxDomainGetOSType,
+    .domainSetMemory = vboxDomainSetMemory,
+    .domainGetInfo = vboxDomainGetInfo,
+    .domainGetState = vboxDomainGetState,
+    .domainSave = vboxDomainSave,
+    .domainSetVcpus = vboxDomainSetVcpus,
+    .domainSetVcpusFlags = vboxDomainSetVcpusFlags,
+    .domainGetVcpusFlags = vboxDomainGetVcpusFlags,
+    .domainGetMaxVcpus = vboxDomainGetMaxVcpus,
+    .domainGetXMLDesc = vboxDomainGetXMLDesc,
+    .listDefinedDomains = vboxListDefinedDomains,
+    .numOfDefinedDomains = vboxNumOfDefinedDomains,
+    .domainCreate = vboxDomainCreate,
+    .domainCreateWithFlags = vboxDomainCreateWithFlags,
+    .domainDefineXML = vboxDomainDefineXML,
+    .domainUndefine = vboxDomainUndefine,
+    .domainAttachDevice = vboxDomainAttachDevice,
+    .domainAttachDeviceFlags = vboxDomainAttachDeviceFlags,
+    .domainDetachDevice = vboxDomainDetachDevice,
+    .domainDetachDeviceFlags = vboxDomainDetachDeviceFlags,
+    .domainUpdateDeviceFlags = vboxDomainUpdateDeviceFlags,
+    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory,
+    .nodeGetFreeMemory = nodeGetFreeMemory,
 #if VBOX_API_VERSION == 4000
-    vboxDomainScreenshot, /* domainScreenshot */
-#else
-    NULL, /* domainScreenshot */
+    .domainScreenshot = vboxDomainScreenshot,
 #endif
-    vboxDomainSetVcpus, /* domainSetVcpus */
-    vboxDomainSetVcpusFlags, /* domainSetVcpusFlags */
-    vboxDomainGetVcpusFlags, /* domainGetVcpusFlags */
-    NULL, /* domainPinVcpu */
-    NULL, /* domainGetVcpus */
-    vboxDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    NULL, /* domainGetSecurityLabel */
-    NULL, /* nodeGetSecurityModel */
-    vboxDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXMLFromNative */
-    NULL, /* domainXMLToNative */
-    vboxListDefinedDomains, /* listDefinedDomains */
-    vboxNumOfDefinedDomains, /* numOfDefinedDomains */
-    vboxDomainCreate, /* domainCreate */
-    vboxDomainCreateWithFlags, /* domainCreateWithFlags */
-    vboxDomainDefineXML, /* domainDefineXML */
-    vboxDomainUndefine, /* domainUndefine */
-    vboxDomainAttachDevice, /* domainAttachDevice */
-    vboxDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
-    vboxDomainDetachDevice, /* domainDetachDevice */
-    vboxDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    vboxDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
-    NULL, /* domainGetAutostart */
-    NULL, /* domainSetAutostart */
-    NULL, /* domainGetSchedulerType */
-    NULL, /* domainGetSchedulerParameters */
-    NULL, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare */
-    NULL, /* domainMigratePerform */
-    NULL, /* domainMigrateFinish */
-    NULL, /* domainBlockStats */
-    NULL, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
-    NULL, /* domainBlockPeek */
-    NULL, /* domainMemoryPeek */
-    NULL, /* domainGetBlockInfo */
-    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    nodeGetFreeMemory,  /* getFreeMemory */
-#if VBOX_API_VERSION == 2002 || VBOX_API_VERSION == 4000
-    NULL, /* domainEventRegister */
-    NULL, /* domainEventDeregister */
-#else
-    vboxDomainEventRegister, /* domainEventRegister */
-    vboxDomainEventDeregister, /* domainEventDeregister */
+#if VBOX_API_VERSION != 2002 && VBOX_API_VERSION != 4000
+    .domainEventRegister = vboxDomainEventRegister,
+    .domainEventDeregister = vboxDomainEventDeregister,
 #endif
-    NULL, /* domainMigratePrepare2 */
-    NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
-    NULL, /* domainMigratePrepareTunnel */
-    vboxIsEncrypted, /* isEncrypted */
-    vboxIsSecure, /* isSecure */
-    vboxDomainIsActive, /* domainIsActive */
-    vboxDomainIsPersistent, /* domainIsPersistent */
-    vboxDomainIsUpdated, /* domainIsUpdated */
-    NULL, /* cpuCompare */
-    NULL, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
-    NULL, /* domainAbortJob */
-    NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
-#if VBOX_API_VERSION == 2002 || VBOX_API_VERSION == 4000
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
-#else
-    vboxDomainEventRegisterAny, /* domainEventRegisterAny */
-    vboxDomainEventDeregisterAny, /* domainEventDeregisterAny */
+    .isEncrypted = vboxIsEncrypted,
+    .isSecure = vboxIsSecure,
+    .domainIsActive = vboxDomainIsActive,
+    .domainIsPersistent = vboxDomainIsPersistent,
+    .domainIsUpdated = vboxDomainIsUpdated,
+#if VBOX_API_VERSION != 2002 && VBOX_API_VERSION != 4000
+    .domainEventRegisterAny = vboxDomainEventRegisterAny,
+    .domainEventDeregisterAny = vboxDomainEventDeregisterAny,
 #endif
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
-    vboxDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
-    vboxDomainSnapshotGetXMLDesc, /* domainSnapshotGetXMLDesc */
-    vboxDomainSnapshotNum, /* domainSnapshotNum */
-    vboxDomainSnapshotListNames, /* domainSnapshotListNames */
-    vboxDomainSnapshotLookupByName, /* domainSnapshotLookupByName */
-    vboxDomainHasCurrentSnapshot, /* domainHasCurrentSnapshot */
-    vboxDomainSnapshotCurrent, /* domainSnapshotCurrent */
-    vboxDomainRevertToSnapshot, /* domainRevertToSnapshot */
-    vboxDomainSnapshotDelete, /* domainSnapshotDelete */
-    NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainOpenConsole */
-    NULL, /* domainInjectNMI */
+    .domainSnapshotCreateXML = vboxDomainSnapshotCreateXML,
+    .domainSnapshotGetXMLDesc = vboxDomainSnapshotGetXMLDesc,
+    .domainSnapshotNum = vboxDomainSnapshotNum,
+    .domainSnapshotListNames = vboxDomainSnapshotListNames,
+    .domainSnapshotLookupByName = vboxDomainSnapshotLookupByName,
+    .domainHasCurrentSnapshot = vboxDomainHasCurrentSnapshot,
+    .domainSnapshotCurrent = vboxDomainSnapshotCurrent,
+    .domainRevertToSnapshot = vboxDomainRevertToSnapshot,
+    .domainSnapshotDelete = vboxDomainSnapshotDelete,
 };
 
 virNetworkDriver NAME(NetworkDriver) = {
@@ -8865,9 +8806,6 @@ virNetworkDriver NAME(NetworkDriver) = {
     .networkCreate          = vboxNetworkCreate,
     .networkDestroy         = vboxNetworkDestroy,
     .networkGetXMLDesc      = vboxNetworkGetXMLDesc,
-    .networkGetBridgeName   = NULL,
-    .networkGetAutostart    = NULL,
-    .networkSetAutostart    = NULL
 };
 
 virStorageDriver NAME(StorageDriver) = {
@@ -8876,24 +8814,7 @@ virStorageDriver NAME(StorageDriver) = {
     .close              = vboxStorageClose,
     .numOfPools         = vboxStorageNumOfPools,
     .listPools          = vboxStorageListPools,
-    .numOfDefinedPools  = NULL,
-    .listDefinedPools   = NULL,
-    .findPoolSources    = NULL,
     .poolLookupByName   = vboxStoragePoolLookupByName,
-    .poolLookupByUUID   = NULL,
-    .poolLookupByVolume = NULL,
-    .poolCreateXML      = NULL,
-    .poolDefineXML      = NULL,
-    .poolBuild          = NULL,
-    .poolUndefine       = NULL,
-    .poolCreate         = NULL,
-    .poolDestroy        = NULL,
-    .poolDelete         = NULL,
-    .poolRefresh        = NULL,
-    .poolGetInfo        = NULL,
-    .poolGetXMLDesc     = NULL,
-    .poolGetAutostart   = NULL,
-    .poolSetAutostart   = NULL,
     .poolNumOfVolumes   = vboxStoragePoolNumOfVolumes,
     .poolListVolumes    = vboxStoragePoolListVolumes,
 
@@ -8901,7 +8822,6 @@ virStorageDriver NAME(StorageDriver) = {
     .volLookupByKey     = vboxStorageVolLookupByKey,
     .volLookupByPath    = vboxStorageVolLookupByPath,
     .volCreateXML       = vboxStorageVolCreateXML,
-    .volCreateXMLFrom   = NULL,
     .volDelete          = vboxStorageVolDelete,
     .volGetInfo         = vboxStorageVolGetInfo,
     .volGetXMLDesc      = vboxStorageVolGetXMLDesc,

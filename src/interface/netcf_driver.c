@@ -542,20 +542,20 @@ cleanup:
 
 static virInterfaceDriver interfaceDriver = {
     "Interface",
-    interfaceOpenInterface,          /* open */
-    interfaceCloseInterface,         /* close */
-    interfaceNumOfInterfaces,        /* numOfInterfaces */
-    interfaceListInterfaces,         /* listInterfaces */
-    interfaceNumOfDefinedInterfaces, /* numOfInterfaces */
-    interfaceListDefinedInterfaces,  /* listInterfaces */
-    interfaceLookupByName,           /* interfaceLookupByName */
-    interfaceLookupByMACString,      /* interfaceLookupByMACString */
-    interfaceGetXMLDesc,             /* interfaceGetXMLDesc */
-    interfaceDefineXML,              /* interfaceDefineXML */
-    interfaceUndefine,               /* interfaceUndefine */
-    interfaceCreate,                 /* interfaceCreate */
-    interfaceDestroy,                /* interfaceDestroy */
-    interfaceIsActive,               /* interfaceIsActive */
+    .open = interfaceOpenInterface,
+    .close = interfaceCloseInterface,
+    .numOfInterfaces = interfaceNumOfInterfaces,
+    .listInterfaces = interfaceListInterfaces,
+    .numOfDefinedInterfaces = interfaceNumOfDefinedInterfaces,
+    .listDefinedInterfaces = interfaceListDefinedInterfaces,
+    .interfaceLookupByName = interfaceLookupByName,
+    .interfaceLookupByMACString = interfaceLookupByMACString,
+    .interfaceGetXMLDesc = interfaceGetXMLDesc,
+    .interfaceDefineXML = interfaceDefineXML,
+    .interfaceUndefine = interfaceUndefine,
+    .interfaceCreate = interfaceCreate,
+    .interfaceDestroy = interfaceDestroy,
+    .interfaceIsActive = interfaceIsActive,
 };
 
 int interfaceRegister(void) {

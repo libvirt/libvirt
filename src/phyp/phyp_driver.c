@@ -3740,117 +3740,33 @@ phypVIOSDriverClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 static virDriver phypDriver = {
-    VIR_DRV_PHYP, "PHYP", phypOpen,     /* open */
-    phypClose,                  /* close */
-    NULL,                       /* supports_feature */
-    NULL,                       /* type */
-    NULL,                       /* version */
-    NULL,                       /* libvirtVersion (impl. in libvirt.c) */
-    NULL,                       /* getHostname */
-    NULL,                       /* getSysinfo */
-    NULL,                       /* getMaxVcpus */
-    NULL,                       /* nodeGetInfo */
-    phypConnectGetCapabilities, /* getCapabilities */
-    phypListDomains,            /* listDomains */
-    phypNumDomains,             /* numOfDomains */
-    phypDomainCreateAndStart,   /* domainCreateXML */
-    phypDomainLookupByID,       /* domainLookupByID */
-    NULL,                       /* domainLookupByUUID */
-    phypDomainLookupByName,     /* domainLookupByName */
-    NULL,                       /* domainSuspend */
-    phypDomainResume,           /* domainResume */
-    phypDomainShutdown,         /* domainShutdown */
-    phypDomainReboot,           /* domainReboot */
-    phypDomainDestroy,          /* domainDestroy */
-    NULL,                       /* domainGetOSType */
-    NULL,                       /* domainGetMaxMemory */
-    NULL,                       /* domainSetMaxMemory */
-    NULL,                       /* domainSetMemory */
-    NULL,                       /* domainSetMemoryFlags */
-    NULL,                       /* domainSetMemoryParameters */
-    NULL,                       /* domainGetMemoryParameters */
-    NULL,                       /* domainSetBlkioParameters */
-    NULL,                       /* domainGetBlkioParameters */
-    phypDomainGetInfo,          /* domainGetInfo */
-    phypDomainGetState,         /* domainGetState */
-    NULL,                       /* domainSave */
-    NULL,                       /* domainRestore */
-    NULL,                       /* domainCoreDump */
-    NULL,                       /* domainScreenshot */
-    phypDomainSetCPU,           /* domainSetVcpus */
-    phypDomainSetVcpusFlags,    /* domainSetVcpusFlags */
-    phypDomainGetVcpusFlags,    /* domainGetVcpusFlags */
-    NULL,                       /* domainPinVcpu */
-    NULL,                       /* domainGetVcpus */
-    phypGetLparCPUMAX,          /* domainGetMaxVcpus */
-    NULL,                       /* domainGetSecurityLabel */
-    NULL,                       /* nodeGetSecurityModel */
-    phypDomainGetXMLDesc,       /* domainGetXMLDesc */
-    NULL,                       /* domainXMLFromNative */
-    NULL,                       /* domainXMLToNative */
-    phypListDefinedDomains,     /* listDefinedDomains */
-    phypNumDefinedDomains,      /* numOfDefinedDomains */
-    NULL,                       /* domainCreate */
-    NULL,                       /* domainCreateWithFlags */
-    NULL,                       /* domainDefineXML */
-    NULL,                       /* domainUndefine */
-    phypAttachDevice,           /* domainAttachDevice */
-    NULL,                       /* domainAttachDeviceFlags */
-    NULL,                       /* domainDetachDevice */
-    NULL,                       /* domainDetachDeviceFlags */
-    NULL,                       /* domainUpdateDeviceFlags */
-    NULL,                       /* domainGetAutostart */
-    NULL,                       /* domainSetAutostart */
-    NULL,                       /* domainGetSchedulerType */
-    NULL,                       /* domainGetSchedulerParameters */
-    NULL,                       /* domainSetSchedulerParameters */
-    NULL,                       /* domainMigratePrepare */
-    NULL,                       /* domainMigratePerform */
-    NULL,                       /* domainMigrateFinish */
-    NULL,                       /* domainBlockStats */
-    NULL,                       /* domainInterfaceStats */
-    NULL,                       /* domainMemoryStats */
-    NULL,                       /* domainBlockPeek */
-    NULL,                       /* domainMemoryPeek */
-    NULL,                       /* domainGetBlockInfo */
-    NULL,                       /* nodeGetCellsFreeMemory */
-    NULL,                       /* nodeGetFreeMemory */
-    NULL,                       /* domainEventRegister */
-    NULL,                       /* domainEventDeregister */
-    NULL,                       /* domainMigratePrepare2 */
-    NULL,                       /* domainMigrateFinish2 */
-    NULL,                       /* nodeDeviceDettach */
-    NULL,                       /* nodeDeviceReAttach */
-    NULL,                       /* nodeDeviceReset */
-    NULL,                       /* domainMigratePrepareTunnel */
-    phypIsEncrypted,            /* isEncrypted */
-    phypIsSecure,               /* isSecure */
-    NULL,                       /* domainIsActive */
-    NULL,                       /* domainIsPersistent */
-    phypIsUpdated,              /* domainIsUpdated */
-    NULL,                       /* cpuCompare */
-    NULL,                       /* cpuBaseline */
-    NULL,                       /* domainGetJobInfo */
-    NULL,                       /* domainAbortJob */
-    NULL,                       /* domainMigrateSetMaxDowntime */
-    NULL,                       /* domainMigrateSetMaxSpeed */
-    NULL,                       /* domainEventRegisterAny */
-    NULL,                       /* domainEventDeregisterAny */
-    NULL,                       /* domainManagedSave */
-    NULL,                       /* domainHasManagedSaveImage */
-    NULL,                       /* domainManagedSaveRemove */
-    NULL,                       /* domainSnapshotCreateXML */
-    NULL,                       /* domainSnapshotGetXMLDesc */
-    NULL,                       /* domainSnapshotNum */
-    NULL,                       /* domainSnapshotListNames */
-    NULL,                       /* domainSnapshotLookupByName */
-    NULL,                       /* domainHasCurrentSnapshot */
-    NULL,                       /* domainSnapshotCurrent */
-    NULL,                       /* domainRevertToSnapshot */
-    NULL,                       /* domainSnapshotDelete */
-    NULL,                       /* qemuDomainMonitorCommand */
-    NULL,                       /* domainOpenConsole */
-    NULL,                       /* domainInjectNMI */
+    .no = VIR_DRV_PHYP,
+    .name = "PHYP",
+    .open = phypOpen,
+    .close = phypClose,
+    .getCapabilities = phypConnectGetCapabilities,
+    .listDomains = phypListDomains,
+    .numOfDomains = phypNumDomains,
+    .domainCreateXML = phypDomainCreateAndStart,
+    .domainLookupByID = phypDomainLookupByID,
+    .domainLookupByName = phypDomainLookupByName,
+    .domainResume = phypDomainResume,
+    .domainShutdown = phypDomainShutdown,
+    .domainReboot = phypDomainReboot,
+    .domainDestroy = phypDomainDestroy,
+    .domainGetInfo = phypDomainGetInfo,
+    .domainGetState = phypDomainGetState,
+    .domainSetVcpus = phypDomainSetCPU,
+    .domainSetVcpusFlags = phypDomainSetVcpusFlags,
+    .domainGetVcpusFlags = phypDomainGetVcpusFlags,
+    .domainGetMaxVcpus = phypGetLparCPUMAX,
+    .domainGetXMLDesc = phypDomainGetXMLDesc,
+    .listDefinedDomains = phypListDefinedDomains,
+    .numOfDefinedDomains = phypNumDefinedDomains,
+    .domainAttachDevice = phypAttachDevice,
+    .isEncrypted = phypIsEncrypted,
+    .isSecure = phypIsSecure,
+    .domainIsUpdated = phypIsUpdated,
 };
 
 static virStorageDriver phypStorageDriver = {
@@ -3860,38 +3776,19 @@ static virStorageDriver phypStorageDriver = {
 
     .numOfPools = phypNumOfStoragePools,
     .listPools = phypListStoragePools,
-    .numOfDefinedPools = NULL,
-    .listDefinedPools = NULL,
-    .findPoolSources = NULL,
     .poolLookupByName = phypStoragePoolLookupByName,
     .poolLookupByUUID = phypGetStoragePoolLookUpByUUID,
-    .poolLookupByVolume = NULL,
     .poolCreateXML = phypStoragePoolCreateXML,
-    .poolDefineXML = NULL,
-    .poolBuild = NULL,
-    .poolUndefine = NULL,
-    .poolCreate = NULL,
     .poolDestroy = phypDestroyStoragePool,
-    .poolDelete = NULL,
-    .poolRefresh = NULL,
-    .poolGetInfo = NULL,
     .poolGetXMLDesc = phypGetStoragePoolXMLDesc,
-    .poolGetAutostart = NULL,
-    .poolSetAutostart = NULL,
     .poolNumOfVolumes = phypStoragePoolNumOfVolumes,
     .poolListVolumes = phypStoragePoolListVolumes,
 
     .volLookupByName = phypVolumeLookupByName,
-    .volLookupByKey = NULL,
     .volLookupByPath = phypVolumeLookupByPath,
     .volCreateXML = phypStorageVolCreateXML,
-    .volCreateXMLFrom = NULL,
-    .volDelete = NULL,
-    .volGetInfo = NULL,
     .volGetXMLDesc = phypVolumeGetXMLDesc,
     .volGetPath = phypVolumeGetPath,
-    .poolIsActive = NULL,
-    .poolIsPersistent = NULL
 };
 
 static virInterfaceDriver phypInterfaceDriver = {
@@ -3900,14 +3797,8 @@ static virInterfaceDriver phypInterfaceDriver = {
     .close = phypVIOSDriverClose,
     .numOfInterfaces = phypNumOfInterfaces,
     .listInterfaces = phypListInterfaces,
-    .numOfDefinedInterfaces = NULL,
-    .listDefinedInterfaces = NULL,
     .interfaceLookupByName = phypInterfaceLookupByName,
-    .interfaceLookupByMACString = NULL,
-    .interfaceGetXMLDesc = NULL,
     .interfaceDefineXML = phypInterfaceDefineXML,
-    .interfaceUndefine = NULL,
-    .interfaceCreate = NULL,
     .interfaceDestroy = phypInterfaceDestroy,
     .interfaceIsActive = phypInterfaceIsActive
 };

@@ -2714,119 +2714,56 @@ cleanup:
 
 /* Function Tables */
 static virDriver lxcDriver = {
-    VIR_DRV_LXC,
-    "LXC",
-    lxcOpen, /* open */
-    lxcClose, /* close */
-    NULL, /* supports_feature */
-    NULL, /* type */
-    lxcVersion, /* version */
-    NULL, /* libvirtVersion (impl. in libvirt.c) */
-    virGetHostname, /* getHostname */
-    NULL, /* getSysinfo */
-    NULL, /* getMaxVcpus */
-    nodeGetInfo, /* nodeGetInfo */
-    lxcGetCapabilities, /* getCapabilities */
-    lxcListDomains, /* listDomains */
-    lxcNumDomains, /* numOfDomains */
-    lxcDomainCreateAndStart, /* domainCreateXML */
-    lxcDomainLookupByID, /* domainLookupByID */
-    lxcDomainLookupByUUID, /* domainLookupByUUID */
-    lxcDomainLookupByName, /* domainLookupByName */
-    lxcDomainSuspend, /* domainSuspend */
-    lxcDomainResume, /* domainResume */
-    NULL, /* domainShutdown */
-    NULL, /* domainReboot */
-    lxcDomainDestroy, /* domainDestroy */
-    lxcGetOSType, /* domainGetOSType */
-    lxcDomainGetMaxMemory, /* domainGetMaxMemory */
-    lxcDomainSetMaxMemory, /* domainSetMaxMemory */
-    lxcDomainSetMemory, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
-    lxcDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    lxcDomainGetMemoryParameters, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
-    lxcDomainGetInfo, /* domainGetInfo */
-    lxcDomainGetState, /* domainGetState */
-    NULL, /* domainSave */
-    NULL, /* domainRestore */
-    NULL, /* domainCoreDump */
-    NULL, /* domainScreenshot */
-    NULL, /* domainSetVcpus */
-    NULL, /* domainSetVcpusFlags */
-    NULL, /* domainGetVcpusFlags */
-    NULL, /* domainPinVcpu */
-    NULL, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
-    NULL, /* domainGetSecurityLabel */
-    NULL, /* nodeGetSecurityModel */
-    lxcDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXMLFromNative */
-    NULL, /* domainXMLToNative */
-    lxcListDefinedDomains, /* listDefinedDomains */
-    lxcNumDefinedDomains, /* numOfDefinedDomains */
-    lxcDomainStart, /* domainCreate */
-    lxcDomainStartWithFlags, /* domainCreateWithFlags */
-    lxcDomainDefine, /* domainDefineXML */
-    lxcDomainUndefine, /* domainUndefine */
-    NULL, /* domainAttachDevice */
-    NULL, /* domainAttachDeviceFlags */
-    NULL, /* domainDetachDevice */
-    NULL, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
-    lxcDomainGetAutostart, /* domainGetAutostart */
-    lxcDomainSetAutostart, /* domainSetAutostart */
-    lxcGetSchedulerType, /* domainGetSchedulerType */
-    lxcGetSchedulerParameters, /* domainGetSchedulerParameters */
-    lxcSetSchedulerParameters, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare */
-    NULL, /* domainMigratePerform */
-    NULL, /* domainMigrateFinish */
-    NULL, /* domainBlockStats */
-    lxcDomainInterfaceStats, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
-    NULL, /* domainBlockPeek */
-    NULL, /* domainMemoryPeek */
-    NULL, /* domainGetBlockInfo */
-    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    nodeGetFreeMemory,  /* nodeGetFreeMemory */
-    lxcDomainEventRegister, /* domainEventRegister */
-    lxcDomainEventDeregister, /* domainEventDeregister */
-    NULL, /* domainMigratePrepare2 */
-    NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
-    NULL, /* domainMigratePrepareTunnel */
-    lxcIsEncrypted, /* isEncrypted */
-    lxcIsSecure, /* isSecure */
-    lxcDomainIsActive, /* domainIsActive */
-    lxcDomainIsPersistent, /* domainIsPersistent */
-    lxcDomainIsUpdated, /* domainIsUpdated */
-    NULL, /* cpuCompare */
-    NULL, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
-    NULL, /* domainAbortJob */
-    NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
-    lxcDomainEventRegisterAny, /* domainEventRegisterAny */
-    lxcDomainEventDeregisterAny, /* domainEventDeregisterAny */
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
-    NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotGetXMLDesc */
-    NULL, /* domainSnapshotNum */
-    NULL, /* domainSnapshotListNames */
-    NULL, /* domainSnapshotLookupByName */
-    NULL, /* domainHasCurrentSnapshot */
-    NULL, /* domainSnapshotCurrent */
-    NULL, /* domainRevertToSnapshot */
-    NULL, /* domainSnapshotDelete */
-    NULL, /* qemuDomainMonitorCommand */
-    lxcDomainOpenConsole, /* domainOpenConsole */
-    NULL, /* domainInjectNMI */
+    .no = VIR_DRV_LXC,
+    .name = "LXC",
+    .open = lxcOpen,
+    .close = lxcClose,
+    .version = lxcVersion,
+    .getHostname = virGetHostname,
+    .nodeGetInfo = nodeGetInfo,
+    .getCapabilities = lxcGetCapabilities,
+    .listDomains = lxcListDomains,
+    .numOfDomains = lxcNumDomains,
+    .domainCreateXML = lxcDomainCreateAndStart,
+    .domainLookupByID = lxcDomainLookupByID,
+    .domainLookupByUUID = lxcDomainLookupByUUID,
+    .domainLookupByName = lxcDomainLookupByName,
+    .domainSuspend = lxcDomainSuspend,
+    .domainResume = lxcDomainResume,
+    .domainDestroy = lxcDomainDestroy,
+    .domainGetOSType = lxcGetOSType,
+    .domainGetMaxMemory = lxcDomainGetMaxMemory,
+    .domainSetMaxMemory = lxcDomainSetMaxMemory,
+    .domainSetMemory = lxcDomainSetMemory,
+    .domainSetMemoryParameters = lxcDomainSetMemoryParameters,
+    .domainGetMemoryParameters = lxcDomainGetMemoryParameters,
+    .domainGetInfo = lxcDomainGetInfo,
+    .domainGetState = lxcDomainGetState,
+    .domainGetXMLDesc = lxcDomainGetXMLDesc,
+    .listDefinedDomains = lxcListDefinedDomains,
+    .numOfDefinedDomains = lxcNumDefinedDomains,
+    .domainCreate = lxcDomainStart,
+    .domainCreateWithFlags = lxcDomainStartWithFlags,
+    .domainDefineXML = lxcDomainDefine,
+    .domainUndefine = lxcDomainUndefine,
+    .domainGetAutostart = lxcDomainGetAutostart,
+    .domainSetAutostart = lxcDomainSetAutostart,
+    .domainGetSchedulerType = lxcGetSchedulerType,
+    .domainGetSchedulerParameters = lxcGetSchedulerParameters,
+    .domainSetSchedulerParameters = lxcSetSchedulerParameters,
+    .domainInterfaceStats = lxcDomainInterfaceStats,
+    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory,
+    .nodeGetFreeMemory = nodeGetFreeMemory,
+    .domainEventRegister = lxcDomainEventRegister,
+    .domainEventDeregister = lxcDomainEventDeregister,
+    .isEncrypted = lxcIsEncrypted,
+    .isSecure = lxcIsSecure,
+    .domainIsActive = lxcDomainIsActive,
+    .domainIsPersistent = lxcDomainIsPersistent,
+    .domainIsUpdated = lxcDomainIsUpdated,
+    .domainEventRegisterAny = lxcDomainEventRegisterAny,
+    .domainEventDeregisterAny = lxcDomainEventDeregisterAny,
+    .domainOpenConsole = lxcDomainOpenConsole,
 };
 
 static virStateDriver lxcStateDriver = {

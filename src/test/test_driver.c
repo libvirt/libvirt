@@ -5318,160 +5318,106 @@ static int testNWFilterClose(virConnectPtr conn) {
 }
 
 static virDriver testDriver = {
-    VIR_DRV_TEST,
-    "Test",
-    testOpen, /* open */
-    testClose, /* close */
-    NULL, /* supports_feature */
-    NULL, /* type */
-    testGetVersion, /* version */
-    NULL, /* libvirtVersion (impl. in libvirt.c) */
-    virGetHostname, /* getHostname */
-    NULL, /* getSysinfo */
-    testGetMaxVCPUs, /* getMaxVcpus */
-    testNodeGetInfo, /* nodeGetInfo */
-    testGetCapabilities, /* getCapabilities */
-    testListDomains, /* listDomains */
-    testNumOfDomains, /* numOfDomains */
-    testDomainCreateXML, /* domainCreateXML */
-    testLookupDomainByID, /* domainLookupByID */
-    testLookupDomainByUUID, /* domainLookupByUUID */
-    testLookupDomainByName, /* domainLookupByName */
-    testPauseDomain, /* domainSuspend */
-    testResumeDomain, /* domainResume */
-    testShutdownDomain, /* domainShutdown */
-    testRebootDomain, /* domainReboot */
-    testDestroyDomain, /* domainDestroy */
-    testGetOSType, /* domainGetOSType */
-    testGetMaxMemory, /* domainGetMaxMemory */
-    testSetMaxMemory, /* domainSetMaxMemory */
-    testSetMemory, /* domainSetMemory */
-    NULL, /* domainSetMemoryFlags */
-    NULL, /* domainSetMemoryParameters */
-    NULL, /* domainGetMemoryParameters */
-    NULL, /* domainSetBlkioParameters */
-    NULL, /* domainGetBlkioParameters */
-    testGetDomainInfo, /* domainGetInfo */
-    testDomainGetState, /* domainGetState */
-    testDomainSave, /* domainSave */
-    testDomainRestore, /* domainRestore */
-    testDomainCoreDump, /* domainCoreDump */
-    NULL, /* domainScreenshot */
-    testSetVcpus, /* domainSetVcpus */
-    testDomainSetVcpusFlags, /* domainSetVcpusFlags */
-    testDomainGetVcpusFlags, /* domainGetVcpusFlags */
-    testDomainPinVcpu, /* domainPinVcpu */
-    testDomainGetVcpus, /* domainGetVcpus */
-    testDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    NULL, /* domainGetSecurityLabel */
-    NULL, /* nodeGetSecurityModel */
-    testDomainGetXMLDesc, /* domainGetXMLDesc */
-    NULL, /* domainXMLFromNative */
-    NULL, /* domainXMLToNative */
-    testListDefinedDomains, /* listDefinedDomains */
-    testNumOfDefinedDomains, /* numOfDefinedDomains */
-    testDomainCreate, /* domainCreate */
-    testDomainCreateWithFlags, /* domainCreateWithFlags */
-    testDomainDefineXML, /* domainDefineXML */
-    testDomainUndefine, /* domainUndefine */
-    NULL, /* domainAttachDevice */
-    NULL, /* domainAttachDeviceFlags */
-    NULL, /* domainDetachDevice */
-    NULL, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
-    testDomainGetAutostart, /* domainGetAutostart */
-    testDomainSetAutostart, /* domainSetAutostart */
-    testDomainGetSchedulerType, /* domainGetSchedulerType */
-    testDomainGetSchedulerParams, /* domainGetSchedulerParameters */
-    testDomainSetSchedulerParams, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare */
-    NULL, /* domainMigratePerform */
-    NULL, /* domainMigrateFinish */
-    testDomainBlockStats, /* domainBlockStats */
-    testDomainInterfaceStats, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
-    NULL, /* domainBlockPeek */
-    NULL, /* domainMemoryPeek */
-    NULL, /* domainGetBlockInfo */
-    testNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    NULL, /* nodeGetFreeMemory */
-    testDomainEventRegister, /* domainEventRegister */
-    testDomainEventDeregister, /* domainEventDeregister */
-    NULL, /* domainMigratePrepare2 */
-    NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
-    NULL, /* domainMigratePrepareTunnel */
-    testIsEncrypted, /* isEncrypted */
-    testIsSecure, /* isEncrypted */
-    testDomainIsActive, /* domainIsActive */
-    testDomainIsPersistent, /* domainIsPersistent */
-    testDomainIsUpdated, /* domainIsUpdated */
-    NULL, /* cpuCompare */
-    NULL, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
-    NULL, /* domainAbortJob */
-    NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainMigrateSetMaxSpeed */
-    testDomainEventRegisterAny, /* domainEventRegisterAny */
-    testDomainEventDeregisterAny, /* domainEventDeregisterAny */
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
-    NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotGetXMLDesc */
-    NULL, /* domainSnapshotNum */
-    NULL, /* domainSnapshotListNames */
-    NULL, /* domainSnapshotLookupByName */
-    NULL, /* domainHasCurrentSnapshot */
-    NULL, /* domainSnapshotCurrent */
-    NULL, /* domainRevertToSnapshot */
-    NULL, /* domainSnapshotDelete */
-    NULL, /* qemuDomainMonitorCommand */
-    NULL, /* domainOpenConsole */
-    NULL, /* domainInjectNMI */
+    .no = VIR_DRV_TEST,
+    .name = "Test",
+    .open = testOpen,
+    .close = testClose,
+    .version = testGetVersion,
+    .getHostname = virGetHostname,
+    .getMaxVcpus = testGetMaxVCPUs,
+    .nodeGetInfo = testNodeGetInfo,
+    .getCapabilities = testGetCapabilities,
+    .listDomains = testListDomains,
+    .numOfDomains = testNumOfDomains,
+    .domainCreateXML = testDomainCreateXML,
+    .domainLookupByID = testLookupDomainByID,
+    .domainLookupByUUID = testLookupDomainByUUID,
+    .domainLookupByName = testLookupDomainByName,
+    .domainSuspend = testPauseDomain,
+    .domainResume = testResumeDomain,
+    .domainShutdown = testShutdownDomain,
+    .domainReboot = testRebootDomain,
+    .domainDestroy = testDestroyDomain,
+    .domainGetOSType = testGetOSType,
+    .domainGetMaxMemory = testGetMaxMemory,
+    .domainSetMaxMemory = testSetMaxMemory,
+    .domainSetMemory = testSetMemory,
+    .domainGetInfo = testGetDomainInfo,
+    .domainGetState = testDomainGetState,
+    .domainSave = testDomainSave,
+    .domainRestore = testDomainRestore,
+    .domainCoreDump = testDomainCoreDump,
+    .domainSetVcpus = testSetVcpus,
+    .domainSetVcpusFlags = testDomainSetVcpusFlags,
+    .domainGetVcpusFlags = testDomainGetVcpusFlags,
+    .domainPinVcpu = testDomainPinVcpu,
+    .domainGetVcpus = testDomainGetVcpus,
+    .domainGetMaxVcpus = testDomainGetMaxVcpus,
+    .domainGetXMLDesc = testDomainGetXMLDesc,
+    .listDefinedDomains = testListDefinedDomains,
+    .numOfDefinedDomains = testNumOfDefinedDomains,
+    .domainCreate = testDomainCreate,
+    .domainCreateWithFlags = testDomainCreateWithFlags,
+    .domainDefineXML = testDomainDefineXML,
+    .domainUndefine = testDomainUndefine,
+    .domainGetAutostart = testDomainGetAutostart,
+    .domainSetAutostart = testDomainSetAutostart,
+    .domainGetSchedulerType = testDomainGetSchedulerType,
+    .domainGetSchedulerParameters = testDomainGetSchedulerParams,
+    .domainSetSchedulerParameters = testDomainSetSchedulerParams,
+    .domainBlockStats = testDomainBlockStats,
+    .domainInterfaceStats = testDomainInterfaceStats,
+    .nodeGetCellsFreeMemory = testNodeGetCellsFreeMemory,
+    .domainEventRegister = testDomainEventRegister,
+    .domainEventDeregister = testDomainEventDeregister,
+    .isEncrypted = testIsEncrypted,
+    .isSecure = testIsSecure,
+    .domainIsActive = testDomainIsActive,
+    .domainIsPersistent = testDomainIsPersistent,
+    .domainIsUpdated = testDomainIsUpdated,
+    .domainEventRegisterAny = testDomainEventRegisterAny,
+    .domainEventDeregisterAny = testDomainEventDeregisterAny,
 };
 
 static virNetworkDriver testNetworkDriver = {
     "Test",
-    testOpenNetwork, /* open */
-    testCloseNetwork, /* close */
-    testNumNetworks, /* numOfNetworks */
-    testListNetworks, /* listNetworks */
-    testNumDefinedNetworks, /* numOfDefinedNetworks */
-    testListDefinedNetworks, /* listDefinedNetworks */
-    testLookupNetworkByUUID, /* networkLookupByUUID */
-    testLookupNetworkByName, /* networkLookupByName */
-    testNetworkCreate, /* networkCreateXML */
-    testNetworkDefine, /* networkDefineXML */
-    testNetworkUndefine, /* networkUndefine */
-    testNetworkStart, /* networkCreate */
-    testNetworkDestroy, /* networkDestroy */
-    testNetworkGetXMLDesc, /* networkGetXMLDesc */
-    testNetworkGetBridgeName, /* networkGetBridgeName */
-    testNetworkGetAutostart, /* networkGetAutostart */
-    testNetworkSetAutostart, /* networkSetAutostart */
-    testNetworkIsActive, /* networkIsActive */
-    testNetworkIsPersistent, /* networkIsPersistent */
+    .open = testOpenNetwork,
+    .close = testCloseNetwork,
+    .numOfNetworks = testNumNetworks,
+    .listNetworks = testListNetworks,
+    .numOfDefinedNetworks = testNumDefinedNetworks,
+    .listDefinedNetworks = testListDefinedNetworks,
+    .networkLookupByUUID = testLookupNetworkByUUID,
+    .networkLookupByName = testLookupNetworkByName,
+    .networkCreateXML = testNetworkCreate,
+    .networkDefineXML = testNetworkDefine,
+    .networkUndefine = testNetworkUndefine,
+    .networkCreate = testNetworkStart,
+    .networkDestroy = testNetworkDestroy,
+    .networkGetXMLDesc = testNetworkGetXMLDesc,
+    .networkGetBridgeName = testNetworkGetBridgeName,
+    .networkGetAutostart = testNetworkGetAutostart,
+    .networkSetAutostart = testNetworkSetAutostart,
+    .networkIsActive = testNetworkIsActive,
+    .networkIsPersistent = testNetworkIsPersistent,
 };
 
 static virInterfaceDriver testInterfaceDriver = {
     "Test",                     /* name */
-    testOpenInterface,          /* open */
-    testCloseInterface,         /* close */
-    testNumOfInterfaces,        /* numOfInterfaces */
-    testListInterfaces,         /* listInterfaces */
-    testNumOfDefinedInterfaces, /* numOfDefinedInterfaces */
-    testListDefinedInterfaces,  /* listDefinedInterfaces */
-    testLookupInterfaceByName,  /* interfaceLookupByName */
-    testLookupInterfaceByMACString, /* interfaceLookupByMACString */
-    testInterfaceGetXMLDesc,    /* interfaceGetXMLDesc */
-    testInterfaceDefineXML,     /* interfaceDefineXML */
-    testInterfaceUndefine,      /* interfaceUndefine */
-    testInterfaceCreate,        /* interfaceCreate */
-    testInterfaceDestroy,       /* interfaceDestroy */
-    testInterfaceIsActive,      /* interfaceIsActive */
+    .open = testOpenInterface,
+    .close = testCloseInterface,
+    .numOfInterfaces = testNumOfInterfaces,
+    .listInterfaces = testListInterfaces,
+    .numOfDefinedInterfaces = testNumOfDefinedInterfaces,
+    .listDefinedInterfaces = testListDefinedInterfaces,
+    .interfaceLookupByName = testLookupInterfaceByName,
+    .interfaceLookupByMACString = testLookupInterfaceByMACString,
+    .interfaceGetXMLDesc = testInterfaceGetXMLDesc,
+    .interfaceDefineXML = testInterfaceDefineXML,
+    .interfaceUndefine = testInterfaceUndefine,
+    .interfaceCreate = testInterfaceCreate,
+    .interfaceDestroy = testInterfaceDestroy,
+    .interfaceIsActive = testInterfaceIsActive,
 };
 
 

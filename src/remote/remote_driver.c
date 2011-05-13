@@ -6397,119 +6397,119 @@ unsigned long remoteVersion(void)
 }
 
 static virDriver remote_driver = {
-    VIR_DRV_REMOTE,
-    "remote",
-    remoteOpen, /* open */
-    remoteClose, /* close */
-    remoteSupportsFeature, /* supports_feature */
-    remoteType, /* type */
-    remoteGetVersion, /* version */
-    remoteGetLibVersion, /* libvirtVersion */
-    remoteGetHostname, /* getHostname */
-    remoteGetSysinfo, /* getSysinfo */
-    remoteGetMaxVcpus, /* getMaxVcpus */
-    remoteNodeGetInfo, /* nodeGetInfo */
-    remoteGetCapabilities, /* getCapabilities */
-    remoteListDomains, /* listDomains */
-    remoteNumOfDomains, /* numOfDomains */
-    remoteDomainCreateXML, /* domainCreateXML */
-    remoteDomainLookupByID, /* domainLookupByID */
-    remoteDomainLookupByUUID, /* domainLookupByUUID */
-    remoteDomainLookupByName, /* domainLookupByName */
-    remoteDomainSuspend, /* domainSuspend */
-    remoteDomainResume, /* domainResume */
-    remoteDomainShutdown, /* domainShutdown */
-    remoteDomainReboot, /* domainReboot */
-    remoteDomainDestroy, /* domainDestroy */
-    remoteDomainGetOSType, /* domainGetOSType */
-    remoteDomainGetMaxMemory, /* domainGetMaxMemory */
-    remoteDomainSetMaxMemory, /* domainSetMaxMemory */
-    remoteDomainSetMemory, /* domainSetMemory */
-    remoteDomainSetMemoryFlags, /* domainSetMemoryFlags */
-    remoteDomainSetMemoryParameters, /* domainSetMemoryParameters */
-    remoteDomainGetMemoryParameters, /* domainGetMemoryParameters */
-    remoteDomainSetBlkioParameters, /* domainSetBlkioParameters */
-    remoteDomainGetBlkioParameters, /* domainGetBlkioParameters */
-    remoteDomainGetInfo, /* domainGetInfo */
-    remoteDomainGetState, /* domainGetState */
-    remoteDomainSave, /* domainSave */
-    remoteDomainRestore, /* domainRestore */
-    remoteDomainCoreDump, /* domainCoreDump */
-    remoteDomainScreenshot, /* domainScreenshot */
-    remoteDomainSetVcpus, /* domainSetVcpus */
-    remoteDomainSetVcpusFlags, /* domainSetVcpusFlags */
-    remoteDomainGetVcpusFlags, /* domainGetVcpusFlags */
-    remoteDomainPinVcpu, /* domainPinVcpu */
-    remoteDomainGetVcpus, /* domainGetVcpus */
-    remoteDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    remoteDomainGetSecurityLabel, /* domainGetSecurityLabel */
-    remoteNodeGetSecurityModel, /* nodeGetSecurityModel */
-    remoteDomainGetXMLDesc, /* domainGetXMLDesc */
-    remoteDomainXMLFromNative, /* domainXMLFromNative */
-    remoteDomainXMLToNative, /* domainXMLToNative */
-    remoteListDefinedDomains, /* listDefinedDomains */
-    remoteNumOfDefinedDomains, /* numOfDefinedDomains */
-    remoteDomainCreate, /* domainCreate */
-    remoteDomainCreateWithFlags, /* domainCreateWithFlags */
-    remoteDomainDefineXML, /* domainDefineXML */
-    remoteDomainUndefine, /* domainUndefine */
-    remoteDomainAttachDevice, /* domainAttachDevice */
-    remoteDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
-    remoteDomainDetachDevice, /* domainDetachDevice */
-    remoteDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    remoteDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
-    remoteDomainGetAutostart, /* domainGetAutostart */
-    remoteDomainSetAutostart, /* domainSetAutostart */
-    remoteDomainGetSchedulerType, /* domainGetSchedulerType */
-    remoteDomainGetSchedulerParameters, /* domainGetSchedulerParameters */
-    remoteDomainSetSchedulerParameters, /* domainSetSchedulerParameters */
-    remoteDomainMigratePrepare, /* domainMigratePrepare */
-    remoteDomainMigratePerform, /* domainMigratePerform */
-    remoteDomainMigrateFinish, /* domainMigrateFinish */
-    remoteDomainBlockStats, /* domainBlockStats */
-    remoteDomainInterfaceStats, /* domainInterfaceStats */
-    remoteDomainMemoryStats, /* domainMemoryStats */
-    remoteDomainBlockPeek, /* domainBlockPeek */
-    remoteDomainMemoryPeek, /* domainMemoryPeek */
-    remoteDomainGetBlockInfo, /* domainGetBlockInfo */
-    remoteNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    remoteNodeGetFreeMemory, /* nodeGetFreeMemory */
-    remoteDomainEventRegister, /* domainEventRegister */
-    remoteDomainEventDeregister, /* domainEventDeregister */
-    remoteDomainMigratePrepare2, /* domainMigratePrepare2 */
-    remoteDomainMigrateFinish2, /* domainMigrateFinish2 */
-    remoteNodeDeviceDettach, /* nodeDeviceDettach */
-    remoteNodeDeviceReAttach, /* nodeDeviceReAttach */
-    remoteNodeDeviceReset, /* nodeDeviceReset */
-    remoteDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
-    remoteIsEncrypted, /* isEncrypted */
-    remoteIsSecure, /* isSecure */
-    remoteDomainIsActive, /* domainIsActive */
-    remoteDomainIsPersistent, /* domainIsPersistent */
-    remoteDomainIsUpdated, /* domainIsUpdated */
-    remoteCPUCompare, /* cpuCompare */
-    remoteCPUBaseline, /* cpuBaseline */
-    remoteDomainGetJobInfo, /* domainGetJobInfo */
-    remoteDomainAbortJob, /* domainAbortJob */
-    remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
-    remoteDomainMigrateSetMaxSpeed, /* domainMigrateSetMaxSpeed */
-    remoteDomainEventRegisterAny, /* domainEventRegisterAny */
-    remoteDomainEventDeregisterAny, /* domainEventDeregisterAny */
-    remoteDomainManagedSave, /* domainManagedSave */
-    remoteDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
-    remoteDomainManagedSaveRemove, /* domainManagedSaveRemove */
-    remoteDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
-    remoteDomainSnapshotGetXMLDesc, /* domainSnapshotGetXMLDesc */
-    remoteDomainSnapshotNum, /* domainSnapshotNum */
-    remoteDomainSnapshotListNames, /* domainSnapshotListNames */
-    remoteDomainSnapshotLookupByName, /* domainSnapshotLookupByName */
-    remoteDomainHasCurrentSnapshot, /* domainHasCurrentSnapshot */
-    remoteDomainSnapshotCurrent, /* domainSnapshotCurrent */
-    remoteDomainRevertToSnapshot, /* domainRevertToSnapshot */
-    remoteDomainSnapshotDelete, /* domainSnapshotDelete */
-    remoteQemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
-    remoteDomainOpenConsole, /* domainOpenConsole */
-    remoteDomainInjectNMI, /* domainInjectNMI */
+    .no = VIR_DRV_REMOTE,
+    .name = "remote",
+    .open = remoteOpen,
+    .close = remoteClose,
+    .supports_feature = remoteSupportsFeature,
+    .type = remoteType,
+    .version = remoteGetVersion,
+    .libvirtVersion = remoteGetLibVersion,
+    .getHostname = remoteGetHostname,
+    .getSysinfo = remoteGetSysinfo,
+    .getMaxVcpus = remoteGetMaxVcpus,
+    .nodeGetInfo = remoteNodeGetInfo,
+    .getCapabilities = remoteGetCapabilities,
+    .listDomains = remoteListDomains,
+    .numOfDomains = remoteNumOfDomains,
+    .domainCreateXML = remoteDomainCreateXML,
+    .domainLookupByID = remoteDomainLookupByID,
+    .domainLookupByUUID = remoteDomainLookupByUUID,
+    .domainLookupByName = remoteDomainLookupByName,
+    .domainSuspend = remoteDomainSuspend,
+    .domainResume = remoteDomainResume,
+    .domainShutdown = remoteDomainShutdown,
+    .domainReboot = remoteDomainReboot,
+    .domainDestroy = remoteDomainDestroy,
+    .domainGetOSType = remoteDomainGetOSType,
+    .domainGetMaxMemory = remoteDomainGetMaxMemory,
+    .domainSetMaxMemory = remoteDomainSetMaxMemory,
+    .domainSetMemory = remoteDomainSetMemory,
+    .domainSetMemoryFlags = remoteDomainSetMemoryFlags,
+    .domainSetMemoryParameters = remoteDomainSetMemoryParameters,
+    .domainGetMemoryParameters = remoteDomainGetMemoryParameters,
+    .domainSetBlkioParameters = remoteDomainSetBlkioParameters,
+    .domainGetBlkioParameters = remoteDomainGetBlkioParameters,
+    .domainGetInfo = remoteDomainGetInfo,
+    .domainGetState = remoteDomainGetState,
+    .domainSave = remoteDomainSave,
+    .domainRestore = remoteDomainRestore,
+    .domainCoreDump = remoteDomainCoreDump,
+    .domainScreenshot = remoteDomainScreenshot,
+    .domainSetVcpus = remoteDomainSetVcpus,
+    .domainSetVcpusFlags = remoteDomainSetVcpusFlags,
+    .domainGetVcpusFlags = remoteDomainGetVcpusFlags,
+    .domainPinVcpu = remoteDomainPinVcpu,
+    .domainGetVcpus = remoteDomainGetVcpus,
+    .domainGetMaxVcpus = remoteDomainGetMaxVcpus,
+    .domainGetSecurityLabel = remoteDomainGetSecurityLabel,
+    .nodeGetSecurityModel = remoteNodeGetSecurityModel,
+    .domainGetXMLDesc = remoteDomainGetXMLDesc,
+    .domainXMLFromNative = remoteDomainXMLFromNative,
+    .domainXMLToNative = remoteDomainXMLToNative,
+    .listDefinedDomains = remoteListDefinedDomains,
+    .numOfDefinedDomains = remoteNumOfDefinedDomains,
+    .domainCreate = remoteDomainCreate,
+    .domainCreateWithFlags = remoteDomainCreateWithFlags,
+    .domainDefineXML = remoteDomainDefineXML,
+    .domainUndefine = remoteDomainUndefine,
+    .domainAttachDevice = remoteDomainAttachDevice,
+    .domainAttachDeviceFlags = remoteDomainAttachDeviceFlags,
+    .domainDetachDevice = remoteDomainDetachDevice,
+    .domainDetachDeviceFlags = remoteDomainDetachDeviceFlags,
+    .domainUpdateDeviceFlags = remoteDomainUpdateDeviceFlags,
+    .domainGetAutostart = remoteDomainGetAutostart,
+    .domainSetAutostart = remoteDomainSetAutostart,
+    .domainGetSchedulerType = remoteDomainGetSchedulerType,
+    .domainGetSchedulerParameters = remoteDomainGetSchedulerParameters,
+    .domainSetSchedulerParameters = remoteDomainSetSchedulerParameters,
+    .domainMigratePrepare = remoteDomainMigratePrepare,
+    .domainMigratePerform = remoteDomainMigratePerform,
+    .domainMigrateFinish = remoteDomainMigrateFinish,
+    .domainBlockStats = remoteDomainBlockStats,
+    .domainInterfaceStats = remoteDomainInterfaceStats,
+    .domainMemoryStats = remoteDomainMemoryStats,
+    .domainBlockPeek = remoteDomainBlockPeek,
+    .domainMemoryPeek = remoteDomainMemoryPeek,
+    .domainGetBlockInfo = remoteDomainGetBlockInfo,
+    .nodeGetCellsFreeMemory = remoteNodeGetCellsFreeMemory,
+    .nodeGetFreeMemory = remoteNodeGetFreeMemory,
+    .domainEventRegister = remoteDomainEventRegister,
+    .domainEventDeregister = remoteDomainEventDeregister,
+    .domainMigratePrepare2 = remoteDomainMigratePrepare2,
+    .domainMigrateFinish2 = remoteDomainMigrateFinish2,
+    .nodeDeviceDettach = remoteNodeDeviceDettach,
+    .nodeDeviceReAttach = remoteNodeDeviceReAttach,
+    .nodeDeviceReset = remoteNodeDeviceReset,
+    .domainMigratePrepareTunnel = remoteDomainMigratePrepareTunnel,
+    .isEncrypted = remoteIsEncrypted,
+    .isSecure = remoteIsSecure,
+    .domainIsActive = remoteDomainIsActive,
+    .domainIsPersistent = remoteDomainIsPersistent,
+    .domainIsUpdated = remoteDomainIsUpdated,
+    .cpuCompare = remoteCPUCompare,
+    .cpuBaseline = remoteCPUBaseline,
+    .domainGetJobInfo = remoteDomainGetJobInfo,
+    .domainAbortJob = remoteDomainAbortJob,
+    .domainMigrateSetMaxDowntime = remoteDomainMigrateSetMaxDowntime,
+    .domainMigrateSetMaxSpeed = remoteDomainMigrateSetMaxSpeed,
+    .domainEventRegisterAny = remoteDomainEventRegisterAny,
+    .domainEventDeregisterAny = remoteDomainEventDeregisterAny,
+    .domainManagedSave = remoteDomainManagedSave,
+    .domainHasManagedSaveImage = remoteDomainHasManagedSaveImage,
+    .domainManagedSaveRemove = remoteDomainManagedSaveRemove,
+    .domainSnapshotCreateXML = remoteDomainSnapshotCreateXML,
+    .domainSnapshotGetXMLDesc = remoteDomainSnapshotGetXMLDesc,
+    .domainSnapshotNum = remoteDomainSnapshotNum,
+    .domainSnapshotListNames = remoteDomainSnapshotListNames,
+    .domainSnapshotLookupByName = remoteDomainSnapshotLookupByName,
+    .domainHasCurrentSnapshot = remoteDomainHasCurrentSnapshot,
+    .domainSnapshotCurrent = remoteDomainSnapshotCurrent,
+    .domainRevertToSnapshot = remoteDomainRevertToSnapshot,
+    .domainSnapshotDelete = remoteDomainSnapshotDelete,
+    .qemuDomainMonitorCommand = remoteQemuDomainMonitorCommand,
+    .domainOpenConsole = remoteDomainOpenConsole,
+    .domainInjectNMI = remoteDomainInjectNMI,
 };
 
 static virNetworkDriver network_driver = {
