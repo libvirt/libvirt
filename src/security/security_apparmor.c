@@ -163,7 +163,7 @@ load_profile(virSecurityManagerPtr mgr,
              const char *fn,
              bool append)
 {
-    int rc = -1, status, ret;
+    int rc = -1;
     bool create = true;
     char *xml = NULL;
     virCommandPtr cmd;
@@ -193,9 +193,6 @@ load_profile(virSecurityManagerPtr mgr,
 
   clean:
     VIR_FREE(xml);
-
-    VIR_FORCE_CLOSE(pipefd[0]);
-    VIR_FORCE_CLOSE(pipefd[1]);
 
     return rc;
 }
