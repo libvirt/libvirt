@@ -11654,6 +11654,8 @@ virStreamNew(virConnectPtr conn,
     st = virGetStream(conn);
     if (st)
         st->flags = flags;
+    else
+        virDispatchError(conn);
 
     return st;
 }

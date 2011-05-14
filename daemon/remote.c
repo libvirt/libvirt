@@ -1191,10 +1191,8 @@ remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_U
 
     dname = args->dname == NULL ? NULL : *args->dname;
 
-    if (!(stream = remoteCreateClientStream(conn, hdr))) {
-        virReportOOMError();
+    if (!(stream = remoteCreateClientStream(conn, hdr)))
         goto cleanup;
-    }
 
     if (virDomainMigratePrepareTunnel(conn, stream->st,
                                       args->flags, dname, args->resource,
@@ -3054,10 +3052,8 @@ remoteDispatchDomainOpenConsole(struct qemud_server *server ATTRIBUTE_UNUSED,
     if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
-    if (!(stream = remoteCreateClientStream(conn, hdr))) {
-        virReportOOMError();
+    if (!(stream = remoteCreateClientStream(conn, hdr)))
         goto cleanup;
-    }
 
     if (virDomainOpenConsole(dom,
                              args->devname ? *args->devname : NULL,
