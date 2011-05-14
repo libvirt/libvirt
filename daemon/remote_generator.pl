@@ -953,6 +953,11 @@ elsif ($opt_k) {
                     push(@ret_list, "rv = ret.$1;");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
+                } elsif ($ret_member =~ m/^remote_string (\S+);/) {
+                    push(@ret_list, "rv = ret.$1 ? *ret.$1 : NULL;");
+                    push(@ret_list, "VIR_FREE(ret.$1);");
+                    $single_ret_var = "char *rv = NULL";
+                    $single_ret_type = "char *";
                 } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|node_device|interface|secret|nwfilter|domain_snapshot) (\S+);/) {
                     my $name = $1;
                     my $arg_name = $2;

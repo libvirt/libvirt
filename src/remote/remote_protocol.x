@@ -2171,7 +2171,7 @@ enum remote_procedure {
     REMOTE_PROC_NODE_LIST_DEVICES = 112, /* autogen autogen */
     REMOTE_PROC_NODE_DEVICE_LOOKUP_BY_NAME = 113, /* autogen autogen */
     REMOTE_PROC_NODE_DEVICE_GET_XML_DESC = 114, /* autogen autogen */
-    REMOTE_PROC_NODE_DEVICE_GET_PARENT = 115, /* skipgen skipgen */
+    REMOTE_PROC_NODE_DEVICE_GET_PARENT = 115, /* skipgen autogen */
     REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS = 116, /* autogen autogen */
     REMOTE_PROC_NODE_DEVICE_LIST_CAPS = 117, /* autogen autogen */
     REMOTE_PROC_NODE_DEVICE_DETTACH = 118, /* autogen skipgen */

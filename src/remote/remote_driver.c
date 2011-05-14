@@ -3001,32 +3001,6 @@ remoteDevMonClose(virConnectPtr conn)
     return remoteGenericClose(conn, &conn->devMonPrivateData);
 }
 
-static char *remoteNodeDeviceGetParent(virNodeDevicePtr dev)
-{
-    char *rv = NULL;
-    remote_node_device_get_parent_args args;
-    remote_node_device_get_parent_ret ret;
-    struct private_data *priv = dev->conn->devMonPrivateData;
-
-    remoteDriverLock(priv);
-
-    args.name = dev->name;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_GET_PARENT,
-              (xdrproc_t) xdr_remote_node_device_get_parent_args, (char *) &args,
-              (xdrproc_t) xdr_remote_node_device_get_parent_ret, (char *) &ret) == -1)
-        goto done;
-
-    /* Caller frees. */
-    rv = ret.parent ? *ret.parent : NULL;
-    VIR_FREE(ret.parent);
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
 static int
 remoteNodeDeviceDettach (virNodeDevicePtr dev)
 {
