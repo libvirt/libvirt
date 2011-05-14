@@ -2058,7 +2058,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_CREATE_XML = 10, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_DEFINE_XML = 11, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_DESTROY = 12, /* autogen skipgen */
+    REMOTE_PROC_DOMAIN_DESTROY = 12, /* autogen autogen */
     REMOTE_PROC_DOMAIN_DETACH_DEVICE = 13, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_XML_DESC = 14, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_AUTOSTART = 15, /* autogen autogen */
@@ -2110,7 +2110,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58, /* skipgen skipgen */
     REMOTE_PROC_GET_HOSTNAME = 59, /* autogen autogen */
-    REMOTE_PROC_SUPPORTS_FEATURE = 60, /* autogen skipgen */
+    REMOTE_PROC_SUPPORTS_FEATURE = 60, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE = 61, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM = 62, /* autogen autogen */

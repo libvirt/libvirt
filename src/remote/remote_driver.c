@@ -1591,37 +1591,6 @@ remoteClose (virConnectPtr conn)
     return ret;
 }
 
-static int
-remoteSupportsFeature (virConnectPtr conn, int feature)
-{
-    int rv = -1;
-    remote_supports_feature_args args;
-    remote_supports_feature_ret ret;
-    struct private_data *priv = conn->privateData;
-
-    remoteDriverLock(priv);
-
-    /* VIR_DRV_FEATURE_REMOTE* features are handled directly. */
-    if (feature == VIR_DRV_FEATURE_REMOTE) {
-        rv = 1;
-        goto done;
-    }
-
-    args.feature = feature;
-
-    memset (&ret, 0, sizeof ret);
-    if (call (conn, priv, 0, REMOTE_PROC_SUPPORTS_FEATURE,
-              (xdrproc_t) xdr_remote_supports_feature_args, (char *) &args,
-              (xdrproc_t) xdr_remote_supports_feature_ret, (char *) &ret) == -1)
-        goto done;
-
-    rv = ret.supported;
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
 /* Unfortunately this function is defined to return a static string.
  * Since the remote end always answers with the same type (for a
  * single connection anyway) we cache the type in the connection's
@@ -1805,30 +1774,6 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
 
 cleanup:
     xdr_free ((xdrproc_t) xdr_remote_list_domains_ret, (char *) &ret);
-
-done:
-    remoteDriverUnlock(priv);
-    return rv;
-}
-
-static int
-remoteDomainDestroy (virDomainPtr domain)
-{
-    int rv = -1;
-    remote_domain_destroy_args args;
-    struct private_data *priv = domain->conn->privateData;
-
-    remoteDriverLock(priv);
-
-    make_nonnull_domain (&args.dom, domain);
-
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_DESTROY,
-              (xdrproc_t) xdr_remote_domain_destroy_args, (char *) &args,
-              (xdrproc_t) xdr_void, (char *) NULL) == -1)
-        goto done;
-
-    rv = 0;
-    domain->id = -1;
 
 done:
     remoteDriverUnlock(priv);

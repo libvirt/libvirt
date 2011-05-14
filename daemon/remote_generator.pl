@@ -1065,6 +1065,15 @@ elsif ($opt_k) {
         print "\n";
         print "    remoteDriverLock(priv);\n";
 
+        if ($call->{ProcName} eq "SupportsFeature") {
+            # SPECIAL: VIR_DRV_FEATURE_REMOTE feature is handled directly
+            print "\n";
+            print "    if (feature == VIR_DRV_FEATURE_REMOTE) {\n";
+            print "        rv = 1;\n";
+            print "        goto done;\n";
+            print "    }\n";
+        }
+
         foreach my $args_check (@args_check_list) {
             print "\n";
             print "    if ($args_check->{arg} > $args_check->{limit}) {\n";
@@ -1138,6 +1147,11 @@ elsif ($opt_k) {
             print "    ";
             print join("\n    ", @ret_list);
             print "\n";
+        }
+
+        if ($call->{ProcName} eq "DomainDestroy") {
+            # SPECIAL: virDomainDestroy needs to reset the domain id explicitly
+            print "    dom->id = -1;\n";
         }
 
         if ($multi_ret or !@ret_list) {
