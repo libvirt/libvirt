@@ -265,11 +265,13 @@ elsif ($opt_b) {
     my @keys = sort (keys %calls);
 
     foreach (@keys) {
+        my $call = $calls{$_};
+
         # skip things which are REMOTE_MESSAGE
-        next if $calls{$_}->{msg};
+        next if $call->{msg};
 
         # skip procedures not on generate list
-        next if ! exists($generate{$calls{$_}->{ProcName}});
+        next if ! exists($generate{$call->{ProcName}});
 
         my $has_node_device = 0;
         my @vars_list = ();
@@ -281,11 +283,11 @@ elsif ($opt_b) {
         my @free_list_on_error = ("remoteDispatchError(rerr);");
 
         # handle arguments to the function
-        if ($calls{$_}->{args} ne "void") {
+        if ($call->{args} ne "void") {
             # node device is special, as it's identified by name
-            if ($calls{$_}->{args} =~ m/^remote_node_device_/ and
-                !($calls{$_}->{args} =~ m/^remote_node_device_lookup_by_name_/) and
-                !($calls{$_}->{args} =~ m/^remote_node_device_create_xml_/)) {
+            if ($call->{args} =~ m/^remote_node_device_/ and
+                !($call->{args} =~ m/^remote_node_device_lookup_by_name_/) and
+                !($call->{args} =~ m/^remote_node_device_create_xml_/)) {
                 $has_node_device = 1;
                 push(@vars_list, "virNodeDevicePtr dev = NULL");
                 push(@getters_list,
@@ -297,7 +299,7 @@ elsif ($opt_b) {
                      "        virNodeDeviceFree(dev);");
             }
 
-            foreach my $args_member (@{$calls{$_}->{args_members}}) {
+            foreach my $args_member (@{$call->{args_members}}) {
                 if ($args_member =~ m/^remote_nonnull_string name;/ and $has_node_device) {
                     # ignore the name arg for node devices
                     next
@@ -332,9 +334,9 @@ elsif ($opt_b) {
                         push(@args_list, "conn");
                     }
 
-                    if ($calls{$_}->{ProcName} eq "SecretSetValue") {
+                    if ($call->{ProcName} eq "SecretSetValue") {
                         push(@args_list, "(const unsigned char *)args->$2.$2_val");
-                    } elsif ($calls{$_}->{ProcName} eq "CPUBaseline") {
+                    } elsif ($call->{ProcName} eq "CPUBaseline") {
                         push(@args_list, "(const char **)args->$2.$2_val");
                     } else {
                         push(@args_list, "args->$2.$2_val");
@@ -388,13 +390,13 @@ elsif ($opt_b) {
         my $single_ret_list_max_define = "undefined";
         my $multi_ret = 0;
 
-        if ($calls{$_}->{ret} ne "void" and
-            scalar(@{$calls{$_}->{ret_members}}) > 1) {
+        if ($call->{ret} ne "void" and
+            scalar(@{$call->{ret_members}}) > 1) {
             $multi_ret = 1;
         }
 
-        if ($calls{$_}->{ret} ne "void") {
-            foreach my $ret_member (@{$calls{$_}->{ret_members}}) {
+        if ($call->{ret} ne "void") {
+            foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
                     if ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+)\[\S+\];/) {
                         push(@ret_list, "memcpy(ret->$3, tmp.$3, sizeof ret->$3);");
@@ -415,7 +417,7 @@ elsif ($opt_b) {
                     $single_ret_list_max_var = "max$1";
                     $single_ret_list_max_define = $2;
 
-                    if ($calls{$_}->{ProcName} eq "NodeListDevices") {
+                    if ($call->{ProcName} eq "NodeListDevices") {
                         my $conn = shift(@args_list);
                         my $cap = shift(@args_list);
                         unshift(@args_list, "ret->$1.$1_val");
@@ -463,12 +465,12 @@ elsif ($opt_b) {
                     push(@ret_list, "ret->$1 = $1;");
                     $single_ret_var = $1;
 
-                    if ($calls{$_}->{ProcName} =~ m/GetAutostart$/) {
+                    if ($call->{ProcName} =~ m/GetAutostart$/) {
                         $single_ret_by_ref = 1;
                     } else {
                         $single_ret_by_ref = 0;
 
-                        if ($calls{$_}->{ProcName} eq "CPUCompare") {
+                        if ($call->{ProcName} eq "CPUCompare") {
                             $single_ret_check = " == VIR_CPU_COMPARE_ERROR";
                         } else {
                             $single_ret_check = " < 0";
@@ -486,7 +488,7 @@ elsif ($opt_b) {
 
                     my $conn = shift(@args_list);
 
-                    if ($calls{$_}->{ProcName} eq "NodeGetCellsFreeMemory") {
+                    if ($call->{ProcName} eq "NodeGetCellsFreeMemory") {
                         $single_ret_check = " <= 0";
                         $single_ret_list_max_var = "maxCells";
                         unshift(@args_list, "(unsigned long long *)ret->$1.$1_val");
@@ -508,8 +510,8 @@ elsif ($opt_b) {
                     push(@ret_list, "ret->$ret_name = $ret_name;");
                     $single_ret_var = $ret_name;
 
-                    if ($calls{$_}->{ProcName} eq "DomainGetMaxMemory" or
-                        $calls{$_}->{ProcName} eq "NodeGetFreeMemory") {
+                    if ($call->{ProcName} eq "DomainGetMaxMemory" or
+                        $call->{ProcName} eq "NodeGetFreeMemory") {
                         # SPECIAL: virDomainGetMaxMemory and virNodeGetFreeMemory
                         #          return the actual value directly and 0 indicates
                         #          an error
@@ -532,17 +534,17 @@ elsif ($opt_b) {
                 push(@args_list, "conn");
             }
 
-            my $struct_name = $calls{$_}->{ProcName};
+            my $struct_name = $call->{ProcName};
             $struct_name =~ s/Get//;
 
-            if ($calls{$_}->{ProcName} eq "DomainGetBlockInfo") {
+            if ($call->{ProcName} eq "DomainGetBlockInfo") {
                 # SPECIAL: virDomainGetBlockInfo has flags parameter after
                 #          the struct parameter in its signature
                 my $flags = pop(@args_list);
                 push(@args_list, "&tmp");
                 push(@args_list, $flags);
-            } elsif ($calls{$_}->{ProcName} eq "DomainBlockStats" ||
-                     $calls{$_}->{ProcName} eq "DomainInterfaceStats") {
+            } elsif ($call->{ProcName} eq "DomainBlockStats" ||
+                     $call->{ProcName} eq "DomainInterfaceStats") {
                 # SPECIAL: virDomainBlockStats and virDomainInterfaceStats
                 #          have a 'Struct' suffix on the actual struct name
                 #          and take the struct size as additional argument
@@ -559,22 +561,22 @@ elsif ($opt_b) {
         # print functions signature
         print "\n";
         print "static int\n";
-        print "${structprefix}Dispatch$calls{$_}->{ProcName}(\n";
+        print "${structprefix}Dispatch$call->{ProcName}(\n";
         print "    struct qemud_server *server ATTRIBUTE_UNUSED,\n";
         print "    struct qemud_client *client ATTRIBUTE_UNUSED,\n";
         print "    virConnectPtr conn,\n";
         print "    remote_message_header *hdr ATTRIBUTE_UNUSED,\n";
         print "    remote_error *rerr,\n";
-        print "    $calls{$_}->{args} *args";
+        print "    $call->{args} *args";
 
-        if ($calls{$_}->{args} eq "void") {
+        if ($call->{args} eq "void") {
             print " ATTRIBUTE_UNUSED"
         }
 
         print ",\n";
-        print "    $calls{$_}->{ret} *ret";
+        print "    $call->{ret} *ret";
 
-        if ($calls{$_}->{ret} eq "void") {
+        if ($call->{ret} eq "void") {
             print " ATTRIBUTE_UNUSED"
         }
 
@@ -618,36 +620,36 @@ elsif ($opt_b) {
             print "\n";
         }
 
-        if ($calls{$_}->{ret} eq "void") {
-            print "    if (vir$calls{$_}->{ProcName}(";
+        if ($call->{ret} eq "void") {
+            print "    if (vir$call->{ProcName}(";
             print join(', ', @args_list);
             print ") < 0)\n";
             print "        goto cleanup;\n";
             print "\n";
         } elsif (!$multi_ret) {
             my $prefix = "";
-            my $proc_name = $calls{$_}->{ProcName};
+            my $proc_name = $call->{ProcName};
 
             if (! @args_list) {
                 push(@args_list, "conn");
 
-                if ($calls{$_}->{ProcName} ne "NodeGetFreeMemory") {
+                if ($call->{ProcName} ne "NodeGetFreeMemory") {
                     $prefix = "Connect"
                 }
             }
 
-            if ($calls{$_}->{ProcName} eq "GetSysinfo" or
-                $calls{$_}->{ProcName} eq "GetMaxVcpus" or
-                $calls{$_}->{ProcName} eq "DomainXMLFromNative" or
-                $calls{$_}->{ProcName} eq "DomainXMLToNative" or
-                $calls{$_}->{ProcName} eq "FindStoragePoolSources" or
-                $calls{$_}->{ProcName} =~ m/^List/) {
+            if ($call->{ProcName} eq "GetSysinfo" or
+                $call->{ProcName} eq "GetMaxVcpus" or
+                $call->{ProcName} eq "DomainXMLFromNative" or
+                $call->{ProcName} eq "DomainXMLToNative" or
+                $call->{ProcName} eq "FindStoragePoolSources" or
+                $call->{ProcName} =~ m/^List/) {
                 $prefix = "Connect"
-            } elsif ($calls{$_}->{ProcName} eq "SupportsFeature") {
+            } elsif ($call->{ProcName} eq "SupportsFeature") {
                 $prefix = "Drv"
-            } elsif ($calls{$_}->{ProcName} eq "CPUBaseline") {
+            } elsif ($call->{ProcName} eq "CPUBaseline") {
                 $proc_name = "ConnectBaselineCPU"
-            } elsif ($calls{$_}->{ProcName} eq "CPUCompare") {
+            } elsif ($call->{ProcName} eq "CPUCompare") {
                 $proc_name = "ConnectCompareCPU"
             }
 
@@ -681,7 +683,7 @@ elsif ($opt_b) {
             print join("\n    ", @ret_list);
             print "\n";
         } else {
-            print "    if (vir$calls{$_}->{ProcName}(";
+            print "    if (vir$call->{ProcName}(";
             print join(', ', @args_list);
             print ") < 0)\n";
 
