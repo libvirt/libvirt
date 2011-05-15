@@ -12624,8 +12624,10 @@ vshReadlineInit(vshControl *ctl)
     /* Prepare to read/write history from/to the ~/.virsh/history file */
     userdir = virGetUserDirectory(getuid());
 
-    if (userdir == NULL)
+    if (userdir == NULL) {
+        vshError(ctl, "%s", _("Could not determine home directory"));
         return -1;
+    }
 
     if (virAsprintf(&ctl->historydir, "%s/.virsh", userdir) < 0) {
         vshError(ctl, "%s", _("Out of memory"));
