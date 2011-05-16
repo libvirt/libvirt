@@ -369,7 +369,6 @@ cleanup:
         virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
-    qemuDriverUnlock(driver);
     return ret;
 }
 
