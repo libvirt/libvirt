@@ -45,7 +45,6 @@ void remoteDispatchFormatError (remote_error *rerr,
 
 void remoteDispatchAuthError (remote_error *rerr);
 void remoteDispatchGenericError (remote_error *rerr);
-void remoteDispatchOOMError (remote_error *rerr);
 void remoteDispatchError(remote_error *rerr);
 
 

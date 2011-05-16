@@ -104,14 +104,6 @@ void remoteDispatchGenericError (remote_error *rerr)
 }
 
 
-void remoteDispatchOOMError (remote_error *rerr)
-{
-    remoteDispatchStringError(rerr,
-                              VIR_ERR_NO_MEMORY,
-                              "out of memory");
-}
-
-
 void remoteDispatchError(remote_error *rerr)
 {
     virErrorPtr verr = virGetLastError();
