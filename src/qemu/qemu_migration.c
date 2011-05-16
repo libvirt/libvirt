@@ -458,7 +458,7 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
 {
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    int ret;
+    int ret = -1;
 
     VIR_DEBUG("xml=%s", NULLSTR(xml));
 
