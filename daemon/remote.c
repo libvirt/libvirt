@@ -1746,6 +1746,7 @@ remoteDispatchDomainScreenshot(struct qemud_server *server ATTRIBUTE_UNUSED,
 cleanup:
     if (rv < 0)
         remoteDispatchError(rerr);
+    VIR_FREE(mime);
     if (dom)
         virDomainFree(dom);
     if (stream && rv != 0) {
