@@ -603,7 +603,7 @@ virExecWithHook(const char *const*argv,
         goto fork_error;
     }
 
-    openmax = sysconf (_SC_OPEN_MAX);
+    openmax = sysconf(_SC_OPEN_MAX);
     for (i = 3; i < openmax; i++)
         if (i != infd &&
             i != null &&
@@ -2732,11 +2732,11 @@ static char *virGetUserEnt(uid_t uid,
     struct passwd *pw = NULL;
     long val = sysconf(_SC_GETPW_R_SIZE_MAX);
     size_t strbuflen = val;
+    int rc;
 
-    if (val < 0) {
-        virReportSystemError(errno, "%s", _("sysconf failed"));
-        return NULL;
-    }
+    /* sysconf is a hint; if it fails, fall back to a reasonable size */
+    if (val < 0)
+        strbuflen = 1024;
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
         virReportOOMError();
@@ -2750,8 +2750,15 @@ static char *virGetUserEnt(uid_t uid,
      *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
      *        The given name or uid was not found.
      */
-    if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
-        virReportSystemError(errno,
+    while ((rc = getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
+        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
+            virReportOOMError();
+            VIR_FREE(strbuf);
+            return NULL;
+        }
+    }
+    if (rc != 0 || pw == NULL) {
+        virReportSystemError(rc,
                              _("Failed to find user record for uid '%u'"),
                              (unsigned int) uid);
         VIR_FREE(strbuf);
@@ -2789,11 +2796,11 @@ int virGetUserID(const char *name,
     struct passwd *pw = NULL;
     long val = sysconf(_SC_GETPW_R_SIZE_MAX);
     size_t strbuflen = val;
+    int rc;
 
-    if (val < 0) {
-        virReportSystemError(errno, "%s", _("sysconf failed"));
-        return -1;
-    }
+    /* sysconf is a hint; if it fails, fall back to a reasonable size */
+    if (val < 0)
+        strbuflen = 1024;
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
         virReportOOMError();
@@ -2807,8 +2814,15 @@ int virGetUserID(const char *name,
      *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
      *        The given name or uid was not found.
      */
-    if (getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
-        virReportSystemError(errno,
+    while ((rc = getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
+        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
+            virReportOOMError();
+            VIR_FREE(strbuf);
+            return -1;
+        }
+    }
+    if (rc != 0 || pw == NULL) {
+        virReportSystemError(rc,
                              _("Failed to find user record for name '%s'"),
                              name);
         VIR_FREE(strbuf);
@@ -2831,11 +2845,11 @@ int virGetGroupID(const char *name,
     struct group *gr = NULL;
     long val = sysconf(_SC_GETGR_R_SIZE_MAX);
     size_t strbuflen = val;
+    int rc;
 
-    if (val < 0) {
-        virReportSystemError(errno, "%s", _("sysconf failed"));
-        return -1;
-    }
+    /* sysconf is a hint; if it fails, fall back to a reasonable size */
+    if (val < 0)
+        strbuflen = 1024;
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
         virReportOOMError();
@@ -2849,8 +2863,15 @@ int virGetGroupID(const char *name,
      *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
      *        The given name or uid was not found.
      */
-    if (getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr) != 0 || gr == NULL) {
-        virReportSystemError(errno,
+    while ((rc = getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
+        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
+            virReportOOMError();
+            VIR_FREE(strbuf);
+            return -1;
+        }
+    }
+    if (rc != 0 || gr == NULL) {
+        virReportSystemError(rc,
                              _("Failed to find group record for name '%s'"),
                              name);
         VIR_FREE(strbuf);
@@ -2886,6 +2907,7 @@ virSetUIDGID(uid_t uid, gid_t gid)
         struct passwd pwd, *pwd_result;
         char *buf = NULL;
         size_t bufsize;
+        int rc;
 
         bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
         if (bufsize == -1)
@@ -2895,10 +2917,16 @@ virSetUIDGID(uid_t uid, gid_t gid)
             virReportOOMError();
             return -1;
         }
-        getpwuid_r(uid, &pwd, buf, bufsize, &pwd_result);
-        if (!pwd_result) {
-            virReportSystemError(errno,
-                                 _("cannot getpwuid_r(%d)"),
+        while ((rc = getpwuid_r(uid, &pwd, buf, bufsize,
+                                &pwd_result)) == ERANGE) {
+            if (VIR_RESIZE_N(buf, bufsize, bufsize, bufsize) < 0) {
+                virReportOOMError();
+                VIR_FREE(buf);
+                return -1;
+            }
+        }
+        if (rc || !pwd_result) {
+            virReportSystemError(rc, _("cannot getpwuid_r(%d)"),
                                  (unsigned int) uid);
             VIR_FREE(buf);
             return -1;
