@@ -35,6 +35,7 @@
 /configure
 /configure.lineno
 /daemon/*_dispatch_*.h
+/docs/hvsupport.html.in
 /gnulib/
 /libtool
 /libvirt-*.tar.gz
