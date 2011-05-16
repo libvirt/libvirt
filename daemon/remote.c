@@ -460,41 +460,6 @@ remoteDispatchClose(struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
-remoteDispatchGetType(struct qemud_server *server ATTRIBUTE_UNUSED,
-                      struct qemud_client *client ATTRIBUTE_UNUSED,
-                      virConnectPtr conn,
-                      remote_message_header *hdr ATTRIBUTE_UNUSED,
-                      remote_error *rerr,
-                      void *args ATTRIBUTE_UNUSED, remote_get_type_ret *ret)
-{
-    const char *type;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(type = virConnectGetType(conn)))
-        goto cleanup;
-
-    /* We have to strdup because remoteDispatchClientRequest will
-     * free this string after it's been serialised.
-     */
-    if (!(ret->type = strdup(type))) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    return rv;
-}
-
-static int
 remoteDispatchDomainGetSchedulerType(struct qemud_server *server ATTRIBUTE_UNUSED,
                                      struct qemud_client *client ATTRIBUTE_UNUSED,
                                      virConnectPtr conn,

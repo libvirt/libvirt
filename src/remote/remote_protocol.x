@@ -2054,7 +2054,7 @@ enum remote_procedure {
      * it handles src/remote.  */
     REMOTE_PROC_OPEN = 1, /* skipgen skipgen */
     REMOTE_PROC_CLOSE = 2, /* skipgen skipgen */
-    REMOTE_PROC_GET_TYPE = 3, /* skipgen skipgen */
+    REMOTE_PROC_GET_TYPE = 3, /* autogen skipgen */
     REMOTE_PROC_GET_VERSION = 4, /* autogen autogen */
     REMOTE_PROC_GET_MAX_VCPUS = 5, /* autogen autogen */
     REMOTE_PROC_NODE_GET_INFO = 6, /* autogen autogen */

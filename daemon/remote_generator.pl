@@ -429,8 +429,21 @@ elsif ($opt_b) {
                         unshift(@args_list, $conn);
                     }
                 } elsif ($ret_member =~ m/^remote_nonnull_string (\S+);/) {
-                    push(@vars_list, "char *$1");
-                    push(@ret_list, "ret->$1 = $1;");
+                    if ($call->{ProcName} eq "GetType") {
+                        # SPECIAL: virConnectGetType returns a constant string that must
+                        #          not be freed. Therefore, duplicate the string here.
+                        push(@vars_list, "const char *$1");
+                        push(@ret_list, "/* We have to strdup because remoteDispatchClientRequest will");
+                        push(@ret_list, " * free this string after it's been serialised. */");
+                        push(@ret_list, "if (!(ret->type = strdup(type))) {");
+                        push(@ret_list, "    virReportOOMError();");
+                        push(@ret_list, "    goto cleanup;");
+                        push(@ret_list, "}");
+                    } else {
+                        push(@vars_list, "char *$1");
+                        push(@ret_list, "ret->$1 = $1;");
+                    }
+
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
