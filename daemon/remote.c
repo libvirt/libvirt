@@ -1694,59 +1694,64 @@ no_memory:
 }
 
 static int
-remoteDispatchDomainScreenshot (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
-                                virConnectPtr conn,
-                                remote_message_header *hdr,
-                                remote_error *rerr,
-                                remote_domain_screenshot_args *args,
-                                remote_domain_screenshot_ret *ret)
+remoteDispatchDomainScreenshot(struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client,
+                               virConnectPtr conn,
+                               remote_message_header *hdr,
+                               remote_error *rerr,
+                               remote_domain_screenshot_args *args,
+                               remote_domain_screenshot_ret *ret)
 {
     int rv = -1;
     struct qemud_client_stream *stream = NULL;
-    virDomainPtr dom;
+    virDomainPtr dom = NULL;
     char *mime, **mime_p;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
 
     ret->mime = NULL;
 
-    dom = get_nonnull_domain (conn, args->dom);
-    if (dom == NULL)
-        goto err;
+    if (!(dom = get_nonnull_domain (conn, args->dom)))
+        goto cleanup;
 
-    stream = remoteCreateClientStream(conn, hdr);
-    if (!stream)
-        goto err;
+    if (!(stream = remoteCreateClientStream(conn, hdr)))
+        goto cleanup;
 
-    mime = virDomainScreenshot(dom, stream->st, args->screen, args->flags);
-    if (!mime)
-        goto err;
+    if (!(mime = virDomainScreenshot(dom, stream->st, args->screen, args->flags)))
+        goto cleanup;
 
     if (remoteAddClientStream(client, stream, 1) < 0) {
         virStreamAbort(stream->st);
-        goto err;
+        goto cleanup;
     }
 
     if (VIR_ALLOC(mime_p) < 0) {
-        remoteDispatchOOMError(rerr);
+        virReportOOMError();
         goto cleanup;
     }
 
     *mime_p = strdup(mime);
     if (*mime_p == NULL) {
-        remoteDispatchOOMError(rerr);
+        virReportOOMError();
         goto cleanup;
     }
 
     ret->mime = mime_p;
+
     rv = 0;
 
-err:
+cleanup:
     if (rv < 0)
         remoteDispatchError(rerr);
-cleanup:
-    virDomainFree(dom);
-    if (stream && rv != 0)
+    if (dom)
+        virDomainFree(dom);
+    if (stream && rv != 0) {
+        virStreamAbort(stream->st);
         remoteFreeClientStream(client, stream);
+    }
     return rv;
 }
 
