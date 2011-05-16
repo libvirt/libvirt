@@ -34,7 +34,7 @@
 /config.sub
 /configure
 /configure.lineno
-/daemon/*_dispatch_*.h
+/daemon/*_dispatch.h
 /docs/hvsupport.html.in
 /gnulib/
 /libtool

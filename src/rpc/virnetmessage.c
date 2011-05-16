@@ -51,6 +51,9 @@ void virNetMessageFree(virNetMessagePtr msg)
     if (!msg)
         return;
 
+    if (msg->cb)
+        msg->cb(msg, msg->opaque);
+
     VIR_DEBUG("msg=%p", msg);
 
     VIR_FREE(msg);

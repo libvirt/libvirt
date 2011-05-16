@@ -258,80 +258,6 @@ if ($opt_d) {
     }
 }
 
-# Prototypes for dispatch functions ("remote_dispatch_prototypes.h").
-elsif ($opt_p) {
-    my @keys = sort (keys %calls);
-    foreach (@keys) {
-        # Skip things which are REMOTE_MESSAGE
-        next if $calls{$_}->{msg};
-
-        print "static int ${structprefix}Dispatch$calls{$_}->{ProcName}(\n";
-        print "    struct qemud_server *server,\n";
-        print "    struct qemud_client *client,\n";
-        print "    virConnectPtr conn,\n";
-        print "    remote_message_header *hdr,\n";
-        print "    remote_error *rerr,\n";
-        print "    $calls{$_}->{args} *args,\n";
-        print "    $calls{$_}->{ret} *ret);\n";
-    }
-}
-
-# Union of all arg types
-# ("remote_dispatch_args.h").
-elsif ($opt_a) {
-    for ($id = 0 ; $id <= $#calls ; $id++) {
-        if (defined $calls[$id] &&
-            !$calls[$id]->{msg} &&
-            $calls[$id]->{args} ne "void") {
-            print "    $calls[$id]->{args} val_$calls[$id]->{args};\n";
-        }
-    }
-}
-
-# Union of all arg types
-# ("remote_dispatch_ret.h").
-elsif ($opt_r) {
-    for ($id = 0 ; $id <= $#calls ; $id++) {
-        if (defined $calls[$id] &&
-            !$calls[$id]->{msg} &&
-            $calls[$id]->{ret} ne "void") {
-            print "    $calls[$id]->{ret} val_$calls[$id]->{ret};\n";
-        }
-    }
-}
-
-# Inside the switch statement, prepare the 'fn', 'args_filter', etc
-# ("remote_dispatch_table.h").
-elsif ($opt_t) {
-    for ($id = 0 ; $id <= $#calls ; $id++) {
-        if (defined $calls[$id] && !$calls[$id]->{msg}) {
-            print "{   /* $calls[$id]->{ProcName} => $id */\n";
-            print "    .fn = (dispatch_fn) ${structprefix}Dispatch$calls[$id]->{ProcName},\n";
-            if ($calls[$id]->{args} ne "void") {
-                print "    .args_filter = (xdrproc_t) xdr_$calls[$id]->{args},\n";
-            } else {
-                print "    .args_filter = (xdrproc_t) xdr_void,\n";
-            }
-            if ($calls[$id]->{ret} ne "void") {
-                print "    .ret_filter = (xdrproc_t) xdr_$calls[$id]->{ret},\n";
-            } else {
-                print "    .ret_filter = (xdrproc_t) xdr_void,\n";
-            }
-            print "},\n";
-        } else {
-            if ($calls[$id]->{msg}) {
-                print "{   /* Async event $calls[$id]->{ProcName} => $id */\n";
-            } else {
-                print "{   /* (unused) => $id */\n";
-            }
-            print "    .fn = NULL,\n";
-            print "    .args_filter = (xdrproc_t) xdr_void,\n";
-            print "    .ret_filter = (xdrproc_t) xdr_void,\n";
-            print "},\n";
-        }
-    }
-}
-
 # Bodies for dispatch functions ("remote_dispatch_bodies.h").
 elsif ($opt_b) {
     my %generate = map { $_ => 1 } @autogen;
@@ -343,8 +269,58 @@ elsif ($opt_b) {
         # skip things which are REMOTE_MESSAGE
         next if $call->{msg};
 
-        # skip procedures not on generate list
-        next if ! exists($generate{$call->{ProcName}});
+	my $name = $structprefix . "Dispatch" . $call->{ProcName};
+	my $argtype = $call->{args};
+	my $rettype = $call->{ret};
+
+	my $argann = $argtype ne "void" ? "" : " ATTRIBUTE_UNUSED";
+	my $retann = $rettype ne "void" ? "" : " ATTRIBUTE_UNUSED";
+
+	# First we print out a function declaration for the
+	# real dispatcher body
+	print "static int ${name}(\n";
+	print "    virNetServerPtr server,\n";
+	print "    virNetServerClientPtr client,\n";
+	print "    virNetMessageHeaderPtr hdr,\n";
+	print "    virNetMessageErrorPtr rerr";
+	if ($argtype ne "void") {
+	    print ",\n    $argtype *args";
+	}
+	if ($rettype ne "void") {
+	    print ",\n    $rettype *ret";
+	}
+	print ");\n";
+
+
+	# Next we print out a generic wrapper method which has
+	# fixed function signature, for use in the dispatcher
+	# table. This simply callers the real dispatcher method
+	print "static int ${name}Helper(\n";
+	print "    virNetServerPtr server,\n";
+	print "    virNetServerClientPtr client,\n";
+	print "    virNetMessageHeaderPtr hdr,\n";
+	print "    virNetMessageErrorPtr rerr,\n";
+	print "    void *args$argann,\n";
+	print "    void *ret$retann)\n";
+	print "{\n";
+	print "  VIR_DEBUG(\"server=%p client=%p hdr=%p rerr=%p args=%p ret=%p\", server, client, hdr, rerr, args, ret);\n";
+	print "  return $name(server, client, hdr, rerr";
+	if ($argtype ne "void") {
+	    print ", args";
+	}
+	if ($rettype ne "void") {
+	    print ", ret";
+	}
+	print ");\n";
+	print "}\n";
+
+	# Finally we print out the dispatcher method body impl
+	# (if possible)
+        if (!exists($generate{$call->{ProcName}})) {
+            print "/* ${structprefix}Dispatch$call->{ProcName} body has " .
+                  "to be implemented manually */\n\n\n\n";
+            next;
+        }
 
         my $has_node_device = 0;
         my @vars_list = ();
@@ -354,18 +330,18 @@ elsif ($opt_b) {
         my @prepare_ret_list = ();
         my @ret_list = ();
         my @free_list = ();
-        my @free_list_on_error = ("remoteDispatchError(rerr);");
+        my @free_list_on_error = ("virNetMessageSaveError(rerr);");
 
         # handle arguments to the function
-        if ($call->{args} ne "void") {
+        if ($argtype ne "void") {
             # node device is special, as it's identified by name
-            if ($call->{args} =~ m/^remote_node_device_/ and
-                !($call->{args} =~ m/^remote_node_device_lookup_by_name_/) and
-                !($call->{args} =~ m/^remote_node_device_create_xml_/)) {
+            if ($argtype =~ m/^remote_node_device_/ and
+                !($argtype =~ m/^remote_node_device_lookup_by_name_/) and
+                !($argtype =~ m/^remote_node_device_create_xml_/)) {
                 $has_node_device = 1;
                 push(@vars_list, "virNodeDevicePtr dev = NULL");
                 push(@getters_list,
-                     "    if (!(dev = virNodeDeviceLookupByName(conn, args->name)))\n" .
+                     "    if (!(dev = virNodeDeviceLookupByName(priv->conn, args->name)))\n" .
                      "        goto cleanup;\n");
                 push(@args_list, "dev");
                 push(@free_list,
@@ -382,7 +358,7 @@ elsif ($opt_b) {
 
                     push(@vars_list, "vir${type_name}Ptr $2 = NULL");
                     push(@getters_list,
-                         "    if (!($2 = get_nonnull_$1(conn, args->$2)))\n" .
+                         "    if (!($2 = get_nonnull_$1(priv->conn, args->$2)))\n" .
                          "        goto cleanup;\n");
                     push(@args_list, "$2");
                     push(@free_list,
@@ -392,7 +368,7 @@ elsif ($opt_b) {
                     push(@vars_list, "virDomainPtr dom = NULL");
                     push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
                     push(@getters_list,
-                         "    if (!(dom = get_nonnull_domain(conn, args->snap.dom)))\n" .
+                         "    if (!(dom = get_nonnull_domain(priv->conn, args->snap.dom)))\n" .
                          "        goto cleanup;\n" .
                          "\n" .
                          "    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))\n" .
@@ -405,14 +381,14 @@ elsif ($opt_b) {
                          "        virDomainFree(dom);");
                 } elsif ($args_member =~ m/^(?:remote_string|remote_uuid) (\S+)<\S+>;/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     push(@args_list, "args->$1.$1_val");
                     push(@args_list, "args->$1.$1_len");
                 } elsif ($args_member =~ m/^(?:opaque|remote_nonnull_string) (\S+)<\S+>;(.*)$/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     my $cast = "";
@@ -431,7 +407,7 @@ elsif ($opt_b) {
                     push(@args_list, "args->$arg_name.${arg_name}_len");
                 } elsif ($args_member =~ m/^(?:unsigned )?int (\S+)<\S+>;/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     push(@args_list, "args->$1.$1_val");
@@ -452,13 +428,13 @@ elsif ($opt_b) {
                     die "unhandled type for argument value: $args_member";
                 } elsif ($args_member =~ m/^remote_uuid (\S+);/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     push(@args_list, "(unsigned char *) args->$1");
                 } elsif ($args_member =~ m/^remote_string (\S+);/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     push(@vars_list, "char *$1");
@@ -466,19 +442,19 @@ elsif ($opt_b) {
                     push(@args_list, "$1");
                 } elsif ($args_member =~ m/^remote_nonnull_string (\S+);/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     push(@args_list, "args->$1");
                 } elsif ($args_member =~ m/^(unsigned )?int (\S+);/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     push(@args_list, "args->$2");
                 } elsif ($args_member =~ m/^(unsigned )?hyper (\S+);/) {
                     if (! @args_list) {
-                        push(@args_list, "conn");
+                        push(@args_list, "priv->conn");
                     }
 
                     my $arg_name = $2;
@@ -511,12 +487,12 @@ elsif ($opt_b) {
         my $single_ret_list_max_define = "undefined";
         my $multi_ret = 0;
 
-        if ($call->{ret} ne "void" and
+        if ($rettype ne "void" and
             scalar(@{$call->{ret_members}}) > 1) {
             $multi_ret = 1;
         }
 
-        if ($call->{ret} ne "void") {
+        if ($rettype ne "void") {
             foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
                     if ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+)\[\S+\];/) {
@@ -715,8 +691,8 @@ elsif ($opt_b) {
                 die "multi-return-value without insert@<offset> annotation: $call->{ret}";
             }
 
-            if (!@args_list) {
-                push(@args_list, "conn");
+            if (! @args_list) {
+                push(@args_list, "priv->conn");
             }
 
             my $struct_name = $call->{ProcName};
@@ -737,36 +713,28 @@ elsif ($opt_b) {
         }
 
         if ($call->{streamflag} ne "none") {
-            splice(@args_list, $call->{streamoffset}, 0, ("stream->st"));
+            splice(@args_list, $call->{streamoffset}, 0, ("st"));
             push(@free_list_on_error, "if (stream) {");
-            push(@free_list_on_error, "    virStreamAbort(stream->st);");
-            push(@free_list_on_error, "    remoteFreeClientStream(client, stream);");
+            push(@free_list_on_error, "    virStreamAbort(st);");
+            push(@free_list_on_error, "    daemonFreeClientStream(client, stream);");
+            push(@free_list_on_error, "} else {");
+            push(@free_list_on_error, "    virStreamFree(st);");
             push(@free_list_on_error, "}");
         }
 
         # print functions signature
-        print "\n";
-        print "static int\n";
-        print "${structprefix}Dispatch$call->{ProcName}(\n";
-        print "    struct qemud_server *server ATTRIBUTE_UNUSED,\n";
-        print "    struct qemud_client *client ATTRIBUTE_UNUSED,\n";
-        print "    virConnectPtr conn,\n";
-        print "    remote_message_header *hdr ATTRIBUTE_UNUSED,\n";
-        print "    remote_error *rerr,\n";
-        print "    $call->{args} *args";
-
-        if ($call->{args} eq "void") {
-            print " ATTRIBUTE_UNUSED"
-        }
-
-        print ",\n";
-        print "    $call->{ret} *ret";
-
-        if ($call->{ret} eq "void") {
-            print " ATTRIBUTE_UNUSED"
-        }
-
-        print ")\n";
+	print "static int $name(\n";
+	print "    virNetServerPtr server ATTRIBUTE_UNUSED,\n";
+	print "    virNetServerClientPtr client,\n";
+	print "    virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,\n";
+	print "    virNetMessageErrorPtr rerr";
+        if ($argtype ne "void") {
+	    print ",\n    $argtype *args";
+	}
+        if ($rettype ne "void") {
+	    print ",\n    $rettype *ret";
+	}
+	print ")\n";
 
         # print function body
         print "{\n";
@@ -775,13 +743,16 @@ elsif ($opt_b) {
         foreach my $var (@vars_list) {
             print "    $var;\n";
         }
+	print "    struct daemonClientPrivate *priv =\n";
+        print "        virNetServerClientGetPrivateData(client);\n";
 
         if ($call->{streamflag} ne "none") {
-            print "    struct qemud_client_stream *stream = NULL;\n";
+            print "    virStreamPtr st = NULL;\n";
+            print "    daemonClientStreamPtr stream = NULL;\n";
         }
 
         print "\n";
-        print "    if (!conn) {\n";
+        print "    if (!priv->conn) {\n";
         print "        virNetError(VIR_ERR_INTERNAL_ERROR, \"%s\", _(\"connection not open\"));\n";
         print "        goto cleanup;\n";
         print "    }\n";
@@ -811,12 +782,15 @@ elsif ($opt_b) {
         }
 
         if ($call->{streamflag} ne "none") {
-            print "    if (!(stream = remoteCreateClientStream(conn, hdr)))\n";
+            print "    if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)))\n";
+            print "        goto cleanup;\n";
+            print "\n";
+            print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, hdr)))\n";
             print "        goto cleanup;\n";
             print "\n";
         }
 
-        if ($call->{ret} eq "void") {
+        if ($rettype eq "void") {
             print "    if (vir$call->{ProcName}(";
             print join(', ', @args_list);
             print ") < 0)\n";
@@ -827,7 +801,7 @@ elsif ($opt_b) {
             my $proc_name = $call->{ProcName};
 
             if (! @args_list) {
-                push(@args_list, "conn");
+                push(@args_list, "priv->conn");
 
                 if ($call->{ProcName} ne "NodeGetFreeMemory") {
                     $prefix = "Connect"
@@ -885,12 +859,12 @@ elsif ($opt_b) {
         }
 
         if ($call->{streamflag} ne "none") {
-            print "    if (remoteAddClientStream(client, stream, ";
+            print "    if (daemonAddClientStream(client, stream, ";
 
             if ($call->{streamflag} eq "write") {
-                print "0";
+                print "false";
             } else {
-                print "1";
+                print "true";
             }
 
             print ") < 0)\n";
@@ -934,8 +908,46 @@ elsif ($opt_b) {
         }
 
         print "    return rv;\n";
-        print "}\n";
+        print "}\n\n\n\n";
     }
+
+
+    # Finally we write out the huge dispatch table which lists
+    # the dispatch helper method. the XDR proc for processing
+    # args and return values, and the size of the args and
+    # return value structs. All methods are marked as requiring
+    # authentication. Methods are selectively relaxed in the
+    # daemon code which registers the program.
+
+    print "virNetServerProgramProc ${structprefix}Procs[] = {\n";
+    for ($id = 0 ; $id <= $#calls ; $id++) {
+	my ($comment, $name, $argtype, $arglen, $argfilter, $retlen, $retfilter);
+
+	if (defined $calls[$id] && !$calls[$id]->{msg}) {
+	    $comment = "/* Method $calls[$id]->{ProcName} => $id */";
+	    $name = $structprefix . "Dispatch" . $calls[$id]->{ProcName} . "Helper";
+	    my $argtype = $calls[$id]->{args};
+	    my $rettype = $calls[$id]->{ret};
+	    $arglen = $argtype ne "void" ? "sizeof($argtype)" : "0";
+	    $retlen = $rettype ne "void" ? "sizeof($rettype)" : "0";
+	    $argfilter = $argtype ne "void" ? "xdr_$argtype" : "xdr_void";
+	    $retfilter = $rettype ne "void" ? "xdr_$rettype" : "xdr_void";
+	} else {
+	    if ($calls[$id]->{msg}) {
+		$comment = "/* Async event $calls[$id]->{ProcName} => $id */";
+	    } else {
+		$comment = "/* Unused $id */";
+	    }
+	    $name = "NULL";
+	    $arglen = $retlen = 0;
+	    $argfilter = "xdr_void";
+	    $retfilter = "xdr_void";
+	}
+
+	print "{ $comment\n   ${name},\n   $arglen,\n   (xdrproc_t)$argfilter,\n   $retlen,\n   (xdrproc_t)$retfilter,\n   true \n},\n";
+    }
+    print "};\n";
+    print "size_t ${structprefix}NProcs = ARRAY_CARDINALITY(${structprefix}Procs);\n";
 }
 
 # Bodies for client functions ("remote_client_bodies.h").
@@ -952,6 +964,9 @@ elsif ($opt_k) {
         # skip procedures not on generate list
         next if ! exists($generate{$call->{ProcName}});
 
+	my $argtype = $call->{args};
+	my $rettype = $call->{ret};
+
         # handle arguments to the function
         my @args_list = ();
         my @vars_list = ();
@@ -962,18 +977,18 @@ elsif ($opt_k) {
         my $priv_name = "privateData";
         my $call_args = "&args";
 
-        if ($call->{args} eq "void") {
+        if ($argtype eq "void") {
             $call_args = "NULL";
         } else {
-            push(@vars_list, "$call->{args} args");
+            push(@vars_list, "$argtype args");
 
             my $is_first_arg = 1;
             my $has_node_device = 0;
 
             # node device is special
-            if ($call->{args} =~ m/^remote_node_/ and
-                !($call->{args} =~ m/^remote_node_device_lookup_by_name_/) and
-                !($call->{args} =~ m/^remote_node_device_create_xml_/)) {
+            if ($argtype =~ m/^remote_node_/ and
+                !($argtype =~ m/^remote_node_device_lookup_by_name_/) and
+                !($argtype =~ m/^remote_node_device_create_xml_/)) {
                 $has_node_device = 1;
                 $priv_name = "devMonPrivateData";
             }
@@ -1150,15 +1165,15 @@ elsif ($opt_k) {
         my $single_ret_cleanup = 0;
         my $multi_ret = 0;
 
-        if ($call->{ret} ne "void" and
+        if ($rettype ne "void" and
             scalar(@{$call->{ret_members}}) > 1) {
             $multi_ret = 1;
         }
 
-        if ($call->{ret} eq "void") {
+        if ($rettype eq "void") {
             $call_ret = "NULL";
         } else {
-            push(@vars_list, "$call->{ret} ret");
+            push(@vars_list, "$rettype ret");
 
             foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
@@ -1233,7 +1248,7 @@ elsif ($opt_k) {
                             push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
                         }
 
-                        push(@ret_list, "xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);");
+                        push(@ret_list, "xdr_free((xdrproc_t)xdr_$rettype, (char *)&ret);");
                         $single_ret_var = "vir${type_name}Ptr rv = NULL";
                         $single_ret_type = "vir${type_name}Ptr";
                     }
@@ -1397,15 +1412,15 @@ elsif ($opt_k) {
             print "\n";
         }
 
-        if ($call->{ret} ne "void") {
+        if ($rettype ne "void") {
             print "\n";
             print "    memset(&ret, 0, sizeof ret);\n";
         }
 
         print "\n";
         print "    if (call($priv_src, priv, 0, ${procprefix}_PROC_$call->{UC_NAME},\n";
-        print "             (xdrproc_t)xdr_$call->{args}, (char *)$call_args,\n";
-        print "             (xdrproc_t)xdr_$call->{ret}, (char *)$call_ret) == -1) {\n";
+        print "             (xdrproc_t)xdr_$argtype, (char *)$call_args,\n";
+        print "             (xdrproc_t)xdr_$rettype, (char *)$call_ret) == -1) {\n";
 
         if ($call->{streamflag} ne "none") {
             print "        virNetClientRemoveStream(priv->client, netst);\n";

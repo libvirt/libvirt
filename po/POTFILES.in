@@ -1,4 +1,3 @@
-daemon/dispatch.c
 daemon/libvirtd.c
 daemon/remote.c
 daemon/remote_dispatch_bodies.h

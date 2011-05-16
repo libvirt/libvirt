@@ -29,6 +29,8 @@ typedef struct virNetMessageError *virNetMessageErrorPtr;
 typedef struct _virNetMessage virNetMessage;
 typedef virNetMessage *virNetMessagePtr;
 
+typedef void (*virNetMessageFreeCallback)(virNetMessagePtr msg, void *opaque);
+
 /* Never allocate this (huge) buffer on the stack. Always
  * use virNetMessageNew() to allocate on the heap
  */
@@ -38,6 +40,9 @@ struct _virNetMessage {
     size_t bufferOffset;
 
     virNetMessageHeader header;
+
+    virNetMessageFreeCallback cb;
+    void *opaque;
 
     virNetMessagePtr next;
 };

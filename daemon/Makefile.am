@@ -3,33 +3,21 @@
 CLEANFILES =
 
 DAEMON_GENERATED =					\
-		$(srcdir)/remote_dispatch_prototypes.h	\
-		$(srcdir)/remote_dispatch_table.h	\
-		$(srcdir)/remote_dispatch_args.h	\
-		$(srcdir)/remote_dispatch_ret.h		\
-		$(srcdir)/remote_dispatch_bodies.h	\
-		$(srcdir)/qemu_dispatch_prototypes.h	\
-		$(srcdir)/qemu_dispatch_table.h		\
-		$(srcdir)/qemu_dispatch_args.h		\
-		$(srcdir)/qemu_dispatch_ret.h		\
-		$(srcdir)/qemu_dispatch_bodies.h
+		$(srcdir)/remote_dispatch.h		\
+		$(srcdir)/qemu_dispatch.h
 
 DAEMON_SOURCES =					\
 		libvirtd.c libvirtd.h			\
 		remote.c remote.h			\
-		dispatch.c dispatch.h			\
 		stream.c stream.h			\
 		../src/remote/remote_protocol.c		\
 		../src/remote/qemu_protocol.c		\
 		$(DAEMON_GENERATED)
 
-AVAHI_SOURCES =						\
-		mdns.c mdns.h
-
 DISTCLEANFILES =
 EXTRA_DIST =						\
-	remote_dispatch_bodies.h			\
-	qemu_dispatch_bodies.h				\
+	remote_dispatch.h				\
+	qemu_dispatch.h					\
 	libvirtd.conf					\
 	libvirtd.init.in				\
 	libvirtd.upstart				\
@@ -47,7 +35,6 @@ EXTRA_DIST =						\
 	libvirtd.pod.in					\
 	libvirtd.8.in					\
 	libvirtd.stp					\
-	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 
 BUILT_SOURCES =
@@ -55,52 +42,12 @@ BUILT_SOURCES =
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
 
-$(srcdir)/remote_dispatch_prototypes.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -p remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_table.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -t remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_args.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -a remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_ret.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -r remote \
-	  $(REMOTE_PROTOCOL) > $@
-
-$(srcdir)/remote_dispatch_bodies.h: $(srcdir)/../src/rpc/gendispatch.pl \
+$(srcdir)/remote_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
 	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -c -b remote \
 	  $(REMOTE_PROTOCOL) > $@
 
-$(srcdir)/qemu_dispatch_prototypes.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -p qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_table.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -t qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_args.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -a qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_ret.h: $(srcdir)/../src/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -r qemu \
-	  $(QEMU_PROTOCOL) > $@
-
-$(srcdir)/qemu_dispatch_bodies.h: $(srcdir)/../src/rpc/gendispatch.pl \
+$(srcdir)/qemu_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
 	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -b qemu \
 	  $(QEMU_PROTOCOL) > $@
@@ -137,6 +84,7 @@ libvirtd_CFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
 	-I$(top_srcdir)/src/conf \
+	-I$(top_srcdir)/src/rpc \
 	-I$(top_srcdir)/src/remote \
 	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
 	$(XDR_CFLAGS) $(POLKIT_CFLAGS) \
@@ -155,7 +103,10 @@ libvirtd_LDADD =					\
 	$(SASL_LIBS)					\
 	$(POLKIT_LIBS)
 
-libvirtd_LDADD += ../src/libvirt-qemu.la
+libvirtd_LDADD += \
+	../src/libvirt-net-rpc-server.la \
+	../src/libvirt-net-rpc.la \
+	../src/libvirt-qemu.la
 
 if ! WITH_DRIVER_MODULES
 if WITH_QEMU
@@ -209,12 +160,6 @@ else
 policydir = $(datadir)/polkit-1/actions
 policyfile = libvirtd.policy-1
 endif
-endif
-
-if HAVE_AVAHI
-libvirtd_SOURCES += $(AVAHI_SOURCES)
-libvirtd_CFLAGS += $(AVAHI_CFLAGS)
-libvirtd_LDADD += $(AVAHI_LIBS)
 endif
 
 if WITH_DTRACE

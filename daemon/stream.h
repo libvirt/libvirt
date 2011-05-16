@@ -28,27 +28,21 @@
 
 
 
-struct qemud_client_stream *
-remoteCreateClientStream(virConnectPtr conn,
-                         remote_message_header *hdr);
+daemonClientStream *
+daemonCreateClientStream(virNetServerClientPtr client,
+                         virStreamPtr st,
+                         virNetServerProgramPtr prog,
+                         virNetMessageHeaderPtr hdr);
 
-void remoteFreeClientStream(struct qemud_client *client,
-                            struct qemud_client_stream *stream);
+int daemonFreeClientStream(virNetServerClientPtr client,
+                           daemonClientStream *stream);
 
-int remoteAddClientStream(struct qemud_client *client,
-                          struct qemud_client_stream *stream,
-                          int transmit);
-
-struct qemud_client_stream *
-remoteFindClientStream(struct qemud_client *client,
-                       virStreamPtr stream);
+int daemonAddClientStream(virNetServerClientPtr client,
+                          daemonClientStream *stream,
+                          bool transmit);
 
 int
-remoteRemoveClientStream(struct qemud_client *client,
-                         struct qemud_client_stream *stream);
-
-void
-remoteStreamMessageFinished(struct qemud_client *client,
-                            struct qemud_client_message *msg);
+daemonRemoveClientStream(virNetServerClientPtr client,
+                         daemonClientStream *stream);
 
 #endif /* __LIBVIRTD_STREAM_H__ */

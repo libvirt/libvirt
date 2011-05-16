@@ -24,32 +24,57 @@
 #include <config.h>
 
 #include "stream.h"
+#include "remote.h"
 #include "memory.h"
-#include "dispatch.h"
 #include "logging.h"
+#include "virnetserverclient.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
 
+#define virNetError(code, ...)                                    \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+
+struct daemonClientStream {
+    daemonClientPrivatePtr priv;
+
+    virNetServerProgramPtr prog;
+
+    virStreamPtr st;
+    int procedure;
+    int serial;
+
+    unsigned int recvEOF : 1;
+    unsigned int closed : 1;
+
+    int filterID;
+
+    virNetMessagePtr rx;
+    int tx;
+
+    daemonClientStreamPtr next;
+};
+
 static int
-remoteStreamHandleWrite(struct qemud_client *client,
-                        struct qemud_client_stream *stream);
+daemonStreamHandleWrite(virNetServerClientPtr client,
+                        daemonClientStream *stream);
 static int
-remoteStreamHandleRead(struct qemud_client *client,
-                       struct qemud_client_stream *stream);
+daemonStreamHandleRead(virNetServerClientPtr client,
+                       daemonClientStream *stream);
 static int
-remoteStreamHandleFinish(struct qemud_client *client,
-                         struct qemud_client_stream *stream,
-                         struct qemud_client_message *msg);
+daemonStreamHandleFinish(virNetServerClientPtr client,
+                         daemonClientStream *stream,
+                         virNetMessagePtr msg);
 static int
-remoteStreamHandleAbort(struct qemud_client *client,
-                        struct qemud_client_stream *stream,
-                        struct qemud_client_message *msg);
+daemonStreamHandleAbort(virNetServerClientPtr client,
+                        daemonClientStream *stream,
+                        virNetMessagePtr msg);
 
 
 
 static void
-remoteStreamUpdateEvents(struct qemud_client_stream *stream)
+daemonStreamUpdateEvents(daemonClientStream *stream)
 {
     int newEvents = 0;
     if (stream->rx)
@@ -60,24 +85,43 @@ remoteStreamUpdateEvents(struct qemud_client_stream *stream)
     virStreamEventUpdateCallback(stream->st, newEvents);
 }
 
+/*
+ * Invoked when an outgoing data packet message has been fully sent.
+ * This simply re-enables TX of further data.
+ *
+ * The idea is to stop the daemon growing without bound due to
+ * fast stream, but slow client
+ */
+static void
+daemonStreamMessageFinished(virNetMessagePtr msg,
+                            void *opaque)
+{
+    daemonClientStream *stream = opaque;
+    VIR_DEBUG("stream=%p proc=%d serial=%d",
+              stream, msg->header.proc, msg->header.serial);
+
+    stream->tx = 1;
+    daemonStreamUpdateEvents(stream);
+}
 
 /*
  * Callback that gets invoked when a stream becomes writable/readable
  */
 static void
-remoteStreamEvent(virStreamPtr st, int events, void *opaque)
+daemonStreamEvent(virStreamPtr st, int events, void *opaque)
 {
-    struct qemud_client *client = opaque;
-    struct qemud_client_stream *stream;
+    virNetServerClientPtr client = opaque;
+    daemonClientStream *stream;
+    daemonClientPrivatePtr priv = virNetServerClientGetPrivateData(client);
 
-    /* XXX sub-optimal - we really should be taking the server lock
-     * first, but we have no handle to the server object
-     * We're lucky to get away with it for now, due to this callback
-     * executing in the main thread, but this should really be fixed
-     */
-    virMutexLock(&client->lock);
+    virMutexLock(&priv->lock);
 
-    stream = remoteFindClientStream(client, st);
+    stream = priv->streams;
+    while (stream) {
+        if (stream->st == st)
+            break;
+        stream = stream->next;
+    }
 
     if (!stream) {
         VIR_WARN("event for client=%p stream st=%p, but missing stream state", client, st);
@@ -85,12 +129,12 @@ remoteStreamEvent(virStreamPtr st, int events, void *opaque)
         goto cleanup;
     }
 
-    VIR_DEBUG("st=%p events=%d", st, events);
+    VIR_DEBUG("st=%p events=%d EOF=%d closed=%d", st, events, stream->recvEOF, stream->closed);
 
     if (events & VIR_STREAM_EVENT_WRITABLE) {
-        if (remoteStreamHandleWrite(client, stream) < 0) {
-            remoteRemoveClientStream(client, stream);
-            qemudDispatchClientFailure(client);
+        if (daemonStreamHandleWrite(client, stream) < 0) {
+            daemonRemoveClientStream(client, stream);
+            virNetServerClientClose(client);
             goto cleanup;
         }
     }
@@ -98,40 +142,84 @@ remoteStreamEvent(virStreamPtr st, int events, void *opaque)
     if (!stream->recvEOF &&
         (events & (VIR_STREAM_EVENT_READABLE | VIR_STREAM_EVENT_HANGUP))) {
         events = events & ~(VIR_STREAM_EVENT_READABLE | VIR_STREAM_EVENT_HANGUP);
-        if (remoteStreamHandleRead(client, stream) < 0) {
-            remoteRemoveClientStream(client, stream);
-            qemudDispatchClientFailure(client);
+        if (daemonStreamHandleRead(client, stream) < 0) {
+            daemonRemoveClientStream(client, stream);
+            virNetServerClientClose(client);
             goto cleanup;
+        }
+    }
+
+    /* If we have a completion/abort message, always process it */
+    if (stream->rx) {
+        virNetMessagePtr msg = stream->rx;
+        switch (msg->header.status) {
+        case VIR_NET_CONTINUE:
+            /* nada */
+            break;
+        case VIR_NET_OK:
+            virNetMessageQueueServe(&stream->rx);
+            if (daemonStreamHandleFinish(client, stream, msg) < 0) {
+                virNetMessageFree(msg);
+                daemonRemoveClientStream(client, stream);
+                virNetServerClientClose(client);
+                goto cleanup;
+            }
+            break;
+        case VIR_NET_ERROR:
+        default:
+            virNetMessageQueueServe(&stream->rx);
+            if (daemonStreamHandleAbort(client, stream, msg) < 0) {
+                virNetMessageFree(msg);
+                daemonRemoveClientStream(client, stream);
+                virNetServerClientClose(client);
+                goto cleanup;
+            }
+            break;
         }
     }
 
     if (!stream->closed &&
         (events & (VIR_STREAM_EVENT_ERROR | VIR_STREAM_EVENT_HANGUP))) {
         int ret;
-        remote_error rerr;
-        memset(&rerr, 0, sizeof rerr);
+        virNetMessagePtr msg;
+        virNetMessageError rerr;
+
+        memset(&rerr, 0, sizeof(rerr));
         stream->closed = 1;
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
         if (events & VIR_STREAM_EVENT_HANGUP)
-            remoteDispatchFormatError(&rerr, "%s", _("stream had unexpected termination"));
+            virNetError(VIR_ERR_RPC,
+                        "%s", _("stream had unexpected termination"));
         else
-            remoteDispatchFormatError(&rerr, "%s", _("stream had I/O failure"));
-        ret = remoteSerializeStreamError(client, &rerr, stream->procedure, stream->serial);
-        remoteRemoveClientStream(client, stream);
+            virNetError(VIR_ERR_RPC,
+                        "%s", _("stream had I/O failure"));
+
+        msg = virNetMessageNew();
+        if (!msg) {
+            ret = -1;
+        } else {
+            ret = virNetServerProgramSendStreamError(remoteProgram,
+                                                     client,
+                                                     msg,
+                                                     &rerr,
+                                                     stream->procedure,
+                                                     stream->serial);
+        }
+        daemonRemoveClientStream(client, stream);
         if (ret < 0)
-            qemudDispatchClientFailure(client);
+            virNetServerClientClose(client);
         goto cleanup;
     }
 
     if (stream->closed) {
-        remoteRemoveClientStream(client, stream);
+        daemonRemoveClientStream(client, stream);
     } else {
-        remoteStreamUpdateEvents(stream);
+        daemonStreamUpdateEvents(stream);
     }
 
 cleanup:
-    virMutexUnlock(&client->lock);
+    virMutexUnlock(&priv->lock);
 }
 
 
@@ -144,90 +232,72 @@ cleanup:
  * -1 on fatal client error
  */
 static int
-remoteStreamFilter(struct qemud_client *client,
-                   struct qemud_client_message *msg, void *opaque)
+daemonStreamFilter(virNetServerClientPtr client,
+                   virNetMessagePtr msg,
+                   void *opaque)
 {
-    struct qemud_client_stream *stream = opaque;
+    daemonClientStream *stream = opaque;
+    int ret = 0;
 
-    if (msg->hdr.serial == stream->serial &&
-        msg->hdr.proc == stream->procedure &&
-        msg->hdr.type == REMOTE_STREAM) {
-        VIR_DEBUG("Incoming rx=%p serial=%d proc=%d status=%d",
-              stream->rx, msg->hdr.proc, msg->hdr.serial, msg->hdr.status);
+    virMutexLock(&stream->priv->lock);
 
-        /* If there are queued packets, we need to queue all further
-         * messages, since they must be processed strictly in order.
-         * If there are no queued packets, then OK/ERROR messages
-         * should be processed immediately. Data packets are still
-         * queued to only be processed when the stream is marked as
-         * writable.
-         */
-        if (stream->rx) {
-            qemudClientMessageQueuePush(&stream->rx, msg);
-            remoteStreamUpdateEvents(stream);
-        } else {
-            int ret = 0;
-            switch (msg->hdr.status) {
-            case REMOTE_OK:
-                ret = remoteStreamHandleFinish(client, stream, msg);
-                if (ret == 0)
-                    qemudClientMessageRelease(client, msg);
-                break;
+    if (msg->header.type != VIR_NET_STREAM)
+        goto cleanup;
 
-            case REMOTE_CONTINUE:
-                qemudClientMessageQueuePush(&stream->rx, msg);
-                remoteStreamUpdateEvents(stream);
-                break;
+    if (!virNetServerProgramMatches(stream->prog, msg))
+        goto cleanup;
 
-            case REMOTE_ERROR:
-            default:
-                ret = remoteStreamHandleAbort(client, stream, msg);
-                if (ret == 0)
-                    qemudClientMessageRelease(client, msg);
-                break;
-            }
+    if (msg->header.proc != stream->procedure ||
+        msg->header.serial != stream->serial)
+        goto cleanup;
 
-            if (ret < 0)
-                return -1;
-        }
-        return 1;
-    }
-    return 0;
+    VIR_DEBUG("Incoming client=%p, rx=%p, serial=%d, proc=%d, status=%d",
+              client, stream->rx, msg->header.proc,
+              msg->header.serial, msg->header.status);
+
+    virNetMessageQueuePush(&stream->rx, msg);
+    daemonStreamUpdateEvents(stream);
+    ret = 1;
+
+cleanup:
+    virMutexUnlock(&stream->priv->lock);
+    return ret;
 }
 
 
 /*
  * @conn: a connection object to associate the stream with
- * @hdr: the method call to associate with the stram
+ * @header: the method call to associate with the stream
  *
  * Creates a new stream for this conn
  *
  * Returns a new stream object, or NULL upon OOM
  */
-struct qemud_client_stream *
-remoteCreateClientStream(virConnectPtr conn,
-                         remote_message_header *hdr)
+daemonClientStream *
+daemonCreateClientStream(virNetServerClientPtr client,
+                         virStreamPtr st,
+                         virNetServerProgramPtr prog,
+                         virNetMessageHeaderPtr header)
 {
-    struct qemud_client_stream *stream;
+    daemonClientStream *stream;
+    daemonClientPrivatePtr priv = virNetServerClientGetPrivateData(client);
 
-    VIR_DEBUG("proc=%d serial=%d", hdr->proc, hdr->serial);
+    VIR_DEBUG("client=%p, proc=%d, serial=%d, st=%p",
+              client, header->proc, header->serial, st);
 
     if (VIR_ALLOC(stream) < 0) {
         virReportOOMError();
         return NULL;
     }
 
-    stream->procedure = hdr->proc;
-    stream->serial = hdr->serial;
+    stream->priv = priv;
+    stream->prog = prog;
+    stream->procedure = header->proc;
+    stream->serial = header->serial;
+    stream->filterID = -1;
+    stream->st = st;
 
-    stream->st = virStreamNew(conn, VIR_STREAM_NONBLOCK);
-    if (!stream->st) {
-        VIR_FREE(stream);
-        return NULL;
-    }
-
-    stream->filter.query = remoteStreamFilter;
-    stream->filter.opaque = stream;
+    virNetServerProgramRef(prog);
 
     return stream;
 }
@@ -238,25 +308,37 @@ remoteCreateClientStream(virConnectPtr conn,
  * Frees the memory associated with this inactive client
  * stream
  */
-void remoteFreeClientStream(struct qemud_client *client,
-                            struct qemud_client_stream *stream)
+int daemonFreeClientStream(virNetServerClientPtr client,
+                           daemonClientStream *stream)
 {
-    struct qemud_client_message *msg;
+    virNetMessagePtr msg;
+    int ret = 0;
 
     if (!stream)
-        return;
+        return 0;
 
-    VIR_DEBUG("proc=%d serial=%d", stream->procedure, stream->serial);
+    VIR_DEBUG("client=%p, proc=%d, serial=%d",
+              client, stream->procedure, stream->serial);
+
+    virNetServerProgramFree(stream->prog);
 
     msg = stream->rx;
     while (msg) {
-        struct qemud_client_message *tmp = msg->next;
-        qemudClientMessageRelease(client, msg);
+        virNetMessagePtr tmp = msg->next;
+        /* Send a dummy reply to free up 'msg' & unblock client rx */
+        memset(msg, 0, sizeof(*msg));
+        if (virNetServerClientSendMessage(client, msg) < 0) {
+            virNetServerClientMarkClose(client);
+            virNetMessageFree(msg);
+            ret = -1;
+        }
         msg = tmp;
     }
 
     virStreamFree(stream->st);
     VIR_FREE(stream);
+
+    return ret;
 }
 
 
@@ -264,60 +346,42 @@ void remoteFreeClientStream(struct qemud_client *client,
  * @client: a locked client to add the stream to
  * @stream: a stream to add
  */
-int remoteAddClientStream(struct qemud_client *client,
-                          struct qemud_client_stream *stream,
-                          int transmit)
+int daemonAddClientStream(virNetServerClientPtr client,
+                          daemonClientStream *stream,
+                          bool transmit)
 {
-    struct qemud_client_stream *tmp = client->streams;
+    VIR_DEBUG("client=%p, proc=%d, serial=%d, st=%p, transmit=%d",
+              client, stream->procedure, stream->serial, stream->st, transmit);
+    daemonClientPrivatePtr priv = virNetServerClientGetPrivateData(client);
 
-    VIR_DEBUG("client=%p proc=%d serial=%d", client, stream->procedure, stream->serial);
-
-    if (virStreamEventAddCallback(stream->st, 0,
-                                  remoteStreamEvent, client, NULL) < 0)
+    if (stream->filterID != -1) {
+        VIR_WARN("Filter already added to client %p", client);
         return -1;
-
-    if (tmp) {
-        while (tmp->next)
-            tmp = tmp->next;
-        tmp->next = stream;
-    } else {
-        client->streams = stream;
     }
 
-    stream->filter.next = client->filters;
-    client->filters = &stream->filter;
+    if (virStreamEventAddCallback(stream->st, 0,
+                                  daemonStreamEvent, client, NULL) < 0)
+        return -1;
+
+    if ((stream->filterID = virNetServerClientAddFilter(client,
+                                                        daemonStreamFilter,
+                                                        stream)) < 0) {
+        virStreamEventRemoveCallback(stream->st);
+        return -1;
+    }
 
     if (transmit)
         stream->tx = 1;
 
-    remoteStreamUpdateEvents(stream);
+    virMutexLock(&priv->lock);
+    stream->next = priv->streams;
+    priv->streams = stream;
+
+    daemonStreamUpdateEvents(stream);
+
+    virMutexUnlock(&priv->lock);
 
     return 0;
-}
-
-
-/*
- * @client: a locked client object
- * @procedure: procedure associated with the stream
- * @serial: serial number associated with the stream
- *
- * Finds a existing active stream
- *
- * Returns a stream object matching the procedure+serial number, or NULL
- */
-struct qemud_client_stream *
-remoteFindClientStream(struct qemud_client *client,
-                       virStreamPtr st)
-{
-    struct qemud_client_stream *stream = client->streams;
-
-    while (stream) {
-        if (stream->st == st)
-            return stream;
-        stream = stream->next;
-    }
-
-    return NULL;
 }
 
 
@@ -330,26 +394,19 @@ remoteFindClientStream(struct qemud_client *client,
  * Returns 0 if the stream was removd, -1 if it doesn't exist
  */
 int
-remoteRemoveClientStream(struct qemud_client *client,
-                         struct qemud_client_stream *stream)
+daemonRemoveClientStream(virNetServerClientPtr client,
+                         daemonClientStream *stream)
 {
-    VIR_DEBUG("client=%p proc=%d serial=%d", client, stream->procedure, stream->serial);
+    VIR_DEBUG("client=%p, proc=%d, serial=%d, st=%p",
+              client, stream->procedure, stream->serial, stream->st);
+    daemonClientPrivatePtr priv = virNetServerClientGetPrivateData(client);
+    daemonClientStream *curr = priv->streams;
+    daemonClientStream *prev = NULL;
 
-    struct qemud_client_stream *curr = client->streams;
-    struct qemud_client_stream *prev = NULL;
-    struct qemud_client_filter *filter = NULL;
-
-    if (client->filters == &stream->filter) {
-        client->filters = client->filters->next;
-    } else {
-        filter = client->filters;
-        while (filter) {
-            if (filter->next == &stream->filter) {
-                filter->next = filter->next->next;
-                break;
-            }
-            filter = filter->next;
-        }
+    if (stream->filterID != -1) {
+        virNetServerClientRemoveFilter(client,
+                                       stream->filterID);
+        stream->filterID = -1;
     }
 
     if (!stream->closed) {
@@ -362,9 +419,8 @@ remoteRemoveClientStream(struct qemud_client *client,
             if (prev)
                 prev->next = curr->next;
             else
-                client->streams = curr->next;
-            remoteFreeClientStream(client, stream);
-            return 0;
+                priv->streams = curr->next;
+            return daemonFreeClientStream(client, stream);
         }
         prev = curr;
         curr = curr->next;
@@ -380,17 +436,15 @@ remoteRemoveClientStream(struct qemud_client *client,
  *    1  if message is still being processed
  */
 static int
-remoteStreamHandleWriteData(struct qemud_client *client,
-                            struct qemud_client_stream *stream,
-                            struct qemud_client_message *msg)
+daemonStreamHandleWriteData(virNetServerClientPtr client,
+                            daemonClientStream *stream,
+                            virNetMessagePtr msg)
 {
-    remote_error rerr;
     int ret;
 
-    VIR_DEBUG("stream=%p proc=%d serial=%d len=%d offset=%d",
-          stream, msg->hdr.proc, msg->hdr.serial, msg->bufferLength, msg->bufferOffset);
-
-    memset(&rerr, 0, sizeof rerr);
+    VIR_DEBUG("client=%p, stream=%p, proc=%d, serial=%d, len=%zu, offset=%zu",
+              client, stream, msg->header.proc, msg->header.serial,
+              msg->bufferLength, msg->bufferOffset);
 
     ret = virStreamSend(stream->st,
                         msg->buffer + msg->bufferOffset,
@@ -402,14 +456,25 @@ remoteStreamHandleWriteData(struct qemud_client *client,
         /* Partial write, so indicate we have more todo later */
         if (msg->bufferOffset < msg->bufferLength)
             return 1;
+
+        /* A dummy 'send' just to free up 'msg' object */
+        memset(msg, 0, sizeof(*msg));
+        return virNetServerClientSendMessage(client, msg);
     } else if (ret == -2) {
         /* Blocking, so indicate we have more todo later */
         return 1;
     } else {
+        virNetMessageError rerr;
+
+        memset(&rerr, 0, sizeof(rerr));
+
         VIR_INFO("Stream send failed");
         stream->closed = 1;
-        remoteDispatchError(&rerr);
-        return remoteSerializeReplyError(client, &rerr, &msg->hdr);
+        return virNetServerProgramSendReplyError(stream->prog,
+                                                 client,
+                                                 msg,
+                                                 &rerr,
+                                                 &msg->header);
     }
 
     return 0;
@@ -419,38 +484,42 @@ remoteStreamHandleWriteData(struct qemud_client *client,
 /*
  * Process an finish handshake from the client.
  *
- * Returns a REMOTE_OK confirmation if successful, or a REMOTE_ERROR
+ * Returns a VIR_NET_OK confirmation if successful, or a VIR_NET_ERROR
  * if there was a stream error
  *
  * Returns 0 if successfully sent RPC reply, -1 upon fatal error
  */
 static int
-remoteStreamHandleFinish(struct qemud_client *client,
-                         struct qemud_client_stream *stream,
-                         struct qemud_client_message *msg)
+daemonStreamHandleFinish(virNetServerClientPtr client,
+                         daemonClientStream *stream,
+                         virNetMessagePtr msg)
 {
-    remote_error rerr;
     int ret;
 
-    VIR_DEBUG("stream=%p proc=%d serial=%d",
-          stream, msg->hdr.proc, msg->hdr.serial);
-
-    memset(&rerr, 0, sizeof rerr);
+    VIR_DEBUG("client=%p, stream=%p, proc=%d, serial=%d",
+              client, stream, msg->header.proc, msg->header.serial);
 
     stream->closed = 1;
     virStreamEventRemoveCallback(stream->st);
     ret = virStreamFinish(stream->st);
 
     if (ret < 0) {
-        remoteDispatchError(&rerr);
-        return remoteSerializeReplyError(client, &rerr, &msg->hdr);
+        virNetMessageError rerr;
+        memset(&rerr, 0, sizeof(rerr));
+        return virNetServerProgramSendReplyError(stream->prog,
+                                                 client,
+                                                 msg,
+                                                 &rerr,
+                                                 &msg->header);
     } else {
         /* Send zero-length confirm */
-        if (remoteSendStreamData(client, stream, NULL, 0) < 0)
-            return -1;
+        return virNetServerProgramSendStreamData(stream->prog,
+                                                 client,
+                                                 msg,
+                                                 stream->procedure,
+                                                 stream->serial,
+                                                 NULL, 0);
     }
-
-    return 0;
 }
 
 
@@ -460,30 +529,35 @@ remoteStreamHandleFinish(struct qemud_client *client,
  * Returns 0 if successfully aborted, -1 upon error
  */
 static int
-remoteStreamHandleAbort(struct qemud_client *client,
-                        struct qemud_client_stream *stream,
-                        struct qemud_client_message *msg)
+daemonStreamHandleAbort(virNetServerClientPtr client,
+                        daemonClientStream *stream,
+                        virNetMessagePtr msg)
 {
-    remote_error rerr;
+    VIR_DEBUG("client=%p, stream=%p, proc=%d, serial=%d",
+              client, stream, msg->header.proc, msg->header.serial);
+    virNetMessageError rerr;
 
-    VIR_DEBUG("stream=%p proc=%d serial=%d",
-          stream, msg->hdr.proc, msg->hdr.serial);
-
-    memset(&rerr, 0, sizeof rerr);
+    memset(&rerr, 0, sizeof(rerr));
 
     stream->closed = 1;
     virStreamEventRemoveCallback(stream->st);
     virStreamAbort(stream->st);
 
-    if (msg->hdr.status == REMOTE_ERROR)
-        remoteDispatchFormatError(&rerr, "%s", _("stream aborted at client request"));
+    if (msg->header.status == VIR_NET_ERROR)
+        virNetError(VIR_ERR_RPC,
+                    "%s", _("stream aborted at client request"));
     else {
-        VIR_WARN("unexpected stream status %d", msg->hdr.status);
-        remoteDispatchFormatError(&rerr, _("stream aborted with unexpected status %d"),
-                                  msg->hdr.status);
+        VIR_WARN("unexpected stream status %d", msg->header.status);
+        virNetError(VIR_ERR_RPC,
+                    _("stream aborted with unexpected status %d"),
+                    msg->header.status);
     }
 
-    return remoteSerializeReplyError(client, &rerr, &msg->hdr);
+    return virNetServerProgramSendReplyError(remoteProgram,
+                                             client,
+                                             msg,
+                                             &rerr,
+                                             &msg->header);
 }
 
 
@@ -496,41 +570,39 @@ remoteStreamHandleAbort(struct qemud_client *client,
  * Returns 0 on success, or -1 upon fatal error
  */
 static int
-remoteStreamHandleWrite(struct qemud_client *client,
-                        struct qemud_client_stream *stream)
+daemonStreamHandleWrite(virNetServerClientPtr client,
+                        daemonClientStream *stream)
 {
-    struct qemud_client_message *msg, *tmp;
+    VIR_DEBUG("client=%p, stream=%p", client, stream);
 
-    VIR_DEBUG("stream=%p", stream);
-
-    msg = stream->rx;
-    while (msg && !stream->closed) {
+    while (stream->rx && !stream->closed) {
+        virNetMessagePtr msg = stream->rx;
         int ret;
-        switch (msg->hdr.status) {
-        case REMOTE_OK:
-            ret = remoteStreamHandleFinish(client, stream, msg);
+
+        switch (msg->header.status) {
+        case VIR_NET_OK:
+            ret = daemonStreamHandleFinish(client, stream, msg);
             break;
 
-        case REMOTE_CONTINUE:
-            ret = remoteStreamHandleWriteData(client, stream, msg);
+        case VIR_NET_CONTINUE:
+            ret = daemonStreamHandleWriteData(client, stream, msg);
             break;
 
-        case REMOTE_ERROR:
+        case VIR_NET_ERROR:
         default:
-            ret = remoteStreamHandleAbort(client, stream, msg);
+            ret = daemonStreamHandleAbort(client, stream, msg);
             break;
         }
 
-        if (ret == 0)
-            qemudClientMessageQueueServe(&stream->rx);
-        else if (ret < 0)
-            return -1;
-        else
-            break; /* still processing data */
+        if (ret > 0)
+            break;  /* still processing data from msg */
 
-        tmp = msg->next;
-        qemudClientMessageRelease(client, msg);
-        msg = tmp;
+        virNetMessageQueueServe(&stream->rx);
+        if (ret < 0) {
+            virNetMessageFree(msg);
+            virNetServerClientMarkClose(client);
+            return -1;
+        }
     }
 
     return 0;
@@ -549,14 +621,14 @@ remoteStreamHandleWrite(struct qemud_client *client,
  * be killed
  */
 static int
-remoteStreamHandleRead(struct qemud_client *client,
-                       struct qemud_client_stream *stream)
+daemonStreamHandleRead(virNetServerClientPtr client,
+                       daemonClientStream *stream)
 {
     char *buffer;
-    size_t bufferLen = REMOTE_MESSAGE_PAYLOAD_MAX;
+    size_t bufferLen = VIR_NET_MESSAGE_PAYLOAD_MAX;
     int ret;
 
-    VIR_DEBUG("stream=%p", stream);
+    VIR_DEBUG("client=%p, stream=%p", client, stream);
 
     /* Shouldn't ever be called unless we're marked able to
      * transmit, but doesn't hurt to check */
@@ -572,47 +644,41 @@ remoteStreamHandleRead(struct qemud_client *client,
          * we're readable, but hey things change... */
         ret = 0;
     } else if (ret < 0) {
-        remote_error rerr;
-        memset(&rerr, 0, sizeof rerr);
-        remoteDispatchError(&rerr);
+        virNetMessagePtr msg;
+        virNetMessageError rerr;
 
-        ret = remoteSerializeStreamError(client, &rerr, stream->procedure, stream->serial);
+        memset(&rerr, 0, sizeof(rerr));
+
+        if (!(msg = virNetMessageNew()))
+            ret = -1;
+        else
+            ret = virNetServerProgramSendStreamError(remoteProgram,
+                                                     client,
+                                                     msg,
+                                                     &rerr,
+                                                     stream->procedure,
+                                                     stream->serial);
     } else {
+        virNetMessagePtr msg;
         stream->tx = 0;
         if (ret == 0)
             stream->recvEOF = 1;
-        ret = remoteSendStreamData(client, stream, buffer, ret);
+        if (!(msg = virNetMessageNew()))
+            ret = -1;
+
+        if (msg) {
+            msg->cb = daemonStreamMessageFinished;
+            msg->opaque = stream;
+            virNetServerClientRef(client);
+            ret = virNetServerProgramSendStreamData(remoteProgram,
+                                                    client,
+                                                    msg,
+                                                    stream->procedure,
+                                                    stream->serial,
+                                                    buffer, ret);
+        }
     }
 
     VIR_FREE(buffer);
     return ret;
-}
-
-
-/*
- * Invoked when an outgoing data packet message has been fully sent.
- * This simply re-enables TX of further data.
- *
- * The idea is to stop the daemon growing without bound due to
- * fast stream, but slow client
- */
-void
-remoteStreamMessageFinished(struct qemud_client *client,
-                            struct qemud_client_message *msg)
-{
-    struct qemud_client_stream *stream = client->streams;
-
-    while (stream) {
-        if (msg->hdr.proc == stream->procedure &&
-            msg->hdr.serial == stream->serial)
-            break;
-        stream = stream->next;
-    }
-
-    VIR_DEBUG("Message client=%p stream=%p proc=%d serial=%d", client, stream, msg->hdr.proc, msg->hdr.serial);
-
-    if (stream) {
-        stream->tx = 1;
-        remoteStreamUpdateEvents(stream);
-    }
 }
