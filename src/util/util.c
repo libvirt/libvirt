@@ -869,6 +869,7 @@ int virSetInherit(int fd ATTRIBUTE_UNUSED, bool inherit ATTRIBUTE_UNUSED)
     return -1;
 }
 
+int
 virRun(const char *const *argv ATTRIBUTE_UNUSED,
        int *status)
 {
