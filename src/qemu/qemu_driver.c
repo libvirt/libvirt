@@ -5038,22 +5038,23 @@ cleanup:
     return ret;
 }
 
-static int qemuSetSchedulerParameters(virDomainPtr dom,
-                                      virSchedParameterPtr params,
-                                      int nparams)
+static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
+                                           virSchedParameterPtr params,
+                                           int nparams,
+                                           unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
     int ret = -1;
+    bool isActive;
+
+    virCheckFlags(VIR_DOMAIN_SCHEDPARAM_LIVE |
+                  VIR_DOMAIN_SCHEDPARAM_CONFIG, -1);
 
     qemuDriverLock(driver);
-    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cgroup CPU controller is not mounted"));
-        goto cleanup;
-    }
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
@@ -5063,16 +5064,39 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_SCHEDPARAM_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_SCHEDPARAM_LIVE;
+        else
+            flags = VIR_DOMAIN_SCHEDPARAM_CONFIG;
+    }
+
+    if ((flags & VIR_DOMAIN_MEM_CONFIG) && !vm->persistent) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("cannot change persistent config of a transient domain"));
         goto cleanup;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find cgroup for domain %s"), vm->def->name);
-        goto cleanup;
+    if (flags & VIR_DOMAIN_SCHEDPARAM_LIVE) {
+        if (!isActive) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("cgroup CPU controller is not mounted"));
+            goto cleanup;
+        }
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find cgroup for domain %s"),
+                            vm->def->name);
+            goto cleanup;
+        }
     }
 
     for (i = 0; i < nparams; i++) {
@@ -5086,20 +5110,39 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
                 goto cleanup;
             }
 
-            rc = virCgroupSetCpuShares(group, params[i].value.ul);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set cpu shares tunable"));
-                goto cleanup;
+            if (flags & VIR_DOMAIN_SCHEDPARAM_LIVE) {
+                rc = virCgroupSetCpuShares(group, params[i].value.ul);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set cpu shares tunable"));
+                    goto cleanup;
+                }
+
+                vm->def->cputune.shares = params[i].value.ul;
             }
 
-            vm->def->cputune.shares = params[i].value.ul;
+            if (flags & VIR_DOMAIN_SCHEDPARAM_CONFIG) {
+                persistentDef = virDomainObjGetPersistentDef(driver->caps, vm);
+                if (!persistentDef) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("can't get persistentDef"));
+                    goto cleanup;
+                }
+                persistentDef->cputune.shares = params[i].value.ul;
+                rc = virDomainSaveConfig(driver->configDir, persistentDef);
+                if (rc) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("can't save config"));
+                    goto cleanup;
+                }
+            }
         } else {
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("Invalid parameter `%s'"), param->field);
             goto cleanup;
         }
     }
+
     ret = 0;
 
 cleanup:
@@ -5108,6 +5151,16 @@ cleanup:
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
     return ret;
+}
+
+static int qemuSetSchedulerParameters(virDomainPtr dom,
+                                      virSchedParameterPtr params,
+                                      int nparams)
+{
+    return qemuSetSchedulerParametersFlags(dom,
+                                           params,
+                                           nparams,
+                                           VIR_DOMAIN_SCHEDPARAM_LIVE);
 }
 
 static int qemuGetSchedulerParameters(virDomainPtr dom,
@@ -5143,9 +5196,8 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
     }
 
     if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
+        val = vm->def->cputune.shares;
+        goto out;
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
@@ -5160,6 +5212,7 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
                              _("unable to get cpu shares tunable"));
         goto cleanup;
     }
+out:
     params[0].value.ul = val;
     params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
     if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
@@ -7675,6 +7728,7 @@ static virDriver qemuDriver = {
     .domainMigratePerform3 = qemuDomainMigratePerform3, /* 0.9.2 */
     .domainMigrateFinish3 = qemuDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = qemuDomainMigrateConfirm3, /* 0.9.2 */
+    .domainSetSchedulerParametersFlags = qemuSetSchedulerParametersFlags, /* 0.9.2 */
 };
 
 
