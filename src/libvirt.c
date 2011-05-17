@@ -5107,6 +5107,70 @@ error:
 
 
 /**
+ * virDomainSetSchedulerParametersFlags:
+ * @domain: pointer to domain object
+ * @params: pointer to scheduler parameter objects
+ * @nparams: number of scheduler parameter
+ *          (this value should be same or less than the returned value
+ *           nparams of virDomainGetSchedulerType)
+ * @flags: virDomainSchedParameterFlags
+ *
+ * Change the scheduler parameters
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainSetSchedulerParametersFlags(virDomainPtr domain,
+                                     virSchedParameterPtr params,
+                                     int nparams,
+                                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%u",
+                     params, nparams, flags);
+
+    virResetLastError();
+
+    if (!(flags & (VIR_DOMAIN_SCHEDPARAM_LIVE |
+                   VIR_DOMAIN_SCHEDPARAM_CONFIG |
+                   VIR_DOMAIN_SCHEDPARAM_CURRENT))) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainSetSchedulerParametersFlags) {
+        int ret;
+        ret = conn->driver->domainSetSchedulerParametersFlags(domain,
+                                                              params,
+                                                              nparams,
+                                                              flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainBlockStats:
  * @dom: pointer to the domain object
  * @path: path to the block device

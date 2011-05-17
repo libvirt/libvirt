@@ -295,6 +295,12 @@ typedef enum {
     VIR_DOMAIN_SCHED_FIELD_BOOLEAN = 6  /* boolean(character) case */
 } virSchedParameterType;
 
+typedef enum {
+    VIR_DOMAIN_SCHEDPARAM_CURRENT = (1 << 0), /* affect current domain state */
+    VIR_DOMAIN_SCHEDPARAM_LIVE    = (1 << 1), /* Affect active domain */
+    VIR_DOMAIN_SCHEDPARAM_CONFIG  = (1 << 2), /* Affect next boot */
+} virDomainSchedParameterFlags;
+
 /**
  * VIR_DOMAIN_SCHED_FIELD_LENGTH:
  *
@@ -345,6 +351,14 @@ int     virDomainGetSchedulerParameters (virDomainPtr domain,
 int     virDomainSetSchedulerParameters (virDomainPtr domain,
                                          virSchedParameterPtr params,
                                          int nparams);
+
+/*
+ * Change scheduler parameters
+ */
+int     virDomainSetSchedulerParametersFlags (virDomainPtr domain,
+                                              virSchedParameterPtr params,
+                                              int nparams,
+                                              unsigned int flags);
 
 /**
  * virDomainBlockStats:
