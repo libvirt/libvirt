@@ -433,7 +433,8 @@ VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
 VIR_ENUM_IMPL(virDomainNetdevMacvtap, VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
               "vepa",
               "private",
-              "bridge")
+              "bridge",
+              "passthrough")
 
 VIR_ENUM_IMPL(virVirtualPort, VIR_VIRTUALPORT_TYPE_LAST,
               "none",

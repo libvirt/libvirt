@@ -2240,6 +2240,13 @@ if test "$with_macvtap" != "no" ; then
 fi
 AM_CONDITIONAL([WITH_MACVTAP], [test "$with_macvtap" = "yes"])
 AC_MSG_RESULT([$with_macvtap])
+if test "$with_macvtap" = yes; then
+    AC_CHECK_DECLS([MACVLAN_MODE_PASSTHRU], [], [], [[
+      #include <sys/socket.h>
+      #include <linux/if_link.h>
+    ]])
+fi
+
 
 AC_ARG_WITH([virtualport],
   AC_HELP_STRING([--with-virtualport],[enable virtual port support @<:@default=check@:>@]),

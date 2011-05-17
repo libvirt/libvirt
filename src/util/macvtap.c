@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -44,6 +44,11 @@
 # include <linux/if_tun.h>
 
 # include <netlink/msg.h>
+
+/* Older kernels lacked this enum value.  */
+# if !HAVE_DECL_MACVLAN_MODE_PASSTHRU
+#  define MACVLAN_MODE_PASSTHRU 8
+# endif
 
 #endif /* WITH_MACVTAP || WITH_VIRTUALPORT */
 
@@ -473,6 +478,9 @@ macvtapModeFromInt(enum virDomainNetdevMacvtapType mode)
     case VIR_DOMAIN_NETDEV_MACVTAP_MODE_BRIDGE:
         return MACVLAN_MODE_BRIDGE;
 
+    case VIR_DOMAIN_NETDEV_MACVTAP_MODE_PASSTHRU:
+        return MACVLAN_MODE_PASSTHRU;
+
     case VIR_DOMAIN_NETDEV_MACVTAP_MODE_VEPA:
     default:
         return MACVLAN_MODE_VEPA;
@@ -546,7 +554,7 @@ configMacvtapTap(int tapfd, int vnet_hdr)
  *    be NULL if this function is supposed to choose a name
  * @macaddress: The MAC address for the macvtap device
  * @linkdev: The interface name of the NIC to connect to the external bridge
- * @mode: int describing the mode for 'bridge', 'vepa' or 'private'.
+ * @mode: int describing the mode for 'bridge', 'vepa', 'private' or 'passthru'.
  * @vnet_hdr: 1 to enable IFF_VNET_HDR, 0 to disable it
  * @vmuuid: The UUID of the VM the macvtap belongs to
  * @virtPortProfile: pointer to object holding the virtual port profile data

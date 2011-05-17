@@ -2351,7 +2351,7 @@
   </define>
   <define name="bridgeMode">
     <data type="string">
-      <param name="pattern">(vepa|bridge|private)</param>
+      <param name="pattern">(vepa|bridge|private|passthrough)</param>
     </data>
   </define>
   <define name="addrMAC">

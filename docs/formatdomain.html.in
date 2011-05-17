@@ -1429,6 +1429,13 @@
       external router or gateway and that device sends them back to the
       host. This procedure is followed if either the source or destination
       device is in <code>private</code> mode.</dd>
+      <dt><code>passthrough</code></dt>
+      <dd>This feature attaches a virtual function of a SRIOV capable
+      NIC directly to a VM without losing the migration capability.
+      All packets are sent to the VF/IF of the configured network device.
+      Depending on the capabilities of the device additional prerequisites or
+      limitations may apply; for example, on Linux this requires
+      kernel 2.6.38 or newer. <span class="since">Since 0.9.2</span></dd>
     </dl>
 
 <pre>

@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -88,10 +89,6 @@ void delMacvtap(const char *ifname,
                 const unsigned char *macaddress,
                 const char *linkdev,
                 virVirtualPortProfileParamsPtr virtPortProfile);
-
-#  define MACVTAP_MODE_PRIVATE_STR  "private"
-#  define MACVTAP_MODE_VEPA_STR     "vepa"
-#  define MACVTAP_MODE_BRIDGE_STR   "bridge"
 
 int vpAssociatePortProfileId(const char *macvtap_ifname,
                              const unsigned char *macvtap_macaddr,
