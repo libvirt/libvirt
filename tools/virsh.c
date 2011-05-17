@@ -1596,6 +1596,9 @@ static const vshCmdOptDef opts_schedinfo[] = {
     {"set", VSH_OT_STRING, VSH_OFLAG_NONE, N_("parameter=value")},
     {"weight", VSH_OT_INT, VSH_OFLAG_NONE, N_("weight for XEN_CREDIT")},
     {"cap", VSH_OT_INT, VSH_OFLAG_NONE, N_("cap for XEN_CREDIT")},
+    {"current", VSH_OT_BOOL, 0, N_("get/set current scheduler info")},
+    {"config", VSH_OT_BOOL, 0, N_("get/set value to be used on next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("get/set value from running domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1703,6 +1706,23 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     int update = 0;
     int i, ret;
     bool ret_val = false;
+    unsigned int flags = 0;
+    int current = vshCommandOptBool(cmd, "current");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_SCHEDPARAM_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_SCHEDPARAM_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_SCHEDPARAM_LIVE;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1712,7 +1732,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 
     /* Print SchedulerType */
     schedulertype = virDomainGetSchedulerType(dom, &nparams);
-    if (schedulertype!= NULL){
+    if (schedulertype != NULL){
         vshPrint(ctl, "%-15s: %s\n", _("Scheduler"),
              schedulertype);
         VIR_FREE(schedulertype);
@@ -1741,7 +1761,11 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 
         /* Update parameters & refresh data */
         if (update) {
-            ret = virDomainSetSchedulerParameters(dom, params, nparams);
+            if (flags || current)
+                ret = virDomainSetSchedulerParametersFlags(dom, params,
+                                                           nparams, flags);
+            else
+                ret = virDomainSetSchedulerParameters(dom, params, nparams);
             if (ret == -1)
                 goto cleanup;
 

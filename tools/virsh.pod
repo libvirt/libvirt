@@ -570,17 +570,24 @@ This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
 severed upon restore, as TCP timeouts may have expired.
 
-=item B<schedinfo> optional I<--set> B<parameter=value> I<domain-id>
+=item B<schedinfo> optional I<--set> B<parameter=value> I<domain-id> I<--config>
+I<--live> I<--current>
 
-=item B<schedinfo> optional I<--weight> B<number> optional I<--cap> B<number> I<domain-id>
+=item B<schedinfo> optional I<--weight> B<number> optional I<--cap> B<number>
+I<domain-id>
 
-Allows you to show (and set) the domain scheduler parameters. The parameters available for each hypervisor are:
+Allows you to show (and set) the domain scheduler parameters. The parameters
+available for each hypervisor are:
 
 LXC, QEMU/KVM (posix scheduler): cpu_shares
 
 Xen (credit scheduler): weight, cap
 
 ESX (allocation scheduler): reservation, limit, shares
+
+If I<--live> is specified, set scheduler information of a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
 
 B<Note>: The cpu_shares parameter has a valid value range of 0-262144; Negative
 values are wrapped to positive, and larger values are capped at the maximum.
