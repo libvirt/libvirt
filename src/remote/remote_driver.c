@@ -2637,6 +2637,74 @@ done:
 }
 
 static int
+remoteDomainSetSchedulerParametersFlags(virDomainPtr domain,
+                                        virSchedParameterPtr params,
+                                        int nparams,
+                                        unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_set_scheduler_parameters_flags_args args;
+    int i, do_error;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    /* Serialise the scheduler parameters. */
+    args.params.params_len = nparams;
+    args.flags = flags;
+    if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
+        virReportOOMError();
+        goto done;
+    }
+
+    do_error = 0;
+    for (i = 0; i < nparams; ++i) {
+        /* call() will free this: */
+        args.params.params_val[i].field = strdup (params[i].field);
+        if (args.params.params_val[i].field == NULL) {
+            virReportOOMError();
+            do_error = 1;
+        }
+        args.params.params_val[i].value.type = params[i].type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            args.params.params_val[i].value.remote_sched_param_value_u.i = params[i].value.i; break;
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            args.params.params_val[i].value.remote_sched_param_value_u.ui = params[i].value.ui; break;
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            args.params.params_val[i].value.remote_sched_param_value_u.l = params[i].value.l; break;
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            args.params.params_val[i].value.remote_sched_param_value_u.ul = params[i].value.ul; break;
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            args.params.params_val[i].value.remote_sched_param_value_u.d = params[i].value.d; break;
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            args.params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
+        default:
+            remoteError(VIR_ERR_RPC, "%s", _("unknown parameter type"));
+            do_error = 1;
+        }
+    }
+
+    if (do_error) {
+        xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_flags_args, (char *) &args);
+        goto done;
+    }
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS_FLAGS,
+              (xdrproc_t) xdr_remote_domain_set_scheduler_parameters_flags_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainMemoryStats (virDomainPtr domain,
                          struct _virDomainMemoryStat *stats,
                          unsigned int nr_stats)
@@ -6799,6 +6867,7 @@ static virDriver remote_driver = {
     .domainMigratePerform3 = remoteDomainMigratePerform3, /* 0.9.2 */
     .domainMigrateFinish3 = remoteDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = remoteDomainMigrateConfirm3, /* 0.9.2 */
+    .domainSetSchedulerParametersFlags = remoteDomainSetSchedulerParametersFlags, /* 0.9.2 */
 };
 
 static virNetworkDriver network_driver = {

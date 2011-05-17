@@ -476,6 +476,12 @@ struct remote_domain_set_scheduler_parameters_args {
     remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
 };
 
+struct remote_domain_set_scheduler_parameters_flags_args {
+    remote_nonnull_domain dom;
+    remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+    unsigned int flags;
+};
+
 struct remote_domain_set_blkio_parameters_args {
     remote_nonnull_domain dom;
     remote_blkio_param params<REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX>;
@@ -2284,7 +2290,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3 = 215, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3 = 216, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_FINISH3 = 217, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3 = 218 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3 = 218, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS_FLAGS = 219 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

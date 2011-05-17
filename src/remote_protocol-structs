@@ -188,6 +188,14 @@ struct remote_domain_set_scheduler_parameters_args {
                 remote_sched_param * params_val;
         } params;
 };
+struct remote_domain_set_scheduler_parameters_flags_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              params_len;
+                remote_sched_param * params_val;
+        } params;
+        u_int                      flags;
+};
 struct remote_domain_set_blkio_parameters_args {
         remote_nonnull_domain      dom;
         struct {

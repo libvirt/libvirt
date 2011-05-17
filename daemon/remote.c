@@ -688,6 +688,77 @@ cleanup:
 }
 
 static int
+remoteDispatchDomainSetSchedulerParametersFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                                virConnectPtr conn,
+                                                remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                                remote_error *rerr,
+                                                remote_domain_set_scheduler_parameters_flags_args *args,
+                                                void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom = NULL;
+    virSchedParameterPtr params = NULL;
+    int i, nparams;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    nparams = args->params.params_len;
+
+    if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(params, nparams) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Deserialise parameters. */
+    for (i = 0; i < nparams; ++i) {
+        if (virStrcpyStatic(params[i].field, args->params.params_val[i].field) == NULL) {
+            virNetError(VIR_ERR_INTERNAL_ERROR, _("Field %s too big for destination"),
+                                      args->params.params_val[i].field);
+            goto cleanup;
+        }
+        params[i].type = args->params.params_val[i].value.type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            params[i].value.i = args->params.params_val[i].value.remote_sched_param_value_u.i; break;
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            params[i].value.ui = args->params.params_val[i].value.remote_sched_param_value_u.ui; break;
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            params[i].value.l = args->params.params_val[i].value.remote_sched_param_value_u.l; break;
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            params[i].value.ul = args->params.params_val[i].value.remote_sched_param_value_u.ul; break;
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            params[i].value.d = args->params.params_val[i].value.remote_sched_param_value_u.d; break;
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            params[i].value.b = args->params.params_val[i].value.remote_sched_param_value_u.b; break;
+        }
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainSetSchedulerParametersFlags(dom, params, nparams, args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    VIR_FREE(params);
+    return rv;
+}
+
+static int
 remoteDispatchDomainMemoryStats(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 struct qemud_client *client ATTRIBUTE_UNUSED,
                                 virConnectPtr conn,
