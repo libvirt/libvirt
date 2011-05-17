@@ -5240,7 +5240,7 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
             flags = VIR_DOMAIN_SCHEDPARAM_CONFIG;
     }
 
-    if ((flags & VIR_DOMAIN_MEM_CONFIG) && !vm->persistent) {
+    if ((flags & VIR_DOMAIN_SCHEDPARAM_CONFIG) && !vm->persistent) {
         qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("cannot change persistent config of a transient domain"));
         goto cleanup;
@@ -5330,9 +5330,11 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
                                            VIR_DOMAIN_SCHEDPARAM_LIVE);
 }
 
-static int qemuGetSchedulerParameters(virDomainPtr dom,
-                                      virTypedParameterPtr params,
-                                      int *nparams)
+static int
+qemuGetSchedulerParametersFlags(virDomainPtr dom,
+                                virTypedParameterPtr params,
+                                int *nparams,
+                                unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virCgroupPtr group = NULL;
@@ -5340,11 +5342,15 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
     unsigned long long val;
     int ret = -1;
     int rc;
+    bool isActive;
 
-    qemuDriverLock(driver);
-    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cgroup CPU controller is not mounted"));
+    virCheckFlags(VIR_DOMAIN_SCHEDPARAM_LIVE |
+                  VIR_DOMAIN_SCHEDPARAM_CONFIG, -1);
+
+    if ((flags & (VIR_DOMAIN_SCHEDPARAM_LIVE | VIR_DOMAIN_SCHEDPARAM_CONFIG)) ==
+        (VIR_DOMAIN_SCHEDPARAM_LIVE | VIR_DOMAIN_SCHEDPARAM_CONFIG)) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("cannot query live and config together"));
         goto cleanup;
     }
 
@@ -5354,6 +5360,7 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
         goto cleanup;
     }
 
+    qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (vm == NULL) {
@@ -5362,9 +5369,48 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        val = vm->def->cputune.shares;
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_SCHEDPARAM_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_SCHEDPARAM_LIVE;
+        else
+            flags = VIR_DOMAIN_SCHEDPARAM_CONFIG;
+    }
+
+    if (flags & VIR_DOMAIN_SCHEDPARAM_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot query persistent config of a transient domain"));
+            goto cleanup;
+        }
+
+        if (isActive) {
+            virDomainDefPtr persistentDef;
+
+            persistentDef = virDomainObjGetPersistentDef(driver->caps, vm);
+            if (!persistentDef) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("can't get persistentDef"));
+                goto cleanup;
+            }
+            val = persistentDef->cputune.shares;
+        } else {
+            val = vm->def->cputune.shares;
+        }
         goto out;
+    }
+
+    if (!isActive) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cgroup CPU controller is not mounted"));
+        goto cleanup;
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
@@ -5399,6 +5445,14 @@ cleanup:
     return ret;
 }
 
+static int
+qemuGetSchedulerParameters(virDomainPtr dom,
+                           virTypedParameterPtr params,
+                           int *nparams)
+{
+    return qemuGetSchedulerParametersFlags(dom, params, nparams,
+                                           VIR_DOMAIN_SCHEDPARAM_CURRENT);
+}
 
 /* This uses the 'info blockstats' monitor command which was
  * integrated into both qemu & kvm in late 2007.  If the command is
@@ -7906,7 +7960,9 @@ static virDriver qemuDriver = {
     .domainSetAutostart = qemudDomainSetAutostart, /* 0.2.1 */
     .domainGetSchedulerType = qemuGetSchedulerType, /* 0.7.0 */
     .domainGetSchedulerParameters = qemuGetSchedulerParameters, /* 0.7.0 */
+    .domainGetSchedulerParametersFlags = qemuGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = qemuSetSchedulerParameters, /* 0.7.0 */
+    .domainSetSchedulerParametersFlags = qemuSetSchedulerParametersFlags, /* 0.9.2 */
     .domainMigratePerform = qemudDomainMigratePerform, /* 0.5.0 */
     .domainBlockStats = qemudDomainBlockStats, /* 0.4.1 */
     .domainInterfaceStats = qemudDomainInterfaceStats, /* 0.4.1 */
@@ -7958,7 +8014,6 @@ static virDriver qemuDriver = {
     .domainMigratePerform3 = qemuDomainMigratePerform3, /* 0.9.2 */
     .domainMigrateFinish3 = qemuDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = qemuDomainMigrateConfirm3, /* 0.9.2 */
-    .domainSetSchedulerParametersFlags = qemuSetSchedulerParametersFlags, /* 0.9.2 */
 };
 
 
