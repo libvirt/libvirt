@@ -1745,7 +1745,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 
     /* Print SchedulerType */
     schedulertype = virDomainGetSchedulerType(dom, &nparams);
-    if (schedulertype != NULL){
+    if (schedulertype != NULL) {
         vshPrint(ctl, "%-15s: %s\n", _("Scheduler"),
              schedulertype);
         VIR_FREE(schedulertype);
@@ -1758,12 +1758,22 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
         params = vshMalloc(ctl, sizeof(*params) * nparams);
 
         memset(params, 0, sizeof(*params) * nparams);
-        ret = virDomainGetSchedulerParameters(dom, params, &nparams);
+        if (flags || current) {
+            /* We cannot query both live and config at once, so settle
+               on current in that case.  If we are setting, then the
+               two values should match when we re-query; otherwise, we
+               report the error later.  */
+            ret = virDomainGetSchedulerParametersFlags(dom, params, &nparams,
+                                                       ((live && config) ? 0
+                                                        : flags));
+        } else {
+            ret = virDomainGetSchedulerParameters(dom, params, &nparams);
+        }
         if (ret == -1)
             goto cleanup;
 
         /* See if any params are being set */
-        for (i = 0; i < nparams; i++){
+        for (i = 0; i < nparams; i++) {
             ret = cmdSchedInfoUpdate(ctl, cmd, &(params[i]));
             if (ret == -1)
                 goto cleanup;
@@ -1782,7 +1792,13 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
             if (ret == -1)
                 goto cleanup;
 
-            ret = virDomainGetSchedulerParameters(dom, params, &nparams);
+            if (flags || current)
+                ret = virDomainGetSchedulerParametersFlags(dom, params,
+                                                           &nparams,
+                                                           ((live && config) ? 0
+                                                            : flags));
+            else
+                ret = virDomainGetSchedulerParameters(dom, params, &nparams);
             if (ret == -1)
                 goto cleanup;
         } else {
@@ -1795,10 +1811,16 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
                          var_value_pair);
                 goto cleanup;
             }
+            /* When not doing --set, --live and --config do not mix.  */
+            if (live && config) {
+                vshError(ctl, "%s",
+                         _("cannot query both live and config at once"));
+                goto cleanup;
+            }
         }
 
         ret_val = true;
-        for (i = 0; i < nparams; i++){
+        for (i = 0; i < nparams; i++) {
             switch (params[i].type) {
             case VIR_TYPED_PARAM_INT:
                  vshPrint(ctl, "%-15s: %d\n",  params[i].field, params[i].value.i);
