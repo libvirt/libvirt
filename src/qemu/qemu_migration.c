@@ -252,11 +252,12 @@ qemuMigrationCookieAddGraphics(qemuMigrationCookiePtr mig,
 
     if (dom->def->ngraphics == 1 &&
         (dom->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
-         dom->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) &&
-        !(mig->graphics = qemuMigrationCookieGraphicsAlloc(driver, dom->def->graphics[0])))
-        return -1;
-
-    mig->flags |= QEMU_MIGRATION_COOKIE_GRAPHICS;
+         dom->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)) {
+        if (!(mig->graphics =
+              qemuMigrationCookieGraphicsAlloc(driver, dom->def->graphics[0])))
+            return -1;
+        mig->flags |= QEMU_MIGRATION_COOKIE_GRAPHICS;
+    }
 
     return 0;
 }
@@ -295,7 +296,8 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->hostname);
     virBufferAsprintf(buf, "  <hostuuid>%s</hostuuid>\n", hostuuidstr);
 
-    if (mig->flags & QEMU_MIGRATION_COOKIE_GRAPHICS)
+    if ((mig->flags & QEMU_MIGRATION_COOKIE_GRAPHICS) &&
+        mig->graphics)
         qemuMigrationCookieGraphicsXMLFormat(buf, mig->graphics);
 
     virBufferAddLit(buf, "</qemu-migration>\n");
