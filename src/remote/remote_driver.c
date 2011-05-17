@@ -1779,6 +1779,138 @@ done:
     return rv;
 }
 
+/* Helper to serialize typed parameters. */
+static int
+remoteSerializeTypedParameters(virTypedParameterPtr params,
+                               int nparams,
+                               u_int *args_params_len,
+                               remote_typed_param **args_params_val)
+{
+    int i;
+    int rv = -1;
+    remote_typed_param *val;
+
+    *args_params_len = nparams;
+    if (VIR_ALLOC_N(val, nparams) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; ++i) {
+        /* call() will free this: */
+        val[i].field = strdup (params[i].field);
+        if (val[i].field == NULL) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        val[i].value.type = params[i].type;
+        switch (params[i].type) {
+        case VIR_TYPED_PARAM_INT:
+            val[i].value.remote_typed_param_value_u.i = params[i].value.i;
+            break;
+        case VIR_TYPED_PARAM_UINT:
+            val[i].value.remote_typed_param_value_u.ui = params[i].value.ui;
+            break;
+        case VIR_TYPED_PARAM_LLONG:
+            val[i].value.remote_typed_param_value_u.l = params[i].value.l;
+            break;
+        case VIR_TYPED_PARAM_ULLONG:
+            val[i].value.remote_typed_param_value_u.ul = params[i].value.ul;
+            break;
+        case VIR_TYPED_PARAM_DOUBLE:
+            val[i].value.remote_typed_param_value_u.d = params[i].value.d;
+            break;
+        case VIR_TYPED_PARAM_BOOLEAN:
+            val[i].value.remote_typed_param_value_u.b = params[i].value.b;
+            break;
+        default:
+            remoteError(VIR_ERR_RPC, _("unknown parameter type: %d"),
+                params[i].type);
+            goto cleanup;
+        }
+    }
+
+    *args_params_val = val;
+    val = NULL;
+    rv = 0;
+
+cleanup:
+    if (val) {
+        for (i = 0; i < nparams; i++)
+            VIR_FREE(val[i].field);
+        VIR_FREE(val);
+    }
+    return rv;
+}
+
+/* Helper to deserialize typed parameters. */
+static int
+remoteDeserializeTypedParameters(u_int ret_params_len,
+                                 remote_typed_param *ret_params_val,
+                                 int limit,
+                                 virTypedParameterPtr params,
+                                 int *nparams)
+{
+    int i;
+    int rv = -1;
+
+    /* Check the length of the returned list carefully. */
+    if (ret_params_len > limit || ret_params_len > *nparams) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("returned number of parameters exceeds limit"));
+        goto cleanup;
+    }
+
+    *nparams = ret_params_len;
+
+    /* Deserialise the result. */
+    for (i = 0; i < ret_params_len; ++i) {
+        if (virStrcpyStatic(params[i].field,
+                            ret_params_val[i].field) == NULL) {
+            remoteError(VIR_ERR_INTERNAL_ERROR,
+                        _("Parameter %s too big for destination"),
+                        ret_params_val[i].field);
+            goto cleanup;
+        }
+        params[i].type = ret_params_val[i].value.type;
+        switch (params[i].type) {
+        case VIR_TYPED_PARAM_INT:
+            params[i].value.i =
+                ret_params_val[i].value.remote_typed_param_value_u.i;
+            break;
+        case VIR_TYPED_PARAM_UINT:
+            params[i].value.ui =
+                ret_params_val[i].value.remote_typed_param_value_u.ui;
+            break;
+        case VIR_TYPED_PARAM_LLONG:
+            params[i].value.l =
+                ret_params_val[i].value.remote_typed_param_value_u.l;
+            break;
+        case VIR_TYPED_PARAM_ULLONG:
+            params[i].value.ul =
+                ret_params_val[i].value.remote_typed_param_value_u.ul;
+            break;
+        case VIR_TYPED_PARAM_DOUBLE:
+            params[i].value.d =
+                ret_params_val[i].value.remote_typed_param_value_u.d;
+            break;
+        case VIR_TYPED_PARAM_BOOLEAN:
+            params[i].value.b =
+                ret_params_val[i].value.remote_typed_param_value_u.b;
+            break;
+        default:
+            remoteError(VIR_ERR_RPC, _("unknown parameter type: %d"),
+                        params[i].type);
+            goto cleanup;
+        }
+    }
+
+    rv = 0;
+
+cleanup:
+    return rv;
+}
+
 static int
 remoteDomainSetMemoryParameters (virDomainPtr domain,
                                  virTypedParameterPtr params,
@@ -1787,56 +1919,17 @@ remoteDomainSetMemoryParameters (virDomainPtr domain,
 {
     int rv = -1;
     remote_domain_set_memory_parameters_args args;
-    int i, do_error;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
 
     make_nonnull_domain (&args.dom, domain);
 
-    /* Serialise the memory parameters. */
-    args.params.params_len = nparams;
     args.flags = flags;
-    if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
-        virReportOOMError();
-        goto done;
-    }
 
-    do_error = 0;
-    for (i = 0; i < nparams; ++i) {
-        /* call() will free this: */
-        args.params.params_val[i].field = strdup (params[i].field);
-        if (args.params.params_val[i].field == NULL) {
-            virReportOOMError();
-            do_error = 1;
-        }
-        args.params.params_val[i].value.type = params[i].type;
-        switch (params[i].type) {
-        case VIR_DOMAIN_MEMORY_PARAM_INT:
-            args.params.params_val[i].value.remote_memory_param_value_u.i =
-                params[i].value.i; break;
-        case VIR_DOMAIN_MEMORY_PARAM_UINT:
-            args.params.params_val[i].value.remote_memory_param_value_u.ui =
-                params[i].value.ui; break;
-        case VIR_DOMAIN_MEMORY_PARAM_LLONG:
-            args.params.params_val[i].value.remote_memory_param_value_u.l =
-                params[i].value.l; break;
-        case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
-            args.params.params_val[i].value.remote_memory_param_value_u.ul =
-                params[i].value.ul; break;
-        case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
-            args.params.params_val[i].value.remote_memory_param_value_u.d =
-                params[i].value.d; break;
-        case VIR_DOMAIN_MEMORY_PARAM_BOOLEAN:
-            args.params.params_val[i].value.remote_memory_param_value_u.b =
-                params[i].value.b; break;
-        default:
-            remoteError(VIR_ERR_RPC, "%s", _("unknown parameter type"));
-            do_error = 1;
-        }
-    }
-
-    if (do_error) {
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_len,
+                                       &args.params.params_val) < 0) {
         xdr_free ((xdrproc_t) xdr_remote_domain_set_memory_parameters_args,
                   (char *) &args);
         goto done;
@@ -1862,7 +1955,6 @@ remoteDomainGetMemoryParameters (virDomainPtr domain,
     int rv = -1;
     remote_domain_get_memory_parameters_args args;
     remote_domain_get_memory_parameters_ret ret;
-    int i = -1;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
@@ -1877,14 +1969,6 @@ remoteDomainGetMemoryParameters (virDomainPtr domain,
               (xdrproc_t) xdr_remote_domain_get_memory_parameters_ret, (char *) &ret) == -1)
         goto done;
 
-    /* Check the length of the returned list carefully. */
-    if (ret.params.params_len > REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX ||
-        ret.params.params_len > *nparams) {
-        remoteError(VIR_ERR_RPC, "%s",
-                    _("remoteDomainGetMemoryParameters: "
-                      "returned number of parameters exceeds limit"));
-        goto cleanup;
-    }
     /* Handle the case when the caller does not know the number of parameters
      * and is asking for the number of parameters supported
      */
@@ -1894,49 +1978,12 @@ remoteDomainGetMemoryParameters (virDomainPtr domain,
         goto cleanup;
     }
 
-    *nparams = ret.params.params_len;
-
-    /* Deserialise the result. */
-    for (i = 0; i < *nparams; ++i) {
-        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
-            remoteError(VIR_ERR_INTERNAL_ERROR,
-                        _("Parameter %s too big for destination"),
-                        ret.params.params_val[i].field);
-            goto cleanup;
-        }
-        params[i].type = ret.params.params_val[i].value.type;
-        switch (params[i].type) {
-        case VIR_DOMAIN_MEMORY_PARAM_INT:
-            params[i].value.i =
-                ret.params.params_val[i].value.remote_memory_param_value_u.i;
-            break;
-        case VIR_DOMAIN_MEMORY_PARAM_UINT:
-            params[i].value.ui =
-                ret.params.params_val[i].value.remote_memory_param_value_u.ui;
-            break;
-        case VIR_DOMAIN_MEMORY_PARAM_LLONG:
-            params[i].value.l =
-                ret.params.params_val[i].value.remote_memory_param_value_u.l;
-            break;
-        case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
-            params[i].value.ul =
-                ret.params.params_val[i].value.remote_memory_param_value_u.ul;
-            break;
-        case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
-            params[i].value.d =
-                ret.params.params_val[i].value.remote_memory_param_value_u.d;
-            break;
-        case VIR_DOMAIN_MEMORY_PARAM_BOOLEAN:
-            params[i].value.b =
-                ret.params.params_val[i].value.remote_memory_param_value_u.b;
-            break;
-        default:
-            remoteError(VIR_ERR_RPC, "%s",
-                        _("remoteDomainGetMemoryParameters: "
-                          "unknown parameter type"));
-            goto cleanup;
-        }
-    }
+    if (remoteDeserializeTypedParameters(ret.params.params_len,
+                                         ret.params.params_val,
+                                         REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
+        goto cleanup;
 
     rv = 0;
 
@@ -1956,56 +2003,17 @@ remoteDomainSetBlkioParameters (virDomainPtr domain,
 {
     int rv = -1;
     remote_domain_set_blkio_parameters_args args;
-    int i, do_error;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
 
     make_nonnull_domain (&args.dom, domain);
 
-    /* Serialise the blkio parameters. */
-    args.params.params_len = nparams;
     args.flags = flags;
-    if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
-        virReportOOMError();
-        goto done;
-    }
 
-    do_error = 0;
-    for (i = 0; i < nparams; ++i) {
-        // call() will free this:
-        args.params.params_val[i].field = strdup (params[i].field);
-        if (args.params.params_val[i].field == NULL) {
-            virReportOOMError();
-            do_error = 1;
-        }
-        args.params.params_val[i].value.type = params[i].type;
-        switch (params[i].type) {
-        case VIR_DOMAIN_BLKIO_PARAM_INT:
-            args.params.params_val[i].value.remote_blkio_param_value_u.i =
-                params[i].value.i; break;
-        case VIR_DOMAIN_BLKIO_PARAM_UINT:
-            args.params.params_val[i].value.remote_blkio_param_value_u.ui =
-                params[i].value.ui; break;
-        case VIR_DOMAIN_BLKIO_PARAM_LLONG:
-            args.params.params_val[i].value.remote_blkio_param_value_u.l =
-                params[i].value.l; break;
-        case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
-            args.params.params_val[i].value.remote_blkio_param_value_u.ul =
-                params[i].value.ul; break;
-        case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
-            args.params.params_val[i].value.remote_blkio_param_value_u.d =
-                params[i].value.d; break;
-        case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
-            args.params.params_val[i].value.remote_blkio_param_value_u.b =
-                params[i].value.b; break;
-        default:
-            remoteError(VIR_ERR_RPC, "%s", _("unknown parameter type"));
-            do_error = 1;
-        }
-    }
-
-    if (do_error) {
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_len,
+                                       &args.params.params_val) < 0) {
         xdr_free ((xdrproc_t) xdr_remote_domain_set_blkio_parameters_args,
                   (char *) &args);
         goto done;
@@ -2031,7 +2039,6 @@ remoteDomainGetBlkioParameters (virDomainPtr domain,
     int rv = -1;
     remote_domain_get_blkio_parameters_args args;
     remote_domain_get_blkio_parameters_ret ret;
-    int i = -1;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
@@ -2046,14 +2053,6 @@ remoteDomainGetBlkioParameters (virDomainPtr domain,
               (xdrproc_t) xdr_remote_domain_get_blkio_parameters_ret, (char *) &ret) == -1)
         goto done;
 
-    /* Check the length of the returned list carefully. */
-    if (ret.params.params_len > REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX ||
-        ret.params.params_len > *nparams) {
-        remoteError(VIR_ERR_RPC, "%s",
-                    _("remoteDomainGetBlkioParameters: "
-                      "returned number of parameters exceeds limit"));
-        goto cleanup;
-    }
     /* Handle the case when the caller does not know the number of parameters
      * and is asking for the number of parameters supported
      */
@@ -2063,49 +2062,12 @@ remoteDomainGetBlkioParameters (virDomainPtr domain,
         goto cleanup;
     }
 
-    *nparams = ret.params.params_len;
-
-    /* Deserialise the result. */
-    for (i = 0; i < *nparams; ++i) {
-        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
-            remoteError(VIR_ERR_INTERNAL_ERROR,
-                        _("Parameter %s too big for destination"),
-                        ret.params.params_val[i].field);
-            goto cleanup;
-        }
-        params[i].type = ret.params.params_val[i].value.type;
-        switch (params[i].type) {
-        case VIR_DOMAIN_BLKIO_PARAM_INT:
-            params[i].value.i =
-                ret.params.params_val[i].value.remote_blkio_param_value_u.i;
-            break;
-        case VIR_DOMAIN_BLKIO_PARAM_UINT:
-            params[i].value.ui =
-                ret.params.params_val[i].value.remote_blkio_param_value_u.ui;
-            break;
-        case VIR_DOMAIN_BLKIO_PARAM_LLONG:
-            params[i].value.l =
-                ret.params.params_val[i].value.remote_blkio_param_value_u.l;
-            break;
-        case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
-            params[i].value.ul =
-                ret.params.params_val[i].value.remote_blkio_param_value_u.ul;
-            break;
-        case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
-            params[i].value.d =
-                ret.params.params_val[i].value.remote_blkio_param_value_u.d;
-            break;
-        case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
-            params[i].value.b =
-                ret.params.params_val[i].value.remote_blkio_param_value_u.b;
-            break;
-        default:
-            remoteError(VIR_ERR_RPC, "%s",
-                        _("remoteDomainGetBlkioParameters: "
-                          "unknown parameter type"));
-            goto cleanup;
-        }
-    }
+    if (remoteDeserializeTypedParameters(ret.params.params_len,
+                                         ret.params.params_val,
+                                         REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
+        goto cleanup;
 
     rv = 0;
 
@@ -2475,7 +2437,6 @@ remoteDomainGetSchedulerParameters (virDomainPtr domain,
     int rv = -1;
     remote_domain_get_scheduler_parameters_args args;
     remote_domain_get_scheduler_parameters_ret ret;
-    int i = -1;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
@@ -2489,45 +2450,12 @@ remoteDomainGetSchedulerParameters (virDomainPtr domain,
               (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret) == -1)
         goto done;
 
-    /* Check the length of the returned list carefully. */
-    if (ret.params.params_len > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX ||
-        ret.params.params_len > *nparams) {
-        remoteError(VIR_ERR_RPC, "%s",
-                    _("remoteDomainGetSchedulerParameters: "
-                      "returned number of parameters exceeds limit"));
+    if (remoteDeserializeTypedParameters(ret.params.params_len,
+                                         ret.params.params_val,
+                                         REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
         goto cleanup;
-    }
-    *nparams = ret.params.params_len;
-
-    /* Deserialise the result. */
-    for (i = 0; i < *nparams; ++i) {
-        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
-            remoteError(VIR_ERR_INTERNAL_ERROR,
-                        _("Parameter %s too big for destination"),
-                        ret.params.params_val[i].field);
-            goto cleanup;
-        }
-        params[i].type = ret.params.params_val[i].value.type;
-        switch (params[i].type) {
-        case VIR_DOMAIN_SCHED_FIELD_INT:
-            params[i].value.i = ret.params.params_val[i].value.remote_sched_param_value_u.i; break;
-        case VIR_DOMAIN_SCHED_FIELD_UINT:
-            params[i].value.ui = ret.params.params_val[i].value.remote_sched_param_value_u.ui; break;
-        case VIR_DOMAIN_SCHED_FIELD_LLONG:
-            params[i].value.l = ret.params.params_val[i].value.remote_sched_param_value_u.l; break;
-        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
-            params[i].value.ul = ret.params.params_val[i].value.remote_sched_param_value_u.ul; break;
-        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
-            params[i].value.d = ret.params.params_val[i].value.remote_sched_param_value_u.d; break;
-        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
-            params[i].value.b = ret.params.params_val[i].value.remote_sched_param_value_u.b; break;
-        default:
-            remoteError(VIR_ERR_RPC, "%s",
-                        _("remoteDomainGetSchedulerParameters: "
-                          "unknown parameter type"));
-            goto cleanup;
-        }
-    }
 
     rv = 0;
 
@@ -2544,50 +2472,17 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
 {
     int rv = -1;
     remote_domain_set_scheduler_parameters_args args;
-    int i, do_error;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
 
     make_nonnull_domain (&args.dom, domain);
 
-    /* Serialise the scheduler parameters. */
-    args.params.params_len = nparams;
-    if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
-        virReportOOMError();
-        goto done;
-    }
-
-    do_error = 0;
-    for (i = 0; i < nparams; ++i) {
-        /* call() will free this: */
-        args.params.params_val[i].field = strdup (params[i].field);
-        if (args.params.params_val[i].field == NULL) {
-            virReportOOMError();
-            do_error = 1;
-        }
-        args.params.params_val[i].value.type = params[i].type;
-        switch (params[i].type) {
-        case VIR_DOMAIN_SCHED_FIELD_INT:
-            args.params.params_val[i].value.remote_sched_param_value_u.i = params[i].value.i; break;
-        case VIR_DOMAIN_SCHED_FIELD_UINT:
-            args.params.params_val[i].value.remote_sched_param_value_u.ui = params[i].value.ui; break;
-        case VIR_DOMAIN_SCHED_FIELD_LLONG:
-            args.params.params_val[i].value.remote_sched_param_value_u.l = params[i].value.l; break;
-        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
-            args.params.params_val[i].value.remote_sched_param_value_u.ul = params[i].value.ul; break;
-        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
-            args.params.params_val[i].value.remote_sched_param_value_u.d = params[i].value.d; break;
-        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
-            args.params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
-        default:
-            remoteError(VIR_ERR_RPC, "%s", _("unknown parameter type"));
-            do_error = 1;
-        }
-    }
-
-    if (do_error) {
-        xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_args, (char *) &args);
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_len,
+                                       &args.params.params_val) < 0) {
+        xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_args,
+                  (char *) &args);
         goto done;
     }
 
@@ -2611,51 +2506,19 @@ remoteDomainSetSchedulerParametersFlags(virDomainPtr domain,
 {
     int rv = -1;
     remote_domain_set_scheduler_parameters_flags_args args;
-    int i, do_error;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
 
     make_nonnull_domain (&args.dom, domain);
 
-    /* Serialise the scheduler parameters. */
-    args.params.params_len = nparams;
     args.flags = flags;
-    if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
-        virReportOOMError();
-        goto done;
-    }
 
-    do_error = 0;
-    for (i = 0; i < nparams; ++i) {
-        /* call() will free this: */
-        args.params.params_val[i].field = strdup (params[i].field);
-        if (args.params.params_val[i].field == NULL) {
-            virReportOOMError();
-            do_error = 1;
-        }
-        args.params.params_val[i].value.type = params[i].type;
-        switch (params[i].type) {
-        case VIR_DOMAIN_SCHED_FIELD_INT:
-            args.params.params_val[i].value.remote_sched_param_value_u.i = params[i].value.i; break;
-        case VIR_DOMAIN_SCHED_FIELD_UINT:
-            args.params.params_val[i].value.remote_sched_param_value_u.ui = params[i].value.ui; break;
-        case VIR_DOMAIN_SCHED_FIELD_LLONG:
-            args.params.params_val[i].value.remote_sched_param_value_u.l = params[i].value.l; break;
-        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
-            args.params.params_val[i].value.remote_sched_param_value_u.ul = params[i].value.ul; break;
-        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
-            args.params.params_val[i].value.remote_sched_param_value_u.d = params[i].value.d; break;
-        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
-            args.params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
-        default:
-            remoteError(VIR_ERR_RPC, "%s", _("unknown parameter type"));
-            do_error = 1;
-        }
-    }
-
-    if (do_error) {
-        xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_flags_args, (char *) &args);
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_len,
+                                       &args.params.params_val) < 0) {
+        xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_flags_args,
+                  (char *) &args);
         goto done;
     }
 

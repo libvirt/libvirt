@@ -296,67 +296,27 @@ struct remote_vcpu_info {
     int cpu;
 };
 
-/* Wire encoding of virDomainSchedParameter.
+/* Wire encoding of virTypedParameter.
  * Note the enum (type) which must remain binary compatible.
  */
-union remote_sched_param_value switch (int type) {
- case VIR_DOMAIN_SCHED_FIELD_INT:
+union remote_typed_param_value switch (int type) {
+ case VIR_TYPED_PARAM_INT:
      int i;
- case VIR_DOMAIN_SCHED_FIELD_UINT:
+ case VIR_TYPED_PARAM_UINT:
      unsigned int ui;
- case VIR_DOMAIN_SCHED_FIELD_LLONG:
+ case VIR_TYPED_PARAM_LLONG:
      hyper l;
- case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+ case VIR_TYPED_PARAM_ULLONG:
      unsigned hyper ul;
- case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+ case VIR_TYPED_PARAM_DOUBLE:
      double d;
- case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+ case VIR_TYPED_PARAM_BOOLEAN:
      int b;
 };
 
-struct remote_sched_param {
+struct remote_typed_param {
     remote_nonnull_string field;
-    remote_sched_param_value value;
-};
-
-union remote_blkio_param_value switch (int type) {
- case VIR_DOMAIN_BLKIO_PARAM_INT:
-     int i;
- case VIR_DOMAIN_BLKIO_PARAM_UINT:
-     unsigned int ui;
- case VIR_DOMAIN_BLKIO_PARAM_LLONG:
-     hyper l;
- case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
-     unsigned hyper ul;
- case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
-     double d;
- case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
-     int b;
-};
-
-struct remote_blkio_param {
-    remote_nonnull_string field;
-    remote_blkio_param_value value;
-};
-
-union remote_memory_param_value switch (int type) {
- case VIR_DOMAIN_MEMORY_PARAM_INT:
-     int i;
- case VIR_DOMAIN_MEMORY_PARAM_UINT:
-     unsigned int ui;
- case VIR_DOMAIN_MEMORY_PARAM_LLONG:
-     hyper l;
- case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
-     unsigned hyper ul;
- case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
-     double d;
- case VIR_DOMAIN_MEMORY_PARAM_BOOLEAN:
-     int b;
-};
-
-struct remote_memory_param {
-    remote_nonnull_string field;
-    remote_memory_param_value value;
+    remote_typed_param_value value;
 };
 
 /*----- Calls. -----*/
@@ -471,23 +431,23 @@ struct remote_domain_get_scheduler_parameters_args {
 };
 
 struct remote_domain_get_scheduler_parameters_ret {
-    remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
 };
 
 struct remote_domain_set_scheduler_parameters_args {
     remote_nonnull_domain dom;
-    remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
 };
 
 struct remote_domain_set_scheduler_parameters_flags_args {
     remote_nonnull_domain dom;
-    remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
     unsigned int flags;
 };
 
 struct remote_domain_set_blkio_parameters_args {
     remote_nonnull_domain dom;
-    remote_blkio_param params<REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX>;
     unsigned int flags;
 };
 
@@ -498,13 +458,13 @@ struct remote_domain_get_blkio_parameters_args {
 };
 
 struct remote_domain_get_blkio_parameters_ret {
-    remote_blkio_param params<REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX>;
     int nparams;
 };
 
 struct remote_domain_set_memory_parameters_args {
     remote_nonnull_domain dom;
-    remote_memory_param params<REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX>;
     unsigned int flags;
 };
 
@@ -515,7 +475,7 @@ struct remote_domain_get_memory_parameters_args {
 };
 
 struct remote_domain_get_memory_parameters_ret {
-    remote_memory_param params<REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX>;
     int nparams;
 };
 
