@@ -1492,7 +1492,7 @@ static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
 out:
     VIR_FORCE_CLOSE(outfd);
     virCommandFree(cmd);
-    if (rc >= 0) {
+    if (rc < 0) {
         for ( ; got >= 0 ; got--)
             VIR_FREE(names[got]);
     }
