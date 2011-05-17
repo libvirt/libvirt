@@ -2950,8 +2950,10 @@ cleanup:
 }
 
 static int
-libxlDomainGetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
-                                  int *nparams)
+libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
+                                       virTypedParameterPtr params,
+                                       int *nparams,
+                                       unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDomainObjPrivatePtr priv;
@@ -2959,6 +2961,8 @@ libxlDomainGetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
     libxl_sched_credit sc_info;
     int sched_id;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3027,8 +3031,17 @@ cleanup:
 }
 
 static int
-libxlDomainSetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
-                                  int nparams)
+libxlDomainGetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
+                                  int *nparams)
+{
+    return libxlDomainGetSchedulerParametersFlags(dom, params, nparams, 0);
+}
+
+static int
+libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
+                                       virTypedParameterPtr params,
+                                       int nparams,
+                                       unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDomainObjPrivatePtr priv;
@@ -3037,6 +3050,8 @@ libxlDomainSetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
     int sched_id;
     int i;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3112,6 +3127,13 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+libxlDomainSetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
+                                  int nparams)
+{
+    return libxlDomainSetSchedulerParametersFlags(dom, params, nparams, 0);
 }
 
 static int
@@ -3266,7 +3288,9 @@ static virDriver libxlDriver = {
     .domainSetAutostart = libxlDomainSetAutostart, /* 0.9.0 */
     .domainGetSchedulerType = libxlDomainGetSchedulerType, /* 0.9.0 */
     .domainGetSchedulerParameters = libxlDomainGetSchedulerParameters, /* 0.9.0 */
+    .domainGetSchedulerParametersFlags = libxlDomainGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = libxlDomainSetSchedulerParameters, /* 0.9.0 */
+    .domainSetSchedulerParametersFlags = libxlDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .nodeGetFreeMemory = libxlNodeGetFreeMemory, /* 0.9.0 */
     .domainEventRegister = libxlDomainEventRegister, /* 0.9.0 */
     .domainEventDeregister = libxlDomainEventDeregister, /* 0.9.0 */

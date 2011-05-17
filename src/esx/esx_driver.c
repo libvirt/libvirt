@@ -3559,8 +3559,9 @@ esxDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
 
 
 static int
-esxDomainGetSchedulerParameters(virDomainPtr domain,
-                                virTypedParameterPtr params, int *nparams)
+esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
+                                     virTypedParameterPtr params, int *nparams,
+                                     unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -3570,6 +3571,8 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
     esxVI_SharesInfo *sharesInfo = NULL;
     unsigned int mask = 0;
     int i = 0;
+
+    virCheckFlags(0, -1);
 
     if (*nparams < 3) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
@@ -3681,11 +3684,18 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
     return result;
 }
 
+static int
+esxDomainGetSchedulerParameters(virDomainPtr domain,
+                                virTypedParameterPtr params, int *nparams)
+{
+    return esxDomainGetSchedulerParametersFlags(domain, params, nparams, 0);
+}
 
 
 static int
-esxDomainSetSchedulerParameters(virDomainPtr domain,
-                                virTypedParameterPtr params, int nparams)
+esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
+                                     virTypedParameterPtr params, int nparams,
+                                     unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -3696,6 +3706,8 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
     int i;
+
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -3812,6 +3824,12 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
     return result;
 }
 
+static int
+esxDomainSetSchedulerParameters(virDomainPtr domain,
+                                virTypedParameterPtr params, int nparams)
+{
+    return esxDomainSetSchedulerParametersFlags(domain, params, nparams, 0);
+}
 
 
 static int
@@ -4711,7 +4729,9 @@ static virDriver esxDriver = {
     .domainSetAutostart = esxDomainSetAutostart, /* 0.9.0 */
     .domainGetSchedulerType = esxDomainGetSchedulerType, /* 0.7.0 */
     .domainGetSchedulerParameters = esxDomainGetSchedulerParameters, /* 0.7.0 */
+    .domainGetSchedulerParametersFlags = esxDomainGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = esxDomainSetSchedulerParameters, /* 0.7.0 */
+    .domainSetSchedulerParametersFlags = esxDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .domainMigratePrepare = esxDomainMigratePrepare, /* 0.7.0 */
     .domainMigratePerform = esxDomainMigratePerform, /* 0.7.0 */
     .domainMigrateFinish = esxDomainMigrateFinish, /* 0.7.0 */

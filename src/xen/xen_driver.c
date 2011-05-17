@@ -1676,12 +1676,15 @@ xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
 }
 
 static int
-xenUnifiedDomainGetSchedulerParameters (virDomainPtr dom,
-                                        virTypedParameterPtr params,
-                                        int *nparams)
+xenUnifiedDomainGetSchedulerParametersFlags(virDomainPtr dom,
+                                            virTypedParameterPtr params,
+                                            int *nparams,
+                                            unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i, ret;
+
+    virCheckFlags(0, -1);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
         if (priv->opened[i] && drivers[i]->domainGetSchedulerParameters) {
@@ -1694,12 +1697,24 @@ xenUnifiedDomainGetSchedulerParameters (virDomainPtr dom,
 }
 
 static int
-xenUnifiedDomainSetSchedulerParameters (virDomainPtr dom,
-                                        virTypedParameterPtr params,
-                                        int nparams)
+xenUnifiedDomainGetSchedulerParameters(virDomainPtr dom,
+                                       virTypedParameterPtr params,
+                                       int *nparams)
+{
+    return xenUnifiedDomainGetSchedulerParametersFlags(dom, params,
+                                                       nparams, 0);
+}
+
+static int
+xenUnifiedDomainSetSchedulerParametersFlags(virDomainPtr dom,
+                                            virTypedParameterPtr params,
+                                            int nparams,
+                                            unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i, ret;
+
+    virCheckFlags(0, -1);
 
     /* do the hypervisor call last to get better error */
     for (i = XEN_UNIFIED_NR_DRIVERS - 1; i >= 0; i--) {
@@ -1711,6 +1726,15 @@ xenUnifiedDomainSetSchedulerParameters (virDomainPtr dom,
     }
 
     return(-1);
+}
+
+static int
+xenUnifiedDomainSetSchedulerParameters(virDomainPtr dom,
+                                       virTypedParameterPtr params,
+                                       int nparams)
+{
+    return xenUnifiedDomainSetSchedulerParametersFlags(dom, params,
+                                                       nparams, 0);
 }
 
 static int
@@ -2197,7 +2221,9 @@ static virDriver xenUnifiedDriver = {
     .domainSetAutostart = xenUnifiedDomainSetAutostart, /* 0.4.4 */
     .domainGetSchedulerType = xenUnifiedDomainGetSchedulerType, /* 0.2.3 */
     .domainGetSchedulerParameters = xenUnifiedDomainGetSchedulerParameters, /* 0.2.3 */
+    .domainGetSchedulerParametersFlags = xenUnifiedDomainGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = xenUnifiedDomainSetSchedulerParameters, /* 0.2.3 */
+    .domainSetSchedulerParametersFlags = xenUnifiedDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .domainMigratePrepare = xenUnifiedDomainMigratePrepare, /* 0.3.2 */
     .domainMigratePerform = xenUnifiedDomainMigratePerform, /* 0.3.2 */
     .domainMigrateFinish = xenUnifiedDomainMigrateFinish, /* 0.3.2 */

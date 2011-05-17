@@ -2636,13 +2636,17 @@ static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
     return type;
 }
 
-static int testDomainGetSchedulerParams(virDomainPtr domain,
-                                        virTypedParameterPtr params,
-                                        int *nparams)
+static int
+testDomainGetSchedulerParamsFlags(virDomainPtr domain,
+                                  virTypedParameterPtr params,
+                                  int *nparams,
+                                  unsigned int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2673,14 +2677,25 @@ cleanup:
     return ret;
 }
 
+static int
+testDomainGetSchedulerParams(virDomainPtr domain,
+                             virTypedParameterPtr params,
+                             int *nparams)
+{
+    return testDomainGetSchedulerParamsFlags(domain, params, nparams, 0);
+}
 
-static int testDomainSetSchedulerParams(virDomainPtr domain,
-                                        virTypedParameterPtr params,
-                                        int nparams)
+static int
+testDomainSetSchedulerParamsFlags(virDomainPtr domain,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  unsigned int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1, i;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2711,6 +2726,14 @@ cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
     return ret;
+}
+
+static int
+testDomainSetSchedulerParams(virDomainPtr domain,
+                             virTypedParameterPtr params,
+                             int nparams)
+{
+    return testDomainSetSchedulerParamsFlags(domain, params, nparams, 0);
 }
 
 static int testDomainBlockStats(virDomainPtr domain,
@@ -5454,7 +5477,9 @@ static virDriver testDriver = {
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
     .domainGetSchedulerType = testDomainGetSchedulerType, /* 0.3.2 */
     .domainGetSchedulerParameters = testDomainGetSchedulerParams, /* 0.3.2 */
+    .domainGetSchedulerParametersFlags = testDomainGetSchedulerParamsFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = testDomainSetSchedulerParams, /* 0.3.2 */
+    .domainSetSchedulerParametersFlags = testDomainSetSchedulerParamsFlags, /* 0.9.2 */
     .domainBlockStats = testDomainBlockStats, /* 0.7.0 */
     .domainInterfaceStats = testDomainInterfaceStats, /* 0.7.0 */
     .nodeGetCellsFreeMemory = testNodeGetCellsFreeMemory, /* 0.4.2 */

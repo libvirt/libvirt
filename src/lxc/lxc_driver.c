@@ -2161,15 +2161,19 @@ static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
     return schedulerType;
 }
 
-static int lxcSetSchedulerParameters(virDomainPtr domain,
-                                     virTypedParameterPtr params,
-                                     int nparams)
+static int
+lxcSetSchedulerParametersFlags(virDomainPtr domain,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               unsigned int flags)
 {
     lxc_driver_t *driver = domain->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     if (driver->cgroup == NULL)
         return -1;
@@ -2222,15 +2226,27 @@ cleanup:
     return ret;
 }
 
-static int lxcGetSchedulerParameters(virDomainPtr domain,
-                                     virTypedParameterPtr params,
-                                     int *nparams)
+static int
+lxcSetSchedulerParameters(virDomainPtr domain,
+                          virTypedParameterPtr params,
+                          int nparams)
+{
+    return lxcSetSchedulerParametersFlags(domain, params, nparams, 0);
+}
+
+static int
+lxcGetSchedulerParametersFlags(virDomainPtr domain,
+                               virTypedParameterPtr params,
+                               int *nparams,
+                               unsigned int flags)
 {
     lxc_driver_t *driver = domain->conn->privateData;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     unsigned long long val;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     if (driver->cgroup == NULL)
         return -1;
@@ -2274,6 +2290,14 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+lxcGetSchedulerParameters(virDomainPtr domain,
+                          virTypedParameterPtr params,
+                          int *nparams)
+{
+    return lxcGetSchedulerParametersFlags(domain, params, nparams, 0);
 }
 
 #ifdef __linux__
@@ -2752,7 +2776,9 @@ static virDriver lxcDriver = {
     .domainSetAutostart = lxcDomainSetAutostart, /* 0.7.0 */
     .domainGetSchedulerType = lxcGetSchedulerType, /* 0.5.0 */
     .domainGetSchedulerParameters = lxcGetSchedulerParameters, /* 0.5.0 */
+    .domainGetSchedulerParametersFlags = lxcGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = lxcSetSchedulerParameters, /* 0.5.0 */
+    .domainSetSchedulerParametersFlags = lxcSetSchedulerParametersFlags, /* 0.9.2 */
     .domainInterfaceStats = lxcDomainInterfaceStats, /* 0.7.3 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.6.5 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.6.5 */
