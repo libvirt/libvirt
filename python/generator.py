@@ -323,6 +323,7 @@ skip_impl = (
     'virNodeGetCellsFreeMemory',
     'virDomainGetSchedulerType',
     'virDomainGetSchedulerParameters',
+    'virDomainGetSchedulerParametersFlags',
     'virDomainSetSchedulerParameters',
     'virDomainSetSchedulerParametersFlags',
     'virDomainSetBlkioParameters',

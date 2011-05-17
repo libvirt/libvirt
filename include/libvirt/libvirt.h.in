@@ -350,6 +350,10 @@ typedef enum {
 int     virDomainGetSchedulerParameters (virDomainPtr domain,
                                          virTypedParameterPtr params,
                                          int *nparams);
+int     virDomainGetSchedulerParametersFlags (virDomainPtr domain,
+                                              virTypedParameterPtr params,
+                                              int *nparams,
+                                              unsigned int flags);
 
 /*
  * Change scheduler parameters
@@ -357,10 +361,6 @@ int     virDomainGetSchedulerParameters (virDomainPtr domain,
 int     virDomainSetSchedulerParameters (virDomainPtr domain,
                                          virTypedParameterPtr params,
                                          int nparams);
-
-/*
- * Change scheduler parameters
- */
 int     virDomainSetSchedulerParametersFlags (virDomainPtr domain,
                                               virTypedParameterPtr params,
                                               int nparams,

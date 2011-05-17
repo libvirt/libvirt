@@ -5428,7 +5428,9 @@ error:
  *
  * Get all scheduler parameters, the @params array will be filled with the
  * values and @nparams will be updated to the number of valid elements in
- * @params.
+ * @params.  It is hypervisor specific whether this returns the live or
+ * persistent state; for more control, use
+ * virDomainGetSchedulerParametersFlags.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -5471,6 +5473,65 @@ error:
 }
 
 /**
+ * virDomainGetSchedulerParametersFlags:
+ * @domain: pointer to domain object
+ * @params: pointer to scheduler parameter object
+ *          (return value)
+ * @nparams: pointer to number of scheduler parameter
+ *          (this value should be same than the returned value
+ *           nparams of virDomainGetSchedulerType)
+ * @flags: virDomainSchedParameterFlags
+ *
+ * Get the scheduler parameters, the @params array will be filled with the
+ * values.
+ *
+ * The value of @flags can be exactly VIR_DOMAIN_SCHEDPARAM_CURRENT,
+ * VIR_DOMAIN_SCHEDPARAM_LIVE, or VIR_DOMAIN_SCHEDPARAM_CONFIG.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainGetSchedulerParametersFlags(virDomainPtr domain,
+                                     virTypedParameterPtr params, int *nparams,
+                                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%p, flags=%u",
+                     params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (params == NULL || nparams == NULL || *nparams <= 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetSchedulerParametersFlags) {
+        int ret;
+        ret = conn->driver->domainGetSchedulerParametersFlags (domain, params,
+                                                               nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainSetSchedulerParameters:
  * @domain: pointer to domain object
  * @params: pointer to scheduler parameter objects
@@ -5478,7 +5539,10 @@ error:
  *          (this value can be the same or less than the returned value
  *           nparams of virDomainGetSchedulerType)
  *
- * Change all or a subset or the scheduler parameters.
+ * Change all or a subset or the scheduler parameters.  It is
+ * hypervisor-specific whether this sets live, persistent, or both
+ * settings; for more control, use
+ * virDomainSetSchedulerParametersFlags.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -5534,7 +5598,11 @@ error:
  *           nparams of virDomainGetSchedulerType)
  * @flags: virDomainSchedParameterFlags
  *
- * Change a subset or all scheduler parameters.
+ * Change a subset or all scheduler parameters.  The value of @flags
+ * should be either VIR_DOMAIN_SCHEDPARAM_CURRENT, or a bitwise-or of
+ * values from VIR_DOMAIN_SCHEDPARAM_LIVE and
+ * VIR_DOMAIN_SCHEDPARAM_CURRENT, although hypervisors vary in which
+ * flags are supported.
  *
  * Returns -1 in case of error, 0 in case of success.
  */

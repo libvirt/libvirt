@@ -280,6 +280,13 @@ typedef int
                                          int *nparams);
 
 typedef int
+        (*virDrvDomainGetSchedulerParametersFlags)
+                                        (virDomainPtr domain,
+                                         virTypedParameterPtr params,
+                                         int *nparams,
+                                         unsigned int flags);
+
+typedef int
         (*virDrvDomainSetSchedulerParameters)
                                         (virDomainPtr domain,
                                          virTypedParameterPtr params,
@@ -686,6 +693,7 @@ struct _virDriver {
     virDrvDomainSetAutostart	domainSetAutostart;
     virDrvDomainGetSchedulerType	domainGetSchedulerType;
     virDrvDomainGetSchedulerParameters domainGetSchedulerParameters;
+    virDrvDomainGetSchedulerParametersFlags domainGetSchedulerParametersFlags;
     virDrvDomainSetSchedulerParameters domainSetSchedulerParameters;
     virDrvDomainSetSchedulerParametersFlags domainSetSchedulerParametersFlags;
     virDrvDomainMigratePrepare	domainMigratePrepare;
