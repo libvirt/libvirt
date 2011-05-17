@@ -151,6 +151,17 @@ struct remote_domain_get_scheduler_parameters_ret {
                 remote_typed_param * params_val;
         } params;
 };
+struct remote_domain_get_scheduler_parameters_flags_args {
+        remote_nonnull_domain      dom;
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_domain_get_scheduler_parameters_flags_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
 struct remote_domain_set_scheduler_parameters_args {
         remote_nonnull_domain      dom;
         struct {

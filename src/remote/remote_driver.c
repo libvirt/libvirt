@@ -2467,6 +2467,45 @@ done:
 }
 
 static int
+remoteDomainGetSchedulerParametersFlags (virDomainPtr domain,
+                                         virTypedParameterPtr params,
+                                         int *nparams,
+                                         unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_scheduler_parameters_flags_args args;
+    remote_domain_get_scheduler_parameters_flags_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.nparams = *nparams;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS,
+              (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_flags_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_flags_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (remoteDeserializeTypedParameters(ret.params.params_len,
+                                         ret.params.params_val,
+                                         REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_scheduler_parameters_flags_ret, (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainSetSchedulerParameters (virDomainPtr domain,
                                     virTypedParameterPtr params, int nparams)
 {
@@ -6424,7 +6463,9 @@ static virDriver remote_driver = {
     .domainSetAutostart = remoteDomainSetAutostart, /* 0.3.0 */
     .domainGetSchedulerType = remoteDomainGetSchedulerType, /* 0.3.0 */
     .domainGetSchedulerParameters = remoteDomainGetSchedulerParameters, /* 0.3.0 */
+    .domainGetSchedulerParametersFlags = remoteDomainGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = remoteDomainSetSchedulerParameters, /* 0.3.0 */
+    .domainSetSchedulerParametersFlags = remoteDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .domainMigratePrepare = remoteDomainMigratePrepare, /* 0.3.2 */
     .domainMigratePerform = remoteDomainMigratePerform, /* 0.3.2 */
     .domainMigrateFinish = remoteDomainMigrateFinish, /* 0.3.2 */
@@ -6478,7 +6519,6 @@ static virDriver remote_driver = {
     .domainMigratePerform3 = remoteDomainMigratePerform3, /* 0.9.2 */
     .domainMigrateFinish3 = remoteDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = remoteDomainMigrateConfirm3, /* 0.9.2 */
-    .domainSetSchedulerParametersFlags = remoteDomainSetSchedulerParametersFlags, /* 0.9.2 */
 };
 
 static virNetworkDriver network_driver = {

@@ -434,6 +434,16 @@ struct remote_domain_get_scheduler_parameters_ret {
     remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
 };
 
+struct remote_domain_get_scheduler_parameters_flags_args {
+    remote_nonnull_domain dom;
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_domain_get_scheduler_parameters_flags_ret {
+    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+};
+
 struct remote_domain_set_scheduler_parameters_args {
     remote_nonnull_domain dom;
     remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
@@ -2281,7 +2291,8 @@ enum remote_procedure {
     REMOTE_PROC_INTERFACE_CHANGE_BEGIN = 220, /* autogen autogen */
 
     REMOTE_PROC_INTERFACE_CHANGE_COMMIT = 221, /* autogen autogen */
-    REMOTE_PROC_INTERFACE_CHANGE_ROLLBACK = 222 /* autogen autogen */
+    REMOTE_PROC_INTERFACE_CHANGE_ROLLBACK = 222, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS = 223 /* skipgen skipgen */
     /*
      * Notice how the entries are grouped in sets of 10 ?
      * Nice isn't it. Please keep it this way when adding more.

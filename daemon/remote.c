@@ -685,6 +685,59 @@ no_memory:
 }
 
 static int
+remoteDispatchDomainGetSchedulerParametersFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                                virConnectPtr conn,
+                                                remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                                remote_error *rerr,
+                                                remote_domain_get_scheduler_parameters_flags_args *args,
+                                                remote_domain_get_scheduler_parameters_flags_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = args->nparams;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(params, nparams) < 0)
+        goto no_memory;
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainGetSchedulerParametersFlags(dom, params, &nparams,
+                                             args->flags) < 0)
+        goto cleanup;
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &ret->params.params_len,
+                                       &ret->params.params_val) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    VIR_FREE(params);
+    return rv;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+static int
 remoteDispatchDomainSetSchedulerParameters(struct qemud_server *server ATTRIBUTE_UNUSED,
                                            struct qemud_client *client ATTRIBUTE_UNUSED,
                                            virConnectPtr conn,
