@@ -3903,13 +3903,28 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
      */
-    return domain->conn->driver->domainMigratePerform(domain,
-                                                      NULL, /* cookie */
-                                                      0,    /* cookielen */
-                                                      uri,
-                                                      flags,
-                                                      dname,
-                                                      bandwidth);
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_MIGRATION_V3)) {
+        VIR_DEBUG("Using migration protocol 3");
+        return domain->conn->driver->domainMigratePerform3(domain,
+                                                           NULL, /* cookiein */
+                                                           0,    /* cookieinlen */
+                                                           NULL, /* cookieoutlen */
+                                                           NULL, /* cookieoutlen */
+                                                           uri,
+                                                           flags,
+                                                           dname,
+                                                           bandwidth);
+    } else {
+        VIR_DEBUG("Using migration protocol 2");
+        return domain->conn->driver->domainMigratePerform(domain,
+                                                          NULL, /* cookie */
+                                                          0,    /* cookielen */
+                                                          uri,
+                                                          flags,
+                                                          dname,
+                                                          bandwidth);
+    }
 }
 
 
@@ -3940,13 +3955,28 @@ virDomainMigrateDirect (virDomainPtr domain,
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
      */
-    return domain->conn->driver->domainMigratePerform(domain,
-                                                      NULL, /* cookie */
-                                                      0,    /* cookielen */
-                                                      uri,
-                                                      flags,
-                                                      dname,
-                                                      bandwidth);
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_MIGRATION_V3)) {
+        VIR_DEBUG("Using migration protocol 3");
+        return domain->conn->driver->domainMigratePerform3(domain,
+                                                           NULL, /* cookiein */
+                                                           0,    /* cookieinlen */
+                                                           NULL, /* cookieoutlen */
+                                                           NULL, /* cookieoutlen */
+                                                           uri,
+                                                           flags,
+                                                           dname,
+                                                           bandwidth);
+    } else {
+        VIR_DEBUG("Using migration protocol 2");
+        return domain->conn->driver->domainMigratePerform(domain,
+                                                          NULL, /* cookie */
+                                                          0,    /* cookielen */
+                                                          uri,
+                                                          flags,
+                                                          dname,
+                                                          bandwidth);
+    }
 }
 
 
@@ -4207,6 +4237,7 @@ virDomainMigrateToURI (virDomainPtr domain,
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_P2P)) {
+            VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigratePeer2Peer (domain, flags, dname, duri, bandwidth) < 0)
                 goto error;
         } else {
@@ -4217,6 +4248,7 @@ virDomainMigrateToURI (virDomainPtr domain,
     } else {
         if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
+            VIR_DEBUG("Using direct migration");
             if (virDomainMigrateDirect (domain, flags, dname, duri, bandwidth) < 0)
                 goto error;
         } else {
