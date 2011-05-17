@@ -296,9 +296,9 @@ typedef enum {
 } virSchedParameterType;
 
 typedef enum {
-    VIR_DOMAIN_SCHEDPARAM_CURRENT = (1 << 0), /* affect current domain state */
-    VIR_DOMAIN_SCHEDPARAM_LIVE    = (1 << 1), /* Affect active domain */
-    VIR_DOMAIN_SCHEDPARAM_CONFIG  = (1 << 2), /* Affect next boot */
+    VIR_DOMAIN_SCHEDPARAM_CURRENT = 0,        /* affect current domain state */
+    VIR_DOMAIN_SCHEDPARAM_LIVE    = (1 << 0), /* Affect active domain */
+    VIR_DOMAIN_SCHEDPARAM_CONFIG  = (1 << 1), /* Affect next boot */
 } virDomainSchedParameterFlags;
 
 /**
