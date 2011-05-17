@@ -281,18 +281,70 @@ struct _virNodeInfo {
 };
 
 
+/* Common data types shared among interfaces with name/type/value lists.  */
+
+/**
+ * virTypedParameterType:
+ *
+ * Express the type of a virTypedParameter
+ */
+typedef enum {
+    VIR_TYPED_PARAM_INT     = 1, /* integer case */
+    VIR_TYPED_PARAM_UINT    = 2, /* unsigned integer case */
+    VIR_TYPED_PARAM_LLONG   = 3, /* long long case */
+    VIR_TYPED_PARAM_ULLONG  = 4, /* unsigned long long case */
+    VIR_TYPED_PARAM_DOUBLE  = 5, /* double case */
+    VIR_TYPED_PARAM_BOOLEAN = 6  /* boolean(character) case */
+} virTypedParameterType;
+
+/**
+ * VIR_TYPED_PARAM_FIELD_LENGTH:
+ *
+ * Macro providing the field length of virTypedParameter name
+ */
+#define VIR_TYPED_PARAM_FIELD_LENGTH 80
+
+/**
+ * virTypedParameter:
+ *
+ * A named parameter, including a type and value.
+ */
+typedef struct _virTypedParameter virTypedParameter;
+
+struct _virTypedParameter {
+    char field[VIR_TYPED_PARAM_FIELD_LENGTH];  /* parameter name */
+    int type;   /* parameter type, virTypedParameterType */
+    union {
+        int i;                      /* type is INT */
+        unsigned int ui;            /* type is UINT */
+        long long int l;            /* type is LLONG */
+        unsigned long long int ul;  /* type is ULLONG */
+        double d;                   /* type is DOUBLE */
+        char b;                     /* type is BOOLEAN */
+    } value; /* parameter value */
+};
+
+/**
+ * virTypedParameterPtr:
+ *
+ * a pointer to a virTypedParameter structure.
+ */
+typedef virTypedParameter *virTypedParameterPtr;
+
+/* Management of scheduler parameters */
+
 /**
  * virDomainSchedParameterType:
  *
  * A scheduler parameter field type
  */
 typedef enum {
-    VIR_DOMAIN_SCHED_FIELD_INT     = 1, /* integer case */
-    VIR_DOMAIN_SCHED_FIELD_UINT    = 2, /* unsigned integer case */
-    VIR_DOMAIN_SCHED_FIELD_LLONG   = 3, /* long long case */
-    VIR_DOMAIN_SCHED_FIELD_ULLONG  = 4, /* unsigned long long case */
-    VIR_DOMAIN_SCHED_FIELD_DOUBLE  = 5, /* double case */
-    VIR_DOMAIN_SCHED_FIELD_BOOLEAN = 6  /* boolean(character) case */
+    VIR_DOMAIN_SCHED_FIELD_INT     = VIR_TYPED_PARAM_INT,
+    VIR_DOMAIN_SCHED_FIELD_UINT    = VIR_TYPED_PARAM_UINT,
+    VIR_DOMAIN_SCHED_FIELD_LLONG   = VIR_TYPED_PARAM_LLONG,
+    VIR_DOMAIN_SCHED_FIELD_ULLONG  = VIR_TYPED_PARAM_ULLONG,
+    VIR_DOMAIN_SCHED_FIELD_DOUBLE  = VIR_TYPED_PARAM_DOUBLE,
+    VIR_DOMAIN_SCHED_FIELD_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN,
 } virSchedParameterType;
 
 typedef enum {
@@ -307,7 +359,7 @@ typedef enum {
  * Macro providing the field length of virSchedParameter
  */
 
-#define VIR_DOMAIN_SCHED_FIELD_LENGTH 80
+#define VIR_DOMAIN_SCHED_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
  * virDomainSchedParameter:
@@ -315,20 +367,7 @@ typedef enum {
  * a virDomainSchedParameter is the set of scheduler parameters
  */
 
-typedef struct _virSchedParameter virSchedParameter;
-
-struct _virSchedParameter {
-    char field[VIR_DOMAIN_SCHED_FIELD_LENGTH];  /* parameter name */
-    int type;   /* parameter type */
-    union {
-        int i;                          /* data for integer case */
-        unsigned int ui;        /* data for unsigned integer case */
-        long long int l;        /* data for long long integer case */
-        unsigned long long int ul;      /* data for unsigned long long integer case */
-        double d;       /* data for double case */
-        char b;         /* data for char case */
-    } value; /* parameter value */
-};
+typedef struct _virTypedParameter virSchedParameter;
 
 /**
  * virSchedParameterPtr:
@@ -758,18 +797,21 @@ int                     virDomainGetState       (virDomainPtr domain,
  */
 char *                  virDomainGetSchedulerType(virDomainPtr domain,
                                                  int *nparams);
+
+/* Manage blkio parameters.  */
+
 /**
  * virDomainBlkioParameterType:
  *
  * A blkio parameter field type
  */
 typedef enum {
-    VIR_DOMAIN_BLKIO_PARAM_INT     = 1, /* integer case */
-    VIR_DOMAIN_BLKIO_PARAM_UINT    = 2, /* unsigned integer case */
-    VIR_DOMAIN_BLKIO_PARAM_LLONG   = 3, /* long long case */
-    VIR_DOMAIN_BLKIO_PARAM_ULLONG  = 4, /* unsigned long long case */
-    VIR_DOMAIN_BLKIO_PARAM_DOUBLE  = 5, /* double case */
-    VIR_DOMAIN_BLKIO_PARAM_BOOLEAN = 6  /* boolean(character) case */
+    VIR_DOMAIN_BLKIO_PARAM_INT     = VIR_TYPED_PARAM_INT,
+    VIR_DOMAIN_BLKIO_PARAM_UINT    = VIR_TYPED_PARAM_UINT,
+    VIR_DOMAIN_BLKIO_PARAM_LLONG   = VIR_TYPED_PARAM_LLONG,
+    VIR_DOMAIN_BLKIO_PARAM_ULLONG  = VIR_TYPED_PARAM_ULLONG,
+    VIR_DOMAIN_BLKIO_PARAM_DOUBLE  = VIR_TYPED_PARAM_DOUBLE,
+    VIR_DOMAIN_BLKIO_PARAM_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN,
 } virBlkioParameterType;
 
 /**
@@ -778,7 +820,7 @@ typedef enum {
  * Macro providing the field length of virBlkioParameter
  */
 
-#define VIR_DOMAIN_BLKIO_FIELD_LENGTH 80
+#define VIR_DOMAIN_BLKIO_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
  * VIR_DOMAIN_BLKIO_WEIGHT:
@@ -795,20 +837,7 @@ typedef enum {
  * a virDomainBlkioParameter is the set of blkio parameters
  */
 
-typedef struct _virBlkioParameter virBlkioParameter;
-
-struct _virBlkioParameter {
-    char field[VIR_DOMAIN_BLKIO_FIELD_LENGTH];  /* parameter name */
-    int type;   /* parameter type */
-    union {
-        int i;                          /* data for integer case */
-        unsigned int ui;        /* data for unsigned integer case */
-        long long int l;        /* data for long long integer case */
-        unsigned long long int ul;      /* data for unsigned long long integer case */
-        double d;       /* data for double case */
-        char b;         /* data for char case */
-    } value; /* parameter value */
-};
+typedef struct _virTypedParameter virBlkioParameter;
 
 /**
  * virBlkioParameterPtr:
@@ -826,18 +855,20 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
                                      virBlkioParameterPtr params,
                                      int *nparams, unsigned int flags);
 
+/* Manage memory parameters.  */
+
 /**
  * virDomainMemoryParameterType:
  *
  * A memory parameter field type
  */
 typedef enum {
-    VIR_DOMAIN_MEMORY_PARAM_INT     = 1, /* integer case */
-    VIR_DOMAIN_MEMORY_PARAM_UINT    = 2, /* unsigned integer case */
-    VIR_DOMAIN_MEMORY_PARAM_LLONG   = 3, /* long long case */
-    VIR_DOMAIN_MEMORY_PARAM_ULLONG  = 4, /* unsigned long long case */
-    VIR_DOMAIN_MEMORY_PARAM_DOUBLE  = 5, /* double case */
-    VIR_DOMAIN_MEMORY_PARAM_BOOLEAN = 6  /* boolean(character) case */
+    VIR_DOMAIN_MEMORY_PARAM_INT     = VIR_TYPED_PARAM_INT,
+    VIR_DOMAIN_MEMORY_PARAM_UINT    = VIR_TYPED_PARAM_UINT,
+    VIR_DOMAIN_MEMORY_PARAM_LLONG   = VIR_TYPED_PARAM_LLONG,
+    VIR_DOMAIN_MEMORY_PARAM_ULLONG  = VIR_TYPED_PARAM_ULLONG,
+    VIR_DOMAIN_MEMORY_PARAM_DOUBLE  = VIR_TYPED_PARAM_DOUBLE,
+    VIR_DOMAIN_MEMORY_PARAM_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN,
 } virMemoryParameterType;
 
 /**
@@ -846,7 +877,7 @@ typedef enum {
  * Macro providing the field length of virMemoryParameter
  */
 
-#define VIR_DOMAIN_MEMORY_FIELD_LENGTH 80
+#define VIR_DOMAIN_MEMORY_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
  * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED:
@@ -899,20 +930,7 @@ typedef enum {
  * a virDomainMemoryParameter is the set of scheduler parameters
  */
 
-typedef struct _virMemoryParameter virMemoryParameter;
-
-struct _virMemoryParameter {
-    char field[VIR_DOMAIN_MEMORY_FIELD_LENGTH];  /* parameter name */
-    int type;   /* parameter type */
-    union {
-        int i;                          /* data for integer case */
-        unsigned int ui;        /* data for unsigned integer case */
-        long long int l;        /* data for long long integer case */
-        unsigned long long int ul;      /* data for unsigned long long integer case */
-        double d;       /* data for double case */
-        char b;         /* data for char case */
-    } value; /* parameter value */
-};
+typedef struct _virTypedParameter virMemoryParameter;
 
 /**
  * virMemoryParameterPtr:
