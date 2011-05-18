@@ -871,7 +871,7 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
         ret = 0;
         goto cleanup;
     }
-    if ((*nparams) != LXC_NB_MEM_PARAM) {
+    if ((*nparams) < LXC_NB_MEM_PARAM) {
         lxcError(VIR_ERR_INVALID_ARG,
                  "%s", _("Invalid parameter count"));
         goto cleanup;
@@ -883,7 +883,7 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    for (i = 0; i < *nparams; i++) {
+    for (i = 0; i < LXC_NB_MEM_PARAM; i++) {
         virMemoryParameterPtr param = &params[i];
         val = 0;
         param->value.ul = 0;
@@ -941,6 +941,7 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
         }
     }
 
+    *nparams = LXC_NB_MEM_PARAM;
     ret = 0;
 
 cleanup:

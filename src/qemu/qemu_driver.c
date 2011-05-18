@@ -4957,7 +4957,7 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if ((*nparams) != QEMU_NB_MEM_PARAM) {
+    if ((*nparams) < QEMU_NB_MEM_PARAM) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         "%s", _("Invalid parameter count"));
         goto cleanup;
@@ -4969,7 +4969,7 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    for (i = 0; i < *nparams; i++) {
+    for (i = 0; i < QEMU_NB_MEM_PARAM; i++) {
         virMemoryParameterPtr param = &params[i];
         val = 0;
         param->value.ul = 0;
@@ -5027,6 +5027,7 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         }
     }
 
+    *nparams = QEMU_NB_MEM_PARAM;
     ret = 0;
 
 cleanup:

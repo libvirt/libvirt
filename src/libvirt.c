@@ -3051,7 +3051,7 @@ error:
  * @nparams: pointer to number of memory parameters
  * @flags: currently unused, for future extension
  *
- * Get the memory parameters, the @params array will be filled with the values
+ * Get all memory parameters, the @params array will be filled with the values
  * equal to the number of parameters suggested by @nparams
  *
  * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
@@ -3094,7 +3094,8 @@ virDomainGetMemoryParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if ((nparams == NULL) || (*nparams < 0)) {
+    if ((nparams == NULL) || (*nparams < 0) ||
+        (params == NULL && *nparams != 0)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -3177,8 +3178,9 @@ error:
  * @nparams: pointer to number of blkio parameters
  * @flags: currently unused, for future extension
  *
- * Get the blkio parameters, the @params array will be filled with the values
- * equal to the number of parameters suggested by @nparams
+ * Get all blkio parameters, the @params array will be filled with the values
+ * equal to the number of parameters suggested by @nparams.
+ * See virDomainGetMemoryParameters for an equivalent usage example.
  *
  * This function requires privileged access to the hypervisor. This function
  * expects the caller to allocate the @params.
@@ -3202,7 +3204,8 @@ virDomainGetBlkioParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if ((nparams == NULL) || (*nparams < 0)) {
+    if ((nparams == NULL) || (*nparams < 0) ||
+        (params == NULL && *nparams != 0)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
