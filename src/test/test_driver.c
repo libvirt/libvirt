@@ -2624,7 +2624,9 @@ static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
 {
     char *type = NULL;
 
-    *nparams = 1;
+    if (nparams)
+        *nparams = 1;
+
     type = strdup("fair");
     if (!type)
         virReportOOMError();

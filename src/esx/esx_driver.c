@@ -3513,7 +3513,9 @@ esxDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
         return NULL;
     }
 
-    *nparams = 3; /* reservation, limit, shares */
+    if (nparams != NULL) {
+        *nparams = 3; /* reservation, limit, shares */
+    }
 
     return type;
 }

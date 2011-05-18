@@ -1767,7 +1767,9 @@ static char *
 xenapiDomainGetSchedulerType (virDomainPtr dom ATTRIBUTE_UNUSED, int *nparams)
 {
     char *result = NULL;
-    *nparams = 0;
+
+    if (nparams)
+        *nparams = 0;
     if (!(result = strdup("credit")))
         virReportOOMError();
     return result;

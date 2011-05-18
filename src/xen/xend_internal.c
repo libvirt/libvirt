@@ -3531,8 +3531,7 @@ xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
     const char *ret = NULL;
     char *schedulertype = NULL;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
-        || (nparams == NULL)) {
+    if (domain->conn == NULL || domain->name == NULL) {
         virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return NULL;
     }
@@ -3562,14 +3561,16 @@ xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
             virReportOOMError();
             goto error;
         }
-        *nparams = XEN_SCHED_CRED_NPARAM;
+        if (nparams)
+            *nparams = XEN_SCHED_CRED_NPARAM;
     } else if (STREQ (ret, "sedf")) {
         schedulertype = strdup("sedf");
         if (schedulertype == NULL){
             virReportOOMError();
             goto error;
         }
-        *nparams = XEN_SCHED_SEDF_NPARAM;
+        if (nparams)
+            *nparams = XEN_SCHED_SEDF_NPARAM;
     } else {
         virXendError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unknown scheduler"));
         goto error;

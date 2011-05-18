@@ -2396,14 +2396,16 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
         goto cleanup;
     }
 
-    *nparams = 0;
+    if (nparams)
+        *nparams = 0;
     switch(sched_id) {
     case XEN_SCHEDULER_SEDF:
         ret = strdup("sedf");
         break;
     case XEN_SCHEDULER_CREDIT:
         ret = strdup("credit");
-        *nparams = XEN_SCHED_CREDIT_NPARAM;
+        if (nparams)
+            *nparams = XEN_SCHED_CREDIT_NPARAM;
         break;
     case XEN_SCHEDULER_CREDIT2:
         ret = strdup("credit2");

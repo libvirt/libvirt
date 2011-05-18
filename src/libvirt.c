@@ -4973,9 +4973,10 @@ error:
 /**
  * virDomainGetSchedulerType:
  * @domain: pointer to domain object
- * @nparams: number of scheduler parameters(return value)
+ * @nparams: pointer to number of scheduler parameters, can be NULL
+ *           (return value)
  *
- * Get the scheduler type.
+ * Get the scheduler type and the number of scheduler parameters.
  *
  * Returns NULL in case of error. The caller must free the returned string.
  */
