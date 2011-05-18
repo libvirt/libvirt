@@ -1207,14 +1207,14 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
                 if (schedulertype == NULL)
                     virReportOOMError();
                 if (nparams)
-                    *nparams = 6;
+                    *nparams = XEN_SCHED_SEDF_NPARAM;
                 break;
             case XEN_SCHEDULER_CREDIT:
                 schedulertype = strdup("credit");
                 if (schedulertype == NULL)
                     virReportOOMError();
                 if (nparams)
-                    *nparams = 2;
+                    *nparams = XEN_SCHED_CRED_NPARAM;
                 break;
             default:
                 break;
@@ -1232,8 +1232,8 @@ static const char *str_cap = "cap";
  * @domain: pointer to the Xen Hypervisor block
  * @params: pointer to scheduler parameters.
  *     This memory area should be allocated before calling.
- * @nparams:this parameter should be same as
- *     a given number of scheduler parameters.
+ * @nparams: this parameter must be at least as large as
+ *     the given number of scheduler parameters.
  *     from xenHypervisorGetSchedulerType().
  *
  * Do a low level hypercall to get scheduler parameters
@@ -1288,12 +1288,21 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
 
         switch (op_sys.u.getschedulerid.sched_id){
             case XEN_SCHEDULER_SEDF:
+                if (*nparams < XEN_SCHED_SEDF_NPARAM) {
+                    virXenError(VIR_ERR_INVALID_ARG,
+                                "%s", _("Invalid parameter count"));
+                    return -1;
+                }
+
                 /* TODO: Implement for Xen/SEDF */
                 TODO
                 return(-1);
             case XEN_SCHEDULER_CREDIT:
-                if (*nparams < 2)
-                    return(-1);
+                if (*nparams < XEN_SCHED_CRED_NPARAM) {
+                    virXenError(VIR_ERR_INVALID_ARG,
+                                "%s", _("Invalid parameter count"));
+                    return -1;
+                }
                 memset(&op_dom, 0, sizeof(op_dom));
                 op_dom.cmd = XEN_V2_OP_SCHEDULER;
                 op_dom.domain = (domid_t) domain->id;
@@ -1319,7 +1328,7 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                 params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
                 params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
 
-                *nparams = 2;
+                *nparams = XEN_SCHED_CRED_NPARAM;
                 break;
             default:
                 virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,

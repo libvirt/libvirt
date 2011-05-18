@@ -5015,14 +5015,15 @@ error:
 /**
  * virDomainGetSchedulerParameters:
  * @domain: pointer to domain object
- * @params: pointer to scheduler parameter object
+ * @params: pointer to scheduler parameter objects
  *          (return value)
- * @nparams: pointer to number of scheduler parameter
- *          (this value should be same than the returned value
+ * @nparams: pointer to number of scheduler parameter objects
+ *          (this value must be at least as large as the returned value
  *           nparams of virDomainGetSchedulerType)
  *
- * Get the scheduler parameters, the @params array will be filled with the
- * values.
+ * Get all scheduler parameters, the @params array will be filled with the
+ * values and @nparams will be updated to the number of valid elements in
+ * @params.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -5041,6 +5042,12 @@ virDomainGetSchedulerParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
+
+    if (params == NULL || nparams == NULL || *nparams <= 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     conn = domain->conn;
 
     if (conn->driver->domainGetSchedulerParameters) {

@@ -2652,8 +2652,8 @@ static int testDomainGetSchedulerParams(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (*nparams != 1) {
-        testError(VIR_ERR_INVALID_ARG, "nparams");
+    if (*nparams < 1) {
+        testError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
         goto cleanup;
     }
     strcpy(params[0].field, "weight");
@@ -2661,6 +2661,8 @@ static int testDomainGetSchedulerParams(virDomainPtr domain,
     /* XXX */
     /*params[0].value.ui = privdom->weight;*/
     params[0].value.ui = 50;
+
+    *nparams = 1;
     ret = 0;
 
 cleanup:

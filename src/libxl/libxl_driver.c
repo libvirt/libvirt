@@ -2466,7 +2466,7 @@ libxlDomainGetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
         goto cleanup;
     }
 
-    if (*nparams != XEN_SCHED_CREDIT_NPARAM) {
+    if (*nparams < XEN_SCHED_CREDIT_NPARAM) {
         libxlError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
         goto cleanup;
     }
@@ -2494,6 +2494,7 @@ libxlDomainGetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
         goto cleanup;
     }
 
+    *nparams = XEN_SCHED_CREDIT_NPARAM;
     ret = 0;
 
 cleanup:

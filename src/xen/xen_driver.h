@@ -60,6 +60,9 @@ extern int xenRegister (void);
 
 # define XEND_DOMAINS_DIR "/var/lib/xend/domains"
 
+# define XEN_SCHED_SEDF_NPARAM   6
+# define XEN_SCHED_CRED_NPARAM   2
+
 /* _xenUnifiedDriver:
  *
  * Entry points into the underlying Xen drivers.  This structure

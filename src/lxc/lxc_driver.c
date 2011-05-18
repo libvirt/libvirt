@@ -2234,7 +2234,7 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
     if (driver->cgroup == NULL)
         return -1;
 
-    if ((*nparams) != 1) {
+    if (*nparams < 1) {
         lxcError(VIR_ERR_INVALID_ARG,
                  "%s", _("Invalid parameter count"));
         return -1;
@@ -2264,6 +2264,7 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
     }
     params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
 
+    *nparams = 1;
     ret = 0;
 
 cleanup:

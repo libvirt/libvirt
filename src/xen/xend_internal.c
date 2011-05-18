@@ -55,8 +55,6 @@
 /*
  * The number of Xen scheduler parameters
  */
-#define XEN_SCHED_SEDF_NPARAM   6
-#define XEN_SCHED_CRED_NPARAM   2
 
 #define XEND_RCV_BUF_MAX_LEN 65536
 
@@ -3607,8 +3605,7 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
     int sched_nparam = 0;
     int ret = -1;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
-        || (params == NULL) || (nparams == NULL)) {
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
@@ -3636,10 +3633,22 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
 
     switch (sched_nparam){
         case XEN_SCHED_SEDF_NPARAM:
+            if (*nparams < XEN_SCHED_SEDF_NPARAM) {
+                virXendError(VIR_ERR_INVALID_ARG,
+                             "%s", _("Invalid parameter count"));
+                goto error;
+            }
+
             /* TODO: Implement for Xen/SEDF */
             TODO
             goto error;
         case XEN_SCHED_CRED_NPARAM:
+            if (*nparams < XEN_SCHED_CRED_NPARAM) {
+                virXendError(VIR_ERR_INVALID_ARG,
+                             "%s", _("Invalid parameter count"));
+                goto error;
+            }
+
             /* get cpu_weight/cpu_cap from xend/domain */
             if (sexpr_node(root, "domain/cpu_weight") == NULL) {
                 virXendError(VIR_ERR_INTERNAL_ERROR,

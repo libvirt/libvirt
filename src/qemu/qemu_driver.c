@@ -5181,7 +5181,7 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if ((*nparams) != 1) {
+    if (*nparams < 1) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         "%s", _("Invalid parameter count"));
         goto cleanup;
@@ -5221,6 +5221,7 @@ out:
         goto cleanup;
     }
 
+    *nparams = 1;
     ret = 0;
 
 cleanup:
