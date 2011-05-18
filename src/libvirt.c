@@ -3792,9 +3792,10 @@ virDomainMigrateVersion3(virDomainPtr domain,
     cookieinlen = cookieoutlen;
     cookieout = NULL;
     cookieoutlen = 0;
+    /* dconnuri not relevant in non-P2P modes, so left NULL here */
     ret = domain->conn->driver->domainMigratePerform3
         (domain, NULL, cookiein, cookieinlen,
-         &cookieout, &cookieoutlen,
+         &cookieout, &cookieoutlen, NULL,
          uri, flags, dname, bandwidth);
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
@@ -3822,7 +3823,7 @@ finish:
     dname = dname ? dname : domain->name;
     ret = dconn->driver->domainMigrateFinish3
         (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-         uri, flags, cancelled, &ddomain);
+         NULL, uri, flags, cancelled, &ddomain);
 
     /* If ret is 0 then 'ddomain' indicates whether the VM is
      * running on the dest. If not running, we can restart
@@ -3877,6 +3878,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                            const char *xmlin,
                            unsigned long flags,
                            const char *dname,
+                           const char *dconnuri,
                            const char *uri,
                            unsigned long bandwidth)
 {
@@ -3888,7 +3890,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
         return -1;
     }
 
-    tempuri = xmlParseURI(uri);
+    tempuri = xmlParseURI(dconnuri);
     if (!tempuri) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(domain->conn);
@@ -3915,6 +3917,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                                                            0,    /* cookieinlen */
                                                            NULL, /* cookieoutlen */
                                                            NULL, /* cookieoutlen */
+                                                           dconnuri,
                                                            uri,
                                                            flags,
                                                            dname,
@@ -3926,10 +3929,15 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                             _("Unable to change target guest XML during migration"));
             return -1;
         }
+        if (uri) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to override peer2peer migration URI"));
+            return -1;
+        }
         return domain->conn->driver->domainMigratePerform(domain,
                                                           NULL, /* cookie */
                                                           0,    /* cookielen */
-                                                          uri,
+                                                          dconnuri,
                                                           flags,
                                                           dname,
                                                           bandwidth);
@@ -3968,12 +3976,15 @@ virDomainMigrateDirect (virDomainPtr domain,
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_MIGRATION_V3)) {
         VIR_DEBUG("Using migration protocol 3");
+        /* dconn URI not relevant in direct migration, since no
+         * target libvirtd is involved */
         return domain->conn->driver->domainMigratePerform3(domain,
                                                            xmlin,
                                                            NULL, /* cookiein */
                                                            0,    /* cookieinlen */
                                                            NULL, /* cookieoutlen */
                                                            NULL, /* cookieoutlen */
+                                                           NULL, /* dconnuri */
                                                            uri,
                                                            flags,
                                                            dname,
@@ -4110,7 +4121,7 @@ virDomainMigrate (virDomainPtr domain,
 
             VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigratePeer2Peer(domain, NULL, flags, dname,
-                                          uri ? uri : dstURI, bandwidth) < 0) {
+                                          uri ? uri : dstURI, NULL, bandwidth) < 0) {
                 VIR_FREE(dstURI);
                 goto error;
             }
@@ -4256,7 +4267,7 @@ virDomainMigrateToURI (virDomainPtr domain,
                                       VIR_DRV_FEATURE_MIGRATION_P2P)) {
             VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigratePeer2Peer(domain, NULL, flags,
-                                          dname, duri, bandwidth) < 0)
+                                          dname, duri, NULL, bandwidth) < 0)
                 goto error;
         } else {
             /* No peer to peer migration supported */
@@ -4758,6 +4769,7 @@ virDomainMigratePerform3(virDomainPtr domain,
                          int cookieinlen,
                          char **cookieout,
                          int *cookieoutlen,
+                         const char *dconnuri,
                          const char *uri,
                          unsigned long flags,
                          const char *dname,
@@ -4766,11 +4778,11 @@ virDomainMigratePerform3(virDomainPtr domain,
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain, "xmlin=%s cookiein=%p, cookieinlen=%d, "
-                     "cookieout=%p, cookieoutlen=%p, "
+                     "cookieout=%p, cookieoutlen=%p, dconnuri=%s, "
                      "uri=%s, flags=%lu, dname=%s, bandwidth=%lu",
                      NULLSTR(xmlin), cookiein, cookieinlen,
-                     cookieout, cookieoutlen,
-                     uri, flags, NULLSTR(dname), bandwidth);
+                     cookieout, cookieoutlen, NULLSTR(dconnuri),
+                     NULLSTR(uri), flags, NULLSTR(dname), bandwidth);
 
     virResetLastError();
 
@@ -4791,7 +4803,7 @@ virDomainMigratePerform3(virDomainPtr domain,
         ret = conn->driver->domainMigratePerform3(domain, xmlin,
                                                   cookiein, cookieinlen,
                                                   cookieout, cookieoutlen,
-                                                  uri,
+                                                  dconnuri, uri,
                                                   flags, dname, bandwidth);
         if (ret < 0)
             goto error;
@@ -4817,15 +4829,16 @@ virDomainMigrateFinish3(virConnectPtr dconn,
                         int cookieinlen,
                         char **cookieout,
                         int *cookieoutlen,
+                        const char *dconnuri,
                         const char *uri,
                         unsigned long flags,
                         int cancelled,
                         virDomainPtr *newdom)
 {
     VIR_DEBUG("dconn=%p, dname=%s, cookiein=%p, cookieinlen=%d, cookieout=%p,"
-              "cookieoutlen=%p, uri=%s, flags=%lu, retcode=%d newdom=%p",
+              "cookieoutlen=%p, dconnuri=%s, uri=%s, flags=%lu, retcode=%d newdom=%p",
               dconn, NULLSTR(dname), cookiein, cookieinlen, cookieout,
-              cookieoutlen, uri, flags, cancelled, newdom);
+              cookieoutlen, NULLSTR(dconnuri), NULLSTR(uri), flags, cancelled, newdom);
 
     virResetLastError();
 
@@ -4845,7 +4858,7 @@ virDomainMigrateFinish3(virConnectPtr dconn,
         ret = dconn->driver->domainMigrateFinish3(dconn, dname,
                                                   cookiein, cookieinlen,
                                                   cookieout, cookieoutlen,
-                                                  uri, flags,
+                                                  dconnuri, uri, flags,
                                                   cancelled,
                                                   newdom);
         if (ret < 0)

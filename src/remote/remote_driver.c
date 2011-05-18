@@ -5174,6 +5174,7 @@ remoteDomainMigratePerform3(virDomainPtr dom,
                             int cookieinlen,
                             char **cookieout,
                             int *cookieoutlen,
+                            const char *dconnuri,
                             const char *uri,
                             unsigned long flags,
                             const char *dname,
@@ -5194,9 +5195,10 @@ remoteDomainMigratePerform3(virDomainPtr dom,
     args.xmlin = xmlin == NULL ? NULL : (char **) &xmlin;
     args.cookie_in.cookie_in_val = (char *)cookiein;
     args.cookie_in.cookie_in_len = cookieinlen;
-    args.uri = (char *) uri;
     args.flags = flags;
     args.dname = dname == NULL ? NULL : (char **) &dname;
+    args.uri = uri == NULL ? NULL : (char **) &uri;
+    args.dconnuri = dconnuri == NULL ? NULL : (char **) &dconnuri;
     args.resource = resource;
 
     if (call (dom->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3,
@@ -5233,6 +5235,7 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
                            int cookieinlen,
                            char **cookieout,
                            int *cookieoutlen,
+                           const char *dconnuri,
                            const char *uri,
                            unsigned long flags,
                            int cancelled,
@@ -5252,7 +5255,8 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
     args.cookie_in.cookie_in_val = (char *)cookiein;
     args.cookie_in.cookie_in_len = cookieinlen;
     args.dname = (char *) dname;
-    args.uri = (char *) uri;
+    args.uri = uri == NULL ? NULL : (char **) &uri;
+    args.dconnuri = dconnuri == NULL ? NULL : (char **) &dconnuri;
     args.flags = flags;
     args.cancelled = cancelled;
 

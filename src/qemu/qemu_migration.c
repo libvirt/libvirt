@@ -1652,7 +1652,7 @@ static int doPeer2PeerMigrate2(struct qemud_driver *driver,
                                virConnectPtr sconn,
                                virConnectPtr dconn,
                                virDomainObjPtr vm,
-                               const char *uri,
+                               const char *dconnuri,
                                unsigned long flags,
                                const char *dname,
                                unsigned long resource)
@@ -1753,7 +1753,7 @@ finish:
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, cookie, cookielen,
-         uri_out ? uri_out : uri, flags, cancelled);
+         uri_out ? uri_out : dconnuri, flags, cancelled);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
 cleanup:
@@ -1787,6 +1787,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
                                virConnectPtr dconn,
                                virDomainObjPtr vm,
                                const char *xmlin,
+                               const char *dconnuri,
                                const char *uri,
                                unsigned long flags,
                                const char *dname,
@@ -1832,7 +1833,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
         qemuDomainObjEnterRemoteWithDriver(driver, vm);
         ret = dconn->driver->domainMigratePrepare3
             (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-             NULL, &uri_out, flags, dname, resource, dom_xml);
+             uri, &uri_out, flags, dname, resource, dom_xml);
         qemuDomainObjExitRemoteWithDriver(driver, vm);
     }
     VIR_FREE(dom_xml);
@@ -1852,7 +1853,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
      * running, but in paused state until the destination can
      * confirm migration completion.
      */
-    VIR_DEBUG("Perform3 %p uri=%s", sconn, uri_out);
+    VIR_DEBUG("Perform3 %p uri=%s uri_out=%s", sconn, uri, uri_out);
     VIR_FREE(cookiein);
     cookiein = cookieout;
     cookieinlen = cookieoutlen;
@@ -1895,7 +1896,7 @@ finish:
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     ret = dconn->driver->domainMigrateFinish3
         (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-         uri_out ? uri_out : uri, flags, cancelled, &ddomain);
+         dconnuri, uri_out ? uri_out : uri, flags, cancelled, &ddomain);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
     /* If ret is 0 then 'ddomain' indicates whether the VM is
@@ -1952,6 +1953,7 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
                               virConnectPtr sconn,
                               virDomainObjPtr vm,
                               const char *xmlin,
+                              const char *dconnuri,
                               const char *uri,
                               unsigned long flags,
                               const char *dname,
@@ -1967,7 +1969,7 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
      */
 
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
-    dconn = virConnectOpen(uri);
+    dconn = virConnectOpen(dconnuri);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
     if (dconn == NULL) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -1997,10 +1999,10 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
 
     if (v3)
         ret = doPeer2PeerMigrate3(driver, sconn, dconn, vm, xmlin,
-                                  uri, flags, dname, resource);
+                                  dconnuri, uri, flags, dname, resource);
     else
         ret = doPeer2PeerMigrate2(driver, sconn, dconn, vm,
-                                  uri, flags, dname, resource);
+                                  dconnuri, flags, dname, resource);
 
 cleanup:
     /* don't call virConnectClose(), because that resets any pending errors */
@@ -2016,6 +2018,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
                          virConnectPtr conn,
                          virDomainObjPtr vm,
                          const char *xmlin,
+                         const char *dconnuri,
                          const char *uri,
                          const char *cookiein,
                          int cookieinlen,
@@ -2059,10 +2062,15 @@ int qemuMigrationPerform(struct qemud_driver *driver,
         }
 
         if (doPeer2PeerMigrate(driver, conn, vm, xmlin,
-                               uri, flags, dname, resource) < 0)
+                               dconnuri, uri, flags, dname, resource) < 0)
             /* doPeer2PeerMigrate already set the error, so just get out */
             goto endjob;
     } else {
+        if (dconnuri) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("Unexpected dconnuri parameter with non-peer2peer migration"));
+            goto endjob;
+        }
         if (doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
                             cookieout, cookieoutlen,
                             flags, dname, resource) < 0)

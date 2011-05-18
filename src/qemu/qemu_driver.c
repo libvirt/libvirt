@@ -5946,6 +5946,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+    const char *dconnuri = NULL;
 
     virCheckFlags(VIR_MIGRATE_LIVE |
                   VIR_MIGRATE_PEER2PEER |
@@ -5966,6 +5967,11 @@ qemudDomainMigratePerform (virDomainPtr dom,
         goto cleanup;
     }
 
+    if (flags & VIR_MIGRATE_PEER2PEER) {
+        dconnuri = uri;
+        uri = NULL;
+    }
+
     /* Do not output cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd.
@@ -5973,7 +5979,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
      * Consume any cookie we were able to decode though
      */
     ret = qemuMigrationPerform(driver, dom->conn, vm,
-                               NULL, uri, cookie, cookielen,
+                               NULL, dconnuri, uri, cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
                                flags, dname, resource, true);
 
@@ -6194,6 +6200,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
                           int cookieinlen,
                           char **cookieout,
                           int *cookieoutlen,
+                          const char *dconnuri,
                           const char *uri,
                           unsigned long flags,
                           const char *dname,
@@ -6223,7 +6230,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     }
 
     ret = qemuMigrationPerform(driver, dom->conn, vm, xmlin,
-                               uri, cookiein, cookieinlen,
+                               dconnuri, uri, cookiein, cookieinlen,
                                cookieout, cookieoutlen,
                                flags, dname, resource, false);
 
@@ -6240,6 +6247,7 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
                          int cookieinlen,
                          char **cookieout,
                          int *cookieoutlen,
+                         const char *dconnuri ATTRIBUTE_UNUSED,
                          const char *uri ATTRIBUTE_UNUSED,
                          unsigned long flags,
                          int cancelled,

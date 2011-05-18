@@ -161,7 +161,8 @@ int virDomainMigratePerform3(virDomainPtr dom,
                              int cookieinlen,
                              char **cookieout,
                              int *cookieoutlen,
-                             const char *uri,
+                             const char *dconnuri, /* libvirtd URI if Peer2Peer, NULL otherwise */
+                             const char *uri, /* VM Migration URI */
                              unsigned long flags,
                              const char *dname,
                              unsigned long resource);
@@ -172,7 +173,8 @@ int virDomainMigrateFinish3(virConnectPtr dconn,
                             int cookieinlen,
                             char **cookieout,
                             int *cookieoutlen,
-                            const char *uri,
+                            const char *dconnuri, /* libvirtd URI if Peer2Peer, NULL otherwise */
+                            const char *uri, /* VM Migration URI, NULL in tunnelled case */
                             unsigned long flags,
                             int cancelled, /* Kill the dst VM */
                             virDomainPtr *newdom);

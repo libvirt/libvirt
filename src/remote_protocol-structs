@@ -1510,7 +1510,8 @@ struct remote_domain_migrate_perform3_args {
                 u_int              cookie_in_len;
                 char *             cookie_in_val;
         } cookie_in;
-        remote_nonnull_string      uri;
+        remote_string              dconnuri;
+        remote_string              uri;
         uint64_t                   flags;
         remote_string              dname;
         uint64_t                   resource;
@@ -1527,7 +1528,8 @@ struct remote_domain_migrate_finish3_args {
                 u_int              cookie_in_len;
                 char *             cookie_in_val;
         } cookie_in;
-        remote_nonnull_string      uri;
+        remote_string              dconnuri;
+        remote_string              uri;
         uint64_t                   flags;
         int                        cancelled;
 };
