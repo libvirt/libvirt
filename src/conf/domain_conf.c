@@ -3904,6 +3904,10 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
         def->data.vnc.socket = virXMLPropString(node, "socket");
         def->data.vnc.keymap = virXMLPropString(node, "keymap");
 
+        if (def->data.vnc.listenAddr &&
+            !def->data.vnc.listenAddr[0])
+            VIR_FREE(def->data.vnc.listenAddr);
+
         if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth) < 0)
             goto error;
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
@@ -3968,6 +3972,10 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
         }
 
         def->data.rdp.listenAddr = virXMLPropString(node, "listen");
+
+        if (def->data.rdp.listenAddr &&
+            !def->data.rdp.listenAddr[0])
+            VIR_FREE(def->data.rdp.listenAddr);
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) {
         char *fullscreen = virXMLPropString(node, "fullscreen");
 
@@ -4031,6 +4039,11 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
 
         def->data.spice.listenAddr = virXMLPropString(node, "listen");
         def->data.spice.keymap = virXMLPropString(node, "keymap");
+
+        if (def->data.spice.listenAddr &&
+            !def->data.spice.listenAddr[0])
+            VIR_FREE(def->data.spice.listenAddr);
+
         if (virDomainGraphicsAuthDefParseXML(node, &def->data.spice.auth) < 0)
             goto error;
 
