@@ -5551,14 +5551,6 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
 
     virResetLastError();
 
-    if (!(flags & (VIR_DOMAIN_SCHEDPARAM_LIVE |
-                   VIR_DOMAIN_SCHEDPARAM_CONFIG |
-                   VIR_DOMAIN_SCHEDPARAM_CURRENT))) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
