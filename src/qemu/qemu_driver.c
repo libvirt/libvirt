@@ -4084,6 +4084,13 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
             dev->data.controller = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_LEASE:
+        ret = qemuDomainAttachLease(driver, vm,
+                                    dev->data.lease);
+        if (ret == 0)
+            dev->data.lease = NULL;
+        break;
+
     case VIR_DOMAIN_DEVICE_NET:
         qemuDomainObjCheckNetTaint(driver, vm, dev->data.net, -1);
         ret = qemuDomainAttachNetDevice(dom->conn, driver, vm,
@@ -4172,6 +4179,9 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         ret = qemuDomainDetachDeviceControllerLive(driver, vm, dev);
+        break;
+    case VIR_DOMAIN_DEVICE_LEASE:
+        ret = qemuDomainDetachLease(driver, vm, dev->data.lease);
         break;
     case VIR_DOMAIN_DEVICE_NET:
         ret = qemuDomainDetachNetDevice(driver, vm, dev);
@@ -4267,6 +4277,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 {
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
+    virDomainLeaseDefPtr lease;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -4306,6 +4317,22 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         if (qemuDomainAssignPCIAddresses(vmdef) < 0)
             return -1;
         break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+        lease = dev->data.lease;
+        if (virDomainLeaseIndex(vmdef, lease) >= 0) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Lease %s in lockspace %s already exists"),
+                            lease->key, NULLSTR(lease->lockspace));
+            return -1;
+        }
+        if (virDomainLeaseInsert(vmdef, lease) < 0)
+            return -1;
+
+        /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
+        dev->data.lease = NULL;
+        break;
+
     default:
          qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                          _("persistent attach of device is not supported"));
@@ -4321,6 +4348,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 {
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
+    virDomainLeaseDefPtr lease;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -4331,6 +4359,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
         break;
+
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
         if (virDomainNetRemoveByMac(vmdef, net->mac)) {
@@ -4342,6 +4371,17 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
         break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+        lease = dev->data.lease;
+        if (virDomainLeaseRemove(vmdef, lease) < 0) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Lease %s in lockspace %s does not exist"),
+                            lease->key, NULLSTR(lease->lockspace));
+            return -1;
+        }
+        break;
+
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("persistent detach of device is not supported"));

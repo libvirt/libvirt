@@ -85,6 +85,12 @@ int qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
 int qemuDomainDetachHostDevice(struct qemud_driver *driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev);
+int qemuDomainAttachLease(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          virDomainLeaseDefPtr lease);
+int qemuDomainDetachLease(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          virDomainLeaseDefPtr lease);
 
 
 #endif /* __QEMU_HOTPLUG_H__ */

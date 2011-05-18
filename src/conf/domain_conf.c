@@ -5395,6 +5395,84 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
 }
 
 
+int virDomainLeaseIndex(virDomainDefPtr def,
+                        virDomainLeaseDefPtr lease)
+{
+    virDomainLeaseDefPtr vlease;
+    int i;
+
+    for (i = 0; i < def->nleases; i++) {
+        vlease = def->leases[i];
+        /* Either both must have lockspaces present which  match.. */
+        if (vlease->lockspace && lease->lockspace &&
+            STRNEQ(vlease->lockspace, lease->lockspace))
+            continue;
+        /* ...or neither must have a lockspace present */
+        if (vlease->lockspace || lease->lockspace)
+            continue;
+        if (STREQ(vlease->key, lease->key))
+            return i;
+    }
+    return -1;
+}
+
+
+int virDomainLeaseInsertPreAlloc(virDomainDefPtr def)
+{
+    if (VIR_EXPAND_N(def->leases, def->nleases, 1) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    return 0;
+}
+
+int virDomainLeaseInsert(virDomainDefPtr def,
+                         virDomainLeaseDefPtr lease)
+{
+    if (virDomainLeaseInsertPreAlloc(def) < 0)
+        return -1;
+
+    virDomainLeaseInsertPreAlloced(def, lease);
+    return 0;
+}
+
+
+void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
+                                    virDomainLeaseDefPtr lease)
+{
+    if (lease == NULL)
+        VIR_SHRINK_N(def->leases, def->nleases, 1);
+    else
+        def->leases[def->nleases-1] = lease;
+}
+
+
+void virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i)
+{
+    if (def->nleases > 1) {
+        memmove(def->leases + i,
+                def->leases + i + 1,
+                sizeof(*def->leases) *
+                (def->nleases - (i + 1)));
+        VIR_SHRINK_N(def->leases, def->nleases, 1);
+    } else {
+        VIR_FREE(def->leases);
+        def->nleases = 0;
+    }
+}
+
+
+int virDomainLeaseRemove(virDomainDefPtr def,
+                         virDomainLeaseDefPtr lease)
+{
+    int i = virDomainLeaseIndex(def, lease);
+    if (i < 0)
+        return -1;
+    virDomainLeaseRemoveAt(def, i);
+    return 0;
+}
+
+
 static char *virDomainDefDefaultEmulator(virDomainDefPtr def,
                                          virCapsPtr caps) {
     const char *type;

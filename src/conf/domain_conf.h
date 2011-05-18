@@ -1196,7 +1196,7 @@ struct _virDomainDef {
     int nchannels;
     virDomainChrDefPtr *channels;
 
-    int nleases;
+    size_t nleases;
     virDomainLeaseDefPtr *leases;
 
     /* Only 1 */
@@ -1399,6 +1399,18 @@ int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
+
+
+int virDomainLeaseIndex(virDomainDefPtr def,
+                        virDomainLeaseDefPtr lease);
+int virDomainLeaseInsert(virDomainDefPtr def,
+                         virDomainLeaseDefPtr lease);
+int virDomainLeaseInsertPreAlloc(virDomainDefPtr def);
+void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
+                                    virDomainLeaseDefPtr lease);
+void virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i);
+int virDomainLeaseRemove(virDomainDefPtr def,
+                         virDomainLeaseDefPtr lease);
 
 int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,

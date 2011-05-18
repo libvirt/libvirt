@@ -1846,3 +1846,39 @@ cleanup:
 
     return ret;
 }
+
+int qemuDomainAttachLease(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          virDomainLeaseDefPtr lease)
+{
+    if (virDomainLeaseInsertPreAlloc(vm->def) < 0)
+        return -1;
+
+    if (virDomainLockLeaseAttach(driver->lockManager, vm, lease) < 0) {
+        virDomainLeaseInsertPreAlloced(vm->def, NULL);
+        return -1;
+    }
+
+    virDomainLeaseInsertPreAlloced(vm->def, lease);
+    return 0;
+}
+
+int qemuDomainDetachLease(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          virDomainLeaseDefPtr lease)
+{
+    int i;
+
+    if ((i = virDomainLeaseIndex(vm->def, lease)) < 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("Lease %s in lockspace %s does not exist"),
+                        lease->key, NULLSTR(lease->lockspace));
+        return -1;
+    }
+
+    if (virDomainLockLeaseDetach(driver->lockManager, vm, lease) < 0)
+        return -1;
+
+    virDomainLeaseRemoveAt(vm->def, i);
+    return 0;
+}
