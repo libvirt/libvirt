@@ -5867,8 +5867,8 @@ cleanup:
  */
 static int ATTRIBUTE_NONNULL (5)
 qemudDomainMigratePrepare2 (virConnectPtr dconn,
-                            char **cookie,
-                            int *cookielen,
+                            char **cookie ATTRIBUTE_UNUSED,
+                            int *cookielen ATTRIBUTE_UNUSED,
                             const char *uri_in,
                             char **uri_out,
                             unsigned long flags,
@@ -5906,9 +5906,12 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         goto cleanup;
     }
 
+    /* Do not use cookies in v2 protocol, since the cookie
+     * length was not sufficiently large, causing failures
+     * migrating between old & new libvirtd
+     */
     ret = qemuMigrationPrepareDirect(driver, dconn,
-                                     NULL, 0, /* No input cookies in v2 */
-                                     cookie, cookielen,
+                                     NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
                                      dname, dom_xml);
 
@@ -5921,8 +5924,8 @@ cleanup:
 /* Perform is the second step, and it runs on the source host. */
 static int
 qemudDomainMigratePerform (virDomainPtr dom,
-                           const char *cookie ATTRIBUTE_UNUSED,
-                           int cookielen ATTRIBUTE_UNUSED,
+                           const char *cookie,
+                           int cookielen,
                            const char *uri,
                            unsigned long flags,
                            const char *dname,
@@ -5951,6 +5954,12 @@ qemudDomainMigratePerform (virDomainPtr dom,
         goto cleanup;
     }
 
+    /* Do not output cookies in v2 protocol, since the cookie
+     * length was not sufficiently large, causing failures
+     * migrating between old & new libvirtd.
+     *
+     * Consume any cookie we were able to decode though
+     */
     ret = qemuMigrationPerform(driver, dom->conn, vm,
                                uri, cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
@@ -5997,8 +6006,12 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
         goto cleanup;
     }
 
+    /* Do not use cookies in v2 protocol, since the cookie
+     * length was not sufficiently large, causing failures
+     * migrating between old & new libvirtd
+     */
     dom = qemuMigrationFinish(driver, dconn, vm,
-                              NULL, 0, NULL, NULL, /* No cookies in v2 */
+                              NULL, 0, NULL, NULL, /* No cookies */
                               flags, retcode);
 
 cleanup:
