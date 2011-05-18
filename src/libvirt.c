@@ -2992,11 +2992,11 @@ error:
  * virDomainSetMemoryParameters:
  * @domain: pointer to domain object
  * @params: pointer to memory parameter objects
- * @nparams: number of memory parameter (this value should be same or
+ * @nparams: number of memory parameter (this value can be the same or
  *          less than the number of parameters supported)
  * @flags: currently unused, for future extension
  *
- * Change the memory tunables
+ * Change all or a subset of the memory tunables.
  * This function requires privileged access to the hypervisor.
  *
  * Returns -1 in case of error, 0 in case of success.
@@ -3118,11 +3118,11 @@ error:
  * virDomainSetBlkioParameters:
  * @domain: pointer to domain object
  * @params: pointer to blkio parameter objects
- * @nparams: number of blkio parameters (this value should be same or
+ * @nparams: number of blkio parameters (this value can be the same or
  *          less than the number of parameters supported)
  * @flags: currently unused, for future extension
  *
- * Change the blkio tunables
+ * Change all or a subset of the blkio tunables.
  * This function requires privileged access to the hypervisor.
  *
  * Returns -1 in case of error, 0 in case of success.
