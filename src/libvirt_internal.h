@@ -124,6 +124,7 @@ int virDomainMigratePrepareTunnel(virConnectPtr dconn,
 
 
 char *virDomainMigrateBegin3(virDomainPtr domain,
+                             const char *xmlin,
                              char **cookieout,
                              int *cookieoutlen,
                              unsigned long flags,
@@ -155,6 +156,7 @@ int virDomainMigratePrepareTunnel3(virConnectPtr dconn,
 
 
 int virDomainMigratePerform3(virDomainPtr dom,
+                             const char *xmlin,
                              const char *cookiein,
                              int cookieinlen,
                              char **cookieout,

@@ -1973,6 +1973,7 @@ struct remote_domain_get_state_ret {
 
 struct remote_domain_migrate_begin3_args {
     remote_nonnull_domain dom;
+    remote_string xmlin;
     unsigned hyper flags;
     remote_string dname;
     unsigned hyper resource;
@@ -2011,6 +2012,7 @@ struct remote_domain_migrate_prepare_tunnel3_ret {
 
 struct remote_domain_migrate_perform3_args {
     remote_nonnull_domain dom;
+    remote_string xmlin;
     opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
     remote_nonnull_string uri;
     unsigned hyper flags;

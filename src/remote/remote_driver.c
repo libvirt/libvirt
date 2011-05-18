@@ -4982,6 +4982,7 @@ done:
 
 static char *
 remoteDomainMigrateBegin3(virDomainPtr domain,
+                          const char *xmlin,
                           char **cookieout,
                           int *cookieoutlen,
                           unsigned long flags,
@@ -4999,6 +5000,7 @@ remoteDomainMigrateBegin3(virDomainPtr domain,
     memset(&ret, 0, sizeof(ret));
 
     make_nonnull_domain (&args.dom, domain);
+    args.xmlin = xmlin == NULL ? NULL : (char **) &xmlin;
     args.flags = flags;
     args.dname = dname == NULL ? NULL : (char **) &dname;
     args.resource = resource;
@@ -5167,6 +5169,7 @@ error:
 
 static int
 remoteDomainMigratePerform3(virDomainPtr dom,
+                            const char *xmlin,
                             const char *cookiein,
                             int cookieinlen,
                             char **cookieout,
@@ -5188,6 +5191,7 @@ remoteDomainMigratePerform3(virDomainPtr dom,
 
     make_nonnull_domain(&args.dom, dom);
 
+    args.xmlin = xmlin == NULL ? NULL : (char **) &xmlin;
     args.cookie_in.cookie_in_val = (char *)cookiein;
     args.cookie_in.cookie_in_len = cookieinlen;
     args.uri = (char *) uri;

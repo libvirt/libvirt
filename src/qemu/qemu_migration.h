@@ -34,6 +34,7 @@ int qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr 
 
 char *qemuMigrationBegin(struct qemud_driver *driver,
                          virDomainObjPtr vm,
+                         const char *xmlin,
                          char **cookieout,
                          int *cookieoutlen);
 
@@ -61,6 +62,7 @@ int qemuMigrationPrepareDirect(struct qemud_driver *driver,
 int qemuMigrationPerform(struct qemud_driver *driver,
                          virConnectPtr conn,
                          virDomainObjPtr vm,
+                         const char *xmlin,
                          const char *uri,
                          const char *cookiein,
                          int cookieinlen,

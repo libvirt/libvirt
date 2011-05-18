@@ -5973,7 +5973,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
      * Consume any cookie we were able to decode though
      */
     ret = qemuMigrationPerform(driver, dom->conn, vm,
-                               uri, cookie, cookielen,
+                               NULL, uri, cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
                                flags, dname, resource, true);
 
@@ -6042,6 +6042,7 @@ cleanup:
 
 static char *
 qemuDomainMigrateBegin3(virDomainPtr domain,
+                        const char *xmlin,
                         char **cookieout,
                         int *cookieoutlen,
                         unsigned long flags,
@@ -6071,7 +6072,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
         goto cleanup;
     }
 
-    xml = qemuMigrationBegin(driver, vm,
+    xml = qemuMigrationBegin(driver, vm, xmlin,
                              cookieout, cookieoutlen);
 
 cleanup:
@@ -6188,6 +6189,7 @@ cleanup:
 
 static int
 qemuDomainMigratePerform3(virDomainPtr dom,
+                          const char *xmlin,
                           const char *cookiein,
                           int cookieinlen,
                           char **cookieout,
@@ -6220,7 +6222,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuMigrationPerform(driver, dom->conn, vm,
+    ret = qemuMigrationPerform(driver, dom->conn, vm, xmlin,
                                uri, cookiein, cookieinlen,
                                cookieout, cookieoutlen,
                                flags, dname, resource, false);

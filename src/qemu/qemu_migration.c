@@ -863,11 +863,18 @@ qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
 
 char *qemuMigrationBegin(struct qemud_driver *driver,
                          virDomainObjPtr vm,
+                         const char *xmlin,
                          char **cookieout,
                          int *cookieoutlen)
 {
     char *rv = NULL;
     qemuMigrationCookiePtr mig = NULL;
+
+    if (xmlin) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Passing XML for the target VM is not yet supported"));
+        goto cleanup;
+    }
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -1779,6 +1786,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
                                virConnectPtr sconn,
                                virConnectPtr dconn,
                                virDomainObjPtr vm,
+                               const char *xmlin,
                                const char *uri,
                                unsigned long flags,
                                const char *dname,
@@ -1797,7 +1805,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
     virStreamPtr st = NULL;
 
     VIR_DEBUG("Begin3 %p", sconn);
-    dom_xml = qemuMigrationBegin(driver, vm,
+    dom_xml = qemuMigrationBegin(driver, vm, xmlin,
                                  &cookieout, &cookieoutlen);
     if (!dom_xml)
         goto cleanup;
@@ -1943,6 +1951,7 @@ finish:
 static int doPeer2PeerMigrate(struct qemud_driver *driver,
                               virConnectPtr sconn,
                               virDomainObjPtr vm,
+                              const char *xmlin,
                               const char *uri,
                               unsigned long flags,
                               const char *dname,
@@ -1987,7 +1996,7 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
     }
 
     if (v3)
-        ret = doPeer2PeerMigrate3(driver, sconn, dconn, vm,
+        ret = doPeer2PeerMigrate3(driver, sconn, dconn, vm, xmlin,
                                   uri, flags, dname, resource);
     else
         ret = doPeer2PeerMigrate2(driver, sconn, dconn, vm,
@@ -2006,6 +2015,7 @@ cleanup:
 int qemuMigrationPerform(struct qemud_driver *driver,
                          virConnectPtr conn,
                          virDomainObjPtr vm,
+                         const char *xmlin,
                          const char *uri,
                          const char *cookiein,
                          int cookieinlen,
@@ -2048,7 +2058,8 @@ int qemuMigrationPerform(struct qemud_driver *driver,
             goto endjob;
         }
 
-        if (doPeer2PeerMigrate(driver, conn, vm, uri, flags, dname, resource) < 0)
+        if (doPeer2PeerMigrate(driver, conn, vm, xmlin,
+                               uri, flags, dname, resource) < 0)
             /* doPeer2PeerMigrate already set the error, so just get out */
             goto endjob;
     } else {

@@ -538,6 +538,7 @@ typedef int
 typedef char *
     (*virDrvDomainMigrateBegin3)
                     (virDomainPtr domain,
+                     const char *xmlin,
                      char **cookieout,
                      int *cookieoutlen,
                      unsigned long flags,
@@ -575,6 +576,7 @@ typedef int
 typedef int
     (*virDrvDomainMigratePerform3)
                     (virDomainPtr dom,
+                     const char *xmlin,
                      const char *cookiein,
                      int cookieinlen,
                      char **cookieout,

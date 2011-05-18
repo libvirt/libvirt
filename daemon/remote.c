@@ -3128,6 +3128,7 @@ remoteDispatchDomainMigrateBegin3(struct qemud_server *server ATTRIBUTE_UNUSED,
     char *xml = NULL;
     virDomainPtr dom = NULL;
     char *dname;
+    char *xmlin;
     char *cookieout = NULL;
     int cookieoutlen = 0;
     int rv = -1;
@@ -3140,9 +3141,10 @@ remoteDispatchDomainMigrateBegin3(struct qemud_server *server ATTRIBUTE_UNUSED,
     if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
+    xmlin = args->xmlin == NULL ? NULL : *args->xmlin;
     dname = args->dname == NULL ? NULL : *args->dname;
 
-    if (!(xml = virDomainMigrateBegin3(dom,
+    if (!(xml = virDomainMigrateBegin3(dom, xmlin,
                                        &cookieout, &cookieoutlen,
                                        args->flags, dname, args->resource)))
         goto cleanup;
@@ -3288,6 +3290,7 @@ remoteDispatchDomainMigratePerform3(struct qemud_server *server ATTRIBUTE_UNUSED
                                     remote_domain_migrate_perform3_ret *ret)
 {
     virDomainPtr dom = NULL;
+    char *xmlin;
     char *dname;
     char *cookieout = NULL;
     int cookieoutlen = 0;
@@ -3301,9 +3304,10 @@ remoteDispatchDomainMigratePerform3(struct qemud_server *server ATTRIBUTE_UNUSED
     if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
+    xmlin = args->xmlin == NULL ? NULL : *args->xmlin;
     dname = args->dname == NULL ? NULL : *args->dname;
 
-    if (virDomainMigratePerform3(dom,
+    if (virDomainMigratePerform3(dom, xmlin,
                                  args->cookie_in.cookie_in_val,
                                  args->cookie_in.cookie_in_len,
                                  &cookieout, &cookieoutlen,

@@ -1457,6 +1457,7 @@ struct remote_domain_get_state_ret {
 };
 struct remote_domain_migrate_begin3_args {
         remote_nonnull_domain      dom;
+        remote_string              xmlin;
         uint64_t                   flags;
         remote_string              dname;
         uint64_t                   resource;
@@ -1504,6 +1505,7 @@ struct remote_domain_migrate_prepare_tunnel3_ret {
 };
 struct remote_domain_migrate_perform3_args {
         remote_nonnull_domain      dom;
+        remote_string              xmlin;
         struct {
                 u_int              cookie_in_len;
                 char *             cookie_in_val;

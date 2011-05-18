@@ -3719,6 +3719,7 @@ finish:
 static virDomainPtr
 virDomainMigrateVersion3(virDomainPtr domain,
                          virConnectPtr dconn,
+                         const char *xmlin,
                          unsigned long flags,
                          const char *dname,
                          const char *uri,
@@ -3748,8 +3749,8 @@ virDomainMigrateVersion3(virDomainPtr domain,
 
     VIR_DEBUG("Begin3 %p", domain->conn);
     dom_xml = domain->conn->driver->domainMigrateBegin3
-        (domain, &cookieout, &cookieoutlen, flags, dname,
-         bandwidth);
+        (domain, xmlin, &cookieout, &cookieoutlen,
+         flags, dname, bandwidth);
     if (!dom_xml)
         goto done;
 
@@ -3792,7 +3793,8 @@ virDomainMigrateVersion3(virDomainPtr domain,
     cookieout = NULL;
     cookieoutlen = 0;
     ret = domain->conn->driver->domainMigratePerform3
-        (domain, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+        (domain, NULL, cookiein, cookieinlen,
+         &cookieout, &cookieoutlen,
          uri, flags, dname, bandwidth);
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
@@ -3872,6 +3874,7 @@ finish:
   */
 static int
 virDomainMigratePeer2Peer (virDomainPtr domain,
+                           const char *xmlin,
                            unsigned long flags,
                            const char *dname,
                            const char *uri,
@@ -3907,6 +3910,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                                  VIR_DRV_FEATURE_MIGRATION_V3)) {
         VIR_DEBUG("Using migration protocol 3");
         return domain->conn->driver->domainMigratePerform3(domain,
+                                                           xmlin,
                                                            NULL, /* cookiein */
                                                            0,    /* cookieinlen */
                                                            NULL, /* cookieoutlen */
@@ -3917,6 +3921,11 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                                                            bandwidth);
     } else {
         VIR_DEBUG("Using migration protocol 2");
+        if (xmlin) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to change target guest XML during migration"));
+            return -1;
+        }
         return domain->conn->driver->domainMigratePerform(domain,
                                                           NULL, /* cookie */
                                                           0,    /* cookielen */
@@ -3941,6 +3950,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
  */
 static int
 virDomainMigrateDirect (virDomainPtr domain,
+                        const char *xmlin,
                         unsigned long flags,
                         const char *dname,
                         const char *uri,
@@ -3959,6 +3969,7 @@ virDomainMigrateDirect (virDomainPtr domain,
                                  VIR_DRV_FEATURE_MIGRATION_V3)) {
         VIR_DEBUG("Using migration protocol 3");
         return domain->conn->driver->domainMigratePerform3(domain,
+                                                           xmlin,
                                                            NULL, /* cookiein */
                                                            0,    /* cookieinlen */
                                                            NULL, /* cookieoutlen */
@@ -3969,6 +3980,11 @@ virDomainMigrateDirect (virDomainPtr domain,
                                                            bandwidth);
     } else {
         VIR_DEBUG("Using migration protocol 2");
+        if (xmlin) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to change target guest XML during migration"));
+            return -1;
+        }
         return domain->conn->driver->domainMigratePerform(domain,
                                                           NULL, /* cookie */
                                                           0,    /* cookielen */
@@ -4093,7 +4109,8 @@ virDomainMigrate (virDomainPtr domain,
             }
 
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2Peer(domain, flags, dname, uri ? uri : dstURI, bandwidth) < 0) {
+            if (virDomainMigratePeer2Peer(domain, NULL, flags, dname,
+                                          uri ? uri : dstURI, bandwidth) < 0) {
                 VIR_FREE(dstURI);
                 goto error;
             }
@@ -4118,7 +4135,7 @@ virDomainMigrate (virDomainPtr domain,
             VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                      VIR_DRV_FEATURE_MIGRATION_V3)) {
             VIR_DEBUG("Using migration protocol 3");
-            ddomain = virDomainMigrateVersion3(domain, dconn, flags, dname, uri, bandwidth);
+            ddomain = virDomainMigrateVersion3(domain, dconn, NULL, flags, dname, uri, bandwidth);
         } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                             VIR_DRV_FEATURE_MIGRATION_V2) &&
                    VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
@@ -4238,7 +4255,8 @@ virDomainMigrateToURI (virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_P2P)) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2Peer (domain, flags, dname, duri, bandwidth) < 0)
+            if (virDomainMigratePeer2Peer(domain, NULL, flags,
+                                          dname, duri, bandwidth) < 0)
                 goto error;
         } else {
             /* No peer to peer migration supported */
@@ -4249,7 +4267,8 @@ virDomainMigrateToURI (virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
             VIR_DEBUG("Using direct migration");
-            if (virDomainMigrateDirect (domain, flags, dname, duri, bandwidth) < 0)
+            if (virDomainMigrateDirect(domain, NULL, flags,
+                                       dname, duri, bandwidth) < 0)
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
@@ -4567,6 +4586,7 @@ error:
  */
 char *
 virDomainMigrateBegin3(virDomainPtr domain,
+                       const char *xmlin,
                        char **cookieout,
                        int *cookieoutlen,
                        unsigned long flags,
@@ -4575,9 +4595,9 @@ virDomainMigrateBegin3(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "cookieout=%p, cookieoutlen=%p, "
+    VIR_DOMAIN_DEBUG(domain, "xmlin=%s cookieout=%p, cookieoutlen=%p, "
                      "flags=%lu, dname=%s, bandwidth=%lu",
-                     cookieout, cookieoutlen, flags,
+                     NULLSTR(xmlin), cookieout, cookieoutlen, flags,
                      NULLSTR(dname), bandwidth);
 
     virResetLastError();
@@ -4596,7 +4616,7 @@ virDomainMigrateBegin3(virDomainPtr domain,
 
     if (conn->driver->domainMigrateBegin3) {
         char *xml;
-        xml = conn->driver->domainMigrateBegin3(domain,
+        xml = conn->driver->domainMigrateBegin3(domain, xmlin,
                                                 cookieout, cookieoutlen,
                                                 flags, dname, bandwidth);
         VIR_DEBUG("xml %s", NULLSTR(xml));
@@ -4733,6 +4753,7 @@ error:
  */
 int
 virDomainMigratePerform3(virDomainPtr domain,
+                         const char *xmlin,
                          const char *cookiein,
                          int cookieinlen,
                          char **cookieout,
@@ -4744,9 +4765,11 @@ virDomainMigratePerform3(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "cookiein=%p, cookieinlen=%d, cookieout=%p, cookieoutlen=%p,"
+    VIR_DOMAIN_DEBUG(domain, "xmlin=%s cookiein=%p, cookieinlen=%d, "
+                     "cookieout=%p, cookieoutlen=%p, "
                      "uri=%s, flags=%lu, dname=%s, bandwidth=%lu",
-                     cookiein, cookieinlen, cookieout, cookieoutlen,
+                     NULLSTR(xmlin), cookiein, cookieinlen,
+                     cookieout, cookieoutlen,
                      uri, flags, NULLSTR(dname), bandwidth);
 
     virResetLastError();
@@ -4765,7 +4788,7 @@ virDomainMigratePerform3(virDomainPtr domain,
 
     if (conn->driver->domainMigratePerform3) {
         int ret;
-        ret = conn->driver->domainMigratePerform3(domain,
+        ret = conn->driver->domainMigratePerform3(domain, xmlin,
                                                   cookiein, cookieinlen,
                                                   cookieout, cookieoutlen,
                                                   uri,
