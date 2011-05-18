@@ -48,7 +48,18 @@
 #define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
 
 enum qemuMigrationCookieFlags {
-    QEMU_MIGRATION_COOKIE_GRAPHICS = (1 << 0),
+    QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
+
+    QEMU_MIGRATION_COOKIE_FLAG_LAST
+};
+
+VIR_ENUM_DECL(qemuMigrationCookieFlag);
+VIR_ENUM_IMPL(qemuMigrationCookieFlag,
+              QEMU_MIGRATION_COOKIE_FLAG_LAST,
+              "graphics");
+
+enum qemuMigrationCookieFeatures {
+    QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
 };
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -65,6 +76,7 @@ typedef struct _qemuMigrationCookie qemuMigrationCookie;
 typedef qemuMigrationCookie *qemuMigrationCookiePtr;
 struct _qemuMigrationCookie {
     int flags;
+    int flagsMandatory;
 
     /* Host properties */
     unsigned char hostuuid[VIR_UUID_BUFLEN];
@@ -286,6 +298,7 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char hostuuidstr[VIR_UUID_STRING_BUFLEN];
+    int i;
 
     virUUIDFormat(mig->uuid, uuidstr);
     virUUIDFormat(mig->hostuuid, hostuuidstr);
@@ -295,6 +308,12 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
     virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->hostname);
     virBufferAsprintf(buf, "  <hostuuid>%s</hostuuid>\n", hostuuidstr);
+
+    for (i = 0 ; i < QEMU_MIGRATION_COOKIE_FLAG_LAST ; i++) {
+        if (mig->flagsMandatory & (1 << i))
+            virBufferAsprintf(buf, "  <feature name='%s'/>\n",
+                              qemuMigrationCookieFlagTypeToString(i));
+    }
 
     if ((mig->flags & QEMU_MIGRATION_COOKIE_GRAPHICS) &&
         mig->graphics)
@@ -377,6 +396,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *tmp;
+    xmlNodePtr *nodes = NULL;
+    int i, n;
 
     /* We don't store the uuid, name, hostname, or hostuuid
      * values. We just compare them to local data to do some
@@ -440,6 +461,38 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     }
     VIR_FREE(tmp);
 
+    /* Check to ensure all mandatory features from XML are also
+     * present in 'flags' */
+    if ((n = virXPathNodeSet("./features", ctxt, &nodes)) < 0)
+        goto error;
+
+    for (i = 0 ; i < n ; i++) {
+        int val;
+        char *str = virXMLPropString(nodes[i], "name");
+        if (!str) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("missing feature name"));
+            goto error;
+        }
+
+        if ((val = qemuMigrationCookieFlagTypeFromString(str)) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unknown migration cookie feature %s"),
+                            str);
+            VIR_FREE(str);
+            goto error;
+        }
+
+        if ((flags & (1 << val)) == 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unsupported migration cookie feature %s"),
+                            str);
+            VIR_FREE(str);
+        }
+        VIR_FREE(str);
+    }
+    VIR_FREE(nodes);
+
     if ((flags & QEMU_MIGRATION_COOKIE_GRAPHICS) &&
         virXPathBoolean("count(./graphics) > 0", ctxt) &&
         (!(mig->graphics = qemuMigrationCookieGraphicsXMLParse(ctxt))))
@@ -449,6 +502,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
 
 error:
     VIR_FREE(tmp);
+    VIR_FREE(nodes);
     return -1;
 }
 
