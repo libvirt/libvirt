@@ -1390,7 +1390,7 @@ int
 virConnectRef(virConnectPtr conn)
 {
     if ((!VIR_IS_CONNECT(conn))) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -4490,7 +4490,6 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
                               const char *dname,
                               unsigned long bandwidth,
                               const char *dom_xml)
-
 {
     VIR_DEBUG("conn=%p, stream=%p, flags=%lu, dname=%s, "
               "bandwidth=%lu, dom_xml=%s", conn, st, flags,
@@ -5621,7 +5620,7 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *path, virDomainBlockInfoP
         virDispatchError(NULL);
         return -1;
     }
-    if (info == NULL) {
+    if (path == NULL || info == NULL) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -6527,6 +6526,12 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
         virDispatchError(NULL);
         return -1;
     }
+
+    if (xml == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -6587,6 +6592,12 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
+
+    if (xml == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -6632,6 +6643,12 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
         virDispatchError(NULL);
         return -1;
     }
+
+    if (xml == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -6688,6 +6705,12 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
+
+    if (xml == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -6748,6 +6771,12 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
+
+    if (xml == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -7408,7 +7437,7 @@ int
 virNetworkRef(virNetworkPtr network)
 {
     if ((!VIR_IS_CONNECTED_NETWORK(network))) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -8274,7 +8303,7 @@ int
 virInterfaceRef(virInterfacePtr iface)
 {
     if ((!VIR_IS_CONNECTED_INTERFACE(iface))) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
@@ -8717,7 +8746,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
     }
@@ -9789,6 +9818,11 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
         return NULL;
     }
 
+    if (xmldesc == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (pool->conn->flags & VIR_CONNECT_RO) {
         virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -9842,6 +9876,11 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 
     if (!VIR_IS_STORAGE_VOL(clonevol)) {
         virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        goto error;
+    }
+
+    if (xmldesc == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
@@ -10593,6 +10632,11 @@ int virNodeDeviceListCaps(virNodeDevicePtr dev,
         virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
+    }
+
+    if (names == NULL || maxnames < 0) {
+        virLibNodeDeviceError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
     }
 
     if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceListCaps) {
@@ -11853,6 +11897,11 @@ int virStreamSend(virStreamPtr stream,
         return -1;
     }
 
+    if (data == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (stream->driver &&
         stream->driver->streamSend) {
         int ret;
@@ -11948,6 +11997,11 @@ int virStreamRecv(virStreamPtr stream,
         return -1;
     }
 
+    if (data == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (stream->driver &&
         stream->driver->streamRecv) {
         int ret;
@@ -12022,6 +12076,11 @@ int virStreamSendAll(virStreamPtr stream,
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
+    }
+
+    if (handler == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
     }
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
@@ -12119,6 +12178,11 @@ int virStreamRecvAll(virStreamPtr stream,
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
+    }
+
+    if (handler == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
     }
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
@@ -13835,6 +13899,12 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     conn = domain->conn;
+
+    if (xmlDesc == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (conn->flags & VIR_CONNECT_RO) {
         virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
