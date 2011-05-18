@@ -442,6 +442,8 @@ LIBVIRT_0.9.2 {
         virDomainInjectNMI;
         virDomainScreenshot;
         virDomainSetSchedulerParametersFlags;
+	virDomainMigrate2;
+	virDomainMigrateToURI2;
 } LIBVIRT_0.9.0;
 
 # .... define new API here using predicted next version number ....

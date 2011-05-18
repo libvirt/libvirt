@@ -532,9 +532,21 @@ typedef enum {
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,
                                const char *uri, unsigned long bandwidth);
+virDomainPtr virDomainMigrate2(virDomainPtr domain, virConnectPtr dconn,
+                               const char *dxml,
+                               unsigned long flags, const char *dname,
+                               const char *uri, unsigned long bandwidth);
 
 int virDomainMigrateToURI (virDomainPtr domain, const char *duri,
                            unsigned long flags, const char *dname,
+                           unsigned long bandwidth);
+
+int virDomainMigrateToURI2(virDomainPtr domain,
+                           const char *dconnuri,
+                           const char *miguri,
+                           const char *dxml,
+                           unsigned long flags,
+                           const char *dname,
                            unsigned long bandwidth);
 
 int virDomainMigrateSetMaxDowntime (virDomainPtr domain,
