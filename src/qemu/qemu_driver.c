@@ -6109,6 +6109,8 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
                   VIR_MIGRATE_NON_SHARED_DISK |
                   VIR_MIGRATE_NON_SHARED_INC, -1);
 
+    qemuDriverLock(driver);
+
     if (!dom_xml) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("no domain XML passed"));
@@ -6125,13 +6127,19 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
     }
 
-    qemuDriverLock(driver);
+    if (virLockManagerPluginUsesState(driver->lockManager)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Cannot use migrate v2 protocol with lock manager %s"),
+                        virLockManagerPluginGetName(driver->lockManager));
+        goto cleanup;
+    }
+
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies in v2 */
                                      st, dname, dom_xml);
-    qemuDriverUnlock(driver);
 
 cleanup:
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -6165,6 +6173,14 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     *uri_out = NULL;
 
     qemuDriverLock(driver);
+
+    if (virLockManagerPluginUsesState(driver->lockManager)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Cannot use migrate v2 protocol with lock manager %s"),
+                        virLockManagerPluginGetName(driver->lockManager));
+        goto cleanup;
+    }
+
     if (flags & VIR_MIGRATE_TUNNELLED) {
         /* this is a logical error; we never should have gotten here with
          * VIR_MIGRATE_TUNNELLED set
@@ -6220,6 +6236,13 @@ qemudDomainMigratePerform (virDomainPtr dom,
                   VIR_MIGRATE_NON_SHARED_INC, -1);
 
     qemuDriverLock(driver);
+    if (virLockManagerPluginUsesState(driver->lockManager)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Cannot use migrate v2 protocol with lock manager %s"),
+                        virLockManagerPluginGetName(driver->lockManager));
+        goto cleanup;
+    }
+
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];

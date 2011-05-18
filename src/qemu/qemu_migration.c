@@ -41,6 +41,7 @@
 #include "datatypes.h"
 #include "fdstream.h"
 #include "uuid.h"
+#include "locking/domain_lock.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -49,6 +50,7 @@
 
 enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
+    QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 };
@@ -56,10 +58,11 @@ enum qemuMigrationCookieFlags {
 VIR_ENUM_DECL(qemuMigrationCookieFlag);
 VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               QEMU_MIGRATION_COOKIE_FLAG_LAST,
-              "graphics");
+              "graphics", "lockstate");
 
 enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
+    QEMU_MIGRATION_COOKIE_LOCKSTATE = (1 << QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE),
 };
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -88,6 +91,10 @@ struct _qemuMigrationCookie {
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *name;
 
+    /* If (flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) */
+    char *lockState;
+    char *lockDriver;
+
     /* If (flags & QEMU_MIGRATION_COOKIE_GRAPHICS) */
     qemuMigrationCookieGraphicsPtr graphics;
 };
@@ -113,6 +120,8 @@ static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     VIR_FREE(mig->localHostname);
     VIR_FREE(mig->remoteHostname);
     VIR_FREE(mig->name);
+    VIR_FREE(mig->lockState);
+    VIR_FREE(mig->lockDriver);
     VIR_FREE(mig);
 }
 
@@ -278,6 +287,41 @@ qemuMigrationCookieAddGraphics(qemuMigrationCookiePtr mig,
 }
 
 
+static int
+qemuMigrationCookieAddLockstate(qemuMigrationCookiePtr mig,
+                                struct qemud_driver *driver,
+                                virDomainObjPtr dom)
+{
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+
+    if (mig->flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Migration lockstate data already present"));
+        return -1;
+    }
+
+    if (virDomainObjGetState(dom, NULL) == VIR_DOMAIN_PAUSED) {
+        if (priv->lockState &&
+            !(mig->lockState = strdup(priv->lockState)))
+            return -1;
+    } else {
+        if (virDomainLockProcessInquire(driver->lockManager, dom, &mig->lockState) < 0)
+            return -1;
+    }
+
+    if (!(mig->lockDriver = strdup(virLockManagerPluginGetName(driver->lockManager)))) {
+        VIR_FREE(mig->lockState);
+        return -1;
+    }
+
+    mig->flags |= QEMU_MIGRATION_COOKIE_LOCKSTATE;
+    mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_LOCKSTATE;
+
+    return 0;
+}
+
+
+
 static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                                  qemuMigrationCookieGraphicsPtr grap)
 {
@@ -321,6 +365,15 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
     if ((mig->flags & QEMU_MIGRATION_COOKIE_GRAPHICS) &&
         mig->graphics)
         qemuMigrationCookieGraphicsXMLFormat(buf, mig->graphics);
+
+    if ((mig->flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) &&
+        mig->lockState) {
+        virBufferAsprintf(buf, "  <lockstate driver='%s'>\n",
+                          mig->lockDriver);
+        virBufferAsprintf(buf, "    <leases>%s</leases>\n",
+                          mig->lockState);
+        virBufferAddLit(buf, "  </lockstate>\n");
+    }
 
     virBufferAddLit(buf, "</qemu-migration>\n");
 }
@@ -504,6 +557,19 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         (!(mig->graphics = qemuMigrationCookieGraphicsXMLParse(ctxt))))
         goto error;
 
+    if ((flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) &&
+        virXPathBoolean("count(./lockstate) > 0", ctxt)) {
+        mig->lockDriver = virXPathString("string(./lockstate[1]/@driver)", ctxt);
+        if (!mig->lockDriver) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Missing lock driver name in migration cookie"));
+            goto error;
+        }
+        mig->lockState = virXPathString("string(./lockstate[1]/leases[1])", ctxt);
+        if (mig->lockState && STREQ(mig->lockState, ""))
+            VIR_FREE(mig->lockState);
+    }
+
     return 0;
 
 error:
@@ -564,6 +630,10 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
         qemuMigrationCookieAddGraphics(mig, driver, dom) < 0)
         return -1;
 
+    if (flags & QEMU_MIGRATION_COOKIE_LOCKSTATE &&
+        qemuMigrationCookieAddLockstate(mig, driver, dom) < 0)
+        return -1;
+
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(mig)))
         return -1;
 
@@ -576,7 +646,8 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
 
 static qemuMigrationCookiePtr
-qemuMigrationEatCookie(virDomainObjPtr dom,
+qemuMigrationEatCookie(struct qemud_driver *driver,
+                       virDomainObjPtr dom,
                        const char *cookiein,
                        int cookieinlen,
                        int flags)
@@ -601,6 +672,24 @@ qemuMigrationEatCookie(virDomainObjPtr dom,
                                        cookiein,
                                        flags) < 0)
         goto error;
+
+    if (mig->flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) {
+        if (!mig->lockDriver) {
+            if (virLockManagerPluginUsesState(driver->lockManager)) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Missing %s lock state for migration cookie"),
+                                virLockManagerPluginGetName(driver->lockManager));
+                goto error;
+            }
+        } else if (STRNEQ(mig->lockDriver,
+                          virLockManagerPluginGetName(driver->lockManager))) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Source host lock driver %s different from target %s"),
+                            mig->lockDriver,
+                            virLockManagerPluginGetName(driver->lockManager));
+            goto error;
+        }
+    }
 
     return mig;
 
@@ -927,12 +1016,12 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
     if (!qemuMigrationIsAllowed(vm->def))
         goto cleanup;
 
-    if (!(mig = qemuMigrationEatCookie(vm, NULL, 0, 0)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
         goto cleanup;
 
     if (qemuMigrationBakeCookie(mig, driver, vm,
                                 cookieout, cookieoutlen,
-                                0) < 0)
+                                QEMU_MIGRATION_COOKIE_LOCKSTATE) < 0)
         goto cleanup;
 
     if (xmlin) {
@@ -1024,7 +1113,8 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     def = NULL;
     priv = vm->privateData;
 
-    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
+                                       QEMU_MIGRATION_COOKIE_LOCKSTATE)))
         goto cleanup;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
@@ -1259,7 +1349,8 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
     def = NULL;
     priv = vm->privateData;
 
-    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
+                                       QEMU_MIGRATION_COOKIE_LOCKSTATE)))
         goto cleanup;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
@@ -1285,6 +1376,15 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
             vm = NULL;
         }
         goto endjob;
+    }
+
+    if (mig->lockState) {
+        VIR_DEBUG("Received lockstate %s", mig->lockState);
+        VIR_FREE(priv->lockState);
+        priv->lockState = mig->lockState;
+        mig->lockState = NULL;
+    } else {
+        VIR_DEBUG("Received no lockstate");
     }
 
     if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
@@ -1357,7 +1457,15 @@ static int doNativeMigrate(struct qemud_driver *driver,
               driver, vm, uri, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, NULLSTR(dname), resource);
 
-    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen,
+    if (virLockManagerPluginUsesState(driver->lockManager) &&
+        !cookieout) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Migration with lock driver %s requires cookie support"),
+                        virLockManagerPluginGetName(driver->lockManager));
+        return -1;
+    }
+
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_GRAPHICS)))
         goto cleanup;
 
@@ -1554,6 +1662,14 @@ static int doTunnelMigrate(struct qemud_driver *driver,
               driver, vm, st, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource);
 
+    if (virLockManagerPluginUsesState(driver->lockManager) &&
+        !cookieout) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Migration with lock driver %s requires cookie support"),
+                        virLockManagerPluginGetName(driver->lockManager));
+        return -1;
+    }
+
     if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
         !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -1613,7 +1729,7 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen,
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_GRAPHICS)))
         goto cleanup;
 
@@ -2315,7 +2431,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
     priv->jobActive = QEMU_JOB_NONE;
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
-    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
         goto cleanup;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
@@ -2469,7 +2585,7 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
               driver, conn, vm, NULLSTR(cookiein), cookieinlen,
               flags, retcode);
 
-    if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
         return -1;
 
     if (!virDomainObjIsActive(vm)) {
