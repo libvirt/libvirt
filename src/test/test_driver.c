@@ -2678,7 +2678,7 @@ static int testDomainSetSchedulerParams(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    int ret = -1;
+    int ret = -1, i;
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2690,20 +2690,19 @@ static int testDomainSetSchedulerParams(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (nparams != 1) {
-        testError(VIR_ERR_INVALID_ARG, "nparams");
-        goto cleanup;
+    for (i = 0; i < nparams; i++) {
+        if (STRNEQ(params[i].field, "weight")) {
+            testError(VIR_ERR_INVALID_ARG, "field");
+            goto cleanup;
+        }
+        if (params[i].type != VIR_DOMAIN_SCHED_FIELD_UINT) {
+            testError(VIR_ERR_INVALID_ARG, "type");
+            goto cleanup;
+        }
+        /* XXX */
+        /*privdom->weight = params[i].value.ui;*/
     }
-    if (STRNEQ(params[0].field, "weight")) {
-        testError(VIR_ERR_INVALID_ARG, "field");
-        goto cleanup;
-    }
-    if (params[0].type != VIR_DOMAIN_SCHED_FIELD_UINT) {
-        testError(VIR_ERR_INVALID_ARG, "type");
-        goto cleanup;
-    }
-    /* XXX */
-    /*privdom->weight = params[0].value.ui;*/
+
     ret = 0;
 
 cleanup:

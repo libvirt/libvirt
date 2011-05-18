@@ -3712,8 +3712,7 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
     int sched_nparam = 0;
     int ret = -1;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
-        || (params == NULL)) {
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }

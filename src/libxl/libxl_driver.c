@@ -2544,8 +2544,10 @@ libxlDomainSetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
         goto cleanup;
     }
 
-    if (nparams != XEN_SCHED_CREDIT_NPARAM) {
-        libxlError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
+    if (libxl_sched_credit_domain_get(&priv->ctx, dom->id, &sc_info) != 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to get scheduler parameters for domain '%d'"
+                     " with libxenlight"), dom->id);
         goto cleanup;
     }
 

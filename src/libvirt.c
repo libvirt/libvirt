@@ -5069,11 +5069,11 @@ error:
  * virDomainSetSchedulerParameters:
  * @domain: pointer to domain object
  * @params: pointer to scheduler parameter objects
- * @nparams: number of scheduler parameter
- *          (this value should be same or less than the returned value
+ * @nparams: number of scheduler parameter objects
+ *          (this value can be the same or less than the returned value
  *           nparams of virDomainGetSchedulerType)
  *
- * Change the scheduler parameters
+ * Change all or a subset or the scheduler parameters.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -5092,6 +5092,12 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
+
+    if (params == NULL || nparams < 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -5118,12 +5124,12 @@ error:
  * virDomainSetSchedulerParametersFlags:
  * @domain: pointer to domain object
  * @params: pointer to scheduler parameter objects
- * @nparams: number of scheduler parameter
- *          (this value should be same or less than the returned value
+ * @nparams: number of scheduler parameter objects
+ *          (this value can be the same or less than the returned value
  *           nparams of virDomainGetSchedulerType)
  * @flags: virDomainSchedParameterFlags
  *
- * Change the scheduler parameters
+ * Change a subset or all scheduler parameters.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -5153,6 +5159,12 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
+
+    if (params == NULL || nparams < 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;

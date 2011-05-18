@@ -1364,10 +1364,9 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
         return -1;
     }
 
-    if ((nparams == 0) || (params == NULL)) {
-        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "Noparameters given", 0);
-        return(-1);
+    if (nparams == 0) {
+        /* nothing to do, exit early */
+        return 0;
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
