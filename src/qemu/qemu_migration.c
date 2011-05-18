@@ -355,7 +355,7 @@ qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
         goto error;
     }
     /* Optional */
-    grap->tlsSubject = virXPathString("string(./graphics/cert[ info='subject']/@value)", ctxt);
+    grap->tlsSubject = virXPathString("string(./graphics/cert[@info='subject']/@value)", ctxt);
 
 
     return grap;
