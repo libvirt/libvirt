@@ -3893,11 +3893,14 @@ qemuBuildCommandLine(virConnectPtr conn,
                               def->graphics[0]->data.vnc.socket);
 
         } else if (qemuCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
-            if (def->graphics[0]->data.vnc.listenAddr)
-                virBufferAdd(&opt, def->graphics[0]->data.vnc.listenAddr, -1);
-            else if (driver->vncListen)
-                virBufferAdd(&opt, driver->vncListen, -1);
-
+            const char *addr = def->graphics[0]->data.vnc.listenAddr ?
+                def->graphics[0]->data.vnc.listenAddr :
+                driver->vncListen;
+            bool escapeAddr = strchr(addr, ':') != NULL;
+            if (escapeAddr)
+                virBufferAsprintf(&opt, "[%s]", addr);
+            else
+                virBufferAdd(&opt, addr, -1);
             virBufferAsprintf(&opt, ":%d",
                               def->graphics[0]->data.vnc.port - 5900);
 
@@ -5737,32 +5740,46 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             vnc->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
 
             if (STRPREFIX(val, "unix:")) {
+                /* -vnc unix:/some/big/path */
                 vnc->data.vnc.socket = strdup(val + 5);
                 if (!vnc->data.vnc.socket) {
                     VIR_FREE(vnc);
                     goto no_memory;
                 }
             } else {
-                tmp = strchr(val, ':');
-                if (tmp) {
-                    char *opts;
-                    if (virStrToLong_i(tmp+1, &opts, 10,
-                                       &vnc->data.vnc.port) < 0) {
-                        VIR_FREE(vnc);
-                        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                        _("cannot parse VNC port '%s'"), tmp+1);
-                        goto error;
-                    }
-                    vnc->data.vnc.listenAddr = strndup(val, tmp-val);
-                    if (!vnc->data.vnc.listenAddr) {
-                        VIR_FREE(vnc);
-                        goto no_memory;
-                    }
-                    vnc->data.vnc.port += 5900;
-                    vnc->data.vnc.autoport = 0;
-                } else {
-                    vnc->data.vnc.autoport = 1;
+                /*
+                 * -vnc 127.0.0.1:4
+                 * -vnc [2001:1:2:3:4:5:1234:1234]:4
+                 * -vnc some.host.name:4
+                 */
+                char *opts;
+                const char *sep = ":";
+                if (val[0] == '[')
+                    sep = "]:";
+                tmp = strstr(val, sep);
+                if (!tmp) {
+                    VIR_FREE(vnc);
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    _("missing VNC port number in '%s'"), val);
+                    goto error;
                 }
+                if (virStrToLong_i(tmp+strlen(sep), &opts, 10,
+                                   &vnc->data.vnc.port) < 0) {
+                    VIR_FREE(vnc);
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    _("cannot parse VNC port '%s'"), tmp+1);
+                    goto error;
+                }
+                if (val[0] == '[')
+                    vnc->data.vnc.listenAddr = strndup(val+1, tmp-(val+1));
+                else
+                    vnc->data.vnc.listenAddr = strndup(val, tmp-val);
+                if (!vnc->data.vnc.listenAddr) {
+                    VIR_FREE(vnc);
+                    goto no_memory;
+                }
+                vnc->data.vnc.port += 5900;
+                vnc->data.vnc.autoport = 0;
             }
 
             if (VIR_REALLOC_N(def->graphics, def->ngraphics+1) < 0) {
