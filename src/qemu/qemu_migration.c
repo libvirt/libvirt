@@ -1911,7 +1911,7 @@ finish:
     cookieoutlen = 0;
     ret = qemuMigrationConfirm(driver, sconn, vm,
                                cookiein, cookieinlen,
-                               flags, cancelled, true);
+                               flags, cancelled);
     /* If Confirm3 returns -1, there's nothing more we can
      * do, but fortunately worst case is that there is a
      * domain left in 'paused' state on source.
@@ -2067,12 +2067,6 @@ int qemuMigrationPerform(struct qemud_driver *driver,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
-        if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE)) {
-            virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
-            if (qemuDomainObjEndJob(vm) > 0)
-                virDomainRemoveInactive(&driver->domains, vm);
-            vm = NULL;
-        }
     }
 
     ret = 0;
@@ -2094,9 +2088,17 @@ endjob:
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
-    if (vm &&
-        qemuDomainObjEndJob(vm) == 0)
-        vm = NULL;
+    if (vm) {
+        if (qemuDomainObjEndJob(vm) == 0) {
+            vm = NULL;
+        } else if (!virDomainObjIsActive(vm) &&
+                   (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
+            if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
+                virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
+            virDomainRemoveInactive(&driver->domains, vm);
+            vm = NULL;
+        }
+    }
 
 cleanup:
     if (vm)
@@ -2287,9 +2289,8 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
                          virDomainObjPtr vm,
                          const char *cookiein,
                          int cookieinlen,
-                         unsigned int flags,
-                         int retcode,
-                         bool skipJob)
+                         unsigned int flags ATTRIBUTE_UNUSED,
+                         int retcode)
 {
     qemuMigrationCookiePtr mig;
     virDomainEventPtr event = NULL;
@@ -2298,14 +2299,10 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
     if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
         return -1;
 
-    if (!skipJob &&
-        qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
-        goto cleanup;
-
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("guest unexpectedly quit"));
-        goto endjob;
+        goto cleanup;
     }
 
     /* Did the migration go as planned?  If yes, kill off the
@@ -2318,12 +2315,6 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
-        if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE)) {
-            virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
-            if (qemuDomainObjEndJob(vm) > 0)
-                virDomainRemoveInactive(&driver->domains, vm);
-            vm = NULL;
-        }
     } else {
 
         /* run 'cont' on the destination, which allows migration on qemu
@@ -2335,7 +2326,7 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("resume operation failed"));
-            goto endjob;
+            goto cleanup;
         }
 
         event = virDomainEventNewFromObj(vm,
@@ -2343,22 +2334,14 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
-            goto endjob;
+            goto cleanup;
         }
     }
 
     qemuMigrationCookieFree(mig);
     rv = 0;
 
-endjob:
-    if (vm &&
-        !skipJob &&
-        qemuDomainObjEndJob(vm) == 0)
-        vm = NULL;
-
 cleanup:
-    if (vm)
-        virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     return rv;

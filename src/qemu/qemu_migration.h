@@ -87,8 +87,7 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
                          const char *cookiein,
                          int cookieinlen,
                          unsigned int flags,
-                         int retcode,
-                         bool skipJob);
+                         int retcode);
 
 
 int qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
