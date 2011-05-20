@@ -5536,6 +5536,8 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto endjob;
     }
 
+    virSecurityManagerSetSavedStateLabel(qemu_driver->securityManager, vm, tmp);
+
     priv = vm->privateData;
     qemuDomainObjEnterMonitor(vm);
     if (flags == VIR_MEMORY_VIRTUAL) {
