@@ -1313,6 +1313,13 @@ static int doNativeMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
+    /* Before EnterMonitor, since qemuProcessStopCPUs already does that */
+    if (!(flags & VIR_MIGRATE_LIVE) &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        if (qemuMigrationSetOffline(driver, vm) < 0)
+            goto cleanup;
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (resource > 0 &&
         qemuMonitorSetMigrationSpeed(priv->mon, resource) < 0) {
@@ -1540,6 +1547,13 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         VIR_WARN("unable to provide data for graphics client relocation");
 
     /*   3. start migration on source */
+    /* Before EnterMonitor, since qemuProcessStopCPUs already does that */
+    if (!(flags & VIR_MIGRATE_LIVE) &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        if (qemuMigrationSetOffline(driver, vm) < 0)
+            goto cleanup;
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (resource > 0 &&
         qemuMonitorSetMigrationSpeed(priv->mon, resource) < 0) {
@@ -2048,11 +2062,6 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
 
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
-    if (!(flags & VIR_MIGRATE_LIVE) &&
-        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if (qemuMigrationSetOffline(driver, vm) < 0)
-            goto endjob;
-    }
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         if (cookieinlen) {
