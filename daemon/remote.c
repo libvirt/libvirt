@@ -916,8 +916,6 @@ remoteDispatchDomainMemoryPeek(struct qemud_server *server ATTRIBUTE_UNUSED,
     if (virDomainMemoryPeek(dom, offset, size,
                             ret->buffer.buffer_val, flags) < 0)
         goto cleanup;
-    if (dom)
-        virDomainFree(dom);
 
     rv = 0;
 
