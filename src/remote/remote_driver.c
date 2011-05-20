@@ -1159,7 +1159,7 @@ initialize_gnutls(char *pkipath, int flags)
         if ((virAsprintf(&libvirt_clientcert, "%s/%s", pkipath,
                         "clientcert.pem")) < 0)
              goto out_of_memory;
-    } else if (flags & VIR_DRV_OPEN_REMOTE_USER) {
+    } else if (flags & VIR_DRV_OPEN_REMOTE_USER || getuid() > 0) {
         userdir = virGetUserDirectory(getuid());
 
         if (!userdir)
