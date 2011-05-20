@@ -875,6 +875,8 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
 {
     char *rv = NULL;
     qemuMigrationCookiePtr mig = NULL;
+    VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, cookieout=%p, cookieoutlen=%p",
+              driver, vm, NULLSTR(xmlin), cookieout, cookieoutlen);
 
     if (xmlin) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -935,6 +937,10 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
     qemuMigrationCookiePtr mig = NULL;
+    VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
+              "cookieout=%p, cookieoutlen=%p, st=%p, dname=%s, dom_xml=%s",
+              driver, dconn, NULLSTR(cookiein), cookieinlen,
+              cookieout, cookieoutlen, st, NULLSTR(dname), dom_xml);
 
     if (gettimeofday(&now, NULL) < 0) {
         virReportSystemError(errno, "%s",
@@ -1090,6 +1096,12 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = NULL;
     struct timeval now;
     qemuMigrationCookiePtr mig = NULL;
+    VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
+              "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
+              "dname=%s, dom_xml=%s",
+              driver, dconn, NULLSTR(cookiein), cookieinlen,
+              cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
+              NULLSTR(dname), dom_xml);
 
     if (gettimeofday(&now, NULL) < 0) {
         virReportSystemError(errno, "%s",
@@ -1292,6 +1304,10 @@ static int doNativeMigrate(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
     qemuMigrationCookiePtr mig = NULL;
+    VIR_DEBUG("driver=%p, vm=%p, uri=%s, cookiein=%s, cookieinlen=%d, "
+              "cookieout=%p, cookieoutlen=%p, flags=%u, dname=%s, resource=%lu",
+              driver, vm, uri, NULLSTR(cookiein), cookieinlen,
+              cookieout, cookieoutlen, flags, NULLSTR(dname), resource);
 
     if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_GRAPHICS)))
@@ -1485,6 +1501,10 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     int ret = -1;
     qemuMigrationCookiePtr mig = NULL;
     qemuMigrationIOThreadPtr iothread = NULL;
+    VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
+              "cookieout=%p, cookieoutlen=%p, flags=%lu, resource=%lu",
+              driver, vm, st, NULLSTR(cookiein), cookieinlen,
+              cookieout, cookieoutlen, flags, resource);
 
     if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
         !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
@@ -1685,6 +1705,10 @@ static int doPeer2PeerMigrate2(struct qemud_driver *driver,
     virErrorPtr orig_err = NULL;
     int cancelled;
     virStreamPtr st = NULL;
+    VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, dconnuri=%s, "
+              "flags=%lu, dname=%s, resource=%lu",
+              driver, sconn, dconn, vm, NULLSTR(dconnuri),
+              flags, NULLSTR(dname), resource);
 
     /* In version 2 of the protocol, the prepare step is slightly
      * different.  We fetch the domain XML of the source domain
@@ -1824,8 +1848,12 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
     virErrorPtr orig_err = NULL;
     int cancelled;
     virStreamPtr st = NULL;
+    VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, xmlin=%s, "
+              "dconnuri=%s, uri=%s, flags=%lu, dname=%s, resource=%lu",
+              driver, sconn, dconn, vm, NULLSTR(xmlin),
+              NULLSTR(dconnuri), NULLSTR(uri), flags,
+              NULLSTR(dname), resource);
 
-    VIR_DEBUG("Begin3 %p", sconn);
     dom_xml = qemuMigrationBegin(driver, vm, xmlin,
                                  &cookieout, &cookieoutlen);
     if (!dom_xml)
@@ -1983,6 +2011,10 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
     virConnectPtr dconn = NULL;
     bool p2p;
     bool v3;
+    VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
+              "uri=%s, flags=%lu, dname=%s, resource=%lu",
+              driver, sconn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
+              NULLSTR(uri), flags, NULLSTR(dname), resource);
 
     /* the order of operations is important here; we make sure the
      * destination side is completely setup before we touch the source
@@ -2053,6 +2085,13 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     int ret = -1;
     int resume = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_DEBUG("driver=%p, conn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
+              "uri=%s, cookiein=%s, cookieinlen=%d, cookieout=%p, "
+              "cookieoutlen=%p, flags=%lu, dname=%s, resource=%lu, v3proto=%d",
+              driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
+              NULLSTR(uri), NULLSTR(cookiein), cookieinlen,
+              cookieout, cookieoutlen, flags, NULLSTR(dname),
+              resource, v3proto);
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
@@ -2206,6 +2245,10 @@ qemuMigrationFinish(struct qemud_driver *driver,
     int newVM = 1;
     qemuDomainObjPrivatePtr priv = NULL;
     qemuMigrationCookiePtr mig = NULL;
+    VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
+              "cookieout=%p, cookieoutlen=%p, flags=%lu, retcode=%d",
+              driver, dconn, vm, NULLSTR(cookiein), cookieinlen,
+              cookieout, cookieoutlen, flags, retcode);
 
     priv = vm->privateData;
     if (priv->jobActive != QEMU_JOB_MIGRATION_IN) {
@@ -2356,6 +2399,10 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
     qemuMigrationCookiePtr mig;
     virDomainEventPtr event = NULL;
     int rv = -1;
+    VIR_DEBUG("driver=%p, conn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
+              "flags=%u, retcode=%d",
+              driver, conn, vm, NULLSTR(cookiein), cookieinlen,
+              flags, retcode);
 
     if (!(mig = qemuMigrationEatCookie(vm, cookiein, cookieinlen, 0)))
         return -1;

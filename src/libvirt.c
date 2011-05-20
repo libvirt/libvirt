@@ -3514,6 +3514,8 @@ virDomainMigrateVersion1 (virDomainPtr domain,
     char *cookie = NULL;
     int cookielen = 0, ret;
     virDomainInfo info;
+    VIR_DOMAIN_DEBUG(domain, "dconn=%p flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
+                     dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
 
     ret = virDomainGetInfo (domain, &info);
     if (ret == 0 && info.state == VIR_DOMAIN_PAUSED) {
@@ -3604,6 +3606,8 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     virDomainInfo info;
     virErrorPtr orig_err = NULL;
     int cancelled;
+    VIR_DOMAIN_DEBUG(domain, "dconn=%p flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
+                     dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
 
     /* Prepare the migration.
      *
@@ -3637,7 +3641,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
         flags |= VIR_MIGRATE_PAUSED;
     }
 
-    VIR_DEBUG("Prepare2 %p", dconn);
+    VIR_DEBUG("Prepare2 %p flags=%lu", dconn, flags);
     ret = dconn->driver->domainMigratePrepare2
         (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
          bandwidth, dom_xml);
@@ -3736,6 +3740,10 @@ virDomainMigrateVersion3(virDomainPtr domain,
     virDomainInfo info;
     virErrorPtr orig_err = NULL;
     int cancelled;
+    VIR_DOMAIN_DEBUG(domain, "dconn=%p xmlin=%s, flags=%lu, "
+                     "dname=%s, uri=%s, bandwidth=%lu",
+                     dconn, NULLSTR(xmlin), flags,
+                     NULLSTR(dname), NULLSTR(uri), bandwidth);
 
     if (!domain->conn->driver->domainMigrateBegin3 ||
         !domain->conn->driver->domainMigratePerform3 ||
@@ -3759,7 +3767,7 @@ virDomainMigrateVersion3(virDomainPtr domain,
         flags |= VIR_MIGRATE_PAUSED;
     }
 
-    VIR_DEBUG("Prepare3 %p", dconn);
+    VIR_DEBUG("Prepare3 %p flags=%lu", dconn, flags);
     cookiein = cookieout;
     cookieinlen = cookieoutlen;
     cookieout = NULL;
@@ -3883,6 +3891,10 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                            unsigned long bandwidth)
 {
     xmlURIPtr tempuri = NULL;
+    VIR_DOMAIN_DEBUG(domain, "xmlin=%s, flags=%lu, dname=%s, "
+                     "dconnuri=%s, uri=%s, bandwidth=%lu",
+                     NULLSTR(xmlin), flags, NULLSTR(dname),
+                     NULLSTR(dconnuri), NULLSTR(uri), bandwidth);
 
     if (!domain->conn->driver->domainMigratePerform) {
         virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
@@ -3964,6 +3976,9 @@ virDomainMigrateDirect (virDomainPtr domain,
                         const char *uri,
                         unsigned long bandwidth)
 {
+    VIR_DOMAIN_DEBUG(domain, "xmlin=%s, flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
+                     NULLSTR(xmlin), flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
+
     if (!domain->conn->driver->domainMigratePerform) {
         virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
         virDispatchError(domain->conn);
