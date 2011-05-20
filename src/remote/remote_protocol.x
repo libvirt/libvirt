@@ -2270,7 +2270,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194, /* autogen autogen */
     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SET_MEMORY_PARAMETERS = 197, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199, /* autogen autogen */

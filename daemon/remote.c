@@ -894,36 +894,6 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainCreateWithFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client ATTRIBUTE_UNUSED,
-                                    virConnectPtr conn,
-                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
-                                    remote_error *rerr,
-                                    remote_domain_create_with_flags_args *args,
-                                    remote_domain_create_with_flags_ret *ret)
-{
-    int rv = -1;
-    virDomainPtr dom = NULL;
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    if (virDomainCreateWithFlags(dom, args->flags) < 0)
-        goto cleanup;
-
-    make_nonnull_domain(&ret->dom, dom);
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (dom)
-        virDomainFree(dom);
-    return rv;
-}
-
-static int
 remoteDispatchDomainGetSecurityLabel(struct qemud_server *server ATTRIBUTE_UNUSED,
                                      struct qemud_client *client ATTRIBUTE_UNUSED,
                                      virConnectPtr conn,

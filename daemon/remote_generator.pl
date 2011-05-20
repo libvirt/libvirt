@@ -450,14 +450,22 @@ elsif ($opt_b) {
                 } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|interface|node_device|secret|nwfilter|domain_snapshot) (\S+);/) {
                     my $type_name = name_to_ProcName($1);
 
-                    push(@vars_list, "vir${type_name}Ptr $2 = NULL");
-                    push(@ret_list, "make_nonnull_$1(&ret->$2, $2);");
-                    push(@free_list,
-                         "    if ($2)\n" .
-                         "        vir${type_name}Free($2);");
-                    $single_ret_var = $2;
-                    $single_ret_by_ref = 0;
-                    $single_ret_check = " == NULL";
+                    if ($call->{ProcName} eq "DomainCreateWithFlags") {
+                        # SPECIAL: virDomainCreateWithFlags updates the given
+                        #          domain object instead of returning a new one
+                        push(@ret_list, "make_nonnull_$1(&ret->$2, $2);");
+                        $single_ret_var = undef;
+                        $single_ret_by_ref = 1;
+                    } else {
+                        push(@vars_list, "vir${type_name}Ptr $2 = NULL");
+                        push(@ret_list, "make_nonnull_$1(&ret->$2, $2);");
+                        push(@free_list,
+                             "    if ($2)\n" .
+                             "        vir${type_name}Free($2);");
+                        $single_ret_var = $2;
+                        $single_ret_by_ref = 0;
+                        $single_ret_check = " == NULL";
+                    }
                 } elsif ($ret_member =~ m/^int (\S+)<(\S+)>;/) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
@@ -679,7 +687,12 @@ elsif ($opt_b) {
             if ($single_ret_by_ref) {
                 print "    if (vir$prefix$proc_name(";
                 print join(', ', @args_list);
-                print ", &$single_ret_var) < 0)\n";
+
+                if (defined $single_ret_var) {
+                    print ", &$single_ret_var";
+                }
+
+                print ") < 0)\n";
             } else {
                 print "    if (($single_ret_var = vir$prefix$proc_name(";
                 print join(', ', @args_list);
@@ -979,15 +992,25 @@ elsif ($opt_k) {
                         $priv_name = "${name}PrivateData";
                     }
 
-                    if ($name eq "domain_snapshot") {
-                        push(@ret_list, "rv = get_nonnull_$name(dom, ret.$arg_name);");
+                    if ($call->{ProcName} eq "DomainCreateWithFlags") {
+                        # SPECIAL: virDomainCreateWithFlags updates the given
+                        #          domain object instead of returning a new one
+                        push(@ret_list, "dom->id = ret.dom.id;");
+                        push(@ret_list, "xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);");
+                        push(@ret_list, "rv = 0;");
+                        $single_ret_var = "int rv = -1";
+                        $single_ret_type = "int";
                     } else {
-                        push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
-                    }
+                        if ($name eq "domain_snapshot") {
+                            push(@ret_list, "rv = get_nonnull_$name(dom, ret.$arg_name);");
+                        } else {
+                            push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
+                        }
 
-                    push(@ret_list, "xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);");
-                    $single_ret_var = "vir${type_name}Ptr rv = NULL";
-                    $single_ret_type = "vir${type_name}Ptr";
+                        push(@ret_list, "xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);");
+                        $single_ret_var = "vir${type_name}Ptr rv = NULL";
+                        $single_ret_type = "vir${type_name}Ptr";
+                    }
                 } elsif ($ret_member =~ m/^int (\S+);/) {
                     my $arg_name = $1;
 
