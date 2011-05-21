@@ -501,7 +501,7 @@ elsif ($opt_b) {
                             $single_ret_check = " < 0";
                         }
                     }
-                } elsif ($ret_member =~ m/^hyper (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
+                } elsif ($ret_member =~ m/^(?:unsigned )?hyper (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
@@ -519,7 +519,7 @@ elsif ($opt_b) {
                         $single_ret_check = " < 0";
                         splice(@args_list, int($3), 0, ("ret->$1.$1_val"));
                     }
-                } elsif ($ret_member =~ m/^hyper (\S+)<\S+>;/) {
+                } elsif ($ret_member =~ m/^(?:unsigned )?hyper (\S+)<\S+>;/) {
                     # error out on unannotated arrays
                     die "hyper array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^(unsigned )?hyper (\S+);/) {
@@ -1063,20 +1063,14 @@ elsif ($opt_k) {
                         push(@ret_list, "rv = 0;");
                         $single_ret_var = "int rv = -1";
                         $single_ret_type = "int";
-                    } else {
-                        push(@ret_list, "rv = ret.$arg_name;");
-                        $single_ret_var = "unsigned long rv = 0";
-                        $single_ret_type = "unsigned long";
-                    }
-                } elsif ($ret_member =~ m/^hyper (\S+);/) {
-                    my $arg_name = $1;
-
-                    if ($call->{ProcName} eq "NodeGetFreeMemory") {
+                    } elsif ($call->{ProcName} eq "NodeGetFreeMemory") {
                         push(@ret_list, "rv = ret.$arg_name;");
                         $single_ret_var = "unsigned long long rv = 0";
                         $single_ret_type = "unsigned long long";
                     } else {
-                        die "unhandled type for return value: $ret_member";
+                        push(@ret_list, "rv = ret.$arg_name;");
+                        $single_ret_var = "unsigned long rv = 0";
+                        $single_ret_type = "unsigned long";
                     }
                 } elsif ($ret_member =~ m/^(\/)?\*/) {
                     # ignore comments

@@ -158,11 +158,11 @@ struct remote_node_get_cells_free_memory_args {
 struct remote_node_get_cells_free_memory_ret {
         struct {
                 u_int              cells_len;
-                int64_t *          cells_val;
+                uint64_t *         cells_val;
         } cells;
 };
 struct remote_node_get_free_memory_ret {
-        int64_t                    freeMem;
+        uint64_t                   freeMem;
 };
 struct remote_domain_get_scheduler_type_args {
         remote_nonnull_domain      dom;

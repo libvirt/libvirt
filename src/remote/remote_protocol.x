@@ -449,11 +449,11 @@ struct remote_node_get_cells_free_memory_args {
 };
 
 struct remote_node_get_cells_free_memory_ret {
-    hyper cells<REMOTE_NODE_MAX_CELLS>; /* insert@1 */
+    unsigned hyper cells<REMOTE_NODE_MAX_CELLS>; /* insert@1 */
 };
 
 struct remote_node_get_free_memory_ret {
-    hyper freeMem;
+    unsigned hyper freeMem;
 };
 
 struct remote_domain_get_scheduler_type_args {
