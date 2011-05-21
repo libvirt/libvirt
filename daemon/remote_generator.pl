@@ -405,8 +405,9 @@ elsif ($opt_b) {
                     } else {
                         die "unhandled type for multi-return-value: $ret_member";
                     }
-                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
                     push(@vars_list, "int len");
+                    splice(@args_list, int($3), 0, ("ret->$1.$1_val"));
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
                     $single_ret_var = "len";
@@ -416,18 +417,9 @@ elsif ($opt_b) {
                     $single_ret_list_name = $1;
                     $single_ret_list_max_var = "max$1";
                     $single_ret_list_max_define = $2;
-
-                    if ($call->{ProcName} eq "NodeListDevices") {
-                        my $conn = shift(@args_list);
-                        my $cap = shift(@args_list);
-                        unshift(@args_list, "ret->$1.$1_val");
-                        unshift(@args_list, $cap);
-                        unshift(@args_list, $conn);
-                    } else {
-                        my $conn = shift(@args_list);
-                        unshift(@args_list, "ret->$1.$1_val");
-                        unshift(@args_list, $conn);
-                    }
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<\S+>;/) {
+                    # error out on unannotated arrays
+                    die "remote_nonnull_string array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^remote_nonnull_string (\S+);/) {
                     if ($call->{ProcName} eq "GetType") {
                         # SPECIAL: virConnectGetType returns a constant string that must
@@ -466,8 +458,9 @@ elsif ($opt_b) {
                         $single_ret_by_ref = 0;
                         $single_ret_check = " == NULL";
                     }
-                } elsif ($ret_member =~ m/^int (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^int (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
                     push(@vars_list, "int len");
+                    splice(@args_list, int($3), 0, ("ret->$1.$1_val"));
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
                     $single_ret_var = "len";
@@ -477,10 +470,9 @@ elsif ($opt_b) {
                     $single_ret_list_name = $1;
                     $single_ret_list_max_var = "max$1";
                     $single_ret_list_max_define = $2;
-
-                    my $conn = shift(@args_list);
-                    unshift(@args_list, "ret->$1.$1_val");
-                    unshift(@args_list, $conn);
+                } elsif ($ret_member =~ m/^int (\S+)<\S+>;/) {
+                    # error out on unannotated arrays
+                    die "int array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^int (\S+);/) {
                     push(@vars_list, "int $1");
                     push(@ret_list, "ret->$1 = $1;");
@@ -497,7 +489,7 @@ elsif ($opt_b) {
                             $single_ret_check = " < 0";
                         }
                     }
-                } elsif ($ret_member =~ m/^hyper (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^hyper (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
@@ -508,17 +500,16 @@ elsif ($opt_b) {
                     $single_ret_list_max_var = "max$1";
                     $single_ret_list_max_define = $2;
 
-                    my $conn = shift(@args_list);
-
                     if ($call->{ProcName} eq "NodeGetCellsFreeMemory") {
                         $single_ret_check = " <= 0";
-                        unshift(@args_list, "(unsigned long long *)ret->$1.$1_val");
+                        splice(@args_list, int($3), 0, ("(unsigned long long *)ret->$1.$1_val"));
                     } else {
                         $single_ret_check = " < 0";
-                        unshift(@args_list, "ret->$1.$1_val");
+                        splice(@args_list, int($3), 0, ("ret->$1.$1_val"));
                     }
-
-                    unshift(@args_list, $conn);
+                } elsif ($ret_member =~ m/^hyper (\S+)<\S+>;/) {
+                    # error out on unannotated arrays
+                    die "hyper array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^(unsigned )?hyper (\S+);/) {
                     my $type_name;
                     my $ret_name = $2;
@@ -945,30 +936,18 @@ elsif ($opt_k) {
                         die "unhandled type for multi-return-value for " .
                             "procedure $call->{name}: $ret_member";
                     }
-                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
+                    splice(@args_list, int($3), 0, ("char **const $1"));
+                    push(@ret_list, "rv = ret.$1.$1_len;");
+                    $single_ret_var = "int rv = -1";
+                    $single_ret_type = "int";
                     $single_ret_as_list = 1;
                     $single_ret_list_name = $1;
                     $single_ret_list_max_var = "max$1";
                     $single_ret_list_max_define = $2;
-
-                    my $first_arg = shift(@args_list);
-                    my $second_arg;
-
-                    if ($call->{ProcName} eq "NodeListDevices") {
-                        $second_arg = shift(@args_list);
-                    }
-
-                    unshift(@args_list, "char **const $1");
-
-                    if (defined $second_arg) {
-                        unshift(@args_list, $second_arg);
-                    }
-
-                    unshift(@args_list, $first_arg);
-
-                    push(@ret_list, "rv = ret.$1.$1_len;");
-                    $single_ret_var = "int rv = -1";
-                    $single_ret_type = "int";
+                } elsif ($ret_member =~ m/^remote_nonnull_string (\S+)<\S+>;/) {
+                    # error out on unannotated arrays
+                    die "remote_nonnull_string array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^remote_nonnull_string (\S+);/) {
                     push(@ret_list, "rv = ret.$1;");
                     $single_ret_var = "char *rv = NULL";

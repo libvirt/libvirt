@@ -368,7 +368,10 @@ struct remote_memory_param {
  *
  * Please follow the naming convention carefully - this file is
  * parsed by 'remote_generator.pl'.
- */
+ *
+ * 'remote_CALL_ret' members that are filled via call-by-reference must be
+ * annotated with a insert@<offset> comment to indicate the offset in the
+ * parameter list of the function to be called. */
 
 struct remote_open_args {
     /* NB. "name" might be NULL although in practice you can't
@@ -446,7 +449,7 @@ struct remote_node_get_cells_free_memory_args {
 };
 
 struct remote_node_get_cells_free_memory_ret {
-    hyper cells<REMOTE_NODE_MAX_CELLS>;
+    hyper cells<REMOTE_NODE_MAX_CELLS>; /* insert@1 */
 };
 
 struct remote_node_get_free_memory_ret {
@@ -600,7 +603,7 @@ struct remote_list_domains_args {
 };
 
 struct remote_list_domains_ret {
-    int ids<REMOTE_DOMAIN_ID_LIST_MAX>;
+    int ids<REMOTE_DOMAIN_ID_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_num_of_domains_ret {
@@ -801,7 +804,7 @@ struct remote_list_defined_domains_args {
 };
 
 struct remote_list_defined_domains_ret {
-    remote_nonnull_string names<REMOTE_DOMAIN_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_DOMAIN_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_num_of_defined_domains_ret {
@@ -949,7 +952,7 @@ struct remote_list_networks_args {
 };
 
 struct remote_list_networks_ret {
-    remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_num_of_defined_networks_ret {
@@ -961,7 +964,7 @@ struct remote_list_defined_networks_args {
 };
 
 struct remote_list_defined_networks_ret {
-    remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_network_lookup_by_uuid_args {
@@ -1049,7 +1052,7 @@ struct remote_list_nwfilters_args {
 };
 
 struct remote_list_nwfilters_ret {
-    remote_nonnull_string names<REMOTE_NWFILTER_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_NWFILTER_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_nwfilter_lookup_by_uuid_args {
@@ -1101,7 +1104,7 @@ struct remote_list_interfaces_args {
 };
 
 struct remote_list_interfaces_ret {
-    remote_nonnull_string names<REMOTE_INTERFACE_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_INTERFACE_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_num_of_defined_interfaces_ret {
@@ -1113,7 +1116,7 @@ struct remote_list_defined_interfaces_args {
 };
 
 struct remote_list_defined_interfaces_ret {
-    remote_nonnull_string names<REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_interface_lookup_by_name_args {
@@ -1215,7 +1218,7 @@ struct remote_list_storage_pools_args {
 };
 
 struct remote_list_storage_pools_ret {
-    remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_num_of_defined_storage_pools_ret {
@@ -1227,7 +1230,7 @@ struct remote_list_defined_storage_pools_args {
 };
 
 struct remote_list_defined_storage_pools_ret {
-    remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_find_storage_pool_sources_args {
@@ -1357,7 +1360,7 @@ struct remote_storage_pool_list_volumes_args {
 };
 
 struct remote_storage_pool_list_volumes_ret {
-    remote_nonnull_string names<REMOTE_STORAGE_VOL_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_STORAGE_VOL_NAME_LIST_MAX>; /* insert@1 */
 };
 
 
@@ -1465,7 +1468,7 @@ struct remote_node_list_devices_args {
 };
 
 struct remote_node_list_devices_ret {
-    remote_nonnull_string names<REMOTE_NODE_DEVICE_NAME_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_NODE_DEVICE_NAME_LIST_MAX>; /* insert@2 */
 };
 
 struct remote_node_device_lookup_by_name_args {
@@ -1507,7 +1510,7 @@ struct remote_node_device_list_caps_args {
 };
 
 struct remote_node_device_list_caps_ret {
-    remote_nonnull_string names<REMOTE_NODE_DEVICE_CAPS_LIST_MAX>;
+    remote_nonnull_string names<REMOTE_NODE_DEVICE_CAPS_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_node_device_dettach_args {
@@ -1588,7 +1591,7 @@ struct remote_list_secrets_args {
 };
 
 struct remote_list_secrets_ret {
-    remote_nonnull_string uuids<REMOTE_SECRET_UUID_LIST_MAX>;
+    remote_nonnull_string uuids<REMOTE_SECRET_UUID_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_secret_lookup_by_uuid_args {
@@ -1900,7 +1903,7 @@ struct remote_domain_snapshot_list_names_args {
 };
 
 struct remote_domain_snapshot_list_names_ret {
-    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>;
+    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>; /* insert@1 */
 };
 
 struct remote_domain_snapshot_lookup_by_name_args {
@@ -2007,7 +2010,7 @@ struct remote_domain_migrate_prepare_tunnel3_args {
 };
 
 struct remote_domain_migrate_prepare_tunnel3_ret {
-    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>; /* insert@3 */
 };
 
 struct remote_domain_migrate_perform3_args {
