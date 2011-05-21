@@ -407,7 +407,7 @@ cleanup:
 
 static char *
 nwfilterGetXMLDesc(virNWFilterPtr obj,
-                   unsigned int flags) {
+                   int flags) {
     virNWFilterDriverStatePtr driver = obj->conn->nwfilterPrivateData;
     virNWFilterObjPtr nwfilter;
     char *ret = NULL;

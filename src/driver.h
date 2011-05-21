@@ -1285,7 +1285,7 @@ typedef int
 
 typedef char *
     (*virDrvNWFilterGetXMLDesc)              (virNWFilterPtr nwfilter,
-                                              unsigned int flags);
+                                              int flags);
 
 
 typedef struct _virNWFilterDriver virNWFilterDriver;

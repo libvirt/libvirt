@@ -896,22 +896,6 @@ elsif ($opt_k) {
                     $type_name .= $2;
                     $type_name =~ s/hyper/long/;
 
-                    if ($type_name eq "int") {
-                        # fix bad decisions in the xdr protocol
-                        if ($arg_name eq "flags" and
-                            $call->{ProcName} ne "DomainCoreDump" and
-                            $call->{ProcName} ne "DomainGetXMLDesc" and
-                            $call->{ProcName} ne "NetworkGetXMLDesc") {
-                            $type_name = "unsigned int";
-                        } elsif ($arg_name eq "nvcpus" and
-                                 $call->{ProcName} eq "DomainSetVcpus") {
-                            $type_name = "unsigned int";
-                        } elsif ($arg_name eq "vcpu" and
-                                 $call->{ProcName} eq "DomainPinVcpu") {
-                            $type_name = "unsigned int";
-                        }
-                    }
-
                     # SPECIAL: some hyper parameters map to long longs
                     if (($call->{ProcName} eq "DomainMigrateSetMaxDowntime" and
                          $arg_name eq "downtime") or

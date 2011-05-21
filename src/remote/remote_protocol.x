@@ -430,7 +430,7 @@ struct remote_get_max_vcpus_ret {
 
 struct remote_node_get_info_ret {
     char model[32];
-    hyper memory;
+    unsigned hyper memory;
     int cpus;
     int mhz;
     int nodes;
@@ -612,7 +612,7 @@ struct remote_num_of_domains_ret {
 
 struct remote_domain_create_xml_args {
     remote_nonnull_string xml_desc;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_create_xml_ret {
@@ -657,7 +657,7 @@ struct remote_domain_shutdown_args {
 
 struct remote_domain_reboot_args {
     remote_nonnull_domain dom;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_destroy_args {
@@ -843,7 +843,7 @@ struct remote_domain_inject_nmi_args {
 
 struct remote_domain_set_vcpus_args {
     remote_nonnull_domain dom;
-    int nvcpus;
+    unsigned int nvcpus;
 };
 
 struct remote_domain_set_vcpus_flags_args {
@@ -863,7 +863,7 @@ struct remote_domain_get_vcpus_flags_ret {
 
 struct remote_domain_pin_vcpu_args {
     remote_nonnull_domain dom;
-    int vcpu;
+    unsigned int vcpu;
     opaque cpumap<REMOTE_CPUMAP_MAX>;
 };
 
@@ -1527,7 +1527,7 @@ struct remote_node_device_reset_args {
 
 struct remote_node_device_create_xml_args {
     remote_nonnull_string xml_desc;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_node_device_create_xml_ret {
@@ -1871,7 +1871,7 @@ struct remote_domain_managed_save_remove_args {
 struct remote_domain_snapshot_create_xml_args {
     remote_nonnull_domain dom;
     remote_nonnull_string xml_desc;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_create_xml_ret {
@@ -1880,7 +1880,7 @@ struct remote_domain_snapshot_create_xml_ret {
 
 struct remote_domain_snapshot_get_xml_desc_args {
     remote_nonnull_domain_snapshot snap;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_get_xml_desc_ret {
@@ -1889,7 +1889,7 @@ struct remote_domain_snapshot_get_xml_desc_ret {
 
 struct remote_domain_snapshot_num_args {
     remote_nonnull_domain dom;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_num_ret {
@@ -1899,7 +1899,7 @@ struct remote_domain_snapshot_num_ret {
 struct remote_domain_snapshot_list_names_args {
     remote_nonnull_domain dom;
     int maxnames;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_list_names_ret {
@@ -1909,7 +1909,7 @@ struct remote_domain_snapshot_list_names_ret {
 struct remote_domain_snapshot_lookup_by_name_args {
     remote_nonnull_domain dom;
     remote_nonnull_string name;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_lookup_by_name_ret {
@@ -1918,7 +1918,7 @@ struct remote_domain_snapshot_lookup_by_name_ret {
 
 struct remote_domain_has_current_snapshot_args {
     remote_nonnull_domain dom;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_has_current_snapshot_ret {
@@ -1927,7 +1927,7 @@ struct remote_domain_has_current_snapshot_ret {
 
 struct remote_domain_snapshot_current_args {
     remote_nonnull_domain dom;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_current_ret {
@@ -1936,12 +1936,12 @@ struct remote_domain_snapshot_current_ret {
 
 struct remote_domain_revert_to_snapshot_args {
     remote_nonnull_domain_snapshot snap;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_snapshot_delete_args {
     remote_nonnull_domain_snapshot snap;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_open_console_args {
