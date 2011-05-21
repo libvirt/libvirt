@@ -43,7 +43,7 @@ sub name_to_ProcName {
 
 # Read the input file (usually remote_protocol.x) and form an
 # opinion about the name, args and return type of each RPC.
-my ($name, $ProcName, $id, $flags, $gen, %calls, @calls);
+my ($name, $ProcName, $id, $flags, %calls, @calls);
 
 # only generate a close method if -c was passed
 if ($opt_c) {
@@ -135,18 +135,30 @@ while (<PROTOCOL>) {
         $ProcName = name_to_ProcName ($name);
 
         if ($opt_b or $opt_k) {
-            if (!($flags =~ m/^\s*\/\*\s*(\S+)\s+(\S+)\s*\*\/\s*$/)) {
+            if (!($flags =~ m/^\s*\/\*\s*(\S+)\s+(\S+)\s*(.*)\*\/\s*$/)) {
                 die "invalid generator flags for ${procprefix}_PROC_${name}"
             }
 
-            $gen = $opt_b ? $1 : $2;
+            my $genmode = $opt_b ? $1 : $2;
+            my $genflags = $3;
 
-            if ($gen eq "autogen") {
+            if ($genmode eq "autogen") {
                 push(@autogen, $ProcName);
-            } elsif ($gen eq "skipgen") {
+            } elsif ($genmode eq "skipgen") {
                 # ignore it
             } else {
                 die "invalid generator flags for ${procprefix}_PROC_${name}"
+            }
+
+            if (defined $genflags and $genflags ne "") {
+                if ($genflags =~ m/^\|\s*(read|write)stream@(\d+)\s*$/) {
+                    $calls{$name}->{streamflag} = $1;
+                    $calls{$name}->{streamoffset} = int($2);
+                } else {
+                    die "invalid generator flags for ${procprefix}_PROC_${name}"
+                }
+            } else {
+                $calls{$name}->{streamflag} = "none";
             }
         }
 
@@ -531,6 +543,18 @@ elsif ($opt_b) {
                     } else {
                         $single_ret_by_ref = 1;
                     }
+                } elsif ($ret_member =~ m/^opaque (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
+                    push(@vars_list, "char *$1 = NULL");
+                    push(@vars_list, "int $1_len = 0");
+                    splice(@args_list, int($3), 0, ("&$1", "&$1_len"));
+                    push(@ret_list, "ret->$1.$1_val = $1;");
+                    push(@ret_list, "ret->$1.$1_len = $1_len;");
+                    push(@free_list_on_error, "VIR_FREE($1);");
+                    $single_ret_var = undef;
+                    $single_ret_by_ref = 1;
+                } elsif ($ret_member =~ m/^opaque (\S+)<\S+>;/) {
+                    # error out on unannotated arrays
+                    die "opaque array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
@@ -569,6 +593,14 @@ elsif ($opt_b) {
             push(@vars_list, "vir$struct_name tmp");
         }
 
+        if ($call->{streamflag} ne "none") {
+            splice(@args_list, $call->{streamoffset}, 0, ("stream->st"));
+            push(@free_list_on_error, "if (stream) {");
+            push(@free_list_on_error, "    virStreamAbort(stream->st);");
+            push(@free_list_on_error, "    remoteFreeClientStream(client, stream);");
+            push(@free_list_on_error, "}");
+        }
+
         # print functions signature
         print "\n";
         print "static int\n";
@@ -601,6 +633,10 @@ elsif ($opt_b) {
             print "    $var;\n";
         }
 
+        if ($call->{streamflag} ne "none") {
+            print "    struct qemud_client_stream *stream = NULL;\n";
+        }
+
         print "\n";
         print "    if (!conn) {\n";
         print "        virNetError(VIR_ERR_INTERNAL_ERROR, \"%s\", _(\"connection not open\"));\n";
@@ -628,6 +664,12 @@ elsif ($opt_b) {
         }
 
         if (@optionals_list) {
+            print "\n";
+        }
+
+        if ($call->{streamflag} ne "none") {
+            print "    if (!(stream = remoteCreateClientStream(conn, hdr)))\n";
+            print "        goto cleanup;\n";
             print "\n";
         }
 
@@ -691,25 +733,30 @@ elsif ($opt_b) {
 
             print "        goto cleanup;\n";
             print "\n";
-
-            if (@ret_list) {
-                print "    ";
-            }
-
-            print join("\n    ", @ret_list);
-            print "\n";
         } else {
             print "    if (vir$call->{ProcName}(";
             print join(', ', @args_list);
             print ") < 0)\n";
-
             print "        goto cleanup;\n";
             print "\n";
+        }
 
-            if (@ret_list) {
-                print "    ";
+        if ($call->{streamflag} ne "none") {
+            print "    if (remoteAddClientStream(client, stream, ";
+
+            if ($call->{streamflag} eq "write") {
+                print "0";
+            } else {
+                print "1";
             }
 
+            print ") < 0)\n";
+            print "        goto cleanup;\n";
+            print "\n";
+        }
+
+        if (@ret_list) {
+            print "    ";
             print join("\n    ", @ret_list);
             print "\n";
         }
@@ -865,9 +912,14 @@ elsif ($opt_k) {
                         }
                     }
 
-                    if ($call->{ProcName} eq "DomainMigrateSetMaxDowntime" and
-                        $arg_name eq "downtime") {
-                        $type_name = "unsigned long long";
+                    # SPECIAL: some hyper parameters map to long longs
+                    if (($call->{ProcName} eq "DomainMigrateSetMaxDowntime" and
+                         $arg_name eq "downtime") or
+                        ($call->{ProcName} eq "StorageVolUpload" and
+                         ($arg_name eq "offset" or $arg_name eq "length")) or
+                        ($call->{ProcName} eq "StorageVolDownload" and
+                         ($arg_name eq "offset" or $arg_name eq "length"))) {
+                        $type_name .= " long";
                     }
 
                     push(@args_list, "$type_name $arg_name");
@@ -1004,6 +1056,7 @@ elsif ($opt_k) {
                     $single_ret_type = "int";
                 } elsif ($ret_member =~ m/^unsigned hyper (\S+);/) {
                     my $arg_name = $1;
+
                     if ($call->{ProcName} =~ m/Get(Lib)?Version/) {
                         push(@args_list, "unsigned long *$arg_name");
                         push(@ret_list, "if ($arg_name) *$arg_name = ret.$arg_name;");
@@ -1053,6 +1106,10 @@ elsif ($opt_k) {
             }
         }
 
+        if ($call->{streamflag} ne "none") {
+            splice(@args_list, $call->{streamoffset}, 0, ("virStreamPtr st"));
+        }
+
         # print function
         print "\n";
         print "static $single_ret_type\n";
@@ -1073,8 +1130,21 @@ elsif ($opt_k) {
             print "    int i;\n";
         }
 
+        if ($call->{streamflag} ne "none") {
+            print "    struct private_stream_data *privst = NULL;\n";
+        }
+
         print "\n";
         print "    remoteDriverLock(priv);\n";
+
+        if ($call->{streamflag} ne "none") {
+            print "\n";
+            print "    if (!(privst = remoteStreamOpen(st, REMOTE_PROC_$call->{UC_NAME}, priv->counter)))\n";
+            print "       goto done;\n";
+            print "\n";
+            print "    st->driver = &remoteStreamDrv;\n";
+            print "    st->privateData = privst;\n";
+        }
 
         if ($call->{ProcName} eq "SupportsFeature") {
             # SPECIAL: VIR_DRV_FEATURE_REMOTE feature is handled directly
@@ -1124,8 +1194,14 @@ elsif ($opt_k) {
         print "\n";
         print "    if (call($priv_src, priv, 0, ${procprefix}_PROC_$call->{UC_NAME},\n";
         print "             (xdrproc_t)xdr_$call->{args}, (char *)$call_args,\n";
-        print "             (xdrproc_t)xdr_$call->{ret}, (char *)$call_ret) == -1)\n";
+        print "             (xdrproc_t)xdr_$call->{ret}, (char *)$call_ret) == -1) {\n";
+
+        if ($call->{streamflag} ne "none") {
+            print "        remoteStreamRelease(st);\n";
+        }
+
         print "        goto done;\n";
+        print "    }\n";
         print "\n";
 
         if ($single_ret_as_list) {

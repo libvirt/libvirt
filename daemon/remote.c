@@ -1175,50 +1175,6 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                         struct qemud_client *client,
-                                         virConnectPtr conn,
-                                         remote_message_header *hdr,
-                                         remote_error *rerr,
-                                         remote_domain_migrate_prepare_tunnel_args *args,
-                                         void *ret ATTRIBUTE_UNUSED)
-{
-    char *dname;
-    struct qemud_client_stream *stream = NULL;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    dname = args->dname == NULL ? NULL : *args->dname;
-
-    if (!(stream = remoteCreateClientStream(conn, hdr)))
-        goto cleanup;
-
-    if (virDomainMigratePrepareTunnel(conn, stream->st,
-                                      args->flags, dname, args->resource,
-                                      args->dom_xml) < 0)
-        goto cleanup;
-
-    if (remoteAddClientStream(client, stream, 0) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0) {
-        remoteDispatchError(rerr);
-        if (stream) {
-            virStreamAbort(stream->st);
-            remoteFreeClientStream(client, stream);
-        }
-    }
-    return rv;
-}
-
-static int
 remoteDispatchDomainPinVcpu(struct qemud_server *server ATTRIBUTE_UNUSED,
                             struct qemud_client *client ATTRIBUTE_UNUSED,
                             virConnectPtr conn,
@@ -2611,96 +2567,6 @@ cleanup:
     return rv;
 }
 
-static int remoteDispatchStorageVolUpload(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                          struct qemud_client *client,
-                                          virConnectPtr conn,
-                                          remote_message_header *hdr,
-                                          remote_error *rerr,
-                                          remote_storage_vol_upload_args *args,
-                                          void *ret ATTRIBUTE_UNUSED)
-{
-    struct qemud_client_stream *stream = NULL;
-    virStorageVolPtr vol = NULL;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))
-        goto cleanup;
-
-    if (!(stream = remoteCreateClientStream(conn, hdr)))
-        goto cleanup;
-
-    if (virStorageVolUpload(vol, stream->st,
-                            args->offset, args->length,
-                            args->flags) < 0)
-        goto cleanup;
-
-    if (remoteAddClientStream(client, stream, 0) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (vol)
-        virStorageVolFree(vol);
-    if (stream && rv != 0) {
-        virStreamAbort(stream->st);
-        remoteFreeClientStream(client, stream);
-    }
-    return rv;
-}
-
-static int remoteDispatchStorageVolDownload(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                            struct qemud_client *client,
-                                            virConnectPtr conn,
-                                            remote_message_header *hdr,
-                                            remote_error *rerr,
-                                            remote_storage_vol_download_args *args,
-                                            void *ret ATTRIBUTE_UNUSED)
-{
-    struct qemud_client_stream *stream = NULL;
-    virStorageVolPtr vol = NULL;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))
-        goto cleanup;
-
-    if (!(stream = remoteCreateClientStream(conn, hdr)))
-        goto cleanup;
-
-    if (virStorageVolDownload(vol, stream->st,
-                              args->offset, args->length,
-                              args->flags) < 0)
-        goto cleanup;
-
-    if (remoteAddClientStream(client, stream, 1) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (vol)
-        virStorageVolFree(vol);
-    if (stream && rv != 0) {
-        virStreamAbort(stream->st);
-        remoteFreeClientStream(client, stream);
-    }
-    return rv;
-}
-
 
 /***************************
  * Register / deregister events
@@ -3034,53 +2900,6 @@ cleanup:
 }
 
 
-static int
-remoteDispatchDomainOpenConsole(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
-                                virConnectPtr conn,
-                                remote_message_header *hdr,
-                                remote_error *rerr,
-                                remote_domain_open_console_args *args,
-                                void *ret ATTRIBUTE_UNUSED)
-{
-    struct qemud_client_stream *stream = NULL;
-    virDomainPtr dom = NULL;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    if (!(stream = remoteCreateClientStream(conn, hdr)))
-        goto cleanup;
-
-    if (virDomainOpenConsole(dom,
-                             args->devname ? *args->devname : NULL,
-                             stream->st,
-                             args->flags) < 0)
-        goto cleanup;
-
-    if (remoteAddClientStream(client, stream, 1) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (stream && rv < 0) {
-        virStreamAbort(stream->st);
-        remoteFreeClientStream(client, stream);
-    }
-    if (dom)
-        virDomainFree(dom);
-    return rv;
-}
-
 #include "remote_dispatch_bodies.h"
 #include "qemu_dispatch_bodies.h"
 
@@ -3188,63 +3007,6 @@ cleanup:
     if (rv < 0) {
         remoteDispatchError(rerr);
         VIR_FREE(uri_out);
-    }
-    return rv;
-}
-
-static int
-remoteDispatchDomainMigratePrepareTunnel3(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                          struct qemud_client *client,
-                                          virConnectPtr conn,
-                                          remote_message_header *hdr,
-                                          remote_error *rerr,
-                                          remote_domain_migrate_prepare_tunnel3_args *args,
-                                          remote_domain_migrate_prepare_tunnel3_ret *ret)
-{
-    char *dname;
-    char *cookieout = NULL;
-    int cookieoutlen = 0;
-    struct qemud_client_stream *stream = NULL;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    dname = args->dname == NULL ? NULL : *args->dname;
-
-    if (!(stream = remoteCreateClientStream(conn, hdr))) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virDomainMigratePrepareTunnel3(conn, stream->st,
-                                       args->cookie_in.cookie_in_val,
-                                       args->cookie_in.cookie_in_len,
-                                       &cookieout, &cookieoutlen,
-                                       args->flags, dname, args->resource,
-                                       args->dom_xml) < 0)
-        goto cleanup;
-
-    if (remoteAddClientStream(client, stream, 0) < 0)
-        goto cleanup;
-
-    /* remoteDispatchClientRequest will free cookie
-     */
-    ret->cookie_out.cookie_out_len = cookieoutlen;
-    ret->cookie_out.cookie_out_val = cookieout;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0) {
-        remoteDispatchError(rerr);
-        VIR_FREE(cookieout);
-    }
-    if (stream && rv < 0) {
-        virStreamAbort(stream->st);
-        remoteFreeClientStream(client, stream);
     }
     return rv;
 }

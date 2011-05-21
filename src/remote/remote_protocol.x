@@ -2058,7 +2058,14 @@ const REMOTE_PROTOCOL_VERSION = 1;
 enum remote_procedure {
     /* Each function must have a two-word comment.  The first word is
      * whether remote_generator.pl handles daemon, the second whether
-     * it handles src/remote.  */
+     * it handles src/remote.  Additional flags can be specified after a
+     * pipe.
+     *
+     * The (readstream|writestream)@<offset> flag lets daemon and src/remote
+     * create a stream.  The direction is defined from the src/remote point
+     * of view.  A readstream transfers data from daemon to src/remote.  The
+     * <offset> specifies at which offset the stream parameter is inserted
+     * in the function parameter list. */
     REMOTE_PROC_OPEN = 1, /* skipgen skipgen */
     REMOTE_PROC_CLOSE = 2, /* skipgen skipgen */
     REMOTE_PROC_GET_TYPE = 3, /* autogen skipgen */
@@ -2220,7 +2227,7 @@ enum remote_procedure {
     REMOTE_PROC_SECRET_GET_VALUE = 145, /* skipgen skipgen */
     REMOTE_PROC_SECRET_UNDEFINE = 146, /* autogen autogen */
     REMOTE_PROC_SECRET_LOOKUP_BY_USAGE = 147, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL = 148, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL = 148, /* autogen autogen | writestream@1 */
     REMOTE_PROC_IS_SECURE = 149, /* autogen skipgen */
     REMOTE_PROC_DOMAIN_IS_ACTIVE = 150, /* autogen autogen */
 
@@ -2279,35 +2286,40 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200, /* autogen autogen */
 
-    REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201, /* autogen autogen | readstream@2 */
     REMOTE_PROC_DOMAIN_IS_UPDATED = 202, /* autogen autogen */
     REMOTE_PROC_GET_SYSINFO = 203, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207, /* autogen autogen */
-    REMOTE_PROC_STORAGE_VOL_UPLOAD = 208, /* skipgen skipgen */
-    REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209, /* skipgen skipgen */
+    REMOTE_PROC_STORAGE_VOL_UPLOAD = 208, /* autogen autogen | writestream@1 */
+    REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209, /* autogen autogen | readstream@1 */
     REMOTE_PROC_DOMAIN_INJECT_NMI = 210, /* autogen autogen */
 
-    REMOTE_PROC_DOMAIN_SCREENSHOT = 211, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SCREENSHOT = 211, /* skipgen autogen | readstream@1 */
     REMOTE_PROC_DOMAIN_GET_STATE = 212, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_BEGIN3 = 213, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE3 = 214, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3 = 215, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3 = 215, /* autogen skipgen | writestream@1 */
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3 = 216, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_FINISH3 = 217, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3 = 218, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS_FLAGS = 219 /* skipgen skipgen */
 
-    /*
-     * Notice how the entries are grouped in sets of 10 ?
+    /* Notice how the entries are grouped in sets of 10 ?
      * Nice isn't it. Please keep it this way when adding more.
-     */
-
-    /* Each function must have a two-word comment.  The first word is
+     *
+     * Each function must have a two-word comment.  The first word is
      * whether remote_generator.pl handles daemon, the second whether
-     * it handles src/remote.  */
+     * it handles src/remote.  Additional flags can be specified after a
+     * pipe.
+     *
+     * The (readstream|writestream)@<offset> flag lets daemon and src/remote
+     * create a stream.  The direction is defined from the src/remote point
+     * of view.  A readstream transfers data from daemon to src/remote.  The
+     * <offset> specifies at which offset the stream parameter is inserted
+     * in the function parameter list. */
 };
 
 /*
