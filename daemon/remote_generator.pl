@@ -505,17 +505,16 @@ elsif ($opt_b) {
                     $single_ret_by_ref = 0;
                     $single_ret_as_list = 1;
                     $single_ret_list_name = $1;
+                    $single_ret_list_max_var = "max$1";
                     $single_ret_list_max_define = $2;
 
                     my $conn = shift(@args_list);
 
                     if ($call->{ProcName} eq "NodeGetCellsFreeMemory") {
                         $single_ret_check = " <= 0";
-                        $single_ret_list_max_var = "maxCells";
                         unshift(@args_list, "(unsigned long long *)ret->$1.$1_val");
                     } else {
                         $single_ret_check = " < 0";
-                        $single_ret_list_max_var = "max$1";
                         unshift(@args_list, "ret->$1.$1_val");
                     }
 

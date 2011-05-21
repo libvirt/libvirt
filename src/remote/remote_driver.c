@@ -1714,7 +1714,7 @@ remoteNodeGetCellsFreeMemory(virConnectPtr conn,
     }
 
     args.startCell = startCell;
-    args.maxCells = maxCells;
+    args.maxcells = maxCells;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY,
@@ -1722,12 +1722,12 @@ remoteNodeGetCellsFreeMemory(virConnectPtr conn,
               (xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *)&ret) == -1)
         goto done;
 
-    for (i = 0 ; i < ret.freeMems.freeMems_len ; i++)
-        freeMems[i] = ret.freeMems.freeMems_val[i];
+    for (i = 0 ; i < ret.cells.cells_len ; i++)
+        freeMems[i] = ret.cells.cells_val[i];
 
     xdr_free((xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *) &ret);
 
-    rv = ret.freeMems.freeMems_len;
+    rv = ret.cells.cells_len;
 
 done:
     remoteDriverUnlock(priv);

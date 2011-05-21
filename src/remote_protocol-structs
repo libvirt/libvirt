@@ -153,13 +153,13 @@ struct remote_get_capabilities_ret {
 };
 struct remote_node_get_cells_free_memory_args {
         int                        startCell;
-        int                        maxCells;
+        int                        maxcells;
 };
 struct remote_node_get_cells_free_memory_ret {
         struct {
-                u_int              freeMems_len;
-                int64_t *          freeMems_val;
-        } freeMems;
+                u_int              cells_len;
+                int64_t *          cells_val;
+        } cells;
 };
 struct remote_node_get_free_memory_ret {
         int64_t                    freeMem;

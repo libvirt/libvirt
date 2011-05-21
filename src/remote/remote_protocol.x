@@ -442,11 +442,11 @@ struct remote_get_capabilities_ret {
 
 struct remote_node_get_cells_free_memory_args {
     int startCell;
-    int maxCells;
+    int maxcells;
 };
 
 struct remote_node_get_cells_free_memory_ret {
-    hyper freeMems<REMOTE_NODE_MAX_CELLS>;
+    hyper cells<REMOTE_NODE_MAX_CELLS>;
 };
 
 struct remote_node_get_free_memory_ret {
