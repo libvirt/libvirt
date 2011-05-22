@@ -2889,17 +2889,20 @@ int virGetGroupID(const char *name,
 
 /* Set the real and effective uid and gid to the given values, and call
  * initgroups so that the process has all the assumed group membership of
- * that uid. return 0 on success, -1 on failure.
+ * that uid. return 0 on success, -1 on failure (the original system error
+ * remains in errno).
  */
 int
 virSetUIDGID(uid_t uid, gid_t gid)
 {
+    int err;
+
     if (gid > 0) {
         if (setregid(gid, gid) < 0) {
-            virReportSystemError(errno,
+            virReportSystemError(err = errno,
                                  _("cannot change to '%d' group"),
                                  (unsigned int) gid);
-            return -1;
+            goto error;
         }
     }
 
@@ -2916,39 +2919,45 @@ virSetUIDGID(uid_t uid, gid_t gid)
 
         if (VIR_ALLOC_N(buf, bufsize) < 0) {
             virReportOOMError();
-            return -1;
+            err = ENOMEM;
+            goto error;
         }
         while ((rc = getpwuid_r(uid, &pwd, buf, bufsize,
                                 &pwd_result)) == ERANGE) {
             if (VIR_RESIZE_N(buf, bufsize, bufsize, bufsize) < 0) {
                 virReportOOMError();
                 VIR_FREE(buf);
-                return -1;
+                err = ENOMEM;
+                goto error;
             }
         }
         if (rc || !pwd_result) {
-            virReportSystemError(rc, _("cannot getpwuid_r(%d)"),
+            virReportSystemError(err = rc, _("cannot getpwuid_r(%d)"),
                                  (unsigned int) uid);
             VIR_FREE(buf);
-            return -1;
+            goto error;
         }
         if (initgroups(pwd.pw_name, pwd.pw_gid) < 0) {
-            virReportSystemError(errno,
+            virReportSystemError(err = errno,
                                  _("cannot initgroups(\"%s\", %d)"),
                                  pwd.pw_name, (unsigned int) pwd.pw_gid);
             VIR_FREE(buf);
-            return -1;
+            goto error;
         }
         VIR_FREE(buf);
 # endif
         if (setreuid(uid, uid) < 0) {
-            virReportSystemError(errno,
+            virReportSystemError(err = errno,
                                  _("cannot change to uid to '%d'"),
                                  (unsigned int) uid);
-            return -1;
+            goto error;
         }
     }
     return 0;
+
+error:
+    errno = err;
+    return -1;
 }
 
 #else /* HAVE_GETPWUID_R */
