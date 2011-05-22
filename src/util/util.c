@@ -1476,18 +1476,8 @@ parenterror:
 
     /* set desired uid/gid, then attempt to create the file */
 
-    if ((gid != 0) && (setgid(gid) != 0)) {
+    if (virSetUIDGID(uid, gid) < 0) {
         ret = -errno;
-        virReportSystemError(errno,
-                             _("cannot set gid %u creating '%s'"),
-                             (unsigned int) gid, path);
-        goto childerror;
-    }
-    if  ((uid != 0) && (setuid(uid) != 0)) {
-        ret = -errno;
-        virReportSystemError(errno,
-                             _("cannot set uid %u creating '%s'"),
-                             (unsigned int) uid, path);
         goto childerror;
     }
     if ((fd = open(path, openflags, mode)) < 0) {
@@ -1595,16 +1585,8 @@ parenterror:
 
     /* set desired uid/gid, then attempt to create the directory */
 
-    if ((gid != 0) && (setgid(gid) != 0)) {
+    if (virSetUIDGID(uid, gid) < 0) {
         ret = -errno;
-        virReportSystemError(errno, _("cannot set gid %u creating '%s'"),
-                             (unsigned int) gid, path);
-        goto childerror;
-    }
-    if  ((uid != 0) && (setuid(uid) != 0)) {
-        ret = -errno;
-        virReportSystemError(errno, _("cannot set uid %u creating '%s'"),
-                             (unsigned int) uid, path);
         goto childerror;
     }
     if (mkdir(path, mode) < 0) {

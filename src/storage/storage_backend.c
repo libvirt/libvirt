@@ -535,20 +535,9 @@ static int virStorageBuildSetUIDHook(void *data) {
     if (tmp->skip)
         return 0;
 
-    if ((vol->target.perms.gid != -1)
-        && (setgid(vol->target.perms.gid) != 0)) {
-        virReportSystemError(errno,
-                             _("Cannot set gid to %u before creating %s"),
-                             vol->target.perms.gid, vol->target.path);
+    if (virSetUIDGID(vol->target.perms.uid, vol->target.perms.gid) < 0)
         return -1;
-    }
-    if ((vol->target.perms.uid != -1)
-        && (setuid(vol->target.perms.uid) != 0)) {
-        virReportSystemError(errno,
-                             _("Cannot set uid to %u before creating %s"),
-                             vol->target.perms.uid, vol->target.path);
-        return -1;
-    }
+
     return 0;
 }
 
