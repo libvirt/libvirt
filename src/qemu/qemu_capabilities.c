@@ -982,7 +982,7 @@ qemuCapsComputeCmdFlags(const char *help,
     if (is_kvm && (version >= 10000 || kvm_version >= 74))
         qemuCapsSet(flags, QEMU_CAPS_VNET_HDR);
 
-    if (is_kvm && strstr(help, ",vhost=")) {
+    if (strstr(help, ",vhost=")) {
         qemuCapsSet(flags, QEMU_CAPS_VNET_HOST);
     }
 
