@@ -12,7 +12,11 @@
    <rule action='drop' direction='out' priority='400' >
        <arp match='no' arpsrcipaddr='$IP' />
    </rule>
-   <!-- drop if ipaddr or macaddr odes not belong to guest -->
+   <!-- allow gratuitous arp -->
+   <rule action='accept' direction='in' priority='425'>
+       <arp gratuitous='true'/>
+   </rule>
+   <!-- drop if ipaddr or macaddr does not belong to guest -->
    <rule action='drop' direction='in' priority='450' >
        <arp match='no' arpdstmacaddr='$MAC'/>
        <arp opcode='reply'/>

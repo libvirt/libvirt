@@ -970,6 +970,10 @@ static const virXMLAttr2Struct arpAttributes[] = {
         .name = ARPDSTIPADDR,
         .datatype = DATATYPE_IPADDR,
         .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataARPDstIPAddr),
+    }, {
+        .name = "gratuitous",
+        .datatype = DATATYPE_BOOLEAN,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataGratuitousARP),
     },
     COMMENT_PROP(arpHdrFilter),
     {
@@ -1608,6 +1612,18 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 break;
                             }
                             data.c = item->u.string;
+                            found = 1;
+                        break;
+
+                        case DATATYPE_BOOLEAN:
+                            if (STREQ(prop, "true") ||
+                                STREQ(prop, "1") ||
+                                STREQ(prop, "yes"))
+                                item->u.boolean = true;
+                            else
+                                item->u.boolean = false;
+
+                            data.ui = item->u.boolean;
                             found = 1;
                         break;
 
@@ -2742,6 +2758,13 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
 
                case DATATYPE_STRINGCOPY:
                    virBufferEscapeString(buf, "%s", item->u.string);
+               break;
+
+               case DATATYPE_BOOLEAN:
+                   if (item->u.boolean == true)
+                       virBufferAddLit(buf, "true");
+                   else
+                       virBufferAddLit(buf, "false");
                break;
 
                case DATATYPE_STRING:

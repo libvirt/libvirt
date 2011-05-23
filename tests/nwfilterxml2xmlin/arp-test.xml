@@ -30,4 +30,8 @@
      <arp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
           opcode='65536' hwtype='65536' protocoltype='65536' />
   </rule>
+
+  <rule action='accept' direction='in'>
+     <arp gratuitous='true'/>
+  </rule>
 </filter>

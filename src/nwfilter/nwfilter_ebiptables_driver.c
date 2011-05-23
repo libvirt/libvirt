@@ -2033,6 +2033,13 @@ ebtablesCreateRuleInstance(char chainPrefix,
                           ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataARPDstMACAddr),
                           macaddr);
         }
+
+        if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataGratuitousARP) &&
+            rule->p.arpHdrFilter.dataGratuitousARP.u.boolean) {
+            virBufferAsprintf(&buf,
+                          " %s --arp-gratuitous",
+                          ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataGratuitousARP));
+        }
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_IP:

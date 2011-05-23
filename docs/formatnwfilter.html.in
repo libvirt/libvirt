@@ -321,6 +321,7 @@
      <li>IPV6_ADDR: IPv6 address in numbers format, i.e., FFFF::1</li>
      <li>IPV6_MASK: IPv6 mask in numbers format (FFFF:FFFF:FC00::) or CIDR mask (0-128)</li>
      <li>STRING: A string</li>
+     <li>BOOLEAN: 'true', 'yes', '1' or 'false', 'no', '0'</li>
     </ul>
     <p>
      <br/><br/>
@@ -475,6 +476,11 @@
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
+       </tr>
+       <tr>
+         <td>gratuitous <span class="since">(Since 0.9.2)</span></td>
+         <td>BOOLEAN</td>
+         <td>boolean indicating whether to check for gratuitous ARP packet</td>
        </tr>
       </table>
     <p>

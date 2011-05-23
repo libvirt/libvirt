@@ -15,4 +15,7 @@
   <rule action='accept' direction='out' priority='500'>
     <arp srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff'/>
   </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <arp gratuitous='true'/>
+  </rule>
 </filter>
