@@ -1956,6 +1956,12 @@ finish:
      */
     cancelled = ret == 0 && ddomain == NULL ? 1 : 0;
 
+    /* If finish3 set an error, and we don't have an earlier
+     * one we need to preserve it in case confirm3 overwrites
+     */
+    if (!orig_err)
+        orig_err = virSaveLastError();
+
     /*
      * If cancelled, then src VM will be restarted, else
      * it will be killed
@@ -2249,6 +2255,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
               "cookieout=%p, cookieoutlen=%p, flags=%lu, retcode=%d",
               driver, dconn, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, retcode);
+    virErrorPtr orig_err = NULL;
 
     priv = vm->privateData;
     if (priv->jobActive != QEMU_JOB_MIGRATION_IN) {
@@ -2314,6 +2321,14 @@ qemuMigrationFinish(struct qemud_driver *driver,
              */
             if (qemuProcessStartCPUs(driver, vm, dconn,
                                      VIR_DOMAIN_RUNNING_MIGRATED) < 0) {
+                if (virGetLastError() == NULL)
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("resume operation failed"));
+                /* Need to save the current error, in case shutting
+                 * down the process overwrites it
+                 */
+                orig_err = virSaveLastError();
+
                 /*
                  * In v3 protocol, the source VM is still available to
                  * restart during confirm() step, so we kill it off
@@ -2334,9 +2349,6 @@ qemuMigrationFinish(struct qemud_driver *driver,
                         vm = NULL;
                     }
                 }
-                if (virGetLastError() == NULL)
-                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("resume operation failed"));
                 goto endjob;
             }
         }
@@ -2384,6 +2396,10 @@ cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
     return dom;
 }
 

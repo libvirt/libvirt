@@ -6002,7 +6002,6 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
     struct qemud_driver *driver = dconn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
-    virErrorPtr orig_err;
 
     virCheckFlags(VIR_MIGRATE_LIVE |
                   VIR_MIGRATE_PEER2PEER |
@@ -6012,9 +6011,6 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                   VIR_MIGRATE_PAUSED |
                   VIR_MIGRATE_NON_SHARED_DISK |
                   VIR_MIGRATE_NON_SHARED_INC, NULL);
-
-    /* Migration failed. Save the current error so nothing squashes it */
-    orig_err = virSaveLastError();
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -6033,10 +6029,6 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                               flags, retcode, false);
 
 cleanup:
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
     qemuDriverUnlock(driver);
     return dom;
 }
@@ -6255,7 +6247,6 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
 {
     struct qemud_driver *driver = dconn->privateData;
     virDomainObjPtr vm;
-    virErrorPtr orig_err;
     int ret = -1;
 
     virCheckFlags(VIR_MIGRATE_LIVE |
@@ -6266,9 +6257,6 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
                   VIR_MIGRATE_PAUSED |
                   VIR_MIGRATE_NON_SHARED_DISK |
                   VIR_MIGRATE_NON_SHARED_INC, -1);
-
-    /* Migration failed. Save the current error so nothing squashes it */
-    orig_err = virSaveLastError();
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -6286,10 +6274,6 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
     ret = 0;
 
 cleanup:
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
     qemuDriverUnlock(driver);
     return ret;
 }
@@ -6304,7 +6288,6 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virErrorPtr orig_err;
 
     virCheckFlags(VIR_MIGRATE_LIVE |
                   VIR_MIGRATE_PEER2PEER |
@@ -6332,8 +6315,6 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
                                cookiein, cookieinlen,
                                flags, cancelled);
 
-    orig_err = virSaveLastError();
-
     if (qemuDomainObjEndJob(vm) == 0) {
         vm = NULL;
     } else if (!virDomainObjIsActive(vm) &&
@@ -6342,11 +6323,6 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
             virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
-    }
-
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
     }
 
 cleanup:

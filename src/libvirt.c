@@ -3842,6 +3842,12 @@ finish:
      */
     cancelled = ret == 0 && ddomain == NULL ? 1 : 0;
 
+    /* If finish3 set an error, and we don't have an earlier
+     * one we need to preserve it in case confirm3 overwrites
+     */
+    if (!orig_err)
+        orig_err = virSaveLastError();
+
     /*
      * If cancelled, then src VM will be restarted, else
      * it will be killed
