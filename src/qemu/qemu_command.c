@@ -4037,6 +4037,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (def->graphics[0]->data.spice.playback)
             virBufferAsprintf(&opt, ",playback-compression=%s",
                               virDomainGraphicsSpicePlaybackCompressionTypeToString(def->graphics[0]->data.spice.playback));
+        if (def->graphics[0]->data.spice.streaming)
+            virBufferAsprintf(&opt, ",streaming-video=%s",
+                              virDomainGraphicsSpiceStreamingModeTypeToString(def->graphics[0]->data.spice.streaming));
 
         virCommandAddArg(cmd, "-spice");
         virCommandAddArgBuffer(cmd, &opt);

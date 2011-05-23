@@ -1334,6 +1334,18 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <element name="streaming">
+                <attribute name="mode">
+                  <choice>
+                    <value>filter</value>
+                    <value>all</value>
+                    <value>off</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
           </interleave>
         </group>
         <group>

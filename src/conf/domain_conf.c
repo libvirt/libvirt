@@ -359,6 +359,13 @@ VIR_ENUM_IMPL(virDomainGraphicsSpicePlaybackCompression,
               "on",
               "off");
 
+VIR_ENUM_IMPL(virDomainGraphicsSpiceStreamingMode,
+              VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_LAST,
+              "default",
+              "filter",
+              "all",
+              "off");
+
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
               "capabilities")
@@ -4168,6 +4175,26 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
                     VIR_FREE(compression);
 
                     def->data.spice.playback = compressionVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "streaming")) {
+                    const char *mode = virXMLPropString(cur, "mode");
+                    int modeVal;
+
+                    if (!mode) {
+                        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                             _("spice streaming missing mode"));
+                        goto error;
+                    }
+                    if ((modeVal =
+                         virDomainGraphicsSpiceStreamingModeTypeFromString(mode)) <= 0) {
+                        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                             _("unknown spice streaming mode"));
+                        VIR_FREE(mode);
+                        goto error;
+
+                    }
+                    VIR_FREE(mode);
+
+                    def->data.spice.streaming = modeVal;
                 }
             }
             cur = cur->next;
@@ -8067,6 +8094,9 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.spice.playback)
             virBufferAsprintf(buf, "      <playback compression='%s'/>\n",
                               virDomainGraphicsSpicePlaybackCompressionTypeToString(def->data.spice.playback));
+        if (def->data.spice.streaming)
+            virBufferAsprintf(buf, "      <streaming mode='%s'/>\n",
+                              virDomainGraphicsSpiceStreamingModeTypeToString(def->data.spice.streaming));
     }
 
     if (children) {
