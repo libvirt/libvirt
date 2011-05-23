@@ -779,6 +779,35 @@ error:
     return NULL;
 }
 
+/* check whether the slot is used by the other device
+ * Return 0 if the slot is not used by the other device, or -1 if the slot
+ * is used by the other device.
+ */
+static int qemuDomainPCIAddressCheckSlot(qemuDomainPCIAddressSetPtr addrs,
+                                         virDomainDeviceInfoPtr dev)
+{
+    char *addr;
+    virDomainDeviceInfo temp_dev;
+    int function;
+
+    temp_dev = *dev;
+    for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
+        temp_dev.addr.pci.function = function;
+        addr = qemuPCIAddressAsString(&temp_dev);
+        if (!addr)
+            return -1;
+
+        if (virHashLookup(addrs->used, addr)) {
+            VIR_FREE(addr);
+            return -1;
+        }
+
+        VIR_FREE(addr);
+    }
+
+    return 0;
+}
+
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
 {
@@ -917,18 +946,17 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
         if (!(addr = qemuPCIAddressAsString(&maybe)))
             return -1;
 
-        if (virHashLookup(addrs->used, addr)) {
+        if (qemuDomainPCIAddressCheckSlot(addrs, &maybe) < 0) {
             VIR_DEBUG("PCI addr %s already in use", addr);
             VIR_FREE(addr);
             continue;
         }
 
         VIR_DEBUG("Allocating PCI addr %s", addr);
+        VIR_FREE(addr);
 
-        if (virHashAddEntry(addrs->used, addr, addr) < 0) {
-            VIR_FREE(addr);
+        if (qemuDomainPCIAddressReserveSlot(addrs, i) < 0)
             return -1;
-        }
 
         dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
         dev->addr.pci = maybe.addr.pci;
