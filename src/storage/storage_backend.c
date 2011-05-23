@@ -621,13 +621,14 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
     char *end;
     char *tmp;
     int ret = -1;
+    int exitstatus;
     virCommandPtr cmd = virCommandNewArgList(qemuimg, "-h", NULL);
 
     virCommandAddEnvString(cmd, "LC_ALL=C");
     virCommandSetOutputBuffer(cmd, &help);
     virCommandClearCaps(cmd);
 
-    if (virCommandRun(cmd, NULL) < 0)
+    if (virCommandRun(cmd, &exitstatus) < 0)
         goto cleanup;
 
     start = strstr(help, " create ");
