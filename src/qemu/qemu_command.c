@@ -684,10 +684,11 @@ static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
         return NULL;
     }
 
-    if (virAsprintf(&addr, "%d:%d:%d",
+    if (virAsprintf(&addr, "%d:%d:%d.%d",
                     dev->addr.pci.domain,
                     dev->addr.pci.bus,
-                    dev->addr.pci.slot) < 0) {
+                    dev->addr.pci.slot,
+                    dev->addr.pci.function) < 0) {
         virReportOOMError();
         return NULL;
     }
@@ -817,6 +818,7 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
     dev.addr.pci.domain = 0;
     dev.addr.pci.bus = 0;
     dev.addr.pci.slot = slot;
+    dev.addr.pci.function = 0;
 
     return qemuDomainPCIAddressReserveAddr(addrs, &dev);
 }
@@ -879,6 +881,7 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
         maybe.addr.pci.domain = 0;
         maybe.addr.pci.bus = 0;
         maybe.addr.pci.slot = i;
+        maybe.addr.pci.function = 0;
 
         if (!(addr = qemuPCIAddressAsString(&maybe)))
             return -1;
