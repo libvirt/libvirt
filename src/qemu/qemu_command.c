@@ -1252,10 +1252,20 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                             _("Only PCI device addresses with bus=0 are supported"));
             return -1;
         }
-        if (info->addr.pci.function != 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Only PCI device addresses with function=0 are supported"));
-            return -1;
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIFUNCTION)) {
+            if (info->addr.pci.function > 7) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("The function of PCI device addresses must "
+                                  "less than 8"));
+                return -1;
+            }
+        } else {
+            if (info->addr.pci.function != 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Only PCI device addresses with function=0 "
+                                  "are supported"));
+                return -1;
+            }
         }
 
         /* XXX
@@ -1265,9 +1275,14 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
          * to pciNN.0  where NN is the domain number
          */
         if (qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS))
-            virBufferAsprintf(buf, ",bus=pci.0,addr=0x%x", info->addr.pci.slot);
+            virBufferAsprintf(buf, ",bus=pci.0");
         else
-            virBufferAsprintf(buf, ",bus=pci,addr=0x%x", info->addr.pci.slot);
+            virBufferAsprintf(buf, ",bus=pci");
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIFUNCTION))
+            virBufferAsprintf(buf, ",multifunction=on,addr=0x%x.0x%x",
+                              info->addr.pci.slot, info->addr.pci.function);
+        else
+            virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
     }
     return 0;
 }

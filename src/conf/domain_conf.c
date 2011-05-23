@@ -1312,6 +1312,9 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 
 int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr)
 {
+    /* PCI bus has 32 slots and 8 functions per slot */
+    if (addr->slot >= 32 || addr->function >= 8)
+        return 0;
     return addr->domain || addr->bus || addr->slot;
 }
 
