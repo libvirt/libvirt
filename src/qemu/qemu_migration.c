@@ -2047,7 +2047,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
                          unsigned long flags,
                          const char *dname,
                          unsigned long resource,
-                         bool killOnFinish)
+                         bool v3proto)
 {
     virDomainEventPtr event = NULL;
     int ret = -1;
@@ -2092,8 +2092,13 @@ int qemuMigrationPerform(struct qemud_driver *driver,
             goto endjob;
     }
 
-    /* Clean up the source domain. */
-    if (killOnFinish) {
+    /*
+     * In v3 protocol, the source VM is not killed off until the
+     * confirm step.
+     */
+    if (v3proto) {
+        resume = 0;
+    } else {
         qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_MIGRATED);
         qemuAuditDomainStop(vm, "migrated");
         resume = 0;
@@ -2193,7 +2198,8 @@ qemuMigrationFinish(struct qemud_driver *driver,
                     char **cookieout,
                     int *cookieoutlen,
                     unsigned long flags,
-                    int retcode)
+                    int retcode,
+                    bool v3proto)
 {
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
@@ -2257,7 +2263,6 @@ qemuMigrationFinish(struct qemud_driver *driver,
             event = NULL;
 
         }
-        dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
 
         if (!(flags & VIR_MIGRATE_PAUSED)) {
             /* run 'cont' on the destination, which allows migration on qemu
@@ -2266,12 +2271,34 @@ qemuMigrationFinish(struct qemud_driver *driver,
              */
             if (qemuProcessStartCPUs(driver, vm, dconn,
                                      VIR_DOMAIN_RUNNING_MIGRATED) < 0) {
+                /*
+                 * In v3 protocol, the source VM is still available to
+                 * restart during confirm() step, so we kill it off
+                 * now.
+                 * In v2 protocol, the source is dead, so we leave
+                 * target in paused state, in case admin can fix
+                 * things up
+                 */
+                if (v3proto) {
+                    qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
+                    qemuAuditDomainStop(vm, "failed");
+                    event = virDomainEventNewFromObj(vm,
+                                                     VIR_DOMAIN_EVENT_STOPPED,
+                                                     VIR_DOMAIN_EVENT_STOPPED_FAILED);
+                    if (!vm->persistent) {
+                        if (qemuDomainObjEndJob(vm) > 0)
+                            virDomainRemoveInactive(&driver->domains, vm);
+                        vm = NULL;
+                    }
+                }
                 if (virGetLastError() == NULL)
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     "%s", _("resume operation failed"));
                 goto endjob;
             }
         }
+
+        dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
 
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,

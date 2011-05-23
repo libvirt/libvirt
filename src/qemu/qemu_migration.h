@@ -72,7 +72,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
                          unsigned long flags,
                          const char *dname,
                          unsigned long resource,
-                         bool killOnFinish);
+                         bool v3proto);
 
 virDomainPtr qemuMigrationFinish(struct qemud_driver *driver,
                                  virConnectPtr dconn,
@@ -82,7 +82,8 @@ virDomainPtr qemuMigrationFinish(struct qemud_driver *driver,
                                  char **cookieout,
                                  int *cookieoutlen,
                                  unsigned long flags,
-                                 int retcode);
+                                 int retcode,
+                                 bool v3proto);
 
 int qemuMigrationConfirm(struct qemud_driver *driver,
                          virConnectPtr conn,

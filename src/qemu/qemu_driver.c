@@ -5981,7 +5981,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     ret = qemuMigrationPerform(driver, dom->conn, vm,
                                NULL, dconnuri, uri, cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
-                               flags, dname, resource, true);
+                               flags, dname, resource, false);
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -6030,7 +6030,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
      */
     dom = qemuMigrationFinish(driver, dconn, vm,
                               NULL, 0, NULL, NULL, /* No cookies */
-                              flags, retcode);
+                              flags, retcode, false);
 
 cleanup:
     if (orig_err) {
@@ -6232,7 +6232,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     ret = qemuMigrationPerform(driver, dom->conn, vm, xmlin,
                                dconnuri, uri, cookiein, cookieinlen,
                                cookieout, cookieoutlen,
-                               flags, dname, resource, false);
+                               flags, dname, resource, true);
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -6281,7 +6281,7 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
     *newdom = qemuMigrationFinish(driver, dconn, vm,
                                   cookiein, cookieinlen,
                                   cookieout, cookieoutlen,
-                                  flags, cancelled);
+                                  flags, cancelled, true);
 
     ret = 0;
 
