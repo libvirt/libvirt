@@ -85,7 +85,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "netdev",
 
               "rtc", /* 30 */
-              "vnet-host",
+              "vhost-net",
               "rtc-td-hack",
               "no-hpet",
               "no-kvm-pit",
@@ -983,7 +983,7 @@ qemuCapsComputeCmdFlags(const char *help,
         qemuCapsSet(flags, QEMU_CAPS_VNET_HDR);
 
     if (strstr(help, ",vhost=")) {
-        qemuCapsSet(flags, QEMU_CAPS_VNET_HOST);
+        qemuCapsSet(flags, QEMU_CAPS_VHOST_NET);
     }
 
     /*
