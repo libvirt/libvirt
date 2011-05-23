@@ -79,8 +79,10 @@ struct _qemuMigrationCookie {
     int flagsMandatory;
 
     /* Host properties */
-    unsigned char hostuuid[VIR_UUID_BUFLEN];
-    char *hostname;
+    unsigned char localHostuuid[VIR_UUID_BUFLEN];
+    unsigned char remoteHostuuid[VIR_UUID_BUFLEN];
+    char *localHostname;
+    char *remoteHostname;
 
     /* Guest properties */
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -108,7 +110,8 @@ static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     if (mig->flags & QEMU_MIGRATION_COOKIE_GRAPHICS)
         qemuMigrationCookieGraphicsFree(mig->graphics);
 
-    VIR_FREE(mig->hostname);
+    VIR_FREE(mig->localHostname);
+    VIR_FREE(mig->remoteHostname);
     VIR_FREE(mig->name);
     VIR_FREE(mig);
 }
@@ -233,9 +236,9 @@ qemuMigrationCookieNew(virDomainObjPtr dom)
         goto no_memory;
     memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
 
-    if (!(mig->hostname = virGetHostname(NULL)))
+    if (!(mig->localHostname = virGetHostname(NULL)))
         goto no_memory;
-    if (virGetHostUUID(mig->hostuuid) < 0) {
+    if (virGetHostUUID(mig->localHostuuid) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Unable to obtain host UUID"));
         goto error;
@@ -301,12 +304,12 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
     int i;
 
     virUUIDFormat(mig->uuid, uuidstr);
-    virUUIDFormat(mig->hostuuid, hostuuidstr);
+    virUUIDFormat(mig->localHostuuid, hostuuidstr);
 
     virBufferAsprintf(buf, "<qemu-migration>\n");
     virBufferEscapeString(buf, "  <name>%s</name>\n", mig->name);
     virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
-    virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->hostname);
+    virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->localHostname);
     virBufferAsprintf(buf, "  <hostuuid>%s</hostuuid>\n", hostuuidstr);
 
     for (i = 0 ; i < QEMU_MIGRATION_COOKIE_FLAG_LAST ; i++) {
@@ -434,26 +437,29 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     VIR_FREE(tmp);
 
     /* Check & forbid "localhost" migration */
-    if (!(tmp = virXPathString("string(./hostname[1])", ctxt))) {
+    if (!(mig->remoteHostname = virXPathString("string(./hostname[1])", ctxt))) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("missing hostname element in migration data"));
         goto error;
     }
-    if (STREQ(tmp, mig->hostname)) {
+    if (STREQ(mig->remoteHostname, mig->localHostname)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Attempt to migrate guest to the same host %s"),
-                        tmp);
+                        mig->remoteHostname);
         goto error;
     }
-    VIR_FREE(tmp);
 
     if (!(tmp = virXPathString("string(./hostuuid[1])", ctxt))) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("missing hostuuid element in migration data"));
         goto error;
     }
-    virUUIDFormat(mig->hostuuid, uuidstr);
-    if (STREQ(tmp, uuidstr)) {
+    if (virUUIDParse(tmp, mig->remoteHostuuid) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("malformed hostuuid element in migration data"));
+        goto error;
+    }
+    if (memcmp(mig->remoteHostuuid, mig->localHostuuid, VIR_UUID_BUFLEN) == 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Attempt to migrate guest to the same host %s"),
                         tmp);
@@ -851,7 +857,7 @@ qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorGraphicsRelocate(priv->mon,
                                       cookie->graphics->type,
-                                      cookie->hostname,
+                                      cookie->remoteHostname,
                                       cookie->graphics->port,
                                       cookie->graphics->tlsPort,
                                       cookie->graphics->tlsSubject);
