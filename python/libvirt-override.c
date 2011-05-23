@@ -2945,7 +2945,7 @@ libvirt_virEventRegisterImpl(ATTRIBUTE_UNUSED PyObject * self,
         return VIR_PY_INT_FAIL;
 
     /* Get argument string representations (for error reporting) */
-    addHandleName = py_str(addTimeoutObj);
+    addHandleName = py_str(addHandleObj);
     updateHandleName = py_str(updateHandleObj);
     removeHandleName = py_str(removeHandleObj);
     addTimeoutName = py_str(addTimeoutObj);
