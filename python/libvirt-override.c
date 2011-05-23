@@ -35,6 +35,9 @@ extern void initcygvirtmod(void);
 #define VIR_PY_INT_FAIL (libvirt_intWrap(-1))
 #define VIR_PY_INT_SUCCESS (libvirt_intWrap(0))
 
+/* We don't want to free() returned value. As written in doc:
+ * PyString_AsString returns pointer to 'internal buffer of string,
+ * not a copy' and 'It must not be deallocated'. */
 static char *py_str(PyObject *obj)
 {
     PyObject *str = PyObject_Str(obj);
@@ -2660,7 +2663,6 @@ libvirt_virEventAddHandleFunc  (int fd,
         char *name = py_str(python_cb);
         printf("%s: %s is not callable\n", __FUNCTION__,
                name ? name : "libvirt.eventInvokeHandleCallback");
-        free(name);
 #endif
         goto cleanup;
     }
@@ -2805,7 +2807,6 @@ libvirt_virEventAddTimeoutFunc(int timeout,
         char *name = py_str(python_cb);
         printf("%s: %s is not callable\n", __FUNCTION__,
                name ? name : "libvirt.eventInvokeTimeoutCallback");
-        free(name);
 #endif
         goto cleanup;
     }
@@ -2919,17 +2920,11 @@ libvirt_virEventRegisterImpl(ATTRIBUTE_UNUSED PyObject * self,
 {
     /* Unref the previously-registered impl (if any) */
     Py_XDECREF(addHandleObj);
-    free(addHandleName);
     Py_XDECREF(updateHandleObj);
-    free(updateHandleName);
     Py_XDECREF(removeHandleObj);
-    free(removeHandleName);
     Py_XDECREF(addTimeoutObj);
-    free(addTimeoutName);
     Py_XDECREF(updateTimeoutObj);
-    free(updateTimeoutName);
     Py_XDECREF(removeTimeoutObj);
-    free(removeTimeoutName);
 
     /* Parse and check arguments */
     if (!PyArg_ParseTuple(args, (char *) "OOOOOO:virEventRegisterImpl",
