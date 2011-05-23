@@ -876,10 +876,21 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
 {
     int ret = 0;
-    if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
-        ret = qemuDomainPCIAddressReserveAddr(addrs, dev);
-    else
+    if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        /* We do not support hotplug multi-function PCI device now, so we should
+         * reserve the whole slot. The function of the PCI device must be 0.
+         */
+        if (dev->addr.pci.function != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Only PCI device addresses with function=0"
+                              " are supported"));
+            return -1;
+        }
+
+        ret = qemuDomainPCIAddressReserveSlot(addrs, dev->addr.pci.slot);
+    } else {
         ret = qemuDomainPCIAddressSetNextAddr(addrs, dev);
+    }
     return ret;
 }
 
@@ -912,6 +923,36 @@ int qemuDomainPCIAddressReleaseFunction(qemuDomainPCIAddressSetPtr addrs,
     dev.addr.pci.function = function;
 
     return qemuDomainPCIAddressReleaseAddr(addrs, &dev);
+}
+
+int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot)
+{
+    virDomainDeviceInfo dev;
+    char *addr;
+    int function;
+    int ret = 0;
+
+    dev.addr.pci.domain = 0;
+    dev.addr.pci.bus = 0;
+    dev.addr.pci.slot = slot;
+
+    for (function = 0; function <= QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
+        addr = qemuPCIAddressAsString(&dev);
+        if (!addr)
+            return -1;
+
+        if (!virHashLookup(addrs->used, addr)) {
+            VIR_FREE(addr);
+            continue;
+        }
+
+        VIR_FREE(addr);
+
+        if (qemuDomainPCIAddressReleaseFunction(addrs, slot, function) < 0)
+            ret = -1;
+    }
+
+    return ret;
 }
 
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)

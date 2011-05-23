@@ -242,7 +242,8 @@ error:
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &disk->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        disk->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on %s", disk->src);
 
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
@@ -314,7 +315,8 @@ cleanup:
         qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &controller->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        controller->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on controller");
 
     VIR_FREE(devstr);
@@ -739,7 +741,8 @@ cleanup:
         qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &net->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        net->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on NIC");
 
     if (ret != 0)
@@ -870,7 +873,8 @@ error:
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         (hostdev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &hostdev->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        hostdev->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on host device");
 
     qemuDomainReAttachHostdevDevices(driver, &hostdev, 1);
@@ -1257,7 +1261,8 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
     qemuAuditDisk(vm, detach, NULL, "detach", true);
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        detach->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on %s", dev->data.disk->src);
 
     virDomainDiskRemove(vm->def, i);
@@ -1496,7 +1501,8 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
     }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        detach->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on controller");
 
     virDomainControllerDefFree(detach);
@@ -1595,7 +1601,8 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
     qemuAuditNet(vm, detach, NULL, "detach", true);
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        detach->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on NIC");
 
     virDomainConfNWFilterTeardown(detach);
@@ -1719,7 +1726,8 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
     }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        detach->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on host device");
 
     if (vm->def->nhostdevs > 1) {
