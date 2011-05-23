@@ -379,11 +379,26 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
     int hvm = STREQ(def->os.type, "hvm");
     int i;
 
+    /* Currently, libxenlight only supports 32 vcpus per domain.
+     * cur_vcpus member of struct libxl_domain_build_info is defined
+     * as an int, but its semantic is a bitmap of online vcpus, so
+     * only 32 can be represented.
+     */
+    if (def->maxvcpus > 32 || def->vcpus > 32) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("This version of libxenlight only supports 32 "
+                     "vcpus per domain"));
+        return -1;
+    }
+
     libxl_init_build_info(b_info, &d_config->c_info);
 
     b_info->hvm = hvm;
     b_info->max_vcpus = def->maxvcpus;
-    b_info->cur_vcpus = def->vcpus;
+    if (def->vcpus == 32)
+        b_info->cur_vcpus = (uint32_t) -1;
+    else
+        b_info->cur_vcpus = (1 << def->vcpus) - 1;
     if (def->clock.ntimers > 0 &&
         def->clock.timers[0]->name == VIR_DOMAIN_TIMER_NAME_TSC) {
         switch (def->clock.timers[0]->mode) {
