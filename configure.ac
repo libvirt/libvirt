@@ -1498,7 +1498,9 @@ AC_SUBST([NETCF_CFLAGS])
 AC_SUBST([NETCF_LIBS])
 
 
-with_secrets=yes
+AC_ARG_WITH([secrets],
+  AC_HELP_STRING([--with-secrets], [with local secrets management driver @<:@default=yes@:>@]),[],[with_secrets=yes])
+
 if test "$with_libvirtd" = "no"; then
   with_secrets=no
 fi
@@ -1508,6 +1510,8 @@ fi
 AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 
 
+AC_ARG_WITH([storage-dir],
+  AC_HELP_STRING([--with-storage-dir], [with directory backend for the storage driver @<:@default=yes@:>@]),[],[with_storage_dir=yes])
 AC_ARG_WITH([storage-fs],
   AC_HELP_STRING([--with-storage-fs], [with FileSystem backend for the storage driver @<:@default=check@:>@]),[],[with_storage_fs=check])
 AC_ARG_WITH([storage-lvm],
@@ -1521,7 +1525,6 @@ AC_ARG_WITH([storage-mpath],
 AC_ARG_WITH([storage-disk],
   AC_HELP_STRING([--with-storage-disk], [with GPartd Disk backend for the storage driver @<:@default=check@:>@]),[],[with_storage_disk=check])
 
-with_storage_dir=yes
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
   with_storage_fs=no
