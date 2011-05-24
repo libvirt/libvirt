@@ -283,6 +283,8 @@ mymain(void)
     DO_TEST("disk-floppy", false, NONE);
     DO_TEST("disk-many", false, NONE);
     DO_TEST("disk-virtio", false, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST("disk-order", false,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-xenvbd", false, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-boot-disk", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
