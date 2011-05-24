@@ -456,6 +456,7 @@ LIBVIRT_0.9.3 {
         virDomainBlockPullAbort;
         virDomainBlockPullAll;
         virDomainGetBlockPullInfo;
+        virDomainGetControlInfo;
         virDomainPinVcpuFlags;
         virDomainSendKey;
         virNodeGetCPUStats;

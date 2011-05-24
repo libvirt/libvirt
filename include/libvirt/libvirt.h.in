@@ -141,6 +141,43 @@ typedef enum {
     VIR_DOMAIN_CRASHED_UNKNOWN = 0,     /* crashed for unknown reason */
 } virDomainCrashedReason;
 
+
+/**
+ * virDomainControlState:
+ *
+ * Current state of a control interface to the domain.
+ */
+typedef enum {
+    VIR_DOMAIN_CONTROL_OK = 0,       /* operational, ready to accept commands */
+    VIR_DOMAIN_CONTROL_JOB = 1,      /* background job is running (can be
+                                        monitored by virDomainGetJobInfo); only
+                                        limited set of commands may be allowed */
+    VIR_DOMAIN_CONTROL_OCCUPIED = 2, /* occupied by a running command */
+    VIR_DOMAIN_CONTROL_ERROR = 3,    /* unusable, domain cannot be fully operated */
+} virDomainControlState;
+
+/**
+ * virDomainControlInfo:
+ *
+ * Structure filled in by virDomainGetControlInfo and providing details about
+ * current state of control interface to a domain.
+ */
+typedef struct _virDomainControlInfo virDomainControlInfo;
+struct _virDomainControlInfo {
+    unsigned int state;     /* control state, one of virDomainControlState */
+    unsigned int details;   /* state details, currently 0 */
+    unsigned long long stateTime; /* for how long (in msec) control interface
+                                     has been in current state (except for OK
+                                     and ERROR states) */
+};
+
+/**
+ * virDomainControlInfoPtr:
+ *
+ * Pointer to virDomainControlInfo structure.
+ */
+typedef virDomainControlInfo *virDomainControlInfoPtr;
+
 /**
  * virDomainModificationImpact:
  *
@@ -946,6 +983,9 @@ int                     virDomainGetInfo        (virDomainPtr domain,
 int                     virDomainGetState       (virDomainPtr domain,
                                                  int *state,
                                                  int *reason,
+                                                 unsigned int flags);
+int                     virDomainGetControlInfo (virDomainPtr domain,
+                                                 virDomainControlInfoPtr info,
                                                  unsigned int flags);
 
 /*

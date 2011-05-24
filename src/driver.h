@@ -171,6 +171,10 @@ typedef int
                                          int *reason,
                                          unsigned int flags);
 typedef int
+        (*virDrvDomainGetControlInfo)   (virDomainPtr domain,
+                                         virDomainControlInfoPtr info,
+                                         unsigned int flags);
+typedef int
         (*virDrvDomainSave)		(virDomainPtr domain,
                                          const char *to);
 typedef int
@@ -710,6 +714,7 @@ struct _virDriver {
     virDrvDomainGetBlkioParameters domainGetBlkioParameters;
     virDrvDomainGetInfo		domainGetInfo;
     virDrvDomainGetState	domainGetState;
+    virDrvDomainGetControlInfo  domainGetControlInfo;
     virDrvDomainSave		domainSave;
     virDrvDomainRestore		domainRestore;
     virDrvDomainCoreDump        domainCoreDump;

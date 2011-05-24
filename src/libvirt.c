@@ -3273,6 +3273,54 @@ error:
 }
 
 /**
+ * virDomainGetControlInfo:
+ * @domain: a domain object
+ * @info: pointer to a virDomainControlInfo structure allocated by the user
+ * @flags: additional flags, 0 for now
+ *
+ * Extract details about current state of control interface to a domain.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainGetControlInfo(virDomainPtr domain,
+                        virDomainControlInfoPtr info,
+                        unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "info=%p", info);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (!info) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+    if (conn->driver->domainGetControlInfo) {
+        int ret;
+        ret = conn->driver->domainGetControlInfo(domain, info, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainGetXMLDesc:
  * @domain: a domain object
  * @flags: an OR'ed set of virDomainXMLFlags
