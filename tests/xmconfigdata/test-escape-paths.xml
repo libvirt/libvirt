@@ -25,16 +25,16 @@
       <source dev='/dev/HostVG/XenGuest2'/>
       <target dev='hda' bus='ide'/>
     </disk>
+    <disk type='block' device='disk'>
+      <driver name='phy'/>
+      <source dev='/dev/HostVG/XenGuest&apos;&quot;'/>
+      <target dev='hdb' bus='ide'/>
+    </disk>
     <disk type='file' device='cdrom'>
       <driver name='file'/>
       <source file='/root/boot.iso&amp;test'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
-    </disk>
-    <disk type='block' device='disk'>
-      <driver name='phy'/>
-      <source dev='/dev/HostVG/XenGuest&apos;&quot;'/>
-      <target dev='hdb' bus='ide'/>
     </disk>
     <interface type='bridge'>
       <mac address='00:16:3e:66:92:9c'/>

@@ -18,6 +18,13 @@
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <disk type='file' device='cdrom'>
+      <source file='/root/boot.iso'/>
+      <target dev='hdc' bus='ide'/>
+      <boot order='1'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' unit='0'/>
+    </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
       <source protocol='sheepdog' name='image'>
@@ -25,13 +32,6 @@
       </source>
       <target dev='vda' bus='virtio'/>
       <boot order='3'/>
-    </disk>
-    <disk type='file' device='cdrom'>
-      <source file='/root/boot.iso'/>
-      <target dev='hdc' bus='ide'/>
-      <boot order='1'/>
-      <readonly/>
-      <address type='drive' controller='0' bus='1' unit='0'/>
     </disk>
     <disk type='file' device='floppy'>
       <driver name='qemu' type='raw'/>

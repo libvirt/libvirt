@@ -5883,7 +5883,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!disk)
             goto error;
 
-        def->disks[def->ndisks++] = disk;
+        virDomainDiskInsertPreAlloced(def, disk);
     }
     VIR_FREE(nodes);
 
@@ -5899,7 +5899,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!controller)
             goto error;
 
-        def->controllers[def->ncontrollers++] = controller;
+        virDomainControllerInsertPreAlloced(def, controller);
     }
     VIR_FREE(nodes);
 
