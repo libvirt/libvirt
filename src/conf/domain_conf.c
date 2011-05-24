@@ -8998,6 +8998,12 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                               virDomainGraphicsSpiceChannelNameTypeToString(i),
                               virDomainGraphicsSpiceChannelModeTypeToString(mode));
         }
+        if (!children && (def->data.spice.image || def->data.spice.jpeg ||
+                          def->data.spice.zlib || def->data.spice.playback ||
+                          def->data.spice.streaming)) {
+            virBufferAddLit(buf, ">\n");
+            children = 1;
+        }
         if (def->data.spice.image)
             virBufferAsprintf(buf, "      <image compression='%s'/>\n",
                               virDomainGraphicsSpiceImageCompressionTypeToString(def->data.spice.image));
