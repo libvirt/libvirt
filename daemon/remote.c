@@ -76,7 +76,6 @@ static virStorageVolPtr get_nonnull_storage_vol(virConnectPtr conn, remote_nonnu
 static virSecretPtr get_nonnull_secret(virConnectPtr conn, remote_nonnull_secret secret);
 static virNWFilterPtr get_nonnull_nwfilter(virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
 static virDomainSnapshotPtr get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot);
-static int make_domain(remote_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface(remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
@@ -3359,19 +3358,16 @@ remoteDispatchDomainMigrateFinish3(struct qemud_server *server ATTRIBUTE_UNUSED,
     uri = args->uri == NULL ? NULL : *args->uri;
     dconnuri = args->dconnuri == NULL ? NULL : *args->dconnuri;
 
-    if (virDomainMigrateFinish3(conn, args->dname,
-                                args->cookie_in.cookie_in_val,
-                                args->cookie_in.cookie_in_len,
-                                &cookieout, &cookieoutlen,
-                                dconnuri, uri,
-                                args->flags,
-                                args->cancelled,
-                                &dom) < 0)
+    if (!(dom = virDomainMigrateFinish3(conn, args->dname,
+                                        args->cookie_in.cookie_in_val,
+                                        args->cookie_in.cookie_in_len,
+                                        &cookieout, &cookieoutlen,
+                                        dconnuri, uri,
+                                        args->flags,
+                                        args->cancelled)))
         goto cleanup;
 
-    if (dom &&
-        make_domain(&ret->ddom, dom) < 0)
-        goto cleanup;
+    make_nonnull_domain(&ret->dom, dom);
 
     /* remoteDispatchClientRequest will free cookie
      */
@@ -3493,21 +3489,6 @@ get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot sna
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
-static int
-make_domain(remote_domain *dom_dst, virDomainPtr dom_src)
-{
-    remote_domain rdom;
-    if (VIR_ALLOC(rdom) < 0)
-        return -1;
-
-    rdom->id = dom_src->id;
-    rdom->name = strdup(dom_src->name);
-    memcpy(rdom->uuid, dom_src->uuid, VIR_UUID_BUFLEN);
-
-    *dom_dst = rdom;
-    return 0;
-}
-
 static void
 make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
 {

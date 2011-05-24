@@ -6232,7 +6232,7 @@ cleanup:
 }
 
 
-static int
+static virDomainPtr
 qemuDomainMigrateFinish3(virConnectPtr dconn,
                          const char *dname,
                          const char *cookiein,
@@ -6242,12 +6242,11 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
                          const char *dconnuri ATTRIBUTE_UNUSED,
                          const char *uri ATTRIBUTE_UNUSED,
                          unsigned long flags,
-                         int cancelled,
-                         virDomainPtr *newdom)
+                         int cancelled)
 {
     struct qemud_driver *driver = dconn->privateData;
     virDomainObjPtr vm;
-    int ret = -1;
+    virDomainPtr dom = NULL;
 
     virCheckFlags(VIR_MIGRATE_LIVE |
                   VIR_MIGRATE_PEER2PEER |
@@ -6256,7 +6255,7 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
                   VIR_MIGRATE_UNDEFINE_SOURCE |
                   VIR_MIGRATE_PAUSED |
                   VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+                  VIR_MIGRATE_NON_SHARED_INC, NULL);
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -6266,16 +6265,14 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
         goto cleanup;
     }
 
-    *newdom = qemuMigrationFinish(driver, dconn, vm,
-                                  cookiein, cookieinlen,
-                                  cookieout, cookieoutlen,
-                                  flags, cancelled, true);
-
-    ret = 0;
+    dom = qemuMigrationFinish(driver, dconn, vm,
+                              cookiein, cookieinlen,
+                              cookieout, cookieoutlen,
+                              flags, cancelled, true);
 
 cleanup:
     qemuDriverUnlock(driver);
-    return ret;
+    return dom;
 }
 
 static int

@@ -587,7 +587,7 @@ typedef int
                      const char *dname,
                      unsigned long resource);
 
-typedef int
+typedef virDomainPtr
     (*virDrvDomainMigrateFinish3)
                     (virConnectPtr dconn,
                      const char *dname,
@@ -598,8 +598,7 @@ typedef int
                      const char *dconnuri,
                      const char *uri,
                      unsigned long flags,
-                     int cancelled,
-                     virDomainPtr *newdom);
+                     int cancelled);
 
 typedef int
     (*virDrvDomainMigrateConfirm3)

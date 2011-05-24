@@ -1942,19 +1942,20 @@ finish:
     cookieoutlen = 0;
     dname = dname ? dname : vm->def->name;
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
-    ret = dconn->driver->domainMigrateFinish3
+    ddomain = dconn->driver->domainMigrateFinish3
         (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-         dconnuri, uri_out ? uri_out : uri, flags, cancelled, &ddomain);
+         dconnuri, uri_out ? uri_out : uri, flags, cancelled);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
-    /* If ret is 0 then 'ddomain' indicates whether the VM is
-     * running on the dest. If not running, we can restart
-     * the source.  If ret is -1, we can't be sure what happened
-     * to the VM on the dest, thus the only safe option is to
-     * kill the VM on the source, even though that may leave
-     * no VM at all on either host.
+    /* If ddomain is NULL, then we were unable to start
+     * the guest on the target, and must restart on the
+     * source. There is a small chance that the ddomain
+     * is NULL due to an RPC failure, in which case
+     * ddomain could in fact be running on the dest.
+     * The lock manager plugins should take care of
+     * safety in this scenario.
      */
-    cancelled = ret == 0 && ddomain == NULL ? 1 : 0;
+    cancelled = ddomain == NULL ? 1 : 0;
 
     /* If finish3 set an error, and we don't have an earlier
      * one we need to preserve it in case confirm3 overwrites

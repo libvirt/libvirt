@@ -2035,7 +2035,7 @@ struct remote_domain_migrate_finish3_args {
 };
 
 struct remote_domain_migrate_finish3_ret {
-    remote_domain ddom;
+    remote_nonnull_domain dom;
     opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
 };
 

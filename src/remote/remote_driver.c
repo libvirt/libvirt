@@ -238,7 +238,6 @@ static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int 
     virReportErrorHelper(VIR_FROM_REMOTE, code, __FILE__,         \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
-static virDomainPtr get_domain (virConnectPtr conn, remote_domain domain);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
 static virNWFilterPtr get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
@@ -5228,7 +5227,7 @@ error:
 }
 
 
-static int
+static virDomainPtr
 remoteDomainMigrateFinish3(virConnectPtr dconn,
                            const char *dname,
                            const char *cookiein,
@@ -5238,17 +5237,15 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
                            const char *dconnuri,
                            const char *uri,
                            unsigned long flags,
-                           int cancelled,
-                           virDomainPtr *ddom)
+                           int cancelled)
 {
     remote_domain_migrate_finish3_args args;
     remote_domain_migrate_finish3_ret ret;
     struct private_data *priv = dconn->privateData;
-    int rv = -1;
+    virDomainPtr rv = NULL;
 
     remoteDriverLock(priv);
 
-    *ddom = NULL;
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
@@ -5265,7 +5262,7 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
               (xdrproc_t) xdr_remote_domain_migrate_finish3_ret, (char *) &ret) == -1)
         goto done;
 
-    *ddom = get_domain(dconn, ret.ddom);
+    rv = get_nonnull_domain(dconn, ret.dom);
 
     if (ret.cookie_out.cookie_out_len > 0) {
         if (!cookieout || !cookieoutlen) {
@@ -5280,8 +5277,6 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
     }
 
     xdr_free ((xdrproc_t) &xdr_remote_domain_migrate_finish3_ret, (char *) &ret);
-
-    rv = 0;
 
 done:
     remoteDriverUnlock(priv);
@@ -6606,22 +6601,6 @@ void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
     virDomainEventStateQueue(priv->domainEventState, event);
-}
-
-/* get_nonnull_domain and get_nonnull_network turn an on-wire
- * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
- * These can return NULL if underlying memory allocations fail,
- * but if they do then virterror_internal.has been set.
- */
-static virDomainPtr
-get_domain (virConnectPtr conn, remote_domain domain)
-{
-    virDomainPtr dom = NULL;
-    if (domain) {
-        dom = virGetDomain (conn, domain->name, BAD_CAST domain->uuid);
-        if (dom) dom->id = domain->id;
-    }
-    return dom;
 }
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
