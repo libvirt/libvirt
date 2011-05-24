@@ -1963,6 +1963,8 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     bool is_reg = false;
     unsigned long long offset;
     int fd = -1;
+    uid_t uid = getuid();
+    gid_t gid = getgid();
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -2013,6 +2015,14 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         is_reg = true;
     } else {
         is_reg = !!S_ISREG(sb.st_mode);
+        /* If the path is regular local file which exists
+         * already and dynamic_ownership is off, we don't
+         * want to change it's ownership, just open it as-is */
+        if (is_reg && !driver->dynamicOwnership &&
+            virStorageFileIsSharedFS(path) == 0) {
+            uid=sb.st_uid;
+            gid=sb.st_gid;
+        }
     }
 
     offset = sizeof(header) + header.xml_len;
@@ -2048,7 +2058,7 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     } else {
         if ((fd = virFileOpenAs(path, O_CREAT|O_TRUNC|O_WRONLY,
                                 S_IRUSR|S_IWUSR,
-                                getuid(), getgid(), 0)) < 0) {
+                                uid, gid, 0)) < 0) {
             /* If we failed as root, and the error was permission-denied
                (EACCES or EPERM), assume it's on a network-connected share
                where root access is restricted (eg, root-squashed NFS). If the
