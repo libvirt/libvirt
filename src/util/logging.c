@@ -47,43 +47,6 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 /*
- * Macro used to format the message as a string in virLogMessage
- * and borrowed from libxml2 (also used in virRaiseError)
- */
-#define VIR_GET_VAR_STR(msg, str) {				\
-    int       size, prev_size = -1;				\
-    int       chars;						\
-    char      *larger;						\
-    va_list   ap;						\
-                                                                \
-    str = (char *) malloc(150);					\
-    if (str != NULL) {						\
-                                                                \
-    size = 150;							\
-                                                                \
-    while (1) {							\
-        va_start(ap, msg);					\
-        chars = vsnprintf(str, size, msg, ap);			\
-        va_end(ap);						\
-        if ((chars > -1) && (chars < size)) {			\
-            if (prev_size == chars) {				\
-                break;						\
-            } else {						\
-                prev_size = chars;				\
-            }							\
-        }							\
-        if (chars > -1)						\
-            size += chars + 1;					\
-        else							\
-            size += 100;					\
-        if ((larger = (char *) realloc(str, size)) == NULL) {	\
-            break;						\
-        }							\
-        str = larger;						\
-    }}								\
-}
-
-/*
  * A logging buffer to keep some history over logs
  */
 
@@ -729,6 +692,7 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     int len, fprio, i, ret;
     int saved_errno = errno;
     int emit = 1;
+    va_list ap;
 
     if (!virLogInitialized)
         virLogStartup();
@@ -753,9 +717,12 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     /*
      * serialize the error message, add level and timestamp
      */
-    VIR_GET_VAR_STR(fmt, str);
-    if (str == NULL)
+    va_start(ap, fmt);
+    if (virVasprintf(&str, fmt, ap) < 0) {
+        va_end(ap);
         goto cleanup;
+    }
+    va_end(ap);
     gettimeofday(&cur_time, NULL);
     localtime_r(&cur_time.tv_sec, &time_info);
 
