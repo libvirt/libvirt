@@ -667,6 +667,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
 
 
 #define QEMU_PCI_ADDRESS_LAST_SLOT 31
+#define QEMU_PCI_ADDRESS_LAST_FUNCTION 8
 struct _qemuDomainPCIAddressSet {
     virHashTablePtr used;
     int nextslot;
@@ -810,19 +811,37 @@ int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
     return 0;
 }
 
-int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
-                                    int slot)
+int qemuDomainPCIAddressReserveFunction(qemuDomainPCIAddressSetPtr addrs,
+                                        int slot, int function)
 {
     virDomainDeviceInfo dev;
 
     dev.addr.pci.domain = 0;
     dev.addr.pci.bus = 0;
     dev.addr.pci.slot = slot;
-    dev.addr.pci.function = 0;
+    dev.addr.pci.function = function;
 
     return qemuDomainPCIAddressReserveAddr(addrs, &dev);
 }
 
+int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
+                                    int slot)
+{
+    int function;
+
+    for (function = 0; function <= QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
+        if (qemuDomainPCIAddressReserveFunction(addrs, slot, function) < 0)
+            goto cleanup;
+    }
+
+    return 0;
+
+cleanup:
+    for (function--; function >= 0; function--) {
+        qemuDomainPCIAddressReleaseFunction(addrs, slot, function);
+    }
+    return -1;
+}
 
 int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
@@ -853,6 +872,18 @@ int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
     return ret;
 }
 
+int qemuDomainPCIAddressReleaseFunction(qemuDomainPCIAddressSetPtr addrs,
+                                        int slot, int function)
+{
+    virDomainDeviceInfo dev;
+
+    dev.addr.pci.domain = 0;
+    dev.addr.pci.bus = 0;
+    dev.addr.pci.slot = slot;
+    dev.addr.pci.function = function;
+
+    return qemuDomainPCIAddressReleaseAddr(addrs, &dev);
+}
 
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
 {
