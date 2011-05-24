@@ -628,6 +628,9 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
     virCommandSetOutputBuffer(cmd, &help);
     virCommandClearCaps(cmd);
 
+    /* qemuimg doesn't return zero exit status on -h,
+     * therefore we need to provide pointer for storing
+     * exit status, although we don't parse it any later */
     if (virCommandRun(cmd, &exitstatus) < 0)
         goto cleanup;
 
