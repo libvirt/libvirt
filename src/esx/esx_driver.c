@@ -922,9 +922,18 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    /* Decline URIs without server part, or missing auth */
-    if (conn->uri->server == NULL || auth == NULL || auth->cb == NULL) {
-        return VIR_DRV_OPEN_DECLINED;
+    /* Require server part */
+    if (conn->uri->server == NULL) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("URI is missing the server part"));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    /* Require auth */
+    if (auth == NULL || auth->cb == NULL) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Missing or invalid auth pointer"));
+        return VIR_DRV_OPEN_ERROR;
     }
 
     /* Allocate per-connection private data */
