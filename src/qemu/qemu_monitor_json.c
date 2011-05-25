@@ -413,8 +413,13 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
             ret = virJSONValueObjectAppendNumberLong(jargs, key, val);
         }   break;
         case 'U': {
-            unsigned long long val = va_arg(args, unsigned long long);
-            ret = virJSONValueObjectAppendNumberUlong(jargs, key, val);
+            /* qemu silently truncates numbers larger than LLONG_MAX,
+             * so passing the full range of unsigned 64 bit integers
+             * is not safe here.  Pass them as signed 64 bit integers
+             * instead.
+             */
+            long long val = va_arg(args, long long);
+            ret = virJSONValueObjectAppendNumberLong(jargs, key, val);
         }   break;
         case 'd': {
             double val = va_arg(args, double);
