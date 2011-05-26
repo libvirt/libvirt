@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 #include <dirent.h>
+#include "dirname.h"
 #ifdef __linux__
 # include <sys/ioctl.h>
 # include <linux/fs.h>
@@ -994,6 +995,7 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
 {
     int fd, mode = 0;
     struct stat sb;
+    char *base = last_component(path);
 
     if ((fd = open(path, O_RDONLY|O_NONBLOCK|O_NOCTTY)) < 0) {
         if ((errno == ENOENT || errno == ELOOP) &&
@@ -1022,9 +1024,20 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
         mode = VIR_STORAGE_VOL_OPEN_CHAR;
     else if (S_ISBLK(sb.st_mode))
         mode = VIR_STORAGE_VOL_OPEN_BLOCK;
+    else if (S_ISDIR(sb.st_mode)) {
+        mode = VIR_STORAGE_VOL_OPEN_DIR;
+
+        if (STREQ(base, ".") ||
+            STREQ(base, "..")) {
+            VIR_FORCE_CLOSE(fd);
+            VIR_INFO("Skipping special dir '%s'", base);
+            return -2;
+        }
+    }
 
     if (!(mode & flags)) {
         VIR_FORCE_CLOSE(fd);
+        VIR_INFO("Skipping volume '%s'", path);
 
         if (mode & VIR_STORAGE_VOL_OPEN_ERROR) {
             virStorageReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1047,11 +1060,13 @@ int virStorageBackendVolOpen(const char *path)
 int
 virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                      unsigned long long *allocation,
-                                     unsigned long long *capacity)
+                                     unsigned long long *capacity,
+                                     unsigned int openflags)
 {
     int ret, fd;
 
-    if ((ret = virStorageBackendVolOpen(target->path)) < 0)
+    if ((ret = virStorageBackendVolOpenCheckMode(target->path,
+                                                 openflags)) < 0)
         return ret;
 
     fd = ret;
@@ -1066,22 +1081,32 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
 }
 
 int
-virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
-                               int withCapacity)
+virStorageBackendUpdateVolInfoFlags(virStorageVolDefPtr vol,
+                                    int withCapacity,
+                                    unsigned int openflags)
 {
     int ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
-                                                    &vol->allocation,
-                                                    withCapacity ? &vol->capacity : NULL)) < 0)
+                                    &vol->allocation,
+                                    withCapacity ? &vol->capacity : NULL,
+                                    openflags)) < 0)
         return ret;
 
     if (vol->backingStore.path &&
         (ret = virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
-                                                    NULL, NULL)) < 0)
+                                            NULL, NULL,
+                                            VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
         return ret;
 
     return 0;
+}
+
+int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
+                                   int withCapacity)
+{
+    return virStorageBackendUpdateVolInfoFlags(vol, withCapacity,
+                                               VIR_STORAGE_VOL_OPEN_DEFAULT);
 }
 
 /*
@@ -1125,6 +1150,11 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
              */
             if (capacity)
                 *capacity = sb.st_size;
+        } else if (S_ISDIR(sb.st_mode)) {
+            *allocation = 0;
+            if (capacity)
+                *capacity = 0;
+
         } else {
             off_t end;
             /* XXX this is POSIX compliant, but doesn't work for CHAR files,
