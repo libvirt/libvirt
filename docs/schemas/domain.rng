@@ -1294,6 +1294,13 @@
               <data type="dateTime"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="connected">
+              <choice>
+                <value>keep</value>
+              </choice>
+            </attribute>
+          </optional>
         </group>
         <group>
           <attribute name="type">
@@ -1335,6 +1342,15 @@
           <optional>
             <attribute name="passwdValidTo">
               <data type="dateTime"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="connected">
+              <choice>
+                <value>fail</value>
+                <value>disconnect</value>
+                <value>keep</value>
+              </choice>
             </attribute>
           </optional>
           <interleave>

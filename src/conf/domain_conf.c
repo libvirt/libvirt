@@ -317,6 +317,13 @@ VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "desktop",
               "spice")
 
+VIR_ENUM_IMPL(virDomainGraphicsAuthConnected,
+              VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_LAST,
+              "default",
+              "fail",
+              "disconnect",
+              "keep")
+
 VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelName,
               VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST,
               "main",
@@ -3945,9 +3952,12 @@ error:
 
 
 static int
-virDomainGraphicsAuthDefParseXML(xmlNodePtr node, virDomainGraphicsAuthDefPtr def)
+virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
+                                 virDomainGraphicsAuthDefPtr def,
+                                 int type)
 {
     char *validTo = NULL;
+    char *connected = virXMLPropString(node, "connected");
 
     def->passwd = virXMLPropString(node, "passwd");
 
@@ -3986,6 +3996,28 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node, virDomainGraphicsAuthDefPtr de
 
         def->validTo = timegm(&tm);
         def->expires = 1;
+    }
+
+    if (connected) {
+        int action = virDomainGraphicsAuthConnectedTypeFromString(connected);
+        if (action <= 0) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("unknown connected value %s"),
+                                 connected);
+            VIR_FREE(connected);
+            return -1;
+        }
+        VIR_FREE(connected);
+
+        /* VNC supports connected='keep' only */
+        if (type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            action != VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_KEEP) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                 _("VNC supports connected='keep' only"));
+            return -1;
+        }
+
+        def->connected = action;
     }
 
     return 0;
@@ -4058,7 +4090,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
             !def->data.vnc.listenAddr[0])
             VIR_FREE(def->data.vnc.listenAddr);
 
-        if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth) < 0)
+        if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth,
+                                             def->type) < 0)
             goto error;
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         char *fullscreen = virXMLPropString(node, "fullscreen");
@@ -4194,7 +4227,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
             !def->data.spice.listenAddr[0])
             VIR_FREE(def->data.spice.listenAddr);
 
-        if (virDomainGraphicsAuthDefParseXML(node, &def->data.spice.auth) < 0)
+        if (virDomainGraphicsAuthDefParseXML(node, &def->data.spice.auth,
+                                             def->type) < 0)
             goto error;
 
         cur = node->children;
@@ -9280,6 +9314,10 @@ virDomainGraphicsAuthDefFormatAttr(virBufferPtr buf,
         strftime(strbuf, sizeof(strbuf), "%Y-%m-%dT%H:%M:%S", tm);
         virBufferAsprintf(buf, " passwdValidTo='%s'", strbuf);
     }
+
+    if (def->connected)
+        virBufferEscapeString(buf, " connected='%s'",
+                              virDomainGraphicsAuthConnectedTypeToString(def->connected));
 }
 
 static int

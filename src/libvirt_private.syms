@@ -270,6 +270,8 @@ virDomainFindByID;
 virDomainFindByName;
 virDomainFindByUUID;
 virDomainGetRootFilesystem;
+virDomainGraphicsAuthConnectedTypeFromString;
+virDomainGraphicsAuthConnectedTypeToString;
 virDomainGraphicsDefFree;
 virDomainGraphicsSpiceChannelModeTypeFromString;
 virDomainGraphicsSpiceChannelModeTypeToString;

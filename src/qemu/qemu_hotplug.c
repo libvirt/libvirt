@@ -1065,10 +1065,12 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
             return -1;
         }
 
-        /* If a password lifetime was, or is set, then we must always run,
-         * even if new password matches old password */
+        /* If a password lifetime was, or is set, or action if connected has
+         * changed, then we must always run, even if new password matches
+         * old password */
         if (olddev->data.vnc.auth.expires ||
             dev->data.vnc.auth.expires ||
+            olddev->data.vnc.auth.connected != dev->data.vnc.auth.connected ||
             STRNEQ_NULLABLE(olddev->data.vnc.auth.passwd,
                             dev->data.vnc.auth.passwd)) {
             VIR_DEBUG("Updating password on VNC server %p %p",
@@ -1084,6 +1086,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
             dev->data.vnc.auth.passwd = NULL;
             olddev->data.vnc.auth.validTo = dev->data.vnc.auth.validTo;
             olddev->data.vnc.auth.expires = dev->data.vnc.auth.expires;
+            olddev->data.vnc.auth.connected = dev->data.vnc.auth.connected;
         } else {
             ret = 0;
         }
@@ -1116,6 +1119,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
          * even if new password matches old password */
         if (olddev->data.spice.auth.expires ||
             dev->data.spice.auth.expires ||
+            olddev->data.spice.auth.connected != dev->data.spice.auth.connected ||
             STRNEQ_NULLABLE(olddev->data.spice.auth.passwd,
                             dev->data.spice.auth.passwd)) {
             VIR_DEBUG("Updating password on SPICE server %p %p",
@@ -1131,6 +1135,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
             dev->data.spice.auth.passwd = NULL;
             olddev->data.spice.auth.validTo = dev->data.spice.auth.validTo;
             olddev->data.spice.auth.expires = dev->data.spice.auth.expires;
+            olddev->data.spice.auth.connected = dev->data.spice.auth.connected;
         } else {
             VIR_DEBUG("Not updating since password didn't change");
             ret = 0;
@@ -1874,16 +1879,20 @@ qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     time_t now = time(NULL);
     char expire_time [64];
+    const char *connected = NULL;
     int ret;
 
     if (!auth->passwd && !driver->vncPassword)
         return 0;
 
+    if (auth->connected)
+        connected = virDomainGraphicsAuthConnectedTypeToString(auth->connected);
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorSetPassword(priv->mon,
                                  type,
                                  auth->passwd ? auth->passwd : defaultPasswd,
-                                 NULL);
+                                 connected);
 
     if (ret == -2) {
         if (type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {

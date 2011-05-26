@@ -639,12 +639,22 @@ enum virDomainGraphicsType {
     VIR_DOMAIN_GRAPHICS_TYPE_LAST,
 };
 
+enum virDomainGraphicsAuthConnectedType {
+    VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_DEFAULT = 0,
+    VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_FAIL,
+    VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_DISCONNECT,
+    VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_KEEP,
+
+    VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_LAST
+};
+
 typedef struct _virDomainGraphicsAuthDef virDomainGraphicsAuthDef;
 typedef virDomainGraphicsAuthDef *virDomainGraphicsAuthDefPtr;
 struct _virDomainGraphicsAuthDef {
     char *passwd;
     unsigned int expires: 1; /* Whether there is an expiry time set */
     time_t validTo;  /* seconds since epoch */
+    int connected; /* action if connected */
 };
 
 enum virDomainGraphicsSpiceChannelName {
@@ -1582,6 +1592,7 @@ VIR_ENUM_DECL(virDomainHostdevSubsys)
 VIR_ENUM_DECL(virDomainInput)
 VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)
+VIR_ENUM_DECL(virDomainGraphicsAuthConnected)
 VIR_ENUM_DECL(virDomainGraphicsSpiceChannelName)
 VIR_ENUM_DECL(virDomainGraphicsSpiceChannelMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceImageCompression)

@@ -1896,11 +1896,14 @@ qemu-kvm -net nic,model=? /dev/null
             specifies the keymap to use. It is possible to set a limit
             on the validity of the password be giving an
             timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-            assumed to be in UTC. NB, this may not be supported by all
-            hypervisors.<br/>  <br/> Rather than using listen/port,
-            QEMU supports a <code>socket</code> attribute for
-            listening on a unix domain socket
-            path.<span class="since">Since 0.8.8</span>
+            assumed to be in UTC. The <code>connected</code> attribute
+            allows control of connected client during password changes.
+            VNC accepts <code>keep</code> value only.
+            <span class="since">since 0.9.3</span>
+            NB, this may not be supported by all hypervisors.<br/>  <br/>
+            Rather than using listen/port, QEMU supports a
+            <code>socket</code> attribute for listening on a unix
+            domain socket path.<span class="since">Since 0.8.8</span>
           </dd>
           <dt><code>"spice"</code></dt>
           <dd>
@@ -1918,8 +1921,14 @@ qemu-kvm -net nic,model=? /dev/null
               attribute specifies the keymap to use. It is possible to
               set a limit on the validity of the password be giving an
               timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-              assumed to be in UTC. NB, this may not be supported by
-              all hypervisors.<span class="since">"spice" since 0.8.6</span>.
+              assumed to be in UTC. The <code>connected</code> attribute
+              allows control of connected client during password changes.
+              SPICE accepts <code>keep</code> to keep client connected,
+              <code>disconnect</code> to disconnect client and
+              <code>fail</code> to fail changing password.
+              <span class="since">Since 0.9.3</span>
+              NB, this may not be supported by all hypervisors.
+              <span class="since">"spice" since 0.8.6</span>.
             </p>
             <p>
               When SPICE has both a normal and TLS secured TCP port
