@@ -1,7 +1,7 @@
 /*
  * virtaudit.c: auditing support
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -123,7 +123,7 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
             [VIR_AUDIT_RECORD_RESOURCE] = AUDIT_VIRT_RESOURCE,
         };
 
-        if (type > ARRAY_CARDINALITY(record_types) || record_types[type] == 0)
+        if (type >= ARRAY_CARDINALITY(record_types) || record_types[type] == 0)
             VIR_WARN("Unknown audit record type %d", type);
         else if (audit_log_user_message(auditfd, record_types[type], str, NULL,
                                         clientaddr, clienttty, success) < 0) {
