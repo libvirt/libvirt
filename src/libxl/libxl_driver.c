@@ -2950,7 +2950,7 @@ cleanup:
 }
 
 static int
-libxlDomainGetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
+libxlDomainGetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
                                   int *nparams)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
@@ -3002,7 +3002,7 @@ libxlDomainGetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
     }
 
     params[0].value.ui = sc_info.weight;
-    params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+    params[0].type = VIR_TYPED_PARAM_UINT;
     if (virStrcpyStatic(params[0].field, "weight") == NULL) {
         libxlError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("Field weight too long for destination"));
@@ -3010,7 +3010,7 @@ libxlDomainGetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
     }
 
     params[1].value.ui = sc_info.cap;
-    params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+    params[1].type = VIR_TYPED_PARAM_UINT;
     if (virStrcpyStatic(params[1].field, "cap") == NULL) {
         libxlError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("Field cap too long for destination"));
@@ -3027,7 +3027,7 @@ cleanup:
 }
 
 static int
-libxlDomainSetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
+libxlDomainSetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
                                   int nparams)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
@@ -3075,10 +3075,10 @@ libxlDomainSetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
     }
 
     for (i = 0; i < nparams; ++i) {
-        virSchedParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, "weight")) {
-            if (param->type != VIR_DOMAIN_SCHED_FIELD_UINT) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
                 libxlError(VIR_ERR_INVALID_ARG, "%s",
                            _("invalid type for weight tunable, expected a 'uint'"));
                 goto cleanup;
@@ -3086,7 +3086,7 @@ libxlDomainSetSchedulerParameters(virDomainPtr dom, virSchedParameterPtr params,
             sc_info.weight = params[i].value.ui;
 
         } else if (STREQ(param->field, "cap")) {
-            if (param->type != VIR_DOMAIN_SCHED_FIELD_UINT) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
                 libxlError(VIR_ERR_INVALID_ARG, "%s",
                            _("invalid type for cap tunable, expected a 'uint'"));
                 goto cleanup;

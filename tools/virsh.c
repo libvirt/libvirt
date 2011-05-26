@@ -1617,13 +1617,13 @@ static const vshCmdOptDef opts_schedinfo[] = {
 
 static int
 cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
-                   virSchedParameterPtr param)
+                   virTypedParameterPtr param)
 {
     const char *data = NULL;
 
     /* Legacy 'weight' parameter */
     if (STREQ(param->field, "weight") &&
-        param->type == VIR_DOMAIN_SCHED_FIELD_UINT &&
+        param->type == VIR_TYPED_PARAM_UINT &&
         vshCommandOptBool(cmd, "weight")) {
         int val;
         if (vshCommandOptInt(cmd, "weight", &val) <= 0) {
@@ -1637,7 +1637,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
 
     /* Legacy 'cap' parameter */
     if (STREQ(param->field, "cap") &&
-        param->type == VIR_DOMAIN_SCHED_FIELD_UINT &&
+        param->type == VIR_TYPED_PARAM_UINT &&
         vshCommandOptBool(cmd, "cap")) {
         int val;
         if (vshCommandOptInt(cmd, "cap", &val) <= 0) {
@@ -1665,41 +1665,41 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
             return 0;
 
         switch (param->type) {
-        case VIR_DOMAIN_SCHED_FIELD_INT:
+        case VIR_TYPED_PARAM_INT:
             if (virStrToLong_i(val, NULL, 10, &param->value.i) < 0) {
                 vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting an int"));
                 return -1;
             }
             break;
-        case VIR_DOMAIN_SCHED_FIELD_UINT:
+        case VIR_TYPED_PARAM_UINT:
             if (virStrToLong_ui(val, NULL, 10, &param->value.ui) < 0) {
                 vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting an unsigned int"));
                 return -1;
             }
             break;
-        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+        case VIR_TYPED_PARAM_LLONG:
             if (virStrToLong_ll(val, NULL, 10, &param->value.l) < 0) {
                 vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting a long long"));
                 return -1;
             }
             break;
-        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+        case VIR_TYPED_PARAM_ULLONG:
             if (virStrToLong_ull(val, NULL, 10, &param->value.ul) < 0) {
                 vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting an unsigned long long"));
                 return -1;
             }
             break;
-        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+        case VIR_TYPED_PARAM_DOUBLE:
             if (virStrToDouble(val, NULL, &param->value.d) < 0) {
                 vshError(ctl, "%s", _("Invalid value for parameter, expecting a double"));
                 return -1;
             }
             break;
-        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+        case VIR_TYPED_PARAM_BOOLEAN:
             param->value.b = STREQ(val, "0") ? 0 : 1;
         }
         return 1;
@@ -1714,7 +1714,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 {
     char *schedulertype;
     virDomainPtr dom;
-    virSchedParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int nparams = 0;
     int update = 0;
     int i, ret;
@@ -1755,9 +1755,9 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (nparams) {
-        params = vshMalloc(ctl, sizeof(virSchedParameter)* nparams);
+        params = vshMalloc(ctl, sizeof(*params) * nparams);
 
-        memset(params, 0, sizeof(virSchedParameter)* nparams);
+        memset(params, 0, sizeof(*params) * nparams);
         ret = virDomainGetSchedulerParameters(dom, params, &nparams);
         if (ret == -1)
             goto cleanup;
@@ -1800,22 +1800,22 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
         ret_val = true;
         for (i = 0; i < nparams; i++){
             switch (params[i].type) {
-            case VIR_DOMAIN_SCHED_FIELD_INT:
+            case VIR_TYPED_PARAM_INT:
                  vshPrint(ctl, "%-15s: %d\n",  params[i].field, params[i].value.i);
                  break;
-            case VIR_DOMAIN_SCHED_FIELD_UINT:
+            case VIR_TYPED_PARAM_UINT:
                  vshPrint(ctl, "%-15s: %u\n",  params[i].field, params[i].value.ui);
                  break;
-            case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            case VIR_TYPED_PARAM_LLONG:
                  vshPrint(ctl, "%-15s: %lld\n",  params[i].field, params[i].value.l);
                  break;
-            case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            case VIR_TYPED_PARAM_ULLONG:
                  vshPrint(ctl, "%-15s: %llu\n",  params[i].field, params[i].value.ul);
                  break;
-            case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            case VIR_TYPED_PARAM_DOUBLE:
                  vshPrint(ctl, "%-15s: %f\n",  params[i].field, params[i].value.d);
                  break;
-            case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            case VIR_TYPED_PARAM_BOOLEAN:
                  vshPrint(ctl, "%-15s: %d\n",  params[i].field, params[i].value.b);
                  break;
             default:
@@ -3181,7 +3181,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     int weight = 0;
     int nparams = 0;
     unsigned int i = 0;
-    virBlkioParameterPtr params = NULL, temp = NULL;
+    virTypedParameterPtr params = NULL, temp = NULL;
     bool ret = false;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -3228,27 +3228,27 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
         for (i = 0; i < nparams; i++) {
             switch (params[i].type) {
-                case VIR_DOMAIN_BLKIO_PARAM_INT:
+                case VIR_TYPED_PARAM_INT:
                     vshPrint(ctl, "%-15s: %d\n", params[i].field,
                              params[i].value.i);
                     break;
-                case VIR_DOMAIN_BLKIO_PARAM_UINT:
+                case VIR_TYPED_PARAM_UINT:
                     vshPrint(ctl, "%-15s: %u\n", params[i].field,
                              params[i].value.ui);
                     break;
-                case VIR_DOMAIN_BLKIO_PARAM_LLONG:
+                case VIR_TYPED_PARAM_LLONG:
                     vshPrint(ctl, "%-15s: %lld\n", params[i].field,
                              params[i].value.l);
                     break;
-                case VIR_DOMAIN_BLKIO_PARAM_ULLONG:
+                case VIR_TYPED_PARAM_ULLONG:
                     vshPrint(ctl, "%-15s: %llu\n", params[i].field,
                                  params[i].value.ul);
                     break;
-                case VIR_DOMAIN_BLKIO_PARAM_DOUBLE:
+                case VIR_TYPED_PARAM_DOUBLE:
                     vshPrint(ctl, "%-15s: %f\n", params[i].field,
                              params[i].value.d);
                     break;
-                case VIR_DOMAIN_BLKIO_PARAM_BOOLEAN:
+                case VIR_TYPED_PARAM_BOOLEAN:
                     vshPrint(ctl, "%-15s: %d\n", params[i].field,
                              params[i].value.b);
                     break;
@@ -3264,7 +3264,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
         for (i = 0; i < nparams; i++) {
             temp = &params[i];
-            temp->type = VIR_DOMAIN_BLKIO_PARAM_UINT;
+            temp->type = VIR_TYPED_PARAM_UINT;
 
             if (weight) {
                 temp->value.ui = weight;
@@ -3321,7 +3321,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
     long long min_guarantee = 0;
     int nparams = 0;
     unsigned int i = 0;
-    virMemoryParameterPtr params = NULL, temp = NULL;
+    virTypedParameterPtr params = NULL, temp = NULL;
     bool ret = false;
     unsigned int flags = 0;
     int current = vshCommandOptBool(cmd, "current");
@@ -3391,30 +3391,30 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
 
         for (i = 0; i < nparams; i++) {
             switch (params[i].type) {
-                case VIR_DOMAIN_MEMORY_PARAM_INT:
+                case VIR_TYPED_PARAM_INT:
                     vshPrint(ctl, "%-15s: %d\n", params[i].field,
                              params[i].value.i);
                     break;
-                case VIR_DOMAIN_MEMORY_PARAM_UINT:
+                case VIR_TYPED_PARAM_UINT:
                     vshPrint(ctl, "%-15s: %u\n", params[i].field,
                              params[i].value.ui);
                     break;
-                case VIR_DOMAIN_MEMORY_PARAM_LLONG:
+                case VIR_TYPED_PARAM_LLONG:
                     vshPrint(ctl, "%-15s: %lld\n", params[i].field,
                              params[i].value.l);
                     break;
-                case VIR_DOMAIN_MEMORY_PARAM_ULLONG:
+                case VIR_TYPED_PARAM_ULLONG:
                     if (params[i].value.ul == VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
                         vshPrint(ctl, "%-15s: unlimited\n", params[i].field);
                     else
                         vshPrint(ctl, "%-15s: %llu kB\n", params[i].field,
                                  params[i].value.ul);
                     break;
-                case VIR_DOMAIN_MEMORY_PARAM_DOUBLE:
+                case VIR_TYPED_PARAM_DOUBLE:
                     vshPrint(ctl, "%-15s: %f\n", params[i].field,
                              params[i].value.d);
                     break;
-                case VIR_DOMAIN_MEMORY_PARAM_BOOLEAN:
+                case VIR_TYPED_PARAM_BOOLEAN:
                     vshPrint(ctl, "%-15s: %d\n", params[i].field,
                              params[i].value.b);
                     break;
@@ -3430,7 +3430,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
 
         for (i = 0; i < nparams; i++) {
             temp = &params[i];
-            temp->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+            temp->type = VIR_TYPED_PARAM_ULLONG;
 
             /*
              * Some magic here, this is used to fill the params structure with

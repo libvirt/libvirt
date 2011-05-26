@@ -3003,7 +3003,7 @@ error:
  */
 int
 virDomainSetMemoryParameters(virDomainPtr domain,
-                             virMemoryParameterPtr params,
+                             virTypedParameterPtr params,
                              int nparams, unsigned int flags)
 {
     virConnectPtr conn;
@@ -3057,15 +3057,15 @@ error:
  * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
  * @params as NULL, the API returns the number of parameters supported by the
  * HV by updating @nparams on SUCCESS. The caller should then allocate @params
- * array, i.e. (sizeof(@virMemoryParameter) * @nparams) bytes and call the API
+ * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
  * again.
  *
  * Here is the sample code snippet:
  *
  * if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) == 0) &&
  *     (nparams != 0)) {
- *     params = vshMalloc(ctl, sizeof(virMemoryParameter) * nparams);
- *     memset(params, 0, sizeof(virMemoryParameter) * nparams);
+ *     params = vshMalloc(ctl, sizeof(*params) * nparams);
+ *     memset(params, 0, sizeof(*params) * nparams);
  *     if (virDomainGetMemoryParameters(dom, params, &nparams, 0)) {
  *         vshError(ctl, "%s", _("Unable to get memory parameters"));
  *         goto error;
@@ -3079,7 +3079,7 @@ error:
  */
 int
 virDomainGetMemoryParameters(virDomainPtr domain,
-                             virMemoryParameterPtr params,
+                             virTypedParameterPtr params,
                              int *nparams, unsigned int flags)
 {
     virConnectPtr conn;
@@ -3130,7 +3130,7 @@ error:
  */
 int
 virDomainSetBlkioParameters(virDomainPtr domain,
-                             virBlkioParameterPtr params,
+                             virTypedParameterPtr params,
                              int nparams, unsigned int flags)
 {
     virConnectPtr conn;
@@ -3189,7 +3189,7 @@ error:
  */
 int
 virDomainGetBlkioParameters(virDomainPtr domain,
-                             virBlkioParameterPtr params,
+                             virTypedParameterPtr params,
                              int *nparams, unsigned int flags)
 {
     virConnectPtr conn;
@@ -5434,7 +5434,7 @@ error:
  */
 int
 virDomainGetSchedulerParameters(virDomainPtr domain,
-                                virSchedParameterPtr params, int *nparams)
+                                virTypedParameterPtr params, int *nparams)
 {
     virConnectPtr conn;
 
@@ -5484,7 +5484,7 @@ error:
  */
 int
 virDomainSetSchedulerParameters(virDomainPtr domain,
-                                virSchedParameterPtr params, int nparams)
+                                virTypedParameterPtr params, int nparams)
 {
     virConnectPtr conn;
 
@@ -5540,7 +5540,7 @@ error:
  */
 int
 virDomainSetSchedulerParametersFlags(virDomainPtr domain,
-                                     virSchedParameterPtr params,
+                                     virTypedParameterPtr params,
                                      int nparams,
                                      unsigned int flags)
 {

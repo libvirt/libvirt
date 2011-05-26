@@ -1,7 +1,7 @@
 /*
  * xen_internal.h: internal API for direct access to Xen hypervisor level
  *
- * Copyright (C) 2005, 2010 Red Hat, Inc.
+ * Copyright (C) 2005, 2010-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -101,12 +101,12 @@ char *  xenHypervisorGetSchedulerType   (virDomainPtr domain,
           ATTRIBUTE_NONNULL (1);
 
 int     xenHypervisorGetSchedulerParameters(virDomainPtr domain,
-                                         virSchedParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int *nparams)
           ATTRIBUTE_NONNULL (1);
 
 int     xenHypervisorSetSchedulerParameters(virDomainPtr domain,
-                                         virSchedParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int nparams)
           ATTRIBUTE_NONNULL (1);
 

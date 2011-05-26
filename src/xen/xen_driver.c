@@ -1677,7 +1677,8 @@ xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
 
 static int
 xenUnifiedDomainGetSchedulerParameters (virDomainPtr dom,
-                    virSchedParameterPtr params, int *nparams)
+                                        virTypedParameterPtr params,
+                                        int *nparams)
 {
     GET_PRIVATE(dom->conn);
     int i, ret;
@@ -1694,7 +1695,8 @@ xenUnifiedDomainGetSchedulerParameters (virDomainPtr dom,
 
 static int
 xenUnifiedDomainSetSchedulerParameters (virDomainPtr dom,
-                    virSchedParameterPtr params, int nparams)
+                                        virTypedParameterPtr params,
+                                        int nparams)
 {
     GET_PRIVATE(dom->conn);
     int i, ret;

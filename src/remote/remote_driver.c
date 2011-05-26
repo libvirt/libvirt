@@ -1781,7 +1781,7 @@ done:
 
 static int
 remoteDomainSetMemoryParameters (virDomainPtr domain,
-                                 virMemoryParameterPtr params,
+                                 virTypedParameterPtr params,
                                  int nparams,
                                  unsigned int flags)
 {
@@ -1856,7 +1856,7 @@ done:
 
 static int
 remoteDomainGetMemoryParameters (virDomainPtr domain,
-                                 virMemoryParameterPtr params, int *nparams,
+                                 virTypedParameterPtr params, int *nparams,
                                  unsigned int flags)
 {
     int rv = -1;
@@ -1950,9 +1950,9 @@ done:
 
 static int
 remoteDomainSetBlkioParameters (virDomainPtr domain,
-                                virBlkioParameterPtr params,
-                                 int nparams,
-                                 unsigned int flags)
+                                virTypedParameterPtr params,
+                                int nparams,
+                                unsigned int flags)
 {
     int rv = -1;
     remote_domain_set_blkio_parameters_args args;
@@ -2025,8 +2025,8 @@ done:
 
 static int
 remoteDomainGetBlkioParameters (virDomainPtr domain,
-                                 virBlkioParameterPtr params, int *nparams,
-                                 unsigned int flags)
+                                virTypedParameterPtr params, int *nparams,
+                                unsigned int flags)
 {
     int rv = -1;
     remote_domain_get_blkio_parameters_args args;
@@ -2470,7 +2470,7 @@ done:
 
 static int
 remoteDomainGetSchedulerParameters (virDomainPtr domain,
-                                    virSchedParameterPtr params, int *nparams)
+                                    virTypedParameterPtr params, int *nparams)
 {
     int rv = -1;
     remote_domain_get_scheduler_parameters_args args;
@@ -2540,7 +2540,7 @@ done:
 
 static int
 remoteDomainSetSchedulerParameters (virDomainPtr domain,
-                                    virSchedParameterPtr params, int nparams)
+                                    virTypedParameterPtr params, int nparams)
 {
     int rv = -1;
     remote_domain_set_scheduler_parameters_args args;
@@ -2605,7 +2605,7 @@ done:
 
 static int
 remoteDomainSetSchedulerParametersFlags(virDomainPtr domain,
-                                        virSchedParameterPtr params,
+                                        virTypedParameterPtr params,
                                         int nparams,
                                         unsigned int flags)
 {

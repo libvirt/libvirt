@@ -2637,7 +2637,7 @@ static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
 }
 
 static int testDomainGetSchedulerParams(virDomainPtr domain,
-                                        virSchedParameterPtr params,
+                                        virTypedParameterPtr params,
                                         int *nparams)
 {
     testConnPtr privconn = domain->conn->privateData;
@@ -2659,7 +2659,7 @@ static int testDomainGetSchedulerParams(virDomainPtr domain,
         goto cleanup;
     }
     strcpy(params[0].field, "weight");
-    params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+    params[0].type = VIR_TYPED_PARAM_UINT;
     /* XXX */
     /*params[0].value.ui = privdom->weight;*/
     params[0].value.ui = 50;
@@ -2675,7 +2675,7 @@ cleanup:
 
 
 static int testDomainSetSchedulerParams(virDomainPtr domain,
-                                        virSchedParameterPtr params,
+                                        virTypedParameterPtr params,
                                         int nparams)
 {
     testConnPtr privconn = domain->conn->privateData;
@@ -2697,7 +2697,7 @@ static int testDomainSetSchedulerParams(virDomainPtr domain,
             testError(VIR_ERR_INVALID_ARG, "field");
             goto cleanup;
         }
-        if (params[i].type != VIR_DOMAIN_SCHED_FIELD_UINT) {
+        if (params[i].type != VIR_TYPED_PARAM_UINT) {
             testError(VIR_ERR_INVALID_ARG, "type");
             goto cleanup;
         }

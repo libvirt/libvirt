@@ -3519,12 +3519,12 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
  *
  * Available parameters:
  *
- * - reservation (VIR_DOMAIN_SCHED_FIELD_LLONG >= 0, in megaherz)
+ * - reservation (VIR_TYPED_PARAM_LLONG >= 0, in megaherz)
  *
  *   The amount of CPU resource that is guaranteed to be available to the domain.
  *
  *
- * - limit (VIR_DOMAIN_SCHED_FIELD_LLONG >= 0, or -1, in megaherz)
+ * - limit (VIR_TYPED_PARAM_LLONG >= 0, or -1, in megaherz)
  *
  *   The CPU utilization of the domain will be limited to this value, even if
  *   more CPU resources are available. If the limit is set to -1, the CPU
@@ -3532,7 +3532,7 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
  *   must be greater than or equal to the reservation.
  *
  *
- * - shares (VIR_DOMAIN_SCHED_FIELD_INT >= 0, or in {-1, -2, -3}, no unit)
+ * - shares (VIR_TYPED_PARAM_INT >= 0, or in {-1, -2, -3}, no unit)
  *
  *   Shares are used to determine relative CPU allocation between domains. In
  *   general, a domain with more shares gets proportionally more of the CPU
@@ -3560,7 +3560,7 @@ esxDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
 
 static int
 esxDomainGetSchedulerParameters(virDomainPtr domain,
-                                virSchedParameterPtr params, int *nparams)
+                                virTypedParameterPtr params, int *nparams)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -3596,10 +3596,10 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "config.cpuAllocation.reservation") &&
             ! (mask & (1 << 0))) {
-            snprintf (params[i].field, VIR_DOMAIN_SCHED_FIELD_LENGTH, "%s",
+            snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
                       "reservation");
 
-            params[i].type = VIR_DOMAIN_SCHED_FIELD_LLONG;
+            params[i].type = VIR_TYPED_PARAM_LLONG;
 
             if (esxVI_AnyType_ExpectType(dynamicProperty->val,
                                          esxVI_Type_Long) < 0) {
@@ -3612,10 +3612,10 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
         } else if (STREQ(dynamicProperty->name,
                          "config.cpuAllocation.limit") &&
                    ! (mask & (1 << 1))) {
-            snprintf (params[i].field, VIR_DOMAIN_SCHED_FIELD_LENGTH, "%s",
+            snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
                       "limit");
 
-            params[i].type = VIR_DOMAIN_SCHED_FIELD_LLONG;
+            params[i].type = VIR_TYPED_PARAM_LLONG;
 
             if (esxVI_AnyType_ExpectType(dynamicProperty->val,
                                          esxVI_Type_Long) < 0) {
@@ -3628,10 +3628,10 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
         } else if (STREQ(dynamicProperty->name,
                          "config.cpuAllocation.shares") &&
                    ! (mask & (1 << 2))) {
-            snprintf (params[i].field, VIR_DOMAIN_SCHED_FIELD_LENGTH, "%s",
+            snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
                       "shares");
 
-            params[i].type = VIR_DOMAIN_SCHED_FIELD_INT;
+            params[i].type = VIR_TYPED_PARAM_INT;
 
             if (esxVI_SharesInfo_CastFromAnyType(dynamicProperty->val,
                                                  &sharesInfo) < 0) {
@@ -3685,7 +3685,7 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
 
 static int
 esxDomainSetSchedulerParameters(virDomainPtr domain,
-                                virSchedParameterPtr params, int nparams)
+                                virTypedParameterPtr params, int nparams)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -3711,7 +3711,7 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
     for (i = 0; i < nparams; ++i) {
         if (STREQ (params[i].field, "reservation") &&
-            params[i].type == VIR_DOMAIN_SCHED_FIELD_LLONG) {
+            params[i].type == VIR_TYPED_PARAM_LLONG) {
             if (esxVI_Long_Alloc(&spec->cpuAllocation->reservation) < 0) {
                 goto cleanup;
             }
@@ -3725,7 +3725,7 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
             spec->cpuAllocation->reservation->value = params[i].value.l;
         } else if (STREQ (params[i].field, "limit") &&
-                   params[i].type == VIR_DOMAIN_SCHED_FIELD_LLONG) {
+                   params[i].type == VIR_TYPED_PARAM_LLONG) {
             if (esxVI_Long_Alloc(&spec->cpuAllocation->limit) < 0) {
                 goto cleanup;
             }
@@ -3740,7 +3740,7 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
             spec->cpuAllocation->limit->value = params[i].value.l;
         } else if (STREQ (params[i].field, "shares") &&
-                   params[i].type == VIR_DOMAIN_SCHED_FIELD_INT) {
+                   params[i].type == VIR_TYPED_PARAM_INT) {
             if (esxVI_SharesInfo_Alloc(&sharesInfo) < 0 ||
                 esxVI_Int_Alloc(&sharesInfo->shares) < 0) {
                 goto cleanup;
@@ -4533,7 +4533,7 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
 
 
 static int
-esxDomainSetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
+esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
                              int nparams, unsigned int flags)
 {
     int result = -1;
@@ -4561,7 +4561,7 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
 
     for (i = 0; i < nparams; ++i) {
         if (STREQ (params[i].field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE) &&
-            params[i].type == VIR_DOMAIN_SCHED_FIELD_ULLONG) {
+            params[i].type == VIR_TYPED_PARAM_ULLONG) {
             if (esxVI_Long_Alloc(&spec->memoryAllocation->reservation) < 0) {
                 goto cleanup;
             }
@@ -4605,7 +4605,7 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
 
 
 static int
-esxDomainGetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
+esxDomainGetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
                              int *nparams, unsigned int flags)
 {
     int result = -1;
@@ -4649,7 +4649,7 @@ esxDomainGetMemoryParameters(virDomainPtr domain, virMemoryParameterPtr params,
         goto cleanup;
     }
 
-    params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
+    params[0].type = VIR_TYPED_PARAM_ULLONG;
     params[0].value.ul = reservation->value * 1024; /* Scale from megabytes to kilobytes */
 
     *nparams = 1;

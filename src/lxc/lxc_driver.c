@@ -745,7 +745,7 @@ cleanup:
 }
 
 static int lxcDomainSetMemoryParameters(virDomainPtr dom,
-                                        virMemoryParameterPtr params,
+                                        virTypedParameterPtr params,
                                         int nparams,
                                         unsigned int flags ATTRIBUTE_UNUSED)
 {
@@ -774,11 +774,11 @@ static int lxcDomainSetMemoryParameters(virDomainPtr dom,
 
     ret = 0;
     for (i = 0; i < nparams; i++) {
-        virMemoryParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
             int rc;
-            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 lxcError(VIR_ERR_INVALID_ARG, "%s",
                          _("invalid type for memory hard_limit tunable, expected a 'ullong'"));
                 ret = -1;
@@ -793,7 +793,7 @@ static int lxcDomainSetMemoryParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
             int rc;
-            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 lxcError(VIR_ERR_INVALID_ARG, "%s",
                          _("invalid type for memory soft_limit tunable, expected a 'ullong'"));
                 ret = -1;
@@ -808,7 +808,7 @@ static int lxcDomainSetMemoryParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
             int rc;
-            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 lxcError(VIR_ERR_INVALID_ARG, "%s",
                          _("invalid type for swap_hard_limit tunable, expected a 'ullong'"));
                 ret = -1;
@@ -842,7 +842,7 @@ cleanup:
 }
 
 static int lxcDomainGetMemoryParameters(virDomainPtr dom,
-                                        virMemoryParameterPtr params,
+                                        virTypedParameterPtr params,
                                         int *nparams,
                                         unsigned int flags ATTRIBUTE_UNUSED)
 {
@@ -884,10 +884,10 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
     }
 
     for (i = 0; i < LXC_NB_MEM_PARAM; i++) {
-        virMemoryParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
         val = 0;
         param->value.ul = 0;
-        param->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+        param->type = VIR_TYPED_PARAM_ULLONG;
 
         switch(i) {
         case 0: /* fill memory hard limit here */
@@ -2162,7 +2162,7 @@ static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
 }
 
 static int lxcSetSchedulerParameters(virDomainPtr domain,
-                                     virSchedParameterPtr params,
+                                     virTypedParameterPtr params,
                                      int nparams)
 {
     lxc_driver_t *driver = domain->conn->privateData;
@@ -2189,7 +2189,7 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
         goto cleanup;
 
     for (i = 0; i < nparams; i++) {
-        virSchedParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
 
         if (STRNEQ(param->field, "cpu_shares")) {
             lxcError(VIR_ERR_INVALID_ARG,
@@ -2197,7 +2197,7 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
             goto cleanup;
         }
 
-        if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
+        if (param->type != VIR_TYPED_PARAM_ULLONG) {
             lxcError(VIR_ERR_INVALID_ARG, "%s",
                  _("Invalid type for cpu_shares tunable, expected a 'ullong'"));
             goto cleanup;
@@ -2223,7 +2223,7 @@ cleanup:
 }
 
 static int lxcGetSchedulerParameters(virDomainPtr domain,
-                                     virSchedParameterPtr params,
+                                     virTypedParameterPtr params,
                                      int *nparams)
 {
     lxc_driver_t *driver = domain->conn->privateData;
@@ -2263,7 +2263,7 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
                  "%s", _("Field cpu_shares too big for destination"));
         goto cleanup;
     }
-    params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
+    params[0].type = VIR_TYPED_PARAM_ULLONG;
 
     *nparams = 1;
     ret = 0;

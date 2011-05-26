@@ -4686,7 +4686,7 @@ cleanup:
 }
 
 static int qemuDomainSetBlkioParameters(virDomainPtr dom,
-                                         virBlkioParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int nparams,
                                          unsigned int flags)
 {
@@ -4725,11 +4725,11 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
 
     ret = 0;
     for (i = 0; i < nparams; i++) {
-        virBlkioParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
             int rc;
-            if (param->type != VIR_DOMAIN_BLKIO_PARAM_UINT) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
                 ret = -1;
@@ -4765,7 +4765,7 @@ cleanup:
 }
 
 static int qemuDomainGetBlkioParameters(virDomainPtr dom,
-                                         virBlkioParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int *nparams,
                                          unsigned int flags)
 {
@@ -4819,10 +4819,10 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
     }
 
     for (i = 0; i < *nparams; i++) {
-        virBlkioParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
         val = 0;
         param->value.ui = 0;
-        param->type = VIR_DOMAIN_BLKIO_PARAM_UINT;
+        param->type = VIR_TYPED_PARAM_UINT;
 
         switch (i) {
         case 0: /* fill blkio weight here */
@@ -4858,7 +4858,7 @@ cleanup:
 }
 
 static int qemuDomainSetMemoryParameters(virDomainPtr dom,
-                                         virMemoryParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int nparams,
                                          unsigned int flags)
 {
@@ -4924,11 +4924,11 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
 
     ret = 0;
     for (i = 0; i < nparams; i++) {
-        virMemoryParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
             int rc;
-            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for memory hard_limit tunable, expected a 'ullong'"));
                 ret = -1;
@@ -4949,7 +4949,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
             int rc;
-            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for memory soft_limit tunable, expected a 'ullong'"));
                 ret = -1;
@@ -4970,7 +4970,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
             int rc;
-            if (param->type != VIR_DOMAIN_MEMORY_PARAM_ULLONG) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for swap_hard_limit tunable, expected a 'ullong'"));
                 ret = -1;
@@ -5012,7 +5012,7 @@ cleanup:
 }
 
 static int qemuDomainGetMemoryParameters(virDomainPtr dom,
-                                         virMemoryParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int *nparams,
                                          unsigned int flags)
 {
@@ -5135,10 +5135,10 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
     }
 
     for (i = 0; i < QEMU_NB_MEM_PARAM; i++) {
-        virMemoryParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
         val = 0;
         param->value.ul = 0;
-        param->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+        param->type = VIR_TYPED_PARAM_ULLONG;
 
         switch (i) {
         case 0: /* fill memory hard limit here */
@@ -5206,7 +5206,7 @@ cleanup:
 }
 
 static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
-                                           virSchedParameterPtr params,
+                                           virTypedParameterPtr params,
                                            int nparams,
                                            unsigned int flags)
 {
@@ -5267,11 +5267,11 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     for (i = 0; i < nparams; i++) {
-        virSchedParameterPtr param = &params[i];
+        virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, "cpu_shares")) {
             int rc;
-            if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for cpu_shares tunable, expected a 'ullong'"));
                 goto cleanup;
@@ -5321,7 +5321,7 @@ cleanup:
 }
 
 static int qemuSetSchedulerParameters(virDomainPtr dom,
-                                      virSchedParameterPtr params,
+                                      virTypedParameterPtr params,
                                       int nparams)
 {
     return qemuSetSchedulerParametersFlags(dom,
@@ -5331,7 +5331,7 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
 }
 
 static int qemuGetSchedulerParameters(virDomainPtr dom,
-                                      virSchedParameterPtr params,
+                                      virTypedParameterPtr params,
                                       int *nparams)
 {
     struct qemud_driver *driver = dom->conn->privateData;
@@ -5381,7 +5381,7 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
     }
 out:
     params[0].value.ul = val;
-    params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
+    params[0].type = VIR_TYPED_PARAM_ULLONG;
     if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("Field cpu_shares too long for destination"));

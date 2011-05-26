@@ -505,7 +505,7 @@ remoteDispatchDomainGetSchedulerParameters(struct qemud_server *server ATTRIBUTE
                                            remote_domain_get_scheduler_parameters_ret *ret)
 {
     virDomainPtr dom = NULL;
-    virSchedParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int i;
     int nparams = args->nparams;
     int rv = -1;
@@ -590,7 +590,7 @@ remoteDispatchDomainSetSchedulerParameters(struct qemud_server *server ATTRIBUTE
                                            void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom = NULL;
-    virSchedParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int i, nparams;
     int rv = -1;
 
@@ -661,7 +661,7 @@ remoteDispatchDomainSetSchedulerParametersFlags(struct qemud_server *server ATTR
                                                 void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom = NULL;
-    virSchedParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int i, nparams;
     int rv = -1;
 
@@ -1227,7 +1227,7 @@ remoteDispatchDomainSetMemoryParameters(struct qemud_server *server
                                         * args, void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom = NULL;
-    virMemoryParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int i, nparams;
     unsigned int flags;
     int rv = -1;
@@ -1325,7 +1325,7 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
                                         * ret)
 {
     virDomainPtr dom = NULL;
-    virMemoryParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int i;
     int nparams = args->nparams;
     unsigned int flags;
@@ -1445,7 +1445,7 @@ remoteDispatchDomainSetBlkioParameters(struct qemud_server *server
                                         * args, void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom = NULL;
-    virBlkioParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int i, nparams;
     unsigned int flags;
     int rv = -1;
@@ -1543,7 +1543,7 @@ remoteDispatchDomainGetBlkioParameters(struct qemud_server *server
                                         * ret)
 {
     virDomainPtr dom = NULL;
-    virBlkioParameterPtr params = NULL;
+    virTypedParameterPtr params = NULL;
     int i;
     int nparams = args->nparams;
     unsigned int flags;

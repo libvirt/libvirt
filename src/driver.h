@@ -141,25 +141,25 @@ typedef int
 typedef int
         (*virDrvDomainSetMemoryParameters)
                                         (virDomainPtr domain,
-                                         virMemoryParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int nparams,
                                          unsigned int flags);
 typedef int
         (*virDrvDomainGetMemoryParameters)
                                         (virDomainPtr domain,
-                                         virMemoryParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int *nparams,
                                          unsigned int flags);
 typedef int
         (*virDrvDomainSetBlkioParameters)
                                         (virDomainPtr domain,
-                                         virBlkioParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int nparams,
                                          unsigned int flags);
 typedef int
         (*virDrvDomainGetBlkioParameters)
                                         (virDomainPtr domain,
-                                         virBlkioParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int *nparams,
                                          unsigned int flags);
 typedef int
@@ -276,19 +276,19 @@ typedef char *
 typedef int
         (*virDrvDomainGetSchedulerParameters)
                                         (virDomainPtr domain,
-                                         virSchedParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int *nparams);
 
 typedef int
         (*virDrvDomainSetSchedulerParameters)
                                         (virDomainPtr domain,
-                                         virSchedParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int nparams);
 
 typedef int
         (*virDrvDomainSetSchedulerParametersFlags)
                                         (virDomainPtr domain,
-                                         virSchedParameterPtr params,
+                                         virTypedParameterPtr params,
                                          int nparams,
                                          unsigned int flags);
 

@@ -3597,7 +3597,7 @@ static const char *str_cap = "cap";
  */
 static int
 xenDaemonGetSchedulerParameters(virDomainPtr domain,
-                                virSchedParameterPtr params, int *nparams)
+                                virTypedParameterPtr params, int *nparams)
 {
     xenUnifiedPrivatePtr priv;
     struct sexpr *root;
@@ -3667,7 +3667,7 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
                              str_weight);
                 goto error;
             }
-            params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+            params[0].type = VIR_TYPED_PARAM_UINT;
             params[0].value.ui = sexpr_int(root, "domain/cpu_weight");
 
             if (virStrcpyStatic(params[1].field, str_cap) == NULL) {
@@ -3675,7 +3675,7 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
                              _("Cap %s too big for destination"), str_cap);
                 goto error;
             }
-            params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+            params[1].type = VIR_TYPED_PARAM_UINT;
             params[1].value.ui = sexpr_int(root, "domain/cpu_cap");
             *nparams = XEN_SCHED_CRED_NPARAM;
             ret = 0;
@@ -3703,7 +3703,7 @@ error:
  */
 static int
 xenDaemonSetSchedulerParameters(virDomainPtr domain,
-                                virSchedParameterPtr params, int nparams)
+                                virTypedParameterPtr params, int nparams)
 {
     xenUnifiedPrivatePtr priv;
     struct sexpr *root;
@@ -3754,10 +3754,10 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
             memset(&buf_cap, 0, VIR_UUID_BUFLEN);
             for (i = 0; i < nparams; i++) {
                 if (STREQ (params[i].field, str_weight) &&
-                    params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
+                    params[i].type == VIR_TYPED_PARAM_UINT) {
                     snprintf(buf_weight, sizeof(buf_weight), "%u", params[i].value.ui);
                 } else if (STREQ (params[i].field, str_cap) &&
-                    params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
+                    params[i].type == VIR_TYPED_PARAM_UINT) {
                     snprintf(buf_cap, sizeof(buf_cap), "%u", params[i].value.ui);
                 } else {
                     virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
