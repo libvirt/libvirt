@@ -1307,7 +1307,7 @@ qemuSafeSerialParamValue(const char *value)
 
 char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
-                  int bootable,
+                  bool bootable,
                   virBitmapPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
@@ -1461,6 +1461,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
     if (bootable &&
+        qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
@@ -1524,6 +1525,7 @@ error:
 
 char *
 qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
+                     int bootindex,
                      virBitmapPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
@@ -1564,8 +1566,8 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
     }
     virBufferAsprintf(&opt, ",drive=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
-    if (disk->bootIndex && qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
-        virBufferAsprintf(&opt, ",bootindex=%d", disk->bootIndex);
+    if (bootindex && qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
+        virBufferAsprintf(&opt, ",bootindex=%d", bootindex);
 
     if (virBufferError(&opt)) {
         virReportOOMError();
@@ -1733,6 +1735,7 @@ qemuBuildNicStr(virDomainNetDefPtr net,
 char *
 qemuBuildNicDevStr(virDomainNetDefPtr net,
                    int vlan,
+                   int bootindex,
                    virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -1785,8 +1788,8 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
                       net->mac[4], net->mac[5]);
     if (qemuBuildDeviceAddressStr(&buf, &net->info, qemuCaps) < 0)
         goto error;
-    if (net->bootIndex && qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
-        virBufferAsprintf(&buf, ",bootindex=%d", net->bootIndex);
+    if (bootindex && qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
+        virBufferAsprintf(&buf, ",bootindex=%d", bootindex);
 
     if (virBufferError(&buf)) {
         virReportOOMError();
@@ -2802,7 +2805,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                      enum virVMOperationType vmop)
 {
     int i;
-    char boot[VIR_DOMAIN_BOOT_LAST+1];
     struct utsname ut;
     int disableKQEMU = 0;
     int enableKQEMU = 0;
@@ -2817,6 +2819,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandPtr cmd;
     bool has_rbd_hosts = false;
     virBuffer rbd_hosts = VIR_BUFFER_INITIALIZER;
+    bool emitBootindex = false;
 
     uname_normalize(&ut);
 
@@ -3208,30 +3211,53 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArg(cmd, "-no-acpi");
 
     if (!def->os.bootloader) {
-        for (i = 0 ; i < def->os.nBootDevs ; i++) {
-            switch (def->os.bootDevs[i]) {
-            case VIR_DOMAIN_BOOT_CDROM:
-                boot[i] = 'd';
-                break;
-            case VIR_DOMAIN_BOOT_FLOPPY:
-                boot[i] = 'a';
-                break;
-            case VIR_DOMAIN_BOOT_DISK:
-                boot[i] = 'c';
-                break;
-            case VIR_DOMAIN_BOOT_NET:
-                boot[i] = 'n';
-                break;
-            default:
-                boot[i] = 'c';
-                break;
+        /*
+         * We prefer using explicit bootindex=N parameters for predictable
+         * results even though domain XML doesn't use per device boot elements.
+         * However, we can't use bootindex if boot menu was requested.
+         */
+        if (!def->os.nBootDevs) {
+            /* def->os.nBootDevs is guaranteed to be > 0 unless per-device boot
+             * configuration is used
+             */
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("hypervisor lacks deviceboot feature"));
+                goto error;
             }
+            emitBootindex = true;
+        } else if (qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
+                   (def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_ENABLED ||
+                    !qemuCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU))) {
+            emitBootindex = true;
         }
-        if (def->os.nBootDevs) {
-            virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
-            virCommandAddArg(cmd, "-boot");
 
+        if (!emitBootindex) {
+            virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
+            char boot[VIR_DOMAIN_BOOT_LAST+1];
+
+            for (i = 0 ; i < def->os.nBootDevs ; i++) {
+                switch (def->os.bootDevs[i]) {
+                case VIR_DOMAIN_BOOT_CDROM:
+                    boot[i] = 'd';
+                    break;
+                case VIR_DOMAIN_BOOT_FLOPPY:
+                    boot[i] = 'a';
+                    break;
+                case VIR_DOMAIN_BOOT_DISK:
+                    boot[i] = 'c';
+                    break;
+                case VIR_DOMAIN_BOOT_NET:
+                    boot[i] = 'n';
+                    break;
+                default:
+                    boot[i] = 'c';
+                    break;
+                }
+            }
             boot[def->os.nBootDevs] = '\0';
+
+            virCommandAddArg(cmd, "-boot");
 
             if (qemuCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU) &&
                 def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_DEFAULT) {
@@ -3244,13 +3270,6 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
 
             virCommandAddArgBuffer(cmd, &boot_buf);
-        } else if (!qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
-            /* def->os.nBootDevs is guaranteed to be > 0 unless per-device boot
-             * configuration is used
-             */
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("hypervisor lacks deviceboot feature"));
-            goto error;
         }
 
         if (def->os.kernel)
@@ -3308,19 +3327,20 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE)) {
         int bootCD = 0, bootFloppy = 0, bootDisk = 0;
 
-        /* If QEMU supports boot=on for -drive param... */
-        if (qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) &&
+        if ((qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) || emitBootindex) &&
             !def->os.kernel) {
+            /* bootDevs will get translated into either bootindex=N or boot=on
+             * depending on what qemu supports */
             for (i = 0 ; i < def->os.nBootDevs ; i++) {
                 switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_CDROM:
-                    bootCD = 1;
+                    bootCD = i + 1;
                     break;
                 case VIR_DOMAIN_BOOT_FLOPPY:
-                    bootFloppy = 1;
+                    bootFloppy = i + 1;
                     break;
                 case VIR_DOMAIN_BOOT_DISK:
-                    bootDisk = 1;
+                    bootDisk = i + 1;
                     break;
                 }
             }
@@ -3328,7 +3348,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         for (i = 0 ; i < def->ndisks ; i++) {
             char *optstr;
-            int bootable = 0;
+            int bootindex = 0;
             virDomainDiskDefPtr disk = def->disks[i];
             int withDeviceArg = 0;
             bool deviceFlagMasked = false;
@@ -3352,15 +3372,15 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             switch (disk->device) {
             case VIR_DOMAIN_DISK_DEVICE_CDROM:
-                bootable = bootCD;
+                bootindex = bootCD;
                 bootCD = 0;
                 break;
             case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-                bootable = bootFloppy;
+                bootindex = bootFloppy;
                 bootFloppy = 0;
                 break;
             case VIR_DOMAIN_DISK_DEVICE_DISK:
-                bootable = bootDisk;
+                bootindex = bootDisk;
                 bootDisk = 0;
                 break;
             }
@@ -3380,7 +3400,9 @@ qemuBuildCommandLine(virConnectPtr conn,
                     deviceFlagMasked = true;
                 }
             }
-            optstr = qemuBuildDriveStr(disk, bootable, qemuCaps);
+            optstr = qemuBuildDriveStr(disk,
+                                       emitBootindex ? false : !!bootindex,
+                                       qemuCaps);
             if (deviceFlagMasked)
                 qemuCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
             if (!optstr)
@@ -3408,6 +3430,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 }
             }
 
+            if (!emitBootindex)
+                bootindex = 0;
+            else if (disk->bootIndex)
+                bootindex = disk->bootIndex;
+
             if (withDeviceArg) {
                 if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
                     virCommandAddArg(cmd, "-global");
@@ -3416,18 +3443,18 @@ qemuBuildCommandLine(virConnectPtr conn,
                                            ? 'B' : 'A',
                                            disk->info.alias);
 
-                    if (disk->bootIndex &&
-                        qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
+                    if (bootindex) {
                         virCommandAddArg(cmd, "-global");
                         virCommandAddArgFormat(cmd, "isa-fdc.bootindex%c=%d",
                                                disk->info.addr.drive.unit
                                                ? 'B' : 'A',
-                                               disk->bootIndex);
+                                               bootindex);
                     }
                 } else {
                     virCommandAddArg(cmd, "-device");
 
-                    if (!(optstr = qemuBuildDriveDevStr(disk, qemuCaps)))
+                    if (!(optstr = qemuBuildDriveDevStr(disk, bootindex,
+                                                        qemuCaps)))
                         goto error;
                     virCommandAddArg(cmd, optstr);
                     VIR_FREE(optstr);
@@ -3588,12 +3615,31 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
             virCommandAddArgList(cmd, "-net", "none", NULL);
     } else {
+        int bootNet = 0;
+
+        if (emitBootindex) {
+            /* convert <boot dev='network'/> to bootindex since we didn't emit
+             * -boot n
+             */
+            for (i = 0 ; i < def->os.nBootDevs ; i++) {
+                if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_NET) {
+                    bootNet = i + 1;
+                    break;
+                }
+            }
+        }
+
         for (i = 0 ; i < def->nnets ; i++) {
             virDomainNetDefPtr net = def->nets[i];
             char *nic, *host;
             char tapfd_name[50];
             char vhostfd_name[50] = "";
             int vlan;
+            int bootindex = bootNet;
+
+            bootNet = 0;
+            if (!bootindex)
+                bootindex = net->bootIndex;
 
             /* VLANs are not used with -netdev, so don't record them */
             if (qemuCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
@@ -3665,7 +3711,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
             if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 virCommandAddArg(cmd, "-device");
-                if (!(nic = qemuBuildNicDevStr(net, vlan, qemuCaps)))
+                nic = qemuBuildNicDevStr(net, vlan, bootindex, qemuCaps);
+                if (!nic)
                     goto error;
                 virCommandAddArg(cmd, nic);
                 VIR_FREE(nic);

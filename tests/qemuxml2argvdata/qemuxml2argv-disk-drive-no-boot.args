@@ -1,0 +1,18 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+/usr/bin/qemu \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=2 \
+-drive file=/dev/HostVG/QEMUGuest2,if=none,media=cdrom,id=drive-ide0-1-0 \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
+-drive file=/dev/fd0,if=none,id=drive-fdc0-0-0 \
+-global isa-fdc.driveA=drive-fdc0-0-0 \
+-global isa-fdc.bootindexA=3 \
+-usb

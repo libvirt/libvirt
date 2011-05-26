@@ -265,9 +265,24 @@ mymain(void)
     DO_TEST("boot-network", false, NONE);
     DO_TEST("boot-floppy", false, NONE);
     DO_TEST("boot-multi", false, QEMU_CAPS_BOOT_MENU);
+    DO_TEST("boot-menu-enable", false,
+            QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE);
+    DO_TEST("boot-menu-enable", false,
+            QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
+            QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-menu-disable", false, QEMU_CAPS_BOOT_MENU);
+    DO_TEST("boot-menu-disable-drive", false,
+            QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE);
+    DO_TEST("boot-menu-disable-drive-bootindex", false,
+            QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
+            QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-order", false,
             QEMU_CAPS_BOOTINDEX, QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE);
+    DO_TEST("boot-complex", false,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST("boot-complex-bootindex", false,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT,
+            QEMU_CAPS_BOOTINDEX);
     DO_TEST("bootloader", true, QEMU_CAPS_DOMID);
     DO_TEST("clock-utc", false, NONE);
     DO_TEST("clock-localtime", false, NONE);
@@ -323,6 +338,8 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-network-sheepdog", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
+    DO_TEST("disk-drive-no-boot", false,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_BOOTINDEX);
     DO_TEST("disk-usb", false, NONE);
     DO_TEST("disk-usb-device", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);

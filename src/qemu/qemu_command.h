@@ -68,6 +68,7 @@ char * qemuBuildNicStr(virDomainNetDefPtr net,
 /* Current, best practice */
 char * qemuBuildNicDevStr(virDomainNetDefPtr net,
                           int vlan,
+                          int bootindex,
                           virBitmapPtr qemuCaps);
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
@@ -75,13 +76,14 @@ char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
 
 /* Both legacy & current support */
 char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
-                        int bootable,
+                        bool bootable,
                         virBitmapPtr qemuCaps);
 char *qemuBuildFSStr(virDomainFSDefPtr fs,
                      virBitmapPtr qemuCaps);
 
 /* Current, best practice */
 char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
+                            int bootindex,
                             virBitmapPtr qemuCaps);
 char * qemuBuildFSDevStr(virDomainFSDefPtr fs,
                          virBitmapPtr qemuCaps);
