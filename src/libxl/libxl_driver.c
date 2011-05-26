@@ -2221,6 +2221,520 @@ libxlDomainUndefine(virDomainPtr dom)
     return ret;
 }
 
+static int
+libxlDomainChangeEjectableMedia(libxlDomainObjPrivatePtr priv,
+                                virDomainObjPtr vm, virDomainDiskDefPtr disk)
+{
+    virDomainDiskDefPtr origdisk = NULL;
+    libxl_device_disk x_disk;
+    int i;
+    int ret = -1;
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (vm->def->disks[i]->bus == disk->bus &&
+            STREQ(vm->def->disks[i]->dst, disk->dst)) {
+            origdisk = vm->def->disks[i];
+            break;
+        }
+    }
+
+    if (!origdisk) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("No device with bus '%s' and target '%s'"),
+                   virDomainDiskBusTypeToString(disk->bus), disk->dst);
+        goto cleanup;
+    }
+
+    if (origdisk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Removable media not supported for %s device"),
+                   virDomainDiskDeviceTypeToString(disk->device));
+        return -1;
+    }
+
+    if (libxlMakeDisk(disk, &x_disk) < 0)
+        goto cleanup;
+
+    if ((ret = libxl_cdrom_insert(&priv->ctx, vm->def->id, &x_disk)) < 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("libxenlight failed to change media for disk '%s'"),
+                   disk->dst);
+        goto cleanup;
+    }
+
+    VIR_FREE(origdisk->src);
+    origdisk->src = disk->src;
+    disk->src = NULL;
+    origdisk->type = disk->type;
+
+
+    virDomainDiskDefFree(disk);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+static int
+libxlDomainAttachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
+                                virDomainObjPtr vm, virDomainDeviceDefPtr dev)
+{
+    virDomainDiskDefPtr l_disk = dev->data.disk;
+    libxl_device_disk x_disk;
+    int ret = -1;
+
+    switch (l_disk->device)  {
+        case VIR_DOMAIN_DISK_DEVICE_CDROM:
+            ret = libxlDomainChangeEjectableMedia(priv, vm, l_disk);
+            break;
+        case VIR_DOMAIN_DISK_DEVICE_DISK:
+            if (l_disk->bus == VIR_DOMAIN_DISK_BUS_XEN) {
+                if (virDomainDiskIndexByName(vm->def, l_disk->dst) >= 0) {
+                    libxlError(VIR_ERR_OPERATION_FAILED,
+                            _("target %s already exists"), l_disk->dst);
+                    goto cleanup;
+                }
+
+                if (!l_disk->src) {
+                    libxlError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("disk source path is missing"));
+                    goto cleanup;
+                }
+
+                if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+
+                if (libxlMakeDisk(l_disk, &x_disk) < 0)
+                    goto cleanup;
+
+                if ((ret = libxl_device_disk_add(&priv->ctx, vm->def->id,
+                                                &x_disk)) < 0) {
+                    libxlError(VIR_ERR_INTERNAL_ERROR,
+                            _("libxenlight failed to attach disk '%s'"),
+                            l_disk->dst);
+                    goto cleanup;
+                }
+
+                virDomainDiskInsertPreAlloced(vm->def, l_disk);
+
+            } else {
+                libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("disk bus '%s' cannot be hotplugged."),
+                        virDomainDiskBusTypeToString(l_disk->bus));
+            }
+            break;
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("disk device type '%s' cannot be hotplugged"),
+                    virDomainDiskDeviceTypeToString(l_disk->device));
+            break;
+    }
+
+cleanup:
+    return ret;
+}
+
+static int
+libxlDomainDetachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
+                                virDomainObjPtr vm, virDomainDeviceDefPtr dev)
+{
+    virDomainDiskDefPtr l_disk = NULL;
+    libxl_device_disk x_disk;
+    int i;
+    int wait_secs = 2;
+    int ret = -1;
+
+    switch (dev->data.disk->device)  {
+        case VIR_DOMAIN_DISK_DEVICE_DISK:
+            if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_XEN) {
+
+                if ((i = virDomainDiskIndexByName(vm->def,
+                                                  dev->data.disk->dst)) < 0) {
+                    libxlError(VIR_ERR_OPERATION_FAILED,
+                               _("disk %s not found"), dev->data.disk->dst);
+                    goto cleanup;
+                }
+
+                l_disk = vm->def->disks[i];
+
+                if (libxlMakeDisk(l_disk, &x_disk) < 0)
+                    goto cleanup;
+
+                if ((ret = libxl_device_disk_del(&priv->ctx, &x_disk,
+                                                 wait_secs)) < 0) {
+                    libxlError(VIR_ERR_INTERNAL_ERROR,
+                               _("libxenlight failed to detach disk '%s'"),
+                               l_disk->dst);
+                    goto cleanup;
+                }
+
+                virDomainDiskRemove(vm->def, i);
+                virDomainDiskDefFree(l_disk);
+
+            } else {
+                libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("disk bus '%s' cannot be hot unplugged."),
+                        virDomainDiskBusTypeToString(l_disk->bus));
+            }
+            break;
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("device type '%s' cannot hot unplugged"),
+                       virDomainDiskDeviceTypeToString(dev->data.disk->device));
+            break;
+    }
+
+cleanup:
+    return ret;
+}
+
+static int
+libxlDomainAttachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
+                            virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            ret = libxlDomainAttachDeviceDiskLive(priv, vm, dev);
+            if (!ret)
+                dev->data.disk = NULL;
+            break;
+
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("device type '%s' cannot be attached"),
+                       virDomainDeviceTypeToString(dev->type));
+            break;
+    }
+
+    return ret;
+}
+
+static int
+libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
+{
+    virDomainDiskDefPtr disk;
+
+    switch (dev->type) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            disk = dev->data.disk;
+            if (virDomainDiskIndexByName(vmdef, disk->dst) >= 0) {
+                libxlError(VIR_ERR_INVALID_ARG,
+                        _("target %s already exists."), disk->dst);
+                return -1;
+            }
+            if (virDomainDiskInsert(vmdef, disk)) {
+                virReportOOMError();
+                return -1;
+            }
+            /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
+            dev->data.disk = NULL;
+            break;
+
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("persistent attach of device is not supported"));
+            return -1;
+    }
+    return 0;
+}
+
+static int
+libxlDomainDetachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
+                            virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            ret = libxlDomainDetachDeviceDiskLive(priv, vm, dev);
+            break;
+
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("device type '%s' cannot be detached"),
+                       virDomainDeviceTypeToString(dev->type));
+            break;
+    }
+
+    return ret;
+}
+
+static int
+libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
+{
+    virDomainDiskDefPtr disk;
+    int ret = -1;
+
+    switch (dev->type) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            disk = dev->data.disk;
+            if (virDomainDiskRemoveByName(vmdef, disk->dst)) {
+                libxlError(VIR_ERR_INVALID_ARG,
+                            _("no target device %s"), disk->dst);
+                break;
+            }
+            ret = 0;
+            break;
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("persistent detach of device is not supported"));
+            break;
+    }
+
+    return ret;
+}
+
+static int
+libxlDomainUpdateDeviceLive(libxlDomainObjPrivatePtr priv,
+                            virDomainObjPtr vm, virDomainDeviceDefPtr dev)
+{
+    virDomainDiskDefPtr disk;
+    int ret = -1;
+
+    switch (dev->type) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            disk = dev->data.disk;
+            switch (disk->device) {
+                case VIR_DOMAIN_DISK_DEVICE_CDROM:
+                    ret = libxlDomainChangeEjectableMedia(priv, vm, disk);
+                    if (ret == 0)
+                        dev->data.disk = NULL;
+                    break;
+                default:
+                    libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("disk bus '%s' cannot be updated."),
+                               virDomainDiskBusTypeToString(disk->bus));
+                    break;
+            }
+            break;
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("device type '%s' cannot be updated"),
+                       virDomainDeviceTypeToString(dev->type));
+            break;
+    }
+
+    return ret;
+}
+
+static int
+libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
+{
+    virDomainDiskDefPtr orig;
+    virDomainDiskDefPtr disk;
+    int i;
+    int ret = -1;
+
+    switch (dev->type) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            disk = dev->data.disk;
+            if ((i = virDomainDiskIndexByName(vmdef, disk->dst)) < 0) {
+                libxlError(VIR_ERR_INVALID_ARG,
+                           _("target %s doesn't exists."), disk->dst);
+                goto cleanup;
+            }
+            orig = vmdef->disks[i];
+            if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM)) {
+                libxlError(VIR_ERR_INVALID_ARG,
+                           _("this disk doesn't support update"));
+                goto cleanup;
+            }
+
+            VIR_FREE(orig->src);
+            orig->src = disk->src;
+            orig->type = disk->type;
+            if (disk->driverName) {
+                VIR_FREE(orig->driverName);
+                orig->driverName = disk->driverName;
+                disk->driverName = NULL;
+            }
+            if (disk->driverType) {
+                VIR_FREE(orig->driverType);
+                orig->driverType = disk->driverType;
+                disk->driverType = NULL;
+            }
+            disk->src = NULL;
+            break;
+        default:
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("persistent update of device is not supported"));
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+/* Actions for libxlDomainModifyDeviceFlags */
+enum {
+    LIBXL_DEVICE_ATTACH,
+    LIBXL_DEVICE_DETACH,
+    LIBXL_DEVICE_UPDATE,
+};
+
+static int
+libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
+                             unsigned int flags, int action)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr vmdef = NULL;
+    virDomainDeviceDefPtr dev = NULL;
+    libxlDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        libxlError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (virDomainObjIsActive(vm)) {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    } else {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        /* check consistency between flags and the vm state */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            libxlError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
+            goto cleanup;
+        }
+    }
+
+    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
+         libxlError(VIR_ERR_OPERATION_INVALID,
+                    "%s", _("cannot modify device on transient domain"));
+         goto cleanup;
+    }
+
+    if (!(dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                  VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        if (!(dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+
+        /* Make a copy for updated domain. */
+        if (!(vmdef = virDomainObjCopyPersistentDef(driver->caps, vm)))
+            goto cleanup;
+
+        switch (action) {
+            case LIBXL_DEVICE_ATTACH:
+                ret = libxlDomainAttachDeviceConfig(vmdef, dev);
+                break;
+            case LIBXL_DEVICE_DETACH:
+                ret = libxlDomainDetachDeviceConfig(vmdef, dev);
+                break;
+            case LIBXL_DEVICE_UPDATE:
+                ret = libxlDomainUpdateDeviceConfig(vmdef, dev);
+            default:
+                libxlError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown domain modify action %d"), action);
+                break;
+        }
+    } else
+        ret = 0;
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+        /* If dev exists it was created to modify the domain config. Free it. */
+        virDomainDeviceDefFree(dev);
+        if (!(dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+
+        switch (action) {
+            case LIBXL_DEVICE_ATTACH:
+                ret = libxlDomainAttachDeviceLive(priv, vm, dev);
+                break;
+            case LIBXL_DEVICE_DETACH:
+                ret = libxlDomainDetachDeviceLive(priv, vm, dev);
+                break;
+            case LIBXL_DEVICE_UPDATE:
+                ret = libxlDomainUpdateDeviceLive(priv, vm, dev);
+            default:
+                libxlError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown domain modify action %d"), action);
+                break;
+        }
+        /*
+         * update domain status forcibly because the domain status may be
+         * changed even if we attach the device failed.
+         */
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            ret = -1;
+    }
+
+    /* Finally, if no error until here, we can save config. */
+    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        if (!ret) {
+            virDomainObjAssignDef(vm, vmdef, false);
+            vmdef = NULL;
+        }
+    }
+
+cleanup:
+    virDomainDefFree(vmdef);
+    virDomainDeviceDefFree(dev);
+    if (vm)
+        virDomainObjUnlock(vm);
+    libxlDriverUnlock(driver);
+    return ret;
+}
+
+static int
+libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                             unsigned int flags)
+{
+    return libxlDomainModifyDeviceFlags(dom, xml, flags, LIBXL_DEVICE_ATTACH);
+}
+
+static int
+libxlDomainAttachDevice(virDomainPtr dom, const char *xml)
+{
+    return libxlDomainAttachDeviceFlags(dom, xml,
+                                        VIR_DOMAIN_DEVICE_MODIFY_LIVE);
+}
+
+static int
+libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
+                             unsigned int flags)
+{
+    return libxlDomainModifyDeviceFlags(dom, xml, flags, LIBXL_DEVICE_DETACH);
+}
+
+static int
+libxlDomainDetachDevice(virDomainPtr dom, const char *xml)
+{
+    return libxlDomainDetachDeviceFlags(dom, xml,
+                                        VIR_DOMAIN_DEVICE_MODIFY_LIVE);
+}
+
+static int
+libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
+                             unsigned int flags)
+{
+    return libxlDomainModifyDeviceFlags(dom, xml, flags, LIBXL_DEVICE_UPDATE);
+}
+
 static unsigned long long
 libxlNodeGetFreeMemory(virConnectPtr conn)
 {
@@ -2743,6 +3257,11 @@ static virDriver libxlDriver = {
     .domainCreateWithFlags = libxlDomainCreateWithFlags, /* 0.9.0 */
     .domainDefineXML = libxlDomainDefineXML, /* 0.9.0 */
     .domainUndefine = libxlDomainUndefine, /* 0.9.0 */
+    .domainAttachDevice = libxlDomainAttachDevice, /* 0.9.2 */
+    .domainAttachDeviceFlags = libxlDomainAttachDeviceFlags, /* 0.9.2 */
+    .domainDetachDevice = libxlDomainDetachDevice,    /* 0.9.2 */
+    .domainDetachDeviceFlags = libxlDomainDetachDeviceFlags, /* 0.9.2 */
+    .domainUpdateDeviceFlags = libxlDomainUpdateDeviceFlags, /* 0.9.2 */
     .domainGetAutostart = libxlDomainGetAutostart, /* 0.9.0 */
     .domainSetAutostart = libxlDomainSetAutostart, /* 0.9.0 */
     .domainGetSchedulerType = libxlDomainGetSchedulerType, /* 0.9.0 */
