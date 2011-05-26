@@ -276,6 +276,13 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
             VIR_DEBUG("Failed to remove domain XML for %s", vm->def->name);
         VIR_FREE(file);
     }
+
+    if (vm->newDef) {
+        virDomainDefFree(vm->def);
+        vm->def = vm->newDef;
+        vm->def->id = -1;
+        vm->newDef = NULL;
+    }
 }
 
 /*
