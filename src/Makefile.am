@@ -553,6 +553,7 @@ libvirt_driver_remote_la_CFLAGS =				\
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) $(SASL_LIBS)
 if WITH_DRIVER_MODULES
+libvirt_driver_remote_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
@@ -1077,6 +1078,10 @@ if WITH_VMX
 USED_SYM_FILES += libvirt_vmx.syms
 endif
 
+if WITH_XENXS
+USED_SYM_FILES += libvirt_xenxs.syms
+endif
+
 EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
@@ -1086,7 +1091,8 @@ EXTRA_DIST += \
   libvirt_macvtap.syms		\
   libvirt_daemon.syms		\
   libvirt_nwfilter.syms	\
-  libvirt_vmx.syms
+  libvirt_vmx.syms		\
+  libvirt_xenxs.syms
 
 BUILT_SOURCES += libvirt.syms libvirt.def libvirt_qemu.def
 

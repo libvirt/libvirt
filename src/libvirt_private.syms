@@ -932,6 +932,7 @@ virEventRemoveHandle;
 virExec;
 virExecWithHook;
 virFileAbsPath;
+virFileBuildPath;
 virFileDeletePid;
 virFileExists;
 virFileFindMountPoint;
@@ -1020,6 +1021,8 @@ virStrerror;
 
 
 # xml.h
+virXMLParseFileHelper;
+virXMLParseHelper;
 virXMLParseStrHelper;
 virXMLPropString;
 virXPathBoolean;

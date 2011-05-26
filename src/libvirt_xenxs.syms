@@ -1,0 +1,21 @@
+#
+# These symbols are dependent upon --with-xen via WITH_XEN or --with-libxl via WITH_LIBXL.
+#
+
+# xen_sxpr.h
+xenFormatSxpr;
+xenFormatSxprChr;
+xenFormatSxprDisk;
+xenFormatSxprNet;
+xenFormatSxprOnePCI;
+xenFormatSxprSound;
+xenGetDomIdFromSxpr;
+xenGetDomIdFromSxprString;
+xenParseSxpr;
+xenParseSxprChar;
+xenParseSxprSound;
+xenParseSxprString;
+
+# xen_xm.h
+xenFormatXM;
+xenParseXM;
