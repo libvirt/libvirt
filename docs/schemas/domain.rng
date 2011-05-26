@@ -1222,6 +1222,11 @@
               <text/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="passwdValidTo">
+              <data type="dateTime"/>
+            </attribute>
+          </optional>
         </group>
         <group>
           <attribute name="type">
@@ -1258,6 +1263,11 @@
           <optional>
             <attribute name="keymap">
               <text/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="passwdValidTo">
+              <data type="dateTime"/>
             </attribute>
           </optional>
           <interleave>
