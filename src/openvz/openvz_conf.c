@@ -645,7 +645,7 @@ openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value)
  *
  * Returns <0 on error, 0 if not found, 1 if found.
  */
-static int
+int
 openvzReadConfigParam(const char *conf_file, const char *param, char **value)
 {
     char *line = NULL;

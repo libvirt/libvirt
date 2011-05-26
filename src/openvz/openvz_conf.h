@@ -57,6 +57,7 @@ int openvz_readline(int fd, char *ptr, int maxlen);
 int openvzExtractVersion(struct openvz_driver *driver);
 int openvzReadVPSConfigParam(int vpsid, const char *param, char **value);
 int openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value);
+int openvzReadConfigParam(const char *conf_file, const char *param, char **value);
 int openvzCopyDefaultConfig(int vpsid);
 virCapsPtr openvzCapsInit(void);
 int openvzLoadDomains(struct openvz_driver *driver);

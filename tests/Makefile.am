@@ -91,6 +91,10 @@ if WITH_QEMU
 check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
 endif
 
+if WITH_OPENVZ
+check_PROGRAMS += openvzutilstest
+endif
+
 if WITH_ESX
 check_PROGRAMS += esxutilstest
 endif
@@ -197,6 +201,10 @@ TESTS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
 TESTS += nwfilterxml2xmltest
 endif
 
+if WITH_OPENVZ
+TESTS += openvzutilstest
+endif
+
 if WITH_ESX
 TESTS += esxutilstest
 endif
@@ -300,6 +308,16 @@ qemuhelptest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
 else
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c qemuhelptest.c testutilsqemu.c testutilsqemu.h
 endif
+
+if WITH_OPENVZ
+openvzutilstest_SOURCES = \
+	openvzutilstest.c \
+	testutils.c testutils.h
+openvzutilstest_LDADD = ../src/libvirt_driver_openvz.la $(LDADDS)
+else
+EXTRA_DIST += openvzutilstest.c
+endif
+EXTRA_DIST += openvzutilstest.conf
 
 if WITH_ESX
 esxutilstest_SOURCES = \
