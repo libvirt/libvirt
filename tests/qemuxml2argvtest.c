@@ -357,6 +357,11 @@ mymain(void)
     DO_TEST("graphics-spice-compression", false,
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE);
+    DO_TEST("graphics-spice-timeout", false,
+            QEMU_CAPS_DRIVE,
+            QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL_VGA);
     DO_TEST("graphics-spice-qxl-vga", false,
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
