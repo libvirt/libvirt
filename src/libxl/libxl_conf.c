@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ *  Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +18,7 @@
  *
  * Authors:
  *     Jim Fehlig <jfehlig@novell.com>
+ *     Markus Groß <gross@univention.de>
  */
 /*---------------------------------------------------------------------------*/
 
@@ -476,6 +478,68 @@ error:
     return -1;
 }
 
+int
+libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
+{
+    if (l_disk->src && (x_disk->pdev_path = strdup(l_disk->src)) == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (l_disk->dst && (x_disk->vdev = strdup(l_disk->dst)) == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (l_disk->driverName) {
+        if (STREQ(l_disk->driverName, "tap") ||
+            STREQ(l_disk->driverName, "tap2")) {
+            if (l_disk->driverType) {
+                if (STREQ(l_disk->driverType, "qcow")) {
+                    x_disk->format = DISK_FORMAT_QCOW;
+                    x_disk->backend = DISK_BACKEND_QDISK;
+                } else if (STREQ(l_disk->driverType, "qcow2")) {
+                    x_disk->format = DISK_FORMAT_QCOW2;
+                    x_disk->backend = DISK_BACKEND_QDISK;
+                } else if (STREQ(l_disk->driverType, "vhd")) {
+                    x_disk->format = DISK_FORMAT_VHD;
+                    x_disk->backend = DISK_BACKEND_TAP;
+                } else if (STREQ(l_disk->driverType, "aio") ||
+                            STREQ(l_disk->driverType, "raw")) {
+                    x_disk->format = DISK_FORMAT_RAW;
+                    x_disk->backend = DISK_BACKEND_TAP;
+                }
+            } else {
+                /* No subtype specified, default to raw/tap */
+                    x_disk->format = DISK_FORMAT_RAW;
+                    x_disk->backend = DISK_BACKEND_TAP;
+            }
+        } else if (STREQ(l_disk->driverName, "file")) {
+            x_disk->format = DISK_FORMAT_RAW;
+            x_disk->backend = DISK_BACKEND_TAP;
+        } else if (STREQ(l_disk->driverName, "phy")) {
+            x_disk->format = DISK_FORMAT_RAW;
+            x_disk->backend = DISK_BACKEND_PHY;
+        } else {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                        _("libxenlight does not support disk driver %s"),
+                        l_disk->driverName);
+            return -1;
+        }
+    } else {
+        /* No driverName - default to raw/tap?? */
+        x_disk->format = DISK_FORMAT_RAW;
+        x_disk->backend = DISK_BACKEND_TAP;
+    }
+
+    /* How to set unpluggable? */
+    x_disk->unpluggable = 1;
+    x_disk->readwrite = !l_disk->readonly;
+    x_disk->is_cdrom = l_disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ? 1 : 0;
+
+    return 0;
+}
+
 static int
 libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
 {
@@ -490,64 +554,8 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
     }
 
     for (i = 0; i < ndisks; i++) {
-        if (l_disks[i]->src &&
-             (x_disks[i].pdev_path = strdup(l_disks[i]->src)) == NULL) {
-            virReportOOMError();
+        if (libxlMakeDisk(l_disks[i], &x_disks[i]) < 0)
             goto error;
-        }
-
-        if (l_disks[i]->dst &&
-            (x_disks[i].vdev = strdup(l_disks[i]->dst)) == NULL) {
-            virReportOOMError();
-            goto error;
-        }
-
-        if (l_disks[i]->driverName) {
-            if (STREQ(l_disks[i]->driverName, "tap") ||
-                STREQ(l_disks[i]->driverName, "tap2")) {
-                if (l_disks[i]->driverType) {
-                    if (STREQ(l_disks[i]->driverType, "qcow")) {
-                        x_disks[i].format = DISK_FORMAT_QCOW;
-                        x_disks[i].backend = DISK_BACKEND_QDISK;
-                    } else if (STREQ(l_disks[i]->driverType, "qcow2")) {
-                        x_disks[i].format = DISK_FORMAT_QCOW2;
-                        x_disks[i].backend = DISK_BACKEND_QDISK;
-                    } else if (STREQ(l_disks[i]->driverType, "vhd")) {
-                        x_disks[i].format = DISK_FORMAT_VHD;
-                        x_disks[i].backend = DISK_BACKEND_TAP;
-                    } else if (STREQ(l_disks[i]->driverType, "aio") ||
-                               STREQ(l_disks[i]->driverType, "raw")) {
-                        x_disks[i].format = DISK_FORMAT_RAW;
-                        x_disks[i].backend = DISK_BACKEND_TAP;
-                    }
-                } else {
-                    /* No subtype specified, default to raw/tap */
-                        x_disks[i].format = DISK_FORMAT_RAW;
-                        x_disks[i].backend = DISK_BACKEND_TAP;
-                }
-            } else if (STREQ(l_disks[i]->driverName, "file")) {
-                x_disks[i].format = DISK_FORMAT_RAW;
-                x_disks[i].backend = DISK_BACKEND_TAP;
-            } else if (STREQ(l_disks[i]->driverName, "phy")) {
-                x_disks[i].format = DISK_FORMAT_RAW;
-                x_disks[i].backend = DISK_BACKEND_PHY;
-            } else {
-                libxlError(VIR_ERR_INTERNAL_ERROR,
-                           _("libxenlight does not support disk driver %s"),
-                           l_disks[i]->driverName);
-                goto error;
-            }
-        } else {
-            /* No driverName - default to raw/tap?? */
-            x_disks[i].format = DISK_FORMAT_RAW;
-            x_disks[i].backend = DISK_BACKEND_TAP;
-        }
-
-        /* How to set unpluggable? */
-        x_disks[i].unpluggable = 1;
-        x_disks[i].readwrite = !l_disks[i]->readonly;
-        x_disks[i].is_cdrom =
-                l_disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM ? 1 : 0;
     }
 
     d_config->disks = x_disks;
@@ -560,6 +568,45 @@ error:
         libxl_device_disk_destroy(&x_disks[i]);
     VIR_FREE(x_disks);
     return -1;
+}
+
+int
+libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
+{
+    // TODO: Where is mtu stored?
+    //x_nics[i].mtu = 1492;
+
+    memcpy(x_nic->mac, l_nic->mac, sizeof(libxl_mac));
+
+    if (l_nic->model && !STREQ(l_nic->model, "netfront")) {
+        if ((x_nic->model = strdup(l_nic->model)) == NULL) {
+            virReportOOMError();
+            return -1;
+        }
+        x_nic->nictype = NICTYPE_IOEMU;
+    } else {
+        x_nic->nictype = NICTYPE_VIF;
+    }
+
+    if (l_nic->ifname && (x_nic->ifname = strdup(l_nic->ifname)) == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (l_nic->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        if (l_nic->data.bridge.brname &&
+            (x_nic->bridge = strdup(l_nic->data.bridge.brname)) == NULL) {
+            virReportOOMError();
+            return -1;
+        }
+        if (l_nic->data.bridge.script &&
+            (x_nic->script = strdup(l_nic->data.bridge.script)) == NULL) {
+            virReportOOMError();
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 static int
@@ -578,41 +625,8 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     for (i = 0; i < nnics; i++) {
         x_nics[i].devid = i;
 
-        // TODO: Where is mtu stored?
-        //x_nics[i].mtu = 1492;
-
-        memcpy(x_nics[i].mac, l_nics[i]->mac, sizeof(libxl_mac));
-
-        if (l_nics[i]->model && !STREQ(l_nics[i]->model, "netfront")) {
-            if ((x_nics[i].model = strdup(l_nics[i]->model)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-            x_nics[i].nictype = NICTYPE_IOEMU;
-        } else {
-            x_nics[i].nictype = NICTYPE_VIF;
-        }
-
-        if (l_nics[i]->ifname &&
-            (x_nics[i].ifname = strdup(l_nics[i]->ifname)) == NULL) {
-            virReportOOMError();
+        if (libxlMakeNic(l_nics[i], &x_nics[i]))
             goto error;
-        }
-
-        if (l_nics[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-            if (l_nics[i]->data.bridge.brname &&
-                (x_nics[i].bridge =
-                 strdup(l_nics[i]->data.bridge.brname)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-            if (l_nics[i]->data.bridge.script &&
-                (x_nics[i].script =
-                 strdup(l_nics[i]->data.bridge.script)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-        }
     }
 
     d_config->vifs = x_nics;
@@ -627,6 +641,62 @@ error:
     return -1;
 }
 
+int
+libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainGraphicsDefPtr l_vfb,
+             libxl_device_vfb *x_vfb)
+{
+    int port;
+
+    switch (l_vfb->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            x_vfb->sdl = 1;
+            if (l_vfb->data.sdl.display &&
+                (x_vfb->display = strdup(l_vfb->data.sdl.display)) == NULL) {
+                virReportOOMError();
+                return -1;
+            }
+            if (l_vfb->data.sdl.xauth &&
+                (x_vfb->xauthority =
+                    strdup(l_vfb->data.sdl.xauth)) == NULL) {
+                virReportOOMError();
+                return -1;
+            }
+            break;
+        case  VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            x_vfb->vnc = 1;
+            /* driver handles selection of free port */
+            x_vfb->vncunused = 0;
+            if (l_vfb->data.vnc.autoport) {
+                port = libxlNextFreeVncPort(driver, LIBXL_VNC_PORT_MIN);
+                if (port < 0) {
+                    libxlError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Unable to find an unused VNC port"));
+                    return -1;
+                }
+                l_vfb->data.vnc.port = port;
+            }
+            x_vfb->vncdisplay = l_vfb->data.vnc.port - LIBXL_VNC_PORT_MIN;
+
+            if (l_vfb->data.vnc.listenAddr) {
+                /* libxl_device_vfb_init() does strdup("127.0.0.1") */
+                free(x_vfb->vnclisten);
+                if ((x_vfb->vnclisten =
+                    strdup(l_vfb->data.vnc.listenAddr)) == NULL) {
+                    virReportOOMError();
+                    return -1;
+                }
+            }
+            if (l_vfb->data.vnc.keymap &&
+                (x_vfb->keymap =
+                    strdup(l_vfb->data.vnc.keymap)) == NULL) {
+                virReportOOMError();
+                return -1;
+            }
+            break;
+    }
+    return 0;
+}
+
 static int
 libxlMakeVfbList(libxlDriverPrivatePtr driver,
                  virDomainDefPtr def, libxl_domain_config *d_config)
@@ -636,7 +706,6 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
     libxl_device_vfb *x_vfbs;
     libxl_device_vkb *x_vkbs;
     int i;
-    int port;
 
     if (nvfbs == 0)
         return 0;
@@ -655,55 +724,8 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
         libxl_device_vfb_init(&x_vfbs[i], i);
         libxl_device_vkb_init(&x_vkbs[i], i);
 
-        switch (l_vfbs[i]->type) {
-            case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-                x_vfbs[i].sdl = 1;
-                if (l_vfbs[i]->data.sdl.display &&
-                    (x_vfbs[i].display =
-                     strdup(l_vfbs[i]->data.sdl.display)) == NULL) {
-                    virReportOOMError();
-                    goto error;
-                }
-                if (l_vfbs[i]->data.sdl.xauth &&
-                    (x_vfbs[i].xauthority =
-                     strdup(l_vfbs[i]->data.sdl.xauth)) == NULL) {
-                    virReportOOMError();
-                    goto error;
-                }
-                break;
-            case  VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-                x_vfbs[i].vnc = 1;
-                /* driver handles selection of free port */
-                x_vfbs[i].vncunused = 0;
-                if (l_vfbs[i]->data.vnc.autoport) {
-                    port = libxlNextFreeVncPort(driver, LIBXL_VNC_PORT_MIN);
-                    if (port < 0) {
-                        libxlError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("Unable to find an unused VNC port"));
-                        goto error;
-                    }
-                    l_vfbs[i]->data.vnc.port = port;
-                }
-                x_vfbs[i].vncdisplay = l_vfbs[i]->data.vnc.port -
-                        LIBXL_VNC_PORT_MIN;
-
-                if (l_vfbs[i]->data.vnc.listenAddr) {
-                    /* libxl_device_vfb_init() does strdup("127.0.0.1") */
-                    free(x_vfbs[i].vnclisten);
-                    if ((x_vfbs[i].vnclisten =
-                     strdup(l_vfbs[i]->data.vnc.listenAddr)) == NULL) {
-                        virReportOOMError();
-                        goto error;
-                    }
-                }
-                if (l_vfbs[i]->data.vnc.keymap &&
-                    (x_vfbs[i].keymap =
-                     strdup(l_vfbs[i]->data.vnc.keymap)) == NULL) {
-                    virReportOOMError();
-                    goto error;
-                }
-                break;
-        }
+        if (libxlMakeVfb(driver, l_vfbs[i], &x_vfbs[i]) < 0)
+            goto error;
     }
 
     d_config->vfbs = x_vfbs;

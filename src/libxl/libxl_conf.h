@@ -90,6 +90,14 @@ virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);
 
 int
+libxlMakeDisk(virDomainDiskDefPtr l_dev, libxl_device_disk *x_dev);
+int
+libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic);
+int
+libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainGraphicsDefPtr l_vfb,
+             libxl_device_vfb *x_vfb);
+
+int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
                        virDomainDefPtr def, libxl_domain_config *d_config);
 
