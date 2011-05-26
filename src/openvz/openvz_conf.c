@@ -642,53 +642,45 @@ openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value)
 /*
  * value will be freed before a new value is assigned to it, the caller is
  * responsible for freeing it afterwards.
+ *
+ * Returns <0 on error, 0 if not found, 1 if found.
  */
 static int
 openvzReadConfigParam(const char *conf_file, const char *param, char **value)
 {
     char *line = NULL;
     size_t line_size = 0;
-    ssize_t ret;
     FILE *fp;
-    int found = 0;
-    char *sf, *token;
-    char *saveptr = NULL;
-
-    value[0] = 0;
+    int err = 0;
+    char *sf, *token, *saveptr = NULL;
 
     fp = fopen(conf_file, "r");
     if (fp == NULL)
         return -1;
 
-    while (1) {
-        ret = getline(&line, &line_size, fp);
-        if (ret <= 0)
-            break;
+    VIR_FREE(*value);
+    while (getline(&line, &line_size, fp) >= 0) {
+        if (! STREQLEN(line, param, strlen(param)))
+            continue;
+
+        sf = line + strlen(param);
+        if (*sf++ != '=') continue;
+
         saveptr = NULL;
-        if (STREQLEN(line, param, strlen(param))) {
-            sf = line;
-            sf += strlen(param);
-            if (sf[0] == '=' && sf[1] != '\0' ) {
-                sf++;
-                if ((token = strtok_r(sf,"\"\t\n", &saveptr)) != NULL) {
-                    VIR_FREE(*value);
-                    *value = strdup(token);
-                    if (value == NULL) {
-                        ret = -1;
-                        break;
-                    }
-                    found = 1;
-                }
+        if ((token = strtok_r(sf, "\"\t\n", &saveptr)) != NULL) {
+            VIR_FREE(*value);
+            *value = strdup(token);
+            if (*value == NULL) {
+                err = 1;
+                break;
             }
-       }
+            /* keep going - last entry wins */
+        }
     }
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
 
-    if (ret == 0 && found)
-        ret = 1;
-
-    return ret;
+    return err ? -1 : *value ? 1 : 0;
 }
 
 /*
