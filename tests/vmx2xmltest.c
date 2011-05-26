@@ -261,6 +261,7 @@ mymain(void)
     DO_TEST("esx-in-the-wild-3", "esx-in-the-wild-3");
     DO_TEST("esx-in-the-wild-4", "esx-in-the-wild-4");
     DO_TEST("esx-in-the-wild-5", "esx-in-the-wild-5");
+    DO_TEST("esx-in-the-wild-6", "esx-in-the-wild-6");
 
     DO_TEST("gsx-in-the-wild-1", "gsx-in-the-wild-1");
     DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2");
