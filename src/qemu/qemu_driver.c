@@ -4418,12 +4418,13 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                          "%s", _("cannot modify device on transient domain"));
          goto endjob;
     }
-    dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
-                                  VIR_DOMAIN_XML_INACTIVE);
-    if (dev == NULL)
-        goto endjob;
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                      VIR_DOMAIN_XML_INACTIVE);
+        if (dev == NULL)
+            goto endjob;
+
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
         if (!vmdef)
@@ -4447,6 +4448,13 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
         ret = 0;
 
     if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
+        /* If dev exists it was created to modify the domain config. Free it. */
+        virDomainDeviceDefFree(dev);
+        dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                      VIR_DOMAIN_XML_INACTIVE);
+        if (dev == NULL)
+            goto endjob;
+
         switch (action) {
         case QEMU_DEVICE_ATTACH:
             ret = qemuDomainAttachDeviceLive(vm, dev, dom);
