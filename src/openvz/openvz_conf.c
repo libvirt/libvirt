@@ -863,7 +863,6 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
     char *conf_file;
     char *line = NULL;
     size_t line_size = 0;
-    ssize_t ret;
     char *saveptr = NULL;
     char *uuidbuf;
     char *iden;
@@ -878,13 +877,13 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
         goto cleanup;
 
     while (1) {
-        ret = getline(&line, &line_size, fp);
-        if (ret == -1)
-            goto cleanup;
-
-        if (ret == 0) { /* EoF, UUID was not found */
-            uuidstr[0] = 0;
-            break;
+        if (getline(&line, &line_size, fp) < 0) {
+            if (feof(fp)) { /* EOF, UUID was not found */
+                uuidstr[0] = 0;
+                break;
+            } else {
+                goto cleanup;
+            }
         }
 
         iden = strtok_r(line, " ", &saveptr);
