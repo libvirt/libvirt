@@ -2394,15 +2394,13 @@ virNWFilterTestUnassignDef(virConnectPtr conn,
 {
     int rc = 0;
 
-    virNWFilterLockFilterUpdates();
-
     nwfilter->wantRemoved = 1;
     /* trigger the update on VMs referencing the filter */
     if (virNWFilterTriggerVMFilterRebuild(conn))
         rc = 1;
 
     nwfilter->wantRemoved = 0;
-    virNWFilterUnlockFilterUpdates();
+
     return rc;
 }
 
@@ -2434,8 +2432,9 @@ virNWFilterObjAssignDef(virConnectPtr conn,
         return NULL;
     }
 
+    virNWFilterLockFilterUpdates();
+
     if ((nwfilter = virNWFilterObjFindByName(nwfilters, def->name))) {
-        virNWFilterLockFilterUpdates();
         nwfilter->newDef = def;
         /* trigger the update on VMs referencing the filter */
         if (virNWFilterTriggerVMFilterRebuild(conn)) {
@@ -2451,6 +2450,8 @@ virNWFilterObjAssignDef(virConnectPtr conn,
         virNWFilterUnlockFilterUpdates();
         return nwfilter;
     }
+
+    virNWFilterUnlockFilterUpdates();
 
     if (VIR_ALLOC(nwfilter) < 0) {
         virReportOOMError();

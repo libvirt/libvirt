@@ -372,6 +372,8 @@ nwfilterUndefine(virNWFilterPtr obj) {
     nwfilterDriverLock(driver);
     virNWFilterCallbackDriversLock();
 
+    virNWFilterLockFilterUpdates();
+
     nwfilter = virNWFilterObjFindByUUID(&driver->nwfilters, obj->uuid);
     if (!nwfilter) {
         virNWFilterReportError(VIR_ERR_NO_NWFILTER,
@@ -398,6 +400,8 @@ nwfilterUndefine(virNWFilterPtr obj) {
 cleanup:
     if (nwfilter)
         virNWFilterObjUnlock(nwfilter);
+
+    virNWFilterUnlockFilterUpdates();
 
     virNWFilterCallbackDriversUnlock();
     nwfilterDriverUnlock(driver);
