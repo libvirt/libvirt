@@ -4966,23 +4966,22 @@ cleanup:
 static int qemuDomainGetMemoryParameters(virDomainPtr dom,
                                          virMemoryParameterPtr params,
                                          int *nparams,
-                                         unsigned int flags ATTRIBUTE_UNUSED)
+                                         unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
     unsigned long long val;
     int ret = -1;
     int rc;
+    bool isActive;
+
+    virCheckFlags(VIR_DOMAIN_MEMORY_PARAM_LIVE |
+                  VIR_DOMAIN_MEMORY_PARAM_CONFIG, -1);
 
     qemuDriverLock(driver);
-
-    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cgroup memory controller is not mounted"));
-        goto cleanup;
-    }
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
@@ -4992,10 +4991,43 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_MEMORY_PARAM_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_MEMORY_PARAM_LIVE;
+        else
+            flags = VIR_DOMAIN_MEMORY_PARAM_CONFIG;
+    }
+
+    if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+        if (!isActive) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("cgroup memory controller is not mounted"));
+            goto cleanup;
+        }
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find cgroup for domain %s"), vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
     }
 
     if ((*nparams) == 0) {
@@ -5011,10 +5043,47 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find cgroup for domain %s"), vm->def->name);
-        goto cleanup;
+    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+        for (i = 0; i < *nparams; i++) {
+            virMemoryParameterPtr param = &params[i];
+            val = 0;
+            param->value.ul = 0;
+            param->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+
+            switch (i) {
+            case 0: /* fill memory hard limit here */
+                if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT) == NULL) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("Field memory hard limit too long for destination"));
+                    goto cleanup;
+                }
+                param->value.ul = persistentDef->mem.hard_limit;
+                break;
+
+            case 1: /* fill memory soft limit here */
+                if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT) == NULL) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("Field memory soft limit too long for destination"));
+                    goto cleanup;
+                }
+                param->value.ul = persistentDef->mem.soft_limit;
+                break;
+
+            case 2: /* fill swap hard limit here */
+                if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT) == NULL) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("Field swap hard limit too long for destination"));
+                    goto cleanup;
+                }
+                param->value.ul = persistentDef->mem.swap_hard_limit;
+                break;
+
+            default:
+                break;
+                /* should not hit here */
+            }
+        }
+        goto out;
     }
 
     for (i = 0; i < QEMU_NB_MEM_PARAM; i++) {
@@ -5075,6 +5144,7 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         }
     }
 
+out:
     *nparams = QEMU_NB_MEM_PARAM;
     ret = 0;
 
