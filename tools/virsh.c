@@ -3828,6 +3828,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"migrateuri", VSH_OT_DATA, 0, N_("migration URI, usually can be omitted")},
     {"dname", VSH_OT_DATA, 0, N_("rename to new name during migration (if supported)")},
     {"timeout", VSH_OT_INT, 0, N_("force guest to suspend if live migration exceeds timeout (in seconds)")},
+    {"xml", VSH_OT_STRING, 0, N_("filename containing updated XML for the target")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3851,6 +3852,8 @@ doMigrate (void *opaque)
     const vshCmd *cmd = data->cmd;
 #if HAVE_PTHREAD_SIGMASK
     sigset_t sigmask, oldsigmask;
+    const char *xmlfile = NULL;
+    char *xml = NULL;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
@@ -3868,6 +3871,11 @@ doMigrate (void *opaque)
         vshCommandOptString(cmd, "migrateuri", &migrateuri) < 0 ||
         vshCommandOptString(cmd, "dname", &dname) < 0) {
         vshError(ctl, "%s", _("missing argument"));
+        goto out;
+    }
+
+    if (vshCommandOptString(cmd, "xml", &xmlfile) < 0) {
+        vshError(ctl, "%s", _("malformed xml argument"));
         goto out;
     }
 
@@ -3892,6 +3900,12 @@ doMigrate (void *opaque)
     if (vshCommandOptBool (cmd, "copy-storage-inc"))
         flags |= VIR_MIGRATE_NON_SHARED_INC;
 
+
+    if (xmlfile &&
+        virFileReadAll(xmlfile, 8192, &xml) < 0)
+        goto out;
+
+
     if ((flags & VIR_MIGRATE_PEER2PEER) ||
         vshCommandOptBool (cmd, "direct")) {
         /* For peer2peer migration or direct migration we only expect one URI
@@ -3902,7 +3916,7 @@ doMigrate (void *opaque)
             goto out;
         }
 
-        if (virDomainMigrateToURI (dom, desturi, flags, dname, 0) == 0)
+        if (virDomainMigrateToURI2(dom, desturi, NULL, xml, flags, dname, 0) == 0)
             ret = '0';
     } else {
         /* For traditional live migration, connect to the destination host directly. */
@@ -3912,7 +3926,7 @@ doMigrate (void *opaque)
         dconn = virConnectOpenAuth (desturi, virConnectAuthPtrDefault, 0);
         if (!dconn) goto out;
 
-        ddom = virDomainMigrate (dom, dconn, flags, dname, migrateuri, 0);
+        ddom = virDomainMigrate2(dom, dconn, xml, flags, dname, migrateuri, 0);
         if (ddom) {
             virDomainFree(ddom);
             ret = '0';
@@ -3926,6 +3940,7 @@ out:
 out_sig:
 #endif
     if (dom) virDomainFree (dom);
+    VIR_FREE(xml);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
 
