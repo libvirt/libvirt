@@ -3307,6 +3307,9 @@ static const vshCmdOptDef opts_memtune[] = {
      N_("Max memory plus swap in kilobytes")},
     {"min-guarantee", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("Min guaranteed memory in kilobytes")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3320,6 +3323,23 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
     unsigned int i = 0;
     virMemoryParameterPtr params = NULL, temp = NULL;
     bool ret = false;
+    unsigned int flags = 0;
+    int current = vshCommandOptBool(cmd, "current");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_MEMORY_PARAM_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_MEMORY_PARAM_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_MEMORY_PARAM_LIVE;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -3350,7 +3370,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
 
     if (nparams == 0) {
         /* get the number of memory parameters */
-        if (virDomainGetMemoryParameters(dom, NULL, &nparams, 0) != 0) {
+        if (virDomainGetMemoryParameters(dom, NULL, &nparams, flags) != 0) {
             vshError(ctl, "%s",
                      _("Unable to get number of memory parameters"));
             goto cleanup;
@@ -3364,7 +3384,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
 
         /* now go get all the memory parameters */
         params = vshCalloc(ctl, nparams, sizeof(*params));
-        if (virDomainGetMemoryParameters(dom, params, &nparams, 0) != 0) {
+        if (virDomainGetMemoryParameters(dom, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get memory parameters"));
             goto cleanup;
         }
@@ -3444,7 +3464,7 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
             if (temp->value.ul == -1)
                 temp->value.ul = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
         }
-        if (virDomainSetMemoryParameters(dom, params, nparams, 0) != 0)
+        if (virDomainSetMemoryParameters(dom, params, nparams, flags) != 0)
             vshError(ctl, "%s", _("Unable to change memory parameters"));
         else
             ret = true;

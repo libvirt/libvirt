@@ -644,6 +644,13 @@ flags, the current settings are displayed; with a flag, the
 appropriate limit is adjusted if supported by the hypervisor.  LXC and
 QEMU/KVM support I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
 
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--current> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
 For QEMU/KVM, the parameters are applied to the QEMU process as a whole.
 Thus, when counting them, one needs to add up guest RAM, guest video RAM, and
 some memory overhead of QEMU itself.  The last piece is hard to determine so

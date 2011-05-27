@@ -883,6 +883,13 @@ typedef enum {
     VIR_DOMAIN_MEMORY_PARAM_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN,
 } virMemoryParameterType;
 
+/* flags for setting memory parameters */
+typedef enum {
+    VIR_DOMAIN_MEMORY_PARAM_CURRENT = 0,        /* affect current domain state */
+    VIR_DOMAIN_MEMORY_PARAM_LIVE    = (1 << 0), /* affect active domain */
+    VIR_DOMAIN_MEMORY_PARAM_CONFIG  = (1 << 1)  /* affect next boot */
+} virMemoryParamFlags;
+
 /**
  * VIR_DOMAIN_MEMORY_FIELD_LENGTH:
  *
