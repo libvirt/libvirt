@@ -4860,20 +4860,20 @@ cleanup:
 static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                                          virMemoryParameterPtr params,
                                          int nparams,
-                                         unsigned int flags ATTRIBUTE_UNUSED)
+                                         unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     int i;
+    virDomainDefPtr persistentDef = NULL;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     int ret = -1;
+    bool isActive;
+
+    virCheckFlags(VIR_DOMAIN_MEMORY_PARAM_LIVE |
+                  VIR_DOMAIN_MEMORY_PARAM_CONFIG, -1);
 
     qemuDriverLock(driver);
-    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cgroup memory controller is not mounted"));
-        goto cleanup;
-    }
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
@@ -4883,16 +4883,43 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_MEMORY_PARAM_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_MEMORY_PARAM_LIVE;
+        else
+            flags = VIR_DOMAIN_MEMORY_PARAM_CONFIG;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find cgroup for domain %s"), vm->def->name);
-        goto cleanup;
+    if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+        if (!isActive) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("cgroup memory controller is not mounted"));
+            goto cleanup;
+        }
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find cgroup for domain %s"), vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
     }
 
     ret = 0;
@@ -4908,11 +4935,17 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            rc = virCgroupSetMemoryHardLimit(group, params[i].value.ul);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set memory hard_limit tunable"));
-                ret = -1;
+            if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+                rc = virCgroupSetMemoryHardLimit(group, params[i].value.ul);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set memory hard_limit tunable"));
+                    ret = -1;
+                }
+            }
+
+            if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+                persistentDef->mem.hard_limit = params[i].value.ul;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
             int rc;
@@ -4923,11 +4956,17 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            rc = virCgroupSetMemorySoftLimit(group, params[i].value.ul);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set memory soft_limit tunable"));
-                ret = -1;
+            if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+                rc = virCgroupSetMemorySoftLimit(group, params[i].value.ul);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set memory soft_limit tunable"));
+                    ret = -1;
+                }
+            }
+
+            if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+                persistentDef->mem.soft_limit = params[i].value.ul;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
             int rc;
@@ -4938,11 +4977,16 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            rc = virCgroupSetMemSwapHardLimit(group, params[i].value.ul);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set swap_hard_limit tunable"));
-                ret = -1;
+            if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+                rc = virCgroupSetMemSwapHardLimit(group, params[i].value.ul);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set swap_hard_limit tunable"));
+                    ret = -1;
+                }
+            }
+            if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+                persistentDef->mem.swap_hard_limit = params[i].value.ul;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE)) {
             qemuReportError(VIR_ERR_INVALID_ARG,
@@ -4953,6 +4997,10 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                             _("Parameter `%s' not supported"), param->field);
             ret = -1;
         }
+    }
+
+    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+        ret = virDomainSaveConfig(driver->configDir, persistentDef);
     }
 
 cleanup:
