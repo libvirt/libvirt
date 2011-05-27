@@ -914,14 +914,9 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
 {
     char *rv = NULL;
     qemuMigrationCookiePtr mig = NULL;
+    virDomainDefPtr def = NULL;
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, cookieout=%p, cookieoutlen=%p",
               driver, vm, NULLSTR(xmlin), cookieout, cookieoutlen);
-
-    if (xmlin) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Passing XML for the target VM is not yet supported"));
-        goto cleanup;
-    }
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -940,13 +935,27 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
                                 0) < 0)
         goto cleanup;
 
-    rv = qemuDomainFormatXML(driver, vm,
-                             VIR_DOMAIN_XML_SECURE |
-                             VIR_DOMAIN_XML_UPDATE_CPU);
+    if (xmlin) {
+        if (!(def = virDomainDefParseString(driver->caps, xmlin,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+
+        if (!virDomainDefCheckABIStability(def, vm->def))
+            goto cleanup;
+
+        rv = qemuDomainDefFormatXML(driver, def,
+                                    VIR_DOMAIN_XML_SECURE |
+                                    VIR_DOMAIN_XML_UPDATE_CPU);
+    } else {
+        rv = qemuDomainFormatXML(driver, vm,
+                                 VIR_DOMAIN_XML_SECURE |
+                                 VIR_DOMAIN_XML_UPDATE_CPU);
+    }
 
 cleanup:
     virDomainObjUnlock(vm);
     qemuMigrationCookieFree(mig);
+    virDomainDefFree(def);
     return rv;
 }
 

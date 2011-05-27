@@ -120,6 +120,10 @@ void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
 void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
                                        virDomainObjPtr obj);
 
+char *qemuDomainDefFormatXML(struct qemud_driver *driver,
+                             virDomainDefPtr vm,
+                             int flags);
+
 char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
                           int flags);

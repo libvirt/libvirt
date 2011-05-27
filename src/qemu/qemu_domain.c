@@ -700,19 +700,14 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 }
 
 
-char *qemuDomainFormatXML(struct qemud_driver *driver,
-                          virDomainObjPtr vm,
-                          int flags)
+char *qemuDomainDefFormatXML(struct qemud_driver *driver,
+                             virDomainDefPtr def,
+                             int flags)
 {
     char *ret = NULL;
     virCPUDefPtr cpu = NULL;
-    virDomainDefPtr def;
     virCPUDefPtr def_cpu;
 
-    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef)
-        def = vm->newDef;
-    else
-        def = vm->def;
     def_cpu = def->cpu;
 
     /* Update guest CPU requirements according to host CPU */
@@ -736,6 +731,21 @@ cleanup:
     virCPUDefFree(cpu);
     return ret;
 }
+
+char *qemuDomainFormatXML(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          int flags)
+{
+    virDomainDefPtr def;
+
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef)
+        def = vm->newDef;
+    else
+        def = vm->def;
+
+    return qemuDomainDefFormatXML(driver, def, flags);
+}
+
 
 void qemuDomainObjTaint(struct qemud_driver *driver,
                         virDomainObjPtr obj,
