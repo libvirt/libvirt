@@ -659,7 +659,12 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
         return -1;
 
     VIR_FREE(*value);
-    while (getline(&line, &line_size, fp) >= 0) {
+    while (1) {
+        if (getline(&line, &line_size, fp) < 0) {
+            err = !feof(fp);
+            break;
+        }
+
         if (! STREQLEN(line, param, strlen(param)))
             continue;
 
