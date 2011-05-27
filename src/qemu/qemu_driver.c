@@ -4255,6 +4255,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk;
+    virDomainNetDefPtr net;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -4277,6 +4278,23 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         break;
 
+    case VIR_DOMAIN_DEVICE_NET:
+        net = dev->data.net;
+        if (virDomainNetIndexByMac(vmdef, net->mac) >= 0) {
+            char macbuf[VIR_MAC_STRING_BUFLEN];
+            virFormatMacAddr(net->mac, macbuf);
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("mac %s already exists"), macbuf);
+            return -1;
+        }
+        if (virDomainNetInsert(vmdef, net)) {
+            virReportOOMError();
+            return -1;
+        }
+        dev->data.net = NULL;
+        if (qemuDomainAssignPCIAddresses(vmdef) < 0)
+            return -1;
+        break;
     default:
          qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                          _("persistent attach of device is not supported"));
@@ -4291,6 +4309,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk;
+    virDomainNetDefPtr net;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -4298,6 +4317,17 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         if (virDomainDiskRemoveByName(vmdef, disk->dst)) {
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("no target device %s"), disk->dst);
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        net = dev->data.net;
+        if (virDomainNetRemoveByMac(vmdef, net->mac)) {
+            char macbuf[VIR_MAC_STRING_BUFLEN];
+
+            virFormatMacAddr(net->mac, macbuf);
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("no nic of mac %s"), macbuf);
             return -1;
         }
         break;

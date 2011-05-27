@@ -5204,6 +5204,51 @@ int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
     return 0;
 }
 
+int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
+{
+    if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+        return -1;
+    def->nets[def->nnets]  = net;
+    def->nnets++;
+    return 0;
+}
+
+int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac)
+{
+    int i;
+
+    for (i = 0; i < def->nnets; i++)
+        if (!memcmp(def->nets[i]->mac, mac, VIR_MAC_BUFLEN))
+            return i;
+    return -1;
+}
+
+static void virDomainNetRemove(virDomainDefPtr def, size_t i)
+{
+    if (def->nnets > 1) {
+        memmove(def->nets + i,
+                def->nets + i + 1,
+                sizeof(*def->nets) * (def->nnets - (i + 1)));
+        def->nnets--;
+        if (VIR_REALLOC_N(def->nets, def->nnets) < 0) {
+            /* ignore harmless */
+        }
+    } else {
+        VIR_FREE(def->nets);
+        def->nnets = 0;
+    }
+}
+
+int virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac)
+{
+    int i = virDomainNetIndexByMac(def, mac);
+
+    if (i < 0)
+        return -1;
+    virDomainNetRemove(def, i);
+    return 0;
+}
+
 
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller)

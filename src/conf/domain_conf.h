@@ -1370,6 +1370,10 @@ int virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def);
 void virDomainDiskRemove(virDomainDefPtr def, size_t i);
 int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 
+int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac);
+int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
+int virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac);
+
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
