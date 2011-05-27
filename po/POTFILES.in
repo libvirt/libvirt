@@ -102,6 +102,7 @@ src/util/macvtap.c
 src/util/network.c
 src/util/pci.c
 src/util/processinfo.c
+src/util/sexpr.c
 src/util/stats_linux.c
 src/util/storage_file.c
 src/util/sysinfo.c
