@@ -31,8 +31,12 @@
 enum virCPUType {
     VIR_CPU_TYPE_HOST,
     VIR_CPU_TYPE_GUEST,
-    VIR_CPU_TYPE_AUTO
+    VIR_CPU_TYPE_AUTO,
+
+    VIR_CPU_TYPE_LAST
 };
+
+VIR_ENUM_DECL(virCPU)
 
 enum virCPUMatch {
     VIR_CPU_MATCH_MINIMUM,
@@ -96,6 +100,9 @@ enum virCPUFormatFlags {
                                          * in host capabilities */
 };
 
+bool
+virCPUDefIsEqual(virCPUDefPtr src,
+                 virCPUDefPtr dst);
 
 char *
 virCPUDefFormat(virCPUDefPtr def,

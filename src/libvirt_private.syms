@@ -224,6 +224,7 @@ virDomainControllerTypeToString;
 virDomainCpuSetFormat;
 virDomainCpuSetParse;
 virDomainDefAddImplicitControllers;
+virDomainDefCheckABIStability;
 virDomainDefClearDeviceAliases;
 virDomainDefClearPCIAddresses;
 virDomainDefFormat;

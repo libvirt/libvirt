@@ -1096,7 +1096,12 @@ virDomainVcpupinDefPtr virDomainVcpupinFindByVcpu(virDomainVcpupinDefPtr *def,
                                                   int nvcpupin,
                                                   int vcpu);
 
-/* Guest VM main configuration */
+/*
+ * Guest VM main configuration
+ *
+ * NB: if adding to this struct, virDomainDefCheckABIStability
+ * may well need an update
+ */
 typedef struct _virDomainDef virDomainDef;
 typedef virDomainDef *virDomainDefPtr;
 struct _virDomainDef {
@@ -1342,6 +1347,9 @@ virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
 virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
                                       const char *filename);
 
+bool virDomainDefCheckABIStability(virDomainDefPtr src,
+                                   virDomainDefPtr dst);
+
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 
 char *virDomainDefFormat(virDomainDefPtr def,
@@ -1503,7 +1511,6 @@ VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainChrSpicevmc)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)
-VIR_ENUM_DECL(virDomainSysinfo)
 VIR_ENUM_DECL(virDomainSmbiosMode)
 VIR_ENUM_DECL(virDomainWatchdogModel)
 VIR_ENUM_DECL(virDomainWatchdogAction)

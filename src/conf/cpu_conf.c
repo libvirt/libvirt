@@ -35,6 +35,9 @@
     virReportErrorHelper(VIR_FROM_CPU, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+VIR_ENUM_IMPL(virCPU, VIR_CPU_TYPE_LAST,
+              "host", "guest", "auto")
+
 VIR_ENUM_IMPL(virCPUMatch, VIR_CPU_MATCH_LAST,
               "minimum",
               "exact",
@@ -445,4 +448,100 @@ virCPUDefAddFeature(virCPUDefPtr def,
 no_memory:
     virReportOOMError();
     return -1;
+}
+
+bool
+virCPUDefIsEqual(virCPUDefPtr src,
+                 virCPUDefPtr dst)
+{
+    bool identical = false;
+    int i;
+
+    if (!src && !dst)
+        return true;
+
+    if ((src && !dst) || (!src && dst)) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                          _("Target CPU does not match source"));
+        goto cleanup;
+    }
+
+    if (src->type != dst->type) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU type %s does not match source %s"),
+                          virCPUTypeToString(dst->type),
+                          virCPUTypeToString(src->type));
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(src->arch, dst->arch)) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU arch %s does not match source %s"),
+                          NULLSTR(dst->arch), NULLSTR(src->arch));
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(src->model, dst->model)) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU model %s does not match source %s"),
+                          NULLSTR(dst->model), NULLSTR(src->model));
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(src->vendor, dst->vendor)) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU vendor %s does not match source %s"),
+                          NULLSTR(dst->vendor), NULLSTR(src->vendor));
+        goto cleanup;
+    }
+
+    if (src->sockets != dst->sockets) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU sockets %d does not match source %d"),
+                          dst->sockets, src->sockets);
+        goto cleanup;
+    }
+
+    if (src->cores != dst->cores) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU cores %d does not match source %d"),
+                          dst->cores, src->cores);
+        goto cleanup;
+    }
+
+    if (src->threads != dst->threads) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU threads %d does not match source %d"),
+                          dst->threads, src->threads);
+        goto cleanup;
+    }
+
+    if (src->nfeatures != dst->nfeatures) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU feature count %zu does not match source %zu"),
+                          dst->nfeatures, src->nfeatures);
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < src->nfeatures ; i++) {
+        if (STRNEQ(src->features[i].name, dst->features[i].name)) {
+            virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                              _("Target CPU feature %s does not match source %s"),
+                              dst->features[i].name, src->features[i].name);
+            goto cleanup;
+        }
+
+        if (src->features[i].policy != dst->features[i].policy) {
+            virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                              _("Target CPU feature policy %s does not match source %s"),
+                              virCPUFeaturePolicyTypeToString(dst->features[i].policy),
+                              virCPUFeaturePolicyTypeToString(src->features[i].policy));
+            goto cleanup;
+        }
+    }
+
+    identical = true;
+
+cleanup:
+    return identical;
 }
