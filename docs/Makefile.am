@@ -8,6 +8,8 @@ DOC_SOURCE_DIR=../src
 
 DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 
+BUILT_SOURCES=hvsupport.html.in
+
 apihtml =			\
   html/index.html		\
   html/libvirt-libvirt.html	\
