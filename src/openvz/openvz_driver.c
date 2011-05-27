@@ -1507,6 +1507,7 @@ static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid)
     unsigned long long usertime, systime, nicetime;
     int readvps = vpsid + 1;  /* ensure readvps is initially different */
     ssize_t ret;
+    int err = 0;
 
 /* read statistic from /proc/vz/vestat.
 sample:
@@ -1522,8 +1523,10 @@ Version: 2.2
     /*search line with VEID=vpsid*/
     while (1) {
         ret = getline(&line, &line_size, fp);
-        if (ret <= 0)
+        if (ret < 0) {
+            err = !feof(fp);
             break;
+        }
 
         if (sscanf (line, "%d %llu %llu %llu",
                     &readvps, &usertime, &nicetime, &systime) == 4
@@ -1538,7 +1541,7 @@ Version: 2.2
 
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
-    if (ret < 0)
+    if (err)
         return -1;
 
     if (readvps != vpsid) /*not found*/
