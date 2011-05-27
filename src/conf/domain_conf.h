@@ -792,7 +792,6 @@ struct _virDomainHostdevDef {
             int dummy;
         } caps;
     } source;
-    char* target;
     int bootIndex;
     virDomainDeviceInfo info; /* Guest address */
 };

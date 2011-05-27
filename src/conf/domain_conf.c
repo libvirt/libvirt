@@ -893,7 +893,6 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->target);
     virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def);
 }
@@ -4774,7 +4773,6 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
         virReportOOMError();
         return NULL;
     }
-    def->target = NULL;
 
     mode = virXMLPropString(node, "mode");
     if (mode) {
