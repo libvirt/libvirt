@@ -206,7 +206,7 @@ libvirt_virDomainGetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
     char *c_retval;
     int i_retval;
     int nparams, i;
-    virSchedParameterPtr params;
+    virTypedParameterPtr params;
 
     if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetScedulerParameters",
                           &pyobj_domain))
@@ -242,27 +242,27 @@ libvirt_virDomainGetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
         PyObject *key, *val;
 
         switch (params[i].type) {
-        case VIR_DOMAIN_SCHED_FIELD_INT:
+        case VIR_TYPED_PARAM_INT:
             val = PyInt_FromLong((long)params[i].value.i);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_UINT:
+        case VIR_TYPED_PARAM_UINT:
             val = PyInt_FromLong((long)params[i].value.ui);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+        case VIR_TYPED_PARAM_LLONG:
             val = PyLong_FromLongLong((long long)params[i].value.l);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+        case VIR_TYPED_PARAM_ULLONG:
             val = PyLong_FromLongLong((long long)params[i].value.ul);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+        case VIR_TYPED_PARAM_DOUBLE:
             val = PyFloat_FromDouble((double)params[i].value.d);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+        case VIR_TYPED_PARAM_BOOLEAN:
             val = PyBool_FromLong((long)params[i].value.b);
             break;
 
@@ -287,7 +287,7 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
     char *c_retval;
     int i_retval;
     int nparams, i;
-    virSchedParameterPtr params;
+    virTypedParameterPtr params;
 
     if (!PyArg_ParseTuple(args, (char *)"OO:virDomainSetScedulerParameters",
                           &pyobj_domain, &info))
@@ -325,27 +325,27 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
             continue;
 
         switch (params[i].type) {
-        case VIR_DOMAIN_SCHED_FIELD_INT:
+        case VIR_TYPED_PARAM_INT:
             params[i].value.i = (int)PyInt_AS_LONG(val);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_UINT:
+        case VIR_TYPED_PARAM_UINT:
             params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+        case VIR_TYPED_PARAM_LLONG:
             params[i].value.l = (long long)PyLong_AsLongLong(val);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+        case VIR_TYPED_PARAM_ULLONG:
             params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+        case VIR_TYPED_PARAM_DOUBLE:
             params[i].value.d = (double)PyFloat_AsDouble(val);
             break;
 
-        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+        case VIR_TYPED_PARAM_BOOLEAN:
             {
                 /* Hack - Python's definition of Py_True breaks strict
                  * aliasing rules, so can't directly compare :-(
