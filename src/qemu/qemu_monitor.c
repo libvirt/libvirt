@@ -69,7 +69,9 @@ struct _qemuMonitor {
 
     /* If anything went wrong, this will be fed back
      * the next monitor msg */
-    int lastErrno;
+    virError lastError;
+
+    int nextSerial;
 
     unsigned json: 1;
     unsigned json_hmp: 1;
@@ -312,6 +314,10 @@ qemuMonitorOpenPty(const char *monitor)
 }
 
 
+/* This method processes data that has been received
+ * from the monitor. Looking for async events and
+ * replies/errors.
+ */
 static int
 qemuMonitorIOProcess(qemuMonitorPtr mon)
 {
@@ -344,10 +350,8 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
                                        mon->buffer, mon->bufferOffset,
                                        msg);
 
-    if (len < 0) {
-        mon->lastErrno = errno;
+    if (len < 0)
         return -1;
-    }
 
     if (len < mon->bufferOffset) {
         memmove(mon->buffer, mon->buffer + len, mon->bufferOffset - len);
@@ -377,11 +381,6 @@ qemuMonitorIOWriteWithFD(qemuMonitorPtr mon,
     int ret;
     char control[CMSG_SPACE(sizeof(int))];
     struct cmsghdr *cmsg;
-
-    if (!mon->hasSendFD) {
-        errno = EINVAL;
-        return -1;
-    }
 
     memset(&msg, 0, sizeof(msg));
 
@@ -423,6 +422,12 @@ qemuMonitorIOWrite(qemuMonitorPtr mon)
     if (!mon->msg || mon->msg->txOffset == mon->msg->txLength)
         return 0;
 
+    if (mon->msg->txFD != -1 && !mon->hasSendFD) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Monitor does not support sending of file descriptors"));
+        return -1;
+    }
+
     if (mon->msg->txFD == -1)
         done = write(mon->fd,
                      mon->msg->txBuffer + mon->msg->txOffset,
@@ -437,7 +442,8 @@ qemuMonitorIOWrite(qemuMonitorPtr mon)
         if (errno == EAGAIN)
             return 0;
 
-        mon->lastErrno = errno;
+        virReportSystemError(errno, "%s",
+                             _("Unable to write to monitor"));
         return -1;
     }
     mon->msg->txOffset += done;
@@ -459,7 +465,7 @@ qemuMonitorIORead(qemuMonitorPtr mon)
     if (avail < 1024) {
         if (VIR_REALLOC_N(mon->buffer,
                           mon->bufferLength + 1024) < 0) {
-            errno = ENOMEM;
+            virReportOOMError();
             return -1;
         }
         mon->bufferLength += 1024;
@@ -476,7 +482,8 @@ qemuMonitorIORead(qemuMonitorPtr mon)
         if (got < 0) {
             if (errno == EAGAIN)
                 break;
-            mon->lastErrno = errno;
+            virReportSystemError(errno, "%s",
+                                 _("Unable to read from monitor"));
             ret = -1;
             break;
         }
@@ -503,7 +510,7 @@ static void qemuMonitorUpdateWatch(qemuMonitorPtr mon)
         VIR_EVENT_HANDLE_HANGUP |
         VIR_EVENT_HANDLE_ERROR;
 
-    if (!mon->lastErrno) {
+    if (mon->lastError.code == VIR_ERR_OK) {
         events |= VIR_EVENT_HANDLE_READABLE;
 
         if (mon->msg && mon->msg->txOffset < mon->msg->txLength)
@@ -528,61 +535,84 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 #endif
 
     if (mon->fd != fd || mon->watch != watch) {
-        VIR_ERROR(_("event from unexpected fd %d!=%d / watch %d!=%d"), mon->fd, fd, mon->watch, watch);
+        if (events & VIR_EVENT_HANDLE_HANGUP)
+            eof = true;
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("event from unexpected fd %d!=%d / watch %d!=%d"),
+                        mon->fd, fd, mon->watch, watch);
+        error = true;
+    } else if (mon->lastError.code != VIR_ERR_OK) {
+        if (events & VIR_EVENT_HANDLE_HANGUP)
+            eof = true;
         error = true;
     } else {
-        if (!mon->lastErrno &&
-            events & VIR_EVENT_HANDLE_WRITABLE) {
-            int done = qemuMonitorIOWrite(mon);
-            if (done < 0)
-                error = 1;
+        if (events & VIR_EVENT_HANDLE_WRITABLE) {
+            if (qemuMonitorIOWrite(mon) < 0)
+                error = true;
             events &= ~VIR_EVENT_HANDLE_WRITABLE;
         }
-        if (!mon->lastErrno &&
+
+        if (!error &&
             events & VIR_EVENT_HANDLE_READABLE) {
             int got = qemuMonitorIORead(mon);
-            if (got < 0)
+            events &= ~VIR_EVENT_HANDLE_READABLE;
+            if (got < 0) {
                 error = true;
-            /* Ignore hangup/error events if we read some data, to
-             * give time for that data to be consumed */
-            if (got > 0) {
+            } else if (got == 0) {
+                eof = true;
+            } else {
+                /* Ignore hangup/error events if we read some data, to
+                 * give time for that data to be consumed */
                 events = 0;
 
                 if (qemuMonitorIOProcess(mon) < 0)
                     error = true;
-            } else
-                events &= ~VIR_EVENT_HANDLE_READABLE;
-        }
-
-        /* If IO process resulted in an error & we have a message,
-         * then wakeup that waiter */
-        if (mon->lastErrno && mon->msg && !mon->msg->finished) {
-            mon->msg->lastErrno = mon->lastErrno;
-            mon->msg->finished = 1;
-            virCondSignal(&mon->notify);
-        }
-
-        qemuMonitorUpdateWatch(mon);
-
-        if (events & (VIR_EVENT_HANDLE_HANGUP |
-                      VIR_EVENT_HANDLE_ERROR)) {
-            /* If IO process resulted in EOF & we have a message,
-             * then wakeup that waiter */
-            if (mon->msg && !mon->msg->finished) {
-                mon->msg->finished = 1;
-                mon->msg->lastErrno = EIO;
-                virCondSignal(&mon->notify);
             }
+        }
+
+        if (!error &&
+            events & VIR_EVENT_HANDLE_HANGUP) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("End of file from monitor"));
             eof = 1;
-        } else if (events) {
-            VIR_ERROR(_("unhandled fd event %d for monitor fd %d"),
-                      events, mon->fd);
+            events &= ~VIR_EVENT_HANDLE_HANGUP;
+        }
+
+        if (!error && !eof &&
+            events & VIR_EVENT_HANDLE_ERROR) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Error while waiting for monitor"));
+            error = 1;
+        }
+        if (!error && events) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unhandled event %d for monitor fd %d"),
+                            events, mon->fd);
             error = 1;
         }
     }
 
-    if (eof || error)
-        mon->lastErrno = EIO;
+    if (error || eof) {
+        if (mon->lastError.code != VIR_ERR_OK) {
+            /* Already have an error, so clear any new error */
+            virResetLastError();
+        } else {
+            virErrorPtr err = virGetLastError();
+            if (!err)
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Error while processing monitor IO"));
+            virCopyLastError(&mon->lastError);
+            virResetLastError();
+        }
+
+        VIR_DEBUG("Error on monitor %s", NULLSTR(mon->lastError.message));
+        /* If IO process resulted in an error & we have a message,
+         * then wakeup that waiter */
+        if (mon->msg && !mon->msg->finished) {
+            mon->msg->finished = 1;
+            virCondSignal(&mon->notify);
+        }
+    }
 
     qemuMonitorUpdateWatch(mon);
 
@@ -738,14 +768,28 @@ void qemuMonitorClose(qemuMonitorPtr mon)
 }
 
 
+char *qemuMonitorNextCommandID(qemuMonitorPtr mon)
+{
+    char *id;
+
+    if (virAsprintf(&id, "libvirt-%d", ++mon->nextSerial) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+    return id;
+}
+
+
 int qemuMonitorSend(qemuMonitorPtr mon,
                     qemuMonitorMessagePtr msg)
 {
     int ret = -1;
 
     /* Check whether qemu quited unexpectedly */
-    if (mon->lastErrno) {
-        msg->lastErrno = mon->lastErrno;
+    if (mon->lastError.code != VIR_ERR_OK) {
+        VIR_DEBUG("Attempt to send command while error is set %s",
+                  NULLSTR(mon->lastError.message));
+        virSetError(&mon->lastError);
         return -1;
     }
 
@@ -753,12 +797,21 @@ int qemuMonitorSend(qemuMonitorPtr mon,
     qemuMonitorUpdateWatch(mon);
 
     while (!mon->msg->finished) {
-        if (virCondWait(&mon->notify, &mon->lock) < 0)
+        if (virCondWait(&mon->notify, &mon->lock) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to wait on monitor condition"));
             goto cleanup;
+        }
     }
 
-    if (mon->lastErrno == 0)
-        ret = 0;
+    if (mon->lastError.code != VIR_ERR_OK) {
+        VIR_DEBUG("Send command resulted in error %s",
+                  NULLSTR(mon->lastError.message));
+        virSetError(&mon->lastError);
+        goto cleanup;
+    }
+
+    ret = 0;
 
 cleanup:
     mon->msg = NULL;

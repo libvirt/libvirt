@@ -153,7 +153,8 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 #endif
                 if (msg->passwordHandler) {
                     int i;
-                    /* Try and handle the prompt */
+                    /* Try and handle the prompt. The handler is required
+                     * to report a normal libvirt error */
                     if (msg->passwordHandler(mon, msg,
                                              start,
                                              passwd - start + strlen(PASSWORD_PROMPT),
@@ -168,7 +169,8 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                     /* Handled, so skip forward over password prompt */
                     start = passwd;
                 } else {
-                    errno = EACCES;
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Password request seen, but no handler available"));
                     return -1;
                 }
             }
@@ -183,8 +185,10 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
              * BASIC_PROMPT we can reasonably reliably cope */
             if (want) {
                 if (VIR_REALLOC_N(msg->rxBuffer,
-                                  msg->rxLength + want + 1) < 0)
+                                  msg->rxLength + want + 1) < 0) {
+                    virReportOOMError();
                     return -1;
+                }
                 memcpy(msg->rxBuffer + msg->rxLength, start, want);
                 msg->rxLength += want;
                 msg->rxBuffer[msg->rxLength] = '\0';
@@ -234,28 +238,24 @@ qemuMonitorTextCommandWithHandler(qemuMonitorPtr mon,
 
     ret = qemuMonitorSend(mon, &msg);
 
-    VIR_DEBUG("Receive command reply ret=%d errno=%d %d bytes '%s'",
-              ret, msg.lastErrno, msg.rxLength, msg.rxBuffer);
+    VIR_DEBUG("Receive command reply ret=%d rxLength=%d rxBuffer='%s'",
+              ret, msg.rxLength, msg.rxBuffer);
 
     /* Just in case buffer had some passwords in */
     memset(msg.txBuffer, 0, msg.txLength);
     VIR_FREE(msg.txBuffer);
 
-    /* To make life safer for callers, already ensure there's at least an empty string */
-    if (msg.rxBuffer) {
-        *reply = msg.rxBuffer;
-    } else {
-        *reply = strdup("");
-        if (!*reply) {
-            virReportOOMError();
-            return -1;
+    if (ret >= 0) {
+        /* To make life safer for callers, already ensure there's at least an empty string */
+        if (msg.rxBuffer) {
+            *reply = msg.rxBuffer;
+        } else {
+            *reply = strdup("");
+            if (!*reply) {
+                virReportOOMError();
+                return -1;
+            }
         }
-    }
-
-    if (ret < 0) {
-        virReportSystemError(msg.lastErrno,
-                             _("cannot send monitor command '%s'"), cmd);
-        VIR_FREE(*reply);
     }
 
     return ret;
@@ -297,15 +297,16 @@ qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
     pathStart = strstr(data, DISK_ENCRYPTION_PREFIX);
     pathEnd = strstr(data, DISK_ENCRYPTION_POSTFIX);
     if (!pathStart || !pathEnd || pathStart >= pathEnd) {
-        errno = -EINVAL;
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Unable to extract disk path from %s"),
+                        data);
         return -1;
     }
 
     /* Extra the path */
     pathStart += strlen(DISK_ENCRYPTION_PREFIX);
-    path = strndup(pathStart, pathEnd - pathStart);
-    if (!path) {
-        errno = ENOMEM;
+    if (!(path = strndup(pathStart, pathEnd - pathStart))) {
+        virReportOOMError();
         return -1;
     }
 
@@ -325,7 +326,7 @@ qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
                       msg->txLength + passphrase_len + 1 + 1) < 0) {
         memset(passphrase, 0, passphrase_len);
         VIR_FREE(passphrase);
-        errno = ENOMEM;
+        virReportOOMError();
         return -1;
     }
 
@@ -763,7 +764,7 @@ qemuMonitorSendVNCPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
      * to be sent back */
     if (VIR_REALLOC_N(msg->txBuffer,
                       msg->txLength + passphrase_len + 1 + 1) < 0) {
-        errno = ENOMEM;
+        virReportOOMError();
         return -1;
     }
 

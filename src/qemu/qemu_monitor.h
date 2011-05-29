@@ -49,12 +49,16 @@ struct _qemuMonitorMessage {
     int txOffset;
     int txLength;
 
+    /* Used by the text monitor reply / error */
     char *rxBuffer;
     int rxLength;
+    /* Used by the JSON monitor to hold reply / error */
+    void *rxObject;
 
-    int finished;
-
-    int lastErrno;
+    /* True if rxBuffer / rxObject are ready, or a
+     * fatal error occurred on the monitor channel
+     */
+    bool finished;
 
     qemuMonitorPasswordHandler passwordHandler;
     void *passwordOpaque;
@@ -137,6 +141,7 @@ int qemuMonitorRef(qemuMonitorPtr mon);
 int qemuMonitorUnref(qemuMonitorPtr mon) ATTRIBUTE_RETURN_CHECK;
 
 /* These APIs are for use by the internal Text/JSON monitor impl code only */
+char *qemuMonitorNextCommandID(qemuMonitorPtr mon);
 int qemuMonitorSend(qemuMonitorPtr mon,
                     qemuMonitorMessagePtr msg);
 int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,

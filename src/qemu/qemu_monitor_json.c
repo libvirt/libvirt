@@ -111,43 +111,38 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
 
     VIR_DEBUG("Line [%s]", line);
 
-    if (!(obj = virJSONValueFromString(line))) {
-        VIR_DEBUG("Parsing JSON string failed");
-        errno = EINVAL;
+    if (!(obj = virJSONValueFromString(line)))
         goto cleanup;
-    }
 
     if (obj->type != VIR_JSON_TYPE_OBJECT) {
-        VIR_DEBUG("Parsed JSON string isn't an object");
-        errno = EINVAL;
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Parsed JSON reply '%s' isn't an object"), line);
+        goto cleanup;
     }
 
     if (virJSONValueObjectHasKey(obj, "QMP") == 1) {
-        VIR_DEBUG("Got QMP capabilities data");
         ret = 0;
-        goto cleanup;
-    }
-
-    if (virJSONValueObjectHasKey(obj, "event") == 1) {
+        virJSONValueFree(obj);
+    } else if (virJSONValueObjectHasKey(obj, "event") == 1) {
         ret = qemuMonitorJSONIOProcessEvent(mon, obj);
-        goto cleanup;
-    }
-
-    if (msg) {
-        if (!(msg->rxBuffer = strdup(line))) {
-            errno = ENOMEM;
-            goto cleanup;
+    } else if (virJSONValueObjectHasKey(obj, "error") == 1 ||
+               virJSONValueObjectHasKey(obj, "return") == 1) {
+        if (msg) {
+            msg->rxObject = obj;
+            msg->finished = 1;
+            ret = 0;
+        } else {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unexpected JSON reply '%s'"), line);
         }
-        msg->rxLength = strlen(line);
-        msg->finished = 1;
     } else {
-        VIR_DEBUG("Ignoring unexpected JSON message [%s]", line);
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Unknown JSON reply '%s'"), line);
     }
-
-    ret = 0;
 
 cleanup:
-    virJSONValueFree(obj);
+    if (ret < 0)
+        virJSONValueFree(obj);
     return ret;
 }
 
@@ -166,7 +161,7 @@ int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
             int got = nl - (data + used);
             char *line = strndup(data + used, got);
             if (!line) {
-                errno = ENOMEM;
+                virReportOOMError();
                 return -1;
             }
             used += got + strlen(LINE_ENDING);
@@ -195,10 +190,23 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
     int ret = -1;
     qemuMonitorMessage msg;
     char *cmdstr = NULL;
+    char *id = NULL;
+    virJSONValuePtr exe;
 
     *reply = NULL;
 
     memset(&msg, 0, sizeof msg);
+
+    exe = virJSONValueObjectGet(cmd, "execute");
+    if (exe) {
+        if (!(id = qemuMonitorNextCommandID(mon)))
+            goto cleanup;
+        if (virJSONValueObjectAppendString(cmd, "id", id) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to append command 'id' string"));
+            goto cleanup;
+        }
+    }
 
     if (!(cmdstr = virJSONValueToString(cmd))) {
         virReportOOMError();
@@ -215,33 +223,24 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
 
     ret = qemuMonitorSend(mon, &msg);
 
-    VIR_DEBUG("Receive command reply ret=%d errno=%d %d bytes '%s'",
-              ret, msg.lastErrno, msg.rxLength, msg.rxBuffer);
+    VIR_DEBUG("Receive command reply ret=%d rxObject=%p",
+              ret, msg.rxObject);
 
-
-    /* If we got ret==0, but not reply data something rather bad
-     * went wrong, so lets fake an EIO error */
-    if (!msg.rxBuffer && ret == 0) {
-        msg.lastErrno = EIO;
-        ret = -1;
-    }
 
     if (ret == 0) {
-        if (!((*reply) = virJSONValueFromString(msg.rxBuffer))) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("cannot parse JSON doc '%s'"), msg.rxBuffer);
-            goto cleanup;
+        if (!msg.rxObject) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Missing monitor reply object"));
+            ret = -1;
+        } else {
+            *reply = msg.rxObject;
         }
     }
 
-    if (ret < 0)
-        virReportSystemError(msg.lastErrno,
-                             _("cannot send monitor command '%s'"), cmdstr);
-
 cleanup:
+    VIR_FREE(id);
     VIR_FREE(cmdstr);
     VIR_FREE(msg.txBuffer);
-    VIR_FREE(msg.rxBuffer);
 
     return ret;
 }
