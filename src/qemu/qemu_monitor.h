@@ -67,9 +67,10 @@ struct _qemuMonitorCallbacks {
                     virDomainObjPtr vm);
 
     void (*eofNotify)(qemuMonitorPtr mon,
-                      virDomainObjPtr vm,
-                      int withError);
-    /* XXX we'd really like to avoid virCOnnectPtr here
+                      virDomainObjPtr vm);
+    void (*errorNotify)(qemuMonitorPtr mon,
+                        virDomainObjPtr vm);
+    /* XXX we'd really like to avoid virConnectPtr here
      * It is required so the callback can find the active
      * secret driver. Need to change this to work like the
      * security drivers do, to avoid this

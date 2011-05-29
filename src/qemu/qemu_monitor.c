@@ -517,7 +517,8 @@ static void qemuMonitorUpdateWatch(qemuMonitorPtr mon)
 static void
 qemuMonitorIO(int watch, int fd, int events, void *opaque) {
     qemuMonitorPtr mon = opaque;
-    int quit = 0, failed = 0;
+    bool error = false;
+    bool eof = false;
 
     /* lock access to the monitor and protect fd */
     qemuMonitorLock(mon);
@@ -528,27 +529,27 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
     if (mon->fd != fd || mon->watch != watch) {
         VIR_ERROR(_("event from unexpected fd %d!=%d / watch %d!=%d"), mon->fd, fd, mon->watch, watch);
-        failed = 1;
+        error = true;
     } else {
         if (!mon->lastErrno &&
             events & VIR_EVENT_HANDLE_WRITABLE) {
             int done = qemuMonitorIOWrite(mon);
             if (done < 0)
-                failed = 1;
+                error = 1;
             events &= ~VIR_EVENT_HANDLE_WRITABLE;
         }
         if (!mon->lastErrno &&
             events & VIR_EVENT_HANDLE_READABLE) {
             int got = qemuMonitorIORead(mon);
             if (got < 0)
-                failed = 1;
+                error = true;
             /* Ignore hangup/error events if we read some data, to
              * give time for that data to be consumed */
             if (got > 0) {
                 events = 0;
 
                 if (qemuMonitorIOProcess(mon) < 0)
-                    failed = 1;
+                    error = true;
             } else
                 events &= ~VIR_EVENT_HANDLE_READABLE;
         }
@@ -572,36 +573,44 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
                 mon->msg->lastErrno = EIO;
                 virCondSignal(&mon->notify);
             }
-            quit = 1;
+            eof = 1;
         } else if (events) {
             VIR_ERROR(_("unhandled fd event %d for monitor fd %d"),
                       events, mon->fd);
-            failed = 1;
+            error = 1;
         }
     }
+
+    if (eof || error)
+        mon->lastErrno = EIO;
+
+    qemuMonitorUpdateWatch(mon);
 
     /* We have to unlock to avoid deadlock against command thread,
      * but is this safe ?  I think it is, because the callback
      * will try to acquire the virDomainObjPtr mutex next */
-    if (failed || quit) {
-        void (*eofNotify)(qemuMonitorPtr, virDomainObjPtr, int)
+    if (eof) {
+        void (*eofNotify)(qemuMonitorPtr, virDomainObjPtr)
             = mon->cb->eofNotify;
         virDomainObjPtr vm = mon->vm;
-
-        /* If qemu quited unexpectedly, and we may try to send monitor
-         * command later. But we have no chance to wake up it. So set
-         * mon->lastErrno to EIO, and check it before sending monitor
-         * command.
-         */
-        if (!mon->lastErrno)
-            mon->lastErrno = EIO;
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         if (qemuMonitorUnref(mon) > 0)
             qemuMonitorUnlock(mon);
-        VIR_DEBUG("Triggering EOF callback error? %d", failed);
-        (eofNotify)(mon, vm, failed);
+        VIR_DEBUG("Triggering EOF callback");
+        (eofNotify)(mon, vm);
+    } else if (error) {
+        void (*errorNotify)(qemuMonitorPtr, virDomainObjPtr)
+            = mon->cb->errorNotify;
+        virDomainObjPtr vm = mon->vm;
+
+        /* Make sure anyone waiting wakes up now */
+        virCondSignal(&mon->notify);
+        if (qemuMonitorUnref(mon) > 0)
+            qemuMonitorUnlock(mon);
+        VIR_DEBUG("Triggering error callback");
+        (errorNotify)(mon, vm);
     } else {
         if (qemuMonitorUnref(mon) > 0)
             qemuMonitorUnlock(mon);

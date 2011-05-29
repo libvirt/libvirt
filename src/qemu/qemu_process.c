@@ -100,12 +100,14 @@ extern struct qemud_driver *qemu_driver;
  */
 static void
 qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                            virDomainObjPtr vm,
-                            int hasError)
+                            virDomainObjPtr vm)
 {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
+    int eventReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
+    int stopReason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+    const char *auditReason = "shutdown";
 
     VIR_DEBUG("Received EOF on %p '%s'", vm, vm->def->name);
 
@@ -120,32 +122,54 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 
     priv = vm->privateData;
-    if (!hasError && priv->monJSON && !priv->gotShutdown) {
+    if (priv->monJSON && !priv->gotShutdown) {
         VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
                   "assuming the domain crashed", vm->def->name);
-        hasError = 1;
+        eventReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
+        stopReason = VIR_DOMAIN_SHUTOFF_FAILED;
+        auditReason = "failed";
     }
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
-                                     hasError ?
-                                     VIR_DOMAIN_EVENT_STOPPED_FAILED :
-                                     VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-
-    qemuProcessStop(driver, vm, 0,
-                    hasError ?
-                    VIR_DOMAIN_SHUTOFF_CRASHED :
-                    VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-    qemuAuditDomainStop(vm, hasError ? "failed" : "shutdown");
+                                     eventReason);
+    qemuProcessStop(driver, vm, 0, stopReason);
+    qemuAuditDomainStop(vm, auditReason);
 
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains, vm);
     else
         virDomainObjUnlock(vm);
 
-    if (event) {
+    if (event)
         qemuDomainEventQueue(driver, event);
-    }
+    qemuDriverUnlock(driver);
+}
+
+
+/*
+ * This is invoked when there is some kind of error
+ * parsing data to/from the monitor. The VM can continue
+ * to run, but no further monitor commands will be
+ * allowed
+ */
+static void
+qemuProcessHandleMonitorError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                              virDomainObjPtr vm)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+
+    VIR_DEBUG("Received error on %p '%s'", vm, vm->def->name);
+
+    qemuDriverLock(driver);
+    virDomainObjLock(vm);
+
+    event = virDomainEventControlErrorNewFromObj(vm);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+
+    virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
 }
 
@@ -626,6 +650,7 @@ static void qemuProcessHandleMonitorDestroy(qemuMonitorPtr mon,
 static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuProcessHandleMonitorDestroy,
     .eofNotify = qemuProcessHandleMonitorEOF,
+    .errorNotify = qemuProcessHandleMonitorError,
     .diskSecretLookup = qemuProcessFindVolumeQcowPassphrase,
     .domainShutdown = qemuProcessHandleShutdown,
     .domainStop = qemuProcessHandleStop,
