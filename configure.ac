@@ -255,7 +255,7 @@ AC_ARG_WITH([qemu],
 AC_ARG_WITH([uml],
   AC_HELP_STRING([--with-uml], [add UML support @<:@default=check@:>@]),[],[with_uml=check])
 AC_ARG_WITH([openvz],
-  AC_HELP_STRING([--with-openvz], [add OpenVZ support @<:@default=yes@:>@]),[],[with_openvz=yes])
+  AC_HELP_STRING([--with-openvz], [add OpenVZ support @<:@default=check@:>@]),[],[with_openvz=check])
 AC_ARG_WITH([vmware],
   AC_HELP_STRING([--with-vmware], [add VMware support @<:@default=yes@:>@]),[],[with_vmware=yes])
 AC_ARG_WITH([libssh2],
@@ -348,15 +348,33 @@ AC_PATH_PROG([EBTABLES_PATH], [ebtables], /sbin/ebtables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([EBTABLES_PATH], "$EBTABLES_PATH", [path to ebtables binary])
 
 
+dnl
+dnl Checks for the OpenVZ driver
+dnl
+
+if test "$with_openvz" = "check"; then
+    with_openvz=$with_linux
+fi
+
+if test "$with_openvz" = "yes" && test "$with_linux" = "no"; then
+    AC_MSG_ERROR([The OpenVZ driver can be enabled on Linux only.])
+fi
+
 if test "$with_openvz" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_OPENVZ], 1, [whether OpenVZ driver is enabled])
 fi
 AM_CONDITIONAL([WITH_OPENVZ], [test "$with_openvz" = "yes"])
 
+
+dnl
+dnl Checks for the VMware Workstation/Player driver
+dnl
+
 if test "$with_vmware" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_VMWARE], 1, [whether VMware driver is enabled])
 fi
 AM_CONDITIONAL([WITH_VMWARE], [test "$with_vmware" = "yes"])
+
 
 dnl
 dnl check for XDR
