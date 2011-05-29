@@ -61,7 +61,7 @@ typedef int (*virExecHook)(void *data);
 int virExecWithHook(const char *const*argv,
                     const char *const*envp,
                     const fd_set *keepfd,
-                    int *retpid,
+                    pid_t *retpid,
                     int infd,
                     int *outfd,
                     int *errfd,
