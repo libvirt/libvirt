@@ -804,13 +804,13 @@ struct remote_interface_destroy_args {
         u_int                      flags;
 };
 struct remote_interface_change_begin_args {
-        unsigned int flags;
+        u_int                      flags;
 };
 struct remote_interface_change_commit_args {
-        unsigned int flags;
+        u_int                      flags;
 };
 struct remote_interface_change_rollback_args {
-        unsigned int flags;
+        u_int                      flags;
 };
 struct remote_auth_list_ret {
         struct {
