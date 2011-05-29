@@ -245,6 +245,17 @@ static int myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myDomainEventControlErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                             virDomainPtr dom,
+                                             void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) control error\n", __func__, virDomainGetName(dom),
+           virDomainGetID(dom));
+
+    return 0;
+}
+
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -278,6 +289,7 @@ int main(int argc, char **argv)
     int callback5ret = -1;
     int callback6ret = -1;
     int callback7ret = -1;
+    int callback8ret = -1;
     struct sigaction action_stop;
 
     memset(&action_stop, 0, sizeof action_stop);
@@ -336,6 +348,11 @@ int main(int argc, char **argv)
                                                     VIR_DOMAIN_EVENT_ID_GRAPHICS,
                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventGraphicsCallback),
                                                     strdup("callback graphics"), myFreeFunc);
+    callback8ret = virConnectDomainEventRegisterAny(dconn,
+                                                    NULL,
+                                                    VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
+                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventControlErrorCallback),
+                                                    strdup("callback control error"), myFreeFunc);
 
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
@@ -360,6 +377,8 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback5ret);
         virConnectDomainEventDeregisterAny(dconn, callback6ret);
         virConnectDomainEventDeregisterAny(dconn, callback7ret);
+        if (callback8ret != -1)
+            virConnectDomainEventDeregisterAny(dconn, callback8ret);
     }
 
     VIR_DEBUG("Closing connection");

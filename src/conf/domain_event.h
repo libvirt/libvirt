@@ -167,6 +167,8 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
                                                    virDomainEventGraphicsAddressPtr remote,
                                                    const char *authScheme,
                                                    virDomainEventGraphicsSubjectPtr subject);
+virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom);
+virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj);
 
 
 

@@ -2031,6 +2031,10 @@ struct remote_domain_migrate_confirm3_args {
     int cancelled;
 };
 
+struct remote_domain_event_control_error_msg {
+    remote_nonnull_domain dom;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -2292,7 +2296,9 @@ enum remote_procedure {
 
     REMOTE_PROC_INTERFACE_CHANGE_COMMIT = 221, /* autogen autogen */
     REMOTE_PROC_INTERFACE_CHANGE_ROLLBACK = 222, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS = 223 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS = 223, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR = 224 /* skipgen skipgen */
+
     /*
      * Notice how the entries are grouped in sets of 10 ?
      * Nice isn't it. Please keep it this way when adding more.

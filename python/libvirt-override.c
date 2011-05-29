@@ -3480,6 +3480,9 @@ libvirt_virConnectDomainEventRegisterAny(ATTRIBUTE_UNUSED PyObject * self,
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:
         cb = VIR_DOMAIN_EVENT_CALLBACK(libvirt_virConnectDomainEventGraphicsCallback);
         break;
+    case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
+        cb = VIR_DOMAIN_EVENT_CALLBACK(libvirt_virConnectDomainEventGenericCallback);
+        break;
     }
 
     if (!cb) {

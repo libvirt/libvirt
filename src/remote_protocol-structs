@@ -1539,6 +1539,9 @@ struct remote_domain_migrate_confirm3_args {
         uint64_t                   flags;
         int                        cancelled;
 };
+struct remote_domain_event_control_error_msg {
+        remote_nonnull_domain      dom;
+};
 struct remote_message_header {
         u_int                      prog;
         u_int                      vers;

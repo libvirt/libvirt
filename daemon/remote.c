@@ -379,6 +379,34 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int remoteRelayDomainEventControlError(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                              virDomainPtr dom,
+                                              void *opaque)
+{
+    struct qemud_client *client = opaque;
+    remote_domain_event_control_error_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain control error %s %d", dom->name, dom->id);
+
+    virMutexLock(&client->lock);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchDomainEventSend(client,
+                                  REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR,
+                                  (xdrproc_t)xdr_remote_domain_event_control_error_msg, &data);
+
+    virMutexUnlock(&client->lock);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -387,6 +415,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOError),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventGraphics),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOErrorReason),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventControlError),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

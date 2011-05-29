@@ -3962,6 +3962,33 @@ no_memory:
 }
 
 
+static virDomainEventPtr
+remoteDomainReadEventControlError(virConnectPtr conn, XDR *xdr)
+{
+    remote_domain_event_control_error_msg msg;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+    memset (&msg, 0, sizeof msg);
+
+    /* unmarshall parameters, and process it*/
+    if (! xdr_remote_domain_event_control_error_msg(xdr, &msg) ) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("unable to demarshall reboot event"));
+        return NULL;
+    }
+
+    dom = get_nonnull_domain(conn,msg.dom);
+    if (!dom)
+        return NULL;
+
+    event = virDomainEventControlErrorNewFromDom(dom);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_event_control_error_msg, (char *) &msg);
+
+    virDomainFree(dom);
+    return event;
+}
+
+
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
@@ -5567,6 +5594,10 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
 
     case REMOTE_PROC_DOMAIN_EVENT_GRAPHICS:
         event = remoteDomainReadEventGraphics(conn, xdr);
+        break;
+
+    case REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR:
+        event = remoteDomainReadEventControlError(conn, xdr);
         break;
 
     default:

@@ -875,6 +875,24 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
 }
 
 
+virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
+                                  dom->id, dom->name, dom->uuid);
+    return ev;
+}
+
+
+virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
+                                  obj->def->id, obj->def->name, obj->def->uuid);
+    return ev;
+}
+
+
 /**
  * virDomainEventQueuePop:
  * @evtQueue: the queue of events
@@ -1002,6 +1020,11 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                     event->data.graphics.authScheme,
                                                     event->data.graphics.subject,
                                                     cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
+        (cb)(conn, dom,
+             cbopaque);
         break;
 
     default:
