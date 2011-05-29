@@ -2538,7 +2538,7 @@ int virDomainInjectNMI(virDomainPtr domain, unsigned int flags);
 
 
 /**
- * virDomainSchedParameterType:
+ * virSchedParameterType:
  *
  * A scheduler parameter field type.  Provided for backwards
  * compatibility; virTypedParameterType is the preferred enum since
@@ -2563,9 +2563,9 @@ typedef enum {
 #define VIR_DOMAIN_SCHED_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
- * virDomainSchedParameter:
+ * virSchedParameter:
  *
- * a virDomainSchedParameter is the set of scheduler parameters.
+ * a virSchedParameter is the set of scheduler parameters.
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias since 0.9.2.
  */
@@ -2582,7 +2582,7 @@ typedef struct _virTypedParameter virSchedParameter;
 typedef virSchedParameter *virSchedParameterPtr;
 
 /**
- * virDomainBlkioParameterType:
+ * virBlkioParameterType:
  *
  * A blkio parameter field type.  Provided for backwards
  * compatibility; virTypedParameterType is the preferred enum since
@@ -2607,9 +2607,9 @@ typedef enum {
 #define VIR_DOMAIN_BLKIO_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
- * virDomainBlkioParameter:
+ * virBlkioParameter:
  *
- * a virDomainBlkioParameter is the set of blkio parameters.
+ * a virBlkioParameter is the set of blkio parameters.
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias since 0.9.2.
  */
@@ -2626,7 +2626,7 @@ typedef struct _virTypedParameter virBlkioParameter;
 typedef virBlkioParameter *virBlkioParameterPtr;
 
 /**
- * virDomainMemoryParameterType:
+ * virMemoryParameterType:
  *
  * A memory parameter field type.  Provided for backwards
  * compatibility; virTypedParameterType is the preferred enum since
@@ -2651,9 +2651,9 @@ typedef enum {
 #define VIR_DOMAIN_MEMORY_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
- * virDomainMemoryParameter:
+ * virMemoryParameter:
  *
- * a virDomainMemoryParameter is the set of scheduler parameters.
+ * a virMemoryParameter is the set of scheduler parameters.
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias since 0.9.2.
  */
