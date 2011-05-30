@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ *  Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +18,7 @@
  *
  * Authors:
  *     Jim Fehlig <jfehlig@novell.com>
+ *     Markus Groß <gross@univention.de>
  */
 /*---------------------------------------------------------------------------*/
 
@@ -81,6 +83,18 @@ struct _libxlDomainObjPrivate {
     int eventHdl;
 };
 
+# define LIBXL_SAVE_MAGIC "libvirt-xml\n \0 \r"
+# define LIBXL_SAVE_VERSION 1
+
+typedef struct _libxlSavefileHeader libxlSavefileHeader;
+typedef libxlSavefileHeader *libxlSavefileHeaderPtr;
+struct _libxlSavefileHeader {
+    char magic[sizeof(LIBXL_SAVE_MAGIC)-1];
+    uint32_t version;
+    uint32_t xmlLen;
+    /* 24 bytes used, pad up to 64 bytes */
+    uint32_t unused[10];
+};
 
 # define libxlError(code, ...)                                     \
     virReportErrorHelper(VIR_FROM_LIBXL, code, __FILE__,           \
