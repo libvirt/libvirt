@@ -479,7 +479,8 @@ error:
 }
 
 int
-libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
+libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
+              libxl_device_disk *x_disk)
 {
     if (l_disk->src && (x_disk->pdev_path = strdup(l_disk->src)) == NULL) {
         virReportOOMError();
@@ -537,6 +538,8 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
     x_disk->readwrite = !l_disk->readonly;
     x_disk->is_cdrom = l_disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ? 1 : 0;
 
+    x_disk->domid = def->id;
+
     return 0;
 }
 
@@ -554,7 +557,7 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
     }
 
     for (i = 0; i < ndisks; i++) {
-        if (libxlMakeDisk(l_disks[i], &x_disks[i]) < 0)
+        if (libxlMakeDisk(def, l_disks[i], &x_disks[i]) < 0)
             goto error;
     }
 
@@ -571,11 +574,13 @@ error:
 }
 
 int
-libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
+libxlMakeNic(virDomainDefPtr def, virDomainNetDefPtr l_nic,
+             libxl_device_nic *x_nic)
 {
     // TODO: Where is mtu stored?
     //x_nics[i].mtu = 1492;
 
+    x_nic->domid = def->id;
     memcpy(x_nic->mac, l_nic->mac, sizeof(libxl_mac));
 
     if (l_nic->model && !STREQ(l_nic->model, "netfront")) {
@@ -625,7 +630,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     for (i = 0; i < nnics; i++) {
         x_nics[i].devid = i;
 
-        if (libxlMakeNic(l_nics[i], &x_nics[i]))
+        if (libxlMakeNic(def, l_nics[i], &x_nics[i]))
             goto error;
     }
 
@@ -642,8 +647,8 @@ error:
 }
 
 int
-libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainGraphicsDefPtr l_vfb,
-             libxl_device_vfb *x_vfb)
+libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
+             virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb)
 {
     int port;
 
@@ -694,6 +699,7 @@ libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainGraphicsDefPtr l_vfb,
             }
             break;
     }
+    x_vfb->domid = def->id;
     return 0;
 }
 
@@ -724,7 +730,7 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
         libxl_device_vfb_init(&x_vfbs[i], i);
         libxl_device_vkb_init(&x_vkbs[i], i);
 
-        if (libxlMakeVfb(driver, l_vfbs[i], &x_vfbs[i]) < 0)
+        if (libxlMakeVfb(driver, def, l_vfbs[i], &x_vfbs[i]) < 0)
             goto error;
     }
 

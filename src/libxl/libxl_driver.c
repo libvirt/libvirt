@@ -2252,7 +2252,7 @@ libxlDomainChangeEjectableMedia(libxlDomainObjPrivatePtr priv,
         return -1;
     }
 
-    if (libxlMakeDisk(disk, &x_disk) < 0)
+    if (libxlMakeDisk(vm->def, disk, &x_disk) < 0)
         goto cleanup;
 
     if ((ret = libxl_cdrom_insert(&priv->ctx, vm->def->id, &x_disk)) < 0) {
@@ -2307,7 +2307,7 @@ libxlDomainAttachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
                     goto cleanup;
                 }
 
-                if (libxlMakeDisk(l_disk, &x_disk) < 0)
+                if (libxlMakeDisk(vm->def, l_disk, &x_disk) < 0)
                     goto cleanup;
 
                 if ((ret = libxl_device_disk_add(&priv->ctx, vm->def->id,
@@ -2360,7 +2360,7 @@ libxlDomainDetachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
 
                 l_disk = vm->def->disks[i];
 
-                if (libxlMakeDisk(l_disk, &x_disk) < 0)
+                if (libxlMakeDisk(vm->def, l_disk, &x_disk) < 0)
                     goto cleanup;
 
                 if ((ret = libxl_device_disk_del(&priv->ctx, &x_disk,
