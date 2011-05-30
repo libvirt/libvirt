@@ -528,8 +528,8 @@ cleanup:
 static int
 remoteSerializeTypedParameters(virTypedParameterPtr params,
                                int nparams,
-                               u_int *ret_params_len,
-                               remote_typed_param **ret_params_val)
+                               remote_typed_param **ret_params_val,
+                               u_int *ret_params_len)
 {
     int i;
     int rv = -1;
@@ -590,8 +590,8 @@ cleanup:
 
 /* Helper to deserialize typed parameters. */
 static virTypedParameterPtr
-remoteDeserializeTypedParameters(u_int args_params_len,
-                                 remote_typed_param *args_params_val,
+remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
+                                 u_int args_params_len,
                                  int limit,
                                  int *nparams)
 {
@@ -694,8 +694,8 @@ remoteDispatchDomainGetSchedulerParameters(struct qemud_server *server ATTRIBUTE
         goto cleanup;
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &ret->params.params_len,
-                                       &ret->params.params_val) < 0)
+                                       &ret->params.params_val,
+                                       &ret->params.params_len) < 0)
         goto cleanup;
 
     rv = 0;
@@ -747,8 +747,8 @@ remoteDispatchDomainGetSchedulerParametersFlags(struct qemud_server *server ATTR
         goto cleanup;
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &ret->params.params_len,
-                                       &ret->params.params_val) < 0)
+                                       &ret->params.params_val,
+                                       &ret->params.params_len) < 0)
         goto cleanup;
 
     rv = 0;
@@ -787,8 +787,8 @@ remoteDispatchDomainSetSchedulerParameters(struct qemud_server *server ATTRIBUTE
 
     nparams = args->params.params_len;
 
-    if ((params = remoteDeserializeTypedParameters(args->params.params_len,
-                                                   args->params.params_val,
+    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                   args->params.params_len,
                                                    REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
                                                    &nparams)) == NULL)
         goto cleanup;
@@ -829,8 +829,8 @@ remoteDispatchDomainSetSchedulerParametersFlags(struct qemud_server *server ATTR
         goto cleanup;
     }
 
-    if ((params = remoteDeserializeTypedParameters(args->params.params_len,
-                                                   args->params.params_val,
+    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                   args->params.params_len,
                                                    REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
                                                    &nparams)) == NULL)
         goto cleanup;
@@ -1369,8 +1369,8 @@ remoteDispatchDomainSetMemoryParameters(struct qemud_server *server
 
     flags = args->flags;
 
-    if ((params = remoteDeserializeTypedParameters(args->params.params_len,
-                                                   args->params.params_val,
+    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                   args->params.params_len,
                                                    REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
                                                    &nparams)) == NULL)
         goto cleanup;
@@ -1443,8 +1443,8 @@ remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
     }
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &ret->params.params_len,
-                                       &ret->params.params_val) < 0)
+                                       &ret->params.params_val,
+                                       &ret->params.params_len) < 0)
         goto cleanup;
 
 success:
@@ -1484,8 +1484,8 @@ remoteDispatchDomainSetBlkioParameters(struct qemud_server *server
 
     flags = args->flags;
 
-    if ((params = remoteDeserializeTypedParameters(args->params.params_len,
-                                                   args->params.params_val,
+    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                   args->params.params_len,
                                                    REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
                                                    &nparams)) == NULL)
         goto cleanup;
@@ -1558,8 +1558,8 @@ remoteDispatchDomainGetBlkioParameters(struct qemud_server *server
     }
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &ret->params.params_len,
-                                       &ret->params.params_val) < 0)
+                                       &ret->params.params_val,
+                                       &ret->params.params_len) < 0)
         goto cleanup;
 
 success:

@@ -1783,8 +1783,8 @@ done:
 static int
 remoteSerializeTypedParameters(virTypedParameterPtr params,
                                int nparams,
-                               u_int *args_params_len,
-                               remote_typed_param **args_params_val)
+                               remote_typed_param **args_params_val,
+                               u_int *args_params_len)
 {
     int i;
     int rv = -1;
@@ -1845,8 +1845,8 @@ cleanup:
 
 /* Helper to deserialize typed parameters. */
 static int
-remoteDeserializeTypedParameters(u_int ret_params_len,
-                                 remote_typed_param *ret_params_val,
+remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
+                                 u_int ret_params_len,
                                  int limit,
                                  virTypedParameterPtr params,
                                  int *nparams)
@@ -1928,8 +1928,8 @@ remoteDomainSetMemoryParameters (virDomainPtr domain,
     args.flags = flags;
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_len,
-                                       &args.params.params_val) < 0) {
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
         xdr_free ((xdrproc_t) xdr_remote_domain_set_memory_parameters_args,
                   (char *) &args);
         goto done;
@@ -1978,8 +1978,8 @@ remoteDomainGetMemoryParameters (virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_len,
-                                         ret.params.params_val,
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
                                          REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
                                          params,
                                          nparams) < 0)
@@ -2012,8 +2012,8 @@ remoteDomainSetBlkioParameters (virDomainPtr domain,
     args.flags = flags;
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_len,
-                                       &args.params.params_val) < 0) {
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
         xdr_free ((xdrproc_t) xdr_remote_domain_set_blkio_parameters_args,
                   (char *) &args);
         goto done;
@@ -2062,8 +2062,8 @@ remoteDomainGetBlkioParameters (virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_len,
-                                         ret.params.params_val,
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
                                          REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
                                          params,
                                          nparams) < 0)
@@ -2450,8 +2450,8 @@ remoteDomainGetSchedulerParameters (virDomainPtr domain,
               (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret) == -1)
         goto done;
 
-    if (remoteDeserializeTypedParameters(ret.params.params_len,
-                                         ret.params.params_val,
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
                                          REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
                                          params,
                                          nparams) < 0)
@@ -2489,8 +2489,8 @@ remoteDomainGetSchedulerParametersFlags (virDomainPtr domain,
               (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_flags_ret, (char *) &ret) == -1)
         goto done;
 
-    if (remoteDeserializeTypedParameters(ret.params.params_len,
-                                         ret.params.params_val,
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
                                          REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
                                          params,
                                          nparams) < 0)
@@ -2518,8 +2518,8 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
     make_nonnull_domain (&args.dom, domain);
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_len,
-                                       &args.params.params_val) < 0) {
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
         xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_args,
                   (char *) &args);
         goto done;
@@ -2554,8 +2554,8 @@ remoteDomainSetSchedulerParametersFlags(virDomainPtr domain,
     args.flags = flags;
 
     if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_len,
-                                       &args.params.params_val) < 0) {
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
         xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_flags_args,
                   (char *) &args);
         goto done;
