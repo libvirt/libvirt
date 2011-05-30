@@ -785,92 +785,6 @@ no_memory:
 }
 
 static int
-remoteDispatchDomainSetSchedulerParameters(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                           struct qemud_client *client ATTRIBUTE_UNUSED,
-                                           virConnectPtr conn,
-                                           remote_message_header *hdr ATTRIBUTE_UNUSED,
-                                           remote_error *rerr,
-                                           remote_domain_set_scheduler_parameters_args *args,
-                                           void *ret ATTRIBUTE_UNUSED)
-{
-    virDomainPtr dom = NULL;
-    virTypedParameterPtr params = NULL;
-    int nparams;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    nparams = args->params.params_len;
-
-    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                   args->params.params_len,
-                                                   REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
-                                                   &nparams)) == NULL)
-        goto cleanup;
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    if (virDomainSetSchedulerParameters(dom, params, nparams) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (dom)
-        virDomainFree(dom);
-    VIR_FREE(params);
-    return rv;
-}
-
-static int
-remoteDispatchDomainSetSchedulerParametersFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                                struct qemud_client *client ATTRIBUTE_UNUSED,
-                                                virConnectPtr conn,
-                                                remote_message_header *hdr ATTRIBUTE_UNUSED,
-                                                remote_error *rerr,
-                                                remote_domain_set_scheduler_parameters_flags_args *args,
-                                                void *ret ATTRIBUTE_UNUSED)
-{
-    virDomainPtr dom = NULL;
-    virTypedParameterPtr params = NULL;
-    int nparams;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                   args->params.params_len,
-                                                   REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
-                                                   &nparams)) == NULL)
-        goto cleanup;
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    if (virDomainSetSchedulerParametersFlags(dom, params, nparams, args->flags) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (dom)
-        virDomainFree(dom);
-    VIR_FREE(params);
-    return rv;
-}
-
-static int
 remoteDispatchDomainMemoryStats(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 struct qemud_client *client ATTRIBUTE_UNUSED,
                                 virConnectPtr conn,
@@ -1363,54 +1277,6 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainSetMemoryParameters(struct qemud_server *server
-                                        ATTRIBUTE_UNUSED,
-                                        struct qemud_client *client
-                                        ATTRIBUTE_UNUSED,
-                                        virConnectPtr conn,
-                                        remote_message_header *
-                                        hdr ATTRIBUTE_UNUSED,
-                                        remote_error * rerr,
-                                        remote_domain_set_memory_parameters_args
-                                        * args, void *ret ATTRIBUTE_UNUSED)
-{
-    virDomainPtr dom = NULL;
-    virTypedParameterPtr params = NULL;
-    int nparams;
-    unsigned int flags;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    flags = args->flags;
-
-    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                   args->params.params_len,
-                                                   REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
-                                                   &nparams)) == NULL)
-        goto cleanup;
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    if (virDomainSetMemoryParameters(dom, params, nparams, flags) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    VIR_FREE(params);
-    if (dom)
-        virDomainFree(dom);
-    return rv;
-}
-
-static int
 remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
                                         ATTRIBUTE_UNUSED,
                                         struct qemud_client *client
@@ -1474,54 +1340,6 @@ cleanup:
     if (dom)
         virDomainFree(dom);
     VIR_FREE(params);
-    return rv;
-}
-
-static int
-remoteDispatchDomainSetBlkioParameters(struct qemud_server *server
-                                        ATTRIBUTE_UNUSED,
-                                        struct qemud_client *client
-                                        ATTRIBUTE_UNUSED,
-                                        virConnectPtr conn,
-                                        remote_message_header *
-                                        hdr ATTRIBUTE_UNUSED,
-                                        remote_error * rerr,
-                                        remote_domain_set_blkio_parameters_args
-                                        * args, void *ret ATTRIBUTE_UNUSED)
-{
-    virDomainPtr dom = NULL;
-    virTypedParameterPtr params = NULL;
-    int nparams;
-    unsigned int flags;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    flags = args->flags;
-
-    if ((params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                   args->params.params_len,
-                                                   REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
-                                                   &nparams)) == NULL)
-        goto cleanup;
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    if (virDomainSetBlkioParameters(dom, params, nparams, flags) < 0)
-        goto cleanup;
-
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    VIR_FREE(params);
-    if (dom)
-        virDomainFree(dom);
     return rv;
 }
 

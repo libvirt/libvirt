@@ -407,6 +407,17 @@ elsif ($opt_b) {
                     }
 
                     push(@args_list, "args->$2.$2_len");
+                } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
+                    push(@vars_list, "virTypedParameterPtr $1 = NULL");
+                    push(@vars_list, "int n$1");
+                    push(@args_list, "$1");
+                    push(@args_list, "n$1");
+                    push(@getters_list, "    if (($1 = remoteDeserializeTypedParameters(args->$1.$1_val,\n" .
+                                        "                                                   args->$1.$1_len,\n" .
+                                        "                                                   $2,\n" .
+                                        "                                                   &n$1)) == NULL)\n" .
+                                        "        goto cleanup;\n");
+                    push(@free_list, "    VIR_FREE(params);");
                 } elsif ($args_member =~ m/<\S+>;/ or $args_member =~ m/\[\S+\];/) {
                     # just make all other array types fail
                     die "unhandled type for argument value: $args_member";
@@ -893,6 +904,7 @@ elsif ($opt_k) {
         my @vars_list = ();
         my @args_check_list = ();
         my @setters_list = ();
+        my @setters_list2 = ();
         my $priv_src = "conn";
         my $priv_name = "privateData";
         my $call_args = "&args";
@@ -973,6 +985,19 @@ elsif ($opt_k) {
                     push(@setters_list, "args.$arg_name.${arg_name}_val = (char *)$arg_name;");
                     push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
                     push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });
+                } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
+                    push(@args_list, "virTypedParameterPtr $1");
+                    push(@args_list, "int n$1");
+                    push(@setters_list2, "if (remoteSerializeTypedParameters($1, n$1, &args.$1.$1_val, &args.$1.$1_len) < 0) {\n" .
+                                         "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
+                                         "        goto done;\n" .
+                                         "    }");
+                } elsif ($args_member =~ m/^(unsigned )?int (\S+);\s*\/\*\s*call-by-reference\s*\*\//) {
+                    my $type_name = $1; $type_name .= "int *";
+                    my $arg_name = $2;
+
+                    push(@args_list, "$type_name $arg_name");
+                    push(@setters_list, "args.$arg_name = *$arg_name;");
                 } elsif ($args_member =~ m/^(unsigned )?int (\S+);/) {
                     my $type_name = $1; $type_name .= "int";
                     my $arg_name = $2;
@@ -1021,6 +1046,7 @@ elsif ($opt_k) {
 
         # handle return values of the function
         my @ret_list = ();
+        my @ret_list2 = ();
         my $call_ret = "&ret";
         my $single_ret_var = "int rv = -1";
         my $single_ret_type = "int";
@@ -1029,6 +1055,7 @@ elsif ($opt_k) {
         my $single_ret_list_name = "undefined";
         my $single_ret_list_max_var = "undefined";
         my $single_ret_list_max_define = "undefined";
+        my $single_ret_cleanup = 0;
         my $multi_ret = 0;
 
         if ($call->{ret} ne "void" and
@@ -1118,6 +1145,18 @@ elsif ($opt_k) {
                         $single_ret_var = "vir${type_name}Ptr rv = NULL";
                         $single_ret_type = "vir${type_name}Ptr";
                     }
+                } elsif ($ret_member =~ m/^remote_typed_param (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
+                    splice(@args_list, int($3), 0, ("virTypedParameterPtr $1"));
+                    push(@ret_list2, "if (remoteDeserializeTypedParameters(ret.$1.$1_val,\n" .
+                                     "                                         ret.$1.$1_len,\n" .
+                                     "                                         $2,\n" .
+                                     "                                         $1,\n" .
+                                     "                                         n$1) < 0)\n" .
+                                     "        goto cleanup;\n");
+                    $single_ret_cleanup = 1;
+                } elsif ($ret_member =~ m/^remote_typed_param (\S+)<\S+>;/) {
+                    # error out on unannotated arrays
+                    die "remote_typed_param array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^int (\S+);/) {
                     my $arg_name = $1;
 
@@ -1257,6 +1296,17 @@ elsif ($opt_k) {
             print "\n";
         }
 
+        if (@setters_list2) {
+            print "\n";
+            print "    ";
+        }
+
+        print join("\n    ", @setters_list2);
+
+        if (@setters_list2) {
+            print "\n";
+        }
+
         if ($call->{ret} ne "void") {
             print "\n";
             print "    memset(&ret, 0, sizeof ret);\n";
@@ -1301,6 +1351,12 @@ elsif ($opt_k) {
             print "\n";
         }
 
+        if (@ret_list2) {
+            print "    ";
+            print join("\n    ", @ret_list2);
+            print "\n";
+        }
+
         if (@ret_list) {
             print "    ";
             print join("\n    ", @ret_list);
@@ -1316,7 +1372,7 @@ elsif ($opt_k) {
             print "    rv = 0;\n";
         }
 
-        if ($single_ret_as_list) {
+        if ($single_ret_as_list or $single_ret_cleanup) {
             print "\n";
             print "cleanup:\n";
             print "    xdr_free((xdrproc_t)xdr_remote_$call->{name}_ret, (char *)&ret);\n";

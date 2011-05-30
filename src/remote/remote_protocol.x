@@ -427,21 +427,21 @@ struct remote_domain_get_scheduler_type_ret {
 
 struct remote_domain_get_scheduler_parameters_args {
     remote_nonnull_domain dom;
-    int nparams;
+    int nparams; /* call-by-reference */
 };
 
 struct remote_domain_get_scheduler_parameters_ret {
-    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>; /* insert@1 */
 };
 
 struct remote_domain_get_scheduler_parameters_flags_args {
     remote_nonnull_domain dom;
-    int nparams;
+    int nparams; /* call-by-reference */
     unsigned int flags;
 };
 
 struct remote_domain_get_scheduler_parameters_flags_ret {
-    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+    remote_typed_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>; /* insert@1 */
 };
 
 struct remote_domain_set_scheduler_parameters_args {
@@ -2113,8 +2113,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_RESTORE = 54, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SAVE = 55, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE = 56, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57, /* skipgen autogen */
+    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58, /* autogen autogen */
     REMOTE_PROC_GET_HOSTNAME = 59, /* autogen autogen */
     REMOTE_PROC_SUPPORTS_FEATURE = 60, /* autogen autogen */
 
@@ -2267,7 +2267,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194, /* autogen autogen */
     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195, /* autogen autogen */
     REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_SET_MEMORY_PARAMETERS = 197, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SET_MEMORY_PARAMETERS = 197, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200, /* autogen autogen */
@@ -2276,7 +2276,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_IS_UPDATED = 202, /* autogen autogen */
     REMOTE_PROC_GET_SYSINFO = 203, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207, /* autogen autogen */
     REMOTE_PROC_STORAGE_VOL_UPLOAD = 208, /* autogen autogen | writestream@1 */
@@ -2291,12 +2291,12 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3 = 216, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_FINISH3 = 217, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3 = 218, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS_FLAGS = 219, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS_FLAGS = 219, /* autogen autogen */
     REMOTE_PROC_INTERFACE_CHANGE_BEGIN = 220, /* autogen autogen */
 
     REMOTE_PROC_INTERFACE_CHANGE_COMMIT = 221, /* autogen autogen */
     REMOTE_PROC_INTERFACE_CHANGE_ROLLBACK = 222, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS = 223, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS = 223, /* skipgen autogen */
     REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR = 224 /* skipgen skipgen */
 
     /*
