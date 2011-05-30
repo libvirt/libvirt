@@ -1634,6 +1634,100 @@ libxlDomainGetState(virDomainPtr dom,
 }
 
 static int
+libxlDomainCoreDump(virDomainPtr dom, const char *to, int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    virDomainEventPtr event = NULL;
+    bool paused = false;
+    int ret = -1;
+
+    virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH, -1);
+
+    libxlDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        libxlError(VIR_ERR_NO_DOMAIN,
+                   _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (!(flags & VIR_DUMP_LIVE) &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        if (libxl_domain_pause(&priv->ctx, dom->id) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Before dumping core, failed to suspend domain '%d'"
+                         " with libxenlight"),
+                       dom->id);
+            goto cleanup;
+        }
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_DUMP);
+        paused = true;
+    }
+
+    if (libxl_domain_core_dump(&priv->ctx, dom->id, to) != 0) {
+        libxlError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to dump core of domain '%d' with libxenlight"),
+                   dom->id);
+        goto cleanup_unpause;
+    }
+
+    libxlDriverLock(driver);
+    if (flags & VIR_DUMP_CRASH) {
+        if (libxlVmReap(driver, vm, 1, VIR_DOMAIN_SHUTOFF_CRASHED) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to destroy domain '%d'"), dom->id);
+            goto cleanup_unlock;
+        }
+
+        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+    }
+
+    if ((flags & VIR_DUMP_CRASH) && !vm->persistent) {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
+    ret = 0;
+
+cleanup_unlock:
+    libxlDriverUnlock(driver);
+cleanup_unpause:
+    if (virDomainObjIsActive(vm) && paused) {
+        if (libxl_domain_unpause(&priv->ctx, dom->id) != 0) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("After dumping core, failed to resume domain '%d' with"
+                         " libxenlight"), dom->id);
+        } else {
+            virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_RUNNING_UNPAUSED);
+        }
+    }
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    if (event) {
+        libxlDriverLock(driver);
+        libxlDomainEventQueue(driver, event);
+        libxlDriverUnlock(driver);
+    }
+    return ret;
+}
+
+static int
 libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                          unsigned int flags)
 {
@@ -3265,6 +3359,7 @@ static virDriver libxlDriver = {
     .domainSetMemoryFlags = libxlDomainSetMemoryFlags, /* 0.9.0 */
     .domainGetInfo = libxlDomainGetInfo, /* 0.9.0 */
     .domainGetState = libxlDomainGetState, /* 0.9.2 */
+    .domainCoreDump = libxlDomainCoreDump, /* 0.9.2 */
     .domainSetVcpus = libxlDomainSetVcpus, /* 0.9.0 */
     .domainSetVcpusFlags = libxlDomainSetVcpusFlags, /* 0.9.0 */
     .domainGetVcpusFlags = libxlDomainGetVcpusFlags, /* 0.9.0 */
