@@ -87,6 +87,24 @@
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
+#if SIZEOF_LONG < 8
+# define HYPER_TO_TYPE(_type, _to, _from)                                     \
+    do {                                                                      \
+        if ((_from) != (_type)(_from)) {                                      \
+            remoteError(VIR_ERR_INTERNAL_ERROR,                               \
+                        _("conversion from hyper to %s overflowed"), #_type); \
+            goto done;                                                        \
+        }                                                                     \
+        (_to) = (_from);                                                      \
+    } while (0)
+
+# define HYPER_TO_LONG(_to, _from) HYPER_TO_TYPE(long, _to, _from)
+# define HYPER_TO_ULONG(_to, _from) HYPER_TO_TYPE(unsigned long, _to, _from)
+#else
+# define HYPER_TO_LONG(_to, _from) (_to) = (_from)
+# define HYPER_TO_ULONG(_to, _from) (_to) = (_from)
+#endif
+
 static int inside_daemon = 0;
 
 struct remote_thread_call;

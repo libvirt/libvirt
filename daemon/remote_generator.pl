@@ -174,6 +174,58 @@ while (<PROTOCOL>) {
 
 close(PROTOCOL);
 
+# this hash contains the procedures that are allowed to map [unsigned] hyper
+# to [unsigned] long for legacy reasons in their signature and return type.
+# this list is fixed. new procedures and public APIs have to map [unsigned]
+# hyper to [unsigned] long long
+my $long_legacy = {
+    DomainGetMaxMemory          => { ret => { memory => 1 } },
+    DomainGetInfo               => { ret => { maxMem => 1, memory => 1 } },
+    DomainMigrate               => { arg => { flags => 1, resource => 1 } },
+    DomainMigrate2              => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateBegin3         => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateConfirm3       => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateDirect         => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateFinish         => { arg => { flags => 1 } },
+    DomainMigrateFinish2        => { arg => { flags => 1 } },
+    DomainMigrateFinish3        => { arg => { flags => 1 } },
+    DomainMigratePeer2Peer      => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePerform        => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePerform3       => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePrepare        => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePrepare2       => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePrepare3       => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePrepareTunnel  => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePrepareTunnel3 => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateToURI          => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateToURI2         => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateVersion1       => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateVersion2       => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateVersion3       => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateSetMaxSpeed    => { arg => { bandwidth => 1 } },
+    DomainSetMaxMemory          => { arg => { memory => 1 } },
+    DomainSetMemory             => { arg => { memory => 1 } },
+    DomainSetMemoryFlags        => { arg => { memory => 1 } },
+    GetLibVersion               => { ret => { lib_ver => 1 } },
+    GetVersion                  => { ret => { hv_ver => 1 } },
+    NodeGetInfo                 => { ret => { memory => 1 } },
+};
+
+sub hyper_to_long
+{
+    my $proc_name = shift;
+    my $ret_or_arg = shift;
+    my $member = shift;
+
+    if ($long_legacy->{$proc_name} and
+        $long_legacy->{$proc_name}->{$ret_or_arg} and
+        $long_legacy->{$proc_name}->{$ret_or_arg}->{$member}) {
+        return 1;
+    } else {
+        return 0
+    }
+}
+
 #----------------------------------------------------------------------
 # Output
 
@@ -378,12 +430,29 @@ elsif ($opt_b) {
                     }
 
                     push(@args_list, "args->$1");
-                } elsif ($args_member =~ m/^(unsigned )?(int|hyper) (\S+);/) {
+                } elsif ($args_member =~ m/^(unsigned )?int (\S+);/) {
                     if (! @args_list) {
                         push(@args_list, "conn");
                     }
 
-                    push(@args_list, "args->$3");
+                    push(@args_list, "args->$2");
+                } elsif ($args_member =~ m/^(unsigned )?hyper (\S+);/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
+                    }
+
+                    my $arg_name = $2;
+
+                    if (hyper_to_long($call->{ProcName}, "arg", $arg_name)) {
+                        my $type_name = $1; $type_name .= "long";
+                        my $sign = ""; $sign = "U" if ($1);
+
+                        push(@vars_list, "$type_name $arg_name");
+                        push(@getters_list, "    HYPER_TO_${sign}LONG($arg_name, args->$arg_name);\n");
+                        push(@args_list, "$arg_name");
+                    } else {
+                        push(@args_list, "args->$arg_name");
+                    }
                 } elsif ($args_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
@@ -411,6 +480,10 @@ elsif ($opt_b) {
             foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
                     if ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+)\[\S+\];/) {
+                        if ($2 eq "hyper" and hyper_to_long($call->{ProcName}, "ret", $3)) {
+                            die "legacy [u]long hyper arrays aren't supported";
+                        }
+
                         push(@ret_list, "memcpy(ret->$3, tmp.$3, sizeof ret->$3);");
                     } elsif ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+);/) {
                         push(@ret_list, "ret->$3 = tmp.$3;");
@@ -502,6 +575,10 @@ elsif ($opt_b) {
                         }
                     }
                 } elsif ($ret_member =~ m/^(?:unsigned )?hyper (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
+                    if (hyper_to_long($call->{ProcName}, "ret", $1)) {
+                        die "legacy [u]long hyper arrays aren't supported";
+                    }
+
                     push(@vars_list, "int len");
                     push(@ret_list, "ret->$1.$1_len = len;");
                     push(@free_list_on_error, "VIR_FREE(ret->$1.$1_val);");
@@ -523,14 +600,22 @@ elsif ($opt_b) {
                     # error out on unannotated arrays
                     die "hyper array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^(unsigned )?hyper (\S+);/) {
-                    my $type_name;
+                    my $type_name = $1;
                     my $ret_name = $2;
+                    my $ret_assign;
 
-                    $type_name = $1 if ($1);
-                    $type_name .= "long";
+                    if (hyper_to_long($call->{ProcName}, "ret", $ret_name)) {
+                        my $sign = ""; $sign = "U" if ($1);
+
+                        $type_name .= "long";
+                        $ret_assign = "HYPER_TO_${sign}LONG(ret->$ret_name, $ret_name);";
+                    } else {
+                        $type_name .= "long long";
+                        $ret_assign = "ret->$ret_name = $ret_name;";
+                    }
 
                     push(@vars_list, "$type_name $ret_name");
-                    push(@ret_list, "ret->$ret_name = $ret_name;");
+                    push(@ret_list, $ret_assign);
                     $single_ret_var = $ret_name;
 
                     if ($call->{ProcName} eq "DomainGetMaxMemory" or
@@ -888,22 +973,20 @@ elsif ($opt_k) {
                     push(@setters_list, "args.$arg_name.${arg_name}_val = (char *)$arg_name;");
                     push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
                     push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });
-                } elsif ($args_member =~ m/^(unsigned )?(int|hyper) (\S+);/) {
-                    my $type_name;
-                    my $arg_name = $3;
+                } elsif ($args_member =~ m/^(unsigned )?int (\S+);/) {
+                    my $type_name = $1; $type_name .= "int";
+                    my $arg_name = $2;
 
-                    $type_name = $1 if ($1);
-                    $type_name .= $2;
-                    $type_name =~ s/hyper/long/;
+                    push(@args_list, "$type_name $arg_name");
+                    push(@setters_list, "args.$arg_name = $arg_name;");
+                } elsif ($args_member =~ m/^(unsigned )?hyper (\S+);/) {
+                    my $type_name = $1;
+                    my $arg_name = $2;
 
-                    # SPECIAL: some hyper parameters map to long longs
-                    if (($call->{ProcName} eq "DomainMigrateSetMaxDowntime" and
-                         $arg_name eq "downtime") or
-                        ($call->{ProcName} eq "StorageVolUpload" and
-                         ($arg_name eq "offset" or $arg_name eq "length")) or
-                        ($call->{ProcName} eq "StorageVolDownload" and
-                         ($arg_name eq "offset" or $arg_name eq "length"))) {
-                        $type_name .= " long";
+                    if (hyper_to_long($call->{ProcName}, "arg", $arg_name)) {
+                        $type_name .= "long";
+                    } else {
+                        $type_name .= "long long";
                     }
 
                     push(@args_list, "$type_name $arg_name");
@@ -961,13 +1044,23 @@ elsif ($opt_k) {
             foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
                     if ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+)\[\S+\];/) {
+                        if ($2 eq "hyper" and hyper_to_long($call->{ProcName}, "ret", $3)) {
+                            die "legacy [u]long hyper arrays aren't supported";
+                        }
+
                         push(@ret_list, "memcpy(result->$3, ret.$3, sizeof result->$3);");
                     } elsif ($ret_member =~ m/<\S+>;/ or $ret_member =~ m/\[\S+\];/) {
                         # just make all other array types fail
                         die "unhandled type for multi-return-value for " .
                             "procedure $call->{name}: $ret_member";
                     } elsif ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+);/) {
-                        push(@ret_list, "result->$3 = ret.$3;");
+                        if ($2 eq "hyper" and hyper_to_long($call->{ProcName}, "ret", $3)) {
+                            my $sign = ""; $sign = "U" if ($1);
+
+                            push(@ret_list, "HYPER_TO_${sign}LONG(result->$3, ret.$3);");
+                        } else {
+                            push(@ret_list, "result->$3 = ret.$3;");
+                        }
                     } else {
                         die "unhandled type for multi-return-value for " .
                             "procedure $call->{name}: $ret_member";
@@ -1039,22 +1132,22 @@ elsif ($opt_k) {
                     $single_ret_var = "int rv = -1";
                     $single_ret_type = "int";
                 } elsif ($ret_member =~ m/^unsigned hyper (\S+);/) {
-                    my $arg_name = $1;
+                    my $ret_name = $1;
 
                     if ($call->{ProcName} =~ m/Get(Lib)?Version/) {
-                        push(@args_list, "unsigned long *$arg_name");
-                        push(@ret_list, "if ($arg_name) *$arg_name = ret.$arg_name;");
+                        push(@args_list, "unsigned long *$ret_name");
+                        push(@ret_list, "if ($ret_name) HYPER_TO_ULONG(*$ret_name, ret.$ret_name);");
                         push(@ret_list, "rv = 0;");
                         $single_ret_var = "int rv = -1";
                         $single_ret_type = "int";
-                    } elsif ($call->{ProcName} eq "NodeGetFreeMemory") {
-                        push(@ret_list, "rv = ret.$arg_name;");
-                        $single_ret_var = "unsigned long long rv = 0";
-                        $single_ret_type = "unsigned long long";
-                    } else {
-                        push(@ret_list, "rv = ret.$arg_name;");
+                    } elsif (hyper_to_long($call->{ProcName}, "ret", $ret_name)) {
+                        push(@ret_list, "HYPER_TO_ULONG(rv, ret.$ret_name);");
                         $single_ret_var = "unsigned long rv = 0";
                         $single_ret_type = "unsigned long";
+                    } else {
+                        push(@ret_list, "rv = ret.$ret_name;");
+                        $single_ret_var = "unsigned long long rv = 0";
+                        $single_ret_type = "unsigned long long";
                     }
                 } elsif ($ret_member =~ m/^(\/)?\*/) {
                     # ignore comments
