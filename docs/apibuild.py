@@ -1490,6 +1490,77 @@ class CParser:
         self.signature = signature
         return token
 
+    # this dict contains the functions that are allowed to use [unsigned]
+    # long for legacy reasons in their signature and return type. this list is
+    # fixed. new procedures and public APIs have to use [unsigned] long long
+    long_legacy_functions = \
+      { "virGetVersion"                  : (False, ("libVer", "typeVer")),
+        "virConnectGetLibVersion"        : (False, ("libVer")),
+        "virConnectGetVersion"           : (False, ("hvVer")),
+        "virDomainGetMaxMemory"          : (True,  ()),
+        "virDomainMigrate"               : (False, ("flags", "bandwidth")),
+        "virDomainMigrate2"              : (False, ("flags", "bandwidth")),
+        "virDomainMigrateBegin3"         : (False, ("flags", "bandwidth")),
+        "virDomainMigrateConfirm3"       : (False, ("flags", "bandwidth")),
+        "virDomainMigrateDirect"         : (False, ("flags", "bandwidth")),
+        "virDomainMigrateFinish"         : (False, ("flags")),
+        "virDomainMigrateFinish2"        : (False, ("flags")),
+        "virDomainMigrateFinish3"        : (False, ("flags")),
+        "virDomainMigratePeer2Peer"      : (False, ("flags", "bandwidth")),
+        "virDomainMigratePerform"        : (False, ("flags", "bandwidth")),
+        "virDomainMigratePerform3"       : (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare"        : (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare2"       : (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare3"       : (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepareTunnel"  : (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepareTunnel3" : (False, ("flags", "bandwidth")),
+        "virDomainMigrateToURI"          : (False, ("flags", "bandwidth")),
+        "virDomainMigrateToURI2"         : (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion1"       : (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion2"       : (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion3"       : (False, ("flags", "bandwidth")),
+        "virDomainMigrateSetMaxSpeed"    : (False, ("bandwidth")),
+        "virDomainSetMaxMemory"          : (False, ("memory")),
+        "virDomainSetMemory"             : (False, ("memory")),
+        "virDomainSetMemoryFlags"        : (False, ("memory")) }
+
+    def checkLongLegacyFunction(self, name, return_type, signature):
+        if "long" in return_type and "long long" not in return_type:
+            try:
+                if not CParser.long_legacy_functions[name][0]:
+                    raise Exception()
+            except:
+                self.error(("function '%s' is not allowed to return long, "
+                            "use long long instead") % (name))
+
+        for param in signature:
+            if "long" in param[0] and "long long" not in param[0]:
+                try:
+                    if param[1] not in CParser.long_legacy_functions[name][1]:
+                        raise Exception()
+                except:
+                    self.error(("function '%s' is not allowed to take long "
+                                "parameter '%s', use long long instead")
+                               % (name, param[1]))
+
+    # this dict contains the structs that are allowed to use [unsigned]
+    # long for legacy reasons. this list is fixed. new structs have to use
+    # [unsigned] long long
+    long_legacy_struct_fields = \
+      { "_virDomainInfo"                 : ("maxMem", "memory"),
+        "_virNodeInfo"                   : ("memory") }
+
+    def checkLongLegacyStruct(self, name, fields):
+        for field in fields:
+            if "long" in field[0] and "long long" not in field[0]:
+                try:
+                    if field[1] not in CParser.long_legacy_struct_fields[name]:
+                        raise Exception()
+                except:
+                    self.error(("struct '%s' is not allowed to contain long "
+                                "field '%s', use long long instead") \
+                               % (name, field[1]))
+
      #
      # Parse a global definition, be it a type, variable or function
      # the extern "C" blocks are a bit nasty and require it to recurse.
@@ -1572,6 +1643,7 @@ class CParser:
                     self.comment = None
                     token = self.token()
                     if type == "struct":
+                        self.checkLongLegacyStruct(self.name, self.struct_fields)
                         self.index_add(self.name, self.filename,
                              not self.is_header, "struct", self.struct_fields)
                     else:
@@ -1584,12 +1656,14 @@ class CParser:
                     if token == None:
                         return None
                     if token[0] == "sep" and token[1] == ";":
+                        self.checkLongLegacyFunction(self.name, type, self.signature)
                         d = self.mergeFunctionComment(self.name,
                                 ((type, None), self.signature), 1)
                         self.index_add(self.name, self.filename, static,
                                         "function", d)
                         token = self.token()
                     elif token[0] == "sep" and token[1] == "{":
+                        self.checkLongLegacyFunction(self.name, type, self.signature)
                         d = self.mergeFunctionComment(self.name,
                                 ((type, None), self.signature), static)
                         self.index_add(self.name, self.filename, static,
