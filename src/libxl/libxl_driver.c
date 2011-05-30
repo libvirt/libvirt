@@ -1493,22 +1493,19 @@ cleanup:
 }
 
 static int
-libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long memory,
+libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                           unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    virDomainDefPtr def = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    bool isActive;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_MEM_LIVE |
-                  VIR_DOMAIN_MEM_CONFIG, -1);
-
-    if ((flags & (VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_CONFIG)) == 0) {
-        libxlError(VIR_ERR_INVALID_ARG,
-                   _("invalid flag combination: (0x%x)"), flags);
-    }
+                  VIR_DOMAIN_MEM_CONFIG |
+                  VIR_DOMAIN_MEM_MAXIMUM, -1);
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1519,13 +1516,22 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long memory,
         goto cleanup;
     }
 
-    if (memory > vm->def->mem.max_balloon) {
-        libxlError(VIR_ERR_INVALID_ARG, "%s",
-                   _("cannot set memory higher than max memory"));
-        goto cleanup;
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_MEM_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_MEM_LIVE;
+        else
+            flags = VIR_DOMAIN_MEM_CONFIG;
+    }
+    if (flags == VIR_DOMAIN_MEM_MAXIMUM) {
+        if (isActive)
+            flags = VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_MAXIMUM;
+        else
+            flags = VIR_DOMAIN_MEM_CONFIG | VIR_DOMAIN_MEM_MAXIMUM;
     }
 
-    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_MEM_LIVE)) {
+    if (!isActive && (flags & VIR_DOMAIN_MEM_LIVE)) {
         libxlError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("cannot set memory on an inactive domain"));
         goto cleanup;
@@ -1537,30 +1543,62 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long memory,
                        _("cannot change persistent config of a transient domain"));
             goto cleanup;
         }
-        if (!(def = virDomainObjGetPersistentDef(driver->caps, vm)))
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
             goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_MEM_LIVE) {
-        priv = vm->privateData;
+    if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
+        /* resize the maximum memory */
 
-        if (libxl_set_memory_target(&priv->ctx, dom->id, memory, 0,
-                                    /* force */ 1) < 0) {
-            libxlError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to set memory for domain '%d'"
-                         " with libxenlight"), dom->id);
+        if (flags & VIR_DOMAIN_MEM_LIVE) {
+            priv = vm->privateData;
+            if (libxl_domain_setmaxmem(&priv->ctx, dom->id, newmem) < 0) {
+                libxlError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to set maximum memory for domain '%d'"
+                             " with libxenlight"), dom->id);
+                goto cleanup;
+            }
+        }
+
+        if (flags & VIR_DOMAIN_MEM_CONFIG) {
+            /* Help clang 2.8 decipher the logic flow.  */
+            sa_assert(persistentDef);
+            persistentDef->mem.max_balloon = newmem;
+            if (persistentDef->mem.cur_balloon > newmem)
+                persistentDef->mem.cur_balloon = newmem;
+            ret = virDomainSaveConfig(driver->configDir, persistentDef);
+            goto cleanup;
+        }
+
+    } else {
+        /* resize the current memory */
+
+        if (newmem > vm->def->mem.max_balloon) {
+            libxlError(VIR_ERR_INVALID_ARG, "%s",
+                        _("cannot set memory higher than max memory"));
+            goto cleanup;
+        }
+
+        if (flags & VIR_DOMAIN_MEM_LIVE) {
+            priv = vm->privateData;
+            if (libxl_set_memory_target(&priv->ctx, dom->id, newmem, 0,
+                                        /* force */ 1) < 0) {
+                libxlError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to set memory for domain '%d'"
+                             " with libxenlight"), dom->id);
+                goto cleanup;
+            }
+        }
+
+        if (flags & VIR_DOMAIN_MEM_CONFIG) {
+            sa_assert(persistentDef);
+            persistentDef->mem.cur_balloon = newmem;
+            ret = virDomainSaveConfig(driver->configDir, persistentDef);
             goto cleanup;
         }
     }
 
     ret = 0;
-
-    if (flags & VIR_DOMAIN_MEM_CONFIG) {
-        /* clang 2.9 needs an extra hint.  */
-        sa_assert(def);
-        def->mem.cur_balloon = memory;
-        ret = virDomainSaveConfig(driver->configDir, def);
-    }
 
 cleanup:
     if (vm)
@@ -1572,6 +1610,12 @@ static int
 libxlDomainSetMemory(virDomainPtr dom, unsigned long memory)
 {
     return libxlDomainSetMemoryFlags(dom, memory, VIR_DOMAIN_MEM_LIVE);
+}
+
+static int
+libxlDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
+{
+    return libxlDomainSetMemoryFlags(dom, memory, VIR_DOMAIN_MEM_MAXIMUM);
 }
 
 static int
@@ -3552,6 +3596,7 @@ static virDriver libxlDriver = {
     .domainDestroy = libxlDomainDestroy, /* 0.9.0 */
     .domainGetOSType = libxlDomainGetOSType, /* 0.9.0 */
     .domainGetMaxMemory = libxlDomainGetMaxMemory, /* 0.9.0 */
+    .domainSetMaxMemory = libxlDomainSetMaxMemory, /* 0.9.2 */
     .domainSetMemory = libxlDomainSetMemory, /* 0.9.0 */
     .domainSetMemoryFlags = libxlDomainSetMemoryFlags, /* 0.9.0 */
     .domainGetInfo = libxlDomainGetInfo, /* 0.9.0 */
