@@ -3850,10 +3850,10 @@ doMigrate (void *opaque)
     vshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
-#if HAVE_PTHREAD_SIGMASK
-    sigset_t sigmask, oldsigmask;
     const char *xmlfile = NULL;
     char *xml = NULL;
+#if HAVE_PTHREAD_SIGMASK
+    sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);

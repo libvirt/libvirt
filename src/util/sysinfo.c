@@ -94,15 +94,6 @@ virSysinfoRead(void) {
     return NULL;
 }
 
-char *
-virSysinfoFormat(virSysinfoDefPtr def ATTRIBUTE_UNUSED,
-                 const char *prefix ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                 _("Host sysinfo extraction not supported on this platform"));
-    return NULL;
-}
-
 #else /* !WIN32 */
 
 virSysinfoDefPtr
@@ -220,6 +211,7 @@ no_memory:
     ret = NULL;
     goto cleanup;
 }
+#endif /* !WIN32 */
 
 /**
  * virSysinfoFormat:
@@ -350,7 +342,7 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
         goto cleanup;
     }
 
-# define CHECK_FIELD(name, desc)                                        \
+#define CHECK_FIELD(name, desc)                                         \
     do {                                                                \
         if (STRNEQ_NULLABLE(src->name, dst->name)) {                    \
             virSmbiosReportError(VIR_ERR_CONFIG_UNSUPPORTED,            \
@@ -372,12 +364,10 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
     CHECK_FIELD(system_sku, "system sku");
     CHECK_FIELD(system_family, "system family");
 
-# undef CHECK_FIELD
+#undef CHECK_FIELD
 
     identical = true;
 
 cleanup:
     return identical;
 }
-
-#endif /* !WIN32 */
