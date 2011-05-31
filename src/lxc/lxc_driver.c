@@ -1522,6 +1522,10 @@ static int lxcVmStart(virConnectPtr conn,
     if (virDomainObjSetDefTransient(driver->caps, vm, false) < 0)
         goto cleanup;
 
+    /* Write domain status to disk. */
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto cleanup;
+
     rc = 0;
 
 cleanup:
@@ -1909,8 +1913,6 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr vm = payload;
     lxc_driver_t *driver = opaque;
-    char *config = NULL;
-    virDomainDefPtr tmp;
     lxcDomainObjPrivatePtr priv;
 
     virDomainObjLock(vm);
@@ -1924,18 +1926,6 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
     if ((virFileReadPid(lxc_driver->stateDir, vm->def->name, &vm->pid)) != 0) {
         VIR_FORCE_CLOSE(priv->monitor);
         goto cleanup;
-    }
-
-    if ((config = virDomainConfigFile(driver->stateDir,
-                                      vm->def->name)) == NULL)
-        goto cleanup;
-
-    /* Try and load the live config */
-    tmp = virDomainDefParseFile(driver->caps, config, 0);
-    VIR_FREE(config);
-    if (tmp) {
-        vm->newDef = vm->def;
-        vm->def = tmp;
     }
 
     if (vm->pid != 0) {
@@ -2030,14 +2020,23 @@ static int lxcStartup(int privileged)
     lxc_driver->caps->privateDataAllocFunc = lxcDomainObjPrivateAlloc;
     lxc_driver->caps->privateDataFreeFunc = lxcDomainObjPrivateFree;
 
+    /* Get all the running persistent or transient configs first */
+    if (virDomainLoadAllConfigs(lxc_driver->caps,
+                                &lxc_driver->domains,
+                                lxc_driver->stateDir,
+                                NULL,
+                                1, NULL, NULL) < 0)
+        goto cleanup;
+
+    virHashForEach(lxc_driver->domains.objs, lxcReconnectVM, lxc_driver);
+
+    /* Then inactive persistent configs */
     if (virDomainLoadAllConfigs(lxc_driver->caps,
                                 &lxc_driver->domains,
                                 lxc_driver->configDir,
                                 lxc_driver->autostartDir,
                                 0, NULL, NULL) < 0)
         goto cleanup;
-
-    virHashForEach(lxc_driver->domains.objs, lxcReconnectVM, lxc_driver);
 
     lxcDriverUnlock(lxc_driver);
 
