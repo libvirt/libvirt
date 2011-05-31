@@ -1626,6 +1626,15 @@ struct remote_domain_migrate_confirm3_args {
 struct remote_domain_event_control_error_msg {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_get_control_info_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_control_info_ret {
+        u_int                      state;
+        u_int                      details;
+        uint64_t                   stateTime;
+};
 struct remote_message_header {
         u_int                      prog;
         u_int                      vers;
