@@ -44,7 +44,7 @@ EXTRA_DIST =						\
 	libvirtd.lxc.logrotate.in                       \
 	libvirtd.uml.logrotate.in                       \
 	test_libvirtd.aug                               \
-	THREADING.txt					\
+	THREADS.txt					\
 	libvirtd.pod.in					\
 	libvirtd.8.in					\
 	libvirtd.stp					\
