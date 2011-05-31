@@ -1873,6 +1873,66 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainGetControlInfo(virDomainPtr dom,
+                          virDomainControlInfoPtr info,
+                          unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    memset(info, 0, sizeof(*info));
+
+    if (priv->monError) {
+        info->state = VIR_DOMAIN_CONTROL_ERROR;
+    } else if (priv->jobActive) {
+        if (!priv->monStart) {
+            info->state = VIR_DOMAIN_CONTROL_JOB;
+            if (virTimeMs(&info->stateTime) < 0)
+                goto cleanup;
+            info->stateTime -= priv->jobStart;
+        } else {
+            info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
+            if (virTimeMs(&info->stateTime) < 0)
+                goto cleanup;
+            info->stateTime -= priv->monStart;
+        }
+    } else {
+        info->state = VIR_DOMAIN_CONTROL_OK;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 
 #define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
 #define QEMUD_SAVE_VERSION 2
@@ -8159,6 +8219,7 @@ static virDriver qemuDriver = {
     .domainGetBlkioParameters = qemuDomainGetBlkioParameters, /* 0.9.0 */
     .domainGetInfo = qemudDomainGetInfo, /* 0.2.0 */
     .domainGetState = qemuDomainGetState, /* 0.9.2 */
+    .domainGetControlInfo = qemuDomainGetControlInfo, /* 0.9.3 */
     .domainSave = qemudDomainSave, /* 0.2.0 */
     .domainRestore = qemuDomainRestore, /* 0.2.0 */
     .domainCoreDump = qemudDomainCoreDump, /* 0.7.0 */

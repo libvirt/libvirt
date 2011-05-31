@@ -609,6 +609,7 @@ void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
 
     qemuMonitorLock(priv->mon);
     qemuMonitorRef(priv->mon);
+    virTimeMs(&priv->monStart);
     virDomainObjUnlock(obj);
 }
 
@@ -629,6 +630,7 @@ void qemuDomainObjExitMonitor(virDomainObjPtr obj)
 
     virDomainObjLock(obj);
 
+    priv->monStart = 0;
     if (refs == 0) {
         priv->mon = NULL;
     }
@@ -650,6 +652,7 @@ void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
 
     qemuMonitorLock(priv->mon);
     qemuMonitorRef(priv->mon);
+    virTimeMs(&priv->monStart);
     virDomainObjUnlock(obj);
     qemuDriverUnlock(driver);
 }
@@ -674,6 +677,7 @@ void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
     qemuDriverLock(driver);
     virDomainObjLock(obj);
 
+    priv->monStart = 0;
     if (refs == 0) {
         priv->mon = NULL;
     }

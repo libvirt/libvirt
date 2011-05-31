@@ -166,6 +166,7 @@ qemuProcessHandleMonitorError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     qemuDriverLock(driver);
     virDomainObjLock(vm);
 
+    ((qemuDomainObjPrivatePtr) vm->privateData)->monError = true;
     event = virDomainEventControlErrorNewFromObj(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
@@ -2300,6 +2301,8 @@ int qemuProcessStart(virConnectPtr conn,
 #endif
         priv->monJSON = 0;
 
+    priv->monError = false;
+    priv->monStart = 0;
     priv->gotShutdown = false;
 
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
