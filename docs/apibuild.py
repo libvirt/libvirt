@@ -58,6 +58,12 @@ ignored_functions = {
   "virEventRemoveTimeout": "internal function in event.c",
 }
 
+ignored_macros = {
+  "_virSchedParameter": "backward compatibility macro for virTypedParameter",
+  "_virBlkioParameter": "backward compatibility macro for virTypedParameter",
+  "_virMemoryParameter": "backward compatibility macro for virTypedParameter",
+}
+
 def escape(raw):
     raw = string.replace(raw, '&', '&amp;')
     raw = string.replace(raw, '<', '&lt;')
@@ -716,7 +722,11 @@ class CParser:
     # Parse a comment block associate to a macro
     #
     def parseMacroComment(self, name, quiet = 0):
+        global ignored_macros
+
         if name[0:2] == '__':
+            quiet = 1
+        if ignored_macros.has_key(name):
             quiet = 1
 
         args = []
