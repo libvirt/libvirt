@@ -873,8 +873,8 @@ XML format for a device.
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
 actual network devices. For more detailed information about this feature
-see the documentation at L<http://libvirt.org/formatnetwork.html> . A lot
-of the command for virtual networks are similar to the one used for domains,
+see the documentation at L<http://libvirt.org/formatnetwork.html> . Many
+of the commands for virtual networks are similar to the ones used for domains,
 but the way to name a virtual network is either by its name or UUID.
 
 =over 4
@@ -946,6 +946,103 @@ Convert a network name to network UUID.
 
 =back
 
+=head1 INTERFACE COMMANDS
+
+The following commands manipulate host interfaces.  Often, these host
+interfaces can then be used by name within domain <interface> elements
+(such as a system-created bridge interface), but there is no
+requirement that host interfaces be tied to any particular guest
+configuration XML at all.
+
+Many of the commands for host interfaces are similar to the ones used
+for domains, and the way to name an interface is either by its name or
+its MAC address.  However, using a MAC address for an I<iface>
+argument only works when that address is unique (if an interface and a
+bridge share the same MAC address, which is often the case, then using
+that MAC address results in an error due to ambiguity, and you must
+resort to a name instead).
+
+=over 4
+
+=item B<iface-define> I<file>
+
+Define a host interface from an XML I<file>, the interface is just defined but
+not started.
+
+=item B<iface-destroy> I<interface>
+
+Destroy a given host interface, such as by running "if-down" to
+disable that interface from active use. This takes effect immediately.
+
+=item B<iface-dumpxml> I<interface> optional I<--inactive>
+
+Output the host interface information as an XML dump to stdout.  If
+I<--inactive> is specified, then the output reflects the persistent
+state of the interface that will be used the next time it is started.
+
+=item B<iface-edit> I<interface>
+
+Edit the XML configuration file for a host interface.
+
+This is equivalent to:
+
+ virsh iface-dumpxml iface > iface.xml
+ vi iface.xml (or make changes with your other text editor)
+ virsh iface-define iface.xml
+
+except that it does some error checking.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
+
+=item B<iface-list> optional I<--inactive> or I<--all>
+
+Returns the list of active host interfaces.  If I<--all> is specified
+this will also include defined but inactive interfaces.  If
+I<--inactive> is specified only the inactive ones will be listed.
+
+=item B<iface-name> I<iface-MAC>
+
+Convert a host interface MAC to interface name, if the I<iface-MAC> is
+unique among the host's interfaces.
+
+=item B<iface-name> I<iface-MAC>
+
+Convert a host interface name to MAC address.
+
+=item B<iface-start> I<iface>
+
+Start a (previously defined) host interface, such as by running "if-up".
+
+=item B<iface-undefine> I<iface>
+
+Undefine the configuration for an inactive host interface.
+
+=item B<iface-begin>
+
+Create a snapshot of current host interface settings, which can later
+be committed (I<iface-commit>) or restored (I<iface-rollback>).  If a
+snapshot already exists, then this command will fail until the
+previous snapshot has been committed or restored.  Undefined behavior
+results if any external changes are made to host interfaces outside of
+the libvirt API between the beginning of a snapshot and its eventual
+commit or rollback.
+
+=item B<iface-commit>
+
+Declare all changes since the last I<iface-begin> as working, and
+delete the rollback point.  If no interface snapshot has already been
+started, then this command will fail.
+
+=item B<iface-rollback>
+
+Revert all host interface settings back to the state recorded in the
+last I<iface-begin>.  If no interface snapshot has already been
+started, then this command will fail.  Rebooting the host also serves
+as an implicit rollback point.
+
+=back
+
 =head1 STORAGE POOL COMMANDS
 
 The following commands manipulate storage pools. Libvirt has the
@@ -953,7 +1050,7 @@ capability to manage various storage solutions, including files, raw
 partitions, and domain-specific formats, used to provide the storage
 volumes visible as devices within virtual machines. For more detailed
 information about this feature, see the documentation at
-L<http://libvirt.org/formatstorage.html> . A lot of the commands for
+L<http://libvirt.org/formatstorage.html> . Many of the commands for
 pools are similar to the ones used for domains.
 
 =over 4

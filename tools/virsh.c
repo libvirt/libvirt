@@ -11204,6 +11204,10 @@ static const vshCmdDef nodedevCmds[] = {
 };
 
 static const vshCmdDef ifaceCmds[] = {
+    {"iface-begin", cmdInterfaceBegin, opts_interface_begin,
+     info_interface_begin, 0},
+    {"iface-commit", cmdInterfaceCommit, opts_interface_commit,
+     info_interface_commit, 0},
     {"iface-define", cmdInterfaceDefine, opts_interface_define,
      info_interface_define, 0},
     {"iface-destroy", cmdInterfaceDestroy, opts_interface_destroy,
@@ -11218,16 +11222,12 @@ static const vshCmdDef ifaceCmds[] = {
      info_interface_mac, 0},
     {"iface-name", cmdInterfaceName, opts_interface_name,
      info_interface_name, 0},
+    {"iface-rollback", cmdInterfaceRollback, opts_interface_rollback,
+     info_interface_rollback, 0},
     {"iface-start", cmdInterfaceStart, opts_interface_start,
      info_interface_start, 0},
     {"iface-undefine", cmdInterfaceUndefine, opts_interface_undefine,
      info_interface_undefine, 0},
-    {"iface-begin", cmdInterfaceBegin, opts_interface_begin,
-     info_interface_begin, 0},
-    {"iface-commit", cmdInterfaceCommit, opts_interface_commit,
-     info_interface_commit, 0},
-    {"iface-rollback", cmdInterfaceRollback, opts_interface_rollback,
-     info_interface_rollback, 0},
     {NULL, NULL, NULL, NULL, 0}
 };
 
