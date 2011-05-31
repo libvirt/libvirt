@@ -8,15 +8,17 @@ INCLUDES = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
-	-I$(top_srcdir)/src/conf \
+	-I$(top_srcdir)/src/conf
+
+AM_CFLAGS = \
 	$(LIBXML_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
 	$(SELINUX_CFLAGS) \
 	$(APPARMOR_CFLAGS) \
 	$(YAJL_CFLAGS) \
-         $(COVERAGE_CFLAGS) \
-         $(WARN_CFLAGS)
+	$(COVERAGE_CFLAGS) \
+	$(WARN_CFLAGS)
 
 if WITH_DRIVER_MODULES
 INCLUDES += \
@@ -419,22 +421,22 @@ nodeinfotest_LDADD = $(LDADDS)
 
 commandtest_SOURCES = \
 	commandtest.c testutils.h testutils.c
-commandtest_CFLAGS = -Dabs_builddir="\"`pwd`\""
+commandtest_CFLAGS = -Dabs_builddir="\"`pwd`\"" $(AM_CFLAGS)
 commandtest_LDADD = $(LDADDS)
 
 commandhelper_SOURCES = \
 	commandhelper.c
-commandhelper_CFLAGS = -Dabs_builddir="\"`pwd`\""
+commandhelper_CFLAGS = -Dabs_builddir="\"`pwd`\"" $(AM_CFLAGS)
 commandhelper_LDADD = $(LDADDS)
 
 virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c
-virnetmessagetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""
+virnetmessagetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virnetmessagetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 virnetsockettest_SOURCES = \
 	virnetsockettest.c testutils.h testutils.c
-virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""
+virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virnetsockettest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 

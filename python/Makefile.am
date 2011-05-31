@@ -3,11 +3,12 @@
 SUBDIRS= . tests
 
 INCLUDES = \
-        $(WARN_CFLAGS) \
-        $(PYTHON_INCLUDES) \
+	$(PYTHON_INCLUDES) \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/$(subdir)
+
+AM_CFLAGS = $(WARN_CFLAGS)
 
 DOCS_DIR = $(datadir)/doc/libvirt-python-$(LIBVIRT_VERSION)
 

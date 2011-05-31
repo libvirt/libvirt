@@ -3,20 +3,19 @@
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them
-INCLUDES =							\
-		-I$(top_srcdir)/gnulib/lib			\
+INCLUDES =	-I$(top_srcdir)/gnulib/lib			\
 		-I../gnulib/lib					\
 		-I../include					\
 		-I@top_srcdir@/src/util				\
 		-I@top_srcdir@/include				\
-		$(DRIVER_MODULE_CFLAGS)				\
+		-DIN_LIBVIRT
+
+AM_CFLAGS =	$(DRIVER_MODULE_CFLAGS)				\
 		$(LIBXML_CFLAGS)				\
 		$(WARN_CFLAGS)					\
-		$(LOCK_CHECKING_CFLAGS)			\
-		-DIN_LIBVIRT				\
-		$(WIN32_EXTRA_CFLAGS)
-
-AM_CFLAGS = $(COVERAGE_CFLAGS)
+		$(LOCK_CHECKING_CFLAGS)				\
+		$(WIN32_EXTRA_CFLAGS)				\
+		$(COVERAGE_CFLAGS)
 AM_LDFLAGS = $(COVERAGE_LDFLAGS)
 
 EXTRA_DIST = $(conf_DATA)
@@ -640,7 +639,7 @@ noinst_LTLIBRARIES += libvirt_driver_vmware.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_vmware.la
 endif
 libvirt_driver_vmware_la_CFLAGS = \
-		-I@top_srcdir@/src/conf -I@top_srcdir@/src/vmx
+		-I@top_srcdir@/src/conf -I@top_srcdir@/src/vmx $(AM_CFLAGS)
 if WITH_DRIVER_MODULES
 libvirt_driver_vmware_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_vmware_la_LDFLAGS = -module -avoid-version
