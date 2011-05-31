@@ -58,8 +58,10 @@
 
 static char *openvzLocateConfDir(void);
 static int openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len);
-static int openvzLocateConfFile(int vpsid, char **conffile, const char *ext);
 static int openvzAssignUUIDs(void);
+static int openvzLocateConfFileDefault(int vpsid, char **conffile, const char *ext);
+
+openvzLocateConfFileFunc openvzLocateConfFile = openvzLocateConfFileDefault;
 
 int
 strtoI(const char *str)
@@ -171,7 +173,7 @@ no_memory:
 }
 
 
-static int
+int
 openvzReadNetworkConf(virDomainDefPtr def,
                       int veid) {
     int ret;
@@ -801,13 +803,12 @@ cleanup:
 }
 
 /* Locate config file of container
-* return -1 - error
-*         0 - OK
-*/
+ * return -1 - error
+ *         0 - OK */
 static int
-openvzLocateConfFile(int vpsid, char **conffile, const char *ext)
+openvzLocateConfFileDefault(int vpsid, char **conffile, const char *ext)
 {
-    char * confdir;
+    char *confdir;
     int ret = 0;
 
     confdir = openvzLocateConfDir();
@@ -824,8 +825,8 @@ openvzLocateConfFile(int vpsid, char **conffile, const char *ext)
     return ret;
 }
 
-static char
-*openvzLocateConfDir(void)
+static char *
+openvzLocateConfDir(void)
 {
     const char *conf_dir_list[] = {"/etc/vz/conf", "/usr/local/etc/conf", NULL};
     int i=0;
