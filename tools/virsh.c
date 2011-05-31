@@ -352,6 +352,7 @@ static void vshDebug(vshControl *ctl, int level, const char *format, ...)
 static int vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
 static const char *vshDomainStateToString(int state);
 static const char *vshDomainStateReasonToString(int state, int reason);
+static const char *vshDomainControlStateToString(int state);
 static const char *vshDomainVcpuStateToString(int state);
 static bool vshConnectionUsability(vshControl *ctl, virConnectPtr conn);
 
@@ -971,6 +972,53 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
     } else {
         vshPrint(ctl, "%s\n",
                  _(vshDomainStateToString(state)));
+    }
+
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "domcontrol" command
+ */
+static const vshCmdInfo info_domcontrol[] = {
+    {"help", N_("domain control interface state")},
+    {"desc", N_("Returns state of a control interface to the domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domcontrol[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomControl(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool ret = true;
+    virDomainControlInfo info;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainGetControlInfo(dom, &info, 0) < 0) {
+        ret = false;
+        goto cleanup;
+    }
+
+    if (info.state != VIR_DOMAIN_CONTROL_OK &&
+        info.state != VIR_DOMAIN_CONTROL_ERROR) {
+        vshPrint(ctl, "%s (%0.3fs)\n",
+                 _(vshDomainControlStateToString(info.state)),
+                 info.stateTime / 1000.0);
+    } else {
+        vshPrint(ctl, "%s\n",
+                 _(vshDomainControlStateToString(info.state)));
     }
 
 cleanup:
@@ -11513,6 +11561,7 @@ static const vshCmdDef domManagementCmds[] = {
 static const vshCmdDef domMonitoringCmds[] = {
     {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo, 0},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},
+    {"domcontrol", cmdDomControl, opts_domcontrol, info_domcontrol, 0},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat, 0},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo, 0},
     {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat, 0},
@@ -13036,6 +13085,23 @@ vshDomainStateReasonToString(int state, int reason)
             ;
         }
         break;
+    }
+
+    return N_("unknown");
+}
+
+static const char *
+vshDomainControlStateToString(int state)
+{
+    switch ((virDomainControlState) state) {
+    case VIR_DOMAIN_CONTROL_OK:
+        return N_("ok");
+    case VIR_DOMAIN_CONTROL_JOB:
+        return N_("background job");
+    case VIR_DOMAIN_CONTROL_OCCUPIED:
+        return N_("occupied");
+    case VIR_DOMAIN_CONTROL_ERROR:
+        return N_("error");
     }
 
     return N_("unknown");

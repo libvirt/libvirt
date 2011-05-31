@@ -463,6 +463,12 @@ Convert a domain Id (or UUID) to domain name
 Returns state about a domain.  I<--reason> tells virsh to also print
 reason for the state.
 
+=item B<domcontrol> I<domain-id>
+
+Returns state of an interface to VMM used to control a domain.  For
+states other than "ok" or "error" the command also prints number of
+seconds elapsed since the control interface entered its current state.
+
 =item B<domxml-from-native> I<format> I<config>
 
 Convert the file I<config> in the native guest configuration format
