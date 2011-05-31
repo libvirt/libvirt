@@ -57,6 +57,7 @@
 /tests/cputest
 /tests/hashtest
 /tests/nwfilterxml2xmltest
+/tests/openvzutilstest
 /update.log
 Makefile
 Makefile.in
