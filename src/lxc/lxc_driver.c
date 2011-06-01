@@ -1287,7 +1287,8 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
                       int nveths,
                       char **veths,
                       int appPty,
-                      int logfile)
+                      int logfile,
+                      int handshakefd)
 {
     int i;
     char *filterstr;
@@ -1332,6 +1333,8 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
 
     virCommandAddArgList(cmd, "--name", vm->def->name, "--console", NULL);
     virCommandAddArgFormat(cmd, "%d", appPty);
+    virCommandAddArg(cmd, "--handshake");
+    virCommandAddArgFormat(cmd, "%d", handshakefd);
     virCommandAddArg(cmd, "--background");
 
     for (i = 0 ; i < nveths ; i++) {
@@ -1355,6 +1358,7 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
     }
 
     virCommandPreserveFD(cmd, appPty);
+    virCommandPreserveFD(cmd, handshakefd);
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
 
@@ -1364,6 +1368,78 @@ cleanup:
     return NULL;
 }
 
+static int
+lxcReadLogOutput(virDomainObjPtr vm,
+                 char *logfile,
+                 off_t pos,
+                 char *buf,
+                 size_t buflen)
+{
+    int fd;
+    off_t off;
+    int whence;
+    int got = 0, ret = -1;
+    int retries = 10;
+
+    if ((fd = open(logfile, O_RDONLY)) < 0) {
+        virReportSystemError(errno, _("failed to open logfile %s"),
+                             logfile);
+        goto cleanup;
+    }
+
+    if (pos < 0) {
+        off = 0;
+        whence = SEEK_END;
+    } else {
+        off = pos;
+        whence = SEEK_SET;
+    }
+
+    if (lseek(fd, off, whence) < 0) {
+        if (whence == SEEK_END)
+            virReportSystemError(errno,
+                                 _("unable to seek to end of log for %s"),
+                                 logfile);
+        else
+            virReportSystemError(errno,
+                                 _("unable to seek to %lld from start for %s"),
+                                 (long long)off, logfile);
+        goto cleanup;
+    }
+
+    while (retries) {
+        ssize_t bytes;
+        int isdead = 0;
+
+        if (kill(vm->pid, 0) == -1 && errno == ESRCH)
+            isdead = 1;
+
+        /* Any failures should be detected before we read the log, so we
+         * always have something useful to report on failure. */
+        bytes = saferead(fd, buf+got, buflen-got-1);
+        if (bytes < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Failure while reading guest log output"));
+            goto cleanup;
+        }
+
+        got += bytes;
+        buf[got] = '\0';
+
+        if ((got == buflen-1) || isdead) {
+            break;
+        }
+
+        usleep(100*1000);
+        retries--;
+    }
+
+
+    ret = got;
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
 
 /**
  * lxcVmStart:
@@ -1389,6 +1465,7 @@ static int lxcVmStart(virConnectPtr conn,
     int logfd = -1;
     unsigned int nveths = 0;
     char **veths = NULL;
+    int handshakefds[2] = { -1, -1 };
     off_t pos = -1;
     char ebuf[1024];
     char *timestamp;
@@ -1462,10 +1539,16 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (pipe(handshakefds) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to create pipe"));
+        goto cleanup;
+    }
+
     if (!(cmd = lxcBuildControllerCmd(driver,
                                       vm,
                                       nveths, veths,
-                                      parentTty, logfd)))
+                                      parentTty, logfd, handshakefds[1])))
         goto cleanup;
 
     /* Log timestamp */
@@ -1489,6 +1572,11 @@ static int lxcVmStart(virConnectPtr conn,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
+    if (VIR_CLOSE(handshakefds[1]) < 0) {
+        virReportSystemError(errno, "%s", _("could not close handshake fd"));
+        goto cleanup;
+    }
+
     /* Connect to the controller as a client *first* because
      * this will block until the child has written their
      * pid file out to disk */
@@ -1505,6 +1593,18 @@ static int lxcVmStart(virConnectPtr conn,
 
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
+
+    if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
+        char out[1024];
+
+        if (!(lxcReadLogOutput(vm, logfile, pos, out, 1024) < 0)) {
+            lxcError(VIR_ERR_INTERNAL_ERROR,
+                     _("guest failed to start: %s"), out);
+        }
+
+        lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+        goto cleanup;
+    }
 
     if ((priv->monitorWatch = virEventAddHandle(
              priv->monitor,
@@ -1545,6 +1645,8 @@ cleanup:
     if (rc != 0)
         VIR_FORCE_CLOSE(priv->monitor);
     VIR_FORCE_CLOSE(parentTty);
+    VIR_FORCE_CLOSE(handshakefds[0]);
+    VIR_FORCE_CLOSE(handshakefds[1]);
     VIR_FREE(logfile);
     return rc;
 }
