@@ -2471,6 +2471,30 @@ virTimestamp(void)
     return timestamp;
 }
 
+#define timeval_to_ms(tv)   (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
+
+/**
+ * virTimeMs:
+ *
+ * Get current time in milliseconds.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virTimeMs(unsigned long long *ms)
+{
+    struct timeval now;
+
+    if (gettimeofday(&now, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
+
+    *ms = timeval_to_ms(now);
+    return 0;
+}
+
 #if HAVE_LIBDEVMAPPER_H
 bool
 virIsDevMapperDevice(const char *devname)
