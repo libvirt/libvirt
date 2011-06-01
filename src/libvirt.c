@@ -894,21 +894,25 @@ int virStateActive(void) {
 /**
  * virGetVersion:
  * @libVer: return value for the library version (OUT)
- * @type: the type of connection/driver looked at, if @typeVer is not NULL
- * @typeVer: optional return value for the version of the hypervisor (OUT)
+ * @type: ignored; pass NULL
+ * @typeVer: pass NULL; for historical purposes duplicates @libVer if
+ * non-NULL
  *
- * Provides information on up to two versions: @libVer is the version of the
- * library and will always be set unless an error occurs, in which case an
- * error code will be returned. If @typeVer is not NULL it will be set to the
- * version of the hypervisor @type against which the library was compiled.
- * If @type is NULL, "Xen" is assumed, if @type is unknown or not
- * available, an error code will be returned and @typeVer will be 0.
+ * Provides version information. @libVer is the version of the
+ * library and will always be set unless an error occurs, in which case
+ * an error code will be returned. @typeVer exists for historical
+ * compatibility; if it is not NULL it will duplicate @libVer (it was
+ * originally intended to return hypervisor information based on @type,
+ * but due to the design of remote clients this is not reliable). To
+ * get the version of the running hypervisor use the virConnectGetVersion
+ * function instead. To get the libvirt library version used by a
+ * connection use the virConnectGetLibVersion instead.
  *
  * Returns -1 in case of failure, 0 otherwise, and values for @libVer and
  *       @typeVer have the format major * 1,000,000 + minor * 1,000 + release.
  */
 int
-virGetVersion(unsigned long *libVer, const char *type,
+virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
               unsigned long *typeVer)
 {
     VIR_DEBUG("libVir=%p, type=%s, typeVer=%p", libVer, type, typeVer);
@@ -921,78 +925,9 @@ virGetVersion(unsigned long *libVer, const char *type,
         goto error;
     *libVer = LIBVIR_VERSION_NUMBER;
 
-    if (typeVer != NULL) {
-        if (type == NULL)
-            type = "Xen";
-
-/* FIXME: Add _proper_ type version handling for loadable driver modules... */
-#ifdef WITH_DRIVER_MODULES
+    if (typeVer != NULL)
         *typeVer = LIBVIR_VERSION_NUMBER;
-#else
-        *typeVer = 0;
 
-# if WITH_XEN
-        if (STRCASEEQ(type, "Xen"))
-            *typeVer = xenUnifiedVersion();
-# endif
-# if WITH_TEST
-        if (STRCASEEQ(type, "Test"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_QEMU
-        if (STRCASEEQ(type, "QEMU"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_LXC
-        if (STRCASEEQ(type, "LXC"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_LIBXL
-        if (STRCASEEQ(type, "xenlight"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_PHYP
-        if (STRCASEEQ(type, "phyp"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_OPENVZ
-        if (STRCASEEQ(type, "OpenVZ"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_VMWARE
-        if (STRCASEEQ(type, "VMware"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_VBOX
-        if (STRCASEEQ(type, "VBox"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_UML
-        if (STRCASEEQ(type, "UML"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_ONE
-        if (STRCASEEQ(type, "ONE"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_ESX
-        if (STRCASEEQ(type, "ESX"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_XENAPI
-        if (STRCASEEQ(type, "XenAPI"))
-            *typeVer = LIBVIR_VERSION_NUMBER;
-# endif
-# if WITH_REMOTE
-        if (STRCASEEQ(type, "Remote"))
-            *typeVer = remoteVersion();
-# endif
-        if (*typeVer == 0) {
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-            goto error;
-        }
-#endif /* WITH_DRIVER_MODULES */
-    }
     return 0;
 
 error:
