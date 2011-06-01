@@ -363,14 +363,39 @@ static void daemonInitialize(void)
      * If they try to open a connection for a module that
      * is not loaded they'll get a suitable error at that point
      */
+# ifdef WITH_NETWORK
     virDriverLoadModule("network");
+# endif
+# ifdef WITH_STORAGE
     virDriverLoadModule("storage");
+# endif
+# ifdef WITH_NODE_DEVICES
     virDriverLoadModule("nodedev");
+# endif
+# ifdef WITH_SECRETS
     virDriverLoadModule("secret");
-    virDriverLoadModule("qemu");
-    virDriverLoadModule("lxc");
-    virDriverLoadModule("uml");
+# endif
+# ifdef WITH_NWFILTER
     virDriverLoadModule("nwfilter");
+# endif
+# ifdef WITH_INTERFACE
+    virDriverLoadModule("interface");
+# endif
+# ifdef WITH_QEMU
+    virDriverLoadModule("qemu");
+# endif
+# ifdef WITH_LXC
+    virDriverLoadModule("lxc");
+# endif
+# ifdef WITH_UML
+    virDriverLoadModule("uml");
+# endif
+# ifdef WITH_XEN
+    virDriverLoadModule("xen");
+# endif
+# ifdef WITH_LIBXL
+    virDriverLoadModule("libxl");
+# endif
 #else
 # ifdef WITH_NETWORK
     networkRegister();
@@ -381,7 +406,7 @@ static void daemonInitialize(void)
 # ifdef WITH_STORAGE_DIR
     storageRegister();
 # endif
-# if defined(WITH_NODE_DEVICES)
+# ifdef WITH_NODE_DEVICES
     nodedevRegister();
 # endif
 # ifdef WITH_SECRETS

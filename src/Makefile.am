@@ -626,27 +626,16 @@ libvirt_driver_la_LIBADD = $(NUMACTL_LIBS) $(GNUTLS_LIBS) $(DLOPEN_LIBS)
 USED_SYM_FILES = libvirt_private.syms
 
 if WITH_TEST
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_test.la
-else
 noinst_LTLIBRARIES += libvirt_driver_test.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_test.la
-endif
 libvirt_driver_test_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-if WITH_DRIVER_MODULES
-libvirt_driver_test_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
-endif
 libvirt_driver_test_la_SOURCES = $(TEST_DRIVER_SOURCES)
 endif
 
 if WITH_REMOTE
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_remote.la
-else
 noinst_LTLIBRARIES += libvirt_driver_remote.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
-endif
 libvirt_driver_remote_la_CFLAGS =				\
 		$(GNUTLS_CFLAGS)				\
 		$(XDR_CFLAGS)					\
@@ -658,10 +647,6 @@ libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) \
                 libvirt-net-rpc-client.la \
                 libvirt-net-rpc-server.la \
                 libvirt-net-rpc.la
-if WITH_DRIVER_MODULES
-libvirt_driver_remote_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
-endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
 $(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
@@ -681,7 +666,8 @@ if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_xen.la
 else
 noinst_LTLIBRARIES += libvirt_driver_xen.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_xen.la
+# Stateful, so linked to daemon instead
+#libvirt_la_BUILT_LIBADD += libvirt_driver_xen.la
 endif
 libvirt_driver_xen_la_CFLAGS =					\
 		$(XEN_CFLAGS)					\
@@ -698,86 +684,46 @@ libvirt_driver_xen_la_SOURCES = $(XEN_DRIVER_SOURCES)
 endif
 
 if WITH_PHYP
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_phyp.la
-else
 noinst_LTLIBRARIES += libvirt_driver_phyp.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_phyp.la
-endif
 libvirt_driver_phyp_la_LIBADD = $(LIBSSH2_LIBS)
-if WITH_DRIVER_MODULES
-libvirt_driver_phyp_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_phyp_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
-endif
 libvirt_driver_phyp_la_CFLAGS = $(LIBSSH2_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_phyp_la_SOURCES = $(PHYP_DRIVER_SOURCES)
 endif
 
 if WITH_OPENVZ
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_openvz.la
-else
 noinst_LTLIBRARIES += libvirt_driver_openvz.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_openvz.la
-endif
 libvirt_driver_openvz_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-if WITH_DRIVER_MODULES
-libvirt_driver_openvz_la_LIBADD = ../gnulib/lib/libgnu.la
-libvirt_driver_openvz_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
-endif
 libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
 endif
 
 if WITH_VMWARE
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_vmware.la
-else
 noinst_LTLIBRARIES += libvirt_driver_vmware.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_vmware.la
-endif
 libvirt_driver_vmware_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf -I$(top_srcdir)/src/vmx $(AM_CFLAGS)
-if WITH_DRIVER_MODULES
-libvirt_driver_vmware_la_LIBADD = ../gnulib/lib/libgnu.la
-libvirt_driver_vmware_la_LDFLAGS = -module -avoid-version
-endif
 libvirt_driver_vmware_la_SOURCES = $(VMWARE_DRIVER_SOURCES)
 endif
 
 if WITH_VBOX
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_vbox.la
-else
 noinst_LTLIBRARIES += libvirt_driver_vbox.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_vbox.la
-endif
 libvirt_driver_vbox_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS) $(MSCOM_LIBS)
-if WITH_DRIVER_MODULES
-libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
-endif
 libvirt_driver_vbox_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif
 
 if WITH_XENAPI
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_xenapi.la
-else
 noinst_LTLIBRARIES += libvirt_driver_xenapi.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_xenapi.la
-endif
 libvirt_driver_xenapi_la_CFLAGS = $(LIBXENSERVER_CFLAGS) $(LIBCURL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_xenapi_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xenapi_la_LIBADD = $(LIBXENSERVER_LIBS) $(LIBCURL_LIBS)
-if WITH_DRIVER_MODULES
-libvirt_driver_xenapi_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_xenapi_la_LDFLAGS += -module -avoid-version
-endif
 libvirt_driver_xenapi_la_SOURCES = $(XENAPI_DRIVER_SOURCES)
 endif
 
@@ -896,20 +842,12 @@ $(ESX_DRIVER_GENERATED): $(srcdir)/esx/esx_vi_generator.input \
 	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/esx/esx_vi_generator.py
 
 if WITH_ESX
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_esx.la
-else
 noinst_LTLIBRARIES += libvirt_driver_esx.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_esx.la
-endif
 libvirt_driver_esx_la_CFLAGS = $(LIBCURL_CFLAGS) \
 		-I$(top_srcdir)/src/conf -I$(top_srcdir)/src/vmx $(AM_CFLAGS)
 libvirt_driver_esx_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_esx_la_LIBADD = $(LIBCURL_LIBS)
-if WITH_DRIVER_MODULES
-libvirt_driver_esx_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_esx_la_LDFLAGS += -module -avoid-version
-endif
 libvirt_driver_esx_la_SOURCES = $(ESX_DRIVER_SOURCES)
 libvirt_driver_esx_la_DEPENDENCIES = $(ESX_DRIVER_GENERATED)
 endif
@@ -922,20 +860,12 @@ $(HYPERV_DRIVER_GENERATED): $(srcdir)/hyperv/hyperv_wmi_generator.input \
 	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/hyperv/hyperv_wmi_generator.py
 
 if WITH_HYPERV
-if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_hyperv.la
-else
 noinst_LTLIBRARIES += libvirt_driver_hyperv.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_hyperv.la
-endif
 libvirt_driver_hyperv_la_CFLAGS = $(OPENWSMAN_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_hyperv_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_hyperv_la_LIBADD = $(OPENWSMAN_LIBS)
-if WITH_DRIVER_MODULES
-libvirt_driver_hyperv_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_hyperv_la_LDFLAGS += -module -avoid-version
-endif
 libvirt_driver_hyperv_la_SOURCES = $(HYPERV_DRIVER_SOURCES)
 endif
 
@@ -966,7 +896,8 @@ if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_interface.la
 else
 noinst_LTLIBRARIES += libvirt_driver_interface.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_interface.la
+# Stateful, so linked to daemon instead
+#libvirt_la_BUILT_LIBADD += libvirt_driver_interface.la
 endif
 libvirt_driver_interface_la_CFLAGS = $(NETCF_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)

@@ -45,37 +45,32 @@
 #include "virrandom.h"
 #include "viruri.h"
 
-#ifndef WITH_DRIVER_MODULES
-# ifdef WITH_TEST
-#  include "test/test_driver.h"
-# endif
-# ifdef WITH_XEN
-#  include "xen/xen_driver.h"
-# endif
-# ifdef WITH_REMOTE
-#  include "remote/remote_driver.h"
-# endif
-# ifdef WITH_OPENVZ
-#  include "openvz/openvz_driver.h"
-# endif
-# ifdef WITH_VMWARE
-#  include "vmware/vmware_driver.h"
-# endif
-# ifdef WITH_PHYP
-#  include "phyp/phyp_driver.h"
-# endif
-# ifdef WITH_VBOX
-#  include "vbox/vbox_driver.h"
-# endif
-# ifdef WITH_ESX
-#  include "esx/esx_driver.h"
-# endif
-# ifdef WITH_HYPERV
-#  include "hyperv/hyperv_driver.h"
-# endif
-# ifdef WITH_XENAPI
-#  include "xenapi/xenapi_driver.h"
-# endif
+#ifdef WITH_TEST
+# include "test/test_driver.h"
+#endif
+#ifdef WITH_REMOTE
+# include "remote/remote_driver.h"
+#endif
+#ifdef WITH_OPENVZ
+# include "openvz/openvz_driver.h"
+#endif
+#ifdef WITH_VMWARE
+# include "vmware/vmware_driver.h"
+#endif
+#ifdef WITH_PHYP
+# include "phyp/phyp_driver.h"
+#endif
+#ifdef WITH_VBOX
+# include "vbox/vbox_driver.h"
+#endif
+#ifdef WITH_ESX
+# include "esx/esx_driver.h"
+#endif
+#ifdef WITH_HYPERV
+# include "hyperv/hyperv_driver.h"
+#endif
+#ifdef WITH_XENAPI
+# include "xenapi/xenapi_driver.h"
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -424,70 +419,32 @@ virInitialize(void)
      * Note that the order is important: the first ones have a higher
      * priority when calling virConnectOpen.
      */
-#ifdef WITH_DRIVER_MODULES
-    /* We don't care if any of these fail, because the whole point
-     * is to allow users to only install modules they want to use.
-     * If they try to open a connection for a module that
-     * is not loaded they'll get a suitable error at that point
-     */
-# ifdef WITH_TEST
-    virDriverLoadModule("test");
-# endif
-# ifdef WITH_XEN
-    virDriverLoadModule("xen");
-# endif
-# ifdef WITH_OPENVZ
-    virDriverLoadModule("openvz");
-# endif
-# ifdef WITH_VMWARE
-    virDriverLoadModule("vmware");
-# endif
-# ifdef WITH_VBOX
-    virDriverLoadModule("vbox");
-# endif
-# ifdef WITH_ESX
-    virDriverLoadModule("esx");
-# endif
-# ifdef WITH_HYPERV
-    virDriverLoadModule("hyperv");
-# endif
-# ifdef WITH_XENAPI
-    virDriverLoadModule("xenapi");
-# endif
-# ifdef WITH_REMOTE
-    virDriverLoadModule("remote");
-# endif
-#else
-# ifdef WITH_TEST
+#ifdef WITH_TEST
     if (testRegister() == -1) return -1;
-# endif
-# ifdef WITH_XEN
-    if (xenRegister () == -1) return -1;
-# endif
-# ifdef WITH_OPENVZ
+#endif
+#ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
-# endif
-# ifdef WITH_VMWARE
+#endif
+#ifdef WITH_VMWARE
     if (vmwareRegister() == -1) return -1;
-# endif
-# ifdef WITH_PHYP
+#endif
+#ifdef WITH_PHYP
     if (phypRegister() == -1) return -1;
-# endif
-# ifdef WITH_VBOX
+#endif
+#ifdef WITH_VBOX
     if (vboxRegister() == -1) return -1;
-# endif
-# ifdef WITH_ESX
+#endif
+#ifdef WITH_ESX
     if (esxRegister() == -1) return -1;
-# endif
-# ifdef WITH_HYPERV
+#endif
+#ifdef WITH_HYPERV
     if (hypervRegister() == -1) return -1;
-# endif
-# ifdef WITH_XENAPI
+#endif
+#ifdef WITH_XENAPI
     if (xenapiRegister() == -1) return -1;
-# endif
-# ifdef WITH_REMOTE
+#endif
+#ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
-# endif
 #endif
 
     return 0;
