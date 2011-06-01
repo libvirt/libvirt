@@ -614,7 +614,7 @@ pciTrySecondaryBusReset(pciDevice *dev,
      * are not in use by the host or other guests.
      */
     if ((conflict = pciBusContainsActiveDevices(dev, inactiveDevs))) {
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Active %s devices on bus with %s, not doing bus reset"),
                        conflict->name, dev->name);
         return -1;
@@ -624,7 +624,7 @@ pciTrySecondaryBusReset(pciDevice *dev,
     if (pciGetParentDevice(dev, &parent) < 0)
         return -1;
     if (!parent) {
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to find parent device for %s"),
                        dev->name);
         return -1;
@@ -637,7 +637,7 @@ pciTrySecondaryBusReset(pciDevice *dev,
      * are multiple devices/functions
      */
     if (pciRead(dev, 0, config_space, PCI_CONF_LEN) < 0) {
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to read PCI config space for %s"),
                        dev->name);
         goto out;
@@ -657,7 +657,7 @@ pciTrySecondaryBusReset(pciDevice *dev,
     usleep(200 * 1000); /* sleep 200ms */
 
     if (pciWrite(dev, 0, config_space, PCI_CONF_LEN) < 0) {
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to restore PCI config space for %s"),
                        dev->name);
         goto out;
@@ -683,7 +683,7 @@ pciTryPowerManagementReset(pciDevice *dev)
 
     /* Save and restore the device's config space. */
     if (pciRead(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to read PCI config space for %s"),
                        dev->name);
         return -1;
@@ -703,7 +703,7 @@ pciTryPowerManagementReset(pciDevice *dev)
     usleep(10 * 1000); /* sleep 10ms */
 
     if (pciWrite(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to restore PCI config space for %s"),
                        dev->name);
         return -1;
@@ -770,7 +770,7 @@ pciResetDevice(pciDevice *dev,
 
     if (ret < 0) {
         virErrorPtr err = virGetLastError();
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to reset PCI device %s: %s"),
                        dev->name,
                        err ? err->message : _("no FLR, PM reset or bus reset available"));
@@ -1324,7 +1324,7 @@ pciGetDevice(unsigned domain,
     product = pciReadDeviceID(dev, "device");
 
     if (!vendor || !product) {
-        pciReportError(VIR_ERR_NO_SUPPORT,
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to read product/vendor ID for %s"),
                        dev->name);
         VIR_FREE(product);
@@ -1588,7 +1588,7 @@ pciDeviceIsBehindSwitchLackingACS(pciDevice *dev)
         if (dev->bus == 0)
             return 0;
         else {
-            pciReportError(VIR_ERR_NO_SUPPORT,
+            pciReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to find parent device for %s"),
                            dev->name);
             return -1;
@@ -1643,7 +1643,7 @@ int pciDeviceIsAssignable(pciDevice *dev,
             VIR_DEBUG("%s %s: strict ACS check disabled; device assignment allowed",
                       dev->id, dev->name);
         } else {
-            pciReportError(VIR_ERR_NO_SUPPORT,
+            pciReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Device %s is behind a switch lacking ACS and "
                              "cannot be assigned"),
                            dev->name);
