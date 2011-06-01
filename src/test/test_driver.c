@@ -499,7 +499,6 @@ cleanup:
 
 static int testOpenDefault(virConnectPtr conn) {
     int u;
-    struct timeval tv;
     testConnPtr privconn;
     virDomainDefPtr domdef = NULL;
     virDomainObjPtr domobj = NULL;
@@ -525,12 +524,6 @@ static int testOpenDefault(virConnectPtr conn) {
 
     testDriverLock(privconn);
     conn->privateData = privconn;
-
-    if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(errno,
-                             "%s", _("getting time of day"));
-        goto error;
-    }
 
     if (virDomainObjListInit(&privconn->domains) < 0)
         goto error;
