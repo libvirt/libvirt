@@ -46,8 +46,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-#define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
-
 enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
     QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
@@ -831,7 +829,6 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
     unsigned long long memProcessed;
     unsigned long long memRemaining;
     unsigned long long memTotal;
-    struct timeval now;
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
@@ -847,18 +844,11 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
                                         &memTotal);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret < 0) {
+    if (ret < 0 || virTimeMs(&priv->jobInfo.timeElapsed) < 0) {
         priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
         return -1;
     }
-
-    if (gettimeofday(&now, NULL) < 0) {
-        priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
-        virReportSystemError(errno, "%s",
-                             _("cannot get time of day"));
-        return -1;
-    }
-    priv->jobInfo.timeElapsed = timeval_to_ms(now) - priv->jobStart;
+    priv->jobInfo.timeElapsed -= priv->jobStart;
 
     switch (status) {
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
@@ -1069,18 +1059,16 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     int internalret;
     int dataFD[2] = { -1, -1 };
     qemuDomainObjPrivatePtr priv = NULL;
-    struct timeval now;
+    unsigned long long now;
     qemuMigrationCookiePtr mig = NULL;
+
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, st=%p, dname=%s, dom_xml=%s",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, st, NULLSTR(dname), dom_xml);
 
-    if (gettimeofday(&now, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot get time of day"));
+    if (virTimeMs(&now) < 0)
         return -1;
-    }
 
     /* Parse the domain XML. */
     if (!(def = virDomainDefParseString(driver->caps, dom_xml,
@@ -1190,7 +1178,7 @@ endjob:
         virDomainObjIsActive(vm)) {
         priv->jobActive = QEMU_JOB_MIGRATION_IN;
         priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
-        priv->jobStart = timeval_to_ms(now);
+        priv->jobStart = now;
     }
 
 cleanup:
@@ -1229,8 +1217,9 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
     int ret = -1;
     int internalret;
     qemuDomainObjPrivatePtr priv = NULL;
-    struct timeval now;
+    unsigned long long now;
     qemuMigrationCookiePtr mig = NULL;
+
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
               "dname=%s, dom_xml=%s",
@@ -1238,11 +1227,8 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
               cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
               NULLSTR(dname), dom_xml);
 
-    if (gettimeofday(&now, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot get time of day"));
+    if (virTimeMs(&now) < 0)
         return -1;
-    }
 
     /* The URI passed in may be NULL or a string "tcp://somehostname:port".
      *
@@ -1413,7 +1399,7 @@ endjob:
         virDomainObjIsActive(vm)) {
         priv->jobActive = QEMU_JOB_MIGRATION_IN;
         priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
-        priv->jobStart = timeval_to_ms(now);
+        priv->jobStart = now;
     }
 
 cleanup:

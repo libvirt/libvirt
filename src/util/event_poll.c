@@ -201,11 +201,12 @@ int virEventPollRemoveHandle(int watch) {
 int virEventPollAddTimeout(int frequency,
                            virEventTimeoutCallback cb,
                            void *opaque,
-                           virFreeCallback ff) {
-    struct timeval now;
+                           virFreeCallback ff)
+{
+    unsigned long long now;
     int ret;
     EVENT_DEBUG("Adding timer %d with %d ms freq", nextTimer, frequency);
-    if (gettimeofday(&now, NULL) < 0) {
+    if (virTimeMs(&now) < 0) {
         return -1;
     }
 
@@ -227,9 +228,7 @@ int virEventPollAddTimeout(int frequency,
     eventLoop.timeouts[eventLoop.timeoutsCount].opaque = opaque;
     eventLoop.timeouts[eventLoop.timeoutsCount].deleted = 0;
     eventLoop.timeouts[eventLoop.timeoutsCount].expiresAt =
-        frequency >= 0 ? frequency +
-        (((unsigned long long)now.tv_sec)*1000) +
-        (((unsigned long long)now.tv_usec)/1000) : 0;
+        frequency >= 0 ? frequency + now : 0;
 
     eventLoop.timeoutsCount++;
     ret = nextTimer-1;
@@ -238,8 +237,9 @@ int virEventPollAddTimeout(int frequency,
     return ret;
 }
 
-void virEventPollUpdateTimeout(int timer, int frequency) {
-    struct timeval tv;
+void virEventPollUpdateTimeout(int timer, int frequency)
+{
+    unsigned long long now;
     int i;
     EVENT_DEBUG("Updating timer %d timeout with %d ms freq", timer, frequency);
 
@@ -248,7 +248,7 @@ void virEventPollUpdateTimeout(int timer, int frequency) {
         return;
     }
 
-    if (gettimeofday(&tv, NULL) < 0) {
+    if (virTimeMs(&now) < 0) {
         return;
     }
 
@@ -257,9 +257,7 @@ void virEventPollUpdateTimeout(int timer, int frequency) {
         if (eventLoop.timeouts[i].timer == timer) {
             eventLoop.timeouts[i].frequency = frequency;
             eventLoop.timeouts[i].expiresAt =
-                frequency >= 0 ? frequency +
-                (((unsigned long long)tv.tv_sec)*1000) +
-                (((unsigned long long)tv.tv_usec)/1000) : 0;
+                frequency >= 0 ? frequency + now : 0;
             virEventPollInterruptLocked();
             break;
         }
@@ -321,18 +319,12 @@ static int virEventPollCalculateTimeout(int *timeout) {
 
     /* Calculate how long we should wait for a timeout if needed */
     if (then > 0) {
-        struct timeval tv;
+        unsigned long long now;
 
-        if (gettimeofday(&tv, NULL) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Unable to get current time"));
+        if (virTimeMs(&now) < 0)
             return -1;
-        }
 
-        *timeout = then -
-            ((((unsigned long long)tv.tv_sec)*1000) +
-             (((unsigned long long)tv.tv_usec)/1000));
-
+        *timeout = then - now;
         if (*timeout < 0)
             *timeout = 0;
     } else {
@@ -397,21 +389,16 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
  *
  * Returns 0 upon success, -1 if an error occurred
  */
-static int virEventPollDispatchTimeouts(void) {
-    struct timeval tv;
+static int virEventPollDispatchTimeouts(void)
+{
     unsigned long long now;
     int i;
     /* Save this now - it may be changed during dispatch */
     int ntimeouts = eventLoop.timeoutsCount;
     VIR_DEBUG("Dispatch %d", ntimeouts);
 
-    if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to get current time"));
+    if (virTimeMs(&now) < 0)
         return -1;
-    }
-    now = (((unsigned long long)tv.tv_sec)*1000) +
-        (((unsigned long long)tv.tv_usec)/1000);
 
     for (i = 0 ; i < ntimeouts ; i++) {
         if (eventLoop.timeouts[i].deleted || eventLoop.timeouts[i].frequency < 0)

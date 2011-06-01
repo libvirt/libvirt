@@ -45,8 +45,6 @@
 
 #define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
 
-#define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
-
 
 static void qemuDomainEventDispatchFunc(virConnectPtr conn,
                                         virDomainEventPtr event,
@@ -492,15 +490,12 @@ void qemuDomainSetNamespaceHooks(virCapsPtr caps)
 int qemuDomainObjBeginJob(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
-    struct timeval now;
+    unsigned long long now;
     unsigned long long then;
 
-    if (gettimeofday(&now, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot get time of day"));
+    if (virTimeMs(&now) < 0)
         return -1;
-    }
-    then = timeval_to_ms(now) + QEMU_JOB_WAIT_TIME;
+    then = now + QEMU_JOB_WAIT_TIME;
 
     virDomainObjRef(obj);
 
@@ -520,7 +515,7 @@ int qemuDomainObjBeginJob(virDomainObjPtr obj)
     priv->jobActive = QEMU_JOB_UNSPECIFIED;
     priv->jobSignals = 0;
     memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
-    priv->jobStart = timeval_to_ms(now);
+    priv->jobStart = now;
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
     return 0;
@@ -536,15 +531,12 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                                     virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
-    struct timeval now;
+    unsigned long long now;
     unsigned long long then;
 
-    if (gettimeofday(&now, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot get time of day"));
+    if (virTimeMs(&now) < 0)
         return -1;
-    }
-    then = timeval_to_ms(now) + QEMU_JOB_WAIT_TIME;
+    then = now + QEMU_JOB_WAIT_TIME;
 
     virDomainObjRef(obj);
     qemuDriverUnlock(driver);
@@ -568,7 +560,7 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
     priv->jobActive = QEMU_JOB_UNSPECIFIED;
     priv->jobSignals = 0;
     memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
-    priv->jobStart = timeval_to_ms(now);
+    priv->jobStart = now;
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
     virDomainObjUnlock(obj);

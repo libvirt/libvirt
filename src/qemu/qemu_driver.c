@@ -113,8 +113,6 @@
 
 #define QEMU_NB_BLKIO_PARAM  1
 
-#define timeval_to_ms(tv)       (((tv).tv_sec * 1000ull) + ((tv).tv_usec / 1000))
-
 static void processWatchdogEvent(void *data, void *opaque);
 
 static int qemudShutdown(void);
@@ -6841,8 +6839,6 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
 
     if (virDomainObjIsActive(vm)) {
         if (priv->jobActive) {
-            struct timeval now;
-
             memcpy(info, &priv->jobInfo, sizeof(*info));
 
             /* Refresh elapsed time again just to ensure it
@@ -6850,12 +6846,9 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
              * of incoming migration which we don't currently
              * monitor actively in the background thread
              */
-            if (gettimeofday(&now, NULL) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("cannot get time of day"));
+            if (virTimeMs(&info->timeElapsed) < 0)
                 goto cleanup;
-            }
-            info->timeElapsed = timeval_to_ms(now) - priv->jobStart;
+            info->timeElapsed -= priv->jobStart;
         } else {
             memset(info, 0, sizeof(*info));
             info->type = VIR_DOMAIN_JOB_NONE;
