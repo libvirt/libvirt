@@ -1293,11 +1293,6 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
                                 struct private_data *priv,
                                 int no_verify)
 {
-    const int cert_type_priority[3] = {
-        GNUTLS_CRT_X509,
-        GNUTLS_CRT_OPENPGP,
-        0
-    };
     bool success = false;
     int err;
     gnutls_session_t session;
@@ -1317,15 +1312,6 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     if (err) {
         remoteError(VIR_ERR_GNUTLS_ERROR,
                     _("unable to set TLS algorithm priority: %s"),
-                    gnutls_strerror (err));
-        goto cleanup;
-    }
-    err =
-        gnutls_certificate_type_set_priority (session,
-                                              cert_type_priority);
-    if (err) {
-        remoteError(VIR_ERR_GNUTLS_ERROR,
-                    _("unable to set certificate priority: %s"),
                     gnutls_strerror (err));
         goto cleanup;
     }
