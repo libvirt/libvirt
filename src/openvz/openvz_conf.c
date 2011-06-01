@@ -473,6 +473,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         if (VIR_ALLOC(dom->def) < 0)
             goto no_memory;
 
+        dom->def->virtType = VIR_DOMAIN_VIRT_OPENVZ;
+
         if (STREQ(status, "stopped")) {
             virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
                                  VIR_DOMAIN_SHUTOFF_UNKNOWN);
