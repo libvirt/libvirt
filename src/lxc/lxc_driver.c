@@ -1281,21 +1281,18 @@ cleanup:
 }
 
 
-static int lxcControllerStart(lxc_driver_t *driver,
-                              virDomainObjPtr vm,
-                              int nveths,
-                              char **veths,
-                              int appPty,
-                              int logfile)
+static virCommandPtr
+lxcBuildControllerCmd(lxc_driver_t *driver,
+                      virDomainObjPtr vm,
+                      int nveths,
+                      char **veths,
+                      int appPty,
+                      int logfile)
 {
     int i;
-    int ret = -1;
     char *filterstr;
     char *outputstr;
     virCommandPtr cmd;
-    off_t pos = -1;
-    char ebuf[1024];
-    char *timestamp;
 
     cmd = virCommandNew(vm->def->emulator);
 
@@ -1357,33 +1354,14 @@ static int lxcControllerStart(lxc_driver_t *driver,
             goto cleanup;
     }
 
-    /* Log timestamp */
-    if ((timestamp = virTimestamp()) == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
-        safewrite(logfile, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
-        VIR_WARN("Unable to write timestamp to logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
-    }
-    VIR_FREE(timestamp);
-
-    /* Log generated command line */
-    virCommandWriteArgLog(cmd, logfile);
-    if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
-        VIR_WARN("Unable to seek to end of logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
-
     virCommandPreserveFD(cmd, appPty);
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
 
-    ret = virCommandRun(cmd, NULL);
-
+    return cmd;
 cleanup:
     virCommandFree(cmd);
-    return ret;
+    return NULL;
 }
 
 
@@ -1411,6 +1389,10 @@ static int lxcVmStart(virConnectPtr conn,
     int logfd = -1;
     unsigned int nveths = 0;
     char **veths = NULL;
+    off_t pos = -1;
+    char ebuf[1024];
+    char *timestamp;
+    virCommandPtr cmd = NULL;
     lxcDomainObjPrivatePtr priv = vm->privateData;
 
     if (!lxc_driver->cgroup) {
@@ -1480,10 +1462,31 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (lxcControllerStart(driver,
-                           vm,
-                           nveths, veths,
-                           parentTty, logfd) < 0)
+    if (!(cmd = lxcBuildControllerCmd(driver,
+                                      vm,
+                                      nveths, veths,
+                                      parentTty, logfd)))
+        goto cleanup;
+
+    /* Log timestamp */
+    if ((timestamp = virTimestamp()) == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (safewrite(logfd, timestamp, strlen(timestamp)) < 0 ||
+        safewrite(logfd, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
+        VIR_WARN("Unable to write timestamp to logfile: %s",
+                 virStrerror(errno, ebuf, sizeof ebuf));
+    }
+    VIR_FREE(timestamp);
+
+    /* Log generated command line */
+    virCommandWriteArgLog(cmd, logfd);
+    if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
+        VIR_WARN("Unable to seek to end of logfile: %s",
+                 virStrerror(errno, ebuf, sizeof ebuf));
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     /* Connect to the controller as a client *first* because
@@ -1529,6 +1532,7 @@ static int lxcVmStart(virConnectPtr conn,
     rc = 0;
 
 cleanup:
+    virCommandFree(cmd);
     if (VIR_CLOSE(logfd) < 0) {
         virReportSystemError(errno, "%s", _("could not close logfile"));
         rc = -1;
