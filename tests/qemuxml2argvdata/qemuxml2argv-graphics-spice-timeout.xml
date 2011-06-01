@@ -5,7 +5,7 @@
   <currentMemory>1048576</currentMemory>
   <vcpu>2</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-0.13'>hvm</type>
+    <type arch='i686' machine='pc'>hvm</type>
     <boot dev='cdrom'/>
     <boot dev='hd'/>
     <bootmenu enable='yes'/>
@@ -38,7 +38,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/bin/kvm</emulator>
+    <emulator>/./qemu.sh</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='/var/lib/libvirt/images/f14.img'/>
