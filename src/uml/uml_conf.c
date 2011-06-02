@@ -207,7 +207,10 @@ umlBuildCommandLineNet(virConnectPtr conn,
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         /* ethNNN=tuntap,tapname,macaddr,gateway */
-        virBufferAddLit(&buf, "tuntap");
+        virBufferAddLit(&buf, "tuntap,");
+        if (def->ifname) {
+            virBufferAdd(&buf, def->ifname, -1);
+        }
         if (def->data.ethernet.ipaddr) {
             umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("IP address not supported for ethernet inteface"));
