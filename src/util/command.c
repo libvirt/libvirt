@@ -142,7 +142,7 @@ virCommandNewArgList(const char *binary, ...)
     const char *arg;
 
     if (!cmd || cmd->has_error)
-        return NULL;
+        return cmd;
 
     va_start(list, binary);
     while ((arg = va_arg(list, const char *)) != NULL)
