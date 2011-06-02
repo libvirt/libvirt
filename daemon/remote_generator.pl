@@ -1363,8 +1363,11 @@ elsif ($opt_k) {
             print "\n";
         }
 
-        if ($call->{ProcName} eq "DomainDestroy") {
-            # SPECIAL: virDomainDestroy needs to reset the domain id explicitly
+        if ($call->{ProcName} eq "DomainDestroy" ||
+	    $call->{ProcName} eq "DomainSave" ||
+	    $call->{ProcName} eq "DomainManagedSave") {
+            # SPECIAL: virDomain{Destroy|Save|ManagedSave} need to reset
+	    # the domain id explicitly on success
             print "    dom->id = -1;\n";
         }
 
