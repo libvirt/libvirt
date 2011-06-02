@@ -718,7 +718,7 @@ qemuMigrationSetOffline(struct qemud_driver *driver,
                         virDomainObjPtr vm)
 {
     int ret;
-
+    VIR_DEBUG("driver=%p vm=%p", driver, vm);
     ret = qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION);
     if (ret == 0) {
         virDomainEventPtr event;
@@ -1521,6 +1521,19 @@ static int doNativeMigrate(struct qemud_driver *driver,
     if (qemuMigrationWaitForCompletion(driver, vm) < 0)
         goto cleanup;
 
+    /* When migration completed, QEMU will have paused the
+     * CPUs for us, but unless we're using the JSON monitor
+     * we won't have been notified of this, so might still
+     * think we're running. For v2 protocol this doesn't
+     * matter because we'll kill the VM soon, but for v3
+     * this is important because we stay paused until the
+     * confirm3 step, but need to release the lock state
+     */
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        if (qemuMigrationSetOffline(driver, vm) < 0)
+            goto cleanup;
+    }
+
     if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0)
         VIR_WARN("Unable to encode migration cookie");
 
@@ -1815,6 +1828,19 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         goto cancel;
 
     ret = qemuMigrationWaitForCompletion(driver, vm);
+
+    /* When migration completed, QEMU will have paused the
+     * CPUs for us, but unless we're using the JSON monitor
+     * we won't have been notified of this, so might still
+     * think we're running. For v2 protocol this doesn't
+     * matter because we'll kill the VM soon, but for v3
+     * this is important because we stay paused until the
+     * confirm3 step, but need to release the lock state
+     */
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        if (qemuMigrationSetOffline(driver, vm) < 0)
+            goto cleanup;
+    }
 
     /* Close now to ensure the IO thread quits & is joinable in next method */
     VIR_FORCE_CLOSE(client_sock);
