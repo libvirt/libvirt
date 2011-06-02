@@ -632,22 +632,26 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     int ret;
     uint32_t domid = 0;
     char *dom_xml = NULL;
-    char *managed_save = NULL;
+    char *managed_save_path = NULL;
+    int managed_save_fd = -1;
     pid_t child_console_pid = -1;
     libxlDomainObjPrivatePtr priv = vm->privateData;
 
     /* If there is a managed saved state restore it instead of starting
      * from scratch. The old state is removed once the restoring succeeded. */
     if (restore_fd < 0) {
-        managed_save = libxlDomainManagedSavePath(driver, vm);
-        if (managed_save == NULL)
+        managed_save_path = libxlDomainManagedSavePath(driver, vm);
+        if (managed_save_path == NULL)
             goto error;
 
-        if (virFileExists(managed_save)) {
+        if (virFileExists(managed_save_path)) {
 
-            restore_fd = libxlSaveImageOpen(driver, managed_save, &def, &hdr);
-            if (restore_fd < 0)
+            managed_save_fd = libxlSaveImageOpen(driver, managed_save_path,
+                                                 &def, &hdr);
+            if (managed_save_fd < 0)
                 goto error;
+
+            restore_fd = managed_save_fd;
 
             if (STRNEQ(vm->def->name, def->name) ||
                 memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
@@ -665,9 +669,12 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
             virDomainObjAssignDef(vm, def, true);
             def = NULL;
 
-            if (unlink(managed_save) < 0)
-                VIR_WARN("Failed to remove the managed state %s", managed_save);
+            if (unlink(managed_save_path) < 0) {
+                VIR_WARN("Failed to remove the managed state %s",
+                         managed_save_path);
+            }
         }
+        VIR_FREE(managed_save_path);
     }
 
     memset(&d_config, 0, sizeof(d_config));
@@ -738,6 +745,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     libxl_domain_config_destroy(&d_config);
     VIR_FREE(dom_xml);
+    VIR_FORCE_CLOSE(managed_save_fd);
     return 0;
 
 error:
@@ -748,9 +756,9 @@ error:
     }
     libxl_domain_config_destroy(&d_config);
     VIR_FREE(dom_xml);
-    VIR_FREE(managed_save);
+    VIR_FREE(managed_save_path);
     virDomainDefFree(def);
-    VIR_FORCE_CLOSE(restore_fd);
+    VIR_FORCE_CLOSE(managed_save_fd);
     return -1;
 }
 
@@ -1955,6 +1963,8 @@ libxlDomainRestore(virConnectPtr conn, const char *from)
     }
 
 cleanup:
+    if (VIR_CLOSE(fd) < 0)
+        virReportSystemError(errno, "%s", _("cannot close file"));
     virDomainDefFree(def);
     if (vm)
         virDomainObjUnlock(vm);
