@@ -195,13 +195,10 @@ int lxcContainerSendContinue(int control)
 
     writeCount = safewrite(control, &msg, sizeof(msg));
     if (writeCount != sizeof(msg)) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to send container continue message"));
         goto error_out;
     }
 
     rc = 0;
-
 error_out:
     return rc;
 }
@@ -224,13 +221,8 @@ static int lxcContainerWaitForContinue(int control)
     readLen = saferead(control, &msg, sizeof(msg));
     if (readLen != sizeof(msg) ||
         msg != LXC_CONTINUE_MSG) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to read the container continue message"));
         return -1;
     }
-    VIR_FORCE_CLOSE(control);
-
-    VIR_DEBUG("Received container continue message");
 
     return 0;
 }
@@ -793,8 +785,12 @@ static int lxcContainerChild( void *data )
         goto cleanup;
 
     /* Wait for interface devices to show up */
-    if (lxcContainerWaitForContinue(argv->monitor) < 0)
+    if (lxcContainerWaitForContinue(argv->monitor) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to read the container continue message"));
         goto cleanup;
+    }
+    VIR_DEBUG("Received container continue message");
 
     /* rename and enable interfaces */
     if (lxcContainerRenameAndEnableInterfaces(argv->nveths,
@@ -814,6 +810,7 @@ static int lxcContainerChild( void *data )
 cleanup:
     VIR_FREE(ttyPath);
     VIR_FORCE_CLOSE(ttyfd);
+    VIR_FORCE_CLOSE(argv->monitor);
 
     if (ret == 0) {
         /* this function will only return if an error occured */

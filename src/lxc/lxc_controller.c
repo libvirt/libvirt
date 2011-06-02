@@ -731,8 +731,11 @@ lxcControllerRun(virDomainDefPtr def,
     if (lxcControllerMoveInterfaces(nveths, veths, container) < 0)
         goto cleanup;
 
-    if (lxcContainerSendContinue(control[0]) < 0)
+    if (lxcContainerSendContinue(control[0]) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to send container continue message"));
         goto cleanup;
+    }
 
     /* Now the container is running, there's no need for us to keep
        any elevated capabilities */
