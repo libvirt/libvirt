@@ -961,6 +961,9 @@ virCommandProcessIO(virCommandPtr cmd)
             } else {
                 int done;
 
+                /* Coverity 5.3.0 can't see that we only get here if
+                 * infd is in the set because it was non-negative.  */
+                sa_assert(infd != -1);
                 done = write(infd, cmd->inbuf + inoff,
                              inlen - inoff);
                 if (done < 0) {
