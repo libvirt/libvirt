@@ -2779,8 +2779,10 @@ qemudSetLogging(struct qemud_server *server, virConfPtr conf,
                     goto free_and_fail;
 
                 if (virAsprintf(&tmp, "%d:file:%s/.libvirt/libvirtd.log",
-                                virLogGetDefaultPriority(), userdir) == -1)
+                                virLogGetDefaultPriority(), userdir) == -1) {
+                    VIR_FREE(userdir);
                     goto out_of_memory;
+                }
             }
         } else {
             if (virAsprintf(&tmp, "%d:stderr", virLogGetDefaultPriority()) < 0)
