@@ -2545,10 +2545,8 @@ remoteGenericOpen(virConnectPtr conn, virConnectAuthPtr auth,
          * use the UNIX transport. This handles Xen driver
          * which doesn't have its own impl of the network APIs. */
         struct private_data *priv;
-        int ret;
-        ret = remoteOpenSecondaryDriver(conn, auth, flags, &priv);
-        if (ret == VIR_DRV_OPEN_SUCCESS)
-            *genericPrivateData = priv;
+        int ret = remoteOpenSecondaryDriver(conn, auth, flags, &priv);
+        *genericPrivateData = priv;
         return ret;
     }
 }
