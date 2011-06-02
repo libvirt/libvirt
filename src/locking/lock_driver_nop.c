@@ -76,7 +76,8 @@ static int virLockManagerNopRelease(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                     char **state,
                                     unsigned int flags ATTRIBUTE_UNUSED)
 {
-    *state = NULL;
+    if (state)
+        *state = NULL;
 
     return 0;
 }
@@ -85,8 +86,8 @@ static int virLockManagerNopInquire(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                     char **state,
                                     unsigned int flags ATTRIBUTE_UNUSED)
 {
-
-    *state = NULL;
+    if (state)
+        *state = NULL;
 
     return 0;
 }

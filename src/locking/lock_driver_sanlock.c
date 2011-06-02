@@ -374,18 +374,20 @@ static int virLockManagerSanlockRelease(virLockManagerPtr lock,
 
     virCheckFlags(0, -1);
 
-    if ((rv = sanlock_inquire(-1, priv->vm_pid, 0, &res_count, state)) < 0) {
-        if (rv <= -200)
-            virLockError(VIR_ERR_INTERNAL_ERROR,
-                         _("Failed to inquire lock: error %d"), rv);
-        else
-            virReportSystemError(-rv, "%s",
-                                 _("Failed to inquire lock"));
-        return -1;
-    }
+    if (state) {
+        if ((rv = sanlock_inquire(-1, priv->vm_pid, 0, &res_count, state)) < 0) {
+            if (rv <= -200)
+                virLockError(VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to inquire lock: error %d"), rv);
+            else
+                virReportSystemError(-rv, "%s",
+                                     _("Failed to inquire lock"));
+            return -1;
+        }
 
-    if (STREQ(*state, ""))
-        VIR_FREE(*state);
+        if (STREQ(*state, ""))
+            VIR_FREE(*state);
+    }
 
     if ((rv = sanlock_release(-1, priv->vm_pid, SANLK_REL_ALL, 0, NULL)) < 0) {
         if (rv <= -200)
@@ -408,6 +410,11 @@ static int virLockManagerSanlockInquire(virLockManagerPtr lock,
     int rv, res_count;
 
     virCheckFlags(0, -1);
+
+    if (!state) {
+        virLockError(VIR_ERR_INVALID_ARG, "state");
+        return -1;
+    }
 
     VIR_DEBUG("pid=%d", priv->vm_pid);
 
