@@ -317,7 +317,6 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool) {
 static int
 virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     char *src;
-    char *options = NULL;
     const char **mntargv;
 
     /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
@@ -328,7 +327,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     int glusterfs = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
                  pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS);
 
-    int option_index;
     int source_index;
 
     const char *netfs_auto_argv[] = {
@@ -358,7 +356,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
         virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format),
         NULL,
         "-o",
-        NULL,
+        "direct-io-mode=1",
         pool->def->target.path,
         NULL,
     };
@@ -369,7 +367,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     } else if (glusterfs) {
         mntargv = glusterfs_argv;
         source_index = 3;
-        option_index = 5;
     } else {
         mntargv = fs_argv;
         source_index = 3;
@@ -405,12 +402,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     }
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
-        if (pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS) {
-            if ((options = strdup("direct-io-mode=1")) == NULL) {
-                virReportOOMError();
-                return -1;
-            }
-        }
         if (virAsprintf(&src, "%s:%s",
                         pool->def->source.host.name,
                         pool->def->source.dir) == -1) {
@@ -425,10 +416,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
         }
     }
     mntargv[source_index] = src;
-
-    if (glusterfs) {
-        mntargv[option_index] = options;
-    }
 
     if (virRun(mntargv, NULL) < 0) {
         VIR_FREE(src);
