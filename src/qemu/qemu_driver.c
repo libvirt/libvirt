@@ -5531,6 +5531,12 @@ qemudDomainBlockStats (virDomainPtr dom,
         goto cleanup;
     }
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(path, vm->def->disks[i]->dst)) {
             disk = vm->def->disks[i];
@@ -5994,7 +6000,8 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
        highest allocated extent from QEMU */
     if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
         format != VIR_STORAGE_FILE_RAW &&
-        S_ISBLK(sb.st_mode)) {
+        S_ISBLK(sb.st_mode) &&
+        virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
         if ((priv->jobActive == QEMU_JOB_MIGRATION_OUT)
@@ -6017,19 +6024,16 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
             if (qemuDomainObjBeginJob(vm) < 0)
                 goto cleanup;
 
-            if (!virDomainObjIsActive(vm)) {
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                "%s", _("domain is not running"));
-                goto endjob;
+            if (virDomainObjIsActive(vm)) {
+                qemuDomainObjEnterMonitor(vm);
+                ret = qemuMonitorGetBlockExtent(priv->mon,
+                                                disk->info.alias,
+                                                &info->allocation);
+                qemuDomainObjExitMonitor(vm);
+            } else {
+                ret = 0;
             }
 
-            qemuDomainObjEnterMonitor(vm);
-            ret = qemuMonitorGetBlockExtent(priv->mon,
-                                            disk->info.alias,
-                                            &info->allocation);
-            qemuDomainObjExitMonitor(vm);
-
-endjob:
             if (qemuDomainObjEndJob(vm) == 0)
                 vm = NULL;
         }
