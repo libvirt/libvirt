@@ -274,7 +274,7 @@ qcowXGetBackingStore(char **res,
                      bool isQCow2)
 {
     unsigned long long offset;
-    unsigned long size;
+    unsigned int size;
 
     *res = NULL;
     if (format)
