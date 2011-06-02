@@ -617,6 +617,7 @@ lxcControllerRun(virDomainDefPtr def,
 {
     int rc = -1;
     int control[2] = { -1, -1};
+    int containerhandshake[2] = { -1, -1 };
     int containerPty = -1;
     char *containerPtyPath = NULL;
     pid_t container = -1;
@@ -627,6 +628,12 @@ lxcControllerRun(virDomainDefPtr def,
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, control) < 0) {
         virReportSystemError(errno, "%s",
                              _("sockpair failed"));
+        goto cleanup;
+    }
+
+    if (socketpair(PF_UNIX, SOCK_STREAM, 0, containerhandshake) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("socketpair failed"));
         goto cleanup;
     }
 
@@ -725,9 +732,11 @@ lxcControllerRun(virDomainDefPtr def,
                                        nveths,
                                        veths,
                                        control[1],
+                                       containerhandshake[1],
                                        containerPtyPath)) < 0)
         goto cleanup;
     VIR_FORCE_CLOSE(control[1]);
+    VIR_FORCE_CLOSE(containerhandshake[1]);
 
     if (lxcControllerMoveInterfaces(nveths, veths, container) < 0)
         goto cleanup;
@@ -735,6 +744,12 @@ lxcControllerRun(virDomainDefPtr def,
     if (lxcContainerSendContinue(control[0]) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to send container continue message"));
+        goto cleanup;
+    }
+
+    if (lxcContainerWaitForContinue(containerhandshake[0]) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("error receiving signal from container"));
         goto cleanup;
     }
 
@@ -760,6 +775,8 @@ cleanup:
     VIR_FREE(containerPtyPath);
     VIR_FORCE_CLOSE(containerPty);
     VIR_FORCE_CLOSE(handshakefd);
+    VIR_FORCE_CLOSE(containerhandshake[0]);
+    VIR_FORCE_CLOSE(containerhandshake[1]);
 
     if (container > 1) {
         int status;

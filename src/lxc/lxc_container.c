@@ -90,6 +90,7 @@ struct __lxc_child_argv {
     char **veths;
     int monitor;
     char *ttyPath;
+    int handshakefd;
 };
 
 
@@ -128,7 +129,7 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcContainerSetStdio(int control, int ttyfd)
+static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
 {
     int rc = -1;
     int open_max, i;
@@ -149,7 +150,7 @@ static int lxcContainerSetStdio(int control, int ttyfd)
      * close all FDs before executing the container */
     open_max = sysconf (_SC_OPEN_MAX);
     for (i = 0; i < open_max; i++)
-        if (i != ttyfd && i != control) {
+        if (i != ttyfd && i != control && i != handshakefd) {
             int tmpfd = i;
             VIR_FORCE_CLOSE(tmpfd);
         }
@@ -802,7 +803,13 @@ static int lxcContainerChild( void *data )
     if (lxcContainerDropCapabilities() < 0)
         goto cleanup;
 
-    if (lxcContainerSetStdio(argv->monitor, ttyfd) < 0) {
+    if (lxcContainerSendContinue(argv->handshakefd) < 0) {
+        virReportSystemError(errno, "%s",
+                            _("failed to send continue signal to controller"));
+        goto cleanup;
+    }
+
+    if (lxcContainerSetStdio(argv->monitor, ttyfd, argv->handshakefd) < 0) {
         goto cleanup;
     }
 
@@ -811,6 +818,7 @@ cleanup:
     VIR_FREE(ttyPath);
     VIR_FORCE_CLOSE(ttyfd);
     VIR_FORCE_CLOSE(argv->monitor);
+    VIR_FORCE_CLOSE(argv->handshakefd);
 
     if (ret == 0) {
         /* this function will only return if an error occured */
@@ -870,13 +878,15 @@ int lxcContainerStart(virDomainDefPtr def,
                       unsigned int nveths,
                       char **veths,
                       int control,
+                      int handshakefd,
                       char *ttyPath)
 {
     pid_t pid;
     int flags;
     int stacksize = getpagesize() * 4;
     char *stack, *stacktop;
-    lxc_child_argv_t args = { def, nveths, veths, control, ttyPath };
+    lxc_child_argv_t args = { def, nveths, veths, control, ttyPath,
+                              handshakefd};
 
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0) {

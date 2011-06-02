@@ -52,6 +52,7 @@ int lxcContainerStart(virDomainDefPtr def,
                       unsigned int nveths,
                       char **veths,
                       int control,
+                      int handshakefd,
                       char *ttyPath);
 
 int lxcContainerAvailable(int features);
