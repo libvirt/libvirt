@@ -535,14 +535,14 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 #endif
 
     if (mon->fd != fd || mon->watch != watch) {
-        if (events & VIR_EVENT_HANDLE_HANGUP)
+        if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
             eof = true;
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("event from unexpected fd %d!=%d / watch %d!=%d"),
                         mon->fd, fd, mon->watch, watch);
         error = true;
     } else if (mon->lastError.code != VIR_ERR_OK) {
-        if (events & VIR_EVENT_HANDLE_HANGUP)
+        if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
             eof = true;
         error = true;
     } else {
@@ -581,8 +581,9 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         if (!error && !eof &&
             events & VIR_EVENT_HANDLE_ERROR) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Error while waiting for monitor"));
-            error = 1;
+                            _("Invalid file descriptor while waiting for monitor"));
+            eof = 1;
+            events &= ~VIR_EVENT_HANDLE_ERROR;
         }
         if (!error && events) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
