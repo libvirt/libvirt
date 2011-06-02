@@ -664,6 +664,14 @@ lxcControllerRun(virDomainDefPtr def,
      */
     if (root) {
         VIR_DEBUG("Setting up private /dev/pts");
+
+        if (!virFileExists(root->src)) {
+            virReportSystemError(errno,
+                                 _("root source %s does not exist"),
+                                 root->src);
+            goto cleanup;
+        }
+
         if (unshare(CLONE_NEWNS) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Cannot unshare mount namespace"));
