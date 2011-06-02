@@ -1191,12 +1191,14 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
             qemuDomainObjExitMonitor(vm);
+            qemuAuditDisk(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
     } else {
         if (qemuMonitorRemovePCIDevice(priv->mon,
                                        &detach->info.addr.pci) < 0) {
             qemuDomainObjExitMonitor(vm);
+            qemuAuditDisk(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
     }
@@ -1206,7 +1208,7 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
 
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    qemuAuditDisk(vm, detach, NULL, "detach", ret >= 0);
+    qemuAuditDisk(vm, detach, NULL, "detach", true);
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
@@ -1283,6 +1285,7 @@ int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
         qemuDomainObjExitMonitor(vm);
+        qemuAuditDisk(vm, detach, NULL, "detach", false);
         goto cleanup;
     }
 
@@ -1291,7 +1294,7 @@ int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
 
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    qemuAuditDisk(vm, detach, NULL, "detach", ret >= 0);
+    qemuAuditDisk(vm, detach, NULL, "detach", true);
 
     virDomainDiskRemove(vm->def, i);
 
