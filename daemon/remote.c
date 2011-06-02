@@ -1453,6 +1453,7 @@ remoteDispatchDomainScreenshot(struct qemud_server *server ATTRIBUTE_UNUSED,
     *mime_p = strdup(mime);
     if (*mime_p == NULL) {
         virReportOOMError();
+        VIR_FREE(mime_p);
         goto cleanup;
     }
 
