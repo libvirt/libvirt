@@ -1195,6 +1195,8 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
     pid_t vcpupid;
     unsigned char *cpumask;
     int vcpu, cpumaplen, hostcpus, maxcpu;
+    unsigned char *cpumap = NULL;
+    int ret = -1;
 
     if (virNodeGetInfo(conn, &nodeinfo) != 0) {
         return  -1;
@@ -1216,18 +1218,18 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
+    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
     for (vcpu = 0; vcpu < def->cputune.nvcpupin; vcpu++) {
         if (vcpu != def->cputune.vcpupin[vcpu]->vcpuid)
             continue;
 
         int i;
-        unsigned char *cpumap = NULL;
 
-        if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
-            virReportOOMError();
-            return -1;
-        }
-
+        memset(cpumap, 0, cpumaplen);
         cpumask = (unsigned char *)def->cputune.vcpupin[vcpu]->cpumask;
         vcpupid = priv->vcpupids[vcpu];
 
@@ -1249,11 +1251,14 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
                                       cpumap,
                                       cpumaplen,
                                       maxcpu) < 0) {
-            return -1;
+            goto cleanup;
         }
     }
 
-    return 0;
+    ret = 0;
+cleanup:
+    VIR_FREE(cpumap);
+    return ret;
 }
 
 static int
