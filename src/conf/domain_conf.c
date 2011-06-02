@@ -7269,7 +7269,8 @@ static bool virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
         }
         break;
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-        if (memcmp(src->target.addr, dst->target.addr, sizeof(src->target.addr)) != 0) {
+        if (memcmp(src->target.addr, dst->target.addr,
+                   sizeof(*src->target.addr)) != 0) {
             char *saddr = virSocketFormatAddrFull(src->target.addr, true, ":");
             char *daddr = virSocketFormatAddrFull(dst->target.addr, true, ":");
             virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
