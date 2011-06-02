@@ -1639,6 +1639,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
         info->memory = vm->def->mem.cur_balloon;
+        info->maxMem = vm->def->mem.max_balloon;
     } else {
         if (libxl_domain_info(&driver->ctx, &d_info, dom->id) != 0) {
             libxlError(VIR_ERR_INTERNAL_ERROR,
@@ -1647,10 +1648,10 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         }
         info->cpuTime = d_info.cpu_time;
         info->memory = d_info.current_memkb;
+        info->maxMem = d_info.max_memkb;
     }
 
     info->state = virDomainObjGetState(vm, NULL);
-    info->maxMem = vm->def->mem.max_balloon;
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
