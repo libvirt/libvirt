@@ -1,7 +1,7 @@
 /*
  * domain_event.c: domain event queue processing helpers
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -555,6 +555,7 @@ virDomainEventStateFree(virDomainEventStatePtr state)
 
     if (state->timer != -1)
         virEventRemoveTimeout(state->timer);
+    VIR_FREE(state);
 }
 
 /**
