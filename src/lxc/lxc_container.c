@@ -785,6 +785,13 @@ static int lxcContainerChild( void *data )
     if (lxcContainerSetupMounts(vmDef, root) < 0)
         goto cleanup;
 
+    if (!virFileExists(vmDef->os.init)) {
+        virReportSystemError(errno,
+                    _("cannot find init path '%s' relative to container root"),
+                    vmDef->os.init);
+        goto cleanup;
+    }
+
     /* Wait for interface devices to show up */
     if (lxcContainerWaitForContinue(argv->monitor) < 0) {
         virReportSystemError(errno, "%s",
