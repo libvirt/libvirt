@@ -221,6 +221,8 @@ int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
     if (virLockManagerAcquire(lock, NULL, 0) < 0)
         goto cleanup;
 
+    ret = 0;
+
 cleanup:
     virLockManagerFree(lock);
 
@@ -239,6 +241,8 @@ int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
 
     if (virLockManagerRelease(lock, NULL, 0) < 0)
         goto cleanup;
+
+    ret = 0;
 
 cleanup:
     virLockManagerFree(lock);
@@ -260,6 +264,8 @@ int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
     if (virLockManagerAcquire(lock, NULL, 0) < 0)
         goto cleanup;
 
+    ret = 0;
+
 cleanup:
     virLockManagerFree(lock);
 
@@ -278,6 +284,8 @@ int virDomainLockLeaseDetach(virLockManagerPluginPtr plugin,
 
     if (virLockManagerRelease(lock, NULL, 0) < 0)
         goto cleanup;
+
+    ret = 0;
 
 cleanup:
     virLockManagerFree(lock);
