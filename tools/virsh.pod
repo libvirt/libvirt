@@ -235,7 +235,9 @@ Print the XML representation of the hypervisor sysinfo, if available.
 =item B<nodeinfo>
 
 Returns basic information about the node, like number and type of CPU,
-and size of the physical memory.
+and size of the physical memory. The output corresponds to virNodeInfo
+structure. Specifically, the "CPU socket(s)" field means number of CPU
+sockets per NUMA cell.
 
 =item B<capabilities>
 
