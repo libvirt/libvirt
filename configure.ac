@@ -972,7 +972,7 @@ if test "x$with_sanlock" != "xno"; then
         fail=1
     fi])
   if test "x$with_sanlock" != "xno" ; then
-    AC_CHECK_LIB([sanlock], [sanlock_acquire],[
+    AC_CHECK_LIB([sanlock], [sanlock_restrict],[
       SANLOCK_LIBS="$SANLOCK_LIBS -lsanlock"
       with_sanlock=yes
     ],[

@@ -59,7 +59,9 @@ typedef enum {
 
 typedef enum {
     /* Don't acquire the resources, just register the object PID */
-    VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY = (1 << 0)
+    VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY = (1 << 0),
+    /* Prevent further lock/unlock calls from this process */
+    VIR_LOCK_MANAGER_ACQUIRE_RESTRICT = (1 << 1),
 } virLockManagerAcquireFlags;
 
 enum {

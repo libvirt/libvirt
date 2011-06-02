@@ -240,7 +240,8 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
     int rv;
     int i;
 
-    virCheckFlags(VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY, -1);
+    virCheckFlags(VIR_LOCK_MANAGER_ACQUIRE_RESTRICT |
+                  VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY, -1);
 
     if (priv->res_count == 0 &&
         priv->hasRWDisks) {
@@ -326,6 +327,18 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
     if (sock != -1 &&
         virSetInherit(sock, true) < 0)
         goto error;
+
+    if (flags & VIR_LOCK_MANAGER_ACQUIRE_RESTRICT) {
+        if ((rv = sanlock_restrict(sock, SANLK_RESTRICT_ALL)) < 0) {
+            if (rv <= -200)
+                virLockError(VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to restrict process: error %d"), rv);
+            else
+                virReportSystemError(-rv, "%s",
+                                     _("Failed to restrict process"));
+            goto error;
+        }
+    }
 
     VIR_DEBUG("Acquire completed fd=%d", sock);
 

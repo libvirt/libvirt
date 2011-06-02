@@ -159,10 +159,12 @@ int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
 {
     virLockManagerPtr lock = virDomainLockManagerNew(plugin, dom, true);
     int ret;
+    int flags = VIR_LOCK_MANAGER_ACQUIRE_RESTRICT;
+
     if (paused)
-        ret = virLockManagerAcquire(lock, NULL, VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY);
-    else
-        ret = virLockManagerAcquire(lock, NULL, 0);
+        flags |= VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY;
+
+    ret = virLockManagerAcquire(lock, NULL, flags);
 
     virLockManagerFree(lock);
 
