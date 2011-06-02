@@ -831,11 +831,6 @@ virStorageFileGetMetadataFromFD(const char *path,
     int ret = -1;
     struct stat sb;
 
-    if (VIR_ALLOC_N(head, len) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
     memset(meta, 0, sizeof (*meta));
 
     if (fstat(fd, &sb) < 0) {
@@ -847,13 +842,17 @@ virStorageFileGetMetadataFromFD(const char *path,
 
     /* No header to probe for directories */
     if (S_ISDIR(sb.st_mode)) {
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
         virReportSystemError(errno, _("cannot seek to start of '%s'"), path);
-        goto cleanup;
+        return -1;
+    }
+
+    if (VIR_ALLOC_N(head, len) < 0) {
+        virReportOOMError();
+        return -1;
     }
 
     if ((len = read(fd, head, len)) < 0) {
