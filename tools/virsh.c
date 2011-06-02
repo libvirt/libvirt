@@ -8689,6 +8689,10 @@ static const vshCmdInfo info_version[] = {
     {NULL, NULL}
 };
 
+static const vshCmdOptDef opts_version[] = {
+    {"daemon", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("report daemon version too")},
+    {NULL, 0, 0, NULL}
+};
 
 static bool
 cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
@@ -8698,6 +8702,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     unsigned long libVersion;
     unsigned long includeVersion;
     unsigned long apiVersion;
+    unsigned long daemonVersion;
     int ret;
     unsigned int major;
     unsigned int minor;
@@ -8756,6 +8761,21 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         vshPrint(ctl, _("Running hypervisor: %s %d.%d.%d\n"),
                  hvType, major, minor, rel);
     }
+
+    if (vshCommandOptBool(cmd, "daemon")) {
+        ret = virConnectGetLibVersion(ctl->conn, &daemonVersion);
+        if (ret < 0) {
+            vshError(ctl, "%s", _("failed to get the daemon version"));
+        } else {
+            major = daemonVersion / 1000000;
+            daemonVersion %= 1000000;
+            minor = daemonVersion / 1000;
+            rel = daemonVersion % 1000;
+            vshPrint(ctl, _("Running against daemon: %d.%d.%d\n"),
+                     major, minor, rel);
+        }
+    }
+
     return true;
 }
 
@@ -11179,7 +11199,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"vcpucount", cmdVcpucount, opts_vcpucount, info_vcpucount, 0},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo, 0},
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin, 0},
-    {"version", cmdVersion, NULL, info_version, 0},
+    {"version", cmdVersion, opts_version, info_version, 0},
     {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay, 0},
     {NULL, NULL, NULL, NULL, 0}
 };
