@@ -751,9 +751,9 @@ static int lxcContainerChild( void *data )
 {
     lxc_child_argv_t *argv = data;
     virDomainDefPtr vmDef = argv->config;
-    int ttyfd;
+    int ttyfd = -1;
     int ret = -1;
-    char *ttyPath;
+    char *ttyPath = NULL;
     virDomainFSDefPtr root;
     virCommandPtr cmd = NULL;
 
@@ -786,16 +786,8 @@ static int lxcContainerChild( void *data )
         virReportSystemError(errno,
                              _("Failed to open tty %s"),
                              ttyPath);
-        VIR_FREE(ttyPath);
         goto cleanup;
     }
-    VIR_FREE(ttyPath);
-
-    if (lxcContainerSetStdio(argv->monitor, ttyfd) < 0) {
-        VIR_FORCE_CLOSE(ttyfd);
-        goto cleanup;
-    }
-    VIR_FORCE_CLOSE(ttyfd);
 
     if (lxcContainerSetupMounts(vmDef, root) < 0)
         goto cleanup;
@@ -806,17 +798,28 @@ static int lxcContainerChild( void *data )
 
     /* rename and enable interfaces */
     if (lxcContainerRenameAndEnableInterfaces(argv->nveths,
-                                              argv->veths) < 0)
+                                              argv->veths) < 0) {
         goto cleanup;
+    }
 
     /* drop a set of root capabilities */
     if (lxcContainerDropCapabilities() < 0)
         goto cleanup;
 
-    /* this function will only return if an error occured */
-    ret = virCommandExec(cmd);
+    if (lxcContainerSetStdio(argv->monitor, ttyfd) < 0) {
+        goto cleanup;
+    }
 
+    ret = 0;
 cleanup:
+    VIR_FREE(ttyPath);
+    VIR_FORCE_CLOSE(ttyfd);
+
+    if (ret == 0) {
+        /* this function will only return if an error occured */
+        ret = virCommandExec(cmd);
+    }
+
     virCommandFree(cmd);
     return ret;
 }
