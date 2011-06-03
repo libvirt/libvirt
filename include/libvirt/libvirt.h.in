@@ -142,6 +142,23 @@ typedef enum {
 } virDomainCrashedReason;
 
 /**
+ * virDomainModificationImpact:
+ *
+ * Several APIs take flags to determine whether a change to the domain
+ * affects just the running instance, just the persistent definition,
+ * or both.  The use of VIR_DOMAIN_AFFECT_CURRENT will resolve to
+ * either VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG according
+ * to current domain state. VIR_DOMAIN_AFFECT_LIVE requires a running
+ * domain, and VIR_DOMAIN_AFFECT_CONFIG requires a persistent domain
+ * (whether or not it is running).
+ */
+typedef enum {
+    VIR_DOMAIN_AFFECT_CURRENT = 0,      /* Affect current domain state.  */
+    VIR_DOMAIN_AFFECT_LIVE    = 1 << 0, /* Affect running domain state.  */
+    VIR_DOMAIN_AFFECT_CONFIG  = 1 << 1, /* Affect persistent domain state.  */
+} virDomainModificationImpact;
+
+/**
  * virDomainInfoPtr:
  *
  * a virDomainInfo is a structure filled by virDomainGetInfo() and extracting
@@ -337,12 +354,6 @@ typedef virTypedParameter *virTypedParameterPtr;
 
 
 /* Management of scheduler parameters */
-
-typedef enum {
-    VIR_DOMAIN_SCHEDPARAM_CURRENT = 0,        /* affect current domain state */
-    VIR_DOMAIN_SCHEDPARAM_LIVE    = (1 << 0), /* Affect active domain */
-    VIR_DOMAIN_SCHEDPARAM_CONFIG  = (1 << 1), /* Affect next boot */
-} virDomainSchedParameterFlags;
 
 /*
  * Fetch scheduler parameters, caller allocates 'params' field of size 'nparams'
@@ -798,13 +809,6 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
                                     int *nparams, unsigned int flags);
 
 /* Manage memory parameters.  */
-
-/* flags for setting memory parameters */
-typedef enum {
-    VIR_DOMAIN_MEMORY_PARAM_CURRENT = 0,        /* affect current domain state */
-    VIR_DOMAIN_MEMORY_PARAM_LIVE    = (1 << 0), /* affect active domain */
-    VIR_DOMAIN_MEMORY_PARAM_CONFIG  = (1 << 1)  /* affect next boot */
-} virMemoryParamFlags;
 
 /**
  * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED:

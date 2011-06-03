@@ -1732,12 +1732,12 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, "%s", _("--current must be specified exclusively"));
             return false;
         }
-        flags = VIR_DOMAIN_SCHEDPARAM_CURRENT;
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
     } else {
         if (config)
-            flags |= VIR_DOMAIN_SCHEDPARAM_CONFIG;
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
         if (live)
-            flags |= VIR_DOMAIN_SCHEDPARAM_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -3505,12 +3505,12 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
             vshError(ctl, "%s", _("--current must be specified exclusively"));
             return false;
         }
-        flags = VIR_DOMAIN_MEMORY_PARAM_CURRENT;
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
     } else {
         if (config)
-            flags |= VIR_DOMAIN_MEMORY_PARAM_CONFIG;
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
         if (live)
-            flags |= VIR_DOMAIN_MEMORY_PARAM_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
 
     if (!vshConnectionUsability(ctl, ctl->conn))

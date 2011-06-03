@@ -4921,8 +4921,8 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
     int ret = -1;
     bool isActive;
 
-    virCheckFlags(VIR_DOMAIN_MEMORY_PARAM_LIVE |
-                  VIR_DOMAIN_MEMORY_PARAM_CONFIG, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     qemuDriverLock(driver);
 
@@ -4936,14 +4936,14 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
 
     isActive = virDomainObjIsActive(vm);
 
-    if (flags == VIR_DOMAIN_MEMORY_PARAM_CURRENT) {
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
         if (isActive)
-            flags = VIR_DOMAIN_MEMORY_PARAM_LIVE;
+            flags = VIR_DOMAIN_AFFECT_LIVE;
         else
-            flags = VIR_DOMAIN_MEMORY_PARAM_CONFIG;
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
 
-    if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!isActive) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             "%s", _("domain is not running"));
@@ -4963,7 +4963,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
         }
     }
 
-    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!vm->persistent) {
             qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("cannot change persistent config of a transient domain"));
@@ -4986,7 +4986,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 rc = virCgroupSetMemoryHardLimit(group, params[i].value.ul);
                 if (rc != 0) {
                     virReportSystemError(-rc, "%s",
@@ -4995,7 +4995,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 }
             }
 
-            if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 persistentDef->mem.hard_limit = params[i].value.ul;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
@@ -5007,7 +5007,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 rc = virCgroupSetMemorySoftLimit(group, params[i].value.ul);
                 if (rc != 0) {
                     virReportSystemError(-rc, "%s",
@@ -5016,7 +5016,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 }
             }
 
-            if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 persistentDef->mem.soft_limit = params[i].value.ul;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
@@ -5028,7 +5028,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                 continue;
             }
 
-            if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 rc = virCgroupSetMemSwapHardLimit(group, params[i].value.ul);
                 if (rc != 0) {
                     virReportSystemError(-rc, "%s",
@@ -5036,7 +5036,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
                     ret = -1;
                 }
             }
-            if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 persistentDef->mem.swap_hard_limit = params[i].value.ul;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE)) {
@@ -5050,7 +5050,7 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
         }
     }
 
-    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainSaveConfig(driver->configDir, persistentDef);
     }
 
@@ -5077,8 +5077,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
     int rc;
     bool isActive;
 
-    virCheckFlags(VIR_DOMAIN_MEMORY_PARAM_LIVE |
-                  VIR_DOMAIN_MEMORY_PARAM_CONFIG, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     qemuDriverLock(driver);
 
@@ -5092,14 +5092,14 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
 
     isActive = virDomainObjIsActive(vm);
 
-    if (flags == VIR_DOMAIN_MEMORY_PARAM_CURRENT) {
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
         if (isActive)
-            flags = VIR_DOMAIN_MEMORY_PARAM_LIVE;
+            flags = VIR_DOMAIN_AFFECT_LIVE;
         else
-            flags = VIR_DOMAIN_MEMORY_PARAM_CONFIG;
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
 
-    if (flags & VIR_DOMAIN_MEMORY_PARAM_LIVE) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!isActive) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             "%s", _("domain is not running"));
@@ -5119,7 +5119,7 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         }
     }
 
-    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!vm->persistent) {
             qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("cannot change persistent config of a transient domain"));
@@ -5142,12 +5142,12 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_MEMORY_PARAM_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         for (i = 0; i < *nparams; i++) {
             virMemoryParameterPtr param = &params[i];
             val = 0;
             param->value.ul = 0;
-            param->type = VIR_DOMAIN_MEMORY_PARAM_ULLONG;
+            param->type = VIR_TYPED_PARAM_ULLONG;
 
             switch (i) {
             case 0: /* fill memory hard limit here */
@@ -5269,8 +5269,8 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
     int ret = -1;
     bool isActive;
 
-    virCheckFlags(VIR_DOMAIN_SCHEDPARAM_LIVE |
-                  VIR_DOMAIN_SCHEDPARAM_CONFIG, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     qemuDriverLock(driver);
 
@@ -5284,20 +5284,20 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
 
     isActive = virDomainObjIsActive(vm);
 
-    if (flags == VIR_DOMAIN_SCHEDPARAM_CURRENT) {
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
         if (isActive)
-            flags = VIR_DOMAIN_SCHEDPARAM_LIVE;
+            flags = VIR_DOMAIN_AFFECT_LIVE;
         else
-            flags = VIR_DOMAIN_SCHEDPARAM_CONFIG;
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
 
-    if ((flags & VIR_DOMAIN_SCHEDPARAM_CONFIG) && !vm->persistent) {
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
         qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("cannot change persistent config of a transient domain"));
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_SCHEDPARAM_LIVE) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!isActive) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             "%s", _("domain is not running"));
@@ -5328,7 +5328,7 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
                 goto cleanup;
             }
 
-            if (flags & VIR_DOMAIN_SCHEDPARAM_LIVE) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 rc = virCgroupSetCpuShares(group, params[i].value.ul);
                 if (rc != 0) {
                     virReportSystemError(-rc, "%s",
@@ -5339,7 +5339,7 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
                 vm->def->cputune.shares = params[i].value.ul;
             }
 
-            if (flags & VIR_DOMAIN_SCHEDPARAM_CONFIG) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 persistentDef = virDomainObjGetPersistentDef(driver->caps, vm);
                 if (!persistentDef) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5378,7 +5378,7 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
     return qemuSetSchedulerParametersFlags(dom,
                                            params,
                                            nparams,
-                                           VIR_DOMAIN_SCHEDPARAM_LIVE);
+                                           VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int
@@ -5395,11 +5395,11 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
     int rc;
     bool isActive;
 
-    virCheckFlags(VIR_DOMAIN_SCHEDPARAM_LIVE |
-                  VIR_DOMAIN_SCHEDPARAM_CONFIG, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if ((flags & (VIR_DOMAIN_SCHEDPARAM_LIVE | VIR_DOMAIN_SCHEDPARAM_CONFIG)) ==
-        (VIR_DOMAIN_SCHEDPARAM_LIVE | VIR_DOMAIN_SCHEDPARAM_CONFIG)) {
+    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) ==
+        (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                         _("cannot query live and config together"));
         goto cleanup;
@@ -5422,14 +5422,14 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
 
     isActive = virDomainObjIsActive(vm);
 
-    if (flags == VIR_DOMAIN_SCHEDPARAM_CURRENT) {
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
         if (isActive)
-            flags = VIR_DOMAIN_SCHEDPARAM_LIVE;
+            flags = VIR_DOMAIN_AFFECT_LIVE;
         else
-            flags = VIR_DOMAIN_SCHEDPARAM_CONFIG;
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
 
-    if (flags & VIR_DOMAIN_SCHEDPARAM_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!vm->persistent) {
             qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("cannot query persistent config of a transient domain"));
@@ -5502,7 +5502,7 @@ qemuGetSchedulerParameters(virDomainPtr dom,
                            int *nparams)
 {
     return qemuGetSchedulerParametersFlags(dom, params, nparams,
-                                           VIR_DOMAIN_SCHEDPARAM_CURRENT);
+                                           VIR_DOMAIN_AFFECT_CURRENT);
 }
 
 /* This uses the 'info blockstats' monitor command which was

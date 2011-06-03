@@ -2994,7 +2994,7 @@ error:
  * @params: pointer to memory parameter objects
  * @nparams: number of memory parameter (this value can be the same or
  *          less than the number of parameters supported)
- * @flags: currently unused, for future extension
+ * @flags: bitwise-OR of virDomainModificationImpact
  *
  * Change all or a subset of the memory tunables.
  * This function requires privileged access to the hypervisor.
@@ -3049,7 +3049,7 @@ error:
  * @params: pointer to memory parameter object
  *          (return value, allocated by the caller)
  * @nparams: pointer to number of memory parameters
- * @flags: currently unused, for future extension
+ * @flags: one of virDomainModificationImpact
  *
  * Get all memory parameters, the @params array will be filled with the values
  * equal to the number of parameters suggested by @nparams
@@ -5480,13 +5480,13 @@ error:
  * @nparams: pointer to number of scheduler parameter
  *          (this value should be same than the returned value
  *           nparams of virDomainGetSchedulerType)
- * @flags: virDomainSchedParameterFlags
+ * @flags: one of virDomainModificationImpact
  *
  * Get the scheduler parameters, the @params array will be filled with the
  * values.
  *
- * The value of @flags can be exactly VIR_DOMAIN_SCHEDPARAM_CURRENT,
- * VIR_DOMAIN_SCHEDPARAM_LIVE, or VIR_DOMAIN_SCHEDPARAM_CONFIG.
+ * The value of @flags can be exactly VIR_DOMAIN_AFFECT_CURRENT,
+ * VIR_DOMAIN_AFFECT_LIVE, or VIR_DOMAIN_AFFECT_CONFIG.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -5596,12 +5596,12 @@ error:
  * @nparams: number of scheduler parameter objects
  *          (this value can be the same or less than the returned value
  *           nparams of virDomainGetSchedulerType)
- * @flags: virDomainSchedParameterFlags
+ * @flags: bitwise-OR of virDomainModificationImpact
  *
  * Change a subset or all scheduler parameters.  The value of @flags
- * should be either VIR_DOMAIN_SCHEDPARAM_CURRENT, or a bitwise-or of
- * values from VIR_DOMAIN_SCHEDPARAM_LIVE and
- * VIR_DOMAIN_SCHEDPARAM_CURRENT, although hypervisors vary in which
+ * should be either VIR_DOMAIN_AFFECT_CURRENT, or a bitwise-or of
+ * values from VIR_DOMAIN_AFFECT_LIVE and
+ * VIR_DOMAIN_AFFECT_CURRENT, although hypervisors vary in which
  * flags are supported.
  *
  * Returns -1 in case of error, 0 in case of success.
