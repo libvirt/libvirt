@@ -144,11 +144,16 @@ typedef enum {
 /**
  * virDomainModificationImpact:
  *
- * Several APIs take flags to determine whether a change to the domain
- * affects just the running instance, just the persistent definition,
- * or both.  The use of VIR_DOMAIN_AFFECT_CURRENT will resolve to
- * either VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG according
- * to current domain state. VIR_DOMAIN_AFFECT_LIVE requires a running
+ * Several modification APIs take flags to determine whether a change
+ * to the domain affects just the running instance, just the
+ * persistent definition, or both at the same time.  The counterpart
+ * query APIs also take the same flags to determine whether to query
+ * the running instance or persistent definition, although both cannot
+ * be queried at once.
+ *
+ * The use of VIR_DOMAIN_AFFECT_CURRENT will resolve to either
+ * VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG according to
+ * current domain state. VIR_DOMAIN_AFFECT_LIVE requires a running
  * domain, and VIR_DOMAIN_AFFECT_CONFIG requires a persistent domain
  * (whether or not it is running).
  */
