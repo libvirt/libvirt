@@ -29,7 +29,9 @@
 #include "memory.h"
 #include "uuid.h"
 
-#include <dlfcn.h>
+#if HAVE_DLFCN_H
+# include <dlfcn.h>
+#endif
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -115,6 +117,7 @@ static void virLockManagerLogParams(size_t nparams,
  *
  * Returns a plugin object, or NULL if loading failed.
  */
+#if HAVE_DLFCN_H
 virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
                                                 unsigned int flags)
 {
@@ -188,6 +191,15 @@ cleanup:
         dlclose(handle);
     return NULL;
 }
+#else /* !HAVE_DLFCN_H */
+virLockManagerPluginPtr virLockManagerPluginNew(const char *name ATTRIBUTE_UNUSED,
+                                                unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("this platform is missing dlopen"));
+    return NULL;
+}
+#endif /* !HAVE_DLFCN_H */
 
 
 /**
@@ -212,6 +224,7 @@ void virLockManagerPluginRef(virLockManagerPluginPtr plugin)
  * result in an unsafe scenario.
  *
  */
+#if HAVE_DLFCN_H
 void virLockManagerPluginUnref(virLockManagerPluginPtr plugin)
 {
     if (!plugin)
@@ -233,6 +246,11 @@ void virLockManagerPluginUnref(virLockManagerPluginPtr plugin)
     VIR_FREE(plugin->name);
     VIR_FREE(plugin);
 }
+#else /* !HAVE_DLFCN_H */
+void virLockManagerPluginUnref(virLockManagerPluginPtr plugin ATTRIBUTE_UNUSED)
+{
+}
+#endif /* !HAVE_DLFCN_H */
 
 
 const char *virLockManagerPluginGetName(virLockManagerPluginPtr plugin)
