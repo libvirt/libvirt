@@ -293,7 +293,7 @@
     &lt;vcpupin vcpu="1" cpuset="0,1"/&gt;
     &lt;vcpupin vcpu="2" cpuset="2,3"/&gt;
     &lt;vcpupin vcpu="3" cpuset="0,4"/&gt;
-    &lt;cpushares&gt;2048&lt;/cpushares&gt;
+    &lt;shares&gt;2048&lt;/shares&gt;
   &lt;/cputune&gt;
   ...</pre>
 
