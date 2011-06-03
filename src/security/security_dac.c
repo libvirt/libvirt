@@ -110,7 +110,7 @@ virSecurityDACSetOwnership(const char *path, int uid, int gid)
             }
         }
 
-        if (chown_errno == EOPNOTSUPP) {
+        if (chown_errno == EOPNOTSUPP || chown_errno == EINVAL) {
             VIR_INFO("Setting user and group to '%d:%d' on '%s' not supported by filesystem",
                      uid, gid, path);
         } else if (chown_errno == EPERM) {
