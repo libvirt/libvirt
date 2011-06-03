@@ -264,12 +264,13 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
             char *str = virXMLPropString(nodes[i], "name");
             if (str) {
                 int flag = qemuCapsTypeFromString(str);
-                VIR_FREE(str);
                 if (flag < 0) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     _("Unknown qemu capabilities flag %s"), str);
+                    VIR_FREE(str);
                     goto error;
                 }
+                VIR_FREE(str);
                 qemuCapsSet(qemuCaps, flag);
             }
         }
