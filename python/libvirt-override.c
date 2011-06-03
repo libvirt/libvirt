@@ -414,7 +414,7 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
     virDomainInfo dominfo;
     virVcpuInfoPtr cpuinfo = NULL;
     unsigned char *cpumap = NULL;
-    int cpumaplen, i;
+    size_t cpumaplen, i;
     int i_retval;
 
     if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetVcpus",
