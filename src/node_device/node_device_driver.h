@@ -53,8 +53,6 @@ int udevNodeRegister(void);
 void nodeDeviceLock(virDeviceMonitorStatePtr driver);
 void nodeDeviceUnlock(virDeviceMonitorStatePtr driver);
 
-void registerCommonNodeFuncs(virDeviceMonitorPtr mon);
-
 int nodedevRegister(void);
 
 # ifdef __linux__
@@ -85,5 +83,17 @@ int read_wwn_linux(int host, const char *file, char **wwn);
 #  define read_wwn(host, file, wwn)
 
 # endif /* __linux__ */
+
+int nodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags);
+int nodeListDevices(virConnectPtr conn, const char *cap, char **const names,
+                    int maxnames, unsigned int flags);
+virNodeDevicePtr nodeDeviceLookupByName(virConnectPtr conn, const char *name);
+char *nodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags);
+char *nodeDeviceGetParent(virNodeDevicePtr dev);
+int nodeDeviceNumOfCaps(virNodeDevicePtr dev);
+int nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames);
+virNodeDevicePtr nodeDeviceCreateXML(virConnectPtr conn,
+                                     const char *xmlDesc, unsigned int flags);
+int nodeDeviceDestroy(virNodeDevicePtr dev);
 
 #endif /* __VIR_NODE_DEVICE_H__ */

@@ -881,22 +881,30 @@ static int halNodeDrvClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 static virDeviceMonitor halDeviceMonitor = {
     .name = "halDeviceMonitor",
-    .open = halNodeDrvOpen,
-    .close = halNodeDrvClose,
+    .open = halNodeDrvOpen, /* 0.5.0 */
+    .close = halNodeDrvClose, /* 0.5.0 */
+    .numOfDevices = nodeNumOfDevices, /* 0.5.0 */
+    .listDevices = nodeListDevices, /* 0.5.0 */
+    .deviceLookupByName = nodeDeviceLookupByName, /* 0.5.0 */
+    .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.5.0 */
+    .deviceGetParent = nodeDeviceGetParent, /* 0.5.0 */
+    .deviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.5.0 */
+    .deviceListCaps = nodeDeviceListCaps, /* 0.5.0 */
+    .deviceCreateXML = nodeDeviceCreateXML, /* 0.6.5 */
+    .deviceDestroy = nodeDeviceDestroy, /* 0.6.5 */
 };
 
 
 static virStateDriver halStateDriver = {
     .name = "HAL",
-    .initialize = halDeviceMonitorStartup,
-    .cleanup = halDeviceMonitorShutdown,
-    .reload = halDeviceMonitorReload,
-    .active = halDeviceMonitorActive,
+    .initialize = halDeviceMonitorStartup, /* 0.5.0 */
+    .cleanup = halDeviceMonitorShutdown, /* 0.5.0 */
+    .reload = halDeviceMonitorReload, /* 0.5.0 */
+    .active = halDeviceMonitorActive, /* 0.5.0 */
 };
 
 int halNodeRegister(void)
 {
-    registerCommonNodeFuncs(&halDeviceMonitor);
     if (virRegisterDeviceMonitor(&halDeviceMonitor) < 0)
         return -1;
     return virRegisterStateDriver(&halStateDriver);

@@ -1741,23 +1741,31 @@ static int udevNodeDrvClose(virConnectPtr conn)
 
 static virDeviceMonitor udevDeviceMonitor = {
     .name = "udevDeviceMonitor",
-    .open = udevNodeDrvOpen,
-    .close = udevNodeDrvClose,
+    .open = udevNodeDrvOpen, /* 0.7.3 */
+    .close = udevNodeDrvClose, /* 0.7.3 */
+    .numOfDevices = nodeNumOfDevices, /* 0.7.3 */
+    .listDevices = nodeListDevices, /* 0.7.3 */
+    .deviceLookupByName = nodeDeviceLookupByName, /* 0.7.3 */
+    .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.7.3 */
+    .deviceGetParent = nodeDeviceGetParent, /* 0.7.3 */
+    .deviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.7.3 */
+    .deviceListCaps = nodeDeviceListCaps, /* 0.7.3 */
+    .deviceCreateXML = nodeDeviceCreateXML, /* 0.7.3 */
+    .deviceDestroy = nodeDeviceDestroy, /* 0.7.3 */
 };
 
 static virStateDriver udevStateDriver = {
     .name = "udev",
-    .initialize = udevDeviceMonitorStartup,
-    .cleanup = udevDeviceMonitorShutdown,
-    .reload = udevDeviceMonitorReload,
-    .active = udevDeviceMonitorActive,
+    .initialize = udevDeviceMonitorStartup, /* 0.7.3 */
+    .cleanup = udevDeviceMonitorShutdown, /* 0.7.3 */
+    .reload = udevDeviceMonitorReload, /* 0.7.3 */
+    .active = udevDeviceMonitorActive, /* 0.7.3 */
 };
 
 int udevNodeRegister(void)
 {
     VIR_DEBUG("Registering udev node device backend");
 
-    registerCommonNodeFuncs(&udevDeviceMonitor);
     if (virRegisterDeviceMonitor(&udevDeviceMonitor) < 0) {
         return -1;
     }

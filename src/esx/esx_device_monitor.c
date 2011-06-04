@@ -66,18 +66,9 @@ esxDeviceClose(virConnectPtr conn)
 
 
 static virDeviceMonitor esxDeviceMonitor = {
-    "ESX",                                 /* name */
-    esxDeviceOpen,                         /* open */
-    esxDeviceClose,                        /* close */
-    NULL,                                  /* numOfDevices */
-    NULL,                                  /* listDevices */
-    NULL,                                  /* deviceLookupByName */
-    NULL,                                  /* deviceGetXMLDesc */
-    NULL,                                  /* deviceGetParent */
-    NULL,                                  /* deviceNumOfCaps */
-    NULL,                                  /* deviceListCaps */
-    NULL,                                  /* deviceCreateXML */
-    NULL,                                  /* deviceDestroy */
+    .name = "ESX",
+    .open = esxDeviceOpen, /* 0.7.6 */
+    .close = esxDeviceClose, /* 0.7.6 */
 };
 
 

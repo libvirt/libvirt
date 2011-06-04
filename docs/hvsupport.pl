@@ -27,7 +27,7 @@ my %groupheaders = (
 my @srcs;
 find({
     wanted => sub {
-	if (m!$srcdir/.*/\w+_(driver|tmpl)\.c$!) {
+	if (m!$srcdir/.*/\w+_(driver|tmpl|monitor|hal|udev)\.c$!) {
 	    push @srcs, $_ if $_ !~ /vbox_driver\.c/;
 	}
     }, no_chdir => 1}, $srcdir);
@@ -142,7 +142,7 @@ open FILE, "<$drivertable"
 my %groups;
 my $ingrp;
 while (defined($line = <FILE>)) {
-    if ($line =~ /struct _(vir\w*Driver)/) {
+    if ($line =~ /struct _(vir\w*(?:Driver|Monitor))/) {
 	my $grp = $1;
 	if ($grp ne "virStateDriver" &&
 	    $grp ne "virStreamDriver") {
@@ -150,7 +150,7 @@ while (defined($line = <FILE>)) {
 	    $groups{$ingrp} = { apis => {}, drivers => {} };
 	}
     } elsif ($ingrp) {
-	if ($line =~ /^\s*virDrv(\w+)\s+(\w+);\s*$/) {
+	if ($line =~ /^\s*vir(?:Drv|DevMon)(\w+)\s+(\w+);\s*$/) {
 	    my $field = $2;
 	    my $name = $1;
 
@@ -159,6 +159,8 @@ while (defined($line = <FILE>)) {
 		$api = "vir$name";
 	    } elsif (exists $apis{"virConnect$name"}) {
 		$api = "virConnect$name";
+	    } elsif (exists $apis{"virNode$name"}) {
+		$api = "virNode$name";
 	    } else {
 		die "driver $name does not have a public API";
 	    }
@@ -188,7 +190,17 @@ foreach my $src (@srcs) {
 		    $line =~ /^\s*(?:static\s+)?$grp\s+NAME\(\w+\)\s*=\s*{/) {
 		    $ingrp = $grp;
 		    $impl = $src;
-		    $impl =~ s,.*/(\w+?)_((\w+)_)?(\w+)\.c,$1,;
+
+		    if ($impl =~ m,.*/node_device_(\w+)\.c,) {
+			$impl = $1;
+		    } else {
+			$impl =~ s,.*/(\w+?)_((\w+)_)?(\w+)\.c,$1,;
+		    }
+
+		    if ($groups{$ingrp}->{drivers}->{$impl}) {
+			die "Group $ingrp already contains $impl";
+		    }
+
 		    $groups{$ingrp}->{drivers}->{$impl} = {};
 		}
 	    }
@@ -206,7 +218,7 @@ foreach my $src (@srcs) {
 		die "Driver method for $api is NULL in $src" if $meth eq "NULL";
 
 		if (!exists($groups{$ingrp}->{apis}->{$api})) {
-		    die "Found unexpected driver $api in $ingrp\n";
+		    die "Found unexpected method $api in $ingrp\n";
 		}
 
 		$groups{$ingrp}->{drivers}->{$impl}->{$api} = $vers;
