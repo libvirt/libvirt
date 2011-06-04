@@ -2518,7 +2518,6 @@ cleanup:
 void qemuProcessKill(virDomainObjPtr vm)
 {
     int i;
-    int rc;
     VIR_DEBUG("vm=%s pid=%d", vm->def->name, vm->pid);
 
     if (!virDomainObjIsActive(vm)) {
@@ -2540,9 +2539,8 @@ void qemuProcessKill(virDomainObjPtr vm)
         else
             signum = 0; /* Just check for existence */
 
-        rc = virKillProcess(vm->pid, signum);
-        if (rc < 0) {
-            if (rc != -ESRCH) {
+        if (virKillProcess(vm->pid, signum) < 0) {
+            if (errno != ESRCH) {
                 char ebuf[1024];
                 VIR_WARN("Failed to kill process %d %s",
                          vm->pid, virStrerror(errno, ebuf, sizeof ebuf));
