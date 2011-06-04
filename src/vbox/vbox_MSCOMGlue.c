@@ -2,7 +2,7 @@
 /*
  * vbox_MSCOMGlue.c: glue to the MSCOM based VirtualBox API
  *
- * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2010-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -338,6 +338,57 @@ static nsIEventQueue vboxEventQueue = {
 
 
 
+static char *
+vboxLookupRegistryValue(HKEY key, const char *keyName, const char *valueName)
+{
+    LONG status;
+    DWORD type;
+    DWORD length;
+    char *value = NULL;
+
+    status = RegQueryValueEx(key, valueName, NULL, &type, NULL, &length);
+
+    if (status != ERROR_SUCCESS) {
+        VIR_ERROR(_("Could not query registry value '%s\\%s'"),
+                  keyName, valueName);
+        goto cleanup;
+    }
+
+    if (type != REG_SZ) {
+        VIR_ERROR(_("Registry value '%s\\%s' has unexpected type"),
+                  keyName, valueName);
+        goto cleanup;
+    }
+
+    if (length < 2) {
+        VIR_ERROR(_("Registry value '%s\\%s' is too short"),
+                  keyName, valueName);
+        goto cleanup;
+    }
+
+    /* +1 for the null-terminator if it's missing */
+    if (VIR_ALLOC_N(value, length + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    status = RegQueryValueEx(key, valueName, NULL, NULL, (LPBYTE)value, &length);
+
+    if (status != ERROR_SUCCESS) {
+        VIR_FREE(value);
+        VIR_ERROR(_("Could not query registry value '%s\\%s'"),
+                  keyName, valueName);
+        goto cleanup;
+    }
+
+    if (value[length - 1] != '\0') {
+        value[length] = '\0';
+    }
+
+  cleanup:
+    return value;
+}
+
 static int
 vboxLookupVersionInRegistry(void)
 {
@@ -345,8 +396,6 @@ vboxLookupVersionInRegistry(void)
     const char *keyName = VBOX_REGKEY_ORACLE;
     LONG status;
     HKEY key;
-    DWORD type;
-    DWORD length;
     char *value = NULL;
 
     status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName, 0, KEY_READ, &key);
@@ -363,41 +412,25 @@ vboxLookupVersionInRegistry(void)
         }
     }
 
-    status = RegQueryValueEx(key, "Version", NULL, &type, NULL, &length);
+    /* The registry key layout changed around version 4.0.8. Before the version
+     * number was in the Version key, now the Version key can contain %VER% and
+     * the actual version number is in the VersionExt key then. */
+    value = vboxLookupRegistryValue(key, keyName, "Version");
 
-    if (status != ERROR_SUCCESS) {
-        VIR_ERROR(_("Could not query registry value '%s\\Version'"), keyName);
+    if (value == NULL) {
         goto cleanup;
     }
 
-    if (type != REG_SZ) {
-        VIR_ERROR(_("Registry value '%s\\Version' has unexpected type"), keyName);
-        goto cleanup;
+    if (STREQ(value, "%VER%")) {
+        VIR_FREE(value);
+        value = vboxLookupRegistryValue(key, keyName, "VersionExt");
+
+        if (value == NULL) {
+            goto cleanup;
+        }
     }
 
-    if (length < 2) {
-        VIR_ERROR(_("Registry value '%s\\Version' is too short"), keyName);
-        goto cleanup;
-    }
-
-    /* +1 for the null-terminator if it's missing */
-    if (VIR_ALLOC_N(value, length + 1) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    status = RegQueryValueEx(key, "Version", NULL, NULL, (LPBYTE)value, &length);
-
-    if (status != ERROR_SUCCESS) {
-        VIR_ERROR(_("Could not query registry value '%s\\Version'"), keyName);
-        goto cleanup;
-    }
-
-    if (value[length - 1] != '\0') {
-        value[length] = '\0';
-    }
-
-    if (virParseVersionString(value, &vboxVersion)) {
+    if (virParseVersionString(value, &vboxVersion) < 0) {
         VIR_ERROR(_("Could not parse version number from '%s'"), value);
         goto cleanup;
     }
