@@ -97,7 +97,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
 
         if (!virFileExists(name)) {
             if (!ignoreMissing) {
-                VIR_ERROR(_("Libaray '%s' doesn't exist"), name);
+                VIR_ERROR(_("Library '%s' doesn't exist"), name);
             }
 
             VIR_FREE(name);
