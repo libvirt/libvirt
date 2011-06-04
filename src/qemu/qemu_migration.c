@@ -618,11 +618,8 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
                         int *cookieoutlen,
                         int flags)
 {
-    if (!cookieout || !cookieoutlen) {
-        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                        _("missing migration cookie data"));
-        return -1;
-    }
+    if (!cookieout || !cookieoutlen)
+        return 0;
 
     *cookieoutlen = 0;
 
