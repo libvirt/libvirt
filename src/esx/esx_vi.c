@@ -2,7 +2,7 @@
 /*
  * esx_vi.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -1737,7 +1737,7 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
         goto cleanup;
     }
 
-    if (objectContentList == NULL) {
+    if (*objectContentList == NULL) {
         switch (occurrence) {
           case esxVI_Occurrence_OptionalItem:
           case esxVI_Occurrence_OptionalList:
