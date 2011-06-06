@@ -7071,10 +7071,13 @@ static int cmdVolSize(const char *data, unsigned long long *val)
         switch (*end) {
         case 'T':
             *val *= 1024;
+            /* fallthrough */
         case 'G':
             *val *= 1024;
+            /* fallthrough */
         case 'M':
             *val *= 1024;
+            /* fallthrough */
         case 'k':
             *val *= 1024;
             break;
