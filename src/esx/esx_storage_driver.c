@@ -1645,7 +1645,7 @@ esxStoragePoolIsPersistent(virStoragePoolPtr pool ATTRIBUTE_UNUSED)
 
 
 static virStorageDriver esxStorageDriver = {
-    "ESX",                                 /* name */
+    .name = "ESX",
     .open = esxStorageOpen, /* 0.7.6 */
     .close = esxStorageClose, /* 0.7.6 */
     .numOfPools = esxNumberOfStoragePools, /* 0.8.2 */

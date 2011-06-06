@@ -66,9 +66,9 @@ esxNetworkClose(virConnectPtr conn)
 
 
 static virNetworkDriver esxNetworkDriver = {
-    "ESX",                                 /* name */
-    .open = esxNetworkOpen, /* 0.7.0 */
-    .close = esxNetworkClose, /* 0.7.0 */
+    .name = "ESX",
+    .open = esxNetworkOpen, /* 0.7.6 */
+    .close = esxNetworkClose, /* 0.7.6 */
 };
 
 
