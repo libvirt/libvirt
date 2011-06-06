@@ -60,6 +60,7 @@
 #include "command.h"
 #include "virkeycode.h"
 #include "virnetdevbandwidth.h"
+#include "util/bitmap.h"
 
 static char *progname;
 
@@ -11502,6 +11503,246 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
+/**
+ * Check if n1 is superset of n2, meaning n1 contains all elements and
+ * attributes as n2 at least. Including children.
+ * @n1 first node
+ * @n2 second node
+ * returns true in case n1 covers n2, false otherwise.
+ */
+static bool
+vshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
+{
+    xmlNodePtr child1, child2;
+    xmlAttrPtr attr;
+    char *prop1, *prop2;
+    bool found;
+    bool visited;
+    bool ret = false;
+    unsigned long n1_child_size, n2_child_size, n1_iter;
+    virBitmapPtr bitmap;
+
+    if (!n1 && !n2)
+        return true;
+
+    if (!n1 || !n2)
+        return false;
+
+    if (!xmlStrEqual(n1->name, n2->name))
+        return false;
+
+    /* Iterate over n2 attributes and check if n1 contains them*/
+    attr = n2->properties;
+    while (attr) {
+        if (attr->type == XML_ATTRIBUTE_NODE) {
+            prop1 = virXMLPropString(n1, (const char *) attr->name);
+            prop2 = virXMLPropString(n2, (const char *) attr->name);
+            if (STRNEQ_NULLABLE(prop1, prop2)) {
+                xmlFree(prop1);
+                xmlFree(prop2);
+                return false;
+            }
+            xmlFree(prop1);
+            xmlFree(prop2);
+        }
+        attr = attr->next;
+    }
+
+    n1_child_size = xmlChildElementCount(n1);
+    n2_child_size = xmlChildElementCount(n2);
+    if (n1_child_size < n2_child_size)
+        return false;
+
+    if (!(bitmap = virBitmapAlloc(n1_child_size))) {
+        virReportOOMError();
+        return false;
+    }
+
+    child2 = n2->children;
+    while (child2) {
+        if (child2->type != XML_ELEMENT_NODE) {
+            child2 = child2->next;
+            continue;
+        }
+
+        child1 = n1->children;
+        n1_iter = 0;
+        found = false;
+        while (child1) {
+            if (child1->type != XML_ELEMENT_NODE) {
+                child1 = child1->next;
+                continue;
+            }
+
+            if (virBitmapGetBit(bitmap, n1_iter, &visited) < 0) {
+                vshError(NULL, "%s", _("Bad child elements counting."));
+                goto cleanup;
+            }
+
+            if (visited) {
+                child1 = child1->next;
+                n1_iter++;
+                continue;
+            }
+
+            if (xmlStrEqual(child1->name, child2->name)) {
+                found = true;
+                if (virBitmapSetBit(bitmap, n1_iter) < 0) {
+                    vshError(NULL, "%s", _("Bad child elements counting."));
+                    goto cleanup;
+                }
+
+                if (!vshNodeIsSuperset(child1, child2))
+                    goto cleanup;
+
+                break;
+            }
+
+            child1 = child1->next;
+            n1_iter++;
+        }
+
+        if (!found)
+            goto cleanup;
+
+        child2 = child2->next;
+    }
+
+    ret = true;
+
+cleanup:
+    virBitmapFree(bitmap);
+    return ret;
+}
+
+/**
+ * vshCompleteXMLFromDomain:
+ * @ctl vshControl for error messages printing
+ * @dom domain
+ * @oldXML device XML before
+ * @newXML and after completion
+ *
+ * For given domain and (probably incomplete) device XML specification try to
+ * find such device in domain and complete missing parts. This is however
+ * possible only when given device XML is sufficiently precise so it addresses
+ * only one device.
+ *
+ * Returns -2 when no such device exists in domain, -3 when given XML selects many
+ *          (is too ambiguous), 0 in case of success. Otherwise returns -1. @newXML
+ *          is touched only in case of success.
+ */
+static int
+vshCompleteXMLFromDomain(vshControl *ctl, virDomainPtr dom, char *oldXML,
+                         char **newXML)
+{
+    int funcRet = -1;
+    char *domXML = NULL;
+    xmlDocPtr domDoc = NULL, devDoc = NULL;
+    xmlNodePtr node = NULL;
+    xmlXPathContextPtr domCtxt = NULL, devCtxt = NULL;
+    xmlNodePtr *devices = NULL;
+    xmlSaveCtxtPtr sctxt = NULL;
+    int devices_size;
+    char *xpath = NULL;
+    xmlBufferPtr buf = NULL;
+    int i = 0;
+    int indx = -1;
+
+    if (!(domXML = virDomainGetXMLDesc(dom, 0))) {
+        vshError(ctl, _("couldn't get XML description of domain %s"),
+                 virDomainGetName(dom));
+        goto cleanup;
+    }
+
+    domDoc = virXMLParseStringCtxt(domXML, _("(domain_definition)"), &domCtxt);
+    if (!domDoc) {
+        vshError(ctl, _("Failed to parse domain definition xml"));
+        goto cleanup;
+    }
+
+    devDoc = virXMLParseStringCtxt(oldXML, _("(device_definition)"), &devCtxt);
+    if (!devDoc) {
+        vshError(ctl, _("Failed to parse device definition xml"));
+        goto cleanup;
+    }
+
+    node = xmlDocGetRootElement(devDoc);
+
+    buf = xmlBufferCreate();
+    if (!buf) {
+        vshError(ctl, "%s", _("out of memory"));
+        goto cleanup;
+    }
+
+    /* Get all possible devices */
+    virAsprintf(&xpath, "/domain/devices/%s", node->name);
+    if (!xpath) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    devices_size = virXPathNodeSet(xpath, domCtxt, &devices);
+
+    if (devices_size < 0) {
+        /* error */
+        vshError(ctl, "%s", _("error when selecting nodes"));
+        goto cleanup;
+    } else if (devices_size == 0) {
+        /* no such device */
+        funcRet = -2;
+        goto cleanup;
+    }
+
+    /* and refine */
+    for (i = 0; i < devices_size; i++) {
+        if (vshNodeIsSuperset(devices[i], node)) {
+            if (indx >= 0) {
+                funcRet = -3; /* ambiguous */
+                goto cleanup;
+            }
+            indx = i;
+        }
+    }
+
+    if (indx < 0) {
+        funcRet = -2; /* no such device */
+        goto cleanup;
+    }
+
+    vshDebug(ctl, VSH_ERR_DEBUG, "Found device at pos %d\n", indx);
+
+    if (newXML) {
+        sctxt = xmlSaveToBuffer(buf, NULL, 0);
+        if (!sctxt) {
+            vshError(ctl, "%s", _("failed to create document saving context"));
+            goto cleanup;
+        }
+
+        xmlSaveTree(sctxt, devices[indx]);
+        xmlSaveClose(sctxt);
+        *newXML = (char *) xmlBufferContent(buf);
+        if (!*newXML) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        buf->content = NULL;
+    }
+
+    vshDebug(ctl, VSH_ERR_DEBUG, "Old xml:\n%s\nNew xml:\n%s\n", oldXML,
+             newXML ? NULLSTR(*newXML) : "(null)");
+
+    funcRet = 0;
+
+cleanup:
+    xmlBufferFree(buf);
+    VIR_FREE(devices);
+    xmlXPathFreeContext(devCtxt);
+    xmlXPathFreeContext(domCtxt);
+    xmlFreeDoc(devDoc);
+    xmlFreeDoc(domDoc);
+    VIR_FREE(domXML);
+    VIR_FREE(xpath);
+    return funcRet;
+}
 
 /*
  * "detach-device" command
@@ -11522,10 +11763,11 @@ static const vshCmdOptDef opts_detach_device[] = {
 static bool
 cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    virDomainPtr dom = NULL;
     const char *from = NULL;
-    char *buffer;
+    char *buffer = NULL, *new_buffer = NULL;
     int ret;
+    bool funcRet = false;
     unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -11534,37 +11776,50 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(cmd, "file", &from) <= 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if (vshCommandOptString(cmd, "file", &from) <= 0)
+        goto cleanup;
 
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
         virshReportError(ctl);
-        virDomainFree(dom);
-        return false;
+        goto cleanup;
+    }
+
+    ret = vshCompleteXMLFromDomain(ctl, dom, buffer, &new_buffer);
+    if (ret < 0) {
+        if (ret == -2) {
+            vshError(ctl, _("no such device in %s"), virDomainGetName(dom));
+        } else if (ret == -3) {
+            vshError(ctl, "%s", _("given XML selects too many devices. "
+                                  "Please, be more specific"));
+        } else {
+            /* vshCompleteXMLFromDomain() already printed error message,
+             * so nothing to do here. */
+        }
+        goto cleanup;
     }
 
     if (vshCommandOptBool(cmd, "persistent")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        ret = virDomainDetachDeviceFlags(dom, buffer, flags);
+        ret = virDomainDetachDeviceFlags(dom, new_buffer, flags);
     } else {
-        ret = virDomainDetachDevice(dom, buffer);
+        ret = virDomainDetachDevice(dom, new_buffer);
     }
-    VIR_FREE(buffer);
 
     if (ret < 0) {
         vshError(ctl, _("Failed to detach device from %s"), from);
-        virDomainFree(dom);
-        return false;
-    } else {
-        vshPrint(ctl, "%s", _("Device detached successfully\n"));
+        goto cleanup;
     }
 
+    vshPrint(ctl, "%s", _("Device detached successfully\n"));
+    funcRet = true;
+
+cleanup:
+    VIR_FREE(new_buffer);
+    VIR_FREE(buffer);
     virDomainFree(dom);
-    return true;
+    return funcRet;
 }
 
 
