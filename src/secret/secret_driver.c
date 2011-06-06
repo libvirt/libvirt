@@ -1,7 +1,7 @@
 /*
  * secret_driver.c: local driver for secret manipulation API
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -516,12 +516,6 @@ loadSecrets(virSecretDriverStatePtr driver,
     ret = 0;
 
 cleanup:
-    while (list != NULL) {
-        virSecretEntryPtr s;
-
-        s = listUnlink(&list);
-        secretFree(s);
-    }
     if (dir != NULL)
         closedir(dir);
     return ret;
