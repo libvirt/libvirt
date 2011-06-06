@@ -2199,12 +2199,12 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
                               const char *uri,
                               unsigned long flags,
                               const char *dname,
-                              unsigned long resource)
+                              unsigned long resource,
+                              bool *v3proto)
 {
     int ret = -1;
     virConnectPtr dconn = NULL;
     bool p2p;
-    bool v3;
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
               "uri=%s, flags=%lu, dname=%s, resource=%lu",
               driver, sconn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
@@ -2226,8 +2226,12 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     p2p = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                    VIR_DRV_FEATURE_MIGRATION_P2P);
-    v3 = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                  VIR_DRV_FEATURE_MIGRATION_V3);
+        /* v3proto reflects whether the caller used Perform3, but with
+         * p2p migrate, regardless of whether Perform3 or Perform3
+         * were used, we decide protocol based on what target supports
+         */
+    *v3proto = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                        VIR_DRV_FEATURE_MIGRATION_V3);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
 
     if (!p2p) {
@@ -2243,7 +2247,7 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (v3)
+    if (*v3proto)
         ret = doPeer2PeerMigrate3(driver, sconn, dconn, vm, xmlin,
                                   dconnuri, uri, flags, dname, resource);
     else
@@ -2310,7 +2314,8 @@ int qemuMigrationPerform(struct qemud_driver *driver,
         }
 
         if (doPeer2PeerMigrate(driver, conn, vm, xmlin,
-                               dconnuri, uri, flags, dname, resource) < 0)
+                               dconnuri, uri, flags, dname,
+                               resource, &v3proto) < 0)
             /* doPeer2PeerMigrate already set the error, so just get out */
             goto endjob;
     } else {
