@@ -363,6 +363,22 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
                             __VA_ARGS__)
 
 /**
+ * VIR_UUID_DEBUG:
+ * @conn: connection
+ * @uuid: possibly null UUID array
+ */
+#define VIR_UUID_DEBUG(conn, uuid)                              \
+    do {                                                        \
+        if (uuid) {                                             \
+            char _uuidstr[VIR_UUID_STRING_BUFLEN];              \
+            virUUIDFormat(uuid, _uuidstr);                      \
+            VIR_DEBUG("conn=%p, uuid=%s", conn, _uuidstr);      \
+        } else {                                                \
+            VIR_DEBUG("conn=%p, uuid=(null)", conn);            \
+        }                                                       \
+    } while (0)
+
+/**
  * virInitialize:
  *
  * Initialize the library. It's better to call this routine at startup
@@ -1876,10 +1892,7 @@ error:
 virDomainPtr
 virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virUUIDFormat(uuid, uuidstr);
-
-    VIR_DEBUG("conn=%p, uuid=%s", conn, uuidstr);
+    VIR_UUID_DEBUG(conn, uuid);
 
     virResetLastError();
 
@@ -1922,7 +1935,7 @@ virDomainPtr
 virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
-    VIR_DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
+    VIR_DEBUG("conn=%p, uuidstr=%s", conn, NULLSTR(uuidstr));
 
     virResetLastError();
 
@@ -7493,10 +7506,7 @@ error:
 virNetworkPtr
 virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virUUIDFormat(uuid, uuidstr);
-
-    VIR_DEBUG("conn=%p, uuid=%s", conn, uuidstr);
+    VIR_UUID_DEBUG(conn, uuid);
 
     virResetLastError();
 
@@ -7539,7 +7549,7 @@ virNetworkPtr
 virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
-    VIR_DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
+    VIR_DEBUG("conn=%p, uuidstr=%s", conn, NULLSTR(uuidstr));
 
     virResetLastError();
 
@@ -9235,7 +9245,7 @@ virStoragePoolPtr
 virStoragePoolLookupByUUID(virConnectPtr conn,
                            const unsigned char *uuid)
 {
-    VIR_DEBUG("conn=%p, uuid=%s", conn, uuid);
+    VIR_UUID_DEBUG(conn, uuid);
 
     virResetLastError();
 
@@ -9279,7 +9289,7 @@ virStoragePoolLookupByUUIDString(virConnectPtr conn,
                                  const char *uuidstr)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
-    VIR_DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
+    VIR_DEBUG("conn=%p, uuidstr=%s", conn, NULLSTR(uuidstr));
 
     virResetLastError();
 
@@ -11766,7 +11776,7 @@ error:
 virSecretPtr
 virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    VIR_DEBUG("conn=%p, uuid=%s", conn, uuid);
+    VIR_UUID_DEBUG(conn, uuid);
 
     virResetLastError();
 
@@ -11811,7 +11821,7 @@ virSecretPtr
 virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
-    VIR_DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
+    VIR_DEBUG("conn=%p, uuidstr=%s", conn, NULLSTR(uuidstr));
 
     virResetLastError();
 
@@ -13422,7 +13432,7 @@ error:
 virNWFilterPtr
 virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    VIR_DEBUG("conn=%p, uuid=%s", conn, uuid);
+    VIR_UUID_DEBUG(conn, uuid);
 
     virResetLastError();
 
@@ -13465,7 +13475,7 @@ virNWFilterPtr
 virNWFilterLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
-    VIR_DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
+    VIR_DEBUG("conn=%p, uuidstr=%s", conn, NULLSTR(uuidstr));
 
     virResetLastError();
 
