@@ -1043,12 +1043,14 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
     switch (dev->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         if ((olddev->data.vnc.autoport != dev->data.vnc.autoport) ||
-            (!dev->data.vnc.autoport && (olddev->data.vnc.port != dev->data.vnc.port))) {
+            (!dev->data.vnc.autoport &&
+             (olddev->data.vnc.port != dev->data.vnc.port))) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change port settings on vnc graphics"));
             return -1;
         }
-        if (STRNEQ_NULLABLE(olddev->data.vnc.listenAddr, dev->data.vnc.listenAddr)) {
+        if (STRNEQ_NULLABLE(olddev->data.vnc.listenAddr,
+                            dev->data.vnc.listenAddr)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change listen address setting on vnc graphics"));
             return -1;
@@ -1063,10 +1065,14 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
          * even if new password matches old password */
         if (olddev->data.vnc.auth.expires ||
             dev->data.vnc.auth.expires ||
-            STRNEQ_NULLABLE(olddev->data.vnc.auth.passwd, dev->data.vnc.auth.passwd)) {
-            VIR_DEBUG("Updating password on VNC server %p %p", dev->data.vnc.auth.passwd, driver->vncPassword);
-            ret = qemuDomainChangeGraphicsPasswords(driver, vm, VIR_DOMAIN_GRAPHICS_TYPE_VNC,
-                                                    &dev->data.vnc.auth, driver->vncPassword);
+            STRNEQ_NULLABLE(olddev->data.vnc.auth.passwd,
+                            dev->data.vnc.auth.passwd)) {
+            VIR_DEBUG("Updating password on VNC server %p %p",
+                      dev->data.vnc.auth.passwd, driver->vncPassword);
+            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
+                                                    VIR_DOMAIN_GRAPHICS_TYPE_VNC,
+                                                    &dev->data.vnc.auth,
+                                                    driver->vncPassword);
 
             /* Steal the new dev's  char * reference */
             VIR_FREE(olddev->data.vnc.auth.passwd);
@@ -1081,18 +1087,22 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         if ((olddev->data.spice.autoport != dev->data.spice.autoport) ||
-            (!dev->data.spice.autoport && (olddev->data.spice.port != dev->data.spice.port)) ||
-            (!dev->data.spice.autoport && (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
+            (!dev->data.spice.autoport &&
+             (olddev->data.spice.port != dev->data.spice.port)) ||
+            (!dev->data.spice.autoport &&
+             (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change port settings on spice graphics"));
             return -1;
         }
-        if (STRNEQ_NULLABLE(olddev->data.spice.listenAddr, dev->data.spice.listenAddr)) {
+        if (STRNEQ_NULLABLE(olddev->data.spice.listenAddr,
+                            dev->data.spice.listenAddr)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change listen address setting on spice graphics"));
             return -1;
         }
-        if (STRNEQ_NULLABLE(olddev->data.spice.keymap, dev->data.spice.keymap)) {
+        if (STRNEQ_NULLABLE(olddev->data.spice.keymap,
+                            dev->data.spice.keymap)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change keymap setting on spice graphics"));
             return -1;
@@ -1102,12 +1112,16 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
          * even if new password matches old password */
         if (olddev->data.spice.auth.expires ||
             dev->data.spice.auth.expires ||
-            STRNEQ_NULLABLE(olddev->data.spice.auth.passwd, dev->data.spice.auth.passwd)) {
-            VIR_DEBUG("Updating password on SPICE server %p %p", dev->data.spice.auth.passwd, driver->spicePassword);
-            ret = qemuDomainChangeGraphicsPasswords(driver, vm, VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
-                                                    &dev->data.spice.auth, driver->spicePassword);
+            STRNEQ_NULLABLE(olddev->data.spice.auth.passwd,
+                            dev->data.spice.auth.passwd)) {
+            VIR_DEBUG("Updating password on SPICE server %p %p",
+                      dev->data.spice.auth.passwd, driver->spicePassword);
+            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
+                                                    VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
+                                                    &dev->data.spice.auth,
+                                                    driver->spicePassword);
 
-            /* Steal the new dev's  char * reference */
+            /* Steal the new dev's char * reference */
             VIR_FREE(olddev->data.spice.auth.passwd);
             olddev->data.spice.auth.passwd = dev->data.spice.auth.passwd;
             dev->data.spice.auth.passwd = NULL;
