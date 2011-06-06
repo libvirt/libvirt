@@ -97,6 +97,7 @@ struct qemuDomainJobObj {
 
     virCond asyncCond;                  /* Use to coordinate with async jobs */
     enum qemuDomainAsyncJob asyncJob;   /* Currently active async job */
+    int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
     unsigned long long start;           /* When the async job started */
     virDomainJobInfo info;              /* Async job progress data */
@@ -140,6 +141,11 @@ struct qemuDomainWatchdogEvent
     int action;
 };
 
+const char *qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
+                                            int phase);
+int qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
+                                      const char *phase);
+
 void qemuDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque);
 
 /* driver must be locked before calling */
@@ -182,6 +188,9 @@ void qemuDomainObjEndNestedJob(struct qemud_driver *driver,
                                virDomainObjPtr obj);
 
 void qemuDomainObjSaveJob(struct qemud_driver *driver, virDomainObjPtr obj);
+void qemuDomainObjSetJobPhase(struct qemud_driver *driver,
+                              virDomainObjPtr obj,
+                              int phase);
 void qemuDomainObjSetAsyncJobMask(virDomainObjPtr obj,
                                   unsigned long long allowedJobs);
 void qemuDomainObjRestoreJob(virDomainObjPtr obj,

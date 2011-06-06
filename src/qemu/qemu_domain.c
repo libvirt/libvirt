@@ -65,6 +65,46 @@ VIR_ENUM_IMPL(qemuDomainAsyncJob, QEMU_ASYNC_JOB_LAST,
 );
 
 
+const char *
+qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
+                                int phase ATTRIBUTE_UNUSED)
+{
+    switch (job) {
+    case QEMU_ASYNC_JOB_MIGRATION_OUT:
+    case QEMU_ASYNC_JOB_MIGRATION_IN:
+    case QEMU_ASYNC_JOB_SAVE:
+    case QEMU_ASYNC_JOB_DUMP:
+    case QEMU_ASYNC_JOB_NONE:
+    case QEMU_ASYNC_JOB_LAST:
+        ; /* fall through */
+    }
+
+    return "none";
+}
+
+int
+qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
+                                  const char *phase)
+{
+    if (!phase)
+        return 0;
+
+    switch (job) {
+    case QEMU_ASYNC_JOB_MIGRATION_OUT:
+    case QEMU_ASYNC_JOB_MIGRATION_IN:
+    case QEMU_ASYNC_JOB_SAVE:
+    case QEMU_ASYNC_JOB_DUMP:
+    case QEMU_ASYNC_JOB_NONE:
+    case QEMU_ASYNC_JOB_LAST:
+        ; /* fall through */
+    }
+
+    if (STREQ(phase, "none"))
+        return 0;
+    else
+        return -1;
+}
+
 static void qemuDomainEventDispatchFunc(virConnectPtr conn,
                                         virDomainEventPtr event,
                                         virConnectDomainEventGenericCallback cb,
@@ -135,6 +175,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     struct qemuDomainJobObj *job = &priv->job;
 
     job->asyncJob = QEMU_ASYNC_JOB_NONE;
+    job->phase = 0;
     job->mask = DEFAULT_JOB_MASK;
     job->start = 0;
     memset(&job->info, 0, sizeof(job->info));
@@ -151,6 +192,7 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
     memset(job, 0, sizeof(*job));
     job->active = priv->job.active;
     job->asyncJob = priv->job.asyncJob;
+    job->phase = priv->job.phase;
 
     qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);
@@ -249,9 +291,15 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         virBufferAsprintf(buf, "  <lockstate>%s</lockstate>\n", priv->lockState);
 
     if (priv->job.active || priv->job.asyncJob) {
-        virBufferAsprintf(buf, "  <job type='%s' async='%s'/>\n",
+        virBufferAsprintf(buf, "  <job type='%s' async='%s'",
                           qemuDomainJobTypeToString(priv->job.active),
                           qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+        if (priv->job.phase) {
+            virBufferAsprintf(buf, " phase='%s'",
+                              qemuDomainAsyncJobPhaseToString(
+                                    priv->job.asyncJob, priv->job.phase));
+        }
+        virBufferAddLit(buf, "/>\n");
     }
 
     return 0;
@@ -384,6 +432,17 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         }
         VIR_FREE(tmp);
         priv->job.asyncJob = async;
+
+        if ((tmp = virXPathString("string(./job[1]/@phase)", ctxt))) {
+            priv->job.phase = qemuDomainAsyncJobPhaseFromString(async, tmp);
+            if (priv->job.phase < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Unknown job phase %s"), tmp);
+                VIR_FREE(tmp);
+                goto error;
+            }
+            VIR_FREE(tmp);
+        }
     }
 
     return 0;
@@ -592,6 +651,20 @@ qemuDomainObjSaveJob(struct qemud_driver *driver, virDomainObjPtr obj)
 
     if (virDomainSaveStatus(driver->caps, driver->stateDir, obj) < 0)
         VIR_WARN("Failed to save status on vm %s", obj->def->name);
+}
+
+void
+qemuDomainObjSetJobPhase(struct qemud_driver *driver,
+                         virDomainObjPtr obj,
+                         int phase)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    if (!priv->job.asyncJob)
+        return;
+
+    priv->job.phase = phase;
+    qemuDomainObjSaveJob(driver, obj);
 }
 
 void
