@@ -8,6 +8,407 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>0.9.2: Jun 6 2011</h3>
+    <ul>
+      <li> Features:<br/>
+      Framework for lock manager plugins (Daniel P. Berrange),<br/>
+      API for network config change transactions (Michal Privoznik),<br/>
+      flags for setting memory parameters (Hu Tao),<br/>
+      virDomainGetState public API (Jiri Denemark),<br/>
+      qemu: allow blkstat/blkinfo calls during migration (Federico Simoncelli),<br/>
+      Introduce migration v3 API (Daniel P. Berrange),<br/>
+      Defining the Screenshot public API (Michal Privoznik),<br/>
+      public API for NMI injection (Lai Jiangshan)<br/>
+      </li>
+      <li> Documentation:<br/>
+      esx: Fix driver method version annotations (Matthias Bolte),<br/>
+      vbox: Fix typo in error message (Matthias Bolte),<br/>
+      virsh: Document nodeinfo output (Jiri Denemark),<br/>
+      Correct 'cputune' documentation example. (Neil Wilson),<br/>
+      document iface-* commands (Eric Blake),<br/>
+      Add initial docs about the lock managers (Daniel P. Berrange),<br/>
+      maint: use consistent file name for threading notes (Eric Blake),<br/>
+      Fix virTypedParameter alias comments (Matthias Bolte),<br/>
+      Fix error syntax of vcpupin example XML (Osier Yang),<br/>
+      Automatically generate the hvsupport.html.in file from source files (Daniel P. Berrange),<br/>
+      Fix documentation for cputune parameters (Osier Yang),<br/>
+      avoid double 'the' (Eric Blake),<br/>
+      Add documentation about test suites (Daniel Veillard),<br/>
+      updates to CA cert and client cert/key info (Doug Goldstein),<br/>
+      node filesystem attr is 'accessmode', not 'mode' (Cole Robinson)<br/>
+      </li>
+      <li> Portability:<br/>
+      vbox: Fix version extraction on Windows for newer VirtualBox versions (Matthias Bolte),<br/>
+      Make dlopen usage in lock manager conditional (Matthias Bolte),<br/>
+      build: fix VPATH build break from previous patch (Eric Blake),<br/>
+      Remove call to deprecated gnutls_certificate_type_set_priority (Daniel P. Berrange),<br/>
+      Fix sysinfo/virsh build problems on Win32 (Daniel P. Berrange),<br/>
+      Fix build with --with-driver-modules enabled (Matthias Bolte),<br/>
+      build: fix 'make dist' for ./configure --without-remote (Eric Blake),<br/>
+      virsh: time_t is not a long on FreeBSD (Matthias Bolte),<br/>
+      time_t is not a long on FreeBSD, switch internal type to long long (Matthias Bolte),<br/>
+      build: avoid strerror_r pitfalls (Eric Blake),<br/>
+      build: fix VIR_DEBUG on mingw (Eric Blake),<br/>
+      build: generate files when building without libvirtd (Wen Congyang),<br/>
+      build: drop unused sys/syslimits.h header (Eric Blake),<br/>
+      Fix prototype of virRun for Win32 targets (Daniel P. Berrange),<br/>
+      build: tolerate unlimited group size (Eric Blake),<br/>
+      Disable virCommandExec on Win32 (Daniel P. Berrange),<br/>
+      command: Fix compilation on FreeBSD (Matthias Bolte),<br/>
+      apparmor: Fix compilation by removing remains from virCommand conversion (Matthias Bolte),<br/>
+      configure: Fix mpath check on non-Linux systems (Matthias Bolte),<br/>
+      fix xdr detection and use with recent glibc (Christophe Fergeau),<br/>
+      build: avoid gcc preprocessor extensions (Eric Blake),<br/>
+      build: fix VPATH build with distributed generated files (Eric Blake),<br/>
+      build: fix VPATH builds (Eric Blake)<br/>
+      </li>
+      <li> Bug Fixes:<br/>
+      Fix QEMU p2p v2 migration when run from a v3 client (Daniel P. Berrange),<br/>
+      Don't raise an error if the migration cookie is NULL (Daniel P. Berrange),<br/>
+      Fix check of virKillProcess return status (Daniel P. Berrange),<br/>
+      qemu: Avoid use after free in qemuCaps parsing (Jiri Denemark),<br/>
+      security driver: ignore EINVAL when chowning an image file (Laine Stump),<br/>
+      migrate: detect xml incompatibility (Eric Blake),<br/>
+      event: avoid memory leak on cleanup (Eric Blake),<br/>
+      qemu: avoid memory leak on vcpupin (Eric Blake),<br/>
+      remote: avoid leak on failure (Eric Blake),<br/>
+      lock: avoid leak on failure (Eric Blake),<br/>
+      storage: avoid memory leak on stat failure (Eric Blake),<br/>
+      storage: avoid memory leak (Eric Blake),<br/>
+      libvirtd: avoid leak on failure (Eric Blake),<br/>
+      command: avoid leak on failure (Eric Blake),<br/>
+      Explicitly set VM state to paused after migration completes (Daniel P. Berrange),<br/>
+      Fix regressions BlockStats/Info APIs in QEMU driver (Daniel P. Berrange),<br/>
+      Fix minor issues in libxenlight managed save (Jim Fehlig),<br/>
+      Fix auditing of disk hotunplug operations (Daniel P. Berrange),<br/>
+      Avoid crash on NULL pointer in lock driver impls during hotplug (Daniel P. Berrange),<br/>
+      Fix return value in lock manager hotplug methods (Daniel P. Berrange),<br/>
+      Make sure virDomainSave/virDomainManagedSave reset id to -1 (Daniel P. Berrange),<br/>
+      Fix handling of VIR_EVENT_HANDLE_ERROR in QEMU monitor (Daniel P. Berrange),<br/>
+      security: plug regression introduced in disk probe logic (Eric Blake),<br/>
+      Fix order of disks and controllers (Jiri Denemark),<br/>
+      util: Fix incorrect error in PCI functions (Osier Yang),<br/>
+      openvz: Restore original EOF handling in openvzGetProcessInfo (Matthias Bolte),<br/>
+      openvz: Handle getline failures in openvzReadConfigParam properly (Matthias Bolte),<br/>
+      conf: Fix incorrect spice graphic XML format on compression options (Michal Privoznik),<br/>
+      nwfilter: reorder locks (Stefan Berger),<br/>
+      openvz: Fix regression in openvzGetVPSUUID (Matthias Bolte),<br/>
+      esx: Fix regression in absolute file name handling (Matthias Bolte),<br/>
+      openvz: Fix regression in config file parsing (Taisuke Yamada),<br/>
+      audit: fix minor off-by-one (Eric Blake),<br/>
+      Fix libxl vm def handling on domU cleanup (Markus Groß),<br/>
+      Fix modifying disk devices in qemu driver (Markus Groß),<br/>
+      json: Avoid passing large positive 64 bit integers to QMP. (Richard W.M. Jones),<br/>
+      Fix initialization of current vcpus in libxl driver (Jim Fehlig),<br/>
+      qemu: Don't change ownership of file when appending to it (Michal Privoznik),<br/>
+      qemu: fix typo in name - should be VHOST_NET, not VNET_HOST (Laine Stump),<br/>
+      Fix QEMU -vnc arg generation with raw IPv6 addresses (Daniel P. Berrange),<br/>
+      Fix peer2peer migration with transient VMs (Daniel P. Berrange),<br/>
+      python: Don't free must-not-free variables (Michal Privoznik),<br/>
+      python: Fix typo in bindings (Michal Privoznik),<br/>
+      libvirt.spec: /var/cache/libvirt should be 0711. (Richard W.M. Jones),<br/>
+      remote: remove bogus virDomainFree. (Richard W.M. Jones),<br/>
+      qemudDomainMemoryPeek: change ownership/selinux label on temporary file. (Richard W.M. Jones),<br/>
+      Fix QEMU migration cookie crash for guests with no graphics (Daniel P. Berrange),<br/>
+      Blank out the 'listenAddr' parameter if empty string (Daniel P. Berrange),<br/>
+      Improve invalid argument checks for the public API (Matthias Bolte),<br/>
+      qemu: fix typo in spice migration code (Michal Privoznik),<br/>
+      openvz: fix logic bug in previous patch (Eric Blake),<br/>
+      Fix error reporting in stream creation code (Matthias Bolte),<br/>
+      virsh: Correctly initialize libvirt (Jiri Denemark),<br/>
+      Fix leak of mime type string in screenshot dispatcher (Daniel P. Berrange),<br/>
+      Fix remote dispatcher for screenshot command (Daniel P. Berrange),<br/>
+      Add missing initialization to 'ret' in qemu migration (Daniel P. Berrange),<br/>
+      Close all sockets before cancelling QEMU migration (Daniel P. Berrange),<br/>
+      Ensure we always read a full buffer in tunnelled migration (Daniel P. Berrange),<br/>
+      phyp: avoid a crash (Eric Blake),<br/>
+      stream: avoid use-after-free (Eric Blake),<br/>
+      virsh: Fix uninitialized variable warning (Matthias Bolte),<br/>
+      libxl: fix typos in previous patch (Eric Blake),<br/>
+      node_device: avoid null dereference on error (Eric Blake),<br/>
+      tests: avoid crash when run under gcov (Eric Blake),<br/>
+      Fix two uninitialized variable warnings (Matthias Bolte),<br/>
+      apparmor: Fix uninitalized variable warning in virt-aa-helper (Matthias Bolte),<br/>
+      Fix qemuMigrationToFile nonull annotation (Daniel P. Berrange)<br/>
+      </li>
+      <li> Improvements:<br/>
+      API: consolidate common unreleased enums (Eric Blake),<br/>
+      uml: correct command line networking parameters (Heath Petersen),<br/>
+      Add call to sanlock_restrict() in QEMU lock driver (Daniel P. Berrange),<br/>
+      screenshot: Expose the new API in virsh (Michal Privoznik),<br/>
+      libxl: adds managed save and restore support (Markus Groß),<br/>
+      libxl: get maximum memory of running domain (Markus Groß),<br/>
+      Add a plugin for the 'sanlock' project (Daniel P. Berrange),<br/>
+      Allow leases to be hotpluged with QEMU guests (Daniel P. Berrange),<br/>
+      Support passing QEMU lock state to dest during migration (Daniel P. Berrange),<br/>
+      Integrate the QEMU driver with the lock manager infrastructure (Daniel P. Berrange),<br/>
+      Add higher level lock API for domain objects (Daniel P. Berrange),<br/>
+      Add a 'nop' lock driver implementation. (Daniel P. Berrange),<br/>
+      Support leases in guest XML and lock manager (Daniel P. Berrange),<br/>
+      Allow handshake with child process during startup (Daniel P. Berrange),<br/>
+      tests: really fix QEMU XML-2-ARGV graphics-spice-timeout test (Eric Blake),<br/>
+      build: avoid corrupting / in RHEL 5 (Eric Blake),<br/>
+      tests: Add a test for correct disk device ordering (Jiri Denemark),<br/>
+      Fix QEMU XML-2-ARGV graphics-spice-timeout test (Matthias Bolte),<br/>
+      remote generator: Handle some virTypedParameterPtr using functions (Matthias Bolte),<br/>
+      apibuild: Restrict long usage to existing functions and structs (Matthias Bolte),<br/>
+      remote generator: Legacy support for hyper to long mappings (Matthias Bolte),<br/>
+      Use common parameter order for remote(De)SerializeTypedParameters (Matthias Bolte),<br/>
+      openvz: Add simple test for openvzReadNetworkConf (Matthias Bolte),<br/>
+      openvz: Set virtType to openvz in openvzLoadDomains (Matthias Bolte),<br/>
+      storage: List directory volumes for dir/fs/netfs pools (Cole Robinson),<br/>
+      tests: Add more complex domain scheme test data (Michal Privoznik),<br/>
+      tests: Test for SPICE compression options (Michal Privoznik),<br/>
+      Ignore backward compatibility macros in apibuild.py (Matthias Bolte),<br/>
+      openvz: fix bridge devices parsing in openvzReadNetworkConf() (Jean-Baptiste Rouault),<br/>
+      Allow custom XML to be passed in during migration (Daniel P. Berrange),<br/>
+      Allow virsh to pass in a custom XML document for migration (Daniel P. Berrange),<br/>
+      Add an API for comparing the ABI of two guest configurations (Daniel P. Berrange),<br/>
+      Remove unused 'target' field in virDomainHostdevDef (Daniel P. Berrange),<br/>
+      lxc: Seperate domain config loading (Osier Yang),<br/>
+      openvz: Automatically disable on non-Linux systems (Matthias Bolte),<br/>
+      Support maximum and current memory flags in libxl driver (Markus Groß),<br/>
+      Add domainSave/Restore to libxl driver (Markus Groß),<br/>
+      Add domainCoreDump to libxl driver (Markus Groß),<br/>
+      Populate domid field of devices for libxenlight (Markus Groß),<br/>
+      Issue full error messages when processing QEMU monitor I/O (Daniel P. Berrange),<br/>
+      Don't kill QEMU process when a monitor I/O parsing error occurs (Daniel P. Berrange),<br/>
+      Introduce a new event emitted when a virtualization failure occurs (Daniel P. Berrange),<br/>
+      sched: provide new API shims for remaining drivers (Eric Blake),<br/>
+      virsh: improve schedinfo querying ability (Eric Blake),<br/>
+      remote: introduce remoteGetSchedulerParametersFlags (Eric Blake),<br/>
+      qemu: introduce qemuGetSchedulerParametersFlags (Eric Blake),<br/>
+      sched: introduce virDomainGetSchedulerParametersFlags (Eric Blake),<br/>
+      remote: consolidate typed parameter handling (Eric Blake),<br/>
+      maint: prefer newer API names internally (Eric Blake),<br/>
+      libvirt.h: avoid regression, and document preferred name (Eric Blake),<br/>
+      Fix virExecWithHook Prototype (Richard Laager),<br/>
+      interface: reformat error logs (Laine Stump),<br/>
+      interface: implement a test driver for network config transaction API. (Michal Privoznik),<br/>
+      interface: Implement driver methods for network config transaction API (Michal Privoznik),<br/>
+      interface: expose network config transaction API to virsh (Michal Privoznik),<br/>
+      interface: implement remote protocol for network config transaction API (Michal Privoznik),<br/>
+      interface: implement public APIs for libvirt transactional network changes (Michal Privoznik),<br/>
+      interface: define internal driver API for network config transactions (Michal Privoznik),<br/>
+      sexpr: Improve serialization error reporting (Matthias Bolte),<br/>
+      qemu: implement the new flags for setting memory parameters (Hu Tao),<br/>
+      qemu: implement the new flags for getting memory parameters (Hu Tao),<br/>
+      qemu : support persistent add/delete network interface (KAMEZAWA Hiroyuki),<br/>
+      openvz: Add simple testcase for config file parsing function (Matthias Bolte),<br/>
+      Add disk attach/detach support to libxl driver (Markus Groß),<br/>
+      Refactored libxl datastructure instantiation (Markus Groß),<br/>
+      schema: Add graphics element passwdValidTo attribute to schema (Michal Privoznik),<br/>
+      Fix sign mismatches between public API, driver API and XDR protocol (Matthias Bolte),<br/>
+      remote generator: Fix XDR sign mismatch for virNodeGet(Cells)FreeMemory (Matthias Bolte),<br/>
+      remote generator: Handle stream-using functions (Matthias Bolte),<br/>
+      remote generator: Make call-by-reference handling stricter (Matthias Bolte),<br/>
+      remote generator: Rename virNodeGetCellsFreeMemory parameters to common pattern (Matthias Bolte),<br/>
+      remote generator: Handle virDomainCreateWithFlags (Matthias Bolte),<br/>
+      Allow to explicitly disable the secrets a directory storage driver (Matthias Bolte),<br/>
+      Fix the signature of virDomainMigrateFinish3 for error reporting (Daniel P. Berrange),<br/>
+      Fix preservation of errors across migration steps (Daniel P. Berrange),<br/>
+      Improve debug logging of migration APIs (Daniel P. Berrange),<br/>
+      Fix error propagation in finish method for v3 migration (Daniel P. Berrange),<br/>
+      Fix SPICE seamless migration hostname (Daniel P. Berrange),<br/>
+      Fix resume on destination when doing non-live tunnelled migration (Daniel P. Berrange),<br/>
+      Introduce two method migration APIs (Daniel P. Berrange),<br/>
+      Add a second URI parameter to virDomainMigratePerform3 method (Daniel P. Berrange),<br/>
+      Extend v3 migration protocol to allow app supplied XML for target (Daniel P. Berrange),<br/>
+      esx: Report an error when auth pointer is missing instead of declining (Matthias Bolte),<br/>
+      Perform feature flag compat checking in QEMU migration cookies (Daniel P. Berrange),<br/>
+      Replace all remaining setgid/setuid calls with virSetUIDGID (Jiri Denemark),<br/>
+      util: Keep errno set to the root error after when returning from virSetUIDGID (Jiri Denemark),<br/>
+      storage: Add comment to picking return value of qemu-img (Michal Privoznik),<br/>
+      spice: support streaming-video parameter (Alon Levy),<br/>
+      nwfilter: enable filtering of gratuitous ARP packets (Stefan Berger),<br/>
+      qemu: don't require is_kvm for vhost-net support (Laine Stump),<br/>
+      Use per-user TLS certificates when possible (Doug Goldstein),<br/>
+      storage: pick return value of qemu-img (Michal Privoznik),<br/>
+      remote generator: Add special case for virConnectGetType (Matthias Bolte),<br/>
+      remote generator: Don't rely on $_ being stable over a large function (Matthias Bolte),<br/>
+      build: require newer gettext (Eric Blake),<br/>
+      virsh: Use Env variables for debug level and logfile (Supriya Kannery),<br/>
+      Don't generate cookies with v2 migration protocol. (Daniel P. Berrange),<br/>
+      Ensure p2p and direct migration use the new v3 protocol if available (Daniel P. Berrange),<br/>
+      remote: remove special case for getting version (Eric Blake),<br/>
+      virsh: optimize creation of default connection (Eric Blake),<br/>
+      Clarify that virDomainGet(Memory|Blkio)Parameters doesn't support subsets (Matthias Bolte),<br/>
+      Clarify that virDomainSet(Memory|Blkio)Parameters can take parameter subsets (Matthias Bolte),<br/>
+      Clarify that virDomainSetSchedulerParameters(Flags) can take subsets (Matthias Bolte),<br/>
+      Clarify the semantic of virDomainGetSchedulerParameters arguments (Matthias Bolte),<br/>
+      Clarify semantic of nparams argument of virDomainGetSchedulerType (Matthias Bolte),<br/>
+      Fix messages using VIR_ERR_XML_ERROR (Cole Robinson),<br/>
+      libvirt.h: consolidate typed parameter handling (Eric Blake),<br/>
+      build: update to latest gnulib (Eric Blake),<br/>
+      Add support for 'passthru' mode for direct network interfaces (Dirk Herrendorefer),<br/>
+      virsh: add parameters --live, --config and --current to cmd schedinfo (Hu Tao),<br/>
+      remote: introduce remoteSetSchedulerParametersFlags (Hu Tao),<br/>
+      qemu: introduce qemuSetSchedulerParametersFlags (Hu Tao),<br/>
+      sched: adjust parameter values to make current = 0 (Eric Blake),<br/>
+      introduce virDomainSetSchedulerParametersFlags (Hu Tao),<br/>
+      storage_backend: Convert virRunWithHook usage to virCommand (Cole Robinson),<br/>
+      storage_backend: Fix error reporting with regex helper (Cole Robinson),<br/>
+      storage: Covert regex helpers to virCommand (Cole Robinson),<br/>
+      openvz: Convert virExec usage to virCommand (Cole Robinson),<br/>
+      storage: iscsi: Convert virExec to virCommand (Cole Robinson),<br/>
+      remote generator, client: Add more special case handling (Matthias Bolte),<br/>
+      remote generator, client: Handle functions that return an optional string (Matthias Bolte),<br/>
+      esx: Simplify some esxVI_Boolean to bool (Matthias Bolte),<br/>
+      esx: Convert autoAnswer from esxVI_Boolean to a simple bool (Matthias Bolte),<br/>
+      esx: Fix race condition in esxVI_EnsureSession (Matthias Bolte),<br/>
+      esx: Whitespace cleanup in the generator (Matthias Bolte),<br/>
+      esx: Change some alignments in the input file (Matthias Bolte),<br/>
+      esx: Change generated method parameter autobinding (Matthias Bolte),<br/>
+      virsh: Report an error when virGetUserDirectory fails (Matthias Bolte),<br/>
+      maint: mark more perl scripts executable (Eric Blake),<br/>
+      maint: mark perl script executable (Eric Blake),<br/>
+      maint: ignore generated file (Eric Blake),<br/>
+      Improve error message when XDR marshalling fails (Daniel P. Berrange),<br/>
+      Run tunnelled migration IO in separate thread (Daniel P. Berrange),<br/>
+      Don't overwrite error when stream send fails (Daniel P. Berrange),<br/>
+      Make tunnelled migration honour resource restriction (Daniel P. Berrange),<br/>
+      Refactor migration completion loop to allow code reuse (Daniel P. Berrange),<br/>
+      Implement migration v3 protocol in QEMU driver (Daniel P. Berrange),<br/>
+      Merge tunnel and non-tunnel migration impl into one (Daniel P. Berrange),<br/>
+      Fix VM teardown if prepare returns invalid URI in v2 migration (Daniel P. Berrange),<br/>
+      Refactor tunnelled migration methods (Daniel P. Berrange),<br/>
+      Wire up SPICE client relocation with QEMU migration (Daniel P. Berrange),<br/>
+      Pass graphics setup from dst back to src via migration cookies (Daniel P. Berrange),<br/>
+      Introduce migration cookies to QEMU driver (Daniel P. Berrange),<br/>
+      Fix locking with qemuMigrationPrepareTunnel method (Daniel P. Berrange),<br/>
+      Remote driver implementation of new migration API (Daniel P. Berrange),<br/>
+      Add many version number annotations to drivers (Daniel P. Berrange),<br/>
+      Convert all driver struct intializers to C99 style (Daniel P. Berrange),<br/>
+      Tweak driver naming for consistency with public API (Daniel P. Berrange),<br/>
+      qemu: Update domain state when reconnecting monitor (Jiri Denemark),<br/>
+      Implement domain state reason (Jiri Denemark),<br/>
+      Implement basic virDomainGetState in all drivers (Jiri Denemark),<br/>
+      virsh: Prefer virDomainGetState over virDomainGetInfo (Jiri Denemark),<br/>
+      Wire protocol format and remote driver for virDomainGetState (Jiri Denemark),<br/>
+      virDomainGetState public API implementation (Jiri Denemark),<br/>
+      Internal driver API for virDomainGetState (Jiri Denemark),<br/>
+      esx: Refactor common code in the generator (Matthias Bolte),<br/>
+      esx: Improve dynamic cast detection in the generator (Matthias Bolte),<br/>
+      esx: Improve list usage detection in the generator (Matthias Bolte),<br/>
+      esx: Remove 1000 lines of generated but unused code (Matthias Bolte),<br/>
+      esx: Generate implicit _this macros (Matthias Bolte),<br/>
+      esx: Move the Event type from the VI generator to manually written code (Matthias Bolte),<br/>
+      test: all test_scripts should be part of tarball when building without libvirtd (Wen Congyang),<br/>
+      build: probes.d and libvirtd.stp should be part of tarball (Wen Congyang),<br/>
+      remote: Convert SSH tunnel to virCommand (Cole Robinson),<br/>
+      storage: Convert qemu-img -help parsing to virCommand (Cole Robinson),<br/>
+      apparmor: Convert virExec usage to virCommand (Cole Robinson),<br/>
+      util: Combine __virExec and virExecWithHook (Cole Robinson),<br/>
+      remote_driver: Convert virExecDaemonize usage to virCommand (Cole Robinson),<br/>
+      remote: Use virDomainEventState helpers (Cole Robinson),<br/>
+      libxl: Convert to virDomainEventState (Cole Robinson),<br/>
+      test: Use virDomainEventState helpers (Cole Robinson),<br/>
+      lxc: Use virDomainEventState helpers (Cole Robinson),<br/>
+      qemu: Use virDomainEventState helpers (Cole Robinson),<br/>
+      domain_event: Add common domain event queue/flush helpers (Cole Robinson),<br/>
+      domain_event: Add virDomainEventState structure (Cole Robinson),<br/>
+      xml: Use virXMLParse* helpers everywhere (Cole Robinson),<br/>
+      domain: Require init node for container guests (Cole Robinson),<br/>
+      xml: Make sure virXpathNodeSet always sets an error (Cole Robinson),<br/>
+      vbox: Implement the Screenshot driver methods (Michal Privoznik),<br/>
+      qemu: Implement the Screenshot driver methods (Michal Privoznik),<br/>
+      virFDStream: Add option for delete file after it's opening (Michal Privoznik),<br/>
+      Implementing the Screenshot remote protocol (Michal Privoznik),<br/>
+      Implementing the Screenshot public API (Michal Privoznik),<br/>
+      Defining the Screenshot internal API (Michal Privoznik),<br/>
+      remote generator: Add skipgen/autogen flags to .x files (Matthias Bolte),<br/>
+      nwfilter: drop unused flag argument (Eric Blake),<br/>
+      maint: omit translation for all VIR_INFO (Eric Blake),<br/>
+      build: wrap macro body in one-shot do-while loop (Eric Blake),<br/>
+      build: drop need for VIR_DOMAIN_DEBUG0() (Eric Blake),<br/>
+      libvirt,logging: cleanup VIR_XXX0() (Lai Jiangshan),<br/>
+      maint: avoid a couple of gnulib regressions (Eric Blake),<br/>
+      build: remove some dead assignments (Eric Blake),<br/>
+      Allow destroying QEMU VM even if a job is active (Daniel P. Berrange),<br/>
+      Add support for YAJL version 2 API/ABI (Daniel P. Berrange),<br/>
+      libxl: support enabling the HPET (Paolo Bonzini),<br/>
+      libxl: support enabling the HPET (Paolo Bonzini),<br/>
+      xen: parse and generate hpet item in sxpr (Paolo Bonzini),<br/>
+      virsh: flexibility in CA cert and user cert/key (Doug Goldstein),<br/>
+      remote generator: Make parsing stricter (Matthias Bolte),<br/>
+      remote generator: Unify unsigned int notation in .x files (Matthias Bolte),<br/>
+      remote generator: Fix comment ignoring regex (Matthias Bolte),<br/>
+      Rename internal DumpXML functions to GetXMLDesc (Matthias Bolte),<br/>
+      qemu,inject-nmi: Implement the driver methods (Lai Jiangshan),<br/>
+      inject-nmi: Expose the new API in virsh (Lai Jiangshan),<br/>
+      inject-nmi: Implementing the remote protocol (Lai Jiangshan),<br/>
+      inject-nmi: Implementing the public API (Lai Jiangshan),<br/>
+      inject-nmi: Defining the internal API (Lai Jiangshan),<br/>
+      lxc: container: Build init cmd before we close stdout (Cole Robinson),<br/>
+      lxc: container: Convert init node exec to virCommand (Cole Robinson),<br/>
+      command: Add virCommandExec helper (Cole Robinson),<br/>
+      lxc: driver: Improve logging when launching emulator (Cole Robinson),<br/>
+      lxc: driver: Convert emulator launching to virCommand (Cole Robinson),<br/>
+      command: Add virCommandEnvAddFormat (Cole Robinson),<br/>
+      build: translate generated strings (Eric Blake),<br/>
+      Pull in gnulib fnmatch module (Daniel P. Berrange),<br/>
+      json: Fix *GetBoolean functions (Jiri Denemark),<br/>
+      build: rebuild generated files after rpcgen_fix.pl tweak (Eric Blake),<br/>
+      Re-add libvirt.spec to tarball to allwo "make rpm" (Daniel Veillard),<br/>
+      build: Remove all generated RPC files from GIT (Daniel P. Berrange),<br/>
+      build: refactor generated RPC files (Daniel P. Berrange),<br/>
+      build: rename generated files to .h, for automake's sake (Eric Blake),<br/>
+      remote generator, client: Handle arguments with limited length (Matthias Bolte),<br/>
+      remote generator, client: Handle functions that return lists (Matthias Bolte),<br/>
+      remote: Refactor remote*Open and remote*Close functions (Matthias Bolte),<br/>
+      remote generator, client: Handle functions with optional return values (Matthias Bolte),<br/>
+      remote generator, client: Handle functions with multiple return values (Matthias Bolte),<br/>
+      remote generator, client: Handle functions with wrapped return values (Matthias Bolte),<br/>
+      remote generator, client: Handle functions with simple return values (Matthias Bolte),<br/>
+      remote generator, client: Handle simple remote driver functions (Matthias Bolte),<br/>
+      remote generator: Reorder into prepare and print section (Matthias Bolte),<br/>
+      remote generator, daemon: Handle functions with multiple return values (Matthias Bolte),<br/>
+      remote generator, daemon: Combine multiple ifs in the generated code (Matthias Bolte),<br/>
+      remote generator, daemon: Handle the CPU functions (Matthias Bolte),<br/>
+      remote generator: Refactor duplicate code (Matthias Bolte),<br/>
+      remote generator, daemon: Handle functions that return lists (Matthias Bolte),<br/>
+      remote: Rename 'nameslen' to the common 'maxnames' (Matthias Bolte),<br/>
+      remote generator, daemon: Handle functions with optional arguments (Matthias Bolte),<br/>
+      remote generator, daemon: Handle more functions (Matthias Bolte),<br/>
+      remote generator, daemon: Handle simple-return-value functions (Matthias Bolte),<br/>
+      remote generator, daemon: Change capitalization of some words (Matthias Bolte),<br/>
+      remote: Replace 'domain' with 'dom' in the XDR protocol (Matthias Bolte),<br/>
+      remote generator, daemon: Output function bodies too (Matthias Bolte),<br/>
+      remote generator: Replace tabs with spaces and rename file (Matthias Bolte),<br/>
+      Balloon dom0 in libxl driver (Markus Groß),<br/>
+      remote: check actual access to the cert (Doug Goldstein),<br/>
+      maint: avoid comparisons to bool constants (Eric Blake),<br/>
+      Add warning message to XML definition files stored on disk (Michal Privoznik),<br/>
+      Fix security driver handling of FIFOs with QEMU (Daniel P. Berrange),<br/>
+      Make taint warnings also go into the domain logfile (Daniel P. Berrange),<br/>
+      Add a qemuDomainAppendLog method for writing to the domain logfile (Daniel P. Berrange),<br/>
+      Move qemuProcessLogReadFD and qemuProcessLogFD methods (Daniel P. Berrange),<br/>
+      Log taint warnings in QEMU driver (Daniel P. Berrange),<br/>
+      Add field to virDomainObjPtr to track "tainting" (Daniel P. Berrange),<br/>
+      virsh: improve TLS certificate error messages (Doug Goldstein),<br/>
+      virsh: use new method for easier log to file (Eric Blake),<br/>
+      buf: add virBufferVasprintf (Eric Blake),<br/>
+      maint: rename virBufferVSprintf to virBufferAsprintf (Eric Blake),<br/>
+      Make QEMU migration use cached qemu capabilities data (Daniel P. Berrange),<br/>
+      Make QEMU hotplug use cached qemu capabilities data (Daniel P. Berrange),<br/>
+      Persist qemu capabilities in the domain status file (Daniel P. Berrange)<br/>
+      </li>
+      <li> Cleanups:<br/>
+      build: silence coverity false positive (Eric Blake),<br/>
+      build: silence coverity false positive (Eric Blake),<br/>
+      .gitignore: Exempt a new test binary. (Eric Blake),<br/>
+      Ensure hvsupport.html.in is built before HTML validation (Daniel P. Berrange),<br/>
+      Fix a make check error (Daniel Veillard),<br/>
+      Add sexpr.c to the list of file with translatable messages (Matthias Bolte),<br/>
+      don't check flags in virDomainSetSchedulerParametersFlags (Hu Tao),<br/>
+      build: silence clang false positive (Eric Blake),<br/>
+      Remove obsolete remoteDispatchOOMError method (Daniel P. Berrange),<br/>
+      remote: keep 'make check' happy (Eric Blake),<br/>
+      build: avoid compiler warning during configure (Wen Congyang),<br/>
+      Remove bogus assert() from migration code (Daniel P. Berrange),<br/>
+      build: drop files generated by config.status from tarball (Eric Blake)<br/>
+      </li>
+    </ul>
     <h3>0.9.1: May 5 2011</h3>
     <ul>
       <li> Features:<br/>

@@ -1101,6 +1101,17 @@ fi
 %endif
 
 %changelog
+* Mon Jun  6 2011 Daniel Veillard <veillard@redhat.com> - 0.9.2-1
+- Framework for lock manager plugins
+- API for network config change transactions
+- flags for setting memory parameters
+- virDomainGetState public API
+- qemu: allow blkstat/blkinfo calls during migration
+- Introduce migration v3 API
+- Defining the Screenshot public API
+- public API for NMI injection
+- Various improvements and bug fixes
+
 * Thu May  5 2011 Daniel Veillard <veillard@redhat.com> - 0.9.1-1
 - support various persistent domain updates
 - improvements on memory APIs
