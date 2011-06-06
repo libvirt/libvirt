@@ -48,9 +48,9 @@ bool qemuCgroupControllerActive(struct qemud_driver *driver,
 {
     if (driver->cgroup == NULL)
         return false;
-    if (!virCgroupMounted(driver->cgroup, controller))
-        return false;
     if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
+        return false;
+    if (!virCgroupMounted(driver->cgroup, controller))
         return false;
     if (driver->cgroupControllers & (1 << controller))
         return true;
