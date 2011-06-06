@@ -1117,6 +1117,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
             VIR_DEBUG("Not updating since password didn't change");
             ret = 0;
         }
+        break;
 
     default:
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
