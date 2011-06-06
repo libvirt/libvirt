@@ -377,7 +377,7 @@ qemuProcessFakeReboot(void *opaque)
     VIR_DEBUG("vm=%p", vm);
     qemuDriverLock(driver);
     virDomainObjLock(vm);
-    if (qemuDomainObjBeginJob(vm, QEMU_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -413,7 +413,7 @@ qemuProcessFakeReboot(void *opaque)
     ret = 0;
 
 endjob:
-    if (qemuDomainObjEndJob(vm) == 0)
+    if (qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;
 
 cleanup:
@@ -3215,7 +3215,7 @@ static void qemuProcessAutoDestroyDom(void *payload,
     if (priv->job.asyncJob) {
         VIR_DEBUG("vm=%s has long-term job active, cancelling",
                   dom->def->name);
-        qemuDomainObjDiscardAsyncJob(dom);
+        qemuDomainObjDiscardAsyncJob(data->driver, dom);
     }
 
     if (qemuDomainObjBeginJobWithDriver(data->driver, dom,
@@ -3228,7 +3228,7 @@ static void qemuProcessAutoDestroyDom(void *payload,
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
-    if (qemuDomainObjEndJob(dom) == 0)
+    if (qemuDomainObjEndJob(data->driver, dom) == 0)
         dom = NULL;
     if (dom && !dom->persistent)
         virDomainRemoveInactive(&data->driver->domains, dom);

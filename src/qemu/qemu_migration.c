@@ -1160,7 +1160,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
         virDomainAuditStart(vm, "migrated", false);
         qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FAILED);
         if (!vm->persistent) {
-            if (qemuDomainObjEndAsyncJob(vm) > 0)
+            if (qemuDomainObjEndAsyncJob(driver, vm) > 0)
                 virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
         }
@@ -1189,7 +1189,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
 
 endjob:
     if (vm &&
-        qemuDomainObjEndAsyncJob(vm) == 0)
+        qemuDomainObjEndAsyncJob(driver, vm) == 0)
         vm = NULL;
 
     /* We set a fake job active which is held across
@@ -1200,6 +1200,7 @@ endjob:
     if (vm &&
         virDomainObjIsActive(vm)) {
         priv->job.asyncJob = QEMU_ASYNC_JOB_MIGRATION_IN;
+        qemuDomainObjSaveJob(driver, vm);
         priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
         priv->job.start = now;
     }
@@ -1378,7 +1379,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
          * should have already done that.
          */
         if (!vm->persistent) {
-            if (qemuDomainObjEndAsyncJob(vm) > 0)
+            if (qemuDomainObjEndAsyncJob(driver, vm) > 0)
                 virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
         }
@@ -1411,7 +1412,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
 
 endjob:
     if (vm &&
-        qemuDomainObjEndAsyncJob(vm) == 0)
+        qemuDomainObjEndAsyncJob(driver, vm) == 0)
         vm = NULL;
 
     /* We set a fake job active which is held across
@@ -1422,6 +1423,7 @@ endjob:
     if (vm &&
         virDomainObjIsActive(vm)) {
         priv->job.asyncJob = QEMU_ASYNC_JOB_MIGRATION_IN;
+        qemuDomainObjSaveJob(driver, vm);
         priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
         priv->job.start = now;
     }
@@ -2388,7 +2390,7 @@ endjob:
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
     if (vm) {
-        if (qemuDomainObjEndAsyncJob(vm) == 0) {
+        if (qemuDomainObjEndAsyncJob(driver, vm) == 0) {
             vm = NULL;
         } else if (!virDomainObjIsActive(vm) &&
                    (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
@@ -2478,7 +2480,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
                         _("domain '%s' is not processing incoming migration"), vm->def->name);
         goto cleanup;
     }
-    qemuDomainObjDiscardAsyncJob(vm);
+    qemuDomainObjDiscardAsyncJob(driver, vm);
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
         goto cleanup;
@@ -2526,7 +2528,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
                     qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
                     virDomainAuditStop(vm, "failed");
                     if (newVM) {
-                        if (qemuDomainObjEndJob(vm) > 0)
+                        if (qemuDomainObjEndJob(driver, vm) > 0)
                             virDomainRemoveInactive(&driver->domains, vm);
                         vm = NULL;
                     }
@@ -2575,7 +2577,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
                                                      VIR_DOMAIN_EVENT_STOPPED,
                                                      VIR_DOMAIN_EVENT_STOPPED_FAILED);
                     if (!vm->persistent) {
-                        if (qemuDomainObjEndJob(vm) > 0)
+                        if (qemuDomainObjEndJob(driver, vm) > 0)
                             virDomainRemoveInactive(&driver->domains, vm);
                         vm = NULL;
                     }
@@ -2611,7 +2613,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
         if (!vm->persistent) {
-            if (qemuDomainObjEndJob(vm) > 0)
+            if (qemuDomainObjEndJob(driver, vm) > 0)
                 virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
         }
@@ -2622,7 +2624,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
 
 endjob:
     if (vm &&
-        qemuDomainObjEndJob(vm) == 0)
+        qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;
 
 cleanup:

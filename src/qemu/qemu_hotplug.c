@@ -1245,14 +1245,14 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
     ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitor(driver, vm);
             virDomainAuditDisk(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
     } else {
         if (qemuMonitorRemovePCIDevice(priv->mon,
                                        &detach->info.addr.pci) < 0) {
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitor(driver, vm);
             virDomainAuditDisk(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
@@ -1340,7 +1340,7 @@ int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
 
     ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitor(driver, vm);
         virDomainAuditDisk(vm, detach, NULL, "detach", false);
         goto cleanup;
     }
@@ -1479,13 +1479,13 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
     ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias)) {
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitor(driver, vm);
             goto cleanup;
         }
     } else {
         if (qemuMonitorRemovePCIDevice(priv->mon,
                                        &detach->info.addr.pci) < 0) {
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitor(driver, vm);
             goto cleanup;
         }
     }
@@ -1574,7 +1574,7 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
     ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitor(driver, vm);
             virDomainAuditNet(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
