@@ -1348,11 +1348,11 @@ static int qemudDomainSuspend(virDomainPtr dom) {
 
     priv = vm->privateData;
 
-    if (priv->jobActive == QEMU_JOB_MIGRATION_OUT) {
+    if (priv->job.active == QEMU_JOB_MIGRATION_OUT) {
         if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
             VIR_DEBUG("Requesting domain pause on %s",
                       vm->def->name);
-            priv->jobSignals |= QEMU_JOB_SIGNAL_SUSPEND;
+            priv->job.signals |= QEMU_JOB_SIGNAL_SUSPEND;
         }
         ret = 0;
         goto cleanup;
@@ -1883,7 +1883,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         if ((vm->def->memballoon != NULL) &&
             (vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
             info->memory = vm->def->mem.max_balloon;
-        } else if (!priv->jobActive) {
+        } else if (!priv->job.active) {
             if (qemuDomainObjBeginJob(vm) < 0)
                 goto cleanup;
             if (!virDomainObjIsActive(vm))
@@ -1990,12 +1990,12 @@ qemuDomainGetControlInfo(virDomainPtr dom,
 
     if (priv->monError) {
         info->state = VIR_DOMAIN_CONTROL_ERROR;
-    } else if (priv->jobActive) {
+    } else if (priv->job.active) {
         if (!priv->monStart) {
             info->state = VIR_DOMAIN_CONTROL_JOB;
             if (virTimeMs(&info->stateTime) < 0)
                 goto cleanup;
-            info->stateTime -= priv->jobStart;
+            info->stateTime -= priv->job.start;
         } else {
             info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
             if (virTimeMs(&info->stateTime) < 0)
@@ -2130,10 +2130,10 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
 
-    priv->jobActive = QEMU_JOB_SAVE;
+    qemuDomainObjSetJob(vm, QEMU_JOB_SAVE);
 
-    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
-    priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
+    memset(&priv->job.info, 0, sizeof(priv->job.info));
+    priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
 
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -2623,7 +2623,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         goto endjob;
     }
 
-    priv->jobActive = QEMU_JOB_DUMP;
+    qemuDomainObjSetJob(vm, QEMU_JOB_DUMP);
 
     /* Migrate will always stop the VM, so the resume condition is
        independent of whether the stop command is issued.  */
@@ -3855,7 +3855,7 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
         qemuDomainObjPrivatePtr priv = vm->privateData;
         /* Don't delay if someone's using the monitor, just use
          * existing most recent data instead */
-        if (!priv->jobActive) {
+        if (!priv->job.active) {
             if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
                 goto cleanup;
 
@@ -6023,19 +6023,19 @@ qemudDomainBlockStats (virDomainPtr dom,
     }
 
     priv = vm->privateData;
-    if ((priv->jobActive == QEMU_JOB_MIGRATION_OUT)
-        || (priv->jobActive == QEMU_JOB_SAVE)) {
+    if ((priv->job.active == QEMU_JOB_MIGRATION_OUT)
+        || (priv->job.active == QEMU_JOB_SAVE)) {
         virDomainObjRef(vm);
-        while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKSTAT)
-            ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+        while (priv->job.signals & QEMU_JOB_SIGNAL_BLKSTAT)
+            ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
 
-        priv->jobSignalsData.statDevName = disk->info.alias;
-        priv->jobSignalsData.blockStat = stats;
-        priv->jobSignalsData.statRetCode = &ret;
-        priv->jobSignals |= QEMU_JOB_SIGNAL_BLKSTAT;
+        priv->job.signalsData.statDevName = disk->info.alias;
+        priv->job.signalsData.blockStat = stats;
+        priv->job.signalsData.statRetCode = &ret;
+        priv->job.signals |= QEMU_JOB_SIGNAL_BLKSTAT;
 
-        while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKSTAT)
-            ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+        while (priv->job.signals & QEMU_JOB_SIGNAL_BLKSTAT)
+            ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
 
         if (virDomainObjUnref(vm) == 0)
             vm = NULL;
@@ -6470,19 +6470,19 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
-        if ((priv->jobActive == QEMU_JOB_MIGRATION_OUT)
-            || (priv->jobActive == QEMU_JOB_SAVE)) {
+        if ((priv->job.active == QEMU_JOB_MIGRATION_OUT)
+            || (priv->job.active == QEMU_JOB_SAVE)) {
             virDomainObjRef(vm);
-            while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKINFO)
-                ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+            while (priv->job.signals & QEMU_JOB_SIGNAL_BLKINFO)
+                ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
 
-            priv->jobSignalsData.infoDevName = disk->info.alias;
-            priv->jobSignalsData.blockInfo = info;
-            priv->jobSignalsData.infoRetCode = &ret;
-            priv->jobSignals |= QEMU_JOB_SIGNAL_BLKINFO;
+            priv->job.signalsData.infoDevName = disk->info.alias;
+            priv->job.signalsData.blockInfo = info;
+            priv->job.signalsData.infoRetCode = &ret;
+            priv->job.signals |= QEMU_JOB_SIGNAL_BLKINFO;
 
-            while (priv->jobSignals & QEMU_JOB_SIGNAL_BLKINFO)
-                ignore_value(virCondWait(&priv->signalCond, &vm->lock));
+            while (priv->job.signals & QEMU_JOB_SIGNAL_BLKINFO)
+                ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
 
             if (virDomainObjUnref(vm) == 0)
                 vm = NULL;
@@ -7310,8 +7310,8 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
     priv = vm->privateData;
 
     if (virDomainObjIsActive(vm)) {
-        if (priv->jobActive) {
-            memcpy(info, &priv->jobInfo, sizeof(*info));
+        if (priv->job.active) {
+            memcpy(info, &priv->job.info, sizeof(*info));
 
             /* Refresh elapsed time again just to ensure it
              * is fully updated. This is primarily for benefit
@@ -7320,7 +7320,7 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
              */
             if (virTimeMs(&info->timeElapsed) < 0)
                 goto cleanup;
-            info->timeElapsed -= priv->jobStart;
+            info->timeElapsed -= priv->job.start;
         } else {
             memset(info, 0, sizeof(*info));
             info->type = VIR_DOMAIN_JOB_NONE;
@@ -7360,9 +7360,9 @@ static int qemuDomainAbortJob(virDomainPtr dom) {
     priv = vm->privateData;
 
     if (virDomainObjIsActive(vm)) {
-        if (priv->jobActive) {
+        if (priv->job.active) {
             VIR_DEBUG("Requesting cancellation of job on vm %s", vm->def->name);
-            priv->jobSignals |= QEMU_JOB_SIGNAL_CANCEL;
+            priv->job.signals |= QEMU_JOB_SIGNAL_CANCEL;
         } else {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             "%s", _("no job is active on the domain"));
@@ -7414,15 +7414,15 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (priv->jobActive != QEMU_JOB_MIGRATION_OUT) {
+    if (priv->job.active != QEMU_JOB_MIGRATION_OUT) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not being migrated"));
         goto cleanup;
     }
 
     VIR_DEBUG("Requesting migration downtime change to %llums", downtime);
-    priv->jobSignalsData.migrateDowntime = downtime;
-    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
+    priv->job.signalsData.migrateDowntime = downtime;
+    priv->job.signals |= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
     ret = 0;
 
 cleanup:
@@ -7463,15 +7463,15 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (priv->jobActive != QEMU_JOB_MIGRATION_OUT) {
+    if (priv->job.active != QEMU_JOB_MIGRATION_OUT) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not being migrated"));
         goto cleanup;
     }
 
     VIR_DEBUG("Requesting migration speed change to %luMbs", bandwidth);
-    priv->jobSignalsData.migrateBandwidth = bandwidth;
-    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
+    priv->job.signalsData.migrateBandwidth = bandwidth;
+    priv->job.signals |= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
     ret = 0;
 
 cleanup:

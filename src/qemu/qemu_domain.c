@@ -79,6 +79,42 @@ void qemuDomainEventQueue(struct qemud_driver *driver,
 }
 
 
+static int
+qemuDomainObjInitJob(qemuDomainObjPrivatePtr priv)
+{
+    memset(&priv->job, 0, sizeof(priv->job));
+
+    if (virCondInit(&priv->job.cond) < 0)
+        return -1;
+
+    if (virCondInit(&priv->job.signalCond) < 0) {
+        ignore_value(virCondDestroy(&priv->job.cond));
+        return -1;
+    }
+
+    return 0;
+}
+
+static void
+qemuDomainObjResetJob(qemuDomainObjPrivatePtr priv)
+{
+    struct qemuDomainJobObj *job = &priv->job;
+
+    job->active = QEMU_JOB_NONE;
+    job->start = 0;
+    memset(&job->info, 0, sizeof(job->info));
+    job->signals = 0;
+    memset(&job->signalsData, 0, sizeof(job->signalsData));
+}
+
+static void
+qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
+{
+    ignore_value(virCondDestroy(&priv->job.cond));
+    ignore_value(virCondDestroy(&priv->job.signalCond));
+}
+
+
 static void *qemuDomainObjPrivateAlloc(void)
 {
     qemuDomainObjPrivatePtr priv;
@@ -86,19 +122,10 @@ static void *qemuDomainObjPrivateAlloc(void)
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
-    if (virCondInit(&priv->jobCond) < 0)
-        goto initfail;
-
-    if (virCondInit(&priv->signalCond) < 0) {
-        ignore_value(virCondDestroy(&priv->jobCond));
-        goto initfail;
-    }
+    if (qemuDomainObjInitJob(priv) < 0)
+        VIR_FREE(priv);
 
     return priv;
-
-initfail:
-    VIR_FREE(priv);
-    return NULL;
 }
 
 static void qemuDomainObjPrivateFree(void *data)
@@ -109,9 +136,8 @@ static void qemuDomainObjPrivateFree(void *data)
 
     qemuDomainPCIAddressSetFree(priv->pciaddrs);
     virDomainChrSourceDefFree(priv->monConfig);
+    qemuDomainObjFreeJob(priv);
     VIR_FREE(priv->vcpupids);
-    ignore_value(virCondDestroy(&priv->jobCond));
-    ignore_value(virCondDestroy(&priv->signalCond));
     VIR_FREE(priv->lockState);
 
     /* This should never be non-NULL if we get here, but just in case... */
@@ -473,6 +499,24 @@ void qemuDomainSetNamespaceHooks(virCapsPtr caps)
     caps->ns.href = qemuDomainDefNamespaceHref;
 }
 
+void
+qemuDomainObjSetJob(virDomainObjPtr obj,
+                    enum qemuDomainJob job)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    priv->job.active = job;
+}
+
+void
+qemuDomainObjDiscardJob(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    qemuDomainObjResetJob(priv);
+    qemuDomainObjSetJob(obj, QEMU_JOB_NONE);
+}
+
 /*
  * obj must be locked before calling, qemud_driver must NOT be locked
  *
@@ -498,8 +542,8 @@ int qemuDomainObjBeginJob(virDomainObjPtr obj)
 
     virDomainObjRef(obj);
 
-    while (priv->jobActive) {
-        if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
+    while (priv->job.active) {
+        if (virCondWaitUntil(&priv->job.cond, &obj->lock, then) < 0) {
             /* Safe to ignore value since ref count was incremented above */
             ignore_value(virDomainObjUnref(obj));
             if (errno == ETIMEDOUT)
@@ -511,11 +555,9 @@ int qemuDomainObjBeginJob(virDomainObjPtr obj)
             return -1;
         }
     }
-    priv->jobActive = QEMU_JOB_UNSPECIFIED;
-    priv->jobSignals = 0;
-    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
-    priv->jobStart = now;
-    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+    qemuDomainObjResetJob(priv);
+    qemuDomainObjSetJob(obj, QEMU_JOB_UNSPECIFIED);
+    priv->job.start = now;
 
     return 0;
 }
@@ -540,8 +582,8 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
     virDomainObjRef(obj);
     qemuDriverUnlock(driver);
 
-    while (priv->jobActive) {
-        if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
+    while (priv->job.active) {
+        if (virCondWaitUntil(&priv->job.cond, &obj->lock, then) < 0) {
             if (errno == ETIMEDOUT)
                 qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
                                 "%s", _("cannot acquire state change lock"));
@@ -556,11 +598,9 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
             return -1;
         }
     }
-    priv->jobActive = QEMU_JOB_UNSPECIFIED;
-    priv->jobSignals = 0;
-    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
-    priv->jobStart = now;
-    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+    qemuDomainObjResetJob(priv);
+    qemuDomainObjSetJob(obj, QEMU_JOB_UNSPECIFIED);
+    priv->job.start = now;
 
     virDomainObjUnlock(obj);
     qemuDriverLock(driver);
@@ -582,16 +622,12 @@ int qemuDomainObjEndJob(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
-    priv->jobActive = QEMU_JOB_NONE;
-    priv->jobSignals = 0;
-    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
-    priv->jobStart = 0;
-    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
-    virCondSignal(&priv->jobCond);
+    qemuDomainObjResetJob(priv);
+    qemuDomainObjSetJob(obj, QEMU_JOB_NONE);
+    virCondSignal(&priv->job.cond);
 
     return virDomainObjUnref(obj);
 }
-
 
 /*
  * obj must be locked before calling, qemud_driver must be unlocked

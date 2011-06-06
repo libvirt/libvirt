@@ -3205,11 +3205,10 @@ static void qemuProcessAutoDestroyDom(void *payload,
     }
 
     priv = dom->privateData;
-    if (priv->jobActive == QEMU_JOB_MIGRATION_IN) {
+    if (priv->job.active == QEMU_JOB_MIGRATION_IN) {
         VIR_DEBUG("vm=%s has incoming migration active, cancelling",
                   dom->def->name);
-        priv->jobActive = QEMU_JOB_NONE;
-        memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+        qemuDomainObjDiscardJob(dom);
     }
 
     if (qemuDomainObjBeginJobWithDriver(data->driver, dom) < 0)

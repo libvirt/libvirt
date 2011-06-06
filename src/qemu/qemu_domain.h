@@ -68,19 +68,26 @@ struct qemuDomainJobSignalsData {
     int *infoRetCode; /* Return code for the blkinfo calls */
 };
 
+struct qemuDomainJobObj {
+    virCond cond;       /* Use in conjunction with main virDomainObjPtr lock */
+    virCond signalCond; /* Use to coordinate the safe queries during migration */
+
+    enum qemuDomainJob active;  /* Currently running job */
+
+    unsigned long long start;   /* When the job started */
+    virDomainJobInfo info;      /* Progress data */
+
+    unsigned int signals;       /* Signals for running job */
+    struct qemuDomainJobSignalsData signalsData;    /* Signal specific data */
+};
+
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
 typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
-    virCond jobCond; /* Use in conjunction with main virDomainObjPtr lock */
-    virCond signalCond; /* Use to coordinate the safe queries during migration */
-    enum qemuDomainJob jobActive;   /* Currently running job */
-    unsigned int jobSignals;        /* Signals for running job */
-    struct qemuDomainJobSignalsData jobSignalsData; /* Signal specific data */
-    virDomainJobInfo jobInfo;
-    unsigned long long jobStart;
+    struct qemuDomainJobObj job;
 
     qemuMonitorPtr mon;
     virDomainChrSourceDefPtr monConfig;
@@ -121,6 +128,10 @@ int qemuDomainObjBeginJob(virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                                     virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjEndJob(virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
+
+void qemuDomainObjSetJob(virDomainObjPtr obj, enum qemuDomainJob job);
+void qemuDomainObjDiscardJob(virDomainObjPtr obj);
+
 void qemuDomainObjEnterMonitor(virDomainObjPtr obj);
 void qemuDomainObjExitMonitor(virDomainObjPtr obj);
 void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
