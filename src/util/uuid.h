@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,10 @@
 #ifndef __VIR_UUID_H__
 # define __VIR_UUID_H__
 
+# include "internal.h"
+
 int virSetHostUUIDStr(const char *host_uuid);
-int virGetHostUUID(unsigned char *host_uuid);
+int virGetHostUUID(unsigned char *host_uuid) ATTRIBUTE_NONNULL(1);
 
 int virUUIDIsValid(unsigned char *uuid);
 
@@ -33,6 +35,6 @@ int virUUIDParse(const char *uuidstr,
                  unsigned char *uuid);
 
 void virUUIDFormat(const unsigned char *uuid,
-                   char *uuidstr);
+                   char *uuidstr) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif /* __VIR_UUID_H__ */
