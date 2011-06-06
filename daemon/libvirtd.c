@@ -2783,6 +2783,7 @@ qemudSetLogging(struct qemud_server *server, virConfPtr conf,
                     VIR_FREE(userdir);
                     goto out_of_memory;
                 }
+                VIR_FREE(userdir);
             }
         } else {
             if (virAsprintf(&tmp, "%d:stderr", virLogGetDefaultPriority()) < 0)
