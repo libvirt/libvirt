@@ -2267,6 +2267,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                     /* Not supported by libvirt yet */
                 } else if (device == DeviceType_SharedFolder) {
                     /* Not supported by libvirt yet */
+                    /* Can VirtualBox really boot from a shared folder? */
                 }
             }
 
@@ -2770,6 +2771,67 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             }
 
 #endif /* VBOX_API_VERSION >= 3001 */
+
+            /* shared folders */
+            vboxArray sharedFolders = VBOX_ARRAY_INITIALIZER;
+
+            def->nfss = 0;
+
+            vboxArrayGet(&sharedFolders, machine,
+                         machine->vtbl->GetSharedFolders);
+
+            if (sharedFolders.count > 0) {
+                if (VIR_ALLOC_N(def->fss, sharedFolders.count) < 0) {
+                    virReportOOMError();
+                    goto sharedFoldersCleanup;
+                }
+
+                for (i = 0; i < sharedFolders.count; i++) {
+                    ISharedFolder *sharedFolder = sharedFolders.items[i];
+                    PRUnichar *nameUtf16 = NULL;
+                    char *name = NULL;
+                    PRUnichar *hostPathUtf16 = NULL;
+                    char *hostPath = NULL;
+                    PRBool writable = PR_FALSE;
+
+                    if (VIR_ALLOC(def->fss[i]) < 0) {
+                        virReportOOMError();
+                        goto sharedFoldersCleanup;
+                    }
+
+                    def->fss[i]->type = VIR_DOMAIN_FS_TYPE_MOUNT;
+
+                    sharedFolder->vtbl->GetHostPath(sharedFolder, &hostPathUtf16);
+                    VBOX_UTF16_TO_UTF8(hostPathUtf16, &hostPath);
+                    def->fss[i]->src = strdup(hostPath);
+                    VBOX_UTF8_FREE(hostPath);
+                    VBOX_UTF16_FREE(hostPathUtf16);
+
+                    if (def->fss[i]->src == NULL) {
+                        virReportOOMError();
+                        goto sharedFoldersCleanup;
+                    }
+
+                    sharedFolder->vtbl->GetName(sharedFolder, &nameUtf16);
+                    VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+                    def->fss[i]->dst = strdup(name);
+                    VBOX_UTF8_FREE(name);
+                    VBOX_UTF16_FREE(nameUtf16);
+
+                    if (def->fss[i]->dst == NULL) {
+                        virReportOOMError();
+                        goto sharedFoldersCleanup;
+                    }
+
+                    sharedFolder->vtbl->GetWritable(sharedFolder, &writable);
+                    def->fss[i]->readonly = !writable;
+
+                    ++def->nfss;
+                }
+            }
+
+sharedFoldersCleanup:
+            vboxArrayRelease(&sharedFolders);
 
             /* dump network cards if present */
             def->nnets = 0;
@@ -4811,6 +4873,38 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     }
 }
 
+static void
+vboxAttachSharedFolder(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    int i;
+    PRUnichar *nameUtf16;
+    PRUnichar *hostPathUtf16;
+    PRBool writable;
+
+    if (def->nfss == 0)
+        return;
+
+    for (i = 0; i < def->nfss; i++) {
+        if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+            continue;
+
+        VBOX_UTF8_TO_UTF16(def->fss[i]->dst, &nameUtf16);
+        VBOX_UTF8_TO_UTF16(def->fss[i]->src, &hostPathUtf16);
+        writable = !def->fss[i]->readonly;
+
+#if VBOX_API_VERSION < 4000
+        machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
+                                          writable);
+#else /* VBOX_API_VERSION >= 4000 */
+        machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
+                                          writable, PR_FALSE);
+#endif /* VBOX_API_VERSION >= 4000 */
+
+        VBOX_UTF16_FREE(nameUtf16);
+        VBOX_UTF16_FREE(hostPathUtf16);
+    }
+}
+
 static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     IMachine       *machine     = NULL;
@@ -4949,6 +5043,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     vboxAttachVideo(def, machine);
     vboxAttachDisplay(def, data, machine);
     vboxAttachUSB(def, data, machine);
+    vboxAttachSharedFolder(def, data, machine);
 
     /* Save the machine settings made till now and close the
      * session. also free up the mchiid variable used.
@@ -5303,6 +5398,34 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                         if (dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
                         }
                     }
+                } else if (dev->type == VIR_DOMAIN_DEVICE_FS &&
+                           dev->data.fs->type == VIR_DOMAIN_FS_TYPE_MOUNT) {
+                    PRUnichar *nameUtf16;
+                    PRUnichar *hostPathUtf16;
+                    PRBool writable;
+
+                    VBOX_UTF8_TO_UTF16(dev->data.fs->dst, &nameUtf16);
+                    VBOX_UTF8_TO_UTF16(dev->data.fs->src, &hostPathUtf16);
+                    writable = !dev->data.fs->readonly;
+
+#if VBOX_API_VERSION < 4000
+                    rc = machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
+                                                           writable);
+#else /* VBOX_API_VERSION >= 4000 */
+                    rc = machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
+                                                           writable, PR_FALSE);
+#endif /* VBOX_API_VERSION >= 4000 */
+
+                    if (NS_FAILED(rc)) {
+                        vboxError(VIR_ERR_INTERNAL_ERROR,
+                                  _("could not attach shared folder '%s', rc=%08x"),
+                                  dev->data.fs->dst, (unsigned)rc);
+                    } else {
+                        ret = 0;
+                    }
+
+                    VBOX_UTF16_FREE(nameUtf16);
+                    VBOX_UTF16_FREE(hostPathUtf16);
                 }
                 machine->vtbl->SaveSettings(machine);
                 VBOX_RELEASE(machine);
@@ -5461,6 +5584,23 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
                         if (dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
                         }
                     }
+                } else if (dev->type == VIR_DOMAIN_DEVICE_FS &&
+                           dev->data.fs->type == VIR_DOMAIN_FS_TYPE_MOUNT) {
+                    PRUnichar *nameUtf16;
+
+                    VBOX_UTF8_TO_UTF16(dev->data.fs->dst, &nameUtf16);
+
+                    rc = machine->vtbl->RemoveSharedFolder(machine, nameUtf16);
+
+                    if (NS_FAILED(rc)) {
+                        vboxError(VIR_ERR_INTERNAL_ERROR,
+                                  _("could not detach shared folder '%s', rc=%08x"),
+                                  dev->data.fs->dst, (unsigned)rc);
+                    } else {
+                        ret = 0;
+                    }
+
+                    VBOX_UTF16_FREE(nameUtf16);
                 }
                 machine->vtbl->SaveSettings(machine);
                 VBOX_RELEASE(machine);

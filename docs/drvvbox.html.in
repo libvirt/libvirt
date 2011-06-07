@@ -70,6 +70,11 @@ vbox+ssh://user@example.com/session  (remote access, SSH tunnelled)
       &lt;target dev='fda'/&gt;
     &lt;/disk&gt;
 
+    &lt;filesystem type='mount'&gt;
+      &lt;source dir='/home/user/stuff'/&gt;
+      &lt;target dir='my-shared-folder'/&gt;
+    &lt;/filesystem&gt;
+
     &lt;!--BRIDGE--&gt;
     &lt;interface type='bridge'&gt;
       &lt;source bridge='eth0'/&gt;
