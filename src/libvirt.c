@@ -6461,6 +6461,68 @@ error:
 }
 
 /**
+ * virDomainSendKey:
+ * @domain:    pointer to domain object, or NULL for Domain0
+ * @codeset:   the code set of keycodes, from virKeycodeSet
+ * @holdtime:  the duration (in milliseconds) that the keys will be held
+ * @keycodes:  array of keycodes
+ * @nkeycodes: number of keycodes, up to VIR_DOMAIN_SEND_KEY_MAX_KEYS
+ * @flags:     the flags for controlling behavior, pass 0 for now
+ *
+ * Send key(s) to the guest.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+
+int virDomainSendKey(virDomainPtr domain,
+                     unsigned int codeset,
+                     unsigned int holdtime,
+                     unsigned int *keycodes,
+                     unsigned int nkeycodes,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DOMAIN_DEBUG(domain, "codeset=%u, holdtime=%u, nkeycodes=%u, flags=%u",
+                     codeset, holdtime, nkeycodes, flags);
+
+    virResetLastError();
+
+    if (keycodes == NULL ||
+        nkeycodes == 0 || nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
+        virLibDomainError(VIR_ERR_OPERATION_INVALID, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainSendKey) {
+        int ret;
+        ret = conn->driver->domainSendKey(domain, codeset, holdtime,
+                                          keycodes, nkeycodes, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainSetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0
  * @nvcpus: the new number of virtual CPUs for this domain
