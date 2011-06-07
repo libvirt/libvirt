@@ -548,6 +548,13 @@ typedef int
 typedef int
     (*virDrvDomainInjectNMI)(virDomainPtr dom, unsigned int flags);
 
+typedef int
+    (*virDrvDomainSendKey)(virDomainPtr dom, unsigned int codeset,
+                           unsigned int holdtime,
+                           unsigned int *keycodes,
+                           unsigned int nkeycodes,
+                           unsigned int flags);
+
 typedef char *
     (*virDrvDomainMigrateBegin3)
                     (virDomainPtr domain,
@@ -756,6 +763,7 @@ struct _virDriver {
     virDrvDomainMigratePerform3	domainMigratePerform3;
     virDrvDomainMigrateFinish3	domainMigrateFinish3;
     virDrvDomainMigrateConfirm3	domainMigrateConfirm3;
+    virDrvDomainSendKey domainSendKey;
 };
 
 typedef int
