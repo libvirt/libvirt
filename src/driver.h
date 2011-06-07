@@ -377,6 +377,14 @@ typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
 typedef int
+    (*virDrvNodeGetCPUStats)
+                    (virConnectPtr conn,
+                     int cpuNum,
+                     virCPUStatsPtr params,
+                     int *nparams,
+                     unsigned int flags);
+
+typedef int
     (*virDrvNodeGetCellsFreeMemory)
                     (virConnectPtr conn,
                      unsigned long long *freeMems,
@@ -719,6 +727,7 @@ struct _virDriver {
     virDrvDomainBlockPeek	domainBlockPeek;
     virDrvDomainMemoryPeek      domainMemoryPeek;
     virDrvDomainGetBlockInfo    domainGetBlockInfo;
+    virDrvNodeGetCPUStats       nodeGetCPUStats;
     virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
     virDrvNodeGetFreeMemory		nodeGetFreeMemory;
     virDrvDomainEventRegister         domainEventRegister;
