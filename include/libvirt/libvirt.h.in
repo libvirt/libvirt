@@ -842,7 +842,7 @@ int                     virNodeGetCPUStats (virConnectPtr conn,
 
 int                     virNodeGetMemoryStats (virConnectPtr conn,
                                                int cellNum,
-                                               virCPUStatsPtr params,
+                                               virMemoryStatsPtr params,
                                                int *nparams,
                                                unsigned int flags);
 

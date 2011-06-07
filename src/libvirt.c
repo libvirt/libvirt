@@ -5375,6 +5375,92 @@ error:
 }
 
 /**
+ * virNodeGetMemoryStats:
+ * @conn: pointer to the hypervisor connection.
+ * @cellNum: number of node cell. (VIR_MEMORY_STATS_ALL_CELLS means total cell
+ *           statistics)
+ * @params: pointer to node memory stats objects
+ * @nparams: number of node memory stats (this value should be same or
+ *          less than the number of stats supported)
+ * @flags: currently unused, for future extension. always pass 0.
+ *
+ * This function provides memory stats of the node.
+ * If you want to get total cpu statistics of the node, you must specify
+ * VIR_MEMORY_STATS_ALL_CELLS to @cellNum.
+ * The @params array will be filled with the values equal to the number of
+ * stats suggested by @nparams
+ *
+ * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
+ * @params as NULL, the API returns the number of parameters supported by the
+ * HV by updating @nparams on SUCCESS. The caller should then allocate @params
+ * array, i.e. (sizeof(@virMemoryStats) * @nparams) bytes and call
+ * the API again.
+ *
+ * Here is the sample code snippet:
+ *
+ * if ((virNodeGetMemoryStats(conn, cellNum, NULL, &nparams, 0) == 0) &&
+ *     (nparams != 0)) {
+ *     if ((params = malloc(sizeof(virMemoryStats) * nparams)) == NULL)
+ *         goto error;
+ *     memset(params, cellNum, 0, sizeof(virMemoryStats) * nparams);
+ *     if (virNodeGetMemoryStats(conn, params, &nparams, 0))
+ *         goto error;
+ * }
+ *
+ * This function doesn't require privileged access to the hypervisor.
+ * This function expects the caller to allocate the @params.
+ *
+ * Memory Stats:
+ *
+ * VIR_MEMORY_STATS_TOTAL:
+ *     The total memory usage.(KB)
+ * VIR_MEMORY_STATS_FREE:
+ *     The free memory usage.(KB)
+ *     On linux, this usage includes buffers and cached.
+ * VIR_MEMORY_STATS_BUFFERS:
+ *     The buffers memory usage.(KB)
+ * VIR_MEMORY_STATS_CACHED:
+ *     The cached memory usage.(KB)
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int virNodeGetMemoryStats (virConnectPtr conn,
+                           int cellNum,
+                           virMemoryStatsPtr params,
+                           int *nparams, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, cellNum=%d, params=%p, nparams=%d, flags=%u",
+              conn, cellNum, params, nparams ? *nparams : -1, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if ((nparams == NULL) || (*nparams < 0) ||
+        ((cellNum < 0) && (cellNum != VIR_MEMORY_STATS_ALL_CELLS))) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->nodeGetMemoryStats) {
+        int ret;
+        ret = conn->driver->nodeGetMemoryStats (conn, cellNum, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virNodeGetFreeMemory:
  * @conn: pointer to the hypervisor connection
  *
