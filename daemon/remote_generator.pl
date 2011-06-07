@@ -407,6 +407,13 @@ elsif ($opt_b) {
                     }
 
                     push(@args_list, "args->$2.$2_len");
+                } elsif ($args_member =~ m/^(?:unsigned )?int (\S+)<\S+>;/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
+                    }
+
+                    push(@args_list, "args->$1.$1_val");
+                    push(@args_list, "args->$1.$1_len");
                 } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
                     push(@vars_list, "virTypedParameterPtr $1 = NULL");
                     push(@vars_list, "int n$1");
@@ -986,6 +993,16 @@ elsif ($opt_k) {
                     }
 
                     push(@setters_list, "args.$arg_name.${arg_name}_val = (char *)$arg_name;");
+                    push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
+                    push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });
+                } elsif ($args_member =~ m/^((?:unsigned )?int) (\S+)<(\S+)>;/) {
+                    my $type_name = $1;
+                    my $arg_name = $2;
+                    my $limit = $3;
+
+                    push(@args_list, "${type_name} *$arg_name");
+                    push(@args_list, "unsigned int ${arg_name}len");
+                    push(@setters_list, "args.$arg_name.${arg_name}_val = $arg_name;");
                     push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
                     push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });
                 } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
