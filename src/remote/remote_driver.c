@@ -1763,6 +1763,70 @@ done:
 }
 
 static int
+remoteNodeGetMemoryStats (virConnectPtr conn,
+                          int cellNum,
+                          virMemoryStatsPtr params, int *nparams,
+                          unsigned int flags)
+{
+    int rv = -1;
+    remote_node_get_memory_stats_args args;
+    remote_node_get_memory_stats_ret ret;
+    int i = -1;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.nparams = *nparams;
+    args.cellNum = cellNum;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_MEMORY_STATS,
+              (xdrproc_t) xdr_remote_node_get_memory_stats_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_get_memory_stats_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Check the length of the returned list carefully. */
+    if (ret.params.params_len > REMOTE_NODE_MEMORY_STATS_MAX ||
+        ret.params.params_len > *nparams) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("remoteNodeGetMemoryStats: "
+                      "returned number of stats exceeds limit"));
+        goto cleanup;
+    }
+    /* Handle the case when the caller does not know the number of stats
+     * and is asking for the number of stats supported
+     */
+    if (*nparams == 0) {
+        *nparams = ret.nparams;
+        rv = 0;
+        goto cleanup;
+    }
+
+    *nparams = ret.params.params_len;
+
+    /* Deserialise the result. */
+    for (i = 0; i < *nparams; ++i) {
+        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
+            remoteError(VIR_ERR_INTERNAL_ERROR,
+                        _("Stats %s too big for destination"),
+                        ret.params.params_val[i].field);
+            goto cleanup;
+        }
+        params[i].value = ret.params.params_val[i].value;
+    }
+
+    rv = 0;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_node_get_memory_stats_ret,
+              (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteNodeGetCellsFreeMemory(virConnectPtr conn,
                             unsigned long long *freeMems,
                             int startCell,
@@ -6361,6 +6425,7 @@ static virDriver remote_driver = {
     .domainMemoryPeek = remoteDomainMemoryPeek, /* 0.4.2 */
     .domainGetBlockInfo = remoteDomainGetBlockInfo, /* 0.8.1 */
     .nodeGetCPUStats = remoteNodeGetCPUStats, /* 0.9.3 */
+    .nodeGetMemoryStats = remoteNodeGetMemoryStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = remoteNodeGetCellsFreeMemory, /* 0.3.3 */
     .nodeGetFreeMemory = remoteNodeGetFreeMemory, /* 0.3.3 */
     .domainEventRegister = remoteDomainEventRegister, /* 0.5.0 */

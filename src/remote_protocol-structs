@@ -75,6 +75,10 @@ struct remote_node_get_cpu_stats {
         remote_nonnull_string      field;
         uint64_t                   value;
 };
+struct remote_node_get_memory_stats {
+        remote_nonnull_string      field;
+        uint64_t                   value;
+};
 struct remote_open_args {
         remote_string              name;
         int                        flags;
@@ -134,6 +138,18 @@ struct remote_node_get_cpu_stats_ret {
         struct {
                 u_int              params_len;
                 remote_node_get_cpu_stats * params_val;
+        } params;
+        int                        nparams;
+};
+struct remote_node_get_memory_stats_args {
+        int                        nparams;
+        int                        cellNum;
+        u_int                      flags;
+};
+struct remote_node_get_memory_stats_ret {
+        struct {
+                u_int              params_len;
+                remote_node_get_memory_stats * params_val;
         } params;
         int                        nparams;
 };

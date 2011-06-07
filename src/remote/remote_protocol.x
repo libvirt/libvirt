@@ -137,6 +137,9 @@ const REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX = 16;
 /* Upper limit on list of node cpu stats. */
 const REMOTE_NODE_CPU_STATS_MAX = 16;
 
+/* Upper limit on list of node memory stats. */
+const REMOTE_NODE_MEMORY_STATS_MAX = 16;
+
 /* Upper limit on number of NUMA cells */
 const REMOTE_NODE_MAX_CELLS = 1024;
 
@@ -332,6 +335,11 @@ struct remote_node_get_cpu_stats {
     unsigned hyper value;
 };
 
+struct remote_node_get_memory_stats {
+    remote_nonnull_string field;
+    unsigned hyper value;
+};
+
 /*----- Calls. -----*/
 
 /* For each call we may have a 'remote_CALL_args' and 'remote_CALL_ret'
@@ -424,6 +432,17 @@ struct remote_node_get_cpu_stats_args {
 
 struct remote_node_get_cpu_stats_ret {
     remote_node_get_cpu_stats params<REMOTE_NODE_CPU_STATS_MAX>;
+    int nparams;
+};
+
+struct remote_node_get_memory_stats_args {
+    int nparams;
+    int cellNum;
+    unsigned int flags;
+};
+
+struct remote_node_get_memory_stats_ret {
+    remote_node_get_memory_stats params<REMOTE_NODE_MEMORY_STATS_MAX>;
     int nparams;
 };
 
@@ -2339,7 +2358,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR = 224, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_PIN_VCPU_FLAGS = 225, /* skipgen autogen */
     REMOTE_PROC_DOMAIN_SEND_KEY = 226, /* autogen autogen */
-    REMOTE_PROC_NODE_GET_CPU_STATS = 227 /* skipgen skipgen */
+    REMOTE_PROC_NODE_GET_CPU_STATS = 227, /* skipgen skipgen */
+    REMOTE_PROC_NODE_GET_MEMORY_STATS = 228 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
