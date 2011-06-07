@@ -57,11 +57,19 @@
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define CPU_SYS_PATH "/sys/devices/system/cpu"
+# define PROCSTAT_PATH "/proc/stat"
+
+# define LINUX_NB_CPU_STATS 4
 
 /* NB, this is not static as we need to call it from the testsuite */
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              virNodeInfoPtr nodeinfo,
                              bool need_hyperthreads);
+
+static int linuxNodeGetCPUStats(FILE *procstat,
+                                int cpuNum,
+                                virCPUStatsPtr params,
+                                int *nparams);
 
 /* Return the positive decimal contents of the given
  * CPU_SYS_PATH/cpu%u/FILE, or -1 on error.  If MISSING_OK and the
@@ -376,6 +384,107 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     return 0;
 }
 
+# define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
+
+int linuxNodeGetCPUStats(FILE *procstat,
+                         int cpuNum,
+                         virCPUStatsPtr params,
+                         int *nparams)
+{
+    int ret = -1;
+    char line[1024];
+    unsigned long long usr, ni, sys, idle, iowait;
+    unsigned long long irq, softirq, steal, guest, guest_nice;
+    char cpu_header[3 + INT_BUFSIZE_BOUND(cpuNum)];
+
+    if ((*nparams) == 0) {
+        /* Current number of cpu stats supported by linux */
+        *nparams = LINUX_NB_CPU_STATS;
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((*nparams) != LINUX_NB_CPU_STATS) {
+        nodeReportError(VIR_ERR_INVALID_ARG,
+                        "%s", _("Invalid parameter count"));
+        goto cleanup;
+    }
+
+    if (cpuNum == VIR_CPU_STATS_ALL_CPUS) {
+        strcpy(cpu_header, "cpu");
+    } else {
+        snprintf(cpu_header, sizeof(cpu_header), "cpu%d", cpuNum);
+    }
+
+    while (fgets(line, sizeof(line), procstat) != NULL) {
+        char *buf = line;
+
+        if (STRPREFIX(buf, cpu_header)) { /* aka logical CPU time */
+            int i;
+
+            if (sscanf(buf,
+                       "%*s %llu %llu %llu %llu %llu" // user ~ iowait
+                       "%llu %llu %llu %llu %llu",    // irq  ~ guest_nice
+                       &usr, &ni, &sys, &idle, &iowait,
+                       &irq, &softirq, &steal, &guest, &guest_nice) < 4) {
+                continue;
+            }
+
+            for (i = 0; i < *nparams; i++) {
+                virCPUStatsPtr param = &params[i];
+
+                switch (i) {
+                case 0: /* fill kernel cpu time here */
+                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_KERNEL) == NULL) {
+                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                        "%s", _("Field kernel cpu time too long for destination"));
+                        goto cleanup;
+                    }
+                    param->value = (sys + irq + softirq) * TICK_TO_NSEC;
+                    break;
+
+                case 1: /* fill user cpu time here */
+                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_USER) == NULL) {
+                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                        "%s", _("Field kernel cpu time too long for destination"));
+                        goto cleanup;
+                    }
+                    param->value = (usr + ni) * TICK_TO_NSEC;
+                    break;
+
+                case 2: /* fill idle cpu time here */
+                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_IDLE) == NULL) {
+                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                        "%s", _("Field kernel cpu time too long for destination"));
+                        goto cleanup;
+                    }
+                    param->value = idle * TICK_TO_NSEC;
+                    break;
+
+                case 3: /* fill iowait cpu time here */
+                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_IOWAIT) == NULL) {
+                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                        "%s", _("Field kernel cpu time too long for destination"));
+                        goto cleanup;
+                    }
+                    param->value = iowait * TICK_TO_NSEC;
+                    break;
+
+                default:
+                    break;
+                    /* should not hit here */
+                }
+            }
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    nodeReportError(VIR_ERR_INVALID_ARG, "%s", _("Invalid cpu number"));
+
+cleanup:
+    return ret;
+}
 #endif
 
 int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
@@ -410,6 +519,35 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
     /* XXX Solaris will need an impl later if they port QEMU driver */
     nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
                     _("node info not implemented on this platform"));
+    return -1;
+#endif
+}
+
+int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                    int cpuNum,
+                    virCPUStatsPtr params,
+                    int *nparams,
+                    unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+#ifdef __linux__
+    {
+        int ret;
+        FILE *procstat = fopen(PROCSTAT_PATH, "r");
+        if (!procstat) {
+            virReportSystemError(errno,
+                                 _("cannot open %s"), PROCSTAT_PATH);
+            return -1;
+        }
+        ret = linuxNodeGetCPUStats(procstat, cpuNum, params, nparams);
+        VIR_FORCE_FCLOSE(procstat);
+
+        return ret;
+    }
+#else
+    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
+                    _("node CPU stats not implemented on this platform"));
     return -1;
 #endif
 }

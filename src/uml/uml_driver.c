@@ -2218,6 +2218,7 @@ static virDriver umlDriver = {
     .domainGetAutostart = umlDomainGetAutostart, /* 0.5.0 */
     .domainSetAutostart = umlDomainSetAutostart, /* 0.5.0 */
     .domainBlockPeek = umlDomainBlockPeek, /* 0.5.0 */
+    .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.5.0 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.5.0 */
     .isEncrypted = umlIsEncrypted, /* 0.7.3 */
