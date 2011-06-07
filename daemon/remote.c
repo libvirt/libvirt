@@ -1516,6 +1516,83 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchNodeGetCPUStats (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
+                               remote_message_header *hdr ATTRIBUTE_UNUSED,
+                               remote_error *rerr,
+                               remote_node_get_cpu_stats_args *args,
+                               remote_node_get_cpu_stats_ret *ret)
+{
+    virCPUStatsPtr params = NULL;
+    int i;
+    int cpuNum = args->cpuNum;
+    int nparams = args->nparams;
+    unsigned int flags;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    flags = args->flags;
+
+    if (nparams > REMOTE_NODE_CPU_STATS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(params, nparams) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virNodeGetCPUStats(conn, cpuNum, params, &nparams, flags) < 0)
+        goto cleanup;
+
+    /* In this case, we need to send back the number of stats
+     * supported
+     */
+    if (args->nparams == 0) {
+        ret->nparams = nparams;
+        goto success;
+    }
+
+    /* Serialise the memory parameters. */
+    ret->params.params_len = nparams;
+    if (VIR_ALLOC_N(ret->params.params_val, nparams) < 0)
+        goto no_memory;
+
+    for (i = 0; i < nparams; ++i) {
+        /* remoteDispatchClientRequest will free this: */
+        ret->params.params_val[i].field = strdup(params[i].field);
+        if (ret->params.params_val[i].field == NULL)
+            goto no_memory;
+
+        ret->params.params_val[i].value = params[i].value;
+    }
+
+success:
+    rv = 0;
+
+cleanup:
+    if (rv < 0) {
+        remoteDispatchError(rerr);
+        if (ret->params.params_val) {
+            for (i = 0; i < nparams; i++)
+                VIR_FREE(ret->params.params_val[i].field);
+            VIR_FREE(ret->params.params_val);
+        }
+    }
+    VIR_FREE(params);
+    return rv;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
 /*-------------------------------------------------------------*/
 
 static int

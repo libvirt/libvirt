@@ -71,6 +71,10 @@ struct remote_typed_param {
         remote_nonnull_string      field;
         remote_typed_param_value   value;
 };
+struct remote_node_get_cpu_stats {
+        remote_nonnull_string      field;
+        uint64_t                   value;
+};
 struct remote_open_args {
         remote_string              name;
         int                        flags;
@@ -120,6 +124,18 @@ struct remote_node_get_info_ret {
 };
 struct remote_get_capabilities_ret {
         remote_nonnull_string      capabilities;
+};
+struct remote_node_get_cpu_stats_args {
+        int                        cpuNum;
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_node_get_cpu_stats_ret {
+        struct {
+                u_int              params_len;
+                remote_node_get_cpu_stats * params_val;
+        } params;
+        int                        nparams;
 };
 struct remote_node_get_cells_free_memory_args {
         int                        startCell;
