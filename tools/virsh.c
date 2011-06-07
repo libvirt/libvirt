@@ -3714,6 +3714,135 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "nodecpustats" command
+ */
+static const vshCmdInfo info_nodecpustats[] = {
+    {"help", N_("Prints cpu stats of the node.")},
+    {"desc", N_("Returns cpu stats of the node.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_node_cpustats[] = {
+    {"cpu", VSH_OT_INT, 0, N_("prints specified cpu statistics only.")},
+    {"percent", VSH_OT_BOOL, 0, N_("prints by percentage during 1 second.")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdNodeCPUStats(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    int i, j;
+    bool flag_utilization = false;
+    bool flag_percent = vshCommandOptBool(cmd, "percent");
+    int cpuNum = VIR_CPU_STATS_ALL_CPUS;
+    virCPUStatsPtr params;
+    int nparams = 0;
+    bool ret = false;
+    struct cpu_stats {
+        unsigned long long user;
+        unsigned long long sys;
+        unsigned long long idle;
+        unsigned long long iowait;
+        unsigned long long util;
+    } cpu_stats[2];
+    double user_time, sys_time, idle_time, iowait_time, total_time;
+    double usage;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptInt(cmd, "cpu", &cpuNum) < 0) {
+        vshError(ctl, "%s", _("Invalid value of cpuNum"));
+        return false;
+    }
+
+    if (virNodeGetCPUStats(ctl->conn, cpuNum, NULL, &nparams, 0) != 0) {
+        vshError(ctl, "%s",
+                 _("Unable to get number of cpu stats"));
+        return false;
+    }
+    if (nparams == 0) {
+        /* nothing to output */
+        return true;
+    }
+
+    memset(cpu_stats, 0, sizeof(cpu_stats));
+    params = vshCalloc(ctl, nparams, sizeof(*params));
+
+    i = 0;
+    do {
+        if (virNodeGetCPUStats(ctl->conn, cpuNum, params, &nparams, 0) != 0) {
+            vshError(ctl, "%s", _("Unable to get node cpu stats"));
+            goto cleanup;
+        }
+
+        for (j = 0; j < nparams; j++) {
+            unsigned long long value = params[j].value;
+
+            if (STREQ(params[j].field, VIR_CPU_STATS_KERNEL)) {
+                cpu_stats[i].sys = value;
+            } else if (STREQ(params[j].field, VIR_CPU_STATS_USER)) {
+                cpu_stats[i].user = value;
+            } else if (STREQ(params[j].field, VIR_CPU_STATS_IDLE)) {
+                cpu_stats[i].idle = value;
+            } else if (STREQ(params[j].field, VIR_CPU_STATS_IOWAIT)) {
+                cpu_stats[i].iowait = value;
+            } else if (STREQ(params[j].field, VIR_CPU_STATS_UTILIZATION)) {
+                cpu_stats[i].util = value;
+                flag_utilization = true;
+            }
+        }
+
+        if (flag_utilization || !flag_percent)
+            break;
+
+        i++;
+        sleep(1);
+    } while (i < 2);
+
+    if (!flag_percent) {
+        if (!flag_utilization) {
+            vshPrint(ctl, "%-15s %20llu\n", _("user  :"), cpu_stats[0].user);
+            vshPrint(ctl, "%-15s %20llu\n", _("system:"), cpu_stats[0].sys);
+            vshPrint(ctl, "%-15s %20llu\n", _("idle  :"), cpu_stats[0].idle);
+            vshPrint(ctl, "%-15s %20llu\n", _("iowait:"), cpu_stats[0].iowait);
+        }
+    } else {
+        if (flag_utilization) {
+            usage = cpu_stats[0].util;
+
+            vshPrint(ctl, "%-15s %5.1lf%%\n", _("usage:"), usage);
+            vshPrint(ctl, "%-15s %5.1lf%%\n", _("idle :"), 100 - usage);
+        } else {
+            user_time   = cpu_stats[1].user   - cpu_stats[0].user;
+            sys_time    = cpu_stats[1].sys    - cpu_stats[0].sys;
+            idle_time   = cpu_stats[1].idle   - cpu_stats[0].idle;
+            iowait_time = cpu_stats[1].iowait - cpu_stats[0].iowait;
+            total_time  = user_time + sys_time + idle_time + iowait_time;
+
+            usage = (user_time + sys_time) / total_time * 100;
+
+            vshPrint(ctl, "%-15s %5.1lf%%\n",
+                     _("usage:"), usage);
+            vshPrint(ctl, "%-15s %5.1lf%%\n",
+                     _("    user  :"), user_time / total_time * 100);
+            vshPrint(ctl, "%-15s %5.1lf%%\n",
+                     _("    system:"), sys_time  / total_time * 100);
+            vshPrint(ctl, "%-15s %5.1lf%%\n",
+                     _("idle  :"), idle_time     / total_time * 100);
+            vshPrint(ctl, "%-15s %5.1lf%%\n",
+                     _("iowait:"), iowait_time   / total_time * 100);
+        }
+    }
+
+    ret = true;
+
+  cleanup:
+    VIR_FREE(params);
+    return ret;
+}
+
+/*
  * "capabilities" command
  */
 static const vshCmdInfo info_capabilities[] = {
@@ -11393,6 +11522,7 @@ static const vshCmdDef hostAndHypervisorCmds[] = {
      VSH_CMD_FLAG_NOCONNECT},
     {"freecell", cmdFreecell, opts_freecell, info_freecell, 0},
     {"hostname", cmdHostname, NULL, info_hostname, 0},
+    {"nodecpustats", cmdNodeCPUStats, opts_node_cpustats, info_nodecpustats, 0},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
     {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
      info_qemu_monitor_command, 0},

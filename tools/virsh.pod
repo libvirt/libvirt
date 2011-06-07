@@ -239,6 +239,13 @@ and size of the physical memory. The output corresponds to virNodeInfo
 structure. Specifically, the "CPU socket(s)" field means number of CPU
 sockets per NUMA cell.
 
+=item B<nodecpustats> optional I<cpu> I<--percent>
+
+Returns cpu stats of the node.
+If I<cpu> is specified, this will prints specified cpu statistics only.
+If I<--percent> is specified, this will prints percentage of each kind of cpu
+statistics during 1 second.
+
 =item B<capabilities>
 
 Print an XML document describing the capabilities of the hypervisor
