@@ -46,6 +46,7 @@ static int getFreeVethName(char **veth, int startDev)
     int devNum = startDev-1;
     char *path = NULL;
 
+    VIR_DEBUG("Find free from veth%d", startDev);
     do {
         VIR_FREE(path);
         ++devNum;
@@ -53,6 +54,7 @@ static int getFreeVethName(char **veth, int startDev)
             virReportOOMError();
             return -1;
         }
+        VIR_DEBUG("Probe %s", path);
     } while (virFileExists(path));
     VIR_FREE(path);
 
@@ -60,6 +62,7 @@ static int getFreeVethName(char **veth, int startDev)
         virReportOOMError();
         return -1;
     }
+
     return devNum;
 }
 
@@ -98,18 +101,19 @@ int vethCreate(char** veth1, char** veth2)
     bool veth1_alloc = false;
     bool veth2_alloc = false;
 
-    VIR_DEBUG("veth1: %s veth2: %s", NULLSTR(*veth1), NULLSTR(*veth2));
+    VIR_DEBUG("Host: %s guest: %s", NULLSTR(*veth1), NULLSTR(*veth2));
 
     if (*veth1 == NULL) {
         if ((vethDev = getFreeVethName(veth1, vethDev)) < 0)
             goto cleanup;
-        VIR_DEBUG("Assigned veth1: %s", *veth1);
+        VIR_DEBUG("Assigned host: %s", *veth1);
         veth1_alloc = true;
+        vethDev++;
     }
     argv[3] = *veth1;
 
     while (*veth2 == NULL) {
-        if ((vethDev = getFreeVethName(veth2, vethDev + 1)) < 0) {
+        if ((vethDev = getFreeVethName(veth2, vethDev)) < 0) {
             if (veth1_alloc)
                 VIR_FREE(*veth1);
             goto cleanup;
@@ -122,12 +126,12 @@ int vethCreate(char** veth1, char** veth2)
             continue;
         }
 
-        VIR_DEBUG("Assigned veth2: %s", *veth2);
+        VIR_DEBUG("Assigned guest: %s", *veth2);
         veth2_alloc = true;
     }
     argv[8] = *veth2;
 
-    VIR_DEBUG("veth1: %s veth2: %s", *veth1, *veth2);
+    VIR_DEBUG("Create Host: %s guest: %s", *veth1, *veth2);
     if (virRun(argv, NULL) < 0) {
         if (veth1_alloc)
             VIR_FREE(*veth1);
