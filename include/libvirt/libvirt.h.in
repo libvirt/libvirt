@@ -216,7 +216,6 @@ typedef struct _virStream virStream;
  */
 typedef virStream *virStreamPtr;
 
-
 /**
  * VIR_SECURITY_LABEL_BUFLEN:
  *
@@ -300,6 +299,66 @@ struct _virNodeInfo {
                             total number of CPU sockets otherwise */
     unsigned int cores; /* number of cores per socket */
     unsigned int threads;/* number of threads per core */
+};
+
+/**
+ * VIR_CPU_STATS_FIELD_LENGTH:
+ *
+ * Macro providing the field length of virNodeCPUStats
+ */
+#define VIR_CPU_STATS_FIELD_LENGTH 80
+
+/**
+ * VIR_CPU_STATS_ALL_CPUS:
+ *
+ * Macro for the total CPU time/utilization
+ */
+#define VIR_CPU_STATS_ALL_CPUS (-1)
+
+/**
+ * VIR_CPU_STATS_KERNEL:
+ *
+ * Macro for the cumulative CPU time which spends by kernel,
+ * when the node booting up.(in nanoseconds).
+ */
+#define VIR_CPU_STATS_KERNEL "kernel"
+
+/**
+ * The cumulative CPU time which spends by user processes,
+ * when the node booting up.(in nanoseconds).
+ */
+#define VIR_CPU_STATS_USER "user"
+
+/**
+ * The cumulative idle CPU time,
+ * when the node booting up.(in nanoseconds).
+ */
+#define VIR_CPU_STATS_IDLE "idle"
+
+/**
+ * The cumulative I/O wait CPU time,
+ * when the node booting up.(in nanoseconds).
+ */
+#define VIR_CPU_STATS_IOWAIT "iowait"
+
+/**
+ * The CPU utilization.
+ * The usage value is in percent and 100% represents all CPUs on
+ * the server.
+ */
+#define VIR_CPU_STATS_UTILIZATION "utilization"
+
+/**
+ * virCPUStats:
+ *
+ * a virNodeCPUStats is a structure filled by virNodeGetCPUStats()
+ * and providing the information for the cpu stats of the node.
+ */
+typedef struct _virCPUStats virCPUStats;
+
+struct _virCPUStats {
+    char field[VIR_CPU_STATS_FIELD_LENGTH];
+    unsigned long long value;
 };
 
 
@@ -562,6 +621,14 @@ int virDomainMigrateSetMaxSpeed(virDomainPtr domain,
 typedef virNodeInfo *virNodeInfoPtr;
 
 /**
+ * virCPUStatsPtr:
+ *
+ * a virCPUStatsPtr is a pointer to a virCPUStats structure.
+ */
+
+typedef virCPUStats *virCPUStatsPtr;
+
+/**
  * virConnectFlags
  *
  * Flags when opening a connection to a hypervisor
@@ -694,6 +761,12 @@ int                     virConnectGetMaxVcpus   (virConnectPtr conn,
 int                     virNodeGetInfo          (virConnectPtr conn,
                                                  virNodeInfoPtr info);
 char *                  virConnectGetCapabilities (virConnectPtr conn);
+
+int                     virNodeGetCPUStats (virConnectPtr conn,
+                                            int cpuNum,
+                                            virCPUStatsPtr params,
+                                            int *nparams,
+                                            unsigned int flags);
 
 unsigned long long      virNodeGetFreeMemory    (virConnectPtr conn);
 

@@ -454,6 +454,7 @@ LIBVIRT_0.9.3 {
     global:
         virDomainPinVcpuFlags;
         virDomainSendKey;
+        virNodeGetCPUStats;
 } LIBVIRT_0.9.2;
 
 # .... define new API here using predicted next version number ....

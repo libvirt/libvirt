@@ -363,6 +363,7 @@ skip_impl = (
     'virConnectBaselineCPU',
     'virDomainRevertToSnapshot',
     'virDomainSendKey',
+    'virNodeGetCPUStats',
 )
 
 
