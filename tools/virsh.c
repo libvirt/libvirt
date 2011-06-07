@@ -152,6 +152,7 @@ enum {
     VSH_OFLAG_NONE     = 0,        /* without flags */
     VSH_OFLAG_REQ      = (1 << 0), /* option required */
     VSH_OFLAG_EMPTY_OK = (1 << 1), /* empty string option allowed */
+    VSH_OFLAG_REQ_OPT  = (1 << 2), /* --optionname required */
 };
 
 /* dummy */
@@ -11453,6 +11454,12 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t* opts_need_arg,
                 return -1; /* bool options can't be mandatory */
             continue;
         }
+        if (opt->flag & VSH_OFLAG_REQ_OPT) {
+            if (opt->flag & VSH_OFLAG_REQ)
+                *opts_required |= 1 << i;
+            continue;
+        }
+
         *opts_need_arg |= 1 << i;
         if (opt->flag & VSH_OFLAG_REQ) {
             if (optional)
