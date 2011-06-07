@@ -3008,16 +3008,15 @@ error:
  * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
  * again.
  *
- * Here is the sample code snippet:
+ * Here is a sample code snippet:
  *
  * if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) == 0) &&
  *     (nparams != 0)) {
- *     params = vshMalloc(ctl, sizeof(*params) * nparams);
- *     memset(params, 0, sizeof(*params) * nparams);
- *     if (virDomainGetMemoryParameters(dom, params, &nparams, 0)) {
- *         vshError(ctl, "%s", _("Unable to get memory parameters"));
+ *     if ((params = malloc(sizeof(*params) * nparams)) == NULL)
  *         goto error;
- *     }
+ *     memset(params, 0, sizeof(*params) * nparams);
+ *     if (virDomainGetMemoryParameters(dom, params, &nparams, 0))
+ *         goto error;
  * }
  *
  * This function requires privileged access to the hypervisor. This function
@@ -5283,6 +5282,96 @@ virConnectGetCapabilities (virConnectPtr conn)
 error:
     virDispatchError(conn);
     return NULL;
+}
+
+/**
+ * virNodeGetCPUStats:
+ * @conn: pointer to the hypervisor connection.
+ * @cpuNum: number of node cpu. (VIR_CPU_STATS_ALL_CPUS means total cpu
+ *          statistics)
+ * @params: pointer to node cpu time parameter objects
+ * @nparams: number of node cpu time parameter (this value should be same or
+ *          less than the number of parameters supported)
+ * @flags: currently unused, for future extension. always pass 0.
+ *
+ * This function provides individual cpu statistics of the node.
+ * If you want to get total cpu statistics of the node, you must specify
+ * VIR_CPU_STATS_ALL_CPUS to @cpuNum.
+ * The @params array will be filled with the values equal to the number of
+ * parameters suggested by @nparams
+ *
+ * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
+ * @params as NULL, the API returns the number of parameters supported by the
+ * HV by updating @nparams on SUCCESS. The caller should then allocate @params
+ * array, i.e. (sizeof(@virCPUStats) * @nparams) bytes and call
+ * the API again.
+ *
+ * Here is a sample code snippet:
+ *
+ * if ((virNodeGetCPUStats(conn, cpuNum, NULL, &nparams, 0) == 0) &&
+ *     (nparams != 0)) {
+ *     if ((params = malloc(sizeof(virCPUStats) * nparams)) == NULL)
+ *         goto error;
+ *     memset(params, 0, sizeof(virCPUStats) * nparams);
+ *     if (virNodeGetCPUStats(conn, cpuNum, params, &nparams, 0))
+ *         goto error;
+ * }
+ *
+ * This function doesn't require privileged access to the hypervisor.
+ * This function expects the caller to allocate the @params.
+ *
+ * CPU time Statistics:
+ *
+ * VIR_NODE_CPU_STATS_KERNEL:
+ *     The cumulative CPU time which spends by kernel,
+ *     when the node booting up.(nanoseconds)
+ * VIR_NODE_CPU_STATS_USER:
+ *     The cumulative CPU time which spends by user processes,
+ *     when the node booting up.(nanoseconds)
+ * VIR_NODE_CPU_STATS_IDLE:
+ *     The cumulative idle CPU time, when the node booting up.(nanoseconds)
+ * VIR_NODE_CPU_STATS_IOWAIT:
+ *     The cumulative I/O wait CPU time, when the node booting up.(nanoseconds)
+ * VIR_NODE_CPU_STATS_UTILIZATION:
+ *     The CPU utilization. The usage value is in percent and 100%
+ *     represents all CPUs on the server.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int virNodeGetCPUStats (virConnectPtr conn,
+                        int cpuNum,
+                        virCPUStatsPtr params,
+                        int *nparams, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, cpuNum=%d, params=%p, nparams=%d, flags=%u",
+              conn, cpuNum, params, nparams ? *nparams : -1, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if ((nparams == NULL) || (*nparams < 0) ||
+        ((cpuNum < 0) && (cpuNum != VIR_CPU_STATS_ALL_CPUS))) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->nodeGetCPUStats) {
+        int ret;
+        ret = conn->driver->nodeGetCPUStats (conn, cpuNum, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
 }
 
 /**
