@@ -4932,29 +4932,21 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
     unsigned int val;
     int ret = -1;
     int rc;
+    bool isActive;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
     qemuDriverLock(driver);
-
-    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
-        goto cleanup;
-    }
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (vm == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("No such domain %s"), dom->uuid);
-        goto cleanup;
-    }
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
         goto cleanup;
     }
 
@@ -4971,37 +4963,93 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find cgroup for domain %s"), vm->def->name);
-        goto cleanup;
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
 
-    for (i = 0; i < *nparams; i++) {
-        virTypedParameterPtr param = &params[i];
-        val = 0;
-        param->value.ui = 0;
-        param->type = VIR_TYPED_PARAM_UINT;
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!isActive) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto cleanup;
+        }
 
-        switch (i) {
-        case 0: /* fill blkio weight here */
-            rc = virCgroupGetBlkioWeight(group, &val);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to get blkio weight"));
-                goto cleanup;
-            }
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field blkio weight too long for destination"));
-                goto cleanup;
-            }
-            param->value.ui = val;
-            break;
+        if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+            qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
+            goto cleanup;
+        }
 
-        default:
-            break;
-            /* should not hit here */
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find cgroup for domain %s"), vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        for (i = 0; i < *nparams; i++) {
+            virTypedParameterPtr param = &params[i];
+            val = 0;
+            param->value.ui = 0;
+            param->type = VIR_TYPED_PARAM_UINT;
+
+            switch (i) {
+            case 0: /* fill blkio weight here */
+                rc = virCgroupGetBlkioWeight(group, &val);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to get blkio weight"));
+                    goto cleanup;
+                }
+                if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("Field blkio weight too long for destination"));
+                    goto cleanup;
+                }
+                param->value.ui = val;
+                break;
+
+            default:
+                break;
+                /* should not hit here */
+            }
+        }
+    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        for (i = 0; i < *nparams; i++) {
+            virTypedParameterPtr param = &params[i];
+            val = 0;
+            param->value.ui = 0;
+            param->type = VIR_TYPED_PARAM_UINT;
+
+            switch (i) {
+            case 0: /* fill blkio weight here */
+                if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("Field blkio weight too long for destination"));
+                    goto cleanup;
+                }
+                param->value.ui = persistentDef->blkio.weight;
+                break;
+
+            default:
+                break;
+                /* should not hit here */
+            }
         }
     }
 
