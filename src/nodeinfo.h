@@ -35,6 +35,11 @@ int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                     virCPUStatsPtr params,
                     int *nparams,
                     unsigned int flags ATTRIBUTE_UNUSED);
+int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       int cellNum,
+                       virMemoryStatsPtr params,
+                       int *nparams,
+                       unsigned int flags ATTRIBUTE_UNUSED);
 int nodeGetCellsFreeMemory(virConnectPtr conn,
                            unsigned long long *freeMems,
                            int startCell,

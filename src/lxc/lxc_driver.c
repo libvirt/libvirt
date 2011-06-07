@@ -2886,6 +2886,7 @@ static virDriver lxcDriver = {
     .domainSetSchedulerParametersFlags = lxcSetSchedulerParametersFlags, /* 0.9.2 */
     .domainInterfaceStats = lxcDomainInterfaceStats, /* 0.7.3 */
     .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.3 */
+    .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.6.5 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.6.5 */
     .domainEventRegister = lxcDomainEventRegister, /* 0.7.0 */

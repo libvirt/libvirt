@@ -8093,6 +8093,7 @@ static virDriver qemuDriver = {
     .domainMemoryPeek = qemudDomainMemoryPeek, /* 0.4.4 */
     .domainGetBlockInfo = qemuDomainGetBlockInfo, /* 0.8.1 */
     .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.3 */
+    .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.4.4 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.4.4 */
     .domainEventRegister = qemuDomainEventRegister, /* 0.5.0 */
