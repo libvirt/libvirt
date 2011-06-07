@@ -126,7 +126,7 @@ typedef enum {
     VSH_OT_STRING,   /* optional string option */
     VSH_OT_INT,      /* optional or mandatory int option */
     VSH_OT_DATA,     /* string data (as non-option) */
-    VSH_OT_ARGV      /* remaining arguments, opt->name should be "" */
+    VSH_OT_ARGV      /* remaining arguments */
 } vshCmdOptType;
 
 /*
@@ -10426,7 +10426,7 @@ static const vshCmdInfo info_echo[] = {
 static const vshCmdOptDef opts_echo[] = {
     {"shell", VSH_OT_BOOL, 0, N_("escape for shell use")},
     {"xml", VSH_OT_BOOL, 0, N_("escape for XML use")},
-    {"", VSH_OT_ARGV, 0, N_("arguments to echo")},
+    {"string", VSH_OT_ARGV, 0, N_("arguments to echo")},
     {NULL, 0, 0, NULL}
 };
 
@@ -11479,6 +11479,11 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                 vshError(ctl, _("option --%s already seen"), name);
                 return NULL;
             }
+            if (opt->type == VSH_OT_ARGV) {
+                vshError(ctl, _("variable argument <%s> "
+                         "should not be used with --<%s>"), name, name);
+                return NULL;
+            }
             *opts_seen |= 1 << i;
             return opt;
         }
@@ -11527,7 +11532,7 @@ vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint32_t opts_required,
             const vshCmdOptDef *opt = &def->opts[i];
 
             vshError(ctl,
-                     opt->type == VSH_OT_DATA ?
+                     opt->type == VSH_OT_DATA || opt->type == VSH_OT_ARGV ?
                      _("command '%s' requires <%s> option") :
                      _("command '%s' requires --%s option"),
                      def->name, opt->name);
@@ -11635,7 +11640,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     break;
                 case VSH_OT_ARGV:
                     /* xgettext:c-format */
-                    fmt = _("[<string>]...");
+                    fmt = (opt->flag & VSH_OFLAG_REQ) ? _("<%s>...")
+                           : _("[<%s>]...");
                     break;
                 default:
                     assert(0);
@@ -11675,7 +11681,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     break;
                 case VSH_OT_ARGV:
                     /* Not really an option. */
-                    continue;
+                    snprintf(buf, sizeof(buf), _("<%s>"), opt->name);
+                    break;
                 default:
                     assert(0);
                 }
@@ -13112,7 +13119,7 @@ vshReadlineOptionsGenerator(const char *text, int state)
 
         list_index++;
 
-        if (opt->type == VSH_OT_DATA)
+        if (opt->type == VSH_OT_DATA || opt->type == VSH_OT_ARGV)
             /* ignore non --option */
             continue;
 
