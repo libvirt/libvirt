@@ -361,6 +361,70 @@ struct _virCPUStats {
     unsigned long long value;
 };
 
+/**
+ * VIR_MEMORY_STATS_FIELD_LENGTH:
+ *
+ * Macro providing the field length of virMemoryStats
+ */
+#define VIR_MEMORY_STATS_FIELD_LENGTH 80
+
+/**
+ * VIR_MEMORY_STATS_ALL_CELLS:
+ *
+ * Macro for the total memory of all cells.
+ */
+#define VIR_MEMORY_STATS_ALL_CELLS (-1)
+
+/**
+ * VIR_MEMORY_STATS_TOTAL:
+ *
+ * Macro for the total memory of specified cell:
+ * it represents the maximum memory.
+ */
+
+#define VIR_MEMORY_STATS_TOTAL "total"
+
+/**
+ * VIR_MEMORY_STATS_FREE:
+ *
+ * Macro for the free memory of specified cell:
+ * On linux, it includes buffer and cached memory, in case of
+ * VIR_MEMORY_STATS_ALL_CELLS.
+ */
+
+#define VIR_MEMORY_STATS_FREE "free"
+
+/**
+ * VIR_MEMORY_STATS_BUFFERS:
+ *
+ * Macro for the buffer memory: On linux, it only returns in case of
+ * VIR_MEMORY_STATS_ALL_CELLS.
+ */
+
+#define VIR_MEMORY_STATS_BUFFERS "buffers"
+
+/**
+ * VIR_MEMORY_STATS_CACHED:
+ *
+ * Macro for the cached memory: On linux, it only returns in case of
+ * VIR_MEMORY_STATS_ALL_CELLS.
+ */
+
+#define VIR_MEMORY_STATS_CACHED "cached"
+
+/**
+ * virMemoryStats:
+ *
+ * a virMemoryStats is a structure filled by virNodeGetMemoryStats()
+ * and providing the information of the memory of the Node.
+ */
+
+typedef struct _virMemoryStats virMemoryStats;
+
+struct _virMemoryStats {
+    char field[VIR_MEMORY_STATS_FIELD_LENGTH];
+    unsigned long long value;
+};
 
 /* Common data types shared among interfaces with name/type/value lists.  */
 
@@ -629,6 +693,14 @@ typedef virNodeInfo *virNodeInfoPtr;
 typedef virCPUStats *virCPUStatsPtr;
 
 /**
+ * virMemoryStatsPtr:
+ *
+ * a virMemoryStatsPtr is a pointer to a virMemoryStats structure.
+ */
+
+typedef virMemoryStats *virMemoryStatsPtr;
+
+/**
  * virConnectFlags
  *
  * Flags when opening a connection to a hypervisor
@@ -767,6 +839,12 @@ int                     virNodeGetCPUStats (virConnectPtr conn,
                                             virCPUStatsPtr params,
                                             int *nparams,
                                             unsigned int flags);
+
+int                     virNodeGetMemoryStats (virConnectPtr conn,
+                                               int cellNum,
+                                               virCPUStatsPtr params,
+                                               int *nparams,
+                                               unsigned int flags);
 
 unsigned long long      virNodeGetFreeMemory    (virConnectPtr conn);
 

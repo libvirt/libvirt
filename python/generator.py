@@ -364,6 +364,7 @@ skip_impl = (
     'virDomainRevertToSnapshot',
     'virDomainSendKey',
     'virNodeGetCPUStats',
+    'virNodeGetMemoryStats',
 )
 
 
