@@ -3424,6 +3424,9 @@ static const vshCmdOptDef opts_blkiotune[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"weight", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("IO Weight in range [100, 1000]")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3436,6 +3439,23 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     unsigned int i = 0;
     virTypedParameterPtr params = NULL, temp = NULL;
     bool ret = false;
+    unsigned int flags = 0;
+    int current = vshCommandOptBool(cmd, "current");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -3460,7 +3480,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
     if (nparams == 0) {
         /* get the number of blkio parameters */
-        if (virDomainGetBlkioParameters(dom, NULL, &nparams, 0) != 0) {
+        if (virDomainGetBlkioParameters(dom, NULL, &nparams, flags) != 0) {
             vshError(ctl, "%s",
                      _("Unable to get number of blkio parameters"));
             goto cleanup;
@@ -3474,7 +3494,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
         /* now go get all the blkio parameters */
         params = vshCalloc(ctl, nparams, sizeof(*params));
-        if (virDomainGetBlkioParameters(dom, params, &nparams, 0) != 0) {
+        if (virDomainGetBlkioParameters(dom, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get blkio parameters"));
             goto cleanup;
         }
@@ -3526,7 +3546,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
                 weight = 0;
             }
         }
-        if (virDomainSetBlkioParameters(dom, params, nparams, 0) != 0)
+        if (virDomainSetBlkioParameters(dom, params, nparams, flags) != 0)
             vshError(ctl, "%s", _("Unable to change blkio parameters"));
         else
             ret = true;

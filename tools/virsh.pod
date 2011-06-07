@@ -734,6 +734,13 @@ value are kilobytes (i.e. blocks of 1024 bytes).
 Display or set the blkio parameters. QEMU/KVM supports I<--weight>.
 I<--weight> is in range [100, 1000].
 
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--current> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
 =item B<setvcpus> I<domain-id> I<count> optional I<--maximum> I<--config>
 I<--live>
 
