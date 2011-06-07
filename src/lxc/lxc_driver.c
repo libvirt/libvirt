@@ -52,7 +52,7 @@
 #include "hooks.h"
 #include "files.h"
 #include "fdstream.h"
-
+#include "domain_nwfilter.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1027,6 +1027,8 @@ static void lxcVmCleanup(lxc_driver_t *driver,
         vethDelete(vm->def->nets[i]->ifname);
     }
 
+    virDomainConfVMNWFilterTeardown(vm);
+
     if (driver->cgroup &&
         virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0) {
         virCgroupRemove(cgroup);
@@ -1145,6 +1147,10 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         }
 
         if (vethInterfaceUpOrDown(parentVeth, 1) < 0)
+            goto error_exit;
+
+        if (def->nets[i]->filter &&
+            virDomainConfNWFilterInstantiate(conn, def->nets[i]) < 0)
             goto error_exit;
     }
 
@@ -1642,8 +1648,10 @@ cleanup:
             vethDelete(veths[i]);
         VIR_FREE(veths[i]);
     }
-    if (rc != 0)
+    if (rc != 0) {
         VIR_FORCE_CLOSE(priv->monitor);
+        virDomainConfVMNWFilterTeardown(vm);
+    }
     VIR_FORCE_CLOSE(parentTty);
     VIR_FORCE_CLOSE(handshakefds[0]);
     VIR_FORCE_CLOSE(handshakefds[1]);
@@ -2842,6 +2850,33 @@ cleanup:
     return ret;
 }
 
+static int
+lxcVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
+                   virHashIterator iter, void *data)
+{
+    virHashForEach(lxc_driver->domains.objs, iter, data);
+
+    return 0;
+}
+
+static void
+lxcVMDriverLock(void)
+{
+    lxcDriverLock(lxc_driver);
+}
+
+static void
+lxcVMDriverUnlock(void)
+{
+    lxcDriverUnlock(lxc_driver);
+}
+
+static virNWFilterCallbackDriver lxcCallbackDriver = {
+    .name = "LXC",
+    .vmFilterRebuild = lxcVMFilterRebuild,
+    .vmDriverLock = lxcVMDriverLock,
+    .vmDriverUnlock = lxcVMDriverUnlock,
+};
 
 /* Function Tables */
 static virDriver lxcDriver = {
@@ -2913,5 +2948,6 @@ int lxcRegister(void)
 {
     virRegisterDriver(&lxcDriver);
     virRegisterStateDriver(&lxcStateDriver);
+    virNWFilterRegisterCallbackDriver(&lxcCallbackDriver);
     return 0;
 }
