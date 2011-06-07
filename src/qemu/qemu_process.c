@@ -1233,18 +1233,9 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
         cpumask = (unsigned char *)def->cputune.vcpupin[vcpu]->cpumask;
         vcpupid = priv->vcpupids[vcpu];
 
-        /* Convert cpumask to bitmap here. */
-        for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-            int cur = 0;
-            int mod = 0;
-
-            if (i) {
-                cur = i / 8;
-                mod = i % 8;
-            }
-
+        for (i = 0 ; i < VIR_DOMAIN_CPUMASK_LEN ; i++) {
             if (cpumask[i])
-                cpumap[cur] |= 1 << mod;
+                VIR_USE_CPU(cpumap, i);
         }
 
         if (virProcessInfoSetAffinity(vcpupid,
