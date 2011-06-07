@@ -4853,14 +4853,13 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
     int ret = -1;
+    bool isActive;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
     qemuDriverLock(driver);
-    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
-        goto cleanup;
-    }
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
@@ -4870,49 +4869,104 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find cgroup for domain %s"), vm->def->name);
-        goto cleanup;
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!isActive) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+            qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
+            goto cleanup;
+        }
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find cgroup for domain %s"), vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
     }
 
     ret = 0;
-    for (i = 0; i < nparams; i++) {
-        virTypedParameterPtr param = &params[i];
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        for (i = 0; i < nparams; i++) {
+            virTypedParameterPtr param = &params[i];
 
-        if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-            int rc;
-            if (param->type != VIR_TYPED_PARAM_UINT) {
-                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
-                ret = -1;
-                continue;
-            }
+            if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
+                int rc;
+                if (param->type != VIR_TYPED_PARAM_UINT) {
+                    qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                    _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
+                    ret = -1;
+                    continue;
+                }
 
-            if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
-                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("out of blkio weight range."));
-                ret = -1;
-                continue;
-            }
+                if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
+                    qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                    _("out of blkio weight range."));
+                    ret = -1;
+                    continue;
+                }
 
-            rc = virCgroupSetBlkioWeight(group, params[i].value.ui);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set blkio weight tunable"));
+                rc = virCgroupSetBlkioWeight(group, params[i].value.ui);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set blkio weight tunable"));
+                    ret = -1;
+                }
+            } else {
+                qemuReportError(VIR_ERR_INVALID_ARG,
+                                _("Parameter `%s' not supported"), param->field);
                 ret = -1;
             }
-        } else {
-            qemuReportError(VIR_ERR_INVALID_ARG,
-                            _("Parameter `%s' not supported"), param->field);
-            ret = -1;
         }
+    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        for (i = 0; i < nparams; i++) {
+            virTypedParameterPtr param = &params[i];
+
+            if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
+                if (param->type != VIR_TYPED_PARAM_UINT) {
+                    qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                    _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
+                    ret = -1;
+                    continue;
+                }
+
+                if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
+                    qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                    _("out of blkio weight range."));
+                    ret = -1;
+                    continue;
+                }
+
+                persistentDef->blkio.weight = params[i].value.ui;
+            } else {
+                qemuReportError(VIR_ERR_INVALID_ARG,
+                                _("Parameter `%s' not supported"), param->field);
+                ret = -1;
+            }
+        }
+        ret = virDomainSaveConfig(driver->configDir, persistentDef);
     }
 
 cleanup:
