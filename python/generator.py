@@ -362,6 +362,7 @@ skip_impl = (
     'virNodeDeviceListCaps',
     'virConnectBaselineCPU',
     'virDomainRevertToSnapshot',
+    'virDomainSendKey',
 )
 
 

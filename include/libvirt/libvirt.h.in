@@ -1566,6 +1566,33 @@ char *                  virStorageVolGetXMLDesc         (virStorageVolPtr pool,
 
 char *                  virStorageVolGetPath            (virStorageVolPtr vol);
 
+/**
+ * virKeycodeSet:
+ *
+ * Enum to specify which keycode mapping is in use for virDomainSendKey().
+ */
+typedef enum {
+    VIR_KEYCODE_SET_LINUX          = 0,
+    VIR_KEYCODE_SET_XT             = 1,
+    VIR_KEYCODE_SET_ATSET1         = 2,
+    VIR_KEYCODE_SET_ATSET2         = 3,
+    VIR_KEYCODE_SET_ATSET3         = 4,
+} virKeycodeSet;
+
+/**
+ * VIR_DOMAIN_SEND_KEY_MAX_KEYS:
+ *
+ * Maximum number of keycodes that can be sent in one virDomainSendKey() call.
+ */
+#define VIR_DOMAIN_SEND_KEY_MAX_KEYS  16
+
+int virDomainSendKey(virDomainPtr domain,
+                     unsigned int codeset,
+                     unsigned int holdtime,
+                     unsigned int *keycodes,
+                     unsigned int nkeycodes,
+                     unsigned int flags);
+
 /*
  * Deprecated calls
  */
