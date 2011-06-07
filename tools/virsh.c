@@ -3718,7 +3718,7 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  */
 static const vshCmdInfo info_nodecpustats[] = {
     {"help", N_("Prints cpu stats of the node.")},
-    {"desc", N_("Returns cpu stats of the node.")},
+    {"desc", N_("Returns cpu stats of the node, in nanoseconds.")},
     {NULL, NULL}
 };
 
@@ -3729,7 +3729,7 @@ static const vshCmdOptDef opts_node_cpustats[] = {
 };
 
 static bool
-cmdNodeCPUStats(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
 {
     int i, j;
     bool flag_utilization = false;
@@ -3834,6 +3834,67 @@ cmdNodeCPUStats(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                      _("iowait:"), iowait_time   / total_time * 100);
         }
     }
+
+    ret = true;
+
+  cleanup:
+    VIR_FREE(params);
+    return ret;
+}
+
+/*
+ * "nodememstats" command
+ */
+static const vshCmdInfo info_nodememstats[] = {
+    {"help", N_("Prints memory stats of the node.")},
+    {"desc", N_("Returns memory stats of the node, in kilobytes.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_node_memstats[] = {
+    {"cell", VSH_OT_INT, 0, N_("prints specified cell statistics only.")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
+{
+    int nparams = 0;
+    unsigned int i = 0;
+    int cellNum = VIR_MEMORY_STATS_ALL_CELLS;
+    virMemoryStatsPtr params = NULL;
+    bool ret = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptInt(cmd, "cell", &cellNum) < 0) {
+        vshError(ctl, "%s", _("Invalid value of cellNum"));
+        return false;
+    }
+
+    /* get the number of memory parameters */
+    if (virNodeGetMemoryStats(ctl->conn, cellNum, NULL, &nparams, 0) != 0) {
+        vshError(ctl, "%s",
+                 _("Unable to get number of memory stats"));
+        goto cleanup;
+    }
+
+    if (nparams == 0) {
+        /* nothing to output */
+        ret = true;
+        goto cleanup;
+    }
+
+    /* now go get all the memory parameters */
+    params = vshCalloc(ctl, nparams, sizeof(*params));
+    if (virNodeGetMemoryStats(ctl->conn, cellNum, params, &nparams, 0) != 0) {
+        vshError(ctl, "%s", _("Unable to get memory stats"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; i++)
+        vshPrint(ctl, "%-7s: %20llu kB\n", params[i].field, params[i].value);
 
     ret = true;
 
@@ -11522,8 +11583,9 @@ static const vshCmdDef hostAndHypervisorCmds[] = {
      VSH_CMD_FLAG_NOCONNECT},
     {"freecell", cmdFreecell, opts_freecell, info_freecell, 0},
     {"hostname", cmdHostname, NULL, info_hostname, 0},
-    {"nodecpustats", cmdNodeCPUStats, opts_node_cpustats, info_nodecpustats, 0},
+    {"nodecpustats", cmdNodeCpuStats, opts_node_cpustats, info_nodecpustats, 0},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
+    {"nodememstats", cmdNodeMemStats, opts_node_memstats, info_nodememstats, 0},
     {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
      info_qemu_monitor_command, 0},
     {"sysinfo", cmdSysinfo, NULL, info_sysinfo, 0},

@@ -246,6 +246,11 @@ If I<cpu> is specified, this will prints specified cpu statistics only.
 If I<--percent> is specified, this will prints percentage of each kind of cpu
 statistics during 1 second.
 
+=item B<nodememstats> optional I<cell>
+
+Returns memory stats of the node.
+If I<cell> is specified, this will prints specified cell statistics only.
+
 =item B<capabilities>
 
 Print an XML document describing the capabilities of the hypervisor
