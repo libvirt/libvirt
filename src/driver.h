@@ -385,6 +385,14 @@ typedef int
                      unsigned int flags);
 
 typedef int
+    (*virDrvNodeGetMemoryStats)
+                    (virConnectPtr conn,
+                     int cellNum,
+                     virMemoryStatsPtr params,
+                     int *nparams,
+                     unsigned int flags);
+
+typedef int
     (*virDrvNodeGetCellsFreeMemory)
                     (virConnectPtr conn,
                      unsigned long long *freeMems,
@@ -728,6 +736,7 @@ struct _virDriver {
     virDrvDomainMemoryPeek      domainMemoryPeek;
     virDrvDomainGetBlockInfo    domainGetBlockInfo;
     virDrvNodeGetCPUStats       nodeGetCPUStats;
+    virDrvNodeGetMemoryStats	nodeGetMemoryStats;
     virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
     virDrvNodeGetFreeMemory		nodeGetFreeMemory;
     virDrvDomainEventRegister         domainEventRegister;
