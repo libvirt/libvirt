@@ -167,11 +167,6 @@ esxListStoragePools(virConnectPtr conn, char **const names, int maxnames)
     int count = 0;
     int i;
 
-    if (names == NULL || maxnames < 0) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
-        return -1;
-    }
-
     if (maxnames == 0) {
         return 0;
     }

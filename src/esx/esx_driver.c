@@ -1479,11 +1479,6 @@ esxListDomains(virConnectPtr conn, int *ids, int maxids)
     esxVI_VirtualMachinePowerState powerState;
     int count = 0;
 
-    if (ids == NULL || maxids < 0) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
-        return -1;
-    }
-
     if (maxids == 0) {
         return 0;
     }
@@ -2894,11 +2889,6 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     esxVI_VirtualMachinePowerState powerState;
     int count = 0;
     int i;
-
-    if (names == NULL || maxnames < 0) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
-        return -1;
-    }
 
     if (maxnames == 0) {
         return 0;
