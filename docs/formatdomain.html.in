@@ -1907,7 +1907,12 @@ qemu-kvm -net nic,model=? /dev/null
       <dt><code>video</code></dt>
       <dd>
         The <code>video</code> element is the a container for describing
-        video devices.
+        video devices. For backwards compatability, if no <code>video</code>
+        is set but there is a <code>graphics</code> in domain xml, then libvirt
+        will add a default <code>video</code> according to the guest type.
+        For a guest of type "kvm", the default <code>video</code> for it is:
+        <code>type</code> with value "cirrus", <code>vram</code> with value
+        "9216", and <code>heads</code> with value "1".
       </dd>
 
       <dt><code>model</code></dt>
