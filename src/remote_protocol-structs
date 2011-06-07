@@ -505,6 +505,16 @@ struct remote_domain_inject_nmi_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
 };
+struct remote_domain_send_key_args {
+        remote_nonnull_domain      dom;
+        u_int                      codeset;
+        u_int                      holdtime;
+        struct {
+                u_int              keycodes_len;
+                u_int *            keycodes_val;
+        } keycodes;
+        u_int                      flags;
+};
 struct remote_domain_set_vcpus_args {
         remote_nonnull_domain      dom;
         u_int                      nvcpus;

@@ -191,6 +191,11 @@ const REMOTE_SECRET_UUID_LIST_MAX = 16384;
  */
 const REMOTE_CPU_BASELINE_MAX = 256;
 
+/*
+ * Max number of sending keycodes.
+ */
+const REMOTE_DOMAIN_SEND_KEY_MAX = 16;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -808,6 +813,14 @@ struct remote_domain_undefine_args {
 
 struct remote_domain_inject_nmi_args {
     remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_send_key_args {
+    remote_nonnull_domain dom;
+    unsigned int codeset;
+    unsigned int holdtime;
+    unsigned int keycodes<REMOTE_DOMAIN_SEND_KEY_MAX>;
     unsigned int flags;
 };
 
@@ -2305,7 +2318,8 @@ enum remote_procedure {
     REMOTE_PROC_INTERFACE_CHANGE_ROLLBACK = 222, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS = 223, /* skipgen autogen */
     REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR = 224, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_PIN_VCPU_FLAGS = 225 /* skipgen autogen */
+    REMOTE_PROC_DOMAIN_PIN_VCPU_FLAGS = 225, /* skipgen autogen */
+    REMOTE_PROC_DOMAIN_SEND_KEY = 226 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

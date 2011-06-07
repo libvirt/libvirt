@@ -6338,6 +6338,7 @@ static virDriver remote_driver = {
     .domainMigratePerform3 = remoteDomainMigratePerform3, /* 0.9.2 */
     .domainMigrateFinish3 = remoteDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = remoteDomainMigrateConfirm3, /* 0.9.2 */
+    .domainSendKey = remoteDomainSendKey, /* 0.9.3 */
 };
 
 static virNetworkDriver network_driver = {
