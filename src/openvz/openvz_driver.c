@@ -1200,7 +1200,7 @@ static int
 openvzDomainGetVcpusFlags(virDomainPtr dom ATTRIBUTE_UNUSED,
                           unsigned int flags)
 {
-    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+    if (flags != (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
         openvzError(VIR_ERR_INVALID_ARG, _("unsupported flags (0x%x)"), flags);
         return -1;
     }
@@ -1210,7 +1210,7 @@ openvzDomainGetVcpusFlags(virDomainPtr dom ATTRIBUTE_UNUSED,
 
 static int openvzDomainGetMaxVcpus(virDomainPtr dom)
 {
-    return openvzDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
+    return openvzDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
                                            VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
@@ -1244,7 +1244,7 @@ static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     struct openvz_driver   *driver = dom->conn->privateData;
     int                     ret = -1;
 
-    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+    if (flags != VIR_DOMAIN_AFFECT_LIVE) {
         openvzError(VIR_ERR_INVALID_ARG, _("unsupported flags (0x%x)"), flags);
         return -1;
     }
@@ -1277,7 +1277,7 @@ cleanup:
 static int
 openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
-    return openvzDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
+    return openvzDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,

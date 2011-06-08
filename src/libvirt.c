@@ -2878,12 +2878,12 @@ error:
  * to Domain0 i.e. the domain where the application runs.
  * This function may requires privileged access to the hypervisor.
  *
- * @flags may include VIR_DOMAIN_MEM_LIVE or VIR_DOMAIN_MEM_CONFIG.
- * Both flags may be set. If VIR_DOMAIN_MEM_LIVE is set, the change affects
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set. If VIR_DOMAIN_AFFECT_LIVE is set, the change affects
  * a running domain and will fail if domain is not active.
- * If VIR_DOMAIN_MEM_CONFIG is set, the change affects persistent state,
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
  * and will fail for transient domains. If neither flag is specified
- * (that is, @flags is VIR_DOMAIN_MEM_CURRENT), then an inactive domain
+ * (that is, @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain
  * modifies persistent setup, while an active domain is hypervisor-dependent
  * on whether just live or both live and persistent state is changed.
  * If VIR_DOMAIN_MEM_MAXIMUM is set, the change affects domain's maximum memory
@@ -6527,13 +6527,13 @@ error:
  * does not support it or if growing the number is arbitrary limited.
  * This function requires privileged access to the hypervisor.
  *
- * @flags must include VIR_DOMAIN_VCPU_LIVE to affect a running
+ * @flags must include VIR_DOMAIN_AFFECT_LIVE to affect a running
  * domain (which may fail if domain is not active), or
- * VIR_DOMAIN_VCPU_CONFIG to affect the next boot via the XML
+ * VIR_DOMAIN_AFFECT_CONFIG to affect the next boot via the XML
  * description of the domain.  Both flags may be set.
  *
  * If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then
- * VIR_DOMAIN_VCPU_LIVE must be clear, and only the maximum virtual
+ * VIR_DOMAIN_AFFECT_LIVE must be clear, and only the maximum virtual
  * CPU limit is altered; generally, this value must be less than or
  * equal to virConnectGetMaxVcpus().  Otherwise, this call affects the
  * current virtual CPU limit, which must be less than or equal to the
@@ -6564,7 +6564,7 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
 
     /* Perform some argument validation common to all implementations.  */
     if (nvcpus < 1 || (unsigned short) nvcpus != nvcpus ||
-        (flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0) {
+        (flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) == 0) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -6623,7 +6623,7 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     }
 
     /* Exactly one of these two flags should be set.  */
-    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
+    if (!(flags & VIR_DOMAIN_AFFECT_LIVE) == !(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -7047,11 +7047,11 @@ error:
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
  * Attach a virtual device to a domain, using the flags parameter
- * to control how the device is attached.  VIR_DOMAIN_DEVICE_MODIFY_CURRENT
+ * to control how the device is attached.  VIR_DOMAIN_AFFECT_CURRENT
  * specifies that the device allocation is made based on current domain
- * state.  VIR_DOMAIN_DEVICE_MODIFY_LIVE specifies that the device shall be
+ * state.  VIR_DOMAIN_AFFECT_LIVE specifies that the device shall be
  * allocated to the active domain instance only and is not added to the
- * persisted domain configuration.  VIR_DOMAIN_DEVICE_MODIFY_CONFIG
+ * persisted domain configuration.  VIR_DOMAIN_AFFECT_CONFIG
  * specifies that the device shall be allocated to the persisted domain
  * configuration only.  Note that the target hypervisor must return an
  * error if unable to satisfy flags.  E.g. the hypervisor driver will
@@ -7164,11 +7164,11 @@ error:
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
  * Detach a virtual device from a domain, using the flags parameter
- * to control how the device is detached.  VIR_DOMAIN_DEVICE_MODIFY_CURRENT
+ * to control how the device is detached.  VIR_DOMAIN_AFFECT_CURRENT
  * specifies that the device allocation is removed based on current domain
- * state.  VIR_DOMAIN_DEVICE_MODIFY_LIVE specifies that the device shall be
+ * state.  VIR_DOMAIN_AFFECT_LIVE specifies that the device shall be
  * deallocated from the active domain instance only and is not from the
- * persisted domain configuration.  VIR_DOMAIN_DEVICE_MODIFY_CONFIG
+ * persisted domain configuration.  VIR_DOMAIN_AFFECT_CONFIG
  * specifies that the device shall be deallocated from the persisted domain
  * configuration only.  Note that the target hypervisor must return an
  * error if unable to satisfy flags.  E.g. the hypervisor driver will
@@ -7226,11 +7226,11 @@ error:
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
  * Change a virtual device on a domain, using the flags parameter
- * to control how the device is changed.  VIR_DOMAIN_DEVICE_MODIFY_CURRENT
+ * to control how the device is changed.  VIR_DOMAIN_AFFECT_CURRENT
  * specifies that the device change is made based on current domain
- * state.  VIR_DOMAIN_DEVICE_MODIFY_LIVE specifies that the device shall be
+ * state.  VIR_DOMAIN_AFFECT_LIVE specifies that the device shall be
  * changed on the active domain instance only and is not added to the
- * persisted domain configuration. VIR_DOMAIN_DEVICE_MODIFY_CONFIG
+ * persisted domain configuration. VIR_DOMAIN_AFFECT_CONFIG
  * specifies that the device shall be changed on the persisted domain
  * configuration only.  Note that the target hypervisor must return an
  * error if unable to satisfy flags.  E.g. the hypervisor driver will

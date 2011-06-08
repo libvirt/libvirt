@@ -2044,7 +2044,7 @@ vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     PRUint32  CPUCount   = nvcpus;
     nsresult rc;
 
-    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+    if (flags != VIR_DOMAIN_AFFECT_LIVE) {
         vboxError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
         return -1;
     }
@@ -2092,7 +2092,7 @@ vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 static int
 vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
-    return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
+    return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int
@@ -2102,7 +2102,7 @@ vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     ISystemProperties *systemProperties = NULL;
     PRUint32 maxCPUCount = 0;
 
-    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+    if (flags != (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
         vboxError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
         return -1;
     }
@@ -2127,7 +2127,7 @@ vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 static int
 vboxDomainGetMaxVcpus(virDomainPtr dom)
 {
-    return vboxDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
+    return vboxDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
                                          VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
@@ -5292,7 +5292,7 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
 
 static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                        unsigned int flags) {
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         vboxError(VIR_ERR_OPERATION_INVALID, "%s",
                   _("cannot modify the persistent configuration of a domain"));
         return -1;
@@ -5303,11 +5303,11 @@ static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
 static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                        unsigned int flags) {
-    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_CURRENT |
-                  VIR_DOMAIN_DEVICE_MODIFY_LIVE |
-                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_CURRENT |
+                  VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         vboxError(VIR_ERR_OPERATION_INVALID, "%s",
                   _("cannot modify the persistent configuration of a domain"));
         return -1;
@@ -5442,7 +5442,7 @@ cleanup:
 
 static int vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                                        unsigned int flags) {
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         vboxError(VIR_ERR_OPERATION_INVALID, "%s",
                   _("cannot modify the persistent configuration of a domain"));
         return -1;

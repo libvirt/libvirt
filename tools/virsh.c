@@ -2718,7 +2718,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
      * up.  */
     if (all || (maximum && config)) {
         count = virDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_MAXIMUM |
-                                             VIR_DOMAIN_VCPU_CONFIG));
+                                             VIR_DOMAIN_AFFECT_CONFIG));
         if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
                           || last_error->code == VIR_ERR_INVALID_ARG)) {
             char *tmp;
@@ -2748,7 +2748,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
 
     if (all || (maximum && live)) {
         count = virDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_MAXIMUM |
-                                             VIR_DOMAIN_VCPU_LIVE));
+                                             VIR_DOMAIN_AFFECT_LIVE));
         if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
                           || last_error->code == VIR_ERR_INVALID_ARG)) {
             count = virDomainGetMaxVcpus(dom);
@@ -2768,7 +2768,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (all || (current && config)) {
-        count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_VCPU_CONFIG);
+        count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_AFFECT_CONFIG);
         if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
                           || last_error->code == VIR_ERR_INVALID_ARG)) {
             char *tmp, *end;
@@ -2805,7 +2805,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (all || (current && live)) {
-        count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_VCPU_LIVE);
+        count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_AFFECT_LIVE);
         if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
                           || last_error->code == VIR_ERR_INVALID_ARG)) {
             virDomainInfo info;
@@ -3107,8 +3107,8 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
     int flags = ((maximum ? VIR_DOMAIN_VCPU_MAXIMUM : 0) |
-                 (config ? VIR_DOMAIN_VCPU_CONFIG : 0) |
-                 (live ? VIR_DOMAIN_VCPU_LIVE : 0));
+                 (config ? VIR_DOMAIN_AFFECT_CONFIG : 0) |
+                 (live ? VIR_DOMAIN_AFFECT_LIVE : 0));
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -3224,12 +3224,12 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, "%s", _("--current must be specified exclusively"));
             return false;
         }
-        flags = VIR_DOMAIN_MEM_CURRENT;
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
     } else {
         if (config)
-            flags |= VIR_DOMAIN_MEM_CONFIG;
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
         if (live)
-            flags |= VIR_DOMAIN_MEM_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
         /* neither option is specified */
         if (!live && !config)
             flags = -1;
@@ -3315,9 +3315,9 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
         }
     } else {
         if (config)
-            flags |= VIR_DOMAIN_MEM_CONFIG;
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
         if (live)
-            flags |= VIR_DOMAIN_MEM_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
         /* neither option is specified */
         if (!live && !config)
             flags = -1;
@@ -9357,9 +9357,9 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "persistent")) {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
-           flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+           flags |= VIR_DOMAIN_AFFECT_LIVE;
         ret = virDomainAttachDeviceFlags(dom, buffer, flags);
     } else {
         ret = virDomainAttachDevice(dom, buffer);
@@ -9422,9 +9422,9 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "persistent")) {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
-           flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+           flags |= VIR_DOMAIN_AFFECT_LIVE;
         ret = virDomainDetachDeviceFlags(dom, buffer, flags);
     } else {
         ret = virDomainDetachDevice(dom, buffer);
@@ -9488,11 +9488,11 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "persistent")) {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
-           flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+           flags |= VIR_DOMAIN_AFFECT_LIVE;
     } else {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        flags = VIR_DOMAIN_AFFECT_LIVE;
     }
 
     if (vshCommandOptBool(cmd, "force"))
@@ -9604,9 +9604,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     xml = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "persistent")) {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
         ret = virDomainAttachDeviceFlags(dom, xml, flags);
     } else {
         ret = virDomainAttachDevice(dom, xml);
@@ -9743,9 +9743,9 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "persistent")) {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
         ret = virDomainDetachDeviceFlags(dom,
                                          (char *)xmlBufferContent(xml_buf),
                                          flags);
@@ -9881,9 +9881,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     xml = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "persistent")) {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
         ret = virDomainAttachDeviceFlags(dom, xml, flags);
     } else {
         ret = virDomainAttachDevice(dom, xml);
@@ -10003,9 +10003,9 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "persistent")) {
-        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
         ret = virDomainDetachDeviceFlags(dom,
                                          (char *)xmlBufferContent(xml_buf),
                                          flags);

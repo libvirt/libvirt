@@ -1831,7 +1831,7 @@ cleanup:
 static int umlDomainAttachDeviceFlags(virDomainPtr dom,
                                       const char *xml,
                                       unsigned int flags) {
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         umlReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot modify the persistent configuration of a domain"));
         return -1;
@@ -1939,7 +1939,7 @@ cleanup:
 static int umlDomainDetachDeviceFlags(virDomainPtr dom,
                                       const char *xml,
                                       unsigned int flags) {
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         umlReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot modify the persistent configuration of a domain"));
         return -1;

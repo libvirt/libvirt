@@ -865,9 +865,12 @@ int     virDomainGetMemoryParameters(virDomainPtr domain,
 
 /* Memory size modification flags. */
 typedef enum {
-    VIR_DOMAIN_MEM_CURRENT = 0,        /* affect current domain state */
-    VIR_DOMAIN_MEM_LIVE    = (1 << 0), /* affect active domain */
-    VIR_DOMAIN_MEM_CONFIG  = (1 << 1), /* affect next boot */
+    /* See virDomainModificationImpact for these flags.  */
+    VIR_DOMAIN_MEM_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
+    VIR_DOMAIN_MEM_LIVE    = VIR_DOMAIN_AFFECT_LIVE,
+    VIR_DOMAIN_MEM_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG,
+
+    /* Additionally, these flags may be bitwise-OR'd in.  */
     VIR_DOMAIN_MEM_MAXIMUM = (1 << 2), /* affect Max rather than current */
 } virDomainMemoryModFlags;
 
@@ -1029,11 +1032,12 @@ typedef virVcpuInfo *virVcpuInfoPtr;
 
 /* Flags for controlling virtual CPU hot-plugging.  */
 typedef enum {
-    /* Must choose at least one of these two bits; SetVcpus can choose both */
-    VIR_DOMAIN_VCPU_LIVE    = (1 << 0), /* Affect active domain */
-    VIR_DOMAIN_VCPU_CONFIG  = (1 << 1), /* Affect next boot */
+    /* Must choose at least one of these two bits; SetVcpus can choose both;
+       see virDomainModificationImpact for details.  */
+    VIR_DOMAIN_VCPU_LIVE    = VIR_DOMAIN_AFFECT_LIVE,
+    VIR_DOMAIN_VCPU_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG,
 
-    /* Additional flags to be bit-wise OR'd in */
+    /* Additionally, these flags may be bitwise-OR'd in.  */
     VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count */
 } virDomainVcpuFlags;
 
@@ -1142,12 +1146,14 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
 
 
 typedef enum {
+    /* See virDomainModificationImpact for these flags.  */
+    VIR_DOMAIN_DEVICE_MODIFY_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
+    VIR_DOMAIN_DEVICE_MODIFY_LIVE    = VIR_DOMAIN_AFFECT_LIVE,
+    VIR_DOMAIN_DEVICE_MODIFY_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG,
 
-   VIR_DOMAIN_DEVICE_MODIFY_CURRENT = 0, /* Modify device allocation based on current domain state */
-   VIR_DOMAIN_DEVICE_MODIFY_LIVE = (1 << 0), /* Modify live device allocation */
-   VIR_DOMAIN_DEVICE_MODIFY_CONFIG = (1 << 1), /* Modify persisted device allocation */
-   VIR_DOMAIN_DEVICE_MODIFY_FORCE = (1 << 2), /* Forcibly modify device
-                                                 (ex. force eject a cdrom) */
+    /* Additionally, these flags may be bitwise-OR'd in.  */
+    VIR_DOMAIN_DEVICE_MODIFY_FORCE = (1 << 2), /* Forcibly modify device
+                                                  (ex. force eject a cdrom) */
 } virDomainDeviceModifyFlags;
 
 int virDomainAttachDevice(virDomainPtr domain, const char *xml);

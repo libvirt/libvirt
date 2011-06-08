@@ -2059,12 +2059,12 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     virDomainDefPtr def;
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
-                  VIR_DOMAIN_VCPU_CONFIG |
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
     /* Exactly one of LIVE or CONFIG must be set.  */
-    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
+    if (!(flags & VIR_DOMAIN_AFFECT_LIVE) == !(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         testError(VIR_ERR_INVALID_ARG,
                   _("invalid flag combination: (0x%x)"), flags);
         return -1;
@@ -2082,7 +2082,7 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_VCPU_LIVE) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virDomainObjIsActive(vm)) {
             testError(VIR_ERR_OPERATION_INVALID, "%s",
                       _("domain not active"));
@@ -2104,7 +2104,7 @@ cleanup:
 static int
 testDomainGetMaxVcpus(virDomainPtr domain)
 {
-    return testDomainGetVcpusFlags(domain, (VIR_DOMAIN_VCPU_LIVE |
+    return testDomainGetVcpusFlags(domain, (VIR_DOMAIN_AFFECT_LIVE |
                                             VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
@@ -2117,15 +2117,15 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
     virDomainDefPtr persistentDef;
     int ret = -1, maxvcpus;
 
-    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
-                  VIR_DOMAIN_VCPU_CONFIG |
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
     /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
      * mixed with LIVE.  */
-    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0 ||
-        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
-         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) {
+    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) == 0 ||
+        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) ==
+         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) {
         testError(VIR_ERR_INVALID_ARG,
                   _("invalid flag combination: (0x%x)"), flags);
         return -1;
@@ -2145,7 +2145,7 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(privdom) && (flags & VIR_DOMAIN_VCPU_LIVE)) {
+    if (!virDomainObjIsActive(privdom) && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
         testError(VIR_ERR_OPERATION_INVALID,
                   "%s", _("cannot hotplug vcpus for an inactive domain"));
         goto cleanup;
@@ -2169,23 +2169,23 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         goto cleanup;
 
     switch (flags) {
-    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
+    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_CONFIG:
         persistentDef->maxvcpus = nrCpus;
         if (nrCpus < persistentDef->vcpus)
             persistentDef->vcpus = nrCpus;
         ret = 0;
         break;
 
-    case VIR_DOMAIN_VCPU_CONFIG:
+    case VIR_DOMAIN_AFFECT_CONFIG:
         persistentDef->vcpus = nrCpus;
         ret = 0;
         break;
 
-    case VIR_DOMAIN_VCPU_LIVE:
+    case VIR_DOMAIN_AFFECT_LIVE:
         ret = testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0);
         break;
 
-    case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
+    case VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG:
         ret = testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0);
         if (ret == 0) {
             persistentDef->vcpus = nrCpus;
@@ -2202,7 +2202,7 @@ cleanup:
 static int
 testSetVcpus(virDomainPtr domain, unsigned int nrCpus)
 {
-    return testDomainSetVcpusFlags(domain, nrCpus, VIR_DOMAIN_VCPU_LIVE);
+    return testDomainSetVcpusFlags(domain, nrCpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int testDomainGetVcpus(virDomainPtr domain,

@@ -166,6 +166,12 @@ def enum(type, name, value):
         value = 5
     elif value == 'VIR_TYPED_PARAM_BOOLEAN':
         value = 6
+    elif value == 'VIR_DOMAIN_AFFECT_CURRENT':
+        value = 0
+    elif value == 'VIR_DOMAIN_AFFECT_LIVE':
+        value = 1
+    elif value == 'VIR_DOMAIN_AFFECT_CONFIG':
+        value = 2
     enums[type][name] = value
 
 #######################################################################

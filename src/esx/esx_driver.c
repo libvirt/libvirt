@@ -2535,7 +2535,7 @@ esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
 
-    if (flags != VIR_DOMAIN_VCPU_LIVE) {
+    if (flags != VIR_DOMAIN_AFFECT_LIVE) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
         return -1;
     }
@@ -2606,7 +2606,7 @@ esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
 static int
 esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
-    return esxDomainSetVcpusFlags(domain, nvcpus, VIR_DOMAIN_VCPU_LIVE);
+    return esxDomainSetVcpusFlags(domain, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 
@@ -2619,7 +2619,7 @@ esxDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+    if (flags != (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
         return -1;
     }
@@ -2674,7 +2674,7 @@ esxDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 static int
 esxDomainGetMaxVcpus(virDomainPtr domain)
 {
-    return esxDomainGetVcpusFlags(domain, (VIR_DOMAIN_VCPU_LIVE |
+    return esxDomainGetVcpusFlags(domain, (VIR_DOMAIN_AFFECT_LIVE |
                                            VIR_DOMAIN_VCPU_MAXIMUM));
 }
 

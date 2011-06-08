@@ -1593,8 +1593,8 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     int ret = -1, r;
     bool isActive;
 
-    virCheckFlags(VIR_DOMAIN_MEM_LIVE |
-                  VIR_DOMAIN_MEM_CONFIG |
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_MEM_MAXIMUM, -1);
 
     qemuDriverLock(driver);
@@ -1613,26 +1613,26 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
     isActive = virDomainObjIsActive(vm);
 
-    if (flags == VIR_DOMAIN_MEM_CURRENT) {
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
         if (isActive)
-            flags = VIR_DOMAIN_MEM_LIVE;
+            flags = VIR_DOMAIN_AFFECT_LIVE;
         else
-            flags = VIR_DOMAIN_MEM_CONFIG;
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
     if (flags == VIR_DOMAIN_MEM_MAXIMUM) {
         if (isActive)
-            flags = VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_MAXIMUM;
+            flags = VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_MEM_MAXIMUM;
         else
-            flags = VIR_DOMAIN_MEM_CONFIG | VIR_DOMAIN_MEM_MAXIMUM;
+            flags = VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_MEM_MAXIMUM;
     }
 
-    if (!isActive && (flags & VIR_DOMAIN_MEM_LIVE)) {
+    if (!isActive && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_MEM_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!vm->persistent) {
             qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("cannot change persistent config of a transient domain"));
@@ -1645,14 +1645,14 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
         /* resize the maximum memory */
 
-        if (flags & VIR_DOMAIN_MEM_LIVE) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
             qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("cannot resize the maximum memory on an "
                               "active domain"));
             goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_MEM_CONFIG) {
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             /* Help clang 2.8 decipher the logic flow.  */
             sa_assert(persistentDef);
             persistentDef->mem.max_balloon = newmem;
@@ -1671,7 +1671,7 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_MEM_LIVE) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
             priv = vm->privateData;
             qemuDomainObjEnterMonitor(vm);
             r = qemuMonitorSetBalloon(priv->mon, newmem);
@@ -1689,7 +1689,7 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             }
         }
 
-        if (flags & VIR_DOMAIN_MEM_CONFIG) {
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             sa_assert(persistentDef);
             persistentDef->mem.cur_balloon = newmem;
             ret = virDomainSaveConfig(driver->configDir, persistentDef);
@@ -1710,7 +1710,7 @@ cleanup:
 
 static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem)
 {
-    return qemudDomainSetMemoryFlags(dom, newmem, VIR_DOMAIN_MEM_LIVE);
+    return qemudDomainSetMemoryFlags(dom, newmem, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
@@ -2758,15 +2758,15 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     int max;
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
-                  VIR_DOMAIN_VCPU_CONFIG |
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
     /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
      * mixed with LIVE.  */
-    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0 ||
-        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) ==
-         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_LIVE)) {
+    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) == 0 ||
+        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) ==
+         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid flag combination: (0x%x)"), flags);
         return -1;
@@ -2792,13 +2792,13 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (qemuDomainObjBeginJob(vm) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_VCPU_LIVE)) {
+    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto endjob;
     }
 
-    if (!vm->persistent && (flags & VIR_DOMAIN_VCPU_CONFIG)) {
+    if (!vm->persistent && (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("cannot change persistent config of a transient domain"));
         goto endjob;
@@ -2832,23 +2832,23 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
 
     switch (flags) {
-    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
+    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_CONFIG:
         persistentDef->maxvcpus = nvcpus;
         if (nvcpus < persistentDef->vcpus)
             persistentDef->vcpus = nvcpus;
         ret = 0;
         break;
 
-    case VIR_DOMAIN_VCPU_CONFIG:
+    case VIR_DOMAIN_AFFECT_CONFIG:
         persistentDef->vcpus = nvcpus;
         ret = 0;
         break;
 
-    case VIR_DOMAIN_VCPU_LIVE:
+    case VIR_DOMAIN_AFFECT_LIVE:
         ret = qemudDomainHotplugVcpus(vm, nvcpus);
         break;
 
-    case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
+    case VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG:
         ret = qemudDomainHotplugVcpus(vm, nvcpus);
         if (ret == 0) {
             persistentDef->vcpus = nvcpus;
@@ -2857,7 +2857,7 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     }
 
     /* Save the persistent config to disk */
-    if (flags & VIR_DOMAIN_VCPU_CONFIG)
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
         ret = virDomainSaveConfig(driver->configDir, persistentDef);
 
 endjob:
@@ -2873,7 +2873,7 @@ cleanup:
 static int
 qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
-    return qemudDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
+    return qemudDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 
@@ -3099,12 +3099,12 @@ qemudDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     virDomainDefPtr def;
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
-                  VIR_DOMAIN_VCPU_CONFIG |
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
     /* Exactly one of LIVE or CONFIG must be set.  */
-    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
+    if (!(flags & VIR_DOMAIN_AFFECT_LIVE) == !(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid flag combination: (0x%x)"), flags);
         return -1;
@@ -3122,7 +3122,7 @@ qemudDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_VCPU_LIVE) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virDomainObjIsActive(vm)) {
             qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("domain not active"));
@@ -3144,7 +3144,7 @@ cleanup:
 static int
 qemudDomainGetMaxVcpus(virDomainPtr dom)
 {
-    return qemudDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
+    return qemudDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
                                           VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
@@ -4508,8 +4508,8 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
-                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG |
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
                   (action == QEMU_DEVICE_UPDATE ?
                    VIR_DOMAIN_DEVICE_MODIFY_FORCE : 0), -1);
 
@@ -4527,13 +4527,13 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
         goto cleanup;
 
     if (virDomainObjIsActive(vm)) {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        if (flags == VIR_DOMAIN_AFFECT_CURRENT)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
     } else {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (flags == VIR_DOMAIN_AFFECT_CURRENT)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
         /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             "%s",
                             _("cannot do live update a device on "
@@ -4542,13 +4542,13 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
         }
     }
 
-    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
          qemuReportError(VIR_ERR_OPERATION_INVALID,
                          "%s", _("cannot modify device on transient domain"));
          goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
                                       VIR_DOMAIN_XML_INACTIVE);
         if (dev == NULL)
@@ -4576,7 +4576,7 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     } else
         ret = 0;
 
-    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
+    if (!ret && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
         /* If dev exists it was created to modify the domain config. Free it. */
         virDomainDeviceDefFree(dev);
         dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
@@ -4608,7 +4608,7 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
             ret = -1;
     }
     /* Finally, if no error until here, we can save config. */
-    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+    if (!ret && (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         ret = virDomainSaveConfig(driver->configDir, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false);
@@ -4638,7 +4638,7 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 static int qemuDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
     return qemuDomainAttachDeviceFlags(dom, xml,
-                                       VIR_DOMAIN_DEVICE_MODIFY_LIVE);
+                                       VIR_DOMAIN_AFFECT_LIVE);
 }
 
 
@@ -4658,7 +4658,7 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 static int qemuDomainDetachDevice(virDomainPtr dom, const char *xml)
 {
     return qemuDomainDetachDeviceFlags(dom, xml,
-                                       VIR_DOMAIN_DEVICE_MODIFY_LIVE);
+                                       VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int qemudDomainGetAutostart(virDomainPtr dom,
