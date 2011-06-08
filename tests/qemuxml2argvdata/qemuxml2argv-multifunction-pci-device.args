@@ -1,0 +1,15 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-device lsi,id=scsi0,bus=pci.0,multifunction=on,addr=0x3.0x0 \
+-device lsi,id=scsi1,bus=pci.0,multifunction=on,addr=0x4.0x0 \
+-device lsi,id=scsi2,bus=pci.0,multifunction=on,addr=0x4.0x1 \
+-device lsi,id=scsi3,bus=pci.0,multifunction=on,addr=0x4.0x2 \
+-device lsi,id=scsi4,bus=pci.0,multifunction=on,addr=0x4.0x3 \
+-device lsi,id=scsi5,bus=pci.0,multifunction=on,addr=0x4.0x4 \
+-device lsi,id=scsi6,bus=pci.0,multifunction=on,addr=0x4.0x5 \
+-device lsi,id=scsi7,bus=pci.0,multifunction=on,addr=0x4.0x6 \
+-device lsi,id=scsi8,bus=pci.0,multifunction=on,addr=0x4.0x7 \
+-drive file=/tmp/scsidisk.img,if=none,id=drive-scsi0-0-0 \
+-device scsi-disk,bus=scsi0.0,scsi-id=0,drive=drive-scsi0-0-0,id=scsi0-0-0 \
+-usb -device virtio-balloon-pci,id=balloon0,bus=pci.0,multifunction=on,addr=0x5.0x0

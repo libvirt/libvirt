@@ -503,6 +503,10 @@ mymain(void)
     DO_TEST("blkiotune", false, QEMU_CAPS_NAME);
     DO_TEST("cputune", false, QEMU_CAPS_NAME);
 
+    DO_TEST("multifunction-pci-device", false,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_PCI_MULTIFUNCTION);
+
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
     free(map);
