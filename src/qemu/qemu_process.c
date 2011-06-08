@@ -880,18 +880,20 @@ qemuProcessExtractTTYPath(const char *haystack,
 static int
 qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                       int count,
-                      const char *prefix,
-                      virHashTablePtr paths)
+                      virHashTablePtr paths,
+                      bool chardevfmt)
 {
     int i;
+    const char *prefix = chardevfmt ? "char" : "";
 
     for (i = 0 ; i < count ; i++) {
         virDomainChrDefPtr chr = devices[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            char id[16];
+            char id[32];
             const char *path;
 
-            if (snprintf(id, sizeof(id), "%s%d", prefix, i) >= sizeof(id))
+            if (snprintf(id, sizeof(id), "%s%s",
+                         prefix, chr->info.alias) >= sizeof(id))
                 return -1;
 
             path = (const char *) virHashLookup(paths, id);
@@ -926,22 +928,25 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
 
 static int
 qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
+                                     virBitmapPtr qemuCaps,
                                      virHashTablePtr paths)
 {
+    bool chardevfmt = qemuCapsGet(qemuCaps, QEMU_CAPS_CHARDEV);
+
     if (qemuProcessLookupPTYs(vm->def->serials, vm->def->nserials,
-                              "serial", paths) < 0)
+                              paths, chardevfmt) < 0)
         return -1;
 
     if (qemuProcessLookupPTYs(vm->def->parallels, vm->def->nparallels,
-                              "parallel", paths) < 0)
+                              paths, chardevfmt) < 0)
         return -1;
 
     if (qemuProcessLookupPTYs(vm->def->channels, vm->def->nchannels,
-                              "channel", paths) < 0)
+                              paths, chardevfmt) < 0)
         return -1;
 
     if (vm->def->console &&
-        qemuProcessLookupPTYs(&vm->def->console, 1, "console", paths) < 0)
+        qemuProcessLookupPTYs(&vm->def->console, 1, paths, chardevfmt) < 0)
         return -1;
 
     return 0;
@@ -1023,7 +1028,9 @@ qemuProcessReadLogFD(int logfd, char *buf, int maxlen, int off)
 
 static int
 qemuProcessWaitForMonitor(struct qemud_driver* driver,
-                          virDomainObjPtr vm, off_t pos)
+                          virDomainObjPtr vm,
+                          virBitmapPtr qemuCaps,
+                          off_t pos)
 {
     char *buf;
     size_t buf_size = 4096; /* Plenty of space to get startup greeting */
@@ -1065,7 +1072,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
 
     VIR_DEBUG("qemuMonitorGetPtyPaths returned %i", ret);
     if (ret == 0)
-        ret = qemuProcessFindCharDevicePTYsMonitor(vm, paths);
+        ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps, paths);
 
 cleanup:
     virHashFree(paths);
@@ -2444,7 +2451,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Waiting for monitor to show up");
-    if (qemuProcessWaitForMonitor(driver, vm, pos) < 0)
+    if (qemuProcessWaitForMonitor(driver, vm, priv->qemuCaps, pos) < 0)
         goto cleanup;
 
     VIR_DEBUG("Detecting VCPU PIDs");
