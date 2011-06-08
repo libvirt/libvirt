@@ -518,8 +518,8 @@ virExecWithHook(const char *const*argv,
          * so we need to temporarily block that again
          */
         struct sigaction waxon, waxoff;
+        memset(&waxoff, 0, sizeof(waxoff));
         waxoff.sa_handler = SIG_IGN;
-        waxoff.sa_flags = 0;
         sigemptyset(&waxoff.sa_mask);
         memset(&waxon, 0, sizeof(waxon));
         if (sigaction(SIGPIPE, &waxoff, &waxon) < 0) {
