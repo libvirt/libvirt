@@ -31,6 +31,7 @@
 #include "buf.h"
 #include "util.h"
 #include "memory.h"
+#include "command.h"
 
 #include "security_driver.h"
 #include "security_apparmor.h"
