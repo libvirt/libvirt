@@ -989,6 +989,16 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
         }
     }
 
+    if (vm->def->console) {
+        virDomainChrDefPtr chr = vm->def->console;
+        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
+            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
+            if ((ret = qemuProcessExtractTTYPath(output, &offset,
+                                                 &chr->source.data.file.path)) != 0)
+                return ret;
+        }
+    }
+
     return 0;
 }
 
