@@ -542,6 +542,11 @@ Set maximum tolerable downtime for a domain which is being live-migrated to
 another host.  The I<downtime> is a number of milliseconds the guest is allowed
 to be down at the end of live migration.
 
+=item B<migrate-setspeed> I<domain-id> I<bandwidth>
+
+Set the maximum migration bandwidth (in Mbps) for a domain which is being
+migrated to another host.
+
 =item B<reboot> I<domain-id>
 
 Reboot a domain.  This acts just as if the domain had the B<reboot>

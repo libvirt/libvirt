@@ -4301,6 +4301,50 @@ done:
 }
 
 /*
+ * "migrate-setspeed" command
+ */
+static const vshCmdInfo info_migrate_setspeed[] = {
+    {"help", N_("Set the maximum migration bandwidth")},
+    {"desc", N_("Set the maximum migration bandwidth (in Mbps) for a domain "
+                "which is being migrated to another host.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_migrate_setspeed[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"bandwidth", VSH_OT_INT, VSH_OFLAG_REQ, N_("migration bandwidth limit in Mbps")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    unsigned long bandwidth = 0;
+    bool ret = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptUL(cmd, "bandwidth", &bandwidth) < 0) {
+        vshError(ctl, "%s", _("migrate: Invalid bandwidth"));
+        goto done;
+    }
+
+    if (virDomainMigrateSetMaxSpeed(dom, bandwidth, 0) < 0)
+        goto done;
+
+    ret = true;
+
+done:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "net-autostart" command
  */
 static const vshCmdInfo info_network_autostart[] = {
@@ -11080,6 +11124,8 @@ static const vshCmdDef domManagementCmds[] = {
     {"migrate", cmdMigrate, opts_migrate, info_migrate, 0},
     {"migrate-setmaxdowntime", cmdMigrateSetMaxDowntime,
      opts_migrate_setmaxdowntime, info_migrate_setmaxdowntime, 0},
+    {"migrate-setspeed", cmdMigrateSetMaxSpeed,
+     opts_migrate_setspeed, info_migrate_setspeed, 0},
     {"reboot", cmdReboot, opts_reboot, info_reboot, 0},
     {"restore", cmdRestore, opts_restore, info_restore, 0},
     {"resume", cmdResume, opts_resume, info_resume, 0},
