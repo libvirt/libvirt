@@ -417,6 +417,28 @@ fi
 
 
 dnl
+dnl check for libdl
+dnl
+
+dlfcn_found=yes
+dlopen_found=yes
+
+AC_CHECK_HEADER([dlfcn.h],, [dlfcn_found=no])
+AC_SEARCH_LIBS([dlopen], [dl],, [dlopen_found=no])
+
+case $ac_cv_search_dlopen:$host_os in
+  'none required'* | *:mingw* | *:msvc*) DLOPEN_LIBS= ;;
+  no*) AC_MSG_ERROR([Unable to find dlopen()]) ;;
+  *) if test "x$dlfcn_found" != "xyes"; then
+       AC_MSG_ERROR([Unable to find dlfcn.h])
+     fi
+     DLOPEN_LIBS=$ac_cv_search_dlopen ;;
+esac
+
+AC_SUBST([DLOPEN_LIBS])
+
+
+dnl
 dnl check for VirtualBox XPCOMC location
 dnl
 
@@ -432,14 +454,6 @@ AC_DEFINE_UNQUOTED([VBOX_XPCOMC_DIR], ["$vbox_xpcomc_dir"],
                    [Location of directory containing VirtualBox XPCOMC library])
 
 if test "x$with_vbox" = "xyes"; then
-    AC_SEARCH_LIBS([dlopen], [dl],,)
-    case $ac_cv_search_dlopen:$host_os in
-      'none required'* | *:mingw* | *:msvc*) DLOPEN_LIBS= ;;
-      no*) AC_MSG_ERROR([Unable to find dlopen()]) ;;
-      *) DLOPEN_LIBS=$ac_cv_search_dlopen ;;
-    esac
-    AC_SUBST([DLOPEN_LIBS])
-
     case "$host" in
       *-*-mingw* | *-*-msvc*) MSCOM_LIBS="-lole32 -loleaut32" ;;
       *) MSCOM_LIBS= ;;
@@ -2138,19 +2152,10 @@ AC_ARG_WITH([driver-modules],
 
 DRIVER_MODULE_CFLAGS=
 DRIVER_MODULE_LIBS=
-if test "x$with_driver_modules" = "xyes" ; then
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
-  fail=0
-  AC_CHECK_HEADER([dlfcn.h],[],[fail=1])
-  AC_SEARCH_LIBS([dlopen], [dl], [], [fail=1])
-  test $fail = 1 &&
-      AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
-
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
-fi
 if test "$with_driver_modules" = "yes"; then
+  if test "$dlfcn_found" != "yes" || test "$dlopen_found" != "yes"; then
+    AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
+  fi
   DRIVER_MODULE_CFLAGS="-export-dynamic"
   case $ac_cv_search_dlopen in
     no*) DRIVER_MODULE_LIBS= ;;
@@ -2468,6 +2473,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
+AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
 if test "$with_esx" = "yes" ; then
 AC_MSG_NOTICE([ libcurl: $LIBCURL_CFLAGS $LIBCURL_LIBS])
 else

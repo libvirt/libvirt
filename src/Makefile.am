@@ -526,7 +526,7 @@ libvirt_driver_la_SOURCES = $(DRIVER_SOURCES)
 
 libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS) $(GNUTLS_CFLAGS) \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
-libvirt_driver_la_LIBADD = $(NUMACTL_LIBS) $(GNUTLS_LIBS)
+libvirt_driver_la_LIBADD = $(NUMACTL_LIBS) $(GNUTLS_LIBS) $(DLOPEN_LIBS)
 
 USED_SYM_FILES = libvirt_private.syms
 
