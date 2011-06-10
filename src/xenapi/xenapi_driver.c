@@ -166,7 +166,22 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
     privP->session = xen_session_login_with_password(call_func, privP, username,
                                                      password, xen_api_latest_version);
 
-    if (privP->session != NULL && privP->session->ok) {
+    if (privP->session == NULL) {
+        /* From inspection of xen_session_login_with_password in
+         * libxenserver(Version 5.6.100-1), this appears not to be currently
+         * possible. The only way for this to be NULL would be on malloc
+         * failure, except that the code doesn't check for this and would
+         * segfault before returning.
+         *
+         * We don't assume the reason here for a failure in an external library.
+         */
+        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Failed to allocate xen session"));
+
+        goto error;
+    }
+
+    if (privP->session->ok) {
         conn->privateData = privP;
 
         VIR_FREE(username);
@@ -175,7 +190,8 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
         return VIR_DRV_OPEN_SUCCESS;
     }
 
-    xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, NULL);
+    xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
+                              *privP->session->error_description);
 
   error:
     VIR_FREE(username);
