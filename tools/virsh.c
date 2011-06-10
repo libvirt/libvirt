@@ -2998,8 +2998,9 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     unsigned char *cpumap;
     int cpumaplen;
-    int i;
-    enum { expect_num, expect_num_or_comma } state;
+    int i, cpu, lastcpu, maxcpu;
+    bool unuse = false;
+    char *cur;
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
     int current = vshCommandOptBool(cmd, "current");
@@ -3055,66 +3056,74 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    /* Check that the cpulist parameter is a comma-separated list of
-     * numbers and give an intelligent error message if not.
-     */
-    if (cpulist[0] == '\0') {
-        vshError(ctl, "%s", _("cpulist: Invalid format. Empty string."));
-        virDomainFree (dom);
-        return false;
-    }
+    maxcpu = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+    cpumap = vshCalloc(ctl, 0, cpumaplen);
 
-    state = expect_num;
-    for (i = 0; cpulist[i]; i++) {
-        switch (state) {
-        case expect_num:
-          if (!c_isdigit (cpulist[i])) {
-                vshError(ctl, _("cpulist: %s: Invalid format. Expecting "
-                                "digit at position %d (near '%c')."),
-                         cpulist, i, cpulist[i]);
-                virDomainFree (dom);
-                return false;
-            }
-            state = expect_num_or_comma;
-            break;
-        case expect_num_or_comma:
-            if (cpulist[i] == ',')
-                state = expect_num;
-            else if (!c_isdigit (cpulist[i])) {
-                vshError(ctl, _("cpulist: %s: Invalid format. Expecting "
-                                "digit or comma at position %d (near '%c')."),
-                         cpulist, i, cpulist[i]);
-                virDomainFree (dom);
-                return false;
-            }
+    /* Parse cpulist */
+    cur = cpulist;
+    if (*cur == 0)
+        goto parse_error;
+
+    while (*cur != 0) {
+
+        /* the char '^' denotes exclusive */
+        if (*cur == '^') {
+            cur++;
+            unuse = true;
         }
-    }
-    if (state == expect_num) {
-        vshError(ctl, _("cpulist: %s: Invalid format. Trailing comma "
-                        "at position %d."),
-                 cpulist, i);
-        virDomainFree (dom);
-        return false;
-    }
 
-    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
-    cpumap = vshCalloc(ctl, 1, cpumaplen);
-
-    do {
-        unsigned int cpu = atoi(cpulist);
-
-        if (cpu < VIR_NODEINFO_MAXCPUS(nodeinfo)) {
-            VIR_USE_CPU(cpumap, cpu);
-        } else {
+        /* parse physical CPU number */
+        if (!c_isdigit(*cur))
+            goto parse_error;
+        cpu  = virParseNumber(&cur);
+        if (cpu < 0) {
+            goto parse_error;
+        }
+        if (cpu >= maxcpu) {
             vshError(ctl, _("Physical CPU %d doesn't exist."), cpu);
-            VIR_FREE(cpumap);
-            virDomainFree(dom);
-            return false;
+            goto parse_error;
         }
-        cpulist = strchr(cpulist, ',');
-        if (cpulist)
-            cpulist++;
-    } while (cpulist);
+        virSkipSpaces(&cur);
+
+        if ((*cur == ',') || (*cur == 0)) {
+            if (unuse) {
+                VIR_UNUSE_CPU(cpumap, cpu);
+            } else {
+                VIR_USE_CPU(cpumap, cpu);
+            }
+        } else if (*cur == '-') {
+            /* the char '-' denotes range */
+            if (unuse) {
+                goto parse_error;
+            }
+            cur++;
+            virSkipSpaces(&cur);
+            /* parse the end of range */
+            lastcpu = virParseNumber(&cur);
+            if (lastcpu < cpu) {
+                goto parse_error;
+            }
+            if (lastcpu >= maxcpu) {
+                vshError(ctl, _("Physical CPU %d doesn't exist."), maxcpu);
+                goto parse_error;
+            }
+            for (i = cpu; i <= lastcpu; i++) {
+                VIR_USE_CPU(cpumap, i);
+            }
+            virSkipSpaces(&cur);
+        }
+
+        if (*cur == ',') {
+            cur++;
+            virSkipSpaces(&cur);
+            unuse = false;
+        } else if (*cur == 0) {
+            break;
+        } else {
+            goto parse_error;
+        }
+    }
 
     if (flags == -1) {
         if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0) {
@@ -3126,9 +3135,15 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
+cleanup:
     VIR_FREE(cpumap);
     virDomainFree(dom);
     return ret;
+
+parse_error:
+    vshError(ctl, "%s", _("cpulist: Invalid format."));
+    ret = false;
+    goto cleanup;
 }
 
 /*
