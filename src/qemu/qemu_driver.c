@@ -2952,6 +2952,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     int ret = -1;
     bool isActive;
     qemuDomainObjPrivatePtr priv;
+    bool canResetting = true;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -3002,15 +3003,23 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
             goto cleanup;
     }
 
+    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+        goto cleanup;
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+    /* pinning to all physical cpus means resetting,
+     * so check if we can reset setting.
+     */
+    for (int pcpu = 0; pcpu < hostcpus; pcpu++) {
+        if ((cpumap[pcpu/8] & (1 << (pcpu % 8))) == 0) {
+            canResetting = false;
+            break;
+        }
+    }
+
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-
-        if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
-            goto cleanup;
-
-        hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
-        maxcpu = maplen * 8;
-        if (maxcpu > hostcpus)
-            maxcpu = hostcpus;
 
         if (priv->vcpupids != NULL) {
             if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
@@ -3022,23 +3031,42 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
             goto cleanup;
         }
 
-        if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("failed to update or add vcpupin xml of "
-                              "a running domain"));
-            goto cleanup;
+        if (canResetting) {
+            if (virDomainVcpupinDel(vm->def, vcpu) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("failed to delete vcpupin xml of "
+                                  "a running domain"));
+                goto cleanup;
+            }
+        } else {
+            if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("failed to update or add vcpupin xml of "
+                                  "a running domain"));
+                goto cleanup;
+            }
         }
 
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
 
-        if (virDomainVcpupinAdd(persistentDef, cpumap, maplen, vcpu) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("failed to update or add vcpupin xml of "
-                              "a persistent domain"));
-            goto cleanup;
+        if (canResetting) {
+            if (virDomainVcpupinDel(persistentDef, vcpu) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("failed to delete vcpupin xml of "
+                                  "a persistent domain"));
+                goto cleanup;
+            }
+        } else {
+            if (virDomainVcpupinAdd(persistentDef, cpumap, maplen, vcpu) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("failed to update or add vcpupin xml of "
+                                  "a persistent domain"));
+                goto cleanup;
+            }
         }
+
         ret = virDomainSaveConfig(driver->configDir, persistentDef);
         goto cleanup;
     }
