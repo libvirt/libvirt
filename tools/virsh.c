@@ -3062,8 +3062,13 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
 
     /* Parse cpulist */
     cur = cpulist;
-    if (*cur == 0)
+    if (*cur == 0) {
         goto parse_error;
+    } else if (*cur == 'r') {
+        for (cpu = 0; cpu < maxcpu; cpu++)
+            VIR_USE_CPU(cpumap, cpu);
+        *cur = 0;
+    }
 
     while (*cur != 0) {
 
