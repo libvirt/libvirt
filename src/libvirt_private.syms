@@ -364,6 +364,7 @@ virDomainTimerTickpolicyTypeToString;
 virDomainTimerTrackTypeFromString;
 virDomainTimerTrackTypeToString;
 virDomainVcpupinAdd;
+virDomainVcpupinDel;
 virDomainVcpupinFindByVcpu;
 virDomainVcpupinIsDuplicate;
 virDomainVideoDefFree;

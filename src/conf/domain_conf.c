@@ -8206,6 +8206,45 @@ cleanup:
     return -1;
 }
 
+int
+virDomainVcpupinDel(virDomainDefPtr def, int vcpu)
+{
+    int n;
+    bool deleted = false;
+    virDomainVcpupinDefPtr *vcpupin_list = def->cputune.vcpupin;
+
+    /* No vcpupin exists yet */
+    if (!def->cputune.nvcpupin) {
+        return 0;
+    }
+
+    for (n = 0; n < def->cputune.nvcpupin; n++) {
+        if (vcpupin_list[n]->vcpuid == vcpu) {
+            VIR_FREE(vcpupin_list[n]->cpumask);
+            VIR_FREE(vcpupin_list[n]);
+            memmove(&vcpupin_list[n],
+                    &vcpupin_list[n+1],
+                    (def->cputune.nvcpupin - n - 1) * sizeof(virDomainVcpupinDef *));
+            deleted = true;
+            break;
+        }
+    }
+
+    if (!deleted)
+        return 0;
+
+    if (--def->cputune.nvcpupin == 0) {
+        virDomainVcpupinDefFree(def->cputune.vcpupin, 0);
+    } else {
+        if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 static int
 virDomainLifecycleDefFormat(virBufferPtr buf,
                             int type,

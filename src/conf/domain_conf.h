@@ -1412,6 +1412,8 @@ int virDomainVcpupinAdd(virDomainDefPtr def,
                         int maplen,
                         int vcpu);
 
+int virDomainVcpupinDel(virDomainDefPtr def, int vcpu);
+
 int virDomainDiskIndexByName(virDomainDefPtr def, const char *name);
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk);
