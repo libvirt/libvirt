@@ -248,7 +248,6 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 && (*p == '\0' || c_isspace(*p))
                 && id > nodeinfo->cores)
                 nodeinfo->cores = id;
-        }
 # elif defined(__powerpc__) || \
       defined(__powerpc64__)
         } else if (STRPREFIX(buf, "clock")) {
@@ -266,7 +265,6 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 /* Accept trailing fractional part.  */
                 && (*p == '\0' || *p == '.' || c_isspace(*p)))
                 nodeinfo->mhz = ui;
-        }
 # elif defined(__s390__) || \
         defined(__s390x__)
         } else if (STRPREFIX(buf, "# processors")) {
@@ -289,10 +287,10 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
              * and parsed in next iteration, because it is not in expected
              * format and thus lead to error. */
             break;
-        }
 # else
 #  warning Parser for /proc/cpuinfo needs to be adapted for your architecture
 # endif
+        }
     }
 
     if (!nodeinfo->cpus) {
