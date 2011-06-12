@@ -11,7 +11,9 @@
 #include "util.h"
 #include "files.h"
 
-#ifndef __linux__
+#if ! (defined __linux__  &&  (defined(__x86_64__) || \
+                               defined(__amd64__)  || \
+                               defined(__i386__)))
 
 static int
 mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
