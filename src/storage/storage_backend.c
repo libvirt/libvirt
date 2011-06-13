@@ -649,11 +649,11 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    char *size = NULL;
     char *create_tool;
     int imgformat = -1;
     virCommandPtr cmd = NULL;
     bool do_encryption = (vol->target.encryption != NULL);
+    unsigned long long int size_arg;
 
     const char *type = virStorageFileFormatTypeToString(vol->target.format);
     const char *backingType = vol->backingStore.path ?
@@ -757,10 +757,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     }
 
     /* Size in KB */
-    if (virAsprintf(&size, "%lluK", VIR_DIV_UP(vol->capacity, 1024)) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    size_arg = VIR_DIV_UP(vol->capacity, 1024);
 
     /* KVM is usually ahead of qemu on features, so try that first */
     create_tool = virFindFileInPath("kvm-img");
@@ -798,7 +795,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         switch (imgformat) {
         case QEMU_IMG_BACKING_FORMAT_FLAG:
             virCommandAddArgList(cmd, "-F", backingType, vol->target.path,
-                                 size, NULL);
+                                 NULL);
+            virCommandAddArgFormat(cmd, "%lluK", size_arg);
 
             if (do_encryption)
                 virCommandAddArg(cmd, "-e");
@@ -808,20 +806,23 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             virCommandAddArg(cmd, "-o");
             virCommandAddArgFormat(cmd, "backing_fmt=%s%s", backingType,
                                    do_encryption ? ",encryption=on" : "");
-            virCommandAddArgList(cmd, vol->target.path, size, NULL);
+            virCommandAddArg(cmd, vol->target.path);
+            virCommandAddArgFormat(cmd, "%lluK", size_arg);
             break;
 
         default:
             VIR_INFO("Unable to set backing store format for %s with %s",
                      vol->target.path, create_tool);
 
-            virCommandAddArgList(cmd, vol->target.path, size, NULL);
+            virCommandAddArg(cmd, vol->target.path);
+            virCommandAddArgFormat(cmd, "%lluK", size_arg);
             if (do_encryption)
                 virCommandAddArg(cmd, "-e");
         }
     } else {
         virCommandAddArgList(cmd, "create", "-f", type,
-                             vol->target.path, size, NULL);
+                             vol->target.path, NULL);
+        virCommandAddArgFormat(cmd, "%lluK", size_arg);
 
         if (do_encryption) {
             if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS) {
@@ -834,7 +835,6 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
 
     ret = virStorageBackendCreateExecCommand(pool, vol, cmd);
 cleanup:
-    VIR_FREE(size);
     VIR_FREE(create_tool);
     virCommandFree(cmd);
 
