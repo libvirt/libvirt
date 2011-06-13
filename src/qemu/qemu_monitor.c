@@ -247,7 +247,7 @@ qemuMonitorUnwatch(void *monitor)
 }
 
 static int
-qemuMonitorOpenUnix(const char *monitor)
+qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
 {
     struct sockaddr_un addr;
     int monfd;
@@ -274,7 +274,8 @@ qemuMonitorOpenUnix(const char *monitor)
         if (ret == 0)
             break;
 
-        if (errno == ENOENT || errno == ECONNREFUSED) {
+        if ((errno == ENOENT || errno == ECONNREFUSED) &&
+            virKillProcess(cpid, 0) == 0) {
             /* ENOENT       : Socket may not have shown up yet
              * ECONNREFUSED : Leftover socket hasn't been removed yet */
             continue;
@@ -691,7 +692,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
     switch (config->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         mon->hasSendFD = 1;
-        mon->fd = qemuMonitorOpenUnix(config->data.nix.path);
+        mon->fd = qemuMonitorOpenUnix(config->data.nix.path, vm->pid);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:

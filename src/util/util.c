@@ -2010,7 +2010,7 @@ int virKillProcess(pid_t pid, int sig)
          * TerminateProcess is more or less equiv to SIG_KILL, in that
          * a process can't trap / block it
          */
-        if (!TerminateProcess(proc, sig)) {
+        if (sig != 0 && !TerminateProcess(proc, sig)) {
             errno = ESRCH;
             return -1;
         }
