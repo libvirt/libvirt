@@ -258,6 +258,23 @@ cleanup:
 }
 
 /*
+ * Ensure that *null is an fd visiting /dev/null.  Return 0 on
+ * success, -1 on failure.  Allows for lazy opening of shared
+ * /dev/null fd only as required.
+ */
+static int
+getDevNull(int *null)
+{
+    if (*null == -1 && (*null = open("/dev/null", O_RDWR)) < 0) {
+        virReportSystemError(errno,
+                             _("cannot open %s"),
+                             "/dev/null");
+        return -1;
+    }
+    return 0;
+}
+
+/*
  * @argv argv to exec
  * @envp optional environment to use for exec
  * @keepfd options fd_ret to keep open for child process
@@ -288,7 +305,7 @@ virExecWithHook(const char *const*argv,
           char *pidfile)
 {
     pid_t pid;
-    int null, i, openmax;
+    int null = -1, i, openmax;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
     int childout = -1;
@@ -308,11 +325,10 @@ virExecWithHook(const char *const*argv,
         binary = argv[0];
     }
 
-    if ((null = open("/dev/null", O_RDWR)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot open %s"),
-                             "/dev/null");
-        goto cleanup;
+    if (infd < 0) {
+        if (getDevNull(&null) < 0)
+            goto cleanup;
+        infd = null;
     }
 
     if (outfd != NULL) {
@@ -341,6 +357,8 @@ virExecWithHook(const char *const*argv,
             childout = *outfd;
         }
     } else {
+        if (getDevNull(&null) < 0)
+            goto cleanup;
         childout = null;
     }
 
@@ -370,6 +388,8 @@ virExecWithHook(const char *const*argv,
             childerr = *errfd;
         }
     } else {
+        if (getDevNull(&null) < 0)
+            goto cleanup;
         childerr = null;
     }
 
@@ -414,7 +434,6 @@ virExecWithHook(const char *const*argv,
     openmax = sysconf(_SC_OPEN_MAX);
     for (i = 3; i < openmax; i++)
         if (i != infd &&
-            i != null &&
             i != childout &&
             i != childerr &&
             (!keepfd || i >= FD_SETSIZE || !FD_ISSET(i, keepfd))) {
@@ -422,7 +441,7 @@ virExecWithHook(const char *const*argv,
             VIR_FORCE_CLOSE(tmpfd);
         }
 
-    if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
+    if (dup2(infd, STDIN_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stdin file handle"));
         goto fork_error;
@@ -440,17 +459,18 @@ virExecWithHook(const char *const*argv,
         goto fork_error;
     }
 
-    if (infd != STDIN_FILENO)
+    if (infd != STDIN_FILENO && infd != null)
         VIR_FORCE_CLOSE(infd);
-    VIR_FORCE_CLOSE(null);
-    if (childout > STDERR_FILENO) {
+    if (childout > STDERR_FILENO && childout != null) {
         tmpfd = childout;   /* preserve childout value */
         VIR_FORCE_CLOSE(tmpfd);
     }
     if (childerr > STDERR_FILENO &&
-        childerr != childout) {
+        childerr != childout &&
+        childerr != null) {
         VIR_FORCE_CLOSE(childerr);
     }
+    VIR_FORCE_CLOSE(null);
 
     /* Initialize full logging for a while */
     virLogSetFromEnv();
