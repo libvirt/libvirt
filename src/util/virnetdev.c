@@ -38,6 +38,8 @@
 #ifdef __linux__
 # include <linux/sockios.h>
 # include <linux/if_vlan.h>
+#elif !defined(AF_PACKET)
+# undef HAVE_STRUCT_IFREQ
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE

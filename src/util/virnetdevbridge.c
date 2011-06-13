@@ -45,7 +45,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 
-#ifdef HAVE_NET_IF_H
+#if defined(HAVE_NET_IF_H) && defined(SIOCBRADDBR)
 static int virNetDevSetupControlFull(const char *ifname,
                                      struct ifreq *ifr,
                                      int domain,

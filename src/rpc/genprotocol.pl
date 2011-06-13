@@ -31,7 +31,7 @@ open RPCGEN, "-|", $rpcgen, $mode, $xdrdef
 open TARGET, ">$target"
     or die "cannot create $target: $!";
 
-my $fixup = $^O eq "linux";
+my $fixup = $^O eq "linux" || $^O eq "cygwin";
 
 if ($mode eq "-c") {
     print TARGET "#include <config.h>\n";
