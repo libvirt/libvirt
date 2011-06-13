@@ -9862,20 +9862,23 @@ static virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
                                       VIR_DOMAIN_XML_INACTIVE)))
         goto error;
 
-    /* if the domain is already in our hashtable, we don't need to do
-     * anything further
-     */
-    if ((dom = virDomainFindByUUID(doms, def->uuid))) {
-        VIR_FREE(configFile);
-        virDomainDefFree(def);
-        return dom;
-    }
-
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
         goto error;
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
+
+    /* if the domain is already in our hashtable, we only need to
+     * update the autostart flag
+     */
+    if ((dom = virDomainFindByUUID(doms, def->uuid))) {
+        dom->autostart = autostart;
+
+        VIR_FREE(configFile);
+        VIR_FREE(autostartLink);
+        virDomainDefFree(def);
+        return dom;
+    }
 
     if (!(dom = virDomainAssignDef(caps, doms, def, false)))
         goto error;
