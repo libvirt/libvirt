@@ -2878,16 +2878,23 @@ qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 
 
 static int
-qemudDomainPinVcpu(virDomainPtr dom,
-                   unsigned int vcpu,
-                   unsigned char *cpumap,
-                   int maplen) {
+qemudDomainPinVcpuFlags(virDomainPtr dom,
+                        unsigned int vcpu,
+                        unsigned char *cpumap,
+                        int maplen,
+                        unsigned int flags) {
+
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
+    virDomainDefPtr persistentDef = NULL;
     int maxcpu, hostcpus;
     virNodeInfo nodeinfo;
     int ret = -1;
+    bool isActive;
     qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2901,9 +2908,18 @@ qemudDomainPinVcpu(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s",_("cannot pin vcpus on an inactive domain"));
+    isActive = virDomainObjIsActive(vm);
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (!isActive && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("a domain is inactive; can change only "
+                          "persistent config"));
         goto cleanup;
     }
 
@@ -2916,27 +2932,54 @@ qemudDomainPinVcpu(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
-        goto cleanup;
-
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
-    if (priv->vcpupids != NULL) {
-        if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
-                                      cpumap, maplen, maxcpu) < 0)
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("cannot change persistent config of a transient domain"));
             goto cleanup;
-    } else {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
-                        "%s", _("cpu affinity is not supported"));
-        goto cleanup;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
     }
 
-    if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("failed to update or add vcpupin xml"));
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+
+        if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+            goto cleanup;
+
+        hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+        maxcpu = maplen * 8;
+        if (maxcpu > hostcpus)
+            maxcpu = hostcpus;
+
+        if (priv->vcpupids != NULL) {
+            if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
+                                          cpumap, maplen, maxcpu) < 0)
+                goto cleanup;
+        } else {
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            "%s", _("cpu affinity is not supported"));
+            goto cleanup;
+        }
+
+        if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("failed to update or add vcpupin xml of "
+                              "a running domain"));
+            goto cleanup;
+        }
+
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+
+        if (virDomainVcpupinAdd(persistentDef, cpumap, maplen, vcpu) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("failed to update or add vcpupin xml of "
+                              "a persistent domain"));
+            goto cleanup;
+        }
+        ret = virDomainSaveConfig(driver->configDir, persistentDef);
         goto cleanup;
     }
 
@@ -2946,6 +2989,15 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+qemudDomainPinVcpu(virDomainPtr dom,
+                   unsigned int vcpu,
+                   unsigned char *cpumap,
+                   int maplen) {
+    return qemudDomainPinVcpuFlags(dom, vcpu, cpumap, maplen,
+                                   VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int
@@ -8007,6 +8059,7 @@ static virDriver qemuDriver = {
     .domainSetVcpusFlags = qemudDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = qemudDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = qemudDomainPinVcpu, /* 0.4.4 */
+    .domainPinVcpuFlags = qemudDomainPinVcpuFlags, /* 0.9.3 */
     .domainGetVcpus = qemudDomainGetVcpus, /* 0.4.4 */
     .domainGetMaxVcpus = qemudDomainGetMaxVcpus, /* 0.4.4 */
     .domainGetSecurityLabel = qemudDomainGetSecurityLabel, /* 0.6.1 */
