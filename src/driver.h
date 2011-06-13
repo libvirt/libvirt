@@ -230,6 +230,12 @@ typedef int
                                          unsigned char *cpumap,
                                          int maplen);
 typedef int
+        (*virDrvDomainPinVcpuFlags)     (virDomainPtr domain,
+                                         unsigned int vcpu,
+                                         unsigned char *cpumap,
+                                         int maplen,
+                                         unsigned int flags);
+typedef int
         (*virDrvDomainGetVcpus)		(virDomainPtr domain,
                                          virVcpuInfoPtr info,
                                          int maxinfo,
@@ -671,6 +677,7 @@ struct _virDriver {
     virDrvDomainSetVcpusFlags		domainSetVcpusFlags;
     virDrvDomainGetVcpusFlags		domainGetVcpusFlags;
     virDrvDomainPinVcpu		domainPinVcpu;
+    virDrvDomainPinVcpuFlags    domainPinVcpuFlags;
     virDrvDomainGetVcpus		domainGetVcpus;
     virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
     virDrvDomainGetSecurityLabel     domainGetSecurityLabel;

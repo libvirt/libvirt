@@ -1049,6 +1049,11 @@ int                     virDomainPinVcpu        (virDomainPtr domain,
                                                  unsigned int vcpu,
                                                  unsigned char *cpumap,
                                                  int maplen);
+int                     virDomainPinVcpuFlags   (virDomainPtr domain,
+                                                 unsigned int vcpu,
+                                                 unsigned char *cpumap,
+                                                 int maplen,
+                                                 unsigned int flags);
 
 /**
  * VIR_USE_CPU:

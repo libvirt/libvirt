@@ -6709,6 +6709,82 @@ error:
 }
 
 /**
+ * virDomainPinVcpuFlags:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @vcpu: virtual CPU number
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN)
+ *      Each bit set to 1 means that corresponding CPU is usable.
+ *      Bytes are stored in little-endian order: CPU0-7, 8-15...
+ *      In each byte, lowest CPU number is least significant bit.
+ * @maplen: number of bytes in cpumap, from 1 up to size of CPU map in
+ *      underlying virtualization system (Xen...).
+ *      If maplen < size, missing bytes are set to zero.
+ *      If maplen > size, failure code is returned.
+ * @flags: bitwise-OR of virDomainModificationImpac
+ *
+ * Dynamically change the real CPUs which can be allocated to a virtual CPU.
+ * This function requires privileged access to the hypervisor.
+ *
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set.
+ * If VIR_DOMAIN_AFFECT_LIVE is set, the change affects a running domain
+ * and may fail if domain is not alive.
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified (that is,
+ * @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain modifies
+ * persistent setup, while an active domain is hypervisor-dependent on whether
+ * just live or both live and persistent state is changed.
+ * Not all hypervisors can support all flag combinations.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ *
+ */
+int
+virDomainPinVcpuFlags(virDomainPtr domain, unsigned int vcpu,
+                      unsigned char *cpumap, int maplen, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "vcpu=%u, cpumap=%p, maplen=%d, flags=%u",
+                     vcpu, cpumap, maplen, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if ((vcpu > 32000) || (cpumap == NULL) || (maplen < 1)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainPinVcpuFlags) {
+        int ret;
+        ret = conn->driver->domainPinVcpuFlags (domain, vcpu, cpumap, maplen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+
+}
+
+/**
  * virDomainGetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0
  * @info: pointer to an array of virVcpuInfo structures (OUT)
