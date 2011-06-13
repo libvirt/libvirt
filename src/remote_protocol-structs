@@ -529,6 +529,15 @@ struct remote_domain_pin_vcpu_args {
                 char *             cpumap_val;
         } cpumap;
 };
+struct remote_domain_pin_vcpu_flags_args {
+        remote_nonnull_domain      dom;
+        u_int                      vcpu;
+        struct {
+                u_int              cpumap_len;
+                char *             cpumap_val;
+        } cpumap;
+        u_int                      flags;
+};
 struct remote_domain_get_vcpus_args {
         remote_nonnull_domain      dom;
         int                        maxinfo;

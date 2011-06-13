@@ -977,6 +977,9 @@ elsif ($opt_k) {
                     } elsif ($call->{ProcName} eq "DomainPinVcpu") {
                         push(@args_list, "unsigned char *$arg_name");
                         push(@args_list, "int ${arg_name}len");
+                    } elsif ($call->{ProcName} eq "DomainPinVcpuFlags") {
+                        push(@args_list, "unsigned char *$arg_name");
+                        push(@args_list, "int ${arg_name}len");
                     } else {
                         push(@args_list, "const char *$arg_name");
                         push(@args_list, "int ${arg_name}len");

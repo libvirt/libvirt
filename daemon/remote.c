@@ -1277,6 +1277,48 @@ cleanup:
 }
 
 static int
+remoteDispatchDomainPinVcpuFlags(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
+                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                 remote_error *rerr,
+                                 remote_domain_pin_vcpu_flags_args *args,
+                                 void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom = NULL;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (args->cpumap.cpumap_len > REMOTE_CPUMAP_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("cpumap_len > REMOTE_CPUMAP_MAX"));
+        goto cleanup;
+    }
+
+    if (virDomainPinVcpuFlags(dom,
+                              args->vcpu,
+                              (unsigned char *) args->cpumap.cpumap_val,
+                              args->cpumap.cpumap_len,
+                              args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
 remoteDispatchDomainGetMemoryParameters(struct qemud_server *server
                                         ATTRIBUTE_UNUSED,
                                         struct qemud_client *client

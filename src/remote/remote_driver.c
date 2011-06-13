@@ -6259,6 +6259,7 @@ static virDriver remote_driver = {
     .domainSetVcpusFlags = remoteDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = remoteDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = remoteDomainPinVcpu, /* 0.3.0 */
+    .domainPinVcpuFlags = remoteDomainPinVcpuFlags, /* 0.9.3 */
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */
