@@ -29,6 +29,7 @@ typedef struct _virLockManagerPlugin virLockManagerPlugin;
 typedef virLockManagerPlugin *virLockManagerPluginPtr;
 
 virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
+                                                const char *configFile,
                                                 unsigned int flags);
 void virLockManagerPluginRef(virLockManagerPluginPtr plugin);
 void virLockManagerPluginUnref(virLockManagerPluginPtr plugin);

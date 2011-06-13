@@ -119,6 +119,7 @@ static void virLockManagerLogParams(size_t nparams,
  */
 #if HAVE_DLFCN_H
 virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
+                                                const char *configFile,
                                                 unsigned int flags)
 {
     void *handle = NULL;
@@ -162,11 +163,8 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
         }
     }
 
-    if (driver->drvInit(VIR_LOCK_MANAGER_VERSION, flags) < 0) {
-        virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("plugin ABI is not compatible"));
+    if (driver->drvInit(VIR_LOCK_MANAGER_VERSION, configFile, flags) < 0)
         goto cleanup;
-    }
 
     if (VIR_ALLOC(plugin) < 0) {
         virReportOOMError();
@@ -193,6 +191,7 @@ cleanup:
 }
 #else /* !HAVE_DLFCN_H */
 virLockManagerPluginPtr virLockManagerPluginNew(const char *name ATTRIBUTE_UNUSED,
+                                                const char *configFile ATTRIBUTE_UNUSED,
                                                 unsigned int flags ATTRIBUTE_UNUSED)
 {
     virLockError(VIR_ERR_INTERNAL_ERROR, "%s",

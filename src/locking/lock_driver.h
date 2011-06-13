@@ -121,6 +121,7 @@ struct _virLockManagerParam {
  * Returns -1 if the requested version/flags were inadequate
  */
 typedef int (*virLockDriverInit)(unsigned int version,
+                                 const char *configFile,
                                  unsigned int flags);
 
 /**

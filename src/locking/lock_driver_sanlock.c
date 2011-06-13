@@ -64,6 +64,7 @@ struct _virLockManagerSanlockPrivate {
  */
 
 static int virLockManagerSanlockInit(unsigned int version ATTRIBUTE_UNUSED,
+                                     const char *configFile ATTRIBUTE_UNUSED,
                                      unsigned int flags)
 {
     virCheckFlags(0, -1);

@@ -116,7 +116,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 #endif
 
     if (!(driver->lockManager =
-          virLockManagerPluginNew("nop", 0)))
+          virLockManagerPluginNew("nop", NULL, 0)))
         return -1;
 
     /* Just check the file is readable before opening it, otherwise
@@ -438,10 +438,17 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue (conf, "lock_manager");
     CHECK_TYPE ("lock_manager", VIR_CONF_STRING);
     if (p && p->str) {
+        char *lockConf;
         virLockManagerPluginUnref(driver->lockManager);
+        if (virAsprintf(&lockConf, "%s/libvirt/qemu-%s.conf", SYSCONFDIR, p->str) < 0) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
         if (!(driver->lockManager =
-              virLockManagerPluginNew(p->str, 0)))
+              virLockManagerPluginNew(p->str, lockConf, 0)))
             VIR_ERROR(_("Failed to load lock manager %s"), p->str);
+        VIR_FREE(lockConf);
     }
 
     virConfFree (conf);
