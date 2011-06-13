@@ -296,26 +296,6 @@ virExecWithHook(const char *const*argv,
     int tmpfd;
     const char *binary = NULL;
     int forkRet;
-    char *argv_str = NULL;
-    char *envp_str = NULL;
-
-    if ((argv_str = virArgvToString(argv)) == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (envp) {
-        if ((envp_str = virArgvToString(envp)) == NULL) {
-            VIR_FREE(argv_str);
-            virReportOOMError();
-            return -1;
-        }
-        VIR_DEBUG("%s %s", envp_str, argv_str);
-        VIR_FREE(envp_str);
-    } else {
-        VIR_DEBUG("%s", argv_str);
-    }
-    VIR_FREE(argv_str);
 
     if (argv[0][0] != '/') {
         if (!(binary = virFindFileInPath(argv[0]))) {
