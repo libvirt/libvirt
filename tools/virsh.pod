@@ -790,10 +790,16 @@ values; these two flags cannot both be specified.
 Returns basic information about the domain virtual CPUs, like the number of
 vCPUs, the running time, the affinity to physical processors.
 
-=item B<vcpupin> I<domain-id> I<vcpu> I<cpulist>
+=item B<vcpupin> I<domain-id> I<vcpu> I<cpulist> optional I<--live> I<--config>
+I<--current>
 
 Pin domain VCPUs to host physical CPUs. The I<vcpu> number must be provided
 and I<cpulist> is a comma separated list of physical CPU numbers.
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is exclusive.
+If no flag is specified, behavior is different depending on hypervisor.
 
 =item B<vncdisplay> I<domain-id>
 

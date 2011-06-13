@@ -2929,6 +2929,9 @@ static const vshCmdOptDef opts_vcpupin[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"vcpu", VSH_OT_INT, VSH_OFLAG_REQ, N_("vcpu number")},
     {"cpulist", VSH_OT_DATA, VSH_OFLAG_REQ, N_("host cpu number(s) (comma separated)")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2945,6 +2948,26 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     int cpumaplen;
     int i;
     enum { expect_num, expect_num_or_comma } state;
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    int current = vshCommandOptBool(cmd, "current");
+    int flags = 0;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+        /* neither option is specified */
+        if (!live && !config)
+            flags = -1;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -3041,8 +3064,14 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
             cpulist++;
     } while (cpulist);
 
-    if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0) {
-        ret = false;
+    if (flags == -1) {
+        if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0) {
+            ret = false;
+        }
+    } else {
+        if (virDomainPinVcpuFlags(dom, vcpu, cpumap, cpumaplen, flags) != 0) {
+            ret = false;
+        }
     }
 
     VIR_FREE(cpumap);
