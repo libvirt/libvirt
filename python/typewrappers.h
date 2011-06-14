@@ -156,6 +156,7 @@ PyObject * libvirt_ulongWrap(unsigned long val);
 PyObject * libvirt_longlongWrap(long long val);
 PyObject * libvirt_ulonglongWrap(unsigned long long val);
 PyObject * libvirt_charPtrWrap(char *str);
+PyObject * libvirt_charPtrSizeWrap(char *str, Py_ssize_t size);
 PyObject * libvirt_constcharPtrWrap(const char *str);
 PyObject * libvirt_charPtrConstWrap(const char *str);
 PyObject * libvirt_virConnectPtrWrap(virConnectPtr node);

@@ -348,8 +348,6 @@ skip_impl = (
     'virNWFilterGetUUID',
     'virNWFilterGetUUIDString',
     'virNWFilterLookupByUUID',
-    'virStreamRecv',
-    'virStreamSend',
     'virStoragePoolGetUUID',
     'virStoragePoolGetUUIDString',
     'virStoragePoolLookupByUUID',
@@ -393,9 +391,12 @@ skip_function = (
     'virConnectDomainEventDeregisterAny', # overridden in virConnect.py
     'virSaveLastError', # We have our own python error wrapper
     'virFreeError', # Only needed if we use virSaveLastError
+
     'virStreamFree', # Overridden in libvirt-override-virStream.py
-    'virStreamRecvAll',
-    'virStreamSendAll',
+    'virStreamRecvAll', # XXX: Can be written in pure python?
+    'virStreamSendAll', # XXX: Can be written in pure python?
+    'virStreamRecv', # overridden in libvirt-override-virStream.py
+    'virStreamSend', # overridden in libvirt-override-virStream.py
 
     # 'Ref' functions have no use for bindings users.
     "virConnectRef",

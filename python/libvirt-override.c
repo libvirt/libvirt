@@ -3697,6 +3697,66 @@ libvirt_virStreamEventAddCallback(PyObject *self ATTRIBUTE_UNUSED,
     return py_retval;
 }
 
+static PyObject *
+libvirt_virStreamRecv(PyObject *self ATTRIBUTE_UNUSED,
+                      PyObject *args)
+{
+    PyObject *pyobj_stream;
+    virStreamPtr stream;
+    char *buf = NULL;
+    int ret;
+    int nbytes;
+
+    if (!PyArg_ParseTuple(args, (char *) "Oi:virStreamRecv",
+                          &pyobj_stream, &nbytes)) {
+        DEBUG("%s failed to parse tuple\n", __FUNCTION__);
+        return VIR_PY_NONE;
+    }
+    stream = PyvirStream_Get(pyobj_stream);
+
+    if ((buf = malloc(nbytes+1 > 0 ? nbytes+1 : 1)) == NULL)
+        return VIR_PY_NONE;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virStreamRecv(stream, buf, nbytes);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    buf[ret > -1 ? ret : 0] = '\0';
+    DEBUG("StreamRecv ret=%d strlen=%d\n", ret, (int) strlen(buf));
+
+    if (ret < 0)
+        return libvirt_intWrap(ret);
+    return libvirt_charPtrSizeWrap((char *) buf, (Py_ssize_t) ret);
+}
+
+static PyObject *
+libvirt_virStreamSend(PyObject *self ATTRIBUTE_UNUSED,
+                      PyObject *args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_stream;
+    virStreamPtr stream;
+    char *data;
+    int ret;
+    int nbytes;
+
+    if (!PyArg_ParseTuple(args, (char *) "Ozi:virStreamRecv",
+                          &pyobj_stream, &data, &nbytes)) {
+        DEBUG("%s failed to parse tuple\n", __FUNCTION__);
+        return VIR_PY_INT_FAIL;
+    }
+    stream = PyvirStream_Get(pyobj_stream);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virStreamSend(stream, data, nbytes);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    DEBUG("StreamSend ret=%d\n", ret);
+
+    py_retval = libvirt_intWrap(ret);
+    return py_retval;
+}
+
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -3715,6 +3775,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectDomainEventRegisterAny", libvirt_virConnectDomainEventRegisterAny, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventDeregisterAny", libvirt_virConnectDomainEventDeregisterAny, METH_VARARGS, NULL},
     {(char *) "virStreamEventAddCallback", libvirt_virStreamEventAddCallback, METH_VARARGS, NULL},
+    {(char *) "virStreamRecv", libvirt_virStreamRecv, METH_VARARGS, NULL},
+    {(char *) "virStreamSend", libvirt_virStreamSend, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetState", libvirt_virDomainGetState, METH_VARARGS, NULL},
     {(char *) "virDomainGetControlInfo", libvirt_virDomainGetControlInfo, METH_VARARGS, NULL},

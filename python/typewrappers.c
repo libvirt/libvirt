@@ -77,6 +77,20 @@ libvirt_ulonglongWrap(unsigned long long val)
 }
 
 PyObject *
+libvirt_charPtrSizeWrap(char *str, Py_ssize_t size)
+{
+    PyObject *ret;
+
+    if (str == NULL) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    ret = PyString_FromStringAndSize(str, size);
+    free(str);
+    return (ret);
+}
+
+PyObject *
 libvirt_charPtrWrap(char *str)
 {
     PyObject *ret;
