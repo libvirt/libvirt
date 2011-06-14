@@ -15272,3 +15272,231 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
+/**
+ * virDomainBlockPull:
+ * @dom: pointer to domain object
+ * @path: Fully-qualified filename of disk
+ * @info: A pointer to a virDomainBlockPullInfo structure, or NULL
+ * @flags: currently unused, for future extension
+ *
+ * Populate a disk image with data from its backing image.  Once all data from
+ * its backing image has been pulled, the disk no longer depends on a backing
+ * image.  This function works incrementally, performing a small amount of work
+ * each time it is called.  When successful, @info is updated with the current
+ * progress.
+ *
+ * Returns -1 in case of failure, 0 when successful.
+ */
+int virDomainBlockPull(virDomainPtr dom,
+                       const char *path,
+                       virDomainBlockPullInfoPtr info,
+                       unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, info=%p, flags=%u", path, info, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockPull) {
+        int ret;
+        ret = conn->driver->domainBlockPull(dom, path, info, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainBlockPullAll:
+ * @dom: pointer to domain object
+ * @path: Fully-qualified filename of disk
+ * @flags: currently unused, for future extension
+ *
+ * Populate a disk image with data from its backing image.  Once all data from
+ * its backing image has been pulled, the disk no longer depends on a backing
+ * image.  This function pulls data for the entire device in the background.
+ * Progress of the operation can be checked with virDomainGetBlockPullInfo() and
+ * the operation can be aborted with virDomainBlockPullAbort().  When finished,
+ * an asynchronous event is raised to indicate the final status.
+ *
+ * Returns 0 if the operation has started, -1 on failure.
+ */
+int virDomainBlockPullAll(virDomainPtr dom,
+                          const char *path,
+                          unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, flags=%u", path, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockPullAll) {
+        int ret;
+        ret = conn->driver->domainBlockPullAll(dom, path, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainBlockPullAbort:
+ * @dom: pointer to domain object
+ * @path: fully-qualified filename of disk
+ * @flags: currently unused, for future extension
+ *
+ * Cancel a pull operation previously started by virDomainBlockPullAll().
+ *
+ * Returns -1 in case of failure, 0 when successful.
+ */
+int virDomainBlockPullAbort(virDomainPtr dom,
+                            const char *path,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, flags=%u", path, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockPullAbort) {
+        int ret;
+        ret = conn->driver->domainBlockPullAbort(dom, path, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetBlockPullInfo:
+ * @dom: pointer to domain object
+ * @path: fully-qualified filename of disk
+ * @info: pointer to a virDomainBlockPullInfo structure
+ * @flags: currently unused, for future extension
+ *
+ * Request progress information on a block pull operation that has been started
+ * with virDomainBlockPullAll().  If an operation is active for the given
+ * parameters, @info will be updated with the current progress.
+ *
+ * Returns -1 in case of failure, 0 when successful.
+ */
+int virDomainGetBlockPullInfo(virDomainPtr dom,
+                              const char *path,
+                              virDomainBlockPullInfoPtr info,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, info=%p, flags=%u", path, info, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (!info) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("info is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainGetBlockPullInfo) {
+        int ret;
+        ret = conn->driver->domainGetBlockPullInfo(dom, path, info, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
