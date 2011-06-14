@@ -4317,7 +4317,8 @@ out_sig:
 }
 
 static void
-print_job_progress(unsigned long long remaining, unsigned long long total)
+print_job_progress(const char *label, unsigned long long remaining,
+                   unsigned long long total)
 {
     int progress;
 
@@ -4337,7 +4338,7 @@ print_job_progress(unsigned long long remaining, unsigned long long total)
         }
     }
 
-    fprintf(stderr, "\rMigration: [%3d %%]", progress);
+    fprintf(stderr, "\r%s: [%3d %%]", label, progress);
 }
 
 static bool
@@ -4424,7 +4425,7 @@ repoll:
                     functionReturn = true;
                     if (verbose) {
                         /* print [100 %] */
-                        print_job_progress(0, 1);
+                        print_job_progress("Migration", 0, 1);
                     }
                 } else
                     functionReturn = false;
@@ -4463,7 +4464,8 @@ repoll:
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 #endif
             if (ret == 0)
-                print_job_progress(jobinfo.dataRemaining, jobinfo.dataTotal);
+                print_job_progress("Migration", jobinfo.dataRemaining,
+                                   jobinfo.dataTotal);
         }
     }
 
@@ -4565,6 +4567,114 @@ done:
     virDomainFree(dom);
     return ret;
 }
+
+typedef enum {
+    VSH_CMD_BLOCK_PULL_ONE = 0,
+    VSH_CMD_BLOCK_PULL_ALL = 1,
+    VSH_CMD_BLOCK_PULL_ABORT = 2,
+    VSH_CMD_BLOCK_PULL_INFO = 3
+} vshCmdBlockPullMode;
+
+static int
+blockPullImpl(vshControl *ctl, const vshCmd *cmd,
+              virDomainBlockPullInfoPtr info, int mode)
+{
+    virDomainPtr dom;
+    const char *name, *path;
+    int ret = -1;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (vshCommandOptString(cmd, "path", &path) < 0)
+        return false;
+
+    if (mode == VSH_CMD_BLOCK_PULL_ONE)
+        ret = virDomainBlockPull(dom, path, info, 0);
+    else if (mode == VSH_CMD_BLOCK_PULL_ALL)
+        ret = virDomainBlockPullAll(dom, path, 0);
+    else if (mode == VSH_CMD_BLOCK_PULL_ABORT)
+        ret = virDomainBlockPullAbort(dom, path, 0);
+    else if (mode ==  VSH_CMD_BLOCK_PULL_INFO)
+        ret = virDomainGetBlockPullInfo(dom, path, info, 0);
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "blockpull" command
+ */
+static const vshCmdInfo info_block_pull[] = {
+    {"help", N_("Populate a disk from its backing image.")},
+    {"desc", N_("Populate a disk from its backing image.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_block_pull[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
+    {"all", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Populate the entire disk")},
+    {"abort", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Stop populating this disk")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainBlockPullInfo info;
+    int mode;
+    bool all = vshCommandOptBool(cmd, "all");
+    bool do_abort = vshCommandOptBool(cmd, "abort");
+
+    if (all && do_abort) {
+        vshError(ctl, "%s", _("--all and --abort are mutually exclusive"));
+        return false;
+    }
+
+    if (all)
+        mode = VSH_CMD_BLOCK_PULL_ALL;
+    else if (do_abort)
+        mode = VSH_CMD_BLOCK_PULL_ABORT;
+    else
+        mode = VSH_CMD_BLOCK_PULL_ONE;
+
+    if (blockPullImpl(ctl, cmd, &info, mode) != 0)
+        return false;
+    if (mode == VSH_CMD_BLOCK_PULL_ONE)
+        print_job_progress("Block pull", info.end - info.cur, info.end);
+    return true;
+}
+
+/*
+ * "blockpullinfo" command
+ */
+static const vshCmdInfo info_block_pull_info[] = {
+    {"help", N_("Check progress of an active block pull operation.")},
+    {"desc", N_("Check progress of an active block pull operation.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_block_pull_info[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlockPullInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainBlockPullInfo info;
+
+    if (blockPullImpl(ctl, cmd, &info, VSH_CMD_BLOCK_PULL_INFO) != 0)
+        return false;
+    print_job_progress("Block pull", info.end - info.cur, info.end);
+    return true;
+}
+
 
 /*
  * "net-autostart" command
@@ -11335,6 +11445,8 @@ static const vshCmdDef domManagementCmds[] = {
      info_attach_interface, 0},
     {"autostart", cmdAutostart, opts_autostart, info_autostart, 0},
     {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
+    {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
+    {"blockpullinfo", cmdBlockPullInfo, opts_block_pull_info, info_block_pull_info, 0},
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console, 0},
 #endif

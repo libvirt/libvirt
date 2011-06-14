@@ -371,6 +371,20 @@ Configure a domain to be automatically started at boot.
 
 The option I<--disable> disables autostarting.
 
+=item B<blockpull> I<domain-id> I<path> optional { I<--all> | I<--abort> }
+
+Request that the hypervisor update a thin-provisioned I<disk> (a disk
+image belonging to I<domain-id>) by pulling data from the backing
+source into the main disk image.  This command defaults to pulling one
+block at a time.  Using I<--all> requests that all data be pulled in
+the background, and progress can be tracked with B<blockpullinfo>.
+Using <--abort> will stop a long-running <--all>.
+
+=item B<blockpullinfo> I<domain-id> I<disk>
+
+Get information about the current status of a B<blockpull> operation
+started on B<disk>.
+
 =item B<console> I<domain-id> [I<devname>]
 
 Connect the virtual serial console for the guest. The optional
