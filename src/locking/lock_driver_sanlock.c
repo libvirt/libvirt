@@ -45,8 +45,18 @@
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,             \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+
+typedef struct _virLockManagerSanlockDriver virLockManagerSanlockDriver;
+typedef virLockManagerSanlockDriver *virLockManagerSanlockDriverPtr;
+
 typedef struct _virLockManagerSanlockPrivate virLockManagerSanlockPrivate;
 typedef virLockManagerSanlockPrivate *virLockManagerSanlockPrivatePtr;
+
+struct _virLockManagerSanlockDriver {
+    bool requireLeaseForDisks;
+};
+
+static virLockManagerSanlockDriver *driver = NULL;
 
 struct _virLockManagerSanlockPrivate {
     char vm_name[SANLK_NAME_LEN];
@@ -62,21 +72,75 @@ struct _virLockManagerSanlockPrivate {
 /*
  * sanlock plugin for the libvirt virLockManager API
  */
+static int virLockManagerSanlockLoadConfig(const char *configFile)
+{
+    virConfPtr conf;
+    virConfValuePtr p;
 
-static int virLockManagerSanlockInit(unsigned int version ATTRIBUTE_UNUSED,
-                                     const char *configFile ATTRIBUTE_UNUSED,
+    if (access(configFile, R_OK) == -1) {
+        if (errno != ENOENT) {
+            virReportSystemError(errno,
+                                 _("Unable to access config file %s"),
+                                 configFile);
+            return -1;
+        }
+        return 0;
+    }
+
+    if (!(conf = virConfReadFile(configFile, 0)))
+        return -1;
+
+#define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
+        virLockError(VIR_ERR_INTERNAL_ERROR,                            \
+                     "%s: %s: expected type " #typ,                     \
+                     configFile, (name));                               \
+        virConfFree(conf);                                              \
+        return -1;                                                      \
+    }
+
+    p = virConfGetValue(conf, "require_lease_for_disks");
+    CHECK_TYPE("require_lease_for_disks", VIR_CONF_LONG);
+    if (p)
+        driver->requireLeaseForDisks = p->l;
+
+    virConfFree(conf);
+    return 0;
+}
+
+
+static int virLockManagerSanlockInit(unsigned int version,
+                                     const char *configFile,
                                      unsigned int flags)
 {
+    VIR_DEBUG("version=%u configFile=%s flags=%u", version, NULLSTR(configFile), flags);
     virCheckFlags(0, -1);
+
+    if (driver)
+        return 0;
+
+    if (VIR_ALLOC(driver) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    driver->requireLeaseForDisks = true;
+
+    if (virLockManagerSanlockLoadConfig(configFile) < 0)
+        return -1;
+
     return 0;
 }
 
 static int virLockManagerSanlockDeinit(void)
 {
+    if (!driver)
+        return 0;
+
     virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("Unloading sanlock plugin is forbidden"));
     return -1;
 }
+
 
 static int virLockManagerSanlockNew(virLockManagerPtr lock,
                                     unsigned int type,
@@ -89,6 +153,12 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
     int i;
 
     virCheckFlags(0, -1);
+
+    if (!driver) {
+        virLockError(VIR_ERR_INTERNAL_ERROR,
+                     _("Sanlock plugin is not initialized"));
+        return -1;
+    }
 
     if (type != VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN) {
         virLockError(VIR_ERR_INTERNAL_ERROR,
@@ -246,7 +316,8 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                   VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY, -1);
 
     if (priv->res_count == 0 &&
-        priv->hasRWDisks) {
+        priv->hasRWDisks &&
+        driver->requireLeaseForDisks) {
         virLockError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                      _("Read/write, exclusive access, disks were present, but no leases specified"));
         return -1;

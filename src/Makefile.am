@@ -1035,6 +1035,10 @@ if WITH_LXC
 	    $(srcdir)/lxc/test_libvirtd_lxc.aug; \
 	fi
 endif
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/locking \
+	    $(srcdir)/locking/test_libvirt_sanlock.aug; \
+	fi
 
 #
 # Build our version script.  This is composed of three parts:
@@ -1189,9 +1193,26 @@ lockdriver_LTLIBRARIES = sanlock.la
 sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
 sanlock_la_CFLAGS = $(AM_CLFAGS)
 sanlock_la_LDFLAGS = -module -avoid-version
-sanlock_la_LIBADD = -lsanlock
+sanlock_la_LIBADD = -lsanlock \
+		../gnulib/lib/libgnu.la
+
+augeas_DATA += locking/libvirt_sanlock.aug
+augeastest_DATA += locking/test_libvirt_sanlock.aug
+
+EXTRA_DIST += locking/sanlock.conf \
+    locking/libvirt_sanlock.aug \
+    locking/test_libvirt_sanlock.aug
+
+$(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
+	$(AM_V_GEN)mkdir locking ; \
+	cp $< $@
+
+if WITH_QEMU
+conf_DATA += locking/qemu-sanlock.conf
+BUILT_SOURCES += locking/qemu-sanlock.conf
+endif
 else
-EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
+EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES) locking/sanlock.conf
 endif
 
 noinst_LTLIBRARIES += libvirt-net-rpc.la libvirt-net-rpc-server.la libvirt-net-rpc-client.la
