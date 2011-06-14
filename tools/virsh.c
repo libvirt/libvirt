@@ -281,7 +281,8 @@ static int vshCommandOptULongLong(const vshCmd *cmd, const char *name,
                                   unsigned long long *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 static bool vshCommandOptBool(const vshCmd *cmd, const char *name);
-static char *vshCommandOptArgv(const vshCmd *cmd, int count);
+static const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
+                                          const vshCmdOpt *opt);
 
 #define VSH_BYID     (1 << 1)
 #define VSH_BYUUID   (1 << 2)
@@ -10740,6 +10741,7 @@ cmdEcho (vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd)
     bool shell = false;
     bool xml = false;
     int count = 0;
+    const vshCmdOpt *opt = NULL;
     char *arg;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -10748,10 +10750,11 @@ cmdEcho (vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "xml"))
         xml = true;
 
-    while ((arg = vshCommandOptArgv(cmd, count)) != NULL) {
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
         bool close_quote = false;
         char *q;
 
+        arg = opt->data;
         if (count)
             virBufferAddChar(&buf, ' ');
         /* Add outer '' only if arg included shell metacharacters.  */
@@ -12215,20 +12218,20 @@ vshCommandOptBool(const vshCmd *cmd, const char *name)
 }
 
 /*
- * Returns the COUNT argv argument, or NULL after last argument.
+ * Returns the next argv argument after OPT (or the first one if OPT
+ * is NULL), or NULL if no more are present.
  *
- * Requires that a VSH_OT_ARGV option with the name "" be last in the
+ * Requires that a VSH_OT_ARGV option be last in the
  * list of supported options in CMD->def->opts.
  */
-static char *
-vshCommandOptArgv(const vshCmd *cmd, int count)
+static const vshCmdOpt *
+vshCommandOptArgv(const vshCmd *cmd, const vshCmdOpt *opt)
 {
-    vshCmdOpt *opt = cmd->opts;
+    opt = opt ? opt->next : cmd->opts;
 
     while (opt) {
         if (opt->def && opt->def->type == VSH_OT_ARGV) {
-            if (count-- == 0)
-                return opt->data;
+            return opt;
         }
         opt = opt->next;
     }
