@@ -549,7 +549,9 @@ static int qemuMonitorParseExtraBalloonInfo(char *text,
             parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_UNUSED,
                             ",free_mem=", &stats[nr_stats_found]) ||
             parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_AVAILABLE,
-                            ",total_mem=", &stats[nr_stats_found]))
+                            ",total_mem=", &stats[nr_stats_found]) ||
+            parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON,
+                            ",actual=", &stats[nr_stats_found]))
             nr_stats_found++;
 
         /* Skip to the next label.  When *p is ',' the last match attempt

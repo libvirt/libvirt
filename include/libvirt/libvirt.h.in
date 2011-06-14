@@ -467,11 +467,13 @@ typedef enum {
      */
     VIR_DOMAIN_MEMORY_STAT_AVAILABLE       = 5,
 
+    /* Current balloon value (in KB). */
+    VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON  = 6,
     /*
      * The number of statistics supported by this version of the interface.
      * To add new statistics, add them to the enum and increase this value.
      */
-    VIR_DOMAIN_MEMORY_STAT_NR              = 6,
+    VIR_DOMAIN_MEMORY_STAT_NR              = 7,
 } virDomainMemoryStatTags;
 
 typedef struct _virDomainMemoryStat virDomainMemoryStatStruct;

@@ -1119,6 +1119,18 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                 goto cleanup;
             }
 
+            if (virJSONValueObjectHasKey(data, "actual") && (got < nr_stats)) {
+                if (virJSONValueObjectGetNumberUlong(data, "actual", &mem) < 0) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("info balloon reply was missing balloon actual"));
+                    ret = -1;
+                    goto cleanup;
+                }
+                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON;
+                stats[got].val = (mem/1024);
+                got++;
+            }
+
             if (virJSONValueObjectHasKey(data, "mem_swapped_in") && (got < nr_stats)) {
                 if (virJSONValueObjectGetNumberUlong(data, "mem_swapped_in", &mem) < 0) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",

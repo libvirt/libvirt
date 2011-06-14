@@ -1147,6 +1147,8 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
             vshPrint (ctl, "unused %llu\n", stats[i].val);
         if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE)
             vshPrint (ctl, "available %llu\n", stats[i].val);
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON)
+            vshPrint (ctl, "actual %llu\n", stats[i].val);
     }
 
     virDomainFree(dom);
