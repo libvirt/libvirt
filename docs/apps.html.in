@@ -14,7 +14,9 @@
     <p>
       To add an application not listed on this page, send a message
       to the <a href="contact.html">mailing list</a>, requesting it
-      be added here. If your application uses libvirt as its API,
+      be added here, or simply send a patch against the documentation
+      in the libvirt.git docs subdirectory.
+      If your application uses libvirt as its API,
       the following graphic is available for your website to advertise
       support for libvirt:
     </p>
@@ -226,6 +228,17 @@
       </dd>
     </dl>
 
+        <dl>
+            <dt><a href="https://github.com/ohadlevy/virt#readme">Ruby
+            Libvirt Object bindings</a></dt>
+            <dd>
+                Allows using simple ruby objects to manipulate
+                hypervisors, guests, storage, network etc.  It is
+                based on top of
+                the <a href="http://libvirt.org/ruby">native ruby
+                bindings</a>.
+            </dd>
+        </dl>
     <h2><a name="livecd">LiveCD / Appliances</a></h2>
 
     <dl>
@@ -281,6 +294,26 @@
         an IT lifecycle automation product.  It
         <a href="http://publib.boulder.ibm.com/infocenter/tivihelp/v38r1/index.jsp?topic=/com.ibm.tivoli.tpm.apk.doc/libvirt_package.html">uses libvirt</a>
         for communication with virtualization hosts and guest domains.
+      </dd>
+    </dl>
+
+    <dl>
+      <dt><a href="http://theforeman.org">Foreman</a></dt>
+      <dd>
+      Foreman is an open source web based application aimed to be a
+      Single Address For All Machines Life Cycle Management. Foreman:
+
+      <ul>
+          <li>Creates everything you need when adding a new machine to
+          your network, its goal being automatically managing
+          everything you would normally manage manually (DNS, DHCP,
+          TFTP, Virtual Machines,CA, CMDB...)</li>
+          <li>Integrates with Puppet (and acts as web front end to it).</li>
+          <li>Takes care of provisioning until the point puppet is
+          running, allowing Puppet to do what it does best.</li>
+          <li>Shows you Systems Inventory (based on Facter) and
+          provides real time information about hosts status based on
+          Puppet reports.</li>
       </dd>
     </dl>
 
