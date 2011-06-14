@@ -4161,6 +4161,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (def->graphics[0]->data.spice.streaming)
             virBufferAsprintf(&opt, ",streaming-video=%s",
                               virDomainGraphicsSpiceStreamingModeTypeToString(def->graphics[0]->data.spice.streaming));
+        if (def->graphics[0]->data.spice.copypaste == VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO)
+            virBufferAddLit(&opt, ",disable-copy-paste");
 
         virCommandAddArg(cmd, "-spice");
         virCommandAddArgBuffer(cmd, &opt);

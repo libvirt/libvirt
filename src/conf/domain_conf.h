@@ -715,6 +715,14 @@ enum virDomainGraphicsSpiceStreamingMode {
     VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_LAST
 };
 
+enum virDomainGraphicsSpiceClipboardCopypaste {
+    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_DEFAULT = 0,
+    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_YES,
+    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_LAST
+};
+
 typedef struct _virDomainGraphicsDef virDomainGraphicsDef;
 typedef virDomainGraphicsDef *virDomainGraphicsDefPtr;
 struct _virDomainGraphicsDef {
@@ -757,6 +765,7 @@ struct _virDomainGraphicsDef {
             int zlib;
             int playback;
             int streaming;
+            int copypaste;
         } spice;
     } data;
 };
@@ -1553,6 +1562,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceJpegCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceZlibCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
+VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)

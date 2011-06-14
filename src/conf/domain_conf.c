@@ -364,6 +364,12 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceStreamingMode,
               "all",
               "off");
 
+VIR_ENUM_IMPL(virDomainGraphicsSpiceClipboardCopypaste,
+              VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_LAST,
+              "default",
+              "yes",
+              "no");
+
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
               "capabilities")
@@ -4287,6 +4293,26 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
                     VIR_FREE(mode);
 
                     def->data.spice.streaming = modeVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "clipboard")) {
+                    const char *copypaste = virXMLPropString(cur, "copypaste");
+                    int copypasteVal;
+
+                    if (!copypaste) {
+                        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                             _("spice clipboard missing copypaste"));
+                        goto error;
+                    }
+
+                    if ((copypasteVal =
+                         virDomainGraphicsSpiceClipboardCopypasteTypeFromString(copypaste)) <= 0) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("unknown copypaste value '%s'"), copypaste);
+                        VIR_FREE(copypaste);
+                        goto error;
+                    }
+                    VIR_FREE(copypaste);
+
+                    def->data.spice.copypaste = copypasteVal;
                 }
             }
             cur = cur->next;
@@ -9212,7 +9238,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         }
         if (!children && (def->data.spice.image || def->data.spice.jpeg ||
                           def->data.spice.zlib || def->data.spice.playback ||
-                          def->data.spice.streaming)) {
+                          def->data.spice.streaming || def->data.spice.copypaste)) {
             virBufferAddLit(buf, ">\n");
             children = 1;
         }
@@ -9231,6 +9257,9 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.spice.streaming)
             virBufferAsprintf(buf, "      <streaming mode='%s'/>\n",
                               virDomainGraphicsSpiceStreamingModeTypeToString(def->data.spice.streaming));
+        if (def->data.spice.copypaste)
+            virBufferAsprintf(buf, "      <clipboard copypaste='%s'/>\n",
+                              virDomainGraphicsSpiceClipboardCopypasteTypeToString(def->data.spice.copypaste));
     }
 
     if (children) {

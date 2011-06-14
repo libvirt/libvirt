@@ -29,6 +29,7 @@
       <zlib compression='auto'/>
       <playback compression='on'/>
       <streaming mode='filter'/>
+      <clipboard copypaste='no'/>
     </graphics>
     <video>
       <model type='qxl' vram='18432' heads='1'/>

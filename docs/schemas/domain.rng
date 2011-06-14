@@ -1379,6 +1379,17 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <element name="clipboard">
+                <attribute name="copypaste">
+                  <choice>
+                    <value>yes</value>
+                    <value>no</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
           </interleave>
         </group>
         <group>
