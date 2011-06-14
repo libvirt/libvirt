@@ -170,7 +170,12 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
 virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom);
 virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj);
 
-
+virDomainEventPtr virDomainEventBlockPullNewFromObj(virDomainObjPtr obj,
+                                                    const char *path,
+                                                    int status);
+virDomainEventPtr virDomainEventBlockPullNewFromDom(virDomainPtr dom,
+                                                    const char *path,
+                                                    int status);
 
 int virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
                             virDomainEventPtr event);

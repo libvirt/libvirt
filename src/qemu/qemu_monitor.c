@@ -957,6 +957,18 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorEmitBlockPull(qemuMonitorPtr mon,
+                             const char *diskAlias,
+                             int status)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainBlockPull, mon->vm,
+                          diskAlias, status);
+    return ret;
+}
+
 
 
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon)

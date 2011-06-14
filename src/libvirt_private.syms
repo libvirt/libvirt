@@ -377,6 +377,8 @@ virDomainWatchdogModelTypeToString;
 
 
 # domain_event.h
+virDomainEventBlockPullNewFromObj;
+virDomainEventBlockPullNewFromDom;
 virDomainEventCallbackListAdd;
 virDomainEventCallbackListAddID;
 virDomainEventCallbackListCount;

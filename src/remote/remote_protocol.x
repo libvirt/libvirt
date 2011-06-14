@@ -1923,6 +1923,12 @@ struct remote_domain_event_graphics_msg {
     remote_domain_event_graphics_identity subject<REMOTE_DOMAIN_EVENT_GRAPHICS_IDENTITY_MAX>;
 };
 
+struct remote_domain_event_block_pull_msg {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    int status;
+};
+
 struct remote_domain_managed_save_args {
     remote_nonnull_domain dom;
     unsigned int flags;
@@ -2398,7 +2404,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_BLOCK_PULL_ALL = 230, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_BLOCK_PULL_ABORT = 231, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_BLOCK_PULL_INFO = 232 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_BLOCK_PULL_INFO = 232, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_EVENT_BLOCK_PULL = 233 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

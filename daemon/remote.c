@@ -396,6 +396,37 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int remoteRelayDomainEventBlockPull(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                           virDomainPtr dom,
+                                           const char *path,
+                                           int status,
+                                           void *opaque)
+{
+    struct qemud_client *client = opaque;
+    remote_domain_event_block_pull_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain block pull event %s %d %s %i", dom->name, dom->id, path, status);
+
+    virMutexLock(&client->lock);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain(&data.dom, dom);
+    data.path = (char*)path;
+    data.status = status;
+
+    remoteDispatchDomainEventSend(client,
+                                  REMOTE_PROC_DOMAIN_EVENT_BLOCK_PULL,
+                                  (xdrproc_t)xdr_remote_domain_event_block_pull_msg, &data);
+
+    virMutexUnlock(&client->lock);
+
+    return 0;
+}
+
 
 static int remoteRelayDomainEventControlError(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               virDomainPtr dom,
@@ -434,6 +465,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventGraphics),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOErrorReason),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventControlError),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockPull),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

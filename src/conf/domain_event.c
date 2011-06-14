@@ -84,6 +84,10 @@ struct _virDomainEvent {
             char *authScheme;
             virDomainEventGraphicsSubjectPtr subject;
         } graphics;
+        struct {
+            char *path;
+            int status;
+        } blockPull;
     } data;
 };
 
@@ -500,6 +504,11 @@ void virDomainEventFree(virDomainEventPtr event)
             }
             VIR_FREE(event->data.graphics.subject);
         }
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_BLOCK_PULL:
+        VIR_FREE(event->data.blockPull.path);
+        break;
     }
 
     VIR_FREE(event->dom.name);
@@ -875,6 +884,41 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
+static virDomainEventPtr
+virDomainEventBlockPullNew(int id, const char *name, unsigned char *uuid,
+                           const char *path, int status)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_BLOCK_PULL,
+                                  id, name, uuid);
+
+    if (ev) {
+        if (!(ev->data.blockPull.path = strdup(path))) {
+            virReportOOMError();
+            virDomainEventFree(ev);
+            return NULL;
+        }
+        ev->data.blockPull.status = status;
+    }
+
+    return ev;
+}
+
+virDomainEventPtr virDomainEventBlockPullNewFromObj(virDomainObjPtr obj,
+                                                    const char *path,
+                                                    int status)
+{
+    return virDomainEventBlockPullNew(obj->def->id, obj->def->name,
+                                                 obj->def->uuid, path, status);
+}
+
+virDomainEventPtr virDomainEventBlockPullNewFromDom(virDomainPtr dom,
+                                                    const char *path,
+                                                    int status)
+{
+    return virDomainEventBlockPullNew(dom->id, dom->name, dom->uuid,
+                                                 path, status);
+}
 
 virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom)
 {
@@ -1026,6 +1070,13 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
     case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
         (cb)(conn, dom,
              cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_BLOCK_PULL:
+        ((virConnectDomainEventBlockPullCallback)cb)(conn, dom,
+                                                     event->data.blockPull.path,
+                                                     event->data.blockPull.status,
+                                                     cbopaque);
         break;
 
     default:

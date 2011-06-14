@@ -117,6 +117,10 @@ struct _qemuMonitorCallbacks {
                           const char *authScheme,
                           const char *x509dname,
                           const char *saslUsername);
+    int (*domainBlockPull)(qemuMonitorPtr mon,
+                           virDomainObjPtr vm,
+                           const char *diskAlias,
+                           int status);
 };
 
 
@@ -179,6 +183,10 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
                             const char *authScheme,
                             const char *x509dname,
                             const char *saslUsername);
+int qemuMonitorEmitBlockPull(qemuMonitorPtr mon,
+                             const char *diskAlias,
+                             int status);
+
 
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
