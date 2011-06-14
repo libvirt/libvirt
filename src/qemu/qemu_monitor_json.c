@@ -2653,3 +2653,134 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+static int qemuMonitorJSONGetBlockPullInfoOne(virJSONValuePtr entry,
+                                              const char *device,
+                                              virDomainBlockPullInfoPtr info)
+{
+    const char *this_dev;
+
+    if ((this_dev = virJSONValueObjectGetString(entry, "device")) == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'device'"));
+        return -1;
+    }
+    if (!STREQ(this_dev, device))
+        return -1;
+
+    if (virJSONValueObjectGetNumberUlong(entry, "offset", &info->cur) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'offset'"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(entry, "len", &info->end) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'len'"));
+        return -1;
+    }
+    return 0;
+}
+
+/** qemuMonitorJSONGetBlockPullInfo:
+ * Parse Block Pull information.
+ * The reply can be a JSON array of objects or just an object.
+ */
+static int qemuMonitorJSONGetBlockPullInfo(virJSONValuePtr reply,
+                                           const char *device,
+                                           virDomainBlockPullInfoPtr info)
+{
+    virJSONValuePtr data;
+    int nr_results, i = 0;
+
+    if (!info)
+        return -1;
+
+    if ((data = virJSONValueObjectGet(reply, "return")) == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("reply was missing block_pull progress information"));
+        return -1;
+    }
+
+    if (data->type == VIR_JSON_TYPE_OBJECT) {
+        if (qemuMonitorJSONGetBlockPullInfoOne(data, device, info) != 0)
+            goto not_found;
+        else
+            return 0;
+    } else if (data->type != VIR_JSON_TYPE_ARRAY) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("urecognized format of block pull information"));
+        return -1;
+    }
+
+    if ((nr_results = virJSONValueArraySize(data)) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("unable to determine array size"));
+        return -1;
+    }
+
+    for (i = 0; i < nr_results; i++) {
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        if (qemuMonitorJSONGetBlockPullInfoOne(entry, device, info) == 0)
+            return 0;
+    }
+
+not_found:
+    qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                    _("No associated information for the specified disk"));
+    return -1;
+}
+
+
+int qemuMonitorJSONBlockPull(qemuMonitorPtr mon,
+                             const char *device,
+                             virDomainBlockPullInfoPtr info,
+                             int mode)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    int parse_info = 0;
+
+    if (mode == BLOCK_PULL_MODE_ONE) {
+        cmd = qemuMonitorJSONMakeCommand("block_stream", "s:device", device, NULL);
+        parse_info = 1;
+    } else if (mode == BLOCK_PULL_MODE_ALL) {
+        cmd = qemuMonitorJSONMakeCommand("block_stream", "s:device", device,
+                                         "b:all", 1, NULL);
+    } else if (mode == BLOCK_PULL_MODE_ABORT) {
+        cmd = qemuMonitorJSONMakeCommand("block_stream", "s:device", device,
+                                         "b:stop", 1, NULL);
+    } else if (mode == BLOCK_PULL_MODE_INFO) {
+        cmd = qemuMonitorJSONMakeCommand("query-block-stream", NULL);
+        parse_info = 1;
+    }
+
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0 && virJSONValueObjectHasKey(reply, "error")) {
+        if (qemuMonitorJSONHasError(reply, "DeviceNotActive"))
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                _("No active operation on device: %s"), device);
+        else if (qemuMonitorJSONHasError(reply, "DeviceInUse"))
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                _("Device %s in use"), device);
+        else if (qemuMonitorJSONHasError(reply, "NotSupported"))
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                _("Operation is not supported for device: %s"), device);
+        else
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Unexpected error"));
+        ret = -1;
+    }
+
+    if (ret == 0 && parse_info)
+        ret = qemuMonitorJSONGetBlockPullInfo(reply, device, info);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

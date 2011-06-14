@@ -217,5 +217,9 @@ int qemuMonitorJSONInjectNMI(qemuMonitorPtr mon);
 int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
                               const char *file);
 
+int qemuMonitorJSONBlockPull(qemuMonitorPtr mon,
+                             const char *device,
+                             virDomainBlockPullInfoPtr info,
+                             int mode);
 
 #endif /* QEMU_MONITOR_JSON_H */
