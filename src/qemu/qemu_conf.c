@@ -378,16 +378,16 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-     p = virConfGetValue (conf, "hugetlbfs_mount");
-     CHECK_TYPE ("hugetlbfs_mount", VIR_CONF_STRING);
-     if (p && p->str) {
-         VIR_FREE(driver->hugetlbfs_mount);
-         if (!(driver->hugetlbfs_mount = strdup(p->str))) {
-             virReportOOMError();
-             virConfFree(conf);
-             return -1;
-         }
-     }
+    p = virConfGetValue (conf, "hugetlbfs_mount");
+    CHECK_TYPE ("hugetlbfs_mount", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->hugetlbfs_mount);
+        if (!(driver->hugetlbfs_mount = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
 
     p = virConfGetValue (conf, "mac_filter");
     CHECK_TYPE ("mac_filter", VIR_CONF_LONG);
@@ -398,12 +398,16 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             virReportSystemError(errno,
                                  _("failed to enable mac filter in '%s'"),
                                  __FILE__);
+            virConfFree(conf);
+            return -1;
         }
 
         if ((errno = networkDisableAllFrames(driver))) {
             virReportSystemError(errno,
                          _("failed to add rule to drop all frames in '%s'"),
                                  __FILE__);
+            virConfFree(conf);
+            return -1;
         }
     }
 
