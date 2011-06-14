@@ -1008,63 +1008,63 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_NO_STORAGE_POOL:
             if (info == NULL)
-                    errmsg = _("Storage pool not found");
+                errmsg = _("Storage pool not found");
             else
-                    errmsg = _("Storage pool not found: %s");
+                errmsg = _("Storage pool not found: %s");
             break;
         case VIR_ERR_NO_STORAGE_VOL:
             if (info == NULL)
-                    errmsg = _("Storage volume not found");
+                errmsg = _("Storage volume not found");
             else
-                    errmsg = _("Storage volume not found: %s");
+                errmsg = _("Storage volume not found: %s");
             break;
         case VIR_ERR_INVALID_STORAGE_POOL:
             if (info == NULL)
-                    errmsg = _("invalid storage pool pointer in");
+                errmsg = _("invalid storage pool pointer in");
             else
-                    errmsg = _("invalid storage pool pointer in %s");
+                errmsg = _("invalid storage pool pointer in %s");
             break;
         case VIR_ERR_INVALID_STORAGE_VOL:
             if (info == NULL)
-                    errmsg = _("invalid storage volume pointer in");
+                errmsg = _("invalid storage volume pointer in");
             else
-                    errmsg = _("invalid storage volume pointer in %s");
+                errmsg = _("invalid storage volume pointer in %s");
             break;
         case VIR_WAR_NO_STORAGE:
             if (info == NULL)
-                    errmsg = _("Failed to find a storage driver");
+                errmsg = _("Failed to find a storage driver");
             else
-                    errmsg = _("Failed to find a storage driver: %s");
+                errmsg = _("Failed to find a storage driver: %s");
             break;
         case VIR_WAR_NO_NODE:
             if (info == NULL)
-                    errmsg = _("Failed to find a node driver");
+                errmsg = _("Failed to find a node driver");
             else
-                    errmsg = _("Failed to find a node driver: %s");
+                errmsg = _("Failed to find a node driver: %s");
             break;
         case VIR_ERR_INVALID_NODE_DEVICE:
             if (info == NULL)
-                    errmsg = _("invalid node device pointer");
+                errmsg = _("invalid node device pointer");
             else
-                    errmsg = _("invalid node device pointer in %s");
+                errmsg = _("invalid node device pointer in %s");
             break;
         case VIR_ERR_NO_NODE_DEVICE:
             if (info == NULL)
-                    errmsg = _("Node device not found");
+                errmsg = _("Node device not found");
             else
-                    errmsg = _("Node device not found: %s");
+                errmsg = _("Node device not found: %s");
             break;
         case VIR_ERR_NO_SECURITY_MODEL:
             if (info == NULL)
-                    errmsg = _("Security model not found");
+                errmsg = _("Security model not found");
             else
-                    errmsg = _("Security model not found: %s");
+                errmsg = _("Security model not found: %s");
             break;
         case VIR_ERR_OPERATION_INVALID:
             if (info == NULL)
-                    errmsg = _("Requested operation is not valid");
+                errmsg = _("Requested operation is not valid");
             else
-                    errmsg = _("Requested operation is not valid: %s");
+                errmsg = _("Requested operation is not valid: %s");
             break;
         case VIR_WAR_NO_INTERFACE:
             if (info == NULL)
@@ -1116,21 +1116,21 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_INVALID_NWFILTER:
             if (info == NULL)
-                    errmsg = _("Invalid network filter");
+                errmsg = _("Invalid network filter");
             else
-                    errmsg = _("Invalid network filter: %s");
+                errmsg = _("Invalid network filter: %s");
             break;
         case VIR_ERR_NO_NWFILTER:
             if (info == NULL)
-                    errmsg = _("Network filter not found");
+                errmsg = _("Network filter not found");
             else
-                    errmsg = _("Network filter not found: %s");
+                errmsg = _("Network filter not found: %s");
             break;
         case VIR_ERR_BUILD_FIREWALL:
             if (info == NULL)
-                    errmsg = _("Error while building firewall");
+                errmsg = _("Error while building firewall");
             else
-                    errmsg = _("Error while building firewall: %s");
+                errmsg = _("Error while building firewall: %s");
             break;
         case VIR_ERR_CONFIG_UNSUPPORTED:
             if (info == NULL)
