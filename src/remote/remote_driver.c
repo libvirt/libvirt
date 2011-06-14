@@ -2639,6 +2639,70 @@ done:
     return rv;
 }
 
+static int remoteDomainBlockPull(virDomainPtr domain,
+                                 const char *path,
+                                 virDomainBlockPullInfoPtr info,
+                                 unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_block_pull_args args;
+    remote_domain_block_pull_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.path = (char *)path;
+    args.flags = flags;
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_BLOCK_PULL,
+             (xdrproc_t)xdr_remote_domain_block_pull_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_block_pull_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (info) {
+        info->cur = ret.cur;
+        info->end = ret.end;
+    }
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int remoteDomainGetBlockPullInfo(virDomainPtr domain,
+                                        const char *path,
+                                        virDomainBlockPullInfoPtr info,
+                                        unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_block_pull_info_args args;
+    remote_domain_get_block_pull_info_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.path = (char *)path;
+    args.flags = flags;
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_BLOCK_PULL_INFO,
+             (xdrproc_t)xdr_remote_domain_get_block_pull_info_args,
+               (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_block_pull_info_ret,
+               (char *)&ret) == -1)
+        goto done;
+
+    info->cur = ret.cur;
+    info->end = ret.end;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
@@ -6471,6 +6535,10 @@ static virDriver remote_driver = {
     .domainMigrateFinish3 = remoteDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = remoteDomainMigrateConfirm3, /* 0.9.2 */
     .domainSendKey = remoteDomainSendKey, /* 0.9.3 */
+    .domainBlockPull = remoteDomainBlockPull, /* 0.9.3 */
+    .domainBlockPullAll = remoteDomainBlockPullAll, /* 0.9.3 */
+    .domainBlockPullAbort = remoteDomainBlockPullAbort, /* 0.9.3 */
+    .domainGetBlockPullInfo = remoteDomainGetBlockPullInfo, /* 0.9.3 */
 };
 
 static virNetworkDriver network_driver = {

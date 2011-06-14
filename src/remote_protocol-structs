@@ -654,6 +654,34 @@ struct remote_domain_set_autostart_args {
         remote_nonnull_domain      dom;
         int                        autostart;
 };
+struct remote_domain_block_pull_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        u_int                      flags;
+};
+struct remote_domain_block_pull_ret {
+        uint64_t                   cur;
+        uint64_t                   end;
+};
+struct remote_domain_block_pull_all_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        u_int                      flags;
+};
+struct remote_domain_block_pull_abort_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        u_int                      flags;
+};
+struct remote_domain_get_block_pull_info_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        u_int                      flags;
+};
+struct remote_domain_get_block_pull_info_ret {
+        uint64_t                   cur;
+        uint64_t                   end;
+};
 struct remote_num_of_networks_ret {
         int                        num;
 };
