@@ -73,6 +73,7 @@ OPENWSMAN_REQUIRED="2.2.3"
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
+LIBBLKID_REQUIRED="2.17"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -1643,12 +1644,15 @@ fi
 if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
   AC_PATH_PROG([MOUNT], [mount], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([UMOUNT], [umount], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([MKFS], [mkfs], [], [$PATH:/sbin:/usr/sbin])
   if test "$with_storage_fs" = "yes" ; then
     if test -z "$MOUNT" ; then AC_MSG_ERROR([We need mount for FS storage driver]) ; fi
     if test -z "$UMOUNT" ; then AC_MSG_ERROR([We need umount for FS storage driver]) ; fi
+    if test -z "$MKFS" ; then AC_MSG_ERROR([We need mkfs for FS storage driver]) ; fi
   else
     if test -z "$MOUNT" ; then with_storage_fs=no ; fi
     if test -z "$UMOUNT" ; then with_storage_fs=no ; fi
+    if test -z "$MKFS" ; then with_storage_fs=no ; fi
 
     if test "$with_storage_fs" = "check" ; then with_storage_fs=yes ; fi
   fi
@@ -1659,6 +1663,8 @@ if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
         [Location or name of the mount program])
     AC_DEFINE_UNQUOTED([UMOUNT],["$UMOUNT"],
         [Location or name of the mount program])
+    AC_DEFINE_UNQUOTED([MKFS],["$MKFS"],
+        [Location or name of the mkfs program])
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_FS], [test "$with_storage_fs" = "yes"])
@@ -2303,6 +2309,26 @@ if test "$with_nwfilter" = "yes" ; then
   AC_DEFINE([WITH_NWFILTER], 1, [whether local network filter management driver is available])
 fi
 AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
+
+dnl libblkid is used by several storage drivers; therefore we probe
+dnl for it unconditionally.
+AC_ARG_WITH([libblkid],
+  [AS_HELP_STRING([--with-libblkid],
+    [use libblkid to scan for filesystems and partitions @<:@default=check@:>@])],
+  [],
+  [with_libblkid=check])
+
+if test "x$with_libblkid" = "xyes" || test "x$with_libblkid" = "xcheck"; then
+   PKG_CHECK_MODULES([BLKID],
+     [blkid >= $LIBBLKID_REQUIRED],
+     [with_libblkid="yes"],
+     [with_libblkid="no"])
+fi
+
+if test "x$with_libblkid" = "xyes"; then
+  AC_DEFINE([HAVE_LIBBLKID], [1], [libblkid is present])
+fi
+AM_CONDITIONAL([HAVE_LIBBLKID], [test "x$with_libblkid" = "xyes"])
 
 AC_ARG_WITH([qemu-user],
   AC_HELP_STRING([--with-qemu-user], [username to run QEMU system instance as @<:@default=root@:>@]),
