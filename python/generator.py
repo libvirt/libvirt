@@ -197,6 +197,7 @@ skipped_types = {
      'virConnectDomainEventWatchdogCallback': "No function types in python",
      'virConnectDomainEventIOErrorCallback': "No function types in python",
      'virConnectDomainEventGraphicsCallback': "No function types in python",
+     'virStreamEventCallback': "No function types in python",
      'virEventAddHandleFunc': "No function types in python",
 }
 
@@ -392,13 +393,11 @@ skip_function = (
     'virConnectDomainEventDeregisterAny', # overridden in virConnect.py
     'virSaveLastError', # We have our own python error wrapper
     'virFreeError', # Only needed if we use virSaveLastError
-    'virStreamEventAddCallback',
+    'virStreamFree', # Overridden in libvirt-override-virStream.py
     'virStreamRecvAll',
     'virStreamSendAll',
-    'virStreamRef',
-    'virStreamFree',
 
-    # These have no use for bindings users.
+    # 'Ref' functions have no use for bindings users.
     "virConnectRef",
     "virDomainRef",
     "virInterfaceRef",
@@ -408,6 +407,7 @@ skip_function = (
     "virNWFilterRef",
     "virStoragePoolRef",
     "virStorageVolRef",
+    'virStreamRef',
 
     # This functions shouldn't be called via the bindings (and even the docs
     # contain an explicit warning to that effect). The equivalent should be

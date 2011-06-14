@@ -3616,6 +3616,86 @@ libvirt_virConnectDomainEventDeregisterAny(ATTRIBUTE_UNUSED PyObject * self,
     return (py_retval);
 }
 
+static void
+libvirt_virStreamEventFreeFunc(void *opaque)
+{
+    PyObject *pyobj_stream = (PyObject*)opaque;
+    LIBVIRT_ENSURE_THREAD_STATE;
+    Py_DECREF(pyobj_stream);
+    LIBVIRT_RELEASE_THREAD_STATE;
+}
+
+static void
+libvirt_virStreamEventCallback(virStreamPtr st ATTRIBUTE_UNUSED,
+                               int events,
+                               void *opaque)
+{
+    PyObject *pyobj_cbData = (PyObject *)opaque;
+    PyObject *pyobj_stream;
+    PyObject *pyobj_ret;
+    PyObject *dictKey;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    Py_INCREF(pyobj_cbData);
+    dictKey = libvirt_constcharPtrWrap("stream");
+    pyobj_stream = PyDict_GetItem(pyobj_cbData, dictKey);
+    Py_DECREF(dictKey);
+
+    /* Call the pure python dispatcher */
+    pyobj_ret = PyObject_CallMethod(pyobj_stream,
+                                    (char *)"dispatchStreamEventCallback",
+                                    (char *)"iO",
+                                    events, pyobj_cbData);
+
+    Py_DECREF(pyobj_cbData);
+
+    if (!pyobj_ret) {
+        DEBUG("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
+        PyErr_Print();
+    } else {
+        Py_DECREF(pyobj_ret);
+    }
+
+    LIBVIRT_RELEASE_THREAD_STATE;
+}
+
+static PyObject *
+libvirt_virStreamEventAddCallback(PyObject *self ATTRIBUTE_UNUSED,
+                                  PyObject *args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_stream;
+    PyObject *pyobj_cbData;
+    virStreamPtr stream;
+    virStreamEventCallback cb = libvirt_virStreamEventCallback;
+    int ret;
+    int events;
+
+    if (!PyArg_ParseTuple(args, (char *) "OiO:virStreamEventAddCallback",
+                          &pyobj_stream, &events, &pyobj_cbData)) {
+        DEBUG("%s failed to parse tuple\n", __FUNCTION__);
+        return VIR_PY_INT_FAIL;
+    }
+
+    DEBUG("libvirt_virStreamEventAddCallback(%p, %d, %p) called\n",
+          pyobj_stream, events, pyobj_cbData);
+    stream = PyvirStream_Get(pyobj_stream);
+
+    Py_INCREF(pyobj_cbData);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virStreamEventAddCallback(stream, events, cb, pyobj_cbData,
+                                    libvirt_virStreamEventFreeFunc);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (ret < 0) {
+        Py_DECREF(pyobj_cbData);
+    }
+
+    py_retval = libvirt_intWrap(ret);
+    return py_retval;
+}
 
 /************************************************************************
  *									*
@@ -3634,6 +3714,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectDomainEventDeregister", libvirt_virConnectDomainEventDeregister, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventRegisterAny", libvirt_virConnectDomainEventRegisterAny, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventDeregisterAny", libvirt_virConnectDomainEventDeregisterAny, METH_VARARGS, NULL},
+    {(char *) "virStreamEventAddCallback", libvirt_virStreamEventAddCallback, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetState", libvirt_virDomainGetState, METH_VARARGS, NULL},
     {(char *) "virDomainGetControlInfo", libvirt_virDomainGetControlInfo, METH_VARARGS, NULL},
