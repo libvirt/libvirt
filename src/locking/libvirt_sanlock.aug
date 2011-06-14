@@ -17,7 +17,10 @@ module Libvirt_sanlock =
 
 
    (* Each enty in the config is one of the following three ... *)
-   let entry = bool_entry "require_lease_for_disks"
+   let entry = str_entry "disk_lease_dir"
+             | bool_entry "auto_disk_leases"
+             | int_entry "host_id"
+             | bool_entry "require_lease_for_disks"
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 
