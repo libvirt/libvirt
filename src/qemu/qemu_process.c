@@ -1194,7 +1194,7 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
     virNodeInfo nodeinfo;
     pid_t vcpupid;
     unsigned char *cpumask;
-    int vcpu, cpumaplen, hostcpus, maxcpu;
+    int vcpu, cpumaplen, hostcpus, maxcpu, n;
     unsigned char *cpumap = NULL;
     int ret = -1;
 
@@ -1223,14 +1223,12 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
         return -1;
     }
 
-    for (vcpu = 0; vcpu < def->cputune.nvcpupin; vcpu++) {
-        if (vcpu != def->cputune.vcpupin[vcpu]->vcpuid)
-            continue;
-
+    for (n = 0; n < def->cputune.nvcpupin; n++) {
         int i;
+        vcpu = def->cputune.vcpupin[n]->vcpuid;
 
         memset(cpumap, 0, cpumaplen);
-        cpumask = (unsigned char *)def->cputune.vcpupin[vcpu]->cpumask;
+        cpumask = (unsigned char *)def->cputune.vcpupin[n]->cpumask;
         vcpupid = priv->vcpupids[vcpu];
 
         for (i = 0 ; i < VIR_DOMAIN_CPUMASK_LEN ; i++) {
