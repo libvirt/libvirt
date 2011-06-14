@@ -136,7 +136,11 @@ safewrite(int fd, const void *buf, size_t count)
 #ifdef HAVE_POSIX_FALLOCATE
 int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
 {
-    return posix_fallocate(fd, offset, len);
+    int ret = posix_fallocate(fd, offset, len);
+    if (ret == 0)
+        return 0;
+    errno = ret;
+    return -1;
 }
 #else
 
