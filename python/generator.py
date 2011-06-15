@@ -198,7 +198,8 @@ skipped_types = {
      'virConnectDomainEventIOErrorCallback': "No function types in python",
      'virConnectDomainEventGraphicsCallback': "No function types in python",
      'virStreamEventCallback': "No function types in python",
-     'virEventAddHandleFunc': "No function types in python",
+     'virEventHandleCallback': "No function types in python",
+     'virEventTimeoutCallback': "No function types in python",
 }
 
 #######################################################################
@@ -397,14 +398,6 @@ skip_function = (
     'virStreamSendAll', # Pure python libvirt-override-virStream.py
     'virStreamRecv', # overridden in libvirt-override-virStream.py
     'virStreamSend', # overridden in libvirt-override-virStream.py
-
-    # XXX: Skip for now, some work needed to handle Timeout/Handle callbacks
-    'virEventAddHandle',
-    'virEventRemoveHandle',
-    'virEventUpdateHandle',
-    'virEventAddTimeout',
-    'virEventRemoveTimeout',
-    'virEventUpdateTimeout',
 
     # 'Ref' functions have no use for bindings users.
     "virConnectRef",

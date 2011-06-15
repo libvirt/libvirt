@@ -61,7 +61,6 @@ static char *py_str(PyObject *obj)
     return PyString_AsString(str);
 }
 
-
 /************************************************************************
  *									*
  *		Statistics						*
@@ -2527,6 +2526,30 @@ getLibvirtDomainClassObject (void) {
     Py_INCREF(libvirt_dom_class);
     return libvirt_dom_class;
 }
+
+static PyObject *
+libvirt_lookupPythonFunc(const char *funcname)
+{
+    PyObject *python_cb;
+
+    /* Lookup the python callback */
+    python_cb = PyDict_GetItemString(getLibvirtDictObject(), funcname);
+
+    if (!python_cb) {
+        DEBUG("%s: Error finding %s\n", __FUNCTION__, funcname);
+        PyErr_Print();
+        PyErr_Clear();
+        return NULL;
+    }
+
+    if (!PyCallable_Check(python_cb)) {
+        DEBUG("%s: %s is not callable\n", __FUNCTION__, funcname);
+        return NULL;
+    }
+
+    return python_cb;
+}
+
 /*******************************************
  * Domain Events
  *******************************************/
@@ -2712,19 +2735,8 @@ libvirt_virEventAddHandleFunc  (int fd,
     LIBVIRT_ENSURE_THREAD_STATE;
 
     /* Lookup the python callback */
-    python_cb = PyDict_GetItemString(getLibvirtDictObject(),
-                                     "eventInvokeHandleCallback");
-    if(!python_cb) {
-        DEBUG("%s: Error finding eventInvokeHandleCallback\n", __FUNCTION__);
-        PyErr_Print();
-        PyErr_Clear();
-        goto cleanup;
-    }
-    if (!PyCallable_Check(python_cb)) {
-        char *name ATTRIBUTE_UNUSED;
-        name = py_str(python_cb);
-        DEBUG("%s: %s is not callable\n", __FUNCTION__,
-              name ? name : "libvirt.eventInvokeHandleCallback");
+    python_cb = libvirt_lookupPythonFunc("eventInvokeHandleCallback");
+    if (!python_cb) {
         goto cleanup;
     }
     Py_INCREF(python_cb);
@@ -2829,6 +2841,7 @@ libvirt_virEventRemoveHandleFunc(int watch)
     return retval;
 }
 
+
 static int
 libvirt_virEventAddTimeoutFunc(int timeout,
                                virEventTimeoutCallback cb,
@@ -2849,19 +2862,8 @@ libvirt_virEventAddTimeoutFunc(int timeout,
     LIBVIRT_ENSURE_THREAD_STATE;
 
     /* Lookup the python callback */
-    python_cb = PyDict_GetItemString(getLibvirtDictObject(),
-                                     "eventInvokeTimeoutCallback");
-    if(!python_cb) {
-        DEBUG("%s: Error finding eventInvokeTimeoutCallback\n", __FUNCTION__);
-        PyErr_Print();
-        PyErr_Clear();
-        goto cleanup;
-    }
-    if (!PyCallable_Check(python_cb)) {
-        char *name ATTRIBUTE_UNUSED;
-        name = py_str(python_cb);
-        DEBUG("%s: %s is not callable\n", __FUNCTION__,
-              name ? name : "libvirt.eventInvokeTimeoutCallback");
+    python_cb = libvirt_lookupPythonFunc("eventInvokeTimeoutCallback");
+    if (!python_cb) {
         goto cleanup;
     }
     Py_INCREF(python_cb);
@@ -3079,6 +3081,140 @@ libvirt_virEventInvokeTimeoutCallback(PyObject *self ATTRIBUTE_UNUSED,
     return VIR_PY_INT_SUCCESS;
 }
 
+static void
+libvirt_virEventHandleCallback(int watch,
+                               int fd,
+                               int events,
+                               void *opaque)
+{
+    PyObject *pyobj_cbData = (PyObject *)opaque;
+    PyObject *pyobj_ret;
+    PyObject *python_cb;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    /* Lookup the python callback */
+    python_cb = libvirt_lookupPythonFunc("_dispatchEventHandleCallback");
+    if (!python_cb) {
+        goto cleanup;
+    }
+
+    Py_INCREF(pyobj_cbData);
+
+    /* Call the pure python dispatcher */
+    pyobj_ret = PyObject_CallFunction(python_cb,
+                                      (char *)"iiiO",
+                                      watch, fd, events, pyobj_cbData);
+
+    Py_DECREF(pyobj_cbData);
+
+    if (!pyobj_ret) {
+        DEBUG("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
+        PyErr_Print();
+    } else {
+        Py_DECREF(pyobj_ret);
+    }
+
+cleanup:
+    LIBVIRT_RELEASE_THREAD_STATE;
+}
+
+static PyObject *
+libvirt_virEventAddHandle(PyObject *self ATTRIBUTE_UNUSED,
+                          PyObject *args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_cbData;
+    virEventHandleCallback cb = libvirt_virEventHandleCallback;
+    int events;
+    int fd;
+    int ret;
+
+    if (!PyArg_ParseTuple(args, (char *) "iiO:virEventAddHandle",
+                          &fd, &events, &pyobj_cbData)) {
+        DEBUG("%s failed to parse tuple\n", __FUNCTION__);
+        return VIR_PY_INT_FAIL;
+    }
+
+    Py_INCREF(pyobj_cbData);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virEventAddHandle(fd, events, cb, pyobj_cbData, NULL);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (ret < 0) {
+        Py_DECREF(pyobj_cbData);
+    }
+
+    py_retval = libvirt_intWrap(ret);
+    return py_retval;
+}
+
+static void
+libvirt_virEventTimeoutCallback(int timer,
+                                void *opaque)
+{
+    PyObject *pyobj_cbData = (PyObject *)opaque;
+    PyObject *pyobj_ret;
+    PyObject *python_cb;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    /* Lookup the python callback */
+    python_cb = libvirt_lookupPythonFunc("_dispatchEventTimeoutCallback");
+    if (!python_cb) {
+        goto cleanup;
+    }
+
+    Py_INCREF(pyobj_cbData);
+
+    /* Call the pure python dispatcher */
+    pyobj_ret = PyObject_CallFunction(python_cb,
+                                      (char *)"iO",
+                                      timer, pyobj_cbData);
+
+    Py_DECREF(pyobj_cbData);
+
+    if (!pyobj_ret) {
+        DEBUG("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
+        PyErr_Print();
+    } else {
+        Py_DECREF(pyobj_ret);
+    }
+
+cleanup:
+    LIBVIRT_RELEASE_THREAD_STATE;
+}
+
+static PyObject *
+libvirt_virEventAddTimeout(PyObject *self ATTRIBUTE_UNUSED,
+                           PyObject *args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_cbData;
+    virEventTimeoutCallback cb = libvirt_virEventTimeoutCallback;
+    int timeout;
+    int ret;
+
+    if (!PyArg_ParseTuple(args, (char *) "iO:virEventAddTimeout",
+                          &timeout, &pyobj_cbData)) {
+        DEBUG("%s failed to parse tuple\n", __FUNCTION__);
+        return VIR_PY_INT_FAIL;
+    }
+
+    Py_INCREF(pyobj_cbData);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virEventAddTimeout(timeout, cb, pyobj_cbData, NULL);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (ret < 0) {
+        Py_DECREF(pyobj_cbData);
+    }
+
+    py_retval = libvirt_intWrap(ret);
+    return py_retval;
+}
 
 static void
 libvirt_virConnectDomainEventFreeFunc(void *opaque)
@@ -3818,6 +3954,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virStoragePoolGetUUIDString", libvirt_virStoragePoolGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virStoragePoolLookupByUUID", libvirt_virStoragePoolLookupByUUID, METH_VARARGS, NULL},
     {(char *) "virEventRegisterImpl", libvirt_virEventRegisterImpl, METH_VARARGS, NULL},
+    {(char *) "virEventAddHandle", libvirt_virEventAddHandle, METH_VARARGS, NULL},
+    {(char *) "virEventAddTimeout", libvirt_virEventAddTimeout, METH_VARARGS, NULL},
     {(char *) "virEventInvokeHandleCallback", libvirt_virEventInvokeHandleCallback, METH_VARARGS, NULL},
     {(char *) "virEventInvokeTimeoutCallback", libvirt_virEventInvokeTimeoutCallback, METH_VARARGS, NULL},
     {(char *) "virNodeListDevices", libvirt_virNodeListDevices, METH_VARARGS, NULL},
