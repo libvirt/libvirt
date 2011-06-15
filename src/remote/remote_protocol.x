@@ -352,7 +352,12 @@ struct remote_node_get_memory_stats {
  *
  * 'remote_CALL_ret' members that are filled via call-by-reference must be
  * annotated with a insert@<offset> comment to indicate the offset in the
- * parameter list of the function to be called. */
+ * parameter list of the function to be called.
+ *
+ * If the 'remote_CALL_ret' maps to a struct in the public API then it is
+ * also filled via call-by-reference and must be annotated with a
+ * insert@<offset> comment to indicate the offset in the parameter list of
+ * the function to be called. */
 
 struct remote_open_args {
     /* NB. "name" might be NULL although in practice you can't
@@ -409,7 +414,7 @@ struct remote_get_max_vcpus_ret {
     int max_vcpus;
 };
 
-struct remote_node_get_info_ret {
+struct remote_node_get_info_ret { /* insert@1 */
     char model[32];
     unsigned hyper memory;
     int cpus;
@@ -537,7 +542,7 @@ struct remote_domain_block_stats_args {
     remote_nonnull_string path;
 };
 
-struct remote_domain_block_stats_ret {
+struct remote_domain_block_stats_ret { /* insert@2 */
     hyper rd_req;
     hyper rd_bytes;
     hyper wr_req;
@@ -550,7 +555,7 @@ struct remote_domain_interface_stats_args {
     remote_nonnull_string path;
 };
 
-struct remote_domain_interface_stats_ret {
+struct remote_domain_interface_stats_ret { /* insert@2 */
     hyper rx_bytes;
     hyper rx_packets;
     hyper rx_errs;
@@ -605,7 +610,7 @@ struct remote_domain_get_block_info_args {
     unsigned int flags;
 };
 
-struct remote_domain_get_block_info_ret {
+struct remote_domain_get_block_info_ret { /* insert@2 */
     unsigned hyper allocation;
     unsigned hyper capacity;
     unsigned hyper physical;
@@ -713,7 +718,7 @@ struct remote_domain_get_info_args {
     remote_nonnull_domain dom;
 };
 
-struct remote_domain_get_info_ret {
+struct remote_domain_get_info_ret { /* insert@1 */
     unsigned char state;
     unsigned hyper maxMem;
     unsigned hyper memory;
@@ -1400,7 +1405,7 @@ struct remote_storage_pool_get_info_args {
     remote_nonnull_storage_pool pool;
 };
 
-struct remote_storage_pool_get_info_ret {
+struct remote_storage_pool_get_info_ret { /* insert@1 */
     unsigned char state;
     unsigned hyper capacity;
     unsigned hyper allocation;
@@ -1510,7 +1515,7 @@ struct remote_storage_vol_get_info_args {
     remote_nonnull_storage_vol vol;
 };
 
-struct remote_storage_vol_get_info_ret {
+struct remote_storage_vol_get_info_ret { /* insert@1 */
     char type;
     unsigned hyper capacity;
     unsigned hyper allocation;
@@ -1827,7 +1832,7 @@ struct remote_domain_get_job_info_args {
     remote_nonnull_domain dom;
 };
 
-struct remote_domain_get_job_info_ret {
+struct remote_domain_get_job_info_ret { /* insert@1 */
     int type;
 
     unsigned hyper timeElapsed;

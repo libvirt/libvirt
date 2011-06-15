@@ -95,8 +95,9 @@ while (<PROTOCOL>) {
         $collect_args_members = 1;
         $collect_ret_members = 0;
         $last_name = $name;
-    } elsif (/^struct ${structprefix}_(.*)_ret/) {
+    } elsif (/^struct ${structprefix}_(.*)_ret\s+{(.*)$/) {
         $name = $1;
+        $flags = $2;
         $ProcName = name_to_ProcName ($name);
 
         if (exists $calls{$name}) {
@@ -110,6 +111,14 @@ while (<PROTOCOL>) {
                 ret => "${structprefix}_${name}_ret",
                 ret_members => []
             }
+        }
+
+        if ($flags ne "" and ($opt_b or $opt_k)) {
+            if (!($flags =~ m/^\s*\/\*\s*insert@(\d+)\s*\*\/\s*$/)) {
+                die "invalid generator flags for $calls{$name}->{ret}";
+            }
+
+            $calls{$name}->{ret_offset} = int($1);
         }
 
         $collect_args_members = 0;
@@ -668,29 +677,26 @@ elsif ($opt_b) {
 
         # select struct type for multi-return-value functions
         if ($multi_ret) {
-            if (! @args_list) {
+            if (!(defined $call->{ret_offset})) {
+                die "multi-return-value without insert@<offset> annotation: $call->{ret}";
+            }
+
+            if (!@args_list) {
                 push(@args_list, "conn");
             }
 
             my $struct_name = $call->{ProcName};
             $struct_name =~ s/Get//;
 
-            if ($call->{ProcName} eq "DomainGetBlockInfo") {
-                # SPECIAL: virDomainGetBlockInfo has flags parameter after
-                #          the struct parameter in its signature
-                my $flags = pop(@args_list);
-                push(@args_list, "&tmp");
-                push(@args_list, $flags);
-            } elsif ($call->{ProcName} eq "DomainBlockStats" ||
-                     $call->{ProcName} eq "DomainInterfaceStats") {
+            splice(@args_list, $call->{ret_offset}, 0, ("&tmp"));
+
+            if ($call->{ProcName} eq "DomainBlockStats" ||
+                $call->{ProcName} eq "DomainInterfaceStats") {
                 # SPECIAL: virDomainBlockStats and virDomainInterfaceStats
                 #          have a 'Struct' suffix on the actual struct name
                 #          and take the struct size as additional argument
                 $struct_name .= "Struct";
-                push(@args_list, "&tmp");
-                push(@args_list, "sizeof tmp");
-            } else {
-                push(@args_list, "&tmp");
+                splice(@args_list, $call->{ret_offset} + 1, 0, ("sizeof tmp"));
             }
 
             push(@vars_list, "vir$struct_name tmp");
@@ -1012,14 +1018,14 @@ elsif ($opt_k) {
                                          "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
                                          "        goto done;\n" .
                                          "    }");
-                } elsif ($args_member =~ m/^(unsigned )?int (\S+);\s*\/\*\s*call-by-reference\s*\*\//) {
-                    my $type_name = $1; $type_name .= "int *";
+                } elsif ($args_member =~ m/^((?:unsigned )?int) (\S+);\s*\/\*\s*call-by-reference\s*\*\//) {
+                    my $type_name = "$1 *";
                     my $arg_name = $2;
 
                     push(@args_list, "$type_name $arg_name");
                     push(@setters_list, "args.$arg_name = *$arg_name;");
-                } elsif ($args_member =~ m/^(unsigned )?int (\S+);/) {
-                    my $type_name = $1; $type_name .= "int";
+                } elsif ($args_member =~ m/^((?:unsigned )?int) (\S+);/) {
+                    my $type_name = $1;
                     my $arg_name = $2;
 
                     push(@args_list, "$type_name $arg_name");
