@@ -25,6 +25,70 @@
         ret = libvirtmod.virStreamEventAddCallback(self._o, events, cbData)
         if ret == -1: raise libvirtError ('virStreamEventAddCallback() failed')
 
+    def recvAll(self, handler, opaque):
+        """Receive the entire data stream, sending the data to the
+        requested data sink. This is simply a convenient alternative
+        to virStreamRecv, for apps that do blocking-I/o.
+
+        A hypothetical handler function looks like:
+
+            def handler(stream, # virStream instance
+                        buf,    # string containing received data
+                        opaque): # extra data passed to recvAll as opaque
+                fd = opaque
+                return os.write(fd, buf)
+        """
+        while True:
+            got = self.recv(1024*64)
+            if got == -2:
+                raise libvirtError("cannot use recvAll with "
+                                   "nonblocking stream")
+            if len(got) == 0:
+                break
+
+            try:
+                ret = handler(self, got, opaque)
+                if type(ret) is int and ret < 0:
+                    raise RuntimeError("recvAll handler returned %d" % ret)
+            except Exception, e:
+                try:
+                    self.abort()
+                except:
+                    pass
+                raise e
+
+    def sendAll(self, handler, opaque):
+        """
+        Send the entire data stream, reading the data from the
+        requested data source. This is simply a convenient alternative
+        to virStreamSend, for apps that do blocking-I/o.
+
+        A hypothetical handler function looks like:
+
+            def handler(stream, # virStream instance
+                        nbytes, # int amt of data to read
+                        opaque): # extra data passed to recvAll as opaque
+                fd = opaque
+                return os.read(fd, nbytes)
+        """
+        while True:
+            try:
+                got = handler(self, 1024*64, opaque)
+            except:
+                try:
+                    self.abort()
+                except:
+                    pass
+                raise e
+
+            if got == "":
+                break
+
+            ret = self.send(got)
+            if ret == -2:
+                raise libvirtError("cannot use recvAll with "
+                                   "nonblocking stream")
+
     def recv(self, nbytes):
         """Write a series of bytes to the stream. This method may
         block the calling application for an arbitrary amount

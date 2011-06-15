@@ -393,8 +393,8 @@ skip_function = (
     'virFreeError', # Only needed if we use virSaveLastError
 
     'virStreamFree', # Overridden in libvirt-override-virStream.py
-    'virStreamRecvAll', # XXX: Can be written in pure python?
-    'virStreamSendAll', # XXX: Can be written in pure python?
+    'virStreamRecvAll', # Pure python libvirt-override-virStream.py
+    'virStreamSendAll', # Pure python libvirt-override-virStream.py
     'virStreamRecv', # overridden in libvirt-override-virStream.py
     'virStreamSend', # overridden in libvirt-override-virStream.py
 
