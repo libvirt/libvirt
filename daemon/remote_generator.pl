@@ -1225,21 +1225,14 @@ elsif ($opt_k) {
 
         # select struct type for multi-return-value functions
         if ($multi_ret) {
-            my $last_arg;
+            if (!(defined $call->{ret_offset})) {
+                die "multi-return-value without insert@<offset> annotation: $call->{ret}";
+            }
+
             my $struct_name = $call->{ProcName};
             $struct_name =~ s/Get//;
 
-            if ($call->{ProcName} eq "DomainGetBlockInfo") {
-                # SPECIAL: virDomainGetBlockInfo has flags parameter after
-                #          the struct parameter in its signature
-                $last_arg = pop(@args_list);
-            }
-
-            push(@args_list, "vir${struct_name}Ptr result");
-
-            if (defined $last_arg) {
-                push(@args_list, $last_arg);
-            }
+            splice(@args_list, $call->{ret_offset}, 0, ("vir${struct_name}Ptr result"));
         }
 
         if ($call->{streamflag} ne "none") {
