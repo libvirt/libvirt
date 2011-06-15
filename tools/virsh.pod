@@ -1414,13 +1414,19 @@ used to represent properties of snapshots.
 
 =over 4
 
-=item B<snapshot-create> I<domain> I<xmlfile>
+=item B<snapshot-create> I<domain> optional I<xmlfile>
 
 Create a snapshot for domain I<domain> with the properties specified in
 I<xmlfile>.  The only properties settable for a domain snapshot are the
 <name> and <description>; the rest of the fields are ignored, and
 automatically filled in by libvirt.  If I<xmlfile> is completely omitted,
 then libvirt will choose a value for all fields.
+
+=item B<snapshot-create-as> I<domain> optional I<name> I<description>
+
+Create a snapshot for domain I<domain> with the given <name> and
+<description>; if either value is omitted, libvirt will choose a
+value.
 
 =item B<snapshot-current> I<domain>
 

@@ -11130,6 +11130,106 @@ cleanup:
 }
 
 /*
+ * "snapshot-create-as" command
+ */
+static const vshCmdInfo info_snapshot_create_as[] = {
+    {"help", N_("Create a snapshot from a set of args")},
+    {"desc", N_("Create a snapshot (disk and RAM) from arguments")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_snapshot_create_as[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"name", VSH_OT_DATA, 0, N_("name of snapshot")},
+    {"description", VSH_OT_DATA, 0, N_("description of snapshot")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    char *buffer = NULL;
+    virDomainSnapshotPtr snapshot = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    char *doc = NULL;
+    const char *name = NULL;
+    const char *desc = NULL;
+    char *parsed_name = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    if (vshCommandOptString(cmd, "name", &name) < 0 ||
+        vshCommandOptString(cmd, "description", &desc) < 0) {
+        vshError(ctl, _("argument must not be empty"));
+        goto cleanup;
+    }
+
+    virBufferAddLit(&buf, "<domainsnapshot>\n");
+    if (name)
+        virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
+    if (desc)
+        virBufferAsprintf(&buf, "  <description>%s</description>\n", desc);
+    virBufferAddLit(&buf, "</domainsnapshot>\n");
+
+    buffer = virBufferContentAndReset(&buf);
+    if (buffer == NULL) {
+        vshError(ctl, "%s", _("Out of memory"));
+        goto cleanup;
+    }
+
+    snapshot = virDomainSnapshotCreateXML(dom, buffer, 0);
+    if (snapshot == NULL)
+        goto cleanup;
+
+    doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
+    if (!doc)
+        goto cleanup;
+
+    xml = xmlReadDoc((const xmlChar *) doc, "domainsnapshot.xml", NULL,
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOWARNING);
+    if (!xml)
+        goto cleanup;
+    ctxt = xmlXPathNewContext(xml);
+    if (!ctxt)
+        goto cleanup;
+
+    parsed_name = virXPathString("string(/domainsnapshot/name)", ctxt);
+    if (!parsed_name) {
+        vshError(ctl, "%s",
+                 _("Could not find 'name' element in domain snapshot XML"));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Domain snapshot %s created\n"), name ? name : parsed_name);
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(parsed_name);
+    xmlXPathFreeContext(ctxt);
+    if (xml)
+        xmlFreeDoc(xml);
+    if (snapshot)
+        virDomainSnapshotFree(snapshot);
+    VIR_FREE(doc);
+    VIR_FREE(buffer);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
+/*
  * "snapshot-current" command
  */
 static const vshCmdInfo info_snapshot_current[] = {
@@ -11768,6 +11868,8 @@ static const vshCmdDef virshCmds[] = {
 static const vshCmdDef snapshotCmds[] = {
     {"snapshot-create", cmdSnapshotCreate, opts_snapshot_create,
      info_snapshot_create, 0},
+    {"snapshot-create-as", cmdSnapshotCreateAs, opts_snapshot_create_as,
+     info_snapshot_create_as, 0},
     {"snapshot-current", cmdSnapshotCurrent, opts_snapshot_current,
      info_snapshot_current, 0},
     {"snapshot-delete", cmdSnapshotDelete, opts_snapshot_delete,
