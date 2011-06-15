@@ -318,33 +318,41 @@ struct _virNodeInfo {
 /**
  * VIR_CPU_STATS_KERNEL:
  *
- * Macro for the cumulative CPU time which spends by kernel,
- * when the node booting up.(in nanoseconds).
+ * Macro for the cumulative CPU time which was spent by the kernel,
+ * since the node booting up (in nanoseconds).
  */
 #define VIR_CPU_STATS_KERNEL "kernel"
 
 /**
- * The cumulative CPU time which spends by user processes,
- * when the node booting up.(in nanoseconds).
+ * VIR_CPU_STATS_USER:
+ *
+ * The cumulative CPU time which was spent by user processes,
+ * since the node booting up (in nanoseconds).
  */
 #define VIR_CPU_STATS_USER "user"
 
 /**
+ * VIR_CPU_STATS_IDLE:
+ *
  * The cumulative idle CPU time,
- * when the node booting up.(in nanoseconds).
+ * since the node booting up (in nanoseconds).
  */
 #define VIR_CPU_STATS_IDLE "idle"
 
 /**
+ * VIR_CPU_STATS_IOWAIT:
+ *
  * The cumulative I/O wait CPU time,
- * when the node booting up.(in nanoseconds).
+ * since the node booting up (in nanoseconds).
  */
 #define VIR_CPU_STATS_IOWAIT "iowait"
 
 /**
- * The CPU utilization.
- * The usage value is in percent and 100% represents all CPUs on
- * the server.
+ * VIR_CPU_STATS_UTILIZATION:
+ *
+ * The CPU utilization of a node.
+ * The usage value is in percent and 100% represents all CPUs of
+ * the node.
  */
 #define VIR_CPU_STATS_UTILIZATION "utilization"
 
@@ -352,7 +360,7 @@ struct _virNodeInfo {
  * virCPUStats:
  *
  * a virNodeCPUStats is a structure filled by virNodeGetCPUStats()
- * and providing the information for the cpu stats of the node.
+ * providing information about the CPU stats of the node.
  */
 typedef struct _virCPUStats virCPUStats;
 
@@ -388,7 +396,7 @@ struct _virCPUStats {
  * VIR_MEMORY_STATS_FREE:
  *
  * Macro for the free memory of specified cell:
- * On linux, it includes buffer and cached memory, in case of
+ * On Linux, it includes buffer and cached memory, in case of
  * VIR_MEMORY_STATS_ALL_CELLS.
  */
 
@@ -397,7 +405,7 @@ struct _virCPUStats {
 /**
  * VIR_MEMORY_STATS_BUFFERS:
  *
- * Macro for the buffer memory: On linux, it only returns in case of
+ * Macro for the buffer memory: On Linux, it is only returned in case of
  * VIR_MEMORY_STATS_ALL_CELLS.
  */
 
@@ -406,7 +414,7 @@ struct _virCPUStats {
 /**
  * VIR_MEMORY_STATS_CACHED:
  *
- * Macro for the cached memory: On linux, it only returns in case of
+ * Macro for the cached memory: On Linux, it is only returned in case of
  * VIR_MEMORY_STATS_ALL_CELLS.
  */
 
@@ -416,7 +424,7 @@ struct _virCPUStats {
  * virMemoryStats:
  *
  * a virMemoryStats is a structure filled by virNodeGetMemoryStats()
- * and providing the information of the memory of the Node.
+ * providing information about the memory of the node.
  */
 
 typedef struct _virMemoryStats virMemoryStats;
