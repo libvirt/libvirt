@@ -11142,6 +11142,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"name", VSH_OT_DATA, 0, N_("name of snapshot")},
     {"description", VSH_OT_DATA, 0, N_("description of snapshot")},
+    {"print-xml", VSH_OT_BOOL, 0, N_("print XML document rather than create")},
     {NULL, 0, 0, NULL}
 };
 
@@ -11183,6 +11184,12 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     buffer = virBufferContentAndReset(&buf);
     if (buffer == NULL) {
         vshError(ctl, "%s", _("Out of memory"));
+        goto cleanup;
+    }
+
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s\n",  buffer);
+        ret = true;
         goto cleanup;
     }
 

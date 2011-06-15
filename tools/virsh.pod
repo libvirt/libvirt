@@ -1422,11 +1422,13 @@ I<xmlfile>.  The only properties settable for a domain snapshot are the
 automatically filled in by libvirt.  If I<xmlfile> is completely omitted,
 then libvirt will choose a value for all fields.
 
-=item B<snapshot-create-as> I<domain> optional I<name> I<description>
+=item B<snapshot-create-as> I<domain> optional I<--print-xml>
+I<name> I<description>
 
 Create a snapshot for domain I<domain> with the given <name> and
 <description>; if either value is omitted, libvirt will choose a
-value.
+value.  If I<--print-xml> is specified, then XML appropriate for
+I<snapshot-create> is output, rather than actually creating a snapshot.
 
 =item B<snapshot-current> I<domain>
 
