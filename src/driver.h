@@ -568,7 +568,7 @@ typedef int
     (*virDrvDomainSendKey)(virDomainPtr dom, unsigned int codeset,
                            unsigned int holdtime,
                            unsigned int *keycodes,
-                           unsigned int nkeycodes,
+                           int nkeycodes,
                            unsigned int flags);
 
 typedef char *

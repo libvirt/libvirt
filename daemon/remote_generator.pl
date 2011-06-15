@@ -1007,7 +1007,7 @@ elsif ($opt_k) {
                     my $limit = $3;
 
                     push(@args_list, "${type_name} *$arg_name");
-                    push(@args_list, "unsigned int ${arg_name}len");
+                    push(@args_list, "int ${arg_name}len");
                     push(@setters_list, "args.$arg_name.${arg_name}_val = $arg_name;");
                     push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
                     push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });

@@ -6653,7 +6653,7 @@ int virDomainSendKey(virDomainPtr domain,
                      unsigned int codeset,
                      unsigned int holdtime,
                      unsigned int *keycodes,
-                     unsigned int nkeycodes,
+                     int nkeycodes,
                      unsigned int flags)
 {
     virConnectPtr conn;
@@ -6663,7 +6663,7 @@ int virDomainSendKey(virDomainPtr domain,
     virResetLastError();
 
     if (keycodes == NULL ||
-        nkeycodes == 0 || nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
+        nkeycodes <= 0 || nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
         virLibDomainError(VIR_ERR_OPERATION_INVALID, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
