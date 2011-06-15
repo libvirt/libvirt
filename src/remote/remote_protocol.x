@@ -2397,7 +2397,7 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209, /* autogen autogen | readstream@1 */
     REMOTE_PROC_DOMAIN_INJECT_NMI = 210, /* autogen autogen */
 
-    REMOTE_PROC_DOMAIN_SCREENSHOT = 211, /* skipgen autogen | readstream@1 */
+    REMOTE_PROC_DOMAIN_SCREENSHOT = 211, /* autogen autogen | readstream@1 */
     REMOTE_PROC_DOMAIN_GET_STATE = 212, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_BEGIN3 = 213, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE3 = 214, /* skipgen skipgen */

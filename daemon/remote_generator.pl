@@ -351,6 +351,7 @@ elsif ($opt_b) {
         my @optionals_list = ();
         my @getters_list = ();
         my @args_list = ();
+        my @prepare_ret_list = ();
         my @ret_list = ();
         my @free_list = ();
         my @free_list_on_error = ("remoteDispatchError(rerr);");
@@ -547,6 +548,27 @@ elsif ($opt_b) {
                         push(@vars_list, "char *$1");
                         push(@ret_list, "ret->$1 = $1;");
                     }
+
+                    $single_ret_var = $1;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/^remote_string (\S+);/) {
+                    push(@vars_list, "char *$1 = NULL");
+                    push(@vars_list, "char **$1_p = NULL");
+                    push(@ret_list, "ret->$1 = $1_p;");
+                    push(@free_list, "    VIR_FREE($1);");
+                    push(@free_list_on_error, "VIR_FREE($1_p);");
+                    push(@prepare_ret_list,
+                         "if (VIR_ALLOC($1_p) < 0) {\n" .
+                         "        virReportOOMError();\n" .
+                         "        goto cleanup;\n" .
+                         "    }\n" .
+                         "    \n" .
+                         "    *$1_p = strdup($1);\n" .
+                         "    if (*$1_p == NULL) {\n" .
+                         "        virReportOOMError();\n" .
+                         "        goto cleanup;\n" .
+                         "    }\n");
 
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
@@ -861,6 +883,12 @@ elsif ($opt_b) {
 
             print ") < 0)\n";
             print "        goto cleanup;\n";
+            print "\n";
+        }
+
+        if (@prepare_ret_list) {
+            print "    ";
+            print join("\n    ", @prepare_ret_list);
             print "\n";
         }
 
