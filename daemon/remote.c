@@ -1450,7 +1450,7 @@ remoteDispatchNodeGetCPUStats (struct qemud_server *server ATTRIBUTE_UNUSED,
                                remote_node_get_cpu_stats_args *args,
                                remote_node_get_cpu_stats_ret *ret)
 {
-    virCPUStatsPtr params = NULL;
+    virNodeCPUStatsPtr params = NULL;
     int i;
     int cpuNum = args->cpuNum;
     int nparams = args->nparams;
@@ -1527,7 +1527,7 @@ remoteDispatchNodeGetMemoryStats (struct qemud_server *server ATTRIBUTE_UNUSED,
                                   remote_node_get_memory_stats_args *args,
                                   remote_node_get_memory_stats_ret *ret)
 {
-    virMemoryStatsPtr params = NULL;
+    virNodeMemoryStatsPtr params = NULL;
     int i;
     int cellNum = args->cellNum;
     int nparams = args->nparams;

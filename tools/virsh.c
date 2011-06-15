@@ -3910,8 +3910,8 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     int i, j;
     bool flag_utilization = false;
     bool flag_percent = vshCommandOptBool(cmd, "percent");
-    int cpuNum = VIR_CPU_STATS_ALL_CPUS;
-    virCPUStatsPtr params;
+    int cpuNum = VIR_NODE_CPU_STATS_ALL_CPUS;
+    virNodeCPUStatsPtr params;
     int nparams = 0;
     bool ret = false;
     struct cpu_stats {
@@ -3955,15 +3955,15 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
         for (j = 0; j < nparams; j++) {
             unsigned long long value = params[j].value;
 
-            if (STREQ(params[j].field, VIR_CPU_STATS_KERNEL)) {
+            if (STREQ(params[j].field, VIR_NODE_CPU_STATS_KERNEL)) {
                 cpu_stats[i].sys = value;
-            } else if (STREQ(params[j].field, VIR_CPU_STATS_USER)) {
+            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_USER)) {
                 cpu_stats[i].user = value;
-            } else if (STREQ(params[j].field, VIR_CPU_STATS_IDLE)) {
+            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_IDLE)) {
                 cpu_stats[i].idle = value;
-            } else if (STREQ(params[j].field, VIR_CPU_STATS_IOWAIT)) {
+            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_IOWAIT)) {
                 cpu_stats[i].iowait = value;
-            } else if (STREQ(params[j].field, VIR_CPU_STATS_UTILIZATION)) {
+            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_UTILIZATION)) {
                 cpu_stats[i].util = value;
                 flag_utilization = true;
             }
@@ -4037,8 +4037,8 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
 {
     int nparams = 0;
     unsigned int i = 0;
-    int cellNum = VIR_MEMORY_STATS_ALL_CELLS;
-    virMemoryStatsPtr params = NULL;
+    int cellNum = VIR_NODE_MEMORY_STATS_ALL_CELLS;
+    virNodeMemoryStatsPtr params = NULL;
     bool ret = false;
 
     if (!vshConnectionUsability(ctl, ctl->conn))

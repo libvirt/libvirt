@@ -340,135 +340,130 @@ struct _virNodeInfo {
 };
 
 /**
- * VIR_CPU_STATS_FIELD_LENGTH:
+ * VIR_NODE_CPU_STATS_FIELD_LENGTH:
  *
  * Macro providing the field length of virNodeCPUStats
  */
-#define VIR_CPU_STATS_FIELD_LENGTH 80
+#define VIR_NODE_CPU_STATS_FIELD_LENGTH 80
 
 /**
- * VIR_CPU_STATS_ALL_CPUS:
+ * VIR_NODE_CPU_STATS_ALL_CPUS:
  *
  * Macro for the total CPU time/utilization
  */
-#define VIR_CPU_STATS_ALL_CPUS (-1)
+#define VIR_NODE_CPU_STATS_ALL_CPUS (-1)
 
 /**
- * VIR_CPU_STATS_KERNEL:
+ * VIR_NODE_CPU_STATS_KERNEL:
  *
  * Macro for the cumulative CPU time which was spent by the kernel,
  * since the node booting up (in nanoseconds).
  */
-#define VIR_CPU_STATS_KERNEL "kernel"
+#define VIR_NODE_CPU_STATS_KERNEL "kernel"
 
 /**
- * VIR_CPU_STATS_USER:
+ * VIR_NODE_CPU_STATS_USER:
  *
  * The cumulative CPU time which was spent by user processes,
  * since the node booting up (in nanoseconds).
  */
-#define VIR_CPU_STATS_USER "user"
+#define VIR_NODE_CPU_STATS_USER "user"
 
 /**
- * VIR_CPU_STATS_IDLE:
+ * VIR_NODE_CPU_STATS_IDLE:
  *
  * The cumulative idle CPU time,
  * since the node booting up (in nanoseconds).
  */
-#define VIR_CPU_STATS_IDLE "idle"
+#define VIR_NODE_CPU_STATS_IDLE "idle"
 
 /**
- * VIR_CPU_STATS_IOWAIT:
+ * VIR_NODE_CPU_STATS_IOWAIT:
  *
  * The cumulative I/O wait CPU time,
  * since the node booting up (in nanoseconds).
  */
-#define VIR_CPU_STATS_IOWAIT "iowait"
+#define VIR_NODE_CPU_STATS_IOWAIT "iowait"
 
 /**
- * VIR_CPU_STATS_UTILIZATION:
+ * VIR_NODE_CPU_STATS_UTILIZATION:
  *
  * The CPU utilization of a node.
  * The usage value is in percent and 100% represents all CPUs of
  * the node.
  */
-#define VIR_CPU_STATS_UTILIZATION "utilization"
+#define VIR_NODE_CPU_STATS_UTILIZATION "utilization"
 
 /**
- * virCPUStats:
+ * virNodeCPUStats:
  *
  * a virNodeCPUStats is a structure filled by virNodeGetCPUStats()
  * providing information about the CPU stats of the node.
  */
-typedef struct _virCPUStats virCPUStats;
+typedef struct _virNodeCPUStats virNodeCPUStats;
 
-struct _virCPUStats {
-    char field[VIR_CPU_STATS_FIELD_LENGTH];
+struct _virNodeCPUStats {
+    char field[VIR_NODE_CPU_STATS_FIELD_LENGTH];
     unsigned long long value;
 };
 
 /**
- * VIR_MEMORY_STATS_FIELD_LENGTH:
+ * VIR_NODE_MEMORY_STATS_FIELD_LENGTH:
  *
- * Macro providing the field length of virMemoryStats
+ * Macro providing the field length of virNodeMemoryStats
  */
-#define VIR_MEMORY_STATS_FIELD_LENGTH 80
+#define VIR_NODE_MEMORY_STATS_FIELD_LENGTH 80
 
 /**
- * VIR_MEMORY_STATS_ALL_CELLS:
+ * VIR_NODE_MEMORY_STATS_ALL_CELLS:
  *
  * Macro for the total memory of all cells.
  */
-#define VIR_MEMORY_STATS_ALL_CELLS (-1)
+#define VIR_NODE_MEMORY_STATS_ALL_CELLS (-1)
 
 /**
- * VIR_MEMORY_STATS_TOTAL:
+ * VIR_NODE_MEMORY_STATS_TOTAL:
  *
  * Macro for the total memory of specified cell:
  * it represents the maximum memory.
  */
-
-#define VIR_MEMORY_STATS_TOTAL "total"
+#define VIR_NODE_MEMORY_STATS_TOTAL "total"
 
 /**
- * VIR_MEMORY_STATS_FREE:
+ * VIR_NODE_MEMORY_STATS_FREE:
  *
  * Macro for the free memory of specified cell:
  * On Linux, it includes buffer and cached memory, in case of
- * VIR_MEMORY_STATS_ALL_CELLS.
+ * VIR_NODE_MEMORY_STATS_ALL_CELLS.
  */
-
-#define VIR_MEMORY_STATS_FREE "free"
+#define VIR_NODE_MEMORY_STATS_FREE "free"
 
 /**
- * VIR_MEMORY_STATS_BUFFERS:
+ * VIR_NODE_MEMORY_STATS_BUFFERS:
  *
  * Macro for the buffer memory: On Linux, it is only returned in case of
- * VIR_MEMORY_STATS_ALL_CELLS.
+ * VIR_NODE_MEMORY_STATS_ALL_CELLS.
  */
-
-#define VIR_MEMORY_STATS_BUFFERS "buffers"
+#define VIR_NODE_MEMORY_STATS_BUFFERS "buffers"
 
 /**
- * VIR_MEMORY_STATS_CACHED:
+ * VIR_NODE_MEMORY_STATS_CACHED:
  *
  * Macro for the cached memory: On Linux, it is only returned in case of
- * VIR_MEMORY_STATS_ALL_CELLS.
+ * VIR_NODE_MEMORY_STATS_ALL_CELLS.
  */
-
-#define VIR_MEMORY_STATS_CACHED "cached"
+#define VIR_NODE_MEMORY_STATS_CACHED "cached"
 
 /**
- * virMemoryStats:
+ * virNodeMemoryStats:
  *
- * a virMemoryStats is a structure filled by virNodeGetMemoryStats()
+ * a virNodeMemoryStats is a structure filled by virNodeGetMemoryStats()
  * providing information about the memory of the node.
  */
+typedef struct _virNodeMemoryStats virNodeMemoryStats;
 
-typedef struct _virMemoryStats virMemoryStats;
-
-struct _virMemoryStats {
-    char field[VIR_MEMORY_STATS_FIELD_LENGTH];
+struct _virNodeMemoryStats {
+    char field[VIR_NODE_MEMORY_STATS_FIELD_LENGTH];
     unsigned long long value;
 };
 
@@ -731,20 +726,20 @@ int virDomainMigrateSetMaxSpeed(virDomainPtr domain,
 typedef virNodeInfo *virNodeInfoPtr;
 
 /**
- * virCPUStatsPtr:
+ * virNodeCPUStatsPtr:
  *
- * a virCPUStatsPtr is a pointer to a virCPUStats structure.
+ * a virNodeCPUStatsPtr is a pointer to a virNodeCPUStats structure.
  */
 
-typedef virCPUStats *virCPUStatsPtr;
+typedef virNodeCPUStats *virNodeCPUStatsPtr;
 
 /**
- * virMemoryStatsPtr:
+ * virNodeMemoryStatsPtr:
  *
- * a virMemoryStatsPtr is a pointer to a virMemoryStats structure.
+ * a virNodeMemoryStatsPtr is a pointer to a virNodeMemoryStats structure.
  */
 
-typedef virMemoryStats *virMemoryStatsPtr;
+typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
 
 /**
  * virConnectFlags
@@ -882,13 +877,13 @@ char *                  virConnectGetCapabilities (virConnectPtr conn);
 
 int                     virNodeGetCPUStats (virConnectPtr conn,
                                             int cpuNum,
-                                            virCPUStatsPtr params,
+                                            virNodeCPUStatsPtr params,
                                             int *nparams,
                                             unsigned int flags);
 
 int                     virNodeGetMemoryStats (virConnectPtr conn,
                                                int cellNum,
-                                               virMemoryStatsPtr params,
+                                               virNodeMemoryStatsPtr params,
                                                int *nparams,
                                                unsigned int flags);
 

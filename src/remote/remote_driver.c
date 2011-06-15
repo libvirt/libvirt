@@ -1699,7 +1699,7 @@ done:
 static int
 remoteNodeGetCPUStats (virConnectPtr conn,
                        int cpuNum,
-                       virCPUStatsPtr params, int *nparams,
+                       virNodeCPUStatsPtr params, int *nparams,
                        unsigned int flags)
 {
     int rv = -1;
@@ -1765,7 +1765,7 @@ done:
 static int
 remoteNodeGetMemoryStats (virConnectPtr conn,
                           int cellNum,
-                          virMemoryStatsPtr params, int *nparams,
+                          virNodeMemoryStatsPtr params, int *nparams,
                           unsigned int flags)
 {
     int rv = -1;

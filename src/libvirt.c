@@ -5362,7 +5362,7 @@ error:
 /**
  * virNodeGetCPUStats:
  * @conn: pointer to the hypervisor connection.
- * @cpuNum: number of node cpu. (VIR_CPU_STATS_ALL_CPUS means total cpu
+ * @cpuNum: number of node cpu. (VIR_NODE_CPU_STATS_ALL_CPUS means total cpu
  *          statistics)
  * @params: pointer to node cpu time parameter objects
  * @nparams: number of node cpu time parameter (this value should be same or
@@ -5371,23 +5371,23 @@ error:
  *
  * This function provides individual cpu statistics of the node.
  * If you want to get total cpu statistics of the node, you must specify
- * VIR_CPU_STATS_ALL_CPUS to @cpuNum.
+ * VIR_NODE_CPU_STATS_ALL_CPUS to @cpuNum.
  * The @params array will be filled with the values equal to the number of
  * parameters suggested by @nparams
  *
  * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
  * @params as NULL, the API returns the number of parameters supported by the
  * HV by updating @nparams on SUCCESS. The caller should then allocate @params
- * array, i.e. (sizeof(@virCPUStats) * @nparams) bytes and call
+ * array, i.e. (sizeof(@virNodeCPUStats) * @nparams) bytes and call
  * the API again.
  *
  * Here is a sample code snippet:
  *
  * if ((virNodeGetCPUStats(conn, cpuNum, NULL, &nparams, 0) == 0) &&
  *     (nparams != 0)) {
- *     if ((params = malloc(sizeof(virCPUStats) * nparams)) == NULL)
+ *     if ((params = malloc(sizeof(virNodeCPUStats) * nparams)) == NULL)
  *         goto error;
- *     memset(params, 0, sizeof(virCPUStats) * nparams);
+ *     memset(params, 0, sizeof(virNodeCPUStats) * nparams);
  *     if (virNodeGetCPUStats(conn, cpuNum, params, &nparams, 0))
  *         goto error;
  * }
@@ -5415,7 +5415,7 @@ error:
  */
 int virNodeGetCPUStats (virConnectPtr conn,
                         int cpuNum,
-                        virCPUStatsPtr params,
+                        virNodeCPUStatsPtr params,
                         int *nparams, unsigned int flags)
 {
     VIR_DEBUG("conn=%p, cpuNum=%d, params=%p, nparams=%d, flags=%u",
@@ -5430,7 +5430,7 @@ int virNodeGetCPUStats (virConnectPtr conn,
     }
 
     if ((nparams == NULL) || (*nparams < 0) ||
-        ((cpuNum < 0) && (cpuNum != VIR_CPU_STATS_ALL_CPUS))) {
+        ((cpuNum < 0) && (cpuNum != VIR_NODE_CPU_STATS_ALL_CPUS))) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -5452,8 +5452,8 @@ error:
 /**
  * virNodeGetMemoryStats:
  * @conn: pointer to the hypervisor connection.
- * @cellNum: number of node cell. (VIR_MEMORY_STATS_ALL_CELLS means total cell
- *           statistics)
+ * @cellNum: number of node cell. (VIR_NODE_MEMORY_STATS_ALL_CELLS means total
+ *           cell statistics)
  * @params: pointer to node memory stats objects
  * @nparams: number of node memory stats (this value should be same or
  *          less than the number of stats supported)
@@ -5461,23 +5461,23 @@ error:
  *
  * This function provides memory stats of the node.
  * If you want to get total cpu statistics of the node, you must specify
- * VIR_MEMORY_STATS_ALL_CELLS to @cellNum.
+ * VIR_NODE_MEMORY_STATS_ALL_CELLS to @cellNum.
  * The @params array will be filled with the values equal to the number of
  * stats suggested by @nparams
  *
  * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
  * @params as NULL, the API returns the number of parameters supported by the
  * HV by updating @nparams on SUCCESS. The caller should then allocate @params
- * array, i.e. (sizeof(@virMemoryStats) * @nparams) bytes and call
+ * array, i.e. (sizeof(@virNodeMemoryStats) * @nparams) bytes and call
  * the API again.
  *
  * Here is the sample code snippet:
  *
  * if ((virNodeGetMemoryStats(conn, cellNum, NULL, &nparams, 0) == 0) &&
  *     (nparams != 0)) {
- *     if ((params = malloc(sizeof(virMemoryStats) * nparams)) == NULL)
+ *     if ((params = malloc(sizeof(virNodeMemoryStats) * nparams)) == NULL)
  *         goto error;
- *     memset(params, cellNum, 0, sizeof(virMemoryStats) * nparams);
+ *     memset(params, cellNum, 0, sizeof(virNodeMemoryStats) * nparams);
  *     if (virNodeGetMemoryStats(conn, params, &nparams, 0))
  *         goto error;
  * }
@@ -5487,21 +5487,21 @@ error:
  *
  * Memory Stats:
  *
- * VIR_MEMORY_STATS_TOTAL:
+ * VIR_NODE_MEMORY_STATS_TOTAL:
  *     The total memory usage.(KB)
- * VIR_MEMORY_STATS_FREE:
+ * VIR_NODE_MEMORY_STATS_FREE:
  *     The free memory usage.(KB)
  *     On linux, this usage includes buffers and cached.
- * VIR_MEMORY_STATS_BUFFERS:
+ * VIR_NODE_MEMORY_STATS_BUFFERS:
  *     The buffers memory usage.(KB)
- * VIR_MEMORY_STATS_CACHED:
+ * VIR_NODE_MEMORY_STATS_CACHED:
  *     The cached memory usage.(KB)
  *
  * Returns -1 in case of error, 0 in case of success.
  */
 int virNodeGetMemoryStats (virConnectPtr conn,
                            int cellNum,
-                           virMemoryStatsPtr params,
+                           virNodeMemoryStatsPtr params,
                            int *nparams, unsigned int flags)
 {
     VIR_DEBUG("conn=%p, cellNum=%d, params=%p, nparams=%d, flags=%u",
@@ -5516,7 +5516,7 @@ int virNodeGetMemoryStats (virConnectPtr conn,
     }
 
     if ((nparams == NULL) || (*nparams < 0) ||
-        ((cellNum < 0) && (cellNum != VIR_MEMORY_STATS_ALL_CELLS))) {
+        ((cellNum < 0) && (cellNum != VIR_NODE_MEMORY_STATS_ALL_CELLS))) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }

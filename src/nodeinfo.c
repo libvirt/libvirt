@@ -72,11 +72,11 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 
 static int linuxNodeGetCPUStats(FILE *procstat,
                                 int cpuNum,
-                                virCPUStatsPtr params,
+                                virNodeCPUStatsPtr params,
                                 int *nparams);
 static int linuxNodeGetMemoryStats(FILE *meminfo,
                                    int cellNum,
-                                   virMemoryStatsPtr params,
+                                   virNodeMemoryStatsPtr params,
                                    int *nparams);
 
 /* Return the positive decimal contents of the given
@@ -396,7 +396,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 
 int linuxNodeGetCPUStats(FILE *procstat,
                          int cpuNum,
-                         virCPUStatsPtr params,
+                         virNodeCPUStatsPtr params,
                          int *nparams)
 {
     int ret = -1;
@@ -418,7 +418,7 @@ int linuxNodeGetCPUStats(FILE *procstat,
         goto cleanup;
     }
 
-    if (cpuNum == VIR_CPU_STATS_ALL_CPUS) {
+    if (cpuNum == VIR_NODE_CPU_STATS_ALL_CPUS) {
         strcpy(cpu_header, "cpu");
     } else {
         snprintf(cpu_header, sizeof(cpu_header), "cpu%d", cpuNum);
@@ -439,11 +439,11 @@ int linuxNodeGetCPUStats(FILE *procstat,
             }
 
             for (i = 0; i < *nparams; i++) {
-                virCPUStatsPtr param = &params[i];
+                virNodeCPUStatsPtr param = &params[i];
 
                 switch (i) {
                 case 0: /* fill kernel cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_KERNEL) == NULL) {
+                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_KERNEL) == NULL) {
                         nodeReportError(VIR_ERR_INTERNAL_ERROR,
                                         "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
@@ -452,7 +452,7 @@ int linuxNodeGetCPUStats(FILE *procstat,
                     break;
 
                 case 1: /* fill user cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_USER) == NULL) {
+                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_USER) == NULL) {
                         nodeReportError(VIR_ERR_INTERNAL_ERROR,
                                         "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
@@ -461,7 +461,7 @@ int linuxNodeGetCPUStats(FILE *procstat,
                     break;
 
                 case 2: /* fill idle cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_IDLE) == NULL) {
+                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_IDLE) == NULL) {
                         nodeReportError(VIR_ERR_INTERNAL_ERROR,
                                         "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
@@ -470,7 +470,7 @@ int linuxNodeGetCPUStats(FILE *procstat,
                     break;
 
                 case 3: /* fill iowait cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_CPU_STATS_IOWAIT) == NULL) {
+                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_IOWAIT) == NULL) {
                         nodeReportError(VIR_ERR_INTERNAL_ERROR,
                                         "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
@@ -496,7 +496,7 @@ cleanup:
 
 int linuxNodeGetMemoryStats(FILE *meminfo,
                             int cellNum,
-                            virMemoryStatsPtr params,
+                            virNodeMemoryStatsPtr params,
                             int *nparams)
 {
     int ret = -1;
@@ -504,20 +504,20 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
     int found = 0;
     int nr_param;
     char line[1024];
-    char meminfo_hdr[VIR_MEMORY_STATS_FIELD_LENGTH];
+    char meminfo_hdr[VIR_NODE_MEMORY_STATS_FIELD_LENGTH];
     unsigned long val;
     struct field_conv {
         const char *meminfo_hdr;  // meminfo header
         const char *field;        // MemoryStats field name
     } field_conv[] = {
-        {"MemTotal:", VIR_MEMORY_STATS_TOTAL},
-        {"MemFree:",  VIR_MEMORY_STATS_FREE},
-        {"Buffers:",  VIR_MEMORY_STATS_BUFFERS},
-        {"Cached:",   VIR_MEMORY_STATS_CACHED},
+        {"MemTotal:", VIR_NODE_MEMORY_STATS_TOTAL},
+        {"MemFree:",  VIR_NODE_MEMORY_STATS_FREE},
+        {"Buffers:",  VIR_NODE_MEMORY_STATS_BUFFERS},
+        {"Cached:",   VIR_NODE_MEMORY_STATS_CACHED},
         {NULL,        NULL}
     };
 
-    if (cellNum == VIR_MEMORY_STATS_ALL_CELLS) {
+    if (cellNum == VIR_NODE_MEMORY_STATS_ALL_CELLS) {
         nr_param = LINUX_NB_MEMORY_STATS_ALL;
     } else {
         nr_param = LINUX_NB_MEMORY_STATS_CELL;
@@ -570,7 +570,7 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
             struct field_conv *convp = &field_conv[j];
 
             if (STREQ(meminfo_hdr, convp->meminfo_hdr)) {
-                virMemoryStatsPtr param = &params[k++];
+                virNodeMemoryStatsPtr param = &params[k++];
 
                 if (virStrcpyStatic(param->field, convp->field) == NULL) {
                     nodeReportError(VIR_ERR_INTERNAL_ERROR,
@@ -637,7 +637,7 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
 
 int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                     int cpuNum ATTRIBUTE_UNUSED,
-                    virCPUStatsPtr params ATTRIBUTE_UNUSED,
+                    virNodeCPUStatsPtr params ATTRIBUTE_UNUSED,
                     int *nparams ATTRIBUTE_UNUSED,
                     unsigned int flags)
 {
@@ -666,7 +666,7 @@ int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                        int cellNum ATTRIBUTE_UNUSED,
-                       virMemoryStatsPtr params ATTRIBUTE_UNUSED,
+                       virNodeMemoryStatsPtr params ATTRIBUTE_UNUSED,
                        int *nparams ATTRIBUTE_UNUSED,
                        unsigned int flags)
 {
@@ -678,7 +678,7 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
         char *meminfo_path = NULL;
         FILE *meminfo;
 
-        if (cellNum == VIR_MEMORY_STATS_ALL_CELLS) {
+        if (cellNum == VIR_NODE_MEMORY_STATS_ALL_CELLS) {
             meminfo_path = strdup(MEMINFO_PATH);
             if (!meminfo_path) {
                 virReportOOMError();

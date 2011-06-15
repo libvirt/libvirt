@@ -391,7 +391,7 @@ typedef int
     (*virDrvNodeGetCPUStats)
                     (virConnectPtr conn,
                      int cpuNum,
-                     virCPUStatsPtr params,
+                     virNodeCPUStatsPtr params,
                      int *nparams,
                      unsigned int flags);
 
@@ -399,7 +399,7 @@ typedef int
     (*virDrvNodeGetMemoryStats)
                     (virConnectPtr conn,
                      int cellNum,
-                     virMemoryStatsPtr params,
+                     virNodeMemoryStatsPtr params,
                      int *nparams,
                      unsigned int flags);
 
