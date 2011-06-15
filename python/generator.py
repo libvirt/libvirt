@@ -655,9 +655,11 @@ def buildStubs():
 
     print "Generated %d wrapper functions" % nb_wrap
 
-    print "Missing type converters: "
-    for type in unknown_types.keys():
-        print "%s:%d " % (type, len(unknown_types[type])),
+    if unknown_types:
+        print "Missing type converters: "
+        for type in unknown_types.keys():
+            print "%s:%d " % (type, len(unknown_types[type])),
+
     print
 
     for f in functions_failed:
