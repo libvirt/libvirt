@@ -38,7 +38,6 @@
 #include "datatypes.h"
 #include "files.h"
 #include "memory.h"
-#include "event.h"
 #include "uuid.h"
 #include "command.h"
 #include "libxl_driver.h"

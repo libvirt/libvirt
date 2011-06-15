@@ -29,7 +29,6 @@
 #include "datatypes.h"
 #include "driver.h"
 #include "memory.h"
-#include "event.h"
 #include "logging.h"
 #include "uuid.h"
 #include "xen_driver.h"

@@ -455,15 +455,6 @@ ebtablesContextNew;
 ebtablesRemoveForwardAllowIn;
 
 
-# event.h
-virEventAddHandle;
-virEventAddTimeout;
-virEventRemoveHandle;
-virEventRemoveTimeout;
-virEventUpdateHandle;
-virEventUpdateTimeout;
-
-
 # event_poll.h
 virEventPollToNativeEvents;
 virEventPollFromNativeEvents;

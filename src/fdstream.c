@@ -38,7 +38,6 @@
 #include "datatypes.h"
 #include "logging.h"
 #include "memory.h"
-#include "event.h"
 #include "util.h"
 #include "files.h"
 #include "configmake.h"

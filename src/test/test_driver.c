@@ -44,7 +44,6 @@
 #include "interface_conf.h"
 #include "domain_conf.h"
 #include "domain_event.h"
-#include "event.h"
 #include "storage_conf.h"
 #include "node_device_conf.h"
 #include "xml.h"

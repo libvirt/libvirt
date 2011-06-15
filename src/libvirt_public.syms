@@ -459,6 +459,12 @@ LIBVIRT_0.9.3 {
         virDomainGetControlInfo;
         virDomainPinVcpuFlags;
         virDomainSendKey;
+        virEventAddHandle;
+        virEventAddTimeout;
+        virEventRemoveHandle;
+        virEventRemoveTimeout;
+        virEventUpdateHandle;
+        virEventUpdateTimeout;
         virNodeGetCPUStats;
         virNodeGetMemoryStats;
 } LIBVIRT_0.9.2;

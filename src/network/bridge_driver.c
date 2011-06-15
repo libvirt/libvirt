@@ -48,7 +48,6 @@
 #include "bridge_driver.h"
 #include "network_conf.h"
 #include "driver.h"
-#include "event.h"
 #include "buf.h"
 #include "util.h"
 #include "command.h"

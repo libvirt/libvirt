@@ -398,6 +398,14 @@ skip_function = (
     'virStreamRecv', # overridden in libvirt-override-virStream.py
     'virStreamSend', # overridden in libvirt-override-virStream.py
 
+    # XXX: Skip for now, some work needed to handle Timeout/Handle callbacks
+    'virEventAddHandle',
+    'virEventRemoveHandle',
+    'virEventUpdateHandle',
+    'virEventAddTimeout',
+    'virEventRemoveTimeout',
+    'virEventUpdateTimeout',
+
     # 'Ref' functions have no use for bindings users.
     "virConnectRef",
     "virDomainRef",

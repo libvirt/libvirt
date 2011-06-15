@@ -80,7 +80,6 @@
 #include "qemu_protocol.h"
 #include "memory.h"
 #include "util.h"
-#include "event.h"
 #include "ignore-value.h"
 #include "files.h"
 #include "command.h"

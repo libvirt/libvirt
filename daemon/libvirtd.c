@@ -62,7 +62,6 @@
 #include "uuid.h"
 #include "remote_driver.h"
 #include "conf.h"
-#include "event.h"
 #include "event_poll.h"
 #include "memory.h"
 #include "stream.h"

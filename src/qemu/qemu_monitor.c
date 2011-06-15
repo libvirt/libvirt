@@ -32,7 +32,6 @@
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_conf.h"
-#include "event.h"
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"

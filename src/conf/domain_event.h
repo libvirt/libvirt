@@ -25,7 +25,6 @@
 #ifndef __DOMAIN_EVENT_H__
 # define __DOMAIN_EVENT_H__
 
-# include "event.h"
 # include "domain_conf.h"
 
 typedef struct _virDomainEventCallback virDomainEventCallback;

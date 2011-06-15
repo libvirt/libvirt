@@ -31,7 +31,6 @@
 #include "datatypes.h"
 #include "driver.h"
 #include "memory.h"
-#include "event.h"
 #include "xen_driver.h"
 #include "conf.h"
 #include "domain_conf.h"

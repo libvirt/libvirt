@@ -37,7 +37,6 @@
 #include "uuid.h"
 #include "util.h"
 #include "buf.h"
-#include "event.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 

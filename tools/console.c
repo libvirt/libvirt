@@ -43,7 +43,6 @@
 # include "memory.h"
 # include "virterror_internal.h"
 
-# include "event.h"
 
 /* ie  Ctrl-]  as per telnet */
 # define CTRL_CLOSE_BRACKET '\35'

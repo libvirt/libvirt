@@ -32,7 +32,6 @@
 #include "virterror_internal.h"
 #include "driver.h"
 #include "datatypes.h"
-#include "event.h"
 #include "memory.h"
 #include "uuid.h"
 #include "logging.h"

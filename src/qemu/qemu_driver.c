@@ -62,7 +62,6 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
-#include "event.h"
 #include "buf.h"
 #include "util.h"
 #include "nodeinfo.h"

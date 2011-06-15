@@ -49,7 +49,6 @@
 #include "storage_conf.h"
 #include "storage_file.h"
 #include "uuid.h"
-#include "event.h"
 #include "memory.h"
 #include "nodeinfo.h"
 #include "logging.h"

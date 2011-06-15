@@ -39,7 +39,6 @@
 
 #include "libvirtd.h"
 #include "mdns.h"
-#include "event.h"
 #include "event_poll.h"
 #include "memory.h"
 

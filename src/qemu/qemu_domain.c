@@ -30,7 +30,6 @@
 #include "logging.h"
 #include "virterror_internal.h"
 #include "c-ctype.h"
-#include "event.h"
 #include "cpu/cpu.h"
 #include "ignore-value.h"
 #include "uuid.h"

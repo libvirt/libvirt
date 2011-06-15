@@ -45,7 +45,6 @@
 #include "util.h"
 #include "bridge.h"
 #include "veth.h"
-#include "event.h"
 #include "nodeinfo.h"
 #include "uuid.h"
 #include "stats_linux.h"
