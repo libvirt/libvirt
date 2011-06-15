@@ -12730,10 +12730,10 @@ virStreamRef(virStreamPtr stream)
  * block the calling application for an arbitrary amount
  * of time. Once an application has finished sending data
  * it should call virStreamFinish to wait for successful
- * confirmation from the driver, or detect any error
+ * confirmation from the driver, or detect any error.
  *
  * This method may not be used if a stream source has been
- * registered
+ * registered.
  *
  * Errors are not guaranteed to be reported synchronously
  * with the call, but may instead be delayed until a
@@ -12825,10 +12825,10 @@ error:
 /**
  * virStreamRecv:
  * @stream: pointer to the stream object
- * @data: buffer to write to stream
+ * @data: buffer to read into from stream
  * @nbytes: size of @data buffer
  *
- * Write a series of bytes to the stream. This method may
+ * Reads a series of bytes from the stream. This method may
  * block the calling application for an arbitrary amount
  * of time.
  *
