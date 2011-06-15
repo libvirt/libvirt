@@ -3222,6 +3222,13 @@ qemuBuildCommandLine(virConnectPtr conn,
         def->onReboot != VIR_DOMAIN_LIFECYCLE_RESTART)
         virCommandAddArg(cmd, "-no-reboot");
 
+    /* If JSON monitor is enabled, we can receive an event
+     * when QEMU stops. If we use no-shutdown, then we can
+     * watch for this event and do a soft/warm reboot.
+     */
+    if (monitor_json)
+        virCommandAddArg(cmd, "-no-shutdown");
+
     if (!(def->features & (1 << VIR_DOMAIN_FEATURE_ACPI)))
         virCommandAddArg(cmd, "-no-acpi");
 

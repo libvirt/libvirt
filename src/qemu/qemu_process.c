@@ -353,13 +353,103 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+/*
+ * Since we have the '-no-shutdown' flag set, the
+ * QEMU process will currently have guest OS shutdown
+ * and the CPUS stopped. To fake the reboot, we thus
+ * want todo a reset of the virtual hardware, followed
+ * by restart of the CPUs. This should result in the
+ * guest OS booting up again
+ */
+static void
+qemuProcessFakeReboot(void *opaque)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainObjPtr vm = opaque;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+    VIR_DEBUG("vm=%p", vm);
+    qemuDriverLock(driver);
+    virDomainObjLock(vm);
+    if (qemuDomainObjBeginJob(vm) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuMonitorSystemReset(priv->mon) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        goto endjob;
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        goto endjob;
+    }
+
+    if (qemuProcessStartCPUs(driver, vm, NULL,
+                             VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+        if (virGetLastError() == NULL)
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("resume operation failed"));
+        goto endjob;
+    }
+    event = virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_RESUMED,
+                                     VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
+
+    ret = 0;
+
+endjob:
+    if (qemuDomainObjEndJob(vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm) {
+        if (ret == -1)
+            qemuProcessKill(vm);
+        if (virDomainObjUnref(vm) > 0)
+            virDomainObjUnlock(vm);
+    }
+    if (event)
+        qemuDomainEventQueue(driver, event);
+    qemuDriverUnlock(driver);
+}
+
+
 static int
 qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           virDomainObjPtr vm)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_DEBUG("vm=%p", vm);
+
     virDomainObjLock(vm);
-    ((qemuDomainObjPrivatePtr) vm->privateData)->gotShutdown = true;
-    virDomainObjUnlock(vm);
+    priv->gotShutdown = true;
+    if (priv->fakeReboot) {
+        virDomainObjRef(vm);
+        virThread th;
+        if (virThreadCreate(&th,
+                            false,
+                            qemuProcessFakeReboot,
+                            vm) < 0) {
+            VIR_ERROR("Failed to create reboot thread, killing domain");
+            qemuProcessKill(vm);
+            if (virDomainObjUnref(vm) == 0)
+                vm = NULL;
+        }
+    } else {
+        qemuProcessKill(vm);
+    }
+    if (vm)
+        virDomainObjUnlock(vm);
 
     return 0;
 }
@@ -2087,6 +2177,11 @@ qemuProcessPrepareMonitorChr(struct qemud_driver *driver,
 }
 
 
+/*
+ * Precondition: Both driver and vm must be locked,
+ * and a job must be active. This method will call
+ * {Enter,Exit}MonitorWithDriver
+ */
 int
 qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
                      virConnectPtr conn, virDomainRunningReason reason)
@@ -2349,6 +2444,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     vm->def->id = driver->nextvmid++;
+    priv->fakeReboot = false;
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {

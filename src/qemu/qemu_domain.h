@@ -91,6 +91,8 @@ struct _qemuDomainObjPrivate {
 
     virBitmapPtr qemuCaps;
     char *lockState;
+
+    bool fakeReboot;
 };
 
 struct qemuDomainWatchdogEvent

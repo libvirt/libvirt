@@ -46,6 +46,7 @@ int qemuMonitorTextStopCPUs(qemuMonitorPtr mon);
 int qemuMonitorTextGetStatus(qemuMonitorPtr mon, bool *running);
 
 int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon);
+int qemuMonitorTextSystemReset(qemuMonitorPtr mon);
 
 int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
                               int **pids);

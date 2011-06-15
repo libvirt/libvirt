@@ -1095,6 +1095,25 @@ int qemuMonitorSystemPowerdown(qemuMonitorPtr mon)
 }
 
 
+int qemuMonitorSystemReset(qemuMonitorPtr mon)
+{
+    int ret;
+    VIR_DEBUG("mon=%p", mon);
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONSystemReset(mon);
+    else
+        ret = qemuMonitorTextSystemReset(mon);
+    return ret;
+}
+
+
 int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                           int **pids)
 {

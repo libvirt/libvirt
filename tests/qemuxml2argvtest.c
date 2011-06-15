@@ -27,6 +27,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      virBitmapPtr extraFlags,
                                      const char *migrateFrom,
                                      int migrateFd,
+                                     bool json,
                                      bool expectError)
 {
     char *expectargv = NULL;
@@ -116,7 +117,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
-                                     vmdef, &monitor_chr, false, extraFlags,
+                                     vmdef, &monitor_chr, json, extraFlags,
                                      migrateFrom, migrateFd, NULL,
                                      VIR_VM_OP_NO_OP)))
         goto fail;
@@ -168,6 +169,7 @@ struct testInfo {
     virBitmapPtr extraFlags;
     const char *migrateFrom;
     int migrateFd;
+    bool json;
     bool expectError;
 };
 
@@ -186,8 +188,8 @@ testCompareXMLToArgvHelper(const void *data)
         goto cleanup;
 
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
-                                      info->migrateFrom, info->migrateFd,
-                                      info->expectError);
+                                       info->migrateFrom, info->migrateFd,
+                                       info->json, info->expectError);
 
 cleanup:
     free(xml);
@@ -202,6 +204,7 @@ mymain(void)
 {
     int ret = 0;
     char *map = NULL;
+    bool json = false;
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)
@@ -229,7 +232,7 @@ mymain(void)
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, expectError, ...)   \
     do {                                                                \
         struct testInfo info = {                                        \
-            name, NULL, migrateFrom, migrateFd, expectError             \
+            name, NULL, migrateFrom, migrateFd, json, expectError       \
         };                                                              \
         if (!(info.extraFlags = qemuCapsNew()))                         \
             return EXIT_FAILURE;                                        \
@@ -528,6 +531,11 @@ mymain(void)
     DO_TEST("multifunction-pci-device", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PCI_MULTIFUNCTION);
+
+    json = true;
+    DO_TEST("monitor-json", false, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_NODEFCONFIG);
+    json = false;
 
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);

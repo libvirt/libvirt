@@ -49,6 +49,7 @@ int qemuMonitorJSONStopCPUs(qemuMonitorPtr mon);
 int qemuMonitorJSONGetStatus(qemuMonitorPtr mon, bool *running);
 
 int qemuMonitorJSONSystemPowerdown(qemuMonitorPtr mon);
+int qemuMonitorJSONSystemReset(qemuMonitorPtr mon);
 
 int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
                               int **pids);

@@ -1428,7 +1428,7 @@ cleanup:
 }
 
 
-static int qemudDomainShutdown(virDomainPtr dom) {
+static int qemuDomainShutdown(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -1460,9 +1460,67 @@ static int qemudDomainShutdown(virDomainPtr dom) {
     ret = qemuMonitorSystemPowerdown(priv->mon);
     qemuDomainObjExitMonitor(vm);
 
+    priv->fakeReboot = false;
+
 endjob:
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
+static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+    priv = vm->privateData;
+
+#if HAVE_YAJL
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
+        if (qemuDomainObjBeginJob(vm) < 0)
+            goto cleanup;
+
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto endjob;
+        }
+
+        qemuDomainObjEnterMonitor(vm);
+        ret = qemuMonitorSystemPowerdown(priv->mon);
+        qemuDomainObjExitMonitor(vm);
+
+        priv->fakeReboot = true;
+
+    endjob:
+        if (qemuDomainObjEndJob(vm) == 0)
+            vm = NULL;
+    } else {
+#endif
+        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                        _("Reboot is not supported without the JSON monitor"));
+#if HAVE_YAJL
+    }
+#endif
 
 cleanup:
     if (vm)
@@ -1476,6 +1534,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
+    qemuDomainObjPrivatePtr priv;
 
     qemuDriverLock(driver);
     vm  = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1486,6 +1545,9 @@ static int qemudDomainDestroy(virDomainPtr dom) {
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    priv = vm->privateData;
+    priv->fakeReboot = false;
 
     /* Although qemuProcessStop does this already, there may
      * be an outstanding job active. We want to make sure we
@@ -8336,7 +8398,8 @@ static virDriver qemuDriver = {
     .domainLookupByName = qemudDomainLookupByName, /* 0.2.0 */
     .domainSuspend = qemudDomainSuspend, /* 0.2.0 */
     .domainResume = qemudDomainResume, /* 0.2.0 */
-    .domainShutdown = qemudDomainShutdown, /* 0.2.0 */
+    .domainShutdown = qemuDomainShutdown, /* 0.2.0 */
+    .domainReboot = qemuDomainReboot, /* 0.9.3 */
     .domainDestroy = qemudDomainDestroy, /* 0.2.0 */
     .domainGetOSType = qemudDomainGetOSType, /* 0.2.2 */
     .domainGetMaxMemory = qemudDomainGetMaxMemory, /* 0.4.2 */
