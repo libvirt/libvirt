@@ -2401,7 +2401,18 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
                                                    0,
                                                    1) == NULL)
                     goto no_memory;
+
+            /* Xen 3.4.x and beyond supports the Viridian (Hyper-V)
+             * enlightenment interface.  Default is off.
+             */
+            if ((hv_major == 3 && hv_minor >= 4) || (hv_major > 3))
+                if (virCapabilitiesAddGuestFeature(guest,
+                                                   "viridian",
+                                                   0,
+                                                   1) == NULL)
+                    goto no_memory;
         }
+
     }
 
     caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;

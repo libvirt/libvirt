@@ -1171,6 +1171,8 @@ xenParseSxpr(const struct sexpr *root,
             def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
         if (sexpr_int(root, "domain/image/hvm/hap"))
             def->features |= (1 << VIR_DOMAIN_FEATURE_HAP);
+        if (sexpr_int(root, "domain/image/hvm/viridian"))
+            def->features |= (1 << VIR_DOMAIN_FEATURE_VIRIDIAN);
 
         /* Old XenD only allows localtime here for HVM */
         if (sexpr_int(root, "domain/image/hvm/localtime"))
@@ -2166,6 +2168,8 @@ xenFormatSxpr(virConnectPtr conn,
                 virBufferAddLit(&buf, "(pae 1)");
             if (def->features & (1 << VIR_DOMAIN_FEATURE_HAP))
                 virBufferAddLit(&buf, "(hap 1)");
+            if (def->features & (1 << VIR_DOMAIN_FEATURE_VIRIDIAN))
+                virBufferAddLit(&buf, "(viridian 1)");
 
             virBufferAddLit(&buf, "(usb 1)");
 

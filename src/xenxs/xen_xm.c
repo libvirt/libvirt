@@ -369,6 +369,10 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
         else if (val)
             def->features |= (1 << VIR_DOMAIN_FEATURE_HAP);
+        if (xenXMConfigGetBool(conf, "viridian", &val, 0) < 0)
+            goto cleanup;
+        else if (val)
+            def->features |= (1 << VIR_DOMAIN_FEATURE_VIRIDIAN);
 
         if (xenXMConfigGetBool(conf, "hpet", &val, -1) < 0)
             goto cleanup;
@@ -1507,11 +1511,17 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                                (1 << VIR_DOMAIN_FEATURE_APIC)) ? 1 : 0) < 0)
             goto no_memory;
 
-        if (xendConfigVersion >= 3)
+        if (xendConfigVersion >= 3) {
             if (xenXMConfigSetInt(conf, "hap",
                                   (def->features &
                                    (1 << VIR_DOMAIN_FEATURE_HAP)) ? 1 : 0) < 0)
                 goto no_memory;
+
+            if (xenXMConfigSetInt(conf, "viridian",
+                                  (def->features &
+                                   (1 << VIR_DOMAIN_FEATURE_VIRIDIAN)) ? 1 : 0) < 0)
+                goto no_memory;
+        }
 
         if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
             if (def->clock.data.timezone) {

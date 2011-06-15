@@ -1430,6 +1430,8 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
                     defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_PAE);
                 else if (STREQ(result->contents[i].key, "hap"))
                     defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_HAP);
+                else if (STREQ(result->contents[i].key, "viridian"))
+                    defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_VIRIDIAN);
             }
         }
         xen_string_string_map_free(result);
