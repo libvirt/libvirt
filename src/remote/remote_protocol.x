@@ -1003,7 +1003,7 @@ struct remote_domain_get_block_pull_info_args {
     unsigned int flags;
 };
 
-struct remote_domain_get_block_pull_info_ret {
+struct remote_domain_get_block_pull_info_ret { /* insert@2 */
     unsigned hyper cur;
     unsigned hyper end;
 };
@@ -2420,7 +2420,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_BLOCK_PULL_ALL = 230, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_BLOCK_PULL_ABORT = 231, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_BLOCK_PULL_INFO = 232, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_BLOCK_PULL_INFO = 232, /* autogen autogen */
     REMOTE_PROC_DOMAIN_EVENT_BLOCK_PULL = 233, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_GET_CONTROL_INFO = 234 /* autogen autogen */
 

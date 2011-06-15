@@ -1737,42 +1737,6 @@ cleanup:
     return rv;
 }
 
-static int
-remoteDispatchDomainGetBlockPullInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
-                                     struct qemud_client *client ATTRIBUTE_UNUSED,
-                                     virConnectPtr conn,
-                                     remote_message_header *hdr ATTRIBUTE_UNUSED,
-                                     remote_error * rerr,
-                                     remote_domain_get_block_pull_info_args *args,
-                                     remote_domain_get_block_pull_info_ret *ret)
-{
-    virDomainPtr dom = NULL;
-    virDomainBlockPullInfo tmp;
-    int rv = -1;
-
-    if (!conn) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(dom = get_nonnull_domain(conn, args->dom)))
-        goto cleanup;
-
-    if (virDomainGetBlockPullInfo(dom, args->path, &tmp, args->flags) < 0)
-        goto cleanup;
-    ret->cur = tmp.cur;
-    ret->end = tmp.end;
-    rv = 0;
-
-cleanup:
-    if (rv < 0)
-        remoteDispatchError(rerr);
-    if (dom)
-        virDomainFree(dom);
-    return rv;
-}
-
-
 /*-------------------------------------------------------------*/
 
 static int
