@@ -87,11 +87,11 @@ int virEventRemoveHandle(int watch) {
 /**
  * virEventAddTimeout: register a callback for a timer event
  *
- * @frequency: time between events in milliseconds
+ * @timeout: time between events in milliseconds
  * @cb: callback to invoke when an event occurs
  * @opaque: user data to pass to callback
  *
- * Setting frequency to -1 will disable the timer. Setting the frequency
+ * Setting timeout to -1 will disable the timer. Setting the timeout
  * to zero will cause it to fire on every event loop iteration.
  *
  * returns -1 if the timer cannot be registered, a positive
