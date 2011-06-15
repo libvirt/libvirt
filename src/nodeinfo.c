@@ -636,9 +636,9 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
 }
 
 int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    int cpuNum,
-                    virCPUStatsPtr params,
-                    int *nparams,
+                    int cpuNum ATTRIBUTE_UNUSED,
+                    virCPUStatsPtr params ATTRIBUTE_UNUSED,
+                    int *nparams ATTRIBUTE_UNUSED,
                     unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -665,9 +665,9 @@ int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
-                       int cellNum,
-                       virMemoryStatsPtr params,
-                       int *nparams,
+                       int cellNum ATTRIBUTE_UNUSED,
+                       virMemoryStatsPtr params ATTRIBUTE_UNUSED,
+                       int *nparams ATTRIBUTE_UNUSED,
                        unsigned int flags)
 {
     virCheckFlags(0, -1);
