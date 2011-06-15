@@ -600,7 +600,8 @@ the state file was created.
 
 =item B<save> I<domain-id> I<state-file>
 
-Saves a running domain to a state file so that it can be restored
+Saves a running domain (RAM, but not disk state) to a state file so that
+it can be restored
 later.  Once saved, the domain will no longer be running on the
 system, thus the memory allocated for the domain will be free for
 other domains to use.  B<virsh restore> restores from this state file.
@@ -608,6 +609,11 @@ other domains to use.  B<virsh restore> restores from this state file.
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
 severed upon restore, as TCP timeouts may have expired.
+
+Domain saved state files assume that disk images will be unchanged
+between the creation and restore point.  For a more complete system
+restore point, where the disk state is saved alongside the memory
+state, see the B<snapshot> family of commands.
 
 =item B<schedinfo> optional I<--set> B<parameter=value> I<domain-id> I<--config>
 I<--live> I<--current>

@@ -1517,7 +1517,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_save[] = {
     {"help", N_("save a domain state to a file")},
-    {"desc", N_("Save a running domain.")},
+    {"desc", N_("Save the RAM state of a running domain.")},
     {NULL, NULL}
 };
 
@@ -11035,8 +11035,8 @@ cmdQuit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  * "snapshot-create" command
  */
 static const vshCmdInfo info_snapshot_create[] = {
-    {"help", N_("Create a snapshot")},
-    {"desc", N_("Snapshot create")},
+    {"help", N_("Create a snapshot from XML")},
+    {"desc", N_("Create a snapshot (disk and RAM) from XML")},
     {NULL, NULL}
 };
 
