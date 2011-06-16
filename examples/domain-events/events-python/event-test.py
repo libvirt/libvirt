@@ -66,8 +66,7 @@ class virEventLoopPure:
             self.cb(self.handle,
                     self.fd,
                     events,
-                    self.opaque[0],
-                    self.opaque[1])
+                    self.opaque)
 
     # This class contains the data we need to track for a
     # single periodic timer
@@ -96,8 +95,7 @@ class virEventLoopPure:
 
         def dispatch(self):
             self.cb(self.timer,
-                    self.opaque[0],
-                    self.opaque[1])
+                    self.opaque)
 
 
     def __init__(self):

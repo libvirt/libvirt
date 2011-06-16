@@ -117,19 +117,41 @@ def getVersion (name = None):
 #
 # Invoke an EventHandle callback
 #
-def eventInvokeHandleCallback (watch, fd, event, callback, opaque):
+def eventInvokeHandleCallback(watch, fd, event, opaque, opaquecompat=None):
     """
     Invoke the Event Impl Handle Callback in C
     """
+    # libvirt 0.9.2 and earlier required custom event loops to know
+    # that opaque=(cb, original_opaque) and pass the values individually
+    # to this wrapper. This should handle the back compat case, and make
+    # future invocations match the virEventHandleCallback prototype
+    if opaquecompat:
+        callback = opaque
+        opaque = opaquecompat
+    else:
+        callback = opaque[0]
+        opaque = opaque[1]
+
     libvirtmod.virEventInvokeHandleCallback(watch, fd, event, callback, opaque);
 
 #
 # Invoke an EventTimeout callback
 #
-def eventInvokeTimeoutCallback (timer, callback, opaque):
+def eventInvokeTimeoutCallback(timer, opaque, opaquecompat=None):
     """
     Invoke the Event Impl Timeout Callback in C
     """
+    # libvirt 0.9.2 and earlier required custom event loops to know
+    # that opaque=(cb, original_opaque) and pass the values individually
+    # to this wrapper. This should handle the back compat case, and make
+    # future invocations match the virEventTimeoutCallback prototype
+    if opaquecompat:
+        callback = opaque
+        opaque = opaquecompat
+    else:
+        callback = opaque[0]
+        opaque = opaque[1]
+
     libvirtmod.virEventInvokeTimeoutCallback(timer, callback, opaque);
 
 def _dispatchEventHandleCallback(watch, fd, events, cbData):
