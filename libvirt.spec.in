@@ -44,13 +44,13 @@
 %define with_lxc           0%{!?_without_lxc:%{server_drivers}}
 %define with_vbox          0%{!?_without_vbox:%{server_drivers}}
 %define with_uml           0%{!?_without_uml:%{server_drivers}}
-%define with_xenapi        0%{!?_without_xenapi:%{server_drivers}}
 %define with_libxl         0%{!?_without_libxl:%{server_drivers}}
 %define with_vmware        0%{!?_without_vmware:%{server_drivers}}
 
 # Then the hypervisor drivers that talk a native remote protocol
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
+%define with_xenapi        0%{!?_without_xenapi:1}
 
 # Then the secondary host drivers
 %define with_network       0%{!?_without_network:%{server_drivers}}
