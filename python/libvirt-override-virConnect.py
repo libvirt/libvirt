@@ -33,7 +33,7 @@
             ret = libvirtmod.virConnectDomainEventRegister(self._o, self)
             if ret == -1: raise libvirtError ('virConnectDomainEventRegister() failed', conn=self)
 
-    def dispatchDomainEventCallbacks(self, dom, event, detail):
+    def _dispatchDomainEventCallbacks(self, dom, event, detail):
         """Dispatches events to python user domain event callbacks
         """
         try:
@@ -43,7 +43,7 @@
         except AttributeError:
             pass
 
-    def dispatchDomainEventLifecycleCallback(self, dom, event, detail, cbData):
+    def _dispatchDomainEventLifecycleCallback(self, dom, event, detail, cbData):
         """Dispatches events to python user domain lifecycle event callbacks
         """
         cb = cbData["cb"]
@@ -52,89 +52,75 @@
         cb(self, virDomain(self, _obj=dom), event, detail, opaque)
         return 0
 
-    def dispatchDomainEventGenericCallback(self, dom, cbData):
+    def _dispatchDomainEventGenericCallback(self, dom, cbData):
         """Dispatches events to python user domain generic event callbacks
         """
-        try:
-            cb = cbData["cb"]
-            opaque = cbData["opaque"]
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), opaque)
-            return 0
-        except AttributeError:
-            pass
+        cb(self, virDomain(self, _obj=dom), opaque)
+        return 0
 
-    def dispatchDomainEventRTCChangeCallback(self, dom, offset, cbData):
+    def _dispatchDomainEventRTCChangeCallback(self, dom, offset, cbData):
         """Dispatches events to python user domain RTC change event callbacks
         """
-        try:
-            cb = cbData["cb"]
-            opaque = cbData["opaque"]
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), offset ,opaque)
-            return 0
-        except AttributeError:
-            pass
+        cb(self, virDomain(self, _obj=dom), offset ,opaque)
+        return 0
 
-    def dispatchDomainEventWatchdogCallback(self, dom, action, cbData):
+    def _dispatchDomainEventWatchdogCallback(self, dom, action, cbData):
         """Dispatches events to python user domain watchdog event callbacks
         """
-        try:
-            cb = cbData["cb"]
-            opaque = cbData["opaque"]
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), action, opaque)
-            return 0
-        except AttributeError:
-            pass
+        cb(self, virDomain(self, _obj=dom), action, opaque)
+        return 0
 
-    def dispatchDomainEventIOErrorCallback(self, dom, srcPath, devAlias, action, cbData):
+    def _dispatchDomainEventIOErrorCallback(self, dom, srcPath, devAlias,
+                                            action, cbData):
         """Dispatches events to python user domain IO error event callbacks
         """
-        try:
-            cb = cbData["cb"]
-            opaque = cbData["opaque"]
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), srcPath, devAlias, action, opaque)
-            return 0
-        except AttributeError:
-            pass
+        cb(self, virDomain(self, _obj=dom), srcPath, devAlias, action, opaque)
+        return 0
 
-    def dispatchDomainEventIOErrorReasonCallback(self, dom, srcPath, devAlias, action, reason, cbData):
+    def _dispatchDomainEventIOErrorReasonCallback(self, dom, srcPath,
+                                                  devAlias, action, reason,
+                                                  cbData):
         """Dispatches events to python user domain IO error event callbacks
         """
-        try:
-            cb = cbData["cb"]
-            opaque = cbData["opaque"]
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), srcPath, devAlias, action, reason, opaque)
-            return 0
-        except AttributeError:
-            pass
+        cb(self, virDomain(self, _obj=dom), srcPath, devAlias, action,
+           reason, opaque)
+        return 0
 
-    def dispatchDomainEventGraphicsCallback(self, dom, phase, localAddr, remoteAddr, authScheme, subject, cbData):
+    def _dispatchDomainEventGraphicsCallback(self, dom, phase, localAddr,
+                                            remoteAddr, authScheme, subject,
+                                            cbData):
         """Dispatches events to python user domain graphics event callbacks
         """
-        try:
-            cb = cbData["cb"]
-            opaque = cbData["opaque"]
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), phase, localAddr, remoteAddr, authScheme, subject, opaque)
-            return 0
-        except AttributeError:
-            pass
+        cb(self, virDomain(self, _obj=dom), phase, localAddr, remoteAddr,
+           authScheme, subject, opaque)
+        return 0
 
-    def dispatchDomainEventBlockPullCallback(self, dom, path, status, cbData):
+    def _dispatchDomainEventBlockPullCallback(self, dom, path, status, cbData):
         """Dispatches events to python user domain blockPull event callbacks
         """
-        try:
-            cb = cbData["cb"]
-            opaque = cbData["opaque"]
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), path, status, opaque)
-            return 0
-        except AttributeError:
-            pass
+        cb(self, virDomain(self, _obj=dom), path, status, opaque)
+        return 0
 
     def domainEventDeregisterAny(self, callbackID):
         """Removes a Domain Event Callback. De-registering for a

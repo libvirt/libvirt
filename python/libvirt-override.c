@@ -2609,7 +2609,7 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn_inst,
-                                    (char*)"dispatchDomainEventCallbacks",
+                                    (char*)"_dispatchDomainEventCallbacks",
                                     (char*)"Oii",
                                     pyobj_dom_inst,
                                     event,
@@ -2735,7 +2735,7 @@ libvirt_virEventAddHandleFunc  (int fd,
     LIBVIRT_ENSURE_THREAD_STATE;
 
     /* Lookup the python callback */
-    python_cb = libvirt_lookupPythonFunc("eventInvokeHandleCallback");
+    python_cb = libvirt_lookupPythonFunc("_eventInvokeHandleCallback");
     if (!python_cb) {
         goto cleanup;
     }
@@ -2862,7 +2862,7 @@ libvirt_virEventAddTimeoutFunc(int timeout,
     LIBVIRT_ENSURE_THREAD_STATE;
 
     /* Lookup the python callback */
-    python_cb = libvirt_lookupPythonFunc("eventInvokeTimeoutCallback");
+    python_cb = libvirt_lookupPythonFunc("_eventInvokeTimeoutCallback");
     if (!python_cb) {
         goto cleanup;
     }
@@ -3252,7 +3252,7 @@ libvirt_virConnectDomainEventLifecycleCallback(virConnectPtr conn ATTRIBUTE_UNUS
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventLifecycleCallback",
+                                    (char*)"_dispatchDomainEventLifecycleCallback",
                                     (char*)"OiiO",
                                     pyobj_dom,
                                     event, detail,
@@ -3298,7 +3298,7 @@ libvirt_virConnectDomainEventGenericCallback(virConnectPtr conn ATTRIBUTE_UNUSED
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventGenericCallback",
+                                    (char*)"_dispatchDomainEventGenericCallback",
                                     (char*)"OO",
                                     pyobj_dom, pyobj_cbData);
 
@@ -3343,7 +3343,7 @@ libvirt_virConnectDomainEventRTCChangeCallback(virConnectPtr conn ATTRIBUTE_UNUS
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventRTCChangeCallback",
+                                    (char*)"_dispatchDomainEventRTCChangeCallback",
                                     (char*)"OLO",
                                     pyobj_dom,
                                     (PY_LONG_LONG)utcoffset,
@@ -3390,7 +3390,7 @@ libvirt_virConnectDomainEventWatchdogCallback(virConnectPtr conn ATTRIBUTE_UNUSE
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventWatchdogCallback",
+                                    (char*)"_dispatchDomainEventWatchdogCallback",
                                     (char*)"OiO",
                                     pyobj_dom,
                                     action,
@@ -3439,7 +3439,7 @@ libvirt_virConnectDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventIOErrorCallback",
+                                    (char*)"_dispatchDomainEventIOErrorCallback",
                                     (char*)"OssiO",
                                     pyobj_dom,
                                     srcPath, devAlias, action,
@@ -3489,7 +3489,7 @@ libvirt_virConnectDomainEventIOErrorReasonCallback(virConnectPtr conn ATTRIBUTE_
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventIOErrorReasonCallback",
+                                    (char*)"_dispatchDomainEventIOErrorReasonCallback",
                                     (char*)"OssisO",
                                     pyobj_dom,
                                     srcPath, devAlias, action, reason,
@@ -3575,7 +3575,7 @@ libvirt_virConnectDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSE
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventGraphicsCallback",
+                                    (char*)"_dispatchDomainEventGraphicsCallback",
                                     (char*)"OiOOsOO",
                                     pyobj_dom,
                                     phase, pyobj_local, pyobj_remote,
@@ -3624,7 +3624,7 @@ libvirt_virConnectDomainEventBlockPullCallback(virConnectPtr conn ATTRIBUTE_UNUS
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventBlockPullCallback",
+                                    (char*)"_dispatchDomainEventBlockPullCallback",
                                     (char*)"OsiO",
                                     pyobj_dom, path, status, pyobj_cbData);
 
@@ -3780,7 +3780,7 @@ libvirt_virStreamEventCallback(virStreamPtr st ATTRIBUTE_UNUSED,
 
     /* Call the pure python dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_stream,
-                                    (char *)"dispatchStreamEventCallback",
+                                    (char *)"_dispatchStreamEventCallback",
                                     (char *)"iO",
                                     events, pyobj_cbData);
 

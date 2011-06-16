@@ -117,7 +117,7 @@ def getVersion (name = None):
 #
 # Invoke an EventHandle callback
 #
-def eventInvokeHandleCallback(watch, fd, event, opaque, opaquecompat=None):
+def _eventInvokeHandleCallback(watch, fd, event, opaque, opaquecompat=None):
     """
     Invoke the Event Impl Handle Callback in C
     """
@@ -137,7 +137,7 @@ def eventInvokeHandleCallback(watch, fd, event, opaque, opaquecompat=None):
 #
 # Invoke an EventTimeout callback
 #
-def eventInvokeTimeoutCallback(timer, opaque, opaquecompat=None):
+def _eventInvokeTimeoutCallback(timer, opaque, opaquecompat=None):
     """
     Invoke the Event Impl Timeout Callback in C
     """

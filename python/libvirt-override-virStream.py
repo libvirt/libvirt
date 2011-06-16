@@ -9,7 +9,7 @@
             libvirtmod.virStreamFree(self._o)
         self._o = None
 
-    def dispatchStreamEventCallback(self, events, cbData):
+    def _dispatchStreamEventCallback(self, events, cbData):
         """
         Dispatches events to python user's stream event callbacks
         """
