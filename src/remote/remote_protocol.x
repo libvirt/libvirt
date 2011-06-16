@@ -357,7 +357,10 @@ struct remote_node_get_memory_stats {
  * If the 'remote_CALL_ret' maps to a struct in the public API then it is
  * also filled via call-by-reference and must be annotated with a
  * insert@<offset> comment to indicate the offset in the parameter list of
- * the function to be called. */
+ * the function to be called.
+ *
+ * Dynamic opaque and remote_nonnull_string arrays can be annotated with an
+ * optional typecast */
 
 struct remote_open_args {
     /* NB. "name" might be NULL although in practice you can't
@@ -890,13 +893,13 @@ struct remote_domain_get_vcpus_flags_ret {
 struct remote_domain_pin_vcpu_args {
     remote_nonnull_domain dom;
     unsigned int vcpu;
-    opaque cpumap<REMOTE_CPUMAP_MAX>;
+    opaque cpumap<REMOTE_CPUMAP_MAX>; /* (unsigned char *) */
 };
 
 struct remote_domain_pin_vcpu_flags_args {
     remote_nonnull_domain dom;
     unsigned int vcpu;
-    opaque cpumap<REMOTE_CPUMAP_MAX>;
+    opaque cpumap<REMOTE_CPUMAP_MAX>; /* (unsigned char *) */
     unsigned int flags;
 };
 
@@ -1701,7 +1704,7 @@ struct remote_secret_get_xml_desc_ret {
 
 struct remote_secret_set_value_args {
     remote_nonnull_secret secret;
-    opaque value<REMOTE_SECRET_VALUE_MAX>;
+    opaque value<REMOTE_SECRET_VALUE_MAX>; /* (const unsigned char *) */
     unsigned int flags;
 };
 
@@ -1819,7 +1822,7 @@ struct remote_cpu_compare_ret {
 
 
 struct remote_cpu_baseline_args {
-    remote_nonnull_string xmlCPUs<REMOTE_CPU_BASELINE_MAX>;
+    remote_nonnull_string xmlCPUs<REMOTE_CPU_BASELINE_MAX>; /* (const char **) */
     unsigned int flags;
 };
 
@@ -2193,7 +2196,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_LOOKUP_BY_NAME = 23, /* autogen autogen */
     REMOTE_PROC_DOMAIN_LOOKUP_BY_UUID = 24, /* autogen autogen */
     REMOTE_PROC_NUM_OF_DEFINED_DOMAINS = 25, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_PIN_VCPU = 26, /* skipgen autogen */
+    REMOTE_PROC_DOMAIN_PIN_VCPU = 26, /* autogen autogen */
     REMOTE_PROC_DOMAIN_REBOOT = 27, /* autogen autogen */
     REMOTE_PROC_DOMAIN_RESUME = 28, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SET_AUTOSTART = 29, /* autogen autogen */
@@ -2412,7 +2415,7 @@ enum remote_procedure {
     REMOTE_PROC_INTERFACE_CHANGE_ROLLBACK = 222, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS_FLAGS = 223, /* skipgen autogen */
     REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR = 224, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_PIN_VCPU_FLAGS = 225, /* skipgen autogen */
+    REMOTE_PROC_DOMAIN_PIN_VCPU_FLAGS = 225, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SEND_KEY = 226, /* autogen autogen */
     REMOTE_PROC_NODE_GET_CPU_STATS = 227, /* skipgen skipgen */
     REMOTE_PROC_NODE_GET_MEMORY_STATS = 228, /* skipgen skipgen */

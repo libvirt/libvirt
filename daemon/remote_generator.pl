@@ -403,20 +403,32 @@ elsif ($opt_b) {
                          "        virDomainSnapshotFree(snapshot);\n" .
                          "    if (dom)\n" .
                          "        virDomainFree(dom);");
-                } elsif ($args_member =~ m/^(remote_string|remote_nonnull_string|remote_uuid|opaque) (\S+)<\S+>;/) {
+                } elsif ($args_member =~ m/^(?:remote_string|remote_uuid) (\S+)<\S+>;/) {
                     if (! @args_list) {
                         push(@args_list, "conn");
                     }
 
-                    if ($call->{ProcName} eq "SecretSetValue") {
-                        push(@args_list, "(const unsigned char *)args->$2.$2_val");
-                    } elsif ($call->{ProcName} eq "CPUBaseline") {
-                        push(@args_list, "(const char **)args->$2.$2_val");
-                    } else {
-                        push(@args_list, "args->$2.$2_val");
+                    push(@args_list, "args->$1.$1_val");
+                    push(@args_list, "args->$1.$1_len");
+                } elsif ($args_member =~ m/^(?:opaque|remote_nonnull_string) (\S+)<\S+>;(.*)$/) {
+                    if (! @args_list) {
+                        push(@args_list, "conn");
                     }
 
-                    push(@args_list, "args->$2.$2_len");
+                    my $cast = "";
+                    my $arg_name = $1;
+                    my $annotation = $2;
+
+                    if ($annotation ne "") {
+                        if ($annotation =~ m/\s*\/\*\s*(.*)\s*\*\//) {
+                            $cast = $1;
+                        } else {
+                            die "malformed cast annotation for argument: $args_member";
+                        }
+                    }
+
+                    push(@args_list, "${cast}args->$arg_name.${arg_name}_val");
+                    push(@args_list, "args->$arg_name.${arg_name}_len");
                 } elsif ($args_member =~ m/^(?:unsigned )?int (\S+)<\S+>;/) {
                     if (! @args_list) {
                         push(@args_list, "conn");
@@ -998,34 +1010,60 @@ elsif ($opt_k) {
                 } elsif ($args_member =~ m/^remote_string (\S+);/) {
                     push(@args_list, "const char *$1");
                     push(@setters_list, "args.$1 = $1 ? (char **)&$1 : NULL;");
-                } elsif ($args_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;/) {
-                    push(@args_list, "const char **$1");
-                    push(@args_list, "unsigned int ${1}len");
-                    push(@setters_list, "args.$1.${1}_val = (char **)$1;");
-                    push(@setters_list, "args.$1.${1}_len = ${1}len;");
-                    push(@args_check_list, { name => "\"$1\"", arg => "${1}len", limit => $2 });
+                } elsif ($args_member =~ m/^remote_nonnull_string (\S+)<(\S+)>;(.*)$/) {
+                    my $type_name = "const char **";
+                    my $arg_name = $1;
+                    my $limit = $2;
+                    my $annotation = $3;
+
+                    if ($annotation ne "") {
+                        if ($annotation =~ m/\s*\/\*\s*\((.*)\)\s*\*\//) {
+                            $type_name = $1;
+                        } else {
+                            die "malformed cast annotation for argument: $args_member";
+                        }
+                    }
+
+                    push(@args_list, "$type_name$arg_name");
+                    push(@args_list, "unsigned int ${arg_name}len");
+                    push(@setters_list, "args.$arg_name.${arg_name}_val = (char **)$arg_name;");
+                    push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
+                    push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $2 });
                 } elsif ($args_member =~ m/^remote_nonnull_string (\S+);/) {
                     push(@args_list, "const char *$1");
                     push(@setters_list, "args.$1 = (char *)$1;");
-                } elsif ($args_member =~ m/^(remote_string|opaque) (\S+)<(\S+)>;/) {
-                    my $type_name = $1;
-                    my $arg_name = $2;
-                    my $limit = $3;
+                } elsif ($args_member =~ m/^opaque (\S+)<(\S+)>;(.*)$/) {
+                    my $type_name = "const char *";
+                    my $arg_name = $1;
+                    my $limit = $2;
+                    my $annotation = $3;
+
+                    if ($annotation ne "") {
+                        if ($annotation =~ m/\s*\/\*\s*\((.*)\)\s*\*\//) {
+                            $type_name = $1;
+                        } else {
+                            die "malformed cast annotation for argument: $args_member";
+                        }
+                    }
+
+                    push(@args_list, "$type_name$arg_name");
 
                     if ($call->{ProcName} eq "SecretSetValue") {
-                        push(@args_list, "const unsigned char *$arg_name");
+                        # SPECIAL: virSecretSetValue uses size_t instead of int
                         push(@args_list, "size_t ${arg_name}len");
-                    } elsif ($call->{ProcName} eq "DomainPinVcpu") {
-                        push(@args_list, "unsigned char *$arg_name");
-                        push(@args_list, "int ${arg_name}len");
-                    } elsif ($call->{ProcName} eq "DomainPinVcpuFlags") {
-                        push(@args_list, "unsigned char *$arg_name");
-                        push(@args_list, "int ${arg_name}len");
                     } else {
-                        push(@args_list, "const char *$arg_name");
                         push(@args_list, "int ${arg_name}len");
                     }
 
+                    push(@setters_list, "args.$arg_name.${arg_name}_val = (char *)$arg_name;");
+                    push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
+                    push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });
+                } elsif ($args_member =~ m/^remote_string (\S+)<(\S+)>;/) {
+                    my $arg_name = $1;
+                    my $limit = $2;
+
+                    push(@args_list, "const char *$arg_name");
+                    push(@args_list, "int ${arg_name}len");
                     push(@setters_list, "args.$arg_name.${arg_name}_val = (char *)$arg_name;");
                     push(@setters_list, "args.$arg_name.${arg_name}_len = ${arg_name}len;");
                     push(@args_check_list, { name => "\"$arg_name\"", arg => "${arg_name}len", limit => $limit });
