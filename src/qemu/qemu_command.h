@@ -140,11 +140,21 @@ int qemuOpenVhostNet(virDomainDefPtr def,
 int qemudCanonicalizeMachine(struct qemud_driver *driver,
                              virDomainDefPtr def);
 
+/*
+ * NB: def->name can be NULL upon return and the caller
+ * *must* decide how to fill in a name in this case
+ */
 virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                                      const char **progenv,
-                                     const char **progargv);
+                                     const char **progargv,
+                                     char **pidfile,
+                                     virDomainChrSourceDefPtr *monConfig,
+                                     bool *monJSON);
 virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
-                                           const char *args);
+                                           const char *args,
+                                           char **pidfile,
+                                           virDomainChrSourceDefPtr *monConfig,
+                                           bool *monJSON);
 
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);

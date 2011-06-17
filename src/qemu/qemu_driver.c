@@ -3899,10 +3899,17 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
     }
 
     qemuDriverLock(driver);
-    def = qemuParseCommandLineString(driver->caps, config);
+    def = qemuParseCommandLineString(driver->caps, config,
+                                     NULL, NULL, NULL);
     qemuDriverUnlock(driver);
     if (!def)
         goto cleanup;
+
+    if (!def->name &&
+        !(def->name = strdup("unnamed"))) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
 

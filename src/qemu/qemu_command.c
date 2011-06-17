@@ -5530,84 +5530,80 @@ cleanup:
 /*
  * Tries to parse a QEMU serial/parallel device
  */
-static virDomainChrDefPtr
-qemuParseCommandLineChr(const char *val)
+static int
+qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
+                        const char *val)
 {
-    virDomainChrDefPtr def;
-
-    if (!(def = virDomainChrDefNew()))
-        goto error;
-
     if (STREQ(val, "null")) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_NULL;
+        source->type = VIR_DOMAIN_CHR_TYPE_NULL;
     } else if (STREQ(val, "vc")) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_VC;
+        source->type = VIR_DOMAIN_CHR_TYPE_VC;
     } else if (STREQ(val, "pty")) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+        source->type = VIR_DOMAIN_CHR_TYPE_PTY;
     } else if (STRPREFIX(val, "file:")) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
-        def->source.data.file.path = strdup(val+strlen("file:"));
-        if (!def->source.data.file.path)
+        source->type = VIR_DOMAIN_CHR_TYPE_FILE;
+        source->data.file.path = strdup(val+strlen("file:"));
+        if (!source->data.file.path)
             goto no_memory;
     } else if (STRPREFIX(val, "pipe:")) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_PIPE;
-        def->source.data.file.path = strdup(val+strlen("pipe:"));
-        if (!def->source.data.file.path)
+        source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
+        source->data.file.path = strdup(val+strlen("pipe:"));
+        if (!source->data.file.path)
             goto no_memory;
     } else if (STREQ(val, "stdio")) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_STDIO;
+        source->type = VIR_DOMAIN_CHR_TYPE_STDIO;
     } else if (STRPREFIX(val, "udp:")) {
         const char *svc1, *host2, *svc2;
-        def->source.type = VIR_DOMAIN_CHR_TYPE_UDP;
+        source->type = VIR_DOMAIN_CHR_TYPE_UDP;
         val += strlen("udp:");
         svc1 = strchr(val, ':');
         host2 = svc1 ? strchr(svc1, '@') : NULL;
         svc2 = host2 ? strchr(host2, ':') : NULL;
 
         if (svc1)
-            def->source.data.udp.connectHost = strndup(val, svc1-val);
+            source->data.udp.connectHost = strndup(val, svc1-val);
         else
-            def->source.data.udp.connectHost = strdup(val);
+            source->data.udp.connectHost = strdup(val);
 
-        if (!def->source.data.udp.connectHost)
+        if (!source->data.udp.connectHost)
             goto no_memory;
 
         if (svc1) {
             svc1++;
             if (host2)
-                def->source.data.udp.connectService = strndup(svc1, host2-svc1);
+                source->data.udp.connectService = strndup(svc1, host2-svc1);
             else
-                def->source.data.udp.connectService = strdup(svc1);
+                source->data.udp.connectService = strdup(svc1);
 
-            if (!def->source.data.udp.connectService)
+            if (!source->data.udp.connectService)
                 goto no_memory;
         }
 
         if (host2) {
             host2++;
             if (svc2)
-                def->source.data.udp.bindHost = strndup(host2, svc2-host2);
+                source->data.udp.bindHost = strndup(host2, svc2-host2);
             else
-                def->source.data.udp.bindHost = strdup(host2);
+                source->data.udp.bindHost = strdup(host2);
 
-            if (!def->source.data.udp.bindHost)
+            if (!source->data.udp.bindHost)
                 goto no_memory;
         }
         if (svc2) {
             svc2++;
-            def->source.data.udp.bindService = strdup(svc2);
-            if (!def->source.data.udp.bindService)
+            source->data.udp.bindService = strdup(svc2);
+            if (!source->data.udp.bindService)
                 goto no_memory;
         }
     } else if (STRPREFIX(val, "tcp:") ||
                STRPREFIX(val, "telnet:")) {
         const char *opt, *svc;
-        def->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
+        source->type = VIR_DOMAIN_CHR_TYPE_TCP;
         if (STRPREFIX(val, "tcp:")) {
             val += strlen("tcp:");
         } else {
             val += strlen("telnet:");
-            def->source.data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+            source->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         }
         svc = strchr(val, ':');
         if (!svc) {
@@ -5617,38 +5613,38 @@ qemuParseCommandLineChr(const char *val)
         }
         opt = strchr(svc, ',');
         if (opt && strstr(opt, "server"))
-            def->source.data.tcp.listen = true;
+            source->data.tcp.listen = true;
 
-        def->source.data.tcp.host = strndup(val, svc-val);
-        if (!def->source.data.tcp.host)
+        source->data.tcp.host = strndup(val, svc-val);
+        if (!source->data.tcp.host)
             goto no_memory;
         svc++;
         if (opt) {
-            def->source.data.tcp.service = strndup(svc, opt-svc);
+            source->data.tcp.service = strndup(svc, opt-svc);
         } else {
-            def->source.data.tcp.service = strdup(svc);
+            source->data.tcp.service = strdup(svc);
         }
-        if (!def->source.data.tcp.service)
+        if (!source->data.tcp.service)
             goto no_memory;
     } else if (STRPREFIX(val, "unix:")) {
         const char *opt;
         val += strlen("unix:");
         opt = strchr(val, ',');
-        def->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
         if (opt) {
             if (strstr(opt, "listen"))
-                def->source.data.nix.listen = true;
-            def->source.data.nix.path = strndup(val, opt-val);
+                source->data.nix.listen = true;
+            source->data.nix.path = strndup(val, opt-val);
         } else {
-            def->source.data.nix.path = strdup(val);
+            source->data.nix.path = strdup(val);
         }
-        if (!def->source.data.nix.path)
+        if (!source->data.nix.path)
             goto no_memory;
 
     } else if (STRPREFIX(val, "/dev")) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
-        def->source.data.file.path = strdup(val);
-        if (!def->source.data.file.path)
+        source->type = VIR_DOMAIN_CHR_TYPE_DEV;
+        source->data.file.path = strdup(val);
+        if (!source->data.file.path)
             goto no_memory;
     } else {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5656,13 +5652,12 @@ qemuParseCommandLineChr(const char *val)
         goto error;
     }
 
-    return def;
+    return 0;
 
 no_memory:
     virReportOOMError();
 error:
-    virDomainChrDefFree(def);
-    return NULL;
+    return -1;
 }
 
 
@@ -5839,7 +5834,10 @@ error:
  */
 virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                                      const char **progenv,
-                                     const char **progargv)
+                                     const char **progargv,
+                                     char **pidfile,
+                                     virDomainChrSourceDefPtr *monConfig,
+                                     bool *monJSON)
 {
     virDomainDefPtr def;
     int i;
@@ -5851,6 +5849,13 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     int video = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
     int nvirtiodisk = 0;
     qemuDomainCmdlineDefPtr cmd = NULL;
+
+    if (pidfile)
+        *pidfile = NULL;
+    if (monConfig)
+        *monConfig = NULL;
+    if (monJSON)
+        *monJSON = false;
 
     if (!progargv[0]) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -6205,7 +6210,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             WANT_VALUE();
             if (STRNEQ(val, "none")) {
                 virDomainChrDefPtr chr;
-                if (!(chr = qemuParseCommandLineChr(val)))
+
+                if (!(chr = virDomainChrDefNew()))
+                    goto error;
+
+                if (qemuParseCommandLineChr(&chr->source, val) < 0)
                     goto error;
                 if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
                     virDomainChrDefFree(chr);
@@ -6219,7 +6228,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             WANT_VALUE();
             if (STRNEQ(val, "none")) {
                 virDomainChrDefPtr chr;
-                if (!(chr = qemuParseCommandLineChr(val)))
+
+                if (!(chr = virDomainChrDefNew()))
+                    goto error;
+
+                if (qemuParseCommandLineChr(&chr->source, val) < 0)
                     goto error;
                 if (VIR_REALLOC_N(def->parallels, def->nparallels+1) < 0) {
                     virDomainChrDefFree(chr);
@@ -6396,13 +6409,25 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             /* ignore, always added by libvirt */
         } else if (STREQ(arg, "-pidfile")) {
             WANT_VALUE();
-            /* ignore, used by libvirt as needed */
+            if (pidfile)
+                if (!(*pidfile = strdup(val)))
+                    goto no_memory;
         } else if (STREQ(arg, "-incoming")) {
             WANT_VALUE();
             /* ignore, used via restore/migrate APIs */
         } else if (STREQ(arg, "-monitor")) {
             WANT_VALUE();
-            /* ignore, used internally by libvirt */
+            if (monConfig) {
+                virDomainChrSourceDefPtr chr;
+
+                if (VIR_ALLOC(chr) < 0)
+                    goto no_memory;
+
+                if (qemuParseCommandLineChr(chr, val) < 0)
+                    goto error;
+
+                *monConfig = chr;
+            }
         } else if (STREQ(arg, "-S")) {
             /* ignore, always added by libvirt */
         } else {
@@ -6543,11 +6568,6 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
 
     VIR_FREE(nics);
 
-    if (!def->name) {
-        if (!(def->name = strdup("unnamed")))
-            goto no_memory;
-    }
-
     if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
@@ -6566,12 +6586,21 @@ error:
     VIR_FREE(cmd);
     virDomainDefFree(def);
     VIR_FREE(nics);
+    if (monConfig) {
+        virDomainChrSourceDefFree(*monConfig);
+        *monConfig = NULL;
+    }
+    if (pidfile)
+        VIR_FREE(*pidfile);
     return NULL;
 }
 
 
 virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
-                                           const char *args)
+                                           const char *args,
+                                           char **pidfile,
+                                           virDomainChrSourceDefPtr *monConfig,
+                                           bool *monJSON)
 {
     const char **progenv = NULL;
     const char **progargv = NULL;
@@ -6581,7 +6610,8 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
     if (qemuStringToArgvEnv(args, &progenv, &progargv) < 0)
         goto cleanup;
 
-    def = qemuParseCommandLine(caps, progenv, progargv);
+    def = qemuParseCommandLine(caps, progenv, progargv,
+                               pidfile, monConfig, monJSON);
 
 cleanup:
     for (i = 0 ; progargv && progargv[i] ; i++)
