@@ -125,6 +125,8 @@ int virFileWritePidPath(const char *path,
 int virFileWritePid(const char *dir,
                     const char *name,
                     pid_t pid) ATTRIBUTE_RETURN_CHECK;
+int virFileReadPidPath(const char *path,
+                       pid_t *pid) ATTRIBUTE_RETURN_CHECK;
 int virFileReadPid(const char *dir,
                    const char *name,
                    pid_t *pid) ATTRIBUTE_RETURN_CHECK;

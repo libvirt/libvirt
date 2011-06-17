@@ -76,6 +76,7 @@ qemuProcessRemoveDomainStatus(struct qemud_driver *driver,
 {
     char ebuf[1024];
     char *file = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) < 0) {
         virReportOOMError();
@@ -87,10 +88,11 @@ qemuProcessRemoveDomainStatus(struct qemud_driver *driver,
                  vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
     VIR_FREE(file);
 
-    if (virFileDeletePid(driver->stateDir, vm->def->name) != 0)
+    if (priv->pidfile &&
+        unlink(priv->pidfile) < 0 &&
+        errno != ENOENT)
         VIR_WARN("Failed to remove PID file for %s: %s",
                  vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
-
 
     return 0;
 }
@@ -2339,7 +2341,6 @@ int qemuProcessStart(virConnectPtr conn,
     int ret;
     off_t pos = -1;
     char ebuf[1024];
-    char *pidfile = NULL;
     int logfile = -1;
     char *timestamp;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2491,16 +2492,18 @@ int qemuProcessStart(virConnectPtr conn,
     priv->monStart = 0;
     priv->gotShutdown = false;
 
-    if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
-        virReportSystemError(ret,
-                             _("Cannot remove stale PID file for %s"),
-                             vm->def->name);
+    VIR_FREE(priv->pidfile);
+    if (!(priv->pidfile = virFilePid(driver->stateDir, vm->def->name))) {
+        virReportSystemError(errno,
+                             "%s", _("Failed to build pidfile path."));
         goto cleanup;
     }
 
-    if (!(pidfile = virFilePid(driver->stateDir, vm->def->name))) {
+    if (unlink(priv->pidfile) < 0 &&
+        errno != ENOENT) {
         virReportSystemError(errno,
-                             "%s", _("Failed to build pidfile path."));
+                             _("Cannot remove stale PID file %s"),
+                             priv->pidfile);
         goto cleanup;
     }
 
@@ -2591,16 +2594,15 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
     virCommandNonblockingFDs(cmd);
-    virCommandSetPidFile(cmd, pidfile);
+    virCommandSetPidFile(cmd, priv->pidfile);
     virCommandDaemonize(cmd);
     virCommandRequireHandshake(cmd);
 
     ret = virCommandRun(cmd, NULL);
-    VIR_FREE(pidfile);
 
     /* wait for qemu process to show up */
     if (ret == 0) {
-        if (virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) {
+        if (virFileReadPidPath(priv->pidfile, &vm->pid)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Domain %s didn't show up"), vm->def->name);
             ret = -1;
@@ -2946,6 +2948,7 @@ retry:
     priv->nvcpupids = 0;
     qemuCapsFree(priv->qemuCaps);
     priv->qemuCaps = NULL;
+    VIR_FREE(priv->pidfile);
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {

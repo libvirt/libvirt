@@ -1236,26 +1236,16 @@ cleanup:
     return rc;
 }
 
-int virFileReadPid(const char *dir,
-                   const char *name,
-                   pid_t *pid)
+
+int virFileReadPidPath(const char *path,
+                       pid_t *pid)
 {
-    int rc;
     FILE *file;
-    char *pidfile = NULL;
+    int rc;
+
     *pid = 0;
 
-    if (name == NULL || dir == NULL) {
-        rc = EINVAL;
-        goto cleanup;
-    }
-
-    if (!(pidfile = virFilePid(dir, name))) {
-        rc = ENOMEM;
-        goto cleanup;
-    }
-
-    if (!(file = fopen(pidfile, "r"))) {
+    if (!(file = fopen(path, "r"))) {
         rc = errno;
         goto cleanup;
     }
@@ -1272,6 +1262,31 @@ int virFileReadPid(const char *dir,
     }
 
     rc = 0;
+
+ cleanup:
+    return rc;
+}
+
+
+int virFileReadPid(const char *dir,
+                   const char *name,
+                   pid_t *pid)
+{
+    int rc;
+    char *pidfile = NULL;
+    *pid = 0;
+
+    if (name == NULL || dir == NULL) {
+        rc = EINVAL;
+        goto cleanup;
+    }
+
+    if (!(pidfile = virFilePid(dir, name))) {
+        rc = ENOMEM;
+        goto cleanup;
+    }
+
+    rc = virFileReadPidPath(pidfile, pid);
 
  cleanup:
     VIR_FREE(pidfile);
