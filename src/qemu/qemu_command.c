@@ -6624,3 +6624,109 @@ cleanup:
 
     return def;
 }
+
+
+static int qemuParseProcFileStrings(unsigned int pid,
+                                    const char *name,
+                                    const char ***list)
+{
+    char *path = NULL;
+    int ret = -1;
+    char *data = NULL;
+    ssize_t len;
+    char *tmp;
+    size_t nstr = 0;
+    const char **str = NULL;
+    int i;
+
+    if (virAsprintf(&path, "/proc/%u/%s", pid, name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virFileReadAll(path, 1024*128, &data)) < 0)
+        goto cleanup;
+
+    tmp = data;
+    while (tmp < (data + len)) {
+        if (VIR_EXPAND_N(str, nstr, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (!(str[nstr-1] = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        /* Skip arg */
+        tmp += strlen(tmp);
+        /* Skip \0 separator */
+        tmp++;
+    }
+
+    if (VIR_EXPAND_N(str, nstr, 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    str[nstr-1] = NULL;
+
+    ret = nstr-1;
+    *list = str;
+
+cleanup:
+    if (ret < 0) {
+        for (i = 0 ; str && str[i] ; i++)
+            VIR_FREE(str[i]);
+        VIR_FREE(str);
+    }
+    VIR_FREE(data);
+    VIR_FREE(path);
+    return ret;
+}
+
+virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
+                                        unsigned int pid,
+                                        char **pidfile,
+                                        virDomainChrSourceDefPtr *monConfig,
+                                        bool *monJSON)
+{
+    virDomainDefPtr def = NULL;
+    const char **progargv = NULL;
+    const char **progenv = NULL;
+    char *exepath = NULL;
+    char *emulator;
+    int i;
+
+    if (qemuParseProcFileStrings(pid, "cmdline", &progargv) < 0 ||
+        qemuParseProcFileStrings(pid, "environ", &progenv) < 0)
+        goto cleanup;
+
+    if (!(def = qemuParseCommandLine(caps, progenv, progargv,
+                                     pidfile, monConfig, monJSON)))
+        goto cleanup;
+
+    if (virAsprintf(&exepath, "/proc/%u/exe", pid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileResolveLink(exepath, &emulator) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to resolve %s for pid %u"),
+                             exepath, pid);
+        goto cleanup;
+    }
+    VIR_FREE(def->emulator);
+    def->emulator = emulator;
+
+cleanup:
+    VIR_FREE(exepath);
+    for (i = 0 ; progargv && progargv[i] ; i++)
+        VIR_FREE(progargv[i]);
+    VIR_FREE(progargv);
+    for (i = 0 ; progenv && progenv[i] ; i++)
+        VIR_FREE(progenv[i]);
+    VIR_FREE(progenv);
+    return def;
+}

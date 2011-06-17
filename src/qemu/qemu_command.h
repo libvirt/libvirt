@@ -155,6 +155,11 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
                                            char **pidfile,
                                            virDomainChrSourceDefPtr *monConfig,
                                            bool *monJSON);
+virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
+                                        unsigned int pid,
+                                        char **pidfile,
+                                        virDomainChrSourceDefPtr *monConfig,
+                                        bool *monJSON);
 
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
