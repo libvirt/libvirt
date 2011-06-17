@@ -191,6 +191,8 @@ int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
 
 int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                           int **pids);
+int qemuMonitorGetVirtType(qemuMonitorPtr mon,
+                           int *virtType);
 int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
                               unsigned long *currmem);
 int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,

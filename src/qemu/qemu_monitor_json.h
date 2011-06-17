@@ -53,6 +53,8 @@ int qemuMonitorJSONSystemReset(qemuMonitorPtr mon);
 
 int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
                               int **pids);
+int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
+                               int *virtType);
 int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
                                   unsigned long *currmem);
 int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,

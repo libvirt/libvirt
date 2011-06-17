@@ -50,6 +50,8 @@ int qemuMonitorTextSystemReset(qemuMonitorPtr mon);
 
 int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
                               int **pids);
+int qemuMonitorTextGetVirtType(qemuMonitorPtr mon,
+                               int *virtType);
 int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
                                   unsigned long *currmem);
 int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
