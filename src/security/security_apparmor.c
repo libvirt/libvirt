@@ -757,11 +757,31 @@ AppArmorRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-AppArmorSetFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                   virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                   int fd ATTRIBUTE_UNUSED)
+AppArmorSetFDLabel(virSecurityManagerPtr mgr,
+                   virDomainObjPtr vm,
+                   int fd)
 {
-    return 0;
+    int rc = -1;
+    char *proc = NULL;
+    char *fd_path = NULL;
+
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    if (secdef->imagelabel == NULL)
+        return 0;
+
+    if (virAsprintf(&proc, "/proc/self/fd/%d", fd) == -1) {
+        virReportOOMError();
+        return rc;
+    }
+
+    if (virFileResolveLink(proc, &fd_path) < 0) {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("could not find path for descriptor"));
+        return rc;
+    }
+
+    return reload_profile(mgr, vm, fd_path, true);
 }
 
 virSecurityDriver virAppArmorSecurityDriver = {
