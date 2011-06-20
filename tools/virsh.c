@@ -3000,7 +3000,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     int cpumaplen;
     int i, cpu, lastcpu, maxcpu;
     bool unuse = false;
-    char *cur;
+    const char *cur;
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
     int current = vshCommandOptBool(cmd, "current");
@@ -3067,7 +3067,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     } else if (*cur == 'r') {
         for (cpu = 0; cpu < maxcpu; cpu++)
             VIR_USE_CPU(cpumap, cpu);
-        *cur = 0;
+        cur = "";
     }
 
     while (*cur != 0) {
