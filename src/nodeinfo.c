@@ -685,23 +685,23 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                 return -1;
             }
         } else {
-#if HAVE_NUMACTL
+# if HAVE_NUMACTL
             if (numa_available() < 0) {
-#endif
+# endif
                 nodeReportError(VIR_ERR_NO_SUPPORT,
                                 "%s", _("NUMA not supported on this host"));
                 return -1;
-#if HAVE_NUMACTL
+# if HAVE_NUMACTL
             }
-#endif
+# endif
 
-#if HAVE_NUMACTL
+# if HAVE_NUMACTL
             if (cellNum > numa_max_node()) {
                 nodeReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("Invalid cell number"));
                 return -1;
             }
-#endif
+# endif
 
             if (virAsprintf(&meminfo_path, "%s/node%d/meminfo",
                             NODE_SYS_PATH, cellNum) < 0) {
