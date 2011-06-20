@@ -424,7 +424,11 @@ BuildRequires: libcap-ng-devel >= 0.5.0
 BuildRequires: libssh2-devel
 %endif
 %if %{with_netcf}
+%if 0%{?fedora} >= 16 || 0%{?rhel} >= 6
+BuildRequires: netcf-devel >= 0.1.8
+%else
 BuildRequires: netcf-devel >= 0.1.4
+%endif
 %endif
 %if %{with_esx}
 %if 0%{?fedora} >= 9 || 0%{?rhel} >= 6
