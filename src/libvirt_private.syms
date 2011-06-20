@@ -310,6 +310,8 @@ virDomainNetIndexByMac;
 virDomainNetInsert;
 virDomainNetRemoveByMac;
 virDomainNetTypeToString;
+virDomainNumatuneMemModeTypeFromString;
+virDomainNumatuneMemModeTypeToString;
 virDomainObjAssignDef;
 virDomainObjCopyPersistentDef;
 virDomainObjGetPersistentDef;

@@ -1117,6 +1117,25 @@ virDomainVcpupinDefPtr virDomainVcpupinFindByVcpu(virDomainVcpupinDefPtr *def,
                                                   int nvcpupin,
                                                   int vcpu);
 
+enum virDomainNumatuneMemMode {
+    VIR_DOMAIN_NUMATUNE_MEM_STRICT,
+    VIR_DOMAIN_NUMATUNE_MEM_PREFERRED,
+    VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE,
+
+    VIR_DOMAIN_NUMATUNE_MEM_LAST
+};
+
+typedef struct _virDomainNumatuneDef virDomainNumatuneDef;
+typedef virDomainNumatuneDef *virDomainNumatuneDefPtr;
+struct _virDomainNumatuneDef {
+    struct {
+        char *nodemask;
+        int mode;
+    } memory;
+
+    /* Future NUMA tuning related stuff should go here. */
+};
+
 /*
  * Guest VM main configuration
  *
@@ -1155,6 +1174,8 @@ struct _virDomainDef {
         int nvcpupin;
         virDomainVcpupinDefPtr *vcpupin;
     } cputune;
+
+    virDomainNumatuneDef numatune;
 
     /* These 3 are based on virDomainLifeCycleAction enum flags */
     int onReboot;
@@ -1564,6 +1585,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceZlibCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
+VIR_ENUM_DECL(virDomainNumatuneMemMode)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)
