@@ -348,17 +348,6 @@ enum virDomainNetVirtioTxModeType {
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
 };
 
-/* the mode type for macvtap devices */
-enum virDomainNetdevMacvtapType {
-    VIR_DOMAIN_NETDEV_MACVTAP_MODE_VEPA,
-    VIR_DOMAIN_NETDEV_MACVTAP_MODE_PRIVATE,
-    VIR_DOMAIN_NETDEV_MACVTAP_MODE_BRIDGE,
-    VIR_DOMAIN_NETDEV_MACVTAP_MODE_PASSTHRU,
-
-    VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
-};
-
-
 /* Stores the virtual network interface configuration */
 typedef struct _virDomainNetDef virDomainNetDef;
 typedef virDomainNetDef *virDomainNetDefPtr;
@@ -396,7 +385,7 @@ struct _virDomainNetDef {
         } internal;
         struct {
             char *linkdev;
-            int mode;
+            int mode; /* enum virMacvtapMode from util/macvtap.h */
             virVirtualPortProfileParams virtPortProfile;
         } direct;
     } data;
@@ -1614,8 +1603,6 @@ int virDomainStateReasonFromString(virDomainState state, const char *reason);
 
 VIR_ENUM_DECL(virDomainSeclabel)
 VIR_ENUM_DECL(virDomainClockOffset)
-
-VIR_ENUM_DECL(virDomainNetdevMacvtap)
 
 VIR_ENUM_DECL(virDomainTimerName)
 VIR_ENUM_DECL(virDomainTimerTrack)

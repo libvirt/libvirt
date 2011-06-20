@@ -55,12 +55,17 @@
 #include "util.h"
 #include "macvtap.h"
 
+VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
+              "vepa",
+              "private",
+              "bridge",
+              "passthrough")
+
 #if WITH_MACVTAP || WITH_VIRTUALPORT
 
 # include "memory.h"
 # include "logging.h"
 # include "interface.h"
-# include "conf/domain_conf.h"
 # include "virterror_internal.h"
 # include "uuid.h"
 # include "files.h"
@@ -468,26 +473,6 @@ int openTap(const char *ifname,
 }
 
 
-static uint32_t
-macvtapModeFromInt(enum virDomainNetdevMacvtapType mode)
-{
-    switch (mode) {
-    case VIR_DOMAIN_NETDEV_MACVTAP_MODE_PRIVATE:
-        return MACVLAN_MODE_PRIVATE;
-
-    case VIR_DOMAIN_NETDEV_MACVTAP_MODE_BRIDGE:
-        return MACVLAN_MODE_BRIDGE;
-
-    case VIR_DOMAIN_NETDEV_MACVTAP_MODE_PASSTHRU:
-        return MACVLAN_MODE_PASSTHRU;
-
-    case VIR_DOMAIN_NETDEV_MACVTAP_MODE_VEPA:
-    default:
-        return MACVLAN_MODE_VEPA;
-    }
-}
-
-
 /**
  * configMacvtapTap:
  * @tapfd: file descriptor of the macvtap tap
@@ -643,6 +628,13 @@ restoreMacAddress(const char *linkdev,
     return 0;
 }
 
+static const uint32_t modeMap[VIR_MACVTAP_MODE_LAST] = {
+    [VIR_MACVTAP_MODE_VEPA] = MACVLAN_MODE_VEPA,
+    [VIR_MACVTAP_MODE_PRIVATE] = MACVLAN_MODE_PRIVATE,
+    [VIR_MACVTAP_MODE_BRIDGE] = MACVLAN_MODE_BRIDGE,
+    [VIR_MACVTAP_MODE_PASSTHRU] = MACVLAN_MODE_PASSTHRU,
+};
+
 /**
  * openMacvtapTap:
  * Create an instance of a macvtap device and open its tap character
@@ -667,7 +659,7 @@ int
 openMacvtapTap(const char *tgifname,
                const unsigned char *macaddress,
                const char *linkdev,
-               int mode,
+               enum virMacvtapMode mode,
                int vnet_hdr,
                const unsigned char *vmuuid,
                virVirtualPortProfileParamsPtr virtPortProfile,
@@ -679,9 +671,11 @@ openMacvtapTap(const char *tgifname,
     int c, rc;
     char ifname[IFNAMSIZ];
     int retries, do_retry = 0;
-    uint32_t macvtapMode = macvtapModeFromInt(mode);
+    uint32_t macvtapMode;
     const char *cr_ifname;
     int ifindex;
+
+    macvtapMode = modeMap[mode];
 
     *res_ifname = NULL;
 
@@ -694,7 +688,7 @@ openMacvtapTap(const char *tgifname,
      * This is especially important when using SRIOV capable cards that
      * emulate their switch in firmware.
      */
-    if (mode == VIR_DOMAIN_NETDEV_MACVTAP_MODE_PASSTHRU) {
+    if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
         if (replaceMacAdress(macaddress, linkdev, stateDir) != 0) {
             return -1;
         }
@@ -799,7 +793,7 @@ delMacvtap(const char *ifname,
            virVirtualPortProfileParamsPtr virtPortProfile,
            char *stateDir)
 {
-    if (mode == VIR_DOMAIN_NETDEV_MACVTAP_MODE_PASSTHRU) {
+    if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
         restoreMacAddress(linkdev, stateDir);
     }
 

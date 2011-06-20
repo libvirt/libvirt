@@ -447,12 +447,6 @@ VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
               "dynamic",
               "static")
 
-VIR_ENUM_IMPL(virDomainNetdevMacvtap, VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
-              "vepa",
-              "private",
-              "bridge",
-              "passthrough")
-
 VIR_ENUM_IMPL(virVirtualPort, VIR_VIRTUALPORT_TYPE_LAST,
               "none",
               "802.1Qbg",
@@ -2974,14 +2968,14 @@ virDomainNetDefParseXML(virCapsPtr caps,
 
         if (mode != NULL) {
             int m;
-            if ((m = virDomainNetdevMacvtapTypeFromString(mode)) < 0) {
+            if ((m = virMacvtapModeTypeFromString(mode)) < 0) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                      _("Unkown mode has been specified"));
                 goto error;
             }
             def->data.direct.mode = m;
         } else
-            def->data.direct.mode = VIR_DOMAIN_NETDEV_MACVTAP_MODE_VEPA;
+            def->data.direct.mode = VIR_MACVTAP_MODE_VEPA;
 
         if (virtPortParsed)
             def->data.direct.virtPortProfile = virtPort;
@@ -8634,7 +8628,7 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "      <source dev='%s'",
                               def->data.direct.linkdev);
         virBufferAsprintf(buf, " mode='%s'",
-                   virDomainNetdevMacvtapTypeToString(def->data.direct.mode));
+                   virMacvtapModeTypeToString(def->data.direct.mode));
         virBufferAddLit(buf, "/>\n");
         virVirtualPortProfileFormat(buf, &def->data.direct.virtPortProfile,
                                     "      ");
