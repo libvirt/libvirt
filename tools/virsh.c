@@ -12113,7 +12113,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         vshError(ctl, _("command '%s' doesn't exist"), cmdname);
         return false;
     } else {
-        const char *desc = _(vshCmddefGetInfo(def, "desc"));
+        /* Don't translate desc if it is "".  */
+        const char *desc = vshCmddefGetInfo(def, "desc");
         const char *help = _(vshCmddefGetInfo(def, "help"));
         char buf[256];
         uint32_t opts_need_arg;
@@ -12167,7 +12168,7 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         if (desc[0]) {
             /* Print the description only if it's not empty.  */
             fputs(_("\n  DESCRIPTION\n"), stdout);
-            fprintf(stdout, "    %s\n", desc);
+            fprintf(stdout, "    %s\n", _(desc));
         }
 
         if (def->opts) {
