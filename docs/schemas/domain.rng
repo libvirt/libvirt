@@ -778,6 +778,9 @@
       <optional>
         <ref name="driverIO"/>
       </optional>
+      <optional>
+        <ref name="ioeventfd"/>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -814,6 +817,14 @@
       <choice>
         <value>threads</value>
         <value>native</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="ioeventfd">
+    <attribute name="ioeventfd">
+      <choice>
+        <value>on</value>
+        <value>off</value>
       </choice>
     </attribute>
   </define>
@@ -1116,6 +1127,9 @@
                 <value>timer</value>
               </choice>
             </attribute>
+          </optional>
+          <optional>
+            <ref name="ioeventfd"/>
           </optional>
           <empty/>
         </element>

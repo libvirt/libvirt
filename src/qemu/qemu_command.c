@@ -1289,6 +1289,16 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
     return 0;
 }
 
+static int
+qemuBuildIoEventFdStr(virBufferPtr buf,
+                      enum virDomainIoEventFd use,
+                      virBitmapPtr qemuCaps)
+{
+    if (use && qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOEVENTFD))
+        virBufferAsprintf(buf, ",ioeventfd=%s",
+                          virDomainIoEventFdTypeToString(use));
+    return 0;
+}
 
 #define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
@@ -1556,6 +1566,7 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
         break;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         virBufferAddLit(&opt, "virtio-blk-pci");
+        qemuBuildIoEventFdStr(&opt, disk->ioeventfd, qemuCaps);
         qemuBuildDeviceAddressStr(&opt, &disk->info, qemuCaps);
         break;
     case VIR_DOMAIN_DISK_BUS_USB:
@@ -1779,6 +1790,8 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
             goto error;
         }
     }
+    if (usingVirtio)
+        qemuBuildIoEventFdStr(&buf, net->driver.virtio.ioeventfd, qemuCaps);
     if (vlan == -1)
         virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
     else

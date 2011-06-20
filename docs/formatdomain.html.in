@@ -785,7 +785,7 @@
     &lt;/disk&gt;
       ...
     &lt;disk type='network'&gt;
-      &lt;driver name="qemu" type="raw" io="threads"/&gt;
+      &lt;driver name="qemu" type="raw" io="threads" ioeventfd="on"/&gt;
       &lt;source protocol="sheepdog" name="image_name"&gt;
         &lt;host name="hostname" port="7000"/&gt;
       &lt;/source&gt;
@@ -868,6 +868,20 @@
             The optional <code>io</code> attribute controls specific
             policies on I/O; qemu guests support "threads" and
             "native". <span class="since">Since 0.8.8</span>
+          </li>
+          <li>
+            The optional <code>ioeventfd</code> attribute allows users to
+            set <a href='https://patchwork.kernel.org/patch/43390/'>
+            domain I/O asynchronous handling</a> for disk device.
+            The default is left to the discretion of the hypervisor.
+            Accepted values are "on" and "off". Enabling this allows
+            qemu to execute VM while a separate thread handles I/O.
+            Typically guests experiencing high system CPU utilization
+            during I/O will benefit from this. On the other hand,
+            on overloaded host it could increase guest I/O latency.
+            <span class="since">Since 0.9.3 (QEMU and KVM only)</span>
+            <b>In general you should leave this option alone, unless you
+            are very certain you know what you are doing.</b>
           </li>
         </ul>
       </dd>
@@ -1649,7 +1663,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source network='default'/&gt;
       &lt;target dev='vnet1'/&gt;
       &lt;model type='virtio'/&gt;
-      <b>&lt;driver name='vhost' txmode='iothread'/&gt;</b>
+      <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on'/&gt;</b>
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -1696,6 +1710,22 @@ qemu-kvm -net nic,model=? /dev/null
         latency, but potentially causes more processor bandwidth
         contention since the cpu doing the tx isn't necessarily the
         cpu where the guest generated the packets."<br/><br/>
+
+        <b>In general you should leave this option alone, unless you
+        are very certain you know what you are doing.</b>
+      </dd>
+      <dt><code>ioeventfd</code></dt>
+      <dd>
+        This optional attribute allows users to set
+        <a href='https://patchwork.kernel.org/patch/43390/'>
+        domain I/O asynchronous handling</a> for interface device.
+        The default is left to the discretion of the hypervisor.
+        Accepted values are "on" and "off". Enabling this allows
+        qemu to execute VM while a separate thread handles I/O.
+        Typically guests experiencing high system CPU utilization
+        during I/O will benefit from this. On the other hand,
+        on overloaded host it could increase guest I/O latency.
+        <span class="since">Since 0.9.3 (QEMU and KVM only)</span><br/><br/>
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>

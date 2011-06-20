@@ -350,6 +350,10 @@ mymain(void)
     DO_TEST("disk-aio", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_AIO,
             QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
+    DO_TEST("disk-ioeventfd", false,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_VIRTIO_IOEVENTFD,
+            QEMU_CAPS_VIRTIO_TX_ALG, QEMU_CAPS_DEVICE);
+
     DO_TEST("graphics-vnc", false, NONE);
     DO_TEST("graphics-vnc-socket", false, NONE);
 

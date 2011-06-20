@@ -475,7 +475,8 @@ mymain(void)
             QEMU_CAPS_CCID_PASSTHRU,
             QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_QXL_VGA,
-            QEMU_CAPS_VIRTIO_TX_ALG);
+            QEMU_CAPS_VIRTIO_TX_ALG,
+            QEMU_CAPS_VIRTIO_IOEVENTFD);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

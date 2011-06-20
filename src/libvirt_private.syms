@@ -292,6 +292,8 @@ virDomainHostdevDefFree;
 virDomainHostdevModeTypeToString;
 virDomainHostdevSubsysTypeToString;
 virDomainInputDefFree;
+virDomainIoEventFdTypeFromString;
+virDomainIoEventFdTypeToString;
 virDomainLeaseIndex;
 virDomainLeaseInsert;
 virDomainLeaseInsertPreAlloc;
