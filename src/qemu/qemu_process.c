@@ -39,6 +39,10 @@
 #include "qemu_hotplug.h"
 #include "qemu_bridge_filter.h"
 
+#if HAVE_NUMACTL
+# include <numa.h>
+#endif
+
 #include "datatypes.h"
 #include "logging.h"
 #include "virterror_internal.h"
@@ -1175,6 +1179,166 @@ qemuProcessDetectVcpuPIDs(struct qemud_driver *driver,
     return 0;
 }
 
+
+/*
+ * Set NUMA memory policy for qemu process, to be run between
+ * fork/exec of QEMU only.
+ */
+#if HAVE_NUMACTL
+static int
+qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
+{
+    struct bitmask *mask = NULL;
+    virErrorPtr orig_err = NULL;
+    virErrorPtr err = NULL;
+    int mode = -1;
+    int node = -1;
+    int ret = -1;
+    int i = 0;
+    int maxnode = 0;
+
+    VIR_DEBUG("Setting NUMA memory policy");
+
+    if (numa_available() < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Host kernel is not aware of NUMA."));
+        return -1;
+    }
+
+    if (!vm->def->numatune.memory.nodemask)
+        return 0;
+
+    if (VIR_ALLOC(mask) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    mask->size = VIR_DOMAIN_CPUMASK_LEN / sizeof (unsigned long);
+    if (VIR_ALLOC_N(mask->maskp, mask->size) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    /* Convert nodemask to NUMA bitmask. */
+    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
+        int cur = 0;
+        int mod = 0;
+
+        if (i) {
+            cur = i / (8 * sizeof (unsigned long));
+            mod = i % (8 * sizeof (unsigned long));
+        }
+
+        if (vm->def->numatune.memory.nodemask[i]) {
+           mask->maskp[cur] |= 1 << mod;
+        }
+    }
+
+    maxnode = numa_max_node() + 1;
+
+    for (i = 0; i < mask->size; i++) {
+        if (i < (maxnode % (8 * sizeof (unsigned long)))) {
+            if (mask->maskp[i] & ~maxnode) {
+                VIR_WARN("nodeset is out of range, there is only %d NUMA "
+                         "nodes on host", maxnode);
+                break;
+             }
+
+             continue;
+        }
+
+        if (mask->maskp[i]) {
+            VIR_WARN("nodeset is out of range, there is only %d NUMA nodes "
+                      "on host", maxnode);
+        }
+    }
+
+    orig_err = virSaveLastError();
+    mode = vm->def->numatune.memory.mode;
+
+    if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+        numa_set_bind_policy(1);
+        numa_set_membind(mask);
+        numa_set_bind_policy(0);
+
+        err = virGetLastError();
+        if ((err && (err->code != orig_err->code)) ||
+            (err && !orig_err)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to bind memory to specified nodeset: %s"),
+                            err ? err->message : _("unknown error"));
+            virResetLastError();
+            goto cleanup;
+        }
+    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_PREFERRED) {
+        int nnodes = 0;
+        for (i = 0; i < mask->size; i++) {
+            if (numa_bitmask_isbitset(mask, i)) {
+                node = i;
+                nnodes++;
+            }
+        }
+
+        if (nnodes != 1) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("NUMA memory tuning in 'preferred' mode "
+                                    "only supports single node"));
+            goto cleanup;
+        }
+
+        numa_set_bind_policy(0);
+        numa_set_preferred(node);
+
+        err = virGetLastError();
+        if ((err && (err->code != orig_err->code)) ||
+            (err && !orig_err)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to set memory policy as preferred to specified "
+                              "node: %s"), err ? err->message : _("unknown error"));
+            virResetLastError();
+            goto cleanup;
+        }
+    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE) {
+        numa_set_interleave_mask(mask);
+
+        err = virGetLastError();
+        if ((err && (err->code != orig_err->code)) ||
+            (err && !orig_err)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to interleave memory to specified nodeset: %s"),
+                            err ? err->message : _("unknown error"));
+            virResetLastError();
+            goto cleanup;
+        }
+    } else {
+        /* XXX: Shouldn't go here, as we already do checking when
+         * parsing domain XML.
+         */
+        qemuReportError(VIR_ERR_XML_ERROR,
+                        "%s", _("Invalid mode for memory NUMA tuning."));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    numa_bitmask_free(mask);
+    return ret;
+}
+#else
+static int
+qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
+{
+    if (vm->def->numatune.memory.nodemask) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("libvirt is compiled without NUMA tuning support"));
+
+        return -1;
+    }
+
+    return 0;
+}
+#endif
+
 /*
  * To be run between fork/exec of QEMU only
  */
@@ -1891,6 +2055,9 @@ static int qemuProcessHook(void *data)
     if (qemuProcessInitCpuAffinity(h->vm) < 0)
         goto cleanup;
 
+    if (qemuProcessInitNumaMemoryPolicy(h->vm) < 0)
+        return -1;
+
     VIR_DEBUG("Setting up security labeling");
     if (virSecurityManagerSetProcessLabel(h->driver->securityManager, h->vm) < 0)
         goto cleanup;
@@ -1901,7 +2068,6 @@ cleanup:
     VIR_DEBUG("Hook complete ret=%d", ret);
     return ret;
 }
-
 
 int
 qemuProcessPrepareMonitorChr(struct qemud_driver *driver,
