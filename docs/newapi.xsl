@@ -174,22 +174,62 @@
       </pre>
       <table>
         <xsl:for-each select="field">
-          <tr>
-            <td>
-              <xsl:call-template name="dumptext">
-                <xsl:with-param name="text" select="@type"/>
-              </xsl:call-template>
-            </td>
-            <td><xsl:value-of select="@name"/></td>
-            <xsl:if test="@info != ''">
-              <td>
-                <xsl:text> : </xsl:text>
-                <xsl:call-template name="dumptext">
-                  <xsl:with-param name="text" select="@info"/>
-                </xsl:call-template>
-              </td>
-            </xsl:if>
-          </tr>
+          <xsl:choose>
+            <xsl:when test='@type = "union"'>
+              <tr><td>union {</td></tr>
+              <tr>
+              <td><table>
+              <xsl:for-each select="union/field">
+                <tr>
+                  <td>
+                    <xsl:call-template name="dumptext">
+                      <xsl:with-param name="text" select="@type"/>
+                    </xsl:call-template>
+                  </td>
+                  <td><xsl:value-of select="@name"/></td>
+                  <xsl:if test="@info != ''">
+                    <td>
+                      <xsl:text> : </xsl:text>
+                      <xsl:call-template name="dumptext">
+                        <xsl:with-param name="text" select="@info"/>
+                      </xsl:call-template>
+                    </td>
+                  </xsl:if>
+                </tr>
+              </xsl:for-each>
+              </table></td>
+              <td></td></tr>
+              <tr><td>}</td>
+              <td><xsl:value-of select="@name"/></td>
+                <xsl:if test="@info != ''">
+                  <td>
+                    <xsl:text> : </xsl:text>
+                    <xsl:call-template name="dumptext">
+                      <xsl:with-param name="text" select="@info"/>
+                    </xsl:call-template>
+                  </td>
+                </xsl:if>
+              <td></td></tr>
+            </xsl:when>
+            <xsl:otherwise>
+              <tr>
+                <td>
+                  <xsl:call-template name="dumptext">
+                    <xsl:with-param name="text" select="@type"/>
+                  </xsl:call-template>
+                </td>
+                <td><xsl:value-of select="@name"/></td>
+                <xsl:if test="@info != ''">
+                  <td>
+                    <xsl:text> : </xsl:text>
+                    <xsl:call-template name="dumptext">
+                      <xsl:with-param name="text" select="@info"/>
+                    </xsl:call-template>
+                  </td>
+                </xsl:if>
+              </tr>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:for-each>
         <xsl:if test="not(field)">
           <tr>

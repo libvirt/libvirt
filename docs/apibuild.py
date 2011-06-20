@@ -179,6 +179,7 @@ class index:
         self.variables = {}
         self.includes = {}
         self.structs = {}
+        self.unions = {}
         self.enums = {}
         self.typedefs = {}
         self.macros = {}
@@ -232,6 +233,10 @@ class index:
                 self.includes[name] = d
             elif type == "struct":
                 self.structs[name] = d
+            elif type == "struct":
+                self.structs[name] = d
+            elif type == "union":
+                self.unions[name] = d
             elif type == "enum":
                 self.enums[name] = d
             elif type == "typedef":
@@ -280,6 +285,13 @@ class index:
              else:
                  self.structs[id] = idx.structs[id]
                  self.identifiers[id] = idx.structs[id]
+        for id in idx.unions.keys():
+             if self.unions.has_key(id):
+                 print "union %s from %s redeclared in %s" % (
+                    id, self.unions[id].header, idx.unions[id].header)
+             else:
+                 self.unions[id] = idx.unions[id]
+                 self.identifiers[id] = idx.unions[id]
         for id in idx.typedefs.keys():
              if self.typedefs.has_key(id):
                  print "typedef %s from %s redeclared in %s" % (
@@ -347,6 +359,7 @@ class index:
         self.analyze_dict("functions", self.functions)
         self.analyze_dict("variables", self.variables)
         self.analyze_dict("structs", self.structs)
+        self.analyze_dict("unions", self.unions)
         self.analyze_dict("typedefs", self.typedefs)
         self.analyze_dict("macros", self.macros)
 
@@ -656,13 +669,36 @@ class CParser:
                         res[item] = line
         self.index.info = res
 
+    def strip_lead_star(self, line):
+        l = len(line)
+        i = 0
+        while i < l:
+            if line[i] == ' ' or line[i] == '\t':
+                i += 1
+            elif line[i] == '*':
+                return line[:i] + line[i + 1:]
+            else:
+                 return line
+        return line
+
+    def cleanupComment(self):
+        if type(self.comment) != type(""):
+            return
+        # remove the leading * on multi-line comments
+        lines = self.comment.splitlines(True)
+        com = ""
+        for line in lines:
+            com = com + self.strip_lead_star(line)
+        self.comment = com.strip()
+
     def parseComment(self, token):
+        com = token[1]
         if self.top_comment == "":
-            self.top_comment = token[1]
-        if self.comment == None or token[1][0] == '*':
-            self.comment = token[1];
+            self.top_comment = com
+        if self.comment == None or com[0] == '*':
+            self.comment = com;
         else:
-            self.comment = self.comment + token[1]
+            self.comment = self.comment + com
         token = self.lexer.token()
 
         if string.find(self.comment, "DOC_DISABLE") != -1:
@@ -1178,7 +1214,13 @@ class CParser:
                     if token[0] == "sep" and token[1] == ";":
                         self.comment = None
                         token = self.token()
-                        fields.append((self.type, fname, self.comment))
+                        self.cleanupComment()
+                        if self.type == "union":
+                            fields.append((self.type, fname, self.comment,
+                                           self.union_fields))
+                            self.union_fields = []
+                        else:
+                            fields.append((self.type, fname, self.comment))
                         self.comment = None
                     else:
                         self.error("parseStruct: expecting ;", token)
@@ -1201,6 +1243,56 @@ class CParser:
         return token
 
      #
+     # Parse a C union definition till the balancing }
+     #
+    def parseUnion(self, token):
+        fields = []
+        # self.debug("start parseUnion", token)
+        while token != None:
+            if token[0] == "sep" and token[1] == "{":
+                token = self.token()
+                token = self.parseTypeBlock(token)
+            elif token[0] == "sep" and token[1] == "}":
+                self.union_fields = fields
+                # self.debug("end parseUnion", token)
+                # print fields
+                token = self.token()
+                return token
+            else:
+                base_type = self.type
+                # self.debug("before parseType", token)
+                token = self.parseType(token)
+                # self.debug("after parseType", token)
+                if token != None and token[0] == "name":
+                    fname = token[1]
+                    token = self.token()
+                    if token[0] == "sep" and token[1] == ";":
+                        self.comment = None
+                        token = self.token()
+                        self.cleanupComment()
+                        fields.append((self.type, fname, self.comment))
+                        self.comment = None
+                    else:
+                        self.error("parseUnion: expecting ;", token)
+                elif token != None and token[0] == "sep" and token[1] == "{":
+                    token = self.token()
+                    token = self.parseTypeBlock(token)
+                    if token != None and token[0] == "name":
+                        token = self.token()
+                    if token != None and token[0] == "sep" and token[1] == ";":
+                        token = self.token()
+                    else:
+                        self.error("parseUnion: expecting ;", token)
+                else:
+                    self.error("parseUnion: name", token)
+                    token = self.token()
+                self.type = base_type;
+        self.union_fields = fields
+        # self.debug("end parseUnion", token)
+        # print fields
+        return token
+
+     #
      # Parse a C enum block, parse till the balancing }
      #
     def parseEnumBlock(self, token):
@@ -1215,6 +1307,7 @@ class CParser:
                 token = self.parseTypeBlock(token)
             elif token[0] == "sep" and token[1] == "}":
                 if name != None:
+                    self.cleanupComment()
                     if self.comment != None:
                         comment = self.comment
                         self.comment = None
@@ -1222,6 +1315,7 @@ class CParser:
                 token = self.token()
                 return token
             elif token[0] == "name":
+                    self.cleanupComment()
                     if name != None:
                         if self.comment != None:
                             comment = string.strip(self.comment)
@@ -1252,7 +1346,7 @@ class CParser:
         return token
 
      #
-     # Parse a C definition block, used for structs it parse till
+     # Parse a C definition block, used for structs or unions it parse till
      # the balancing }
      #
     def parseTypeBlock(self, token):
@@ -1275,6 +1369,7 @@ class CParser:
     def parseType(self, token):
         self.type = ""
         self.struct_fields = []
+        self.union_fields = []
         self.signature = None
         if token == None:
             return token
@@ -1304,22 +1399,19 @@ class CParser:
                 self.push(token)
                 token = oldtmp
 
+            oldtmp = token
+            token = self.token()
             if token[0] == "name" and token[1] == "int":
-                if self.type == "":
-                    self.type = tmp[1]
-                else:
-                    self.type = self.type + " " + tmp[1]
+                self.type = self.type + " " + token[1]
+            else:
+                self.push(token)
+                token = oldtmp
 
         elif token[0] == "name" and token[1] == "short":
             if self.type == "":
                 self.type = token[1]
             else:
                 self.type = self.type + " " + token[1]
-            if token[0] == "name" and token[1] == "int":
-                if self.type == "":
-                    self.type = tmp[1]
-                else:
-                    self.type = self.type + " " + tmp[1]
 
         elif token[0] == "name" and token[1] == "struct":
             if self.type == "":
@@ -1346,6 +1438,28 @@ class CParser:
                 else:
                     self.error("struct : expecting name", token)
                     return token
+            elif token != None and token[0] == "name" and nametok != None:
+                self.type = self.type + " " + nametok[1]
+                return token
+
+            if nametok != None:
+                self.lexer.push(token)
+                token = nametok
+            return token
+
+        elif token[0] == "name" and token[1] == "union":
+            if self.type == "":
+                self.type = token[1]
+            else:
+                self.type = self.type + " " + token[1]
+            token = self.token()
+            nametok = None
+            if token[0] == "name":
+                nametok = token
+                token = self.token()
+            if token != None and token[0] == "sep" and token[1] == "{":
+                token = self.token()
+                token = self.parseUnion(token)
             elif token != None and token[0] == "name" and nametok != None:
                 self.type = self.type + " " + nametok[1]
                 return token
@@ -1434,7 +1548,7 @@ class CParser:
             nametok = token
             token = self.token()
             if token != None and token[0] == "sep" and token[1] == '[':
-                self.type = self.type + nametok[1]
+                self.type = self.type + " " + nametok[1]
                 while token != None and token[0] == "sep" and token[1] == '[':
                     self.type = self.type + token[1]
                     token = self.token()
@@ -1844,6 +1958,20 @@ class docBuilder:
                 pass
         output.write("    </macro>\n")
 
+    def serialize_union(self, output, field, desc):
+        output.write("      <field name='%s' type='union' info='%s'>\n" % (field[1] , desc))
+        output.write("        <union>\n")
+        for f in field[3]:
+            desc = f[2]
+            if desc == None:
+                desc = ''
+            else:
+                desc = escape(desc)
+            output.write("          <field name='%s' type='%s' info='%s'/>\n" % (f[1] , f[0], desc))
+
+        output.write("        </union>\n")
+        output.write("      </field>\n")
+
     def serialize_typedef(self, output, name):
         id = self.idx.typedefs[name]
         if id.info[0:7] == 'struct ':
@@ -1862,7 +1990,10 @@ class docBuilder:
                             desc = ''
                         else:
                             desc = escape(desc)
-                        output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1] , field[0], desc))
+                        if field[0] == "union":
+                            self.serialize_union(output, field, desc)
+                        else:
+                            output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1] , field[0], desc))
                 except:
                     print "Failed to serialize struct %s" % (name)
                 output.write("    </struct>\n")
@@ -1960,6 +2091,8 @@ class docBuilder:
             if dict.typedefs.has_key(id):
                 continue
             if dict.structs.has_key(id):
+                continue
+            if dict.unions.has_key(id):
                 continue
             if dict.enums.has_key(id):
                 continue
