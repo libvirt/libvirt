@@ -5834,8 +5834,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         char *set = tmp;
         def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
         if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
-            virReportOOMError();
-            goto error;
+            goto no_memory;
         }
         if (virDomainCpuSetParse((const char **)&set,
                                  0, def->cpumask,
@@ -5896,8 +5895,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             int nodemasklen = VIR_DOMAIN_CPUMASK_LEN;
 
             if (VIR_ALLOC_N(def->numatune.memory.nodemask, nodemasklen) < 0) {
-                virReportOOMError();
-                goto error;
+                goto no_memory;
             }
 
             /* "nodeset" leads same syntax with "cpuset". */
@@ -6012,8 +6010,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (def->os.bootloader) {
             def->os.type = strdup("xen");
             if (!def->os.type) {
-                virReportOOMError();
-                goto error;
+                goto no_memory;
             }
         } else {
             virDomainReportError(VIR_ERR_OS_TYPE,
@@ -6030,8 +6027,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         def->virtType == VIR_DOMAIN_VIRT_XEN) {
         VIR_FREE(def->os.type);
         if (!(def->os.type = strdup("xen"))) {
-            virReportOOMError();
-            goto error;
+            goto no_memory;
         }
     }
 
@@ -6058,8 +6054,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
         }
         if (!(def->os.arch = strdup(defaultArch))) {
-            virReportOOMError();
-            goto error;
+            goto no_memory;
         }
     }
 
@@ -6071,8 +6066,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                                                         virDomainVirtTypeToString(def->virtType));
         if (defaultMachine != NULL) {
             if (!(def->os.machine = strdup(defaultMachine))) {
-                virReportOOMError();
-                goto error;
+                goto no_memory;
             }
         }
     }
@@ -6405,8 +6399,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         virDomainInputDefPtr input;
 
         if (VIR_ALLOC(input) < 0) {
-            virReportOOMError();
-            goto error;
+            goto no_memory;
         }
         if (STREQ(def->os.type, "hvm")) {
             input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
