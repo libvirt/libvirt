@@ -1197,6 +1197,9 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
     int i = 0;
     int maxnode = 0;
 
+    if (!vm->def->numatune.memory.nodemask)
+        return 0;
+
     VIR_DEBUG("Setting NUMA memory policy");
 
     if (numa_available() < 0) {
@@ -1204,9 +1207,6 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
                         "%s", _("Host kernel is not aware of NUMA."));
         return -1;
     }
-
-    if (!vm->def->numatune.memory.nodemask)
-        return 0;
 
     if (VIR_ALLOC(mask) < 0) {
         virReportOOMError();
