@@ -1092,6 +1092,8 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainVcpupinDefFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
+    VIR_FREE(def->numatune.memory.nodemask);
+
     virSysinfoDefFree(def->sysinfo);
 
     if (def->namespaceData && def->ns.free)
