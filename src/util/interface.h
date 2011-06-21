@@ -32,4 +32,8 @@ int ifaceGetIndex(bool reportError, const char *ifname, int *ifindex);
 
 int ifaceGetVlanID(const char *vlanifname, int *vlanid);
 
+int ifaceSetMacaddr(const char *ifname, const unsigned char *macaddr);
+
+int ifaceGetMacaddr(const char *ifname, unsigned char *macaddr);
+
 #endif /* __VIR_INTERFACE_H__ */

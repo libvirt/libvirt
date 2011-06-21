@@ -83,12 +83,15 @@ int openMacvtapTap(const char *ifname,
                    const unsigned char *vmuuid,
                    virVirtualPortProfileParamsPtr virtPortProfile,
                    char **res_ifname,
-                   enum virVMOperationType vmop);
+                   enum virVMOperationType vmop,
+                   char *stateDir);
 
 void delMacvtap(const char *ifname,
                 const unsigned char *macaddress,
                 const char *linkdev,
-                virVirtualPortProfileParamsPtr virtPortProfile);
+                int mode,
+                virVirtualPortProfileParamsPtr virtPortProfile,
+                char *stateDir);
 
 int vpAssociatePortProfileId(const char *macvtap_ifname,
                              const unsigned char *macvtap_macaddr,

@@ -390,3 +390,99 @@ ifaceGetVlanID(const char *vlanifname ATTRIBUTE_UNUSED,
     return ENOSYS;
 }
 #endif /* __linux__ */
+
+/**
+ * ifaceGetMacaddr:
+ * @ifname: interface name to set MTU for
+ * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
+ *
+ * This function gets the @macaddr for a given interface @ifname.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+#ifdef __linux__
+int
+ifaceGetMacaddr(const char *ifname,
+                unsigned char *macaddr)
+{
+    struct ifreq ifr;
+    int fd;
+
+    if (!ifname)
+        return EINVAL;
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0)
+        return errno;
+
+    memset(&ifr, 0, sizeof(struct ifreq));
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
+
+    if (ioctl(fd, SIOCGIFHWADDR, (char *)&ifr) != 0)
+        return errno;
+
+    memcpy(macaddr, ifr.ifr_ifru.ifru_hwaddr.sa_data, VIR_MAC_BUFLEN);
+
+    return 0;
+}
+
+#else
+
+int
+ifaceGetMacaddr(const char *ifname ATTRIBUTE_UNUSED,
+                unsigned char *macaddr ATTRIBUTE_UNUSED)
+{
+    return ENOSYS;
+}
+
+#endif /* __linux__ */
+
+/**
+ * ifaceSetMacaddr:
+ * @ifname: interface name to set MTU for
+ * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
+ *
+ * This function sets the @macaddr for a given interface @ifname. This
+ * gets rid of the kernel's automatically assigned random MAC.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+#ifdef __linux__
+int
+ifaceSetMacaddr(const char *ifname,
+                const unsigned char *macaddr)
+{
+    struct ifreq ifr;
+    int fd;
+
+    if (!ifname)
+        return EINVAL;
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0)
+        return errno;
+
+    memset(&ifr, 0, sizeof(struct ifreq));
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
+
+    /* To fill ifr.ifr_hdaddr.sa_family field */
+    if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0)
+        return errno;
+
+    memcpy(ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN);
+
+    return ioctl(fd, SIOCSIFHWADDR, &ifr) == 0 ? 0 : errno;
+}
+
+#else
+
+int
+ifaceSetMacaddr(const char *ifname ATTRIBUTE_UNUSED,
+                const unsigned char *macaddr ATTRIBUTE_UNUSED)
+{
+    return ENOSYS;
+}
+
+#endif /* __linux__ */

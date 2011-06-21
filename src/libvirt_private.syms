@@ -498,7 +498,9 @@ ifaceCheck;
 ifaceCtrl;
 ifaceGetFlags;
 ifaceGetIndex;
+ifaceGetMacaddr;
 ifaceGetVlanID;
+ifaceSetMacaddr;
 ifaceIsUp;
 
 

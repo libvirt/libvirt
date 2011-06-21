@@ -545,6 +545,103 @@ configMacvtapTap(int tapfd, int vnet_hdr)
     return 0;
 }
 
+/**
+ * replaceMacAdress:
+ * @macaddress: new MAC address for interface
+ * @linkdev: name of interface
+ * @stateDir: directory to store old MAC address
+ *
+ * Returns 0 on success, -1 in case of fatal error, error code otherwise.
+ *
+ */
+static int
+replaceMacAdress(const unsigned char *macaddress,
+                 const char *linkdev,
+                 char *stateDir)
+{
+    unsigned char oldmac[6];
+    int rc;
+
+    rc = ifaceGetMacaddr(linkdev, oldmac);
+
+    if (rc) {
+        virReportSystemError(rc,
+                             _("Getting MAC address from '%s' "
+                               "to '%02x:%02x:%02x:%02x:%02x:%02x' failed."),
+                             linkdev,
+                             oldmac[0], oldmac[1], oldmac[2],
+                             oldmac[3], oldmac[4], oldmac[5]);
+    } else {
+        char *path = NULL;
+        char macstr[VIR_MAC_STRING_BUFLEN];
+
+        if (virAsprintf(&path, "%s/%s",
+                        stateDir,
+                        linkdev) < 0) {
+            virReportOOMError();
+            return errno;
+        }
+        virFormatMacAddr(oldmac, macstr);
+        if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
+            virReportSystemError(errno, _("Unable to preserve mac for %s"),
+                                 linkdev);
+            return errno;
+        }
+    }
+
+    rc = ifaceSetMacaddr(linkdev, macaddress);
+    if (rc) {
+        virReportSystemError(errno,
+                             _("Setting MAC address on  '%s' to "
+                               "'%02x:%02x:%02x:%02x:%02x:%02x' failed."),
+                             linkdev,
+                             macaddress[0], macaddress[1], macaddress[2],
+                             macaddress[3], macaddress[4], macaddress[5]);
+    }
+    return rc;
+}
+
+/**
+ * restoreMacAddress:
+ * @linkdev: name of interface
+ * @stateDir: directory containing old MAC address
+ *
+ * Returns 0 on success, -1 in case of fatal error, error code otherwise.
+ *
+ */
+static int
+restoreMacAddress(const char *linkdev,
+                  char *stateDir)
+{
+    char *oldmacname = NULL;
+    char *macstr = NULL;
+    char *path = NULL;
+    unsigned char oldmac[6];
+
+    if (virAsprintf(&path, "%s/%s",
+                    stateDir,
+                    linkdev) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0) {
+        return errno;
+    }
+
+    if (virParseMacAddr(macstr, &oldmac[0]) != 0) {
+        macvtapError(VIR_ERR_INTERNAL_ERROR,
+                             _("Cannot parse MAC address from '%s'"),
+                             oldmacname);
+        return -1;
+    }
+
+    /*reset mac and remove file-ignore results*/
+    ignore_value(ifaceSetMacaddr(linkdev, oldmac));
+    ignore_value(unlink(path));
+    VIR_FREE(macstr);
+    return 0;
+}
 
 /**
  * openMacvtapTap:
@@ -575,7 +672,8 @@ openMacvtapTap(const char *tgifname,
                const unsigned char *vmuuid,
                virVirtualPortProfileParamsPtr virtPortProfile,
                char **res_ifname,
-               enum virVMOperationType vmOp)
+               enum virVMOperationType vmOp,
+               char *stateDir)
 {
     const char *type = "macvtap";
     int c, rc;
@@ -588,6 +686,19 @@ openMacvtapTap(const char *tgifname,
     *res_ifname = NULL;
 
     VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
+
+    /** Note: When using PASSTHROUGH mode with MACVTAP devices the link
+     * device's MAC address must be set to the VMs MAC address. In
+     * order to not confuse the first switch or bridge in line this MAC
+     * address must be reset when the VM is shut down.
+     * This is especially important when using SRIOV capable cards that
+     * emulate their switch in firmware.
+     */
+    if (mode == VIR_DOMAIN_NETDEV_MACVTAP_MODE_PASSTHRU) {
+        if (replaceMacAdress(macaddress, linkdev, stateDir) != 0) {
+            return -1;
+        }
+    }
 
     if (tgifname) {
         if(ifaceGetIndex(false, tgifname, &ifindex) == 0) {
@@ -684,8 +795,14 @@ void
 delMacvtap(const char *ifname,
            const unsigned char *macaddr,
            const char *linkdev,
-           virVirtualPortProfileParamsPtr virtPortProfile)
+           int mode,
+           virVirtualPortProfileParamsPtr virtPortProfile,
+           char *stateDir)
 {
+    if (mode == VIR_DOMAIN_NETDEV_MACVTAP_MODE_PASSTHRU) {
+        restoreMacAddress(linkdev, stateDir);
+    }
+
     if (ifname) {
         vpDisassociatePortProfileId(ifname, macaddr,
                                     linkdev,

@@ -128,7 +128,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
     rc = openMacvtapTap(net->ifname, net->mac, net->data.direct.linkdev,
                         net->data.direct.mode, vnet_hdr, def->uuid,
                         &net->data.direct.virtPortProfile, &res_ifname,
-                        vmop);
+                        vmop, driver->stateDir);
     if (rc >= 0) {
         qemuAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
@@ -149,7 +149,9 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
             if (err) {
                 VIR_FORCE_CLOSE(rc);
                 delMacvtap(net->ifname, net->mac, net->data.direct.linkdev,
-                           &net->data.direct.virtPortProfile);
+                           net->data.direct.mode,
+                           &net->data.direct.virtPortProfile,
+                           driver->stateDir);
                 VIR_FREE(net->ifname);
             }
         }
