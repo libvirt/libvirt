@@ -393,7 +393,6 @@ skip_function = (
     'virSaveLastError', # We have our own python error wrapper
     'virFreeError', # Only needed if we use virSaveLastError
 
-    'virStreamFree', # Overridden in libvirt-override-virStream.py
     'virStreamRecvAll', # Pure python libvirt-override-virStream.py
     'virStreamSendAll', # Pure python libvirt-override-virStream.py
     'virStreamRecv', # overridden in libvirt-override-virStream.py
@@ -423,6 +422,12 @@ skip_function = (
     "virStorageVolGetConnect",
 )
 
+# Generate C code, but skip python impl
+function_skip_python_impl = {
+    "virStreamFree", # Needed in custom virStream __del__, but free shouldn't
+                     # be exposed in bindings
+}
+
 function_skip_index_one = (
     "virDomainRevertToSnapshot",
 )
@@ -433,6 +438,7 @@ def print_function_wrapper(name, output, export, include):
     global unknown_types
     global functions
     global skipped_modules
+    global function_skip_python_impl
 
     try:
         (desc, ret, args, file, cond) = functions[name]
@@ -585,6 +591,9 @@ def print_function_wrapper(name, output, export, include):
         include.write("#endif /* %s */\n" % cond)
         export.write("#endif /* %s */\n" % cond)
         output.write("#endif /* %s */\n" % cond)
+
+    if name in function_skip_python_impl:
+        return 0
     return 1
 
 def buildStubs():
