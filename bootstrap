@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2011-05-16.16; # UTC
+scriptversion=2011-06-22.06; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -290,7 +290,7 @@ sort_patterns() {
     P
     x
     s/^\n//
-  }'
+  }' | sed '/^$/d'
 }
 
 # If $STR is not already on a line by itself in $FILE, insert it,
