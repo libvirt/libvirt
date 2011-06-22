@@ -6731,12 +6731,13 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
         char *str = virXMLPropString(nodes[i], "flag");
         if (str) {
             int flag = virDomainTaintTypeFromString(str);
-            VIR_FREE(str);
             if (flag < 0) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("Unknown taint flag %s"), str);
+                VIR_FREE(str);
                 goto error;
             }
+            VIR_FREE(str);
             virDomainObjTaint(obj, flag);
         }
     }
