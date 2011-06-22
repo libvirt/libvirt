@@ -1295,7 +1295,22 @@ error:
  * especially if there is running domain which need further monitoring by
  * the application.
  *
- * Returns 0 in case of success or -1 in case of error.
+ * Connections are reference counted; the count is explicitly
+ * increased by the initial open (virConnectOpen, virConnectOpenAuth,
+ * and the like) as well as virConnectRef; it is also temporarily
+ * increased by other API that depend on the connection remaining
+ * alive.  The open and every virConnectRef call should have a
+ * matching virConnectClose, and all other references will be released
+ * after the corresponding operation completes.
+ *
+ * The return value is the number of remaining references on success
+ * (positive implies that some other call still has a reference open,
+ * 0 implies that no references remain and the connection is closed),
+ * or -1 on failure.  It is possible for the last virConnectClose to
+ * return a positive value if some other object still has a temporary
+ * reference to the connection, but the application should not try to
+ * further use a connection after the virConnectClose that matches the
+ * initial open.
  */
 int
 virConnectClose(virConnectPtr conn)
