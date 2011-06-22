@@ -77,7 +77,7 @@ typedef struct _testCell *testCellPtr;
 struct _testConn {
     virMutex lock;
 
-    char path[PATH_MAX];
+    char *path;
     int nextDomID;
     virCapsPtr caps;
     virNodeInfo nodeInfo;
@@ -790,9 +790,8 @@ static int testOpenFromFile(virConnectPtr conn,
 
     privconn->nextDomID = 1;
     privconn->numCells = 0;
-    if (virStrcpyStatic(privconn->path, file) == NULL) {
-        testError(VIR_ERR_INTERNAL_ERROR,
-                  _("Path %s too big for destination"), file);
+    if ((privconn->path = strdup(file)) == NULL) {
+        virReportOOMError();
         goto error;
     }
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
@@ -1090,6 +1089,7 @@ static int testOpenFromFile(virConnectPtr conn,
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
+    VIR_FREE(privconn->path);
     testDriverUnlock(privconn);
     VIR_FREE(privconn);
     conn->privateData = NULL;
@@ -1161,6 +1161,7 @@ static int testClose(virConnectPtr conn)
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
     virDomainEventStateFree(privconn->domainEventState);
+    VIR_FREE(privconn->path);
 
     testDriverUnlock(privconn);
     virMutexDestroy(&privconn->lock);
