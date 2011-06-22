@@ -581,9 +581,6 @@ _autogen:
 	$(srcdir)/autogen.sh
 	./config.status
 
-# Exempt @...@ uses of these symbols.
-_makefile_at_at_check_exceptions = ' && !/(SCHEMA|SYSCONF)DIR/'
-
 # regenerate HACKING as part of the syntax-check
 syntax-check: $(top_srcdir)/HACKING
 

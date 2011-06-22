@@ -23,14 +23,14 @@ dist_man1_MANS = virt-xml-validate.1 virt-pki-validate.1 virsh.1
 
 
 virt-xml-validate: virt-xml-validate.in Makefile
-	$(AM_V_GEN)sed -e 's,@SCHEMADIR@,$(pkgdatadir)/schemas,' < $< > $@ \
+	$(AM_V_GEN)sed -e 's,[@]SCHEMADIR@,$(pkgdatadir)/schemas,' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-xml-validate.1: virt-xml-validate.in
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
 
 virt-pki-validate: virt-pki-validate.in Makefile
-	$(AM_V_GEN)sed -e 's,@SYSCONFDIR@,$(sysconfdir),' < $< > $@ \
+	$(AM_V_GEN)sed -e 's,[@]SYSCONFDIR@,$(sysconfdir),' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-pki-validate.1: virt-pki-validate.in
