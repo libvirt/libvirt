@@ -501,9 +501,15 @@ ifaceCtrl;
 ifaceGetFlags;
 ifaceGetIndex;
 ifaceGetMacaddr;
+ifaceGetNthParent;
 ifaceGetVlanID;
-ifaceSetMacaddr;
 ifaceIsUp;
+ifaceLinkDel;
+ifaceMacvtapLinkAdd;
+ifaceMacvtapLinkDump;
+ifaceReplaceMacAddress;
+ifaceRestoreMacaddress;
+ifaceSetMacaddr;
 
 
 # interface_conf.h

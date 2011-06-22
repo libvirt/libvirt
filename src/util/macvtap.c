@@ -100,212 +100,6 @@ enum virVirtualPortOp {
 
 # if WITH_MACVTAP
 
-static int
-link_add(const char *type,
-         const unsigned char *macaddress, int macaddrsize,
-         const char *ifname,
-         const char *srcdev,
-         uint32_t macvlan_mode,
-         int *retry)
-{
-    int rc = 0;
-    struct nlmsghdr *resp;
-    struct nlmsgerr *err;
-    struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    int ifindex;
-    unsigned char *recvbuf = NULL;
-    unsigned int recvbuflen;
-    struct nl_msg *nl_msg;
-    struct nlattr *linkinfo, *info_data;
-
-    if (ifaceGetIndex(true, srcdev, &ifindex) != 0)
-        return -1;
-
-    *retry = 0;
-
-    nl_msg = nlmsg_alloc_simple(RTM_NEWLINK,
-                                NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-
-    if (nla_put_u32(nl_msg, IFLA_LINK, ifindex) < 0)
-        goto buffer_too_small;
-
-    if (nla_put(nl_msg, IFLA_ADDRESS, macaddrsize, macaddress) < 0)
-        goto buffer_too_small;
-
-    if (ifname &&
-        nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-        goto buffer_too_small;
-
-    if (!(linkinfo = nla_nest_start(nl_msg, IFLA_LINKINFO)))
-        goto buffer_too_small;
-
-    if (nla_put(nl_msg, IFLA_INFO_KIND, strlen(type), type) < 0)
-        goto buffer_too_small;
-
-    if (macvlan_mode > 0) {
-        if (!(info_data = nla_nest_start(nl_msg, IFLA_INFO_DATA)))
-            goto buffer_too_small;
-
-        if (nla_put(nl_msg, IFLA_MACVLAN_MODE, sizeof(macvlan_mode),
-                    &macvlan_mode) < 0)
-            goto buffer_too_small;
-
-        nla_nest_end(nl_msg, info_data);
-    }
-
-    nla_nest_end(nl_msg, linkinfo);
-
-    if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
-        rc = -1;
-        goto err_exit;
-    }
-
-    if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
-        goto malformed_resp;
-
-    resp = (struct nlmsghdr *)recvbuf;
-
-    switch (resp->nlmsg_type) {
-    case NLMSG_ERROR:
-        err = (struct nlmsgerr *)NLMSG_DATA(resp);
-        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
-            goto malformed_resp;
-
-        switch (err->error) {
-
-        case 0:
-            break;
-
-        case -EEXIST:
-            *retry = 1;
-            rc = -1;
-            break;
-
-        default:
-            virReportSystemError(-err->error,
-                                 _("error creating %s type of interface"),
-                                 type);
-            rc = -1;
-        }
-        break;
-
-    case NLMSG_DONE:
-        break;
-
-    default:
-        goto malformed_resp;
-    }
-
-err_exit:
-    nlmsg_free(nl_msg);
-
-    VIR_FREE(recvbuf);
-
-    return rc;
-
-malformed_resp:
-    nlmsg_free(nl_msg);
-
-    macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("malformed netlink response message"));
-    VIR_FREE(recvbuf);
-    return -1;
-
-buffer_too_small:
-    nlmsg_free(nl_msg);
-
-    macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("allocated netlink buffer is too small"));
-    return -1;
-}
-
-
-static int
-link_del(const char *ifname)
-{
-    int rc = 0;
-    struct nlmsghdr *resp;
-    struct nlmsgerr *err;
-    struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    unsigned char *recvbuf = NULL;
-    unsigned int recvbuflen;
-    struct nl_msg *nl_msg;
-
-    nl_msg = nlmsg_alloc_simple(RTM_DELLINK,
-                                NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-
-    if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-        goto buffer_too_small;
-
-    if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
-        rc = -1;
-        goto err_exit;
-    }
-
-    if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
-        goto malformed_resp;
-
-    resp = (struct nlmsghdr *)recvbuf;
-
-    switch (resp->nlmsg_type) {
-    case NLMSG_ERROR:
-        err = (struct nlmsgerr *)NLMSG_DATA(resp);
-        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
-            goto malformed_resp;
-
-        if (err->error) {
-            virReportSystemError(-err->error,
-                                 _("error destroying %s interface"),
-                                 ifname);
-            rc = -1;
-        }
-        break;
-
-    case NLMSG_DONE:
-        break;
-
-    default:
-        goto malformed_resp;
-    }
-
-err_exit:
-    nlmsg_free(nl_msg);
-
-    VIR_FREE(recvbuf);
-
-    return rc;
-
-malformed_resp:
-    nlmsg_free(nl_msg);
-
-    macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("malformed netlink response message"));
-    VIR_FREE(recvbuf);
-    return -1;
-
-buffer_too_small:
-    nlmsg_free(nl_msg);
-
-    macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("allocated netlink buffer is too small"));
-    return -1;
-}
-
-
 /* Open the macvtap's tap device.
  * @ifname: Name of the macvtap interface
  * @retries : Number of retries in case udev for example may need to be
@@ -434,103 +228,6 @@ configMacvtapTap(int tapfd, int vnet_hdr)
     return 0;
 }
 
-/**
- * replaceMacAdress:
- * @macaddress: new MAC address for interface
- * @linkdev: name of interface
- * @stateDir: directory to store old MAC address
- *
- * Returns 0 on success, -1 in case of fatal error, error code otherwise.
- *
- */
-static int
-replaceMacAdress(const unsigned char *macaddress,
-                 const char *linkdev,
-                 char *stateDir)
-{
-    unsigned char oldmac[6];
-    int rc;
-
-    rc = ifaceGetMacaddr(linkdev, oldmac);
-
-    if (rc) {
-        virReportSystemError(rc,
-                             _("Getting MAC address from '%s' "
-                               "to '%02x:%02x:%02x:%02x:%02x:%02x' failed."),
-                             linkdev,
-                             oldmac[0], oldmac[1], oldmac[2],
-                             oldmac[3], oldmac[4], oldmac[5]);
-    } else {
-        char *path = NULL;
-        char macstr[VIR_MAC_STRING_BUFLEN];
-
-        if (virAsprintf(&path, "%s/%s",
-                        stateDir,
-                        linkdev) < 0) {
-            virReportOOMError();
-            return errno;
-        }
-        virFormatMacAddr(oldmac, macstr);
-        if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
-            virReportSystemError(errno, _("Unable to preserve mac for %s"),
-                                 linkdev);
-            return errno;
-        }
-    }
-
-    rc = ifaceSetMacaddr(linkdev, macaddress);
-    if (rc) {
-        virReportSystemError(errno,
-                             _("Setting MAC address on  '%s' to "
-                               "'%02x:%02x:%02x:%02x:%02x:%02x' failed."),
-                             linkdev,
-                             macaddress[0], macaddress[1], macaddress[2],
-                             macaddress[3], macaddress[4], macaddress[5]);
-    }
-    return rc;
-}
-
-/**
- * restoreMacAddress:
- * @linkdev: name of interface
- * @stateDir: directory containing old MAC address
- *
- * Returns 0 on success, -1 in case of fatal error, error code otherwise.
- *
- */
-static int
-restoreMacAddress(const char *linkdev,
-                  char *stateDir)
-{
-    char *oldmacname = NULL;
-    char *macstr = NULL;
-    char *path = NULL;
-    unsigned char oldmac[6];
-
-    if (virAsprintf(&path, "%s/%s",
-                    stateDir,
-                    linkdev) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0) {
-        return errno;
-    }
-
-    if (virParseMacAddr(macstr, &oldmac[0]) != 0) {
-        macvtapError(VIR_ERR_INTERNAL_ERROR,
-                             _("Cannot parse MAC address from '%s'"),
-                             oldmacname);
-        return -1;
-    }
-
-    /*reset mac and remove file-ignore results*/
-    ignore_value(ifaceSetMacaddr(linkdev, oldmac));
-    ignore_value(unlink(path));
-    VIR_FREE(macstr);
-    return 0;
-}
 
 static const uint32_t modeMap[VIR_MACVTAP_MODE_LAST] = {
     [VIR_MACVTAP_MODE_VEPA] = MACVLAN_MODE_VEPA,
@@ -593,7 +290,7 @@ openMacvtapTap(const char *tgifname,
      * emulate their switch in firmware.
      */
     if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
-        if (replaceMacAdress(macaddress, linkdev, stateDir) != 0) {
+        if (ifaceReplaceMacAddress(macaddress, linkdev, stateDir) != 0) {
             return -1;
         }
     }
@@ -609,8 +306,8 @@ openMacvtapTap(const char *tgifname,
             return -1;
         }
         cr_ifname = tgifname;
-        rc = link_add(type, macaddress, 6, tgifname, linkdev,
-                      macvtapMode, &do_retry);
+        rc = ifaceMacvtapLinkAdd(type, macaddress, 6, tgifname, linkdev,
+                                 macvtapMode, &do_retry);
         if (rc)
             return -1;
     } else {
@@ -619,8 +316,8 @@ create_name:
         for (c = 0; c < 8192; c++) {
             snprintf(ifname, sizeof(ifname), MACVTAP_NAME_PATTERN, c);
             if (ifaceGetIndex(false, ifname, &ifindex) == ENODEV) {
-                rc = link_add(type, macaddress, 6, ifname, linkdev,
-                              macvtapMode, &do_retry);
+                rc = ifaceMacvtapLinkAdd(type, macaddress, 6, ifname, linkdev,
+                                         macvtapMode, &do_retry);
                 if (rc == 0)
                     break;
 
@@ -673,7 +370,7 @@ disassociate_exit:
                                 vmOp);
 
 link_del_exit:
-    link_del(cr_ifname);
+    ifaceLinkDel(cr_ifname);
 
     return rc;
 }
@@ -698,7 +395,7 @@ delMacvtap(const char *ifname,
            char *stateDir)
 {
     if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
-        restoreMacAddress(linkdev, stateDir);
+        ifaceRestoreMacAddress(linkdev, stateDir);
     }
 
     if (ifname) {
@@ -706,18 +403,13 @@ delMacvtap(const char *ifname,
                                     linkdev,
                                     virtPortProfile,
                                     VIR_VM_OP_DESTROY);
-        link_del(ifname);
+        ifaceLinkDel(ifname);
     }
 }
 
 # endif /* WITH_MACVTAP */
 
 # ifdef IFLA_PORT_MAX
-
-static struct nla_policy ifla_policy[IFLA_MAX + 1] =
-{
-  [IFLA_VF_PORTS] = { .type = NLA_NESTED },
-};
 
 static struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] =
 {
@@ -757,173 +449,6 @@ getLldpadPid(void) {
     return pid;
 }
 
-
-static int
-link_dump(bool nltarget_kernel, const char *ifname, int ifindex,
-          struct nlattr **tb, unsigned char **recvbuf)
-{
-    int rc = 0;
-    struct nlmsghdr *resp;
-    struct nlmsgerr *err;
-    struct ifinfomsg ifinfo = {
-        .ifi_family = AF_UNSPEC,
-        .ifi_index  = ifindex
-    };
-    unsigned int recvbuflen;
-    uint32_t pid = 0;
-    struct nl_msg *nl_msg;
-
-    *recvbuf = NULL;
-
-    nl_msg = nlmsg_alloc_simple(RTM_GETLINK, NLM_F_REQUEST);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-
-    if (ifindex < 0 && ifname) {
-        if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-            goto buffer_too_small;
-    }
-
-    if (!nltarget_kernel) {
-        pid = getLldpadPid();
-        if (pid == 0) {
-            rc = -1;
-            goto err_exit;
-        }
-    }
-
-    if (nlComm(nl_msg, recvbuf, &recvbuflen, pid) < 0) {
-        rc = -1;
-        goto err_exit;
-    }
-
-    if (recvbuflen < NLMSG_LENGTH(0) || *recvbuf == NULL)
-        goto malformed_resp;
-
-    resp = (struct nlmsghdr *)*recvbuf;
-
-    switch (resp->nlmsg_type) {
-    case NLMSG_ERROR:
-        err = (struct nlmsgerr *)NLMSG_DATA(resp);
-        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
-            goto malformed_resp;
-
-        if (err->error) {
-            virReportSystemError(-err->error,
-                                 _("error dumping %s (%d) interface"),
-                                 ifname, ifindex);
-            rc = -1;
-        }
-        break;
-
-    case GENL_ID_CTRL:
-    case NLMSG_DONE:
-        if (nlmsg_parse(resp, sizeof(struct ifinfomsg),
-                        tb, IFLA_MAX, ifla_policy)) {
-            goto malformed_resp;
-        }
-        break;
-
-    default:
-        goto malformed_resp;
-    }
-
-    if (rc != 0)
-        VIR_FREE(*recvbuf);
-
-err_exit:
-    nlmsg_free(nl_msg);
-
-    return rc;
-
-malformed_resp:
-    nlmsg_free(nl_msg);
-
-    macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("malformed netlink response message"));
-    VIR_FREE(*recvbuf);
-    return -1;
-
-buffer_too_small:
-    nlmsg_free(nl_msg);
-
-    macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("allocated netlink buffer is too small"));
-    return -1;
-}
-
-
-/**
- * ifaceGetNthParent
- *
- * @ifindex : the index of the interface or -1 if ifname is given
- * @ifname : the name of the interface; ignored if ifindex is valid
- * @nthParent : the nth parent interface to get
- * @parent_ifindex : pointer to int
- * @parent_ifname : pointer to buffer of size IFNAMSIZ
- * @nth : the nth parent that is actually returned; if for example eth0.100
- *        was given and the 100th parent is to be returned, then eth0 will
- *        most likely be returned with nth set to 1 since the chain does
- *        not have more interfaces
- *
- * Get the nth parent interface of the given interface. 0 is the interface
- * itself.
- *
- * Return 0 on success, != 0 otherwise
- */
-static int
-ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
-                  int *parent_ifindex, char *parent_ifname,
-                  unsigned int *nth)
-{
-    int rc;
-    struct nlattr *tb[IFLA_MAX + 1] = { NULL, };
-    unsigned char *recvbuf = NULL;
-    bool end = false;
-    unsigned int i = 0;
-
-    *nth = 0;
-
-    if (ifindex <= 0 && ifaceGetIndex(true, ifname, &ifindex) != 0)
-        return 1;
-
-    while (!end && i <= nthParent) {
-        rc = link_dump(true, ifname, ifindex, tb, &recvbuf);
-        if (rc)
-            break;
-
-        if (tb[IFLA_IFNAME]) {
-            if (!virStrcpy(parent_ifname, (char*)RTA_DATA(tb[IFLA_IFNAME]),
-                           IFNAMSIZ)) {
-                macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("buffer for root interface name is too small"));
-                VIR_FREE(recvbuf);
-                return 1;
-            }
-            *parent_ifindex = ifindex;
-        }
-
-        if (tb[IFLA_LINK]) {
-            ifindex = *(int *)RTA_DATA(tb[IFLA_LINK]);
-            ifname = NULL;
-        } else
-            end = true;
-
-        VIR_FREE(recvbuf);
-
-        i++;
-    }
-
-    if (nth)
-        *nth = i - 1;
-
-    return rc;
-}
 
 /**
  * getPortProfileStatus
@@ -1252,7 +777,8 @@ doPortProfileOpCommon(bool nltarget_kernel,
     }
 
     while (--repeats >= 0) {
-        rc = link_dump(nltarget_kernel, NULL, ifindex, tb, &recvbuf);
+        rc = ifaceMacvtapLinkDump(nltarget_kernel, NULL, ifindex, tb,
+                                  &recvbuf, getLldpadPid);
         if (rc)
             goto err_exit;
         rc = getPortProfileStatus(tb, vf, instanceId, nltarget_kernel,

@@ -10,6 +10,19 @@
 #ifndef __VIR_INTERFACE_H__
 # define __VIR_INTERFACE_H__
 
+# include <stdint.h>
+
+# if __linux__
+
+#  include <sys/socket.h>
+#  include <linux/netlink.h>
+
+# else
+
+struct nlattr;
+
+# endif
+
 # include "datatypes.h"
 
 int ifaceGetFlags(const char *name, short *flags);
@@ -35,5 +48,29 @@ int ifaceGetVlanID(const char *vlanifname, int *vlanid);
 int ifaceSetMacaddr(const char *ifname, const unsigned char *macaddr);
 
 int ifaceGetMacaddr(const char *ifname, unsigned char *macaddr);
+
+int ifaceMacvtapLinkAdd(const char *type,
+                        const unsigned char *macaddress, int macaddrsize,
+                        const char *ifname,
+                        const char *srcdev,
+                        uint32_t macvlan_mode,
+                        int *retry);
+
+int ifaceLinkDel(const char *ifname);
+
+int ifaceMacvtapLinkDump(bool nltarget_kernel, const char *ifname, int ifindex,
+                         struct nlattr **tb, unsigned char **recvbuf,
+                         uint32_t (*getPidFunc)(void));
+
+int ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
+                      int *parent_ifindex, char *parent_ifname,
+                      unsigned int *nth);
+
+int ifaceReplaceMacAddress(const unsigned char *macaddress,
+                           const char *linkdev,
+                           const char *stateDir);
+
+int ifaceRestoreMacAddress(const char *linkdev,
+                           const char *stateDir);
 
 #endif /* __VIR_INTERFACE_H__ */
