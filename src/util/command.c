@@ -1504,7 +1504,9 @@ virCommandProcessIO(virCommandPtr cmd)
                     if (errno != EINTR &&
                         errno != EAGAIN) {
                         virReportSystemError(errno, "%s",
-                                             _("unable to write to child input"));
+                                             (fds[i].fd == outfd) ?
+                                             _("unable to read child stdout") :
+                                             _("unable to read child stderr"));
                         goto cleanup;
                     }
                 } else if (done == 0) {
