@@ -947,5 +947,6 @@ cleanup:
     if (fd != logFD)
         VIR_FORCE_CLOSE(fd);
 
+    VIR_FREE(message);
     return ret;
 }
