@@ -143,6 +143,7 @@ static int xenInotifyActive(virConnectPtr conn)
 static void xenXMConfigFree(void *payload, const void *key ATTRIBUTE_UNUSED) {
     xenXMConfCachePtr entry = (xenXMConfCachePtr)payload;
     virDomainDefFree(entry->def);
+    VIR_FREE(entry->filename);
     VIR_FREE(entry);
 }
 
@@ -281,7 +282,11 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
             virReportOOMError();
             return -1;
         }
-        memcpy(entry->filename, filename, PATH_MAX);
+        if ((entry->filename = strdup(filename)) == NULL) {
+            virReportOOMError();
+            VIR_FREE(entry);
+            return -1;
+        }
     }
     entry->refreshedAt = now;
 
@@ -289,6 +294,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
         VIR_DEBUG("Failed to read %s", entry->filename);
         if (!newborn)
             virHashSteal(priv->configCache, filename);
+        VIR_FREE(entry->filename);
         VIR_FREE(entry);
         return -1;
     }
@@ -298,6 +304,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
     if (newborn) {
         if (virHashAddEntry(priv->configCache, entry->filename, entry) < 0) {
             virDomainDefFree(entry->def);
+            VIR_FREE(entry->filename);
             VIR_FREE(entry);
             xenXMError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("xenXMConfigCacheRefresh: virHashAddEntry"));
@@ -309,9 +316,11 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
         * of the domain in question
         */
     if (!virHashLookup(priv->nameConfigMap, entry->def->name)) {
-        if (virHashAddEntry(priv->nameConfigMap, entry->def->name, entry->filename) < 0) {
+        if (virHashAddEntry(priv->nameConfigMap, entry->def->name,
+                            entry->filename) < 0) {
             virHashSteal(priv->configCache, filename);
             virDomainDefFree(entry->def);
+            VIR_FREE(entry->filename);
             VIR_FREE(entry);
         }
     }
@@ -1171,7 +1180,10 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
         goto error;
     }
 
-    memmove(entry->filename, filename, PATH_MAX);
+    if ((entry->filename = strdup(filename)) == NULL) {
+        virReportOOMError();
+        goto error;
+    }
     entry->def = def;
 
     if (virHashAddEntry(priv->configCache, filename, entry) < 0) {
@@ -1194,6 +1206,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 
  error:
     VIR_FREE(filename);
+    VIR_FREE(entry->filename);
     VIR_FREE(entry);
     virDomainDefFree(def);
     xenUnifiedUnlock(priv);
