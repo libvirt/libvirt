@@ -56,7 +56,7 @@ struct _pciDevice {
 
     char          name[PCI_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[PCI_ID_LEN];     /* product vendor */
-    char          path[PATH_MAX];
+    char          *path;
     int           fd;
 
     unsigned      initted;
@@ -1307,10 +1307,21 @@ pciGetDevice(unsigned domain,
     dev->slot     = slot;
     dev->function = function;
 
-    snprintf(dev->name, sizeof(dev->name), "%.4x:%.2x:%.2x.%.1x",
-             dev->domain, dev->bus, dev->slot, dev->function);
-    snprintf(dev->path, sizeof(dev->path),
-             PCI_SYSFS "devices/%s/config", dev->name);
+    if (snprintf(dev->name, sizeof(dev->name), "%.4x:%.2x:%.2x.%.1x",
+                 dev->domain, dev->bus, dev->slot,
+                 dev->function) >= sizeof(dev->name)) {
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"),
+                       dev->domain, dev->bus, dev->slot, dev->function);
+        pciFreeDevice(dev);
+        return NULL;
+    }
+    if (virAsprintf(&dev->path, PCI_SYSFS "devices/%s/config",
+                    dev->name) < 0) {
+        virReportOOMError();
+        pciFreeDevice(dev);
+        return NULL;
+    }
 
     if (access(dev->path, F_OK) != 0) {
         virReportSystemError(errno,
@@ -1334,7 +1345,14 @@ pciGetDevice(unsigned domain,
     }
 
     /* strings contain '0x' prefix */
-    snprintf(dev->id, sizeof(dev->id), "%s %s", &vendor[2], &product[2]);
+    if (snprintf(dev->id, sizeof(dev->id), "%s %s", &vendor[2],
+                 &product[2]) >= sizeof(dev->id)) {
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("dev->id buffer overflow: %s %s"),
+                       &vendor[2], &product[2]);
+        pciFreeDevice(dev);
+        return NULL;
+    }
 
     VIR_FREE(product);
     VIR_FREE(vendor);
@@ -1351,6 +1369,7 @@ pciFreeDevice(pciDevice *dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     pciCloseConfig(dev);
+    VIR_FREE(dev->path);
     VIR_FREE(dev);
 }
 

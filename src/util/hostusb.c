@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,7 +48,7 @@ struct _usbDevice {
 
     char          name[USB_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[USB_ID_LEN];     /* product vendor */
-    char          path[PATH_MAX];
+    char          *path;
 };
 
 /* For virReportOOMError()  and virReportSystemError() */
@@ -171,13 +171,30 @@ usbGetDevice(unsigned bus,
     dev->bus     = bus;
     dev->dev     = devno;
 
-    snprintf(dev->name, sizeof(dev->name), "%.3o:%.3o",
-             dev->bus, dev->dev);
-    snprintf(dev->path, sizeof(dev->path),
-             USB_DEVFS "%03d/%03d", dev->bus, dev->dev);
+    if (snprintf(dev->name, sizeof(dev->name), "%.3o:%.3o",
+                 dev->bus, dev->dev) >= sizeof(dev->name)) {
+        usbReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("dev->name buffer overflow: %.3o:%.3o"),
+                       dev->bus, dev->dev);
+        usbFreeDevice(dev);
+        return NULL;
+    }
+    if (virAsprintf(&dev->path, USB_DEVFS "%03d/%03d",
+                    dev->bus, dev->dev) < 0) {
+        virReportOOMError();
+        usbFreeDevice(dev);
+        return NULL;
+    }
 
     /* XXX fixme. this should be product/vendor */
-    snprintf(dev->id, sizeof(dev->id), "%d %d", dev->bus, dev->dev);
+    if (snprintf(dev->id, sizeof(dev->id), "%d %d", dev->bus,
+                 dev->dev) >= sizeof(dev->id)) {
+        usbReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("dev->id buffer overflow: %d %d"),
+                       dev->bus, dev->dev);
+        usbFreeDevice(dev);
+        return NULL;
+    }
 
     VIR_DEBUG("%s %s: initialized", dev->id, dev->name);
 
@@ -203,6 +220,7 @@ void
 usbFreeDevice(usbDevice *dev)
 {
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
+    VIR_FREE(dev->path);
     VIR_FREE(dev);
 }
 
