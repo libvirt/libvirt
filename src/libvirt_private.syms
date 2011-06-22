@@ -670,6 +670,10 @@ virResizeN;
 virShrinkN;
 
 
+#netlink.h
+nlComm;
+
+
 # network.h
 virSocketAddrBroadcast;
 virSocketAddrBroadcastByPrefix;

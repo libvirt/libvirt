@@ -39,11 +39,7 @@
 # include <sys/ioctl.h>
 
 # include <linux/if.h>
-# include <linux/netlink.h>
-# include <linux/rtnetlink.h>
 # include <linux/if_tun.h>
-
-# include <netlink/msg.h>
 
 /* Older kernels lacked this enum value.  */
 # if !HAVE_DECL_MACVLAN_MODE_PASSTHRU
@@ -69,6 +65,7 @@ VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
 # include "virterror_internal.h"
 # include "uuid.h"
 # include "files.h"
+# include "netlink.h"
 
 # define VIR_FROM_THIS VIR_FROM_NET
 
@@ -83,8 +80,6 @@ VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
 
 # define NLMSGBUF_SIZE  256
 # define RATTBUF_SIZE   64
-
-# define NETLINK_ACK_TIMEOUT_S  2
 
 # define STATUS_POLL_TIMEOUT_USEC (10 * MICROSEC_PER_SEC)
 # define STATUS_POLL_INTERVL_USEC (MICROSEC_PER_SEC / 8)
@@ -101,97 +96,6 @@ enum virVirtualPortOp {
 };
 
 
-/**
- * nlComm:
- * @nlmsg: pointer to netlink message
- * @respbuf: pointer to pointer where response buffer will be allocated
- * @respbuflen: pointer to integer holding the size of the response buffer
- *      on return of the function.
- * @nl_pid: the pid of the process to talk to, i.e., pid = 0 for kernel
- *
- * Send the given message to the netlink layer and receive response.
- * Returns 0 on success, -1 on error. In case of error, no response
- * buffer will be returned.
- */
-static
-int nlComm(struct nl_msg *nl_msg,
-           unsigned char **respbuf, unsigned int *respbuflen,
-           int nl_pid)
-{
-    int rc = 0;
-    struct sockaddr_nl nladdr = {
-            .nl_family = AF_NETLINK,
-            .nl_pid    = nl_pid,
-            .nl_groups = 0,
-    };
-    ssize_t nbytes;
-    struct timeval tv = {
-        .tv_sec = NETLINK_ACK_TIMEOUT_S,
-    };
-    fd_set readfds;
-    int fd;
-    int n;
-    struct nlmsghdr *nlmsg = nlmsg_hdr(nl_msg);
-    struct nl_handle *nlhandle = nl_handle_alloc();
-
-    if (!nlhandle) {
-        virReportSystemError(errno,
-                             "%s", _("cannot allocate nlhandle for netlink"));
-        return -1;
-    }
-
-    if (nl_connect(nlhandle, NETLINK_ROUTE) < 0) {
-        virReportSystemError(errno,
-                             "%s", _("cannot connect to netlink socket"));
-        rc = -1;
-        goto err_exit;
-    }
-
-    nlmsg_set_dst(nl_msg, &nladdr);
-
-    nlmsg->nlmsg_pid = getpid();
-
-    nbytes = nl_send_auto_complete(nlhandle, nl_msg);
-    if (nbytes < 0) {
-        virReportSystemError(errno,
-                             "%s", _("cannot send to netlink socket"));
-        rc = -1;
-        goto err_exit;
-    }
-
-    fd = nl_socket_get_fd(nlhandle);
-
-    FD_ZERO(&readfds);
-    FD_SET(fd, &readfds);
-
-    n = select(fd + 1, &readfds, NULL, NULL, &tv);
-    if (n <= 0) {
-        if (n < 0)
-            virReportSystemError(errno, "%s",
-                                 _("error in select call"));
-        if (n == 0)
-            virReportSystemError(ETIMEDOUT, "%s",
-                                 _("no valid netlink response was received"));
-        rc = -1;
-        goto err_exit;
-    }
-
-    *respbuflen = nl_recv(nlhandle, &nladdr, respbuf, NULL);
-    if (*respbuflen <= 0) {
-        virReportSystemError(errno,
-                             "%s", _("nl_recv failed"));
-        rc = -1;
-    }
-err_exit:
-    if (rc == -1) {
-        VIR_FREE(*respbuf);
-        *respbuf = NULL;
-        *respbuflen = 0;
-    }
-
-    nl_handle_destroy(nlhandle);
-    return rc;
-}
 
 
 # if WITH_MACVTAP

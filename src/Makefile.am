@@ -63,6 +63,7 @@ UTIL_SOURCES =							\
 		util/logging.c util/logging.h			\
 		util/macvtap.c util/macvtap.h			\
 		util/memory.c util/memory.h			\
+		util/netlink.c util/netlink.h			\
 		util/pci.c util/pci.h				\
 		util/processinfo.c util/processinfo.h		\
 		util/hostusb.c util/hostusb.h			\

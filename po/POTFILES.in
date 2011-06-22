@@ -101,6 +101,7 @@ src/util/interface.c
 src/util/iptables.c
 src/util/json.c
 src/util/macvtap.c
+src/util/netlink.c
 src/util/network.c
 src/util/pci.c
 src/util/processinfo.c
