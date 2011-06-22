@@ -1,7 +1,7 @@
 /*
  * datatypes.h: management of structs for public data types
  *
- * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -254,8 +254,7 @@ struct _virStorageVol {
     virConnectPtr conn;                  /* pointer back to the connection */
     char *pool;                          /* Pool name of owner */
     char *name;                          /* the storage vol external name */
-    /* XXX currently abusing path for this. Ought not to be so evil */
-    char key[PATH_MAX];                  /* unique key for storage vol */
+    char *key;                           /* unique key for storage vol */
 };
 
 /**
