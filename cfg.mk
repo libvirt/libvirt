@@ -74,7 +74,7 @@ local-checks-to-skip =			\
   sc_useless_cpp_parens
 
 # Files that should never cause syntax check failures.
-VC_LIST_ALWAYS_EXCLUDE_REGEX = ^(HACKING|docs/news\.html\.in)$$
+VC_LIST_ALWAYS_EXCLUDE_REGEX = (^(HACKING|docs/news\.html\.in)|\.po)$$
 
 # Functions like free() that are no-ops on NULL arguments.
 useless_free_options =				\
@@ -288,6 +288,12 @@ sc_prohibit_strncmp:
 sc_prohibit_asprintf:
 	@prohibit='\<v?a[s]printf\>'					\
 	halt='use virAsprintf, not as'printf				\
+	  $(_sc_search_regexp)
+
+# Prefer virSetUIDGID.
+sc_prohibit_setuid:
+	@prohibit='\<set(re)?[ug]id\> *\('				\
+	halt='use virSetUIDGID, not raw set*id'				\
 	  $(_sc_search_regexp)
 
 # Use snprintf rather than s'printf, even if buffer is provably large enough,
@@ -607,14 +613,10 @@ exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
   (^docs|^python/(libvirt-override|typewrappers)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|po/|src/util/util\.c$$|examples/domain-events/events-c/event-test\.c$$)
-
-exclude_file_name_regexp--sc_prohibit_can_not = ^po/
+  ^(bootstrap.conf$$|src/util/util\.c$$|examples/domain-events/events-c/event-test\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|^docs/|(src/util/files\.c|src/libvirt\.c)$$)
-
-exclude_file_name_regexp--sc_prohibit_doubled_word = ^po/
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$)
@@ -634,6 +636,8 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|docs|tests)/|tools/(virsh|console)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_readlink = ^src/util/util\.c$$
+
+exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/util\.c$$
 
 exclude_file_name_regexp--sc_prohibit_sprintf = ^(docs/|HACKING$$)
 
