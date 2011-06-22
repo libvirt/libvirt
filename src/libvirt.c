@@ -1303,7 +1303,7 @@ error:
  * matching virConnectClose, and all other references will be released
  * after the corresponding operation completes.
  *
- * The return value is the number of remaining references on success
+ * Returns the number of remaining references on success
  * (positive implies that some other call still has a reference open,
  * 0 implies that no references remain and the connection is closed),
  * or -1 on failure.  It is possible for the last virConnectClose to
