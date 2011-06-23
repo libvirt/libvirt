@@ -1122,9 +1122,9 @@ cleanup:
         ret = -1;
     }
 
+closelog:
     VIR_FREE(buf);
 
-closelog:
     if (VIR_CLOSE(logfd) < 0) {
         char ebuf[1024];
         VIR_WARN("Unable to close logfile: %s",
