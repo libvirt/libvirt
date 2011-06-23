@@ -1110,7 +1110,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
-    priv->jobActive = QEMU_JOB_MIGRATION_OUT;
+    priv->jobActive = QEMU_JOB_MIGRATION_IN;
 
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
@@ -1345,7 +1345,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
-    priv->jobActive = QEMU_JOB_MIGRATION_OUT;
+    priv->jobActive = QEMU_JOB_MIGRATION_IN;
 
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
