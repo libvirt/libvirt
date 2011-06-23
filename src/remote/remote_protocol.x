@@ -977,40 +977,6 @@ struct remote_domain_set_autostart_args {
     int autostart;
 };
 
-struct remote_domain_block_pull_args {
-    remote_nonnull_domain dom;
-    remote_nonnull_string path;
-    unsigned int flags;
-};
-
-struct remote_domain_block_pull_ret {
-    unsigned hyper cur;
-    unsigned hyper end;
-};
-
-struct remote_domain_block_pull_all_args {
-    remote_nonnull_domain dom;
-    remote_nonnull_string path;
-    unsigned int flags;
-};
-
-struct remote_domain_block_pull_abort_args {
-    remote_nonnull_domain dom;
-    remote_nonnull_string path;
-    unsigned int flags;
-};
-
-struct remote_domain_get_block_pull_info_args {
-    remote_nonnull_domain dom;
-    remote_nonnull_string path;
-    unsigned int flags;
-};
-
-struct remote_domain_get_block_pull_info_ret { /* insert@2 */
-    unsigned hyper cur;
-    unsigned hyper end;
-};
-
 /* Network calls: */
 
 struct remote_num_of_networks_ret {
@@ -2413,12 +2379,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SEND_KEY = 226, /* autogen autogen */
     REMOTE_PROC_NODE_GET_CPU_STATS = 227, /* skipgen skipgen */
     REMOTE_PROC_NODE_GET_MEMORY_STATS = 228, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_BLOCK_PULL = 229, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_BLOCK_PULL_ALL = 230, /* autogen autogen */
-
-    REMOTE_PROC_DOMAIN_BLOCK_PULL_ABORT = 231, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_BLOCK_PULL_INFO = 232, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_CONTROL_INFO = 233 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_CONTROL_INFO = 229 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
