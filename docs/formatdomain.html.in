@@ -1532,7 +1532,7 @@
       in the IEEE 802.1Qbg standard. The values are network specific and
       should be provided by the network administrator. In 802.1Qbg terms,
       the Virtual Station Interface (VSI) represents the virtual interface
-      of a virtual machine.
+      of a virtual machine. <span class="since">Since 0.8.2</span>
     </p>
     <p>
       Please note that IEEE 802.1Qbg requires a non-zero value for the
@@ -1571,6 +1571,35 @@
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
+
+    <p>
+      The interface can have additional parameters as shown below
+      if the switch is conforming to the IEEE 802.1Qbh standard.
+      The values are network specific and should be provided by the
+      network administrator. <span class="since">Since 0.8.2</span>
+    </p>
+    <dl>
+      <dt><code>profileid</code></dt>
+      <dd>The profile ID contains the name of the port profile that is to
+        be applied onto this interface.  This name is resolved by the port
+        profile database into the network parameters from the port profile,
+        and those network parameters will be applied to this interface.
+      </dd>
+    </dl>
+  <pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='direct'/&gt;
+    ...
+    &lt;interface type='direct'&gt;
+      &lt;source dev='eth0' mode='private'/&gt;
+      &lt;virtualport type='802.1Qbh'&gt;
+        &lt;parameters profileid='finance'/&gt;
+      &lt;/virtualport&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...
+  </pre>
 
     <h5><a name="elementsNICSMulticast">Multicast tunnel</a></h5>
 
