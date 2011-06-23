@@ -320,19 +320,5 @@
       <arg name='flags' type='unsigned int' info='flags, curently unused'/>
       <return type='int' info="0 on success, -1 on error"/>
     </function>
-    <function name='virDomainBlockPull' file='python'>
-      <info>Initiate an incremental BlockPull for the given disk</info>
-      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
-      <arg name='path' type='const char *' info='Fully-qualified filename of disk'/>
-      <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
-      <return type='virDomainBlockPullInfo' info='A dictionary containing progress information.' />
-    </function>
-    <function name='virDomainGetBlockPullInfo' file='python'>
-      <info>Get progress information for a background BlockPull operation</info>
-      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
-      <arg name='path' type='const char *' info='Fully-qualified filename of disk'/>
-      <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
-      <return type='virDomainBlockPullInfo' info='A dictionary containing progress information.' />
-    </function>
   </symbols>
 </api>
