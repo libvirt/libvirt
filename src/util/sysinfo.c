@@ -96,37 +96,10 @@ virSysinfoRead(void) {
 
 #else /* !WIN32 */
 
-virSysinfoDefPtr
-virSysinfoRead(void) {
-    char *path, *cur, *eol, *base;
-    virSysinfoDefPtr ret = NULL;
-    char *outbuf = NULL;
-    virCommandPtr cmd;
-
-    path = virFindFileInPath(SYSINFO_SMBIOS_DECODER);
-    if (path == NULL) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to find path for %s binary"),
-                             SYSINFO_SMBIOS_DECODER);
-        return NULL;
-    }
-
-    cmd = virCommandNewArgList(path, "-q", "-t", "0,1", NULL);
-    VIR_FREE(path);
-    virCommandSetOutputBuffer(cmd, &outbuf);
-    if (virCommandRun(cmd, NULL) < 0) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to execute command %s"),
-                             path);
-        goto cleanup;
-    }
-
-    if (VIR_ALLOC(ret) < 0)
-        goto no_memory;
-
-    ret->type = VIR_SYSINFO_SMBIOS;
-
-    base = outbuf;
+static char *
+parseBIOSInfo(char *base, virSysinfoDefPtr ret)
+{
+    char *cur, *eol;
 
     if ((cur = strstr(base, "Vendor: ")) != NULL) {
         cur += 8;
@@ -152,8 +125,21 @@ virSysinfoRead(void) {
         if ((eol) && ((ret->bios_release = strndup(cur, eol - cur)) == NULL))
             goto no_memory;
     }
-    if ((base = strstr(outbuf, "System Information")) == NULL)
-        goto cleanup;
+
+    return eol + 1;
+
+no_memory:
+    return NULL;
+}
+
+static char *
+parseSystemInfo(char *base, virSysinfoDefPtr ret)
+{
+    char *cur, *eol;
+
+    if ((base = strstr(base, "System Information")) == NULL)
+        return 0;
+
     if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
@@ -198,6 +184,50 @@ virSysinfoRead(void) {
             goto no_memory;
     }
 
+    return eol + 1;
+
+no_memory:
+    return NULL;
+}
+
+virSysinfoDefPtr
+virSysinfoRead(void) {
+    char *path, *base;
+    virSysinfoDefPtr ret = NULL;
+    char *outbuf = NULL;
+    virCommandPtr cmd;
+
+    path = virFindFileInPath(SYSINFO_SMBIOS_DECODER);
+    if (path == NULL) {
+        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to find path for %s binary"),
+                             SYSINFO_SMBIOS_DECODER);
+        return NULL;
+    }
+
+    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,4,17", NULL);
+    VIR_FREE(path);
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    if (virCommandRun(cmd, NULL) < 0) {
+        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to execute command %s"),
+                             path);
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(ret) < 0)
+        goto no_memory;
+
+    ret->type = VIR_SYSINFO_SMBIOS;
+
+    base = outbuf;
+
+    if ((base = parseBIOSInfo(base, ret)) == NULL)
+        goto no_memory;
+
+    if ((base = parseSystemInfo(base, ret)) == NULL)
+        goto no_memory;
+
 cleanup:
     VIR_FREE(outbuf);
     virCommandFree(cmd);
@@ -213,6 +243,102 @@ no_memory:
 }
 #endif /* !WIN32 */
 
+static void
+BIOSInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+{
+    int len = strlen(prefix);
+
+    if ((def->bios_vendor != NULL) || (def->bios_version != NULL) ||
+        (def->bios_date != NULL) || (def->bios_release != NULL)) {
+        virBufferAsprintf(buf, "%s  <bios>\n", prefix);
+        if (def->bios_vendor != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='vendor'>%s</entry>\n",
+                                  def->bios_vendor);
+        }
+        if (def->bios_version != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='version'>%s</entry>\n",
+                                  def->bios_version);
+        }
+        if (def->bios_date != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='date'>%s</entry>\n",
+                                  def->bios_date);
+        }
+        if (def->bios_release != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='release'>%s</entry>\n",
+                                  def->bios_release);
+        }
+        virBufferAsprintf(buf, "%s  </bios>\n", prefix);
+    }
+
+    return;
+}
+
+static void
+SystemInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+{
+    int len = strlen(prefix);
+
+    if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
+        (def->system_version != NULL) || (def->system_serial != NULL) ||
+        (def->system_uuid != NULL) || (def->system_sku != NULL) ||
+        (def->system_family != NULL)) {
+        virBufferAsprintf(buf, "%s  <system>\n", prefix);
+        if (def->system_manufacturer != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='manufacturer'>%s</entry>\n",
+                                  def->system_manufacturer);
+        }
+        if (def->system_product != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='product'>%s</entry>\n",
+                                  def->system_product);
+        }
+        if (def->system_version != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='version'>%s</entry>\n",
+                                  def->system_version);
+        }
+        if (def->system_serial != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='serial'>%s</entry>\n",
+                                  def->system_serial);
+        }
+        if (def->system_uuid != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='uuid'>%s</entry>\n",
+                                  def->system_uuid);
+        }
+        if (def->system_sku != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='sku'>%s</entry>\n",
+                                  def->system_sku);
+        }
+        if (def->system_family != NULL) {
+            virBufferAdd(buf, prefix, len);
+            virBufferEscapeString(buf,
+                                  "    <entry name='family'>%s</entry>\n",
+                                  def->system_family);
+        }
+        virBufferAsprintf(buf, "%s  </system>\n", prefix);
+    }
+
+    return;
+}
+
 /**
  * virSysinfoFormat:
  * @def: structure to convert to xml string
@@ -226,7 +352,6 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
 {
     const char *type = virSysinfoTypeToString(def->type);
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    size_t len = strlen(prefix);
 
     if (!type) {
         virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
@@ -236,84 +361,9 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
     }
 
     virBufferAsprintf(&buf, "%s<sysinfo type='%s'>\n", prefix, type);
-    if ((def->bios_vendor != NULL) || (def->bios_version != NULL) ||
-        (def->bios_date != NULL) || (def->bios_release != NULL)) {
-        virBufferAsprintf(&buf, "%s  <bios>\n", prefix);
-        if (def->bios_vendor != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='vendor'>%s</entry>\n",
-                                  def->bios_vendor);
-        }
-        if (def->bios_version != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='version'>%s</entry>\n",
-                                  def->bios_version);
-        }
-        if (def->bios_date != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='date'>%s</entry>\n",
-                                  def->bios_date);
-        }
-        if (def->bios_release != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='release'>%s</entry>\n",
-                                  def->bios_release);
-        }
-        virBufferAsprintf(&buf, "%s  </bios>\n", prefix);
-    }
-    if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
-        (def->system_version != NULL) || (def->system_serial != NULL) ||
-        (def->system_uuid != NULL) || (def->system_sku != NULL) ||
-        (def->system_family != NULL)) {
-        virBufferAsprintf(&buf, "%s  <system>\n", prefix);
-        if (def->system_manufacturer != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='manufacturer'>%s</entry>\n",
-                                  def->system_manufacturer);
-        }
-        if (def->system_product != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='product'>%s</entry>\n",
-                                  def->system_product);
-        }
-        if (def->system_version != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='version'>%s</entry>\n",
-                                  def->system_version);
-        }
-        if (def->system_serial != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='serial'>%s</entry>\n",
-                                  def->system_serial);
-        }
-        if (def->system_uuid != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='uuid'>%s</entry>\n",
-                                  def->system_uuid);
-        }
-        if (def->system_sku != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='sku'>%s</entry>\n",
-                                  def->system_sku);
-        }
-        if (def->system_family != NULL) {
-            virBufferAdd(&buf, prefix, len);
-            virBufferEscapeString(&buf,
-                                  "    <entry name='family'>%s</entry>\n",
-                                  def->system_family);
-        }
-        virBufferAsprintf(&buf, "%s  </system>\n", prefix);
-    }
+
+    BIOSInfoFormat(def, prefix, &buf);
+    SystemInfoFormat(def, prefix, &buf);
 
     virBufferAsprintf(&buf, "%s</sysinfo>\n", prefix);
 
