@@ -20,7 +20,9 @@
 #ifndef __VIR_NETLINK_H__
 # define __VIR_NETLINK_H__
 
-# if __linux__
+# include "config.h"
+
+# if defined(__linux__) && defined(HAVE_LIBNL)
 
 #  include <netlink/msg.h>
 

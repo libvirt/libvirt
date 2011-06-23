@@ -510,7 +510,7 @@ ifaceSetMacaddr(const char *ifname ATTRIBUTE_UNUSED,
  *
  * Returns 0 on success, -1 on fatal error.
  */
-#if __linux__
+#if defined(__linux__) && WITH_MACVTAP
 int
 ifaceMacvtapLinkAdd(const char *type,
                     const unsigned char *macaddress, int macaddrsize,
@@ -649,8 +649,14 @@ ifaceMacvtapLinkAdd(const char *type ATTRIBUTE_UNUSED,
                     int *retry ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+# if defined(__linux__) && !WITH_MACVTAP
+               _("ifaceMacvtapLinkAdd is not supported since the include "
+                 "files were too old"));
+# else
                _("ifaceMacvtapLinkAdd is not supported on non-linux "
                  "platforms"));
+# endif
+
     return -1;
 }
 
@@ -666,7 +672,7 @@ ifaceMacvtapLinkAdd(const char *type ATTRIBUTE_UNUSED,
  *
  * Returns 0 on success, -1 on fatal error.
  */
-#if __linux__
+#if defined( __linux__) && WITH_MACVTAP
 int
 ifaceLinkDel(const char *ifname)
 {
@@ -751,14 +757,20 @@ int
 ifaceLinkDel(const char *ifname ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+# if defined(__linux__) && !WITH_MACVTAP
+               _("ifaceLinkDel is not supported since the include files "
+                 "were too old"));
+# else
                _("ifaceLinkDel is not supported on non-linux platforms"));
+# endif
     return -1;
 }
 
 #endif
 
 
-#if __linux__
+#if defined(__linux__) && defined(IFLA_PORT_MAX)
+
 static struct nla_policy ifla_policy[IFLA_MAX + 1] =
 {
   [IFLA_VF_PORTS] = { .type = NLA_NESTED },
@@ -894,8 +906,14 @@ ifaceMacvtapLinkDump(bool nltarget_kernel ATTRIBUTE_UNUSED,
                      uint32_t (*getPidFunc)(void) ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+# if defined(__linux__) && !defined(IFLA_PORT_MAX)
+               _("ifaceMacvtapLinkDump is not supported since the include "
+                 "files were too old"));
+# else
                _("ifaceMacvtapLinkDump is not supported on non-linux "
                  "platforms"));
+# endif
+
     return -1;
 }
 
@@ -920,7 +938,7 @@ ifaceMacvtapLinkDump(bool nltarget_kernel ATTRIBUTE_UNUSED,
  *
  * Return 0 on success, != 0 otherwise
  */
-#if __linux__
+#if defined(__linux__) && WITH_MACVTAP
 int
 ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
                   int *parent_ifindex, char *parent_ifname,
@@ -981,7 +999,12 @@ ifaceGetNthParent(int ifindex ATTRIBUTE_UNUSED,
                   unsigned int *nth ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+# if defined(__linux__) && !WITH_MACVTAP
+               _("ifaceGetNthParent is not supported since the include files "
+                 "were too old"));
+# else
                _("ifaceGetNthParent is not supported on non-linux platforms"));
+# endif
     return -1;
 }
 

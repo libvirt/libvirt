@@ -55,7 +55,7 @@
  * Returns 0 on success, -1 on error. In case of error, no response
  * buffer will be returned.
  */
-#if __linux__
+#if defined(__linux__) && defined(HAVE_LIBNL)
 int nlComm(struct nl_msg *nl_msg,
            unsigned char **respbuf, unsigned int *respbuflen,
            int nl_pid)
@@ -143,7 +143,11 @@ int nlComm(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
            int nl_pid ATTRIBUTE_UNUSED)
 {
     netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
+# if defined(__linux__) && !defined(HAVE_LIBNL)
+                 _("nlComm is not supported since libnl was not available"));
+# else
                  _("nlComm is not supported on non-linux platforms"));
+# endif
     return -1;
 }
 
