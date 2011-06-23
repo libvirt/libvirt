@@ -67,6 +67,9 @@
       <element name="imagelabel">
         <text/>
       </element>
+      <element name="baselabel">
+        <text/>
+      </element>
     </element>
   </define>
   <define name="hvs">

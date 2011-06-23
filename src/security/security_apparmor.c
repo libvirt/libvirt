@@ -398,6 +398,12 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
+    if (vm->def->seclabel.baselabel) {
+        virSecurityReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("Cannot set a base label with AppArmour"));
+        return rc;
+    }
+
     if ((vm->def->seclabel.label) ||
         (vm->def->seclabel.model) || (vm->def->seclabel.imagelabel)) {
         virSecurityReportError(VIR_ERR_INTERNAL_ERROR,

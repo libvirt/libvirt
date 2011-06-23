@@ -958,6 +958,7 @@ struct _virSecurityLabelDef {
     char *model;        /* name of security model */
     char *label;        /* security label string */
     char *imagelabel;   /* security image label string */
+    char *baselabel;    /* base name of label string */
     int type;
 };
 

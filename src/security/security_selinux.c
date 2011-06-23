@@ -173,11 +173,26 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
+    if ((vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) &&
+        !vm->def->seclabel.baselabel &&
+        vm->def->seclabel.model) {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("security model already defined for VM"));
+        return rc;
+    }
+
     if (vm->def->seclabel.label ||
-        vm->def->seclabel.model ||
         vm->def->seclabel.imagelabel) {
         virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("security label already defined for VM"));
+        return rc;
+    }
+
+    if (vm->def->seclabel.model &&
+        STRNEQ(vm->def->seclabel.model, SECURITY_SELINUX_NAME)) {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("security label model %s is not supported with selinux"),
+                               vm->def->seclabel.model);
         return rc;
     }
 
@@ -195,7 +210,10 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         }
     } while(mcsAdd(mcs) == -1);
 
-    vm->def->seclabel.label = SELinuxGenNewContext(default_domain_context, mcs);
+    vm->def->seclabel.label =
+        SELinuxGenNewContext(vm->def->seclabel.baselabel ?
+                             vm->def->seclabel.baselabel :
+                             default_domain_context, mcs);
     if (! vm->def->seclabel.label)  {
         virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot generate selinux context for %s"), mcs);
@@ -207,8 +225,8 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                _("cannot generate selinux context for %s"), mcs);
         goto err;
     }
-    vm->def->seclabel.model = strdup(SECURITY_SELINUX_NAME);
-    if (!vm->def->seclabel.model) {
+    if (!vm->def->seclabel.model &&
+        !(vm->def->seclabel.model = strdup(SECURITY_SELINUX_NAME))) {
         virReportOOMError();
         goto err;
     }
@@ -219,7 +237,8 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 err:
     VIR_FREE(vm->def->seclabel.label);
     VIR_FREE(vm->def->seclabel.imagelabel);
-    VIR_FREE(vm->def->seclabel.model);
+    if (!vm->def->seclabel.baselabel)
+        VIR_FREE(vm->def->seclabel.model);
 done:
     VIR_FREE(scontext);
     return rc;

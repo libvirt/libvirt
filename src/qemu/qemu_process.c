@@ -2883,7 +2883,8 @@ void qemuProcessStop(struct qemud_driver *driver,
 
     /* Clear out dynamically assigned labels */
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        VIR_FREE(vm->def->seclabel.model);
+        if (!vm->def->seclabel.baselabel)
+            VIR_FREE(vm->def->seclabel.model);
         VIR_FREE(vm->def->seclabel.label);
         VIR_FREE(vm->def->seclabel.imagelabel);
     }
