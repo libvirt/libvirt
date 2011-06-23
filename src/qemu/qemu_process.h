@@ -67,6 +67,7 @@ int qemuProcessAutoDestroyAdd(struct qemud_driver *driver,
                               virConnectPtr conn);
 int qemuProcessAutoDestroyRemove(struct qemud_driver *driver,
                                  virDomainObjPtr vm);
-
+bool qemuProcessAutoDestroyActive(struct qemud_driver *driver,
+                                  virDomainObjPtr vm);
 
 #endif /* __QEMU_PROCESS_H__ */

@@ -1000,6 +1000,12 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
         goto cleanup;
     }
 
+    if (qemuProcessAutoDestroyActive(driver, vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is marked for auto destroy"));
+        goto cleanup;
+    }
+
     if (!qemuMigrationIsAllowed(vm->def))
         goto cleanup;
 
@@ -2285,6 +2291,12 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if (qemuProcessAutoDestroyActive(driver, vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is marked for auto destroy"));
         goto endjob;
     }
 

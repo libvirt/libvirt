@@ -1305,6 +1305,7 @@ static const vshCmdOptDef opts_create[] = {
     {"console", VSH_OT_BOOL, 0, N_("attach to console after creation")},
 #endif
     {"paused", VSH_OT_BOOL, 0, N_("leave the guest paused after creation")},
+    {"autodestroy", VSH_OT_BOOL, 0, N_("automatically destroy the guest when virsh disconnects")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1331,6 +1332,8 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_START_PAUSED;
+    if (vshCommandOptBool(cmd, "autodestroy"))
+        flags |= VIR_DOMAIN_START_AUTODESTROY;
 
     dom = virDomainCreateXML(ctl->conn, buffer, flags);
     VIR_FREE(buffer);
@@ -1466,6 +1469,7 @@ static const vshCmdOptDef opts_start[] = {
     {"console", VSH_OT_BOOL, 0, N_("attach to console after creation")},
 #endif
     {"paused", VSH_OT_BOOL, 0, N_("leave the guest paused after creation")},
+    {"autodestroy", VSH_OT_BOOL, 0, N_("automatically destroy the guest when virsh disconnects")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1494,6 +1498,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_START_PAUSED;
+    if (vshCommandOptBool(cmd, "autodestroy"))
+        flags |= VIR_DOMAIN_START_AUTODESTROY;
 
     /* Prefer older API unless we have to pass a flag.  */
     if ((flags ? virDomainCreateWithFlags(dom, flags)

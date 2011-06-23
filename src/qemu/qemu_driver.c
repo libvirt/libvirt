@@ -119,7 +119,8 @@ static int qemudShutdown(void);
 static int qemudDomainObjStart(virConnectPtr conn,
                                struct qemud_driver *driver,
                                virDomainObjPtr vm,
-                               bool start_paused);
+                               bool start_paused,
+                               bool autodestroy);
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
@@ -148,7 +149,7 @@ qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaq
     } else {
         if (vm->autostart &&
             !virDomainObjIsActive(vm) &&
-            qemudDomainObjStart(data->conn, data->driver, vm, false) < 0) {
+            qemudDomainObjStart(data->conn, data->driver, vm, false, false) < 0) {
             err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
@@ -1246,7 +1247,8 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
 
-    virCheckFlags(VIR_DOMAIN_START_PAUSED, NULL);
+    virCheckFlags(VIR_DOMAIN_START_PAUSED |
+                  VIR_DOMAIN_START_AUTODESTROY, NULL);
 
     qemuDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
@@ -1277,7 +1279,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 
     if (qemuProcessStart(conn, driver, vm, NULL,
                          (flags & VIR_DOMAIN_START_PAUSED) != 0,
-                         false,
+                         (flags & VIR_DOMAIN_START_AUTODESTROY) != 0,
                          -1, NULL, VIR_VM_OP_CREATE) < 0) {
         qemuAuditDomainStart(vm, "booted", false);
         if (qemuDomainObjEndJob(vm) > 0)
@@ -1330,6 +1332,12 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (qemuProcessAutoDestroyActive(driver, vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is marked for auto destroy"));
         goto cleanup;
     }
 
@@ -3882,7 +3890,8 @@ static int qemudNumDefinedDomains(virConnectPtr conn) {
 static int qemudDomainObjStart(virConnectPtr conn,
                                struct qemud_driver *driver,
                                virDomainObjPtr vm,
-                               bool start_paused)
+                               bool start_paused,
+                               bool autodestroy)
 {
     int ret = -1;
     char *managed_save;
@@ -3906,7 +3915,7 @@ static int qemudDomainObjStart(virConnectPtr conn,
     }
 
     ret = qemuProcessStart(conn, driver, vm, NULL, start_paused,
-                           false, -1, NULL, VIR_VM_OP_CREATE);
+                           autodestroy, -1, NULL, VIR_VM_OP_CREATE);
     qemuAuditDomainStart(vm, "booted", ret >= 0);
     if (ret >= 0) {
         virDomainEventPtr event =
@@ -3929,7 +3938,8 @@ qemudDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_START_PAUSED, -1);
+    virCheckFlags(VIR_DOMAIN_START_PAUSED |
+                  VIR_DOMAIN_START_AUTODESTROY, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3951,8 +3961,12 @@ qemudDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
 
-    ret = qemudDomainObjStart(dom->conn, driver, vm,
-                              (flags & VIR_DOMAIN_START_PAUSED) != 0);
+    if (qemudDomainObjStart(dom->conn, driver, vm,
+                            (flags & VIR_DOMAIN_START_PAUSED) != 0,
+                            (flags & VIR_DOMAIN_START_AUTODESTROY) != 0) < 0)
+        goto endjob;
+
+    ret = 0;
 
 endjob:
     if (qemuDomainObjEndJob(vm) == 0)

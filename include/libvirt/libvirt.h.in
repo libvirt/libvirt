@@ -234,6 +234,7 @@ typedef virDomainInfo *virDomainInfoPtr;
 typedef enum {
     VIR_DOMAIN_NONE         = 0,      /* Default behavior */
     VIR_DOMAIN_START_PAUSED = 1 << 0, /* Launch guest in paused state */
+    VIR_DOMAIN_START_AUTODESTROY = 1 << 1, /* Automatically kill guest when virConnectPtr is closed */
 } virDomainCreateFlags;
 
 

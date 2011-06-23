@@ -392,13 +392,16 @@ I<devname> parameter refers to the device alias of an alternate
 console, serial or parallel device configured for the guest.
 If omitted, the primary console will be opened.
 
-=item B<create> I<FILE> optional I<--console> I<--paused>
+=item B<create> I<FILE> optional I<--console> I<--paused> I<--autodestroy>
 
 Create a domain from an XML <file>. An easy way to create the XML
 <file> is to use the B<dumpxml> command to obtain the definition of a
 pre-existing guest.  The domain will be paused if the I<--paused> option
 is used and supported by the driver; otherwise it will be running.
 If I<--console> is requested, attach to the console after creation.
+If I<--autodestroy> is requested, then the guest will be automatically
+destroyed when virsh closes its connection to libvirt, or otherwise
+exits.
 
 B<Example>
 
@@ -786,13 +789,16 @@ services must be shutdown in the domain.
 The exact behavior of a domain when it shuts down is set by the
 I<on_shutdown> parameter in the domain's XML definition.
 
-=item B<start> I<domain-name> optional I<--console> I<--paused>
+=item B<start> I<domain-name> optional I<--console> I<--paused> I<--autodestroy>
 
 Start a (previously defined) inactive domain, either from the last
 B<managedsave> state, or via a fresh boot if no managedsave state is
 present.  The domain will be paused if the I<--paused> option is
 used and supported by the driver; otherwise it will be running.
 If I<--console> is requested, attach to the console after creation.
+If I<--autodestroy> is requested, then the guest will be automatically
+destroyed when virsh closes its connection to libvirt, or otherwise
+exits.
 
 =item B<suspend> I<domain-id>
 

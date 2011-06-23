@@ -1793,6 +1793,17 @@ virDomainGetConnect (virDomainPtr dom)
  * is destroyed, or if the host is restarted (see virDomainDefineXML() to
  * define persistent domains).
  *
+ * If the VIR_DOMAIN_START_PAUSED flag is set, the guest domain
+ * will be started, but its CPUs will remain paused. The CPUs
+ * can later be manually started using virDomainResume.
+ *
+ * If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+ * domain will be automatically destroyed when the virConnectPtr
+ * object is finally released. This will also happen if the
+ * client application crashes / looses its connection to the
+ * libvirtd daemon. Any domains marked for auto destroy will
+ * block attempts at migration or save-to-file
+ *
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
@@ -6521,6 +6532,17 @@ error:
  *
  * Launch a defined domain. If the call succeeds the domain moves from the
  * defined to the running domains pools.
+ *
+ * If the VIR_DOMAIN_START_PAUSED flag is set, the guest domain
+ * will be started, but its CPUs will remain paused. The CPUs
+ * can later be manually started using virDomainResume.
+ *
+ * If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+ * domain will be automatically destroyed when the virConnectPtr
+ * object is finally released. This will also happen if the
+ * client application crashes / looses its connection to the
+ * libvirtd daemon. Any domains marked for auto destroy will
+ * block attempts at migration or save-to-file
  *
  * Returns 0 in case of success, -1 in case of error
  */

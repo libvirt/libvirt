@@ -3158,3 +3158,14 @@ int qemuProcessAutoDestroyRemove(struct qemud_driver *driver,
         return -1;
     return 0;
 }
+
+bool qemuProcessAutoDestroyActive(struct qemud_driver *driver,
+                                  virDomainObjPtr vm)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s uuid=%s", vm->def->name, uuidstr);
+    if (virHashLookup(driver->autodestroy, uuidstr) != NULL)
+        return true;
+    return false;
+}
