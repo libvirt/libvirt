@@ -1120,7 +1120,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
      * -incoming stdio (which qemu_command might convert to exec:cat or fd:n)
      */
     internalret = qemuProcessStart(dconn, driver, vm, "stdio", true,
-                                   false, dataFD[0], NULL,
+                                   true, dataFD[0], NULL,
                                    VIR_VM_OP_MIGRATE_IN_START);
     if (internalret < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
@@ -1348,7 +1348,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
      * -incoming tcp:0.0.0.0:port
      */
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
-    if (qemuProcessStart(dconn, driver, vm, migrateFrom, true, false,
+    if (qemuProcessStart(dconn, driver, vm, migrateFrom, true, true,
                          -1, NULL, VIR_VM_OP_MIGRATE_IN_START) < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
@@ -2549,6 +2549,9 @@ qemuMigrationFinish(struct qemud_driver *driver,
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto endjob;
         }
+
+        /* Guest is successfully running, so cancel previous auto destroy */
+        qemuProcessAutoDestroyRemove(driver, vm);
     } else {
         qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
         qemuAuditDomainStop(vm, "failed");
