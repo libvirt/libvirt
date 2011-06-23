@@ -2371,13 +2371,19 @@ dnl netlink library
 
 LIBNL_CFLAGS=""
 LIBNL_LIBS=""
+have_libnl=no
 
-if test "$with_macvtap" = "yes"; then
+if test "$with_linux" = "yes"; then
     PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
+        have_libnl=yes
+        AC_DEFINE_UNQUOTED([HAVE_LIBNL], 1, [whether the netlink library is available])
     ], [
-        AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
+        if test "$with_macvtap" = "yes"; then
+            AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
+        fi
     ])
 fi
+AM_CONDITIONAL([HAVE_LIBNL], [test "$have_libnl" = "yes"])
 
 AC_SUBST([LIBNL_CFLAGS])
 AC_SUBST([LIBNL_LIBS])
@@ -2574,7 +2580,7 @@ AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
 else
 AC_MSG_NOTICE([    pcap: no])
 fi
-if test "$with_macvtap" = "yes" ; then
+if test "$have_libnl" = "yes" ; then
 AC_MSG_NOTICE([      nl: $LIBNL_CFLAGS $LIBNL_LIBS])
 else
 AC_MSG_NOTICE([      nl: no])
