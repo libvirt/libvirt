@@ -3824,32 +3824,6 @@ remoteDomainReadEventIOErrorReason(virConnectPtr conn, XDR *xdr)
     return event;
 }
 
-static virDomainEventPtr
-remoteDomainReadEventBlockPull(virConnectPtr conn, XDR *xdr)
-{
-    remote_domain_event_block_pull_msg msg;
-    virDomainPtr dom;
-    virDomainEventPtr event = NULL;
-    memset (&msg, 0, sizeof msg);
-
-    /* unmarshall parameters, and process it*/
-    if (! xdr_remote_domain_event_block_pull_msg(xdr, &msg) ) {
-        remoteError(VIR_ERR_RPC, "%s",
-                    _("unable to demarshall block_pull event"));
-        return NULL;
-    }
-
-    dom = get_nonnull_domain(conn,msg.dom);
-    if (!dom)
-        return NULL;
-
-    event = virDomainEventBlockPullNewFromDom(dom, msg.path, msg.status);
-    xdr_free ((xdrproc_t) &xdr_remote_domain_event_block_pull_msg, (char *) &msg);
-
-    virDomainFree(dom);
-    return event;
-}
-
 
 static virDomainEventPtr
 remoteDomainReadEventGraphics(virConnectPtr conn, XDR *xdr)
@@ -5572,10 +5546,6 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
 
     case REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR:
         event = remoteDomainReadEventControlError(conn, xdr);
-        break;
-
-    case REMOTE_PROC_DOMAIN_EVENT_BLOCK_PULL:
-        event = remoteDomainReadEventBlockPull(conn, xdr);
         break;
 
     default:

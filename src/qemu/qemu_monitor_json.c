@@ -56,7 +56,6 @@ static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr dat
 static void qemuMonitorJSONHandleVNCConnect(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleVNCInitialize(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleVNCDisconnect(qemuMonitorPtr mon, virJSONValuePtr data);
-static void qemuMonitorJSONHandleBlockPull(qemuMonitorPtr mon, virJSONValuePtr data);
 
 struct {
     const char *type;
@@ -72,7 +71,6 @@ struct {
     { "VNC_CONNECTED", qemuMonitorJSONHandleVNCConnect, },
     { "VNC_INITIALIZED", qemuMonitorJSONHandleVNCInitialize, },
     { "VNC_DISCONNECTED", qemuMonitorJSONHandleVNCDisconnect, },
-    { "BLOCK_STREAM_COMPLETED", qemuMonitorJSONHandleBlockPull, },
 };
 
 
@@ -679,34 +677,6 @@ static void qemuMonitorJSONHandleVNCInitialize(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleVNCDisconnect(qemuMonitorPtr mon, virJSONValuePtr data)
 {
     qemuMonitorJSONHandleVNC(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT);
-}
-
-static void qemuMonitorJSONHandleBlockPull(qemuMonitorPtr mon, virJSONValuePtr data)
-{
-    const char *device;
-    unsigned long long offset, len;
-    int status = VIR_DOMAIN_BLOCK_PULL_FAILED;
-
-    if ((device = virJSONValueObjectGetString(data, "device")) == NULL) {
-        VIR_WARN("missing device in disk io error event");
-        goto out;
-    }
-
-    if (virJSONValueObjectGetNumberUlong(data, "offset", &offset) < 0) {
-        VIR_WARN("missing offset in block pull event");
-        goto out;
-    }
-
-    if (virJSONValueObjectGetNumberUlong(data, "len", &len) < 0) {
-        VIR_WARN("missing len in block pull event");
-        goto out;
-    }
-
-    if (offset != 0 && offset == len)
-        status = VIR_DOMAIN_BLOCK_PULL_COMPLETED;
-
-out:
-    qemuMonitorEmitBlockPull(mon, device, status);
 }
 
 

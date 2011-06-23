@@ -113,15 +113,6 @@
            authScheme, subject, opaque)
         return 0
 
-    def _dispatchDomainEventBlockPullCallback(self, dom, path, status, cbData):
-        """Dispatches events to python user domain blockPull event callbacks
-        """
-        cb = cbData["cb"]
-        opaque = cbData["opaque"]
-
-        cb(self, virDomain(self, _obj=dom), path, status, opaque)
-        return 0
-
     def domainEventDeregisterAny(self, callbackID):
         """Removes a Domain Event Callback. De-registering for a
            domain callback will disable delivery of this event type """

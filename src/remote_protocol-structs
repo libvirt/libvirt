@@ -1421,11 +1421,6 @@ struct remote_domain_event_graphics_msg {
                 remote_domain_event_graphics_identity * subject_val;
         } subject;
 };
-struct remote_domain_event_block_pull_msg {
-        remote_nonnull_domain      dom;
-        remote_nonnull_string      path;
-        int                        status;
-};
 struct remote_domain_managed_save_args {
         remote_nonnull_domain      dom;
         u_int                      flags;

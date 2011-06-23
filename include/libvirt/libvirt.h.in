@@ -2729,32 +2729,6 @@ typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
                                                       void *opaque);
 
 /**
- * virConnectDomainEventBlockPullStatus:
- *
- * The final status of a virDomainBlockPullAll() operation
- */
-typedef enum {
-    VIR_DOMAIN_BLOCK_PULL_COMPLETED = 0,
-    VIR_DOMAIN_BLOCK_PULL_FAILED = 1,
-} virConnectDomainEventBlockPullStatus;
-
-/**
- * virConnectDomainEventBlockPullCallback:
- * @conn: connection object
- * @dom: domain on which the event occurred
- * @path: fully-qualified filename of the affected disk
- * @status: final status of the operation (virConnectDomainEventBlockPullStatus)
- *
- * The callback signature to use when registering for an event of type
- * VIR_DOMAIN_EVENT_ID_BLOCK_PULL with virConnectDomainEventRegisterAny()
- */
-typedef void (*virConnectDomainEventBlockPullCallback)(virConnectPtr conn,
-                                                       virDomainPtr dom,
-                                                       const char *path,
-                                                       int status,
-                                                       void *opaque);
-
-/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -2772,7 +2746,6 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_GRAPHICS = 5,        /* virConnectDomainEventGraphicsCallback */
     VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON = 6, /* virConnectDomainEventIOErrorReasonCallback */
     VIR_DOMAIN_EVENT_ID_CONTROL_ERROR = 7,   /* virConnectDomainEventGenericCallback */
-    VIR_DOMAIN_EVENT_ID_BLOCK_PULL = 8,      /* virConnectDomainEventBlockPullCallback */
 
     /*
      * NB: this enum value will increase over time as new events are
