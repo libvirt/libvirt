@@ -55,6 +55,7 @@
 #include "processinfo.h"
 #include "domain_nwfilter.h"
 #include "locking/domain_lock.h"
+#include "uuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -2408,6 +2409,7 @@ int qemuProcessStart(virConnectPtr conn,
                      virDomainObjPtr vm,
                      const char *migrateFrom,
                      bool start_paused,
+                     bool autodestroy,
                      int stdin_fd,
                      const char *stdin_path,
                      enum virVMOperationType vmop)
@@ -2795,6 +2797,10 @@ int qemuProcessStart(virConnectPtr conn,
                              VIR_DOMAIN_PAUSED_USER);
     }
 
+    if (autodestroy &&
+        qemuProcessAutoDestroyAdd(driver, vm, conn) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Writing domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
@@ -2935,6 +2941,9 @@ void qemuProcessStop(struct qemud_driver *driver,
     /* shut it off for sure */
     qemuProcessKill(vm);
 
+    /* Stop autodestroy in case guest is restarted */
+    qemuProcessAutoDestroyRemove(driver, vm);
+
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         char *xml = virDomainDefFormat(vm->def, 0);
@@ -3036,4 +3045,116 @@ retry:
         virSetError(orig_err);
         virFreeError(orig_err);
     }
+}
+
+
+int qemuProcessAutoDestroyInit(struct qemud_driver *driver)
+{
+    if (!(driver->autodestroy = virHashCreate(5, NULL)))
+        return -1;
+
+    return 0;
+}
+
+struct qemuProcessAutoDestroyData {
+    struct qemud_driver *driver;
+    virConnectPtr conn;
+};
+
+static void qemuProcessAutoDestroyDom(void *payload,
+                                      const void *name,
+                                      void *opaque)
+{
+    struct qemuProcessAutoDestroyData *data = opaque;
+    virConnectPtr conn = payload;
+    const char *uuidstr = name;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    virDomainObjPtr dom;
+    qemuDomainObjPrivatePtr priv;
+    virDomainEventPtr event = NULL;
+
+    VIR_DEBUG("conn=%p uuidstr=%s thisconn=%p", conn, uuidstr, data->conn);
+
+    if (data->conn != conn)
+        return;
+
+    if (virUUIDParse(uuidstr, uuid) < 0) {
+        VIR_WARN("Failed to parse %s", uuidstr);
+        return;
+    }
+
+    if (!(dom = virDomainFindByUUID(&data->driver->domains,
+                                    uuid))) {
+        VIR_DEBUG("No domain object to kill");
+        return;
+    }
+
+    priv = dom->privateData;
+    if (priv->jobActive == QEMU_JOB_MIGRATION_IN) {
+        VIR_DEBUG("vm=%s has incoming migration active, cancelling",
+                  dom->def->name);
+        priv->jobActive = QEMU_JOB_NONE;
+        memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+    }
+
+    if (qemuDomainObjBeginJobWithDriver(data->driver, dom) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Killing domain");
+    qemuProcessStop(data->driver, dom, 1, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    qemuAuditDomainStop(dom, "destroyed");
+    event = virDomainEventNewFromObj(dom,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+    if (qemuDomainObjEndJob(dom) == 0)
+        dom = NULL;
+    if (dom && !dom->persistent)
+        virDomainRemoveInactive(&data->driver->domains, dom);
+
+cleanup:
+    if (dom)
+        virDomainObjUnlock(dom);
+    if (event)
+        qemuDomainEventQueue(data->driver, event);
+    virHashRemoveEntry(data->driver->autodestroy, uuidstr);
+}
+
+/*
+ * Precondition: driver is locked
+ */
+void qemuProcessAutoDestroyRun(struct qemud_driver *driver, virConnectPtr conn)
+{
+    struct qemuProcessAutoDestroyData data = {
+        driver, conn
+    };
+    VIR_DEBUG("conn=%p", conn);
+    virHashForEach(driver->autodestroy, qemuProcessAutoDestroyDom, &data);
+}
+
+void qemuProcessAutoDestroyShutdown(struct qemud_driver *driver)
+{
+    virHashFree(driver->autodestroy);
+}
+
+int qemuProcessAutoDestroyAdd(struct qemud_driver *driver,
+                              virDomainObjPtr vm,
+                              virConnectPtr conn)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s uuid=%s conn=%p", vm->def->name, uuidstr, conn);
+    if (virHashAddEntry(driver->autodestroy, uuidstr, conn) < 0)
+        return -1;
+    return 0;
+}
+
+int qemuProcessAutoDestroyRemove(struct qemud_driver *driver,
+                                 virDomainObjPtr vm)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s uuid=%s", vm->def->name, uuidstr);
+    if (virHashRemoveEntry(driver->autodestroy, uuidstr) < 0)
+        return -1;
+    return 0;
 }

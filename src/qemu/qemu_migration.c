@@ -1119,8 +1119,9 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     /* Start the QEMU daemon, with the same command-line arguments plus
      * -incoming stdio (which qemu_command might convert to exec:cat or fd:n)
      */
-    internalret = qemuProcessStart(dconn, driver, vm, "stdio", true, dataFD[0],
-                                   NULL, VIR_VM_OP_MIGRATE_IN_START);
+    internalret = qemuProcessStart(dconn, driver, vm, "stdio", true,
+                                   false, dataFD[0], NULL,
+                                   VIR_VM_OP_MIGRATE_IN_START);
     if (internalret < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
@@ -1347,7 +1348,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
      * -incoming tcp:0.0.0.0:port
      */
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
-    if (qemuProcessStart(dconn, driver, vm, migrateFrom, true,
+    if (qemuProcessStart(dconn, driver, vm, migrateFrom, true, false,
                          -1, NULL, VIR_VM_OP_MIGRATE_IN_START) < 0) {
         qemuAuditDomainStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart

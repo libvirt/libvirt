@@ -127,6 +127,11 @@ struct qemud_driver {
     virSysinfoDefPtr hostsysinfo;
 
     virLockManagerPluginPtr lockManager;
+
+    /* Mapping of 'char *uuidstr' -> virConnectPtr
+     * of guests which will be automatically killed
+     * when the virConnectPtr is closed*/
+    virHashTablePtr autodestroy;
 };
 
 typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;

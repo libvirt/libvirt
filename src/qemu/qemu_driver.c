@@ -603,6 +603,9 @@ qemudStartup(int privileged) {
         qemu_driver->hugepage_path = mempath;
     }
 
+    if (qemuProcessAutoDestroyInit(qemu_driver) < 0)
+        goto error;
+
     /* Get all the running persistent or transient configs first */
     if (virDomainLoadAllConfigs(qemu_driver->caps,
                                 &qemu_driver->domains,
@@ -736,6 +739,8 @@ qemudShutdown(void) {
 
     virSysinfoDefFree(qemu_driver->hostsysinfo);
 
+    qemuProcessAutoDestroyShutdown(qemu_driver);
+
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
     VIR_FREE(qemu_driver->logDir);
@@ -860,6 +865,7 @@ static int qemudClose(virConnectPtr conn) {
     qemuDriverLock(driver);
     virDomainEventCallbackListRemoveConn(conn,
                                          driver->domainEventState->callbacks);
+    qemuProcessAutoDestroyRun(driver, conn);
     qemuDriverUnlock(driver);
 
     conn->privateData = NULL;
@@ -1271,6 +1277,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 
     if (qemuProcessStart(conn, driver, vm, NULL,
                          (flags & VIR_DOMAIN_START_PAUSED) != 0,
+                         false,
                          -1, NULL, VIR_VM_OP_CREATE) < 0) {
         qemuAuditDomainStart(vm, "booted", false);
         if (qemuDomainObjEndJob(vm) > 0)
@@ -3528,8 +3535,8 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     }
 
     /* Set the migration source and start it up. */
-    ret = qemuProcessStart(conn, driver, vm, "stdio", true, *fd, path,
-                           VIR_VM_OP_RESTORE);
+    ret = qemuProcessStart(conn, driver, vm, "stdio", true,
+                           false, *fd, path, VIR_VM_OP_RESTORE);
 
     if (intermediatefd != -1) {
         if (ret < 0) {
@@ -3898,8 +3905,8 @@ static int qemudDomainObjStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = qemuProcessStart(conn, driver, vm, NULL, start_paused, -1, NULL,
-                           VIR_VM_OP_CREATE);
+    ret = qemuProcessStart(conn, driver, vm, NULL, start_paused,
+                           false, -1, NULL, VIR_VM_OP_CREATE);
     qemuAuditDomainStart(vm, "booted", ret >= 0);
     if (ret >= 0) {
         virDomainEventPtr event =
@@ -7854,7 +7861,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
 
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                                  false, -1, NULL, VIR_VM_OP_CREATE);
+                                  false, false, -1, NULL, VIR_VM_OP_CREATE);
             qemuAuditDomainStart(vm, "from-snapshot", rc >= 0);
             if (qemuDomainSnapshotSetCurrentInactive(vm, driver->snapshotDir) < 0)
                 goto endjob;

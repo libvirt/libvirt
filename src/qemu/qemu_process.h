@@ -46,6 +46,7 @@ int qemuProcessStart(virConnectPtr conn,
                      virDomainObjPtr vm,
                      const char *migrateFrom,
                      bool start_paused,
+                     bool autodestroy,
                      int stdin_fd,
                      const char *stdin_path,
                      enum virVMOperationType vmop);
@@ -56,5 +57,16 @@ void qemuProcessStop(struct qemud_driver *driver,
                      virDomainShutoffReason reason);
 
 void qemuProcessKill(virDomainObjPtr vm);
+
+int qemuProcessAutoDestroyInit(struct qemud_driver *driver);
+void qemuProcessAutoDestroyRun(struct qemud_driver *driver,
+                               virConnectPtr conn);
+void qemuProcessAutoDestroyShutdown(struct qemud_driver *driver);
+int qemuProcessAutoDestroyAdd(struct qemud_driver *driver,
+                              virDomainObjPtr vm,
+                              virConnectPtr conn);
+int qemuProcessAutoDestroyRemove(struct qemud_driver *driver,
+                                 virDomainObjPtr vm);
+
 
 #endif /* __QEMU_PROCESS_H__ */
