@@ -788,9 +788,10 @@ void qemuDomainObjCheckTaint(struct qemud_driver *driver,
 {
     int i;
 
-    if (!driver->clearEmulatorCapabilities ||
-        driver->user == 0 ||
-        driver->group == 0)
+    if (driver->privileged &&
+        (!driver->clearEmulatorCapabilities ||
+         driver->user == 0 ||
+         driver->group == 0))
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
 
     if (obj->def->namespaceData) {
