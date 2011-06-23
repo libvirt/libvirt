@@ -1583,7 +1583,7 @@ storageVolumeDownload(virStorageVolPtr obj,
     }
 
     if (vol->building) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               _("volume '%s' is still being allocated."),
                               vol->name);
         goto out;
