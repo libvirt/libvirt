@@ -1374,45 +1374,6 @@ int virDomainUpdateDeviceFlags(virDomainPtr domain,
                                const char *xml, unsigned int flags);
 
 /*
- * BlockPull API
- */
-
-/* An iterator for initiating and monitoring block pull operations */
-typedef unsigned long long virDomainBlockPullCursor;
-
-typedef struct _virDomainBlockPullInfo virDomainBlockPullInfo;
-struct _virDomainBlockPullInfo {
-    /*
-     * The following fields provide an indication of block pull progress.  @cur
-     * indicates the current position and will be between 0 and @end.  @end is
-     * the final cursor position for this operation and represents completion.
-     * To approximate progress, divide @cur by @end.
-     */
-    virDomainBlockPullCursor cur;
-    virDomainBlockPullCursor end;
-};
-typedef virDomainBlockPullInfo *virDomainBlockPullInfoPtr;
-
-int                 virDomainBlockPull(virDomainPtr dom,
-                                       const char *path,
-                                       virDomainBlockPullInfoPtr info,
-                                       unsigned int flags);
-
-int                 virDomainBlockPullAll(virDomainPtr dom,
-                                          const char *path,
-                                          unsigned int flags);
-
-int                 virDomainBlockPullAbort(virDomainPtr dom,
-                                            const char *path,
-                                            unsigned int flags);
-
-int                 virDomainGetBlockPullInfo(virDomainPtr dom,
-                                              const char *path,
-                                              virDomainBlockPullInfoPtr info,
-                                              unsigned int flags);
-
-
-/*
  * NUMA support
  */
 

@@ -184,8 +184,6 @@ def enum(type, name, value):
 functions_failed = []
 functions_skipped = [
     "virConnectListDomains",
-    'virDomainBlockPull',
-    'virDomainGetBlockPullInfo',
 ]
 
 skipped_modules = {
@@ -202,7 +200,6 @@ skipped_types = {
      'virStreamEventCallback': "No function types in python",
      'virEventHandleCallback': "No function types in python",
      'virEventTimeoutCallback': "No function types in python",
-     'virDomainBlockPullInfoPtr': "Not implemented yet",
 }
 
 #######################################################################

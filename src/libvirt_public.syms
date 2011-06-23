@@ -452,10 +452,6 @@ LIBVIRT_0.9.2 {
 
 LIBVIRT_0.9.3 {
     global:
-        virDomainBlockPull;
-        virDomainBlockPullAbort;
-        virDomainBlockPullAll;
-        virDomainGetBlockPullInfo;
         virDomainGetControlInfo;
         virDomainPinVcpuFlags;
         virDomainSendKey;
