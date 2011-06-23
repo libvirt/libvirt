@@ -2395,19 +2395,3 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
         ret = qemuMonitorTextScreendump(mon, file);
     return ret;
 }
-
-int qemuMonitorBlockPull(qemuMonitorPtr mon,
-                         const char *path,
-                         virDomainBlockPullInfoPtr info,
-                         int mode)
-{
-    int ret;
-
-    VIR_DEBUG("mon=%p, path=%p, info=%p, mode=%i", mon, path, info, mode);
-
-    if (mon->json)
-        ret = qemuMonitorJSONBlockPull(mon, path, info, mode);
-    else
-        ret = qemuMonitorTextBlockPull(mon, path, info, mode);
-    return ret;
-}

@@ -442,19 +442,6 @@ int qemuMonitorInjectNMI(qemuMonitorPtr mon);
 int qemuMonitorScreendump(qemuMonitorPtr mon,
                           const char *file);
 
-typedef enum {
-    BLOCK_PULL_MODE_ONE = 0,
-    BLOCK_PULL_MODE_ALL = 1,
-    BLOCK_PULL_MODE_ABORT = 2,
-    BLOCK_PULL_MODE_INFO = 3,
-} BLOCK_PULL_MODE;
-
-
-int qemuMonitorBlockPull(qemuMonitorPtr mon,
-                         const char *path,
-                         virDomainBlockPullInfoPtr info,
-                         int mode);
-
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that
