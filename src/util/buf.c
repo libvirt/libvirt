@@ -311,7 +311,8 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
         return;
     }
 
-    if (VIR_ALLOC_N(escaped, 6 * len + 1) < 0) {
+    if (xalloc_oversized(6, len) ||
+        VIR_ALLOC_N(escaped, 6 * len + 1) < 0) {
         virBufferSetError(buf);
         return;
     }
@@ -398,7 +399,8 @@ virBufferEscapeSexpr(const virBufferPtr buf,
         return;
     }
 
-    if (VIR_ALLOC_N(escaped, 2 * len + 1) < 0) {
+    if (xalloc_oversized(2, len) ||
+        VIR_ALLOC_N(escaped, 2 * len + 1) < 0) {
         virBufferSetError(buf);
         return;
     }
