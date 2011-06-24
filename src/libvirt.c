@@ -6919,9 +6919,9 @@ error:
  * not support it.  This function requires privileged access to the
  * hypervisor.
  *
- * @flags must include either VIR_DOMAIN_VCPU_ACTIVE to query a
+ * @flags must include either VIR_DOMAIN_AFFECT_LIVE to query a
  * running domain (which will fail if domain is not active), or
- * VIR_DOMAIN_VCPU_PERSISTENT to query the XML description of the
+ * VIR_DOMAIN_AFFECT_CONFIG to query the XML description of the
  * domain.  It is an error to set both flags.
  *
  * If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then the maximum
