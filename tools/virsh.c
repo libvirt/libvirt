@@ -2998,15 +2998,16 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
  * "vcpupin" command
  */
 static const vshCmdInfo info_vcpupin[] = {
-    {"help", N_("control domain vcpu affinity")},
+    {"help", N_("control or query domain vcpu affinity")},
     {"desc", N_("Pin domain VCPUs to host physical CPUs.")},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_vcpupin[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"vcpu", VSH_OT_INT, VSH_OFLAG_REQ, N_("vcpu number")},
-    {"cpulist", VSH_OT_DATA, VSH_OFLAG_REQ, N_("host cpu number(s) (comma separated)")},
+    {"vcpu", VSH_OT_INT, 0, N_("vcpu number")},
+    {"cpulist", VSH_OT_DATA, VSH_OFLAG_EMPTY_OK,
+     N_("host cpu number(s) to set, or omit option to query")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
     {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
@@ -3019,17 +3020,20 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     virDomainInfo info;
     virDomainPtr dom;
     virNodeInfo nodeinfo;
-    int vcpu;
+    int vcpu = -1;
     const char *cpulist = NULL;
     bool ret = true;
-    unsigned char *cpumap;
+    unsigned char *cpumap = NULL;
+    unsigned char *cpumaps = NULL;
     int cpumaplen;
-    int i, cpu, lastcpu, maxcpu;
+    bool bit, lastbit, isInvert;
+    int i, cpu, lastcpu, maxcpu, ncpus;
     bool unuse = false;
     const char *cur;
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
     int current = vshCommandOptBool(cmd, "current");
+    bool query = false; /* Query mode if no cpulist */
     int flags = 0;
 
     if (current) {
@@ -3054,13 +3058,17 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptInt(cmd, "vcpu", &vcpu) <= 0) {
-        vshError(ctl, "%s", _("vcpupin: Invalid or missing vCPU number."));
+    if (vshCommandOptString(cmd, "cpulist", &cpulist) < 0) {
+        vshError(ctl, "%s", _("vcpupin: Missing cpulist."));
         virDomainFree(dom);
         return false;
     }
+    query = !cpulist;
 
-    if (vshCommandOptString(cmd, "cpulist", &cpulist) <= 0) {
+    /* In query mode, "vcpu" is optional */
+    if (vshCommandOptInt(cmd, "vcpu", &vcpu) < !query) {
+        vshError(ctl, "%s",
+                 _("vcpupin: Invalid or missing vCPU number."));
         virDomainFree(dom);
         return false;
     }
@@ -3071,7 +3079,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virDomainGetInfo(dom, &info) != 0) {
-        vshError(ctl, "%s", _("vcpupin: failed to get domain informations."));
+        vshError(ctl, "%s", _("vcpupin: failed to get domain information."));
         virDomainFree(dom);
         return false;
     }
@@ -3084,8 +3092,61 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
 
     maxcpu = VIR_NODEINFO_MAXCPUS(nodeinfo);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-    cpumap = vshCalloc(ctl, 0, cpumaplen);
 
+    /* Query mode: show CPU affinity information then exit.*/
+    if (query) {
+        /* When query mode and neither "live", "config" nor "current"
+         * is specified, set VIR_DOMAIN_AFFECT_CURRENT as flags */
+        if (flags == -1)
+            flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+        cpumaps = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
+        if ((ncpus = virDomainGetVcpupinInfo(dom, info.nrVirtCpu,
+                                             cpumaps, cpumaplen, flags)) >= 0) {
+
+            vshPrint(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
+            vshPrint(ctl, "----------------------------------\n");
+            for (i = 0; i < ncpus; i++) {
+
+               if (vcpu != -1 && i != vcpu)
+                   continue;
+
+               bit = lastbit = isInvert = false;
+               lastcpu = -1;
+
+               vshPrint(ctl, "%4d: ", i);
+               for (cpu = 0; cpu < maxcpu; cpu++) {
+
+                   bit = VIR_CPU_USABLE(cpumaps, cpumaplen, i, cpu);
+
+                   isInvert = (bit ^ lastbit);
+                   if (bit && isInvert) {
+                       if (lastcpu == -1)
+                           vshPrint(ctl, "%d", cpu);
+                       else
+                           vshPrint(ctl, ",%d", cpu);
+                       lastcpu = cpu;
+                   }
+                   if (!bit && isInvert && lastcpu != cpu - 1)
+                       vshPrint(ctl, "-%d", cpu - 1);
+                   lastbit = bit;
+               }
+               if (bit && !isInvert) {
+                  vshPrint(ctl, "-%d", maxcpu - 1);
+               }
+               vshPrint(ctl, "\n");
+            }
+
+        } else {
+            ret = false;
+        }
+        VIR_FREE(cpumaps);
+        goto cleanup;
+    }
+
+    /* Pin mode: pinning specified vcpu to specified physical cpus*/
+
+    cpumap = vshCalloc(ctl, 0, cpumaplen);
     /* Parse cpulist */
     cur = cpulist;
     if (*cur == 0) {

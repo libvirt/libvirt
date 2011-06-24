@@ -827,11 +827,14 @@ values; these two flags cannot both be specified.
 Returns basic information about the domain virtual CPUs, like the number of
 vCPUs, the running time, the affinity to physical processors.
 
-=item B<vcpupin> I<domain-id> I<vcpu> I<cpulist> optional I<--live> I<--config>
+=item B<vcpupin> I<domain-id> optional I<vcpu> I<cpulist> I<--live> I<--config>
 I<--current>
 
-Pin domain VCPUs to host physical CPUs. The I<vcpu> number must be provided
-and I<cpulist> is a list of physical CPU numbers. Its syntax is a comma
+Query or change the pinning of domain VCPUs to host physical CPUs.  To
+pin a single I<vcpu>, specify I<cpulist>; otherwise, you can query one
+I<vcpu> or omit I<vcpu> to list all at once.
+
+I<cpulist> is a list of physical CPU numbers. Its syntax is a comma
 separated list and a special markup using '-' and '^' (ex. '0-4', '0-3,^2') can
 also be allowed. The '-' denotes the range and the '^' denotes exclusive.
 If you want to reset vcpupin setting, that is, to pin vcpu all physical cpus,
@@ -839,11 +842,12 @@ simply specify 'r' as a cpulist.
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--config> flags may be given, but I<--current> is exclusive.
+Both I<--live> and I<--config> flags may be given if I<cpulist> is present,
+but I<--current> is exclusive.
 If no flag is specified, behavior is different depending on hypervisor.
 
-B<Note>: The expression is sequentially evaluated, so "0-15,^8" is not identical
-to "^8,0-15".
+B<Note>: The expression is sequentially evaluated, so "0-15,^8" is
+identical to "9-14,0-7,15" but not identical to "^8,0-15".
 
 =item B<vncdisplay> I<domain-id>
 
