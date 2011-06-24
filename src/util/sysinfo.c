@@ -57,6 +57,8 @@ VIR_ENUM_IMPL(virSysinfo, VIR_SYSINFO_LAST,
 
 void virSysinfoDefFree(virSysinfoDefPtr def)
 {
+    int i;
+
     if (def == NULL)
         return;
 
@@ -72,6 +74,22 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
     VIR_FREE(def->system_uuid);
     VIR_FREE(def->system_sku);
     VIR_FREE(def->system_family);
+
+    for (i = 0;i < def->nprocessor;i++) {
+        VIR_FREE(def->processor[i].processor_socket_destination);
+        VIR_FREE(def->processor[i].processor_type);
+        VIR_FREE(def->processor[i].processor_family);
+        VIR_FREE(def->processor[i].processor_manufacturer);
+        VIR_FREE(def->processor[i].processor_signature);
+        VIR_FREE(def->processor[i].processor_version);
+        VIR_FREE(def->processor[i].processor_external_clock);
+        VIR_FREE(def->processor[i].processor_max_speed);
+        VIR_FREE(def->processor[i].processor_status);
+        VIR_FREE(def->processor[i].processor_serial_number);
+        VIR_FREE(def->processor[i].processor_part_number);
+    }
+    VIR_FREE(def->processor);
+
     VIR_FREE(def);
 }
 
@@ -190,6 +208,107 @@ no_memory:
     return NULL;
 }
 
+static char *
+parseProcessorInfo(char *base, virSysinfoDefPtr ret)
+{
+    char *cur, *eol, *tmp_base;
+    virProcessorinfoDefPtr processor;
+
+    while((tmp_base = strstr(base, "Processor Information")) != NULL) {
+        base = tmp_base;
+
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
+            goto no_memory;
+        }
+        processor = &ret->processor[ret->nprocessor - 1];
+
+        if ((cur = strstr(base, "Socket Designation: ")) != NULL) {
+            cur += 20;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_socket_destination = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Type: ")) != NULL) {
+            cur += 6;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_type = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Family: ")) != NULL) {
+            cur += 8;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_family = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
+            cur += 14;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_manufacturer = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Signature: ")) != NULL) {
+            cur += 11;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_signature = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Version: ")) != NULL) {
+            cur += 9;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_version = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "External Clock: ")) != NULL) {
+            cur += 16;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_external_clock = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Max Speed: ")) != NULL) {
+            cur += 11;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_max_speed = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Status: ")) != NULL) {
+            cur += 8;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_status = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Serial Number: ")) != NULL) {
+            cur += 15;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_serial_number = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Part Number: ")) != NULL) {
+            cur += 13;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_part_number = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+
+        base = eol + 1;
+    }
+
+    return base;
+
+no_memory:
+    return NULL;
+}
+
 virSysinfoDefPtr
 virSysinfoRead(void) {
     char *path, *base;
@@ -205,7 +324,7 @@ virSysinfoRead(void) {
         return NULL;
     }
 
-    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,4,17", NULL);
+    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,4", NULL);
     VIR_FREE(path);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0) {
@@ -226,6 +345,11 @@ virSysinfoRead(void) {
         goto no_memory;
 
     if ((base = parseSystemInfo(base, ret)) == NULL)
+        goto no_memory;
+
+    ret->nprocessor = 0;
+    ret->processor = NULL;
+    if ((base = parseProcessorInfo(base, ret)) == NULL)
         goto no_memory;
 
 cleanup:
@@ -339,6 +463,101 @@ SystemInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
     return;
 }
 
+static void
+ProcessorInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+{
+    int i;
+    int len = strlen(prefix);
+    virProcessorinfoDefPtr processor;
+
+    for (i = 0; i < def->nprocessor; i++) {
+        processor = &def->processor[i];
+
+        if ((processor->processor_socket_destination != NULL) ||
+            (processor->processor_type != NULL) ||
+            (processor->processor_family != NULL) ||
+            (processor->processor_manufacturer != NULL) ||
+            (processor->processor_signature != NULL) ||
+            (processor->processor_version != NULL) ||
+            (processor->processor_external_clock != NULL) ||
+            (processor->processor_max_speed != NULL) ||
+            (processor->processor_status != NULL) ||
+            (processor->processor_serial_number != NULL) ||
+            (processor->processor_part_number != NULL)) {
+            virBufferAsprintf(buf, "%s  <processor>\n", prefix);
+            if (processor->processor_socket_destination != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='socket_destination'>%s</entry>\n",
+                                      processor->processor_socket_destination);
+            }
+            if (processor->processor_type != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='type'>%s</entry>\n",
+                                      processor->processor_type);
+            }
+            if (processor->processor_family != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='family'>%s</entry>\n",
+                                      processor->processor_family);
+            }
+            if (processor->processor_manufacturer != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='manufacturer'>%s</entry>\n",
+                                      processor->processor_manufacturer);
+            }
+            if (processor->processor_signature != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='signature'>%s</entry>\n",
+                                      processor->processor_signature);
+            }
+            if (processor->processor_version != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='version'>%s</entry>\n",
+                                      processor->processor_version);
+            }
+            if (processor->processor_external_clock != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='external_clock'>%s</entry>\n",
+                                      processor->processor_external_clock);
+            }
+            if (processor->processor_max_speed != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='max_speed'>%s</entry>\n",
+                                      processor->processor_max_speed);
+            }
+            if (processor->processor_status != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='status'>%s</entry>\n",
+                                      processor->processor_status);
+            }
+            if (processor->processor_serial_number != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='serial_number'>%s</entry>\n",
+                                      processor->processor_serial_number);
+            }
+            if (processor->processor_part_number != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='part_number'>%s</entry>\n",
+                                      processor->processor_part_number);
+            }
+            virBufferAsprintf(buf, "%s  </processor>\n", prefix);
+        }
+    }
+
+    return;
+}
+
 /**
  * virSysinfoFormat:
  * @def: structure to convert to xml string
@@ -364,6 +583,7 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
 
     BIOSInfoFormat(def, prefix, &buf);
     SystemInfoFormat(def, prefix, &buf);
+    ProcessorInfoFormat(def, prefix, &buf);
 
     virBufferAsprintf(&buf, "%s</sysinfo>\n", prefix);
 
