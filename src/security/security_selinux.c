@@ -1209,9 +1209,9 @@ SELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-SELinuxSetFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                  virDomainObjPtr vm,
-                  int fd)
+SELinuxSetImageFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                       virDomainObjPtr vm,
+                       int fd)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
@@ -1255,5 +1255,5 @@ virSecurityDriver virSecurityDriverSELinux = {
     SELinuxSetSavedStateLabel,
     SELinuxRestoreSavedStateLabel,
 
-    SELinuxSetFDLabel,
+    SELinuxSetImageFDLabel,
 };

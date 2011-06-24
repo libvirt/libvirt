@@ -370,16 +370,16 @@ virSecurityStackClearSocketLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecurityStackSetFDLabel(virSecurityManagerPtr mgr,
-                           virDomainObjPtr vm,
-                           int fd)
+virSecurityStackSetImageFDLabel(virSecurityManagerPtr mgr,
+                                virDomainObjPtr vm,
+                                int fd)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int rc = 0;
 
-    if (virSecurityManagerSetFDLabel(priv->secondary, vm, fd) < 0)
+    if (virSecurityManagerSetImageFDLabel(priv->secondary, vm, fd) < 0)
         rc = -1;
-    if (virSecurityManagerSetFDLabel(priv->primary, vm, fd) < 0)
+    if (virSecurityManagerSetImageFDLabel(priv->primary, vm, fd) < 0)
         rc = -1;
 
     return rc;
@@ -420,5 +420,5 @@ virSecurityDriver virSecurityDriverStack = {
     virSecurityStackSetSavedStateLabel,
     virSecurityStackRestoreSavedStateLabel,
 
-    virSecurityStackSetFDLabel,
+    virSecurityStackSetImageFDLabel,
 };

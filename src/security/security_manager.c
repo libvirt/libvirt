@@ -326,12 +326,12 @@ int virSecurityManagerVerify(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetFDLabel(virSecurityManagerPtr mgr,
-                                 virDomainObjPtr vm,
-                                 int fd)
+int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
+                                      virDomainObjPtr vm,
+                                      int fd)
 {
-    if (mgr->drv->domainSetSecurityFDLabel)
-        return mgr->drv->domainSetSecurityFDLabel(mgr, vm, fd);
+    if (mgr->drv->domainSetSecurityImageFDLabel)
+        return mgr->drv->domainSetSecurityImageFDLabel(mgr, vm, fd);
 
     virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;

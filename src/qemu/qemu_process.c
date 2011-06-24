@@ -2641,7 +2641,7 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
         }
         if (S_ISFIFO(stdin_sb.st_mode) &&
-            virSecurityManagerSetFDLabel(driver->securityManager, vm, stdin_fd) < 0)
+            virSecurityManagerSetImageFDLabel(driver->securityManager, vm, stdin_fd) < 0)
             goto cleanup;
     }
 

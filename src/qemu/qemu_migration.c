@@ -2688,8 +2688,8 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
          * doesn't have to open() the file, so while we still have to
          * grant SELinux access, we can do it on fd and avoid cleanup
          * later, as well as skip futzing with cgroup.  */
-        if (virSecurityManagerSetFDLabel(driver->securityManager, vm,
-                                         compressor ? pipeFD[1] : fd) < 0)
+        if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm,
+                                              compressor ? pipeFD[1] : fd) < 0)
             goto cleanup;
         bypassSecurityDriver = true;
     } else {

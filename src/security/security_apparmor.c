@@ -759,9 +759,9 @@ AppArmorRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-AppArmorSetFDLabel(virSecurityManagerPtr mgr,
-                   virDomainObjPtr vm,
-                   int fd)
+AppArmorSetImageFDLabel(virSecurityManagerPtr mgr,
+                        virDomainObjPtr vm,
+                        int fd)
 {
     int rc = -1;
     char *proc = NULL;
@@ -820,5 +820,5 @@ virSecurityDriver virAppArmorSecurityDriver = {
     AppArmorSetSavedStateLabel,
     AppArmorRestoreSavedStateLabel,
 
-    AppArmorSetFDLabel,
+    AppArmorSetImageFDLabel,
 };

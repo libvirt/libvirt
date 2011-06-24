@@ -91,8 +91,8 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
                                       virDomainObjPtr vm);
 int virSecurityManagerVerify(virSecurityManagerPtr mgr,
                              virDomainDefPtr def);
-int virSecurityManagerSetFDLabel(virSecurityManagerPtr mgr,
-                                 virDomainObjPtr vm,
-                                 int fd);
+int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
+                                      virDomainObjPtr vm,
+                                      int fd);
 
 #endif /* VIR_SECURITY_MANAGER_H__ */

@@ -848,7 +848,7 @@ virSecurityManagerRestoreAllLabel;
 virSecurityManagerRestoreHostdevLabel;
 virSecurityManagerRestoreSavedStateLabel;
 virSecurityManagerSetAllLabel;
-virSecurityManagerSetFDLabel;
+virSecurityManagerSetImageFDLabel;
 virSecurityManagerSetImageLabel;
 virSecurityManagerSetHostdevLabel;
 virSecurityManagerSetProcessLabel;
