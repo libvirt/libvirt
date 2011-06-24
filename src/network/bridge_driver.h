@@ -28,7 +28,10 @@
 # include <config.h>
 
 # include "internal.h"
+# include "network_conf.h"
+# include "command.h"
 
 int networkRegister(void);
+int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdout, char *pidfile);
 
 #endif /* __VIR_NETWORK__DRIVER_H */

@@ -1087,6 +1087,10 @@ if WITH_XENXS
 USED_SYM_FILES += libvirt_xenxs.syms
 endif
 
+if WITH_NETWORK
+USED_SYM_FILES += libvirt_network.syms
+endif
+
 EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
@@ -1097,7 +1101,8 @@ EXTRA_DIST += \
   libvirt_daemon.syms		\
   libvirt_nwfilter.syms	\
   libvirt_vmx.syms		\
-  libvirt_xenxs.syms
+  libvirt_xenxs.syms		\
+  libvirt_network.syms
 
 GENERATED_SYM_FILES = libvirt.syms libvirt.def libvirt_qemu.def
 

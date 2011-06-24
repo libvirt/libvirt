@@ -433,12 +433,19 @@ networkShutdown(void) {
 }
 
 
-static int
+static dnsmasqContext*
 networkSaveDnsmasqHostsfile(virNetworkIpDefPtr ipdef,
-                            dnsmasqContext *dctx,
+                            char *name,
                             bool force)
 {
     unsigned int i;
+
+    dnsmasqContext *dctx = dnsmasqContextNew(name,
+                                             DNSMASQ_STATE_DIR);
+    if (dctx == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     if (! force && virFileExists(dctx->hostsfile->path))
         return 0;
@@ -450,9 +457,14 @@ networkSaveDnsmasqHostsfile(virNetworkIpDefPtr ipdef,
     }
 
     if (dnsmasqSave(dctx) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    return dctx;
+
+cleanup:
+    dnsmasqContextFree(dctx);
+
+    return NULL;
 }
 
 
@@ -465,6 +477,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     int nbleases = 0;
     int ii;
     virNetworkIpDefPtr tmpipdef;
+    dnsmasqContext *dctx = NULL;
 
     /*
      * NB, be careful about syntax for dnsmasq options in long format.
@@ -494,7 +507,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     if (network->def->domain)
         virCommandAddArgList(cmd, "--domain", network->def->domain, NULL);
 
-    virCommandAddArgPair(cmd, "--pid-file", pidfile);
+    if (pidfile)
+        virCommandAddArgPair(cmd, "--pid-file", pidfile);
 
     /* *no* conf file */
     virCommandAddArg(cmd, "--conf-file=");
@@ -590,18 +604,11 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         if (ipdef->nranges || ipdef->nhosts)
             virCommandAddArg(cmd, "--dhcp-no-override");
 
-        if (ipdef->nhosts > 0) {
-            dnsmasqContext *dctx = dnsmasqContextNew(network->def->name,
-                                                     DNSMASQ_STATE_DIR);
-            if (dctx == NULL) {
-                virReportOOMError();
-                goto cleanup;
-            }
+            if ((dctx = networkSaveDnsmasqHostsfile(ipdef, network->def->name, false))) {
+                if (dctx->hostsfile->nhosts)
+                    virCommandAddArgPair(cmd, "--dhcp-hostsfile",
+                                         dctx->hostsfile->path);
 
-            if (networkSaveDnsmasqHostsfile(ipdef, dctx, false) == 0) {
-                virCommandAddArgPair(cmd, "--dhcp-hostsfile",
-                                     dctx->hostsfile->path);
-            }
             dnsmasqContextFree(dctx);
         }
 
@@ -631,12 +638,12 @@ cleanup:
     return ret;
 }
 
-static int
-networkStartDhcpDaemon(virNetworkObjPtr network)
+int
+networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdout,
+                                  char *pidfile)
 {
     virCommandPtr cmd = NULL;
-    char *pidfile = NULL;
-    int ret = -1, err, ii;
+    int ret = -1, ii;
     virNetworkIpDefPtr ipdef;
 
     network->dnsmasqPid = -1;
@@ -660,6 +667,28 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
      */
     if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
         return 0;
+
+    cmd = virCommandNew(DNSMASQ);
+    if (networkBuildDnsmasqArgv(network, ipdef, pidfile, cmd) < 0) {
+        goto cleanup;
+    }
+
+    if (cmdout)
+        *cmdout = cmd;
+    ret = 0;
+cleanup:
+    if (ret < 0)
+        virCommandFree(cmd);
+    return ret;
+}
+
+static int
+networkStartDhcpDaemon(virNetworkObjPtr network)
+{
+    virCommandPtr cmd = NULL;
+    char *pidfile = NULL;
+    int ret = -1;
+    int err;
 
     if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
         virReportSystemError(err,
@@ -686,10 +715,9 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    cmd = virCommandNew(DNSMASQ);
-    if (networkBuildDnsmasqArgv(network, ipdef, pidfile, cmd) < 0) {
+    ret = networkBuildDhcpDaemonCommandLine(network,&cmd, pidfile);
+    if (ret<  0)
         goto cleanup;
-    }
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -2208,11 +2236,9 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         }
     }
     if (ipv4def) {
-        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
+        dnsmasqContext* dctx = networkSaveDnsmasqHostsfile(ipv4def, network->def->name, true);
         if (dctx == NULL)
             goto cleanup;
-
-        networkSaveDnsmasqHostsfile(ipv4def, dctx, true);
         dnsmasqContextFree(dctx);
     }
 
