@@ -429,6 +429,14 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         goto err;
     }
 
+    /* Now that we have a label, load the profile into the kernel. */
+    if (load_profile(mgr, vm->def->seclabel.label, vm, NULL, false) < 0) {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot load AppArmor profile "
+                               "\'%s\'"), vm->def->seclabel.label);
+        goto err;
+    }
+
     rc = 0;
     goto clean;
 
@@ -450,16 +458,10 @@ AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
-    /* if the profile is not already loaded, then load one */
-    if (profile_loaded(vm->def->seclabel.label) < 0) {
-        if (load_profile(mgr, vm->def->seclabel.label, vm, stdin_path,
-                         false) < 0) {
-            virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot generate AppArmor profile "
-                                   "\'%s\'"), vm->def->seclabel.label);
-            return -1;
-        }
-    }
+    /* Reload the profile if stdin_path is specified. Note that
+       GenSecurityLabel() will have already been run. */
+    if (stdin_path)
+        return reload_profile(mgr, vm, stdin_path, true);
 
     return 0;
 }
