@@ -580,13 +580,13 @@ struct remote_domain_pin_vcpu_flags_args {
         } cpumap;
         u_int                      flags;
 };
-struct remote_domain_get_vcpupin_info_args {
+struct remote_domain_get_vcpu_pin_info_args {
         remote_nonnull_domain      dom;
         int                        ncpumaps;
         int                        maplen;
         u_int                      flags;
 };
-struct remote_domain_get_vcpupin_info_ret {
+struct remote_domain_get_vcpu_pin_info_ret {
         struct {
                 u_int              cpumaps_len;
                 char *             cpumaps_val;

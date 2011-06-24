@@ -7061,7 +7061,7 @@ error:
  * just live or both live and persistent state is changed.
  * Not all hypervisors can support all flag combinations.
  *
- * See also virDomainGetVcpupinInfo for querying this information.
+ * See also virDomainGetVcpuPinInfo for querying this information.
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
@@ -7112,7 +7112,7 @@ error:
 }
 
 /**
- * virDomainGetVcpupinInfo:
+ * virDomainGetVcpuPinInfo:
  * @domain: pointer to domain object, or NULL for Domain0
  * @ncpumaps: the number of cpumap (listed first to match virDomainGetVcpus)
  * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this
@@ -7136,7 +7136,7 @@ error:
  * -1 in case of failure.
  */
 int
-virDomainGetVcpupinInfo (virDomainPtr domain, int ncpumaps,
+virDomainGetVcpuPinInfo (virDomainPtr domain, int ncpumaps,
                          unsigned char *cpumaps, int maplen, unsigned int flags)
 {
     virConnectPtr conn;
@@ -7160,9 +7160,9 @@ virDomainGetVcpupinInfo (virDomainPtr domain, int ncpumaps,
 
     conn = domain->conn;
 
-    if (conn->driver->domainGetVcpupinInfo) {
+    if (conn->driver->domainGetVcpuPinInfo) {
         int ret;
-        ret = conn->driver->domainGetVcpupinInfo (domain, ncpumaps,
+        ret = conn->driver->domainGetVcpuPinInfo (domain, ncpumaps,
                                                   cpumaps, maplen, flags);
         if (ret < 0)
             goto error;
@@ -7197,7 +7197,7 @@ error:
  * and also in cpumaps if this pointer isn't NULL.  This call may fail
  * on an inactive domain.
  *
- * See also virDomainGetVcpupinInfo for querying just cpumaps, including on
+ * See also virDomainGetVcpuPinInfo for querying just cpumaps, including on
  * an inactive domain.
  *
  * Returns the number of info filled in case of success, -1 in case of failure.

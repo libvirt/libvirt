@@ -2142,7 +2142,7 @@ done:
 }
 
 static int
-remoteDomainGetVcpupinInfo (virDomainPtr domain,
+remoteDomainGetVcpuPinInfo (virDomainPtr domain,
                             int ncpumaps,
                             unsigned char *cpumaps,
                             int maplen,
@@ -2150,8 +2150,8 @@ remoteDomainGetVcpupinInfo (virDomainPtr domain,
 {
     int rv = -1;
     int i;
-    remote_domain_get_vcpupin_info_args args;
-    remote_domain_get_vcpupin_info_ret ret;
+    remote_domain_get_vcpu_pin_info_args args;
+    remote_domain_get_vcpu_pin_info_ret ret;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
@@ -2178,10 +2178,10 @@ remoteDomainGetVcpupinInfo (virDomainPtr domain,
 
     memset (&ret, 0, sizeof ret);
 
-    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_VCPUPIN_INFO,
-              (xdrproc_t) xdr_remote_domain_get_vcpupin_info_args,
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_VCPU_PIN_INFO,
+              (xdrproc_t) xdr_remote_domain_get_vcpu_pin_info_args,
               (char *) &args,
-              (xdrproc_t) xdr_remote_domain_get_vcpupin_info_ret,
+              (xdrproc_t) xdr_remote_domain_get_vcpu_pin_info_ret,
               (char *) &ret) == -1)
         goto done;
 
@@ -2207,7 +2207,7 @@ remoteDomainGetVcpupinInfo (virDomainPtr domain,
     rv = ret.num;
 
 cleanup:
-    xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpupin_info_ret, (char *) &ret);
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpu_pin_info_ret, (char *) &ret);
 
 done:
     remoteDriverUnlock(priv);
@@ -6465,7 +6465,7 @@ static virDriver remote_driver = {
     .domainGetVcpusFlags = remoteDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = remoteDomainPinVcpu, /* 0.3.0 */
     .domainPinVcpuFlags = remoteDomainPinVcpuFlags, /* 0.9.3 */
-    .domainGetVcpupinInfo = remoteDomainGetVcpupinInfo, /* 0.9.3 */
+    .domainGetVcpuPinInfo = remoteDomainGetVcpuPinInfo, /* 0.9.3 */
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */

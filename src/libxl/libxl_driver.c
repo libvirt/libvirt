@@ -2393,7 +2393,7 @@ libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
         goto cleanup;
     }
 
-    if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
+    if (virDomainVcpuPinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
         libxlError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("failed to update or add vcpupin xml"));
         goto cleanup;

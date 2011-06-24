@@ -2962,11 +2962,11 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
         }
     } else {
         if (info.state == VIR_DOMAIN_SHUTOFF &&
-            (ncpus = virDomainGetVcpupinInfo(dom, info.nrVirtCpu,
+            (ncpus = virDomainGetVcpuPinInfo(dom, info.nrVirtCpu,
                                              cpumaps, cpumaplen,
                                              VIR_DOMAIN_AFFECT_CONFIG)) >= 0) {
 
-            /* fallback plan to use virDomainGetVcpupinInfo */
+            /* fallback plan to use virDomainGetVcpuPinInfo */
 
             for (n = 0; n < ncpus; n++) {
                 vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
@@ -3015,7 +3015,7 @@ static const vshCmdOptDef opts_vcpupin[] = {
 };
 
 static bool
-cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
+cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
@@ -3101,7 +3101,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
             flags = VIR_DOMAIN_AFFECT_CURRENT;
 
         cpumaps = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
-        if ((ncpus = virDomainGetVcpupinInfo(dom, info.nrVirtCpu,
+        if ((ncpus = virDomainGetVcpuPinInfo(dom, info.nrVirtCpu,
                                              cpumaps, cpumaplen, flags)) >= 0) {
 
             vshPrint(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
@@ -11674,7 +11674,7 @@ static const vshCmdDef domManagementCmds[] = {
      info_update_device, 0},
     {"vcpucount", cmdVcpucount, opts_vcpucount, info_vcpucount, 0},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo, 0},
-    {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin, 0},
+    {"vcpupin", cmdVcpuPin, opts_vcpupin, info_vcpupin, 0},
     {"version", cmdVersion, opts_version, info_version, 0},
     {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay, 0},
     {NULL, NULL, NULL, NULL, 0}

@@ -981,7 +981,7 @@ virDomainClockDefClear(virDomainClockDefPtr def)
 }
 
 static void
-virDomainVcpupinDefFree(virDomainVcpupinDefPtr *def,
+virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr *def,
                         int nvcpupin)
 {
     int i;
@@ -1089,7 +1089,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virCPUDefFree(def->cpu);
 
-    virDomainVcpupinDefFree(def->cputune.vcpupin, def->cputune.nvcpupin);
+    virDomainVcpuPinDefFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
     VIR_FREE(def->numatune.memory.nodemask);
 
@@ -5647,13 +5647,13 @@ cleanup:
 }
 
 /* Parse the XML definition for a vcpupin */
-static virDomainVcpupinDefPtr
-virDomainVcpupinDefParseXML(const xmlNodePtr node,
+static virDomainVcpuPinDefPtr
+virDomainVcpuPinDefParseXML(const xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             int maxvcpus,
                             int flags ATTRIBUTE_UNUSED)
 {
-    virDomainVcpupinDefPtr def;
+    virDomainVcpuPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
     unsigned int vcpuid;
     char *tmp = NULL;
@@ -5895,13 +5895,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
 
     for (i = 0 ; i < n ; i++) {
-        virDomainVcpupinDefPtr vcpupin = NULL;
-        vcpupin = virDomainVcpupinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
+        virDomainVcpuPinDefPtr vcpupin = NULL;
+        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
 
         if (!vcpupin)
             goto error;
 
-        if (virDomainVcpupinIsDuplicate(def->cputune.vcpupin,
+        if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
                                         def->cputune.nvcpupin,
                                         vcpupin->vcpuid)) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -8118,7 +8118,7 @@ virDomainCpuSetParse(const char **str, char sep,
 /* Check if vcpupin with same vcpuid already exists.
  * Return 1 if exists, 0 if not. */
 int
-virDomainVcpupinIsDuplicate(virDomainVcpupinDefPtr *def,
+virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
                             int nvcpupin,
                             int vcpu)
 {
@@ -8135,8 +8135,8 @@ virDomainVcpupinIsDuplicate(virDomainVcpupinDefPtr *def,
     return 0;
 }
 
-virDomainVcpupinDefPtr
-virDomainVcpupinFindByVcpu(virDomainVcpupinDefPtr *def,
+virDomainVcpuPinDefPtr
+virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
                            int nvcpupin,
                            int vcpu)
 {
@@ -8154,13 +8154,13 @@ virDomainVcpupinFindByVcpu(virDomainVcpupinDefPtr *def,
 }
 
 int
-virDomainVcpupinAdd(virDomainDefPtr def,
+virDomainVcpuPinAdd(virDomainDefPtr def,
                     unsigned char *cpumap,
                     int maplen,
                     int vcpu)
 {
-    virDomainVcpupinDefPtr *vcpupin_list = NULL;
-    virDomainVcpupinDefPtr vcpupin = NULL;
+    virDomainVcpuPinDefPtr *vcpupin_list = NULL;
+    virDomainVcpuPinDefPtr vcpupin = NULL;
     char *cpumask = NULL;
     int i;
 
@@ -8202,10 +8202,10 @@ virDomainVcpupinAdd(virDomainDefPtr def,
 
         def->cputune.vcpupin = vcpupin_list;
     } else {
-        if (virDomainVcpupinIsDuplicate(def->cputune.vcpupin,
+        if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
                                         def->cputune.nvcpupin,
                                         vcpu)) {
-            vcpupin = virDomainVcpupinFindByVcpu(def->cputune.vcpupin,
+            vcpupin = virDomainVcpuPinFindByVcpu(def->cputune.vcpupin,
                                                  def->cputune.nvcpupin,
                                                  vcpu);
             vcpupin->vcpuid = vcpu;
@@ -8236,11 +8236,11 @@ cleanup:
 }
 
 int
-virDomainVcpupinDel(virDomainDefPtr def, int vcpu)
+virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
 {
     int n;
     bool deleted = false;
-    virDomainVcpupinDefPtr *vcpupin_list = def->cputune.vcpupin;
+    virDomainVcpuPinDefPtr *vcpupin_list = def->cputune.vcpupin;
 
     /* No vcpupin exists yet */
     if (!def->cputune.nvcpupin) {
@@ -8253,7 +8253,7 @@ virDomainVcpupinDel(virDomainDefPtr def, int vcpu)
             VIR_FREE(vcpupin_list[n]);
             memmove(&vcpupin_list[n],
                     &vcpupin_list[n+1],
-                    (def->cputune.nvcpupin - n - 1) * sizeof(virDomainVcpupinDef *));
+                    (def->cputune.nvcpupin - n - 1) * sizeof(virDomainVcpuPinDef *));
             deleted = true;
             break;
         }
@@ -8263,7 +8263,7 @@ virDomainVcpupinDel(virDomainDefPtr def, int vcpu)
         return 0;
 
     if (--def->cputune.nvcpupin == 0) {
-        virDomainVcpupinDefFree(def->cputune.vcpupin, 0);
+        virDomainVcpuPinDefFree(def->cputune.vcpupin, 0);
     } else {
         if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin) < 0) {
             virReportOOMError();

@@ -903,14 +903,14 @@ struct remote_domain_pin_vcpu_flags_args {
     unsigned int flags;
 };
 
-struct remote_domain_get_vcpupin_info_args {
+struct remote_domain_get_vcpu_pin_info_args {
     remote_nonnull_domain dom;
     int ncpumaps;
     int maplen;
     unsigned int flags;
 };
 
-struct remote_domain_get_vcpupin_info_ret {
+struct remote_domain_get_vcpu_pin_info_ret {
     opaque cpumaps<REMOTE_CPUMAPS_MAX>;
     int num;
 };
@@ -2392,7 +2392,7 @@ enum remote_procedure {
     REMOTE_PROC_NODE_GET_CPU_STATS = 227, /* skipgen skipgen */
     REMOTE_PROC_NODE_GET_MEMORY_STATS = 228, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_GET_CONTROL_INFO = 229, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_VCPUPIN_INFO = 230  /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_VCPU_PIN_INFO = 230  /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

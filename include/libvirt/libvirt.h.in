@@ -1266,7 +1266,7 @@ int                     virDomainPinVcpuFlags   (virDomainPtr domain,
                                                  int maplen,
                                                  unsigned int flags);
 
-int                     virDomainGetVcpupinInfo (virDomainPtr domain,
+int                     virDomainGetVcpuPinInfo (virDomainPtr domain,
                                                  int ncpumaps,
                                                  unsigned char *cpumaps,
                                                  int maplen,

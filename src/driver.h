@@ -240,7 +240,7 @@ typedef int
                                          int maplen,
                                          unsigned int flags);
 typedef int
-        (*virDrvDomainGetVcpupinInfo)   (virDomainPtr domain,
+        (*virDrvDomainGetVcpuPinInfo)   (virDomainPtr domain,
                                          int ncpumaps,
                                          unsigned char *cpumaps,
                                          int maplen,
@@ -713,7 +713,7 @@ struct _virDriver {
     virDrvDomainGetVcpusFlags		domainGetVcpusFlags;
     virDrvDomainPinVcpu		domainPinVcpu;
     virDrvDomainPinVcpuFlags    domainPinVcpuFlags;
-    virDrvDomainGetVcpupinInfo  domainGetVcpupinInfo;
+    virDrvDomainGetVcpuPinInfo  domainGetVcpuPinInfo;
     virDrvDomainGetVcpus		domainGetVcpus;
     virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
     virDrvDomainGetSecurityLabel     domainGetSecurityLabel;

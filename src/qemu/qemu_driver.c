@@ -3109,14 +3109,14 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
         }
 
         if (canResetting) {
-            if (virDomainVcpupinDel(vm->def, vcpu) < 0) {
+            if (virDomainVcpuPinDel(vm->def, vcpu) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("failed to delete vcpupin xml of "
                                   "a running domain"));
                 goto cleanup;
             }
         } else {
-            if (virDomainVcpupinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
+            if (virDomainVcpuPinAdd(vm->def, cpumap, maplen, vcpu) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("failed to update or add vcpupin xml of "
                                   "a running domain"));
@@ -3129,14 +3129,14 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
 
         if (canResetting) {
-            if (virDomainVcpupinDel(persistentDef, vcpu) < 0) {
+            if (virDomainVcpuPinDel(persistentDef, vcpu) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("failed to delete vcpupin xml of "
                                   "a persistent domain"));
                 goto cleanup;
             }
         } else {
-            if (virDomainVcpupinAdd(persistentDef, cpumap, maplen, vcpu) < 0) {
+            if (virDomainVcpuPinAdd(persistentDef, cpumap, maplen, vcpu) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("failed to update or add vcpupin xml of "
                                   "a persistent domain"));
@@ -3166,7 +3166,7 @@ qemudDomainPinVcpu(virDomainPtr dom,
 }
 
 static int
-qemudDomainGetVcpupinInfo(virDomainPtr dom,
+qemudDomainGetVcpuPinInfo(virDomainPtr dom,
                           int ncpumaps,
                           unsigned char *cpumaps,
                           int maplen,
@@ -3180,7 +3180,7 @@ qemudDomainGetVcpupinInfo(virDomainPtr dom,
     bool isActive;
     int maxcpu, hostcpus, vcpu, pcpu;
     int n;
-    virDomainVcpupinDefPtr *vcpupin_list;
+    virDomainVcpuPinDefPtr *vcpupin_list;
     char *cpumask = NULL;
     unsigned char *cpumap;
 
@@ -8446,7 +8446,7 @@ static virDriver qemuDriver = {
     .domainGetVcpusFlags = qemudDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = qemudDomainPinVcpu, /* 0.4.4 */
     .domainPinVcpuFlags = qemudDomainPinVcpuFlags, /* 0.9.3 */
-    .domainGetVcpupinInfo = qemudDomainGetVcpupinInfo, /* 0.9.3 */
+    .domainGetVcpuPinInfo = qemudDomainGetVcpuPinInfo, /* 0.9.3 */
     .domainGetVcpus = qemudDomainGetVcpus, /* 0.4.4 */
     .domainGetMaxVcpus = qemudDomainGetMaxVcpus, /* 0.4.4 */
     .domainGetSecurityLabel = qemudDomainGetSecurityLabel, /* 0.6.1 */

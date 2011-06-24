@@ -1101,18 +1101,18 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
 int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
                                 virDomainSnapshotObjListPtr snapshots);
 
-typedef struct _virDomainVcpupinDef virDomainVcpupinDef;
-typedef virDomainVcpupinDef *virDomainVcpupinDefPtr;
-struct _virDomainVcpupinDef {
+typedef struct _virDomainVcpuPinDef virDomainVcpuPinDef;
+typedef virDomainVcpuPinDef *virDomainVcpuPinDefPtr;
+struct _virDomainVcpuPinDef {
     int vcpuid;
     char *cpumask;
 };
 
-int virDomainVcpupinIsDuplicate(virDomainVcpupinDefPtr *def,
+int virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
                                 int nvcpupin,
                                 int vcpu);
 
-virDomainVcpupinDefPtr virDomainVcpupinFindByVcpu(virDomainVcpupinDefPtr *def,
+virDomainVcpuPinDefPtr virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
                                                   int nvcpupin,
                                                   int vcpu);
 
@@ -1171,7 +1171,7 @@ struct _virDomainDef {
     struct {
         unsigned long shares;
         int nvcpupin;
-        virDomainVcpupinDefPtr *vcpupin;
+        virDomainVcpuPinDefPtr *vcpupin;
     } cputune;
 
     virDomainNumatuneDef numatune;
@@ -1406,12 +1406,12 @@ int virDomainCpuSetParse(const char **str,
 char *virDomainCpuSetFormat(char *cpuset,
                             int maxcpu);
 
-int virDomainVcpupinAdd(virDomainDefPtr def,
+int virDomainVcpuPinAdd(virDomainDefPtr def,
                         unsigned char *cpumap,
                         int maplen,
                         int vcpu);
 
-int virDomainVcpupinDel(virDomainDefPtr def, int vcpu);
+int virDomainVcpuPinDel(virDomainDefPtr def, int vcpu);
 
 int virDomainDiskIndexByName(virDomainDefPtr def, const char *name);
 int virDomainDiskInsert(virDomainDefPtr def,

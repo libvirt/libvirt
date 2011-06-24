@@ -1048,13 +1048,13 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainGetVcpupinInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainGetVcpuPinInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
                                    struct qemud_client *client ATTRIBUTE_UNUSED,
                                    virConnectPtr conn,
                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
                                    remote_error *rerr,
-                                   remote_domain_get_vcpupin_info_args *args,
-                                   remote_domain_get_vcpupin_info_ret *ret)
+                                   remote_domain_get_vcpu_pin_info_args *args,
+                                   remote_domain_get_vcpu_pin_info_ret *ret)
 {
     virDomainPtr dom = NULL;
     unsigned char *cpumaps = NULL;
@@ -1085,7 +1085,7 @@ remoteDispatchDomainGetVcpupinInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
         VIR_ALLOC_N(cpumaps, args->ncpumaps * args->maplen) < 0)
         goto no_memory;
 
-    if ((num = virDomainGetVcpupinInfo(dom,
+    if ((num = virDomainGetVcpuPinInfo(dom,
                                        args->ncpumaps,
                                        cpumaps,
                                        args->maplen,
