@@ -7061,6 +7061,8 @@ error:
  * just live or both live and persistent state is changed.
  * Not all hypervisors can support all flag combinations.
  *
+ * See also virDomainGetVcpupinInfo for querying this information.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  *
  */
@@ -7110,6 +7112,71 @@ error:
 }
 
 /**
+ * virDomainGetVcpupinInfo:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @ncpumaps: the number of cpumap (listed first to match virDomainGetVcpus)
+ * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this
+ *     domain (in 8-bit bytes) (OUT)
+ *     It's assumed there is <ncpumaps> cpumap in cpumaps array.
+ *     The memory allocated to cpumaps must be (ncpumaps * maplen) bytes
+ *     (ie: calloc(ncpumaps, maplen)).
+ *     One cpumap inside cpumaps has the format described in
+ *     virDomainPinVcpu() API.
+ *     Must not be NULL.
+ * @maplen: the number of bytes in one cpumap, from 1 up to size of CPU map.
+ *     Must be positive.
+ * @flags: an OR'ed set of virDomainModificationImpact
+ *     Must not be VIR_DOMAIN_AFFECT_LIVE and
+ *     VIR_DOMAIN_AFFECT_CONFIG concurrently.
+ *
+ * Query the CPU affinity setting of all virtual CPUs of domain, store it
+ * in cpumaps.
+ *
+ * Returns the number of virtual CPUs in case of success,
+ * -1 in case of failure.
+ */
+int
+virDomainGetVcpupinInfo (virDomainPtr domain, int ncpumaps,
+                         unsigned char *cpumaps, int maplen, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "ncpumaps=%d, cpumaps=%p, maplen=%d, flags=%u",
+                     ncpumaps, cpumaps, maplen, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (ncpumaps < 1 || !cpumaps || maplen <= 0 ||
+        INT_MULTIPLY_OVERFLOW(ncpumaps, maplen)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetVcpupinInfo) {
+        int ret;
+        ret = conn->driver->domainGetVcpupinInfo (domain, ncpumaps,
+                                                  cpumaps, maplen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainGetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0
  * @info: pointer to an array of virVcpuInfo structures (OUT)
@@ -7127,7 +7194,11 @@ error:
  *	Must be zero when cpumaps is NULL and positive when it is non-NULL.
  *
  * Extract information about virtual CPUs of domain, store it in info array
- * and also in cpumaps if this pointer isn't NULL.
+ * and also in cpumaps if this pointer isn't NULL.  This call may fail
+ * on an inactive domain.
+ *
+ * See also virDomainGetVcpupinInfo for querying just cpumaps, including on
+ * an inactive domain.
  *
  * Returns the number of info filled in case of success, -1 in case of failure.
  */
