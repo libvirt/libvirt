@@ -423,10 +423,10 @@ skip_function = (
 )
 
 # Generate C code, but skip python impl
-function_skip_python_impl = {
+function_skip_python_impl = (
     "virStreamFree", # Needed in custom virStream __del__, but free shouldn't
                      # be exposed in bindings
-}
+)
 
 function_skip_index_one = (
     "virDomainRevertToSnapshot",
