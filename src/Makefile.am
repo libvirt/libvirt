@@ -570,7 +570,7 @@ $(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 
 endif WITH_REMOTE
 
-%protocol.c: %protocol.x %protocol.h $(srcdir)/remote/rpcgen_fix.pl
+%protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
 	       $< $@
 
@@ -1194,6 +1194,10 @@ EXTRA_DIST += \
        rpc/gendispatch.pl \
        rpc/genprotocol.pl
 
+VIR_NET_RPC_GENERATED = rpc/virnetprotocol.h rpc/virnetprotocol.c
+
+rpc/virnetmessage.h: $(VIR_NET_RPC_GENERATED)
+
 libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \
 	rpc/virnetprotocol.h rpc/virnetprotocol.c \
@@ -1411,4 +1415,4 @@ endif
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES = $(BUILT_SOURCES)
-MAINTAINERCLEANFILES = $(REMOTE_DRIVER_GENERATED)
+MAINTAINERCLEANFILES = $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED)
