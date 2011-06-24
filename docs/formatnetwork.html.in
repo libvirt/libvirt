@@ -184,6 +184,14 @@
             or commas. value is a single string that can contain multiple values
             separated by commas. <span class="since">Since 0.9.3</span>
           </dd>
+          <dt><code>host</code></dt>
+          <dd>The <code>host</code> element within <code>dns</code> is the
+            definition of DNS hosts to be passed to the DNS service. The IP
+            address is identified by the <code>ip</code> attribute and the names
+            for that IP address are identified in the <code>hostname</code>
+            sub-elements of the <code>host</code> element.
+            <span class="since">Since 0.9.3</span>
+          </dd>
         </dl>
       </dd>
       <dt><code>dhcp</code></dt>

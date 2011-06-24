@@ -1,0 +1,1 @@
+/usr/sbin/dnsmasq --strict-order --bind-interfaces --conf-file= --except-interface lo --listen-address 192.168.122.1 --addn-hosts=/var/lib/libvirt/dnsmasq/default.addnhosts

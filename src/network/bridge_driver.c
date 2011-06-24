@@ -435,10 +435,11 @@ networkShutdown(void) {
 
 static dnsmasqContext*
 networkSaveDnsmasqHostsfile(virNetworkIpDefPtr ipdef,
+                            virNetworkDNSDefPtr dnsdef,
                             char *name,
                             bool force)
 {
-    unsigned int i;
+    unsigned int i, j;
 
     dnsmasqContext *dctx = dnsmasqContextNew(name,
                                              DNSMASQ_STATE_DIR);
@@ -447,13 +448,22 @@ networkSaveDnsmasqHostsfile(virNetworkIpDefPtr ipdef,
         goto cleanup;
     }
 
-    if (! force && virFileExists(dctx->hostsfile->path))
-        return 0;
+    if (!(! force && virFileExists(dctx->hostsfile->path))) {
+        for (i = 0; i < ipdef->nhosts; i++) {
+            virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
+            if ((host->mac) && VIR_SOCKET_HAS_ADDR(&host->ip))
+                dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name);
+        }
+    }
 
-    for (i = 0; i < ipdef->nhosts; i++) {
-        virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
-        if ((host->mac) && VIR_SOCKET_HAS_ADDR(&host->ip))
-            dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name);
+    if (dnsdef) {
+        for (i = 0; i < dnsdef->nhosts; i++) {
+            virNetworkDNSHostsDefPtr host = &(dnsdef->hosts[i]);
+            if (VIR_SOCKET_HAS_ADDR(&host->ip)) {
+                for (j = 0; j < host->nnames; j++)
+                    dnsmasqAddHost(dctx, &host->ip, host->names[j]);
+            }
+        }
     }
 
     if (dnsmasqSave(dctx) < 0)
@@ -604,7 +614,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         if (ipdef->nranges || ipdef->nhosts)
             virCommandAddArg(cmd, "--dhcp-no-override");
 
-            if ((dctx = networkSaveDnsmasqHostsfile(ipdef, network->def->name, false))) {
+            if ((dctx = networkSaveDnsmasqHostsfile(ipdef, network->def->dns, network->def->name, false))) {
                 if (dctx->hostsfile->nhosts)
                     virCommandAddArgPair(cmd, "--dhcp-hostsfile",
                                          dctx->hostsfile->path);
@@ -2239,7 +2249,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         }
     }
     if (ipv4def) {
-        dnsmasqContext* dctx = networkSaveDnsmasqHostsfile(ipv4def, network->def->name, true);
+        dnsmasqContext* dctx = networkSaveDnsmasqHostsfile(ipv4def, network->def->dns, network->def->name, true);
         if (dctx == NULL)
             goto cleanup;
         dnsmasqContextFree(dctx);

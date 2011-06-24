@@ -97,6 +97,14 @@
                   <attribute name="value"><text/></attribute>
                 </element>
               </zeroOrMore>
+              <zeroOrMore>
+                <element name="host">
+                  <attribute name="ip"><ref name="ipv4-addr"/></attribute>
+                  <oneOrMore>
+                    <element name="hostname"><text/></element>
+                  </oneOrMore>
+                </element>
+              </zeroOrMore>
             </element>
         </optional>
 

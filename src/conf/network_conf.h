@@ -64,9 +64,19 @@ struct _virNetworkDNSTxtRecordsDef {
     char *value;
 };
 
+struct virNetworkDNSHostsDef {
+    virSocketAddr ip;
+    int nnames;
+    char **names;
+} virNetworkDNSHostsDef;
+
+typedef struct virNetworkDNSHostsDef *virNetworkDNSHostsDefPtr;
+
 struct virNetworkDNSDef {
     unsigned int ntxtrecords;
     virNetworkDNSTxtRecordsDefPtr txtrecords;
+    unsigned int nhosts;
+    virNetworkDNSHostsDefPtr hosts;
 } virNetworkDNSDef;
 
 typedef struct virNetworkDNSDef *virNetworkDNSDefPtr;

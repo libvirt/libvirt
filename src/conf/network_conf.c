@@ -114,6 +114,14 @@ static void virNetworkDNSDefFree(virNetworkDNSDefPtr def)
             }
             VIR_FREE(def->txtrecords);
         }
+        if (def->nhosts) {
+            while (def->nhosts--) {
+                while (def->hosts[def->nhosts].nnames--)
+                    VIR_FREE(def->hosts[def->nhosts].names[def->hosts[def->nhosts].nnames]);
+                VIR_FREE(def->hosts[def->nhosts].names);
+            }
+            VIR_FREE(def->hosts);
+        }
         VIR_FREE(def);
     }
 }
@@ -451,6 +459,71 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
 }
 
 static int
+virNetworkDNSHostsDefParseXML(virNetworkDNSDefPtr def,
+                              xmlNodePtr node)
+{
+    xmlNodePtr cur;
+    char *ip;
+    virSocketAddr inaddr;
+    int ret = -1;
+
+    if (def->hosts == NULL) {
+        if (VIR_ALLOC(def->hosts) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+        def->nhosts = 0;
+    }
+
+    if (!(ip = virXMLPropString(node, "ip")) ||
+        (virSocketParseAddr(ip, &inaddr, AF_UNSPEC) < 0)) {
+        virNetworkReportError(VIR_ERR_XML_DETAIL,
+                              _("Missing IP address in DNS host definition"));
+        VIR_FREE(ip);
+        goto error;
+    }
+    VIR_FREE(ip);
+
+    if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    def->hosts[def->nhosts].ip = inaddr;
+    def->hosts[def->nhosts].nnames = 0;
+
+    if (VIR_ALLOC(def->hosts[def->nhosts].names) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "hostname")) {
+              if (cur->children != NULL) {
+                  if (VIR_REALLOC_N(def->hosts[def->nhosts].names, def->hosts[def->nhosts].nnames + 1) < 0) {
+                      virReportOOMError();
+                      goto error;
+                  }
+
+                  def->hosts[def->nhosts].names[def->hosts[def->nhosts].nnames] = strdup((char *)cur->children->content);
+                  def->hosts[def->nhosts].nnames++;
+              }
+        }
+
+        cur = cur->next;
+    }
+
+    def->nhosts++;
+
+    ret = 0;
+
+error:
+    return ret;
+}
+
+static int
 virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
                          xmlNodePtr node)
 {
@@ -496,6 +569,11 @@ virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
             def->ntxtrecords++;
             name = NULL;
             value = NULL;
+        } else if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "host")) {
+            ret = virNetworkDNSHostsDefParseXML(def, cur);
+            if (ret < 0)
+                goto error;
         }
 
         cur = cur->next;
@@ -852,6 +930,22 @@ virNetworkDNSDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "    <txt name='%s' value='%s' />\n",
                               def->txtrecords[i].name,
                               def->txtrecords[i].value);
+    }
+
+    if (def->nhosts) {
+        int ii, j;
+
+        for (ii = 0 ; ii < def->nhosts; ii++) {
+            char *ip = virSocketFormatAddr(&def->hosts[ii].ip);
+
+            virBufferAsprintf(buf, "    <host ip='%s'>\n", ip);
+
+            for (j = 0; j < def->hosts[ii].nnames; j++)
+                virBufferAsprintf(buf, "      <hostname>%s</hostname>\n",
+                                               def->hosts[ii].names[j]);
+
+            virBufferAsprintf(buf, "    </host>\n");
+        }
     }
 
     virBufferAddLit(buf, "  </dns>\n");
