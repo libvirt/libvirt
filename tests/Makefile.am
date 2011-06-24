@@ -50,6 +50,7 @@ EXTRA_DIST =		\
 	networkschematest \
 	networkxml2xmlin \
 	networkxml2xmlout \
+	networkxml2argvdata \
 	nodedevschemadata \
 	nodedevschematest \
 	nodeinfodata     \
@@ -112,6 +113,8 @@ check_PROGRAMS += object-locking
 endif
 
 check_PROGRAMS += networkxml2xmltest
+
+check_PROGRAMS += networkxml2argvtest
 
 check_PROGRAMS += nwfilterxml2xmltest
 
@@ -225,6 +228,8 @@ TESTS += eventtest
 endif
 
 TESTS += networkxml2xmltest
+
+TESTS += networkxml2argvtest
 
 TESTS += storagevolxml2xmltest storagepoolxml2xmltest
 
@@ -352,6 +357,11 @@ networkxml2xmltest_SOURCES = \
 	networkxml2xmltest.c \
 	testutils.c testutils.h
 networkxml2xmltest_LDADD = $(LDADDS)
+
+networkxml2argvtest_SOURCES = \
+	networkxml2argvtest.c \
+	testutils.c testutils.h
+networkxml2argvtest_LDADD = ../src/libvirt_driver_network.la $(LDADDS)
 
 nwfilterxml2xmltest_SOURCES = \
 	nwfilterxml2xmltest.c \
