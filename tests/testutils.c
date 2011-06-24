@@ -406,7 +406,7 @@ int virtTestDifferenceBin(FILE *stream,
             }
         }
     }
-    /* Round to nearest boundary of 4, except that last world can be short */
+    /* Round to nearest boundary of 4, except that last word can be short */
     start -= (start % 4);
     end += 4 - (end % 4);
     if (end >= length)

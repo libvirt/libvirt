@@ -922,7 +922,7 @@ xenParseSxprPCI(virDomainDefPtr def,
      * )
      *
      * Normally there is one (device ...) block per device, but in
-     * wierd world of Xen PCI, once (device ...) covers multiple
+     * weird world of Xen PCI, once (device ...) covers multiple
      * devices.
      */
 

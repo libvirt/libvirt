@@ -48,7 +48,7 @@ let driverTables = [
   "virNetworkDriver";
   "virStorageDriver";
   "virDeviceMonitor";
-(*  "virStateDriver"; Disable for now, since shutdown/startup have wierd locking rules *)
+(*  "virStateDriver"; Disable for now, since shutdown/startup have weird locking rules *)
 ]
 
 (*
