@@ -89,6 +89,19 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
         VIR_FREE(def->processor[i].processor_part_number);
     }
     VIR_FREE(def->processor);
+    for (i = 0;i < def->nmemory;i++) {
+        VIR_FREE(def->memory[i].memory_size);
+        VIR_FREE(def->memory[i].memory_form_factor);
+        VIR_FREE(def->memory[i].memory_locator);
+        VIR_FREE(def->memory[i].memory_bank_locator);
+        VIR_FREE(def->memory[i].memory_type);
+        VIR_FREE(def->memory[i].memory_type_detail);
+        VIR_FREE(def->memory[i].memory_speed);
+        VIR_FREE(def->memory[i].memory_manufacturer);
+        VIR_FREE(def->memory[i].memory_serial_number);
+        VIR_FREE(def->memory[i].memory_part_number);
+    }
+    VIR_FREE(def->memory);
 
     VIR_FREE(def);
 }
@@ -309,6 +322,104 @@ no_memory:
     return NULL;
 }
 
+static char *
+parseMemoryDeviceInfo(char *base, virSysinfoDefPtr ret)
+{
+    char *cur, *eol, *tmp_base;
+    virMemoryDeviceinfoDefPtr memory;
+
+    while ((tmp_base = strstr(base, "Memory Device")) != NULL) {
+        base = tmp_base;
+
+        if (VIR_EXPAND_N(ret->memory, ret->nmemory, 1) < 0) {
+            goto no_memory;
+        }
+        memory = &ret->memory[ret->nmemory - 1];
+
+        if ((cur = strstr(base, "Size: ")) != NULL) {
+            cur += 6;
+            eol = strchr(cur, '\n');
+            if (STREQLEN(cur, "No Module Installed", eol - cur))
+                goto next;
+
+            if ((eol) &&
+                ((memory->memory_size = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Form Factor: ")) != NULL) {
+            cur += 13;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_form_factor = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Locator: ")) != NULL) {
+            cur += 9;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_locator = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Bank Locator: ")) != NULL) {
+            cur += 14;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_bank_locator = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Type: ")) != NULL) {
+            cur += 6;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_type = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Type Detail: ")) != NULL) {
+            cur += 13;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_type_detail = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Speed: ")) != NULL) {
+            cur += 7;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_speed = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
+            cur += 14;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_manufacturer = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Serial Number: ")) != NULL) {
+            cur += 15;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_serial_number = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "Part Number: ")) != NULL) {
+            cur += 13;
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((memory->memory_part_number = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+
+    next:
+        base = eol + 1;
+    }
+
+    return base;
+
+no_memory:
+    return NULL;
+}
+
 virSysinfoDefPtr
 virSysinfoRead(void) {
     char *path, *base;
@@ -324,7 +435,7 @@ virSysinfoRead(void) {
         return NULL;
     }
 
-    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,4", NULL);
+    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,4,17", NULL);
     VIR_FREE(path);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0) {
@@ -350,6 +461,11 @@ virSysinfoRead(void) {
     ret->nprocessor = 0;
     ret->processor = NULL;
     if ((base = parseProcessorInfo(base, ret)) == NULL)
+        goto no_memory;
+
+    ret->nmemory = 0;
+    ret->memory = NULL;
+    if ((base = parseMemoryDeviceInfo(base, ret)) == NULL)
         goto no_memory;
 
 cleanup:
@@ -558,6 +674,94 @@ ProcessorInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
     return;
 }
 
+static void
+MemoryDeviceInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+{
+    int i;
+    int len = strlen(prefix);
+    virMemoryDeviceinfoDefPtr memory;
+
+    for (i = 0; i < def->nmemory; i++) {
+        memory = &def->memory[i];
+
+        if ((memory->memory_size != NULL) ||
+            (memory->memory_form_factor != NULL) ||
+            (memory->memory_locator != NULL) ||
+            (memory->memory_bank_locator != NULL) ||
+            (memory->memory_type != NULL) ||
+            (memory->memory_type_detail != NULL) ||
+            (memory->memory_speed != NULL) ||
+            (memory->memory_manufacturer != NULL) ||
+            (memory->memory_serial_number != NULL) ||
+            (memory->memory_part_number != NULL)) {
+            virBufferAsprintf(buf, "%s  <memory_device>\n", prefix);
+            if (memory->memory_size != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='size'>%s</entry>\n",
+                                      memory->memory_size);
+            }
+            if (memory->memory_form_factor != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='form_factor'>%s</entry>\n",
+                                      memory->memory_form_factor);
+            }
+            if (memory->memory_locator != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='locator'>%s</entry>\n",
+                                      memory->memory_locator);
+            }
+            if (memory->memory_bank_locator != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='bank_locator'>%s</entry>\n",
+                                      memory->memory_bank_locator);
+            }
+            if (memory->memory_type != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='type'>%s</entry>\n",
+                                      memory->memory_type);
+            }
+            if (memory->memory_type_detail != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='type_detail'>%s</entry>\n",
+                                      memory->memory_type_detail);
+            }
+            if (memory->memory_speed != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='speed'>%s</entry>\n",
+                                      memory->memory_speed);
+            }
+            if (memory->memory_manufacturer != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='manufacturer'>%s</entry>\n",
+                                      memory->memory_manufacturer);
+            }
+            if (memory->memory_serial_number != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='serial_number'>%s</entry>\n",
+                                      memory->memory_serial_number);
+            }
+            if (memory->memory_part_number != NULL) {
+                virBufferAdd(buf, prefix, len);
+                virBufferEscapeString(buf,
+                                      "    <entry name='part_number'>%s</entry>\n",
+                                      memory->memory_part_number);
+            }
+            virBufferAsprintf(buf, "%s  </memory_device>\n", prefix);
+        }
+    }
+
+    return;
+}
+
 /**
  * virSysinfoFormat:
  * @def: structure to convert to xml string
@@ -584,6 +788,7 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
     BIOSInfoFormat(def, prefix, &buf);
     SystemInfoFormat(def, prefix, &buf);
     ProcessorInfoFormat(def, prefix, &buf);
+    MemoryDeviceInfoFormat(def, prefix, &buf);
 
     virBufferAsprintf(&buf, "%s</sysinfo>\n", prefix);
 

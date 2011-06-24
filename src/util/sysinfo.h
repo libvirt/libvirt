@@ -49,6 +49,21 @@ struct _virProcessorinfoDef {
     char *processor_part_number;
 };
 
+typedef struct _virMemoryDeviceinfoDef virMemoryDeviceinfoDef;
+typedef virMemoryDeviceinfoDef *virMemoryDeviceinfoDefPtr;
+struct _virMemoryDeviceinfoDef {
+    char *memory_size;
+    char *memory_form_factor;
+    char *memory_locator;
+    char *memory_bank_locator;
+    char *memory_type;
+    char *memory_type_detail;
+    char *memory_speed;
+    char *memory_manufacturer;
+    char *memory_serial_number;
+    char *memory_part_number;
+};
+
 typedef struct _virSysinfoDef virSysinfoDef;
 typedef virSysinfoDef *virSysinfoDefPtr;
 struct _virSysinfoDef {
@@ -69,6 +84,9 @@ struct _virSysinfoDef {
 
     size_t nprocessor;
     virProcessorinfoDefPtr processor;
+
+    size_t nmemory;
+    virMemoryDeviceinfoDefPtr memory;
 };
 
 virSysinfoDefPtr virSysinfoRead(void);
