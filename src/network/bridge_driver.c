@@ -608,6 +608,9 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                 if (dctx->hostsfile->nhosts)
                     virCommandAddArgPair(cmd, "--dhcp-hostsfile",
                                          dctx->hostsfile->path);
+                if (dctx->addnhostsfile->nhosts)
+                    virCommandAddArgPair(cmd, "--addn-hosts",
+                                         dctx->addnhostsfile->path);
 
             dnsmasqContextFree(dctx);
         }

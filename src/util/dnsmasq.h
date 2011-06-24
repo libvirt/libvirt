@@ -44,7 +44,24 @@ typedef struct
 
 typedef struct
 {
-    dnsmasqHostsfile *hostsfile;
+    unsigned int    nhostnames;
+    char            *ip;
+    char            **hostnames;
+
+} dnsmasqAddnHost;
+
+typedef struct
+{
+    unsigned int     nhosts;
+    dnsmasqAddnHost *hosts;
+
+    char            *path;  /* Absolute path of dnsmasq's hostsfile. */
+} dnsmasqAddnHostsfile;
+
+typedef struct
+{
+    dnsmasqHostsfile     *hostsfile;
+    dnsmasqAddnHostsfile *addnhostsfile;
 } dnsmasqContext;
 
 dnsmasqContext * dnsmasqContextNew(const char *network_name,
@@ -54,6 +71,9 @@ void             dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                                     const char *mac,
                                     virSocketAddr *ip,
                                     const char *name);
+void             dnsmasqAddHost(dnsmasqContext *ctx,
+                                virSocketAddr *ip,
+                                const char *name);
 int              dnsmasqSave(const dnsmasqContext *ctx);
 int              dnsmasqDelete(const dnsmasqContext *ctx);
 int              dnsmasqReload(pid_t pid);

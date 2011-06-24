@@ -194,6 +194,7 @@ virUnrefStream;
 
 # dnsmasq.h
 dnsmasqAddDhcpHost;
+dnsmasqAddHost;
 dnsmasqContextFree;
 dnsmasqContextNew;
 dnsmasqDelete;
