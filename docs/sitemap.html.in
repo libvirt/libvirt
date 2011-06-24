@@ -73,6 +73,10 @@
                 <span>Firewall and network filter configuration</span>
               </li>
               <li>
+                <a href="locking.html">Disk locking</a>
+                <span>Ensuring exclusive guest access to disks</span>
+              </li>
+              <li>
                 <a href="hooks.html">Hooks</a>
                 <span>Hooks for system specific management</span>
               </li>
