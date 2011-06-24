@@ -87,6 +87,19 @@
           </element>
         </optional>
 
+        <!-- Define the DNS related elements like TXT records
+             and other features in the <dns> element -->
+        <optional>
+            <element name="dns">
+              <zeroOrMore>
+                <element name="txt">
+                  <attribute name="name"><ref name="dns-name"/></attribute>
+                  <attribute name="value"><text/></attribute>
+                </element>
+              </zeroOrMore>
+            </element>
+        </optional>
+
         <!-- <ip> element -->
         <zeroOrMore>
           <!-- The IP element sets up NAT'ing and an optional DHCP server
@@ -180,6 +193,13 @@
   <define name='mac-addr'>
     <data type='string'>
       <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
+    </data>
+  </define>
+
+  <!-- a valid DNS name -->
+  <define name='dns-name'>
+    <data type='string'>
+      <param name="pattern">([a-zA-Z\-]+)</param>
     </data>
   </define>
 

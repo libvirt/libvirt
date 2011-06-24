@@ -510,6 +510,24 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     if (network->def->forwardType == VIR_NETWORK_FORWARD_NONE)
         virCommandAddArg(cmd, "--dhcp-option=3");
 
+    if (network->def->dns != NULL) {
+        virNetworkDNSDefPtr dns = network->def->dns;
+        int i;
+
+        for (i = 0; i < dns->ntxtrecords; i++) {
+            char *record = NULL;
+            if (virAsprintf(&record, "%s,%s",
+                            dns->txtrecords[i].name,
+                            dns->txtrecords[i].value) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            virCommandAddArgPair(cmd, "--txt-record", record);
+            VIR_FREE(record);
+        }
+    }
+
     /*
      * --interface does not actually work with dnsmasq < 2.47,
      * due to DAD for ipv6 addresses on the interface.

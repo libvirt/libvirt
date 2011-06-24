@@ -104,6 +104,20 @@ static void virNetworkIpDefClear(virNetworkIpDefPtr def)
     VIR_FREE(def->bootfile);
 }
 
+static void virNetworkDNSDefFree(virNetworkDNSDefPtr def)
+{
+    if (def) {
+        if (def->txtrecords) {
+            while (def->ntxtrecords--) {
+                VIR_FREE(def->txtrecords[def->ntxtrecords].name);
+                VIR_FREE(def->txtrecords[def->ntxtrecords].value);
+            }
+            VIR_FREE(def->txtrecords);
+        }
+        VIR_FREE(def);
+    }
+}
+
 void virNetworkDefFree(virNetworkDefPtr def)
 {
     int ii;
@@ -120,6 +134,8 @@ void virNetworkDefFree(virNetworkDefPtr def)
         virNetworkIpDefClear(&def->ips[ii]);
     }
     VIR_FREE(def->ips);
+
+    virNetworkDNSDefFree(def->dns);
 
     VIR_FREE(def);
 }
@@ -435,6 +451,69 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
 }
 
 static int
+virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
+                         xmlNodePtr node)
+{
+    xmlNodePtr cur;
+    int ret = -1;
+    char *name = NULL;
+    char *value = NULL;
+    virNetworkDNSDefPtr def = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "txt")) {
+            if (!(name = virXMLPropString(cur, "name"))) {
+                virNetworkReportError(VIR_ERR_XML_DETAIL,
+                                      "%s", _("Missing required name attribute in dns txt record"));
+                goto error;
+            }
+            if (!(value = virXMLPropString(cur, "value"))) {
+                virNetworkReportError(VIR_ERR_XML_DETAIL,
+                                      _("Missing required value attribute in dns txt record '%s'"), name);
+                goto error;
+            }
+
+            if (strchr(name, ' ') != NULL) {
+                virNetworkReportError(VIR_ERR_XML_DETAIL,
+                                      _("spaces are not allowed in DNS TXT record names (name is '%s')"), name);
+                goto error;
+            }
+
+            if (VIR_REALLOC_N(def->txtrecords, def->ntxtrecords + 1) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+
+            def->txtrecords[def->ntxtrecords].name = name;
+            def->txtrecords[def->ntxtrecords].value = value;
+            def->ntxtrecords++;
+            name = NULL;
+            value = NULL;
+        }
+
+        cur = cur->next;
+    }
+
+    ret = 0;
+error:
+    if (ret < 0) {
+        VIR_FREE(name);
+        VIR_FREE(value);
+        virNetworkDNSDefFree(def);
+    } else {
+        *dnsdef = def;
+    }
+    return ret;
+}
+
+static int
 virNetworkIPParseXML(const char *networkName,
                      virNetworkIpDefPtr def,
                      xmlNodePtr node,
@@ -584,6 +663,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     virNetworkDefPtr def;
     char *tmp;
     xmlNodePtr *ipNodes = NULL;
+    xmlNodePtr dnsNode = NULL;
     int nIps;
 
     if (VIR_ALLOC(def) < 0) {
@@ -639,6 +719,12 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         }
         VIR_FREE(tmp);
         def->mac_specified = true;
+    }
+
+    dnsNode = virXPathNode("./dns", ctxt);
+    if (dnsNode != NULL) {
+        if (virNetworkDNSDefParseXML(&def->dns, dnsNode) < 0)
+            goto error;
     }
 
     nIps = virXPathNodeSet("./ip", ctxt, &ipNodes);
@@ -748,6 +834,29 @@ virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
 cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
+}
+
+static int
+virNetworkDNSDefFormat(virBufferPtr buf,
+                       virNetworkDNSDefPtr def)
+{
+    int result = 0;
+    int i;
+
+    if (def == NULL)
+        goto out;
+
+    virBufferAddLit(buf, "  <dns>\n");
+
+    for (i = 0 ; i < def->ntxtrecords ; i++) {
+        virBufferAsprintf(buf, "    <txt name='%s' value='%s' />\n",
+                              def->txtrecords[i].name,
+                              def->txtrecords[i].value);
+    }
+
+    virBufferAddLit(buf, "  </dns>\n");
+out:
+    return result;
 }
 
 static int
@@ -880,6 +989,9 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
 
     if (def->domain)
         virBufferAsprintf(&buf, "  <domain name='%s'/>\n", def->domain);
+
+    if (virNetworkDNSDefFormat(&buf, def->dns) < 0)
+        goto error;
 
     for (ii = 0; ii < def->nips; ii++) {
         if (virNetworkIpDefFormat(&buf, &def->ips[ii]) < 0)

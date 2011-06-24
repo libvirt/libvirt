@@ -114,6 +114,9 @@
     <pre>
         ...
         &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
+        &lt;dns&gt;
+          &lt;txt name="example" value="example value" /&gt;
+        &lt;/dns&gt;
         &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
           &lt;dhcp&gt;
             &lt;range start="192.168.122.100" end="192.168.122.254" /&gt;
@@ -166,7 +169,25 @@
         supported for IPv6 addresses, can only be specified on a single IPv4 address
         per network.
         <span class="since">Since 0.7.1</span>
-      </dd><dt><code>dhcp</code></dt><dd>Also within the <code>ip</code> element there is an
+      </dd>
+
+      <dt><code>dns</code></dt><dd>
+        The dns element of a network contains configuration information for the
+        virtual network's DNS server. <span class="since">Since 0.9.3</span>
+        Currently supported elements are:
+        <dl>
+          <dt><code>txt</code></dt>
+          <dd>A <code>dns</code> element can have 0 or more <code>txt</code> elements.
+            Each txt element defines a DNS TXT record and has two attributes, both
+            required: a name that can be queried via dns, and a value that will be
+            returned when that name is queried. names cannot contain embedded spaces
+            or commas. value is a single string that can contain multiple values
+            separated by commas. <span class="since">Since 0.9.3</span>
+          </dd>
+        </dl>
+      </dd>
+      <dt><code>dhcp</code></dt>
+      <dd>Also within the <code>ip</code> element there is an
         optional <code>dhcp</code> element. The presence of this element
         enables DHCP services on the virtual network. It will further
         contain one or more <code>range</code> elements. The
