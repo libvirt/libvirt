@@ -2033,6 +2033,7 @@ static int qemuProcessHook(void *data)
 {
     struct qemuProcessHookData *h = data;
     int ret = -1;
+    int fd;
 
     /* Some later calls want pid present */
     h->vm->pid = getpid();
@@ -2041,7 +2042,8 @@ static int qemuProcessHook(void *data)
     if (virDomainLockProcessStart(h->driver->lockManager,
                                   h->vm,
                                   /* QEMU is always pased initially */
-                                  true) < 0)
+                                  true,
+                                  &fd) < 0)
         goto cleanup;
 
     if (qemuProcessLimits(h->driver) < 0)
@@ -2063,9 +2065,15 @@ static int qemuProcessHook(void *data)
     if (qemuProcessInitNumaMemoryPolicy(h->vm) < 0)
         return -1;
 
-    VIR_DEBUG("Setting up security labeling");
+    VIR_DEBUG("Setting up security labelling");
     if (virSecurityManagerSetProcessLabel(h->driver->securityManager, h->vm) < 0)
         goto cleanup;
+
+    if (fd != -1) {
+        VIR_DEBUG("Setting up lock manager FD labelling");
+        if (virSecurityManagerSetProcessFDLabel(h->driver->securityManager, h->vm, fd) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 

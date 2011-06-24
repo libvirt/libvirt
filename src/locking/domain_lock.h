@@ -28,7 +28,8 @@
 
 int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
                               virDomainObjPtr dom,
-                              bool paused);
+                              bool paused,
+                              int *fd);
 int virDomainLockProcessPause(virLockManagerPluginPtr plugin,
                               virDomainObjPtr dom,
                               char **state);

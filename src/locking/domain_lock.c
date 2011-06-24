@@ -153,7 +153,8 @@ error:
 
 int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
                               virDomainObjPtr dom,
-                              bool paused)
+                              bool paused,
+                              int *fd)
 {
     virLockManagerPtr lock;
     int ret;
@@ -165,7 +166,7 @@ int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
     if (paused)
         flags |= VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY;
 
-    ret = virLockManagerAcquire(lock, NULL, flags);
+    ret = virLockManagerAcquire(lock, NULL, flags, fd);
 
     virLockManagerFree(lock);
 
@@ -198,7 +199,7 @@ int virDomainLockProcessResume(virLockManagerPluginPtr plugin,
     if (!(lock = virDomainLockManagerNew(plugin, dom, true)))
         return -1;
 
-    ret = virLockManagerAcquire(lock, state, 0);
+    ret = virLockManagerAcquire(lock, state, 0, NULL);
     virLockManagerFree(lock);
 
     return ret;
@@ -234,7 +235,7 @@ int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
     if (virDomainLockManagerAddDisk(lock, disk) < 0)
         goto cleanup;
 
-    if (virLockManagerAcquire(lock, NULL, 0) < 0)
+    if (virLockManagerAcquire(lock, NULL, 0, NULL) < 0)
         goto cleanup;
 
     ret = 0;
@@ -283,7 +284,7 @@ int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
     if (virDomainLockManagerAddLease(lock, lease) < 0)
         goto cleanup;
 
-    if (virLockManagerAcquire(lock, NULL, 0) < 0)
+    if (virLockManagerAcquire(lock, NULL, 0, NULL) < 0)
         goto cleanup;
 
     ret = 0;

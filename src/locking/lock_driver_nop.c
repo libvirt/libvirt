@@ -66,9 +66,9 @@ static int virLockManagerNopAddResource(virLockManagerPtr lock ATTRIBUTE_UNUSED,
 
 static int virLockManagerNopAcquire(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                     const char *state ATTRIBUTE_UNUSED,
-                                    unsigned int flags ATTRIBUTE_UNUSED)
+                                    unsigned int flags ATTRIBUTE_UNUSED,
+                                    int *fd ATTRIBUTE_UNUSED)
 {
-
     return 0;
 }
 

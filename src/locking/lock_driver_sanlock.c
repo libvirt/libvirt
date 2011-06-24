@@ -229,7 +229,8 @@ error:
 
 static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                         const char *state,
-                                        unsigned int flags)
+                                        unsigned int flags,
+                                        int *fd)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
     struct sanlk_options *opt;
@@ -348,6 +349,9 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
         }
         VIR_FREE(res_args);
     }
+
+    if (fd)
+        *fd = sock;
 
     return 0;
 

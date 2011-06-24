@@ -214,6 +214,7 @@ typedef int (*virLockDriverAddResource)(virLockManagerPtr man,
  * @manager: the lock manager context
  * @state: the current lock state
  * @flags: optional flags, currently unused
+ * @fd: optional return the leaked FD
  *
  * Start managing resources for the object. This
  * must be called from the PID that represents the
@@ -222,11 +223,17 @@ typedef int (*virLockDriverAddResource)(virLockManagerPtr man,
  * The optional state contains information about the
  * locks previously held for the object.
  *
+ * The file descriptor returned in @fd is one that
+ * is intentionally leaked and should not be closed.
+ * It is returned so that it can be labelled by the
+ * security managers (if required).
+ *
  * Returns 0 on success, or -1 on failure
  */
 typedef int (*virLockDriverAcquire)(virLockManagerPtr man,
                                     const char *state,
-                                    unsigned int flags);
+                                    unsigned int flags,
+                                    int *fd);
 
 /**
  * virLockDriverRelease:
