@@ -1,7 +1,7 @@
 /*
  * libvirt_wrap.h: type wrappers for libvir python bindings
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005, 2011 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
@@ -19,6 +19,11 @@
 # endif /* ATTRIBUTE_UNUSED */
 #else
 # define ATTRIBUTE_UNUSED
+#endif
+
+/* Work around really old python.  */
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 7
+typedef ssize_t Py_ssize_t;
 #endif
 
 #define PyvirConnect_Get(v) (((v) == Py_None) ? NULL : \
