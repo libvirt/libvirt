@@ -1048,6 +1048,75 @@ cleanup:
 }
 
 static int
+remoteDispatchDomainGetVcpupinInfo(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
+                                   remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                   remote_error *rerr,
+                                   remote_domain_get_vcpupin_info_args *args,
+                                   remote_domain_get_vcpupin_info_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    unsigned char *cpumaps = NULL;
+    int num;
+    int rv = -1;
+
+    if (!conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (args->ncpumaps > REMOTE_VCPUINFO_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("ncpumaps > REMOTE_VCPUINFO_MAX"));
+        goto cleanup;
+    }
+
+    if (INT_MULTIPLY_OVERFLOW(args->ncpumaps, args->maplen) ||
+        args->ncpumaps * args->maplen > REMOTE_CPUMAPS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("maxinfo * maplen > REMOTE_CPUMAPS_MAX"));
+        goto cleanup;
+    }
+
+    /* Allocate buffers to take the results. */
+    if (args->maplen > 0 &&
+        VIR_ALLOC_N(cpumaps, args->ncpumaps * args->maplen) < 0)
+        goto no_memory;
+
+    if ((num = virDomainGetVcpupinInfo(dom,
+                                       args->ncpumaps,
+                                       cpumaps,
+                                       args->maplen,
+                                       args->flags)) < 0)
+        goto cleanup;
+
+    ret->num = num;
+    /* Don't need to allocate/copy the cpumaps if we make the reasonable
+     * assumption that unsigned char and char are the same size.
+     * Note that remoteDispatchClientRequest will free.
+     */
+    ret->cpumaps.cpumaps_len = args->ncpumaps * args->maplen;
+    ret->cpumaps.cpumaps_val = (char *) cpumaps;
+    cpumaps = NULL;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        remoteDispatchError(rerr);
+    VIR_FREE(cpumaps);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+static int
 remoteDispatchDomainGetVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
                              struct qemud_client *client ATTRIBUTE_UNUSED,
                              virConnectPtr conn,

@@ -2142,6 +2142,79 @@ done:
 }
 
 static int
+remoteDomainGetVcpupinInfo (virDomainPtr domain,
+                            int ncpumaps,
+                            unsigned char *cpumaps,
+                            int maplen,
+                            unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    remote_domain_get_vcpupin_info_args args;
+    remote_domain_get_vcpupin_info_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    if (ncpumaps > REMOTE_VCPUINFO_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("vCPU count exceeds maximum: %d > %d"),
+                    ncpumaps, REMOTE_VCPUINFO_MAX);
+        goto done;
+    }
+
+    if (INT_MULTIPLY_OVERFLOW(ncpumaps, maplen) ||
+        ncpumaps * maplen > REMOTE_CPUMAPS_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("vCPU map buffer length exceeds maximum: %d > %d"),
+                    ncpumaps * maplen, REMOTE_CPUMAPS_MAX);
+        goto done;
+    }
+
+    make_nonnull_domain (&args.dom, domain);
+    args.ncpumaps = ncpumaps;
+    args.maplen = maplen;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_VCPUPIN_INFO,
+              (xdrproc_t) xdr_remote_domain_get_vcpupin_info_args,
+              (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_vcpupin_info_ret,
+              (char *) &ret) == -1)
+        goto done;
+
+    if (ret.num > ncpumaps) {
+        remoteError(VIR_ERR_RPC,
+                    _("host reports too many vCPUs: %d > %d"),
+                    ret.num, ncpumaps);
+        goto cleanup;
+    }
+
+    if (ret.cpumaps.cpumaps_len > ncpumaps * maplen) {
+        remoteError(VIR_ERR_RPC,
+                    _("host reports map buffer length exceeds maximum: %d > %d"),
+                    ret.cpumaps.cpumaps_len, ncpumaps * maplen);
+        goto cleanup;
+    }
+
+    memset (cpumaps, 0, ncpumaps * maplen);
+
+    for (i = 0; i < ret.cpumaps.cpumaps_len; ++i)
+        cpumaps[i] = ret.cpumaps.cpumaps_val[i];
+
+    rv = ret.num;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpupin_info_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainGetVcpus (virDomainPtr domain,
                       virVcpuInfoPtr info,
                       int maxinfo,
@@ -6392,6 +6465,7 @@ static virDriver remote_driver = {
     .domainGetVcpusFlags = remoteDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = remoteDomainPinVcpu, /* 0.3.0 */
     .domainPinVcpuFlags = remoteDomainPinVcpuFlags, /* 0.9.3 */
+    .domainGetVcpupinInfo = remoteDomainGetVcpupinInfo, /* 0.9.3 */
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */
