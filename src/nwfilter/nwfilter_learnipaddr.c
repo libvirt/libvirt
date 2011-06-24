@@ -37,10 +37,10 @@
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 #include <net/if_arp.h>
-#include <intprops.h>
 
 #include "internal.h"
 
+#include "intprops.h"
 #include "buf.h"
 #include "memory.h"
 #include "logging.h"

@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#include <intprops.h>
-
 #include "domain_lock.h"
 #include "memory.h"
 #include "uuid.h"
