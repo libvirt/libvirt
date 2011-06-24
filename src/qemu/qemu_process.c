@@ -441,7 +441,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                             false,
                             qemuProcessFakeReboot,
                             vm) < 0) {
-            VIR_ERROR("Failed to create reboot thread, killing domain");
+            VIR_ERROR(_("Failed to create reboot thread, killing domain"));
             qemuProcessKill(vm);
             if (virDomainObjUnref(vm) == 0)
                 vm = NULL;
