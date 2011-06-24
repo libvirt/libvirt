@@ -2952,6 +2952,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     bool isActive;
     qemuDomainObjPrivatePtr priv;
     bool canResetting = true;
+    int pcpu;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -3011,7 +3012,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     /* pinning to all physical cpus means resetting,
      * so check if we can reset setting.
      */
-    for (int pcpu = 0; pcpu < hostcpus; pcpu++) {
+    for (pcpu = 0; pcpu < hostcpus; pcpu++) {
         if ((cpumap[pcpu/8] & (1 << (pcpu % 8))) == 0) {
             canResetting = false;
             break;
