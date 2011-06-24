@@ -851,6 +851,7 @@ virSecurityManagerSetAllLabel;
 virSecurityManagerSetImageFDLabel;
 virSecurityManagerSetImageLabel;
 virSecurityManagerSetHostdevLabel;
+virSecurityManagerSetProcessFDLabel;
 virSecurityManagerSetProcessLabel;
 virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
