@@ -61,6 +61,7 @@
 #include "network.h"
 #include "libvirt/libvirt-qemu.h"
 #include "command.h"
+#include "intprops.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -1074,7 +1075,8 @@ remoteDispatchDomainGetVcpus(struct qemud_server *server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (args->maxinfo * args->maplen > REMOTE_CPUMAPS_MAX) {
+    if (INT_MULTIPLY_OVERFLOW(args->maxinfo, args->maplen) ||
+        args->maxinfo * args->maplen > REMOTE_CPUMAPS_MAX) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("maxinfo * maplen > REMOTE_CPUMAPS_MAX"));
         goto cleanup;
     }

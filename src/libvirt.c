@@ -39,6 +39,7 @@
 #include "util.h"
 #include "memory.h"
 #include "configmake.h"
+#include "intprops.h"
 
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
@@ -7153,8 +7154,8 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 
     /* Ensure that domainGetVcpus (aka remoteDomainGetVcpus) does not
        try to memcpy anything into a NULL pointer.  */
-    if ((cpumaps == NULL && maplen != 0)
-        || (cpumaps && maplen <= 0)) {
+    if (!cpumaps ? maplen != 0
+        : (maplen <= 0 || INT_MULTIPLY_OVERFLOW(maxinfo, maplen))) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
