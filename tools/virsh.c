@@ -2909,10 +2909,11 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     virNodeInfo nodeinfo;
     virVcpuInfoPtr cpuinfo;
-    unsigned char *cpumap;
-    int ncpus;
+    unsigned char *cpumaps;
+    int ncpus, maxcpu;
     size_t cpumaplen;
     bool ret = true;
+    int n, m;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -2931,15 +2932,14 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     cpuinfo = vshMalloc(ctl, sizeof(virVcpuInfo)*info.nrVirtCpu);
-    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
-    cpumap = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
+    maxcpu = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+    cpumaps = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
 
     if ((ncpus = virDomainGetVcpus(dom,
                                    cpuinfo, info.nrVirtCpu,
-                                   cpumap, cpumaplen)) >= 0) {
-        int n;
+                                   cpumaps, cpumaplen)) >= 0) {
         for (n = 0 ; n < ncpus ; n++) {
-            unsigned int m;
             vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
             vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
             vshPrint(ctl, "%-15s %s\n", _("State:"),
@@ -2952,8 +2952,8 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
                 vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
             }
             vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
-            for (m = 0 ; m < VIR_NODEINFO_MAXCPUS(nodeinfo) ; m++) {
-                vshPrint(ctl, "%c", VIR_CPU_USABLE(cpumap, cpumaplen, n, m) ? 'y' : '-');
+            for (m = 0; m < maxcpu; m++) {
+                vshPrint(ctl, "%c", VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
             }
             vshPrint(ctl, "\n");
             if (n < (ncpus - 1)) {
@@ -2961,14 +2961,34 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
             }
         }
     } else {
-        if (info.state == VIR_DOMAIN_SHUTOFF) {
-            vshError(ctl, "%s",
-                     _("Domain shut off, virtual CPUs not present."));
+        if (info.state == VIR_DOMAIN_SHUTOFF &&
+            (ncpus = virDomainGetVcpupinInfo(dom, info.nrVirtCpu,
+                                             cpumaps, cpumaplen,
+                                             VIR_DOMAIN_AFFECT_CONFIG)) >= 0) {
+
+            /* fallback plan to use virDomainGetVcpupinInfo */
+
+            for (n = 0; n < ncpus; n++) {
+                vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
+                vshPrint(ctl, "%-15s %s\n", _("CPU:"), _("N/A"));
+                vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
+                vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
+                vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
+                for (m = 0; m < maxcpu; m++) {
+                    vshPrint(ctl, "%c",
+                             VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
+                }
+                vshPrint(ctl, "\n");
+                if (n < (ncpus - 1)) {
+                    vshPrint(ctl, "\n");
+                }
+            }
+        } else {
+            ret = false;
         }
-        ret = false;
     }
 
-    VIR_FREE(cpumap);
+    VIR_FREE(cpumaps);
     VIR_FREE(cpuinfo);
     virDomainFree(dom);
     return ret;
