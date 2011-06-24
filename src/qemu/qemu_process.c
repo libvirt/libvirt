@@ -2886,8 +2886,8 @@ void qemuProcessStop(struct qemud_driver *driver,
         if (!vm->def->seclabel.baselabel)
             VIR_FREE(vm->def->seclabel.model);
         VIR_FREE(vm->def->seclabel.label);
-        VIR_FREE(vm->def->seclabel.imagelabel);
     }
+    VIR_FREE(vm->def->seclabel.imagelabel);
 
     virDomainDefClearDeviceAliases(vm->def);
     if (!priv->persistentAddrs) {

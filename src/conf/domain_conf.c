@@ -5072,6 +5072,30 @@ virSecurityLabelDefParseXML(const virDomainDefPtr def,
                              "%s", _("invalid security type"));
         goto error;
     }
+    p = virXPathStringLimit("string(./seclabel/@relabel)",
+                            VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+    if (p != NULL) {
+        if (STREQ(p, "yes")) {
+            def->seclabel.relabel = true;
+        } else if (STREQ(p, "no")) {
+            def->seclabel.relabel = false;
+        } else {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("invalid security relabel value %s"), p);
+            goto error;
+        }
+        if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+            !def->seclabel.relabel) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 "%s", _("dynamic label type must use resource relabeling"));
+            goto error;
+        }
+    } else {
+        if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
+            def->seclabel.relabel = false;
+        else
+            def->seclabel.relabel = true;
+    }
 
     /* Only parse label, if using static labels, or
      * if the 'live' VM XML is requested
@@ -5089,8 +5113,8 @@ virSecurityLabelDefParseXML(const virDomainDefPtr def,
         def->seclabel.label = p;
     }
 
-    /* Only parse imagelabel, if requested live XML for dynamic label */
-    if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+    /* Only parse imagelabel, if requested live XML with relabeling */
+    if (def->seclabel.relabel &&
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
         p = virXPathStringLimit("string(./seclabel/imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
@@ -9864,16 +9888,17 @@ char *virDomainDefFormat(virDomainDefPtr def,
         if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
             !def->seclabel.baselabel &&
             (flags & VIR_DOMAIN_XML_INACTIVE)) {
-            virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s'/>\n",
-                              sectype, def->seclabel.model);
+            virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s' relabel='%s'/>\n",
+                              sectype, def->seclabel.model,
+                              def->seclabel.relabel ? "yes" : "no");
         } else {
-            virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s'>\n",
-                              sectype, def->seclabel.model);
+            virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s' relabel='%s'>\n",
+                              sectype, def->seclabel.model,
+                              def->seclabel.relabel ? "yes" : "no");
             if (def->seclabel.label)
                 virBufferEscapeString(&buf, "    <label>%s</label>\n",
                                       def->seclabel.label);
-            if (def->seclabel.imagelabel &&
-                (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC))
+            if (def->seclabel.relabel && def->seclabel.imagelabel)
                 virBufferEscapeString(&buf, "    <imagelabel>%s</imagelabel>\n",
                                       def->seclabel.imagelabel);
             if (def->seclabel.baselabel &&

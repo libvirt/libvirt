@@ -61,6 +61,12 @@
           <value>static</value>
         </choice>
       </attribute>
+      <attribute name="relabel">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
       <element name="label">
         <text/>
       </element>
