@@ -507,7 +507,7 @@ ifaceLinkDel;
 ifaceMacvtapLinkAdd;
 ifaceMacvtapLinkDump;
 ifaceReplaceMacAddress;
-ifaceRestoreMacaddress;
+ifaceRestoreMacAddress;
 ifaceSetMacaddr;
 
 
