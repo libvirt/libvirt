@@ -22,7 +22,7 @@
 #endif
 
 /* Work around really old python.  */
-#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 7
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 5
 typedef ssize_t Py_ssize_t;
 #endif
 
