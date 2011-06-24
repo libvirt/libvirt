@@ -3166,6 +3166,117 @@ qemudDomainPinVcpu(virDomainPtr dom,
 }
 
 static int
+qemudDomainGetVcpupinInfo(virDomainPtr dom,
+                          int ncpumaps,
+                          unsigned char *cpumaps,
+                          int maplen,
+                          unsigned int flags) {
+
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virNodeInfo nodeinfo;
+    virDomainDefPtr targetDef = NULL;
+    int ret = -1;
+    bool isActive;
+    int maxcpu, hostcpus, vcpu, pcpu;
+    int n;
+    virDomainVcpupinDefPtr *vcpupin_list;
+    char *cpumask = NULL;
+    unsigned char *cpumap;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) ==
+        (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("cannot get live and persistent info concurrently"));
+        goto cleanup;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    isActive = virDomainObjIsActive(vm);
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!isActive) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto cleanup;
+        }
+        targetDef = vm->def;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("cannot get persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(targetDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
+    }
+
+    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+        goto cleanup;
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    /* Clamp to actual number of vcpus */
+    if (ncpumaps > targetDef->vcpus)
+        ncpumaps = targetDef->vcpus;
+
+    if (ncpumaps < 1) {
+        goto cleanup;
+    }
+
+    /* initialize cpumaps */
+    memset(cpumaps, 0xff, maplen * ncpumaps);
+    if (maxcpu % 8) {
+        for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
+            cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+            cpumap[maplen - 1] &= (1 << maxcpu % 8) - 1;
+        }
+    }
+
+    /* if vcpupin setting exists, there are unused physical cpus */
+    for (n = 0; n < targetDef->cputune.nvcpupin; n++) {
+        vcpupin_list = targetDef->cputune.vcpupin;
+        vcpu = vcpupin_list[n]->vcpuid;
+        cpumask = vcpupin_list[n]->cpumask;
+        cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+        for (pcpu = 0; pcpu < maxcpu; pcpu++) {
+            if (cpumask[pcpu] == 0)
+                VIR_UNUSE_CPU(cpumap, pcpu);
+        }
+    }
+    ret = ncpumaps;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
 qemudDomainGetVcpus(virDomainPtr dom,
                     virVcpuInfoPtr info,
                     int maxinfo,
@@ -8335,6 +8446,7 @@ static virDriver qemuDriver = {
     .domainGetVcpusFlags = qemudDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = qemudDomainPinVcpu, /* 0.4.4 */
     .domainPinVcpuFlags = qemudDomainPinVcpuFlags, /* 0.9.3 */
+    .domainGetVcpupinInfo = qemudDomainGetVcpupinInfo, /* 0.9.3 */
     .domainGetVcpus = qemudDomainGetVcpus, /* 0.4.4 */
     .domainGetMaxVcpus = qemudDomainGetMaxVcpus, /* 0.4.4 */
     .domainGetSecurityLabel = qemudDomainGetSecurityLabel, /* 0.6.1 */
