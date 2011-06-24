@@ -1099,7 +1099,9 @@ EXTRA_DIST += \
   libvirt_vmx.syms		\
   libvirt_xenxs.syms
 
-BUILT_SOURCES += libvirt.syms libvirt.def libvirt_qemu.def
+GENERATED_SYM_FILES = libvirt.syms libvirt.def libvirt_qemu.def
+
+BUILT_SOURCES += $(GENERATED_SYM_FILES)
 
 libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 		$(top_builddir)/config.status
@@ -1196,7 +1198,7 @@ EXTRA_DIST += \
 
 VIR_NET_RPC_GENERATED = rpc/virnetprotocol.h rpc/virnetprotocol.c
 
-rpc/virnetmessage.h: $(VIR_NET_RPC_GENERATED)
+BUILT_SOURCES += $(VIR_NET_RPC_GENERATED)
 
 libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \
@@ -1414,5 +1416,5 @@ endif
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt" ||:
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
-DISTCLEANFILES = $(BUILT_SOURCES)
-MAINTAINERCLEANFILES = $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED)
+DISTCLEANFILES = $(GENERATED_SYM_FILES)
+MAINTAINERCLEANFILES = $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED) $(ESX_DRIVER_GENERATED)
