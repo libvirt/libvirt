@@ -499,7 +499,7 @@ ifaceCheck;
 ifaceCtrl;
 ifaceGetFlags;
 ifaceGetIndex;
-ifaceGetMacaddr;
+ifaceGetMacAddress;
 ifaceGetNthParent;
 ifaceGetVlanID;
 ifaceIsUp;
@@ -508,7 +508,7 @@ ifaceMacvtapLinkAdd;
 ifaceMacvtapLinkDump;
 ifaceReplaceMacAddress;
 ifaceRestoreMacAddress;
-ifaceSetMacaddr;
+ifaceSetMacAddress;
 
 
 # interface_conf.h

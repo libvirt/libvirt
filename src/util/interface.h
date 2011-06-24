@@ -45,9 +45,9 @@ int ifaceGetIndex(bool reportError, const char *ifname, int *ifindex);
 
 int ifaceGetVlanID(const char *vlanifname, int *vlanid);
 
-int ifaceSetMacaddr(const char *ifname, const unsigned char *macaddr);
+int ifaceSetMacAddress(const char *ifname, const unsigned char *macaddr);
 
-int ifaceGetMacaddr(const char *ifname, unsigned char *macaddr);
+int ifaceGetMacAddress(const char *ifname, unsigned char *macaddr);
 
 int ifaceMacvtapLinkAdd(const char *type,
                         const unsigned char *macaddress, int macaddrsize,

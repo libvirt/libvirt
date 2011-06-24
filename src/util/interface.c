@@ -397,7 +397,7 @@ ifaceGetVlanID(const char *vlanifname ATTRIBUTE_UNUSED,
 #endif /* __linux__ */
 
 /**
- * ifaceGetMacaddr:
+ * ifaceGetMacAddress:
  * @ifname: interface name to set MTU for
  * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
  *
@@ -407,8 +407,8 @@ ifaceGetVlanID(const char *vlanifname ATTRIBUTE_UNUSED,
  */
 #ifdef __linux__
 int
-ifaceGetMacaddr(const char *ifname,
-                unsigned char *macaddr)
+ifaceGetMacAddress(const char *ifname,
+                   unsigned char *macaddr)
 {
     struct ifreq ifr;
     int fd;
@@ -435,8 +435,8 @@ ifaceGetMacaddr(const char *ifname,
 #else
 
 int
-ifaceGetMacaddr(const char *ifname ATTRIBUTE_UNUSED,
-                unsigned char *macaddr ATTRIBUTE_UNUSED)
+ifaceGetMacAddress(const char *ifname ATTRIBUTE_UNUSED,
+                   unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
     return ENOSYS;
 }
@@ -444,7 +444,7 @@ ifaceGetMacaddr(const char *ifname ATTRIBUTE_UNUSED,
 #endif /* __linux__ */
 
 /**
- * ifaceSetMacaddr:
+ * ifaceSetMacAddress:
  * @ifname: interface name to set MTU for
  * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
  *
@@ -455,8 +455,8 @@ ifaceGetMacaddr(const char *ifname ATTRIBUTE_UNUSED,
  */
 #ifdef __linux__
 int
-ifaceSetMacaddr(const char *ifname,
-                const unsigned char *macaddr)
+ifaceSetMacAddress(const char *ifname,
+                   const unsigned char *macaddr)
 {
     struct ifreq ifr;
     int fd;
@@ -484,8 +484,8 @@ ifaceSetMacaddr(const char *ifname,
 #else
 
 int
-ifaceSetMacaddr(const char *ifname ATTRIBUTE_UNUSED,
-                const unsigned char *macaddr ATTRIBUTE_UNUSED)
+ifaceSetMacAddress(const char *ifname ATTRIBUTE_UNUSED,
+                   const unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
     return ENOSYS;
 }
@@ -1027,7 +1027,7 @@ ifaceReplaceMacAddress(const unsigned char *macaddress,
     unsigned char oldmac[6];
     int rc;
 
-    rc = ifaceGetMacaddr(linkdev, oldmac);
+    rc = ifaceGetMacAddress(linkdev, oldmac);
 
     if (rc) {
         virReportSystemError(rc,
@@ -1054,7 +1054,7 @@ ifaceReplaceMacAddress(const unsigned char *macaddress,
         }
     }
 
-    rc = ifaceSetMacaddr(linkdev, macaddress);
+    rc = ifaceSetMacAddress(linkdev, macaddress);
     if (rc) {
         virReportSystemError(rc,
                              _("Setting MAC address on  '%s' to "
@@ -1104,7 +1104,7 @@ ifaceRestoreMacAddress(const char *linkdev,
     }
 
     /*reset mac and remove file-ignore results*/
-    rc = ifaceSetMacaddr(linkdev, oldmac);
+    rc = ifaceSetMacAddress(linkdev, oldmac);
     if (rc) {
         virReportSystemError(rc,
                              _("Setting MAC address on  '%s' to "
