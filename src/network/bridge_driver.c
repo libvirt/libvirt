@@ -614,14 +614,13 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         if (ipdef->nranges || ipdef->nhosts)
             virCommandAddArg(cmd, "--dhcp-no-override");
 
-            if ((dctx = networkSaveDnsmasqHostsfile(ipdef, network->def->dns, network->def->name, false))) {
-                if (dctx->hostsfile->nhosts)
-                    virCommandAddArgPair(cmd, "--dhcp-hostsfile",
-                                         dctx->hostsfile->path);
-                if (dctx->addnhostsfile->nhosts)
-                    virCommandAddArgPair(cmd, "--addn-hosts",
-                                         dctx->addnhostsfile->path);
-
+        if ((dctx = networkSaveDnsmasqHostsfile(ipdef, network->def->dns, network->def->name, false))) {
+            if (dctx->hostsfile->nhosts)
+                virCommandAddArgPair(cmd, "--dhcp-hostsfile",
+                                     dctx->hostsfile->path);
+            if (dctx->addnhostsfile->nhosts)
+                virCommandAddArgPair(cmd, "--addn-hosts",
+                                     dctx->addnhostsfile->path);
             dnsmasqContextFree(dctx);
         }
 
