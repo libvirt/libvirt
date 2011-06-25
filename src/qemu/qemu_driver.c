@@ -3173,7 +3173,7 @@ qemudDomainGetVcpupinInfo(virDomainPtr dom,
                           unsigned int flags) {
 
     struct qemud_driver *driver = dom->conn->privateData;
-    virDomainObjPtr vm;
+    virDomainObjPtr vm = NULL;
     virNodeInfo nodeinfo;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
