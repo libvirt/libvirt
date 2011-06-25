@@ -1201,7 +1201,9 @@ EXTRA_DIST += \
        rpc/gendispatch.pl \
        rpc/genprotocol.pl
 
-VIR_NET_RPC_GENERATED = rpc/virnetprotocol.h rpc/virnetprotocol.c
+VIR_NET_RPC_GENERATED = \
+	$(srcdir)/rpc/virnetprotocol.h \
+	$(srcdir)/rpc/virnetprotocol.c
 
 BUILT_SOURCES += $(VIR_NET_RPC_GENERATED)
 
