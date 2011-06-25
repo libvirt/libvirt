@@ -617,6 +617,10 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         if (ipdef->nranges || ipdef->nhosts)
             virCommandAddArg(cmd, "--dhcp-no-override");
 
+        /* add domain to any non-qualified hostnames in /etc/hosts or addn-hosts */
+        if (network->def->domain)
+           virCommandAddArg(cmd, "--expand-hosts");
+
         if ((dctx = networkSaveDnsmasqHostsfile(ipdef, network->def->dns, network->def->name, false))) {
             if (dctx->hostsfile->nhosts)
                 virCommandAddArgPair(cmd, "--dhcp-hostsfile",
