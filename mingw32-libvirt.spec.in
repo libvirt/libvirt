@@ -108,6 +108,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_datadir}/libvirt/schemas/nwfilter.rng
 %{_mingw32_datadir}/libvirt/schemas/secret.rng
 %{_mingw32_datadir}/libvirt/schemas/storageencryption.rng
+%{_mingw32_datadir}/libvirt/schemas/basictypes.rng
 
 %{_mingw32_datadir}/libvirt/cpu_map.xml
 

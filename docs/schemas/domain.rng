@@ -5,6 +5,7 @@
     <ref name="domain"/>
   </start>
 
+  <include href='basictypes.rng'/>
   <include href='storageencryption.rng'/>
 
   <!--
@@ -723,7 +724,7 @@
                 <zeroOrMore>
                   <element name="host">
                     <attribute name="name">
-                      <ref name="hostName"/>
+                      <ref name="dnsName"/>
                     </attribute>
                     <attribute name="port">
                       <ref name="unsignedInt"/>
@@ -1092,7 +1093,7 @@
       <optional>
         <element name="mac">
           <attribute name="address">
-            <ref name="addrMAC"/>
+            <ref name="macAddr"/>
           </attribute>
           <empty/>
         </element>
@@ -1100,7 +1101,7 @@
       <optional>
         <element name="ip">
           <attribute name="address">
-            <ref name="addrIP"/>
+            <ref name="ipv4Addr"/>
           </attribute>
           <empty/>
         </element>
@@ -2344,22 +2345,10 @@
   <!--
        Type library
 
-       Our unsignedInt doesn't allow a leading '+' in its lexical form
        A domain name should be made of ascii, numbers, _-+ and is non-empty
-       UUID currently allows only the 32 characters strict syntax
        memoryKB request at least 4Mbytes though Xen will grow bigger if too low
        weight currently is in range [100, 1000]
     -->
-  <define name="unsignedInt">
-    <data type="unsignedInt">
-      <param name="pattern">[0-9]+</param>
-    </data>
-  </define>
-  <define name='positiveInteger'>
-    <data type='positiveInteger'>
-      <param name="pattern">[0-9]+</param>
-    </data>
-  </define>
   <define name="cpuset">
     <data type="string">
       <param name="pattern">([0-9]+(-[0-9]+)?|\^[0-9]+)(,([0-9]+(-[0-9]+)?|\^[0-9]+))*</param>
@@ -2381,11 +2370,6 @@
       <param name="pattern">[0-9]+</param>
     </data>
    </define>
-  <define name="hostName">
-    <data type="string">
-      <param name="pattern">[a-zA-Z0-9\.\-]+</param>
-    </data>
-  </define>
   <define name="PortNumber">
     <data type="short">
       <param name="minInclusive">-1</param>
@@ -2419,49 +2403,9 @@
       <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
     </data>
   </define>
-  <define name="UUID">
-    <choice>
-      <data type="string">
-        <param name="pattern">[a-fA-F0-9]{32}</param>
-      </data>
-      <data type="string">
-        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
-      </data>
-    </choice>
-  </define>
-  <define name="filePath">
-    <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
-    </data>
-  </define>
-  <define name="absFilePath">
-    <data type="string">
-      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
-    </data>
-  </define>
-  <define name="absDirPath">
-    <data type="string">
-      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]*</param>
-    </data>
-  </define>
-  <define name="deviceName">
-    <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\.\-\\:/]+</param>
-    </data>
-  </define>
   <define name="bridgeMode">
     <data type="string">
       <param name="pattern">(vepa|bridge|private|passthrough)</param>
-    </data>
-  </define>
-  <define name="addrMAC">
-    <data type="string">
-      <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
-    </data>
-  </define>
-  <define name="addrIP">
-    <data type="string">
-      <param name="pattern">([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]</param>
     </data>
   </define>
   <define name="addrIPorName">
@@ -2538,28 +2482,6 @@
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\.:]+</param>
     </data>
-  </define>
-  <define name="uint8range">
-    <choice>
-      <data type="string">
-        <param name="pattern">0x[0-9a-fA-F]{1,2}</param>
-      </data>
-      <data type="int">
-        <param name="minInclusive">0</param>
-        <param name="maxInclusive">255</param>
-      </data>
-    </choice>
-  </define>
-  <define name="uint24range">
-    <choice>
-      <data type="string">
-        <param name="pattern">0x[0-9a-fA-F]{1,6}</param>
-      </data>
-      <data type="int">
-        <param name="minInclusive">0</param>
-        <param name="maxInclusive">16777215</param>
-      </data>
-    </choice>
   </define>
   <define name="virtualPortProfileID">
     <data type="string">

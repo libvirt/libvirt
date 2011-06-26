@@ -2,6 +2,7 @@
 
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = \
+	basictypes.rng \
 	capability.rng \
 	domain.rng \
 	domainsnapshot.rng \

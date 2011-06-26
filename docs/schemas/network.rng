@@ -1,9 +1,12 @@
+<?xml version="1.0"?>
 <!-- A Relax NG schema for the libvirt network XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <ref name="network"/>
   </start>
+
+  <include href='basictypes.rng'/>
 
   <define name="network">
 
@@ -18,7 +21,7 @@
 
         <!-- <uuid> element -->
         <optional>
-          <element name="uuid"><text/></element>
+          <element name="uuid"><ref name="UUID"/></element>
         </optional>
 
         <!-- <bridge> element -->
@@ -28,7 +31,7 @@
           <element name="bridge">
             <optional>
               <attribute name="name">
-                <text/>
+                <ref name="deviceName"/>
               </attribute>
             </optional>
 
@@ -53,7 +56,7 @@
         <!-- <mac> element -->
         <optional>
           <element name="mac">
-            <attribute name="address"><ref name="mac-addr"/></attribute>
+            <attribute name="address"><ref name="macAddr"/></attribute>
             <empty/>
           </element>
         </optional>
@@ -65,7 +68,7 @@
           <element name="forward">
             <optional>
               <attribute name="dev">
-                <text/>
+                <ref name="deviceName"/>
               </attribute>
             </optional>
 
@@ -83,7 +86,7 @@
         <!-- <domain> element -->
         <optional>
           <element name="domain">
-            <attribute name="name"><text/></attribute>
+            <attribute name="name"><ref name="dnsName"/></attribute>
           </element>
         </optional>
 
@@ -93,15 +96,15 @@
             <element name="dns">
               <zeroOrMore>
                 <element name="txt">
-                  <attribute name="name"><ref name="dns-name"/></attribute>
+                  <attribute name="name"><ref name="dnsName"/></attribute>
                   <attribute name="value"><text/></attribute>
                 </element>
               </zeroOrMore>
               <zeroOrMore>
                 <element name="host">
-                  <attribute name="ip"><ref name="ipv4-addr"/></attribute>
+                  <attribute name="ip"><ref name="ipv4Addr"/></attribute>
                   <oneOrMore>
-                    <element name="hostname"><text/></element>
+                    <element name="hostname"><ref name="dnsName"/></element>
                   </oneOrMore>
                 </element>
               </zeroOrMore>
@@ -114,12 +117,12 @@
                local to the host. -->
           <element name="ip">
             <optional>
-              <attribute name="address"><ref name="ip-addr"/></attribute>
+              <attribute name="address"><ref name="ipAddr"/></attribute>
             </optional>
             <optional>
               <choice>
-                <attribute name="netmask"><ref name="ipv4-addr"/></attribute>
-                <attribute name="prefix"><ref name="ip-prefix"/></attribute>
+                <attribute name="netmask"><ref name="ipv4Addr"/></attribute>
+                <attribute name="prefix"><ref name="ipPrefix"/></attribute>
               </choice>
             </optional>
             <optional>
@@ -136,22 +139,22 @@
               <element name="dhcp">
                 <zeroOrMore>
                   <element name="range">
-                    <attribute name="start"><ref name="ipv4-addr"/></attribute>
-                    <attribute name="end"><ref name="ipv4-addr"/></attribute>
+                    <attribute name="start"><ref name="ipv4Addr"/></attribute>
+                    <attribute name="end"><ref name="ipv4Addr"/></attribute>
                   </element>
                 </zeroOrMore>
                 <zeroOrMore>
                   <element name="host">
-                    <attribute name="mac"><ref name="mac-addr"/></attribute>
+                    <attribute name="mac"><ref name="macAddr"/></attribute>
                     <attribute name="name"><text/></attribute>
-                    <attribute name="ip"><ref name="ipv4-addr"/></attribute>
+                    <attribute name="ip"><ref name="ipv4Addr"/></attribute>
                   </element>
                 </zeroOrMore>
                 <optional>
                   <element name="bootp">
-                    <attribute name="file"><text/></attribute>
+                    <attribute name="file"><ref name="filePath"/></attribute>
                     <optional>
-                      <attribute name="server"><text/></attribute>
+                      <attribute name="server"><ref name="dnsName"/></attribute>
                     </optional>
                   </element>
                 </optional>
@@ -163,51 +166,9 @@
     </element>
   </define>
 
-  <!-- An ipv4 "dotted quad" address -->
-  <define name='ipv4-addr'>
-    <data type='string'>
-      <param name="pattern">(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))</param>
-    </data>
-  </define>
-
-  <!-- Based on http://blog.mes-stats.fr/2008/10/09/regex-ipv4-et-ipv6 -->
-  <define name='ipv6-addr'>
-    <data type='string'>
-      <!-- To understand this better, take apart the toplevel '|'s -->
-      <param name="pattern">(([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|(([0-9A-Fa-f]{1,4}:){0,5}:(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|(::([0-9A-Fa-f]{1,4}:){0,5}(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:)</param>
-    </data>
-  </define>
-
-  <define name='ip-addr'>
-    <choice>
-      <ref name='ipv4-addr'/>
-      <ref name='ipv6-addr'/>
-    </choice>
-  </define>
-
-  <define name='ip-prefix'>
-    <data type='unsignedInt'>
-      <param name="maxInclusive">128</param>
-    </data>
-  </define>
-
   <define name='addr-family'>
     <data type='string'>
       <param name="pattern">(ipv4)|(ipv6)</param>
-    </data>
-  </define>
-
-  <!-- a 6 byte MAC address in ASCII-hex format, eg "12:34:56:78:9A:BC" -->
-  <define name='mac-addr'>
-    <data type='string'>
-      <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
-    </data>
-  </define>
-
-  <!-- a valid DNS name -->
-  <define name='dns-name'>
-    <data type='string'>
-      <param name="pattern">([a-zA-Z\-]+)</param>
     </data>
   </define>
 

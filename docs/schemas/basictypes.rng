@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<!-- network-related definitions used in multiple grammars -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <!-- Our unsignedInt doesn"t allow a leading "+" in its lexical form -->
+  <define name="unsignedInt">
+    <data type="unsignedInt">
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+
+  <define name="positiveInteger">
+    <data type="positiveInteger">
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+
+  <define name="uint8range">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,2}</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">255</param>
+      </data>
+    </choice>
+  </define>
+  <define name="uint24range">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,6}</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">16777215</param>
+      </data>
+    </choice>
+  </define>
+
+  <define name="UUID">
+    <choice>
+      <data type="string">
+        <param name="pattern">[a-fA-F0-9]{32}</param>
+      </data>
+      <data type="string">
+        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
+      </data>
+    </choice>
+  </define>
+
+  <!-- a 6 byte MAC address in ASCII-hex format, eg "12:34:56:78:9A:BC" -->
+  <define name="macAddr">
+    <data type="string">
+      <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
+    </data>
+  </define>
+
+  <!-- An ipv4 "dotted quad" address -->
+  <define name="ipv4Addr">
+    <data type="string">
+      <param name="pattern">(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))</param>
+    </data>
+  </define>
+
+  <!-- Based on http://blog.mes-stats.fr/2008/10/09/regex-ipv4-et-ipv6 -->
+  <define name="ipv6Addr">
+    <data type="string">
+      <!-- To understand this better, take apart the toplevel "|"s -->
+<param name="pattern">(([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|(([0-9A-Fa-f]{1,4}:){0,5}:(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|(::([0-9A-Fa-f]{1,4}:){0,5}(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9]))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([1-9][0-9])|([0-9])))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:)</param>
+    </data>
+  </define>
+
+  <define name="ipAddr">
+    <choice>
+      <ref name="ipv4Addr"/>
+      <ref name="ipv6Addr"/>
+    </choice>
+  </define>
+
+  <define name="ipv4Prefix">
+    <data type="unsignedInt">
+      <param name="maxInclusive">32</param>
+    </data>
+  </define>
+
+  <define name="ipv6Prefix">
+    <data type="unsignedInt">
+      <param name="maxInclusive">128</param>
+    </data>
+  </define>
+
+  <define name="ipPrefix">
+    <choice>
+      <ref name="ipv4Prefix"/>
+      <ref name="ipv6Prefix"/>
+    </choice>
+  </define>
+
+  <define name="dnsName">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9\.\-]+</param>
+    </data>
+  </define>
+
+  <define name="deviceName">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9_\.\-\\:/]+</param>
+    </data>
+  </define>
+
+  <define name="filePath">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
+    </data>
+  </define>
+
+  <define name="absFilePath">
+    <data type="string">
+      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
+    </data>
+  </define>
+
+  <define name="absDirPath">
+    <data type="string">
+      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]*</param>
+    </data>
+  </define>
+
+</grammar>

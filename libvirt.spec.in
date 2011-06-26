@@ -1065,6 +1065,7 @@ fi
 %{_datadir}/libvirt/schemas/secret.rng
 %{_datadir}/libvirt/schemas/storageencryption.rng
 %{_datadir}/libvirt/schemas/nwfilter.rng
+%{_datadir}/libvirt/schemas/basictypes.rng
 
 %{_datadir}/libvirt/cpu_map.xml
 
