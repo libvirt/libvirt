@@ -56,10 +56,11 @@
  * verify that it doesn't overflow an unsigned int when shifting */
 verify(VIR_DOMAIN_VIRT_LAST <= 32);
 
-/* Private flag used internally by virDomainSaveStatus and
- * virDomainObjParseFile.  */
+/* Private flags used internally by virDomainSaveStatus and
+ * virDomainLoadStatus. */
 typedef enum {
    VIR_DOMAIN_XML_INTERNAL_STATUS = (1<<16), /* dump internal domain status information */
+   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET = (1<<17), /* dump/parse <actual> element */
 } virDomainXMLInternalFlags;
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -734,6 +735,27 @@ void virDomainFSDefFree(virDomainFSDefPtr def)
     VIR_FREE(def);
 }
 
+void
+virDomainActualNetDefFree(virDomainActualNetDefPtr def)
+{
+    if (!def)
+        return;
+
+    switch (def->type) {
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        VIR_FREE(def->data.bridge.brname);
+        break;
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        VIR_FREE(def->data.direct.linkdev);
+        VIR_FREE(def->data.direct.virtPortProfile);
+        break;
+    default:
+        break;
+    }
+
+    VIR_FREE(def);
+}
+
 void virDomainNetDefFree(virDomainNetDefPtr def)
 {
     if (!def)
@@ -756,6 +778,9 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         VIR_FREE(def->data.network.name);
+        VIR_FREE(def->data.network.portgroup);
+        VIR_FREE(def->data.network.virtPortProfile);
+        virDomainActualNetDefFree(def->data.network.actual);
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -2586,6 +2611,81 @@ cleanup:
     goto cleanup;
 }
 
+static int
+virDomainActualNetDefParseXML(xmlNodePtr node,
+                              xmlXPathContextPtr ctxt,
+                              virDomainActualNetDefPtr *def)
+{
+    virDomainActualNetDefPtr actual = NULL;
+    int ret = -1;
+    xmlNodePtr save_ctxt = ctxt->node;
+    char *type = NULL;
+    char *mode = NULL;
+
+    if (VIR_ALLOC(actual) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    ctxt->node = node;
+
+    type = virXMLPropString(node, "type");
+    if (!type) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("missing type attribute in interface's <actual> element"));
+        goto error;
+    }
+    if ((actual->type = virDomainNetTypeFromString(type)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown type '%s' in interface's <actual> element"), type);
+        goto error;
+    }
+    if (actual->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
+        actual->type != VIR_DOMAIN_NET_TYPE_DIRECT) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unsupported type '%s' in interface's <actual> element"),
+                             type);
+        goto error;
+    }
+
+    if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        actual->data.bridge.brname = virXPathString("string(./source[1]/@bridge)", ctxt);
+    } else if (actual->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        xmlNodePtr virtPortNode;
+
+        actual->data.direct.linkdev = virXPathString("string(./source[1]/@dev)", ctxt);
+
+        mode = virXPathString("string(./source[1]/@mode)", ctxt);
+        if (mode) {
+            int m;
+            if ((m = virMacvtapModeTypeFromString(mode)) < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Unkown mode '%s' in interface <actual> element"),
+                                     mode);
+                goto error;
+            }
+            actual->data.direct.mode = m;
+        }
+
+        virtPortNode = virXPathNode("./virtualport", ctxt);
+        if (virtPortNode &&
+            virVirtualPortProfileParseXML(virtPortNode,
+                                                &actual->data.direct.virtPortProfile) < 0) {
+            goto error;
+        }
+    }
+
+    *def = actual;
+    actual = NULL;
+    ret = 0;
+error:
+    VIR_FREE(type);
+    VIR_FREE(mode);
+    virDomainActualNetDefFree(actual);
+
+    ctxt->node = save_ctxt;
+    return ret;
+}
 
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
@@ -2603,6 +2703,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *macaddr = NULL;
     char *type = NULL;
     char *network = NULL;
+    char *portgroup = NULL;
     char *bridge = NULL;
     char *dev = NULL;
     char *ifname = NULL;
@@ -2619,6 +2720,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *mode = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
     virVirtualPortProfileParamsPtr virtPort = NULL;
+    virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
     int ret;
 
@@ -2650,6 +2752,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) &&
                        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
                 network = virXMLPropString(cur, "network");
+                portgroup = virXMLPropString(cur, "portgroup");
             } else if ((internal == NULL) &&
                        (def->type == VIR_DOMAIN_NET_TYPE_INTERNAL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
@@ -2665,7 +2768,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 dev  = virXMLPropString(cur, "dev");
                 mode = virXMLPropString(cur, "mode");
             } else if ((virtPort == NULL) &&
-                       (def->type == VIR_DOMAIN_NET_TYPE_DIRECT) &&
+                       ((def->type == VIR_DOMAIN_NET_TYPE_DIRECT) ||
+                        (def->type == VIR_DOMAIN_NET_TYPE_NETWORK)) &&
                        xmlStrEqual(cur->name, BAD_CAST "virtualport")) {
                 if (virVirtualPortProfileParseXML(cur, &virtPort) < 0)
                     goto error;
@@ -2712,6 +2816,12 @@ virDomainNetDefParseXML(virCapsPtr caps,
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
                 if (virDomainDeviceBootParseXML(cur, &def->bootIndex,
                                                 bootMap))
+                    goto error;
+            } else if ((actual == NULL) &&
+                       (flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
+                       (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) &&
+                       xmlStrEqual(cur->name, BAD_CAST "actual")) {
+                if (virDomainActualNetDefParseXML(cur, ctxt, &actual) < 0)
                     goto error;
             }
         }
@@ -2761,6 +2871,12 @@ virDomainNetDefParseXML(virCapsPtr caps,
         }
         def->data.network.name = network;
         network = NULL;
+        def->data.network.portgroup = portgroup;
+        portgroup = NULL;
+        def->data.network.virtPortProfile = virtPort;
+        virtPort = NULL;
+        def->data.network.actual = actual;
+        actual = NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -2956,11 +3072,13 @@ cleanup:
     ctxt->node = oldnode;
     VIR_FREE(macaddr);
     VIR_FREE(network);
+    VIR_FREE(portgroup);
     VIR_FREE(address);
     VIR_FREE(port);
     VIR_FREE(ifname);
     VIR_FREE(dev);
     VIR_FREE(virtPort);
+    virDomainActualNetDefFree(actual);
     VIR_FREE(script);
     VIR_FREE(bridge);
     VIR_FREE(model);
@@ -8537,6 +8655,67 @@ virDomainFSDefFormat(virBufferPtr buf,
 }
 
 static int
+virDomainActualNetDefFormat(virBufferPtr buf,
+                            virDomainActualNetDefPtr def)
+{
+    int ret = -1;
+    const char *type;
+    const char *mode;
+
+    if (!def)
+        return 0;
+
+    type = virDomainNetTypeToString(def->type);
+    if (!type) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected net type %d"), def->type);
+        return ret;
+    }
+
+    if (def->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
+        def->type != VIR_DOMAIN_NET_TYPE_DIRECT) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected net type %s"), type);
+        goto error;
+    }
+    virBufferAsprintf(buf, "      <actual type='%s'>\n", type);
+
+    switch (def->type) {
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        if (def->data.bridge.brname) {
+            virBufferEscapeString(buf, "        <source bridge='%s'/>\n",
+                                  def->data.bridge.brname);
+        }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        virBufferAddLit(buf, "        <source");
+        if (def->data.direct.linkdev)
+            virBufferEscapeString(buf, " dev='%s'",
+                                  def->data.direct.linkdev);
+
+        mode = virMacvtapModeTypeToString(def->data.direct.mode);
+        if (!mode) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected source mode %d"),
+                                 def->data.direct.mode);
+            return ret;
+        }
+        virBufferAsprintf(buf, " mode='%s'/>\n", mode);
+        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile,
+                                    "        ");
+        break;
+    default:
+        break;
+    }
+    virBufferAddLit(buf, "      </actual>\n");
+
+    ret = 0;
+error:
+    return ret;
+}
+
+static int
 virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
                       unsigned int flags)
@@ -8559,8 +8738,18 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        virBufferEscapeString(buf, "      <source network='%s'/>\n",
+        virBufferEscapeString(buf, "      <source network='%s'",
                               def->data.network.name);
+        if (def->data.network.portgroup) {
+           virBufferEscapeString(buf, " portgroup='%s'",
+                                 def->data.network.portgroup);
+        }
+        virBufferAddLit(buf, "/>\n");
+        virVirtualPortProfileFormat(buf, def->data.network.virtPortProfile,
+                                    "      ");
+        if ((flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
+            (virDomainActualNetDefFormat(buf, def->data.network.actual) < 0))
+            return -1;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -9445,9 +9634,11 @@ virDomainHostdevDefFormat(virBufferPtr buf,
      VIR_DOMAIN_XML_INACTIVE |                  \
      VIR_DOMAIN_XML_UPDATE_CPU)
 
-verify((VIR_DOMAIN_XML_INTERNAL_STATUS & DUMPXML_FLAGS) == 0);
+verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
+         VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET)
+        & DUMPXML_FLAGS) == 0);
 
-/* This internal version can accept VIR_DOMAIN_XML_INTERNAL_STATUS,
+/* This internal version can accept VIR_DOMAIN_XML_INTERNAL_*,
  * whereas the public version cannot.  */
 static char *
 virDomainDefFormatInternal(virDomainDefPtr def,
@@ -9459,7 +9650,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     const char *type = NULL;
     int n, allones = 1;
 
-    virCheckFlags(DUMPXML_FLAGS | VIR_DOMAIN_XML_INTERNAL_STATUS, NULL);
+    virCheckFlags(DUMPXML_FLAGS |
+                  VIR_DOMAIN_XML_INTERNAL_STATUS |
+                  VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET,
+                  NULL);
 
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10024,7 +10218,10 @@ int virDomainSaveStatus(virCapsPtr caps,
                         const char *statusDir,
                         virDomainObjPtr obj)
 {
-    unsigned int flags = VIR_DOMAIN_XML_SECURE|VIR_DOMAIN_XML_INTERNAL_STATUS;
+    unsigned int flags = (VIR_DOMAIN_XML_SECURE |
+                          VIR_DOMAIN_XML_INTERNAL_STATUS |
+                          VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET);
+
     int ret = -1;
     char *xml;
 
@@ -10115,7 +10312,8 @@ static virDomainObjPtr virDomainLoadStatus(virCapsPtr caps,
         goto error;
 
     if (!(obj = virDomainObjParseFile(caps, statusFile, expectedVirtTypes,
-                                      VIR_DOMAIN_XML_INTERNAL_STATUS)))
+                                      VIR_DOMAIN_XML_INTERNAL_STATUS |
+                                      VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
@@ -11111,4 +11309,69 @@ virDomainStateReasonFromString(virDomainState state, const char *reason)
     }
 
     return -1;
+}
+
+
+/* Some access functions to gloss over the difference between NetDef
+ * (<interface>) and ActualNetDef (<actual>). If the NetDef has an
+ * ActualNetDef, return the requested value from the ActualNetDef,
+ * otherwise return the value from the NetDef.
+ */
+
+int
+virDomainNetGetActualType(virDomainNetDefPtr iface)
+{
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+        return iface->type;
+    if (!iface->data.network.actual)
+        return iface->type;
+    return iface->data.network.actual->type;
+}
+
+char *
+virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_BRIDGE)
+        return iface->data.bridge.brname;
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+        return NULL;
+    if (!iface->data.network.actual)
+        return NULL;
+    return iface->data.network.actual->data.bridge.brname;
+}
+
+char *
+virDomainNetGetActualDirectDev(virDomainNetDefPtr iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
+        return iface->data.direct.linkdev;
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+        return NULL;
+    if (!iface->data.network.actual)
+        return NULL;
+    return iface->data.network.actual->data.direct.linkdev;
+}
+
+int
+virDomainNetGetActualDirectMode(virDomainNetDefPtr iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
+        return iface->data.direct.mode;
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+        return 0;
+    if (!iface->data.network.actual)
+        return 0;
+    return iface->data.network.actual->data.direct.mode;
+}
+
+virVirtualPortProfileParamsPtr
+virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
+        return iface->data.direct.virtPortProfile;
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+        return NULL;
+    if (!iface->data.network.actual)
+        return NULL;
+    return iface->data.network.actual->data.direct.virtPortProfile;
 }

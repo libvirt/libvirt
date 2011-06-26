@@ -1391,23 +1391,54 @@
     <p>
       <strong><em>
       This is the recommended config for general guest connectivity on
-      hosts with dynamic / wireless networking configs
+      hosts with dynamic / wireless networking configs (or multi-host
+      environments where the host hardware details are described
+      separately in a <code>&lt;network&gt;</code>
+      definition <span class="since">Since 0.9.4</span>).
       </em></strong>
     </p>
 
     <p>
-      Provides a virtual network using a bridge device in the host.
-      Depending on the virtual network configuration, the network may be
-      totally isolated, NAT'ing to an explicit network device, or NAT'ing to
-      the default route. DHCP and DNS are provided on the virtual network in
-      all cases and the IP range can be determined by examining the virtual
-      network config with '<code>virsh net-dumpxml [networkname]</code>'.
-      There is one virtual network called 'default' setup out
-      of the box which does NAT'ing to the default route and has an IP range of
-      <code>192.168.122.0/255.255.255.0</code>. Each guest will have an
-      associated tun device created with a name of vnetN, which can also be
-      overridden with the &lt;target&gt; element (see
+
+      Provides a connection whose details are described by the named
+      network definition. Depending on the virtual network's "forward
+      mode" configuration, the network may be totally isolated
+      (no <code>&lt;forward&gt;</code> element given), NAT'ing to an
+      explicit network device or to the default route
+      (<code>&lt;forward mode='nat'&gt;</code>), routed with no NAT
+      (<code>&lt;forward mode='route'/&gt;</code>), or connected
+      directly to one of the host's network interfaces (via macvtap)
+      or bridge devices ((<code>&lt;forward
+      mode='bridge|private|vepa|passthrough'/&gt;</code> <span class="since">Since
+      0.9.4</span>)
+    </p>
+    <p>
+      For networks with a forward mode of bridge, private, vepa, and
+      passthrough, it is assumed that the host has any necessary DNS
+      and DHCP services already setup outside the scope of libvirt. In
+      the case of isolated, nat, and routed networks, DHCP and DNS are
+      provided on the virtual network by libvirt, and the IP range can
+      be determined by examining the virtual network config with
+      '<code>virsh net-dumpxml [networkname]</code>'. There is one
+      virtual network called 'default' setup out of the box which does
+      NAT'ing to the default route and has an IP range
+      of <code>192.168.122.0/255.255.255.0</code>. Each guest will
+      have an associated tun device created with a name of vnetN,
+      which can also be overridden with the &lt;target&gt; element
+      (see
       <a href="#elementsNICSTargetOverride">overriding the target element</a>).
+    </p>
+    <p>
+      When the source of an interface is a network,
+      a <code>portgroup</code> can be specified along with the name of
+      the network; one network may have multiple portgroups defined,
+      with each portgroup containing slightly different configuration
+      information for different classes of network
+      connections. <span class="since">Since 0.9.4</span>). Also,
+      similar to <code>direct</code> network connections (described
+      below), a connection of type <code>network</code> may specify
+      a <code>virtportprofile</code> element, with configuration data
+      to be forwarded to a vepa or 802.1Qbh compliant switch.
     </p>
 
 <pre>
@@ -1418,9 +1449,13 @@
     &lt;/interface&gt;
     ...
     &lt;interface type='network'&gt;
-      &lt;source network='default'/&gt;
+      &lt;source network='default' portgroup='engineering'/&gt;
       &lt;target dev='vnet7'/&gt;
       &lt;mac address="00:11:22:33:44:55"/&gt;
+      &lt;virtualport type='802.1Qbg'&gt;
+        &lt;parameters managerid='11' typeid='1193047' typeidversion='2' instanceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/&gt;
+      &lt;/virtualport&gt;
+
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>

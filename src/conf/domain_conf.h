@@ -343,6 +343,27 @@ enum virDomainNetVirtioTxModeType {
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
 };
 
+/* Config that was actually used to bring up interface, after
+ * resolving network reference. This is private data, only used within
+ * libvirt, but still must maintain backward compatibility, because
+ * different versions of libvirt may read the same data file.
+ */
+typedef struct _virDomainActualNetDef virDomainActualNetDef;
+typedef virDomainActualNetDef *virDomainActualNetDefPtr;
+struct _virDomainActualNetDef {
+    int type; /* enum virDomainNetType */
+    union {
+        struct {
+            char *brname;
+        } bridge;
+        struct {
+            char *linkdev;
+            int mode; /* enum virMacvtapMode from util/macvtap.h */
+            virVirtualPortProfileParamsPtr virtPortProfile;
+        } direct;
+    } data;
+};
+
 /* Stores the virtual network interface configuration */
 typedef struct _virDomainNetDef virDomainNetDef;
 typedef virDomainNetDef *virDomainNetDefPtr;
@@ -369,6 +390,17 @@ struct _virDomainNetDef {
         } socket; /* any of NET_CLIENT or NET_SERVER or NET_MCAST */
         struct {
             char *name;
+            char *portgroup;
+            virVirtualPortProfileParamsPtr virtPortProfile;
+            /* actual has info about the currently used physical
+             * device (if the network is of type
+             * bridge/private/vepa/passthrough). This is saved in the
+             * domain state, but never written to persistent config,
+             * since it needs to be re-allocated whenever the domain
+             * is restarted. It is also never shown to the user, and
+             * the user cannot specify it in XML documents.
+             */
+            virDomainActualNetDefPtr actual;
         } network;
         struct {
             char *brname;
@@ -1340,6 +1372,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
 void virDomainFSDefFree(virDomainFSDefPtr def);
+void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
@@ -1449,6 +1482,13 @@ int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
 int virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac);
+
+int virDomainNetGetActualType(virDomainNetDefPtr iface);
+char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
+char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
+int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
+virVirtualPortProfileParamsPtr
+virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface);
 
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);

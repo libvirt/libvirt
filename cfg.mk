@@ -97,6 +97,7 @@ useless_free_options =				\
   --name=virCommandFree				\
   --name=virConfFreeList			\
   --name=virConfFreeValue			\
+  --name=virDomainActualNetDefFree		\
   --name=virDomainChrDefFree			\
   --name=virDomainChrSourceDefFree		\
   --name=virDomainControllerDefFree		\

@@ -1036,8 +1036,16 @@
               <attribute name="network">
                 <ref name="deviceName"/>
               </attribute>
+              <optional>
+                <attribute name="portgroup">
+                  <ref name="deviceName"/>
+                </attribute>
+              </optional>
               <empty/>
             </element>
+            <optional>
+              <ref name="virtualPortProfile"/>
+            </optional>
             <ref name="interface-options"/>
           </interleave>
         </group>

@@ -158,6 +158,7 @@ mymain(void)
     DO_TEST("net-virtio-device");
     DO_TEST("net-eth");
     DO_TEST("net-eth-ifname");
+    DO_TEST("net-virtio-network-portgroup");
     DO_TEST("sound");
 
     DO_TEST("serial-vc");
