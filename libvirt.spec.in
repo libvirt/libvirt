@@ -1016,7 +1016,10 @@ fi
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc
 %endif
 
+%if %{with_storage_disk}
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
+%endif
+
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 %attr(0755, root, root) %{_sbindir}/libvirtd
 
