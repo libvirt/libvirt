@@ -33,9 +33,9 @@ enum virSysinfoType {
     VIR_SYSINFO_LAST
 };
 
-typedef struct _virProcessorinfoDef virProcessorinfoDef;
-typedef virProcessorinfoDef *virProcessorinfoDefPtr;
-struct _virProcessorinfoDef {
+typedef struct _virSysinfoProcessorDef virSysinfoProcessorDef;
+typedef virSysinfoProcessorDef *virSysinfoProcessorDefPtr;
+struct _virSysinfoProcessorDef {
     char *processor_socket_destination;
     char *processor_type;
     char *processor_family;
@@ -49,9 +49,9 @@ struct _virProcessorinfoDef {
     char *processor_part_number;
 };
 
-typedef struct _virMemoryDeviceinfoDef virMemoryDeviceinfoDef;
-typedef virMemoryDeviceinfoDef *virMemoryDeviceinfoDefPtr;
-struct _virMemoryDeviceinfoDef {
+typedef struct _virSysinfoMemoryDef virSysinfoMemoryDef;
+typedef virSysinfoMemoryDef *virSysinfoMemoryDefPtr;
+struct _virSysinfoMemoryDef {
     char *memory_size;
     char *memory_form_factor;
     char *memory_locator;
@@ -83,10 +83,10 @@ struct _virSysinfoDef {
     char *system_family;
 
     size_t nprocessor;
-    virProcessorinfoDefPtr processor;
+    virSysinfoProcessorDefPtr processor;
 
     size_t nmemory;
-    virMemoryDeviceinfoDefPtr memory;
+    virSysinfoMemoryDefPtr memory;
 };
 
 virSysinfoDefPtr virSysinfoRead(void);

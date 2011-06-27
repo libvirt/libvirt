@@ -128,7 +128,7 @@ virSysinfoRead(void) {
 #else /* !WIN32 */
 
 static char *
-parseBIOSInfo(char *base, virSysinfoDefPtr ret)
+virSysinfoParseBIOS(char *base, virSysinfoDefPtr ret)
 {
     char *cur, *eol;
 
@@ -164,7 +164,7 @@ no_memory:
 }
 
 static char *
-parseSystemInfo(char *base, virSysinfoDefPtr ret)
+virSysinfoParseSystem(char *base, virSysinfoDefPtr ret)
 {
     char *cur, *eol;
 
@@ -222,10 +222,10 @@ no_memory:
 }
 
 static char *
-parseProcessorInfo(char *base, virSysinfoDefPtr ret)
+virSysinfoParseProcessor(char *base, virSysinfoDefPtr ret)
 {
     char *cur, *eol, *tmp_base;
-    virProcessorinfoDefPtr processor;
+    virSysinfoProcessorDefPtr processor;
 
     while((tmp_base = strstr(base, "Processor Information")) != NULL) {
         base = tmp_base;
@@ -323,10 +323,10 @@ no_memory:
 }
 
 static char *
-parseMemoryDeviceInfo(char *base, virSysinfoDefPtr ret)
+virSysinfoParseMemory(char *base, virSysinfoDefPtr ret)
 {
     char *cur, *eol, *tmp_base;
-    virMemoryDeviceinfoDefPtr memory;
+    virSysinfoMemoryDefPtr memory;
 
     while ((tmp_base = strstr(base, "Memory Device")) != NULL) {
         base = tmp_base;
@@ -452,20 +452,20 @@ virSysinfoRead(void) {
 
     base = outbuf;
 
-    if ((base = parseBIOSInfo(base, ret)) == NULL)
+    if ((base = virSysinfoParseBIOS(base, ret)) == NULL)
         goto no_memory;
 
-    if ((base = parseSystemInfo(base, ret)) == NULL)
+    if ((base = virSysinfoParseSystem(base, ret)) == NULL)
         goto no_memory;
 
     ret->nprocessor = 0;
     ret->processor = NULL;
-    if ((base = parseProcessorInfo(base, ret)) == NULL)
+    if ((base = virSysinfoParseProcessor(base, ret)) == NULL)
         goto no_memory;
 
     ret->nmemory = 0;
     ret->memory = NULL;
-    if ((base = parseMemoryDeviceInfo(base, ret)) == NULL)
+    if ((base = virSysinfoParseMemory(base, ret)) == NULL)
         goto no_memory;
 
 cleanup:
@@ -484,7 +484,8 @@ no_memory:
 #endif /* !WIN32 */
 
 static void
-BIOSInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+virSysinfoBIOSFormat(virSysinfoDefPtr def, const char *prefix,
+                     virBufferPtr buf)
 {
     int len = strlen(prefix);
 
@@ -522,7 +523,8 @@ BIOSInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
 }
 
 static void
-SystemInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+virSysinfoSystemFormat(virSysinfoDefPtr def, const char *prefix,
+                       virBufferPtr buf)
 {
     int len = strlen(prefix);
 
@@ -580,11 +582,12 @@ SystemInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
 }
 
 static void
-ProcessorInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+virSysinfoProcessorFormat(virSysinfoDefPtr def, const char *prefix,
+                          virBufferPtr buf)
 {
     int i;
     int len = strlen(prefix);
-    virProcessorinfoDefPtr processor;
+    virSysinfoProcessorDefPtr processor;
 
     for (i = 0; i < def->nprocessor; i++) {
         processor = &def->processor[i];
@@ -675,11 +678,12 @@ ProcessorInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
 }
 
 static void
-MemoryDeviceInfoFormat(virSysinfoDefPtr def, const char *prefix, virBufferPtr buf)
+virSysinfoMemoryFormat(virSysinfoDefPtr def, const char *prefix,
+                             virBufferPtr buf)
 {
     int i;
     int len = strlen(prefix);
-    virMemoryDeviceinfoDefPtr memory;
+    virSysinfoMemoryDefPtr memory;
 
     for (i = 0; i < def->nmemory; i++) {
         memory = &def->memory[i];
@@ -785,10 +789,10 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
 
     virBufferAsprintf(&buf, "%s<sysinfo type='%s'>\n", prefix, type);
 
-    BIOSInfoFormat(def, prefix, &buf);
-    SystemInfoFormat(def, prefix, &buf);
-    ProcessorInfoFormat(def, prefix, &buf);
-    MemoryDeviceInfoFormat(def, prefix, &buf);
+    virSysinfoBIOSFormat(def, prefix, &buf);
+    virSysinfoSystemFormat(def, prefix, &buf);
+    virSysinfoProcessorFormat(def, prefix, &buf);
+    virSysinfoMemoryFormat(def, prefix, &buf);
 
     virBufferAsprintf(&buf, "%s</sysinfo>\n", prefix);
 
