@@ -2614,6 +2614,82 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
     </dl>
 
+    <h3><a name="seclabel">Security label</a></h3>
+
+    <p>
+      The <code>seclabel</code> element allows control over the
+      operation of the security drivers. There are two basic
+      modes of operation, dynamic where libvirt automatically
+      generates a unique security label, or static where the
+      application/administrator chooses the labels. With dynamic
+      label generation, libvirt will always automatically
+      relabel any resources associated with the virtual machine.
+      With static label assignment, by default, the administrator
+      or application must ensure labels are set correctly on any
+      resources, however, automatic relabeling can be enabled
+      if desired
+    </p>
+
+    <p>
+      Valid input XML configurations for the security label
+      are:
+    </p>
+
+    <pre>
+  &lt;seclabel type='dynamic' model='selinux'/&gt;
+
+  &lt;seclabel type='dynamic' model='selinux'&gt;
+    &lt;baselabel&gt;system_u:system_r:my_svirt_t:s0&lt;/baselabel&gt;
+  &lt;/seclabel&gt;
+
+  &lt;seclabel type='static' model='selinux' relabel='no'&gt;
+    &lt;label&gt;system_u:system_r:svirt_t:s0:c392,c662&lt;/label&gt;
+  &lt;/seclabel&gt;
+
+  &lt;seclabel type='static' model='selinux' relabel='yes'&gt;
+    &lt;label&gt;system_u:system_r:svirt_t:s0:c392,c662&lt;/label&gt;
+  &lt;/seclabel&gt;
+    </pre>
+
+    <p>
+      When viewing the XML for a running guest with automatic
+      resource relabeling active, an additional XML element,
+      <code>imagelabel</code>, will be included. This is an
+      output-only element, so will be ignored in user supplied
+      XML documents
+    </p>
+    <dl>
+      <dt><code>type</code></dt>
+      <dd>Either <code>static</code> or <code>dynamic</code> to determine
+        whether libvirt automatically generates a unique security label
+        or not.
+      </dd>
+      <dt><code>model</code></dt>
+      <dd>A valid security model name, matching the currently
+        activated security model
+      </dd>
+      <dt><code>relabel</code></dt>
+      <dd>Either <code>yes</code> or <code>no</code>. This must always
+        be <code>yes</code> if dynamic label assignment is used. With
+        static label assignment it will default to <code>no</code>.
+      </dd>
+      <dt><code>label</code></dt>
+      <dd>If static labelling is used, this must specify the full
+        security label to assign to the virtual domain. The format
+        of the content depends on the security driver in use
+      </dd>
+      <dt><code>baselabel</code></dt>
+      <dd>If dynamic labelling is used, this can optionally be
+        used to specify the base security label. The format
+        of the content depends on the security driver in use
+      </dd>
+      <dt><code>imagelabel</code></dt>
+      <dd>This is an output only element, which shows the
+        security label used on resources associated with the virtual domain.
+        The format of the content depends on the security driver in use
+      </dd>
+    </dl>
+
     <h2><a name="examples">Example configs</a></h2>
 
     <p>
