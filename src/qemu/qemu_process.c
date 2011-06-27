@@ -1251,8 +1251,6 @@ static int
 qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
 {
     nodemask_t mask;
-    virErrorPtr orig_err = NULL;
-    virErrorPtr err = NULL;
     int mode = -1;
     int node = -1;
     int ret = -1;
@@ -1291,23 +1289,12 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
         }
     }
 
-    orig_err = virSaveLastError();
     mode = vm->def->numatune.memory.mode;
 
     if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         numa_set_bind_policy(1);
         numa_set_membind(&mask);
         numa_set_bind_policy(0);
-
-        err = virGetLastError();
-        if ((err && (err->code != orig_err->code)) ||
-            (err && !orig_err)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to bind memory to specified nodeset: %s"),
-                            err ? err->message : _("unknown error"));
-            virResetLastError();
-            goto cleanup;
-        }
     } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_PREFERRED) {
         int nnodes = 0;
         for (i = 0; i < NUMA_NUM_NODES; i++) {
@@ -1326,28 +1313,8 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
 
         numa_set_bind_policy(0);
         numa_set_preferred(node);
-
-        err = virGetLastError();
-        if ((err && (err->code != orig_err->code)) ||
-            (err && !orig_err)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to set memory policy as preferred to specified "
-                              "node: %s"), err ? err->message : _("unknown error"));
-            virResetLastError();
-            goto cleanup;
-        }
     } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE) {
         numa_set_interleave_mask(&mask);
-
-        err = virGetLastError();
-        if ((err && (err->code != orig_err->code)) ||
-            (err && !orig_err)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to interleave memory to specified nodeset: %s"),
-                            err ? err->message : _("unknown error"));
-            virResetLastError();
-            goto cleanup;
-        }
     } else {
         /* XXX: Shouldn't go here, as we already do checking when
          * parsing domain XML.
