@@ -85,10 +85,23 @@ cleanup:
     return result;
 }
 
+static char *
+testDnsmasqLeaseFileName(const char *netname)
+{
+    char *leasefile;
+
+    virAsprintf(&leasefile, "/var/lib/libvirt/dnsmasq/%s.leases",
+                netname);
+
+    return leasefile;
+}
+
 static int
 mymain(void)
 {
     int ret = 0;
+
+    networkDnsmasqLeaseFileName = testDnsmasqLeaseFileName;
 
 #define DO_TEST(name) \
     if (virtTestRun("Network XML-2-Argv " name, \

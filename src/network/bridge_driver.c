@@ -108,7 +108,7 @@ static void networkReloadIptablesRules(struct network_driver *driver);
 static struct network_driver *driverState = NULL;
 
 static char *
-networkDnsmasqLeaseFileName(const char *netname)
+networkDnsmasqLeaseFileNameDefault(const char *netname)
 {
     char *leasefile;
 
@@ -116,6 +116,9 @@ networkDnsmasqLeaseFileName(const char *netname)
                 netname);
     return leasefile;
 }
+
+networkDnsmasqLeaseFileNameFunc networkDnsmasqLeaseFileName =
+    networkDnsmasqLeaseFileNameDefault;
 
 static char *
 networkRadvdPidfileBasename(const char *netname)
