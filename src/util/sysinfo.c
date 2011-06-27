@@ -792,6 +792,11 @@ virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
 
     virBufferAsprintf(&buf, "%s</sysinfo>\n", prefix);
 
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+
     return virBufferContentAndReset(&buf);
 }
 
