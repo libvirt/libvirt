@@ -1090,9 +1090,14 @@ static int virNetClientIO(virNetClientPtr client,
      */
     virNetSocketUpdateIOCallback(client->sock, 0);
 
+    virResetLastError();
     rv = virNetClientIOEventLoop(client, thiscall);
 
     virNetSocketUpdateIOCallback(client->sock, VIR_EVENT_HANDLE_READABLE);
+
+    if (rv == 0 &&
+        virGetLastError())
+        rv = -1;
 
 cleanup:
     VIR_DEBUG("All done with our call %p %p %d", client->waitDispatch, thiscall, rv);
