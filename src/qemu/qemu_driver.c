@@ -4789,11 +4789,14 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     virDomainDeviceDefPtr dev = NULL;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
+    unsigned int affect;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   (action == QEMU_DEVICE_UPDATE ?
                    VIR_DOMAIN_DEVICE_MODIFY_FORCE : 0), -1);
+
+    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4809,10 +4812,10 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
         goto cleanup;
 
     if (virDomainObjIsActive(vm)) {
-        if (flags == VIR_DOMAIN_AFFECT_CURRENT)
+        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     } else {
-        if (flags == VIR_DOMAIN_AFFECT_CURRENT)
+        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
             flags |= VIR_DOMAIN_AFFECT_CONFIG;
         /* check consistency between flags and the vm state */
         if (flags & VIR_DOMAIN_AFFECT_LIVE) {
