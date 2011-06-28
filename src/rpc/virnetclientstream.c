@@ -217,13 +217,24 @@ int virNetClientStreamSetError(virNetClientStreamPtr st,
     } else {
         st->err.code = err.code;
     }
-    st->err.message = *err.message;
-    *err.message = NULL;
+    if (err.message) {
+        st->err.message = *err.message;
+        *err.message = NULL;
+    }
     st->err.domain = err.domain;
     st->err.level = err.level;
-    st->err.str1 = *err.str1;
-    st->err.str2 = *err.str2;
-    st->err.str3 = *err.str3;
+    if (err.str1) {
+        st->err.str1 = *err.str1;
+        *err.str1 = NULL;
+    }
+    if (err.str2) {
+        st->err.str2 = *err.str2;
+        *err.str2 = NULL;
+    }
+    if (err.str3) {
+        st->err.str3 = *err.str3;
+        *err.str3 = NULL;
+    }
     st->err.int1 = err.int1;
     st->err.int2 = err.int2;
 
