@@ -185,14 +185,14 @@ addnhostsWrite(const char *path,
     if (!(f = fopen(tmp, "w"))) {
         istmp = false;
         if (!(f = fopen(path, "w"))) {
-            rc = errno;
+            rc = -errno;
             goto cleanup;
         }
     }
 
     for (i = 0; i < nhosts; i++) {
         if (fputs(hosts[i].ip, f) == EOF || fputc('\t', f) == EOF) {
-            rc = errno;
+            rc = -errno;
             VIR_FORCE_FCLOSE(f);
 
             if (istmp)
@@ -203,7 +203,7 @@ addnhostsWrite(const char *path,
 
         for (ii = 0; ii < hosts[i].nhostnames; ii++) {
             if (fputs(hosts[i].hostnames[ii], f) == EOF || fputc('\t', f) == EOF) {
-                rc = errno;
+                rc = -errno;
                 VIR_FORCE_FCLOSE(f);
 
                 if (istmp)
@@ -214,7 +214,7 @@ addnhostsWrite(const char *path,
         }
 
         if (fputc('\n', f) == EOF) {
-            rc = errno;
+            rc = -errno;
             VIR_FORCE_FCLOSE(f);
 
             if (istmp)
@@ -225,21 +225,14 @@ addnhostsWrite(const char *path,
     }
 
     if (VIR_FCLOSE(f) == EOF) {
-        rc = errno;
+        rc = -errno;
         goto cleanup;
     }
 
-    if (istmp) {
-        if (rename(tmp, path) < 0) {
-            rc = errno;
-            unlink(tmp);
-            goto cleanup;
-        }
-
-        if (unlink(tmp) < 0) {
-            rc = errno;
-            goto cleanup;
-        }
+    if (istmp && rename(tmp, path) < 0) {
+        rc = -errno;
+        unlink(tmp);
+        goto cleanup;
     }
 
  cleanup:
@@ -255,7 +248,7 @@ addnhostsSave(dnsmasqAddnHostsfile *addnhostsfile)
                              addnhostsfile->nhosts);
 
     if (err < 0) {
-        virReportSystemError(err, _("cannot write config file '%s'"),
+        virReportSystemError(-err, _("cannot write config file '%s'"),
                              addnhostsfile->path);
         return -1;
     }
@@ -402,17 +395,10 @@ hostsfileWrite(const char *path,
         goto cleanup;
     }
 
-    if (istmp) {
-        if (rename(tmp, path) < 0) {
-            rc = -errno;
-            unlink(tmp);
-            goto cleanup;
-        }
-
-        if (unlink(tmp) < 0) {
-            rc = -errno;
-            goto cleanup;
-        }
+    if (istmp && rename(tmp, path) < 0) {
+        rc = -errno;
+        unlink(tmp);
+        goto cleanup;
     }
 
  cleanup:
@@ -428,7 +414,7 @@ hostsfileSave(dnsmasqHostsfile *hostsfile)
                              hostsfile->nhosts);
 
     if (err < 0) {
-        virReportSystemError(err, _("cannot write config file '%s'"),
+        virReportSystemError(-err, _("cannot write config file '%s'"),
                              hostsfile->path);
         return -1;
     }
