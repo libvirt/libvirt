@@ -3126,6 +3126,8 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
             }
         }
 
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            goto cleanup;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
