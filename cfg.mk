@@ -31,7 +31,7 @@ gnulib_dir = $(srcdir)/.gnulib
 # List of additional files that we want to pick up in our POTFILES.in
 # This is all gnulib files, as well as generated files for RPC code.
 generated_files = \
-  $(srcdir)/daemon/*_dispatch_*.h \
+  $(srcdir)/daemon/*_dispatch.h \
   $(srcdir)/src/remote/*_client_bodies.h \
   $(srcdir)/src/remote/*_protocol.[ch] \
   $(srcdir)/gnulib/lib/*.[ch]
