@@ -874,7 +874,7 @@ static void
 daemonConfigFree(struct daemonConfig *data);
 
 static struct daemonConfig*
-daemonConfigNew(bool privileged)
+daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 {
     struct daemonConfig *data;
     char *localhost;
@@ -1034,8 +1034,10 @@ daemonConfigLoad(struct daemonConfig *data,
      */
     if (data->auth_unix_rw == REMOTE_AUTH_POLKIT) {
         VIR_FREE(data->unix_sock_rw_perms);
-        if (!(data->unix_sock_rw_perms = strdup("0777")))
-            goto no_memory;
+        if (!(data->unix_sock_rw_perms = strdup("0777"))) {
+            virReportOOMError();
+            goto error;
+        }
     }
 #endif
     if (remoteConfigGetAuth(conf, "auth_unix_ro", &data->auth_unix_ro, filename) < 0)
@@ -1091,8 +1093,6 @@ daemonConfigLoad(struct daemonConfig *data,
     virConfFree (conf);
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     virConfFree (conf);
     return -1;

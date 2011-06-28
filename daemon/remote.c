@@ -2209,7 +2209,7 @@ authdeny:
 
 static int
 remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
-                         virNetServerClientPtr client,
+                         virNetServerClientPtr client ATTRIBUTE_UNUSED,
                          virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
                          virNetMessageErrorPtr rerr,
                          remote_auth_polkit_ret *ret ATTRIBUTE_UNUSED)
