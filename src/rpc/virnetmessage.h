@@ -78,6 +78,8 @@ int virNetMessageEncodePayloadRaw(virNetMessagePtr msg,
                                   const char *buf,
                                   size_t len)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetMessageEncodePayloadEmpty(virNetMessagePtr msg)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     ATTRIBUTE_NONNULL(1);

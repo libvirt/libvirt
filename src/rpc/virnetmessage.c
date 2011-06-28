@@ -334,6 +334,31 @@ error:
 }
 
 
+int virNetMessageEncodePayloadEmpty(virNetMessagePtr msg)
+{
+    XDR xdr;
+    unsigned int msglen;
+
+    /* Re-encode the length word. */
+    VIR_DEBUG("Encode length as %zu", msg->bufferOffset);
+    xdrmem_create(&xdr, msg->buffer, VIR_NET_MESSAGE_HEADER_XDR_LEN, XDR_ENCODE);
+    msglen = msg->bufferOffset;
+    if (!xdr_u_int(&xdr, &msglen)) {
+        virNetError(VIR_ERR_RPC, "%s", _("Unable to encode message length"));
+        goto error;
+    }
+    xdr_destroy(&xdr);
+
+    msg->bufferLength = msg->bufferOffset;
+    msg->bufferOffset = 0;
+    return 0;
+
+error:
+    xdr_destroy(&xdr);
+    return -1;
+}
+
+
 void virNetMessageSaveError(virNetMessageErrorPtr rerr)
 {
     /* This func may be called several times & the first
