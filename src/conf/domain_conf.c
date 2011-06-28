@@ -8263,7 +8263,7 @@ virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
         return 0;
 
     if (--def->cputune.nvcpupin == 0) {
-        virDomainVcpuPinDefFree(def->cputune.vcpupin, 0);
+        VIR_FREE(def->cputune.vcpupin);
     } else {
         if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin) < 0) {
             virReportOOMError();
