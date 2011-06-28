@@ -723,11 +723,15 @@ readmore:
         filter = client->filters;
         while (filter) {
             int ret = filter->func(client, msg, filter->opaque);
-            if (ret < 0 || ret > 0) {
+            if (ret < 0) {
                 virNetMessageFree(msg);
                 msg = NULL;
                 if (ret < 0)
                     client->wantClose = true;
+                break;
+            }
+            if (ret > 0) {
+                msg = NULL;
                 break;
             }
 
