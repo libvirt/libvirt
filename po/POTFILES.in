@@ -1,6 +1,5 @@
 daemon/libvirtd.c
 daemon/remote.c
-daemon/remote_dispatch_bodies.h
 daemon/stream.c
 gnulib/lib/gai_strerror.c
 src/conf/cpu_conf.c
