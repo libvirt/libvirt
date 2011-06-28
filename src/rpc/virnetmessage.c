@@ -101,8 +101,9 @@ int virNetMessageDecodeLength(virNetMessagePtr msg)
     msg->bufferOffset = xdr_getpos(&xdr);
 
     if (len < VIR_NET_MESSAGE_LEN_MAX) {
-        virNetError(VIR_ERR_RPC, "%s",
-                    _("packet received from server too small"));
+        virNetError(VIR_ERR_RPC,
+                    _("packet %d bytes received from server too small, want %d"),
+                    len, VIR_NET_MESSAGE_LEN_MAX);
         goto cleanup;
     }
 
@@ -110,8 +111,9 @@ int virNetMessageDecodeLength(virNetMessagePtr msg)
     len -= VIR_NET_MESSAGE_LEN_MAX;
 
     if (len > VIR_NET_MESSAGE_MAX) {
-        virNetError(VIR_ERR_RPC, "%s",
-                    _("packet received from server too large"));
+        virNetError(VIR_ERR_RPC,
+                    _("packet %d bytes received from server too large, want %d"),
+                    len, VIR_NET_MESSAGE_MAX);
         goto cleanup;
     }
 
