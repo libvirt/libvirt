@@ -130,7 +130,7 @@ virSysinfoRead(void) {
 static char *
 virSysinfoParseBIOS(char *base, virSysinfoDefPtr ret)
 {
-    char *cur, *eol;
+    char *cur, *eol = NULL;
 
     if ((cur = strstr(base, "Vendor: ")) != NULL) {
         cur += 8;
@@ -157,7 +157,7 @@ virSysinfoParseBIOS(char *base, virSysinfoDefPtr ret)
             goto no_memory;
     }
 
-    return eol + 1;
+    return eol ? eol + 1 : NULL;
 
 no_memory:
     return NULL;
@@ -166,7 +166,7 @@ no_memory:
 static char *
 virSysinfoParseSystem(char *base, virSysinfoDefPtr ret)
 {
-    char *cur, *eol;
+    char *cur, *eol = NULL;
 
     if ((base = strstr(base, "System Information")) == NULL)
         return 0;
@@ -215,7 +215,7 @@ virSysinfoParseSystem(char *base, virSysinfoDefPtr ret)
             goto no_memory;
     }
 
-    return eol + 1;
+    return eol ? eol + 1 : NULL;
 
 no_memory:
     return NULL;
@@ -229,6 +229,7 @@ virSysinfoParseProcessor(char *base, virSysinfoDefPtr ret)
 
     while((tmp_base = strstr(base, "Processor Information")) != NULL) {
         base = tmp_base;
+        eol = NULL;
 
         if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
             goto no_memory;
@@ -313,6 +314,8 @@ virSysinfoParseProcessor(char *base, virSysinfoDefPtr ret)
                 goto no_memory;
         }
 
+        if (!eol)
+            break;
         base = eol + 1;
     }
 
@@ -330,6 +333,7 @@ virSysinfoParseMemory(char *base, virSysinfoDefPtr ret)
 
     while ((tmp_base = strstr(base, "Memory Device")) != NULL) {
         base = tmp_base;
+        eol = NULL;
 
         if (VIR_EXPAND_N(ret->memory, ret->nmemory, 1) < 0) {
             goto no_memory;
@@ -411,6 +415,8 @@ virSysinfoParseMemory(char *base, virSysinfoDefPtr ret)
         }
 
     next:
+        if (!eol)
+            break;
         base = eol + 1;
     }
 
