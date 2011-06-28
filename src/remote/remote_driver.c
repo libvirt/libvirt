@@ -2520,7 +2520,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
     int ret = -1;
     const char *mechlist;
     virNetSASLContextPtr saslCtxt;
-    virNetSASLSessionPtr sasl;
+    virNetSASLSessionPtr sasl = NULL;
 
     VIR_DEBUG("Client initialize SASL authentication");
 
