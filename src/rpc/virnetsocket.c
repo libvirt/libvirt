@@ -1066,7 +1066,7 @@ int virNetSocketAddIOCallback(virNetSocketPtr sock,
                                          virNetSocketEventHandle,
                                          sock,
                                          NULL)) < 0) {
-        VIR_WARN("Failed to register watch on socket %p", sock);
+        VIR_DEBUG("Failed to register watch on socket %p", sock);
         return -1;
     }
     sock->func = func;
