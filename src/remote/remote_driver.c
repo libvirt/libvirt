@@ -3254,11 +3254,8 @@ static void remoteStreamEventCallback(virNetClientStreamPtr stream ATTRIBUTE_UNU
                                       void *opaque)
 {
     struct remoteStreamCallbackData *cbdata = opaque;
-    struct private_data *priv = cbdata->st->conn->privateData;
 
-    remoteDriverUnlock(priv);
     (cbdata->cb)(cbdata->st, events, cbdata->opaque);
-    remoteDriverLock(priv);
 }
 
 
