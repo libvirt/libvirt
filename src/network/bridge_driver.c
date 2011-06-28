@@ -446,7 +446,8 @@ networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
     for (i = 0; i < ipdef->nhosts; i++) {
         virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
         if ((host->mac) && VIR_SOCKET_HAS_ADDR(&host->ip))
-            dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name);
+            if (dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name) < 0)
+                return -1;
     }
 
     if (dnsdef) {
@@ -454,7 +455,8 @@ networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
             virNetworkDNSHostsDefPtr host = &(dnsdef->hosts[i]);
             if (VIR_SOCKET_HAS_ADDR(&host->ip)) {
                 for (j = 0; j < host->nnames; j++)
-                    dnsmasqAddHost(dctx, &host->ip, host->names[j]);
+                    if (dnsmasqAddHost(dctx, &host->ip, host->names[j]) < 0)
+                        return -1;
             }
         }
     }
@@ -604,14 +606,15 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         if (network->def->domain)
            virCommandAddArg(cmd, "--expand-hosts");
 
-        if (networkBuildDnsmasqHostsfile(dctx, ipdef, network->def->dns) >= 0) {
-            if (dctx->hostsfile->nhosts)
-                virCommandAddArgPair(cmd, "--dhcp-hostsfile",
-                                     dctx->hostsfile->path);
-            if (dctx->addnhostsfile->nhosts)
-                virCommandAddArgPair(cmd, "--addn-hosts",
-                                     dctx->addnhostsfile->path);
-        }
+        if (networkBuildDnsmasqHostsfile(dctx, ipdef, network->def->dns) < 0)
+            goto cleanup;
+
+        if (dctx->hostsfile->nhosts)
+            virCommandAddArgPair(cmd, "--dhcp-hostsfile",
+                                 dctx->hostsfile->path);
+        if (dctx->addnhostsfile->nhosts)
+            virCommandAddArgPair(cmd, "--addn-hosts",
+                                 dctx->addnhostsfile->path);
 
         if (ipdef->tftproot) {
             virCommandAddArgList(cmd, "--enable-tftp",

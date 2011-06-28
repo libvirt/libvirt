@@ -502,14 +502,13 @@ dnsmasqContextFree(dnsmasqContext *ctx)
  *
  * Add dhcp-host entry.
  */
-void
+int
 dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                    const char *mac,
                    virSocketAddr *ip,
                    const char *name)
 {
-    if (ctx->hostsfile)
-        hostsfileAdd(ctx->hostsfile, mac, ip, name);
+    return hostsfileAdd(ctx->hostsfile, mac, ip, name);
 }
 
 /*
@@ -521,13 +520,12 @@ dnsmasqAddDhcpHost(dnsmasqContext *ctx,
  * Add additional host entry.
  */
 
-void
+int
 dnsmasqAddHost(dnsmasqContext *ctx,
                virSocketAddr *ip,
                const char *name)
 {
-    if (ctx->addnhostsfile)
-        addnhostsAdd(ctx->addnhostsfile, ip, name);
+    return addnhostsAdd(ctx->addnhostsfile, ip, name);
 }
 
 /**

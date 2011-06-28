@@ -68,11 +68,11 @@ typedef struct
 dnsmasqContext * dnsmasqContextNew(const char *network_name,
                                    const char *config_dir);
 void             dnsmasqContextFree(dnsmasqContext *ctx);
-void             dnsmasqAddDhcpHost(dnsmasqContext *ctx,
+int              dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                                     const char *mac,
                                     virSocketAddr *ip,
                                     const char *name);
-void             dnsmasqAddHost(dnsmasqContext *ctx,
+int              dnsmasqAddHost(dnsmasqContext *ctx,
                                 virSocketAddr *ip,
                                 const char *name);
 int              dnsmasqSave(const dnsmasqContext *ctx);
