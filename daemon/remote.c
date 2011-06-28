@@ -1759,13 +1759,13 @@ remoteSASLFinish(virNetServerClientPtr client)
     if (virNetServerClientSetIdentity(client, identity) < 0)
         goto error;
 
-
     virNetServerClientSetSASLSession(client, priv->sasl);
 
     VIR_DEBUG("Authentication successful %d", virNetServerClientGetFD(client));
+
+    identity = virNetSASLSessionGetIdentity(priv->sasl);
     PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL,
-          virNetSASLSessionGetIdentity(priv->sasl));
+          virNetServerClientGetFD(client), REMOTE_AUTH_SASL, identity);
 
     virNetSASLSessionFree(priv->sasl);
     priv->sasl = NULL;
@@ -1793,6 +1793,7 @@ remoteDispatchAuthSaslStart(virNetServerPtr server ATTRIBUTE_UNUSED,
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    const char *identity;
 
     virMutexLock(&priv->lock);
 
@@ -1856,9 +1857,9 @@ authfail:
     goto error;
 
 authdeny:
+    identity = virNetSASLSessionGetIdentity(priv->sasl);
     PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL,
-          virNetSASLSessionGetIdentity(priv->sasl));
+          virNetServerClientGetFD(client), REMOTE_AUTH_SASL, identity);
     goto error;
 
 error:
@@ -1888,7 +1889,7 @@ remoteDispatchAuthSaslStep(virNetServerPtr server ATTRIBUTE_UNUSED,
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
-
+    const char *identity;
 
     virMutexLock(&priv->lock);
 
@@ -1952,9 +1953,9 @@ authfail:
     goto error;
 
 authdeny:
+    identity = virNetSASLSessionGetIdentity(priv->sasl);
     PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL,
-          virNetSASLSessionGetIdentity(priv->sasl));
+          virNetServerClientGetFD(client), REMOTE_AUTH_SASL, identity);
     goto error;
 
 error:
