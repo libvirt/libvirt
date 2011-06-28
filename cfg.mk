@@ -605,6 +605,14 @@ _autogen:
 # regenerate HACKING as part of the syntax-check
 syntax-check: $(top_srcdir)/HACKING
 
+# sc_po_check can fail if generated files are not built first
+sc_po_check: $(srcdir)/daemon/remote_dispatch.h \
+		$(srcdir)/src/remote/remote_client_bodies.h
+$(srcdir)/daemon/remote_dispatch.h:
+	$(MAKE) -C daemon remote_dispatch.h
+$(srcdir)/src/remote/remote_client_bodies.h:
+	$(MAKE) -C src remote/remote_client_bodies.h
+
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.c$$
 
