@@ -580,9 +580,6 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
         if (thecall && thecall->expectReply) {
             VIR_DEBUG("Got sync data packet completion");
             thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
-        } else {
-            // XXX
-            //remoteStreamEventTimerUpdate(privst);
         }
         return 0;
     }
