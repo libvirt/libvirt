@@ -142,7 +142,6 @@ static dnsmasqAddnHostsfile *
 addnhostsNew(const char *name,
              const char *config_dir)
 {
-    int err;
     dnsmasqAddnHostsfile *addnhostsfile;
 
     if (VIR_ALLOC(addnhostsfile) < 0) {
@@ -156,12 +155,6 @@ addnhostsNew(const char *name,
     if (virAsprintf(&addnhostsfile->path, "%s/%s.%s", config_dir, name,
                     DNSMASQ_ADDNHOSTSFILE_SUFFIX) < 0) {
         virReportOOMError();
-        goto error;
-    }
-
-    if ((err = virFileMakePath(config_dir))) {
-        virReportSystemError(err, _("cannot create config directory '%s'"),
-                             config_dir);
         goto error;
     }
 
@@ -344,7 +337,6 @@ static dnsmasqHostsfile *
 hostsfileNew(const char *name,
              const char *config_dir)
 {
-    int err;
     dnsmasqHostsfile *hostsfile;
 
     if (VIR_ALLOC(hostsfile) < 0) {
@@ -358,12 +350,6 @@ hostsfileNew(const char *name,
     if (virAsprintf(&hostsfile->path, "%s/%s.%s", config_dir, name,
                     DNSMASQ_HOSTSFILE_SUFFIX) < 0) {
         virReportOOMError();
-        goto error;
-    }
-
-    if ((err = virFileMakePath(config_dir))) {
-        virReportSystemError(err, _("cannot create config directory '%s'"),
-                             config_dir);
         goto error;
     }
 
@@ -468,6 +454,11 @@ dnsmasqContextNew(const char *network_name,
         return NULL;
     }
 
+    if (!(ctx->config_dir = strdup(config_dir))) {
+        virReportOOMError();
+        goto error;
+    }
+
     if (!(ctx->hostsfile = hostsfileNew(network_name, config_dir)))
         goto error;
     if (!(ctx->addnhostsfile = addnhostsNew(network_name, config_dir)))
@@ -491,6 +482,8 @@ dnsmasqContextFree(dnsmasqContext *ctx)
 {
     if (!ctx)
         return;
+
+    VIR_FREE(ctx->config_dir);
 
     if (ctx->hostsfile)
         hostsfileFree(ctx->hostsfile);
@@ -546,7 +539,14 @@ dnsmasqAddHost(dnsmasqContext *ctx,
 int
 dnsmasqSave(const dnsmasqContext *ctx)
 {
+    int err;
     int ret = 0;
+
+    if ((err = virFileMakePath(ctx->config_dir))) {
+        virReportSystemError(err, _("cannot create config directory '%s'"),
+                             ctx->config_dir);
+        return -1;
+    }
 
     if (ctx->hostsfile)
         ret = hostsfileSave(ctx->hostsfile);

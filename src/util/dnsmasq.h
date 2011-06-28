@@ -60,6 +60,7 @@ typedef struct
 
 typedef struct
 {
+    char                 *config_dir;
     dnsmasqHostsfile     *hostsfile;
     dnsmasqAddnHostsfile *addnhostsfile;
 } dnsmasqContext;

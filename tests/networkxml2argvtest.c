@@ -24,6 +24,7 @@ static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
     virNetworkObjPtr obj = NULL;
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
+    dnsmasqContext *dctx = NULL;
 
     if (virtTestLoadFile(inxml, &inXmlData) < 0)
         goto fail;
@@ -38,8 +39,12 @@ static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
         goto fail;
 
     obj->def = dev;
+    dctx = dnsmasqContextNew(dev->name, "/var/lib/libvirt/dnsmasq");
 
-    if (networkBuildDhcpDaemonCommandLine(obj, &cmd, pidfile) < 0)
+    if (dctx == NULL)
+        goto fail;
+
+    if (networkBuildDhcpDaemonCommandLine(obj, &cmd, pidfile, dctx) < 0)
         goto fail;
 
     if (!(actual = virCommandToString(cmd)))
@@ -59,6 +64,7 @@ static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
     VIR_FREE(pidfile);
     virCommandFree(cmd);
     virNetworkObjFree(obj);
+    dnsmasqContextFree(dctx);
     return ret;
 }
 

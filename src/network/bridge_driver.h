@@ -30,9 +30,12 @@
 # include "internal.h"
 # include "network_conf.h"
 # include "command.h"
+# include "dnsmasq.h"
 
 int networkRegister(void);
-int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdout, char *pidfile);
+int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
+                                      virCommandPtr *cmdout, char *pidfile,
+                                      dnsmasqContext *dctx);
 
 typedef char *(*networkDnsmasqLeaseFileNameFunc)(const char *netname);
 
