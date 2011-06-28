@@ -1222,6 +1222,7 @@ endif
 libvirt_net_rpc_la_CFLAGS = \
 			$(GNUTLS_CFLAGS) \
 			$(SASL_CFLAGS) \
+			$(XDR_CFLAGS) \
 			$(AM_CFLAGS)
 libvirt_net_rpc_la_LDFLAGS = \
 			$(GNUTLS_LIBS) \
