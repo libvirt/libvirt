@@ -113,7 +113,7 @@ static void virNetClientIncomingEvent(virNetSocketPtr sock,
 static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
                                        const char *hostname)
 {
-    virNetClientPtr client;
+    virNetClientPtr client = NULL;
     int wakeupFD[2] = { -1, -1 };
 
     if (pipe2(wakeupFD, O_CLOEXEC) < 0) {

@@ -511,8 +511,8 @@ int virNetSocketNewConnectCommand(virCommandPtr cmd,
                                   virNetSocketPtr *retsock)
 {
     pid_t pid = 0;
-    int sv[2];
-    int errfd[2];
+    int sv[2] = { -1, -1 };
+    int errfd[2] = { -1, -1 };
 
     *retsock = NULL;
 
