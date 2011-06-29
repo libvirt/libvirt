@@ -8,6 +8,7 @@ schema_DATA = \
 	domainsnapshot.rng \
 	interface.rng \
 	network.rng \
+	networkcommon.rng \
 	nodedev.rng \
 	nwfilter.rng \
 	secret.rng \

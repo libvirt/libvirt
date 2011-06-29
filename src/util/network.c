@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 
 #include "memory.h"
+#include "uuid.h"
 #include "network.h"
 #include "util.h"
 #include "virterror_internal.h"
@@ -673,4 +674,203 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
 
 error:
     return result;
+}
+
+/* virtualPortProfile utilities */
+
+VIR_ENUM_IMPL(virVirtualPort, VIR_VIRTUALPORT_TYPE_LAST,
+              "none",
+              "802.1Qbg",
+              "802.1Qbh")
+
+int
+virVirtualPortProfileParseXML(xmlNodePtr node,
+                              virVirtualPortProfileParamsPtr virtPort)
+{
+    int ret = -1;
+    char *virtPortType;
+    char *virtPortManagerID = NULL;
+    char *virtPortTypeID = NULL;
+    char *virtPortTypeIDVersion = NULL;
+    char *virtPortInstanceID = NULL;
+    char *virtPortProfileID = NULL;
+    xmlNodePtr cur = node->children;
+
+    virtPortType = virXMLPropString(node, "type");
+    if (!virtPortType) {
+        virSocketError(VIR_ERR_XML_ERROR, "%s",
+                             _("missing virtualportprofile type"));
+        goto error;
+    }
+
+    while (cur != NULL) {
+        if (xmlStrEqual(cur->name, BAD_CAST "parameters")) {
+
+            virtPortManagerID = virXMLPropString(cur, "managerid");
+            virtPortTypeID = virXMLPropString(cur, "typeid");
+            virtPortTypeIDVersion = virXMLPropString(cur, "typeidversion");
+            virtPortInstanceID = virXMLPropString(cur, "instanceid");
+            virtPortProfileID = virXMLPropString(cur, "profileid");
+
+            break;
+        }
+
+        cur = cur->next;
+    }
+
+    virtPort->virtPortType = VIR_VIRTUALPORT_NONE;
+
+    switch (virVirtualPortTypeFromString(virtPortType)) {
+
+    case VIR_VIRTUALPORT_8021QBG:
+        if (virtPortManagerID     != NULL && virtPortTypeID     != NULL &&
+            virtPortTypeIDVersion != NULL) {
+            unsigned int val;
+
+            if (virStrToLong_ui(virtPortManagerID, NULL, 0, &val)) {
+                virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                     _("cannot parse value of managerid parameter"));
+                goto error;
+            }
+
+            if (val > 0xff) {
+                virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                     _("value of managerid out of range"));
+                goto error;
+            }
+
+            virtPort->u.virtPort8021Qbg.managerID = (uint8_t)val;
+
+            if (virStrToLong_ui(virtPortTypeID, NULL, 0, &val)) {
+                virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                     _("cannot parse value of typeid parameter"));
+                goto error;
+            }
+
+            if (val > 0xffffff) {
+                virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                     _("value for typeid out of range"));
+                goto error;
+            }
+
+            virtPort->u.virtPort8021Qbg.typeID = (uint32_t)val;
+
+            if (virStrToLong_ui(virtPortTypeIDVersion, NULL, 0, &val)) {
+                virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                     _("cannot parse value of typeidversion parameter"));
+                goto error;
+            }
+
+            if (val > 0xff) {
+                virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                     _("value of typeidversion out of range"));
+                goto error;
+            }
+
+            virtPort->u.virtPort8021Qbg.typeIDVersion = (uint8_t)val;
+
+            if (virtPortInstanceID != NULL) {
+                if (virUUIDParse(virtPortInstanceID,
+                                 virtPort->u.virtPort8021Qbg.instanceID)) {
+                    virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                         _("cannot parse instanceid parameter as a uuid"));
+                    goto error;
+                }
+            } else {
+                if (virUUIDGenerate(virtPort->u.virtPort8021Qbg.instanceID)) {
+                    virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                         _("cannot generate a random uuid for instanceid"));
+                    goto error;
+                }
+            }
+
+            virtPort->virtPortType = VIR_VIRTUALPORT_8021QBG;
+            ret = 0;
+        } else {
+                    virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                         _("a parameter is missing for 802.1Qbg description"));
+            goto error;
+        }
+    break;
+
+    case VIR_VIRTUALPORT_8021QBH:
+        if (virtPortProfileID != NULL) {
+            if (virStrcpyStatic(virtPort->u.virtPort8021Qbh.profileID,
+                                virtPortProfileID) != NULL) {
+                virtPort->virtPortType = VIR_VIRTUALPORT_8021QBH;
+                ret = 0;
+            } else {
+                virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                     _("profileid parameter too long"));
+                goto error;
+            }
+        } else {
+            virSocketError(VIR_ERR_XML_ERROR, "%s",
+                                 _("profileid parameter is missing for 802.1Qbh descripion"));
+            goto error;
+        }
+    break;
+
+
+    default:
+    case VIR_VIRTUALPORT_NONE:
+    case VIR_VIRTUALPORT_TYPE_LAST:
+         virSocketError(VIR_ERR_XML_ERROR, "%s",
+                              _("unknown virtualport type"));
+        goto error;
+    break;
+    }
+
+error:
+    VIR_FREE(virtPortManagerID);
+    VIR_FREE(virtPortTypeID);
+    VIR_FREE(virtPortTypeIDVersion);
+    VIR_FREE(virtPortInstanceID);
+    VIR_FREE(virtPortProfileID);
+    VIR_FREE(virtPortType);
+
+    return ret;
+}
+
+void
+virVirtualPortProfileFormat(virBufferPtr buf,
+                            virVirtualPortProfileParamsPtr virtPort,
+                            const char *indent)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!virtPort || virtPort->virtPortType == VIR_VIRTUALPORT_NONE)
+        return;
+
+    virBufferAsprintf(buf, "%s<virtualport type='%s'>\n",
+                      indent,
+                      virVirtualPortTypeToString(virtPort->virtPortType));
+
+    switch (virtPort->virtPortType) {
+    case VIR_VIRTUALPORT_NONE:
+    case VIR_VIRTUALPORT_TYPE_LAST:
+        break;
+
+    case VIR_VIRTUALPORT_8021QBG:
+        virUUIDFormat(virtPort->u.virtPort8021Qbg.instanceID,
+                      uuidstr);
+        virBufferAsprintf(buf,
+                          "%s  <parameters managerid='%d' typeid='%d' "
+                          "typeidversion='%d' instanceid='%s'/>\n",
+                          indent,
+                          virtPort->u.virtPort8021Qbg.managerID,
+                          virtPort->u.virtPort8021Qbg.typeID,
+                          virtPort->u.virtPort8021Qbg.typeIDVersion,
+                          uuidstr);
+        break;
+
+    case VIR_VIRTUALPORT_8021QBH:
+        virBufferAsprintf(buf,
+                          "%s  <parameters profileid='%s'/>\n",
+                          indent,
+                          virtPort->u.virtPort8021Qbh.profileID);
+        break;
+    }
+
+    virBufferAsprintf(buf, "%s</virtualport>\n", indent);
 }

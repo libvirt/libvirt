@@ -50,6 +50,7 @@
 
 #include "util.h"
 #include "macvtap.h"
+#include "network.h"
 
 VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
               "vepa",
@@ -1089,7 +1090,7 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
 
     VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
 
-    if (vmOp == VIR_VM_OP_NO_OP)
+    if (!virtPort || vmOp == VIR_VM_OP_NO_OP)
         return 0;
 
     switch (virtPort->virtPortType) {
@@ -1144,6 +1145,9 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
               virtPort, macvtap_ifname);
 
     VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
+
+    if (!virtPort)
+       return 0;
 
     switch (virtPort->virtPortType) {
     case VIR_VIRTUALPORT_NONE:

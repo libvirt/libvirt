@@ -25,15 +25,6 @@
 
 # include <config.h>
 
-
-enum virVirtualPortType {
-    VIR_VIRTUALPORT_NONE,
-    VIR_VIRTUALPORT_8021QBG,
-    VIR_VIRTUALPORT_8021QBH,
-
-    VIR_VIRTUALPORT_TYPE_LAST,
-};
-
 /* the mode type for macvtap devices */
 enum virMacvtapMode {
     VIR_MACVTAP_MODE_VEPA,
@@ -42,31 +33,6 @@ enum virMacvtapMode {
     VIR_MACVTAP_MODE_PASSTHRU,
 
     VIR_MACVTAP_MODE_LAST,
-};
-
-
-# ifdef IFLA_VF_PORT_PROFILE_MAX
-#  define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX IFLA_VF_PORT_PROFILE_MAX
-# else
-#  define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
-# endif
-
-/* profile data for macvtap (VEPA) */
-typedef struct _virVirtualPortProfileParams virVirtualPortProfileParams;
-typedef virVirtualPortProfileParams *virVirtualPortProfileParamsPtr;
-struct _virVirtualPortProfileParams {
-    enum virVirtualPortType   virtPortType;
-    union {
-        struct {
-            uint8_t       managerID;
-            uint32_t      typeID; /* 24 bit valid */
-            uint8_t       typeIDVersion;
-            unsigned char instanceID[VIR_UUID_BUFLEN];
-        } virtPort8021Qbg;
-        struct {
-            char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
-        } virtPort8021Qbh;
-    } u;
 };
 
 enum virVMOperationType {
@@ -85,6 +51,7 @@ enum virVMOperationType {
 # if WITH_MACVTAP
 
 #  include "internal.h"
+#  include "network.h"
 
 int openMacvtapTap(const char *ifname,
                    const unsigned char *macaddress,
@@ -119,7 +86,6 @@ int vpDisassociatePortProfileId(const char *macvtap_ifname,
 
 # endif /* WITH_MACVTAP */
 
-VIR_ENUM_DECL(virVirtualPort)
 VIR_ENUM_DECL(virVMOperation)
 VIR_ENUM_DECL(virMacvtapMode)
 

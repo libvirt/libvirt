@@ -714,6 +714,8 @@ virSocketParseAddr;
 virSocketParseIpv4Addr;
 virSocketParseIpv6Addr;
 virSocketSetPort;
+virVirtualPortProfileFormat;
+virVirtualPortProfileParseXML;
 
 
 # network_conf.h
