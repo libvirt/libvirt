@@ -2729,6 +2729,8 @@ qemuDomainScreenshot(virDomainPtr dom,
         goto endjob;
     }
 
+    virSecurityManagerSetSavedStateLabel(qemu_driver->securityManager, vm, tmp);
+
     qemuDomainObjEnterMonitor(vm);
     if (qemuMonitorScreendump(priv->mon, tmp) < 0) {
         qemuDomainObjExitMonitor(vm);
