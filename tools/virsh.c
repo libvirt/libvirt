@@ -11915,11 +11915,14 @@ vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
 }
 
 static int
-vshCmddefOptParse(const vshCmdDef *cmd, uint32_t* opts_need_arg,
+vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
                   uint32_t *opts_required)
 {
     int i;
     bool optional = false;
+
+    *opts_need_arg = 0;
+    *opts_required = 0;
 
     if (!cmd->opts)
         return 0;
