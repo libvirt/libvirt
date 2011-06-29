@@ -1032,6 +1032,7 @@ virSetNonBlock;
 virSetUIDGID;
 virSkipSpaces;
 virSkipSpacesAndBackslash;
+virSkipSpacesBackwards;
 virStrToDouble;
 virStrToLong_i;
 virStrToLong_l;
@@ -1043,6 +1044,7 @@ virStrcpy;
 virStrncpy;
 virTimeMs;
 virTimestamp;
+virTrimSpaces;
 virVasprintf;
 
 

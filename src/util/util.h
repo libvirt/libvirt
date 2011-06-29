@@ -166,8 +166,12 @@ int virHexToBin(unsigned char c);
 
 int virMacAddrCompare (const char *mac1, const char *mac2);
 
-void virSkipSpaces(const char **str);
-void virSkipSpacesAndBackslash(const char **str);
+void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);
+void virSkipSpacesAndBackslash(const char **str) ATTRIBUTE_NONNULL(1);
+void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);
+void virSkipSpacesBackwards(const char *str, char **endp)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int virParseNumber(const char **str);
 int virParseVersionString(const char *str, unsigned long *version,
                           bool allowMissing);

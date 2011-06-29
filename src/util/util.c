@@ -1562,6 +1562,62 @@ virSkipSpacesAndBackslash(const char **str)
 }
 
 /**
+ * virTrimSpaces:
+ * @str: string to modify to remove all trailing spaces
+ * @endp: track the end of the string
+ *
+ * If @endp is NULL on entry, then all spaces prior to the trailing
+ * NUL in @str are removed, by writing NUL into the appropriate
+ * location.  If @endp is non-NULL but points to a NULL pointer,
+ * then all spaces prior to the trailing NUL in @str are removed,
+ * NUL is written to the new string end, and endp is set to the
+ * location of the (new) string end.  If @endp is non-NULL and
+ * points to a non-NULL pointer, then that pointer is used as
+ * the end of the string, endp is set to the (new) location, but
+ * no NUL pointer is written into the string.
+ */
+void
+virTrimSpaces(char *str, char **endp)
+{
+    char *end;
+
+    if (!endp || !*endp)
+        end = str + strlen(str);
+    else
+        end = *endp;
+    while (end > str && c_isspace(end[-1]))
+        end--;
+    if (endp) {
+        if (!*endp)
+            *end = '\0';
+        *endp = end;
+    } else {
+        *end = '\0';
+    }
+}
+
+/**
+ * virSkipSpacesBackwards:
+ * @str: start of string
+ * @endp: on entry, *endp must be NULL or a location within @str, on exit,
+ * will be adjusted to skip trailing spaces, or to NULL if @str had nothing
+ * but spaces.
+ */
+void
+virSkipSpacesBackwards(const char *str, char **endp)
+{
+    /* Casting away const is safe, since virTrimSpaces does not
+     * modify string with this particular usage.  */
+    char *s = (char*) str;
+
+    if (!*endp)
+        *endp = s + strlen(s);
+    virTrimSpaces(s, endp);
+    if (s == *endp)
+        *endp = NULL;
+}
+
+/**
  * virParseNumber:
  * @str: pointer to the char pointer used
  *
