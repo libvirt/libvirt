@@ -132,6 +132,10 @@ virSysinfoParseBIOS(char *base, virSysinfoDefPtr ret)
 {
     char *cur, *eol = NULL;
 
+    if ((cur = strstr(base, "BIOS Information")) == NULL)
+        return base;
+
+    base = cur;
     if ((cur = strstr(base, "Vendor: ")) != NULL) {
         cur += 8;
         eol = strchr(cur, '\n');
@@ -157,7 +161,7 @@ virSysinfoParseBIOS(char *base, virSysinfoDefPtr ret)
             goto no_memory;
     }
 
-    return eol ? eol + 1 : NULL;
+    return base + strlen("BIOS Information");
 
 no_memory:
     return NULL;
@@ -168,9 +172,10 @@ virSysinfoParseSystem(char *base, virSysinfoDefPtr ret)
 {
     char *cur, *eol = NULL;
 
-    if ((base = strstr(base, "System Information")) == NULL)
-        return 0;
+    if ((cur = strstr(base, "System Information")) == NULL)
+        return base;
 
+    base = cur;
     if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
@@ -215,7 +220,7 @@ virSysinfoParseSystem(char *base, virSysinfoDefPtr ret)
             goto no_memory;
     }
 
-    return eol ? eol + 1 : NULL;
+    return base + strlen("System Information");
 
 no_memory:
     return NULL;
@@ -314,9 +319,7 @@ virSysinfoParseProcessor(char *base, virSysinfoDefPtr ret)
                 goto no_memory;
         }
 
-        if (!eol)
-            break;
-        base = eol + 1;
+        base += strlen("Processor Information");
     }
 
     return base;
@@ -415,9 +418,7 @@ virSysinfoParseMemory(char *base, virSysinfoDefPtr ret)
         }
 
     next:
-        if (!eol)
-            break;
-        base = eol + 1;
+        base += strlen("Memory Device");
     }
 
     return base;
