@@ -945,6 +945,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
                                                def->hosts[ii].names[j]);
 
             virBufferAsprintf(buf, "    </host>\n");
+            VIR_FREE(ip);
         }
     }
 
