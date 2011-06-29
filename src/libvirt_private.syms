@@ -1031,6 +1031,7 @@ virSetInherit;
 virSetNonBlock;
 virSetUIDGID;
 virSkipSpaces;
+virSkipSpacesAndBackslash;
 virStrToDouble;
 virStrToLong_i;
 virStrToLong_l;

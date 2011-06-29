@@ -1199,11 +1199,11 @@ sexpr_to_xend_topology(const struct sexpr *root,
         cell = virParseNumber(&cur);
         if (cell < 0)
             goto parse_error;
-        virSkipSpaces(&cur);
+        virSkipSpacesAndBackslash(&cur);
         if (*cur != ':')
             goto parse_error;
         cur++;
-        virSkipSpaces(&cur);
+        virSkipSpacesAndBackslash(&cur);
         if (STRPREFIX(cur, "no cpus")) {
             nb_cpus = 0;
             for (cpu = 0; cpu < numCpus; cpu++)

@@ -1532,16 +1532,31 @@ virHexToBin(unsigned char c)
  * @str: pointer to the char pointer used
  *
  * Skip potential blanks, this includes space tabs, line feed,
- * carriage returns and also '\\' which can be erronously emitted
- * by xend
+ * carriage returns.
  */
 void
 virSkipSpaces(const char **str)
 {
     const char *cur = *str;
 
-    while ((*cur == ' ') || (*cur == '\t') || (*cur == '\n') ||
-           (*cur == '\r') || (*cur == '\\'))
+    while (c_isspace(*cur))
+        cur++;
+    *str = cur;
+}
+
+/**
+ * virSkipSpacesAndBackslash:
+ * @str: pointer to the char pointer used
+ *
+ * Like virSkipSpaces, but also skip backslashes erroneously emitted
+ * by xend
+ */
+void
+virSkipSpacesAndBackslash(const char **str)
+{
+    const char *cur = *str;
+
+    while (c_isspace(*cur) || *cur == '\\')
         cur++;
     *str = cur;
 }
