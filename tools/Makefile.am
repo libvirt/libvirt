@@ -13,6 +13,7 @@ EXTRA_DIST = \
 	virt-xml-validate.in				\
 	virt-pki-validate.in				\
 	virt-sanlock-cleanup.in				\
+	virt-sanlock-cleanup.8				\
 	virsh.pod					\
 	libvirt-guests.init.sh				\
 	libvirt-guests.sysconf
