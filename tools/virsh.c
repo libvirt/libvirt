@@ -3025,7 +3025,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     unsigned char *cpumap = NULL;
     unsigned char *cpumaps = NULL;
-    int cpumaplen;
+    size_t cpumaplen;
     bool bit, lastbit, isInvert;
     int i, cpu, lastcpu, maxcpu, ncpus;
     bool unuse = false;
