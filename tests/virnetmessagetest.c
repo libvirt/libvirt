@@ -167,6 +167,7 @@ static int testMessagePayloadEncode(const void *args ATTRIBUTE_UNUSED)
 {
     virNetMessageError err;
     static virNetMessage msg;
+    int ret = -1;
     static const char expect[] = {
         0x00, 0x00, 0x00, 0x74,  /* Length */
         0x11, 0x22, 0x33, 0x44,  /* Program */
@@ -204,19 +205,21 @@ static int testMessagePayloadEncode(const void *args ATTRIBUTE_UNUSED)
 
     err.code = VIR_ERR_INTERNAL_ERROR;
     err.domain = VIR_FROM_RPC;
-    if (VIR_ALLOC(err.message) < 0)
-        return -1;
-    *err.message = strdup("Hello World");
     err.level = VIR_ERR_ERROR;
+
+    if (VIR_ALLOC(err.message) < 0)
+        goto cleanup;
+    *err.message = strdup("Hello World");
     if (VIR_ALLOC(err.str1) < 0)
-        return -1;
+        goto cleanup;
     *err.str1 = strdup("One");
     if (VIR_ALLOC(err.str2) < 0)
-        return -1;
+        goto cleanup;
     *err.str2 = strdup("Two");
     if (VIR_ALLOC(err.str3) < 0)
-        return -1;
+        goto cleanup;
     *err.str3 = strdup("Three");
+
     err.int1 = 1;
     err.int2 = 2;
 
@@ -228,29 +231,43 @@ static int testMessagePayloadEncode(const void *args ATTRIBUTE_UNUSED)
     msg.header.status = VIR_NET_ERROR;
 
     if (virNetMessageEncodeHeader(&msg) < 0)
-        return -1;
+        goto cleanup;
 
     if (virNetMessageEncodePayload(&msg, (xdrproc_t)xdr_virNetMessageError, &err) < 0)
-        return -1;
+        goto cleanup;
 
     if (ARRAY_CARDINALITY(expect) != msg.bufferLength) {
         VIR_DEBUG("Expect message length %zu got %zu",
                   sizeof(expect), msg.bufferLength);
-        return -1;
+        goto cleanup;
     }
 
     if (msg.bufferOffset != 0) {
         VIR_DEBUG("Expect message offset 0 got %zu",
                   msg.bufferOffset);
-        return -1;
+        goto cleanup;
     }
 
     if (memcmp(expect, msg.buffer, sizeof(expect)) != 0) {
         virtTestDifferenceBin(stderr, expect, msg.buffer, sizeof(expect));
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+cleanup:
+    if (err.message)
+        VIR_FREE(*err.message);
+    if (err.str1)
+        VIR_FREE(*err.str1);
+    if (err.str2)
+        VIR_FREE(*err.str2);
+    if (err.str3)
+        VIR_FREE(*err.str3);
+    VIR_FREE(err.message);
+    VIR_FREE(err.str1);
+    VIR_FREE(err.str2);
+    VIR_FREE(err.str3);
+    return ret;
 }
 
 static int testMessagePayloadDecode(const void *args ATTRIBUTE_UNUSED)
