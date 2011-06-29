@@ -299,13 +299,13 @@ VMWARE_DRIVER_SOURCES =						\
 		vmware/vmware_conf.c vmware/vmware_conf.h
 
 VBOX_DRIVER_SOURCES =						\
-        vbox/vbox_glue.c vbox/vbox_glue.h			\
-        vbox/vbox_driver.c vbox/vbox_driver.h			\
-        vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h			\
-        vbox/vbox_V3_0.c vbox/vbox_CAPI_v3_0.h			\
-        vbox/vbox_V3_1.c vbox/vbox_CAPI_v3_1.h			\
-        vbox/vbox_V3_2.c vbox/vbox_CAPI_v3_2.h			\
-        vbox/vbox_V4_0.c vbox/vbox_CAPI_v4_0.h
+	vbox/vbox_glue.c vbox/vbox_glue.h			\
+	vbox/vbox_driver.c vbox/vbox_driver.h			\
+	vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h			\
+	vbox/vbox_V3_0.c vbox/vbox_CAPI_v3_0.h			\
+	vbox/vbox_V3_1.c vbox/vbox_CAPI_v3_1.h			\
+	vbox/vbox_V3_2.c vbox/vbox_CAPI_v3_2.h			\
+	vbox/vbox_V4_0.c vbox/vbox_CAPI_v4_0.h
 
 VBOX_DRIVER_EXTRA_DIST =					\
 		vbox/vbox_tmpl.c vbox/README			\
@@ -576,7 +576,7 @@ endif WITH_REMOTE
 
 %protocol.h: %protocol.x $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
-               $< $@
+	       $< $@
 
 if WITH_XEN
 if WITH_DRIVER_MODULES
@@ -1144,8 +1144,8 @@ libvirt_qemu.def: $(srcdir)/libvirt_qemu.syms
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
 libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
-                     -version-info $(LIBVIRT_VERSION_INFO) \
-                    $(AM_LDFLAGS) \
+		     -version-info $(LIBVIRT_VERSION_INFO) \
+		    $(AM_LDFLAGS) \
 		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += $(LIBXML_LIBS) \
@@ -1178,8 +1178,8 @@ libvirt_test_la_CFLAGS = $(AM_CFLAGS)
 
 libvirt_qemu_la_SOURCES = libvirt-qemu.c
 libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
-                          -version-info $(LIBVIRT_VERSION_INFO) \
-                          $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS) \
+			  -version-info $(LIBVIRT_VERSION_INFO) \
+			  $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS) \
 			  $(AM_LDFLAGS)
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
@@ -1407,7 +1407,7 @@ if WITH_NETWORK
 	      $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml && \
 	    rm $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml.t; }
 	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
-           ln -s ../default.xml \
+	   ln -s ../default.xml \
 	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 endif
 
