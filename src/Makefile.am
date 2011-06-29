@@ -1185,7 +1185,6 @@ libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
 
-
 if HAVE_SANLOCK
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES = sanlock.la
@@ -1199,12 +1198,8 @@ sanlock_la_LIBADD = -lsanlock \
 augeas_DATA += locking/libvirt_sanlock.aug
 augeastest_DATA += locking/test_libvirt_sanlock.aug
 
-EXTRA_DIST += locking/sanlock.conf \
-    locking/libvirt_sanlock.aug \
-    locking/test_libvirt_sanlock.aug
-
 $(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
-	$(AM_V_GEN)mkdir locking ; \
+	$(AM_V_GEN)$(MKDIR_P) locking ; \
 	cp $< $@
 
 if WITH_QEMU
@@ -1212,10 +1207,16 @@ conf_DATA += locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
 endif
 else
-EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES) locking/sanlock.conf
+EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
 endif
+EXTRA_DIST += locking/sanlock.conf \
+	locking/libvirt_sanlock.aug \
+	locking/test_libvirt_sanlock.aug
 
-noinst_LTLIBRARIES += libvirt-net-rpc.la libvirt-net-rpc-server.la libvirt-net-rpc-client.la
+noinst_LTLIBRARIES += \
+	libvirt-net-rpc.la \
+	libvirt-net-rpc-server.la \
+	libvirt-net-rpc-client.la
 
 EXTRA_DIST += \
        rpc/virnetprotocol.x \
