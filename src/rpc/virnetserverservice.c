@@ -39,6 +39,7 @@ struct _virNetServerService {
 
     int auth;
     bool readonly;
+    size_t nrequests_client_max;
 
     virNetTLSContextPtr tls;
 
@@ -65,6 +66,7 @@ static void virNetServerServiceAccept(virNetSocketPtr sock,
     if (!(client = virNetServerClientNew(clientsock,
                                          svc->auth,
                                          svc->readonly,
+                                         svc->nrequests_client_max,
                                          svc->tls)))
         goto error;
 
@@ -88,6 +90,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int auth,
                                                  bool readonly,
+                                                 size_t nrequests_client_max,
                                                  virNetTLSContextPtr tls)
 {
     virNetServerServicePtr svc;
@@ -99,6 +102,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
     svc->refs = 1;
     svc->auth = auth;
     svc->readonly = readonly;
+    svc->nrequests_client_max = nrequests_client_max;
     svc->tls = tls;
     if (tls)
         virNetTLSContextRef(tls);
@@ -138,6 +142,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   gid_t grp,
                                                   int auth,
                                                   bool readonly,
+                                                  size_t nrequests_client_max,
                                                   virNetTLSContextPtr tls)
 {
     virNetServerServicePtr svc;
@@ -149,6 +154,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     svc->refs = 1;
     svc->auth = auth;
     svc->readonly = readonly;
+    svc->nrequests_client_max = nrequests_client_max;
     svc->tls = tls;
     if (tls)
         virNetTLSContextRef(tls);

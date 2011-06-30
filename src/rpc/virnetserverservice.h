@@ -40,12 +40,14 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int auth,
                                                  bool readonly,
+                                                 size_t nrequests_client_max,
                                                  virNetTLSContextPtr tls);
 virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
                                                   bool readonly,
+                                                  size_t nrequests_client_max,
                                                   virNetTLSContextPtr tls);
 
 int virNetServerServiceGetPort(virNetServerServicePtr svc);

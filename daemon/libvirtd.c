@@ -486,6 +486,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                            unix_sock_gid,
                                            config->auth_unix_rw,
                                            false,
+                                           config->max_client_requests,
                                            NULL)))
         goto error;
     if (sock_path_ro &&
@@ -494,6 +495,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                              unix_sock_gid,
                                              config->auth_unix_ro,
                                              true,
+                                             config->max_client_requests,
                                              NULL)))
         goto error;
 
@@ -509,6 +511,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                                      config->tcp_port,
                                                      config->auth_tcp,
                                                      false,
+                                                     config->max_client_requests,
                                                      NULL)))
                 goto error;
 
@@ -543,6 +546,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                             config->tls_port,
                                             config->auth_tls,
                                             false,
+                                            config->max_client_requests,
                                             ctxt))) {
                 virNetTLSContextFree(ctxt);
                 goto error;

@@ -282,6 +282,7 @@ virNetServerClientCheckAccess(virNetServerClientPtr client)
 virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
+                                            size_t nrequests_max,
                                             virNetTLSContextPtr tls)
 {
     virNetServerClientPtr client;
@@ -301,7 +302,7 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     client->auth = auth;
     client->readonly = readonly;
     client->tlsCtxt = tls;
-    client->nrequests_max = 10; /* XXX */
+    client->nrequests_max = nrequests_max;
 
     if (tls)
         virNetTLSContextRef(tls);

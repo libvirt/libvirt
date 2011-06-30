@@ -41,6 +41,7 @@ typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
 virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
+                                            size_t nrequests_max,
                                             virNetTLSContextPtr tls);
 
 int virNetServerClientAddFilter(virNetServerClientPtr client,
