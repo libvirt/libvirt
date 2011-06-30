@@ -91,7 +91,9 @@
 
 #include "configmake.h"
 
+#if HAVE_SASL
 virNetSASLContextPtr saslCtxt = NULL;
+#endif
 virNetServerProgramPtr remoteProgram = NULL;
 virNetServerProgramPtr qemuProgram = NULL;
 
@@ -560,6 +562,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
         }
     }
 
+#if HAVE_SASL
     if (config->auth_unix_rw == REMOTE_AUTH_SASL ||
         config->auth_unix_ro == REMOTE_AUTH_SASL ||
         config->auth_tcp == REMOTE_AUTH_SASL ||
@@ -569,6 +572,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
         if (!saslCtxt)
             goto error;
     }
+#endif
 
 #if HAVE_POLKIT0
     if (auth_unix_rw == REMOTE_AUTH_POLKIT ||
@@ -745,8 +749,10 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
 
     if (STREQ(p->str, "none")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
+#if HAVE_SASL
     } else if (STREQ(p->str, "sasl")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_SASL;
+#endif
     } else if (STREQ(p->str, "polkit")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_POLKIT;
     } else {

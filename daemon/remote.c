@@ -1653,6 +1653,7 @@ cleanup:
 }
 
 
+#ifdef HAVE_SASL
 /*
  * Initializes the SASL session in prepare for authentication
  * and gives the client a list of allowed mechanisms to choose
@@ -1969,6 +1970,49 @@ error:
     virMutexUnlock(&priv->lock);
     return -1;
 }
+#else
+static int
+remoteDispatchAuthSaslInit(virNetServerPtr server ATTRIBUTE_UNUSED,
+                           virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                           virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
+                           virNetMessageErrorPtr rerr,
+                           remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
+{
+    VIR_WARN("Client tried unsupported SASL auth");
+    virNetError(VIR_ERR_AUTH_FAILED, "%s",
+                _("authentication failed"));
+    virNetMessageSaveError(rerr);
+    return -1;
+}
+static int
+remoteDispatchAuthSaslStart(virNetServerPtr server ATTRIBUTE_UNUSED,
+                            virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                            virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
+                            virNetMessageErrorPtr rerr,
+                            remote_auth_sasl_start_args *args ATTRIBUTE_UNUSED,
+                            remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
+{
+    VIR_WARN("Client tried unsupported SASL auth");
+    virNetError(VIR_ERR_AUTH_FAILED, "%s",
+                _("authentication failed"));
+    virNetMessageSaveError(rerr);
+    return -1;
+}
+static int
+remoteDispatchAuthSaslStep(virNetServerPtr server ATTRIBUTE_UNUSED,
+                           virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                           virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
+                           virNetMessageErrorPtr rerr,
+                           remote_auth_sasl_step_args *args ATTRIBUTE_UNUSED,
+                           remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
+{
+    VIR_WARN("Client tried unsupported SASL auth");
+    virNetError(VIR_ERR_AUTH_FAILED, "%s",
+                _("authentication failed"));
+    virNetMessageSaveError(rerr);
+    return -1;
+}
+#endif
 
 
 
