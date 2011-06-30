@@ -746,6 +746,8 @@ void virNetServerFree(virNetServerPtr srv)
     }
     VIR_FREE(srv->clients);
 
+    VIR_FREE(srv->mdnsGroupName);
+
     virNetServerUnlock(srv);
     virMutexDestroy(&srv->lock);
     VIR_FREE(srv);
