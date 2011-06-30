@@ -13331,12 +13331,16 @@ vshDebug(vshControl *ctl, int level, const char *format, ...)
     va_list ap;
     char *str;
 
-    va_start(ap, format);
-    vshOutputLogFile(ctl, VSH_ERR_DEBUG, format, ap);
-    va_end(ap);
-
-    if (level > ctl->debug)
+    /* Aligning log levels to that of libvirt.
+     * Traces with levels >=  user-specified-level
+     * gets logged into file
+     */
+    if (level < ctl->debug)
         return;
+
+    va_start(ap, format);
+    vshOutputLogFile(ctl, level, format, ap);
+    va_end(ap);
 
     va_start(ap, format);
     if (virVasprintf(&str, format, ap) < 0) {
