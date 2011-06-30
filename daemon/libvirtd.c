@@ -310,8 +310,10 @@ daemonPidFilePath(bool privileged,
         if (!(userdir = virGetUserDirectory(geteuid())))
             goto error;
 
-        if (virAsprintf(pidfile, "%s/.libvirt/libvirtd.pid", userdir) < 0)
+        if (virAsprintf(pidfile, "%s/.libvirt/libvirtd.pid", userdir) < 0) {
+            VIR_FREE(userdir);
             goto no_memory;
+        }
 
         VIR_FREE(userdir);
     }
