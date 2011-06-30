@@ -6372,7 +6372,7 @@ static int buildPoolXML(const vshCmd *cmd, const char **retname, char **xml) {
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
     virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
-    if (srcHost || srcPath || srcDev) {
+    if (srcHost || srcPath || srcDev || srcFormat || srcName) {
         virBufferAddLit(&buf, "  <source>\n");
 
         if (srcHost)
