@@ -2377,7 +2377,8 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 
     /* Check and display whether the domain is persistent or not */
     persistent = virDomainIsPersistent(dom);
-    vshDebug(ctl, 5, "Domain persistent flag value: %d\n", persistent);
+    vshDebug(ctl, VSH_ERR_DEBUG, "Domain persistent flag value: %d\n",
+             persistent);
     if (persistent < 0)
         vshPrint(ctl, "%-15s %s\n", _("Persistent:"), _("unknown"));
     else
@@ -3289,7 +3290,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
         /* If the --maximum flag was given, we need to ensure only the
            --config flag is in effect as well */
         if (maximum) {
-            vshDebug(ctl, 5, "--maximum flag was given\n");
+            vshDebug(ctl, VSH_ERR_DEBUG, "--maximum flag was given\n");
 
             /* If neither the --config nor --live flags were given, OR
                if just the --live flag was given, we need to error out
@@ -4620,7 +4621,8 @@ repoll:
         if ( timeout && ((int)(curr.tv_sec - start.tv_sec)  * 1000 + \
                          (int)(curr.tv_usec - start.tv_usec) / 1000) > timeout * 1000 ) {
             /* suspend the domain when migration timeouts. */
-            vshDebug(ctl, 5, "suspend the domain when migration timeouts\n");
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     "suspend the domain when migration timeouts\n");
             virDomainSuspend(dom);
             timeout = 0;
         }
@@ -6851,7 +6853,8 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         /* Retrieve the persistence status of the pool */
         if (details) {
             persistent = virStoragePoolIsPersistent(pool);
-            vshDebug(ctl, 5, "Persistent flag value: %d\n", persistent);
+            vshDebug(ctl, VSH_ERR_DEBUG, "Persistent flag value: %d\n",
+                     persistent);
             if (persistent < 0)
                 poolInfoTexts[i].persistent = vshStrdup(ctl, _("unknown"));
             else
@@ -7042,19 +7045,19 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         availStrLength = stringLength;
 
     /* Display the string lengths for debugging. */
-    vshDebug(ctl, 5, "Longest name string = %lu chars\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Longest name string = %lu chars\n",
              (unsigned long) nameStrLength);
-    vshDebug(ctl, 5, "Longest state string = %lu chars\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Longest state string = %lu chars\n",
              (unsigned long) stateStrLength);
-    vshDebug(ctl, 5, "Longest autostart string = %lu chars\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Longest autostart string = %lu chars\n",
              (unsigned long) autostartStrLength);
-    vshDebug(ctl, 5, "Longest persistent string = %lu chars\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Longest persistent string = %lu chars\n",
              (unsigned long) persistStrLength);
-    vshDebug(ctl, 5, "Longest capacity string = %lu chars\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Longest capacity string = %lu chars\n",
              (unsigned long) capStrLength);
-    vshDebug(ctl, 5, "Longest allocation string = %lu chars\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Longest allocation string = %lu chars\n",
              (unsigned long) allocStrLength);
-    vshDebug(ctl, 5, "Longest available string = %lu chars\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Longest available string = %lu chars\n",
              (unsigned long) availStrLength);
 
     /* Create the output template.  Each column is sized according to
@@ -7326,7 +7329,8 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 
         /* Check and display whether the pool is persistent or not */
         persistent = virStoragePoolIsPersistent(pool);
-        vshDebug(ctl, 5, "Pool persistent flag value: %d\n", persistent);
+        vshDebug(ctl, VSH_ERR_DEBUG, "Pool persistent flag value: %d\n",
+                 persistent);
         if (persistent < 0)
             vshPrint(ctl, "%-15s %s\n", _("Persistent:"),  _("unknown"));
         else
@@ -7334,7 +7338,8 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 
         /* Check and display whether the pool is autostarted or not */
         virStoragePoolGetAutostart(pool, &autostart);
-        vshDebug(ctl, 5, "Pool autostart flag value: %d\n", autostart);
+        vshDebug(ctl, VSH_ERR_DEBUG, "Pool autostart flag value: %d\n",
+                 autostart);
         if (autostart < 0)
             vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("no autostart"));
         else
@@ -7535,31 +7540,37 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (snapshotStrVol) {
         /* Lookup snapshot backing volume.  Try the backing-vol
          *  parameter as a name */
-        vshDebug(ctl, 5, "%s: Look up backing store volume '%s' as name\n",
+        vshDebug(ctl, VSH_ERR_DEBUG,
+                 "%s: Look up backing store volume '%s' as name\n",
                  cmd->def->name, snapshotStrVol);
         virStorageVolPtr snapVol = virStorageVolLookupByName(pool, snapshotStrVol);
         if (snapVol)
-                vshDebug(ctl, 5, "%s: Backing store volume found using '%s' as name\n",
+                vshDebug(ctl, VSH_ERR_DEBUG,
+                         "%s: Backing store volume found using '%s' as name\n",
                          cmd->def->name, snapshotStrVol);
 
         if (snapVol == NULL) {
             /* Snapshot backing volume not found by name.  Try the
              *  backing-vol parameter as a key */
-            vshDebug(ctl, 5, "%s: Look up backing store volume '%s' as key\n",
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     "%s: Look up backing store volume '%s' as key\n",
                      cmd->def->name, snapshotStrVol);
             snapVol = virStorageVolLookupByKey(ctl->conn, snapshotStrVol);
             if (snapVol)
-                vshDebug(ctl, 5, "%s: Backing store volume found using '%s' as key\n",
+                vshDebug(ctl, VSH_ERR_DEBUG,
+                         "%s: Backing store volume found using '%s' as key\n",
                          cmd->def->name, snapshotStrVol);
         }
         if (snapVol == NULL) {
             /* Snapshot backing volume not found by key.  Try the
              *  backing-vol parameter as a path */
-            vshDebug(ctl, 5, "%s: Look up backing store volume '%s' as path\n",
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     "%s: Look up backing store volume '%s' as path\n",
                      cmd->def->name, snapshotStrVol);
             snapVol = virStorageVolLookupByPath(ctl->conn, snapshotStrVol);
             if (snapVol)
-                vshDebug(ctl, 5, "%s: Backing store volume found using '%s' as path\n",
+                vshDebug(ctl, VSH_ERR_DEBUG,
+                         "%s: Backing store volume found using '%s' as path\n",
                          cmd->def->name, snapshotStrVol);
         }
         if (snapVol == NULL) {
@@ -8496,11 +8507,16 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         allocStrLength = stringLength;
 
     /* Display the string lengths for debugging */
-    vshDebug(ctl, 5, "Longest name string = %zu chars\n", nameStrLength);
-    vshDebug(ctl, 5, "Longest path string = %zu chars\n", pathStrLength);
-    vshDebug(ctl, 5, "Longest type string = %zu chars\n", typeStrLength);
-    vshDebug(ctl, 5, "Longest capacity string = %zu chars\n", capStrLength);
-    vshDebug(ctl, 5, "Longest allocation string = %zu chars\n", allocStrLength);
+    vshDebug(ctl, VSH_ERR_DEBUG,
+             "Longest name string = %zu chars\n", nameStrLength);
+    vshDebug(ctl, VSH_ERR_DEBUG,
+             "Longest path string = %zu chars\n", pathStrLength);
+    vshDebug(ctl, VSH_ERR_DEBUG,
+             "Longest type string = %zu chars\n", typeStrLength);
+    vshDebug(ctl, VSH_ERR_DEBUG,
+             "Longest capacity string = %zu chars\n", capStrLength);
+    vshDebug(ctl, VSH_ERR_DEBUG,
+             "Longest allocation string = %zu chars\n", allocStrLength);
 
     /* Create the output template */
     ret = virAsprintf(&outputStr,
@@ -12495,7 +12511,7 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
 
-    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
     if (name)
@@ -12504,20 +12520,21 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
     /* try it by ID */
     if (flag & VSH_BYID) {
         if (virStrToLong_i(n, NULL, 10, &id) == 0 && id >= 0) {
-            vshDebug(ctl, 5, "%s: <%s> seems like domain ID\n",
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     "%s: <%s> seems like domain ID\n",
                      cmd->def->name, optname);
             dom = virDomainLookupByID(ctl->conn, id);
         }
     }
     /* try it by UUID */
     if (dom==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, 5, "%s: <%s> trying as domain UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as domain UUID\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
     if (dom==NULL && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as domain NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as domain NAME\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByName(ctl->conn, n);
     }
@@ -12541,7 +12558,7 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
 
-    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
     if (name)
@@ -12549,13 +12566,13 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by UUID */
     if ((flag & VSH_BYUUID) && (strlen(n) == VIR_UUID_STRING_BUFLEN-1)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as network UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network UUID\n",
                  cmd->def->name, optname);
         network = virNetworkLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
     if (network==NULL && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as network NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network NAME\n",
                  cmd->def->name, optname);
         network = virNetworkLookupByName(ctl->conn, n);
     }
@@ -12580,7 +12597,7 @@ vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
 
-    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
     if (name)
@@ -12588,13 +12605,13 @@ vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by UUID */
     if ((flag & VSH_BYUUID) && (strlen(n) == VIR_UUID_STRING_BUFLEN-1)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as nwfilter UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter UUID\n",
                  cmd->def->name, optname);
         nwfilter = virNWFilterLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
     if (nwfilter == NULL && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as nwfilter NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter NAME\n",
                  cmd->def->name, optname);
         nwfilter = virNWFilterLookupByName(ctl->conn, n);
     }
@@ -12618,7 +12635,7 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
 
-    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
     if (name)
@@ -12626,13 +12643,13 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by NAME */
     if ((flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as interface NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface NAME\n",
                  cmd->def->name, optname);
         iface = virInterfaceLookupByName(ctl->conn, n);
     }
     /* try it by MAC */
     if ((iface == NULL) && (flag & VSH_BYMAC)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as interface MAC\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface MAC\n",
                  cmd->def->name, optname);
         iface = virInterfaceLookupByMACString(ctl->conn, n);
     }
@@ -12653,7 +12670,7 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
 
-    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
     if (name)
@@ -12661,13 +12678,13 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
 
     /* try it by UUID */
     if ((flag & VSH_BYUUID) && (strlen(n) == VIR_UUID_STRING_BUFLEN-1)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as pool UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool UUID\n",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
     if (pool == NULL && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as pool NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool NAME\n",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByName(ctl->conn, n);
     }
@@ -12699,7 +12716,7 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     if (p)
         pool = vshCommandOptPoolBy(ctl, cmd, pooloptname, name, flag);
 
-    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
     if (name)
@@ -12707,19 +12724,19 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by name */
     if (pool && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as vol name\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol name\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByName(pool, n);
     }
     /* try it by key */
     if (vol == NULL && (flag & VSH_BYUUID)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as vol key\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol key\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByKey(ctl->conn, n);
     }
     /* try it by path */
     if (vol == NULL && (flag & VSH_BYUUID)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as vol path\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol path\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByPath(ctl->conn, n);
     }
@@ -12746,7 +12763,8 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
 
-    vshDebug(ctl, 5, "%s: found option <%s>: %s\n", cmd->def->name, optname, n);
+    vshDebug(ctl, VSH_ERR_DEBUG,
+             "%s: found option <%s>: %s\n", cmd->def->name, optname, n);
 
     if (name != NULL)
         *name = n;
@@ -12951,7 +12969,7 @@ get_data:
                     last->next = arg;
                 last = arg;
 
-                vshDebug(ctl, 4, "%s: %s(%s): %s\n",
+                vshDebug(ctl, VSH_ERR_INFO, "%s: %s(%s): %s\n",
                          cmd->name,
                          opt->name,
                          opt->type != VSH_OT_BOOL ? _("optdata") : _("bool"),
@@ -14065,7 +14083,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         /* parse command */
         ctl->imode = false;
         if (argc - optind == 1) {
-            vshDebug(ctl, 2, "commands: \"%s\"\n", argv[optind]);
+            vshDebug(ctl, VSH_ERR_INFO, "commands: \"%s\"\n", argv[optind]);
             return vshCommandStringParse(ctl, argv[optind]);
         } else {
             return vshCommandArgvParse(ctl, argc - optind, argv + optind);
