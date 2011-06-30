@@ -456,10 +456,6 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
         /* Partial write, so indicate we have more todo later */
         if (msg->bufferOffset < msg->bufferLength)
             return 1;
-
-        /* A dummy 'send' just to free up 'msg' object */
-        memset(msg, 0, sizeof(*msg));
-        return virNetServerClientSendMessage(client, msg);
     } else if (ret == -2) {
         /* Blocking, so indicate we have more todo later */
         return 1;
@@ -602,6 +598,22 @@ daemonStreamHandleWrite(virNetServerClientPtr client,
             virNetMessageFree(msg);
             virNetServerClientMarkClose(client);
             return -1;
+        }
+
+        /* 'CONTINUE' messages don't send a reply (unless error
+         * occurred), so to release the 'msg' object we need to
+         * send a fake zero-length reply. Nothing actually gets
+         * onto the wire, but this causes the client to reset
+         * its active request count / throttling
+         */
+        if (msg->header.status == VIR_NET_CONTINUE) {
+            memset(msg, 0, sizeof(*msg));
+            msg->header.type = VIR_NET_REPLY;
+            if (virNetServerClientSendMessage(client, msg) < 0) {
+                virNetMessageFree(msg);
+                virNetServerClientMarkClose(client);
+                return -1;
+            }
         }
     }
 
