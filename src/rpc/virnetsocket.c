@@ -27,6 +27,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #ifdef HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
