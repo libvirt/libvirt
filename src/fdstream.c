@@ -171,6 +171,13 @@ static void virFDStreamEvent(int watch ATTRIBUTE_UNUSED,
     }
 }
 
+static void virFDStreamCallbackFree(void *opaque)
+{
+    virStreamPtr st = opaque;
+    virStreamFree(st);
+}
+
+
 static int
 virFDStreamAddCallback(virStreamPtr st,
                        int events,
@@ -198,7 +205,7 @@ virFDStreamAddCallback(virStreamPtr st,
                                            events,
                                            virFDStreamEvent,
                                            st,
-                                           NULL)) < 0) {
+                                           virFDStreamCallbackFree)) < 0) {
         streamsReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("cannot register file watch on stream"));
         goto cleanup;
