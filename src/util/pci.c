@@ -1294,7 +1294,8 @@ pciGetDevice(unsigned domain,
              unsigned function)
 {
     pciDevice *dev;
-    char *vendor, *product;
+    char *vendor = NULL;
+    char *product = NULL;
 
     if (VIR_ALLOC(dev) < 0) {
         virReportOOMError();
@@ -1313,22 +1314,19 @@ pciGetDevice(unsigned domain,
         pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"),
                        dev->domain, dev->bus, dev->slot, dev->function);
-        pciFreeDevice(dev);
-        return NULL;
+        goto error;
     }
     if (virAsprintf(&dev->path, PCI_SYSFS "devices/%s/config",
                     dev->name) < 0) {
         virReportOOMError();
-        pciFreeDevice(dev);
-        return NULL;
+        goto error;
     }
 
     if (access(dev->path, F_OK) != 0) {
         virReportSystemError(errno,
                              _("Device %s not found: could not access %s"),
                              dev->name, dev->path);
-        pciFreeDevice(dev);
-        return NULL;
+        goto error;
     }
 
     vendor  = pciReadDeviceID(dev, "vendor");
@@ -1338,10 +1336,7 @@ pciGetDevice(unsigned domain,
         pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to read product/vendor ID for %s"),
                        dev->name);
-        VIR_FREE(product);
-        VIR_FREE(vendor);
-        pciFreeDevice(dev);
-        return NULL;
+        goto error;
     }
 
     /* strings contain '0x' prefix */
@@ -1350,16 +1345,20 @@ pciGetDevice(unsigned domain,
         pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->id buffer overflow: %s %s"),
                        &vendor[2], &product[2]);
-        pciFreeDevice(dev);
-        return NULL;
+        goto error;
     }
-
-    VIR_FREE(product);
-    VIR_FREE(vendor);
 
     VIR_DEBUG("%s %s: initialized", dev->id, dev->name);
 
+cleanup:
+    VIR_FREE(product);
+    VIR_FREE(vendor);
     return dev;
+
+error:
+    pciFreeDevice(dev);
+    dev = NULL;
+    goto cleanup;
 }
 
 void
