@@ -97,10 +97,22 @@ static void networkDriverUnlock(struct network_driver *driver)
 
 static int networkShutdown(void);
 
-static int networkStartNetworkDaemon(struct network_driver *driver,
+static int networkStartNetwork(struct network_driver *driver,
+                               virNetworkObjPtr network);
+
+static int networkShutdownNetwork(struct network_driver *driver,
+                                  virNetworkObjPtr network);
+
+static int networkStartNetworkVirtual(struct network_driver *driver,
                                      virNetworkObjPtr network);
 
-static int networkShutdownNetworkDaemon(struct network_driver *driver,
+static int networkShutdownNetworkVirtual(struct network_driver *driver,
+                                        virNetworkObjPtr network);
+
+static int networkStartNetworkExternal(struct network_driver *driver,
+                                     virNetworkObjPtr network);
+
+static int networkShutdownNetworkExternal(struct network_driver *driver,
                                         virNetworkObjPtr network);
 
 static void networkReloadIptablesRules(struct network_driver *driver);
@@ -252,9 +264,10 @@ networkAutostartConfigs(struct network_driver *driver) {
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (driver->networks.objs[i]->autostart &&
-            !virNetworkObjIsActive(driver->networks.objs[i]) &&
-            networkStartNetworkDaemon(driver, driver->networks.objs[i]) < 0) {
+            !virNetworkObjIsActive(driver->networks.objs[i])) {
+            if (networkStartNetwork(driver, driver->networks.objs[i]) < 0) {
             /* failed to start but already logged */
+            }
         }
         virNetworkObjUnlock(driver->networks.objs[i]);
     }
@@ -1698,7 +1711,7 @@ networkAddAddrToBridge(struct network_driver *driver,
 }
 
 static int
-networkStartNetworkDaemon(struct network_driver *driver,
+networkStartNetworkVirtual(struct network_driver *driver,
                           virNetworkObjPtr network)
 {
     int ii, err;
@@ -1706,12 +1719,6 @@ networkStartNetworkDaemon(struct network_driver *driver,
     virErrorPtr save_err = NULL;
     virNetworkIpDefPtr ipdef;
     char *macTapIfName = NULL;
-
-    if (virNetworkObjIsActive(network)) {
-        networkReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("network is already active"));
-        return -1;
-    }
 
     /* Check to see if any network IP collides with an existing route */
     if (networkCheckRouteCollision(network) < 0)
@@ -1814,25 +1821,9 @@ networkStartNetworkDaemon(struct network_driver *driver,
     if (v6present && networkStartRadvd(network) < 0)
         goto err4;
 
-    /* Persist the live configuration now we have bridge info  */
-    if (virNetworkSaveConfig(NETWORK_STATE_DIR, network->def) < 0) {
-        goto err5;
-    }
-
     VIR_FREE(macTapIfName);
-    VIR_INFO("Starting up network '%s'", network->def->name);
-    network->active = 1;
 
     return 0;
-
- err5:
-    if (!save_err)
-        save_err = virSaveLastError();
-
-    if (network->radvdPid > 0) {
-        kill(network->radvdPid, SIGTERM);
-        network->radvdPid = -1;
-    }
 
  err4:
     if (!save_err)
@@ -1885,25 +1876,11 @@ networkStartNetworkDaemon(struct network_driver *driver,
     return -1;
 }
 
-
-static int networkShutdownNetworkDaemon(struct network_driver *driver,
+static int networkShutdownNetworkVirtual(struct network_driver *driver,
                                         virNetworkObjPtr network)
 {
     int err;
-    char *stateFile;
-    char *macTapIfName;
-
-    VIR_INFO("Shutting down network '%s'", network->def->name);
-
-    if (!virNetworkObjIsActive(network))
-        return 0;
-
-    stateFile = virNetworkConfigFile(NETWORK_STATE_DIR, network->def->name);
-    if (!stateFile)
-        return -1;
-
-    unlink(stateFile);
-    VIR_FREE(stateFile);
+    char ebuf[1024];
 
     if (network->radvdPid > 0) {
         char *radvdpidbase;
@@ -1921,10 +1898,8 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
     if (network->dnsmasqPid > 0)
         kill(network->dnsmasqPid, SIGTERM);
 
-    char ebuf[1024];
-
     if (network->def->mac_specified) {
-        macTapIfName = networkBridgeDummyNicName(network->def->bridge);
+        char *macTapIfName = networkBridgeDummyNicName(network->def->bridge);
         if (!macTapIfName) {
             virReportOOMError();
         } else {
@@ -1960,6 +1935,119 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
         kill(network->radvdPid, SIGKILL);
     network->radvdPid = -1;
 
+    return 0;
+}
+
+static int
+networkStartNetworkExternal(struct network_driver *driver ATTRIBUTE_UNUSED,
+                            virNetworkObjPtr network ATTRIBUTE_UNUSED)
+{
+    /* put anything here that needs to be done each time a network of
+     * type BRIDGE, PRIVATE, VEPA, or PASSTHROUGH is started. On
+     * failure, undo anything you've done, and return -1. On success
+     * return 0.
+     */
+    return 0;
+}
+
+static int networkShutdownNetworkExternal(struct network_driver *driver ATTRIBUTE_UNUSED,
+                                        virNetworkObjPtr network ATTRIBUTE_UNUSED)
+{
+    /* put anything here that needs to be done each time a network of
+     * type BRIDGE, PRIVATE, VEPA, or PASSTHROUGH is shutdown. On
+     * failure, undo anything you've done, and return -1. On success
+     * return 0.
+     */
+    return 0;
+}
+
+static int
+networkStartNetwork(struct network_driver *driver,
+                    virNetworkObjPtr network)
+{
+    int ret = 0;
+
+    if (virNetworkObjIsActive(network)) {
+        networkReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("network is already active"));
+        return -1;
+    }
+
+    switch (network->def->forwardType) {
+
+    case VIR_NETWORK_FORWARD_NONE:
+    case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_ROUTE:
+        ret = networkStartNetworkVirtual(driver, network);
+        break;
+
+    case VIR_NETWORK_FORWARD_BRIDGE:
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
+        ret = networkStartNetworkExternal(driver, network);
+        break;
+    }
+
+    if (ret < 0)
+        return ret;
+
+    /* Persist the live configuration now that anything autogenerated
+     * is setup.
+     */
+    if ((ret = virNetworkSaveConfig(NETWORK_STATE_DIR, network->def)) < 0) {
+        goto error;
+    }
+
+    VIR_INFO("Starting up network '%s'", network->def->name);
+    network->active = 1;
+
+error:
+    if (ret < 0) {
+        virErrorPtr save_err = virSaveLastError();
+        int save_errno = errno;
+        networkShutdownNetwork(driver, network);
+        virSetError(save_err);
+        virFreeError(save_err);
+        errno = save_errno;
+    }
+    return ret;
+}
+
+static int networkShutdownNetwork(struct network_driver *driver,
+                                        virNetworkObjPtr network)
+{
+    int ret = 0;
+    char *stateFile;
+
+    VIR_INFO("Shutting down network '%s'", network->def->name);
+
+    if (!virNetworkObjIsActive(network))
+        return 0;
+
+    stateFile = virNetworkConfigFile(NETWORK_STATE_DIR, network->def->name);
+    if (!stateFile)
+        return -1;
+
+    unlink(stateFile);
+    VIR_FREE(stateFile);
+
+    switch (network->def->forwardType) {
+
+    case VIR_NETWORK_FORWARD_NONE:
+    case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_ROUTE:
+        ret = networkShutdownNetworkVirtual(driver, network);
+        break;
+
+    case VIR_NETWORK_FORWARD_BRIDGE:
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
+        ret = networkShutdownNetworkExternal(driver, network);
+        break;
+    }
+
     network->active = 0;
 
     if (network->newDef) {
@@ -1968,7 +2056,7 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
         network->newDef = NULL;
     }
 
-    return 0;
+    return ret;
 }
 
 
@@ -2199,7 +2287,7 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
         goto cleanup;
     def = NULL;
 
-    if (networkStartNetworkDaemon(driver, network) < 0) {
+    if (networkStartNetwork(driver, network) < 0) {
         virNetworkRemoveInactive(&driver->networks,
                                  network);
         network = NULL;
@@ -2401,7 +2489,7 @@ static int networkStart(virNetworkPtr net) {
         goto cleanup;
     }
 
-    ret = networkStartNetworkDaemon(driver, network);
+    ret = networkStartNetwork(driver, network);
 
 cleanup:
     if (network)
@@ -2430,7 +2518,7 @@ static int networkDestroy(virNetworkPtr net) {
         goto cleanup;
     }
 
-    ret = networkShutdownNetworkDaemon(driver, network);
+    ret = networkShutdownNetwork(driver, network);
     if (!network->persistent) {
         virNetworkRemoveInactive(&driver->networks,
                                  network);
