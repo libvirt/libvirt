@@ -122,7 +122,6 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
 
     if (virJSONValueObjectHasKey(obj, "QMP") == 1) {
         ret = 0;
-        virJSONValueFree(obj);
     } else if (virJSONValueObjectHasKey(obj, "event") == 1) {
         ret = qemuMonitorJSONIOProcessEvent(mon, obj);
     } else if (virJSONValueObjectHasKey(obj, "error") == 1 ||
@@ -130,6 +129,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
         if (msg) {
             msg->rxObject = obj;
             msg->finished = 1;
+            obj = NULL;
             ret = 0;
         } else {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -141,8 +141,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
     }
 
 cleanup:
-    if (ret < 0)
-        virJSONValueFree(obj);
+    virJSONValueFree(obj);
     return ret;
 }
 
