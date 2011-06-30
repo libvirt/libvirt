@@ -950,7 +950,6 @@ cleanup:
 
     if (parser.nstate) {
         int i;
-        VIR_WARN("cleanup state %d", parser.nstate);
         for (i = 0 ; i < parser.nstate ; i++) {
             VIR_FREE(parser.state[i].key);
         }
