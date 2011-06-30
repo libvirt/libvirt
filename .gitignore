@@ -57,6 +57,7 @@
 /tests/*.log
 /tests/cputest
 /tests/hashtest
+/tests/jsontest
 /tests/networkxml2argvtest
 /tests/nwfilterxml2xmltest
 /tests/openvzutilstest
