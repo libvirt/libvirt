@@ -74,7 +74,8 @@ EXTRA_DIST =		\
 	xencapsdata \
 	xmconfigdata \
 	xml2sexprdata \
-	xml2vmxdata
+	xml2vmxdata \
+	.valgrind.supp
 
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
