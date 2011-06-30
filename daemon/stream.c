@@ -327,6 +327,7 @@ int daemonFreeClientStream(virNetServerClientPtr client,
         virNetMessagePtr tmp = msg->next;
         /* Send a dummy reply to free up 'msg' & unblock client rx */
         memset(msg, 0, sizeof(*msg));
+        msg->header.type = VIR_NET_REPLY;
         if (virNetServerClientSendMessage(client, msg) < 0) {
             virNetServerClientMarkClose(client);
             virNetMessageFree(msg);

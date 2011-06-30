@@ -259,7 +259,13 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
          */
         VIR_INFO("Ignoring unexpected stream data serial=%d proc=%d status=%d",
                  msg->header.serial, msg->header.proc, msg->header.status);
-        virNetMessageFree(msg);
+        /* Send a dummy reply to free up 'msg' & unblock client rx */
+        memset(msg, 0, sizeof(*msg));
+        msg->header.type = VIR_NET_REPLY;
+        if (virNetServerClientSendMessage(client, msg) < 0) {
+            ret = -1;
+            goto cleanup;
+        }
         ret = 0;
         break;
 
@@ -275,6 +281,7 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
 error:
     ret = virNetServerProgramSendReplyError(prog, client, msg, &rerr, &msg->header);
 
+cleanup:
     return ret;
 }
 
