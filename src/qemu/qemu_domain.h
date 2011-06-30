@@ -36,16 +36,35 @@
      (1 << VIR_DOMAIN_VIRT_KVM) |      \
      (1 << VIR_DOMAIN_VIRT_XEN))
 
+# define JOB_MASK(job)                  (1 << (job - 1))
+# define DEFAULT_JOB_MASK               \
+    (JOB_MASK(QEMU_JOB_QUERY) | JOB_MASK(QEMU_JOB_DESTROY))
+
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
  * information, not merely actions */
 enum qemuDomainJob {
     QEMU_JOB_NONE = 0,  /* Always set to 0 for easy if (jobActive) conditions */
-    QEMU_JOB_UNSPECIFIED,
-    QEMU_JOB_MIGRATION_OUT,
-    QEMU_JOB_MIGRATION_IN,
-    QEMU_JOB_SAVE,
-    QEMU_JOB_DUMP,
+    QEMU_JOB_QUERY,         /* Doesn't change any state */
+    QEMU_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
+    QEMU_JOB_SUSPEND,       /* Suspends (stops vCPUs) the domain */
+    QEMU_JOB_MODIFY,        /* May change state */
+
+    /* The following two items must always be the last items */
+    QEMU_JOB_ASYNC,         /* Asynchronous job */
+    QEMU_JOB_ASYNC_NESTED,  /* Normal job within an async job */
+};
+
+/* Async job consists of a series of jobs that may change state. Independent
+ * jobs that do not change state (and possibly others if explicitly allowed by
+ * current async job) are allowed to be run even if async job is active.
+ */
+enum qemuDomainAsyncJob {
+    QEMU_ASYNC_JOB_NONE = 0,
+    QEMU_ASYNC_JOB_MIGRATION_OUT,
+    QEMU_ASYNC_JOB_MIGRATION_IN,
+    QEMU_ASYNC_JOB_SAVE,
+    QEMU_ASYNC_JOB_DUMP,
 };
 
 enum qemuDomainJobSignals {
@@ -69,14 +88,16 @@ struct qemuDomainJobSignalsData {
 };
 
 struct qemuDomainJobObj {
-    virCond cond;       /* Use in conjunction with main virDomainObjPtr lock */
+    virCond cond;                       /* Use to coordinate jobs */
+    enum qemuDomainJob active;          /* Currently running job */
+
+    virCond asyncCond;                  /* Use to coordinate with async jobs */
+    enum qemuDomainAsyncJob asyncJob;   /* Currently active async job */
+    unsigned long long mask;            /* Jobs allowed during async job */
+    unsigned long long start;           /* When the async job started */
+    virDomainJobInfo info;              /* Async job progress data */
+
     virCond signalCond; /* Use to coordinate the safe queries during migration */
-
-    enum qemuDomainJob active;  /* Currently running job */
-
-    unsigned long long start;   /* When the job started */
-    virDomainJobInfo info;      /* Progress data */
-
     unsigned int signals;       /* Signals for running job */
     struct qemuDomainJobSignalsData signalsData;    /* Signal specific data */
 };
@@ -124,18 +145,43 @@ void qemuDomainEventQueue(struct qemud_driver *driver,
 void qemuDomainSetPrivateDataHooks(virCapsPtr caps);
 void qemuDomainSetNamespaceHooks(virCapsPtr caps);
 
-int qemuDomainObjBeginJob(virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjBeginJob(virDomainObjPtr obj,
+                          enum qemuDomainJob job)
+    ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjBeginAsyncJob(virDomainObjPtr obj,
+                               enum qemuDomainAsyncJob asyncJob)
+    ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjBeginNestedJob(virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
-                                    virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
-int qemuDomainObjEndJob(virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
+                                    virDomainObjPtr obj,
+                                    enum qemuDomainJob job)
+    ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
+                                         virDomainObjPtr obj,
+                                         enum qemuDomainAsyncJob asyncJob)
+    ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjBeginNestedJobWithDriver(struct qemud_driver *driver,
+                                          virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
+
+int qemuDomainObjEndJob(virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
+int qemuDomainObjEndAsyncJob(virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
+void qemuDomainObjEndNestedJob(virDomainObjPtr obj);
 
 void qemuDomainObjSetJob(virDomainObjPtr obj, enum qemuDomainJob job);
-void qemuDomainObjDiscardJob(virDomainObjPtr obj);
+void qemuDomainObjSetAsyncJobMask(virDomainObjPtr obj,
+                                  unsigned long long allowedJobs);
+void qemuDomainObjDiscardAsyncJob(virDomainObjPtr obj);
 
-void qemuDomainObjEnterMonitor(virDomainObjPtr obj);
+int qemuDomainObjEnterMonitor(virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
 void qemuDomainObjExitMonitor(virDomainObjPtr obj);
-void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
-                                         virDomainObjPtr obj);
+int qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
+                                        virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
 void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
                                         virDomainObjPtr obj);
 void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,

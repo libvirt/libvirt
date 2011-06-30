@@ -377,7 +377,7 @@ qemuProcessFakeReboot(void *opaque)
     VIR_DEBUG("vm=%p", vm);
     qemuDriverLock(driver);
     virDomainObjLock(vm);
-    if (qemuDomainObjBeginJob(vm) < 0)
+    if (qemuDomainObjBeginJob(vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -386,7 +386,7 @@ qemuProcessFakeReboot(void *opaque)
         goto endjob;
     }
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if (qemuMonitorSystemReset(priv->mon) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto endjob;
@@ -817,7 +817,7 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     }
 
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     ret = qemuMonitorSetCapabilities(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -1169,7 +1169,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
         goto cleanup;
 
     priv = vm->privateData;
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     ret = qemuMonitorGetPtyPaths(priv->mon, paths);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -1224,7 +1224,7 @@ qemuProcessDetectVcpuPIDs(struct qemud_driver *driver,
 
     /* What follows is now all KVM specific */
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         return -1;
@@ -1518,7 +1518,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
                 goto cleanup;
 
             alias = vm->def->disks[i]->info.alias;
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
             ret = qemuMonitorSetDrivePassphrase(priv->mon, alias, secret);
             VIR_FREE(secret);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -1909,7 +1909,7 @@ qemuProcessInitPCIAddresses(struct qemud_driver *driver,
     int ret;
     qemuMonitorPCIAddress *addrs = NULL;
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     naddrs = qemuMonitorGetAllPCIAddresses(priv->mon,
                                            &addrs);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -2130,7 +2130,7 @@ qemuProcessStartCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
     }
     VIR_FREE(priv->lockState);
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     ret = qemuMonitorStartCPUs(priv->mon, conn);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -2158,9 +2158,11 @@ int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
     oldState = virDomainObjGetState(vm, &oldReason);
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorStopCPUs(priv->mon);
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (ret == 0) {
+        ret = qemuMonitorStopCPUs(priv->mon);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    }
 
     if (ret == 0) {
         if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
@@ -2206,7 +2208,7 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
     bool running;
     int ret;
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     ret = qemuMonitorGetStatus(priv->mon, &running);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -2252,6 +2254,9 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
 
     priv = obj->privateData;
 
+    /* Set fake job so that EnterMonitor* doesn't want to start a new one */
+    priv->job.active = QEMU_JOB_MODIFY;
+
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted if qemuConnectMonitor() failed */
     virDomainObjRef(obj);
@@ -2289,6 +2294,8 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
 
     if (qemuProcessFiltersInstantiate(conn, obj->def))
         goto error;
+
+    priv->job.active = QEMU_JOB_NONE;
 
     /* update domain state XML with possibly updated state in virDomainObj */
     if (virDomainSaveStatus(driver->caps, driver->stateDir, obj) < 0)
@@ -2703,7 +2710,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Setting initial memory amount");
     cur_balloon = vm->def->mem.cur_balloon;
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if (qemuMonitorSetBalloon(priv->mon, cur_balloon) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
@@ -3117,7 +3124,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     VIR_DEBUG("Getting initial memory amount");
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     if (qemuMonitorGetBalloonInfo(priv->mon, &vm->def->mem.cur_balloon) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
@@ -3205,13 +3212,14 @@ static void qemuProcessAutoDestroyDom(void *payload,
     }
 
     priv = dom->privateData;
-    if (priv->job.active == QEMU_JOB_MIGRATION_IN) {
-        VIR_DEBUG("vm=%s has incoming migration active, cancelling",
+    if (priv->job.asyncJob) {
+        VIR_DEBUG("vm=%s has long-term job active, cancelling",
                   dom->def->name);
-        qemuDomainObjDiscardJob(dom);
+        qemuDomainObjDiscardAsyncJob(dom);
     }
 
-    if (qemuDomainObjBeginJobWithDriver(data->driver, dom) < 0)
+    if (qemuDomainObjBeginJobWithDriver(data->driver, dom,
+                                        QEMU_JOB_DESTROY) < 0)
         goto cleanup;
 
     VIR_DEBUG("Killing domain");

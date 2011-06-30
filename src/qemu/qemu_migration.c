@@ -749,9 +749,11 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
     if (priv->job.signals & QEMU_JOB_SIGNAL_CANCEL) {
         priv->job.signals ^= QEMU_JOB_SIGNAL_CANCEL;
         VIR_DEBUG("Cancelling job at client request");
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorMigrateCancel(priv->mon);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        if (ret == 0) {
+            ret = qemuMonitorMigrateCancel(priv->mon);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
         if (ret < 0) {
             VIR_WARN("Unable to cancel job");
         }
@@ -766,9 +768,11 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
         priv->job.signals ^= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
         priv->job.signalsData.migrateDowntime = 0;
         VIR_DEBUG("Setting migration downtime to %llums", ms);
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorSetMigrationDowntime(priv->mon, ms);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        if (ret == 0) {
+            ret = qemuMonitorSetMigrationDowntime(priv->mon, ms);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
         if (ret < 0)
             VIR_WARN("Unable to set migration downtime");
     } else if (priv->job.signals & QEMU_JOB_SIGNAL_MIGRATE_SPEED) {
@@ -777,21 +781,25 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
         priv->job.signals ^= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
         priv->job.signalsData.migrateBandwidth = 0;
         VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        if (ret == 0) {
+            ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
         if (ret < 0)
             VIR_WARN("Unable to set migration speed");
     } else if (priv->job.signals & QEMU_JOB_SIGNAL_BLKSTAT) {
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                              priv->job.signalsData.statDevName,
-                              &priv->job.signalsData.blockStat->rd_req,
-                              &priv->job.signalsData.blockStat->rd_bytes,
-                              &priv->job.signalsData.blockStat->wr_req,
-                              &priv->job.signalsData.blockStat->wr_bytes,
-                              &priv->job.signalsData.blockStat->errs);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        if (ret == 0) {
+            ret = qemuMonitorGetBlockStatsInfo(priv->mon,
+                                  priv->job.signalsData.statDevName,
+                                  &priv->job.signalsData.blockStat->rd_req,
+                                  &priv->job.signalsData.blockStat->rd_bytes,
+                                  &priv->job.signalsData.blockStat->wr_req,
+                                  &priv->job.signalsData.blockStat->wr_bytes,
+                                  &priv->job.signalsData.blockStat->errs);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
 
         *priv->job.signalsData.statRetCode = ret;
         priv->job.signals ^= QEMU_JOB_SIGNAL_BLKSTAT;
@@ -799,11 +807,13 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
         if (ret < 0)
             VIR_WARN("Unable to get block statistics");
     } else if (priv->job.signals & QEMU_JOB_SIGNAL_BLKINFO) {
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        ret = qemuMonitorGetBlockExtent(priv->mon,
-                           priv->job.signalsData.infoDevName,
-                           &priv->job.signalsData.blockInfo->allocation);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        if (ret == 0) {
+            ret = qemuMonitorGetBlockExtent(priv->mon,
+                               priv->job.signalsData.infoDevName,
+                               &priv->job.signalsData.blockInfo->allocation);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
 
         *priv->job.signalsData.infoRetCode = ret;
         priv->job.signals ^= QEMU_JOB_SIGNAL_BLKINFO;
@@ -836,13 +846,15 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
         return -1;
     }
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorGetMigrationStatus(priv->mon,
-                                        &status,
-                                        &memProcessed,
-                                        &memRemaining,
-                                        &memTotal);
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (ret == 0) {
+        ret = qemuMonitorGetMigrationStatus(priv->mon,
+                                            &status,
+                                            &memProcessed,
+                                            &memRemaining,
+                                            &memTotal);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    }
 
     if (ret < 0 || virTimeMs(&priv->job.info.timeElapsed) < 0) {
         priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
@@ -897,14 +909,14 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     const char *job;
 
-    switch (priv->job.active) {
-    case QEMU_JOB_MIGRATION_OUT:
+    switch (priv->job.asyncJob) {
+    case QEMU_ASYNC_JOB_MIGRATION_OUT:
         job = _("migration job");
         break;
-    case QEMU_JOB_SAVE:
+    case QEMU_ASYNC_JOB_SAVE:
         job = _("domain save job");
         break;
-    case QEMU_JOB_DUMP:
+    case QEMU_ASYNC_JOB_DUMP:
         job = _("domain core dump job");
         break;
     default:
@@ -969,14 +981,16 @@ qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
     if (cookie->graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
         return 0;
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorGraphicsRelocate(priv->mon,
-                                      cookie->graphics->type,
-                                      cookie->remoteHostname,
-                                      cookie->graphics->port,
-                                      cookie->graphics->tlsPort,
-                                      cookie->graphics->tlsSubject);
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (ret == 0) {
+        ret = qemuMonitorGraphicsRelocate(priv->mon,
+                                          cookie->graphics->type,
+                                          cookie->remoteHostname,
+                                          cookie->graphics->port,
+                                          cookie->graphics->tlsPort,
+                                          cookie->graphics->tlsSubject);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    }
 
     return ret;
 }
@@ -1110,9 +1124,9 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                                        QEMU_MIGRATION_COOKIE_LOCKSTATE)))
         goto cleanup;
 
-    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
+                                             QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto cleanup;
-    qemuDomainObjSetJob(vm, QEMU_JOB_MIGRATION_IN);
 
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
@@ -1146,7 +1160,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
         virDomainAuditStart(vm, "migrated", false);
         qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FAILED);
         if (!vm->persistent) {
-            if (qemuDomainObjEndJob(vm) > 0)
+            if (qemuDomainObjEndAsyncJob(vm) > 0)
                 virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
         }
@@ -1175,7 +1189,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
 
 endjob:
     if (vm &&
-        qemuDomainObjEndJob(vm) == 0)
+        qemuDomainObjEndAsyncJob(vm) == 0)
         vm = NULL;
 
     /* We set a fake job active which is held across
@@ -1185,7 +1199,7 @@ endjob:
      */
     if (vm &&
         virDomainObjIsActive(vm)) {
-        qemuDomainObjSetJob(vm, QEMU_JOB_MIGRATION_IN);
+        priv->job.asyncJob = QEMU_ASYNC_JOB_MIGRATION_IN;
         priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
         priv->job.start = now;
     }
@@ -1346,9 +1360,9 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
                                        QEMU_MIGRATION_COOKIE_LOCKSTATE)))
         goto cleanup;
 
-    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
+                                             QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto cleanup;
-    qemuDomainObjSetJob(vm, QEMU_JOB_MIGRATION_IN);
 
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
@@ -1364,7 +1378,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
          * should have already done that.
          */
         if (!vm->persistent) {
-            if (qemuDomainObjEndJob(vm) > 0)
+            if (qemuDomainObjEndAsyncJob(vm) > 0)
                 virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
         }
@@ -1397,7 +1411,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
 
 endjob:
     if (vm &&
-        qemuDomainObjEndJob(vm) == 0)
+        qemuDomainObjEndAsyncJob(vm) == 0)
         vm = NULL;
 
     /* We set a fake job active which is held across
@@ -1407,7 +1421,7 @@ endjob:
      */
     if (vm &&
         virDomainObjIsActive(vm)) {
-        qemuDomainObjSetJob(vm, QEMU_JOB_MIGRATION_IN);
+        priv->job.asyncJob = QEMU_ASYNC_JOB_MIGRATION_IN;
         priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
         priv->job.start = now;
     }
@@ -1491,7 +1505,9 @@ static int doNativeMigrate(struct qemud_driver *driver,
             goto cleanup;
     }
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+        goto cleanup;
+
     if (resource > 0 &&
         qemuMonitorSetMigrationSpeed(priv->mon, resource) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -1750,7 +1766,9 @@ static int doTunnelMigrate(struct qemud_driver *driver,
             goto cleanup;
     }
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+        goto cleanup;
+
     if (resource > 0 &&
         qemuMonitorSetMigrationSpeed(priv->mon, resource) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -1791,7 +1809,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     /* it is also possible that the migrate didn't fail initially, but
      * rather failed later on.  Check the output of "info migrate"
      */
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+        goto cancel;
     if (qemuMonitorGetMigrationStatus(priv->mon,
                                       &status,
                                       &transferred,
@@ -1849,9 +1868,10 @@ cancel:
     if (ret != 0 && virDomainObjIsActive(vm)) {
         VIR_FORCE_CLOSE(client_sock);
         VIR_FORCE_CLOSE(qemu_sock);
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        qemuMonitorMigrateCancel(priv->mon);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        if (qemuDomainObjEnterMonitorWithDriver(driver, vm) == 0) {
+            qemuMonitorMigrateCancel(priv->mon);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
     }
 
 cleanup:
@@ -2287,9 +2307,9 @@ int qemuMigrationPerform(struct qemud_driver *driver,
               cookieout, cookieoutlen, flags, NULLSTR(dname),
               resource, v3proto);
 
-    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
+                                             QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
-    qemuDomainObjSetJob(vm, QEMU_JOB_MIGRATION_OUT);
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -2368,7 +2388,7 @@ endjob:
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
     if (vm) {
-        if (qemuDomainObjEndJob(vm) == 0) {
+        if (qemuDomainObjEndAsyncJob(vm) == 0) {
             vm = NULL;
         } else if (!virDomainObjIsActive(vm) &&
                    (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
@@ -2453,17 +2473,17 @@ qemuMigrationFinish(struct qemud_driver *driver,
     virErrorPtr orig_err = NULL;
 
     priv = vm->privateData;
-    if (priv->job.active != QEMU_JOB_MIGRATION_IN) {
+    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_IN) {
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("domain '%s' is not processing incoming migration"), vm->def->name);
         goto cleanup;
     }
-    qemuDomainObjDiscardJob(vm);
+    qemuDomainObjDiscardAsyncJob(vm);
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
         goto cleanup;
 
-    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
     /* Did the migration go as planned?  If yes, return the domain
@@ -2744,7 +2764,9 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
         restoreLabel = true;
     }
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+        goto cleanup;
+
     if (!compressor) {
         const char *args[] = { "cat", NULL };
 

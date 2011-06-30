@@ -49,17 +49,39 @@ There are a number of locks on various objects
 
 
 
-  * qemuMonitorPrivatePtr: Job condition
+  * qemuMonitorPrivatePtr: Job conditions
 
     Since virDomainObjPtr lock must not be held during sleeps, the job
-    condition provides additional protection for code making updates.
+    conditions provide additional protection for code making updates.
+
+    Qemu driver uses two kinds of job conditions: asynchronous and
+    normal.
+
+    Asynchronous job condition is used for long running jobs (such as
+    migration) that consist of several monitor commands and it is
+    desirable to allow calling a limited set of other monitor commands
+    while such job is running.  This allows clients to, e.g., query
+    statistical data, cancel the job, or change parameters of the job.
+
+    Normal job condition is used by all other jobs to get exclusive
+    access to the monitor and also by every monitor command issued by an
+    asynchronous job.  When acquiring normal job condition, the job must
+    specify what kind of action it is about to take and this is checked
+    against the allowed set of jobs in case an asynchronous job is
+    running.  If the job is incompatible with current asynchronous job,
+    it needs to wait until the asynchronous job ends and try to acquire
+    the job again.
 
     Immediately after acquiring the virDomainObjPtr lock, any method
-    which intends to update state must acquire the job condition. The
-    virDomainObjPtr lock is released while blocking on this condition
-    variable. Once the job condition is acquired, a method can safely
-    release the virDomainObjPtr lock whenever it hits a piece of code
-    which may sleep/wait, and re-acquire it after the sleep/wait.
+    which intends to update state must acquire either asynchronous or
+    normal job condition.  The virDomainObjPtr lock is released while
+    blocking on these condition variables.  Once the job condition is
+    acquired, a method can safely release the virDomainObjPtr lock
+    whenever it hits a piece of code which may sleep/wait, and
+    re-acquire it after the sleep/wait.  Whenever an asynchronous job
+    wants to talk to the monitor, it needs to acquire nested job (a
+    special kind of normla job) to obtain exclusive access to the
+    monitor.
 
     Since the virDomainObjPtr lock was dropped while waiting for the
     job condition, it is possible that the domain is no longer active
@@ -111,31 +133,74 @@ To lock the virDomainObjPtr
 
 
 
-To acquire the job mutex
+To acquire the normal job condition
 
   qemuDomainObjBeginJob()           (if driver is unlocked)
     - Increments ref count on virDomainObjPtr
-    - Wait qemuDomainObjPrivate condition 'jobActive != 0' using
-      virDomainObjPtr mutex
-    - Sets jobActive to 1
+    - Waits until the job is compatible with current async job or no
+      async job is running
+    - Waits job.cond condition 'job.active != 0' using virDomainObjPtr
+      mutex
+    - Rechecks if the job is still compatible and repeats waiting if it
+      isn't
+    - Sets job.active to the job type
 
   qemuDomainObjBeginJobWithDriver() (if driver needs to be locked)
-    - Unlocks driver
     - Increments ref count on virDomainObjPtr
-    - Wait qemuDomainObjPrivate condition 'jobActive != 0' using
-      virDomainObjPtr mutex
-    - Sets jobActive to 1
+    - Unlocks driver
+    - Waits until the job is compatible with current async job or no
+      async job is running
+    - Waits job.cond condition 'job.active != 0' using virDomainObjPtr
+      mutex
+    - Rechecks if the job is still compatible and repeats waiting if it
+      isn't
+    - Sets job.active to the job type
     - Unlocks virDomainObjPtr
     - Locks driver
     - Locks virDomainObjPtr
 
-   NB: this variant is required in order to comply with lock ordering rules
-   for virDomainObjPtr vs driver
+   NB: this variant is required in order to comply with lock ordering
+   rules for virDomainObjPtr vs driver
 
 
   qemuDomainObjEndJob()
-    - Set jobActive to 0
-    - Signal on qemuDomainObjPrivate condition
+    - Sets job.active to 0
+    - Signals on job.cond condition
+    - Decrements ref count on virDomainObjPtr
+
+
+
+To acquire the asynchronous job condition
+
+  qemuDomainObjBeginAsyncJob()            (if driver is unlocked)
+    - Increments ref count on virDomainObjPtr
+    - Waits until no async job is running
+    - Waits job.cond condition 'job.active != 0' using virDomainObjPtr
+      mutex
+    - Rechecks if any async job was started while waiting on job.cond
+      and repeats waiting in that case
+    - Sets job.asyncJob to the asynchronous job type
+
+  qemuDomainObjBeginAsyncJobWithDriver()  (if driver needs to be locked)
+    - Increments ref count on virDomainObjPtr
+    - Unlocks driver
+    - Waits until no async job is running
+    - Waits job.cond condition 'job.active != 0' using virDomainObjPtr
+      mutex
+    - Rechecks if any async job was started while waiting on job.cond
+      and repeats waiting in that case
+    - Sets job.asyncJob to the asynchronous job type
+    - Unlocks virDomainObjPtr
+    - Locks driver
+    - Locks virDomainObjPtr
+
+   NB: this variant is required in order to comply with lock ordering
+   rules for virDomainObjPtr vs driver
+
+
+  qemuDomainObjEndAsyncJob()
+    - Sets job.asyncJob to 0
+    - Broadcasts on job.asyncCond condition
     - Decrements ref count on virDomainObjPtr
 
 
@@ -152,6 +217,11 @@ To acquire the QEMU monitor lock
 
   NB: caller must take care to drop the driver lock if necessary
 
+  These functions automatically begin/end nested job if called inside an
+  asynchronous job.  The caller must then check the return value of
+  qemuDomainObjEnterMonitor to detect if domain died while waiting on
+  the nested job.
+
 
 To acquire the QEMU monitor lock with the driver lock held
 
@@ -166,6 +236,11 @@ To acquire the QEMU monitor lock with the driver lock held
     - Acquires the virDomainObjPtr lock
 
   NB: caller must take care to drop the driver lock if necessary
+
+  These functions automatically begin/end nested job if called inside an
+  asynchronous job.  The caller must then check the return value of
+  qemuDomainObjEnterMonitorWithDriver to detect if domain died while
+  waiting on the nested job.
 
 
 To keep a domain alive while waiting on a remote command, starting
@@ -232,7 +307,7 @@ Design patterns
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
      qemuDriverUnlock(driver);
 
-     qemuDomainObjBeginJob(obj);
+     qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
 
      ...do work...
 
@@ -253,12 +328,12 @@ Design patterns
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
      qemuDriverUnlock(driver);
 
-     qemuDomainObjBeginJob(obj);
+     qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
 
      ...do prep work...
 
      if (virDomainObjIsActive(vm)) {
-         qemuDomainObjEnterMonitor(obj);
+         ignore_value(qemuDomainObjEnterMonitor(obj));
          qemuMonitorXXXX(priv->mon);
          qemuDomainObjExitMonitor(obj);
      }
@@ -280,12 +355,12 @@ Design patterns
      qemuDriverLock(driver);
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
 
-     qemuDomainObjBeginJobWithDriver(obj);
+     qemuDomainObjBeginJobWithDriver(obj, QEMU_JOB_TYPE);
 
      ...do prep work...
 
      if (virDomainObjIsActive(vm)) {
-         qemuDomainObjEnterMonitorWithDriver(driver, obj);
+         ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, obj));
          qemuMonitorXXXX(priv->mon);
          qemuDomainObjExitMonitorWithDriver(driver, obj);
      }
@@ -297,7 +372,7 @@ Design patterns
      qemuDriverUnlock(driver);
 
 
- * Coordinating with a remote server for migraion
+ * Running asynchronous job
 
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
@@ -305,7 +380,47 @@ Design patterns
      qemuDriverLock(driver);
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
 
-     qemuDomainObjBeginJobWithDriver(obj);
+     qemuDomainObjBeginAsyncJobWithDriver(obj, QEMU_ASYNC_JOB_TYPE);
+     qemuDomainObjSetAsyncJobMask(obj, allowedJobs);
+
+     ...do prep work...
+
+     if (qemuDomainObjEnterMonitorWithDriver(driver, obj) < 0) {
+         /* domain died in the meantime */
+         goto error;
+     }
+     ...start qemu job...
+     qemuDomainObjExitMonitorWithDriver(driver, obj);
+
+     while (!finished) {
+         if (qemuDomainObjEnterMonitorWithDriver(driver, obj) < 0) {
+             /* domain died in the meantime */
+             goto error;
+         }
+         ...monitor job progress...
+         qemuDomainObjExitMonitorWithDriver(driver, obj);
+
+         virDomainObjUnlock(obj);
+         sleep(aWhile);
+         virDomainObjLock(obj);
+     }
+
+     ...do final work...
+
+     qemuDomainObjEndAsyncJob(obj);
+     virDomainObjUnlock(obj);
+     qemuDriverUnlock(driver);
+
+
+ * Coordinating with a remote server for migration
+
+     virDomainObjPtr obj;
+     qemuDomainObjPrivatePtr priv;
+
+     qemuDriverLock(driver);
+     obj = virDomainFindByUUID(driver->domains, dom->uuid);
+
+     qemuDomainObjBeginAsyncJobWithDriver(obj, QEMU_ASYNC_JOB_TYPE);
 
      ...do prep work...
 
@@ -322,7 +437,7 @@ Design patterns
 
      ...do final work...
 
-     qemuDomainObjEndJob(obj);
+     qemuDomainObjEndAsyncJob(obj);
      virDomainObjUnlock(obj);
      qemuDriverUnlock(driver);
 
