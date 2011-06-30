@@ -72,7 +72,7 @@ instead of the default connection.
 =item B<-d>, B<--debug> I<LEVEL>
 
 Enable debug messages at integer I<LEVEL> and above.  I<LEVEL> can
-range from 0 (default) to 5.
+range from 0 (default) to 4.
 
 =item B<-l>, B<--log> I<FILE>
 
@@ -1559,6 +1559,34 @@ The following environment variables can be set to alter the behaviour
 of C<virsh>
 
 =over 4
+
+=item VIRSH_DEBUG=<0 to 4>
+
+Turn on verbose debugging of virsh commands. Valid levels are
+
+=item * VIRSH_DEBUG=0
+
+DEBUG - Messages at ALL levels get logged
+
+=item * VIRSH_DEBUG=1
+
+INFO - Logs messages at levels INFO, NOTICE, WARNING and ERROR
+
+=item * VIRSH_DEBUG=2
+
+NOTICE - Logs messages at levels NOTICE, WARNING and ERROR
+
+=item * VIRSH_DEBUG=3
+
+WARNING - Logs messages at levels WARNING and ERROR
+
+=item * VIRSH_DEBUG=4
+
+ERROR - Messages at only ERROR level gets logged.
+
+=item VIRSH_LOG_FILE=C<LOGFILE>
+
+The file to log virsh debug messages.
 
 =item VIRSH_DEFAULT_CONNECT_URI
 
