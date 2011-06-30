@@ -1,6 +1,7 @@
 /*
  * interface.c: interface support functions
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -1100,6 +1101,7 @@ ifaceRestoreMacAddress(const char *linkdev,
         ifaceError(VIR_ERR_INTERNAL_ERROR,
                    _("Cannot parse MAC address from '%s'"),
                    oldmacname);
+        VIR_FREE(macstr);
         return -1;
     }
 
