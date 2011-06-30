@@ -383,6 +383,7 @@ qemuMonitorIOWriteWithFD(qemuMonitorPtr mon,
     struct cmsghdr *cmsg;
 
     memset(&msg, 0, sizeof(msg));
+    memset(control, 0, sizeof(control));
 
     iov[0].iov_base = (void *)data;
     iov[0].iov_len = len;
