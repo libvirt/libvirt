@@ -14,6 +14,7 @@ INCLUDES = \
 	$(SASL_CFLAGS) \
 	$(SELINUX_CFLAGS) \
 	$(APPARMOR_CFLAGS) \
+	$(YAJL_CFLAGS) \
          $(COVERAGE_CFLAGS) \
          $(WARN_CFLAGS)
 
@@ -29,6 +30,7 @@ LDADDS = \
         $(SASL_LIBS) \
         $(SELINUX_LIBS) \
         $(APPARMOR_LIBS) \
+        $(YAJL_LIBS) \
         $(WARN_CFLAGS) \
 	../src/libvirt_test.la \
 	../gnulib/lib/libgnu.la \
@@ -113,6 +115,10 @@ if WITH_CIL
 check_PROGRAMS += object-locking
 endif
 
+if HAVE_YAJL
+check_PROGRAMS += jsontest
+endif
+
 check_PROGRAMS += networkxml2xmltest
 
 check_PROGRAMS += networkxml2argvtest
@@ -195,6 +201,10 @@ TESTS = virshtest \
 	virnetmessagetest \
 	virnetsockettest \
 	$(test_scripts)
+
+if HAVE_YAJL
+TESTS += jsontest
+endif
 
 if WITH_XEN
 TESTS += xml2sexprtest \
@@ -443,6 +453,10 @@ virbuftest_LDADD = $(LDADDS)
 hashtest_SOURCES = \
 	hashtest.c hashdata.h testutils.h testutils.c
 hashtest_LDADD = $(LDADDS)
+
+jsontest_SOURCES = \
+	jsontest.c jsondata.h testutils.h testutils.c
+jsontest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
