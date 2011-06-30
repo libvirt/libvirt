@@ -3691,7 +3691,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
     memset(&ret, 0, sizeof(ret));
 
     if (!(netst = virNetClientStreamNew(priv->remoteProgram,
-                                        REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL,
+                                        REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3,
                                         priv->counter)))
         goto done;
 
