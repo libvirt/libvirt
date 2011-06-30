@@ -472,7 +472,7 @@ virSysinfoRead(void) {
 
     ret->nmemory = 0;
     ret->memory = NULL;
-    if ((base = virSysinfoParseMemory(base, ret)) == NULL)
+    if (virSysinfoParseMemory(base, ret) == NULL)
         goto no_memory;
 
 cleanup:

@@ -529,11 +529,10 @@ int virNetServerAddService(virNetServerPtr srv,
 #if HAVE_AVAHI
     if (mdnsEntryName) {
         int port = virNetServerServiceGetPort(svc);
-        virNetServerMDNSEntryPtr entry;
 
-        if (!(entry = virNetServerMDNSAddEntry(srv->mdnsGroup,
-                                               mdnsEntryName,
-                                               port)))
+        if (!virNetServerMDNSAddEntry(srv->mdnsGroup,
+                                      mdnsEntryName,
+                                      port))
             goto error;
     }
 #endif
