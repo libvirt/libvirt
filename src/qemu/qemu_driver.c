@@ -2091,7 +2091,10 @@ qemuCompressProgramName(int compress)
 }
 
 /* This internal function expects the driver lock to already be held on
- * entry and the vm must be active.
+ * entry and the vm must be active + locked. Vm will be unlocked and
+ * potentially free'd after this returns (eg transient VMs are freed
+ * shutdown). So 'vm' must not be referenced by the caller after
+ * this returns (whether returning success or failure).
  */
 static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
                                virDomainObjPtr vm, const char *path,
@@ -2318,6 +2321,8 @@ cleanup:
         unlink(path);
     if (event)
         qemuDomainEventQueue(driver, event);
+    if (vm)
+        virDomainObjUnlock(vm);
     return ret;
 }
 
@@ -2380,6 +2385,7 @@ static int qemudDomainSave(virDomainPtr dom, const char *path)
     }
 
     ret = qemudDomainSaveFlag(driver, dom, vm, path, compressed);
+    vm = NULL;
 
 cleanup:
     if (vm)
@@ -2436,6 +2442,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     compressed = QEMUD_SAVE_FORMAT_RAW;
     ret = qemudDomainSaveFlag(driver, dom, vm, name, compressed);
+    vm = NULL;
 
 cleanup:
     if (vm)
