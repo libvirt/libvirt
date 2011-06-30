@@ -931,14 +931,14 @@ int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot)
 {
     virDomainDeviceInfo dev;
     char *addr;
-    int function;
     int ret = 0;
+    unsigned int *function = &dev.addr.pci.function;
 
     dev.addr.pci.domain = 0;
     dev.addr.pci.bus = 0;
     dev.addr.pci.slot = slot;
 
-    for (function = 0; function <= QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
+    for (*function = 0; *function <= QEMU_PCI_ADDRESS_LAST_FUNCTION; (*function)++) {
         addr = qemuPCIAddressAsString(&dev);
         if (!addr)
             return -1;
@@ -950,7 +950,7 @@ int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot)
 
         VIR_FREE(addr);
 
-        if (qemuDomainPCIAddressReleaseFunction(addrs, slot, function) < 0)
+        if (qemuDomainPCIAddressReleaseFunction(addrs, slot, *function) < 0)
             ret = -1;
     }
 
