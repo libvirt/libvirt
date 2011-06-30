@@ -837,6 +837,7 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
                     client->nrequests < client->nrequests_max) {
                     /* Ready to recv more messages */
                     client->rx = msg;
+                    memset(client->rx, 0, sizeof(*client->rx));
                     client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
                     msg = NULL;
                     client->nrequests++;
