@@ -455,7 +455,7 @@ hashtest_SOURCES = \
 hashtest_LDADD = $(LDADDS)
 
 jsontest_SOURCES = \
-	jsontest.c jsondata.h testutils.h testutils.c
+	jsontest.c testutils.h testutils.c
 jsontest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
