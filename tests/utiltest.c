@@ -160,7 +160,7 @@ mymain(void)
 
     virSetErrorFunc(NULL, testQuietError);
 
-    #define DO_TEST(_name)                                                    \
+#define DO_TEST(_name)                                                  \
         do {                                                                  \
             if (virtTestRun("Util "#_name, 1, test##_name,                    \
                             NULL) < 0) {                                      \
