@@ -1598,16 +1598,16 @@ virParseNumber(const char **str)
 int
 virParseVersionString(const char *str, unsigned long *version)
 {
-    unsigned int major, minor, micro;
+    unsigned int major, minor = 0, micro = 0;
     char *tmp;
 
-    if (virStrToLong_ui(str, &tmp, 10, &major) < 0 || *tmp != '.')
+    if (virStrToLong_ui(str, &tmp, 10, &major) < 0)
         return -1;
 
-    if (virStrToLong_ui(tmp + 1, &tmp, 10, &minor) < 0 || *tmp != '.')
+    if ((*tmp == '.') && virStrToLong_ui(tmp + 1, &tmp, 10, &minor) < 0)
         return -1;
 
-    if (virStrToLong_ui(tmp + 1, &tmp, 10, &micro) < 0)
+    if ((*tmp == '.') && virStrToLong_ui(tmp + 1, &tmp, 10, &micro) < 0)
         return -1;
 
     *version = 1000000 * major + 1000 * minor + micro;
