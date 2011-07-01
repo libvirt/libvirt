@@ -30,6 +30,7 @@ sockettest
 statstest
 storagepoolxml2xmltest
 storagevolxml2xmltest
+utiltest
 virbuftest
 virnetmessagetest
 virnetsockettest

@@ -84,7 +84,8 @@ EXTRA_DIST =		\
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
 	commandtest commandhelper seclabeltest \
-	hashtest virnetmessagetest virnetsockettest ssh
+	hashtest virnetmessagetest virnetsockettest ssh \
+	utiltest
 
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
@@ -202,6 +203,7 @@ TESTS = virshtest \
 	hashtest \
 	virnetmessagetest \
 	virnetsockettest \
+	utiltest \
 	$(test_scripts)
 
 if HAVE_YAJL
@@ -459,6 +461,10 @@ hashtest_LDADD = $(LDADDS)
 jsontest_SOURCES = \
 	jsontest.c testutils.h testutils.c
 jsontest_LDADD = $(LDADDS)
+
+utiltest_SOURCES = \
+	utiltest.c testutils.h testutils.c
+utiltest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
