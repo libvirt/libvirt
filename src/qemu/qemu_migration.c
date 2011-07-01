@@ -2471,7 +2471,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
         if (!virDomainObjIsActive(vm)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("guest unexpectedly quit"));
-            goto cleanup;
+            goto endjob;
         }
 
         qemuMigrationVPAssociatePortProfiles(vm->def);
@@ -2491,7 +2491,24 @@ qemuMigrationFinish(struct qemud_driver *driver,
                  * Return a NULL dom pointer, and hope that this is a rare
                  * situation and management tools are smart.
                  */
-                vm = NULL;
+
+                /*
+                 * In v3 protocol, the source VM is still available to
+                 * restart during confirm() step, so we kill it off
+                 * now.
+                 * In v2 protocol, the source is dead, so we leave
+                 * target in paused state, in case admin can fix
+                 * things up
+                 */
+                if (v3proto) {
+                    qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
+                    qemuAuditDomainStop(vm, "failed");
+                    if (newVM) {
+                        if (qemuDomainObjEndJob(vm) > 0)
+                            virDomainRemoveInactive(&driver->domains, vm);
+                        vm = NULL;
+                    }
+                }
                 goto endjob;
             }
 
