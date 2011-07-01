@@ -44,11 +44,41 @@
 #   define LIBVIRTD_PROBES_H
 #   include "probes.h"
 #  endif /* LIBVIRTD_PROBES_H */
+
+/* Systemtap 1.2 headers have a bug where they cannot handle a
+ * variable declared with array type.  Work around this by casting all
+ * arguments.  This is some gross use of the preprocessor because
+ * PROBE is a var-arg macro, but it is better than the alternative of
+ * making all callers to PROBE have to be aware of the issues.  And
+ * hopefully, if we ever add a call to PROBE with other than 2 or 3
+ * end arguments, you can figure out the pattern to extend this hack.
+ */
+#  define VIR_COUNT_ARGS(...) VIR_ARG5(__VA_ARGS__, 4, 3, 2, 1)
+#  define VIR_ARG5(_1, _2, _3, _4, _5, ...) _5
+#  define VIR_ADD_CAST_EXPAND(a, b, ...) VIR_ADD_CAST_PASTE(a, b, __VA_ARGS__)
+#  define VIR_ADD_CAST_PASTE(a, b, ...) a##b(__VA_ARGS__)
+
+/* The double cast is necessary to silence gcc warnings; any pointer
+ * can safely go to intptr_t and back to void *, which collapses
+ * arrays into pointers; while any integer can be widened to intptr_t
+ * then cast to void *.  */
+#  define VIR_ADD_CAST(a) ((void *)(intptr_t)(a))
+#  define VIR_ADD_CAST2(a, b)                           \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b)
+#  define VIR_ADD_CAST3(a, b, c)                        \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c)
+
+#  define VIR_ADD_CASTS(...)                                            \
+    VIR_ADD_CAST_EXPAND(VIR_ADD_CAST, VIR_COUNT_ARGS(__VA_ARGS__),      \
+                        __VA_ARGS__)
+
+#  define PROBE_EXPAND(NAME, ARGS) NAME(ARGS)
 #  define PROBE(NAME, FMT, ...)                              \
     VIR_DEBUG_INT("trace." __FILE__ , __func__, __LINE__,    \
                   #NAME ": " FMT, __VA_ARGS__);              \
     if (LIBVIRTD_ ## NAME ## _ENABLED()) {                   \
-        LIBVIRTD_ ## NAME(__VA_ARGS__);                      \
+        PROBE_EXPAND(LIBVIRTD_ ## NAME,                      \
+                     VIR_ADD_CASTS(__VA_ARGS__));            \
     }
 # else
 #  define PROBE(NAME, FMT, ...)                              \
