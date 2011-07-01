@@ -1202,7 +1202,7 @@ esxGetVersion(virConnectPtr conn, unsigned long *version)
     esxPrivate *priv = conn->privateData;
 
     if (virParseVersionString(priv->primary->service->about->version,
-                              version) < 0) {
+                              version, false) < 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Could not parse version number from '%s'"),
                   priv->primary->service->about->version);

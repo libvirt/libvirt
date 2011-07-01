@@ -2249,7 +2249,7 @@ static int lxcVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *versio
 
     uname(&ver);
 
-    if (virParseVersionString(ver.release, version) < 0) {
+    if (virParseVersionString(ver.release, version, true) < 0) {
         lxcError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %s"), ver.release);
         return -1;
     }

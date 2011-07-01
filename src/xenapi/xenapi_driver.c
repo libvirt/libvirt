@@ -302,7 +302,7 @@ xenapiGetVersion (virConnectPtr conn, unsigned long *hvVer)
             }
         }
         if (version) {
-            if (virParseVersionString(version, hvVer) < 0)
+            if (virParseVersionString(version, hvVer, false) < 0)
                 xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                           _("Couldn't parse version info"));
             else

@@ -430,7 +430,7 @@ vboxLookupVersionInRegistry(void)
         }
     }
 
-    if (virParseVersionString(value, &vboxVersion) < 0) {
+    if (virParseVersionString(value, &vboxVersion, false) < 0) {
         VIR_ERROR(_("Could not parse version number from '%s'"), value);
         goto cleanup;
     }

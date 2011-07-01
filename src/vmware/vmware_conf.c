@@ -248,7 +248,7 @@ vmwareExtractVersion(struct vmware_driver *driver)
         goto cleanup;
     }
 
-    if (virParseVersionString(tmp, &version) < 0) {
+    if (virParseVersionString(tmp, &version, false) < 0) {
         vmwareError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("version parsing error"));
         goto cleanup;

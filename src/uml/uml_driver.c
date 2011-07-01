@@ -1227,7 +1227,7 @@ static int umlGetVersion(virConnectPtr conn, unsigned long *version) {
     if (driver->umlVersion == 0) {
         uname(&ut);
 
-        if (virParseVersionString(ut.release, &driver->umlVersion) < 0) {
+        if (virParseVersionString(ut.release, &driver->umlVersion, true) < 0) {
             umlReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse version %s"), ut.release);
             goto cleanup;

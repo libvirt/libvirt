@@ -929,7 +929,7 @@ static int vboxExtractVersion(vboxGlobalData *data) {
 
         VBOX_UTF16_TO_UTF8(versionUtf16, &vboxVersion);
 
-        if (virParseVersionString(vboxVersion, &data->version) >= 0)
+        if (virParseVersionString(vboxVersion, &data->version, false) >= 0)
             ret = 0;
 
         VBOX_UTF8_FREE(vboxVersion);
