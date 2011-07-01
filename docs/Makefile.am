@@ -181,7 +181,7 @@ $(python_generated_files): $(srcdir)/apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
 		$(srcdir)/../src/libvirt.c \
 		$(srcdir)/../src/util/virterror.c
-	$(AM_V_GEN)srcdir=$(srcdir) $(srcdir)/apibuild.py
+	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/apibuild.py
 
 check-local: all
 
