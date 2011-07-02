@@ -3825,6 +3825,10 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
     unsigned long balloon;
     int err;
 
+    virCheckFlags(VIR_DOMAIN_XML_SECURE |
+                  VIR_DOMAIN_XML_INACTIVE |
+                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
+
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
