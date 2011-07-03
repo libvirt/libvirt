@@ -622,6 +622,43 @@ int qemuDomainObjEndJob(virDomainObjPtr obj)
     return virDomainObjUnref(obj);
 }
 
+
+static void
+qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
+                                  virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    qemuMonitorLock(priv->mon);
+    qemuMonitorRef(priv->mon);
+    ignore_value(virTimeMs(&priv->monStart));
+    virDomainObjUnlock(obj);
+    if (driver)
+        qemuDriverUnlock(driver);
+}
+
+static void
+qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
+                                 virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    int refs;
+
+    refs = qemuMonitorUnref(priv->mon);
+
+    if (refs > 0)
+        qemuMonitorUnlock(priv->mon);
+
+    if (driver)
+        qemuDriverLock(driver);
+    virDomainObjLock(obj);
+
+    priv->monStart = 0;
+    if (refs == 0) {
+        priv->mon = NULL;
+    }
+}
+
 /*
  * obj must be locked before calling, qemud_driver must be unlocked
  *
@@ -633,14 +670,8 @@ int qemuDomainObjEndJob(virDomainObjPtr obj)
  */
 void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
 {
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-
-    qemuMonitorLock(priv->mon);
-    qemuMonitorRef(priv->mon);
-    ignore_value(virTimeMs(&priv->monStart));
-    virDomainObjUnlock(obj);
+    qemuDomainObjEnterMonitorInternal(NULL, obj);
 }
-
 
 /* obj must NOT be locked before calling, qemud_driver must be unlocked
  *
@@ -648,22 +679,8 @@ void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
  */
 void qemuDomainObjExitMonitor(virDomainObjPtr obj)
 {
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-    int refs;
-
-    refs = qemuMonitorUnref(priv->mon);
-
-    if (refs > 0)
-        qemuMonitorUnlock(priv->mon);
-
-    virDomainObjLock(obj);
-
-    priv->monStart = 0;
-    if (refs == 0) {
-        priv->mon = NULL;
-    }
+    qemuDomainObjExitMonitorInternal(NULL, obj);
 }
-
 
 /*
  * obj must be locked before calling, qemud_driver must be locked
@@ -676,15 +693,8 @@ void qemuDomainObjExitMonitor(virDomainObjPtr obj)
 void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
                                          virDomainObjPtr obj)
 {
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-
-    qemuMonitorLock(priv->mon);
-    qemuMonitorRef(priv->mon);
-    ignore_value(virTimeMs(&priv->monStart));
-    virDomainObjUnlock(obj);
-    qemuDriverUnlock(driver);
+    qemuDomainObjEnterMonitorInternal(driver, obj);
 }
-
 
 /* obj must NOT be locked before calling, qemud_driver must be unlocked,
  * and will be locked after returning
@@ -694,21 +704,7 @@ void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
 void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
                                         virDomainObjPtr obj)
 {
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-    int refs;
-
-    refs = qemuMonitorUnref(priv->mon);
-
-    if (refs > 0)
-        qemuMonitorUnlock(priv->mon);
-
-    qemuDriverLock(driver);
-    virDomainObjLock(obj);
-
-    priv->monStart = 0;
-    if (refs == 0) {
-        priv->mon = NULL;
-    }
+    qemuDomainObjExitMonitorInternal(driver, obj);
 }
 
 void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
