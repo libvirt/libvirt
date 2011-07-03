@@ -7197,6 +7197,8 @@ qemudNodeDeviceReAttach (virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
+    pciDeviceReAttachInit(pci);
+
     qemuDriverLock(driver);
     if (pciReAttachDevice(pci, driver->activePciHostdevs) < 0)
         goto out;

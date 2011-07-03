@@ -1382,6 +1382,14 @@ unsigned pciDeviceGetManaged(pciDevice *dev)
     return dev->managed;
 }
 
+void pciDeviceReAttachInit(pciDevice *pci)
+{
+    pci->unbind_from_stub = 1;
+    pci->remove_slot = 1;
+    pci->reprobe = 1;
+}
+
+
 pciDeviceList *
 pciDeviceListNew(void)
 {

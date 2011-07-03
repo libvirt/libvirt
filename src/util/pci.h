@@ -40,6 +40,7 @@ int        pciResetDevice    (pciDevice     *dev,
 void      pciDeviceSetManaged(pciDevice     *dev,
                               unsigned       managed);
 unsigned  pciDeviceGetManaged(pciDevice     *dev);
+void      pciDeviceReAttachInit(pciDevice   *dev);
 
 pciDeviceList *pciDeviceListNew  (void);
 void           pciDeviceListFree (pciDeviceList *list);

@@ -801,6 +801,7 @@ pciDeviceListFree;
 pciDeviceListGet;
 pciDeviceListNew;
 pciDeviceListSteal;
+pciDeviceReAttachInit;
 pciDeviceSetManaged;
 pciFreeDevice;
 pciGetDevice;
