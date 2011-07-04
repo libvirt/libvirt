@@ -31,6 +31,7 @@
 #include "uuid.h"
 #include "logging.h"
 #include "memory.h"
+#include "ignore-value.h"
 
 /* Return nn:mm in hex for block and character devices, and NULL
  * for other file types, stat failure, or allocation failure.  */
@@ -264,8 +265,9 @@ qemuAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup,
         return;
     }
 
-    virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_DEVICES,
-                              NULL, &controller);
+    ignore_value(virCgroupPathOfController(cgroup,
+                                           VIR_CGROUP_CONTROLLER_DEVICES,
+                                           NULL, &controller));
     detail = virAuditEncode("cgroup", VIR_AUDIT_STR(controller));
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,

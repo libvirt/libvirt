@@ -5842,7 +5842,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     if (VIR_ALLOC(cmd) < 0)
         goto no_memory;
 
-    virUUIDGenerate(def->uuid);
+    if (virUUIDGenerate(def->uuid) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("failed to generate uuid"));
+        goto error;
+    }
 
     def->id = -1;
     def->mem.cur_balloon = def->mem.max_balloon = 64 * 1024;

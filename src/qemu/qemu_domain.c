@@ -608,7 +608,7 @@ void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
 
     qemuMonitorLock(priv->mon);
     qemuMonitorRef(priv->mon);
-    virTimeMs(&priv->monStart);
+    ignore_value(virTimeMs(&priv->monStart));
     virDomainObjUnlock(obj);
 }
 
@@ -651,7 +651,7 @@ void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
 
     qemuMonitorLock(priv->mon);
     qemuMonitorRef(priv->mon);
-    virTimeMs(&priv->monStart);
+    ignore_value(virTimeMs(&priv->monStart));
     virDomainObjUnlock(obj);
     qemuDriverUnlock(driver);
 }
