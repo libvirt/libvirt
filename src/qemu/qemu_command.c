@@ -5827,7 +5827,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     const char **nics = NULL;
     int video = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
     int nvirtiodisk = 0;
-    qemuDomainCmdlineDefPtr cmd;
+    qemuDomainCmdlineDefPtr cmd = NULL;
 
     if (!progargv[0]) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
