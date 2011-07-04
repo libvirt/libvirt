@@ -184,6 +184,8 @@ void qemuDomainObjEndNestedJob(struct qemud_driver *driver,
 void qemuDomainObjSaveJob(struct qemud_driver *driver, virDomainObjPtr obj);
 void qemuDomainObjSetAsyncJobMask(virDomainObjPtr obj,
                                   unsigned long long allowedJobs);
+void qemuDomainObjRestoreJob(virDomainObjPtr obj,
+                             struct qemuDomainJobObj *job);
 void qemuDomainObjDiscardAsyncJob(struct qemud_driver *driver,
                                   virDomainObjPtr obj);
 

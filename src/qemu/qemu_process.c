@@ -2231,6 +2231,80 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
     return 0;
 }
 
+static int
+qemuProcessRecoverJob(struct qemud_driver *driver,
+                      virDomainObjPtr vm,
+                      virConnectPtr conn,
+                      const struct qemuDomainJobObj *job)
+{
+    virDomainState state;
+    int reason;
+
+    state = virDomainObjGetState(vm, &reason);
+
+    switch (job->asyncJob) {
+    case QEMU_ASYNC_JOB_MIGRATION_OUT:
+    case QEMU_ASYNC_JOB_MIGRATION_IN:
+        /* we don't know what to do yet */
+        break;
+
+    case QEMU_ASYNC_JOB_SAVE:
+    case QEMU_ASYNC_JOB_DUMP:
+        /* TODO cancel possibly running migrate operation */
+        /* resume the domain but only if it was paused as a result of
+         * running save/dump operation */
+        if (state == VIR_DOMAIN_PAUSED &&
+            ((job->asyncJob == QEMU_ASYNC_JOB_DUMP &&
+              reason == VIR_DOMAIN_PAUSED_DUMP) ||
+             (job->asyncJob == QEMU_ASYNC_JOB_SAVE &&
+              reason == VIR_DOMAIN_PAUSED_SAVE) ||
+             reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
+            if (qemuProcessStartCPUs(driver, vm, conn,
+                                     VIR_DOMAIN_RUNNING_UNPAUSED) < 0) {
+                VIR_WARN("Could not resume domain %s after", vm->def->name);
+            }
+        }
+        break;
+
+    case QEMU_ASYNC_JOB_NONE:
+    case QEMU_ASYNC_JOB_LAST:
+        break;
+    }
+
+    if (!virDomainObjIsActive(vm))
+        return -1;
+
+    switch (job->active) {
+    case QEMU_JOB_QUERY:
+        /* harmless */
+        break;
+
+    case QEMU_JOB_DESTROY:
+        VIR_DEBUG("Domain %s should have already been destroyed",
+                  vm->def->name);
+        return -1;
+
+    case QEMU_JOB_SUSPEND:
+        /* mostly harmless */
+        break;
+
+    case QEMU_JOB_MODIFY:
+        /* XXX depending on the command we may be in an inconsistent state and
+         * we should probably fall back to "monitor error" state and refuse to
+         */
+        break;
+
+    case QEMU_JOB_ASYNC:
+    case QEMU_JOB_ASYNC_NESTED:
+        /* async job was already handled above */
+    case QEMU_JOB_NONE:
+    case QEMU_JOB_LAST:
+        break;
+    }
+
+    return 0;
+}
+
 struct qemuProcessReconnectData {
     virConnectPtr conn;
     struct qemud_driver *driver;
@@ -2247,8 +2321,11 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
     struct qemud_driver *driver = data->driver;
     qemuDomainObjPrivatePtr priv;
     virConnectPtr conn = data->conn;
+    struct qemuDomainJobObj oldjob;
 
     virDomainObjLock(obj);
+
+    qemuDomainObjRestoreJob(obj, &oldjob);
 
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
 
@@ -2293,6 +2370,9 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
         goto error;
 
     if (qemuProcessFiltersInstantiate(conn, obj->def))
+        goto error;
+
+    if (qemuProcessRecoverJob(driver, obj, conn, &oldjob) < 0)
         goto error;
 
     priv->job.active = QEMU_JOB_NONE;

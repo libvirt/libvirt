@@ -142,6 +142,20 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     memset(&job->signalsData, 0, sizeof(job->signalsData));
 }
 
+void
+qemuDomainObjRestoreJob(virDomainObjPtr obj,
+                        struct qemuDomainJobObj *job)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    memset(job, 0, sizeof(*job));
+    job->active = priv->job.active;
+    job->asyncJob = priv->job.asyncJob;
+
+    qemuDomainObjResetJob(priv);
+    qemuDomainObjResetAsyncJob(priv);
+}
+
 static void
 qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
