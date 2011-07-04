@@ -311,6 +311,11 @@ reread:
 
             umlShutdownVMDaemon(NULL, driver, dom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
             virDomainAuditStop(dom, "shutdown");
+            if (!dom->persistent) {
+                virDomainRemoveInactive(&driver->domains,
+                                        dom);
+                dom = NULL;
+            }
         } else if (e->mask & (IN_CREATE | IN_MODIFY)) {
             VIR_DEBUG("Got inotify domain startup '%s'", name);
             if (virDomainObjIsActive(dom)) {
@@ -332,14 +337,25 @@ reread:
                 umlShutdownVMDaemon(NULL, driver, dom,
                                     VIR_DOMAIN_SHUTOFF_FAILED);
                 virDomainAuditStop(dom, "failed");
+                if (!dom->persistent) {
+                    virDomainRemoveInactive(&driver->domains,
+                                            dom);
+                    dom = NULL;
+                }
             } else if (umlIdentifyChrPTY(driver, dom) < 0) {
-                VIR_WARN("Could not identify charater devices for new domain");
+                VIR_WARN("Could not identify character devices for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom,
                                     VIR_DOMAIN_SHUTOFF_FAILED);
                 virDomainAuditStop(dom, "failed");
+                if (!dom->persistent) {
+                    virDomainRemoveInactive(&driver->domains,
+                                            dom);
+                    dom = NULL;
+                }
             }
         }
-        virDomainObjUnlock(dom);
+        if (dom)
+            virDomainObjUnlock(dom);
     }
 
 cleanup:
