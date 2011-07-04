@@ -7498,7 +7498,7 @@ static int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         goto cleanup;
     }
     err = virFileMakePath(snapDir);
-    if (err < 0) {
+    if (err != 0) {
         virReportSystemError(err, _("cannot create snapshot directory '%s'"),
                              snapDir);
         goto cleanup;
