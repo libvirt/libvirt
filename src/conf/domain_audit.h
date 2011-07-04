@@ -40,6 +40,12 @@ void virDomainAuditDisk(virDomainObjPtr vm,
                         const char *reason,
                         bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void virDomainAuditFS(virDomainObjPtr vm,
+                      virDomainFSDefPtr oldDef,
+                      virDomainFSDefPtr newDef,
+                      const char *reason,
+                      bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 void virDomainAuditNet(virDomainObjPtr vm,
                        virDomainNetDefPtr oldDef,
                        virDomainNetDefPtr newDef,

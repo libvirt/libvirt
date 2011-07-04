@@ -207,6 +207,7 @@ virDomainAuditCgroup;
 virDomainAuditCgroupMajor;
 virDomainAuditCgroupPath;
 virDomainAuditDisk;
+virDomainAuditFS;
 virDomainAuditHostdev;
 virDomainAuditMemory;
 virDomainAuditNet;

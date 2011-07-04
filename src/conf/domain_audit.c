@@ -100,6 +100,47 @@ cleanup:
 
 
 void
+virDomainAuditFS(virDomainObjPtr vm,
+                 virDomainFSDefPtr oldDef, virDomainFSDefPtr newDef,
+                 const char *reason, bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    char *oldsrc = NULL;
+    char *newsrc = NULL;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN("OOM while encoding audit message");
+        return;
+    }
+
+    if (!(oldsrc = virAuditEncode("old-fs",
+                                  oldDef && oldDef->src ?
+                                  oldDef->src : "?"))) {
+        VIR_WARN("OOM while encoding audit message");
+        goto cleanup;
+    }
+    if (!(newsrc = virAuditEncode("new-fs",
+                                  newDef && newDef->src ?
+                                  newDef->src : "?"))) {
+        VIR_WARN("OOM while encoding audit message");
+        goto cleanup;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "resrc=fs reason=%s %s uuid=%s %s %s",
+              reason, vmname, uuidstr,
+              oldsrc, newsrc);
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(oldsrc);
+    VIR_FREE(newsrc);
+}
+
+
+void
 virDomainAuditNet(virDomainObjPtr vm,
                   virDomainNetDefPtr oldDef, virDomainNetDefPtr newDef,
                   const char *reason, bool success)
@@ -431,6 +472,11 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
         virDomainDiskDefPtr disk = vm->def->disks[i];
         if (disk->src) /* Skips CDROM without media initially inserted */
             virDomainAuditDisk(vm, NULL, disk, "start", true);
+    }
+
+    for (i = 0 ; i < vm->def->nfss ; i++) {
+        virDomainFSDefPtr fs = vm->def->fss[i];
+        virDomainAuditFS(vm, NULL, fs, "start", true);
     }
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
