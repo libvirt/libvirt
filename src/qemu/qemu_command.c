@@ -37,6 +37,7 @@
 #include "domain_nwfilter.h"
 #include "domain_audit.h"
 #include "domain_conf.h"
+#include "network/bridge_driver.h"
 
 #include <sys/utsname.h>
 #include <sys/stat.h>
@@ -3697,6 +3698,13 @@ qemuBuildCommandLine(virConnectPtr conn,
             else
                 vlan = i;
 
+            /* If appropriate, grab a physical device from the configured
+             * network's pool of devices, or resolve bridge device name
+             * to the one defined in the network definition.
+             */
+            if (networkAllocateActualDevice(net) < 0)
+               goto error;
+
             actualType = virDomainNetGetActualType(net);
             if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
@@ -4677,6 +4685,9 @@ qemuBuildCommandLine(virConnectPtr conn,
  no_memory:
     virReportOOMError();
  error:
+    /* free up any resources in the network driver */
+    for (i = 0 ; i < def->nnets ; i++)
+        networkReleaseActualDevice(def->nets[i]);
     for (i = 0; i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);
     virBufferFreeAndReset(&rbd_hosts);

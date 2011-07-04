@@ -39,6 +39,7 @@
 #include "virfile.h"
 #include "qemu_cgroup.h"
 #include "locking/domain_lock.h"
+#include "network/bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -603,7 +604,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     virDomainDevicePCIAddress guestAddr;
     int vlan;
     bool releaseaddr = false;
-    int actualType = virDomainNetGetActualType(net);
+    bool iface_connected = false;
+    int actualType;
 
     if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_HOST_NET_ADD)) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -611,18 +613,28 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         return -1;
     }
 
+    /* If appropriate, grab a physical device from the configured
+     * network's pool of devices, or resolve bridge device name
+     * to the one defined in the network definition.
+     */
+    if (networkAllocateActualDevice(net) < 0)
+        goto cleanup;
+
+    actualType = virDomainNetGetActualType(net);
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
                                              priv->qemuCaps)) < 0)
-            return -1;
+            goto cleanup;
+        iface_connected = true;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if ((tapfd = qemuPhysIfaceConnect(vm->def, conn, driver, net,
                                           priv->qemuCaps,
                                           VIR_VM_OP_CREATE)) < 0)
-            return -1;
+            goto cleanup;
+        iface_connected = true;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
             goto cleanup;
     }
@@ -738,16 +750,19 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     vm->def->nets[vm->def->nnets++] = net;
 
 cleanup:
-    if ((ret != 0) &&
-        qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
-        releaseaddr &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        net->info.addr.pci.slot) < 0)
-        VIR_WARN("Unable to release PCI address on NIC");
+    if (ret < 0) {
+        if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+            (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+            releaseaddr &&
+            qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                            net->info.addr.pci.slot) < 0)
+            VIR_WARN("Unable to release PCI address on NIC");
 
-    if (ret != 0)
-        virDomainConfNWFilterTeardown(net);
+        if (iface_connected)
+            virDomainConfNWFilterTeardown(net);
+
+        networkReleaseActualDevice(net);
+    }
 
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
@@ -1634,6 +1649,7 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
         }
     }
 
+    networkReleaseActualDevice(detach);
     if (vm->def->nnets > 1) {
         memmove(vm->def->nets + i,
                 vm->def->nets + i + 1,

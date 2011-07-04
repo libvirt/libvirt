@@ -2718,3 +2718,375 @@ int networkRegister(void) {
     virRegisterStateDriver(&networkStateDriver);
     return 0;
 }
+
+/********************************************************/
+
+/* Private API to deal with logical switch capabilities.
+ * These functions are exported so that other parts of libvirt can
+ * call them, but are not part of the public API and not in the
+ * driver's function table. If we ever have more than one network
+ * driver, we will need to present these functions via a second
+ * "backend" function table.
+ */
+
+/* networkAllocateActualDevice:
+ * @iface: the original NetDef from the domain
+ *
+ * Looks up the network reference by iface, allocates a physical
+ * device from that network (if appropriate), and returns with the
+ * virDomainActualNetDef filled in accordingly. If there are no
+ * changes to be made in the netdef, then just leave the actualdef
+ * empty.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+networkAllocateActualDevice(virDomainNetDefPtr iface)
+{
+    struct network_driver *driver = driverState;
+    virNetworkObjPtr network;
+    virNetworkDefPtr netdef;
+    int ret = -1;
+
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+        return 0;
+
+    virDomainActualNetDefFree(iface->data.network.actual);
+    iface->data.network.actual = NULL;
+
+    networkDriverLock(driver);
+    network = virNetworkFindByName(&driver->networks, iface->data.network.name);
+    networkDriverUnlock(driver);
+    if (!network) {
+        networkReportError(VIR_ERR_NO_NETWORK,
+                           _("no network with matching name '%s'"),
+                           iface->data.network.name);
+        goto cleanup;
+    }
+
+    netdef = network->def;
+    if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) &&
+        netdef->bridge) {
+
+        /* <forward type='bridge'/> <bridge name='xxx'/>
+         * is VIR_DOMAIN_NET_TYPE_BRIDGE
+         */
+
+        if (VIR_ALLOC(iface->data.network.actual) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+        iface->data.network.actual->data.bridge.brname = strdup(netdef->bridge);
+        if (!iface->data.network.actual->data.bridge.brname) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+    } else if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) ||
+               (netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) ||
+               (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
+               (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
+        virVirtualPortProfileParamsPtr virtport = NULL;
+
+        /* <forward type='bridge|private|vepa|passthrough'> are all
+         * VIR_DOMAIN_NET_TYPE_DIRECT.
+         */
+
+        if (VIR_ALLOC(iface->data.network.actual) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* Set type=direct and appropriate <source mode='xxx'/> */
+        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_DIRECT;
+        switch (netdef->forwardType) {
+        case VIR_NETWORK_FORWARD_BRIDGE:
+            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_BRIDGE;
+            break;
+        case VIR_NETWORK_FORWARD_PRIVATE:
+            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_PRIVATE;
+            break;
+        case VIR_NETWORK_FORWARD_VEPA:
+            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_VEPA;
+            break;
+        case VIR_NETWORK_FORWARD_PASSTHROUGH:
+            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_PASSTHRU;
+            break;
+        }
+
+        /* Find the most specific virtportprofile and copy it */
+        if (iface->data.network.virtPortProfile) {
+            virtport = iface->data.network.virtPortProfile;
+        } else {
+            virPortGroupDefPtr portgroup
+               = virPortGroupFindByName(netdef, iface->data.network.portgroup);
+            if (portgroup)
+                virtport = portgroup->virtPortProfile;
+            else
+                virtport = netdef->virtPortProfile;
+        }
+        if (virtport) {
+            if (VIR_ALLOC(iface->data.network.actual->data.direct.virtPortProfile) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            /* There are no pointers in a virtualPortProfile, so a shallow copy
+             * is sufficient
+             */
+            *iface->data.network.actual->data.direct.virtPortProfile = *virtport;
+        }
+        /* If there is only a single device, just return it (caller will detect
+         * any error if exclusive use is required but could not be acquired).
+         */
+        if (netdef->nForwardIfs == 0) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("network '%s' uses a direct mode, but has no forward dev and no interface pool"),
+                               netdef->name);
+            goto cleanup;
+        } else {
+            int ii;
+            virNetworkForwardIfDefPtr dev = NULL;
+
+            /* pick an interface from the pool */
+
+            /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both require
+             * exclusive access to a device, so current usageCount must be
+             * 0.  Other modes can share, so just search for the one with
+             * the lowest usageCount.
+             */
+            if ((netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
+                ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
+                 iface->data.network.actual->data.direct.virtPortProfile &&
+                 (iface->data.network.actual->data.direct.virtPortProfile->virtPortType
+                  == VIR_VIRTUALPORT_8021QBH))) {
+                /* pick first dev with 0 usageCount */
+
+                for (ii = 0; ii < netdef->nForwardIfs; ii++) {
+                    if (netdef->forwardIfs[ii].usageCount == 0) {
+                        dev = &netdef->forwardIfs[ii];
+                        break;
+                    }
+                }
+            } else {
+                /* pick least used dev */
+                dev = &netdef->forwardIfs[0];
+                for (ii = 1; ii < netdef->nForwardIfs; ii++) {
+                    if (netdef->forwardIfs[ii].usageCount < dev->usageCount)
+                        dev = &netdef->forwardIfs[ii];
+                }
+            }
+            /* dev points at the physical device we want to use */
+            if (!dev) {
+                networkReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("network '%s' requires exclusive access to interfaces, but none are available"),
+                               netdef->name);
+                goto cleanup;
+            }
+            iface->data.network.actual->data.direct.linkdev = strdup(dev->dev);
+            if (!iface->data.network.actual->data.direct.linkdev) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            /* we are now assured of success, so mark the allocation */
+            dev->usageCount++;
+            VIR_DEBUG("Using physical device %s, usageCount %d",
+                      dev->dev, dev->usageCount);
+        }
+    }
+
+    ret = 0;
+cleanup:
+    if (network)
+        virNetworkObjUnlock(network);
+    if (ret < 0) {
+        virDomainActualNetDefFree(iface->data.network.actual);
+        iface->data.network.actual = NULL;
+    }
+    return ret;
+}
+
+/* networkNotifyActualDevice:
+ * @iface:  the domain's NetDef with an "actual" device already filled in.
+ *
+ * Called to notify the network driver when libvirtd is restarted and
+ * finds an already running domain. If appropriate it will force an
+ * allocation of the actual->direct.linkdev to get everything back in
+ * order.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+networkNotifyActualDevice(virDomainNetDefPtr iface)
+{
+    struct network_driver *driver = driverState;
+    virNetworkObjPtr network;
+    virNetworkDefPtr netdef;
+    char *actualDev;
+    int ret = -1;
+
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+       return 0;
+
+    if (!iface->data.network.actual ||
+        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
+        VIR_DEBUG("Nothing to claim from network %s", iface->data.network.name);
+        return 0;
+    }
+
+    networkDriverLock(driver);
+    network = virNetworkFindByName(&driver->networks, iface->data.network.name);
+    networkDriverUnlock(driver);
+    if (!network) {
+        networkReportError(VIR_ERR_NO_NETWORK,
+                           _("no network with matching name '%s'"),
+                           iface->data.network.name);
+        goto cleanup;
+    }
+
+    actualDev = virDomainNetGetActualDirectDev(iface);
+    if (!actualDev) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("the interface uses a direct mode, but has no source dev"));
+            goto cleanup;
+        }
+
+    netdef = network->def;
+    if (netdef->nForwardIfs == 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' uses a direct mode, but has no forward dev and no interface pool"),
+                           netdef->name);
+        goto cleanup;
+    } else {
+        int ii;
+        virNetworkForwardIfDefPtr dev = NULL;
+
+        /* find the matching interface in the pool and increment its usageCount */
+
+        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
+            if (STREQ(actualDev, netdef->forwardIfs[ii].dev)) {
+                dev = &netdef->forwardIfs[ii];
+                break;
+            }
+        }
+        /* dev points at the physical device we want to use */
+        if (!dev) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("network '%s' doesn't have dev='%s' in use by domain"),
+                               netdef->name, actualDev);
+            goto cleanup;
+        }
+
+        /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both require
+         * exclusive access to a device, so current usageCount must be
+         * 0 in those cases.
+         */
+        if ((dev->usageCount > 0) &&
+            ((netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
+             ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
+              iface->data.network.actual->data.direct.virtPortProfile &&
+              (iface->data.network.actual->data.direct.virtPortProfile->virtPortType
+               == VIR_VIRTUALPORT_8021QBH)))) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("network '%s' claims dev='%s' is already in use by a different domain"),
+                               netdef->name, actualDev);
+            goto cleanup;
+        }
+        /* we are now assured of success, so mark the allocation */
+        dev->usageCount++;
+        VIR_DEBUG("Using physical device %s, usageCount %d",
+                  dev->dev, dev->usageCount);
+    }
+
+    ret = 0;
+cleanup:
+    if (network)
+        virNetworkObjUnlock(network);
+    return ret;
+}
+
+
+/* networkReleaseActualDevice:
+ * @iface:  a domain's NetDef (interface definition)
+ *
+ * Given a domain <interface> element that previously had its <actual>
+ * element filled in (and possibly a physical device allocated to it),
+ * free up the physical device for use by someone else, and free the
+ * virDomainActualNetDef.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+networkReleaseActualDevice(virDomainNetDefPtr iface)
+{
+    struct network_driver *driver = driverState;
+    virNetworkObjPtr network = NULL;
+    virNetworkDefPtr netdef;
+    char *actualDev;
+    int ret = -1;
+
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+       return 0;
+
+    if (!iface->data.network.actual ||
+        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
+        VIR_DEBUG("Nothing to release to network %s", iface->data.network.name);
+        ret = 0;
+        goto cleanup;
+    }
+
+    networkDriverLock(driver);
+    network = virNetworkFindByName(&driver->networks, iface->data.network.name);
+    networkDriverUnlock(driver);
+    if (!network) {
+        networkReportError(VIR_ERR_NO_NETWORK,
+                           _("no network with matching name '%s'"),
+                           iface->data.network.name);
+        goto cleanup;
+    }
+
+    actualDev = virDomainNetGetActualDirectDev(iface);
+    if (!actualDev) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("the interface uses a direct mode, but has no source dev"));
+            goto cleanup;
+        }
+
+    netdef = network->def;
+    if (netdef->nForwardIfs == 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' uses a direct mode, but has no forward dev and no interface pool"),
+                           netdef->name);
+        goto cleanup;
+    } else {
+        int ii;
+        virNetworkForwardIfDefPtr dev = NULL;
+
+        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
+            if (STREQ(actualDev, netdef->forwardIfs[ii].dev)) {
+                dev = &netdef->forwardIfs[ii];
+                break;
+            }
+        }
+        /* dev points at the physical device we've been using */
+        if (!dev) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("network '%s' doesn't have dev='%s' in use by domain"),
+                               netdef->name, actualDev);
+            goto cleanup;
+        }
+
+        dev->usageCount--;
+        VIR_DEBUG("Releasing physical device %s, usageCount %d",
+                  dev->dev, dev->usageCount);
+    }
+
+    ret = 0;
+cleanup:
+    if (network)
+        virNetworkObjUnlock(network);
+    virDomainActualNetDefFree(iface->data.network.actual);
+    iface->data.network.actual = NULL;
+    return ret;
+}

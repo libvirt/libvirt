@@ -56,6 +56,7 @@
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "locking/domain_lock.h"
+#include "network/bridge_driver.h"
 #include "uuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -2178,6 +2179,19 @@ int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
 
 
 static int
+qemuProcessNotifyNets(virDomainDefPtr def)
+{
+    int ii;
+
+    for (ii = 0 ; ii < def->nnets ; ii++) {
+        virDomainNetDefPtr net = def->nets[ii];
+        if (networkNotifyActualDevice(net) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+static int
 qemuProcessFiltersInstantiate(virConnectPtr conn,
                               virDomainDefPtr def)
 {
@@ -2377,6 +2391,9 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
     }
 
     if (virSecurityManagerReserveLabel(driver->securityManager, obj) < 0)
+        goto error;
+
+    if (qemuProcessNotifyNets(obj->def) < 0)
         goto error;
 
     if (qemuProcessFiltersInstantiate(conn, obj->def))
@@ -3014,10 +3031,10 @@ void qemuProcessStop(struct qemud_driver *driver,
 
     qemuDomainReAttachHostDevices(driver, vm->def);
 
-#if WITH_MACVTAP
     def = vm->def;
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
+#if WITH_MACVTAP
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             delMacvtap(net->ifname, net->mac,
                        virDomainNetGetActualDirectDev(net),
@@ -3026,8 +3043,12 @@ void qemuProcessStop(struct qemud_driver *driver,
                        driver->stateDir);
             VIR_FREE(net->ifname);
         }
-    }
 #endif
+        /* release the physical device (or any other resources used by
+         * this interface in the network driver
+         */
+        networkReleaseActualDevice(net);
+    }
 
 retry:
     if ((ret = qemuRemoveCgroup(driver, vm, 0)) < 0) {

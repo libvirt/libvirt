@@ -1,7 +1,7 @@
 /*
  * network_driver.h: core driver methods for managing networks
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -29,13 +29,31 @@
 
 # include "internal.h"
 # include "network_conf.h"
+# include "domain_conf.h"
 # include "command.h"
 # include "dnsmasq.h"
 
 int networkRegister(void);
+
+# if WITH_NETWORK
+int networkAllocateActualDevice(virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1);
+int networkNotifyActualDevice(virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1);
+int networkReleaseActualDevice(virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1);
+
 int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
                                       virCommandPtr *cmdout, char *pidfile,
-                                      dnsmasqContext *dctx);
+                                      dnsmasqContext *dctx)
+    ;
+# else
+/* Define no-op replacements that don't drag in any link dependencies.  */
+#  define networkAllocateActualDevice(iface) 0
+#  define networkNotifyActualDevice(iface) 0
+#  define networkReleaseActualDevice(iface) 0
+#  define networkBuildDhcpDaemonCommandLine(network, cmdout, pidfile, dctx) 0
+# endif
 
 typedef char *(*networkDnsmasqLeaseFileNameFunc)(const char *netname);
 

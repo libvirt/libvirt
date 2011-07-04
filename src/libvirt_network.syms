@@ -3,4 +3,7 @@
 #
 
 # bridge_driver.h
+networkAllocateActualDevice;
 networkBuildDhcpDaemonCommandLine;
+networkNotifyActualDevice;
+networkReleaseActualDevice;

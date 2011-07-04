@@ -314,23 +314,30 @@ EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
 endif
 
 if WITH_QEMU
+
+qemu_LDADDS = ../src/libvirt_driver_qemu.la
+
+if WITH_NETWORK
+qemu_LDADDS += ../src/libvirt_driver_network.la
+endif
+
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2argvtest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
+qemuxml2argvtest_LDADD = $(qemu_LDADDS)  $(LDADDS)
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2xmltest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
+qemuxml2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
 qemuargv2xmltest_SOURCES = \
 	qemuargv2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuargv2xmltest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
+qemuargv2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
 qemuhelptest_SOURCES = qemuhelptest.c testutils.c testutils.h
-qemuhelptest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
+qemuhelptest_LDADD = $(qemu_LDADDS) $(LDADDS)
 else
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c qemuhelptest.c testutilsqemu.c testutilsqemu.h
 endif
