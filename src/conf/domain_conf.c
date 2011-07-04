@@ -5160,7 +5160,7 @@ error:
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               const virDomainDefPtr def,
                                               const char *xmlStr,
-                                              int flags)
+                                              unsigned int flags)
 {
     xmlDocPtr xml;
     xmlNodePtr node;
@@ -6703,7 +6703,8 @@ no_memory:
 
 static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
                                             xmlDocPtr xml,
-                                            xmlXPathContextPtr ctxt)
+                                            xmlXPathContextPtr ctxt,
+                                            unsigned int flags)
 {
     char *tmp = NULL;
     long val;
@@ -6726,8 +6727,7 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(caps, xml, config, ctxt,
-                                    VIR_DOMAIN_XML_INTERNAL_STATUS);
+    obj->def = virDomainDefParseXML(caps, xml, config, ctxt, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -6816,14 +6816,14 @@ virDomainDefParse(const char *xmlStr,
 
 virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
                                         const char *xmlStr,
-                                        int flags)
+                                        unsigned int flags)
 {
     return virDomainDefParse(xmlStr, NULL, caps, flags);
 }
 
 virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
                                       const char *filename,
-                                      int flags)
+                                      unsigned int flags)
 {
     return virDomainDefParse(NULL, filename, caps, flags);
 }
@@ -6832,7 +6832,7 @@ virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
 virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
                                       xmlDocPtr xml,
                                       xmlNodePtr root,
-                                      int flags)
+                                      unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
     virDomainDefPtr def = NULL;
@@ -6861,7 +6861,8 @@ cleanup:
 static virDomainObjPtr
 virDomainObjParseNode(virCapsPtr caps,
                       xmlDocPtr xml,
-                      xmlNodePtr root)
+                      xmlNodePtr root,
+                      unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
     virDomainObjPtr obj = NULL;
@@ -6879,7 +6880,7 @@ virDomainObjParseNode(virCapsPtr caps,
     }
 
     ctxt->node = root;
-    obj = virDomainObjParseXML(caps, xml, ctxt);
+    obj = virDomainObjParseXML(caps, xml, ctxt, flags);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -6888,13 +6889,15 @@ cleanup:
 
 
 virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
-                                      const char *filename)
+                                      const char *filename,
+                                      unsigned int flags)
 {
     xmlDocPtr xml;
     virDomainObjPtr obj = NULL;
 
     if ((xml = virXMLParseFile(filename))) {
-        obj = virDomainObjParseNode(caps, xml, xmlDocGetRootElement(xml));
+        obj = virDomainObjParseNode(caps, xml,
+                                    xmlDocGetRootElement(xml), flags);
         xmlFreeDoc(xml);
     }
 
@@ -9500,7 +9503,7 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
 
 char *virDomainDefFormat(virDomainDefPtr def,
-                         int flags)
+                         unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
@@ -10138,7 +10141,8 @@ static virDomainObjPtr virDomainLoadStatus(virCapsPtr caps,
     if ((statusFile = virDomainConfigFile(statusDir, name)) == NULL)
         goto error;
 
-    if (!(obj = virDomainObjParseFile(caps, statusFile)))
+    if (!(obj = virDomainObjParseFile(caps, statusFile,
+                                      VIR_DOMAIN_XML_INTERNAL_STATUS)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);

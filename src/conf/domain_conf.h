@@ -1378,20 +1378,21 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               const virDomainDefPtr def,
                                               const char *xmlStr,
-                                              int flags);
+                                              unsigned int flags);
 virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
                                         const char *xmlStr,
-                                        int flags);
+                                        unsigned int flags);
 virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
                                       const char *filename,
-                                      int flags);
+                                      unsigned int flags);
 virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
                                       xmlDocPtr doc,
                                       xmlNodePtr root,
-                                      int flags);
+                                      unsigned int flags);
 
 virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
-                                      const char *filename);
+                                      const char *filename,
+                                      unsigned int flags);
 
 bool virDomainDefCheckABIStability(virDomainDefPtr src,
                                    virDomainDefPtr dst);
@@ -1399,7 +1400,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 
 char *virDomainDefFormat(virDomainDefPtr def,
-                         int flags);
+                         unsigned int flags);
 
 int virDomainCpuSetParse(const char **str,
                          char sep,
