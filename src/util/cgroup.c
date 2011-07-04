@@ -1395,7 +1395,7 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
                     done = false;
                 }
 
-                virHashAddEntry(pids, (void*)pid, (void*)1);
+                ignore_value(virHashAddEntry(pids, (void*)pid, (void*)1));
             }
             VIR_FORCE_FCLOSE(fp);
         }
