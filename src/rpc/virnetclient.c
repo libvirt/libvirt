@@ -602,7 +602,8 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
         if (thecall && thecall->expectReply) {
             VIR_DEBUG("Got a synchronous error");
             /* Raise error now, so that this call will see it immediately */
-            virNetClientStreamRaiseError(st);
+            if (!virNetClientStreamRaiseError(st))
+                VIR_DEBUG("unable to raise synchronous error");
             thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
         }
         return 0;
