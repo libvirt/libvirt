@@ -2552,7 +2552,8 @@ qemuMigrationFinish(struct qemud_driver *driver,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
         if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
             virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
-            qemuDomainEventQueue(driver, event);
+            if (event)
+                qemuDomainEventQueue(driver, event);
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_SUSPENDED,
                                              VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
