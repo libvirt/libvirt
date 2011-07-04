@@ -64,22 +64,22 @@ struct _virNetworkDNSTxtRecordsDef {
     char *value;
 };
 
-struct virNetworkDNSHostsDef {
+struct _virNetworkDNSHostsDef {
     virSocketAddr ip;
     int nnames;
     char **names;
-} virNetworkDNSHostsDef;
+};
 
-typedef struct virNetworkDNSHostsDef *virNetworkDNSHostsDefPtr;
+typedef struct _virNetworkDNSHostsDef *virNetworkDNSHostsDefPtr;
 
-struct virNetworkDNSDef {
+struct _virNetworkDNSDef {
     unsigned int ntxtrecords;
     virNetworkDNSTxtRecordsDefPtr txtrecords;
     unsigned int nhosts;
     virNetworkDNSHostsDefPtr hosts;
-} virNetworkDNSDef;
+};
 
-typedef struct virNetworkDNSDef *virNetworkDNSDefPtr;
+typedef struct _virNetworkDNSDef *virNetworkDNSDefPtr;
 
 typedef struct _virNetworkIpDef virNetworkIpDef;
 typedef virNetworkIpDef *virNetworkIpDefPtr;
