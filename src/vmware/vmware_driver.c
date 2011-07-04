@@ -461,7 +461,6 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
     vmwareDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     vmwareDriverUnlock(driver);
-    vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
 
     if (!vm) {
         vmwareError(VIR_ERR_NO_DOMAIN, "%s",
@@ -469,6 +468,7 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
+    vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
     vmwareSetSentinal(cmd, vmw_types[driver->type]);
     vmwareSetSentinal(cmd, vmxPath);
 
