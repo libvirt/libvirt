@@ -82,7 +82,12 @@ cleanup:
     return;
 
 error:
-    virNetSocketFree(clientsock);
+    if (client) {
+        virNetServerClientClose(client);
+        virNetServerClientFree(client);
+    } else {
+        virNetSocketFree(clientsock);
+    }
 }
 
 
