@@ -399,12 +399,9 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if ((ret = createRawFile(fd, vol, inputvol)) < 0) {
-        virReportSystemError(-fd,
-                             _("cannot create path '%s'"),
-                             vol->target.path);
+    if ((ret = createRawFile(fd, vol, inputvol)) < 0)
+        /* createRawFile already reported the exact error. */
         ret = -1;
-    }
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
