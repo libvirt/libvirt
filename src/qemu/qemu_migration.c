@@ -2343,11 +2343,11 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
 
     for (i = 0; i < def->nnets; i++) {
         net = def->nets[i];
-        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             if (vpAssociatePortProfileId(net->ifname,
                                          net->mac,
-                                         net->data.direct.linkdev,
-                                         net->data.direct.virtPortProfile,
+                                         virDomainNetGetActualDirectDev(net),
+                                         virDomainNetGetActualDirectVirtPortProfile(net),
                                          def->uuid,
                                          VIR_VM_OP_MIGRATE_IN_FINISH) != 0)
                 goto err_exit;
@@ -2360,11 +2360,11 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
 err_exit:
     for (i = 0; i < last_good_net; i++) {
         net = def->nets[i];
-        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             vpDisassociatePortProfileId(net->ifname,
                                         net->mac,
-                                        net->data.direct.linkdev,
-                                        net->data.direct.virtPortProfile,
+                                        virDomainNetGetActualDirectDev(net),
+                                        virDomainNetGetActualDirectVirtPortProfile(net),
                                         VIR_VM_OP_MIGRATE_IN_FINISH);
         }
     }

@@ -603,6 +603,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     virDomainDevicePCIAddress guestAddr;
     int vlan;
     bool releaseaddr = false;
+    int actualType = virDomainNetGetActualType(net);
 
     if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_HOST_NET_ADD)) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -610,14 +611,14 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-        net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+    if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
                                              priv->qemuCaps)) < 0)
             return -1;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
             goto cleanup;
-    } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if ((tapfd = qemuPhysIfaceConnect(vm->def, conn, driver, net,
                                           priv->qemuCaps,
                                           VIR_VM_OP_CREATE)) < 0)
@@ -1613,10 +1614,11 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
     virDomainConfNWFilterTeardown(detach);
 
 #if WITH_MACVTAP
-    if (detach->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        delMacvtap(detach->ifname, detach->mac, detach->data.direct.linkdev,
-                   detach->data.direct.mode,
-                   detach->data.direct.virtPortProfile,
+    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        delMacvtap(detach->ifname, detach->mac,
+                   virDomainNetGetActualDirectDev(detach),
+                   virDomainNetGetActualDirectMode(detach),
+                   virDomainNetGetActualDirectVirtPortProfile(detach),
                    driver->stateDir);
         VIR_FREE(detach->ifname);
     }

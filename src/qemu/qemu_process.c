@@ -3018,10 +3018,12 @@ void qemuProcessStop(struct qemud_driver *driver,
     def = vm->def;
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
-        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            delMacvtap(net->ifname, net->mac, net->data.direct.linkdev,
-                       net->data.direct.mode,
-                       net->data.direct.virtPortProfile, driver->stateDir);
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            delMacvtap(net->ifname, net->mac,
+                       virDomainNetGetActualDirectDev(net),
+                       virDomainNetGetActualDirectMode(net),
+                       virDomainNetGetActualDirectVirtPortProfile(net),
+                       driver->stateDir);
             VIR_FREE(net->ifname);
         }
     }

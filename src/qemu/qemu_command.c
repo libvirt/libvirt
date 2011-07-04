@@ -125,9 +125,12 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         net->model && STREQ(net->model, "virtio"))
         vnet_hdr = 1;
 
-    rc = openMacvtapTap(net->ifname, net->mac, net->data.direct.linkdev,
-                        net->data.direct.mode, vnet_hdr, def->uuid,
-                        net->data.direct.virtPortProfile, &res_ifname,
+    rc = openMacvtapTap(net->ifname, net->mac,
+                        virDomainNetGetActualDirectDev(net),
+                        virDomainNetGetActualDirectMode(net),
+                        vnet_hdr, def->uuid,
+                        virDomainNetGetActualDirectVirtPortProfile(net),
+                        &res_ifname,
                         vmop, driver->stateDir);
     if (rc >= 0) {
         virDomainAuditNetDevice(def, net, res_ifname, true);
@@ -148,9 +151,10 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
             err = virDomainConfNWFilterInstantiate(conn, net);
             if (err) {
                 VIR_FORCE_CLOSE(rc);
-                delMacvtap(net->ifname, net->mac, net->data.direct.linkdev,
-                           net->data.direct.mode,
-                           net->data.direct.virtPortProfile,
+                delMacvtap(net->ifname, net->mac,
+                           virDomainNetGetActualDirectDev(net),
+                           virDomainNetGetActualDirectMode(net),
+                           virDomainNetGetActualDirectVirtPortProfile(net),
                            driver->stateDir);
                 VIR_FREE(net->ifname);
             }
@@ -184,8 +188,9 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     int vnet_hdr = 0;
     int template_ifname = 0;
     unsigned char tapmac[VIR_MAC_BUFLEN];
+    int actualType = virDomainNetGetActualType(net);
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         int active, fail = 0;
         virErrorPtr errobj;
         virNetworkPtr network = virNetworkLookupByName(conn,
@@ -218,14 +223,15 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         if (fail)
             return -1;
 
-    } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        if (!(brname = strdup(net->data.bridge.brname))) {
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        if (!(brname = strdup(virDomainNetGetActualBridgeName(net)))) {
             virReportOOMError();
             return -1;
         }
     } else {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Network type %d is not supported"), net->type);
+                        _("Network type %d is not supported"),
+                        virDomainNetGetActualType(net));
         return -1;
     }
 
@@ -1829,7 +1835,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     bool is_tap = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    switch (net->type) {
+    switch (virDomainNetGetActualType(net)) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -1857,7 +1863,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_MCAST:
         virBufferAddLit(&buf, "socket");
-        switch (net->type) {
+        switch (virDomainNetGetActualType(net)) {
         case VIR_DOMAIN_NET_TYPE_CLIENT:
             virBufferAsprintf(&buf, "%cconnect=%s:%d",
                               type_sep,
@@ -3678,6 +3684,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             char vhostfd_name[50] = "";
             int vlan;
             int bootindex = bootNet;
+            int actualType;
 
             bootNet = 0;
             if (!bootindex)
@@ -3690,8 +3697,9 @@ qemuBuildCommandLine(virConnectPtr conn,
             else
                 vlan = i;
 
-            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
-                net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+            actualType = virDomainNetGetActualType(net);
+            if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+                actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
                 int tapfd = qemuNetworkIfaceConnect(def, conn, driver, net,
                                                     qemuCaps);
                 if (tapfd < 0)
@@ -3703,7 +3711,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 if (snprintf(tapfd_name, sizeof(tapfd_name), "%d",
                              tapfd) >= sizeof(tapfd_name))
                     goto no_memory;
-            } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 int tapfd = qemuPhysIfaceConnect(def, conn, driver, net,
                                                  qemuCaps, vmop);
                 if (tapfd < 0)
@@ -3717,9 +3725,9 @@ qemuBuildCommandLine(virConnectPtr conn,
                     goto no_memory;
             }
 
-            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
-                net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-                net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+                actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+                actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 /* Attempt to use vhost-net mode for these types of
                    network device */
                 int vhostfd;
