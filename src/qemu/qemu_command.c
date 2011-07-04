@@ -35,7 +35,7 @@
 #include "uuid.h"
 #include "c-ctype.h"
 #include "domain_nwfilter.h"
-#include "qemu_audit.h"
+#include "domain_audit.h"
 #include "domain_conf.h"
 
 #include <sys/utsname.h>
@@ -130,7 +130,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                         &net->data.direct.virtPortProfile, &res_ifname,
                         vmop, driver->stateDir);
     if (rc >= 0) {
-        qemuAuditNetDevice(def, net, res_ifname, true);
+        virDomainAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
     }
@@ -255,7 +255,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
     err = brAddTap(driver->brctl, brname, &net->ifname, tapmac,
                    vnet_hdr, true, &tapfd);
-    qemuAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
+    virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
     if (err) {
         if (err == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
@@ -346,7 +346,7 @@ qemuOpenVhostNet(virDomainDefPtr def,
     }
 
     *vhostfd = open("/dev/vhost-net", O_RDWR);
-    qemuAuditNetDevice(def, net, "/dev/vhost-net", *vhostfd >= 0);
+    virDomainAuditNetDevice(def, net, "/dev/vhost-net", *vhostfd >= 0);
 
     /* If the config says explicitly to use vhost and we couldn't open it,
      * report an error.

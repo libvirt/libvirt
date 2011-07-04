@@ -202,6 +202,21 @@ dnsmasqReload;
 dnsmasqSave;
 
 
+# domain_audit.h
+virDomainAuditCgroup;
+virDomainAuditCgroupMajor;
+virDomainAuditCgroupPath;
+virDomainAuditDisk;
+virDomainAuditHostdev;
+virDomainAuditMemory;
+virDomainAuditNet;
+virDomainAuditNetDevice;
+virDomainAuditSecurityLabel;
+virDomainAuditStart;
+virDomainAuditStop;
+virDomainAuditVcpu;
+
+
 # domain_conf.h
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;

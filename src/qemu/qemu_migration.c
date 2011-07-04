@@ -30,9 +30,9 @@
 #include "qemu_domain.h"
 #include "qemu_process.h"
 #include "qemu_capabilities.h"
-#include "qemu_audit.h"
 #include "qemu_cgroup.h"
 
+#include "domain_audit.h"
 #include "logging.h"
 #include "virterror_internal.h"
 #include "memory.h"
@@ -1131,7 +1131,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                                    true, dataFD[0], NULL,
                                    VIR_VM_OP_MIGRATE_IN_START);
     if (internalret < 0) {
-        qemuAuditDomainStart(vm, "migrated", false);
+        virDomainAuditStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
          * should have already done that.
          */
@@ -1143,7 +1143,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     }
 
     if (virFDStreamOpen(st, dataFD[1]) < 0) {
-        qemuAuditDomainStart(vm, "migrated", false);
+        virDomainAuditStart(vm, "migrated", false);
         qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FAILED);
         if (!vm->persistent) {
             if (qemuDomainObjEndJob(vm) > 0)
@@ -1156,7 +1156,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
     }
     dataFD[1] = -1; /* 'st' owns the FD now & will close it */
 
-    qemuAuditDomainStart(vm, "migrated", true);
+    virDomainAuditStart(vm, "migrated", true);
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
@@ -1359,7 +1359,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
     if (qemuProcessStart(dconn, driver, vm, migrateFrom, true, true,
                          -1, NULL, VIR_VM_OP_MIGRATE_IN_START) < 0) {
-        qemuAuditDomainStart(vm, "migrated", false);
+        virDomainAuditStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
          * should have already done that.
          */
@@ -1389,7 +1389,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
         VIR_WARN("Unable to encode migration cookie");
     }
 
-    qemuAuditDomainStart(vm, "migrated", true);
+    virDomainAuditStart(vm, "migrated", true);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_MIGRATED);
@@ -2340,7 +2340,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
         resume = 0;
     } else {
         qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_MIGRATED);
-        qemuAuditDomainStop(vm, "migrated");
+        virDomainAuditStop(vm, "migrated");
         resume = 0;
 
         event = virDomainEventNewFromObj(vm,
@@ -2505,7 +2505,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
                  */
                 if (v3proto) {
                     qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
-                    qemuAuditDomainStop(vm, "failed");
+                    virDomainAuditStop(vm, "failed");
                     if (newVM) {
                         if (qemuDomainObjEndJob(vm) > 0)
                             virDomainRemoveInactive(&driver->domains, vm);
@@ -2551,7 +2551,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
                  */
                 if (v3proto) {
                     qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
-                    qemuAuditDomainStop(vm, "failed");
+                    virDomainAuditStop(vm, "failed");
                     event = virDomainEventNewFromObj(vm,
                                                      VIR_DOMAIN_EVENT_STOPPED,
                                                      VIR_DOMAIN_EVENT_STOPPED_FAILED);
@@ -2587,7 +2587,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
         qemuProcessAutoDestroyRemove(driver, vm);
     } else {
         qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
-        qemuAuditDomainStop(vm, "failed");
+        virDomainAuditStop(vm, "failed");
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
@@ -2650,7 +2650,7 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
      */
     if (retcode == 0) {
         qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_MIGRATED);
-        qemuAuditDomainStop(vm, "migrated");
+        virDomainAuditStop(vm, "migrated");
 
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
@@ -2730,7 +2730,7 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
             }
             rc = virCgroupAllowDevicePath(cgroup, path,
                                           VIR_CGROUP_DEVICE_RW);
-            qemuAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
+            virDomainAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
             if (rc < 0) {
                 virReportSystemError(-rc,
                                      _("Unable to allow device %s for %s"),
@@ -2819,7 +2819,7 @@ cleanup:
     if (cgroup != NULL) {
         rc = virCgroupDenyDevicePath(cgroup, path,
                                      VIR_CGROUP_DEVICE_RWM);
-        qemuAuditCgroupPath(vm, cgroup, "deny", path, "rwm", rc);
+        virDomainAuditCgroupPath(vm, cgroup, "deny", path, "rwm", rc);
         if (rc < 0)
             VIR_WARN("Unable to deny device %s for %s %d",
                      path, vm->def->name, rc);

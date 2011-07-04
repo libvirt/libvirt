@@ -34,7 +34,6 @@
 #include "qemu_capabilities.h"
 #include "qemu_monitor.h"
 #include "qemu_command.h"
-#include "qemu_audit.h"
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
 #include "qemu_bridge_filter.h"
@@ -54,6 +53,7 @@
 #include "c-ctype.h"
 #include "nodeinfo.h"
 #include "processinfo.h"
+#include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "locking/domain_lock.h"
 #include "uuid.h"
@@ -144,7 +144,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      eventReason);
     qemuProcessStop(driver, vm, 0, stopReason);
-    qemuAuditDomainStop(vm, auditReason);
+    virDomainAuditStop(vm, auditReason);
 
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains, vm);
@@ -2409,10 +2409,10 @@ int qemuProcessStart(virConnectPtr conn,
        then generate a security label for isolation */
     VIR_DEBUG("Generating domain security label (if required)");
     if (virSecurityManagerGenLabel(driver->securityManager, vm) < 0) {
-        qemuAuditSecurityLabel(vm, false);
+        virDomainAuditSecurityLabel(vm, false);
         goto cleanup;
     }
-    qemuAuditSecurityLabel(vm, true);
+    virDomainAuditSecurityLabel(vm, true);
 
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
@@ -3217,7 +3217,7 @@ static void qemuProcessAutoDestroyDom(void *payload,
 
     VIR_DEBUG("Killing domain");
     qemuProcessStop(data->driver, dom, 1, VIR_DOMAIN_SHUTOFF_DESTROYED);
-    qemuAuditDomainStop(dom, "destroyed");
+    virDomainAuditStop(dom, "destroyed");
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);

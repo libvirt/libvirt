@@ -108,6 +108,7 @@ LOCK_DRIVER_SANLOCK_SOURCES = \
 DOMAIN_CONF_SOURCES =						\
 		conf/capabilities.c conf/capabilities.h		\
 		conf/domain_conf.c conf/domain_conf.h		\
+		conf/domain_audit.c conf/domain_audit.h		\
 		conf/domain_nwfilter.c conf/domain_nwfilter.h
 
 DOMAIN_EVENT_SOURCES =						\
@@ -317,7 +318,6 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_capabilities.c qemu/qemu_capabilities.h\
 		qemu/qemu_command.c qemu/qemu_command.h		\
 		qemu/qemu_domain.c qemu/qemu_domain.h		\
-		qemu/qemu_audit.c qemu/qemu_audit.h		\
 		qemu/qemu_cgroup.c qemu/qemu_cgroup.h		\
 		qemu/qemu_hostdev.c qemu/qemu_hostdev.h		\
 		qemu/qemu_hotplug.c qemu/qemu_hotplug.h		\
