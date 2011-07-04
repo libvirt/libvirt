@@ -55,6 +55,7 @@
 #include "memory.h"
 #include "uuid.h"
 #include "domain_conf.h"
+#include "domain_audit.h"
 #include "datatypes.h"
 #include "logging.h"
 #include "domain_nwfilter.h"
@@ -157,8 +158,11 @@ umlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaqu
     virDomainObjLock(vm);
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
+        int ret;
         virResetLastError();
-        if (umlStartVMDaemon(data->conn, data->driver, vm) < 0) {
+        ret = umlStartVMDaemon(data->conn, data->driver, vm);
+        virDomainAuditStart(vm, "booted", ret >= 0);
+        if (ret < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name, err ? err->message : _("unknown error"));
@@ -306,6 +310,7 @@ reread:
             }
 
             umlShutdownVMDaemon(NULL, driver, dom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+            virDomainAuditStop(dom, "shutdown");
         } else if (e->mask & (IN_CREATE | IN_MODIFY)) {
             VIR_DEBUG("Got inotify domain startup '%s'", name);
             if (virDomainObjIsActive(dom)) {
@@ -326,10 +331,12 @@ reread:
                 VIR_WARN("Could not open monitor for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom,
                                     VIR_DOMAIN_SHUTOFF_FAILED);
+                virDomainAuditStop(dom, "failed");
             } else if (umlIdentifyChrPTY(driver, dom) < 0) {
                 VIR_WARN("Could not identify charater devices for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom,
                                     VIR_DOMAIN_SHUTOFF_FAILED);
+                virDomainAuditStop(dom, "failed");
             }
         }
         virDomainObjUnlock(dom);
@@ -519,8 +526,10 @@ umlShutdownOneVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
     struct uml_driver *driver = opaque;
 
     virDomainObjLock(dom);
-    if (virDomainObjIsActive(dom))
+    if (virDomainObjIsActive(dom)) {
         umlShutdownVMDaemon(NULL, driver, dom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        virDomainAuditStop(dom, "shutdown");
+    }
     virDomainObjUnlock(dom);
 }
 
@@ -1289,11 +1298,13 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
     def = NULL;
 
     if (umlStartVMDaemon(conn, driver, vm) < 0) {
+        virDomainAuditStart(vm, "booted", false);
         virDomainRemoveInactive(&driver->domains,
                                 vm);
         vm = NULL;
         goto cleanup;
     }
+    virDomainAuditStart(vm, "booted", true);
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
@@ -1353,6 +1364,7 @@ static int umlDomainDestroy(virDomainPtr dom) {
     }
 
     umlShutdownVMDaemon(dom->conn, driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    virDomainAuditStop(vm, "destroyed");
     if (!vm->persistent) {
         virDomainRemoveInactive(&driver->domains,
                                 vm);
@@ -1629,6 +1641,7 @@ static int umlDomainStartWithFlags(virDomainPtr dom, unsigned int flags) {
     }
 
     ret = umlStartVMDaemon(dom->conn, driver, vm);
+    virDomainAuditStart(vm, "booted", ret >= 0);
 
 cleanup:
     if (vm)
