@@ -240,6 +240,7 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
             VIR_FREE(tmp);
             break;
         }
+        prev = tmp;
         tmp = tmp->next;
     }
 
