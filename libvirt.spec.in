@@ -1113,6 +1113,19 @@ fi
 %endif
 
 %changelog
+* Mon Jul  4 2011 Daniel Veillard <veillard@redhat.com> - 0.9.3-1
+- new API virDomainGetVcpupinInfo
+- Add TXT record support for virtual DNS service
+- Support reboots with the QEMU driver
+- New API virDomainGetControlInfo API
+- New API virNodeGetMemoryStats
+- New API virNodeGetCPUTime
+- New API for send-key
+- New API virDomainPinVcpuFlags
+- support multifunction PCI device
+- lxc: various improvements
+- many improvements and bug fixes
+
 * Mon Jun  6 2011 Daniel Veillard <veillard@redhat.com> - 0.9.2-1
 - Framework for lock manager plugins
 - API for network config change transactions
