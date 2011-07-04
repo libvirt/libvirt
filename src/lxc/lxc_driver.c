@@ -51,6 +51,7 @@
 #include "hooks.h"
 #include "files.h"
 #include "fdstream.h"
+#include "domain_audit.h"
 #include "domain_nwfilter.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -1270,6 +1271,7 @@ static void lxcMonitorEvent(int watch,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+        virDomainAuditStop(vm, "shutdown");
     }
     if (!vm->persistent) {
         virDomainRemoveInactive(&driver->domains, vm);
@@ -1701,10 +1703,14 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
 
     ret = lxcVmStart(dom->conn, driver, vm, VIR_DOMAIN_RUNNING_BOOTED);
 
-    if (ret == 0)
+    if (ret == 0) {
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
+        virDomainAuditStart(vm, "booted", true);
+    } else {
+        virDomainAuditStart(vm, "booted", false);
+    }
 
 cleanup:
     if (vm)
@@ -1772,6 +1778,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     def = NULL;
 
     if (lxcVmStart(conn, driver, vm, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+        virDomainAuditStart(vm, "booted", false);
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
         goto cleanup;
@@ -1780,6 +1787,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
+    virDomainAuditStart(vm, "booted", true);
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
@@ -1940,6 +1948,7 @@ static int lxcDomainDestroy(virDomainPtr dom)
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+    virDomainAuditStop(vm, "destroyed");
     if (!vm->persistent) {
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
@@ -1986,6 +1995,7 @@ lxcAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaqu
         !virDomainObjIsActive(vm)) {
         int ret = lxcVmStart(data->conn, data->driver, vm,
                              VIR_DOMAIN_RUNNING_BOOTED);
+        virDomainAuditStart(vm, "booted", ret >= 0);
         if (ret < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
@@ -2054,6 +2064,7 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
                  lxcMonitorEvent,
                  vm, NULL)) < 0) {
             lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+            virDomainAuditStop(vm, "failed");
             goto cleanup;
         }
     } else {
