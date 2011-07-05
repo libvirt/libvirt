@@ -265,7 +265,7 @@ reload_profile(virSecurityManagerPtr mgr,
     int rc = -1;
     char *profile_name = NULL;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     if ((profile_name = get_profile_name(vm)) == NULL)
@@ -610,7 +610,7 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
     int rc = -1;
     char *profile_name;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
@@ -682,7 +682,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     struct SDPDOP *ptr;
     int ret = -1;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -741,7 +741,7 @@ AppArmorRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     return reload_profile(mgr, vm, NULL, false);

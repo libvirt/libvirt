@@ -5076,25 +5076,25 @@ virSecurityLabelDefParseXML(const virDomainDefPtr def,
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p != NULL) {
         if (STREQ(p, "yes")) {
-            def->seclabel.relabel = true;
+            def->seclabel.norelabel = false;
         } else if (STREQ(p, "no")) {
-            def->seclabel.relabel = false;
+            def->seclabel.norelabel = true;
         } else {
             virDomainReportError(VIR_ERR_XML_ERROR,
                                  _("invalid security relabel value %s"), p);
             goto error;
         }
         if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-            !def->seclabel.relabel) {
+            def->seclabel.norelabel) {
             virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                  "%s", _("dynamic label type must use resource relabeling"));
             goto error;
         }
     } else {
         if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
-            def->seclabel.relabel = false;
+            def->seclabel.norelabel = true;
         else
-            def->seclabel.relabel = true;
+            def->seclabel.norelabel = false;
     }
 
     /* Only parse label, if using static labels, or
@@ -5114,7 +5114,7 @@ virSecurityLabelDefParseXML(const virDomainDefPtr def,
     }
 
     /* Only parse imagelabel, if requested live XML with relabeling */
-    if (def->seclabel.relabel &&
+    if (!def->seclabel.norelabel &&
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
         p = virXPathStringLimit("string(./seclabel/imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
@@ -9893,15 +9893,15 @@ char *virDomainDefFormat(virDomainDefPtr def,
             (flags & VIR_DOMAIN_XML_INACTIVE)) {
             virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s' relabel='%s'/>\n",
                               sectype, def->seclabel.model,
-                              def->seclabel.relabel ? "yes" : "no");
+                              def->seclabel.norelabel ? "no" : "yes");
         } else {
             virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s' relabel='%s'>\n",
                               sectype, def->seclabel.model,
-                              def->seclabel.relabel ? "yes" : "no");
+                              def->seclabel.norelabel ? "no" : "yes");
             if (def->seclabel.label)
                 virBufferEscapeString(&buf, "    <label>%s</label>\n",
                                       def->seclabel.label);
-            if (def->seclabel.relabel && def->seclabel.imagelabel)
+            if (!def->seclabel.norelabel && def->seclabel.imagelabel)
                 virBufferEscapeString(&buf, "    <imagelabel>%s</imagelabel>\n",
                                       def->seclabel.imagelabel);
             if (def->seclabel.baselabel &&

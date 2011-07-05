@@ -960,7 +960,7 @@ struct _virSecurityLabelDef {
     char *imagelabel;   /* security image label string */
     char *baselabel;    /* base name of label string */
     int type;           /* virDomainSeclabelType */
-    bool relabel;
+    bool norelabel;
 };
 
 enum virDomainTimerNameType {

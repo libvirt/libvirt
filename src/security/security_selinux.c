@@ -537,7 +537,7 @@ SELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     /* Don't restore labels on readoly/shared disks, because
@@ -621,7 +621,7 @@ SELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     bool allowDiskFormatProbing = virSecurityManagerGetAllowDiskFormatProbing(mgr);
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     return virDomainDiskDefForeachPath(disk,
@@ -661,7 +661,7 @@ SELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int ret = -1;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -730,7 +730,7 @@ SELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int ret = -1;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -784,7 +784,7 @@ SELinuxSetSecurityChardevLabel(virDomainObjPtr vm,
     char *in = NULL, *out = NULL;
     int ret = -1;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     switch (dev->type) {
@@ -830,7 +830,7 @@ SELinuxRestoreSecurityChardevLabel(virDomainObjPtr vm,
     char *in = NULL, *out = NULL;
     int ret = -1;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     switch (dev->type) {
@@ -918,7 +918,7 @@ SELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Restoring security label on %s", vm->def->name);
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
@@ -989,7 +989,7 @@ SELinuxSetSavedStateLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     return SELinuxSetFilecon(savefile, secdef->imagelabel);
@@ -1003,7 +1003,7 @@ SELinuxRestoreSavedStateLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     return SELinuxRestoreSecurityFileLabel(savefile);
@@ -1218,7 +1218,7 @@ SELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;
 
-    if (!secdef->relabel)
+    if (secdef->norelabel)
         return 0;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
