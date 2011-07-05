@@ -156,7 +156,7 @@ out:
         VIR_FREE(d->scsi_host.wwpn);
     }
     VIR_FREE(sysfs_path);
-    return 0;
+    return retval;
 }
 
 
