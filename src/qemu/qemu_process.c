@@ -2448,7 +2448,7 @@ int qemuProcessStart(virConnectPtr conn,
         }
     }
 
-    if (virFileMakePath(driver->logDir) != 0) {
+    if (virFileMakePath(driver->logDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create log directory %s"),
                              driver->logDir);

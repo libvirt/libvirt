@@ -308,7 +308,7 @@ static int lxcContainerChildMountSort(const void *a, const void *b)
 
 static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 {
-    int rc, ret;
+    int ret;
     char *oldroot = NULL, *newroot = NULL;
 
     ret = -1;
@@ -325,8 +325,8 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         goto err;
     }
 
-    if ((rc = virFileMakePath(oldroot)) != 0) {
-        virReportSystemError(rc,
+    if (virFileMakePath(oldroot) < 0) {
+        virReportSystemError(errno,
                              _("Failed to create %s"),
                              oldroot);
         goto err;
@@ -347,8 +347,8 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         goto err;
     }
 
-    if ((rc = virFileMakePath(newroot)) != 0) {
-        virReportSystemError(rc,
+    if (virFileMakePath(newroot) < 0) {
+        virReportSystemError(errno,
                              _("Failed to create %s"),
                              newroot);
         goto err;
@@ -415,7 +415,7 @@ static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
     }
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
-        if (virFileMakePath(mnts[i].dst) != 0) {
+        if (virFileMakePath(mnts[i].dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
                                  mnts[i].src);
@@ -429,8 +429,8 @@ static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
         }
     }
 
-    if ((rc = virFileMakePath("/dev/pts") != 0)) {
-        virReportSystemError(rc, "%s",
+    if (virFileMakePath("/dev/pts") < 0) {
+        virReportSystemError(errno, "%s",
                              _("Cannot create /dev/pts"));
         goto cleanup;
     }
@@ -531,7 +531,7 @@ static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
             return -1;
         }
 
-        if (virFileMakePath(vmDef->fss[i]->dst) != 0) {
+        if (virFileMakePath(vmDef->fss[i]->dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to create %s"),
                                  vmDef->fss[i]->dst);

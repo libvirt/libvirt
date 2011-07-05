@@ -914,25 +914,25 @@ libxlStartup(int privileged) {
                     "%s", LIBXL_SAVE_DIR) == -1)
         goto out_of_memory;
 
-    if (virFileMakePath(libxl_driver->logDir) != 0) {
+    if (virFileMakePath(libxl_driver->logDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create log dir '%s': %s"),
                   libxl_driver->logDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(libxl_driver->stateDir) != 0) {
+    if (virFileMakePath(libxl_driver->stateDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create state dir '%s': %s"),
                   libxl_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(libxl_driver->libDir) != 0) {
+    if (virFileMakePath(libxl_driver->libDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create lib dir '%s': %s"),
                   libxl_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(libxl_driver->saveDir) != 0) {
+    if (virFileMakePath(libxl_driver->saveDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
                   libxl_driver->saveDir, virStrerror(errno, ebuf, sizeof ebuf));
@@ -3389,10 +3389,8 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
             goto cleanup;
 
         if (autostart) {
-            int err;
-
-            if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(err,
+            if (virFileMakePath(driver->autostartDir) < 0) {
+                virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);
                 goto cleanup;

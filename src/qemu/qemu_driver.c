@@ -469,37 +469,37 @@ qemudStartup(int privileged) {
             goto out_of_memory;
     }
 
-    if (virFileMakePath(qemu_driver->stateDir) != 0) {
+    if (virFileMakePath(qemu_driver->stateDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create state dir '%s': %s"),
                   qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(qemu_driver->libDir) != 0) {
+    if (virFileMakePath(qemu_driver->libDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create lib dir '%s': %s"),
                   qemu_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(qemu_driver->cacheDir) != 0) {
+    if (virFileMakePath(qemu_driver->cacheDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create cache dir '%s': %s"),
                   qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(qemu_driver->saveDir) != 0) {
+    if (virFileMakePath(qemu_driver->saveDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
                   qemu_driver->saveDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(qemu_driver->snapshotDir) != 0) {
+    if (virFileMakePath(qemu_driver->snapshotDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
                   qemu_driver->snapshotDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(qemu_driver->autoDumpPath) != 0) {
+    if (virFileMakePath(qemu_driver->autoDumpPath) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create dump dir '%s': %s"),
                   qemu_driver->autoDumpPath, virStrerror(errno, ebuf, sizeof ebuf));
@@ -586,8 +586,8 @@ qemudStartup(int privileged) {
         if (virAsprintf(&mempath, "%s/libvirt/qemu", qemu_driver->hugetlbfs_mount) < 0)
             goto out_of_memory;
 
-        if ((rc = virFileMakePath(mempath)) != 0) {
-            virReportSystemError(rc,
+        if (virFileMakePath(mempath) < 0) {
+            virReportSystemError(errno,
                                  _("unable to create hugepage path %s"), mempath);
             VIR_FREE(mempath);
             goto error;
@@ -5021,10 +5021,8 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
             goto cleanup;
 
         if (autostart) {
-            int err;
-
-            if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(err,
+            if (virFileMakePath(driver->autostartDir) < 0) {
+                virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);
                 goto cleanup;
@@ -7489,7 +7487,6 @@ static int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     int ret = -1;
     char *snapDir = NULL;
     char *snapFile = NULL;
-    int err;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(vm->def->uuid, uuidstr);
@@ -7503,9 +7500,8 @@ static int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         virReportOOMError();
         goto cleanup;
     }
-    err = virFileMakePath(snapDir);
-    if (err != 0) {
-        virReportSystemError(err, _("cannot create snapshot directory '%s'"),
+    if (virFileMakePath(snapDir) < 0) {
+        virReportSystemError(errno, _("cannot create snapshot directory '%s'"),
                              snapDir);
         goto cleanup;
     }

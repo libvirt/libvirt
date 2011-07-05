@@ -1502,8 +1502,8 @@ static int lxcVmStart(virConnectPtr conn,
         return -1;
     }
 
-    if ((r = virFileMakePath(driver->logDir)) != 0) {
-        virReportSystemError(r,
+    if (virFileMakePath(driver->logDir) < 0) {
+        virReportSystemError(errno,
                              _("Cannot create log directory '%s'"),
                              driver->logDir);
         return -1;
@@ -2539,10 +2539,8 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
         goto cleanup;
 
     if (autostart) {
-        int err;
-
-        if ((err = virFileMakePath(driver->autostartDir))) {
-            virReportSystemError(err,
+        if (virFileMakePath(driver->autostartDir) < 0) {
+            virReportSystemError(errno,
                                  _("Cannot create autostart directory %s"),
                                  driver->autostartDir);
             goto cleanup;

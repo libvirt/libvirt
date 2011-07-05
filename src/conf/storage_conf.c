@@ -1512,10 +1512,8 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
     ssize_t towrite;
 
     if (!pool->configFile) {
-        int err;
-
-        if ((err = virFileMakePath(driver->configDir))) {
-            virReportSystemError(err,
+        if (virFileMakePath(driver->configDir) < 0) {
+            virReportSystemError(errno,
                                  _("cannot create config directory %s"),
                                  driver->configDir);
             return -1;

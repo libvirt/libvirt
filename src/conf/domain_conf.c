@@ -9989,7 +9989,7 @@ int virDomainSaveXML(const char *configDir,
     if ((configFile = virDomainConfigFile(configDir, def->name)) == NULL)
         goto cleanup;
 
-    if (virFileMakePath(configDir)) {
+    if (virFileMakePath(configDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create config directory '%s'"),
                              configDir);

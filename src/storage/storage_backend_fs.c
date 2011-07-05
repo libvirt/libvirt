@@ -559,8 +559,8 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
         /* assure all directories in the path prior to the final dir
          * exist, with default uid/gid/mode. */
         *p = '\0';
-        if ((err = virFileMakePath(parent)) != 0) {
-            virReportSystemError(err, _("cannot create path '%s'"),
+        if (virFileMakePath(parent) < 0) {
+            virReportSystemError(errno, _("cannot create path '%s'"),
                                  parent);
             goto error;
         }

@@ -523,11 +523,10 @@ dnsmasqAddHost(dnsmasqContext *ctx,
 int
 dnsmasqSave(const dnsmasqContext *ctx)
 {
-    int err;
     int ret = 0;
 
-    if ((err = virFileMakePath(ctx->config_dir))) {
-        virReportSystemError(err, _("cannot create config directory '%s'"),
+    if (virFileMakePath(ctx->config_dir) < 0) {
+        virReportSystemError(errno, _("cannot create config directory '%s'"),
                              ctx->config_dir);
         return -1;
     }

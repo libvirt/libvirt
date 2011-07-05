@@ -1019,10 +1019,8 @@ storagePoolSetAutostart(virStoragePoolPtr obj,
 
     if (pool->autostart != autostart) {
         if (autostart) {
-            int err;
-
-            if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(err,
+            if (virFileMakePath(driver->autostartDir) < 0) {
+                virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);
                 goto cleanup;

@@ -692,17 +692,16 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
     int ret = -1;
-    int err;
     dnsmasqContext *dctx = NULL;
 
-    if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
-        virReportSystemError(err,
+    if (virFileMakePath(NETWORK_PID_DIR) < 0) {
+        virReportSystemError(errno,
                              _("cannot create directory %s"),
                              NETWORK_PID_DIR);
         goto cleanup;
     }
-    if ((err = virFileMakePath(NETWORK_STATE_DIR)) != 0) {
-        virReportSystemError(err,
+    if (virFileMakePath(NETWORK_STATE_DIR) < 0) {
+        virReportSystemError(errno,
                              _("cannot create directory %s"),
                              NETWORK_STATE_DIR);
         goto cleanup;
@@ -713,8 +712,8 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    if ((err = virFileMakePath(DNSMASQ_STATE_DIR)) != 0) {
-        virReportSystemError(err,
+    if (virFileMakePath(DNSMASQ_STATE_DIR) < 0) {
+        virReportSystemError(errno,
                              _("cannot create directory %s"),
                              DNSMASQ_STATE_DIR);
         goto cleanup;
@@ -764,7 +763,7 @@ networkStartRadvd(virNetworkObjPtr network)
     char *configstr = NULL;
     char *configfile = NULL;
     virCommandPtr cmd = NULL;
-    int ret = -1, err, ii;
+    int ret = -1, ii;
     virNetworkIpDefPtr ipdef;
 
     network->radvdPid = -1;
@@ -777,14 +776,14 @@ networkStartRadvd(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
-        virReportSystemError(err,
+    if (virFileMakePath(NETWORK_PID_DIR) < 0) {
+        virReportSystemError(errno,
                              _("cannot create directory %s"),
                              NETWORK_PID_DIR);
         goto cleanup;
     }
-    if ((err = virFileMakePath(RADVD_STATE_DIR)) != 0) {
-        virReportSystemError(err,
+    if (virFileMakePath(RADVD_STATE_DIR) < 0) {
+        virReportSystemError(errno,
                              _("cannot create directory %s"),
                              RADVD_STATE_DIR);
         goto cleanup;
@@ -2526,7 +2525,7 @@ static int networkSetAutostart(virNetworkPtr net,
             goto cleanup;
 
         if (autostart) {
-            if (virFileMakePath(driver->networkAutostartDir)) {
+            if (virFileMakePath(driver->networkAutostartDir) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory '%s'"),
                                      driver->networkAutostartDir);

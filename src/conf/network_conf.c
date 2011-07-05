@@ -1114,13 +1114,12 @@ int virNetworkSaveXML(const char *configDir,
     char *configFile = NULL;
     int fd = -1, ret = -1;
     size_t towrite;
-    int err;
 
     if ((configFile = virNetworkConfigFile(configDir, def->name)) == NULL)
         goto cleanup;
 
-    if ((err = virFileMakePath(configDir))) {
-        virReportSystemError(err,
+    if (virFileMakePath(configDir) < 0) {
+        virReportSystemError(errno,
                              _("cannot create config directory '%s'"),
                              configDir);
         goto cleanup;

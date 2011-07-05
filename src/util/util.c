@@ -1010,66 +1010,79 @@ int virDirCreate(const char *path ATTRIBUTE_UNUSED,
 }
 #endif /* WIN32 */
 
-static int virFileMakePathHelper(char *path) {
+static int virFileMakePathHelper(char *path)
+{
     struct stat st;
     char *p = NULL;
-    int err;
 
     if (stat(path, &st) >= 0)
         return 0;
+    else if (errno != ENOENT)
+        return -1;
 
-    if ((p = strrchr(path, '/')) == NULL)
-        return EINVAL;
+    if ((p = strrchr(path, '/')) == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
 
     if (p != path) {
         *p = '\0';
-        err = virFileMakePathHelper(path);
+
+        if (virFileMakePathHelper(path) < 0)
+            return -1;
+
         *p = '/';
-        if (err != 0)
-            return err;
     }
 
-    if (mkdir(path, 0777) < 0 && errno != EEXIST) {
-        return errno;
-    }
+    if (mkdir(path, 0777) < 0 && errno != EEXIST)
+        return -1;
+
     return 0;
 }
 
+/**
+ * Creates the given directory with mode 0777 if it's not already existing.
+ *
+ * Returns 0 on success, or -1 if an error occurred (in which case, errno
+ * is set appropriately).
+ */
 int virFileMakePath(const char *path)
 {
+    int ret = -1;
     struct stat st;
     char *parent = NULL;
     char *p;
-    int err = 0;
 
     if (stat(path, &st) >= 0)
+        return 0;
+    else if (errno != ENOENT)
         goto cleanup;
 
     if ((parent = strdup(path)) == NULL) {
-        err = ENOMEM;
+        errno = ENOMEM;
         goto cleanup;
     }
 
     if ((p = strrchr(parent, '/')) == NULL) {
-        err = EINVAL;
+        errno = EINVAL;
         goto cleanup;
     }
 
     if (p != parent) {
         *p = '\0';
-        if ((err = virFileMakePathHelper(parent)) != 0) {
+
+        if (virFileMakePathHelper(parent) < 0)
             goto cleanup;
-        }
     }
 
-    if (mkdir(path, 0777) < 0 && errno != EEXIST) {
-        err = errno;
+    if (mkdir(path, 0777) < 0 && errno != EEXIST)
         goto cleanup;
-    }
+
+    ret = 0;
 
 cleanup:
     VIR_FREE(parent);
-    return err;
+    return ret;
 }
 
 /* Build up a fully qualified path for a config file to be
@@ -1182,8 +1195,10 @@ int virFileWritePid(const char *dir,
         goto cleanup;
     }
 
-    if ((rc = virFileMakePath(dir)))
+    if (virFileMakePath(dir) < 0) {
+        rc = errno;
         goto cleanup;
+    }
 
     if (!(pidfile = virFilePid(dir, name))) {
         rc = ENOMEM;

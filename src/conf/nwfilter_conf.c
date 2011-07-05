@@ -2184,13 +2184,12 @@ int virNWFilterSaveXML(const char *configDir,
     char *configFile = NULL;
     int fd = -1, ret = -1;
     size_t towrite;
-    int err;
 
     if ((configFile = virNWFilterConfigFile(configDir, def->name)) == NULL)
         goto cleanup;
 
-    if ((err = virFileMakePath(configDir))) {
-        virReportSystemError(err,
+    if (virFileMakePath(configDir) < 0) {
+        virReportSystemError(errno,
                              _("cannot create config directory '%s'"),
                              configDir);
         goto cleanup;
@@ -2574,10 +2573,8 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
     ssize_t towrite;
 
     if (!nwfilter->configFile) {
-        int err;
-
-        if ((err = virFileMakePath(driver->configDir))) {
-            virReportSystemError(err,
+        if (virFileMakePath(driver->configDir) < 0) {
+            virReportSystemError(errno,
                                  _("cannot create config directory %s"),
                                  driver->configDir);
             return -1;

@@ -420,7 +420,7 @@ umlStartup(int privileged)
         goto error;
     }
 
-    if (virFileMakePath(uml_driver->monitorDir) != 0) {
+    if (virFileMakePath(uml_driver->monitorDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create monitor directory %s: %s"),
                uml_driver->monitorDir, virStrerror(errno, ebuf, sizeof ebuf));
@@ -839,7 +839,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if (virFileMakePath(driver->logDir) != 0) {
+    if (virFileMakePath(driver->logDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create log directory %s"),
                              driver->logDir);
@@ -2004,10 +2004,8 @@ static int umlDomainSetAutostart(virDomainPtr dom,
             goto cleanup;
 
         if (autostart) {
-            int err;
-
-            if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(err,
+            if (virFileMakePath(driver->autostartDir) < 0) {
+                virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);
                 goto cleanup;
