@@ -124,7 +124,9 @@ endif
 
 check_PROGRAMS += networkxml2xmltest
 
+if WITH_NETWORK
 check_PROGRAMS += networkxml2argvtest
+endif
 
 check_PROGRAMS += nwfilterxml2xmltest
 
@@ -244,7 +246,9 @@ endif
 
 TESTS += networkxml2xmltest
 
+if WITH_NETWORK
 TESTS += networkxml2argvtest
+endif
 
 TESTS += storagevolxml2xmltest storagepoolxml2xmltest
 
@@ -373,10 +377,14 @@ networkxml2xmltest_SOURCES = \
 	testutils.c testutils.h
 networkxml2xmltest_LDADD = $(LDADDS)
 
+if WITH_NETWORK
 networkxml2argvtest_SOURCES = \
 	networkxml2argvtest.c \
 	testutils.c testutils.h
 networkxml2argvtest_LDADD = ../src/libvirt_driver_network.la $(LDADDS)
+else
+EXTRA_DIST += networkxml2argvtest.c
+endif
 
 nwfilterxml2xmltest_SOURCES = \
 	nwfilterxml2xmltest.c \
