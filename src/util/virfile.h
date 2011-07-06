@@ -65,4 +65,7 @@ int virFileDirectFdClose(virFileDirectFdPtr dfd);
 
 void virFileDirectFdFree(virFileDirectFdPtr dfd);
 
+int virFileLock(int fd, bool shared, off_t start, off_t len);
+int virFileUnlock(int fd, off_t start, off_t len);
+
 #endif /* __VIR_FILES_H */

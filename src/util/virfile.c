@@ -251,3 +251,86 @@ virFileDirectFdFree(virFileDirectFdPtr dfd)
     virCommandFree(dfd->cmd);
     VIR_FREE(dfd);
 }
+
+
+#ifndef WIN32
+/**
+ * virFileLock:
+ * @fd: file descriptor to acquire the lock on
+ * @shared: type of lock to acquire
+ * @start: byte offset to start lock
+ * @len: length of lock (0 to acquire entire remaining file from @start)
+ *
+ * Attempt to acquire a lock on the file @fd. If @shared
+ * is true, then a shared lock will be acquired,
+ * otherwise an exclusive lock will be acquired. If
+ * the lock cannot be acquired, an error will be
+ * returned. This will not wait to acquire the lock if
+ * another process already holds it.
+ *
+ * The lock will be released when @fd is closed. The lock
+ * will also be released if *any* other open file descriptor
+ * pointing to the same underlying file is closed. As such
+ * this function should not be relied on in multi-threaded
+ * apps where other threads can be opening/closing arbitrary
+ * files.
+ *
+ * Returns 0 on success, or -errno otherwise
+ */
+int virFileLock(int fd, bool shared, off_t start, off_t len)
+{
+    struct flock fl = {
+        .l_type = shared ? F_RDLCK : F_WRLCK,
+        .l_whence = SEEK_SET,
+        .l_start = start,
+        .l_len = len,
+    };
+
+    if (fcntl(fd, F_SETLK, &fl) < 0)
+        return -errno;
+
+    return 0;
+}
+
+
+/**
+ * virFileUnlock:
+ * @fd: file descriptor to release the lock on
+ * @start: byte offset to start unlock
+ * @len: length of lock (0 to release entire remaining file from @start)
+ *
+ * Release a lock previously acquired with virFileUnlock().
+ * NB the lock will also be released if any open file descriptor
+ * pointing to the same file as @fd is closed
+ *
+ * Returns 0 on succcess, or -errno on error
+ */
+int virFileUnlock(int fd, off_t start, off_t len)
+{
+    struct flock fl = {
+        .l_type = F_UNLCK,
+        .l_whence = SEEK_SET,
+        .l_start = start,
+        .l_len = len,
+    };
+
+    if (fcntl(fd, F_SETLK, &fl) < 0)
+        return -errno;
+
+    return 0;
+}
+#else
+int virFileLock(int fd ATTRIBUTE_UNUSED,
+                bool shared ATTRIBUTE_UNUSED,
+                off_t start ATTRIBUTE_UNUSED,
+                off_t len ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+int virFileUnlock(int fd ATTRIBUTE_UNUSED,
+                  off_t start ATTRIBUTE_UNUSED,
+                  off_t len ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+#endif
