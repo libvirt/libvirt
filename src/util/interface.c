@@ -413,6 +413,7 @@ ifaceGetMacAddress(const char *ifname,
 {
     struct ifreq ifr;
     int fd;
+    int rc = 0;
 
     if (!ifname)
         return EINVAL;
@@ -422,15 +423,21 @@ ifaceGetMacAddress(const char *ifname,
         return errno;
 
     memset(&ifr, 0, sizeof(struct ifreq));
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
-        return EINVAL;
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
+        rc = EINVAL;
+        goto cleanup;
+    }
 
-    if (ioctl(fd, SIOCGIFHWADDR, (char *)&ifr) != 0)
-        return errno;
+    if (ioctl(fd, SIOCGIFHWADDR, (char *)&ifr) != 0) {
+        rc = errno;
+        goto cleanup;
+    }
 
     memcpy(macaddr, ifr.ifr_ifru.ifru_hwaddr.sa_data, VIR_MAC_BUFLEN);
 
-    return 0;
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return rc;
 }
 
 #else
@@ -461,6 +468,7 @@ ifaceSetMacAddress(const char *ifname,
 {
     struct ifreq ifr;
     int fd;
+    int rc = 0;
 
     if (!ifname)
         return EINVAL;
@@ -470,16 +478,24 @@ ifaceSetMacAddress(const char *ifname,
         return errno;
 
     memset(&ifr, 0, sizeof(struct ifreq));
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
-        return EINVAL;
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
+        rc = EINVAL;
+        goto cleanup;
+    }
 
     /* To fill ifr.ifr_hdaddr.sa_family field */
-    if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0)
-        return errno;
+    if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0) {
+        rc = errno;
+        goto cleanup;
+    }
 
     memcpy(ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN);
 
-    return ioctl(fd, SIOCSIFHWADDR, &ifr) == 0 ? 0 : errno;
+    rc = ioctl(fd, SIOCSIFHWADDR, &ifr) == 0 ? 0 : errno;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return rc;
 }
 
 #else
