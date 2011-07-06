@@ -264,8 +264,9 @@ static void virNetServerFatalSignal(int sig, siginfo_t *siginfo ATTRIBUTE_UNUSED
 #ifdef SIGUSR2
     if (sig != SIGUSR2) {
 #endif
-        sig_action.sa_handler = SIG_IGN;
+        sig_action.sa_handler = SIG_DFL;
         sigaction(sig, &sig_action, NULL);
+        raise(sig);
 #ifdef SIGUSR2
     }
 #endif
