@@ -232,9 +232,10 @@ typedef virDomainInfo *virDomainInfoPtr;
  * Domain.
  */
 typedef enum {
-    VIR_DOMAIN_NONE         = 0,      /* Default behavior */
-    VIR_DOMAIN_START_PAUSED = 1 << 0, /* Launch guest in paused state */
-    VIR_DOMAIN_START_AUTODESTROY = 1 << 1, /* Automatically kill guest when virConnectPtr is closed */
+    VIR_DOMAIN_NONE               = 0,      /* Default behavior */
+    VIR_DOMAIN_START_PAUSED       = 1 << 0, /* Launch guest in paused state */
+    VIR_DOMAIN_START_AUTODESTROY  = 1 << 1, /* Automatically kill guest when virConnectPtr is closed */
+    VIR_DOMAIN_START_BYPASS_CACHE = 1 << 2, /* Avoid file system cache pollution */
 } virDomainCreateFlags;
 
 
@@ -657,8 +658,9 @@ typedef virDomainMemoryStatStruct *virDomainMemoryStatPtr;
 
 /* Domain core dump flags. */
 typedef enum {
-    VIR_DUMP_CRASH   = (1 << 0), /* crash after dump */
-    VIR_DUMP_LIVE    = (1 << 1), /* live dump */
+    VIR_DUMP_CRASH        = (1 << 0), /* crash after dump */
+    VIR_DUMP_LIVE         = (1 << 1), /* live dump */
+    VIR_DUMP_BYPASS_CACHE = (1 << 2), /* avoid file system cache pollution */
 } virDomainCoreDumpFlags;
 
 /* Domain migration flags. */
@@ -941,10 +943,28 @@ int                     virDomainResume         (virDomainPtr domain);
 /*
  * Domain save/restore
  */
+
+/**
+ * virDomainSaveRestoreFlags:
+ * Flags for use in virDomainSaveFlags(), virDomainManagedSave(), and
+ * virDomainRestoreFlags().
+ */
+typedef enum {
+    VIR_DOMAIN_SAVE_BYPASS_CACHE = 1 << 0, /* Avoid file system cache pollution */
+} virDomainSaveRestoreFlags;
+
 int                     virDomainSave           (virDomainPtr domain,
                                                  const char *to);
+int                     virDomainSaveFlags      (virDomainPtr domain,
+                                                 const char *to,
+                                                 const char *dxml,
+                                                 unsigned int flags);
 int                     virDomainRestore        (virConnectPtr conn,
                                                  const char *from);
+int                     virDomainRestoreFlags   (virConnectPtr conn,
+                                                 const char *from,
+                                                 const char *dxml,
+                                                 unsigned int flags);
 
 /*
  * Managed domain save

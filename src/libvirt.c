@@ -2242,6 +2242,8 @@ error:
  * listed as running anymore (this may be a problem).
  * Use virDomainRestore() to restore a domain after saving.
  *
+ * See virDomainSaveFlags() for more control.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
@@ -2296,11 +2298,92 @@ error:
 }
 
 /**
+ * virDomainSaveFlags:
+ * @domain: a domain object
+ * @to: path for the output file
+ * @dxml: (optional) XML config for adjusting guest xml used on restore
+ * @flags: bitwise-OR of virDomainSaveRestoreFlags
+ *
+ * This method will suspend a domain and save its memory contents to
+ * a file on disk. After the call, if successful, the domain is not
+ * listed as running anymore (this may be a problem).
+ * Use virDomainRestore() to restore a domain after saving.
+ *
+ * If the hypervisor supports it, @dxml can be used to alter
+ * host-specific portions of the domain XML that will be used when
+ * restoring an image.  For example, it is possible to alter the
+ * backing filename that is associated with a disk device, in order to
+ * prepare for file renaming done as part of backing up the disk
+ * device while the domain is stopped.
+ *
+ * If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
+ * attempt to bypass the file system cache while creating the file, or
+ * fail if it cannot do so for the given system; this can allow less
+ * pressure on file system cache, but also risks slowing saves to NFS.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainSaveFlags(virDomainPtr domain, const char *to,
+                   const char *dxml, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "to=%s dxml=%s flags=%x",
+                     to, NULLSTR(dxml), flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+    if (to == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainSaveFlags) {
+        int ret;
+        char *absolute_to;
+
+        /* We must absolutize the file path as the save is done out of process */
+        if (virFileAbsPath(to, &absolute_to) < 0) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                            _("could not build absolute output file path"));
+            goto error;
+        }
+
+        ret = conn->driver->domainSaveFlags(domain, absolute_to, dxml, flags);
+
+        VIR_FREE(absolute_to);
+
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainRestore:
  * @conn: pointer to the hypervisor connection
  * @from: path to the input file
  *
  * This method will restore a domain saved to disk by virDomainSave().
+ *
+ * See virDomainRestoreFlags() for more control.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2353,6 +2436,80 @@ error:
 }
 
 /**
+ * virDomainRestoreFlags:
+ * @conn: pointer to the hypervisor connection
+ * @from: path to the input file
+ * @dxml: (optional) XML config for adjusting guest xml used on restore
+ * @flags: bitwise-OR of virDomainSaveRestoreFlags
+ *
+ * This method will restore a domain saved to disk by virDomainSave().
+ *
+ * If the hypervisor supports it, @dxml can be used to alter
+ * host-specific portions of the domain XML that will be used when
+ * restoring an image.  For example, it is possible to alter the
+ * backing filename that is associated with a disk device, in order to
+ * prepare for file renaming done as part of backing up the disk
+ * device while the domain is stopped.
+ *
+ * If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
+ * attempt to bypass the file system cache while restoring the file, or
+ * fail if it cannot do so for the given system; this can allow less
+ * pressure on file system cache, but also risks slowing saves to NFS.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
+    unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, from=%s, dxml=%s, flags=%x",
+              conn, from, NULLSTR(dxml), flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if (from == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainRestoreFlags) {
+        int ret;
+        char *absolute_from;
+
+        /* We must absolutize the file path as the restore is done out of process */
+        if (virFileAbsPath(from, &absolute_from) < 0) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                            _("could not build absolute input file path"));
+            goto error;
+        }
+
+        ret = conn->driver->domainRestoreFlags(conn, absolute_from, dxml,
+                                               flags);
+
+        VIR_FREE(absolute_from);
+
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainCoreDump:
  * @domain: a domain object
  * @to: path for the core file
@@ -2361,6 +2518,17 @@ error:
  * This method will dump the core of a domain on a given file for analysis.
  * Note that for remote Xen Daemon the file path will be interpreted in
  * the remote host.
+ *
+ * If @flags includes VIR_DUMP_CRASH, then leave the guest shut off with
+ * a crashed state after the dump completes.  If @flags includes
+ * VIR_DUMP_LIVE, then make the core dump while continuing to allow
+ * the guest to run; otherwise, the guest is suspended during the dump.
+ * The above two flags are mutually exclusive.
+ *
+ * Additionally, if @flags includes VIR_DUMP_BYPASS_CACHE, then libvirt
+ * will attempt to bypass the file system cache while creating the file,
+ * or fail if it cannot do so for the given system; this can allow less
+ * pressure on file system cache, but also risks slowing saves to NFS.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -6611,6 +6779,12 @@ error:
  * client application crashes / looses its connection to the
  * libvirtd daemon. Any domains marked for auto destroy will
  * block attempts at migration or save-to-file
+ *
+ * If the VIR_DOMAIN_START_BYPASS_CACHE flag is set, and there is a
+ * managed save file for this domain (created by virDomainManagedSave()),
+ * then libvirt will attempt to bypass the file system cache while restoring
+ * the file, or fail if it cannot do so for the given system; this can allow
+ * less pressure on file system cache, but also risks slowing loads from NFS.
  *
  * Returns 0 in case of success, -1 in case of error
  */
@@ -14837,7 +15011,7 @@ error:
 /**
  * virDomainManagedSave:
  * @dom: pointer to the domain
- * @flags: optional flags currently unused
+ * @flags: bitwise-OR of virDomainSaveRestoreFlags
  *
  * This method will suspend a domain and save its memory contents to
  * a file on disk. After the call, if successful, the domain is not
@@ -14846,6 +15020,11 @@ error:
  * the saved state itself, and will reuse it once the domain is being
  * restarted (automatically or via an explicit libvirt call).
  * As a result any running domain is sure to not have a managed saved image.
+ *
+ * If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
+ * attempt to bypass the file system cache while creating the file, or
+ * fail if it cannot do so for the given system; this can allow less
+ * pressure on file system cache, but also risks slowing saves to NFS.
  *
  * Returns 0 in case of success or -1 in case of failure
  */

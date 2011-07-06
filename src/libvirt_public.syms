@@ -468,6 +468,8 @@ LIBVIRT_0.9.3 {
 
 LIBVIRT_0.9.4 {
     global:
+        virDomainRestoreFlags;
+        virDomainSaveFlags;
         virDomainUndefineFlags;
 } LIBVIRT_0.9.3;
 
