@@ -1,7 +1,7 @@
 /*
  * node_device.c: node device enumeration
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -125,11 +125,13 @@ void nodeDeviceUnlock(virDeviceMonitorStatePtr driver)
 int
 nodeNumOfDevices(virConnectPtr conn,
                  const char *cap,
-                 unsigned int flags ATTRIBUTE_UNUSED)
+                 unsigned int flags)
 {
     virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
     int ndevs = 0;
     unsigned int i;
+
+    virCheckFlags(0, -1);
 
     nodeDeviceLock(driver);
     for (i = 0; i < driver->devs.count; i++) {
@@ -148,11 +150,13 @@ int
 nodeListDevices(virConnectPtr conn,
                 const char *cap,
                 char **const names, int maxnames,
-                unsigned int flags ATTRIBUTE_UNUSED)
+                unsigned int flags)
 {
     virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
     int ndevs = 0;
     unsigned int i;
+
+    virCheckFlags(0, -1);
 
     nodeDeviceLock(driver);
     for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
@@ -254,11 +258,13 @@ out:
 
 char *
 nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
-                     unsigned int flags ATTRIBUTE_UNUSED)
+                     unsigned int flags)
 {
     virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     nodeDeviceLock(driver);
     obj = virNodeDeviceFindByName(&driver->devs, dev->name);
@@ -545,13 +551,15 @@ find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
 virNodeDevicePtr
 nodeDeviceCreateXML(virConnectPtr conn,
                     const char *xmlDesc,
-                    unsigned int flags ATTRIBUTE_UNUSED)
+                    unsigned int flags)
 {
     virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
     virNodeDeviceDefPtr def = NULL;
     char *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;
     virNodeDevicePtr dev = NULL;
+
+    virCheckFlags(0, NULL);
 
     nodeDeviceLock(driver);
 

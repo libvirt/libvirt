@@ -1721,8 +1721,10 @@ static int udevDeviceMonitorActive(void)
 
 static virDrvOpenStatus udevNodeDrvOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags ATTRIBUTE_UNUSED)
+                                        unsigned int flags)
 {
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (driverState == NULL) {
         return VIR_DRV_OPEN_DECLINED;
     }
