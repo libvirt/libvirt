@@ -156,7 +156,7 @@ static int chgIfaceFlags(const char *ifname, short flagclear, short flagset) {
 
     rc = getFlags(fd, ifname, &ifr);
     if (rc != 0)
-        goto err_exit;
+        goto cleanup;
 
     flags = (ifr.ifr_flags & flagmask) | flagset;
 
@@ -167,7 +167,7 @@ static int chgIfaceFlags(const char *ifname, short flagclear, short flagset) {
             rc = errno;
     }
 
-err_exit:
+cleanup:
     VIR_FORCE_CLOSE(fd);
     return rc;
 }
@@ -241,7 +241,7 @@ ifaceCheck(bool reportError, const char *ifname,
                            _("invalid interface name %s"),
                            ifname);
             rc = EINVAL;
-            goto err_exit;
+            goto cleanup;
         }
 
         if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
@@ -250,12 +250,12 @@ ifaceCheck(bool reportError, const char *ifname,
                            _("coud not get MAC address of interface %s"),
                            ifname);
             rc = errno;
-            goto err_exit;
+            goto cleanup;
         }
 
         if (memcmp(&ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN) != 0) {
             rc = ENODEV;
-            goto err_exit;
+            goto cleanup;
         }
     }
 
@@ -265,7 +265,7 @@ ifaceCheck(bool reportError, const char *ifname,
             rc = ENODEV;
     }
 
- err_exit:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
 
     return rc;
@@ -318,7 +318,7 @@ ifaceGetIndex(bool reportError, const char *ifname, int *ifindex)
                        _("invalid interface name %s"),
                        ifname);
         rc = EINVAL;
-        goto err_exit;
+        goto cleanup;
     }
 
     if (ioctl(fd, SIOCGIFINDEX, &ifreq) >= 0)
@@ -331,7 +331,7 @@ ifaceGetIndex(bool reportError, const char *ifname, int *ifindex)
         rc = ENODEV;
     }
 
-err_exit:
+cleanup:
     VIR_FORCE_CLOSE(fd);
 
     return rc;
@@ -368,17 +368,17 @@ ifaceGetVlanID(const char *vlanifname, int *vlanid) {
 
     if (virStrcpyStatic(vlanargs.device1, vlanifname) == NULL) {
         rc = EINVAL;
-        goto err_exit;
+        goto cleanup;
     }
 
     if (ioctl(fd, SIOCGIFVLAN, &vlanargs) != 0) {
         rc = errno;
-        goto err_exit;
+        goto cleanup;
     }
 
     *vlanid = vlanargs.u.VID;
 
- err_exit:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
 
     return rc;
@@ -576,7 +576,7 @@ ifaceMacvtapLinkAdd(const char *type,
 
     if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
         rc = -1;
-        goto err_exit;
+        goto cleanup;
     }
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
@@ -615,7 +615,7 @@ ifaceMacvtapLinkAdd(const char *type,
         goto malformed_resp;
     }
 
-err_exit:
+cleanup:
     nlmsg_free(nl_msg);
 
     VIR_FREE(recvbuf);
@@ -700,7 +700,7 @@ ifaceLinkDel(const char *ifname)
 
     if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
         rc = -1;
-        goto err_exit;
+        goto cleanup;
     }
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
@@ -729,7 +729,7 @@ ifaceLinkDel(const char *ifname)
         goto malformed_resp;
     }
 
-err_exit:
+cleanup:
     nlmsg_free(nl_msg);
 
     VIR_FREE(recvbuf);
@@ -832,13 +832,13 @@ ifaceMacvtapLinkDump(bool nltarget_kernel, const char *ifname, int ifindex,
         pid = getPidFunc();
         if (pid == 0) {
             rc = -1;
-            goto err_exit;
+            goto cleanup;
         }
     }
 
     if (nlComm(nl_msg, recvbuf, &recvbuflen, pid) < 0) {
         rc = -1;
-        goto err_exit;
+        goto cleanup;
     }
 
     if (recvbuflen < NLMSG_LENGTH(0) || *recvbuf == NULL)
@@ -875,7 +875,7 @@ ifaceMacvtapLinkDump(bool nltarget_kernel, const char *ifname, int ifindex,
     if (rc != 0)
         VIR_FREE(*recvbuf);
 
-err_exit:
+cleanup:
     nlmsg_free(nl_msg);
 
     return rc;
