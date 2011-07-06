@@ -148,6 +148,15 @@ LOCK_DRIVER_SANLOCK_SOURCES = \
 LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
 		locking/sanlock_helper.c
 
+LOCK_PROTOCOL_GENERATED = \
+		locking/lock_protocol.h \
+		locking/lock_protocol.c \
+		$(NULL)
+
+EXTRA_DIST += locking/lock_protocol.x
+BUILT_SOURCES += $(LOCK_PROTOCOL_GENERATED)
+MAINTAINERCLEANFILES += $(LOCK_PROTOCOL_GENERATED)
+
 LOCK_DAEMON_SOURCES = \
 		locking/lock_daemon.h \
 		locking/lock_daemon.c \
@@ -1520,7 +1529,10 @@ EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
 if WITH_LIBVIRTD
 sbin_PROGRAMS = virtlockd
 
-virtlockd_SOURCES = $(LOCK_DAEMON_SOURCES)
+virtlockd_SOURCES = \
+		$(LOCK_DAEMON_SOURCES) \
+		$(LOCK_PROTOCOL_GENERATED) \
+		$(NULL)
 virtlockd_CFLAGS = \
 		$(AM_CFLAGS) \
 		$(NULL)

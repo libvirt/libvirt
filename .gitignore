@@ -108,6 +108,7 @@
 /src/libvirt_*helper
 /src/libvirt_*probes.h
 /src/libvirt_lxc
+/src/locking/lock_protocol.[ch]
 /src/locking/qemu-sanlock.conf
 /src/locking/test_libvirt_sanlock.aug
 /src/lxc/lxc_controller_dispatch.h

@@ -827,3 +827,6 @@ exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(docs/apibuild.py|tests/virt-aa-helper-test)$$
 
 exclude_file_name_regexp--sc_size_of_brackets = cfg.mk
+
+exclude_file_name_regexp--sc_correct_id_types = \
+  (^src/locking/lock_protocol.x$$)
