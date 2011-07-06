@@ -1489,13 +1489,12 @@ libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *arg
         return(NULL);
 
     if ((startCell < 0) || (maxCells <= 0) || (startCell + maxCells > 10000))
-        goto error;
+        return VIR_PY_NONE;
 
     conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
-    freeMems =
-        malloc(maxCells * sizeof(*freeMems));
+    freeMems = malloc(maxCells * sizeof(*freeMems));
     if (freeMems == NULL)
-        goto error;
+        return VIR_PY_NONE;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     c_retval = virNodeGetCellsFreeMemory(conn, freeMems, startCell, maxCells);
@@ -1503,7 +1502,6 @@ libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *arg
 
     if (c_retval < 0) {
         free(freeMems);
-error:
         return VIR_PY_NONE;
     }
     py_retval = PyList_New(c_retval);
