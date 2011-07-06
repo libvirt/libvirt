@@ -124,7 +124,7 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
 
     memcpy(params[0].value.uuid, dom->def->uuid, VIR_UUID_BUFLEN);
 
-    if (!(lock = virLockManagerNew(plugin,
+    if (!(lock = virLockManagerNew(virLockManagerPluginGetDriver(plugin),
                                    VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN,
                                    ARRAY_CARDINALITY(params),
                                    params,

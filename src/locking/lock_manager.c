@@ -39,11 +39,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
-#define CHECK_PLUGIN(field, errret)                                  \
-    if (!plugin->driver->field) {                                    \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
-                       _("Missing '%s' field in lock manager driver"), \
-                       #field);                                        \
+#define CHECK_DRIVER(field, errret)                                  \
+    if (!driver->field) {                                            \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                       \
+                     _("Missing '%s' field in lock manager driver"), \
+                     #field);                                        \
         return errret;                                               \
     }
 
@@ -265,9 +265,16 @@ bool virLockManagerPluginUsesState(virLockManagerPluginPtr plugin)
 }
 
 
+virLockDriverPtr virLockManagerPluginGetDriver(virLockManagerPluginPtr plugin)
+{
+    VIR_DEBUG("plugin=%p", plugin);
+
+    return plugin->driver;
+}
+
 /**
  * virLockManagerNew:
- * @plugin: the plugin implementation to use
+ * @driver: the lock manager implementation to use
  * @type: the type of process to be supervised
  * @flags: optional flags, currently unused
  *
@@ -276,27 +283,27 @@ bool virLockManagerPluginUsesState(virLockManagerPluginPtr plugin)
  *
  * Returns a new lock manager context
  */
-virLockManagerPtr virLockManagerNew(virLockManagerPluginPtr plugin,
+virLockManagerPtr virLockManagerNew(virLockDriverPtr driver,
                                     unsigned int type,
                                     size_t nparams,
                                     virLockManagerParamPtr params,
                                     unsigned int flags)
 {
     virLockManagerPtr lock;
-    VIR_DEBUG("plugin=%p type=%u nparams=%zu params=%p flags=%x",
-              plugin, type, nparams, params, flags);
+    VIR_DEBUG("driver=%p type=%u nparams=%zu params=%p flags=%x",
+              driver, type, nparams, params, flags);
     virLockManagerLogParams(nparams, params);
 
-    CHECK_PLUGIN(drvNew, NULL);
+    CHECK_DRIVER(drvNew, NULL);
 
     if (VIR_ALLOC(lock) < 0) {
         virReportOOMError();
         return NULL;
     }
 
-    lock->driver = plugin->driver;
+    lock->driver = driver;
 
-    if (plugin->driver->drvNew(lock, type, nparams, params, flags) < 0) {
+    if (driver->drvNew(lock, type, nparams, params, flags) < 0) {
         VIR_FREE(lock);
         return NULL;
     }

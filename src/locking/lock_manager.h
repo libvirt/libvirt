@@ -37,8 +37,9 @@ void virLockManagerPluginUnref(virLockManagerPluginPtr plugin);
 const char *virLockManagerPluginGetName(virLockManagerPluginPtr plugin);
 bool virLockManagerPluginUsesState(virLockManagerPluginPtr plugin);
 
+virLockDriverPtr virLockManagerPluginGetDriver(virLockManagerPluginPtr plugin);
 
-virLockManagerPtr virLockManagerNew(virLockManagerPluginPtr plugin,
+virLockManagerPtr virLockManagerNew(virLockDriverPtr driver,
                                     unsigned int type,
                                     size_t nparams,
                                     virLockManagerParamPtr params,
