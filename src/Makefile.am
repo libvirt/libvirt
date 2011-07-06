@@ -164,6 +164,10 @@ LOCK_DAEMON_GENERATED = \
 BUILT_SOURCES += $(LOCK_DAEMON_GENERATED)
 MAINTAINERCLEANFILES += $(LOCK_DAEMON_GENERATED)
 
+LOCK_DRIVER_LOCKD_SOURCES = \
+		locking/lock_driver_lockd.c \
+		$(NULL)
+
 LOCK_DAEMON_SOURCES = \
 		locking/lock_daemon.h \
 		locking/lock_daemon.c \
@@ -1300,9 +1304,14 @@ EXTRA_DIST +=							\
 
 check-local: check-augeas
 
-.PHONY: check-augeas check-augeas-qemu check-augeas-lxc check-augeas-sanlock
+.PHONY: check-augeas \
+	check-augeas-qemu \
+	check-augeas-lxc \
+	check-augeas-sanlock \
+	check-augeas-lockd \
+	$(NULL)
 
-check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock
+check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock check-augeas-lockd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -1345,6 +1354,15 @@ check-augeas-sanlock: test_libvirt_sanlock.aug
 else
 check-augeas-sanlock:
 endif
+
+test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
+		locking/qemu-lockd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< $@
+
+check-augeas-lockd: test_libvirt_lockd.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_lockd.aug; \
+	fi
 
 #
 # Build our version script.  This is composed of three parts:
@@ -1539,7 +1557,32 @@ libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
 
+lockdriverdir = $(libdir)/libvirt/lock-driver
+lockdriver_LTLIBRARIES =
+
 if WITH_LIBVIRTD
+lockdriver_LTLIBRARIES += lockd.la
+lockd_la_SOURCES = \
+		$(LOCK_DRIVER_LOCKD_SOURCES) \
+		$(LOCK_PROTOCOL_GENERATED) \
+		$(NULL)
+lockd_la_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
+lockd_la_LDFLAGS = -module -avoid-version
+lockd_la_LIBADD = ../gnulib/lib/libgnu.la libvirt-net-rpc.la libvirt-net-rpc-client.la
+if WITH_DTRACE_PROBES
+lockd_la_LIBADD += libvirt_probes.lo
+endif
+if WITH_QEMU
+nodist_conf_DATA = locking/qemu-lockd.conf
+BUILT_SOURCES += locking/qemu-lockd.conf
+DISTCLEANFILES += locking/qemu-lockd.conf
+endif
+
+locking/%-lockd.conf: $(srcdir)/locking/lockd.conf
+	$(AM_V_GEN)$(MKDIR_P) locking ; \
+	cp $< $@
+
+
 sbin_PROGRAMS = virtlockd
 
 virtlockd_SOURCES = \
@@ -1567,7 +1610,8 @@ virtlockd_LDADD += libvirt_probes.lo
 endif
 
 else
-EXTRA_DIST += $(LOCK_DAEMON_SOURCES)
+EXTRA_DIST += $(LOCK_DAEMON_SOURCES) \
+              $(LOCK_DRIVER_LOCKD_SOURCES)
 endif
 
 EXTRA_DIST += locking/virtlockd.sysconf
@@ -1661,9 +1705,7 @@ virtlockd.socket: locking/virtlockd.socket.in $(top_builddir)/config.status
 
 
 if HAVE_SANLOCK
-lockdriverdir = $(libdir)/libvirt/lock-driver
-lockdriver_LTLIBRARIES = sanlock.la
-
+lockdriver_LTLIBRARIES += sanlock.la
 sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
 sanlock_la_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
 sanlock_la_LDFLAGS = -module -avoid-version

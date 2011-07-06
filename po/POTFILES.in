@@ -51,6 +51,7 @@ src/libvirt-qemu.c
 src/locking/lock_daemon.c
 src/locking/lock_daemon_config.c
 src/locking/lock_daemon_dispatch.c
+src/locking/lock_driver_lockd.c
 src/locking/lock_driver_sanlock.c
 src/locking/lock_manager.c
 src/locking/sanlock_helper.c

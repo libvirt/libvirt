@@ -1,0 +1,6 @@
+module Test_libvirt_lockd =
+  ::CONFIG::
+
+   test Libvirt_lockd.lns get conf =
+{ "auto_disk_leases" = "0" }
+{ "require_lease_for_disks" = "1" }

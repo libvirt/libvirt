@@ -53,6 +53,8 @@ fi
 export LD_LIBRARY_PATH
 
 export LIBVIRT_DRIVER_DIR="$b/src/.libs"
+export LIBVIRT_LOCK_MANAGER_PLUGIN_DIR="$b/src/.libs"
+export VIRTLOCKD_PATH="$b/src/virtlockd"
 export LIBVIRTD_PATH="$b/daemon/libvirtd"
 
 # For Python.
