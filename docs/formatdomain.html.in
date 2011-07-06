@@ -46,7 +46,8 @@
       <dt><code>uuid</code></dt>
       <dd>The content of the <code>uuid</code> element provides
         a globally unique identifier for the virtual machine.
-        The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
+        The format must be RFC 4122 compliant,
+        eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
         If omitted when defining/creating a new machine, a random
         UUID is generated. It is also possible to provide the UUID
         via a <a href="#elementsSysinfo"><code>sysinfo</code></a>
@@ -96,13 +97,16 @@
         on bare metal, so requires full virtualization. <code>linux</code>
         (badly named!) refers to an OS that supports the Xen 3 hypervisor
         guest ABI. There are also two optional attributes, <code>arch</code>
-        specifying the CPU architecture to virtualization, and <code>machine</code>
-        referring to the machine type. The <a href="formatcaps.html">Capabilities XML</a>
-        provides details on allowed values for these. <span class="since">Since 0.0.1</span></dd>
+        specifying the CPU architecture to virtualization,
+        and <code>machine</code> referring to the machine
+        type. The <a href="formatcaps.html">Capabilities XML</a>
+        provides details on allowed values for
+        these. <span class="since">Since 0.0.1</span></dd>
       <dt><code>loader</code></dt>
       <dd>The optional <code>loader</code> tag refers to a firmware blob
         used to assist the domain creation process. At this time, it is
-        only needed by Xen fully virtualized domains. <span class="since">Since 0.1.0</span></dd>
+        only needed by Xen fully virtualized
+        domains. <span class="since">Since 0.1.0</span></dd>
       <dt><code>boot</code></dt>
       <dd>The <code>dev</code> attribute takes one of the values "fd", "hd",
         "cdrom" or "network" and is used to specify the next boot device
@@ -296,7 +300,7 @@
     &lt;shares&gt;2048&lt;/shares&gt;
   &lt;/cputune&gt;
   &lt;numatune&gt;
-  &lt;memory mode="strict" nodeset="1-4,^3"/&gt;
+    &lt;memory mode="strict" nodeset="1-4,^3"/&gt;
   &lt;/numatune&gt;
   ...</pre>
 
@@ -372,7 +376,8 @@
         physical CPUS the domain VCPU will be pinned to. If this is ommited,
         each VCPU pinned to all the physical CPUS by default. It contains two
         required attributes, the attribute <code>vcpu</code> specifies vcpu id,
-        and the attribute <code>cpuset</code> is same as attribute <code>cpuset</code>
+        and the attribute <code>cpuset</code> is same as
+        attribute <code>cpuset</code>
         of element <code>vcpu</code>. (NB: Only qemu driver support)
         <span class="since">Since 0.9.0</span>
        </dd>
@@ -380,8 +385,9 @@
       <dd>
         The optional <code>shares</code> element specifies the proportional
         weighted share for the domain. If this is ommited, it defaults to
-        the OS provided defaults. NB, There is no unit for the value, it's a relative
-        measure based on the setting of other VM, e.g. A VM configured with value
+        the OS provided defaults. NB, There is no unit for the value,
+        it's a relative measure based on the setting of other VM,
+        e.g. A VM configured with value
         2048 will get twice as much CPU time as a VM configured with value 1024.
         <span class="since">Since 0.9.0</span>
       </dd>
@@ -395,7 +401,8 @@
       <dd>
         The optional <code>memory</code> element specify how to allocate memory
         for the domain process on a NUMA host. It contains two attributes,
-        attribute <code>mode</code> is either 'interleave', 'strict', or 'preferred',
+        attribute <code>mode</code> is either 'interleave', 'strict',
+        or 'preferred',
         attribute <code>nodeset</code> specifies the NUMA nodes, it leads same
         syntax with attribute <code>cpuset</code> of element <code>vcpu</code>.
         <span class='since'>Since 0.9.3</span>
@@ -825,12 +832,14 @@
         to connect.
         <span class="since">Since 0.0.3</span></dd>
       <dt><code>target</code></dt>
-      <dd>The <code>target</code> element controls the bus / device under which the
-        disk is exposed to the guest OS. The <code>dev</code> attribute indicates
-        the "logical" device name. The actual device name specified is not guaranteed to map to
-        the device name in the guest OS. Treat it as a device ordering hint.
-        The optional <code>bus</code> attribute specifies the type of disk device
-        to emulate; possible values are driver specific, with typical values being
+      <dd>The <code>target</code> element controls the bus / device
+        under which the disk is exposed to the guest
+        OS. The <code>dev</code> attribute indicates the "logical"
+        device name. The actual device name specified is not
+        guaranteed to map to the device name in the guest OS. Treat it
+        as a device ordering hint.  The optional <code>bus</code>
+        attribute specifies the type of disk device to emulate;
+        possible values are driver specific, with typical values being
         "ide", "scsi", "virtio", "xen" or "usb". If omitted, the bus type is
         inferred from the style of the device name. eg, a device named 'sda'
         will typically be exported using a SCSI bus.
@@ -905,7 +914,8 @@
       </dd>
       <dt><code>serial</code></dt>
       <dd>If present, this specify serial number of virtual hard drive.
-          For example, it may look as <code>&lt;serial&gt;WD-WMAP9A966149&lt;/serial&gt;</code>.
+          For example, it may look
+          like <code>&lt;serial&gt;WD-WMAP9A966149&lt;/serial&gt;</code>.
           <span class="since">Since 0.7.1</span>
       </dd>
       <dt><code>host</code></dt>
@@ -1146,7 +1156,8 @@
     <h4><a name="elementsUSB">USB and PCI devices</a></h4>
 
     <p>
-      USB and PCI devices attached to the host can be passed through to the guest using
+      USB and PCI devices attached to the host can be passed through
+      to the guest using
       the <code>hostdev</code> element. <span class="since">since after
       0.4.4 for USB and 0.6.0 for PCI (KVM only)</span>:
     </p>
@@ -1774,12 +1785,12 @@ qemu-kvm -net nic,model=? /dev/null
   ...</pre>
 
     <p>
-        If no target is specified, certain hypervisors will automatically
-        generate a name for the created tun device. This name can be manually
-        specifed, however the name <i>must not start with either 'vnet' or
-        'vif'</i>, which are prefixes reserved by libvirt and certain
-        hypervisors. Manually specified targets using these prefixes will be
-        ignored.
+      If no target is specified, certain hypervisors will
+      automatically generate a name for the created tun device. This
+      name can be manually specifed, however the name <i>must not
+      start with either 'vnet' or 'vif'</i>, which are prefixes
+      reserved by libvirt and certain hypervisors. Manually specified
+      targets using these prefixes will be ignored.
     </p>
 
     <h5><a name="elementsNICSBoot">Specifying boot order</a></h5>
@@ -1808,9 +1819,10 @@ qemu-kvm -net nic,model=? /dev/null
     <h4><a name="elementsInput">Input devices</a></h4>
 
     <p>
-      Input devices allow interaction with the graphical framebuffer in the guest
-      virtual machine. When enabling the framebuffer, an input device is automatically
-      provided. It may be possible to add additional devices explicitly, for example,
+      Input devices allow interaction with the graphical framebuffer
+      in the guest virtual machine. When enabling the framebuffer, an
+      input device is automatically provided. It may be possible to
+      add additional devices explicitly, for example,
       to provide a graphics tablet for absolute cursor movement.
     </p>
 
@@ -1823,8 +1835,9 @@ qemu-kvm -net nic,model=? /dev/null
 
     <dl>
       <dt><code>input</code></dt>
-      <dd>The <code>input</code> element has one mandatory attribute, the <code>type</code>
-        whose value can be either 'mouse' or 'tablet'. The latter provides absolute
+      <dd>The <code>input</code> element has one mandatory attribute,
+        the <code>type</code> whose value can be either 'mouse' or
+        'tablet'. The latter provides absolute
         cursor movement, while the former uses relative movement. The optional
         <code>bus</code> attribute can be used to refine the exact device type.
         It takes values "xen" (paravirtualized), "ps2" and "usb".</dd>
@@ -1858,56 +1871,67 @@ qemu-kvm -net nic,model=? /dev/null
     <dl>
       <dt><code>graphics</code></dt>
       <dd>The <code>graphics</code> element has a mandatory <code>type</code>
-  attribute which takes the value "sdl", "vnc", "rdp" or "desktop":
+        attribute which takes the value "sdl", "vnc", "rdp" or "desktop":
         <dl>
           <dt><code>"sdl"</code></dt>
           <dd>
-  This displays a window on the host desktop, it can take 3 optional arguments:
-  a <code>display</code> attribute for the display to use, an <code>xauth</code>
-  attribute for the authentication identifier, and an optional <code>fullscreen</code>
-  attribute accepting values 'yes' or 'no'.
+            This displays a window on the host desktop, it can take 3
+            optional arguments: a <code>display</code> attribute for
+            the display to use, an <code>xauth</code> attribute for
+            the authentication identifier, and an
+            optional <code>fullscreen</code> attribute accepting
+            values 'yes' or 'no'.
           </dd>
           <dt><code>"vnc"</code></dt>
           <dd>
-  Starts a VNC server. The <code>port</code> attribute specifies the TCP
-  port number (with -1 as legacy syntax indicating that it should be
-  auto-allocated). The <code>autoport</code> attribute is the new
-  preferred syntax for indicating autoallocation of the TCP port to use.
-  The <code>listen</code> attribute is an IP address for the server to
-  listen on. The <code>passwd</code> attribute provides a VNC password
-  in clear text. The <code>keymap</code> attribute specifies the keymap
-  to use. It is possible to set a limit on the validity of the password
-  be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-  assumed to be in UTC. NB, this may not be supported by all hypervisors.<br/>
-  <br/>
-  Rather than using listen/port, QEMU supports a <code>socket</code>
-  attribute for listening on a unix domain socket path.
-  <span class="since">Since 0.8.8</span>
+            Starts a VNC server. The <code>port</code> attribute
+            specifies the TCP port number (with -1 as legacy syntax
+            indicating that it should be
+            auto-allocated). The <code>autoport</code> attribute is
+            the new preferred syntax for indicating autoallocation of
+            the TCP port to use.  The <code>listen</code> attribute is
+            an IP address for the server to listen
+            on. The <code>passwd</code> attribute provides a VNC
+            password in clear text. The <code>keymap</code> attribute
+            specifies the keymap to use. It is possible to set a limit
+            on the validity of the password be giving an
+            timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
+            assumed to be in UTC. NB, this may not be supported by all
+            hypervisors.<br/>  <br/> Rather than using listen/port,
+            QEMU supports a <code>socket</code> attribute for
+            listening on a unix domain socket
+            path.<span class="since">Since 0.8.8</span>
           </dd>
           <dt><code>"spice"</code></dt>
           <dd>
             <p>
-  Starts a SPICE server. The <code>port</code> attribute specifies the TCP
-  port number (with -1 as legacy syntax indicating that it should be
-  auto-allocated), while <code>tlsPort</code> gives an alternative
-  secure port number. The <code>autoport</code> attribute is the new
-  preferred syntax for indicating autoallocation of both port numbers.
-  The <code>listen</code> attribute is an IP address for the server to
-  listen on. The <code>passwd</code> attribute provides a SPICE password
-  in clear text. The <code>keymap</code> attribute specifies the keymap
-  to use. It is possible to set a limit on the validity of the password
-  be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-  assumed to be in UTC. NB, this may not be supported by all hypervisors.
-  <span class="since">"spice" since 0.8.6</span>.
+              Starts a SPICE server. The <code>port</code> attribute
+              specifies the TCP port number (with -1 as legacy syntax
+              indicating that it should be auto-allocated),
+              while <code>tlsPort</code> gives an alternative secure
+              port number. The <code>autoport</code> attribute is the
+              new preferred syntax for indicating autoallocation of
+              both port numbers.  The <code>listen</code> attribute is
+              an IP address for the server to listen
+              on. The <code>passwd</code> attribute provides a SPICE
+              password in clear text. The <code>keymap</code>
+              attribute specifies the keymap to use. It is possible to
+              set a limit on the validity of the password be giving an
+              timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
+              assumed to be in UTC. NB, this may not be supported by
+              all hypervisors.<span class="since">"spice" since 0.8.6</span>.
             </p>
             <p>
-  When SPICE has both a normal and TLS secured TCP port configured, it
-  can be desirable to restrict what channels can be run on each port.
-  This is achieved by adding one or more &lt;channel&gt; elements inside
-  the main &lt;graphics&gt; element. Valid channel names include
-  <code>main</code>, <code>display</code>, <code>inputs</code>,
-  <code>cursor</code>, <code>playback</code>, <code>record</code>;
-  and <span class="since">since 0.8.8</span>: <code>smartcard</code>.
+              When SPICE has both a normal and TLS secured TCP port
+              configured, it can be desirable to restrict what
+              channels can be run on each port.  This is achieved by
+              adding one or more &lt;channel&gt; elements inside the
+              main &lt;graphics&gt; element. Valid channel names
+              include <code>main</code>, <code>display</code>,
+              <code>inputs</code>, <code>cursor</code>,
+              <code>playback</code>, <code>record</code>;
+              and <span class="since">since
+              0.8.8</span>: <code>smartcard</code>.
             </p>
             <pre>
   &lt;graphics type='spice' port='-1' tlsPort='-1' autoport='yes'&gt;
@@ -1951,23 +1975,27 @@ qemu-kvm -net nic,model=? /dev/null
           </dd>
           <dt><code>"rdp"</code></dt>
           <dd>
-  Starts a RDP server. The <code>port</code> attribute
-  specifies the TCP port number (with -1 as legacy syntax indicating
-  that it should be auto-allocated). The <code>autoport</code> attribute
-  is the new preferred syntax for indicating autoallocation of the TCP
-  port to use. The <code>replaceUser</code> attribute is a boolean deciding
-  whether multiple simultaneous connections to the VM are permitted.
-  The <code>multiUser</code> whether the existing connection must be dropped
-  and a new connection must be established by the VRDP server, when a new
-  client connects in single connection mode.
-
+            Starts a RDP server. The <code>port</code> attribute
+            specifies the TCP port number (with -1 as legacy syntax
+            indicating that it should be
+            auto-allocated). The <code>autoport</code> attribute is
+            the new preferred syntax for indicating autoallocation of
+            the TCP port to use. The <code>replaceUser</code>
+            attribute is a boolean deciding whether multiple
+            simultaneous connections to the VM are permitted.
+            The <code>multiUser</code> whether the existing connection
+            must be dropped and a new connection must be established
+            by the VRDP server, when a new client connects in single
+            connection mode.
           </dd>
           <dt><code>"desktop"</code></dt>
           <dd>
-  This value is reserved for VirtualBox domains for the moment. It displays
-  a window on the host desktop, similarly to "sdl", but using the VirtualBox
-  viewer. Just like "sdl", it accepts the optional attributes <code>display</code>
-  and <code>fullscreen</code>.
+            This value is reserved for VirtualBox domains for the
+            moment. It displays a window on the host desktop,
+            similarly to "sdl", but using the VirtualBox viewer. Just
+            like "sdl", it accepts the optional
+            attributes <code>display</code>
+            and <code>fullscreen</code>.
           </dd>
         </dl>
       </dd>
@@ -2389,8 +2417,9 @@ qemu-kvm -net nic,model=? /dev/null
   ...</pre>
 
     <p>
-      Alternatively you can use <code>telnet</code> instead of <code>raw</code> TCP.
-      <span class="since">Since 0.8.5</span> you can also use <code>telnets</code>
+      Alternatively you can use <code>telnet</code> instead
+      of <code>raw</code> TCP.  <span class="since">Since 0.8.5</span>
+      you can also use <code>telnets</code>
       (secure telnet) and <code>tls</code>.
     </p>
 
