@@ -130,7 +130,7 @@ dnl assumed).  Because of $LIB_PTHREAD, we cannot use AC_CHECK_FUNCS_ONCE.
 dnl LIB_PTHREAD was set during gl_INIT by gnulib.
 old_LIBS=$LIBS
 LIBS="$LIBS $LIB_PTHREAD"
-AC_CHECK_FUNCS([pthread_sigmask pthread_mutexattr_init])
+AC_CHECK_FUNCS([pthread_mutexattr_init])
 LIBS=$old_libs
 
 dnl Availability of various common headers (non-fatal if missing).

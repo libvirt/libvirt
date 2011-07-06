@@ -273,14 +273,16 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     char buf[1];
     int len;
     struct pollfd fds[1];
-#ifdef HAVE_PTHREAD_SIGMASK
     sigset_t oldmask, blockedsigs;
 
     sigemptyset (&blockedsigs);
+#ifdef SIGWINCH
     sigaddset (&blockedsigs, SIGWINCH);
-    sigaddset (&blockedsigs, SIGCHLD);
-    sigaddset (&blockedsigs, SIGPIPE);
 #endif
+#ifdef SIGCHLD
+    sigaddset (&blockedsigs, SIGCHLD);
+#endif
+    sigaddset (&blockedsigs, SIGPIPE);
 
     virNetClientLock(client);
 
@@ -311,18 +313,14 @@ int virNetClientSetTLSSession(virNetClientPtr client,
          * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
          * at the suggestion of Paolo Bonzini and Daniel Berrange.
          */
-#ifdef HAVE_PTHREAD_SIGMASK
         ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
-#endif
 
     repoll:
         ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
         if (ret < 0 && errno == EAGAIN)
             goto repoll;
 
-#ifdef HAVE_PTHREAD_SIGMASK
         ignore_value(pthread_sigmask(SIG_BLOCK, &oldmask, NULL));
-#endif
     }
 
     ret = virNetTLSContextCheckCertificate(tls, client->tls);
@@ -338,19 +336,15 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     fds[0].revents = 0;
     fds[0].events = POLLIN;
 
-#ifdef HAVE_PTHREAD_SIGMASK
     /* Block SIGWINCH from interrupting poll in curses programs */
     ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
-#endif
 
     repoll2:
     ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
     if (ret < 0 && errno == EAGAIN)
         goto repoll2;
 
-#ifdef HAVE_PTHREAD_SIGMASK
     ignore_value(pthread_sigmask(SIG_BLOCK, &oldmask, NULL));
-#endif
 
     len = virNetTLSSessionRead(client->tls, buf, 1);
     if (len < 0) {
@@ -800,9 +794,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         virNetClientCallPtr tmp = client->waitDispatch;
         virNetClientCallPtr prev;
         char ignore;
-#ifdef HAVE_PTHREAD_SIGMASK
         sigset_t oldmask, blockedsigs;
-#endif
         int timeout = -1;
 
         /* If we have existing SASL decoded data we
@@ -841,22 +833,22 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
          * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
          * at the suggestion of Paolo Bonzini and Daniel Berrange.
          */
-#ifdef HAVE_PTHREAD_SIGMASK
         sigemptyset (&blockedsigs);
+#ifdef SIGWINCH
         sigaddset (&blockedsigs, SIGWINCH);
+#endif
+#ifdef SIGCHLD
         sigaddset (&blockedsigs, SIGCHLD);
+#endif
         sigaddset (&blockedsigs, SIGPIPE);
         ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
-#endif
 
     repoll:
         ret = poll(fds, ARRAY_CARDINALITY(fds), timeout);
         if (ret < 0 && errno == EAGAIN)
             goto repoll;
 
-#ifdef HAVE_PTHREAD_SIGMASK
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
-#endif
 
         virNetClientLock(client);
 

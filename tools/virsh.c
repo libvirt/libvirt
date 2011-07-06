@@ -4400,14 +4400,12 @@ doMigrate (void *opaque)
     const vshCmd *cmd = data->cmd;
     const char *xmlfile = NULL;
     char *xml = NULL;
-#if HAVE_PTHREAD_SIGMASK
     sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
-#endif
 
     if (!vshConnectionUsability (ctl, ctl->conn))
         goto out;
@@ -4483,10 +4481,8 @@ doMigrate (void *opaque)
     }
 
 out:
-#if HAVE_PTHREAD_SIGMASK
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 out_sig:
-#endif
     if (dom) virDomainFree (dom);
     VIR_FREE(xml);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
@@ -4534,12 +4530,10 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     struct timeval start, curr;
     bool live_flag = false;
     vshCtrlData data;
-#if HAVE_PTHREAD_SIGMASK
     sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
-#endif
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -4631,13 +4625,9 @@ repoll:
         }
 
         if (verbose) {
-#if HAVE_PTHREAD_SIGMASK
             pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
-#endif
             ret = virDomainGetJobInfo(dom, &jobinfo);
-#if HAVE_PTHREAD_SIGMASK
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
-#endif
             if (ret == 0)
                 print_job_progress(jobinfo.dataRemaining, jobinfo.dataTotal);
         }
