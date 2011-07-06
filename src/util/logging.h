@@ -105,10 +105,11 @@ extern char *virLogGetOutputs(void);
 extern int virLogGetDefaultPriority(void);
 extern int virLogSetDefaultPriority(int priority);
 extern void virLogSetFromEnv(void);
-extern int virLogDefineFilter(const char *match, int priority, int flags);
+extern int virLogDefineFilter(const char *match, int priority,
+                              unsigned int flags);
 extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
                               int priority, int dest, const char *name,
-                              int flags);
+                              unsigned int flags);
 
 /*
  * Internal logging API
@@ -123,7 +124,8 @@ extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
 extern void virLogMessage(const char *category, int priority,
-                          const char *funcname, long long linenr, int flags,
+                          const char *funcname, long long linenr,
+                          unsigned int flags,
                           const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(6, 7);
 extern int virLogSetBufferSize(int size);
 extern void virLogEmergencyDumpAll(int signum);

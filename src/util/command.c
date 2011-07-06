@@ -285,14 +285,14 @@ getDevNull(int *null)
  */
 static int
 virExecWithHook(const char *const*argv,
-          const char *const*envp,
-          const fd_set *keepfd,
-          pid_t *retpid,
-          int infd, int *outfd, int *errfd,
-          int flags,
-          virExecHook hook,
-          void *data,
-          char *pidfile)
+                const char *const*envp,
+                const fd_set *keepfd,
+                pid_t *retpid,
+                int infd, int *outfd, int *errfd,
+                unsigned int flags,
+                virExecHook hook,
+                void *data,
+                char *pidfile)
 {
     pid_t pid;
     int null = -1, i, openmax;

@@ -121,9 +121,11 @@ static struct netcf_if *interfaceDriverGetNetcfIF(struct netcf *ncf, virInterfac
 
 static virDrvOpenStatus interfaceOpenInterface(virConnectPtr conn,
                                                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                               unsigned int flags ATTRIBUTE_UNUSED)
+                                               unsigned int flags)
 {
     struct interface_driver *driverState;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (VIR_ALLOC(driverState) < 0)
     {
@@ -387,13 +389,15 @@ cleanup:
 
 static virInterfacePtr interfaceDefineXML(virConnectPtr conn,
                                           const char *xml,
-                                          unsigned int flags ATTRIBUTE_UNUSED)
+                                          unsigned int flags)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
     char *xmlstr = NULL;
     virInterfaceDefPtr ifacedef = NULL;
     virInterfacePtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     interfaceDriverLock(driver);
 
@@ -461,11 +465,13 @@ cleanup:
 }
 
 static int interfaceCreate(virInterfacePtr ifinfo,
-                           unsigned int flags ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     interfaceDriverLock(driver);
 
@@ -493,11 +499,13 @@ cleanup:
 }
 
 static int interfaceDestroy(virInterfacePtr ifinfo,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            unsigned int flags)
 {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     interfaceDriverLock(driver);
 

@@ -525,7 +525,10 @@ cleanup:
 
 static virDrvOpenStatus
 secretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           unsigned int flags ATTRIBUTE_UNUSED) {
+           unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (driverState == NULL)
         return VIR_DRV_OPEN_DECLINED;
 
@@ -667,13 +670,15 @@ cleanup:
 
 static virSecretPtr
 secretDefineXML(virConnectPtr conn, const char *xml,
-                unsigned int flags ATTRIBUTE_UNUSED)
+                unsigned int flags)
 {
     virSecretDriverStatePtr driver = conn->secretPrivateData;
     virSecretPtr ret = NULL;
     virSecretEntryPtr secret;
     virSecretDefPtr backup = NULL;
     virSecretDefPtr new_attrs;
+
+    virCheckFlags(0, NULL);
 
     new_attrs = virSecretDefParseString(xml);
     if (new_attrs == NULL)
@@ -778,11 +783,13 @@ cleanup:
 }
 
 static char *
-secretGetXMLDesc(virSecretPtr obj, unsigned int flags ATTRIBUTE_UNUSED)
+secretGetXMLDesc(virSecretPtr obj, unsigned int flags)
 {
     virSecretDriverStatePtr driver = obj->conn->secretPrivateData;
     char *ret = NULL;
     virSecretEntryPtr secret;
+
+    virCheckFlags(0, NULL);
 
     secretDriverLock(driver);
 
@@ -805,13 +812,15 @@ cleanup:
 
 static int
 secretSetValue(virSecretPtr obj, const unsigned char *value,
-               size_t value_size, unsigned int flags ATTRIBUTE_UNUSED)
+               size_t value_size, unsigned int flags)
 {
     virSecretDriverStatePtr driver = obj->conn->secretPrivateData;
     int ret = -1;
     unsigned char *old_value, *new_value;
     size_t old_value_size;
     virSecretEntryPtr secret;
+
+    virCheckFlags(0, -1);
 
     if (VIR_ALLOC_N(new_value, value_size) < 0) {
         virReportOOMError();

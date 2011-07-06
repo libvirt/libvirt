@@ -481,9 +481,12 @@ static int virLogResetFilters(void) {
  * Returns -1 in case of failure or the filter number if successful
  */
 int virLogDefineFilter(const char *match, int priority,
-                       int flags ATTRIBUTE_UNUSED) {
+                       unsigned int flags)
+{
     int i;
     char *mdup = NULL;
+
+    virCheckFlags(0, -1);
 
     if ((match == NULL) || (priority < VIR_LOG_DEBUG) ||
         (priority > VIR_LOG_ERROR))
@@ -579,9 +582,12 @@ static int virLogResetOutputs(void) {
  */
 int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
                        int priority, int dest, const char *name,
-                       int flags ATTRIBUTE_UNUSED) {
+                       unsigned int flags)
+{
     int ret = -1;
     char *ndup = NULL;
+
+    virCheckFlags(0, -1);
 
     if (f == NULL)
         return -1;
@@ -683,7 +689,8 @@ virLogVersionString(char **msg,
  * the message may be stored, sent to output or just discarded
  */
 void virLogMessage(const char *category, int priority, const char *funcname,
-                   long long linenr, int flags, const char *fmt, ...) {
+                   long long linenr, unsigned int flags, const char *fmt, ...)
+{
     static bool logVersionStderr = true;
     char *str = NULL;
     char *msg = NULL;
