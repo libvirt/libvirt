@@ -613,11 +613,14 @@ cleanup:
 }
 
 static int openvzDomainReboot(virDomainPtr dom,
-                              unsigned int flags ATTRIBUTE_UNUSED) {
+                              unsigned int flags)
+{
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *prog[] = {VZCTL, "--quiet", "restart", PROGRAM_SENTINAL, NULL};
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1283,9 +1286,11 @@ openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
                                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                   unsigned int flags ATTRIBUTE_UNUSED)
+                                   unsigned int flags)
 {
     struct openvz_driver *driver;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
         if (!virFileExists("/proc/vz"))
