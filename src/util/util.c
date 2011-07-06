@@ -1013,11 +1013,17 @@ int virDirCreate(const char *path ATTRIBUTE_UNUSED,
 static int virFileMakePathHelper(char *path)
 {
     struct stat st;
-    char *p = NULL;
+    char *p;
 
-    if (stat(path, &st) >= 0)
-        return 0;
-    else if (errno != ENOENT)
+    if (stat(path, &st) >= 0) {
+        if (S_ISDIR(st.st_mode))
+            return 0;
+
+        errno = ENOTDIR;
+        return -1;
+    }
+
+    if (errno != ENOENT)
         return -1;
 
     if ((p = strrchr(path, '/')) == NULL) {
@@ -1049,39 +1055,15 @@ static int virFileMakePathHelper(char *path)
 int virFileMakePath(const char *path)
 {
     int ret = -1;
-    struct stat st;
-    char *parent = NULL;
-    char *p;
+    char *tmp;
 
-    if (stat(path, &st) >= 0)
-        return 0;
-    else if (errno != ENOENT)
+    if ((tmp = strdup(path)) == NULL)
         goto cleanup;
 
-    if ((parent = strdup(path)) == NULL) {
-        errno = ENOMEM;
-        goto cleanup;
-    }
-
-    if ((p = strrchr(parent, '/')) == NULL) {
-        errno = EINVAL;
-        goto cleanup;
-    }
-
-    if (p != parent) {
-        *p = '\0';
-
-        if (virFileMakePathHelper(parent) < 0)
-            goto cleanup;
-    }
-
-    if (mkdir(path, 0777) < 0 && errno != EEXIST)
-        goto cleanup;
-
-    ret = 0;
+    ret = virFileMakePathHelper(tmp);
 
 cleanup:
-    VIR_FREE(parent);
+    VIR_FREE(tmp);
     return ret;
 }
 
