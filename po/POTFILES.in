@@ -123,6 +123,7 @@ src/util/sysinfo.c
 src/util/util.c
 src/util/viraudit.c
 src/util/virfile.c
+src/util/virpidfile.c
 src/util/virterror.c
 src/util/xml.c
 src/vbox/vbox_MSCOMGlue.c

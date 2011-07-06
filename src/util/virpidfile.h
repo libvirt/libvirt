@@ -55,4 +55,16 @@ int virPidFileDelete(const char *dir,
                      const char *name);
 
 
+int virPidFileAcquirePath(const char *path,
+                          pid_t pid) ATTRIBUTE_RETURN_CHECK;
+int virPidFileAcquire(const char *dir,
+                      const char *name,
+                      pid_t pid) ATTRIBUTE_RETURN_CHECK;
+
+int virPidFileReleasePath(const char *path,
+                          int fd);
+int virPidFileRelease(const char *dir,
+                      const char *name,
+                      int fd);
+
 #endif /* __VIR_PIDFILE_H__ */

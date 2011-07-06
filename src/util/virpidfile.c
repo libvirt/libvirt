@@ -25,12 +25,18 @@
 
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/stat.h>
 
 #include "virpidfile.h"
 #include "virfile.h"
 #include "memory.h"
 #include "util.h"
+#include "intprops.h"
+#include "logging.h"
+#include "virterror_internal.h"
 
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 char *virPidFileBuildPath(const char *dir, const char* name)
 {
@@ -286,6 +292,156 @@ int virPidFileDelete(const char *dir,
     }
 
     rc = virPidFileDeletePath(pidfile);
+
+cleanup:
+    VIR_FREE(pidfile);
+    return rc;
+}
+
+
+
+int virPidFileAcquirePath(const char *path,
+                          pid_t pid)
+{
+    int fd = -1;
+    char pidstr[INT_BUFSIZE_BOUND(pid)];
+    verify(sizeof(pid_t) <= sizeof(unsigned int));
+
+    if (path[0] == '\0')
+        return 0;
+
+    while (1) {
+        struct stat a, b;
+        if ((fd = open(path, O_WRONLY|O_CREAT, 0644)) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to open pid file '%s'"),
+                                 path);
+            return -1;
+        }
+
+        if (virSetCloseExec(fd) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to set close-on-exec flag '%s'"),
+                                 path);
+            VIR_FORCE_CLOSE(fd);
+            return -1;
+        }
+
+        if (fstat(fd, &b) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to check status of pid file '%s'"),
+                                 path);
+            VIR_FORCE_CLOSE(fd);
+            return -1;
+        }
+
+        if (virFileLock(fd, false, 0, 1) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to acquire pid file '%s'"),
+                                 path);
+            VIR_FORCE_CLOSE(fd);
+            return -1;
+        }
+
+        /* Now make sure the pidfile we locked is the same
+         * one that now exists on the filesystem
+         */
+        if (stat(path, &a) < 0) {
+            char ebuf[1024];
+            VIR_DEBUG("Pid file '%s' disappeared: %s",
+                      path, virStrerror(errno, ebuf, sizeof ebuf));
+            VIR_FORCE_CLOSE(fd);
+            /* Someone else must be racing with us, so try agin */
+            continue;
+        }
+
+        if (a.st_ino == b.st_ino)
+            break;
+
+        VIR_DEBUG("Pid file '%s' was recreated", path);
+        VIR_FORCE_CLOSE(fd);
+        /* Someone else must be racing with us, so try agin */
+    }
+
+    snprintf(pidstr, sizeof(pidstr), "%u", (unsigned int)pid);
+
+    if (safewrite(fd, pidstr, strlen(pidstr)) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to write to pid file '%s'"),
+                             path);
+        VIR_FORCE_CLOSE(fd);
+    }
+
+    return fd;
+}
+
+
+int virPidFileAcquire(const char *dir,
+                      const char *name,
+                      pid_t pid)
+{
+    int rc = 0;
+    char *pidfile = NULL;
+
+    if (name == NULL || dir == NULL) {
+        rc = -EINVAL;
+        goto cleanup;
+    }
+
+    if (!(pidfile = virPidFileBuildPath(dir, name))) {
+        rc = -ENOMEM;
+        goto cleanup;
+    }
+
+    rc = virPidFileAcquirePath(pidfile, pid);
+
+cleanup:
+    VIR_FREE(pidfile);
+    return rc;
+}
+
+
+int virPidFileReleasePath(const char *path,
+                          int fd)
+{
+    int rc = 0;
+    /*
+     * We need to unlink before closing the FD to avoid
+     * a race, but Win32 won't let you unlink an open
+     * file handle. So on that platform we do the reverse
+     * and just have to live with the possible race.
+     */
+#ifdef WIN32
+    VIR_FORCE_CLOSE(fd);
+    if (unlink(path) < 0 && errno != ENOENT)
+        rc = -errno;
+#else
+    if (unlink(path) < 0 && errno != ENOENT)
+        rc = -errno;
+    VIR_FORCE_CLOSE(fd);
+#endif
+    return rc;
+}
+
+
+int virPidFileRelease(const char *dir,
+                      const char *name,
+                      int fd)
+{
+    int rc = 0;
+    char *pidfile = NULL;
+
+    if (name == NULL || dir == NULL) {
+        rc = -EINVAL;
+        goto cleanup;
+    }
+
+    if (!(pidfile = virPidFileBuildPath(dir, name))) {
+        rc = -ENOMEM;
+        goto cleanup;
+    }
+
+    rc = virPidFileReleasePath(pidfile, fd);
 
 cleanup:
     VIR_FREE(pidfile);

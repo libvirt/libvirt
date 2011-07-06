@@ -1120,11 +1120,15 @@ virFileFdopen;
 
 
 # virpidfile.h
+virPidFileAcquire;
+virPidFileAcquirePath;
 virPidFileBuildPath;
 virPidFileRead;
 virPidFileReadIfAlive;
 virPidFileReadPath;
 virPidFileReadPathIfAlive;
+virPidFileRelease;
+virPidFileReleasePath;
 virPidFileWrite;
 virPidFileWritePath;
 virPidFileDelete;
