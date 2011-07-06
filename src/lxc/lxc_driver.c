@@ -111,8 +111,10 @@ static void lxcDomainEventQueue(lxc_driver_t *driver,
 
 static virDrvOpenStatus lxcOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                unsigned int flags ATTRIBUTE_UNUSED)
+                                unsigned int flags)
 {
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     /* Verify uri was specified */
     if (conn->uri == NULL) {
         if (lxc_driver == NULL)
@@ -748,13 +750,15 @@ cleanup:
 static int lxcDomainSetMemoryParameters(virDomainPtr dom,
                                         virTypedParameterPtr params,
                                         int nparams,
-                                        unsigned int flags ATTRIBUTE_UNUSED)
+                                        unsigned int flags)
 {
     lxc_driver_t *driver = dom->conn->privateData;
     int i;
     virCgroupPtr cgroup = NULL;
     virDomainObjPtr vm = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -845,7 +849,7 @@ cleanup:
 static int lxcDomainGetMemoryParameters(virDomainPtr dom,
                                         virTypedParameterPtr params,
                                         int *nparams,
-                                        unsigned int flags ATTRIBUTE_UNUSED)
+                                        unsigned int flags)
 {
     lxc_driver_t *driver = dom->conn->privateData;
     int i;
@@ -854,6 +858,8 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
     unsigned long long val;
     int ret = -1;
     int rc;
+
+    virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);

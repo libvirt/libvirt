@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 Red Hat, Inc.
+ * Copyright (C) 2008-2011 Red Hat, Inc.
  * Copyright (C) 2008 IBM Corp.
  *
  * lxc_container.c: file description
@@ -889,7 +889,7 @@ int lxcContainerStart(virDomainDefPtr def,
                       char *ttyPath)
 {
     pid_t pid;
-    int flags;
+    int cflags;
     int stacksize = getpagesize() * 4;
     char *stack, *stacktop;
     lxc_child_argv_t args = { def, nveths, veths, control, ttyPath,
@@ -902,19 +902,19 @@ int lxcContainerStart(virDomainDefPtr def,
     }
     stacktop = stack + stacksize;
 
-    flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
+    cflags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
 
     if (userns_supported()) {
         VIR_DEBUG("Enable user namespaces");
-        flags |= CLONE_NEWUSER;
+        cflags |= CLONE_NEWUSER;
     }
 
     if (def->nets != NULL) {
         VIR_DEBUG("Enable network namespaces");
-        flags |= CLONE_NEWNET;
+        cflags |= CLONE_NEWNET;
     }
 
-    pid = clone(lxcContainerChild, stacktop, flags, &args);
+    pid = clone(lxcContainerChild, stacktop, cflags, &args);
     VIR_FREE(stack);
     VIR_DEBUG("clone() completed, new container PID is %d", pid);
 
