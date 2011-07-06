@@ -550,7 +550,7 @@ virStorageBackendISCSIScanTargets(const char *portal,
 static char *
 virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                                       const char *srcSpec,
-                                      unsigned int flags ATTRIBUTE_UNUSED)
+                                      unsigned int flags)
 {
     virStoragePoolSourcePtr source = NULL;
     size_t ntargets = 0;
@@ -563,6 +563,8 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         .sources = NULL
     };
     char *portal = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (!(source = virStoragePoolDefParseSourceString(srcSpec,
                                                       list.type)))

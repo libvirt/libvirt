@@ -1,7 +1,7 @@
 /*
  * storage_backend_logical.c: storage backend for logical volume handling
  *
- * Copyright (C) 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2007-2009, 2011 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -294,7 +294,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_
 static char *
 virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                                         const char *srcSpec ATTRIBUTE_UNUSED,
-                                        unsigned int flags ATTRIBUTE_UNUSED)
+                                        unsigned int flags)
 {
     /*
      * # pvs --noheadings -o pv_name,vg_name
@@ -312,6 +312,8 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *retval = NULL;
     virStoragePoolSourceList sourceList;
     int i;
+
+    virCheckFlags(0, NULL);
 
     /*
      * NOTE: ignoring errors here; this is just to "touch" any logical volumes
@@ -382,12 +384,14 @@ virStorageBackendLogicalStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
-                                  unsigned int flags ATTRIBUTE_UNUSED)
+                                  unsigned int flags)
 {
     const char **vgargv;
     const char *pvargv[3];
     int n = 0, i, fd;
     char zeros[PV_BLANK_SECTOR_SIZE];
+
+    virCheckFlags(0, -1);
 
     memset(zeros, 0, sizeof(zeros));
 
@@ -518,13 +522,15 @@ virStorageBackendLogicalStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    virStoragePoolObjPtr pool,
-                                   unsigned int flags ATTRIBUTE_UNUSED)
+                                   unsigned int flags)
 {
     const char *cmdargv[] = {
         VGREMOVE, "-f", pool->def->source.name, NULL
     };
     const char *pvargv[3];
     int i, error;
+
+    virCheckFlags(0, -1);
 
     /* first remove the volume group */
     if (virRun(cmdargv, NULL) < 0)
@@ -665,11 +671,13 @@ static int
 virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                   virStorageVolDefPtr vol,
-                                  unsigned int flags ATTRIBUTE_UNUSED)
+                                  unsigned int flags)
 {
     const char *cmdargv[] = {
         LVREMOVE, "-f", vol->target.path, NULL
     };
+
+    virCheckFlags(0, -1);
 
     if (virRun(cmdargv, NULL) < 0)
         return -1;

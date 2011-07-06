@@ -322,7 +322,10 @@ storagePoolLookupByVolume(virStorageVolPtr vol) {
 static virDrvOpenStatus
 storageOpen(virConnectPtr conn,
             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-            unsigned int flags ATTRIBUTE_UNUSED) {
+            unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (!driverState)
         return VIR_DRV_OPEN_DECLINED;
 
@@ -516,12 +519,15 @@ cleanup:
 static virStoragePoolPtr
 storagePoolCreate(virConnectPtr conn,
                   const char *xml,
-                  unsigned int flags ATTRIBUTE_UNUSED) {
+                  unsigned int flags)
+{
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
     virStorageBackendPtr backend;
+
+    virCheckFlags(0, NULL);
 
     storageDriverLock(driver);
     if (!(def = virStoragePoolDefParseString(xml)))
@@ -567,11 +573,14 @@ cleanup:
 static virStoragePoolPtr
 storagePoolDefine(virConnectPtr conn,
                   const char *xml,
-                  unsigned int flags ATTRIBUTE_UNUSED) {
+                  unsigned int flags)
+{
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     storageDriverLock(driver);
     if (!(def = virStoragePoolDefParseString(xml)))
@@ -657,11 +666,14 @@ cleanup:
 
 static int
 storagePoolStart(virStoragePoolPtr obj,
-                 unsigned int flags ATTRIBUTE_UNUSED) {
+                 unsigned int flags)
+{
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -848,11 +860,14 @@ cleanup:
 
 static int
 storagePoolRefresh(virStoragePoolPtr obj,
-                   unsigned int flags ATTRIBUTE_UNUSED) {
+                   unsigned int flags)
+{
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -940,10 +955,13 @@ cleanup:
 
 static char *
 storagePoolGetXMLDesc(virStoragePoolPtr obj,
-                      unsigned int flags ATTRIBUTE_UNUSED) {
+                      unsigned int flags)
+{
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -1261,12 +1279,15 @@ static int storageVolumeDelete(virStorageVolPtr obj, unsigned int flags);
 static virStorageVolPtr
 storageVolumeCreateXML(virStoragePoolPtr obj,
                        const char *xmldesc,
-                       unsigned int flags ATTRIBUTE_UNUSED) {
+                       unsigned int flags)
+{
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
     virStorageVolDefPtr voldef = NULL;
     virStorageVolPtr ret = NULL, volobj = NULL;
+
+    virCheckFlags(0, NULL);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -1383,13 +1404,16 @@ static virStorageVolPtr
 storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
                            const char *xmldesc,
                            virStorageVolPtr vobj,
-                           unsigned int flags ATTRIBUTE_UNUSED) {
+                           unsigned int flags)
+{
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool, origpool = NULL;
     virStorageBackendPtr backend;
     virStorageVolDefPtr origvol = NULL, newvol = NULL;
     virStorageVolPtr ret = NULL, volobj = NULL;
     int buildret;
+
+    virCheckFlags(0, NULL);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -2010,12 +2034,15 @@ cleanup:
 
 static char *
 storageVolumeGetXMLDesc(virStorageVolPtr obj,
-                        unsigned int flags ATTRIBUTE_UNUSED) {
+                        unsigned int flags)
+{
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
     virStorageVolDefPtr vol;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);

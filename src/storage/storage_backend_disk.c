@@ -1,7 +1,7 @@
 /*
  * storage_backend_disk.c: storage backend for disk handling
  *
- * Copyright (C) 2007-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2011 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -334,7 +334,7 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
-                               unsigned int flags ATTRIBUTE_UNUSED)
+                               unsigned int flags)
 {
     /* eg parted /dev/sda mklabel msdos */
     const char *prog[] = {
@@ -346,6 +346,8 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
           virStoragePoolFormatDiskTypeToString(pool->def->source.format)),
         NULL,
     };
+
+    virCheckFlags(0, -1);
 
     if (virRun(prog, NULL) < 0)
         return -1;
@@ -643,7 +645,7 @@ static int
 virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol,
-                               unsigned int flags ATTRIBUTE_UNUSED)
+                               unsigned int flags)
 {
     char *part_num = NULL;
     char *devpath = NULL;
@@ -651,6 +653,8 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCommandPtr cmd = NULL;
     bool isDevMapperDevice;
     int rc = -1;
+
+    virCheckFlags(0, -1);
 
     if (virFileResolveLink(vol->target.path, &devpath) < 0) {
         virReportSystemError(errno,

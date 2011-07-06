@@ -212,7 +212,7 @@ cleanup:
 static char *
 virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               const char *srcSpec,
-                                              unsigned int flags ATTRIBUTE_UNUSED)
+                                              unsigned int flags)
 {
     /*
      *  # showmount --no-headers -e HOSTNAME
@@ -240,6 +240,8 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     virStoragePoolSourcePtr source = NULL;
     char *retval = NULL;
     unsigned int i;
+
+    virCheckFlags(0, NULL);
 
     source = virStoragePoolDefParseSourceString(srcSpec,
                                                 VIR_STORAGE_POOL_NETFS);
@@ -538,11 +540,13 @@ virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool,
-                                 unsigned int flags ATTRIBUTE_UNUSED)
+                                 unsigned int flags)
 {
     int err, ret = -1;
     char *parent;
     char *p;
+
+    virCheckFlags(0, -1);
 
     if ((parent = strdup(pool->def->target.path)) == NULL) {
         virReportOOMError();
@@ -755,8 +759,10 @@ virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virStorageBackendFileSystemDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
-                                  unsigned int flags ATTRIBUTE_UNUSED)
+                                  unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     /* XXX delete all vols first ? */
 
     if (rmdir(pool->def->target.path) < 0) {
@@ -806,8 +812,11 @@ static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
                          virStoragePoolObjPtr pool,
                          virStorageVolDefPtr vol,
                          virStorageVolDefPtr inputvol,
-                         unsigned int flags ATTRIBUTE_UNUSED) {
+                         unsigned int flags)
+{
     int err;
+
+    virCheckFlags(0, -1);
 
     if (inputvol) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
@@ -896,7 +905,10 @@ virStorageBackendFileSystemVolBuildFrom(virConnectPtr conn,
                                         virStoragePoolObjPtr pool,
                                         virStorageVolDefPtr vol,
                                         virStorageVolDefPtr inputvol,
-                                        unsigned int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
     return _virStorageBackendFileSystemVolBuild(conn, pool, vol, inputvol);
 }
 
@@ -907,8 +919,10 @@ static int
 virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                      virStorageVolDefPtr vol,
-                                     unsigned int flags ATTRIBUTE_UNUSED)
+                                     unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     if (unlink(vol->target.path) < 0) {
         /* Silently ignore failures where the vol has already gone away */
         if (errno != ENOENT) {
