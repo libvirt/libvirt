@@ -115,7 +115,8 @@ int xenDaemonDomainGetState(virDomainPtr domain,
                             int *state,
                             int *reason,
                             unsigned int flags);
-char *xenDaemonDomainGetXMLDesc(virDomainPtr domain, int flags, const char *cpus);
+char *xenDaemonDomainGetXMLDesc(virDomainPtr domain, unsigned int flags,
+                                const char *cpus);
 unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
 

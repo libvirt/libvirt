@@ -2201,10 +2201,12 @@ xenHypervisorInit(void)
 virDrvOpenStatus
 xenHypervisorOpen(virConnectPtr conn,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                  unsigned int flags ATTRIBUTE_UNUSED)
+                  unsigned int flags)
 {
     int ret;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (initialized == 0)
         if (xenHypervisorInit() == -1)
@@ -3272,10 +3274,12 @@ int
 xenHypervisorGetDomainState(virDomainPtr domain,
                             int *state,
                             int *reason,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
     virDomainInfo info;
+
+    virCheckFlags(0, -1);
 
     if (domain->conn == NULL)
         return -1;

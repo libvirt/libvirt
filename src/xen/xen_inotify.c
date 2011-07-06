@@ -383,12 +383,14 @@ cleanup:
 virDrvOpenStatus
 xenInotifyOpen(virConnectPtr conn,
                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-               unsigned int flags ATTRIBUTE_UNUSED)
+               unsigned int flags)
 {
     DIR *dh;
     struct dirent *ent;
     char *path;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (priv->configDir) {
         priv->useXenConfigCache = 1;

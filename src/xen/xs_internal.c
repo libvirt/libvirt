@@ -267,9 +267,11 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
 virDrvOpenStatus
 xenStoreOpen(virConnectPtr conn,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-             unsigned int flags ATTRIBUTE_UNUSED)
+             unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (flags & VIR_CONNECT_RO)
         priv->xshandle = xs_daemon_open_readonly();
@@ -461,9 +463,11 @@ int
 xenStoreDomainGetState(virDomainPtr domain,
                        int *state,
                        int *reason,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags)
 {
     char *running;
+
+    virCheckFlags(0, -1);
 
     if (domain->id == -1)
         return -1;
@@ -778,10 +782,12 @@ xenStoreDomainShutdown(virDomainPtr domain)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
+xenStoreDomainReboot(virDomainPtr domain, unsigned int flags)
 {
     int ret;
     xenUnifiedPrivatePtr priv;
+
+    virCheckFlags(0, -1);
 
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenStoreError(VIR_ERR_INVALID_ARG, __FUNCTION__);

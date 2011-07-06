@@ -63,6 +63,13 @@ extern int xenRegister (void);
 # define XEN_SCHED_SEDF_NPARAM   6
 # define XEN_SCHED_CRED_NPARAM   2
 
+/* The set of migration flags explicitly supported by xen.  */
+# define XEN_MIGRATION_FLAGS                    \
+    (VIR_MIGRATE_LIVE |                         \
+     VIR_MIGRATE_UNDEFINE_SOURCE |              \
+     VIR_MIGRATE_PAUSED |                       \
+     VIR_MIGRATE_PERSIST_DEST)
+
 /* _xenUnifiedDriver:
  *
  * Entry points into the underlying Xen drivers.  This structure

@@ -1261,7 +1261,7 @@ static char *
 xenUnifiedDomainXMLFromNative(virConnectPtr conn,
                               const char *format,
                               const char *config,
-                              unsigned int flags ATTRIBUTE_UNUSED)
+                              unsigned int flags)
 {
     virDomainDefPtr def = NULL;
     char *ret = NULL;
@@ -1270,6 +1270,8 @@ xenUnifiedDomainXMLFromNative(virConnectPtr conn,
     char * tty;
     int vncport;
     GET_PRIVATE(conn);
+
+    virCheckFlags(0, NULL);
 
     if (STRNEQ(format, XEN_CONFIG_FORMAT_XM) &&
         STRNEQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
@@ -1311,12 +1313,14 @@ static char *
 xenUnifiedDomainXMLToNative(virConnectPtr conn,
                             const char *format,
                             const char *xmlData,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            unsigned int flags)
 {
     virDomainDefPtr def = NULL;
     char *ret = NULL;
     virConfPtr conf = NULL;
     GET_PRIVATE(conn);
+
+    virCheckFlags(0, NULL);
 
     if (STRNEQ(format, XEN_CONFIG_FORMAT_XM) &&
         STRNEQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
@@ -1368,6 +1372,8 @@ xenUnifiedDomainMigratePrepare (virConnectPtr dconn,
 {
     GET_PRIVATE(dconn);
 
+    virCheckFlags(XEN_MIGRATION_FLAGS, -1);
+
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
         return xenDaemonDomainMigratePrepare (dconn, cookie, cookielen,
                                               uri_in, uri_out,
@@ -1388,6 +1394,8 @@ xenUnifiedDomainMigratePerform (virDomainPtr dom,
 {
     GET_PRIVATE(dom->conn);
 
+    virCheckFlags(XEN_MIGRATION_FLAGS, -1);
+
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
         return xenDaemonDomainMigratePerform (dom, cookie, cookielen, uri,
                                               flags, dname, resource);
@@ -1407,6 +1415,8 @@ xenUnifiedDomainMigrateFinish (virConnectPtr dconn,
     virDomainPtr dom = NULL;
     char *domain_xml = NULL;
     virDomainPtr dom_new = NULL;
+
+    virCheckFlags(XEN_MIGRATION_FLAGS, NULL);
 
     dom = xenUnifiedDomainLookupByName (dconn, dname);
     if (! dom) {
@@ -1765,10 +1775,12 @@ xenUnifiedDomainInterfaceStats (virDomainPtr dom, const char *path,
 static int
 xenUnifiedDomainBlockPeek (virDomainPtr dom, const char *path,
                            unsigned long long offset, size_t size,
-                           void *buffer, unsigned int flags ATTRIBUTE_UNUSED)
+                           void *buffer, unsigned int flags)
 {
     int r;
     GET_PRIVATE (dom->conn);
+
+    virCheckFlags(0, -1);
 
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
         r = xenDaemonDomainBlockPeek (dom, path, offset, size, buffer);

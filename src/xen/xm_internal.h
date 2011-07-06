@@ -45,7 +45,7 @@ int xenXMDomainGetState(virDomainPtr domain,
                         int *state,
                         int *reason,
                         unsigned int flags);
-char *xenXMDomainGetXMLDesc(virDomainPtr domain, int flags);
+char *xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags);
 int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
 unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain);
