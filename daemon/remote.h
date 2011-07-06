@@ -31,11 +31,9 @@
 
 extern virNetServerProgramProc remoteProcs[];
 extern size_t remoteNProcs;
-extern virNetServerProgramErrorHander remoteErr;
 
 extern virNetServerProgramProc qemuProcs[];
 extern size_t qemuNProcs;
-extern virNetServerProgramErrorHander qemuErr;
 
 int remoteClientInitHook(virNetServerPtr srv,
                          virNetServerClientPtr client);

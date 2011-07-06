@@ -39,9 +39,6 @@ typedef virNetServerProgram *virNetServerProgramPtr;
 typedef struct _virNetServerProgramProc virNetServerProgramProc;
 typedef virNetServerProgramProc *virNetServerProgramProcPtr;
 
-typedef struct _virNetServerProgramErrorHandler virNetServerProgramErrorHander;
-typedef virNetServerProgramErrorHander *virNetServerProgramErrorHanderPtr;
-
 typedef int (*virNetServerProgramDispatchFunc)(virNetServerPtr server,
                                                virNetServerClientPtr client,
                                                virNetMessageHeaderPtr hdr,
