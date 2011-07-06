@@ -1102,10 +1102,12 @@ static int testOpenFromFile(virConnectPtr conn,
 
 static virDrvOpenStatus testOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 unsigned int flags ATTRIBUTE_UNUSED)
+                                 unsigned int flags)
 {
     int ret;
     testConnPtr privconn;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
@@ -1909,13 +1911,15 @@ cleanup:
 
 static int testDomainCoreDump(virDomainPtr domain,
                               const char *to,
-                              unsigned int flags ATTRIBUTE_UNUSED)
+                              unsigned int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     int fd = -1;
     virDomainObjPtr privdom;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DUMP_CRASH, -1);
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2849,7 +2853,10 @@ error:
 
 static virDrvOpenStatus testOpenNetwork(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -3184,11 +3191,13 @@ cleanup:
 }
 
 static char *testNetworkGetXMLDesc(virNetworkPtr network,
-                                   unsigned int flags ATTRIBUTE_UNUSED)
+                                   unsigned int flags)
 {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     privnet = virNetworkFindByName(&privconn->networks,
@@ -3298,8 +3307,10 @@ cleanup:
 
 static virDrvOpenStatus testOpenInterface(virConnectPtr conn,
                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                          unsigned int flags ATTRIBUTE_UNUSED)
+                                          unsigned int flags)
 {
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -3482,10 +3493,12 @@ cleanup:
 }
 
 static int testInterfaceChangeBegin(virConnectPtr conn,
-                                    unsigned int flags ATTRIBUTE_UNUSED)
+                                    unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     if (privconn->transaction_running) {
@@ -3507,10 +3520,12 @@ cleanup:
 }
 
 static int testInterfaceChangeCommit(virConnectPtr conn,
-                                     unsigned int flags ATTRIBUTE_UNUSED)
+                                     unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
 
@@ -3532,10 +3547,12 @@ cleanup:
 }
 
 static int testInterfaceChangeRollback(virConnectPtr conn,
-                                       unsigned int flags ATTRIBUTE_UNUSED)
+                                       unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
 
@@ -3561,11 +3578,13 @@ cleanup:
 }
 
 static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
-                                     unsigned int flags ATTRIBUTE_UNUSED)
+                                     unsigned int flags)
 {
     testConnPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     privinterface = virInterfaceFindByName(&privconn->ifaces,
@@ -3587,12 +3606,14 @@ cleanup:
 
 
 static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xmlStr,
-                                              unsigned int flags ATTRIBUTE_UNUSED)
+                                              unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
     virInterfaceDefPtr def;
     virInterfaceObjPtr iface = NULL;
     virInterfacePtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     if ((def = virInterfaceDefParseString(xmlStr)) == NULL)
@@ -3637,11 +3658,13 @@ cleanup:
 }
 
 static int testInterfaceCreate(virInterfacePtr iface,
-                               unsigned int flags ATTRIBUTE_UNUSED)
+                               unsigned int flags)
 {
     testConnPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privinterface = virInterfaceFindByName(&privconn->ifaces,
@@ -3668,11 +3691,13 @@ cleanup:
 }
 
 static int testInterfaceDestroy(virInterfacePtr iface,
-                                unsigned int flags ATTRIBUTE_UNUSED)
+                                unsigned int flags)
 {
     testConnPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privinterface = virInterfaceFindByName(&privconn->ifaces,
@@ -3722,7 +3747,10 @@ static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
 
 static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -3927,10 +3955,13 @@ cleanup:
 
 static int
 testStoragePoolStart(virStoragePoolPtr pool,
-                     unsigned int flags ATTRIBUTE_UNUSED) {
+                     unsigned int flags)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -3961,11 +3992,13 @@ static char *
 testStorageFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                            const char *type,
                            const char *srcSpec,
-                           unsigned int flags ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
     virStoragePoolSourcePtr source = NULL;
     int pool_type;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     pool_type = virStoragePoolTypeFromString(type);
     if (!pool_type) {
@@ -4015,11 +4048,14 @@ cleanup:
 static virStoragePoolPtr
 testStoragePoolCreate(virConnectPtr conn,
                       const char *xml,
-                      unsigned int flags ATTRIBUTE_UNUSED) {
+                      unsigned int flags)
+{
     testConnPtr privconn = conn->privateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     if (!(def = virStoragePoolDefParseString(xml)))
@@ -4058,11 +4094,14 @@ cleanup:
 static virStoragePoolPtr
 testStoragePoolDefine(virConnectPtr conn,
                       const char *xml,
-                      unsigned int flags ATTRIBUTE_UNUSED) {
+                      unsigned int flags)
+{
     testConnPtr privconn = conn->privateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     if (!(def = virStoragePoolDefParseString(xml)))
@@ -4125,10 +4164,13 @@ cleanup:
 
 static int
 testStoragePoolBuild(virStoragePoolPtr pool,
-                     unsigned int flags ATTRIBUTE_UNUSED) {
+                     unsigned int flags)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4193,10 +4235,13 @@ cleanup:
 
 static int
 testStoragePoolDelete(virStoragePoolPtr pool,
-                      unsigned int flags ATTRIBUTE_UNUSED) {
+                      unsigned int flags)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4225,10 +4270,13 @@ cleanup:
 
 static int
 testStoragePoolRefresh(virStoragePoolPtr pool,
-                       unsigned int flags ATTRIBUTE_UNUSED) {
+                       unsigned int flags)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4289,10 +4337,13 @@ cleanup:
 
 static char *
 testStoragePoolGetXMLDesc(virStoragePoolPtr pool,
-                          unsigned int flags ATTRIBUTE_UNUSED) {
+                          unsigned int flags)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4568,11 +4619,14 @@ testStorageVolumeLookupByPath(virConnectPtr conn,
 static virStorageVolPtr
 testStorageVolumeCreateXML(virStoragePoolPtr pool,
                            const char *xmldesc,
-                           unsigned int flags ATTRIBUTE_UNUSED) {
+                           unsigned int flags)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol = NULL;
     virStorageVolPtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4649,11 +4703,14 @@ static virStorageVolPtr
 testStorageVolumeCreateXMLFrom(virStoragePoolPtr pool,
                                const char *xmldesc,
                                virStorageVolPtr clonevol,
-                               unsigned int flags ATTRIBUTE_UNUSED) {
+                               unsigned int flags)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol = NULL, origvol = NULL;
     virStorageVolPtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4738,12 +4795,15 @@ cleanup:
 
 static int
 testStorageVolumeDelete(virStorageVolPtr vol,
-                        unsigned int flags ATTRIBUTE_UNUSED) {
+                        unsigned int flags)
+{
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     int i;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4863,11 +4923,14 @@ cleanup:
 
 static char *
 testStorageVolumeGetXMLDesc(virStorageVolPtr vol,
-                            unsigned int flags ATTRIBUTE_UNUSED) {
+                            unsigned int flags)
+{
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     privpool = virStoragePoolObjFindByName(&privconn->pools,
@@ -4948,7 +5011,10 @@ cleanup:
 /* Node device implementations */
 static virDrvOpenStatus testDevMonOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       unsigned int flags ATTRIBUTE_UNUSED) {
+                                       unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -4964,11 +5030,13 @@ static int testDevMonClose(virConnectPtr conn) {
 static int
 testNodeNumOfDevices(virConnectPtr conn,
                      const char *cap,
-                     unsigned int flags ATTRIBUTE_UNUSED)
+                     unsigned int flags)
 {
     testConnPtr driver = conn->privateData;
     int ndevs = 0;
     unsigned int i;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(driver);
     for (i = 0; i < driver->devs.count; i++)
@@ -4985,11 +5053,13 @@ testNodeListDevices(virConnectPtr conn,
                     const char *cap,
                     char **const names,
                     int maxnames,
-                    unsigned int flags ATTRIBUTE_UNUSED)
+                    unsigned int flags)
 {
     testConnPtr driver = conn->privateData;
     int ndevs = 0;
     unsigned int i;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(driver);
     for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
@@ -5041,11 +5111,13 @@ cleanup:
 
 static char *
 testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
-                         unsigned int flags ATTRIBUTE_UNUSED)
+                         unsigned int flags)
 {
     testConnPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(driver);
     obj = virNodeDeviceFindByName(&driver->devs, dev->name);
@@ -5172,7 +5244,7 @@ cleanup:
 static virNodeDevicePtr
 testNodeDeviceCreateXML(virConnectPtr conn,
                         const char *xmlDesc,
-                        unsigned int flags ATTRIBUTE_UNUSED)
+                        unsigned int flags)
 {
     testConnPtr driver = conn->privateData;
     virNodeDeviceDefPtr def = NULL;
@@ -5181,6 +5253,8 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     int parent_host = -1;
     virNodeDevicePtr dev = NULL;
     virNodeDevCapsDefPtr caps;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(driver);
 
@@ -5402,7 +5476,10 @@ static void testDomainEventQueue(testConnPtr driver,
 
 static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       unsigned int flags ATTRIBUTE_UNUSED) {
+                                       unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -5418,7 +5495,10 @@ static int testSecretClose(virConnectPtr conn) {
 
 static virDrvOpenStatus testNWFilterOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                         unsigned int flags ATTRIBUTE_UNUSED) {
+                                         unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
