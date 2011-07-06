@@ -851,7 +851,7 @@ virConnectPtr           virConnectOpen          (const char *name);
 virConnectPtr           virConnectOpenReadOnly  (const char *name);
 virConnectPtr           virConnectOpenAuth      (const char *name,
                                                  virConnectAuthPtr auth,
-                                                 int flags);
+                                                 unsigned int flags);
 int                     virConnectRef           (virConnectPtr conn);
 int                     virConnectClose         (virConnectPtr conn);
 const char *            virConnectGetType       (virConnectPtr conn);
@@ -961,7 +961,7 @@ int                    virDomainManagedSaveRemove(virDomainPtr dom,
  */
 int                     virDomainCoreDump       (virDomainPtr domain,
                                                  const char *to,
-                                                 int flags);
+                                                 unsigned int flags);
 
 /*
  * Screenshot of current domain console
@@ -1115,7 +1115,7 @@ typedef enum {
 } virDomainXMLFlags;
 
 char *                  virDomainGetXMLDesc     (virDomainPtr domain,
-                                                 int flags);
+                                                 unsigned int flags);
 
 
 char *                  virConnectDomainXMLFromNative(virConnectPtr conn,
@@ -1471,7 +1471,7 @@ int                     virNetworkGetUUID       (virNetworkPtr network,
 int                     virNetworkGetUUIDString (virNetworkPtr network,
                                                  char *buf);
 char *                  virNetworkGetXMLDesc    (virNetworkPtr network,
-                                                 int flags);
+                                                 unsigned int flags);
 char *                  virNetworkGetBridgeName (virNetworkPtr network);
 
 int                     virNetworkGetAutostart  (virNetworkPtr network,
@@ -2464,7 +2464,7 @@ virDomainSnapshotPtr virDomainSnapshotLookupByName(virDomainPtr domain,
                                                    unsigned int flags);
 
 /* Check whether a domain has a snapshot which is currently used */
-int virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned flags);
+int virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags);
 
 /* Get a handle to the current snapshot */
 virDomainSnapshotPtr virDomainSnapshotCurrent(virDomainPtr domain,
@@ -2790,7 +2790,7 @@ int                     virNWFilterGetUUID       (virNWFilterPtr nwfilter,
 int                     virNWFilterGetUUIDString (virNWFilterPtr nwfilter,
                                                   char *buf);
 char *                  virNWFilterGetXMLDesc    (virNWFilterPtr nwfilter,
-                                                  int flags);
+                                                  unsigned int flags);
 
 
 int virDomainOpenConsole(virDomainPtr dom,

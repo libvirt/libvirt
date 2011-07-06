@@ -955,7 +955,7 @@ error:
 static virConnectPtr
 do_open (const char *name,
          virConnectAuthPtr auth,
-         int flags)
+         unsigned int flags)
 {
     int i, res;
     virConnectPtr ret;
@@ -1269,7 +1269,7 @@ error:
 virConnectPtr
 virConnectOpenAuth(const char *name,
                    virConnectAuthPtr auth,
-                   int flags)
+                   unsigned int flags)
 {
     virConnectPtr ret = NULL;
     if (!initialized)
@@ -2365,7 +2365,7 @@ error:
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
+virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -3359,7 +3359,7 @@ error:
  *         the caller must free() the returned value.
  */
 char *
-virDomainGetXMLDesc(virDomainPtr domain, int flags)
+virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -8449,7 +8449,7 @@ error:
  *         the caller must free() the returned value.
  */
 char *
-virNetworkGetXMLDesc(virNetworkPtr network, int flags)
+virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 {
     virConnectPtr conn;
     VIR_DEBUG("network=%p, flags=%x", network, flags);
@@ -14217,7 +14217,7 @@ error:
  *         the caller must free() the returned value.
  */
 char *
-virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, int flags)
+virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
 {
     virConnectPtr conn;
     VIR_DEBUG("nwfilter=%p, flags=%x", nwfilter, flags);
