@@ -1098,8 +1098,8 @@ static int testOpenFromFile(virConnectPtr conn,
 
 
 static virDrvOpenStatus testOpen(virConnectPtr conn,
-                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                    int flags ATTRIBUTE_UNUSED)
+                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                 unsigned int flags ATTRIBUTE_UNUSED)
 {
     int ret;
     testConnPtr privconn;
@@ -1904,7 +1904,7 @@ cleanup:
 
 static int testDomainCoreDump(virDomainPtr domain,
                               const char *to,
-                              int flags ATTRIBUTE_UNUSED)
+                              unsigned int flags ATTRIBUTE_UNUSED)
 {
     testConnPtr privconn = domain->conn->privateData;
     int fd = -1;
@@ -2350,7 +2350,7 @@ cleanup:
     return ret;
 }
 
-static char *testDomainGetXMLDesc(virDomainPtr domain, int flags)
+static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainDefPtr def;
@@ -2843,7 +2843,7 @@ error:
 
 static virDrvOpenStatus testOpenNetwork(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -3177,7 +3177,9 @@ cleanup:
     return ret;
 }
 
-static char *testNetworkGetXMLDesc(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
+static char *testNetworkGetXMLDesc(virNetworkPtr network,
+                                   unsigned int flags ATTRIBUTE_UNUSED)
+{
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     char *ret = NULL;
@@ -3290,7 +3292,7 @@ cleanup:
 
 static virDrvOpenStatus testOpenInterface(virConnectPtr conn,
                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                          int flags ATTRIBUTE_UNUSED)
+                                          unsigned int flags ATTRIBUTE_UNUSED)
 {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
@@ -3714,7 +3716,7 @@ static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
 
 static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -4940,7 +4942,7 @@ cleanup:
 /* Node device implementations */
 static virDrvOpenStatus testDevMonOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       int flags ATTRIBUTE_UNUSED) {
+                                       unsigned int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -5394,7 +5396,7 @@ static void testDomainEventQueue(testConnPtr driver,
 
 static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       int flags ATTRIBUTE_UNUSED) {
+                                       unsigned int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
@@ -5410,7 +5412,7 @@ static int testSecretClose(virConnectPtr conn) {
 
 static virDrvOpenStatus testNWFilterOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                         int flags ATTRIBUTE_UNUSED) {
+                                         unsigned int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 

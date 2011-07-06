@@ -800,7 +800,8 @@ static int qemuDomainSnapshotSetCurrentInactive(virDomainObjPtr vm,
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                  int flags ATTRIBUTE_UNUSED) {
+                                  unsigned int flags ATTRIBUTE_UNUSED)
+{
     if (conn->uri == NULL) {
         if (qemu_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
@@ -2585,7 +2586,7 @@ getCompressionType(struct qemud_driver *driver)
 
 static int qemudDomainCoreDump(virDomainPtr dom,
                                const char *path,
-                               int flags)
+                               unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -3818,7 +3819,8 @@ cleanup:
 
 
 static char *qemuDomainGetXMLDesc(virDomainPtr dom,
-                                  int flags) {
+                                  unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;

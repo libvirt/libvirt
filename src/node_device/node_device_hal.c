@@ -1,6 +1,7 @@
 /*
  * node_device_hal.c: node device enumeration - HAL-based implementation
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -861,7 +862,7 @@ static int halDeviceMonitorActive(void)
 
 static virDrvOpenStatus halNodeDrvOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       int flags ATTRIBUTE_UNUSED)
+                                       unsigned int flags ATTRIBUTE_UNUSED)
 {
     if (driverState == NULL)
         return VIR_DRV_OPEN_DECLINED;

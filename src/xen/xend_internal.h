@@ -1,7 +1,7 @@
 /*
  * xend_internal.h
  *
- * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
  * Copyright (C) 2005,2006
  *
  *      Anthony Liguori <aliguori@us.ibm.com>
@@ -95,7 +95,8 @@ xenDaemonDomainFetch(virConnectPtr xend,
 
 
 /* refactored ones */
-virDrvOpenStatus xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
+virDrvOpenStatus xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                               unsigned int flags);
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);

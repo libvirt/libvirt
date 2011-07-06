@@ -961,7 +961,7 @@ static void vboxUninitialize(vboxGlobalData *data) {
 
 static virDrvOpenStatus vboxOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 int flags ATTRIBUTE_UNUSED) {
+                                 unsigned int flags ATTRIBUTE_UNUSED) {
     vboxGlobalData *data = NULL;
     uid_t uid = getuid();
 
@@ -2130,7 +2130,7 @@ vboxDomainGetMaxVcpus(virDomainPtr dom)
                                          VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
-static char *vboxDomainGetXMLDesc(virDomainPtr dom, int flags) {
+static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
     virDomainDefPtr def  = NULL;
     IMachine *machine    = NULL;
@@ -6938,7 +6938,7 @@ static int vboxDomainEventDeregisterAny(virConnectPtr conn,
  */
 static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags ATTRIBUTE_UNUSED) {
     vboxGlobalData *data = conn->privateData;
 
     if (STRNEQ(conn->driver->name, "VBOX"))
@@ -7574,7 +7574,8 @@ static int vboxNetworkDestroy(virNetworkPtr network) {
     return vboxNetworkUndefineDestroy(network, false);
 }
 
-static char *vboxNetworkGetXMLDesc(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
+static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
+                                   unsigned int flags ATTRIBUTE_UNUSED) {
     VBOX_OBJECT_HOST_CHECK(network->conn, char *, NULL);
     virNetworkDefPtr def  = NULL;
     virNetworkIpDefPtr ipdef = NULL;
@@ -7749,7 +7750,7 @@ cleanup:
 
 static virDrvOpenStatus vboxStorageOpen (virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                         int flags ATTRIBUTE_UNUSED) {
+                                         unsigned int flags ATTRIBUTE_UNUSED) {
     vboxGlobalData *data = conn->privateData;
 
     if (STRNEQ(conn->driver->name, "VBOX"))

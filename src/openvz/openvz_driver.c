@@ -456,7 +456,7 @@ static int openvzDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static char *openvzDomainGetXMLDesc(virDomainPtr dom, int flags) {
+static char *openvzDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
@@ -1281,7 +1281,7 @@ openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
                                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                   int flags ATTRIBUTE_UNUSED)
+                                   unsigned int flags ATTRIBUTE_UNUSED)
 {
     struct openvz_driver *driver;
 

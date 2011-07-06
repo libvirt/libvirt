@@ -110,7 +110,7 @@ static void lxcDomainEventQueue(lxc_driver_t *driver,
 
 static virDrvOpenStatus lxcOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                int flags ATTRIBUTE_UNUSED)
+                                unsigned int flags ATTRIBUTE_UNUSED)
 {
     /* Verify uri was specified */
     if (conn->uri == NULL) {
@@ -953,7 +953,7 @@ cleanup:
 }
 
 static char *lxcDomainGetXMLDesc(virDomainPtr dom,
-                                 int flags)
+                                 unsigned int flags)
 {
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;

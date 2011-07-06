@@ -66,7 +66,7 @@ typedef enum {
 typedef virDrvOpenStatus
         (*virDrvOpen)			(virConnectPtr conn,
                              virConnectAuthPtr auth,
-                             int flags);
+                             unsigned int flags);
 typedef int
         (*virDrvClose)			(virConnectPtr conn);
 typedef int
@@ -183,7 +183,7 @@ typedef int
 typedef int
         (*virDrvDomainCoreDump)		(virDomainPtr domain,
                                          const char *to,
-                                         int flags);
+                                         unsigned int flags);
 typedef char *
         (*virDrvDomainScreenshot)   (virDomainPtr domain,
                                          virStreamPtr stream,
@@ -191,7 +191,7 @@ typedef char *
                                          unsigned int flags);
 typedef char *
         (*virDrvDomainGetXMLDesc)		(virDomainPtr dom,
-                                         int flags);
+                                         unsigned int flags);
 typedef char *
         (*virDrvConnectDomainXMLFromNative) (virConnectPtr conn,
                                              const char *nativeFormat,
@@ -829,7 +829,7 @@ typedef int
         (*virDrvNetworkDestroy)		(virNetworkPtr network);
 typedef char *
         (*virDrvNetworkGetXMLDesc)		(virNetworkPtr network,
-                                         int flags);
+                                         unsigned int flags);
 typedef char *
         (*virDrvNetworkGetBridgeName)	(virNetworkPtr network);
 typedef int
@@ -1351,7 +1351,7 @@ typedef int
 
 typedef char *
     (*virDrvNWFilterGetXMLDesc)              (virNWFilterPtr nwfilter,
-                                              int flags);
+                                              unsigned int flags);
 
 
 typedef struct _virNWFilterDriver virNWFilterDriver;

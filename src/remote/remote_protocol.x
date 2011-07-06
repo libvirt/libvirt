@@ -358,7 +358,7 @@ struct remote_open_args {
      * yet do that using the remote_internal driver.
      */
     remote_string name;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_supports_feature_args {
@@ -732,7 +732,7 @@ struct remote_domain_restore_args {
 struct remote_domain_core_dump_args {
     remote_nonnull_domain dom;
     remote_nonnull_string to;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_screenshot_args {
@@ -747,7 +747,7 @@ struct remote_domain_screenshot_ret {
 
 struct remote_domain_get_xml_desc_args {
     remote_nonnull_domain dom;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_domain_get_xml_desc_ret {
@@ -1052,7 +1052,7 @@ struct remote_network_destroy_args {
 
 struct remote_network_get_xml_desc_args {
     remote_nonnull_network net;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_network_get_xml_desc_ret {
@@ -1124,7 +1124,7 @@ struct remote_nwfilter_undefine_args {
 
 struct remote_nwfilter_get_xml_desc_args {
     remote_nonnull_nwfilter nwfilter;
-    int flags;
+    unsigned int flags;
 };
 
 struct remote_nwfilter_get_xml_desc_ret {

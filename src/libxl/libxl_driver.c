@@ -1059,7 +1059,7 @@ libxlActive(void)
 static virDrvOpenStatus
 libxlOpen(virConnectPtr conn,
           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-          int flags ATTRIBUTE_UNUSED)
+          unsigned int flags ATTRIBUTE_UNUSED)
 {
     if (conn->uri == NULL) {
         if (libxl_driver == NULL)
@@ -1969,7 +1969,7 @@ cleanup:
 }
 
 static int
-libxlDomainCoreDump(virDomainPtr dom, const char *to, int flags)
+libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDomainObjPrivatePtr priv;
@@ -2479,7 +2479,7 @@ cleanup:
 }
 
 static char *
-libxlDomainGetXMLDesc(virDomainPtr dom, int flags)
+libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;

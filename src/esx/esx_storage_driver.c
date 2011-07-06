@@ -3,7 +3,7 @@
  * esx_storage_driver.c: storage driver functions for managing VMware ESX
  *                       host storage
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -104,7 +104,7 @@ esxStoragePoolLookupType(esxVI_Context *ctx, const char *poolName,
 static virDrvOpenStatus
 esxStorageOpen(virConnectPtr conn,
                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-               int flags ATTRIBUTE_UNUSED)
+               unsigned int flags ATTRIBUTE_UNUSED)
 {
     if (conn->driver->no != VIR_DRV_ESX) {
         return VIR_DRV_OPEN_DECLINED;

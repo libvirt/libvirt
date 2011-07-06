@@ -1,7 +1,7 @@
 /*
  * xs_internal.h: internal API for access to XenStore
  *
- * Copyright (C) 2006, 2010 Red Hat, Inc.
+ * Copyright (C) 2006, 2010-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -19,7 +19,7 @@ int xenStoreInit (void);
 
 virDrvOpenStatus	xenStoreOpen	(virConnectPtr conn,
                                          virConnectAuthPtr auth,
-                                         int flags);
+                                         unsigned int flags);
 int		xenStoreClose		(virConnectPtr conn);
 int		xenStoreGetDomainInfo	(virDomainPtr domain,
                                          virDomainInfoPtr info);

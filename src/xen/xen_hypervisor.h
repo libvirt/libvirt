@@ -37,7 +37,7 @@ char *
 virDrvOpenStatus
         xenHypervisorOpen               (virConnectPtr conn,
                                          virConnectAuthPtr auth,
-                                         int flags);
+                                         unsigned int flags);
 int     xenHypervisorClose              (virConnectPtr conn);
 int     xenHypervisorGetVersion         (virConnectPtr conn,
                                          unsigned long *hvVer);

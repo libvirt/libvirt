@@ -4,7 +4,7 @@
  *                /etc/xen
  *                /var/lib/xend/domains
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -382,8 +382,8 @@ cleanup:
  */
 virDrvOpenStatus
 xenInotifyOpen(virConnectPtr conn,
-             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-             int flags ATTRIBUTE_UNUSED)
+               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+               unsigned int flags ATTRIBUTE_UNUSED)
 {
     DIR *dh;
     struct dirent *ent;

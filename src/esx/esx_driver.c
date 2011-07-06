@@ -934,7 +934,8 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
  * socks5. The optional <port> part allows to override the default port 1080.
  */
 static virDrvOpenStatus
-esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
+esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
+        unsigned int flags ATTRIBUTE_UNUSED)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     esxPrivate *priv = NULL;
@@ -2681,7 +2682,7 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
 
 
 static char *
-esxDomainGetXMLDesc(virDomainPtr domain, int flags)
+esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;

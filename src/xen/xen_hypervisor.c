@@ -2201,7 +2201,7 @@ xenHypervisorInit(void)
 virDrvOpenStatus
 xenHypervisorOpen(virConnectPtr conn,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                  int flags ATTRIBUTE_UNUSED)
+                  unsigned int flags ATTRIBUTE_UNUSED)
 {
     int ret;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;

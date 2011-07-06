@@ -525,7 +525,7 @@ cleanup:
 
 static virDrvOpenStatus
 secretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           int flags ATTRIBUTE_UNUSED) {
+           unsigned int flags ATTRIBUTE_UNUSED) {
     if (driverState == NULL)
         return VIR_DRV_OPEN_DECLINED;
 

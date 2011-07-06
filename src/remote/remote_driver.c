@@ -286,7 +286,7 @@ static int
 doRemoteOpen (virConnectPtr conn,
               struct private_data *priv,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-              int flags)
+              unsigned int flags)
 {
     struct qparam_set *vars = NULL;
     char *transport_str = NULL;
@@ -741,7 +741,7 @@ remoteOpenSecondaryDriver(virConnectPtr conn,
 static virDrvOpenStatus
 remoteOpen (virConnectPtr conn,
             virConnectAuthPtr auth,
-            int flags)
+            unsigned int flags)
 {
     struct private_data *priv;
     int ret, rflags = 0;
@@ -1989,7 +1989,7 @@ done:
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteGenericOpen(virConnectPtr conn, virConnectAuthPtr auth,
-                  int flags, void **genericPrivateData)
+                  unsigned int flags, void **genericPrivateData)
 {
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
@@ -2048,7 +2048,8 @@ remoteGenericClose(virConnectPtr conn, void **genericPrivateData)
 }
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteNetworkOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
+remoteNetworkOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                  unsigned int flags)
 {
     return remoteGenericOpen(conn, auth, flags, &conn->networkPrivateData);
 }
@@ -2062,7 +2063,8 @@ remoteNetworkClose(virConnectPtr conn)
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteInterfaceOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
+remoteInterfaceOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                    unsigned int flags)
 {
     return remoteGenericOpen(conn, auth, flags, &conn->interfacePrivateData);
 }
@@ -2076,7 +2078,8 @@ remoteInterfaceClose(virConnectPtr conn)
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteStorageOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
+remoteStorageOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                  unsigned int flags)
 {
     return remoteGenericOpen(conn, auth, flags, &conn->storagePrivateData);
 }
@@ -2135,7 +2138,8 @@ done:
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteDevMonOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
+remoteDevMonOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                 unsigned int flags)
 {
     return remoteGenericOpen(conn, auth, flags, &conn->devMonPrivateData);
 }
@@ -2224,7 +2228,8 @@ done:
 /* ------------------------------------------------------------- */
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteNWFilterOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
+remoteNWFilterOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                   unsigned int flags)
 {
     return remoteGenericOpen(conn, auth, flags, &conn->nwfilterPrivateData);
 }
@@ -3145,7 +3150,8 @@ remoteDomainBuildEventControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
-remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags)
+remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                 unsigned int flags)
 {
     return remoteGenericOpen(conn, auth, flags, &conn->secretPrivateData);
 }

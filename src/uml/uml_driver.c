@@ -946,7 +946,7 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static virDrvOpenStatus umlOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                int flags ATTRIBUTE_UNUSED) {
+                                unsigned int flags ATTRIBUTE_UNUSED) {
     if (conn->uri == NULL) {
         if (uml_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
@@ -1559,7 +1559,7 @@ cleanup:
 
 
 static char *umlDomainGetXMLDesc(virDomainPtr dom,
-                                 int flags ATTRIBUTE_UNUSED) {
+                                 unsigned int flags ATTRIBUTE_UNUSED) {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;

@@ -1128,7 +1128,7 @@ exit:
 
 static virDrvOpenStatus
 phypOpen(virConnectPtr conn,
-         virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
+         virConnectAuthPtr auth, unsigned int flags ATTRIBUTE_UNUSED)
 {
     LIBSSH2_SESSION *session = NULL;
     ConnectionData *connection_data = NULL;
@@ -3307,7 +3307,7 @@ cleanup:
 }
 
 static char *
-phypDomainGetXMLDesc(virDomainPtr dom, int flags)
+phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     ConnectionData *connection_data = dom->conn->networkPrivateData;
     phyp_driverPtr phyp_driver = dom->conn->privateData;
@@ -3725,7 +3725,7 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
 static virDrvOpenStatus
 phypVIOSDriverOpen(virConnectPtr conn,
                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                   int flags ATTRIBUTE_UNUSED)
+                   unsigned int flags ATTRIBUTE_UNUSED)
 {
     if (conn->driver->no != VIR_DRV_PHYP)
         return VIR_DRV_OPEN_DECLINED;

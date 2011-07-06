@@ -442,7 +442,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
 virDrvOpenStatus
 xenXMOpen (virConnectPtr conn,
            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           int flags ATTRIBUTE_UNUSED)
+           unsigned int flags ATTRIBUTE_UNUSED)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
 

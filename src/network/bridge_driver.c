@@ -2010,7 +2010,7 @@ cleanup:
 
 static virDrvOpenStatus networkOpenNetwork(virConnectPtr conn,
                                            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                           int flags ATTRIBUTE_UNUSED) {
+                                           unsigned int flags ATTRIBUTE_UNUSED) {
     if (!driverState)
         return VIR_DRV_OPEN_DECLINED;
 
@@ -2415,7 +2415,9 @@ cleanup:
     return ret;
 }
 
-static char *networkGetXMLDesc(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
+static char *networkGetXMLDesc(virNetworkPtr net,
+                               unsigned int flags ATTRIBUTE_UNUSED)
+{
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     char *ret = NULL;

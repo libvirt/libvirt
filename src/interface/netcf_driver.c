@@ -2,7 +2,7 @@
  * interface_driver.c: backend driver methods to handle physical
  *                     interface configuration using the netcf library.
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -121,7 +121,7 @@ static struct netcf_if *interfaceDriverGetNetcfIF(struct netcf *ncf, virInterfac
 
 static virDrvOpenStatus interfaceOpenInterface(virConnectPtr conn,
                                                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                               int flags ATTRIBUTE_UNUSED)
+                                               unsigned int flags ATTRIBUTE_UNUSED)
 {
     struct interface_driver *driverState;
 

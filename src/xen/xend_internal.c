@@ -1323,7 +1323,7 @@ error:
 virDrvOpenStatus
 xenDaemonOpen(virConnectPtr conn,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-              int flags ATTRIBUTE_UNUSED)
+              unsigned int flags ATTRIBUTE_UNUSED)
 {
     char *port = NULL;
     int ret = VIR_DRV_OPEN_ERROR;
@@ -1629,7 +1629,7 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
  */
 static int
 xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
-                        int flags ATTRIBUTE_UNUSED)
+                        unsigned int flags ATTRIBUTE_UNUSED)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         (filename == NULL)) {

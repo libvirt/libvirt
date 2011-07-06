@@ -1,6 +1,7 @@
 /*
  * xen_inofify.h: Xen notification of xml files
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -29,7 +30,7 @@ extern struct xenUnifiedDriver xenInotifyDriver;
 
 virDrvOpenStatus	xenInotifyOpen	(virConnectPtr conn,
                                          virConnectAuthPtr auth,
-                                         int flags);
+                                         unsigned int flags);
 int		xenInotifyClose		(virConnectPtr conn);
 
 #endif

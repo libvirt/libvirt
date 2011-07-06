@@ -248,7 +248,7 @@ xenUnifiedXendProbe (void)
 #endif
 
 static virDrvOpenStatus
-xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
+xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 {
     int i, ret = VIR_DRV_OPEN_DECLINED;
     xenUnifiedPrivatePtr priv;
@@ -1081,7 +1081,7 @@ xenUnifiedDomainRestore (virConnectPtr conn, const char *from)
 }
 
 static int
-xenUnifiedDomainCoreDump (virDomainPtr dom, const char *to, int flags)
+xenUnifiedDomainCoreDump (virDomainPtr dom, const char *to, unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i;
@@ -1233,7 +1233,7 @@ xenUnifiedDomainGetMaxVcpus (virDomainPtr dom)
 }
 
 static char *
-xenUnifiedDomainGetXMLDesc(virDomainPtr dom, int flags)
+xenUnifiedDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
 

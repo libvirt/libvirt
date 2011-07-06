@@ -91,7 +91,8 @@ getCapsObject (void)
  * Return VIR_DRV_OPEN_SUCCESS on success, else VIR_DRV_OPEN_ERROR
  */
 static virDrvOpenStatus
-xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
+xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
+            unsigned int flags ATTRIBUTE_UNUSED)
 {
     char *username = NULL;
     char *password = NULL;
@@ -1294,7 +1295,7 @@ xenapiDomainGetMaxVcpus (virDomainPtr dom)
  * Returns XML string of the domain configuration on success or -1 in case of error
  */
 static char *
-xenapiDomainGetXMLDesc(virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
+xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
 {
     xen_vm vm=NULL;
     xen_vm_set *vms;

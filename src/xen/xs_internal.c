@@ -1,7 +1,7 @@
 /*
  * xs_internal.c: access to Xen Store
  *
- * Copyright (C) 2006, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006, 2009-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -267,7 +267,7 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
 virDrvOpenStatus
 xenStoreOpen(virConnectPtr conn,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-             int flags ATTRIBUTE_UNUSED)
+             unsigned int flags ATTRIBUTE_UNUSED)
 {
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 

@@ -74,7 +74,7 @@ vmwareDataFreeFunc(void *data)
 static virDrvOpenStatus
 vmwareOpen(virConnectPtr conn,
            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           int flags ATTRIBUTE_UNUSED)
+           unsigned int flags ATTRIBUTE_UNUSED)
 {
     struct vmware_driver *driver;
     char * vmrun = NULL;
@@ -792,7 +792,7 @@ vmwareDomainIsPersistent(virDomainPtr dom)
 
 
 static char *
-vmwareDomainGetXMLDesc(virDomainPtr dom, int flags)
+vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     struct vmware_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;

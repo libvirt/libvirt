@@ -2,7 +2,7 @@
 /*
  * esx_secret_driver.c: secret driver functions for VMware ESX secret manipulation
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@
 
 static virDrvOpenStatus
 esxSecretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-              int flags ATTRIBUTE_UNUSED)
+              unsigned int flags ATTRIBUTE_UNUSED)
 {
     if (conn->driver->no != VIR_DRV_ESX) {
         return VIR_DRV_OPEN_DECLINED;
