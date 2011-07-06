@@ -461,7 +461,7 @@ static int
 AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
                             virDomainObjPtr vm, const char *stdin_path)
 {
-    if (!vm->def->seclabel.relabel)
+    if (vm->def->seclabel.norelabel)
         return 0;
 
     /* Reload the profile if stdin_path is specified. Note that
