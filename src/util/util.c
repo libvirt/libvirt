@@ -133,7 +133,7 @@ safewrite(int fd, const void *buf, size_t count)
 }
 
 #ifdef HAVE_POSIX_FALLOCATE
-int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
+int safezero(int fd, off_t offset, off_t len)
 {
     int ret = posix_fallocate(fd, offset, len);
     if (ret == 0)
@@ -144,7 +144,7 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
 #else
 
 # ifdef HAVE_MMAP
-int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
+int safezero(int fd, off_t offset, off_t len)
 {
     int r;
     char *buf;
@@ -168,7 +168,7 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
 
 # else /* HAVE_MMAP */
 
-int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
+int safezero(int fd, off_t offset, off_t len)
 {
     int r;
     char *buf;

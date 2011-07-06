@@ -39,7 +39,7 @@
 ssize_t saferead(int fd, void *buf, size_t count) ATTRIBUTE_RETURN_CHECK;
 ssize_t safewrite(int fd, const void *buf, size_t count)
     ATTRIBUTE_RETURN_CHECK;
-int safezero(int fd, int flags, off_t offset, off_t len)
+int safezero(int fd, off_t offset, off_t len)
     ATTRIBUTE_RETURN_CHECK;
 
 int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;

@@ -331,7 +331,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
 
                 if (bytes > remain)
                     bytes = remain;
-                if (safezero(fd, 0, vol->allocation - remain, bytes) < 0) {
+                if (safezero(fd, vol->allocation - remain, bytes) < 0) {
                     ret = -errno;
                     virReportSystemError(errno, _("cannot fill file '%s'"),
                                          vol->target.path);
@@ -340,7 +340,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
                 remain -= bytes;
             }
         } else { /* No progress bars to be shown */
-            if (safezero(fd, 0, 0, remain) < 0) {
+            if (safezero(fd, 0, remain) < 0) {
                 ret = -errno;
                 virReportSystemError(errno, _("cannot fill file '%s'"),
                                      vol->target.path);
