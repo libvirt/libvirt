@@ -588,7 +588,7 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
 bool virDomainObjTaint(virDomainObjPtr obj,
                        enum virDomainTaintFlags taint)
 {
-    int flag = (1 << taint);
+    unsigned int flag = (1 << taint);
 
     if (obj->taint & flag)
         return false;
@@ -1456,7 +1456,7 @@ void virDomainDefClearDeviceAliases(virDomainDefPtr def)
 static int ATTRIBUTE_NONNULL(2)
 virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
-                          int flags)
+                          unsigned int flags)
 {
     if (info->alias &&
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
@@ -1712,7 +1712,7 @@ cleanup:
 static int
 virDomainDeviceInfoParseXML(xmlNodePtr node,
                             virDomainDeviceInfoPtr info,
-                            int flags)
+                            unsigned int flags)
 {
     xmlNodePtr cur;
     xmlNodePtr address = NULL;
@@ -1998,7 +1998,7 @@ static virDomainDiskDefPtr
 virDomainDiskDefParseXML(virCapsPtr caps,
                          xmlNodePtr node,
                          virBitmapPtr bootMap,
-                         int flags)
+                         unsigned int flags)
 {
     virDomainDiskDefPtr def;
     xmlNodePtr cur, host;
@@ -2370,7 +2370,7 @@ no_memory:
  */
 static virDomainControllerDefPtr
 virDomainControllerDefParseXML(xmlNodePtr node,
-                               int flags)
+                               unsigned int flags)
 {
     virDomainControllerDefPtr def;
     char *type = NULL;
@@ -2477,7 +2477,7 @@ cleanup:
  */
 static virDomainFSDefPtr
 virDomainFSDefParseXML(xmlNodePtr node,
-                       int flags) {
+                       unsigned int flags) {
     virDomainFSDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
@@ -2720,7 +2720,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                         xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
                         virBitmapPtr bootMap,
-                        int flags ATTRIBUTE_UNUSED)
+                        unsigned int flags ATTRIBUTE_UNUSED)
 {
     virDomainNetDefPtr def;
     xmlNodePtr cur;
@@ -3173,7 +3173,7 @@ static int
 virDomainChrDefParseTargetXML(virCapsPtr caps,
                               virDomainChrDefPtr def,
                               xmlNodePtr cur,
-                              int flags ATTRIBUTE_UNUSED)
+                              unsigned int flags ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     unsigned int port;
@@ -3519,7 +3519,8 @@ virDomainChrDefNew(void) {
 static virDomainChrDefPtr
 virDomainChrDefParseXML(virCapsPtr caps,
                         xmlNodePtr node,
-                        int flags) {
+                        unsigned int flags)
+{
     xmlNodePtr cur;
     char *type = NULL;
     const char *nodeName;
@@ -3591,7 +3592,7 @@ error:
 
 static virDomainSmartcardDefPtr
 virDomainSmartcardDefParseXML(xmlNodePtr node,
-                              int flags)
+                              unsigned int flags)
 {
     xmlNodePtr cur;
     char *mode = NULL;
@@ -3721,7 +3722,8 @@ error:
 static virDomainInputDefPtr
 virDomainInputDefParseXML(const char *ostype,
                           xmlNodePtr node,
-                          int flags) {
+                          unsigned int flags)
+{
     virDomainInputDefPtr def;
     char *type = NULL;
     char *bus = NULL;
@@ -3811,7 +3813,7 @@ error:
 static virDomainTimerDefPtr
 virDomainTimerDefParseXML(const xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
-                          int flags ATTRIBUTE_UNUSED)
+                          unsigned int flags ATTRIBUTE_UNUSED)
 {
     char *name = NULL;
     char *present = NULL;
@@ -3992,7 +3994,8 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node, virDomainGraphicsAuthDefPtr de
 
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
-virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
+virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
+{
     virDomainGraphicsDefPtr def;
     char *type = NULL;
 
@@ -4375,7 +4378,7 @@ error:
 
 static virDomainSoundDefPtr
 virDomainSoundDefParseXML(const xmlNodePtr node,
-                          int flags)
+                          unsigned int flags)
 {
     char *model;
     virDomainSoundDefPtr def;
@@ -4409,7 +4412,7 @@ error:
 
 static virDomainWatchdogDefPtr
 virDomainWatchdogDefParseXML(const xmlNodePtr node,
-                             int flags)
+                             unsigned int flags)
 {
 
     char *model = NULL;
@@ -4464,7 +4467,7 @@ error:
 
 static virDomainMemballoonDefPtr
 virDomainMemballoonDefParseXML(const xmlNodePtr node,
-                               int flags)
+                               unsigned int flags)
 {
     char *model;
     virDomainMemballoonDefPtr def;
@@ -4674,7 +4677,8 @@ virDomainVideoAccelDefParseXML(const xmlNodePtr node) {
 static virDomainVideoDefPtr
 virDomainVideoDefParseXML(const xmlNodePtr node,
                           virDomainDefPtr dom,
-                          int flags) {
+                          unsigned int flags)
+{
     virDomainVideoDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
@@ -4754,7 +4758,8 @@ error:
 static int
 virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
                                      virDomainHostdevDefPtr def,
-                                     int flags ATTRIBUTE_UNUSED) {
+                                     unsigned int flags ATTRIBUTE_UNUSED)
+{
 
     int ret = -1;
     int got_product, got_vendor;
@@ -4876,7 +4881,8 @@ out:
 static int
 virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
                                      virDomainHostdevDefPtr def,
-                                     int flags) {
+                                     unsigned int flags)
+{
 
     int ret = -1;
     xmlNodePtr cur;
@@ -4923,7 +4929,7 @@ out:
 static virDomainHostdevDefPtr
 virDomainHostdevDefParseXML(const xmlNodePtr node,
                             virBitmapPtr bootMap,
-                            int flags)
+                            unsigned int flags)
 {
 
     xmlNodePtr cur;
@@ -5051,7 +5057,7 @@ static int virDomainLifecycleParseXML(xmlXPathContextPtr ctxt,
 static int
 virSecurityLabelDefParseXML(const virDomainDefPtr def,
                             xmlXPathContextPtr ctxt,
-                            int flags)
+                            unsigned int flags)
 {
     char *p;
 
@@ -5691,7 +5697,7 @@ static virDomainVcpuPinDefPtr
 virDomainVcpuPinDefParseXML(const xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             int maxvcpus,
-                            int flags ATTRIBUTE_UNUSED)
+                            unsigned int flags ATTRIBUTE_UNUSED)
 {
     virDomainVcpuPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
@@ -5760,7 +5766,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                             xmlDocPtr xml,
                                             xmlNodePtr root,
                                             xmlXPathContextPtr ctxt,
-                                            int flags)
+                                            unsigned int flags)
 {
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
@@ -6801,7 +6807,7 @@ static virDomainDefPtr
 virDomainDefParse(const char *xmlStr,
                   const char *filename,
                   virCapsPtr caps,
-                  int flags)
+                  unsigned int flags)
 {
     xmlDocPtr xml;
     virDomainDefPtr def = NULL;
@@ -8355,7 +8361,7 @@ virDomainLeaseDefFormat(virBufferPtr buf,
 static int
 virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
-                       int flags)
+                       unsigned int flags)
 {
     const char *type = virDomainDiskTypeToString(def->type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
@@ -8483,7 +8489,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 static int
 virDomainControllerDefFormat(virBufferPtr buf,
                              virDomainControllerDefPtr def,
-                             int flags)
+                             unsigned int flags)
 {
     const char *type = virDomainControllerTypeToString(def->type);
     const char *model = NULL;
@@ -8543,7 +8549,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
 static int
 virDomainFSDefFormat(virBufferPtr buf,
                      virDomainFSDefPtr def,
-                     int flags)
+                     unsigned int flags)
 {
     const char *type = virDomainFSTypeToString(def->type);
     const char *accessmode = virDomainFSAccessModeTypeToString(def->accessmode);
@@ -8605,7 +8611,7 @@ virDomainFSDefFormat(virBufferPtr buf,
 static int
 virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
-                      int flags)
+                      unsigned int flags)
 {
     const char *type = virDomainNetTypeToString(def->type);
     char *attrs;
@@ -8742,7 +8748,7 @@ static int
 virDomainChrSourceDefFormat(virBufferPtr buf,
                             virDomainChrSourceDefPtr def,
                             bool tty_compat,
-                            int flags)
+                            unsigned int flags)
 {
     const char *type = virDomainChrTypeToString(def->type);
 
@@ -8838,7 +8844,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
 static int
 virDomainChrDefFormat(virBufferPtr buf,
                       virDomainChrDefPtr def,
-                      int flags)
+                      unsigned int flags)
 {
     const char *elementName = virDomainChrDeviceTypeToString(def->deviceType);
     const char *targetType = virDomainChrTargetTypeToString(def->deviceType,
@@ -8932,7 +8938,7 @@ virDomainChrDefFormat(virBufferPtr buf,
 static int
 virDomainSmartcardDefFormat(virBufferPtr buf,
                             virDomainSmartcardDefPtr def,
-                            int flags)
+                            unsigned int flags)
 {
     const char *mode = virDomainSmartcardTypeToString(def->type);
     size_t i;
@@ -8983,7 +8989,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
 static int
 virDomainSoundDefFormat(virBufferPtr buf,
                         virDomainSoundDefPtr def,
-                        int flags)
+                        unsigned int flags)
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
 
@@ -9012,7 +9018,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
 static int
 virDomainMemballoonDefFormat(virBufferPtr buf,
                              virDomainMemballoonDefPtr def,
-                             int flags)
+                             unsigned int flags)
 {
     const char *model = virDomainMemballoonModelTypeToString(def->model);
 
@@ -9054,7 +9060,7 @@ virDomainSysinfoDefFormat(virBufferPtr buf,
 static int
 virDomainWatchdogDefFormat(virBufferPtr buf,
                            virDomainWatchdogDefPtr def,
-                           int flags)
+                           unsigned int flags)
 {
     const char *model = virDomainWatchdogModelTypeToString (def->model);
     const char *action = virDomainWatchdogActionTypeToString (def->action);
@@ -9102,7 +9108,7 @@ virDomainVideoAccelDefFormat(virBufferPtr buf,
 static int
 virDomainVideoDefFormat(virBufferPtr buf,
                         virDomainVideoDefPtr def,
-                        int flags)
+                        unsigned int flags)
 {
     const char *model = virDomainVideoTypeToString(def->type);
 
@@ -9138,7 +9144,7 @@ virDomainVideoDefFormat(virBufferPtr buf,
 static int
 virDomainInputDefFormat(virBufferPtr buf,
                         virDomainInputDefPtr def,
-                        int flags)
+                        unsigned int flags)
 {
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
@@ -9279,7 +9285,7 @@ virDomainGraphicsAuthDefFormatAttr(virBufferPtr buf,
 static int
 virDomainGraphicsDefFormat(virBufferPtr buf,
                            virDomainGraphicsDefPtr def,
-                           int flags)
+                           unsigned int flags)
 {
     const char *type = virDomainGraphicsTypeToString(def->type);
     int children = 0;
@@ -9445,7 +9451,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 static int
 virDomainHostdevDefFormat(virBufferPtr buf,
                           virDomainHostdevDefPtr def,
-                          int flags)
+                          unsigned int flags)
 {
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
     const char *type;
@@ -9934,7 +9940,7 @@ char *virDomainDefFormat(virDomainDefPtr def,
 
 static char *virDomainObjFormat(virCapsPtr caps,
                                 virDomainObjPtr obj,
-                                int flags)
+                                unsigned int flags)
 {
     char *config_xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -10053,7 +10059,7 @@ int virDomainSaveStatus(virCapsPtr caps,
                         const char *statusDir,
                         virDomainObjPtr obj)
 {
-    int flags = VIR_DOMAIN_XML_SECURE|VIR_DOMAIN_XML_INTERNAL_STATUS;
+    unsigned int flags = VIR_DOMAIN_XML_SECURE|VIR_DOMAIN_XML_INTERNAL_STATUS;
     int ret = -1;
     char *xml;
 
