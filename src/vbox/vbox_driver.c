@@ -142,8 +142,11 @@ int vboxRegister(void) {
 
 static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                      unsigned int flags ATTRIBUTE_UNUSED) {
+                                      unsigned int flags)
+{
     uid_t uid = getuid();
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL ||
         conn->uri->scheme == NULL ||

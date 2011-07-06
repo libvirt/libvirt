@@ -961,9 +961,12 @@ static void vboxUninitialize(vboxGlobalData *data) {
 
 static virDrvOpenStatus vboxOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 unsigned int flags ATTRIBUTE_UNUSED) {
+                                 unsigned int flags)
+{
     vboxGlobalData *data = NULL;
     uid_t uid = getuid();
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
         conn->uri = xmlParseURI(uid ? "vbox:///session" : "vbox:///system");
@@ -1637,7 +1640,8 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED) {
+static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1645,6 +1649,8 @@ static int vboxDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSE
     PRUint32 state       = MachineState_Null;
     PRBool isAccessible  = PR_FALSE;
     nsresult rc;
+
+    virCheckFlags(0, -1);
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
@@ -6939,8 +6945,11 @@ static int vboxDomainEventDeregisterAny(virConnectPtr conn,
  */
 static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags)
+{
     vboxGlobalData *data = conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (STRNEQ(conn->driver->name, "VBOX"))
         goto cleanup;
@@ -7576,13 +7585,16 @@ static int vboxNetworkDestroy(virNetworkPtr network) {
 }
 
 static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
-                                   unsigned int flags ATTRIBUTE_UNUSED) {
+                                   unsigned int flags)
+{
     VBOX_OBJECT_HOST_CHECK(network->conn, char *, NULL);
     virNetworkDefPtr def  = NULL;
     virNetworkIpDefPtr ipdef = NULL;
     char *networkNameUtf8 = NULL;
     PRUnichar *networkInterfaceNameUtf16    = NULL;
     IHostNetworkInterface *networkInterface = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -7751,8 +7763,11 @@ cleanup:
 
 static virDrvOpenStatus vboxStorageOpen (virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                         unsigned int flags ATTRIBUTE_UNUSED) {
+                                         unsigned int flags)
+{
     vboxGlobalData *data = conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (STRNEQ(conn->driver->name, "VBOX"))
         return VIR_DRV_OPEN_DECLINED;
@@ -8096,13 +8111,16 @@ static virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const cha
 
 static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
                                                 const char *xml,
-                                                unsigned int flags ATTRIBUTE_UNUSED) {
+                                                unsigned int flags)
+{
     VBOX_OBJECT_CHECK(pool->conn, virStorageVolPtr, NULL);
     virStorageVolDefPtr  def  = NULL;
     PRUnichar *hddFormatUtf16 = NULL;
     PRUnichar *hddNameUtf16   = NULL;
     virStoragePoolDef poolDef;
     nsresult rc;
+
+    virCheckFlags(0, NULL);
 
     /* since there is currently one default pool now
      * and virStorageVolDefFormat() just checks it type
@@ -8189,7 +8207,8 @@ cleanup:
 }
 
 static int vboxStorageVolDelete(virStorageVolPtr vol,
-                                unsigned int flags ATTRIBUTE_UNUSED) {
+                                unsigned int flags)
+{
     VBOX_OBJECT_CHECK(vol->conn, int, -1);
     vboxIID hddIID = VBOX_IID_INITIALIZER;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -8198,6 +8217,8 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
     nsresult rc;
     int i = 0;
     int j = 0;
+
+    virCheckFlags(0, -1);
 
     if (virUUIDParse(vol->key, uuid) < 0) {
         vboxError(VIR_ERR_INVALID_ARG,
@@ -8422,7 +8443,8 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
     return ret;
 }
 
-static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags ATTRIBUTE_UNUSED) {
+static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
+{
     VBOX_OBJECT_CHECK(vol->conn, char *, NULL);
     IHardDisk *hardDisk  = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -8431,6 +8453,8 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags A
     virStorageVolDef def;
     int defOk = 0;
     nsresult rc;
+
+    virCheckFlags(0, NULL);
 
     memset(&pool, 0, sizeof(pool));
     memset(&def, 0, sizeof(def));
@@ -8595,7 +8619,7 @@ static char *
 vboxDomainScreenshot(virDomainPtr dom,
                      virStreamPtr st,
                      unsigned int screen,
-                     unsigned int flags ATTRIBUTE_UNUSED)
+                     unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
     IConsole *console = NULL;
@@ -8605,6 +8629,8 @@ vboxDomainScreenshot(virDomainPtr dom,
     char *tmp;
     int tmp_fd = -1;
     unsigned int max_screen;
+
+    virCheckFlags(0, NULL);
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
