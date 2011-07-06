@@ -92,11 +92,13 @@ getCapsObject (void)
  */
 static virDrvOpenStatus
 xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
-            unsigned int flags ATTRIBUTE_UNUSED)
+            unsigned int flags)
 {
     char *username = NULL;
     char *password = NULL;
     struct _xenapiPrivate *privP = NULL;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL || conn->uri->scheme == NULL ||
         STRCASENEQ(conn->uri->scheme, "XenAPI")) {
@@ -804,12 +806,15 @@ xenapiDomainShutdown (virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainReboot (virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
+xenapiDomainReboot (virDomainPtr dom, unsigned int flags)
 {
     /* vm.clean_reboot */
     xen_vm vm;
     struct xen_vm_set *vms;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
+
+    virCheckFlags(0, -1);
+
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
             xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
@@ -1297,7 +1302,7 @@ xenapiDomainGetMaxVcpus (virDomainPtr dom)
  * Returns XML string of the domain configuration on success or -1 in case of error
  */
 static char *
-xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
+xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     xen_vm vm=NULL;
     xen_vm_set *vms;
@@ -1310,6 +1315,10 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
     char *val = NULL;
     struct xen_vif_set *vif_set = NULL;
     char *xml;
+
+    virCheckFlags(VIR_DOMAIN_XML_SECURE |
+                  VIR_DOMAIN_XML_INACTIVE |
+                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
 
     if (!xen_vm_get_by_name_label(session, &vms, dom->name)) return NULL;
     if (vms->size != 1) {
@@ -1476,7 +1485,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
         xen_vif_set_free(vif_set);
     }
     if (vms) xen_vm_set_free(vms);
-    xml = virDomainDefFormat(defPtr, 0);
+    xml = virDomainDefFormat(defPtr, flags);
     virDomainDefFree(defPtr);
     return xml;
 
