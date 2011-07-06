@@ -76,8 +76,8 @@ struct _qemuMigrationCookieGraphics {
 typedef struct _qemuMigrationCookie qemuMigrationCookie;
 typedef qemuMigrationCookie *qemuMigrationCookiePtr;
 struct _qemuMigrationCookie {
-    int flags;
-    int flagsMandatory;
+    unsigned int flags;
+    unsigned int flagsMandatory;
 
     /* Host properties */
     unsigned char localHostuuid[VIR_UUID_BUFLEN];
@@ -446,7 +446,7 @@ error:
 static int
 qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                             xmlXPathContextPtr ctxt,
-                            int flags)
+                            unsigned int flags)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *tmp;
@@ -580,7 +580,7 @@ error:
 static int
 qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
                                const char *xml,
-                               int flags)
+                               unsigned int flags)
 {
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -614,7 +614,7 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
                         virDomainObjPtr dom,
                         char **cookieout,
                         int *cookieoutlen,
-                        int flags)
+                        unsigned int flags)
 {
     if (!cookieout || !cookieoutlen)
         return 0;
@@ -645,7 +645,7 @@ qemuMigrationEatCookie(struct qemud_driver *driver,
                        virDomainObjPtr dom,
                        const char *cookiein,
                        int cookieinlen,
-                       int flags)
+                       unsigned int flags)
 {
     qemuMigrationCookiePtr mig = NULL;
 
@@ -2564,7 +2564,7 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
                          virDomainObjPtr vm,
                          const char *cookiein,
                          int cookieinlen,
-                         unsigned int flags ATTRIBUTE_UNUSED,
+                         unsigned int flags,
                          int retcode)
 {
     qemuMigrationCookiePtr mig;
@@ -2574,6 +2574,8 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
               "flags=%x, retcode=%d",
               driver, conn, vm, NULLSTR(cookiein), cookieinlen,
               flags, retcode);
+
+    virCheckFlags(0, -1);
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
         return -1;

@@ -804,8 +804,10 @@ static int qemuDomainSnapshotSetCurrentInactive(virDomainObjPtr vm,
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                  unsigned int flags ATTRIBUTE_UNUSED)
+                                  unsigned int flags)
 {
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (conn->uri == NULL) {
         if (qemu_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
@@ -2691,7 +2693,7 @@ static char *
 qemuDomainScreenshot(virDomainPtr dom,
                      virStreamPtr st,
                      unsigned int screen,
-                     unsigned int flags ATTRIBUTE_UNUSED)
+                     unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -2699,6 +2701,8 @@ qemuDomainScreenshot(virDomainPtr dom,
     char *tmp = NULL;
     int tmp_fd = -1;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3890,10 +3894,13 @@ cleanup:
 static char *qemuDomainXMLFromNative(virConnectPtr conn,
                                      const char *format,
                                      const char *config,
-                                     unsigned int flags ATTRIBUTE_UNUSED) {
+                                     unsigned int flags)
+{
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (STRNEQ(format, QEMU_CONFIG_FORMAT_ARGV)) {
         qemuReportError(VIR_ERR_INVALID_ARG,
@@ -3924,7 +3931,8 @@ cleanup:
 static char *qemuDomainXMLToNative(virConnectPtr conn,
                                    const char *format,
                                    const char *xmlData,
-                                   unsigned int flags ATTRIBUTE_UNUSED) {
+                                   unsigned int flags)
+{
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainChrSourceDef monConfig;
@@ -3932,6 +3940,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     char *ret = NULL;
     int i;
+
+    virCheckFlags(0, NULL);
 
     qemuDriverLock(driver);
 
@@ -6182,11 +6192,13 @@ qemudDomainBlockPeek (virDomainPtr dom,
                       const char *path,
                       unsigned long long offset, size_t size,
                       void *buffer,
-                      unsigned int flags ATTRIBUTE_UNUSED)
+                      unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int fd = -1, ret = -1, i;
+
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -7258,10 +7270,12 @@ out:
 static int
 qemuCPUCompare(virConnectPtr conn,
                const char *xmlDesc,
-               unsigned int flags ATTRIBUTE_UNUSED)
+               unsigned int flags)
 {
     struct qemud_driver *driver = conn->privateData;
     int ret = VIR_CPU_COMPARE_ERROR;
+
+    virCheckFlags(0, VIR_CPU_COMPARE_ERROR);
 
     qemuDriverLock(driver);
 
@@ -7282,9 +7296,11 @@ static char *
 qemuCPUBaseline(virConnectPtr conn ATTRIBUTE_UNUSED,
                 const char **xmlCPUs,
                 unsigned int ncpus,
-                unsigned int flags ATTRIBUTE_UNUSED)
+                unsigned int flags)
 {
     char *cpu;
+
+    virCheckFlags(0, NULL);
 
     cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0);
 

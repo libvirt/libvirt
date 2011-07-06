@@ -1032,7 +1032,7 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 
 char *qemuDomainDefFormatXML(struct qemud_driver *driver,
                              virDomainDefPtr def,
-                             int flags)
+                             unsigned int flags)
 {
     char *ret = NULL;
     virCPUDefPtr cpu = NULL;
@@ -1064,7 +1064,7 @@ cleanup:
 
 char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
-                          int flags)
+                          unsigned int flags)
 {
     virDomainDefPtr def;
 
@@ -1164,7 +1164,7 @@ void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
 static int
 qemuDomainOpenLogHelper(struct qemud_driver *driver,
                         virDomainObjPtr vm,
-                        int flags,
+                        int oflags,
                         mode_t mode)
 {
     char *logfile;
@@ -1175,7 +1175,7 @@ qemuDomainOpenLogHelper(struct qemud_driver *driver,
         return -1;
     }
 
-    if ((fd = open(logfile, flags, mode)) < 0) {
+    if ((fd = open(logfile, oflags, mode)) < 0) {
         virReportSystemError(errno, _("failed to create logfile %s"),
                              logfile);
         goto cleanup;
@@ -1194,18 +1194,19 @@ cleanup:
 
 
 int
-qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm, bool append)
+qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm,
+                    bool append)
 {
-    int flags;
+    int oflags;
 
-    flags = O_CREAT | O_WRONLY;
+    oflags = O_CREAT | O_WRONLY;
     /* Only logrotate files in /var/log, so only append if running privileged */
     if (driver->privileged || append)
-        flags |= O_APPEND;
+        oflags |= O_APPEND;
     else
-        flags |= O_TRUNC;
+        oflags |= O_TRUNC;
 
-    return qemuDomainOpenLogHelper(driver, vm, flags, S_IRUSR | S_IWUSR);
+    return qemuDomainOpenLogHelper(driver, vm, oflags, S_IRUSR | S_IWUSR);
 }
 
 

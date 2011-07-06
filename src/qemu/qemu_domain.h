@@ -215,11 +215,11 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 
 char *qemuDomainDefFormatXML(struct qemud_driver *driver,
                              virDomainDefPtr vm,
-                             int flags);
+                             unsigned int flags);
 
 char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
-                          int flags);
+                          unsigned int flags);
 
 void qemuDomainObjTaint(struct qemud_driver *driver,
                         virDomainObjPtr obj,
