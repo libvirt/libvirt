@@ -1063,8 +1063,10 @@ libxlActive(void)
 static virDrvOpenStatus
 libxlOpen(virConnectPtr conn,
           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-          unsigned int flags ATTRIBUTE_UNUSED)
+          unsigned int flags)
 {
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (conn->uri == NULL) {
         if (libxl_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
@@ -1482,12 +1484,14 @@ cleanup:
 }
 
 static int
-libxlDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
+libxlDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     libxlDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2511,13 +2515,15 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 static char *
 libxlDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
                          const char * nativeConfig,
-                         unsigned int flags ATTRIBUTE_UNUSED)
+                         unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     const libxl_version_info *ver_info;
     virDomainDefPtr def = NULL;
     virConfPtr conf = NULL;
     char *xml = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (STRNEQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
         libxlError(VIR_ERR_INVALID_ARG,
@@ -2551,7 +2557,7 @@ cleanup:
 static char *
 libxlDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
                        const char * domainXml,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     const libxl_version_info *ver_info;
@@ -2559,6 +2565,8 @@ libxlDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
     virConfPtr conf = NULL;
     int len = MAX_CONFIG_SIZE;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (STRNEQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
         libxlError(VIR_ERR_INVALID_ARG,
@@ -2623,7 +2631,7 @@ libxlNumDefinedDomains(virConnectPtr conn)
 
 static int
 libxlDomainCreateWithFlags(virDomainPtr dom,
-                           unsigned int flags ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
