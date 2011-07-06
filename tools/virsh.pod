@@ -405,7 +405,9 @@ but not started.
 Immediately terminate the domain domain-id.  This doesn't give the domain
 OS any chance to react, and it's the equivalent of ripping the power
 cord out on a physical machine.  In most cases you will want to use
-the B<shutdown> command instead.
+the B<shutdown> command instead.  However, this does not delete any
+storage volumes used by the guest, and if the domain is persistent, it
+can be restarted later.
 
 =item B<domblkstat> I<domain> I<block-device>
 
@@ -506,7 +508,7 @@ variables, and defaults to C<vi>.
 
 =item B<managedsave> I<domain-id>
 
-Save and destroy a running domain, so it can be restarted from the same
+Save and destroy (stop) a running domain, so it can be restarted from the same
 state at a later time.  When the virsh B<start> command is next run for
 the domain, it will automatically be started from this saved state.
 
@@ -957,8 +959,8 @@ not instantiated.
 
 =item B<net-destroy> I<network>
 
-Destroy a given virtual network specified by its name or UUID. This takes
-effect immediately.
+Destroy (stop) a given virtual network specified by its name or UUID. This
+takes effect immediately.
 
 =item B<net-dumpxml> I<network>
 
@@ -1032,7 +1034,7 @@ not started.
 
 =item B<iface-destroy> I<interface>
 
-Destroy a given host interface, such as by running "if-down" to
+Destroy (stop) a given host interface, such as by running "if-down" to
 disable that interface from active use. This takes effect immediately.
 
 =item B<iface-dumpxml> I<interface> optional I<--inactive>
@@ -1162,7 +1164,7 @@ I<type>.
 
 =item B<pool-destroy> I<pool-or-uuid>
 
-Destroy a given I<pool> object. Libvirt will no longer manage the
+Destroy (stop) a given I<pool> object. Libvirt will no longer manage the
 storage described by the pool object, but the raw data contained in
 the pool is not changed, and can be later recovered with
 B<pool-create>.
@@ -1171,7 +1173,7 @@ B<pool-create>.
 
 Destroy the resources used by a given I<pool> object. This operation
 is non-recoverable.  The I<pool> object will still exist after this
-command.
+command, ready for the creation of new storage volumes.
 
 =item B<pool-dumpxml> I<pool-or-uuid>
 

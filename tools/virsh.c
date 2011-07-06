@@ -2264,8 +2264,9 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
  * "destroy" command
  */
 static const vshCmdInfo info_destroy[] = {
-    {"help", N_("destroy a domain")},
-    {"desc", N_("Destroy a given domain.")},
+    {"help", N_("destroy (stop) a domain")},
+    {"desc",
+     N_("Forcefully stop a given domain, but leave its resources intact.")},
     {NULL, NULL}
 };
 
@@ -4877,8 +4878,8 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
  * "net-destroy" command
  */
 static const vshCmdInfo info_network_destroy[] = {
-    {"help", N_("destroy a network")},
-    {"desc", N_("Destroy a given network.")},
+    {"help", N_("destroy (stop) a network")},
+    {"desc", N_("Forcefully stop a given network.")},
     {NULL, NULL}
 };
 
@@ -5724,7 +5725,7 @@ cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_interface_destroy[] = {
     {"help", N_("destroy a physical host interface (disable it / \"if-down\")")},
-    {"desc", N_("destroy a physical host interface.")},
+    {"desc", N_("forcefully stop a physical host interface.")},
     {NULL, NULL}
 };
 
@@ -6283,9 +6284,9 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
  * "nodedev-destroy" command
  */
 static const vshCmdInfo info_node_device_destroy[] = {
-    {"help", N_("destroy a device on the node")},
+    {"help", N_("destroy (stop) a device on the node")},
     {"desc", N_("Destroy a device on the node.  Note that this "
-                          "command destroys devices on the physical host ")},
+                "command destroys devices on the physical host")},
     {NULL, NULL}
 };
 
@@ -6573,8 +6574,9 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
  * "pool-destroy" command
  */
 static const vshCmdInfo info_pool_destroy[] = {
-    {"help", N_("destroy a pool")},
-    {"desc", N_("Destroy a given pool.")},
+    {"help", N_("destroy (stop) a pool")},
+    {"desc",
+     N_("Forcefully stop a given pool. Raw data in the pool is untouched")},
     {NULL, NULL}
 };
 
