@@ -973,7 +973,10 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static virDrvOpenStatus umlOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                unsigned int flags ATTRIBUTE_UNUSED) {
+                                unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (conn->uri == NULL) {
         if (uml_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
@@ -1590,10 +1593,15 @@ cleanup:
 
 
 static char *umlDomainGetXMLDesc(virDomainPtr dom,
-                                 unsigned int flags ATTRIBUTE_UNUSED) {
+                                 unsigned int flags)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
+
+    virCheckFlags(VIR_DOMAIN_XML_SECURE |
+                  VIR_DOMAIN_XML_INACTIVE |
+                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2078,11 +2086,13 @@ umlDomainBlockPeek(virDomainPtr dom,
                    const char *path,
                    unsigned long long offset, size_t size,
                    void *buffer,
-                   unsigned int flags ATTRIBUTE_UNUSED)
+                   unsigned int flags)
 {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int fd = -1, ret = -1, i;
+
+    virCheckFlags(0, -1);
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
