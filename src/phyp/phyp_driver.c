@@ -1128,7 +1128,7 @@ exit:
 
 static virDrvOpenStatus
 phypOpen(virConnectPtr conn,
-         virConnectAuthPtr auth, unsigned int flags ATTRIBUTE_UNUSED)
+         virConnectAuthPtr auth, unsigned int flags)
 {
     LIBSSH2_SESSION *session = NULL;
     ConnectionData *connection_data = NULL;
@@ -1137,6 +1137,8 @@ phypOpen(virConnectPtr conn,
     phyp_driverPtr phyp_driver = NULL;
     char *char_ptr;
     char *managed_system = NULL;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (!conn || !conn->uri)
         return VIR_DRV_OPEN_DECLINED;
@@ -3389,7 +3391,7 @@ cleanup:
 }
 
 static int
-phypDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
+phypDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     int result = -1;
     ConnectionData *connection_data = dom->conn->networkPrivateData;
@@ -3401,6 +3403,8 @@ phypDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
     int exit_status = 0;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, -1);
 
     virBufferAddLit(&buf, "chsysstate");
     if (system_type == HMC)
@@ -3726,8 +3730,10 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
 static virDrvOpenStatus
 phypVIOSDriverOpen(virConnectPtr conn,
                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                   unsigned int flags ATTRIBUTE_UNUSED)
+                   unsigned int flags)
 {
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
     if (conn->driver->no != VIR_DRV_PHYP)
         return VIR_DRV_OPEN_DECLINED;
 
