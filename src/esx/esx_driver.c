@@ -935,12 +935,14 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
  */
 static virDrvOpenStatus
 esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
-        unsigned int flags ATTRIBUTE_UNUSED)
+        unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     esxPrivate *priv = NULL;
     char *potentialVCenterIpAddress = NULL;
     char vCenterIpAddress[NI_MAXHOST] = "";
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     /* Decline if the URI is NULL or the scheme is not one of {vpx|esx|gsx} */
     if (conn->uri == NULL || conn->uri->scheme == NULL ||
@@ -1890,13 +1892,15 @@ esxDomainShutdown(virDomainPtr domain)
 
 
 static int
-esxDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
+esxDomainReboot(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
+
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -2701,6 +2705,8 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
+    /* Flags checked by virDomainDefFormat */
+
     memset(&data, 0, sizeof (data));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
@@ -2798,13 +2804,15 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 static char *
 esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
                        const char *nativeConfig,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags)
 {
     esxPrivate *priv = conn->privateData;
     virVMXContext ctx;
     esxVMX_Data data;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
+
+    virCheckFlags(0, NULL);
 
     memset(&data, 0, sizeof (data));
 
@@ -2838,7 +2846,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 static char *
 esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
                      const char *domainXml,
-                     unsigned int flags ATTRIBUTE_UNUSED)
+                     unsigned int flags)
 {
     esxPrivate *priv = conn->privateData;
     int virtualHW_version;
@@ -2846,6 +2854,8 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     esxVMX_Data data;
     virDomainDefPtr def = NULL;
     char *vmx = NULL;
+
+    virCheckFlags(0, NULL);
 
     memset(&data, 0, sizeof (data));
 
@@ -3831,6 +3841,12 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
     return esxDomainSetSchedulerParametersFlags(domain, params, nparams, 0);
 }
 
+/* The subset of migration flags we are able to support.  */
+#define ESX_MIGRATION_FLAGS                     \
+    (VIR_MIGRATE_PERSIST_DEST |                 \
+     VIR_MIGRATE_UNDEFINE_SOURCE |              \
+     VIR_MIGRATE_LIVE |                         \
+     VIR_MIGRATE_PAUSED)
 
 static int
 esxDomainMigratePrepare(virConnectPtr dconn,
@@ -3838,11 +3854,13 @@ esxDomainMigratePrepare(virConnectPtr dconn,
                         int *cookielen ATTRIBUTE_UNUSED,
                         const char *uri_in ATTRIBUTE_UNUSED,
                         char **uri_out,
-                        unsigned long flags ATTRIBUTE_UNUSED,
+                        unsigned long flags,
                         const char *dname ATTRIBUTE_UNUSED,
                         unsigned long resource ATTRIBUTE_UNUSED)
 {
     esxPrivate *priv = dconn->privateData;
+
+    virCheckFlags(ESX_MIGRATION_FLAGS, -1);
 
     if (uri_in == NULL) {
         if (virAsprintf(uri_out, "vpxmigr://%s/%s/%s",
@@ -3864,7 +3882,7 @@ esxDomainMigratePerform(virDomainPtr domain,
                         const char *cookie ATTRIBUTE_UNUSED,
                         int cookielen ATTRIBUTE_UNUSED,
                         const char *uri,
-                        unsigned long flags ATTRIBUTE_UNUSED,
+                        unsigned long flags,
                         const char *dname,
                         unsigned long bandwidth ATTRIBUTE_UNUSED)
 {
@@ -3881,6 +3899,8 @@ esxDomainMigratePerform(virDomainPtr domain,
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
+
+    virCheckFlags(ESX_MIGRATION_FLAGS, -1);
 
     if (priv->vCenter == NULL) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
@@ -4010,8 +4030,10 @@ esxDomainMigrateFinish(virConnectPtr dconn, const char *dname,
                        const char *cookie ATTRIBUTE_UNUSED,
                        int cookielen ATTRIBUTE_UNUSED,
                        const char *uri ATTRIBUTE_UNUSED,
-                       unsigned long flags ATTRIBUTE_UNUSED)
+                       unsigned long flags)
 {
+    virCheckFlags(ESX_MIGRATION_FLAGS, NULL);
+
     return esxDomainLookupByName(dconn, dname);
 }
 
