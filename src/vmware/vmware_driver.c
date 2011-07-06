@@ -74,10 +74,12 @@ vmwareDataFreeFunc(void *data)
 static virDrvOpenStatus
 vmwareOpen(virConnectPtr conn,
            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           unsigned int flags ATTRIBUTE_UNUSED)
+           unsigned int flags)
 {
     struct vmware_driver *driver;
     char * vmrun = NULL;
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
         /* @TODO accept */
@@ -447,17 +449,18 @@ vmwareDomainResume(virDomainPtr dom)
 }
 
 static int
-vmwareDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
+vmwareDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     struct vmware_driver *driver = dom->conn->privateData;
     const char * vmxPath = NULL;
-
     virDomainObjPtr vm;
     const char *cmd[] = {
         VMRUN, "-T", PROGRAM_SENTINAL,
         "reset", PROGRAM_SENTINAL, "soft", NULL
     };
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     vmwareDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -493,7 +496,7 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
 
 static virDomainPtr
 vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
-                      unsigned int flags ATTRIBUTE_UNUSED)
+                      unsigned int flags)
 {
     struct vmware_driver *driver = conn->privateData;
     virDomainDefPtr vmdef = NULL;
@@ -503,6 +506,8 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     char *vmxPath = NULL;
     vmwareDomainPtr pDomain = NULL;
     virVMXContext ctx;
+
+    virCheckFlags(0, NULL);
 
     ctx.formatFileName = vmwareCopyVMXFileName;
 
@@ -564,11 +569,13 @@ cleanup:
 
 static int
 vmwareDomainCreateWithFlags(virDomainPtr dom,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            unsigned int flags)
 {
     struct vmware_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     vmwareDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
