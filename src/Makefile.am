@@ -1613,6 +1613,53 @@ virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
 
 
 
+EXTRA_DIST += locking/virtlockd.service.in locking/virtlockd.socket.in
+
+if WITH_LIBVIRTD
+if LIBVIRT_INIT_SCRIPT_SYSTEMD
+
+SYSTEMD_UNIT_DIR = /lib/systemd/system
+
+BUILT_SOURCES += virtlockd.service virtlockd.socket
+
+install-systemd: virtlockd.init install-sysconfig
+	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
+	$(INSTALL_SCRIPT) virtlockd.service \
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
+	$(INSTALL_SCRIPT) virtlockd.socket \
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
+
+uninstall-systemd: uninstall-sysconfig
+	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.service
+	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.socket
+else
+install-systemd:
+uninstall-systemd:
+endif
+else
+install-systemd:
+uninstall-systemd:
+endif
+
+virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed					\
+	    -e "s!::localstatedir::!$(localstatedir)!g"	\
+	    -e "s!::sbindir::!$(sbindir)!g"		\
+	    -e "s!::sysconfdir::!$(sysconfdir)!g"	\
+	    < $< > $@-t &&				\
+	    chmod a+x $@-t &&				\
+	    mv $@-t $@
+
+virtlockd.socket: locking/virtlockd.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed					\
+	    -e "s!::localstatedir::!$(localstatedir)!g"	\
+	    -e "s!::sbindir::!$(sbindir)!g"		\
+	    -e "s!::sysconfdir::!$(sysconfdir)!g"	\
+	    < $< > $@-t &&				\
+	    chmod a+x $@-t &&				\
+	    mv $@-t $@
+
+
 if HAVE_SANLOCK
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES = sanlock.la
@@ -1850,7 +1897,7 @@ endif
 endif
 EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
-install-data-local: install-init
+install-data-local: install-init install-systemd
 if WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lockd"
@@ -1903,7 +1950,7 @@ if WITH_NETWORK
 	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 endif
 
-uninstall-local:: uninstall-init
+uninstall-local:: uninstall-init uninstall-systemd
 if WITH_LIBVIRTD
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lockd" ||:

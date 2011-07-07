@@ -1497,6 +1497,7 @@ done
 %else
 if [ $1 -eq 1 ] ; then
     # Initial installation
+    /bin/systemctl enable virtlockd.socket >/dev/null 2>&1 || :
     /bin/systemctl enable libvirtd.service >/dev/null 2>&1 || :
 fi
 %endif
@@ -1524,8 +1525,10 @@ fi
 %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
+    /bin/systemctl --no-reload disable virtlockd.socket > /dev/null 2>&1 || :
     /bin/systemctl --no-reload disable libvirtd.service > /dev/null 2>&1 || :
     /bin/systemctl stop libvirtd.service > /dev/null 2>&1 || :
+    /bin/systemctl stop virtlockd.service > /dev/null 2>&1 || :
 fi
 %endif
 %else
@@ -1543,6 +1546,7 @@ fi
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
+    /bin/systemctl try-restart virtlockd.service >/dev/null 2>&1 || :
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
 fi
 %endif
@@ -1659,6 +1663,8 @@ fi
 %if %{with_systemd}
 %{_unitdir}/libvirtd.service
 %{_unitdir}/libvirt-guests.service
+%{_unitdir}/virtlockd.service
+%{_unitdir}/virtlockd.socket
 %else
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %{_sysconfdir}/rc.d/init.d/libvirt-guests

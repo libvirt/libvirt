@@ -496,8 +496,69 @@ virLockDaemonSetupSignals(virNetServerPtr srv)
     return 0;
 }
 
+
 static int
-virLockDaemonSetupNetworking(virNetServerPtr srv, const char *sock_path)
+virLockDaemonSetupNetworkingSystemD(virNetServerPtr srv)
+{
+    virNetServerServicePtr svc;
+    const char *pidstr;
+    const char *fdstr;
+    unsigned long long procid;
+    unsigned int nfds;
+
+    if (!(pidstr = getenv("LISTEN_PID"))) {
+        VIR_DEBUG("No LISTEN_FDS from systemd");
+        return 0;
+    }
+
+    if (virStrToLong_ull(pidstr, NULL, 10, &procid) < 0) {
+        VIR_DEBUG("Malformed LISTEN_PID from systemd %s", pidstr);
+        return 0;
+    }
+
+    if ((pid_t)procid != getpid()) {
+        VIR_DEBUG("LISTEN_PID %s is not for us %llu",
+                  pidstr, (unsigned long long)getpid());
+        return 0;
+    }
+
+    if (!(fdstr = getenv("LISTEN_FDS"))) {
+        VIR_DEBUG("No LISTEN_FDS from systemd");
+        return 0;
+    }
+
+    if (virStrToLong_ui(fdstr, NULL, 10, &nfds) < 0) {
+        VIR_DEBUG("Malformed LISTEN_FDS from systemd %s", fdstr);
+        return 0;
+    }
+
+    if (nfds > 1) {
+        VIR_DEBUG("Too many (%d) file descriptors from systemd",
+                  nfds);
+        nfds = 1;
+    }
+
+    unsetenv("LISTEN_PID");
+    unsetenv("LISTEN_FDS");
+
+    if (nfds == 0)
+        return 0;
+
+    /* Systemd passes FDs, starting immediately after stderr,
+     * so the first FD we'll get is '3'. */
+    if (!(svc = virNetServerServiceNewFD(3, 0, false, 1, NULL)))
+        return -1;
+
+    if (virNetServerAddService(srv, svc, NULL) < 0) {
+        virObjectUnref(svc);
+        return -1;
+    }
+    return 1;
+}
+
+
+static int
+virLockDaemonSetupNetworkingNative(virNetServerPtr srv, const char *sock_path)
 {
     virNetServerServicePtr svc;
 
@@ -726,6 +787,7 @@ int main(int argc, char **argv) {
     mode_t old_umask;
     bool privileged = false;
     virLockDaemonConfigPtr config = NULL;
+    int rv;
 
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
@@ -901,7 +963,14 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (virLockDaemonSetupNetworking(lockDaemon->srv, sock_file) < 0) {
+    if ((rv = virLockDaemonSetupNetworkingSystemD(lockDaemon->srv)) < 0) {
+        ret = VIR_LOCK_DAEMON_ERR_NETWORK;
+        goto cleanup;
+    }
+
+    /* Only do this, if systemd did not pass a FD */
+    if (rv == 0 &&
+        virLockDaemonSetupNetworkingNative(lockDaemon->srv, sock_file) < 0) {
         ret = VIR_LOCK_DAEMON_ERR_NETWORK;
         goto cleanup;
     }

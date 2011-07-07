@@ -1,0 +1,13 @@
+[Unit]
+Description=Virtual machine lock manager
+Requires=virtlockd.socket
+After=syslog.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/virtlockd
+ExecStart=@sbindir@/virtlockd
+ExecReload=/bin/kill -HUP $MAINPID
+# Loosing the locks is a really bad thing that will
+# cause the machine to be fenced (rebooted), so make
+# sure we discourage OOM killer
+OOMScoreAdjust=-900

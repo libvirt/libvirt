@@ -1,0 +1,8 @@
+[Unit]
+Description=Virtual machine lock manager socket
+
+[Socket]
+ListenStream=/var/run/libvirt/virtlockd/virtlockd.sock
+
+[Install]
+WantedBy=multi-user.target
