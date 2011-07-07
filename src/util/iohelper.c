@@ -43,7 +43,7 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 static int runIO(const char *path,
-                 int flags,
+                 int oflags,
                  int mode,
                  unsigned long long offset,
                  unsigned long long length)
@@ -56,10 +56,10 @@ static int runIO(const char *path,
     const char *fdinname, *fdoutname;
     unsigned long long total = 0;
 
-    if (flags & O_CREAT) {
-        fd = open(path, flags, mode);
+    if (oflags & O_CREAT) {
+        fd = open(path, oflags, mode);
     } else {
-        fd = open(path, flags);
+        fd = open(path, oflags);
     }
     if (fd < 0) {
         virReportSystemError(errno, _("Unable to open %s"), path);
@@ -79,7 +79,7 @@ static int runIO(const char *path,
         goto cleanup;
     }
 
-    switch (flags & O_ACCMODE) {
+    switch (oflags & O_ACCMODE) {
     case O_RDONLY:
         fdin = fd;
         fdinname = path;
@@ -97,7 +97,7 @@ static int runIO(const char *path,
     default:
         virReportSystemError(EINVAL,
                              _("Unable to process file with flags %d"),
-                             (flags & O_ACCMODE));
+                             (oflags & O_ACCMODE));
         goto cleanup;
     }
 
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     virErrorPtr err;
     unsigned long long offset;
     unsigned long long length;
-    int flags;
+    int oflags;
     int mode;
     unsigned int delete;
 
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 
     path = argv[1];
 
-    if (virStrToLong_i(argv[2], NULL, 10, &flags) < 0) {
+    if (virStrToLong_i(argv[2], NULL, 10, &oflags) < 0) {
         fprintf(stderr, _("%s: malformed file flags %s"), argv[0], argv[2]);
         exit(EXIT_FAILURE);
     }
@@ -192,7 +192,7 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    if (runIO(path, flags, mode, offset, length) < 0)
+    if (runIO(path, oflags, mode, offset, length) < 0)
         goto error;
 
     if (delete)

@@ -49,7 +49,7 @@ static int virLockManagerNopNew(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                 unsigned int type ATTRIBUTE_UNUSED,
                                 size_t nparams ATTRIBUTE_UNUSED,
                                 virLockManagerParamPtr params ATTRIBUTE_UNUSED,
-                                unsigned int flags ATTRIBUTE_UNUSED)
+                                unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -59,7 +59,7 @@ static int virLockManagerNopAddResource(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                         const char *name ATTRIBUTE_UNUSED,
                                         size_t nparams ATTRIBUTE_UNUSED,
                                         virLockManagerParamPtr params ATTRIBUTE_UNUSED,
-                                        unsigned int flags ATTRIBUTE_UNUSED)
+                                        unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
 
     return 0;
@@ -68,7 +68,7 @@ static int virLockManagerNopAddResource(virLockManagerPtr lock ATTRIBUTE_UNUSED,
 
 static int virLockManagerNopAcquire(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                     const char *state ATTRIBUTE_UNUSED,
-                                    unsigned int flags ATTRIBUTE_UNUSED,
+                                    unsigned int flags_unused ATTRIBUTE_UNUSED,
                                     int *fd ATTRIBUTE_UNUSED)
 {
     return 0;
@@ -76,7 +76,7 @@ static int virLockManagerNopAcquire(virLockManagerPtr lock ATTRIBUTE_UNUSED,
 
 static int virLockManagerNopRelease(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                     char **state,
-                                    unsigned int flags ATTRIBUTE_UNUSED)
+                                    unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
     if (state)
         *state = NULL;
@@ -86,7 +86,7 @@ static int virLockManagerNopRelease(virLockManagerPtr lock ATTRIBUTE_UNUSED,
 
 static int virLockManagerNopInquire(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                     char **state,
-                                    unsigned int flags ATTRIBUTE_UNUSED)
+                                    unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
     if (state)
         *state = NULL;

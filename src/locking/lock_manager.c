@@ -190,9 +190,10 @@ cleanup:
     return NULL;
 }
 #else /* !HAVE_DLFCN_H */
-virLockManagerPluginPtr virLockManagerPluginNew(const char *name ATTRIBUTE_UNUSED,
-                                                const char *configFile ATTRIBUTE_UNUSED,
-                                                unsigned int flags ATTRIBUTE_UNUSED)
+virLockManagerPluginPtr
+virLockManagerPluginNew(const char *name ATTRIBUTE_UNUSED,
+                        const char *configFile ATTRIBUTE_UNUSED,
+                        unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
     virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("this platform is missing dlopen"));

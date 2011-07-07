@@ -504,7 +504,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
                             const char *path,
                             unsigned long long offset,
                             unsigned long long length,
-                            int flags,
+                            int oflags,
                             int mode,
                             bool delete)
 {
@@ -514,13 +514,13 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     virCommandPtr cmd = NULL;
     int errfd = -1;
 
-    VIR_DEBUG("st=%p path=%s flags=%x offset=%llu length=%llu mode=%o delete=%d",
-              st, path, flags, offset, length, mode, delete);
+    VIR_DEBUG("st=%p path=%s oflags=%x offset=%llu length=%llu mode=%o delete=%d",
+              st, path, oflags, offset, length, mode, delete);
 
-    if (flags & O_CREAT)
-        fd = open(path, flags, mode);
+    if (oflags & O_CREAT)
+        fd = open(path, oflags, mode);
     else
-        fd = open(path, flags);
+        fd = open(path, oflags);
     if (fd < 0) {
         virReportSystemError(errno,
                              _("Unable to open stream for '%s'"),
@@ -545,7 +545,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
          !S_ISFIFO(sb.st_mode))) {
         int childfd;
 
-        if ((flags & O_RDWR) == O_RDWR) {
+        if ((oflags & O_RDWR) == O_RDWR) {
             streamsReportError(VIR_ERR_INTERNAL_ERROR,
                                _("%s: Cannot request read and write flags together"),
                                path);
@@ -562,7 +562,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         cmd = virCommandNewArgList(LIBEXECDIR "/libvirt_iohelper",
                                    path,
                                    NULL);
-        virCommandAddArgFormat(cmd, "%d", flags);
+        virCommandAddArgFormat(cmd, "%d", oflags);
         virCommandAddArgFormat(cmd, "%d", mode);
         virCommandAddArgFormat(cmd, "%llu", offset);
         virCommandAddArgFormat(cmd, "%llu", length);
@@ -575,7 +575,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
          */
         delete = false;
 
-        if (flags == O_RDONLY) {
+        if (oflags == O_RDONLY) {
             childfd = fds[1];
             fd = fds[0];
             virCommandSetOutputFD(cmd, &childfd);
@@ -620,10 +620,10 @@ int virFDStreamOpenFile(virStreamPtr st,
                         const char *path,
                         unsigned long long offset,
                         unsigned long long length,
-                        int flags,
+                        int oflags,
                         bool delete)
 {
-    if (flags & O_CREAT) {
+    if (oflags & O_CREAT) {
         streamsReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Attempt to create %s without specifying mode"),
                            path);
@@ -631,19 +631,19 @@ int virFDStreamOpenFile(virStreamPtr st,
     }
     return virFDStreamOpenFileInternal(st, path,
                                        offset, length,
-                                       flags, 0, delete);
+                                       oflags, 0, delete);
 }
 
 int virFDStreamCreateFile(virStreamPtr st,
                           const char *path,
                           unsigned long long offset,
                           unsigned long long length,
-                          int flags,
+                          int oflags,
                           mode_t mode,
                           bool delete)
 {
     return virFDStreamOpenFileInternal(st, path,
                                        offset, length,
-                                       flags | O_CREAT,
+                                       oflags | O_CREAT,
                                        mode, delete);
 }

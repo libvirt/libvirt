@@ -619,7 +619,7 @@ virExecWithHook(const char *const*argv ATTRIBUTE_UNUSED,
                 int infd ATTRIBUTE_UNUSED,
                 int *outfd ATTRIBUTE_UNUSED,
                 int *errfd ATTRIBUTE_UNUSED,
-                int flags ATTRIBUTE_UNUSED,
+                int flags_unused ATTRIBUTE_UNUSED,
                 virExecHook hook ATTRIBUTE_UNUSED,
                 void *data ATTRIBUTE_UNUSED,
                 char *pidfile ATTRIBUTE_UNUSED)

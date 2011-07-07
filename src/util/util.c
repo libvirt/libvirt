@@ -252,14 +252,14 @@ virArgvToString(const char *const *argv)
 #ifndef WIN32
 
 int virSetInherit(int fd, bool inherit) {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFD)) < 0)
+    int fflags;
+    if ((fflags = fcntl(fd, F_GETFD)) < 0)
         return -1;
     if (inherit)
-        flags &= ~FD_CLOEXEC;
+        fflags &= ~FD_CLOEXEC;
     else
-        flags |= FD_CLOEXEC;
-    if ((fcntl(fd, F_SETFD, flags)) < 0)
+        fflags |= FD_CLOEXEC;
+    if ((fcntl(fd, F_SETFD, fflags)) < 0)
         return -1;
     return 0;
 }
@@ -981,7 +981,7 @@ int virFileOpenAs(const char *path ATTRIBUTE_UNUSED,
                   mode_t mode ATTRIBUTE_UNUSED,
                   uid_t uid ATTRIBUTE_UNUSED,
                   gid_t gid ATTRIBUTE_UNUSED,
-                  unsigned int flags ATTRIBUTE_UNUSED)
+                  unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
     virUtilError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("virFileOpenAs is not implemented for WIN32"));
@@ -993,7 +993,7 @@ int virDirCreate(const char *path ATTRIBUTE_UNUSED,
                  mode_t mode ATTRIBUTE_UNUSED,
                  uid_t uid ATTRIBUTE_UNUSED,
                  gid_t gid ATTRIBUTE_UNUSED,
-                 unsigned int flags ATTRIBUTE_UNUSED)
+                 unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
     virUtilError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("virDirCreate is not implemented for WIN32"));

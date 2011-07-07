@@ -273,10 +273,32 @@ sc_avoid_write:
 # In debug statements, print flags as bitmask and mode_t as octal.
 sc_flags_debug:
 	@prohibit='\<mode=%[0-9.]*[diux]'				\
-	halt='debug mode_t values with %o'				\
+	halt='use %o to debug mode_t values'				\
 	  $(_sc_search_regexp)
-	@prohibit='\<flags=%[0-9.]*l*[diou]'				\
-	halt='debug flag values with %x'				\
+	@prohibit='[Ff]lags=%[0-9.]*l*[diou]'				\
+	halt='use %x to debug flag values'				\
+	  $(_sc_search_regexp)
+
+# Prefer 'unsigned int flags', along with checks for unknown flags.
+# For historical reasons, we are stuck with 'unsigned long flags' in
+# migration, so check for those known 4 instances and no more in public
+# API.  Also check that no flags are marked unused, and 'unsigned' should
+# appear before any declaration of a flags variable (achieved by
+# prohibiting the word prior to the type from ending in anything other
+# than d).  The existence of long long, and of documentation about
+# flags, makes the regex in the third test slightly harder.
+sc_flags_usage:
+	@test "$$(cat $(srcdir)/include/libvirt/libvirt.h.in		\
+	    $(srcdir)/include/libvirt/virterror.h			\
+	    $(srcdir)/include/libvirt/libvirt-qemu.h			\
+	  | grep -c '\(long\|unsigned\) flags')" != 4 &&		\
+	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2;	\
+	    exit 1; } || :
+	@prohibit=' flags ''ATTRIBUTE_UNUSED'				\
+	halt='flags should be checked with virCheckFlags'		\
+	  $(_sc_search_regexp)
+	@prohibit='^[^@]*([^d] (int|long long)|[^dg] long) flags[;,)]'	\
+	halt='flags should be unsigned'					\
 	  $(_sc_search_regexp)
 
 # Avoid functions that can lead to double-close bugs.
@@ -645,7 +667,7 @@ exclude_file_name_regexp--sc_avoid_write = \
 
 exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
 
-exclude_file_name_regexp--sc_flags_debug = ^docs/
+exclude_file_name_regexp--sc_flags_usage = ^docs/
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^src/rpc/gendispatch\.pl$$
