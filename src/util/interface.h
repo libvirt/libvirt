@@ -24,6 +24,7 @@ struct nlattr;
 # endif
 
 # include "datatypes.h"
+# include "network.h"
 
 int ifaceGetFlags(const char *name, short *flags);
 int ifaceIsUp(const char *name, bool *up);
@@ -48,6 +49,8 @@ int ifaceGetVlanID(const char *vlanifname, int *vlanid);
 int ifaceSetMacAddress(const char *ifname, const unsigned char *macaddr);
 
 int ifaceGetMacAddress(const char *ifname, unsigned char *macaddr);
+
+int ifaceGetIPAddress(const char *ifname, virSocketAddrPtr addr);
 
 int ifaceMacvtapLinkAdd(const char *type,
                         const unsigned char *macaddress, int macaddrsize,

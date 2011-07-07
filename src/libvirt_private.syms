@@ -529,6 +529,7 @@ ifaceCtrl;
 ifaceGetFlags;
 ifaceGetIndex;
 ifaceGetMacAddress;
+ifaceGetIPAddress;
 ifaceGetNthParent;
 ifaceGetVlanID;
 ifaceIsUp;

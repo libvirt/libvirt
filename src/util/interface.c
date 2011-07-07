@@ -29,6 +29,7 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <netinet/in.h>
 
 #ifdef __linux__
 # include <linux/if.h>
@@ -510,6 +511,65 @@ ifaceSetMacAddress(const char *ifname ATTRIBUTE_UNUSED,
 
 #endif /* __linux__ */
 
+
+/**
+ * ifaceGetIPAddress:
+ * @ifname: name of the interface whose IP address we want
+ * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
+ *
+ * This function gets the @macaddr for a given interface @ifname.
+ *
+ * Returns 0 on success, -errno on failure.
+ */
+#ifdef __linux__
+int
+ifaceGetIPAddress(const char *ifname,
+                  virSocketAddrPtr addr)
+{
+    struct ifreq ifr;
+    int fd;
+    int rc = 0;
+
+    if (!ifname || !addr)
+        return -EINVAL;
+
+    memset (addr, 0, sizeof(*addr));
+    addr->data.stor.ss_family = AF_UNSPEC;
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0)
+        return -errno;
+
+    memset(&ifr, 0, sizeof(struct ifreq));
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
+        rc = -EINVAL;
+        goto err_exit;
+    }
+
+    if (ioctl(fd, SIOCGIFADDR, (char *)&ifr) != 0) {
+        rc = -errno;
+        goto err_exit;
+    }
+
+    addr->data.stor.ss_family = AF_INET;
+    addr->len = sizeof(addr->data.inet4);
+    memcpy(&addr->data.inet4, &ifr.ifr_addr, addr->len);
+
+err_exit:
+    VIR_FORCE_CLOSE(fd);
+    return rc;
+}
+
+#else
+
+int
+ifaceGetIPAddress(const char *ifname ATTRIBUTE_UNUSED,
+                  virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+
+#endif /* __linux__ */
 
 /**
  * ifaceLinkAdd
