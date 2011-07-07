@@ -83,10 +83,10 @@ enum virNodeDevPCICapFlags {
 };
 
 struct pci_config_address {
-    unsigned domain;
-    unsigned bus;
-    unsigned slot;
-    unsigned function;
+    unsigned int domain;
+    unsigned int bus;
+    unsigned int slot;
+    unsigned int function;
 };
 
 typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
@@ -109,55 +109,55 @@ struct _virNodeDevCapsDef {
             } firmware;
         } system;
         struct {
-            unsigned domain;
-            unsigned bus;
-            unsigned slot;
-            unsigned function;
-            unsigned product;
-            unsigned vendor;
-            unsigned class;
+            unsigned int domain;
+            unsigned int bus;
+            unsigned int slot;
+            unsigned int function;
+            unsigned int product;
+            unsigned int vendor;
+            unsigned int class;
             char *product_name;
             char *vendor_name;
             struct pci_config_address *physical_function;
             struct pci_config_address **virtual_functions;
-            unsigned num_virtual_functions;
-            unsigned flags;
+            unsigned int num_virtual_functions;
+            unsigned int flags;
         } pci_dev;
         struct {
-            unsigned bus;
-            unsigned device;
-            unsigned product;
-            unsigned vendor;
+            unsigned int bus;
+            unsigned int device;
+            unsigned int product;
+            unsigned int vendor;
             char *product_name;
             char *vendor_name;
         } usb_dev;
         struct {
-            unsigned number;
-            unsigned _class;		/* "class" is reserved in C */
-            unsigned subclass;
-            unsigned protocol;
+            unsigned int number;
+            unsigned int _class;		/* "class" is reserved in C */
+            unsigned int subclass;
+            unsigned int protocol;
             char *description;
         } usb_if;
         struct {
             char *address;
-            unsigned address_len;
+            unsigned int address_len;
             char *ifname;
             enum virNodeDevNetCapType subtype;  /* LAST -> no subtype */
         } net;
         struct {
-            unsigned host;
+            unsigned int host;
             char *wwnn;
             char *wwpn;
-            unsigned flags;
+            unsigned int flags;
         } scsi_host;
         struct {
             char *name;
         } scsi_target;
         struct {
-            unsigned host;
-            unsigned bus;
-            unsigned target;
-            unsigned lun;
+            unsigned int host;
+            unsigned int bus;
+            unsigned int target;
+            unsigned int lun;
             char *type;
         } scsi;
         struct {
@@ -172,7 +172,7 @@ struct _virNodeDevCapsDef {
             char *vendor;
             char *serial;
             char *media_label;
-            unsigned flags;	/* virNodeDevStorageCapFlags bits */
+            unsigned int flags;	/* virNodeDevStorageCapFlags bits */
         } storage;
     } data;
     virNodeDevCapsDefPtr next;          /* next capability */
