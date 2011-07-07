@@ -2164,11 +2164,10 @@ static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
         is_reg = true;
     } else {
         is_reg = !!S_ISREG(sb.st_mode);
-        /* If the path is regular local file which exists
+        /* If the path is regular file which exists
          * already and dynamic_ownership is off, we don't
          * want to change it's ownership, just open it as-is */
-        if (is_reg && !driver->dynamicOwnership &&
-            virStorageFileIsSharedFS(path) == 0) {
+        if (is_reg && !driver->dynamicOwnership) {
             uid=sb.st_uid;
             gid=sb.st_gid;
         }
