@@ -1755,6 +1755,7 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 {
     bool enabled = false;
     long long port = 0;
+    char *listenAddr = NULL;
 
     if (def == NULL || *def != NULL) {
         VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1780,12 +1781,18 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     if (virVMXGetConfigLong(conf, "RemoteDisplay.vnc.port", &port, -1,
                             true) < 0 ||
         virVMXGetConfigString(conf, "RemoteDisplay.vnc.ip",
-                              &(*def)->data.vnc.listenAddr, true) < 0 ||
+                              &listenAddr, true) < 0 ||
         virVMXGetConfigString(conf, "RemoteDisplay.vnc.keymap",
                               &(*def)->data.vnc.keymap, true) < 0 ||
         virVMXGetConfigString(conf, "RemoteDisplay.vnc.password",
                               &(*def)->data.vnc.auth.passwd, true) < 0) {
         goto failure;
+    }
+
+    if (listenAddr) {
+        if (virDomainGraphicsListenSetAddress(*def, 0, listenAddr, -1, true) < 0)
+            goto failure;
+        VIR_FREE(listenAddr);
     }
 
     if (port < 0) {
@@ -1806,6 +1813,7 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     return 0;
 
   failure:
+    VIR_FREE(listenAddr);
     virDomainGraphicsDefFree(*def);
     *def = NULL;
 
@@ -3196,6 +3204,8 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
 int
 virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
 {
+    const char *listenAddr;
+
     if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
@@ -3216,9 +3226,9 @@ virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
                           def->data.vnc.port);
     }
 
-    if (def->data.vnc.listenAddr != NULL) {
+    if ((listenAddr = virDomainGraphicsListenGetAddress(def, 0))) {
         virBufferAsprintf(buffer, "RemoteDisplay.vnc.ip = \"%s\"\n",
-                          def->data.vnc.listenAddr);
+                          listenAddr);
     }
 
     if (def->data.vnc.keymap != NULL) {

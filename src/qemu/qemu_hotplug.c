@@ -1052,6 +1052,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
                          virDomainGraphicsDefPtr dev)
 {
     virDomainGraphicsDefPtr olddev = qemuDomainFindGraphics(vm, dev);
+    const char *oldListenAddr, *newListenAddr;
     int ret = -1;
 
     if (!olddev) {
@@ -1059,6 +1060,9 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
                         _("cannot find existing graphics device to modify"));
         return -1;
     }
+
+    oldListenAddr = virDomainGraphicsListenGetAddress(olddev, 0);
+    newListenAddr = virDomainGraphicsListenGetAddress(dev, 0);
 
     switch (dev->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
@@ -1069,8 +1073,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
                             _("cannot change port settings on vnc graphics"));
             return -1;
         }
-        if (STRNEQ_NULLABLE(olddev->data.vnc.listenAddr,
-                            dev->data.vnc.listenAddr)) {
+        if (STRNEQ_NULLABLE(oldListenAddr,newListenAddr)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change listen address setting on vnc graphics"));
             return -1;
@@ -1118,8 +1121,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
                             _("cannot change port settings on spice graphics"));
             return -1;
         }
-        if (STRNEQ_NULLABLE(olddev->data.spice.listenAddr,
-                            dev->data.spice.listenAddr)) {
+        if (STRNEQ_NULLABLE(oldListenAddr, newListenAddr)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change listen address setting on spice graphics"));
             return -1;

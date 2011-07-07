@@ -38,6 +38,8 @@
     </interface>
     <input type='tablet'/>
     <input type='mouse' bus='ps2'/>
-    <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'/>
+    <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
   </devices>
 </domain>

@@ -2501,7 +2501,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                             if (netAddressUtf16) {
                                 VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
                                 if (STRNEQ(netAddressUtf8, ""))
-                                        def->graphics[def->ngraphics]->data.rdp.listenAddr = strdup(netAddressUtf8);
+                                    virDomainGraphicsListenSetAddress(def->graphics[def->ngraphics], 0,
+                                                                      netAddressUtf8, -1, true);
                                 VBOX_UTF16_FREE(netAddressUtf16);
                                 VBOX_UTF8_FREE(netAddressUtf8);
                             }
@@ -4532,6 +4533,9 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             machine->vtbl->GetVRDEServer(machine, &VRDxServer);
 #endif /* VBOX_API_VERSION >= 4000 */
             if (VRDxServer) {
+                const char *listenAddr
+                    = virDomainGraphicsListenGetAddress(def->graphics[i], 0);
+
                 VRDxServer->vtbl->SetEnabled(VRDxServer, PR_TRUE);
                 VIR_DEBUG("VRDP Support turned ON.");
 
@@ -4576,14 +4580,13 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     VIR_DEBUG("VRDP set to allow multiple connection");
                 }
 
-                if (def->graphics[i]->data.rdp.listenAddr) {
+                if (listenAddr) {
 #if VBOX_API_VERSION >= 4000
                     PRUnichar *netAddressKey = NULL;
 #endif
                     PRUnichar *netAddressUtf16 = NULL;
 
-                    VBOX_UTF8_TO_UTF16(def->graphics[i]->data.rdp.listenAddr,
-                                       &netAddressUtf16);
+                    VBOX_UTF8_TO_UTF16(listenAddr, &netAddressUtf16);
 #if VBOX_API_VERSION < 4000
                     VRDxServer->vtbl->SetNetAddress(VRDxServer,
                                                     netAddressUtf16);
@@ -4594,7 +4597,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     VBOX_UTF16_FREE(netAddressKey);
 #endif /* VBOX_API_VERSION >= 4000 */
                     VIR_DEBUG("VRDP listen address is set to: %s",
-                          def->graphics[i]->data.rdp.listenAddr);
+                              listenAddr);
 
                     VBOX_UTF16_FREE(netAddressUtf16);
                 }

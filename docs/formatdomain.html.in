@@ -2043,9 +2043,14 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;graphics type='sdl' display=':0.0'/&gt;
-    &lt;graphics type='vnc' port='5904'/&gt;
+    &lt;graphics type='vnc' port='5904'&gt;
+      &lt;listen type='address' address='1.2.3.4'/&gt;
+    &lt;/graphics&gt;
     &lt;graphics type='rdp' autoport='yes' multiUser='yes' /&gt;
     &lt;graphics type='desktop' fullscreen='yes'/&gt;
+    &lt;graphics type='spice'&gt;
+      &lt;listen type='network' network='rednet'/&gt;
+    &lt;/graphics&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -2188,6 +2193,54 @@ qemu-kvm -net nic,model=? /dev/null
             and <code>fullscreen</code>.
           </dd>
         </dl>
+      </dd>
+    </dl>
+
+    <p>
+      Rather than putting the address information used to set up the
+      listening socket for graphics types <code>vnc</code>
+      and <code>spice</code> in
+      the <code>&lt;graphics&gt;</code> <code>listen</code> attribute,
+      a separate subelement of <code>&lt;graphics&gt;</code>,
+      called <code>&lt;listen&gt;</code> can be specified (see the
+      examples above)<span class="since">since
+      0.9.4</span>. <code>&lt;listen&gt;</code> accepts the following
+      attributes:
+    </p>
+    <dl>
+      <dt><code>type</code></dt>
+      <dd>Set to either <code>address</code>
+        or <code>network</code>. This tells whether this listen
+        element is specifying the address to be used directly, or by
+        naming a network (which will then be used to determine an
+        appropriate address for listening).
+      </dd>
+    </dl>
+    <dl>
+      <dt><code>address</code></dt>
+      <dd>if <code>type='address'</code>, the <code>address</code>
+        attribute will contain either an IP address or hostname (which
+        will be resolved to an IP address via a DNS query) to listen
+        on. In the "live" XML of a running domain, this attribute will
+        be set to the IP address used for listening, even
+        if <code>type='network'</code>.
+      </dd>
+    </dl>
+    <dl>
+      <dt><code>network</code></dt>
+      <dd>if <code>type='network'</code>, the <code>network</code>
+        attribute will contain the name of a network in libvirt's list
+        of configured networks. The named network configuration will
+        be examined to determine an appropriate listen address. For
+        example, if the network has an IPv4 address in its
+        configuration (e.g. if it has a forward type
+        of <code>route</code>, <code>nat</code>, or no forward type
+        (isolated)), the first IPv4 address listed in the network's
+        configuration will be used. If the network is describing a
+        host bridge, the first IPv4 address associated with that
+        bridge device will be used, and if the network is describing
+        one of the 'direct' (macvtap) modes, the first IPv4 address of
+        the first forward dev will be used.
       </dd>
     </dl>
 

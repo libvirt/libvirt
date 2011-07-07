@@ -43,7 +43,9 @@
       <model type='e1000'/>
     </interface>
     <input type='mouse' bus='ps2'/>
-    <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' passwd='123poi'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' passwd='123poi'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
     <sound model='sb16'/>
     <sound model='es1370'/>
   </devices>

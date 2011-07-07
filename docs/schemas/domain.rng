@@ -1289,6 +1289,7 @@
               </choice>
             </attribute>
           </optional>
+          <ref name="listenElements"/>
         </group>
         <group>
           <attribute name="type">
@@ -1342,6 +1343,7 @@
             </attribute>
           </optional>
           <interleave>
+            <ref name="listenElements"/>
             <zeroOrMore>
               <element name="channel">
                 <attribute name="name">
@@ -1478,6 +1480,7 @@
               <ref name="addrIPorName"/>
             </attribute>
           </optional>
+          <ref name="listenElements"/>
         </group>
         <group>
           <attribute name="type">
@@ -1499,6 +1502,36 @@
         </group>
       </choice>
     </element>
+  </define>
+
+  <define name="listenElements">
+    <zeroOrMore>
+      <element name="listen">
+        <choice>
+          <group>
+            <attribute name="type">
+              <value>address</value>
+            </attribute>
+            <attribute name="address">
+              <ref name="addrIPorName"/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>network</value>
+            </attribute>
+            <attribute name="network">
+              <text/>
+            </attribute>
+            <optional>
+              <attribute name="address">
+                <ref name="addrIPorName"/>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+      </element>
+    </zeroOrMore>
   </define>
   <!--
      A video adapter description, allowing configuration of device

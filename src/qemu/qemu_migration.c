@@ -210,7 +210,7 @@ qemuMigrationCookieGraphicsAlloc(struct qemud_driver *driver,
     mig->type = def->type;
     if (mig->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         mig->port = def->data.vnc.port;
-        listenAddr = def->data.vnc.listenAddr;
+        listenAddr = virDomainGraphicsListenGetAddress(def, 0);
         if (!listenAddr)
             listenAddr = driver->vncListen;
 
@@ -223,7 +223,7 @@ qemuMigrationCookieGraphicsAlloc(struct qemud_driver *driver,
             mig->tlsPort = def->data.spice.tlsPort;
         else
             mig->tlsPort = -1;
-        listenAddr = def->data.spice.listenAddr;
+        listenAddr = virDomainGraphicsListenGetAddress(def, 0);
         if (!listenAddr)
             listenAddr = driver->spiceListen;
 

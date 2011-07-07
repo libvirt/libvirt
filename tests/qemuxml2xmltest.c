@@ -139,6 +139,7 @@ mymain(void)
     DO_TEST("disk-drive-cache-v1-wb");
     DO_TEST("disk-drive-cache-v1-none");
     DO_TEST("disk-scsi-device");
+    DO_TEST("graphics-listen-network");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-sasl");
     DO_TEST("graphics-vnc-tls");
@@ -194,6 +195,7 @@ mymain(void)
     DO_TEST_DIFFERENT("disk-scsi-device-auto");
     DO_TEST_DIFFERENT("console-virtio");
     DO_TEST_DIFFERENT("serial-target-port-auto");
+    DO_TEST_DIFFERENT("graphics-listen-network2");
 
     virCapabilitiesFree(driver.caps);
 

@@ -4127,14 +4127,18 @@ qemuBuildCommandLine(virConnectPtr conn,
                               def->graphics[0]->data.vnc.socket);
 
         } else if (qemuCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
-            const char *addr = def->graphics[0]->data.vnc.listenAddr ?
-                def->graphics[0]->data.vnc.listenAddr :
-                driver->vncListen;
-            bool escapeAddr = strchr(addr, ':') != NULL;
+            const char *listenAddr = NULL;
+            bool escapeAddr;
+
+            listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+            if (!listenAddr)
+                listenAddr = driver->vncListen;
+
+            escapeAddr = strchr(listenAddr, ':') != NULL;
             if (escapeAddr)
-                virBufferAsprintf(&opt, "[%s]", addr);
+                virBufferAsprintf(&opt, "[%s]", listenAddr);
             else
-                virBufferAdd(&opt, addr, -1);
+                virBufferAdd(&opt, listenAddr, -1);
             virBufferAsprintf(&opt, ":%d",
                               def->graphics[0]->data.vnc.port - 5900);
 
@@ -4221,6 +4225,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     } else if ((def->ngraphics == 1) &&
                def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
+        const char *listenAddr = NULL;
 
         if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4233,10 +4238,11 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (driver->spiceTLS && def->graphics[0]->data.spice.tlsPort != -1)
             virBufferAsprintf(&opt, ",tls-port=%u", def->graphics[0]->data.spice.tlsPort);
 
-        if (def->graphics[0]->data.spice.listenAddr)
-            virBufferAsprintf(&opt, ",addr=%s", def->graphics[0]->data.spice.listenAddr);
-        else if (driver->spiceListen)
-            virBufferAsprintf(&opt, ",addr=%s", driver->spiceListen);
+        listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+        if (!listenAddr)
+            listenAddr = driver->spiceListen;
+        if (listenAddr)
+            virBufferAsprintf(&opt, ",addr=%s", listenAddr);
 
         /* In the password case we set it via monitor command, to avoid
          * making it visible on CLI, so there's no use of password=XXX
@@ -5978,7 +5984,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 /* -vnc unix:/some/big/path */
                 vnc->data.vnc.socket = strdup(val + 5);
                 if (!vnc->data.vnc.socket) {
-                    VIR_FREE(vnc);
+                    virDomainGraphicsDefFree(vnc);
                     goto no_memory;
                 }
             } else {
@@ -5993,24 +5999,26 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                     sep = "]:";
                 tmp = strstr(val, sep);
                 if (!tmp) {
-                    VIR_FREE(vnc);
+                    virDomainGraphicsDefFree(vnc);
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     _("missing VNC port number in '%s'"), val);
                     goto error;
                 }
                 if (virStrToLong_i(tmp+strlen(sep), &opts, 10,
                                    &vnc->data.vnc.port) < 0) {
-                    VIR_FREE(vnc);
+                    virDomainGraphicsDefFree(vnc);
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     _("cannot parse VNC port '%s'"), tmp+1);
                     goto error;
                 }
                 if (val[0] == '[')
-                    vnc->data.vnc.listenAddr = strndup(val+1, tmp-(val+1));
+                    virDomainGraphicsListenSetAddress(vnc, 0,
+                                                      val+1, tmp-(val+1), true);
                 else
-                    vnc->data.vnc.listenAddr = strndup(val, tmp-val);
-                if (!vnc->data.vnc.listenAddr) {
-                    VIR_FREE(vnc);
+                    virDomainGraphicsListenSetAddress(vnc, 0,
+                                                      val, tmp-val, true);
+                if (!virDomainGraphicsListenGetAddress(vnc, 0)) {
+                    virDomainGraphicsDefFree(vnc);
                     goto no_memory;
                 }
                 vnc->data.vnc.port += 5900;

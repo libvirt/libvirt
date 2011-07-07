@@ -24,6 +24,8 @@
       <target type='xen' port='0'/>
     </console>
     <input type='mouse' bus='xen'/>
-    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0' keymap='ja'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0' keymap='ja'>
+      <listen type='address' address='0.0.0.0'/>
+    </graphics>
   </devices>
 </domain>

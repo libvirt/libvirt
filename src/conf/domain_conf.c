@@ -331,6 +331,11 @@ VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "desktop",
               "spice")
 
+VIR_ENUM_IMPL(virDomainGraphicsListen, VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST,
+              "none",
+              "address",
+              "network")
+
 VIR_ENUM_IMPL(virDomainGraphicsAuthConnected,
               VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_LAST,
               "default",
@@ -625,14 +630,26 @@ virDomainGraphicsAuthDefClear(virDomainGraphicsAuthDefPtr def)
     /* Don't free def */
 }
 
+static void
+virDomainGraphicsListenDefClear(virDomainGraphicsListenDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->address);
+    VIR_FREE(def->network);
+    return;
+}
+
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 {
+    int ii;
+
     if (!def)
         return;
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        VIR_FREE(def->data.vnc.listenAddr);
         VIR_FREE(def->data.vnc.socket);
         VIR_FREE(def->data.vnc.keymap);
         virDomainGraphicsAuthDefClear(&def->data.vnc.auth);
@@ -644,7 +661,6 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        VIR_FREE(def->data.rdp.listenAddr);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
@@ -652,11 +668,14 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        VIR_FREE(def->data.spice.listenAddr);
         VIR_FREE(def->data.spice.keymap);
         virDomainGraphicsAuthDefClear(&def->data.spice.auth);
         break;
     }
+
+    for (ii = 0; ii < def->nListens; ii++)
+        virDomainGraphicsListenDefClear(&def->listens[ii]);
+    VIR_FREE(def->listens);
 
     VIR_FREE(def);
 }
@@ -4018,18 +4037,81 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
     return 0;
 }
 
+static int
+virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
+                                   xmlNodePtr node,
+                                   unsigned int flags)
+{
+    int ret = -1;
+    char *type     = virXMLPropString(node, "type");
+    char *address  = virXMLPropString(node, "address");
+    char *network  = virXMLPropString(node, "network");
+
+    if (!type) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("graphics listen type must be specified"));
+        goto error;
+    }
+
+    if ((def->type = virDomainGraphicsListenTypeFromString(type)) < 0) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unknown graphics listen type '%s'"), type);
+        goto error;
+    }
+
+    /* address is recognized if either type='address', or if
+     * type='network' and we're looking at live XML (i.e. *not*
+     * inactive). It is otherwise ignored. */
+    if (address && address[0] &&
+        ((def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) ||
+         ((def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK) &&
+          !(flags & VIR_DOMAIN_XML_INACTIVE)))) {
+        def->address = address;
+        address = NULL;
+    }
+
+    if (network && network[0]) {
+        if (def->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK) {
+            /* network='xxx' never makes sense with anything except
+             * type='address' */
+            virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                 _("network attribute not allowed when listen type is not network"));
+            goto error;
+        }
+        def->network = network;
+        network = NULL;
+    }
+
+    ret = 0;
+error:
+    if (ret < 0)
+        virDomainGraphicsListenDefClear(def);
+    VIR_FREE(type);
+    VIR_FREE(address);
+    VIR_FREE(network);
+    return ret;
+}
+
 
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
-virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
+virDomainGraphicsDefParseXML(xmlNodePtr node,
+                             xmlXPathContextPtr ctxt,
+                             unsigned int flags)
 {
     virDomainGraphicsDefPtr def;
     char *type = NULL;
+    int nListens;
+    xmlNodePtr *listenNodes = NULL;
+    char *listenAddr = NULL;
+    xmlNodePtr save = ctxt->node;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         return NULL;
     }
+
+    ctxt->node = node;
 
     type = virXMLPropString(node, "type");
 
@@ -4043,6 +4125,78 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unknown graphics device type '%s'"), type);
         goto error;
+    }
+
+    if ((def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) ||
+        (def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) ||
+        (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)) {
+
+        /* parse the <listen> subelements for graphics types that support it */
+        nListens = virXPathNodeSet("./listen", ctxt, &listenNodes);
+        if (nListens < 0)
+            goto error;
+
+        if (nListens > 0) {
+            int ii;
+
+            if (VIR_ALLOC_N(def->listens, nListens) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+
+            for (ii = 0; ii < nListens; ii++) {
+                int ret = virDomainGraphicsListenDefParseXML(&def->listens[ii],
+                                                             listenNodes[ii],
+                                                             flags);
+                if (ret < 0)
+                    goto error;
+                def->nListens++;
+            }
+            VIR_FREE(listenNodes);
+        }
+
+        /* listen attribute of <graphics> is also supported by these,
+         * but must match the 'address' attribute of the first listen
+         * that is type='address' (if present) */
+        listenAddr = virXMLPropString(node, "listen");
+        if (listenAddr && !listenAddr[0])
+            VIR_FREE(listenAddr);
+
+        if (listenAddr) {
+            if (def->nListens == 0) {
+                /* There were no <listen> elements, so we can just
+                 * directly set listenAddr as listens[0]->address */
+                if (virDomainGraphicsListenSetAddress(def, 0, listenAddr,
+                                                      -1, true) < 0)
+                    goto error;
+            } else {
+                /* There is at least 1 listen element, so we look for
+                 * the first listen of type='address', and make sure
+                 * its address matches the listen attribute from
+                 * graphics. */
+                bool matched = false;
+                const char *found = NULL;
+                int ii;
+
+                for (ii = 0; ii < nListens; ii++) {
+                    if (virDomainGraphicsListenGetType(def, ii)
+                        == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
+                        found = virDomainGraphicsListenGetAddress(def, ii);
+                        if (STREQ_NULLABLE(found, listenAddr)) {
+                            matched = true;
+                        }
+                        break;
+                    }
+                }
+                if (!matched) {
+                    virDomainReportError(VIR_ERR_XML_ERROR,
+                                         _("graphics listen attribute %s must match address "
+                                           "attribute of first listen element (found %s)"),
+                                         listenAddr, found ? found : "none");
+                    goto error;
+                }
+            }
+        }
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
@@ -4077,13 +4231,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
             VIR_FREE(autoport);
         }
 
-        def->data.vnc.listenAddr = virXMLPropString(node, "listen");
         def->data.vnc.socket = virXMLPropString(node, "socket");
         def->data.vnc.keymap = virXMLPropString(node, "keymap");
-
-        if (def->data.vnc.listenAddr &&
-            !def->data.vnc.listenAddr[0])
-            VIR_FREE(def->data.vnc.listenAddr);
 
         if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth,
                                              def->type) < 0)
@@ -4149,11 +4298,6 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
             VIR_FREE(multiUser);
         }
 
-        def->data.rdp.listenAddr = virXMLPropString(node, "listen");
-
-        if (def->data.rdp.listenAddr &&
-            !def->data.rdp.listenAddr[0])
-            VIR_FREE(def->data.rdp.listenAddr);
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) {
         char *fullscreen = virXMLPropString(node, "fullscreen");
 
@@ -4215,12 +4359,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
             VIR_FREE(autoport);
         }
 
-        def->data.spice.listenAddr = virXMLPropString(node, "listen");
         def->data.spice.keymap = virXMLPropString(node, "keymap");
-
-        if (def->data.spice.listenAddr &&
-            !def->data.spice.listenAddr[0])
-            VIR_FREE(def->data.spice.listenAddr);
 
         if (virDomainGraphicsAuthDefParseXML(node, &def->data.spice.auth,
                                              def->type) < 0)
@@ -4395,7 +4534,10 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, unsigned int flags)
 
 cleanup:
     VIR_FREE(type);
+    VIR_FREE(listenNodes);
+    VIR_FREE(listenAddr);
 
+    ctxt->node = save;
     return def;
 
 error:
@@ -5264,7 +5406,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "graphics")) {
         dev->type = VIR_DOMAIN_DEVICE_GRAPHICS;
-        if (!(dev->data.graphics = virDomainGraphicsDefParseXML(node, flags)))
+        if (!(dev->data.graphics = virDomainGraphicsDefParseXML(node, ctxt, flags)))
             goto error;
     } else {
         virDomainReportError(VIR_ERR_XML_ERROR,
@@ -6513,6 +6655,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainGraphicsDefPtr graphics = virDomainGraphicsDefParseXML(nodes[i],
+                                                                        ctxt,
                                                                         flags);
         if (!graphics)
             goto error;
@@ -9423,12 +9566,44 @@ virDomainGraphicsAuthDefFormatAttr(virBufferPtr buf,
                               virDomainGraphicsAuthConnectedTypeToString(def->connected));
 }
 
+
+static void
+virDomainGraphicsListenDefFormat(virBufferPtr buf,
+                                 virDomainGraphicsListenDefPtr def,
+                                 unsigned int flags)
+{
+    virBufferAddLit(buf, "      <listen");
+
+    if (def->type) {
+        virBufferAsprintf(buf, " type='%s'",
+                          virDomainGraphicsListenTypeToString(def->type));
+    }
+
+    if (def->address &&
+        ((def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) ||
+         ((def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK) &&
+          !(flags & VIR_DOMAIN_XML_INACTIVE)))) {
+        /* address may also be set to show current status when type='network',
+         * but we don't want to print that if INACTIVE data is requested. */
+        virBufferAsprintf(buf, " address='%s'", def->address);
+    }
+
+    if (def->network &&
+        (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK)) {
+        virBufferAsprintf(buf, " network='%s'", def->network);
+    }
+
+    virBufferAddLit(buf, "/>\n");
+}
+
+
 static int
 virDomainGraphicsDefFormat(virBufferPtr buf,
                            virDomainGraphicsDefPtr def,
                            unsigned int flags)
 {
     const char *type = virDomainGraphicsTypeToString(def->type);
+    const char *listenAddr = NULL;
     int children = 0;
     int i;
 
@@ -9436,6 +9611,17 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected net type %d"), def->type);
         return -1;
+    }
+
+    /* find the first listen element of type='address' and duplicate
+    * its address attribute as the listen attribute of
+    * <graphics>. This is done to improve backward compatibility. */
+    for (i = 0; i < def->nListens; i++) {
+        if (virDomainGraphicsListenGetType(def, i)
+            == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
+            listenAddr = virDomainGraphicsListenGetAddress(def, i);
+            break;
+        }
     }
 
     virBufferAsprintf(buf, "    <graphics type='%s'", type);
@@ -9457,9 +9643,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " autoport='%s'",
                               def->data.vnc.autoport ? "yes" : "no");
 
-            if (def->data.vnc.listenAddr)
-                virBufferAsprintf(buf, " listen='%s'",
-                                  def->data.vnc.listenAddr);
+            if (listenAddr)
+                virBufferAsprintf(buf, " listen='%s'", listenAddr);
         }
 
         if (def->data.vnc.keymap)
@@ -9498,8 +9683,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.rdp.multiUser)
             virBufferAsprintf(buf, " multiUser='yes'");
 
-        if (def->data.rdp.listenAddr)
-            virBufferAsprintf(buf, " listen='%s'", def->data.rdp.listenAddr);
+        if (listenAddr)
+            virBufferAsprintf(buf, " listen='%s'", listenAddr);
 
         break;
 
@@ -9525,9 +9710,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " autoport='%s'",
                           def->data.spice.autoport ? "yes" : "no");
 
-        if (def->data.spice.listenAddr)
-            virBufferAsprintf(buf, " listen='%s'",
-                              def->data.spice.listenAddr);
+        if (listenAddr)
+            virBufferAsprintf(buf, " listen='%s'", listenAddr);
 
         if (def->data.spice.keymap)
             virBufferEscapeString(buf, " keymap='%s'",
@@ -9536,6 +9720,17 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         virDomainGraphicsAuthDefFormatAttr(buf, &def->data.spice.auth, flags);
         break;
 
+    }
+
+    for (i = 0; i < def->nListens; i++) {
+        if (virDomainGraphicsListenGetType(def, i)
+            == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE)
+            continue;
+        if (!children) {
+            virBufferAddLit(buf, ">\n");
+            children = 1;
+        }
+        virDomainGraphicsListenDefFormat(buf, &def->listens[i], flags);
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
@@ -11404,4 +11599,161 @@ virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
         return iface->data.network.actual->bandwidth;
     }
     return iface->bandwidth;
+}
+
+
+/* Return listens[ii] from the appropriate union for the graphics
+ * type, or NULL if this is an unsuitable type, or the index is out of
+ * bounds. If force0 is TRUE, ii == 0, and there is no listen array,
+ * allocate one with a single item. */
+static virDomainGraphicsListenDefPtr
+virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t ii, bool force0)
+{
+    if ((def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) ||
+        (def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) ||
+        (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)) {
+
+        if (!def->listens && (ii == 0) && force0) {
+            if (VIR_ALLOC(def->listens) < 0)
+                virReportOOMError();
+            else
+                def->nListens = 1;
+        }
+
+        if (!def->listens || (def->nListens <= ii))
+            return NULL;
+
+        return &def->listens[ii];
+    }
+
+    /* it's a type that has no listens array */
+    return NULL;
+}
+
+
+/* Access functions for the fields in a virDomainGraphicsDef's
+ * "listens" array.
+ *
+ * NB: For simple backward compatibility with existing code, any of
+ * the "Set" functions will auto-create listens[0] to store the new
+ * setting, when necessary. Auto-creation beyond the first item is not
+ * supported.
+ *
+ * Return values: All "Get" functions return the requested item, or
+ * 0/NULL. (in the case of returned const char *, the caller should
+ * make a copy if they want to keep it around). All "Set" functions
+ * return 0 on success, -1 on failure. */
+
+int
+virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t ii)
+{
+    virDomainGraphicsListenDefPtr listenInfo
+        = virDomainGraphicsGetListen(def, ii, false);
+
+    if (!listenInfo)
+        return VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE;
+    return listenInfo->type;
+}
+
+
+/* NB: This function assumes type has not previously been set. It
+ * *will not* free any existing address or network based on a change
+ * in value of type. */
+int
+virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t ii, int val)
+{
+    virDomainGraphicsListenDefPtr listenInfo
+        = virDomainGraphicsGetListen(def, ii, true);
+
+    if (!listenInfo)
+        return -1;
+    listenInfo->type = val;
+    return 0;
+}
+
+
+const char *
+virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t ii)
+{
+    virDomainGraphicsListenDefPtr listenInfo
+        = virDomainGraphicsGetListen(def, ii, false);
+
+    if (!listenInfo ||
+        (listenInfo->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS))
+        return NULL;
+    return listenInfo->address;
+}
+
+
+/* Make a copy of up to len characters of address, and store it in
+ * listens[ii].address. If setType is true, set the listen's type
+ * to 'address', otherwise leave type alone. */
+int
+virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
+                                  size_t ii, const char *address,
+                                  int len, bool setType)
+{
+    virDomainGraphicsListenDefPtr listenInfo
+        = virDomainGraphicsGetListen(def, ii, true);
+
+    if (!listenInfo)
+        return -1;
+
+    if (setType)
+        listenInfo->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+
+    if (!address) {
+        listenInfo->address = NULL;
+        return 0;
+    }
+
+    listenInfo->address = (len == -1) ? strdup(address) : strndup(address, len);
+    if (!listenInfo->address) {
+        virReportOOMError();
+        return -1;
+    }
+
+    return 0;
+}
+
+
+const char *
+virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def, size_t ii)
+{
+    virDomainGraphicsListenDefPtr listenInfo
+        = virDomainGraphicsGetListen(def, ii, false);
+
+    if (!listenInfo ||
+        (listenInfo->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK))
+        return NULL;
+    return listenInfo->network;
+}
+
+
+/* Make a copy of up to len characters of address, and store it in
+ * listens[ii].network */
+int
+virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
+                                  size_t ii, const char *network, int len)
+{
+    virDomainGraphicsListenDefPtr listenInfo
+        = virDomainGraphicsGetListen(def, ii, true);
+
+    if (!listenInfo)
+        return -1;
+
+    listenInfo->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK;
+
+    if (!network) {
+        listenInfo->network = NULL;
+        return 0;
+    }
+
+    listenInfo->network = (len == -1) ? strdup(network) : strndup(network, len);
+    if (!listenInfo->network) {
+        virReportOOMError();
+        return -1;
+    }
+
+    return 0;
 }

@@ -22,6 +22,7 @@
     <controller type='ide' index='0'/>
     <input type='mouse' bus='ps2'/>
     <graphics type='spice' port='5903' tlsPort='5904' autoport='no' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
       <channel name='main' mode='secure'/>
       <channel name='inputs' mode='insecure'/>
       <image compression='auto_glz'/>
