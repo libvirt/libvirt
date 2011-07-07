@@ -113,6 +113,30 @@
 
   <guest>
     <os_type>hvm</os_type>
+    <arch name='microblaze'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-microblaze</emulator>
+      <machine>petalogix-s3adsp1800</machine>
+      <machine>microblaze-fdt</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='microblazeel'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-microblazeel</emulator>
+      <machine>petalogix-s3adsp1800</machine>
+      <machine>microblaze-fdt</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
     <arch name='mips'>
       <wordsize>32</wordsize>
       <emulator>/usr/bin/qemu-system-mips</emulator>

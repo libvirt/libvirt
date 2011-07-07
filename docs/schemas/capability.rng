@@ -325,6 +325,8 @@
       <value>arm</value>
       <value>i686</value>
       <value>ia64</value>
+      <value>microblaze</value>
+      <value>microblazeel</value>
       <value>mips</value>
       <value>mipsel</value>
       <value>ppc64</value>

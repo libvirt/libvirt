@@ -16,6 +16,8 @@
       <li>
         <strong>QEMU emulators</strong>: The driver will probe <code>/usr/bin</code>
         for the presence of <code>qemu</code>, <code>qemu-system-x86_64</code>,
+        <code>qemu-system-microblaze</code>,
+        <code>qemu-system-microblazeel</code>,
         <code>qemu-system-mips</code>,<code>qemu-system-mipsel</code>,
         <code>qemu-system-sparc</code>,<code>qemu-system-ppc</code>. The results
         of this can be seen from the capabilities XML output.
