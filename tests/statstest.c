@@ -17,7 +17,7 @@ static void testQuietError(void *userData ATTRIBUTE_UNUSED,
 
 static int testDevice(const char *path, int expect)
 {
-    int actual = xenLinuxDomainDeviceID(NULL, 1, path);
+    int actual = xenLinuxDomainDeviceID(1, path);
 
     if (actual == expect) {
         return 0;
