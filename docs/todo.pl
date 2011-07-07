@@ -47,6 +47,8 @@ my $trackers = BZ::Client::Bug->search($client, {'product' => $product,
 my @trackers;
 
 foreach my $tracker (@{$trackers}) {
+    next if $tracker->{'bug_status'} eq "CLOSED";
+
     my $summary = $tracker->{'short_desc'};
     $summary =~ s/^\s*RFE\s*:\s*//;
     $summary =~ s/^\s*\[\s*RFE\s*\]\s*:?\s*//;
@@ -64,6 +66,8 @@ foreach my $tracker (@trackers) {
 						     'blocked' => $tracker->{id}});
 
     foreach my $feature (@{$features}) {
+	next if $feature->{'bug_status'} eq "CLOSED";
+
 	my $summary = $feature->{'short_desc'};
 	$summary =~ s/^\s*RFE\s*:\s*//;
 	$summary =~ s/^\s*\[\s*RFE\s*\]\s*:?\s*//;
