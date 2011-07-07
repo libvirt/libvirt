@@ -791,7 +791,7 @@ libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     virConnectPtr c_retval;
     char * name;
-    int flags;
+    unsigned int flags;
     PyObject *pyauth;
     PyObject *pycredcb;
     PyObject *pycredtype;
@@ -991,7 +991,7 @@ libvirt_virDomainSnapshotListNames(PyObject *self ATTRIBUTE_UNUSED,
     int c_retval, i;
     virDomainPtr dom;
     PyObject *pyobj_dom;
-    int flags;
+    unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainSnapshotListNames", &pyobj_dom, &flags))
         return(NULL);
@@ -1035,7 +1035,7 @@ libvirt_virDomainRevertToSnapshot(PyObject *self ATTRIBUTE_UNUSED,
     virDomainSnapshotPtr snap;
     PyObject *pyobj_snap;
     PyObject *pyobj_dom;
-    int flags;
+    unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"OOi:virDomainRevertToSnapshot", &pyobj_dom, &pyobj_snap, &flags))
         return(NULL);
