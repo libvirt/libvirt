@@ -1,7 +1,7 @@
 /*
  * storage_conf.c: config handling for storage driver
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -117,7 +117,7 @@ enum {
 typedef struct _virStoragePoolOptions virStoragePoolOptions;
 typedef virStoragePoolOptions *virStoragePoolOptionsPtr;
 struct _virStoragePoolOptions {
-    int flags;
+    unsigned int flags;
     int defaultFormat;
     virStoragePoolFormatToString formatToString;
     virStoragePoolFormatFromString formatFromString;

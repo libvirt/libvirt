@@ -150,7 +150,7 @@ struct _virConnect {
      * since. Thus no need to lock when accessing them
      */
     unsigned int magic;     /* specific value to check */
-    int flags;              /* a set of connection flags */
+    unsigned int flags;     /* a set of connection flags */
     xmlURIPtr uri;          /* connection URI */
 
     /* The underlying hypervisor driver and network driver. */
@@ -297,7 +297,7 @@ struct _virStream {
     unsigned int magic;
     virConnectPtr conn;
     int refs;
-    int flags;
+    unsigned int flags;
 
     virStreamDriverPtr driver;
     void *privateData;

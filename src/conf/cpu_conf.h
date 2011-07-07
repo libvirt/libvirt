@@ -1,7 +1,7 @@
 /*
  * cpu_conf.h: CPU XML handling
  *
- * Copyright (C) 2009, 2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -107,13 +107,13 @@ virCPUDefIsEqual(virCPUDefPtr src,
 char *
 virCPUDefFormat(virCPUDefPtr def,
                 const char *indent,
-                int flags);
+                unsigned int flags);
 
 int
 virCPUDefFormatBuf(virBufferPtr buf,
                    virCPUDefPtr def,
                    const char *indent,
-                   int flags);
+                   unsigned int flags);
 
 int
 virCPUDefAddFeature(virCPUDefPtr cpu,
