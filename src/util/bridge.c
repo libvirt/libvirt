@@ -72,25 +72,16 @@ int
 brInit(brControl **ctlp)
 {
     int fd;
-    int flags;
 
     if (!ctlp || *ctlp)
         return EINVAL;
 
     fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0)
+    if (fd < 0 ||
+        virSetCloseExec(fd) < 0 ||
+        VIR_ALLOC(*ctlp) < 0) {
+        VIR_FORCE_CLOSE(fd);
         return errno;
-
-    if ((flags = fcntl(fd, F_GETFD)) < 0 ||
-        fcntl(fd, F_SETFD, flags | FD_CLOEXEC) < 0) {
-        int err = errno;
-        VIR_FORCE_CLOSE(fd);
-        return err;
-    }
-
-    if (VIR_ALLOC(*ctlp) < 0) {
-        VIR_FORCE_CLOSE(fd);
-        return ENOMEM;
     }
 
     (*ctlp)->fd = fd;
@@ -599,7 +590,7 @@ brSetInterfaceUp(brControl *ctl,
                  int up)
 {
     struct ifreq ifr;
-    int flags;
+    int ifflags;
 
     if (!ctl || !ifname)
         return EINVAL;
@@ -612,10 +603,10 @@ brSetInterfaceUp(brControl *ctl,
     if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr) < 0)
         return errno;
 
-    flags = up ? (ifr.ifr_flags | IFF_UP) : (ifr.ifr_flags & ~IFF_UP);
+    ifflags = up ? (ifr.ifr_flags | IFF_UP) : (ifr.ifr_flags & ~IFF_UP);
 
-    if (ifr.ifr_flags != flags) {
-        ifr.ifr_flags = flags;
+    if (ifr.ifr_flags != ifflags) {
+        ifr.ifr_flags = ifflags;
 
         if (ioctl(ctl->fd, SIOCSIFFLAGS, &ifr) < 0)
             return errno;

@@ -114,19 +114,6 @@ static int umlOpenMonitor(struct uml_driver *driver,
 static int umlReadPidFile(struct uml_driver *driver,
                           virDomainObjPtr vm);
 
-static int umlSetCloseExec(int fd) {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFD)) < 0)
-        goto error;
-    flags |= FD_CLOEXEC;
-    if ((fcntl(fd, F_SETFD, flags)) < 0)
-        goto error;
-    return 0;
- error:
-    VIR_ERROR(_("Failed to set close-on-exec file descriptor flag"));
-    return -1;
-}
-
 static int umlStartVMDaemon(virConnectPtr conn,
                             struct uml_driver *driver,
                             virDomainObjPtr vm);
@@ -889,9 +876,9 @@ static int umlStartVMDaemon(virConnectPtr conn,
     }
     VIR_FREE(logfile);
 
-    if (umlSetCloseExec(logfd) < 0) {
-        virReportSystemError(errno,
-                             "%s", _("Unable to set VM logfile close-on-exec flag"));
+    if (virSetCloseExec(logfd) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set VM logfile close-on-exec flag"));
         VIR_FORCE_CLOSE(logfd);
         return -1;
     }
