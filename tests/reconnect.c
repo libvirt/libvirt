@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 #include "internal.h"
+#include "testutils.h"
+#include "command.h"
 
 static void errorHandler(void *userData ATTRIBUTE_UNUSED,
                          virErrorPtr error ATTRIBUTE_UNUSED) {
@@ -14,6 +16,16 @@ int main(void) {
     int ro = 0;
     virConnectPtr conn;
     virDomainPtr dom;
+    int status;
+    virCommandPtr cmd;
+
+    /* skip test if xend is not running */
+    cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
+    if (virCommandRun(cmd, &status) != 0 || status != 0) {
+        virCommandFree(cmd);
+        return EXIT_AM_SKIP;
+    }
+    virCommandFree(cmd);
 
     virSetErrorFunc(NULL, errorHandler);
 

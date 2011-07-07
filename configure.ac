@@ -1982,30 +1982,6 @@ AM_CONDITIONAL([WITH_PYTHON], [test "$with_python" = "yes"])
 AC_SUBST([PYTHON_VERSION])
 AC_SUBST([PYTHON_INCLUDES])
 
-
-
-AC_MSG_CHECKING([whether this host is running a Xen kernel])
-RUNNING_XEN=
-if test -d /proc/sys/xen
-then
-    RUNNING_XEN=yes
-else
-    RUNNING_XEN=no
-fi
-AC_MSG_RESULT($RUNNING_XEN)
-
-AC_MSG_CHECKING([If XenD UNIX socket /var/run/xend/xmlrpc.sock is accessible])
-RUNNING_XEND=
-if test -S /var/run/xend/xmlrpc.sock
-then
-    RUNNING_XEND=yes
-else
-    RUNNING_XEND=no
-fi
-AC_MSG_RESULT($RUNNING_XEND)
-
-AM_CONDITIONAL([ENABLE_XEN_TESTS], [test "$RUNNING_XEN" != "no" && test "$RUNNING_XEND" != "no"])
-
 AC_ARG_ENABLE([test-coverage],
   AC_HELP_STRING([--enable-test-coverage], [turn on code coverage instrumentation @<:@default=no@:>@]),
 [case "${enableval}" in

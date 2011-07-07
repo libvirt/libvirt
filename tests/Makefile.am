@@ -93,10 +93,7 @@ ssh_LDADD = $(COVERAGE_LDFLAGS)
 
 if WITH_XEN
 check_PROGRAMS += xml2sexprtest sexpr2xmltest \
-	xmconfigtest xencapstest
-if ENABLE_XEN_TESTS
-check_PROGRAMS += statstest reconnect
-endif
+	xmconfigtest xencapstest statstest reconnect
 endif
 if WITH_QEMU
 check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
@@ -216,10 +213,9 @@ if WITH_XEN
 TESTS += xml2sexprtest \
 	sexpr2xmltest \
 	xmconfigtest \
-	xencapstest
-if ENABLE_XEN_TESTS
-TESTS += reconnect statstest
-endif
+	xencapstest \
+	reconnect \
+	statstest
 endif
 
 if WITH_QEMU
