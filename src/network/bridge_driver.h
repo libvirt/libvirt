@@ -43,6 +43,9 @@ int networkNotifyActualDevice(virDomainNetDefPtr iface)
 int networkReleaseActualDevice(virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1);
 
+int networkGetNetworkAddress(const char *netname, char **netaddr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
                                       virCommandPtr *cmdout, char *pidfile,
                                       dnsmasqContext *dctx)
@@ -52,6 +55,7 @@ int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
 #  define networkAllocateActualDevice(iface) 0
 #  define networkNotifyActualDevice(iface) 0
 #  define networkReleaseActualDevice(iface) 0
+#  defing networkGetNetworkAddress(netname, netaddr) (-2)
 #  define networkBuildDhcpDaemonCommandLine(network, cmdout, pidfile, dctx) 0
 # endif
 

@@ -55,6 +55,7 @@
 #include "uuid.h"
 #include "iptables.h"
 #include "bridge.h"
+#include "interface.h"
 #include "logging.h"
 #include "dnsmasq.h"
 #include "util/network.h"
@@ -3088,5 +3089,105 @@ cleanup:
         virNetworkObjUnlock(network);
     virDomainActualNetDefFree(iface->data.network.actual);
     iface->data.network.actual = NULL;
+    return ret;
+}
+
+/*
+ * networkGetNetworkAddress:
+ * @netname: the name of a network
+ * @netaddr: string representation of IP address for that network.
+ *
+ * Attempt to return an IP (v4) address associated with the named
+ * network. If a libvirt virtual network, that will be provided in the
+ * configuration. For host bridge and direct (macvtap) networks, we
+ * must do an ioctl to learn the address.
+ *
+ * Note: This function returns the 1st IPv4 address it finds. It might
+ * be useful if it was more flexible, but the current use (getting a
+ * listen address for qemu's vnc/spice graphics server) can only use a
+ * single address anyway.
+ *
+ * Returns 0 on success, and puts a string (which must be free'd by
+ * the caller) into *netaddr. Returns -1 on failure or -2 if
+ * completely unsupported.
+ */
+int
+networkGetNetworkAddress(const char *netname, char **netaddr)
+{
+    int ret = -1;
+    struct network_driver *driver = driverState;
+    virNetworkObjPtr network = NULL;
+    virNetworkDefPtr netdef;
+    virNetworkIpDefPtr ipdef;
+    virSocketAddr addr;
+    virSocketAddrPtr addrptr = NULL;
+    char *devname = NULL;
+
+    *netaddr = NULL;
+    networkDriverLock(driver);
+    network = virNetworkFindByName(&driver->networks, netname);
+    networkDriverUnlock(driver);
+    if (!network) {
+        networkReportError(VIR_ERR_NO_NETWORK,
+                           _("no network with matching name '%s'"),
+                           netname);
+        goto cleanup;
+    }
+    netdef = network->def;
+
+    switch (netdef->forwardType) {
+    case VIR_NETWORK_FORWARD_NONE:
+    case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_ROUTE:
+        /* if there's an ipv4def, get it's address */
+        ipdef = virNetworkDefGetIpByIndex(netdef, AF_INET, 0);
+        if (!ipdef) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("network '%s' doesn't have an IPv4 address"),
+                               netdef->name);
+            break;
+        }
+        addrptr = &ipdef->address;
+        break;
+
+    case VIR_NETWORK_FORWARD_BRIDGE:
+        if ((devname = netdef->bridge))
+            break;
+        /*
+         * fall through if netdef->bridge wasn't set, since this is
+         * also a direct-mode interface.
+         */
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
+        if ((netdef->nForwardIfs > 0) && netdef->forwardIfs)
+            devname = netdef->forwardIfs[0].dev;
+
+        if (!devname) {
+            networkReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("network '%s' has no associated interface or bridge"),
+                               netdef->name);
+        }
+        break;
+    }
+
+    if (devname) {
+        if (ifaceGetIPAddress(devname, &addr)) {
+            virReportSystemError(errno,
+                                 _("Failed to get IP address for '%s' (network '%s')"),
+                                 devname, netdef->name);
+        } else {
+            addrptr = &addr;
+        }
+    }
+
+    if (addrptr &&
+        (*netaddr = virSocketFormatAddr(addrptr))) {
+        ret = 0;
+    }
+
+cleanup:
+    if (network)
+        virNetworkObjUnlock(network);
     return ret;
 }
