@@ -233,6 +233,26 @@ void virNetClientRef(virNetClientPtr client)
 }
 
 
+int virNetClientGetFD(virNetClientPtr client)
+{
+    int fd;
+    virNetClientLock(client);
+    fd = virNetSocketGetFD(client->sock);
+    virNetClientUnlock(client);
+    return fd;
+}
+
+
+int virNetClientDupFD(virNetClientPtr client, bool cloexec)
+{
+    int fd;
+    virNetClientLock(client);
+    fd = virNetSocketDupFD(client->sock, cloexec);
+    virNetClientUnlock(client);
+    return fd;
+}
+
+
 void virNetClientFree(virNetClientPtr client)
 {
     int i;

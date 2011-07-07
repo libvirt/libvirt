@@ -53,6 +53,9 @@ virNetClientPtr virNetClientNewExternal(const char **cmdargv);
 
 void virNetClientRef(virNetClientPtr client);
 
+int virNetClientGetFD(virNetClientPtr client);
+int virNetClientDupFD(virNetClientPtr client, bool cloexec);
+
 int virNetClientAddProgram(virNetClientPtr client,
                            virNetClientProgramPtr prog);
 

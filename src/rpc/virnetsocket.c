@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #ifdef HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
@@ -706,6 +707,23 @@ int virNetSocketGetFD(virNetSocketPtr sock)
     virMutexLock(&sock->lock);
     fd = sock->fd;
     virMutexUnlock(&sock->lock);
+    return fd;
+}
+
+
+int virNetSocketDupFD(virNetSocketPtr sock, bool cloexec)
+{
+    int fd;
+
+    if (cloexec)
+        fd = fcntl(sock->fd, F_DUPFD_CLOEXEC);
+    else
+        fd = dup(sock->fd);
+    if (fd < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to copy socket file handle"));
+        return -1;
+    }
     return fd;
 }
 

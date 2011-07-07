@@ -77,6 +77,8 @@ int virNetSocketNewConnectExternal(const char **cmdargv,
                                    virNetSocketPtr *addr);
 
 int virNetSocketGetFD(virNetSocketPtr sock);
+int virNetSocketDupFD(virNetSocketPtr sock, bool cloexec);
+
 bool virNetSocketIsLocal(virNetSocketPtr sock);
 
 int virNetSocketGetPort(virNetSocketPtr sock);
