@@ -7754,19 +7754,16 @@ static virDrvOpenStatus vboxStorageOpen (virConnectPtr conn,
     vboxGlobalData *data = conn->privateData;
 
     if (STRNEQ(conn->driver->name, "VBOX"))
-        goto cleanup;
+        return VIR_DRV_OPEN_DECLINED;
 
     if ((data->pFuncs      == NULL) ||
         (data->vboxObj     == NULL) ||
         (data->vboxSession == NULL))
-        goto cleanup;
+        return VIR_DRV_OPEN_ERROR;
 
     VIR_DEBUG("vbox storage initialized");
     /* conn->storagePrivateData = some storage specific data */
     return VIR_DRV_OPEN_SUCCESS;
-
-cleanup:
-    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int vboxStorageClose (virConnectPtr conn) {
