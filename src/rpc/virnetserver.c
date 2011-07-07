@@ -39,6 +39,9 @@
 #if HAVE_AVAHI
 # include "virnetservermdns.h"
 #endif
+#if HAVE_DBUS
+# include <dbus/dbus.h>
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 #define virNetError(code, ...)                                    \
@@ -82,6 +85,10 @@ struct _virNetServer {
 #if HAVE_AVAHI
     virNetServerMDNSPtr mdns;
     virNetServerMDNSGroupPtr mdnsGroup;
+#endif
+
+#if HAVE_DBUS
+    DBusConnection *sysbus;
 #endif
 
     size_t nservices;
@@ -270,6 +277,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t max_clients,
                                 const char *mdnsGroupName,
+                                bool connectDBus,
                                 virNetServerClientInitHook clientInitHook)
 {
     virNetServerPtr srv;
@@ -303,6 +311,25 @@ virNetServerPtr virNetServerNew(size_t min_workers,
             goto error;
         if (!(srv->mdnsGroup = virNetServerMDNSAddGroup(srv->mdns, mdnsGroupName)))
             goto error;
+    }
+#endif
+
+#if HAVE_DBUS
+    if (connectDBus) {
+        DBusError derr;
+
+        dbus_connection_set_change_sigpipe(FALSE);
+        dbus_threads_init_default();
+
+        dbus_error_init(&derr);
+        srv->sysbus = dbus_bus_get(DBUS_BUS_SYSTEM, &derr);
+        if (!(srv->sysbus)) {
+            VIR_ERROR(_("Failed to connect to system bus for PolicyKit auth: %s"),
+                      derr.message);
+            dbus_error_free(&derr);
+            goto error;
+        }
+        dbus_connection_set_exit_on_disconnect(srv->sysbus, FALSE);
     }
 #endif
 
@@ -363,6 +390,14 @@ bool virNetServerIsPrivileged(virNetServerPtr srv)
 }
 
 
+#if HAVE_DBUS
+DBusConnection* virNetServerGetDBusConn(virNetServerPtr srv)
+{
+    return srv->sysbus;
+}
+#endif
+
+
 void virNetServerAutoShutdown(virNetServerPtr srv,
                               unsigned int timeout,
                               virNetServerAutoShutdownFunc func,
@@ -376,7 +411,6 @@ void virNetServerAutoShutdown(virNetServerPtr srv,
 
     virNetServerUnlock(srv);
 }
-
 
 static sig_atomic_t sigErrors = 0;
 static int sigLastErrno = 0;
@@ -746,6 +780,11 @@ void virNetServerFree(virNetServerPtr srv)
     VIR_FREE(srv->clients);
 
     VIR_FREE(srv->mdnsGroupName);
+
+#if HAVE_DBUS
+    if (srv->sysbus)
+        dbus_connection_unref(srv->sysbus);
+#endif
 
     virNetServerUnlock(srv);
     virMutexDestroy(&srv->lock);

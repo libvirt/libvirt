@@ -43,6 +43,7 @@
 #include "command.h"
 #include "intprops.h"
 #include "virnetserverservice.h"
+#include "virnetserver.h"
 
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
@@ -2115,7 +2116,7 @@ authdeny:
 }
 #elif HAVE_POLKIT0
 static int
-remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchAuthPolkit(virNetServerPtr server,
                          virNetServerClientPtr client,
                          virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
                          virNetMessageErrorPtr rerr,
@@ -2137,21 +2138,19 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     memset(ident, 0, sizeof ident);
 
-    virMutexLock(&server->lock);
-    virMutexLock(&client->lock);
-    virMutexUnlock(&server->lock);
+    virMutexLock(&priv->lock);
 
-    action = client->readonly ?
+    action = virNetServerClientGetReadonly(client) ?
         "org.libvirt.unix.monitor" :
         "org.libvirt.unix.manage";
 
     VIR_DEBUG("Start PolicyKit auth %d", virNetServerClientGetFD(client));
-    if (client->auth != REMOTE_AUTH_POLKIT) {
+    if (virNetServerClientGetAuth(client) != VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
         VIR_ERROR(_("client tried invalid PolicyKit init request"));
         goto authfail;
     }
 
-    if (qemudGetSocketIdentity(virNetServerClientGetFD(client), &callerUid, &callerPid) < 0) {
+    if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerPid) < 0) {
         VIR_ERROR(_("cannot get peer socket identity"));
         goto authfail;
     }
@@ -2164,7 +2163,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     VIR_INFO("Checking PID %d running as %d", callerPid, callerUid);
     dbus_error_init(&err);
-    if (!(pkcaller = polkit_caller_new_from_pid(server->sysbus,
+    if (!(pkcaller = polkit_caller_new_from_pid(virNetServerGetDBusConn(server),
                                                 callerPid, &err))) {
         VIR_ERROR(_("Failed to lookup policy kit caller: %s"), err.message);
         dbus_error_free(&err);
@@ -2226,9 +2225,9 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
              action, callerPid, callerUid,
              polkit_result_to_string_representation(pkresult));
     ret->complete = 1;
-    client->auth = REMOTE_AUTH_NONE;
+    virNetServerClientSetIdentity(client, ident);
 
-    virMutexUnlock(&client->lock);
+    virMutexUnlock(&priv->lock);
     return 0;
 
 error:
@@ -2236,7 +2235,7 @@ error:
     virNetError(VIR_ERR_AUTH_FAILED, "%s",
                 _("authentication failed"));
     virNetMessageSaveError(rerr);
-    virMutexUnlock(&client->lock);
+    virMutexUnlock(&priv->lock);
     return -1;
 
 authfail:

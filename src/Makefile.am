@@ -1270,10 +1270,12 @@ EXTRA_DIST += \
 endif
 libvirt_net_rpc_server_la_CFLAGS = \
 			$(AVAHI_CFLAGS) \
-			$(AM_CFLAGS)
+			$(AM_CFLAGS) \
+			$(POLKIT_CFLAGS)
 libvirt_net_rpc_server_la_LDFLAGS = \
 			$(AM_LDFLAGS) \
 			$(AVAHI_LIBS) \
+			$(POLKIT_LIBS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)
 libvirt_net_rpc_server_la_LIBADD = \

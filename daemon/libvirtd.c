@@ -576,26 +576,6 @@ static int daemonSetupNetworking(virNetServerPtr srv,
     }
 #endif
 
-#if HAVE_POLKIT0
-    if (auth_unix_rw == REMOTE_AUTH_POLKIT ||
-        auth_unix_ro == REMOTE_AUTH_POLKIT) {
-        DBusError derr;
-
-        dbus_connection_set_change_sigpipe(FALSE);
-        dbus_threads_init_default();
-
-        dbus_error_init(&derr);
-        server->sysbus = dbus_bus_get(DBUS_BUS_SYSTEM, &derr);
-        if (!(server->sysbus)) {
-            VIR_ERROR(_("Failed to connect to system bus for PolicyKit auth: %s"),
-                      derr.message);
-            dbus_error_free(&derr);
-            goto error;
-        }
-        dbus_connection_set_exit_on_disconnect(server->sysbus, FALSE);
-    }
-#endif
-
     return 0;
 
 error:
@@ -1285,6 +1265,7 @@ int main(int argc, char **argv) {
     struct daemonConfig *config;
     bool privileged = geteuid() == 0 ? true : false;
     bool implicit_conf = false;
+    bool use_polkit_dbus;
 
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
@@ -1445,10 +1426,13 @@ int main(int argc, char **argv) {
         umask(old_umask);
     }
 
+    use_polkit_dbus = config->auth_unix_rw == REMOTE_AUTH_POLKIT ||
+            config->auth_unix_ro == REMOTE_AUTH_POLKIT;
     if (!(srv = virNetServerNew(config->min_workers,
                                 config->max_workers,
                                 config->max_clients,
                                 config->mdns_adv ? config->mdns_name : NULL,
+                                use_polkit_dbus,
                                 remoteClientInitHook))) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;

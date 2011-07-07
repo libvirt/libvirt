@@ -25,6 +25,9 @@
 # define __VIR_NET_SERVER_H__
 
 # include <signal.h>
+# if HAVE_DBUS
+#  include <dbus/dbus.h>
+# endif
 
 # include "virnettlscontext.h"
 # include "virnetserverprogram.h"
@@ -38,6 +41,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t max_clients,
                                 const char *mdnsGroupName,
+                                bool connectDBus,
                                 virNetServerClientInitHook clientInitHook);
 
 typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
@@ -45,6 +49,10 @@ typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
 void virNetServerRef(virNetServerPtr srv);
 
 bool virNetServerIsPrivileged(virNetServerPtr srv);
+
+# if HAVE_DBUS
+DBusConnection* virNetServerGetDBusConn(virNetServerPtr srv);
+# endif
 
 void virNetServerAutoShutdown(virNetServerPtr srv,
                               unsigned int timeout,
