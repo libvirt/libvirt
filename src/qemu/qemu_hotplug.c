@@ -1053,6 +1053,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
 {
     virDomainGraphicsDefPtr olddev = qemuDomainFindGraphics(vm, dev);
     const char *oldListenAddr, *newListenAddr;
+    const char *oldListenNetwork, *newListenNetwork;
     int ret = -1;
 
     if (!olddev) {
@@ -1063,6 +1064,8 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
 
     oldListenAddr = virDomainGraphicsListenGetAddress(olddev, 0);
     newListenAddr = virDomainGraphicsListenGetAddress(dev, 0);
+    oldListenNetwork = virDomainGraphicsListenGetNetwork(olddev, 0);
+    newListenNetwork = virDomainGraphicsListenGetNetwork(dev, 0);
 
     switch (dev->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
@@ -1076,6 +1079,11 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
         if (STRNEQ_NULLABLE(oldListenAddr,newListenAddr)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change listen address setting on vnc graphics"));
+            return -1;
+        }
+        if (STRNEQ_NULLABLE(oldListenNetwork,newListenNetwork)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change listen network setting on vnc graphics"));
             return -1;
         }
         if (STRNEQ_NULLABLE(olddev->data.vnc.keymap, dev->data.vnc.keymap)) {
@@ -1124,6 +1132,11 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
         if (STRNEQ_NULLABLE(oldListenAddr, newListenAddr)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("cannot change listen address setting on spice graphics"));
+            return -1;
+        }
+        if (STRNEQ_NULLABLE(oldListenNetwork,newListenNetwork)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change listen network setting on vnc graphics"));
             return -1;
         }
         if (STRNEQ_NULLABLE(olddev->data.spice.keymap,

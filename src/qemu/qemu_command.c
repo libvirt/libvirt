@@ -4127,10 +4127,43 @@ qemuBuildCommandLine(virConnectPtr conn,
                               def->graphics[0]->data.vnc.socket);
 
         } else if (qemuCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
+            const char *listenNetwork;
             const char *listenAddr = NULL;
+            char *netAddr = NULL;
             bool escapeAddr;
+            int ret;
 
-            listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+            switch (virDomainGraphicsListenGetType(def->graphics[0], 0)) {
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+                listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+                listenNetwork = virDomainGraphicsListenGetNetwork(def->graphics[0], 0);
+                if (!listenNetwork)
+                    break;
+                ret = networkGetNetworkAddress(listenNetwork, &netAddr);
+                if (ret <= -2) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    "%s", _("network-based listen not possible, "
+                                            "network driver not present"));
+                    goto error;
+                }
+                if (ret < 0) {
+                    qemuReportError(VIR_ERR_XML_ERROR,
+                                    _("listen network '%s' had no usable address"),
+                                    listenNetwork);
+                    goto error;
+                }
+                listenAddr = netAddr;
+                /* store the address we found in the <graphics> element so it will
+                 * show up in status. */
+                if (virDomainGraphicsListenSetAddress(def->graphics[0], 0,
+                                                      listenAddr, -1, false) < 0)
+                   goto error;
+                break;
+            }
+
             if (!listenAddr)
                 listenAddr = driver->vncListen;
 
@@ -4142,6 +4175,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             virBufferAsprintf(&opt, ":%d",
                               def->graphics[0]->data.vnc.port - 5900);
 
+            VIR_FREE(netAddr);
         } else {
             virBufferAsprintf(&opt, "%d",
                               def->graphics[0]->data.vnc.port - 5900);
@@ -4225,7 +4259,10 @@ qemuBuildCommandLine(virConnectPtr conn,
     } else if ((def->ngraphics == 1) &&
                def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
+        const char *listenNetwork;
         const char *listenAddr = NULL;
+        char *netAddr = NULL;
+        int ret;
 
         if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4238,11 +4275,43 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (driver->spiceTLS && def->graphics[0]->data.spice.tlsPort != -1)
             virBufferAsprintf(&opt, ",tls-port=%u", def->graphics[0]->data.spice.tlsPort);
 
-        listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+        switch (virDomainGraphicsListenGetType(def->graphics[0], 0)) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+            listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            listenNetwork = virDomainGraphicsListenGetNetwork(def->graphics[0], 0);
+            if (!listenNetwork)
+                break;
+            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
+            if (ret <= -2) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                "%s", _("network-based listen not possible, "
+                                        "network driver not present"));
+                goto error;
+            }
+            if (ret < 0) {
+                qemuReportError(VIR_ERR_XML_ERROR,
+                                _("listen network '%s' had no usable address"),
+                                listenNetwork);
+                goto error;
+            }
+            listenAddr = netAddr;
+            /* store the address we found in the <graphics> element so it will
+             * show up in status. */
+            if (virDomainGraphicsListenSetAddress(def->graphics[0], 0,
+                                                  listenAddr, -1, false) < 0)
+               goto error;
+            break;
+        }
+
         if (!listenAddr)
             listenAddr = driver->spiceListen;
         if (listenAddr)
             virBufferAsprintf(&opt, ",addr=%s", listenAddr);
+
+        VIR_FREE(netAddr);
 
         /* In the password case we set it via monitor command, to avoid
          * making it visible on CLI, so there's no use of password=XXX
