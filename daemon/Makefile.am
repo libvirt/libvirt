@@ -170,22 +170,25 @@ policyfile = libvirtd.policy-1
 endif
 endif
 
-install-data-local: install-init install-data-sasl install-data-polkit \
-		    install-logrotate
+install-data-local: install-init-redhat install-init-systemd install-init-upstart \
+		install-data-sasl install-data-polkit \
+		install-logrotate install-sysctl
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:: uninstall-init uninstall-data-sasl uninstall-data-polkit
+uninstall-local:: uninstall-init-redhat uninstall-init-systemd uninstall-init-upstart \
+		uninstall-data-sasl uninstall-data-polkit \
+		uninstall-sysctl
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
 if HAVE_POLKIT
-install-data-polkit:: install-init
+install-data-polkit::
 	mkdir -p $(DESTDIR)$(policydir)
 	$(INSTALL_DATA) $(srcdir)/$(policyfile) $(DESTDIR)$(policydir)/org.libvirt.unix.policy
-uninstall-data-polkit:: install-init
+uninstall-data-polkit::
 	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 else
 install-data-polkit::
@@ -234,24 +237,70 @@ install-logrotate: $(LOGROTATE_CONFS)
 	$(INSTALL_DATA) libvirtd.lxc.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc
 	$(INSTALL_DATA) libvirtd.uml.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
 
-if LIBVIRT_INIT_SCRIPT_RED_HAT
-install-init: libvirtd.init
-	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d \
-	  $(DESTDIR)$(sysconfdir)/sysconfig \
-	  $(DESTDIR)$(sysconfdir)/sysctl.d
-	$(INSTALL_SCRIPT) libvirtd.init \
-	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+install-sysconfig:
+	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
+uninstall-sysconfig:
+	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
+
+install-sysctl:
+	mkdir -p $(DESTDIR)$(sysconfdir)/sysctl.d
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysctl \
 	  $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
 
-uninstall-init:
-	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd \
-		$(DESTDIR)$(sysconfdir)/sysconfig/libvirtd \
-		$(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
+uninstall-sysctl:
+	rm -f $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
+
+if LIBVIRT_INIT_SCRIPT_RED_HAT
 
 BUILT_SOURCES += libvirtd.init
+
+install-init-redhat: install-sysconfig libvirtd.init
+	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(INSTALL_SCRIPT) libvirtd.init \
+	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+
+uninstall-init-redhat: uninstall-sysconfig
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+else
+install-init-redhat:
+uninstall-init-redhat:
+endif # LIBVIRT_INIT_SCRIPT_RED_HAT
+
+
+if LIBVIRT_INIT_SCRIPT_UPSTART
+
+install-init-upstart: install-sysconfig
+	mkdir -p $(DESTDIR)$(sysconfdir)/event.d
+	$(INSTALL_SCRIPT) libvirtd.upstart \
+	  $(DESTDIR)$(sysconfdir)/event.d/libvirtd
+
+uninstall-init-upstart: uninstall-sysconfig
+	rm -f $(DESTDIR)$(sysconfdir)/event.d/libvirtd
+else
+install-init-upstart:
+uninstall-init-upstart:
+endif # LIBVIRT_INIT_SCRIPT_UPSTART
+
+
+EXTRA_DIST += libvirtd.service.in
+if LIBVIRT_INIT_SCRIPT_SYSTEMD
+
+SYSTEMD_UNIT_DIR = /lib/systemd/system
+BUILT_SOURCES += libvirtd.service
+
+install-init-systemd: install-sysconfig libvirtd.service
+	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
+	$(INSTALL_SCRIPT) libvirtd.service \
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
+
+uninstall-init-systemd: uninstall-sysconfig
+	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
+else
+install-init-systemd:
+uninstall-init-systemd:
+endif # LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 libvirtd.init: libvirtd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed					\
@@ -262,18 +311,21 @@ libvirtd.init: libvirtd.init.in $(top_builddir)/config.status
 	    chmod a+x $@-t &&				\
 	    mv $@-t $@
 
+libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed					\
+	    -e s!\@localstatedir\@!@localstatedir@!g	\
+	    -e s!\@sbindir\@!@sbindir@!g		\
+	    -e s!\@sysconfdir\@!@sysconfdir@!g		\
+	    < $< > $@-t &&				\
+	    chmod a+x $@-t &&				\
+	    mv $@-t $@
+
+
 check-local:
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	  '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug; \
 	fi
 
-else
-
-install-init:
-uninstall-init:
-libvirtd.init:
-
-endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 
 # This must be added last, since functions it provides/replaces
 # are used by nearly every other library.

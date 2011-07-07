@@ -1,4 +1,7 @@
 # Override the default config file
+# NOTE: This setting is no longer honoured if using
+# systemd. Set '--config /etc/libvirt/libvirtd.conf'
+# in LIBVIRTD_ARGS instead.
 #LIBVIRTD_CONFIG=/etc/libvirt/libvirtd.conf
 
 # Listen for TCP/IP connections

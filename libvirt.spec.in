@@ -78,6 +78,7 @@
 %define with_dtrace        0%{!?_without_dtrace:0}
 %define with_cgconfig      0%{!?_without_cgconfig:0}
 %define with_sanlock       0%{!?_without_sanlock:0}
+%define with_systemd       0%{!?_without_systemd:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -109,6 +110,11 @@
 %define with_xenapi 0
 %define with_libxl 0
 %define with_hyperv 0
+%endif
+
+# Although earlier Fedora has systemd, libvirt still used sysvinit
+%if 0%{?fedora} >= 17
+%define with_systemd 1
 %endif
 
 # RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
@@ -329,7 +335,9 @@ Requires: libcgroup
 
 # All build-time requirements
 BuildRequires: python-devel
-
+%if %{with_systemd}
+BuildRequires: systemd-units
+%endif
 %if %{with_xen}
 BuildRequires: xen-devel
 %endif
@@ -473,6 +481,13 @@ BuildRequires: nfs-utils
 
 # Fedora build root suckage
 BuildRequires: gawk
+
+%if %{with_systemd}
+Requires(post): systemd-units
+Requires(post): systemd-sysv
+Requires(preun): systemd-units
+Requires(postun): systemd-units
+%endif
 
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
@@ -696,6 +711,13 @@ of recent versions of Linux (and other OSes).
 %define with_packager --with-packager="%{who}, %{when}, %{where}"
 %define with_packager_version --with-packager-version="%{release}"
 
+%if %{with_systemd}
+# We use 'systemd+redhat', so if someone installs upstart or
+# legacy init scripts, they can still start libvirtd, etc
+%define init_scripts --with-init_script=systemd+redhat
+%else
+%define init_scripts --with-init_script=redhat
+%endif
 
 %configure %{?_without_xen} \
            %{?_without_qemu} \
@@ -736,7 +758,7 @@ of recent versions of Linux (and other OSes).
            %{with_packager_version} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
-           --with-init-script=redhat \
+           %{init_scripts} \
            --with-remote-pid-file=%{_localstatedir}/run/libvirtd.pid
 make %{?_smp_mflags}
 gzip -9 ChangeLog
@@ -744,7 +766,7 @@ gzip -9 ChangeLog
 %install
 rm -fr %{buildroot}
 
-%makeinstall
+%makeinstall SYSTEMD_UNIT_DIR=%{_unitdir}
 for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth python xml/nwfilter systemtap
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
@@ -893,6 +915,13 @@ do
 done
 %endif
 
+%if %{with_systemd}
+if [ $1 -eq 1 ] ; then
+    # Initial installation
+    /bin/systemctl enable libvirtd.service >/dev/null 2>&1 || :
+    /bin/systemctl enable cgconfig.service >/dev/null 2>&1 || :
+fi
+%else
 %if %{with_cgconfig}
 # Starting with Fedora 16, systemd automounts all cgroups, and cgconfig is
 # no longer a necessary service.
@@ -908,25 +937,64 @@ if [ "$1" -ge "1" ]; then
 	/sbin/service libvirtd condrestart > /dev/null 2>&1
 fi
 %endif
+%endif
 
 %preun
 %if %{with_libvirtd}
+%if %{with_systemd}
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable libvirtd.service > /dev/null 2>&1 || :
+    /bin/systemctl stop libvirtd.service > /dev/null 2>&1 || :
+fi
+%else
 if [ $1 = 0 ]; then
     /sbin/service libvirtd stop 1>/dev/null 2>&1
     /sbin/chkconfig --del libvirtd
 fi
 %endif
+%endif
+
+%postun
+%if %{with_libvirtd}
+%if %{with_systemd}
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    # Package upgrade, not uninstall
+    /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
+fi
+%endif
+%endif
+
+%if %{with_libvirtd}
+%if %{with_systemd}
+%triggerun -- libvirt < 0.9.4
+%{_bindir}/systemd-sysv-convert --save libvirtd >/dev/null 2>&1 ||:
+
+# If the package is allowed to autostart:
+/bin/systemctl --no-reload enable libvirtd.service >/dev/null 2>&1 ||:
+
+# Run these because the SysV package being removed won't do them
+/sbin/chkconfig --del libvirtd >/dev/null 2>&1 || :
+/bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
+%endif
+%endif
 
 %preun client
 
+%if %{with_systemd}
+%else
 if [ $1 = 0 ]; then
     /sbin/chkconfig --del libvirt-guests
     rm -f /var/lib/libvirt/libvirt-guests
 fi
+%endif
 
 %post client
 
 /sbin/ldconfig
+%if %{with_systemd}
+%else
 /sbin/chkconfig --add libvirt-guests
 if [ $1 -ge 1 ]; then
     level=$(/sbin/runlevel | /bin/cut -d ' ' -f 2)
@@ -937,8 +1005,21 @@ if [ $1 -ge 1 ]; then
         /sbin/service libvirt-guests start > /dev/null 2>&1 || true
     fi
 fi
+%endif
 
 %postun client -p /sbin/ldconfig
+
+%if %{with_systemd}
+%triggerun client -- libvirt < 0.9.4
+%{_bindir}/systemd-sysv-convert --save libvirt-guests >/dev/null 2>&1 ||:
+
+# If the package is allowed to autostart:
+/bin/systemctl --no-reload enable libvirt-guests.service >/dev/null 2>&1 ||:
+
+# Run these because the SysV package being removed won't do them
+/sbin/chkconfig --del libvirt-guests >/dev/null 2>&1 || :
+/bin/systemctl try-restart libvirt-guests.service >/dev/null 2>&1 || :
+%endif
 
 %if %{with_libvirtd}
 %files
@@ -957,6 +1038,9 @@ fi
 %{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %{_sysconfdir}/rc.d/init.d/libvirtd
+%if %{with_systemd}
+%{_unitdir}/libvirtd.service
+%endif
 %doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
@@ -1113,6 +1197,9 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %{_datadir}/libvirt/cpu_map.xml
 
 %{_sysconfdir}/rc.d/init.d/libvirt-guests
+%if %{with_systemd}
+%{_unitdir}/libvirt-guests.service
+%endif
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 

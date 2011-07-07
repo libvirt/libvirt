@@ -329,16 +329,41 @@ dnl init script flavor
 dnl
 AC_MSG_CHECKING([for init script flavor])
 AC_ARG_WITH([init-script],
-            [AC_HELP_STRING([--with-init-script=@<:@redhat|auto|none@:>@],
-		     [Style of init script to install @<:@default=auto@:>@])])
-if test "x$with_init_script" = "x" || test "x$with_init_script" = "xauto"; then
-    if test "$cross_compiling" = yes || test ! -f /etc/redhat-release; then
-        with_init_script=none
-    else
-        with_init_script=redhat
-    fi
-fi
-AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_RED_HAT], test x$with_init_script = xredhat)
+            [AC_HELP_STRING([--with-init-script@<:@=STYLE@:>@],
+                            [Style of init script to install: redhat, systemd, systemd+redhat,
+                             upstart, auto, none @<:@default=auto@:>@])],[],[with_init_script=check])
+init_redhat=no
+init_systemd=no
+init_upstart=no
+case "$with_init_script" in
+    systemd+redhat)
+       init_redhat=yes
+       init_systemd=yes
+       ;;
+    systemd)
+       init_systemd=yes
+       ;;
+    upstart)
+       init_upstart=yes
+       ;;
+    redhat)
+       init_redhat=yes
+       ;;
+    none)
+       ;;
+    check)
+       if test "$cross_compiling" != yes && test -f /etc/redhat-release; then
+          init_redhat=yes
+          with_init_script=redhat
+       fi
+       ;;
+    *)
+       AC_MSG_ERROR([Unknown initscript flavour $with_init_script])
+    ;;
+esac
+AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_RED_HAT], test "$init_redhat" = "yes")
+AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_UPSTART], test "$init_upstart" = "yes")
+AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD], test "$init_systemd" = "yes")
 AC_MSG_RESULT($with_init_script)
 
 dnl RHEL-5 has a peculiar version of Xen, which requires some special casing
@@ -2680,6 +2705,7 @@ AC_MSG_NOTICE([     Readline: $lv_use_readline])
 AC_MSG_NOTICE([       Python: $with_python])
 AC_MSG_NOTICE([       DTrace: $with_dtrace])
 AC_MSG_NOTICE([  XML Catalog: $XML_CATALOG_FILE])
+AC_MSG_NOTICE([  Init script: $with_init_script])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Privileges])
 AC_MSG_NOTICE([])

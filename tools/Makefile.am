@@ -25,7 +25,6 @@ EXTRA_DIST = \
 	virt-sanlock-cleanup.in				\
 	virt-sanlock-cleanup.8				\
 	virsh.pod					\
-	libvirt-guests.init.sh				\
 	libvirt-guests.sysconf
 
 DISTCLEANFILES =
@@ -153,20 +152,31 @@ install-data-local: install-init
 
 uninstall-local: uninstall-init
 
-if LIBVIRT_INIT_SCRIPT_RED_HAT
-install-init: libvirt-guests.init
-	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
-	$(INSTALL_SCRIPT) libvirt-guests.init \
-	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests
+install-sysconfig:
 	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
 	$(INSTALL_DATA) $(srcdir)/libvirt-guests.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
 
-uninstall-init:
-	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests \
-	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
+uninstall-sysconfig:
+	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
+
+EXTRA_DIST += libvirt-guests.init.sh
+
+if LIBVIRT_INIT_SCRIPT_RED_HAT
+install-init: libvirt-guests.init install-sysconfig
+	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(INSTALL_SCRIPT) libvirt-guests.init \
+	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests
+
+uninstall-init: install-sysconfig
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests
 
 BUILT_SOURCES += libvirt-guests.init
+
+else
+install-init:
+uninstall-init:
+endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 
 libvirt-guests.init: libvirt-guests.init.sh $(top_builddir)/config.status
 	$(AM_V_GEN)sed					\
@@ -179,11 +189,38 @@ libvirt-guests.init: libvirt-guests.init.sh $(top_builddir)/config.status
 	    < $< > $@-t &&				\
 	    chmod a+x $@-t &&				\
 	    mv $@-t $@
+
+
+
+EXTRA_DIST += libvirt-guests.service.in
+
+if LIBVIRT_INIT_SCRIPT_SYSTEMD
+install-systemd: libvirt-guests.service install-sysconfig
+	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/systemd.d
+	$(INSTALL_SCRIPT) libvirt-guests.service \
+	  $(DESTDIR)$(sysconfdir)/rc.d/systemd.d/libvirt-guests
+
+uninstall-systemd: install-sysconfig
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/systemd.d/libvirt-guests
+
+BUILT_SOURCES += libvirt-guests.service
+
 else
-install-init:
-uninstall-init:
-libvirt-guests.init:
-endif # LIBVIRT_INIT_SCRIPT_RED_HAT
+install-systemd:
+uninstall-systemd:
+endif # LIBVIRT_INIT_SCRIPT_SYSTEMD
+
+libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed					\
+	    -e 's!\@PACKAGE\@!$(PACKAGE)!g'		\
+	    -e 's!\@bindir\@!$(bindir)!g'		\
+	    -e 's!\@localedir\@!$(localedir)!g'		\
+	    -e 's!\@localstatedir\@!$(localstatedir)!g'	\
+	    -e 's!\@sbindir\@!$(sbindir)!g'		\
+	    -e 's!\@sysconfdir\@!$(sysconfdir)!g'	\
+	    < $< > $@-t &&				\
+	    chmod a+x $@-t &&				\
+	    mv $@-t $@
 
 
 CLEANFILES = $(bin_SCRIPTS)

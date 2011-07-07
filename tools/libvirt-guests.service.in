@@ -1,0 +1,13 @@
+[Unit]
+Description=Suspend Active Libvirt Guests
+After=syslog.target network.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/libvirt-guests
+# Hack just call traditional service until we factor
+# out the code
+ExecStart=/etc/init.d/libvirt-guests start
+ExecStop=/etc/init.d/libvirt-guests stop
+
+[Install]
+WantedBy=multi-user.target
