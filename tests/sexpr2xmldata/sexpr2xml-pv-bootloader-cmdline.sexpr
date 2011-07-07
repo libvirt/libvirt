@@ -1,0 +1,5 @@
+(domain (domid 6)(name 'pvtest')(memory 420)(maxmem 420)(vcpus 2)\
+(uuid '596a5d2171f48fb2e068e2386a5c413e')(bootloader '/usr/bin/pygrub')\
+(bootloader_args '-q')(image (linux (args 'xenfb.video=8,1280,1024')))\
+(on_poweroff 'destroy')(on_reboot 'destroy')(on_crash 'destroy')\
+(device (vbd (dev 'xvda')(uname 'file:/root/some.img')(mode 'w'))))

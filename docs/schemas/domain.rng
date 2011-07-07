@@ -556,9 +556,11 @@
   </define>
   <define name="osbootkernel">
     <interleave>
-      <element name="kernel">
-        <ref name="absFilePath"/>
-      </element>
+      <optional>
+        <element name="kernel">
+          <ref name="absFilePath"/>
+        </element>
+      </optional>
       <optional>
         <element name="initrd">
           <ref name="absFilePath"/>

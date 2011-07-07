@@ -2261,6 +2261,12 @@ xenFormatSxpr(virConnectPtr conn,
         }
 
         virBufferAddLit(&buf, "))");
+    } else {
+        /* PV domains accept kernel cmdline args */
+        if (def->os.cmdline) {
+            virBufferEscapeSexpr(&buf, "(image (linux (args '%s')))",
+                                 def->os.cmdline);
+        }
     }
 
     for (i = 0 ; i < def->ndisks ; i++)

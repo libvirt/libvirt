@@ -116,6 +116,7 @@ mymain(void)
     DO_TEST("pv-vfb-new", "pv-vfb-new", "pvtest", 3);
     DO_TEST("pv-vfb-new-auto", "pv-vfb-new-auto", "pvtest", 3);
     DO_TEST("pv-bootloader", "pv-bootloader", "pvtest", 1);
+    DO_TEST("pv-bootloader-cmdline", "pv-bootloader-cmdline", "pvtest", 1);
     DO_TEST("pv-vcpus", "pv-vcpus", "pvtest", 1);
 
     DO_TEST("disk-file", "disk-file", "pvtest", 2);
