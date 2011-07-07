@@ -443,7 +443,7 @@ remoteDispatchOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
                    struct remote_open_args *args)
 {
     const char *name;
-    int flags;
+    unsigned int flags;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     int rv = -1;
 

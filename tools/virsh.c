@@ -201,7 +201,7 @@ typedef struct {
     bool (*handler) (vshControl *, const vshCmd *);    /* command handler */
     const vshCmdOptDef *opts;   /* definition of command options */
     const vshCmdInfo *info;     /* details about command */
-    int flags;                  /* bitwise OR of VSH_CMD_FLAG */
+    unsigned int flags;         /* bitwise OR of VSH_CMD_FLAG */
 } vshCmdDef;
 
 /*
