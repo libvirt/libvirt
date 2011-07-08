@@ -211,16 +211,18 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 r1 = (?:/\* \d+ \*/\n)?
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
 
-.PHONY: remote_protocol-structs
+PROTOCOL_STRUCTS = \
+	$(srcdir)/remote_protocol-structs \
+	$(srcdir)/qemu_protocol-structs
 if WITH_REMOTE
 # The .o file that pdwtags parses is created as a side effect of running
 # libtool; but from make's perspective we depend on the .lo file.
-remote_protocol-structs: libvirt_driver_remote_la-remote_protocol.lo
+%_protocol-structs: libvirt_driver_remote_la-%_protocol.lo
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
-	  pdwtags --verbose libvirt_driver_remote_la-remote_protocol.$(OBJEXT) \
+	  pdwtags --verbose $(<:.lo=.$(OBJEXT))				\
 	    | perl -0777 -n						\
 		-e 'foreach my $$p (split m!\n\n$(r1)$(r2)\n!) {'	\
-		-e '  if ($$p =~ /^struct remote_/) {'			\
+		-e '  if ($$p =~ /^struct (remote|qemu)_/) {'		\
 		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
 		-e '    $$p =~ s!\s+\n!\n!sg;'				\
 		-e '    $$p =~ s!\s+$$!!;'				\
@@ -233,7 +235,7 @@ remote_protocol-structs: libvirt_driver_remote_la-remote_protocol.lo
 		-e '  print "/* -*- c -*- */\n";'			\
 		-e '}'							\
 		-e 'END {'						\
-		-e '  if ($$n < 300) {'					\
+		-e '  if ($$n < 3) {'					\
 		-e '    warn "WARNING: your pdwtags program is too old\n";' \
 		-e '    warn "WARNING: skipping the $@ test\n";'	\
 		-e '    warn "WARNING: install dwarves-1.3 or newer\n";' \
@@ -248,12 +250,12 @@ remote_protocol-structs: libvirt_driver_remote_la-remote_protocol.lo
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
 	fi
 else !WITH_REMOTE
-# This generated file must live in git, because it cannot be re-generated
+# These generated files must live in git, because they cannot be re-generated
 # when configured --without-remote.
-remote_protocol-structs:
+$(srcdir)/%_protocol-structs:
 endif
-EXTRA_DIST += remote_protocol-structs
-check-local: remote_protocol-structs
+EXTRA_DIST += $(PROTOCOL_STRUCTS)
+check-local: $(PROTOCOL_STRUCTS)
 
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\
