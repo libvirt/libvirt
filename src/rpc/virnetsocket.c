@@ -634,9 +634,29 @@ int virNetSocketNewConnectSSH(const char *nodename,
                              "-e", "none", NULL);
     if (noVerify)
         virCommandAddArgList(cmd, "-o", "StrictHostKeyChecking=no", NULL);
-    virCommandAddArgList(cmd, nodename,
-                         netcat ? netcat : "nc",
-                         "-U", path, NULL);
+
+    if (!netcat)
+        netcat = "nc";
+
+    virCommandAddArgList(cmd, nodename, "sh", "-c", NULL);
+    /*
+     * This ugly thing is a shell script to detect availability of
+     * the -q option for 'nc': debian and suse based distros need this
+     * flag to ensure the remote nc will exit on EOF, so it will go away
+     * when we close the connection tunnel. If it doesn't go away, subsequent
+     * connection attempts will hang.
+     *
+     * Fedora's 'nc' doesn't have this option, and defaults to the desired
+     * behavior.
+     */
+    virCommandAddArgFormat(cmd,
+         "'if %s -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+             "ARG=-q0;"
+         "else "
+             "ARG=;"
+         "fi;"
+         "%s $ARG -U %s'",
+         netcat, netcat, path);
 
     return virNetSocketNewConnectCommand(cmd, retsock);
 }
