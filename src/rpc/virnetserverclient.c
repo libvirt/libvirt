@@ -700,8 +700,10 @@ readmore:
 
     /* Either done with length word header */
     if (client->rx->bufferLength == VIR_NET_MESSAGE_LEN_MAX) {
-        if (virNetMessageDecodeLength(client->rx) < 0)
+        if (virNetMessageDecodeLength(client->rx) < 0) {
+            client->wantClose = true;
             return;
+        }
 
         virNetServerClientUpdateEvent(client);
 
@@ -831,7 +833,9 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
             /* Get finished msg from head of tx queue */
             msg = virNetMessageQueueServe(&client->tx);
 
-            if (msg->header.type == VIR_NET_REPLY) {
+            if (msg->header.type == VIR_NET_REPLY ||
+                (msg->header.type == VIR_NET_STREAM &&
+                 msg->header.status != VIR_NET_CONTINUE)) {
                 client->nrequests--;
                 /* See if the recv queue is currently throttled */
                 if (!client->rx &&
