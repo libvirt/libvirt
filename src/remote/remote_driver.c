@@ -824,10 +824,12 @@ get_transport_from_scheme (char *scheme)
 static int
 doRemoteClose (virConnectPtr conn, struct private_data *priv)
 {
+    int ret = 0;
+
     if (call (conn, priv, 0, REMOTE_PROC_CLOSE,
               (xdrproc_t) xdr_void, (char *) NULL,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
-        return -1;
+        ret = -1;
 
     virNetTLSContextFree(priv->tls);
     priv->tls = NULL;
@@ -846,7 +848,7 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
     virDomainEventStateFree(priv->domainEventState);
     priv->domainEventState = NULL;
 
-    return 0;
+    return ret;
 }
 
 static int
