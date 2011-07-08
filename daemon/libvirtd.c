@@ -1028,6 +1028,10 @@ daemonConfigLoad(struct daemonConfig *data,
 {
     virConfPtr conf;
 
+    if (access(filename, R_OK) == -1 &&
+        errno == ENOENT)
+        return 0;
+
     conf = virConfReadFile (filename, 0);
     if (!conf)
         return -1;
