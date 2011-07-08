@@ -361,11 +361,12 @@ int virNetClientStreamSendPacket(virNetClientStreamPtr st,
     if (virNetClientSend(client, msg, wantReply) < 0)
         goto error;
 
+    virNetMessageFree(msg);
 
     return nbytes;
 
 error:
-    VIR_FREE(msg);
+    virNetMessageFree(msg);
     return -1;
 }
 

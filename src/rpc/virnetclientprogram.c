@@ -329,11 +329,11 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
         goto error;
     }
 
-    VIR_FREE(msg);
+    virNetMessageFree(msg);
 
     return 0;
 
 error:
-    VIR_FREE(msg);
+    virNetMessageFree(msg);
     return -1;
 }
