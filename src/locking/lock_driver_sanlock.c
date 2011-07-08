@@ -294,8 +294,10 @@ static int virLockManagerSanlockInit(unsigned int version,
         goto error;
     }
 
-    if (virLockManagerSanlockSetupLockspace() < 0)
-        goto error;
+    if (driver->autoDiskLease) {
+        if (virLockManagerSanlockSetupLockspace() < 0)
+            goto error;
+    }
 
     return 0;
 
