@@ -61,6 +61,7 @@ struct _virNetServerClient
 {
     int refs;
     bool wantClose;
+    bool delayedClose;
     virMutex lock;
     virNetSocketPtr sock;
     int auth;
@@ -587,7 +588,14 @@ bool virNetServerClientIsClosed(virNetServerClientPtr client)
     return closed;
 }
 
-void virNetServerClientMarkClose(virNetServerClientPtr client)
+void virNetServerClientDelayedClose(virNetServerClientPtr client)
+{
+    virNetServerClientLock(client);
+    client->delayedClose = true;
+    virNetServerClientUnlock(client);
+}
+
+void virNetServerClientImmediateClose(virNetServerClientPtr client)
 {
     virNetServerClientLock(client);
     client->wantClose = true;
@@ -852,6 +860,9 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
             virNetMessageFree(msg);
 
             virNetServerClientUpdateEvent(client);
+
+            if (client->delayedClose)
+                client->wantClose = true;
          }
     }
 }

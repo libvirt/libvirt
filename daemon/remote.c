@@ -483,11 +483,11 @@ cleanup:
 
 static int
 remoteDispatchClose(virNetServerPtr server ATTRIBUTE_UNUSED,
-                    virNetServerClientPtr client,
+                    virNetServerClientPtr client ATTRIBUTE_UNUSED,
                     virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
                     virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED)
 {
-    virNetServerClientClose(client);
+    virNetServerClientDelayedClose(client);
     return 0;
 }
 

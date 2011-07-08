@@ -338,7 +338,7 @@ int daemonFreeClientStream(virNetServerClientPtr client,
         memset(msg, 0, sizeof(*msg));
         msg->header.type = VIR_NET_REPLY;
         if (virNetServerClientSendMessage(client, msg) < 0) {
-            virNetServerClientMarkClose(client);
+            virNetServerClientImmediateClose(client);
             virNetMessageFree(msg);
             ret = -1;
         }
@@ -608,7 +608,7 @@ daemonStreamHandleWrite(virNetServerClientPtr client,
         virNetMessageQueueServe(&stream->rx);
         if (ret < 0) {
             virNetMessageFree(msg);
-            virNetServerClientMarkClose(client);
+            virNetServerClientImmediateClose(client);
             return -1;
         }
 
@@ -623,7 +623,7 @@ daemonStreamHandleWrite(virNetServerClientPtr client,
             msg->header.type = VIR_NET_REPLY;
             if (virNetServerClientSendMessage(client, msg) < 0) {
                 virNetMessageFree(msg);
-                virNetServerClientMarkClose(client);
+                virNetServerClientImmediateClose(client);
                 return -1;
             }
         }
