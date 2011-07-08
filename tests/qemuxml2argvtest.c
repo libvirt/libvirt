@@ -287,6 +287,7 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_BOOTINDEX);
     DO_TEST("bootloader", true, QEMU_CAPS_DOMID);
+    DO_TEST("bios", false, QEMU_CAPS_DEVICE, QEMU_CAPS_SGA);
     DO_TEST("clock-utc", false, NONE);
     DO_TEST("clock-localtime", false, NONE);
     /*

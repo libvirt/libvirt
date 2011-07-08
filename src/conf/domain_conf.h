@@ -933,6 +933,18 @@ enum virDomainLifecycleCrashAction {
     VIR_DOMAIN_LIFECYCLE_CRASH_LAST
 };
 
+enum virDomainBIOSUseserial {
+    VIR_DOMAIN_BIOS_USESERIAL_DEFAULT = 0,
+    VIR_DOMAIN_BIOS_USESERIAL_YES,
+    VIR_DOMAIN_BIOS_USESERIAL_NO
+};
+
+typedef struct _virDomainBIOSDef virDomainBIOSDef;
+typedef virDomainBIOSDef *virDomainBIOSDefPtr;
+struct _virDomainBIOSDef {
+    int useserial;
+};
+
 /* Operating system configuration data & machine / arch */
 typedef struct _virDomainOSDef virDomainOSDef;
 typedef virDomainOSDef *virDomainOSDefPtr;
@@ -952,6 +964,7 @@ struct _virDomainOSDef {
     char *bootloader;
     char *bootloaderArgs;
     int smbios_mode;
+    virDomainBIOSDef bios;
 };
 
 enum virDomainSeclabelType {

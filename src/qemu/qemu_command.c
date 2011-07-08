@@ -3060,6 +3060,26 @@ qemuBuildCommandLine(virConnectPtr conn,
                          "-nodefaults");  /* Disable default guest devices */
     }
 
+    /* Serial graphics adapter */
+    if (def->os.bios.useserial == VIR_DOMAIN_BIOS_USESERIAL_YES) {
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("qemu does not support -device"));
+            goto error;
+        }
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SGA)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("qemu does not support SGA"));
+            goto error;
+        }
+        if (!def->nserials) {
+            qemuReportError(VIR_ERR_XML_ERROR, "%s",
+                            _("need at least one serial port to use SGA"));
+            goto error;
+        }
+        virCommandAddArgList(cmd, "-device", "sga", NULL);
+    }
+
     if (monitor_chr) {
         char *chrdev;
         /* Use -chardev if it's available */

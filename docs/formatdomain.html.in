@@ -86,6 +86,7 @@
     &lt;boot dev='cdrom'/&gt;
     &lt;bootmenu enable='yes'/&gt;
     &lt;smbios mode='sysinfo'/&gt;
+    &lt;bios useserial='yes'/&gt;
   &lt;/os&gt;
   ...</pre>
 
@@ -136,6 +137,14 @@
       the <a href="#elementsSysinfo">sysinfo</a> element).  If not
       specified, the hypervisor default is used. <span class="since">
       Since 0.8.7</span>
+      </dd>
+      <dt><code>bios</code></dt>
+      <dd>This element has attribute <code>useserial</code> with possible
+        values <code>yes</code> or <code>no</code>. It enables or disables
+        Serial Graphics Adapter which allows users to see BIOS messages
+        on a serial port. Therefore, one needs to have
+        <a href="#elementCharSerial">serial port</a> defined.
+        <span class="since">Since 0.9.4</span>
       </dd>
     </dl>
 

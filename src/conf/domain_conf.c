@@ -5662,9 +5662,9 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr *nodes = NULL;
     int i, n;
-    char *bootstr;
+    char *bootstr, *useserial;
     int ret = -1;
-    unsigned long deviceBoot;
+    unsigned long deviceBoot, serialPorts;
 
     if (virXPathULong("count(./devices/disk[boot]"
                       "|./devices/interface[boot]"
@@ -5716,6 +5716,22 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         else
             def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_DISABLED;
         VIR_FREE(bootstr);
+    }
+
+    useserial = virXPathString("string(./os/bios[1]/@useserial)", ctxt);
+    if (useserial) {
+        if (STREQ(useserial, "yes")) {
+            if (virXPathULong("count(./devices/serial)",
+                              ctxt, &serialPorts) < 0) {
+                virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                     _("need at least one serial port "
+                                       "for useserial"));
+                goto cleanup;
+            }
+            def->os.bios.useserial = VIR_DOMAIN_BIOS_USESERIAL_YES;
+        } else {
+            def->os.bios.useserial = VIR_DOMAIN_BIOS_USESERIAL_NO;
+        }
     }
 
     *bootCount = deviceBoot;
@@ -9757,6 +9773,13 @@ char *virDomainDefFormat(virDomainDefPtr def,
                                    VIR_DOMAIN_BOOT_MENU_ENABLED ? "yes"
                                                                 : "no");
             virBufferAsprintf(&buf, "    <bootmenu enable='%s'/>\n", enabled);
+        }
+
+        if (def->os.bios.useserial) {
+            const char *useserial = (def->os.bios.useserial ==
+                                     VIR_DOMAIN_BIOS_USESERIAL_YES ? "yes"
+                                                                   : "no");
+            virBufferAsprintf(&buf, "    <bios useserial='%s'/>\n", useserial);
         }
     }
 

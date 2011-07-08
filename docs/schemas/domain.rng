@@ -151,6 +151,9 @@
         <optional>
           <ref name="smbios"/>
         </optional>
+        <optional>
+          <ref name="bios"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -2274,6 +2277,17 @@
         </choice>
       </attribute>
       <empty/>
+    </element>
+  </define>
+
+  <define name="bios">
+    <element name="bios">
+      <attribute name="useserial">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
     </element>
   </define>
 

@@ -122,6 +122,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "pci-multifunction", /* 60 */
               "virtio-blk-pci.ioeventfd",
+              "sga",
     );
 
 struct qemu_feature_flags {
@@ -1212,6 +1213,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_DEVICE_QXL_VGA);
     if (strstr(str, "virtio-blk-pci.ioeventfd"))
         qemuCapsSet(flags, QEMU_CAPS_VIRTIO_IOEVENTFD);
+    if (strstr(str, "name \"sga\""))
+        qemuCapsSet(flags, QEMU_CAPS_SGA);
 
     return 0;
 }

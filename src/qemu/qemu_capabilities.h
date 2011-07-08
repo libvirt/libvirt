@@ -97,6 +97,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_DEVICE_QXL_VGA    = 59, /* Is the primary and vga campatible qxl device named qxl-vga? */
     QEMU_CAPS_PCI_MULTIFUNCTION = 60, /* -device multifunction=on|off */
     QEMU_CAPS_VIRTIO_IOEVENTFD  = 61, /* IOeventFD feature: virtio-{net|blk}-pci.ioeventfd=on/off */
+    QEMU_CAPS_SGA               = 62, /* Serial Graphics Adapter */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
