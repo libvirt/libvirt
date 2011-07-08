@@ -104,7 +104,7 @@ static void remoteDriverUnlock(struct private_data *driver)
 }
 
 static int call (virConnectPtr conn, struct private_data *priv,
-                 int flags, int proc_nr,
+                 unsigned int flags, int proc_nr,
                  xdrproc_t args_filter, char *args,
                  xdrproc_t ret_filter, char *ret);
 static int remoteAuthenticate (virConnectPtr conn, struct private_data *priv,
@@ -715,7 +715,7 @@ remoteAllocPrivateData(void)
 static int
 remoteOpenSecondaryDriver(virConnectPtr conn,
                           virConnectAuthPtr auth,
-                          int flags,
+                          unsigned int flags,
                           struct private_data **priv)
 {
     int ret;
@@ -3921,7 +3921,7 @@ done:
 static int
 call (virConnectPtr conn ATTRIBUTE_UNUSED,
       struct private_data *priv,
-      int flags,
+      unsigned int flags,
       int proc_nr,
       xdrproc_t args_filter, char *args,
       xdrproc_t ret_filter, char *ret)
