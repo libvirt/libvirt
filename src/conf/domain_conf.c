@@ -2735,7 +2735,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                         xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
                         virBitmapPtr bootMap,
-                        unsigned int flags ATTRIBUTE_UNUSED)
+                        unsigned int flags)
 {
     virDomainNetDefPtr def;
     xmlNodePtr cur;
@@ -3187,8 +3187,7 @@ out:
 static int
 virDomainChrDefParseTargetXML(virCapsPtr caps,
                               virDomainChrDefPtr def,
-                              xmlNodePtr cur,
-                              unsigned int flags ATTRIBUTE_UNUSED)
+                              xmlNodePtr cur)
 {
     int ret = -1;
     unsigned int port;
@@ -3570,8 +3569,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE) {
                 if (xmlStrEqual(cur->name, BAD_CAST "target")) {
-                    if (virDomainChrDefParseTargetXML(caps, def, cur,
-                                                      flags) < 0) {
+                    if (virDomainChrDefParseTargetXML(caps, def, cur) < 0) {
                         goto error;
                     }
                 }
@@ -3827,8 +3825,7 @@ error:
 /* Parse the XML definition for a clock timer */
 static virDomainTimerDefPtr
 virDomainTimerDefParseXML(const xmlNodePtr node,
-                          xmlXPathContextPtr ctxt,
-                          unsigned int flags ATTRIBUTE_UNUSED)
+                          xmlXPathContextPtr ctxt)
 {
     char *name = NULL;
     char *present = NULL;
@@ -4799,8 +4796,7 @@ error:
 
 static int
 virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
-                                     virDomainHostdevDefPtr def,
-                                     unsigned int flags ATTRIBUTE_UNUSED)
+                                     virDomainHostdevDefPtr def)
 {
 
     int ret = -1;
@@ -5020,7 +5016,7 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
             if (xmlStrEqual(cur->name, BAD_CAST "source")) {
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                     def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                        if (virDomainHostdevSubsysUsbDefParseXML(cur, def, flags) < 0)
+                        if (virDomainHostdevSubsysUsbDefParseXML(cur, def) < 0)
                             goto error;
                 }
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
@@ -5755,8 +5751,7 @@ cleanup:
 static virDomainVcpuPinDefPtr
 virDomainVcpuPinDefParseXML(const xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
-                            int maxvcpus,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            int maxvcpus)
 {
     virDomainVcpuPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
@@ -6041,7 +6036,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     for (i = 0 ; i < n ; i++) {
         virDomainVcpuPinDefPtr vcpupin = NULL;
-        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
+        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus);
 
         if (!vcpupin)
             goto error;
@@ -6171,8 +6166,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainTimerDefPtr timer = virDomainTimerDefParseXML(nodes[i],
-                                                               ctxt,
-                                                               flags);
+                                                               ctxt);
         if (!timer)
             goto error;
 
