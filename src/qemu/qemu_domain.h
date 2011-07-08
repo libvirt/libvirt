@@ -146,7 +146,7 @@ const char *qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
 int qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
                                       const char *phase);
 
-void qemuDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque);
+void qemuDomainEventFlush(int timer, void *opaque);
 
 /* driver must be locked before calling */
 void qemuDomainEventQueue(struct qemud_driver *driver,

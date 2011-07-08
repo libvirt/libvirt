@@ -2717,11 +2717,10 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        if (xenFormatSxprDisk(domain->conn,
-                              dev->data.disk,
-                               &buf,
-                               STREQ(def->os.type, "hvm") ? 1 : 0,
-                               priv->xendConfigVersion, 1) < 0)
+        if (xenFormatSxprDisk(dev->data.disk,
+                              &buf,
+                              STREQ(def->os.type, "hvm") ? 1 : 0,
+                              priv->xendConfigVersion, 1) < 0)
             goto cleanup;
 
         if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -2887,8 +2886,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        if (xenFormatSxprDisk(domain->conn,
-                              dev->data.disk,
+        if (xenFormatSxprDisk(dev->data.disk,
                               &buf,
                               STREQ(def->os.type, "hvm") ? 1 : 0,
                               priv->xendConfigVersion, 1) < 0)

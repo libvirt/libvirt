@@ -46,8 +46,7 @@ int xenParseSxprSound(virDomainDefPtr def, const char *str);
 
 virDomainChrDefPtr xenParseSxprChar(const char *value, const char *tty);
 
-int xenFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
-                      virDomainDiskDefPtr def, virBufferPtr buf, int hvm,
+int xenFormatSxprDisk(virDomainDiskDefPtr def, virBufferPtr buf, int hvm,
                       int xendConfigVersion, int isAttach);
 
 int xenFormatSxprNet(virConnectPtr conn,

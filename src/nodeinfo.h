@@ -30,12 +30,12 @@
 int nodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo);
 int nodeCapsInitNUMA(virCapsPtr caps);
 
-int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+int nodeGetCPUStats(virConnectPtr conn,
                     int cpuNum,
                     virNodeCPUStatsPtr params,
                     int *nparams,
                     unsigned int flags);
-int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+int nodeGetMemoryStats(virConnectPtr conn,
                        int cellNum,
                        virNodeMemoryStatsPtr params,
                        int *nparams,

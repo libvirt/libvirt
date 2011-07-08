@@ -413,6 +413,14 @@ sc_prohibit_xmlGetProp:
 	halt='use virXMLPropString, not xmlGetProp'			\
 	  $(_sc_search_regexp)
 
+# ATTRIBUTE_UNUSED should only be applied in implementations, not
+# header declarations
+sc_avoid_attribute_unused_in_header:
+	@prohibit='^[^#]*ATTRIBUTE_UNUSED([^:]|$$)'			\
+	in_vc_files='\.h$$'						\
+	halt='use ATTRIBUTE_UNUSED in .c rather than .h files'		\
+	  $(_sc_search_regexp)
+
 # Many of the function names below came from this filter:
 # git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
 # |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \

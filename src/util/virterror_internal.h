@@ -1,7 +1,7 @@
 /*
  * virterror.h: internal error handling
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2009, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,9 +56,9 @@ void virRaiseErrorFull(const char *filename,
 
 const char *virErrorMsg(virErrorNumber error, const char *info);
 void virReportErrorHelper(int domcode, int errcode,
-                          const char *filename ATTRIBUTE_UNUSED,
-                          const char *funcname ATTRIBUTE_UNUSED,
-                          size_t linenr ATTRIBUTE_UNUSED,
+                          const char *filename,
+                          const char *funcname,
+                          size_t linenr,
                           const char *fmt, ...)
   ATTRIBUTE_FMT_PRINTF(6, 7);
 
