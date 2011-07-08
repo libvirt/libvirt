@@ -516,7 +516,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     int errfd = -1;
     pid_t pid = 0;
 
-    VIR_DEBUG("st=%p path=%s flags=%d offset=%llu length=%llu mode=%d delete=%d",
+    VIR_DEBUG("st=%p path=%s flags=%x offset=%llu length=%llu mode=%o delete=%d",
               st, path, flags, offset, length, mode, delete);
 
     if (flags & O_CREAT)

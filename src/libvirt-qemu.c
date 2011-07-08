@@ -2,7 +2,7 @@
  * libvirt-qemu.c: Interfaces for the libvirt library to handle qemu-specific
  *                 APIs.
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,7 +42,8 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("domain=%p, cmd=%s, result=%p, flags=%u", domain, cmd, result, flags);
+    VIR_DEBUG("domain=%p, cmd=%s, result=%p, flags=%x",
+              domain, cmd, result, flags);
 
     virResetLastError();
 
@@ -113,7 +114,7 @@ virDomainQemuAttach(virConnectPtr conn,
                     unsigned pid,
                     unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, pid=%u, flags=%u", conn, pid, flags);
+    VIR_DEBUG("conn=%p, pid=%u, flags=%x", conn, pid, flags);
 
     virResetLastError();
 

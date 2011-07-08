@@ -1534,7 +1534,7 @@ int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
                            int fd)
 {
     int ret;
-    VIR_DEBUG("mon=%p fd=%d flags=%u",
+    VIR_DEBUG("mon=%p fd=%d flags=%x",
           mon, fd, flags);
 
     if (!mon) {
@@ -1567,7 +1567,7 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 {
     int ret;
     char *uri = NULL;
-    VIR_DEBUG("mon=%p hostname=%s port=%d flags=%u",
+    VIR_DEBUG("mon=%p hostname=%s port=%d flags=%x",
           mon, hostname, port, flags);
 
     if (!mon) {
@@ -1599,7 +1599,7 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
     char *argstr;
     char *dest = NULL;
     int ret = -1;
-    VIR_DEBUG("mon=%p argv=%p flags=%u",
+    VIR_DEBUG("mon=%p argv=%p flags=%x",
           mon, argv, flags);
 
     if (!mon) {
@@ -1640,7 +1640,7 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     char *dest = NULL;
     int ret = -1;
     char *safe_target = NULL;
-    VIR_DEBUG("mon=%p argv=%p target=%s offset=%llu flags=%u",
+    VIR_DEBUG("mon=%p argv=%p target=%s offset=%llu flags=%x",
           mon, argv, target, offset, flags);
 
     if (!mon) {
@@ -1703,7 +1703,7 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
 {
     char *dest = NULL;
     int ret = -1;
-    VIR_DEBUG("mon=%p, unixfile=%s flags=%u",
+    VIR_DEBUG("mon=%p, unixfile=%s flags=%x",
           mon, unixfile, flags);
 
     if (!mon) {

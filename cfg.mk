@@ -269,6 +269,15 @@ sc_avoid_write:
 	halt='consider using safewrite instead of write'		\
 	  $(_sc_search_regexp)
 
+# In debug statements, print flags as bitmask and mode_t as octal.
+sc_flags_debug:
+	@prohibit='\<mode=%[0-9.]*[diux]'				\
+	halt='debug mode_t values with %o'				\
+	  $(_sc_search_regexp)
+	@prohibit='\<flags=%[0-9.]*l*[diou]'				\
+	halt='debug flag values with %x'				\
+	  $(_sc_search_regexp)
+
 # Avoid functions that can lead to double-close bugs.
 sc_prohibit_close:
 	@prohibit='([^>.]|^)\<[fp]?close *\('				\
@@ -626,6 +635,8 @@ exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/console)\.c$$
 
 exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
+
+exclude_file_name_regexp--sc_flags_debug = ^docs/
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^src/rpc/gendispatch\.pl$$

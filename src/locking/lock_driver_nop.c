@@ -31,7 +31,8 @@ static int virLockManagerNopInit(unsigned int version,
                                  const char *configFile,
                                  unsigned int flags)
 {
-    VIR_DEBUG("version=%u configFile=%s flags=%u", version, NULLSTR(configFile), flags);
+    VIR_DEBUG("version=%u configFile=%s flags=%x",
+              version, NULLSTR(configFile), flags);
 
     return 0;
 }

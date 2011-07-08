@@ -156,7 +156,7 @@ virNetServerClientCalculateHandleMode(virNetServerClientPtr client) {
         if (client->tx)
             mode |= VIR_EVENT_HANDLE_WRITABLE;
     }
-    VIR_DEBUG("mode=%d", mode);
+    VIR_DEBUG("mode=%o", mode);
     return mode;
 }
 

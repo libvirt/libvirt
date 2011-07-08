@@ -1380,7 +1380,7 @@ static int doNativeMigrate(struct qemud_driver *driver,
     unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
     qemuMigrationCookiePtr mig = NULL;
     VIR_DEBUG("driver=%p, vm=%p, uri=%s, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=%u, dname=%s, resource=%lu",
+              "cookieout=%p, cookieoutlen=%p, flags=%x, dname=%s, resource=%lu",
               driver, vm, uri, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, NULLSTR(dname), resource);
 
@@ -1600,7 +1600,7 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     qemuMigrationCookiePtr mig = NULL;
     qemuMigrationIOThreadPtr iothread = NULL;
     VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=%lu, resource=%lu",
+              "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu",
               driver, vm, st, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource);
 
@@ -1829,7 +1829,7 @@ static int doPeer2PeerMigrate2(struct qemud_driver *driver,
     int cancelled;
     virStreamPtr st = NULL;
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, dconnuri=%s, "
-              "flags=%lu, dname=%s, resource=%lu",
+              "flags=%lx, dname=%s, resource=%lu",
               driver, sconn, dconn, vm, NULLSTR(dconnuri),
               flags, NULLSTR(dname), resource);
 
@@ -1972,7 +1972,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
     int cancelled;
     virStreamPtr st = NULL;
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, xmlin=%s, "
-              "dconnuri=%s, uri=%s, flags=%lu, dname=%s, resource=%lu",
+              "dconnuri=%s, uri=%s, flags=%lx, dname=%s, resource=%lu",
               driver, sconn, dconn, vm, NULLSTR(xmlin),
               NULLSTR(dconnuri), NULLSTR(uri), flags,
               NULLSTR(dname), resource);
@@ -2142,7 +2142,7 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
     virConnectPtr dconn = NULL;
     bool p2p;
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
-              "uri=%s, flags=%lu, dname=%s, resource=%lu",
+              "uri=%s, flags=%lx, dname=%s, resource=%lu",
               driver, sconn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
               NULLSTR(uri), flags, NULLSTR(dname), resource);
 
@@ -2221,7 +2221,7 @@ int qemuMigrationPerform(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
               "uri=%s, cookiein=%s, cookieinlen=%d, cookieout=%p, "
-              "cookieoutlen=%p, flags=%lu, dname=%s, resource=%lu, v3proto=%d",
+              "cookieoutlen=%p, flags=%lx, dname=%s, resource=%lu, v3proto=%d",
               driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
               NULLSTR(uri), NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, NULLSTR(dname),
@@ -2387,7 +2387,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = NULL;
     qemuMigrationCookiePtr mig = NULL;
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=%lu, retcode=%d",
+              "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
               driver, dconn, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, retcode);
     virErrorPtr orig_err = NULL;
@@ -2571,7 +2571,7 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
     virDomainEventPtr event = NULL;
     int rv = -1;
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
-              "flags=%u, retcode=%d",
+              "flags=%x, retcode=%d",
               driver, conn, vm, NULLSTR(cookiein), cookieinlen,
               flags, retcode);
 

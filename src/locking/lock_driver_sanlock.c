@@ -265,7 +265,8 @@ static int virLockManagerSanlockInit(unsigned int version,
                                      const char *configFile,
                                      unsigned int flags)
 {
-    VIR_DEBUG("version=%u configFile=%s flags=%u", version, NULLSTR(configFile), flags);
+    VIR_DEBUG("version=%u configFile=%s flags=%x",
+              version, NULLSTR(configFile), flags);
     virCheckFlags(0, -1);
 
     if (driver)
