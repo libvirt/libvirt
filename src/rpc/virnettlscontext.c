@@ -396,10 +396,10 @@ static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
     virNetTLSContextPtr ctxt = NULL;
 
     if (virNetTLSContextLocateCredentials(pkipath, tryUserPkiPath, isServer,
-                                          &cacert, &cacrl, &key, &cert) < 0)
+                                          &cacert, &cacrl, &cert, &key) < 0)
         return NULL;
 
-    ctxt = virNetTLSContextNew(cacert, cacrl, key, cert,
+    ctxt = virNetTLSContextNew(cacert, cacrl, cert, key,
                                x509dnWhitelist, requireValidCert, isServer);
 
     VIR_FREE(cacert);
@@ -435,7 +435,7 @@ virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
                                               const char *const*x509dnWhitelist,
                                               bool requireValidCert)
 {
-    return virNetTLSContextNew(cacert, cacrl, key, cert,
+    return virNetTLSContextNew(cacert, cacrl, cert, key,
                                x509dnWhitelist, requireValidCert, true);
 }
 
