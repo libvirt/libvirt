@@ -7,7 +7,7 @@ struct remote_nonnull_domain {
 struct qemu_monitor_command_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      cmd;
-        int                        flags;
+        u_int                      flags;
 };
 struct qemu_monitor_command_ret {
         remote_nonnull_string      result;

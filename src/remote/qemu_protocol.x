@@ -3,7 +3,7 @@
  *   remote_internal driver and libvirtd.  This protocol is
  *   internal and may change at any time.
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@
 struct qemu_monitor_command_args {
     remote_nonnull_domain dom;
     remote_nonnull_string cmd;
-    int flags;
+    unsigned int flags;
 };
 
 struct qemu_monitor_command_ret {
