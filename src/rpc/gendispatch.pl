@@ -1350,11 +1350,11 @@ elsif ($opt_k) {
         if ($call->{streamflag} ne "none") {
             print "\n";
             print "    if (!(netst = virNetClientStreamNew(priv->remoteProgram, REMOTE_PROC_$call->{UC_NAME}, priv->counter)))\n";
-            print "       goto done;\n";
+            print "        goto done;\n";
             print "\n";
-            print "    if (virNetClientAddStream(priv->client, netst) < 0) {";
-            print "       virNetClientStreamFree(netst);\n";
-            print "       goto done;\n";
+            print "    if (virNetClientAddStream(priv->client, netst) < 0) {\n";
+            print "        virNetClientStreamFree(netst);\n";
+            print "        goto done;\n";
             print "    }";
             print "\n";
             print "    st->driver = &remoteStreamDrv;\n";
