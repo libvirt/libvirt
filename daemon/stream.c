@@ -104,6 +104,15 @@ daemonStreamMessageFinished(virNetMessagePtr msg,
     daemonStreamUpdateEvents(stream);
 }
 
+
+static void
+daemonStreamEventFreeFunc(void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+
+    virNetServerClientFree(client);
+}
+
 /*
  * Callback that gets invoked when a stream becomes writable/readable
  */
@@ -361,9 +370,11 @@ int daemonAddClientStream(virNetServerClientPtr client,
     }
 
     if (virStreamEventAddCallback(stream->st, 0,
-                                  daemonStreamEvent, client, NULL) < 0)
+                                  daemonStreamEvent, client,
+                                  daemonStreamEventFreeFunc) < 0)
         return -1;
 
+    virNetServerClientRef(client);
     if ((stream->filterID = virNetServerClientAddFilter(client,
                                                         daemonStreamFilter,
                                                         stream)) < 0) {
