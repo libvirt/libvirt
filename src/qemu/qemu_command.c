@@ -5712,6 +5712,9 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             else
                 feature = strdup(p);
 
+            if (!feature)
+                goto no_memory;
+
             ret = virCPUDefAddFeature(cpu, feature, policy);
             VIR_FREE(feature);
             if (ret < 0)
@@ -6028,6 +6031,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                 disk->dst = strdup("hdc");
+                if (!disk->dst)
+                    goto no_memory;
                 disk->readonly = 1;
             } else {
                 if (STRPREFIX(arg, "-fd")) {
@@ -6041,8 +6046,12 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 }
                 disk->dst = strdup(arg + 1);
+                if (!disk->dst)
+                    goto no_memory;
             }
             disk->src = strdup(val);
+            if (!disk->src)
+                goto no_memory;
 
             if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
                 char *host, *port;
@@ -6058,17 +6067,14 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                         goto error;
                     }
                     *port++ = '\0';
-                    if (VIR_ALLOC(disk->hosts) < 0) {
-                        virReportOOMError();
-                        goto error;
-                    }
+                    if (VIR_ALLOC(disk->hosts) < 0)
+                        goto no_memory;
                     disk->nhosts = 1;
                     disk->hosts->name = host;
                     disk->hosts->port = strdup(port);
-                    if (!disk->hosts->port) {
-                        virReportOOMError();
-                        goto error;
-                    }
+                    if (!disk->hosts->port)
+                        goto no_memory;
+                    VIR_FREE(disk->src);
                     disk->src = NULL;
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_RBD:
@@ -6088,22 +6094,16 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                             goto error;
                         }
                         *vdi++ = '\0';
-                        if (VIR_ALLOC(disk->hosts) < 0) {
-                            virReportOOMError();
-                            goto error;
-                        }
+                        if (VIR_ALLOC(disk->hosts) < 0)
+                            goto no_memory;
                         disk->nhosts = 1;
                         disk->hosts->name = disk->src;
                         disk->hosts->port = strdup(port);
-                        if (!disk->hosts->port) {
-                            virReportOOMError();
-                            goto error;
-                        }
+                        if (!disk->hosts->port)
+                            goto no_memory;
                         disk->src = strdup(vdi);
-                        if (!disk->src) {
-                            virReportOOMError();
-                            goto error;
-                        }
+                        if (!disk->src)
+                            goto no_memory;
                     }
                     break;
                 }
