@@ -74,7 +74,8 @@ local-checks-to-skip =			\
   sc_useless_cpp_parens
 
 # Files that should never cause syntax check failures.
-VC_LIST_ALWAYS_EXCLUDE_REGEX = (^(HACKING|docs/news\.html\.in)|\.po)$$
+VC_LIST_ALWAYS_EXCLUDE_REGEX = \
+  (^(HACKING|docs/(news\.html\.in|.*\.patch))|\.po)$$
 
 # Functions like free() that are no-ops on NULL arguments.
 useless_free_options =				\
@@ -637,36 +638,34 @@ exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
 exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/util\.c$$
 
 exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
-  (^docs|^python/(libvirt-override|typewrappers)\.c$$)
+  ^python/(libvirt-override|typewrappers)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(bootstrap.conf$$|src/util/util\.c$$|examples/domain-events/events-c/event-test\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
-  (\.p[yl]$$|^docs/|(src/util/files\.c|src/libvirt\.c)$$)
+  (\.p[yl]$$|^docs/|^(src/util/files\.c|src/libvirt\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^docs/api_extension/|^tests/qemuhelpdata/|\.(gif|ico|png)$$)
+  (^tests/qemuhelpdata/|\.(gif|ico|png)$$)
 
 _src2=src/(util/command|libvirt|lxc/lxc_controller)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
-  (^docs|^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
+  (^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/util\.c$$
-
-exclude_file_name_regexp--sc_prohibit_gettext_noop = ^docs/
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
-  ^((po|docs|tests)/|tools/(virsh|console)\.c$$)
+  ^((po|tests)/|docs/.*py$$|tools/(virsh|console)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_readlink = ^src/util/util\.c$$
 
 exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/util\.c$$
 
-exclude_file_name_regexp--sc_prohibit_sprintf = ^(docs/|HACKING$$)
+exclude_file_name_regexp--sc_prohibit_sprintf = ^docs/hacking\.html\.in$$
 
 exclude_file_name_regexp--sc_prohibit_strncpy = \
   ^(src/util/util|tools/virsh)\.c$$
@@ -677,7 +676,7 @@ exclude_file_name_regexp--sc_require_config_h = ^examples/
 
 exclude_file_name_regexp--sc_require_config_h_first = ^examples/
 
-exclude_file_name_regexp--sc_trailing_blank = (^docs/|\.(fig|gif|ico|png)$$)
+exclude_file_name_regexp--sc_trailing_blank = \.(fig|gif|ico|png)$$
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(docs/apibuild.py|tests/virt-aa-helper-test)$$
