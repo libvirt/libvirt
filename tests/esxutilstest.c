@@ -280,9 +280,9 @@ VIRT_TEST_MAIN(mymain)
 
 #else
 
-int main (void)
+int main(void)
 {
-    return 77; /* means 'test skipped' for automake */
+    return EXIT_AM_SKIP;
 }
 
 #endif /* WITH_ESX */
