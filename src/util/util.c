@@ -652,7 +652,6 @@ virFileOpenAsNoFork(const char *path, int openflags, mode_t mode,
 {
     int fd = -1;
     int ret = 0;
-    struct stat st;
 
     if ((fd = open(path, openflags, mode)) < 0) {
         ret = -errno;
@@ -660,18 +659,26 @@ virFileOpenAsNoFork(const char *path, int openflags, mode_t mode,
                              path);
         goto error;
     }
-    if (fstat(fd, &st) == -1) {
-        ret = -errno;
-        virReportSystemError(errno, _("stat of '%s' failed"), path);
-        goto error;
+
+    /* VIR_FILE_OPEN_AS_UID in flags means we are running in a child process
+     * owned by uid and gid */
+    if (!(flags & VIR_FILE_OPEN_AS_UID)) {
+        struct stat st;
+
+        if (fstat(fd, &st) == -1) {
+            ret = -errno;
+            virReportSystemError(errno, _("stat of '%s' failed"), path);
+            goto error;
+        }
+        if (((st.st_uid != uid) || (st.st_gid != gid))
+            && (fchown(fd, uid, gid) < 0)) {
+            ret = -errno;
+            virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
+                                 path, (unsigned int) uid, (unsigned int) gid);
+            goto error;
+        }
     }
-    if (((st.st_uid != uid) || (st.st_gid != gid))
-        && (fchown(fd, uid, gid) < 0)) {
-        ret = -errno;
-        virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
-                             path, (unsigned int) uid, (unsigned int) gid);
-        goto error;
-    }
+
     if ((flags & VIR_FILE_OPEN_FORCE_PERMS)
         && (fchmod(fd, mode) < 0)) {
         ret = -errno;
@@ -757,6 +764,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
     if ((!(flags & VIR_FILE_OPEN_AS_UID))
         || (getuid() != 0)
         || ((uid == 0) && (gid == 0))) {
+        flags &= ~VIR_FILE_OPEN_AS_UID;
         return virFileOpenAsNoFork(path, openflags, mode, uid, gid, flags);
     }
 
