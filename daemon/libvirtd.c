@@ -1024,11 +1024,13 @@ daemonConfigFree(struct daemonConfig *data)
  */
 static int
 daemonConfigLoad(struct daemonConfig *data,
-                 const char *filename)
+                 const char *filename,
+                 bool allow_missing)
 {
     virConfPtr conf;
 
-    if (access(filename, R_OK) == -1 &&
+    if (allow_missing &&
+        access(filename, R_OK) == -1 &&
         errno == ENOENT)
         return 0;
 
@@ -1282,6 +1284,7 @@ int main(int argc, char **argv) {
     int ipsock = 0;
     struct daemonConfig *config;
     bool privileged = geteuid() == 0 ? true : false;
+    bool implicit_conf = false;
 
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
@@ -1367,14 +1370,16 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
 
     /* No explicit config, so try and find a default one */
-    if (remote_config_file == NULL &&
-        daemonConfigFilePath(privileged,
-                             &remote_config_file) < 0)
-        exit(EXIT_FAILURE);
+    if (remote_config_file == NULL) {
+        implicit_conf = true;
+        if (daemonConfigFilePath(privileged,
+                                 &remote_config_file) < 0)
+            exit(EXIT_FAILURE);
+    }
 
     /* Read the config file if it exists*/
     if (remote_config_file &&
-        daemonConfigLoad(config, remote_config_file) < 0)
+        daemonConfigLoad(config, remote_config_file, implicit_conf) < 0)
         exit(EXIT_FAILURE);
 
     if (config->host_uuid &&
