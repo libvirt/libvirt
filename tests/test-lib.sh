@@ -54,13 +54,8 @@ test_final()
   status=$2
 
   if test "$verbose" = "0" ; then
-    mod=`expr \( $counter + 1 \) % 40`
-    if test "$mod" != "0" && test "$mod" != "1" ; then
-      for i in `seq $mod 40`
-      do
-        printf " "
-      done
-    fi
+    len=`expr 40 - \( $counter % 40 \)`
+    printf "%${len}s" ""
     if test "$status" = "0" ; then
       printf " %-3d OK\n" $counter
     else
