@@ -1541,6 +1541,8 @@ static const vshCmdOptDef opts_start[] = {
 #endif
     {"paused", VSH_OT_BOOL, 0, N_("leave the guest paused after creation")},
     {"autodestroy", VSH_OT_BOOL, 0, N_("automatically destroy the guest when virsh disconnects")},
+    {"bypass-cache", VSH_OT_BOOL, 0,
+     N_("avoid file system cache when loading")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1571,6 +1573,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_START_PAUSED;
     if (vshCommandOptBool(cmd, "autodestroy"))
         flags |= VIR_DOMAIN_START_AUTODESTROY;
+    if (vshCommandOptBool(cmd, "bypass-cache"))
+        flags |= VIR_DOMAIN_START_BYPASS_CACHE;
 
     /* Prefer older API unless we have to pass a flag.  */
     if ((flags ? virDomainCreateWithFlags(dom, flags)
@@ -1599,6 +1603,7 @@ static const vshCmdInfo info_save[] = {
 };
 
 static const vshCmdOptDef opts_save[] = {
+    {"bypass-cache", VSH_OT_BOOL, 0, N_("avoid file system cache when saving")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("where to save the data")},
     {NULL, 0, 0, NULL}
@@ -1610,7 +1615,8 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *name = NULL;
     const char *to = NULL;
-    bool ret = true;
+    bool ret = false;
+    int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1618,16 +1624,22 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &to) <= 0)
         return false;
 
+    if (vshCommandOptBool(cmd, "bypass-cache"))
+        flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
+
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainSave(dom, to) == 0) {
-        vshPrint(ctl, _("Domain %s saved to %s\n"), name, to);
-    } else {
+    if ((flags ? virDomainSaveFlags(dom, to, NULL, flags)
+         : virDomainSave(dom, to)) < 0) {
         vshError(ctl, _("Failed to save domain %s to %s"), name, to);
-        ret = false;
+        goto cleanup;
     }
 
+    vshPrint(ctl, _("Domain %s saved to %s\n"), name, to);
+    ret = true;
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -1645,6 +1657,7 @@ static const vshCmdInfo info_managedsave[] = {
 };
 
 static const vshCmdOptDef opts_managedsave[] = {
+    {"bypass-cache", VSH_OT_BOOL, 0, N_("avoid file system cache when saving")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1654,21 +1667,27 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *name;
-    bool ret = true;
+    bool ret = false;
+    int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
+    if (vshCommandOptBool(cmd, "bypass-cache"))
+        flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
+
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainManagedSave(dom, 0) == 0) {
-        vshPrint(ctl, _("Domain %s state saved by libvirt\n"), name);
-    } else {
+    if (virDomainManagedSave(dom, flags) < 0) {
         vshError(ctl, _("Failed to save domain %s state"), name);
-        ret = false;
+        goto cleanup;
     }
 
+    vshPrint(ctl, _("Domain %s state saved by libvirt\n"), name);
+    ret = true;
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -1995,6 +2014,8 @@ static const vshCmdInfo info_restore[] = {
 
 static const vshCmdOptDef opts_restore[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("the state to restore")},
+    {"bypass-cache", VSH_OT_BOOL, 0,
+     N_("avoid file system cache when restoring")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2002,7 +2023,8 @@ static bool
 cmdRestore(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
-    bool ret = true;
+    bool ret = false;
+    int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -2010,12 +2032,19 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virDomainRestore(ctl->conn, from) == 0) {
-        vshPrint(ctl, _("Domain restored from %s\n"), from);
-    } else {
+    if (vshCommandOptBool(cmd, "bypass-cache"))
+        flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
+
+    if ((flags ? virDomainRestoreFlags(ctl->conn, from, NULL, flags)
+         : virDomainRestore(ctl->conn, from)) < 0) {
         vshError(ctl, _("Failed to restore domain from %s"), from);
-        ret = false;
+        goto cleanup;
     }
+
+    vshPrint(ctl, _("Domain restored from %s\n"), from);
+    ret = true;
+
+cleanup:
     return ret;
 }
 
@@ -2031,6 +2060,8 @@ static const vshCmdInfo info_dump[] = {
 static const vshCmdOptDef opts_dump[] = {
     {"live", VSH_OT_BOOL, 0, N_("perform a live core dump if supported")},
     {"crash", VSH_OT_BOOL, 0, N_("crash the domain after core dump")},
+    {"bypass-cache", VSH_OT_BOOL, 0,
+     N_("avoid file system cache when saving")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("where to dump the core")},
     {NULL, 0, 0, NULL}
@@ -2042,7 +2073,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *name = NULL;
     const char *to = NULL;
-    bool ret = true;
+    bool ret = false;
     int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -2058,14 +2089,18 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DUMP_LIVE;
     if (vshCommandOptBool (cmd, "crash"))
         flags |= VIR_DUMP_CRASH;
+    if (vshCommandOptBool(cmd, "bypass-cache"))
+        flags |= VIR_DUMP_BYPASS_CACHE;
 
-    if (virDomainCoreDump(dom, to, flags) == 0) {
-        vshPrint(ctl, _("Domain %s dumped to %s\n"), name, to);
-    } else {
+    if (virDomainCoreDump(dom, to, flags) < 0) {
         vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
-        ret = false;
+        goto cleanup;
     }
 
+    vshPrint(ctl, _("Domain %s dumped to %s\n"), name, to);
+    ret = true;
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }

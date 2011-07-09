@@ -475,9 +475,16 @@ named by I<format> to a domain XML format.
 Convert the file I<xml> in domain XML format to the native guest
 configuration format named by I<format>.
 
-=item B<dump> I<domain-id> I<corefilepath>
+=item B<dump> I<domain-id> I<corefilepath> [I<--live>] [I<--crash>]
+[I<--bypass-cache>]
 
 Dumps the core of a domain to a file for analysis.
+If I<--live> is specified, the domain continues to run until the core
+dump is complete, rather than pausing up front.
+If I<--crash> is specified, the domain is halted with a crashed status,
+rather than merely left in a paused state.
+If I<--bypass-cache> is specified, the save will avoid the file system
+cache, although this may slow down the operation.
 
 =item B<dumpxml> I<domain-id> [I<--inactive>] [I<--security-info>]
 [I<--update-cpu>]
@@ -512,11 +519,13 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
-=item B<managedsave> I<domain-id>
+=item B<managedsave> I<domain-id> [I<--bypass-cache>]
 
 Save and destroy (stop) a running domain, so it can be restarted from the same
 state at a later time.  When the virsh B<start> command is next run for
 the domain, it will automatically be started from this saved state.
+If I<--bypass-cache> is specified, the save will avoid the file system
+cache, although this may slow down the operation.
 
 The B<dominfo> command can be used to query whether a domain currently
 has any managed save image.
@@ -590,22 +599,27 @@ domain actually reboots.
 The exact behavior of a domain when it reboots is set by the
 I<on_reboot> parameter in the domain's XML definition.
 
-=item B<restore> I<state-file>
+=item B<restore> I<state-file> [I<--bypass-cache>]
 
 Restores a domain from a B<virsh save> state file. See I<save> for more info.
+
+If I<--bypass-cache> is specified, the restore will avoid the file system
+cache, although this may slow down the operation.
 
 B<Note>: To avoid corrupting file system contents within the domain, you
 should not reuse the saved state file for a second B<restore> unless you
 have also reverted all storage volumes back to the same contents as when
 the state file was created.
 
-=item B<save> I<domain-id> I<state-file>
+=item B<save> I<domain-id> I<state-file> [I<--bypass-cache>]
 
 Saves a running domain (RAM, but not disk state) to a state file so that
 it can be restored
 later.  Once saved, the domain will no longer be running on the
 system, thus the memory allocated for the domain will be free for
 other domains to use.  B<virsh restore> restores from this state file.
+If I<--bypass-cache> is specified, the save will avoid the file system
+cache, although this may slow down the operation.
 
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
@@ -791,6 +805,7 @@ The exact behavior of a domain when it shuts down is set by the
 I<on_shutdown> parameter in the domain's XML definition.
 
 =item B<start> I<domain-name> [I<--console>] [I<--paused>] [I<--autodestroy>]
+[I<--bypass-cache>]
 
 Start a (previously defined) inactive domain, either from the last
 B<managedsave> state, or via a fresh boot if no managedsave state is
@@ -799,7 +814,9 @@ used and supported by the driver; otherwise it will be running.
 If I<--console> is requested, attach to the console after creation.
 If I<--autodestroy> is requested, then the guest will be automatically
 destroyed when virsh closes its connection to libvirt, or otherwise
-exits.
+exits.  If I<--bypass-cache> is specified, and managedsave state exists,
+the restore will avoid the file system cache, although this may slow
+down the operation.
 
 =item B<suspend> I<domain-id>
 
