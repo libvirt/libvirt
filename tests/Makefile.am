@@ -300,7 +300,7 @@ xencapstest_SOURCES = \
 xencapstest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
 
 reconnect_SOURCES = \
-	reconnect.c
+	reconnect.c testutils.h testutils.c
 reconnect_LDADD = $(LDADDS)
 
 statstest_SOURCES = \

@@ -11,7 +11,9 @@ static void errorHandler(void *userData ATTRIBUTE_UNUSED,
                          virErrorPtr error ATTRIBUTE_UNUSED) {
 }
 
-int main(void) {
+static int
+mymain(void)
+{
     int id = 0;
     int ro = 0;
     virConnectPtr conn;
@@ -36,12 +38,12 @@ int main(void) {
     }
     if (conn == NULL) {
         fprintf(stderr, "First virConnectOpen() failed\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     dom = virDomainLookupByID(conn, id);
     if (dom == NULL) {
         fprintf(stderr, "First lookup for domain %d failed\n", id);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     virDomainFree(dom);
     virConnectClose(conn);
@@ -51,16 +53,17 @@ int main(void) {
         conn = virConnectOpen(NULL);
     if (conn == NULL) {
         fprintf(stderr, "Second virConnectOpen() failed\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     dom = virDomainLookupByID(conn, id);
     if (dom == NULL) {
         fprintf(stderr, "Second lookup for domain %d failed\n", id);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     virDomainFree(dom);
     virConnectClose(conn);
-    printf("OK\n");
-    exit(EXIT_SUCCESS);
 
+    return EXIT_SUCCESS;
 }
+
+VIRT_TEST_MAIN(mymain)

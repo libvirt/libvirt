@@ -76,6 +76,9 @@ void virtTestResult(const char *name, int ret, const char *msg, ...)
     va_list vargs;
     va_start(vargs, msg);
 
+    if (testCounter == 0 && !virTestGetVerbose())
+        fprintf(stderr, "      ");
+
     testCounter++;
     if (virTestGetVerbose()) {
         fprintf(stderr, "%3d) %-60s ", testCounter, name);
@@ -112,6 +115,9 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
 {
     int i, ret = 0;
     double *ts = NULL;
+
+    if (testCounter == 0 && !virTestGetVerbose())
+        fprintf(stderr, "      ");
 
     testCounter++;
 
@@ -562,8 +568,6 @@ int virtTestMain(int argc,
         return EXIT_FAILURE;
     }
     fprintf(stderr, "TEST: %s\n", progname);
-    if (!virTestGetVerbose())
-        fprintf(stderr, "      ");
 
     if (virThreadInitialize() < 0 ||
         virErrorInitialize() < 0 ||
@@ -688,7 +692,7 @@ cleanup:
     if (abs_srcdir_cleanup)
         VIR_FREE(abs_srcdir);
     virResetLastError();
-    if (!virTestGetVerbose()) {
+    if (!virTestGetVerbose() && ret != EXIT_AM_SKIP) {
         int i;
         for (i = (testCounter % 40) ; i > 0 && i < 40 ; i++)
             fprintf(stderr, " ");
