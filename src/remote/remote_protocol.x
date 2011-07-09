@@ -725,8 +725,21 @@ struct remote_domain_save_args {
     remote_nonnull_string to;
 };
 
+struct remote_domain_save_flags_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string to;
+    remote_string dxml;
+    unsigned int flags;
+};
+
 struct remote_domain_restore_args {
     remote_nonnull_string from;
+};
+
+struct remote_domain_restore_flags_args {
+    remote_nonnull_string from;
+    remote_string dxml;
+    unsigned int flags;
 };
 
 struct remote_domain_core_dump_args {
@@ -2390,7 +2403,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_CONTROL_INFO = 229, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_VCPU_PIN_INFO = 230,  /* skipgen skipgen */
 
-    REMOTE_PROC_DOMAIN_UNDEFINE_FLAGS = 231  /* autogen autogen */
+    REMOTE_PROC_DOMAIN_UNDEFINE_FLAGS = 231,  /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SAVE_FLAGS = 232,  /* autogen autogen */
+    REMOTE_PROC_DOMAIN_RESTORE_FLAGS = 233  /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
