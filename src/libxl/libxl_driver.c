@@ -1915,11 +1915,19 @@ cleanup:
 }
 
 static int
-libxlDomainSave(virDomainPtr dom, const char *to)
+libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
+                     unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        libxlError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                   _("xml modification unsupported"));
+        return -1;
+    }
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1947,7 +1955,14 @@ cleanup:
 }
 
 static int
-libxlDomainRestore(virConnectPtr conn, const char *from)
+libxlDomainSave(virDomainPtr dom, const char *to)
+{
+    return libxlDomainSaveFlags(dom, to, NULL, 0);
+}
+
+static int
+libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
+                        const char *dxml, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -1955,6 +1970,13 @@ libxlDomainRestore(virConnectPtr conn, const char *from)
     libxlSavefileHeader hdr;
     int fd = -1;
     int ret = -1;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        libxlError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                   _("xml modification unsupported"));
+        return -1;
+    }
 
     libxlDriverLock(driver);
 
@@ -1984,6 +2006,12 @@ cleanup:
         virDomainObjUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
+}
+
+static int
+libxlDomainRestore(virConnectPtr conn, const char *from)
+{
+    return libxlDomainRestoreFlags(conn, from, NULL, 0);
 }
 
 static int
@@ -3860,7 +3888,9 @@ static virDriver libxlDriver = {
     .domainGetInfo = libxlDomainGetInfo, /* 0.9.0 */
     .domainGetState = libxlDomainGetState, /* 0.9.2 */
     .domainSave = libxlDomainSave, /* 0.9.2 */
+    .domainSaveFlags = libxlDomainSaveFlags, /* 0.9.4 */
     .domainRestore = libxlDomainRestore, /* 0.9.2 */
+    .domainRestoreFlags = libxlDomainRestoreFlags, /* 0.9.4 */
     .domainCoreDump = libxlDomainCoreDump, /* 0.9.2 */
     .domainSetVcpus = libxlDomainSetVcpus, /* 0.9.0 */
     .domainSetVcpusFlags = libxlDomainSetVcpusFlags, /* 0.9.0 */

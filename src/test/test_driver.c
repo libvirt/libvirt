@@ -1726,8 +1726,9 @@ cleanup:
 
 #define TEST_SAVE_MAGIC "TestGuestMagic"
 
-static int testDomainSave(virDomainPtr domain,
-                          const char *path)
+static int
+testDomainSaveFlags(virDomainPtr domain, const char *path,
+                    const char *dxml, unsigned int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     char *xml = NULL;
@@ -1736,6 +1737,13 @@ static int testDomainSave(virDomainPtr domain,
     virDomainObjPtr privdom;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        testError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                  _("xml modification unsupported"));
+        return -1;
+    }
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -1820,8 +1828,18 @@ cleanup:
     return ret;
 }
 
-static int testDomainRestore(virConnectPtr conn,
-                             const char *path)
+static int
+testDomainSave(virDomainPtr domain,
+               const char *path)
+{
+    return testDomainSaveFlags(domain, path, NULL, 0);
+}
+
+static int
+testDomainRestoreFlags(virConnectPtr conn,
+                       const char *path,
+                       const char *dxml,
+                       unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
     char *xml = NULL;
@@ -1832,6 +1850,13 @@ static int testDomainRestore(virConnectPtr conn,
     virDomainObjPtr dom = NULL;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        testError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                  _("xml modification unsupported"));
+        return -1;
+    }
 
     if ((fd = open(path, O_RDONLY)) < 0) {
         virReportSystemError(errno,
@@ -1907,6 +1932,13 @@ cleanup:
         testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
+}
+
+static int
+testDomainRestore(virConnectPtr conn,
+                  const char *path)
+{
+    return testDomainRestoreFlags(conn, path, NULL, 0);
 }
 
 static int testDomainCoreDump(virDomainPtr domain,
@@ -5550,7 +5582,9 @@ static virDriver testDriver = {
     .domainGetInfo = testGetDomainInfo, /* 0.1.1 */
     .domainGetState = testDomainGetState, /* 0.9.2 */
     .domainSave = testDomainSave, /* 0.3.2 */
+    .domainSaveFlags = testDomainSaveFlags, /* 0.9.4 */
     .domainRestore = testDomainRestore, /* 0.3.2 */
+    .domainRestoreFlags = testDomainRestoreFlags, /* 0.9.4 */
     .domainCoreDump = testDomainCoreDump, /* 0.3.2 */
     .domainSetVcpus = testSetVcpus, /* 0.1.4 */
     .domainSetVcpusFlags = testDomainSetVcpusFlags, /* 0.8.5 */

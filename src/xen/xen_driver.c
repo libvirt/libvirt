@@ -1061,10 +1061,18 @@ xenUnifiedDomainGetState(virDomainPtr dom,
 }
 
 static int
-xenUnifiedDomainSave (virDomainPtr dom, const char *to)
+xenUnifiedDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
+                          unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        xenUnifiedError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("xml modification unsupported"));
+        return -1;
+    }
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
@@ -1076,10 +1084,24 @@ xenUnifiedDomainSave (virDomainPtr dom, const char *to)
 }
 
 static int
-xenUnifiedDomainRestore (virConnectPtr conn, const char *from)
+xenUnifiedDomainSave(virDomainPtr dom, const char *to)
+{
+    return xenUnifiedDomainSaveFlags(dom, to, NULL, 0);
+}
+
+static int
+xenUnifiedDomainRestoreFlags(virConnectPtr conn, const char *from,
+                             const char *dxml, unsigned int flags)
 {
     GET_PRIVATE(conn);
     int i;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        xenUnifiedError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("xml modification unsupported"));
+        return -1;
+    }
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
@@ -1088,6 +1110,12 @@ xenUnifiedDomainRestore (virConnectPtr conn, const char *from)
             return 0;
 
     return -1;
+}
+
+static int
+xenUnifiedDomainRestore (virConnectPtr conn, const char *from)
+{
+    return xenUnifiedDomainRestoreFlags(conn, from, NULL, 0);
 }
 
 static int
@@ -2223,7 +2251,9 @@ static virDriver xenUnifiedDriver = {
     .domainGetInfo = xenUnifiedDomainGetInfo, /* 0.0.3 */
     .domainGetState = xenUnifiedDomainGetState, /* 0.9.2 */
     .domainSave = xenUnifiedDomainSave, /* 0.0.3 */
+    .domainSaveFlags = xenUnifiedDomainSaveFlags, /* 0.9.4 */
     .domainRestore = xenUnifiedDomainRestore, /* 0.0.3 */
+    .domainRestoreFlags = xenUnifiedDomainRestoreFlags, /* 0.9.4 */
     .domainCoreDump = xenUnifiedDomainCoreDump, /* 0.1.9 */
     .domainSetVcpus = xenUnifiedDomainSetVcpus, /* 0.1.4 */
     .domainSetVcpusFlags = xenUnifiedDomainSetVcpusFlags, /* 0.8.5 */

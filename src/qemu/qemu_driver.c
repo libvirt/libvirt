@@ -2187,9 +2187,10 @@ qemuCompressProgramName(int compress)
  * shutdown). So 'vm' must not be referenced by the caller after
  * this returns (whether returning success or failure).
  */
-static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
-                               virDomainObjPtr vm, const char *path,
-                               int compressed)
+static int
+qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
+                       virDomainObjPtr vm, const char *path,
+                       int compressed)
 {
     char *xml = NULL;
     struct qemud_save_header header;
@@ -2431,12 +2432,21 @@ static bool qemudCompressProgramAvailable(enum qemud_save_formats compress)
     return true;
 }
 
-static int qemudDomainSave(virDomainPtr dom, const char *path)
+static int
+qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
+                    unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     int compressed;
     int ret = -1;
     virDomainObjPtr vm = NULL;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("xml modification unsupported"));
+        return -1;
+    }
 
     qemuDriverLock(driver);
 
@@ -2473,7 +2483,7 @@ static int qemudDomainSave(virDomainPtr dom, const char *path)
         goto cleanup;
     }
 
-    ret = qemudDomainSaveFlag(driver, dom, vm, path, compressed);
+    ret = qemuDomainSaveInternal(driver, dom, vm, path, compressed);
     vm = NULL;
 
 cleanup:
@@ -2482,6 +2492,12 @@ cleanup:
     qemuDriverUnlock(driver);
 
     return ret;
+}
+
+static int
+qemuDomainSave(virDomainPtr dom, const char *path)
+{
+    return qemuDomainSaveFlags(dom, path, NULL, 0);
 }
 
 static char *
@@ -2530,7 +2546,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     VIR_INFO("Saving state to %s", name);
 
     compressed = QEMUD_SAVE_FORMAT_RAW;
-    ret = qemudDomainSaveFlag(driver, dom, vm, name, compressed);
+    ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed);
     vm = NULL;
 
 cleanup:
@@ -3832,8 +3848,10 @@ out:
 }
 
 static int
-qemuDomainRestore(virConnectPtr conn,
-                  const char *path)
+qemuDomainRestoreFlags(virConnectPtr conn,
+                       const char *path,
+                       const char *dxml,
+                       unsigned int flags)
 {
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
@@ -3841,6 +3859,13 @@ qemuDomainRestore(virConnectPtr conn,
     int fd = -1;
     int ret = -1;
     struct qemud_save_header header;
+
+    virCheckFlags(0, -1);
+    if (dxml) {
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("xml modification unsupported"));
+        return -1;
+    }
 
     qemuDriverLock(driver);
 
@@ -3878,6 +3903,13 @@ cleanup:
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
     return ret;
+}
+
+static int
+qemuDomainRestore(virConnectPtr conn,
+                  const char *path)
+{
+    return qemuDomainRestoreFlags(conn, path, NULL, 0);
 }
 
 static int
@@ -8940,8 +8972,10 @@ static virDriver qemuDriver = {
     .domainGetInfo = qemudDomainGetInfo, /* 0.2.0 */
     .domainGetState = qemuDomainGetState, /* 0.9.2 */
     .domainGetControlInfo = qemuDomainGetControlInfo, /* 0.9.3 */
-    .domainSave = qemudDomainSave, /* 0.2.0 */
+    .domainSave = qemuDomainSave, /* 0.2.0 */
+    .domainSaveFlags = qemuDomainSaveFlags, /* 0.9.4 */
     .domainRestore = qemuDomainRestore, /* 0.2.0 */
+    .domainRestoreFlags = qemuDomainRestoreFlags, /* 0.9.4 */
     .domainCoreDump = qemudDomainCoreDump, /* 0.7.0 */
     .domainScreenshot = qemuDomainScreenshot, /* 0.9.2 */
     .domainSetVcpus = qemuDomainSetVcpus, /* 0.4.4 */
