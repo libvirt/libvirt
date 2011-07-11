@@ -50,4 +50,19 @@ FILE *virFileFdopen(int *fdptr, const char *mode) ATTRIBUTE_RETURN_CHECK;
 # define VIR_FORCE_CLOSE(FD) ignore_value(virFileClose(&(FD), true))
 # define VIR_FORCE_FCLOSE(FILE) ignore_value(virFileFclose(&(FILE), true))
 
+/* Opaque type for managing a wrapper around an O_DIRECT fd.  */
+struct _virFileDirectFd;
+
+typedef struct _virFileDirectFd virFileDirectFd;
+typedef virFileDirectFd *virFileDirectFdPtr;
+
+int virFileDirectFdFlag(void);
+
+virFileDirectFdPtr virFileDirectFdNew(int *fd, const char *name)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virFileDirectFdClose(virFileDirectFdPtr dfd);
+
+void virFileDirectFdFree(virFileDirectFdPtr dfd);
+
 #endif /* __VIR_FILES_H */

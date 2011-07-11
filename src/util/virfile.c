@@ -23,10 +23,24 @@
  */
 
 #include <config.h>
-
-#include <unistd.h>
+#include "internal.h"
 
 #include "virfile.h"
+
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include "command.h"
+#include "configmake.h"
+#include "memory.h"
+#include "virterror_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
+#define virFileError(code, ...)                                   \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+
 
 int virFileClose(int *fdptr, bool preserve_errno)
 {
@@ -77,4 +91,163 @@ FILE *virFileFdopen(int *fdptr, const char *mode)
     }
 
     return file;
+}
+
+
+/* Opaque type for managing a wrapper around an O_DIRECT fd.  For now,
+ * read-write is not supported, just a single direction.  */
+struct _virFileDirectFd {
+    virCommandPtr cmd; /* Child iohelper process to do the I/O.  */
+};
+
+/**
+ * virFileDirectFdFlag:
+ *
+ * Returns 0 if the kernel can avoid file system cache pollution
+ * without any additional flags, O_DIRECT if the original fd must be
+ * opened in direct mode, or -1 if there is no support for bypassing
+ * the file system cache.
+ */
+int
+virFileDirectFdFlag(void)
+{
+    /* XXX For now, Linux posix_fadvise is not powerful enough to
+     * avoid O_DIRECT.  */
+    return O_DIRECT ? O_DIRECT : -1;
+}
+
+/**
+ * virFileDirectFdNew:
+ * @fd: pointer to fd to wrap
+ * @name: name of fd, for diagnostics
+ *
+ * Update *FD (created with virFileDirectFdFlag() among the flags to
+ * open()) to ensure that all I/O to that file will bypass the system
+ * cache.  This must be called after open() and optional fchown() or
+ * fchmod(), but before any seek or I/O, and only on seekable fd.  The
+ * file must be O_RDONLY (to read the entire existing file) or
+ * O_WRONLY (to write to an empty file).  In some cases, *FD is
+ * changed to a non-seekable pipe; in this case, the caller must not
+ * do anything further with the original fd.
+ *
+ * On success, the new wrapper object is returned, which must be later
+ * freed with virFileDirectFdFree().  On failure, *FD is unchanged, an
+ * error message is output, and NULL is returned.
+ */
+virFileDirectFdPtr
+virFileDirectFdNew(int *fd, const char *name)
+{
+    virFileDirectFdPtr ret = NULL;
+    bool output = false;
+    int pipefd[2] = { -1, -1 };
+    int mode = -1;
+
+    /* XXX support posix_fadvise rather than spawning a child, if the
+     * kernel support for that is decent enough.  */
+
+    if (!O_DIRECT) {
+        virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("O_DIRECT unsupported on this platform"));
+        return NULL;
+    }
+
+    if (VIR_ALLOC(ret) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+#ifdef F_GETFL
+    /* Mingw lacks F_GETFL, but it also lacks O_DIRECT so didn't get
+     * here in the first place.  All other platforms reach this
+     * line.  */
+    mode = fcntl(*fd, F_GETFL);
+#endif
+
+    if (mode < 0) {
+        virFileError(VIR_ERR_INTERNAL_ERROR, _("invalid fd %d for %s"),
+                     *fd, name);
+        goto error;
+    } else if ((mode & O_ACCMODE) == O_WRONLY) {
+        output = true;
+    } else if ((mode & O_ACCMODE) != O_RDONLY) {
+        virFileError(VIR_ERR_INTERNAL_ERROR, _("unexpected mode %x for %s"),
+                     mode & O_ACCMODE, name);
+        goto error;
+    }
+
+    if (pipe2(pipefd, O_CLOEXEC) < 0) {
+        virFileError(VIR_ERR_INTERNAL_ERROR,
+                     _("unable to create pipe for %s"), name);
+        goto error;
+    }
+
+    ret->cmd = virCommandNewArgList(LIBEXECDIR "/libvirt_iohelper",
+                                    name, "0", NULL);
+    if (output) {
+        virCommandSetInputFD(ret->cmd, pipefd[0]);
+        virCommandSetOutputFD(ret->cmd, fd);
+        virCommandAddArg(ret->cmd, "1");
+    } else {
+        virCommandSetInputFD(ret->cmd, *fd);
+        virCommandSetOutputFD(ret->cmd, &pipefd[1]);
+        virCommandAddArg(ret->cmd, "0");
+    }
+
+    if (virCommandRunAsync(ret->cmd, NULL) < 0)
+        goto error;
+
+    if (VIR_CLOSE(pipefd[!output]) < 0) {
+        virFileError(VIR_ERR_INTERNAL_ERROR, "%s", _("unable to close pipe"));
+        goto error;
+    }
+
+    VIR_FORCE_CLOSE(*fd);
+    *fd = pipefd[output];
+    return ret;
+
+error:
+    VIR_FORCE_CLOSE(pipefd[0]);
+    VIR_FORCE_CLOSE(pipefd[1]);
+    virFileDirectFdFree(ret);
+    return NULL;
+}
+
+/**
+ * virFileDirectFdClose:
+ * @dfd: direct fd wrapper, or NULL
+ *
+ * If DFD is valid, then ensure that I/O has completed, which may
+ * include reaping a child process.  Return 0 if all data for the
+ * wrapped fd is complete, or -1 on failure with an error emitted.
+ * This function intentionally returns 0 when DFD is NULL, so that
+ * callers can conditionally create a virFileDirectFd wrapper but
+ * unconditionally call the cleanup code.  To avoid deadlock, only
+ * call this after closing the fd resulting from virFileDirectFdNew().
+ */
+int
+virFileDirectFdClose(virFileDirectFdPtr dfd)
+{
+    if (!dfd)
+        return 0;
+
+    return virCommandWait(dfd->cmd, NULL);
+}
+
+/**
+ * virFileDirectFdFree:
+ * @dfd: direct fd wrapper, or NULL
+ *
+ * Free all remaining resources associated with DFD.  If
+ * virFileDirectFdClose() was not previously called, then this may
+ * discard some previous I/O.  To avoid deadlock, only call this after
+ * closing the fd resulting from virFileDirectFdNew().
+ */
+void
+virFileDirectFdFree(virFileDirectFdPtr dfd)
+{
+    if (!dfd)
+        return;
+
+    virCommandFree(dfd->cmd);
+    VIR_FREE(dfd);
 }

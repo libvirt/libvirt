@@ -1096,6 +1096,10 @@ virAuditSend;
 
 # virfile.h
 virFileClose;
+virFileDirectFdClose;
+virFileDirectFdFlag;
+virFileDirectFdFree;
+virFileDirectFdNew;
 virFileFclose;
 virFileFdopen;
 

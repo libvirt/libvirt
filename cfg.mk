@@ -120,6 +120,7 @@ useless_free_options =				\
   --name=virDomainSoundDefFree			\
   --name=virDomainVideoDefFree			\
   --name=virDomainWatchdogDefFree		\
+  --name=virFileDirectFdFree			\
   --name=virHashFree				\
   --name=virInterfaceDefFree			\
   --name=virInterfaceIpDefFree			\
