@@ -151,7 +151,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Support automatic creation of leases for disks in sanlock (Daniel P. Berrange),<br/>
       Support loading a configuration file for sanlock plugin (Daniel P. Berrange),<br/>
       Allow per-driver config file for lock manager plugins (Daniel P. Berrange),<br/>
-      network: add domain to unqualified names defined with &lt;host&g; (Laine Stump),<br/>
+      network: add domain to unqualified names defined with &lt;host&gt; (Laine Stump),<br/>
       Convert libvirtd over to the new RPC handling APIs (Daniel P. Berrange),<br/>
       Convert the remote driver to new RPC client APIs (Daniel P. Berrange),<br/>
       Add XDR_CFLAGS to libvirt-net-rpc.la library (Daniel P. Berrange),<br/>
