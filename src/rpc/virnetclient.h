@@ -44,6 +44,7 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    const char *binary,
                                    const char *username,
                                    bool noTTY,
+                                   bool noVerify,
                                    const char *netcat,
                                    const char *path);
 

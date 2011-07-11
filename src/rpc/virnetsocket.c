@@ -576,6 +576,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
                               const char *binary,
                               const char *username,
                               bool noTTY,
+                              bool noVerify,
                               const char *netcat,
                               const char *path,
                               virNetSocketPtr *retsock)
@@ -596,6 +597,8 @@ int virNetSocketNewConnectSSH(const char *nodename,
     if (noTTY)
         virCommandAddArgList(cmd, "-T", "-o", "BatchMode=yes",
                              "-e", "none", NULL);
+    if (noVerify)
+        virCommandAddArgList(cmd, "-o", "StrictHostKeyChecking=no", NULL);
     virCommandAddArgList(cmd, nodename,
                          netcat ? netcat : "nc",
                          "-U", path, NULL);

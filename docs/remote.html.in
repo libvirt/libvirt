@@ -279,9 +279,14 @@ Note that parameter values must be
         <td>
           <code>no_verify</code>
         </td>
-        <td> tls </td>
+        <td> ssh, tls </td>
         <td>
-  If set to a non-zero value, this disables client checks of the
+  SSH: If set to a non-zero value, this disables client's strict host key
+  checking making it auto-accept new host keys.  Existing host keys will
+  still be validated.
+  <br/>
+  <br/>
+  TLS: If set to a non-zero value, this disables client checks of the
   server's certificate.  Note that to disable server checks of
   the client's certificate or IP address you must
   <a href="#Remote_libvirtd_configuration">change the libvirtd
