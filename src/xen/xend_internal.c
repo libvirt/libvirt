@@ -2596,8 +2596,8 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    if (!(def = virDomainDefParseString(priv->caps,
-                                        xmlDesc,
+    if (!(def = virDomainDefParseString(priv->caps, xmlDesc,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         return (NULL);
 
@@ -3346,6 +3346,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
         return(NULL);
 
     if (!(def = virDomainDefParseString(priv->caps, xmlDesc,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         virXendError(VIR_ERR_XML_ERROR,
                      "%s", _("failed to parse domain description"));

@@ -1404,17 +1404,21 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               unsigned int flags);
 virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
                                         const char *xmlStr,
+                                        unsigned int expectedVirtTypes,
                                         unsigned int flags);
 virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
                                       const char *filename,
+                                      unsigned int expectedVirtTypes,
                                       unsigned int flags);
 virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
                                       xmlDocPtr doc,
                                       xmlNodePtr root,
+                                      unsigned int expectedVirtTypes,
                                       unsigned int flags);
 
 virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
                                       const char *filename,
+                                      unsigned int expectedVirtTypes,
                                       unsigned int flags);
 
 bool virDomainDefCheckABIStability(virDomainDefPtr src,
@@ -1489,6 +1493,7 @@ int virDomainLoadAllConfigs(virCapsPtr caps,
                             const char *configDir,
                             const char *autostartDir,
                             int liveStatus,
+                            unsigned int expectedVirtTypes,
                             virDomainLoadConfigNotify notify,
                             void *opaque);
 

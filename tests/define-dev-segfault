@@ -17,7 +17,7 @@ fail=0
 
 # Domain definition from Cole Robinson.
 cat <<\EOF > D.xml || fail=1
-<domain type='kvm'>
+<domain type='test'>
   <name>D</name>
   <uuid>aaa3ae22-fed2-bfbd-ac02-3bea3bcfad82</uuid>
   <memory>262144</memory>

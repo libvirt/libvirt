@@ -30,6 +30,12 @@
 # include "qemu_conf.h"
 # include "bitmap.h"
 
+# define QEMU_EXPECTED_VIRT_TYPES      \
+    ((1 << VIR_DOMAIN_VIRT_QEMU) |     \
+     (1 << VIR_DOMAIN_VIRT_KQEMU) |    \
+     (1 << VIR_DOMAIN_VIRT_KVM) |      \
+     (1 << VIR_DOMAIN_VIRT_XEN))
+
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
  * information, not merely actions */

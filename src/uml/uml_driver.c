@@ -443,7 +443,8 @@ umlStartup(int privileged)
                                 &uml_driver->domains,
                                 uml_driver->configDir,
                                 uml_driver->autostartDir,
-                                0, NULL, NULL) < 0)
+                                0, 1 << VIR_DOMAIN_VIRT_UML,
+                                NULL, NULL) < 0)
         goto error;
 
     umlAutostartConfigs(uml_driver);
@@ -480,7 +481,8 @@ umlReload(void) {
                             &uml_driver->domains,
                             uml_driver->configDir,
                             uml_driver->autostartDir,
-                            0, NULL, NULL);
+                            0, 1 << VIR_DOMAIN_VIRT_UML,
+                            NULL, NULL);
 
     umlAutostartConfigs(uml_driver);
     umlDriverUnlock(uml_driver);
@@ -1273,6 +1275,7 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
 
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -1646,6 +1649,7 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
 
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 

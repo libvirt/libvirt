@@ -1106,6 +1106,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     }
 
     if (!(def = virDomainDefParseString(priv->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         xenUnifiedUnlock(priv);
         return (NULL);

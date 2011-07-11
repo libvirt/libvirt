@@ -281,6 +281,7 @@ libxlSaveImageOpen(libxlDriverPrivatePtr driver, const char *from,
     }
 
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto error;
 
@@ -994,7 +995,8 @@ libxlStartup(int privileged) {
                                 &libxl_driver->domains,
                                 libxl_driver->stateDir,
                                 libxl_driver->autostartDir,
-                                1, NULL, NULL) < 0)
+                                1, 1 << VIR_DOMAIN_VIRT_XEN,
+                                NULL, NULL) < 0)
         goto error;
 
     libxlReconnectDomains(libxl_driver);
@@ -1004,7 +1006,8 @@ libxlStartup(int privileged) {
                                 &libxl_driver->domains,
                                 libxl_driver->configDir,
                                 libxl_driver->autostartDir,
-                                0, NULL, NULL) < 0)
+                                0, 1 << VIR_DOMAIN_VIRT_XEN,
+                                NULL, NULL) < 0)
         goto error;
 
     virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
@@ -1037,7 +1040,8 @@ libxlReload(void)
                             &libxl_driver->domains,
                             libxl_driver->configDir,
                             libxl_driver->autostartDir,
-                            1, NULL, libxl_driver);
+                            1, 1 << VIR_DOMAIN_VIRT_XEN,
+                            NULL, libxl_driver);
 
     virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
                    libxl_driver);
@@ -1207,6 +1211,7 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
 
     libxlDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -2566,7 +2571,8 @@ libxlDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
     }
 
-    if (!(def = virDomainDefParseString(driver->caps, domainXml, 0)))
+    if (!(def = virDomainDefParseString(driver->caps, domainXml,
+                                        1 << VIR_DOMAIN_VIRT_XEN, 0)))
         goto cleanup;
 
     if (!(conf = xenFormatXM(conn, def, ver_info->xen_version_major)))
@@ -2668,6 +2674,7 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
 
     libxlDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 

@@ -68,7 +68,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     priv.caps = caps;
     conn->privateData = &priv;
 
-    if (!(def = virDomainDefParseString(caps, xmlData,
+    if (!(def = virDomainDefParseString(caps, xmlData, 1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 

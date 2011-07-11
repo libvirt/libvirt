@@ -3611,6 +3611,7 @@ phypDomainCreateAndStart(virConnectPtr conn,
     virCheckFlags(0, NULL);
 
     if (!(def = virDomainDefParseString(phyp_driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_PHYP,
                                         VIR_DOMAIN_XML_SECURE)))
         goto err;
 

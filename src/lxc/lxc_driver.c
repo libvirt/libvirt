@@ -409,10 +409,11 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
 
     lxcDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_LXC,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-   if ((dupVM = virDomainObjIsDuplicate(&driver->domains, def, 0)) < 0)
+    if ((dupVM = virDomainObjIsDuplicate(&driver->domains, def, 0)) < 0)
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
@@ -1751,6 +1752,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
 
     lxcDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_LXC,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -2138,7 +2140,8 @@ static int lxcStartup(int privileged)
                                 &lxc_driver->domains,
                                 lxc_driver->stateDir,
                                 NULL,
-                                1, NULL, NULL) < 0)
+                                1, 1 << VIR_DOMAIN_VIRT_LXC,
+                                NULL, NULL) < 0)
         goto cleanup;
 
     virHashForEach(lxc_driver->domains.objs, lxcReconnectVM, lxc_driver);
@@ -2148,7 +2151,8 @@ static int lxcStartup(int privileged)
                                 &lxc_driver->domains,
                                 lxc_driver->configDir,
                                 lxc_driver->autostartDir,
-                                0, NULL, NULL) < 0)
+                                0, 1 << VIR_DOMAIN_VIRT_LXC,
+                                NULL, NULL) < 0)
         goto cleanup;
 
     lxcDriverUnlock(lxc_driver);
@@ -2193,7 +2197,8 @@ lxcReload(void) {
                             &lxc_driver->domains,
                             lxc_driver->configDir,
                             lxc_driver->autostartDir,
-                            0, lxcNotifyLoadDomain, lxc_driver);
+                            0, 1 << VIR_DOMAIN_VIRT_LXC,
+                            lxcNotifyLoadDomain, lxc_driver);
     lxcDriverUnlock(lxc_driver);
 
     lxcAutostartConfigs(lxc_driver);

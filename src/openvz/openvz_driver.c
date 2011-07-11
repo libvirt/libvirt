@@ -887,6 +887,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(driver->caps, xml,
+                                         1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -966,6 +967,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(driver->caps, xml,
+                                         1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 

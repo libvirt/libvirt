@@ -13,6 +13,7 @@
 # include "internal.h"
 # include "testutils.h"
 # include "qemu/qemu_conf.h"
+# include "qemu/qemu_domain.h"
 # include "testutilsqemu.h"
 
 static struct qemud_driver driver;
@@ -32,7 +33,8 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
         goto fail;
 
     if (!(def = virDomainDefParseString(driver.caps, inXmlData,
-                                          VIR_DOMAIN_XML_INACTIVE)))
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
     if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))

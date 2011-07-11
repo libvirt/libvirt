@@ -1019,6 +1019,7 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
 
     if (xmlin) {
         if (!(def = virDomainDefParseString(driver->caps, xmlin,
+                                            QEMU_EXPECTED_VIRT_TYPES,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
@@ -1078,6 +1079,7 @@ qemuMigrationPrepareTunnel(struct qemud_driver *driver,
 
     /* Parse the domain XML. */
     if (!(def = virDomainDefParseString(driver->caps, dom_xml,
+                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -1313,6 +1315,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
 
     /* Parse the domain XML. */
     if (!(def = virDomainDefParseString(driver->caps, dom_xml,
+                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 

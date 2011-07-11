@@ -544,10 +544,11 @@ static int testOpenDefault(virConnectPtr conn) {
 
     privconn->nextDomID = 1;
 
-    if (!(domdef = virDomainDefParseString(privconn->caps,
-                                           defaultDomainXML,
+    if (!(domdef = virDomainDefParseString(privconn->caps, defaultDomainXML,
+                                           1 << VIR_DOMAIN_VIRT_TEST,
                                            VIR_DOMAIN_XML_INACTIVE)))
         goto error;
+
     if (testDomainGenerateIfnames(domdef) < 0)
         goto error;
     if (!(domobj = virDomainAssignDef(privconn->caps,
@@ -889,12 +890,14 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
             }
             def = virDomainDefParseFile(privconn->caps, absFile,
+                                        1 << VIR_DOMAIN_VIRT_TEST,
                                         VIR_DOMAIN_XML_INACTIVE);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
             if ((def = virDomainDefParseNode(privconn->caps, xml, domains[i],
+                                             1 << VIR_DOMAIN_VIRT_TEST,
                                              VIR_DOMAIN_XML_INACTIVE)) == NULL)
                 goto error;
         }
@@ -1288,6 +1291,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(privconn->caps, xml,
+                                       1 << VIR_DOMAIN_VIRT_TEST,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -1868,6 +1872,7 @@ static int testDomainRestore(virConnectPtr conn,
 
     testDriverLock(privconn);
     def = virDomainDefParseString(privconn->caps, xml,
+                                  1 << VIR_DOMAIN_VIRT_TEST,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (!def)
         goto cleanup;
@@ -2416,6 +2421,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(privconn->caps, xml,
+                                       1 << VIR_DOMAIN_VIRT_TEST,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 

@@ -612,7 +612,8 @@ qemudStartup(int privileged) {
                                 &qemu_driver->domains,
                                 qemu_driver->stateDir,
                                 NULL,
-                                1, NULL, NULL) < 0)
+                                1, QEMU_EXPECTED_VIRT_TYPES,
+                                NULL, NULL) < 0)
         goto error;
 
     conn = virConnectOpen(qemu_driver->privileged ?
@@ -626,7 +627,8 @@ qemudStartup(int privileged) {
                                 &qemu_driver->domains,
                                 qemu_driver->configDir,
                                 qemu_driver->autostartDir,
-                                0, NULL, NULL) < 0)
+                                0, QEMU_EXPECTED_VIRT_TYPES,
+                                NULL, NULL) < 0)
         goto error;
 
 
@@ -689,7 +691,8 @@ qemudReload(void) {
                             &qemu_driver->domains,
                             qemu_driver->configDir,
                             qemu_driver->autostartDir,
-                            0, qemudNotifyLoadDomain, qemu_driver);
+                            0, QEMU_EXPECTED_VIRT_TYPES,
+                            qemudNotifyLoadDomain, qemu_driver);
     qemuDriverUnlock(qemu_driver);
 
     qemuAutostartDomains(qemu_driver);
@@ -1253,6 +1256,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 
     qemuDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -3606,6 +3610,7 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
 
     /* Create a domain from this XML */
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto error;
 
@@ -3924,7 +3929,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = virDomainDefParseString(driver->caps, xmlData, 0);
+    def = virDomainDefParseString(driver->caps, xmlData,
+                                  QEMU_EXPECTED_VIRT_TYPES, 0);
     if (!def)
         goto cleanup;
 
@@ -4222,6 +4228,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
 
     qemuDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
+                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 

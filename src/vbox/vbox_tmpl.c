@@ -4803,6 +4803,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     nsresult rc;
 
     if (!(def = virDomainDefParseString(data->caps, xml,
+                                        1 << VIR_DOMAIN_VIRT_VBOX,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         goto cleanup;
     }

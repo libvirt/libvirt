@@ -517,7 +517,9 @@ xenapiDomainCreateXML (virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    virDomainDefPtr defPtr = virDomainDefParseString(caps, xmlDesc, flags);
+    virDomainDefPtr defPtr = virDomainDefParseString(caps, xmlDesc,
+                                                     1 << VIR_DOMAIN_VIRT_XEN,
+                                                     flags);
     createVMRecordFromXml(conn, defPtr, &record, &vm);
     virDomainDefFree(defPtr);
     if (record) {
@@ -1636,9 +1638,11 @@ xenapiDomainDefineXML (virConnectPtr conn, const char *xml)
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
     if (!caps)
         return NULL;
-    virDomainDefPtr defPtr = virDomainDefParseString(caps, xml, 0);
+    virDomainDefPtr defPtr = virDomainDefParseString(caps, xml,
+                                                     1 << VIR_DOMAIN_VIRT_XEN, 0);
     if (!defPtr)
         return NULL;
+
     if (createVMRecordFromXml(conn, defPtr, &record, &vm) != 0) {
         if (!session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, NULL);

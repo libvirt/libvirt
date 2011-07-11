@@ -926,6 +926,7 @@ int main(int argc, char *argv[])
         goto cleanup;
 
     if ((def = virDomainDefParseFile(caps, configFile,
+                                     1 << VIR_DOMAIN_VIRT_LXC,
                                      VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 

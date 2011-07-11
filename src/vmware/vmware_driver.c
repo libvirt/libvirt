@@ -255,6 +255,7 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
 
     vmwareDriverLock(driver);
     if ((vmdef = virDomainDefParseString(driver->caps, xml,
+                                         1 << VIR_DOMAIN_VIRT_VMWARE,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -508,6 +509,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     vmwareDriverLock(driver);
 
     if ((vmdef = virDomainDefParseString(driver->caps, xml,
+                                         1 << VIR_DOMAIN_VIRT_VMWARE,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
