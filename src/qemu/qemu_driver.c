@@ -117,11 +117,12 @@ static void processWatchdogEvent(void *data, void *opaque);
 
 static int qemudShutdown(void);
 
-static int qemudDomainObjStart(virConnectPtr conn,
-                               struct qemud_driver *driver,
-                               virDomainObjPtr vm,
-                               bool start_paused,
-                               bool autodestroy);
+static int qemuDomainObjStart(virConnectPtr conn,
+                              struct qemud_driver *driver,
+                              virDomainObjPtr vm,
+                              bool start_paused,
+                              bool autodestroy,
+                              bool bypass_cache);
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
@@ -149,9 +150,11 @@ qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaq
                   vm->def->name,
                   err ? err->message : _("unknown error"));
     } else {
+        /* XXX need to wire bypass-cache autostart into qemu.conf */
         if (vm->autostart &&
             !virDomainObjIsActive(vm) &&
-            qemudDomainObjStart(data->conn, data->driver, vm, false, false) < 0) {
+            qemuDomainObjStart(data->conn, data->driver, vm,
+                               false, false, false) < 0) {
             err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
@@ -2190,7 +2193,7 @@ qemuCompressProgramName(int compress)
 static int
 qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                        virDomainObjPtr vm, const char *path,
-                       int compressed)
+                       int compressed, bool bypass_cache)
 {
     char *xml = NULL;
     struct qemud_save_header header;
@@ -2205,6 +2208,8 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     int fd = -1;
     uid_t uid = getuid();
     gid_t gid = getgid();
+    int directFlag = 0;
+    virFileDirectFdPtr directFd = NULL;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -2287,15 +2292,23 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     /* Obtain the file handle.  */
 
     /* First try creating the file as root */
+    if (bypass_cache) {
+        directFlag = virFileDirectFdFlag();
+        if (directFlag < 0) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                            _("bypass cache unsupported by this system"));
+            goto endjob;
+        }
+    }
     if (!is_reg) {
-        fd = open(path, O_WRONLY | O_TRUNC);
+        fd = open(path, O_WRONLY | O_TRUNC | directFlag);
         if (fd < 0) {
             virReportSystemError(errno, _("unable to open %s"), path);
             goto endjob;
         }
     } else {
-        if ((fd = virFileOpenAs(path, O_CREAT|O_TRUNC|O_WRONLY,
-                                S_IRUSR|S_IWUSR,
+        int oflags = O_CREAT | O_TRUNC | O_WRONLY | directFlag;
+        if ((fd = virFileOpenAs(path, oflags, S_IRUSR | S_IWUSR,
                                 uid, gid, 0)) < 0) {
             /* If we failed as root, and the error was permission-denied
                (EACCES or EPERM), assume it's on a network-connected share
@@ -2341,7 +2354,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
 
             /* Retry creating the file as driver->user */
 
-            if ((fd = virFileOpenAs(path, O_CREAT|O_TRUNC|O_WRONLY,
+            if ((fd = virFileOpenAs(path, oflags,
                                     S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
                                     driver->user, driver->group,
                                     VIR_FILE_OPEN_AS_UID)) < 0) {
@@ -2359,6 +2372,9 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
         }
     }
 
+    if (bypass_cache && (directFd = virFileDirectFdNew(&fd, path)) == NULL)
+        goto endjob;
+
     /* Write header to file, followed by XML */
     if (qemuDomainSaveHeader(fd, path, xml, &header) < 0) {
         VIR_FORCE_CLOSE(fd);
@@ -2374,6 +2390,8 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
         virReportSystemError(errno, _("unable to close %s"), path);
         goto endjob;
     }
+    if (virFileDirectFdClose(directFd) < 0)
+        goto endjob;
 
     ret = 0;
 
@@ -2406,6 +2424,7 @@ endjob:
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
+    virFileDirectFdFree(directFd);
     VIR_FREE(xml);
     if (ret != 0 && is_reg)
         unlink(path);
@@ -2441,7 +2460,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
     int ret = -1;
     virDomainObjPtr vm = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
     if (dxml) {
         qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                         _("xml modification unsupported"));
@@ -2483,7 +2502,8 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
         goto cleanup;
     }
 
-    ret = qemuDomainSaveInternal(driver, dom, vm, path, compressed);
+    ret = qemuDomainSaveInternal(driver, dom, vm, path, compressed,
+                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0);
     vm = NULL;
 
 cleanup:
@@ -2521,7 +2541,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     int compressed;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2546,7 +2566,8 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     VIR_INFO("Saving state to %s", name);
 
     compressed = QEMUD_SAVE_FORMAT_RAW;
-    ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed);
+    ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
+                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0);
     vm = NULL;
 
 cleanup:
@@ -2630,17 +2651,32 @@ static int
 doCoreDump(struct qemud_driver *driver,
            virDomainObjPtr vm,
            const char *path,
-           enum qemud_save_formats compress)
+           enum qemud_save_formats compress,
+           bool bypass_cache)
 {
     int fd = -1;
     int ret = -1;
+    virFileDirectFdPtr directFd = NULL;
+    int directFlag = 0;
 
     /* Create an empty file with appropriate ownership.  */
-    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
+    if (bypass_cache) {
+        directFlag = virFileDirectFdFlag();
+        if (directFlag < 0) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                            _("bypass cache unsupported by this system"));
+            goto cleanup;
+        }
+    }
+    if ((fd = open(path, O_CREAT | O_TRUNC | O_WRONLY | directFlag,
+                   S_IRUSR | S_IWUSR)) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("failed to create '%s'"), path);
         goto cleanup;
     }
+
+    if (bypass_cache && (directFd = virFileDirectFdNew(&fd, path)) == NULL)
+        goto cleanup;
 
     if (qemuMigrationToFile(driver, vm, fd, 0, path,
                             qemuCompressProgramName(compress), true, false) < 0)
@@ -2652,11 +2688,14 @@ doCoreDump(struct qemud_driver *driver,
                              path);
         goto cleanup;
     }
+    if (virFileDirectFdClose(directFd) < 0)
+        goto cleanup;
 
     ret = 0;
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
+    virFileDirectFdClose(directFd);
     if (ret != 0)
         unlink(path);
     return ret;
@@ -2700,7 +2739,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     int ret = -1;
     virDomainEventPtr event = NULL;
 
-    virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH, -1);
+    virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH | VIR_DUMP_BYPASS_CACHE, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2741,7 +2780,8 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         }
     }
 
-    ret = doCoreDump(driver, vm, path, getCompressionType(driver));
+    ret = doCoreDump(driver, vm, path, getCompressionType(driver),
+                     (flags & VIR_DUMP_BYPASS_CACHE) != 0);
     if (ret < 0)
         goto endjob;
 
@@ -2912,10 +2952,9 @@ static void processWatchdogEvent(void *data, void *opaque)
                 goto endjob;
             }
 
-            ret = doCoreDump(driver,
-                             wdEvent->vm,
-                             dumpfile,
-                             getCompressionType(driver));
+            /* XXX wire up qemu.conf to support bypass-cache dumps */
+            ret = doCoreDump(driver, wdEvent->vm, dumpfile,
+                             getCompressionType(driver), false);
             if (ret < 0)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("Dump failed"));
@@ -3652,18 +3691,29 @@ cleanup:
     return ret;
 }
 
-static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(6)
 qemuDomainSaveImageOpen(struct qemud_driver *driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
-                        struct qemud_save_header *ret_header)
+                        struct qemud_save_header *ret_header,
+                        bool bypass_cache, virFileDirectFdPtr *directFd)
 {
     int fd;
     struct qemud_save_header header;
     char *xml = NULL;
     virDomainDefPtr def = NULL;
+    int directFlag = 0;
 
-    if ((fd = virFileOpenAs(path, O_RDONLY, 0, getuid(), getgid(), 0)) < 0) {
+    if (bypass_cache) {
+        directFlag = virFileDirectFdFlag();
+        if (directFlag < 0) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                            _("bypass cache unsupported by this system"));
+            goto error;
+        }
+    }
+    if ((fd = virFileOpenAs(path, O_RDONLY | directFlag, 0,
+                            getuid(), getgid(), 0)) < 0) {
         if ((fd != -EACCES && fd != -EPERM) ||
             driver->user == getuid()) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -3673,7 +3723,7 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
 
         /* Opening as root failed, but qemu runs as a different user
          * that might have better luck. */
-        if ((fd = virFileOpenAs(path, O_RDONLY, 0,
+        if ((fd = virFileOpenAs(path, O_RDONLY | directFlag, 0,
                                 driver->user, driver->group,
                                 VIR_FILE_OPEN_AS_UID)) < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -3681,6 +3731,8 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
             goto error;
         }
     }
+    if (bypass_cache && (*directFd = virFileDirectFdNew(&fd, path)) == NULL)
+        goto error;
 
     if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -3859,8 +3911,9 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     int fd = -1;
     int ret = -1;
     struct qemud_save_header header;
+    virFileDirectFdPtr directFd = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
     if (dxml) {
         qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                         _("xml modification unsupported"));
@@ -3869,7 +3922,9 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     qemuDriverLock(driver);
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header);
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
+                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
+                                 &directFd);
     if (fd < 0)
         goto cleanup;
 
@@ -3888,6 +3943,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
         goto cleanup;
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path);
+    if (virFileDirectFdClose(directFd) < 0)
+        VIR_WARN("Failed to close %s", path);
 
     if (qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;
@@ -3899,6 +3956,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 cleanup:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
+    virFileDirectFdFree(directFd);
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
@@ -3916,14 +3974,17 @@ static int
 qemuDomainObjRestore(virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainObjPtr vm,
-                     const char *path)
+                     const char *path,
+                     bool bypass_cache)
 {
     virDomainDefPtr def = NULL;
     int fd = -1;
     int ret = -1;
     struct qemud_save_header header;
+    virFileDirectFdPtr directFd = NULL;
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header);
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
+                                 bypass_cache, &directFd);
     if (fd < 0)
         goto cleanup;
 
@@ -3945,10 +4006,13 @@ qemuDomainObjRestore(virConnectPtr conn,
     def = NULL;
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path);
+    if (virFileDirectFdClose(directFd) < 0)
+        VIR_WARN("Failed to close %s", path);
 
 cleanup:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
+    virFileDirectFdFree(directFd);
     return ret;
 }
 
@@ -4197,11 +4261,13 @@ static int qemudNumDefinedDomains(virConnectPtr conn) {
 }
 
 
-static int qemudDomainObjStart(virConnectPtr conn,
-                               struct qemud_driver *driver,
-                               virDomainObjPtr vm,
-                               bool start_paused,
-                               bool autodestroy)
+static int
+qemuDomainObjStart(virConnectPtr conn,
+                   struct qemud_driver *driver,
+                   virDomainObjPtr vm,
+                   bool start_paused,
+                   bool autodestroy,
+                   bool bypass_cache)
 {
     int ret = -1;
     char *managed_save;
@@ -4216,7 +4282,8 @@ static int qemudDomainObjStart(virConnectPtr conn,
         goto cleanup;
 
     if (virFileExists(managed_save)) {
-        ret = qemuDomainObjRestore(conn, driver, vm, managed_save);
+        ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
+                                   bypass_cache);
 
         if ((ret == 0) && (unlink(managed_save) < 0))
             VIR_WARN("Failed to remove the managed state %s", managed_save);
@@ -4242,14 +4309,15 @@ cleanup:
 }
 
 static int
-qemudDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
+qemuDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_START_PAUSED |
-                  VIR_DOMAIN_START_AUTODESTROY, -1);
+                  VIR_DOMAIN_START_AUTODESTROY |
+                  VIR_DOMAIN_START_BYPASS_CACHE, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4271,9 +4339,10 @@ qemudDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
 
-    if (qemudDomainObjStart(dom->conn, driver, vm,
-                            (flags & VIR_DOMAIN_START_PAUSED) != 0,
-                            (flags & VIR_DOMAIN_START_AUTODESTROY) != 0) < 0)
+    if (qemuDomainObjStart(dom->conn, driver, vm,
+                           (flags & VIR_DOMAIN_START_PAUSED) != 0,
+                           (flags & VIR_DOMAIN_START_AUTODESTROY) != 0,
+                           (flags & VIR_DOMAIN_START_BYPASS_CACHE) != 0) < 0)
         goto endjob;
 
     ret = 0;
@@ -4290,9 +4359,9 @@ cleanup:
 }
 
 static int
-qemudDomainStart(virDomainPtr dom)
+qemuDomainStart(virDomainPtr dom)
 {
-    return qemudDomainStartWithFlags(dom, 0);
+    return qemuDomainStartWithFlags(dom, 0);
 }
 
 static int
@@ -8993,8 +9062,8 @@ static virDriver qemuDriver = {
     .domainXMLToNative = qemuDomainXMLToNative, /* 0.6.4 */
     .listDefinedDomains = qemudListDefinedDomains, /* 0.2.0 */
     .numOfDefinedDomains = qemudNumDefinedDomains, /* 0.2.0 */
-    .domainCreate = qemudDomainStart, /* 0.2.0 */
-    .domainCreateWithFlags = qemudDomainStartWithFlags, /* 0.8.2 */
+    .domainCreate = qemuDomainStart, /* 0.2.0 */
+    .domainCreateWithFlags = qemuDomainStartWithFlags, /* 0.8.2 */
     .domainDefineXML = qemudDomainDefine, /* 0.2.0 */
     .domainUndefine = qemudDomainUndefine, /* 0.2.0 */
     .domainUndefineFlags = qemuDomainUndefineFlags, /* 0.9.4 */
