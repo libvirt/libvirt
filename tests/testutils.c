@@ -693,9 +693,8 @@ cleanup:
         VIR_FREE(abs_srcdir);
     virResetLastError();
     if (!virTestGetVerbose() && ret != EXIT_AM_SKIP) {
-        int i;
-        for (i = (testCounter % 40) ; i > 0 && i < 40 ; i++)
-            fprintf(stderr, " ");
+        if (testCounter == 0 || testCounter % 40)
+            fprintf(stderr, "%*s", 40 - (testCounter % 40), "");
         fprintf(stderr, " %-3d %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
     return ret;

@@ -54,7 +54,7 @@ test_final()
   status=$2
 
   if test "$verbose" = "0" ; then
-    len=`expr 40 - \( $counter % 40 \)`
+    len=`expr 39 - \( \( $counter - 1 \) % 40 \)`
     printf "%${len}s" ""
     if test "$status" = "0" ; then
       printf " %-3d OK\n" $counter
