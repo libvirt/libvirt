@@ -52,7 +52,7 @@
 #include "remote_driver.h"
 #include "hooks.h"
 #include "uuid.h"
-#include "virtaudit.h"
+#include "viraudit.h"
 
 #ifdef WITH_DRIVER_MODULES
 # include "driver.h"

@@ -1058,7 +1058,7 @@ virUUIDGenerate;
 virUUIDParse;
 
 
-# virtaudit.h
+# viraudit.h
 virAuditClose;
 virAuditEncode;
 virAuditLog;

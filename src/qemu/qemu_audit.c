@@ -27,7 +27,7 @@
 #include <sys/types.h>
 
 #include "qemu_audit.h"
-#include "virtaudit.h"
+#include "viraudit.h"
 #include "uuid.h"
 #include "logging.h"
 #include "memory.h"

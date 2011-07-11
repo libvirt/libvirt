@@ -120,7 +120,7 @@ src/util/stats_linux.c
 src/util/storage_file.c
 src/util/sysinfo.c
 src/util/util.c
-src/util/virtaudit.c
+src/util/viraudit.c
 src/util/virterror.c
 src/util/xml.c
 src/vbox/vbox_MSCOMGlue.c

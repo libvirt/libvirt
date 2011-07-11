@@ -79,8 +79,8 @@ UTIL_SOURCES =							\
 		util/threadpool.c util/threadpool.h		\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
+		util/viraudit.c util/viraudit.h			\
 		util/xml.c util/xml.h				\
-		util/virtaudit.c util/virtaudit.h               \
 		util/virterror.c util/virterror_internal.h
 
 EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
