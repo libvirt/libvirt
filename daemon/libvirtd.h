@@ -27,10 +27,6 @@
 
 # include <config.h>
 
-# if HAVE_POLKIT0
-#  include <dbus/dbus.h>
-# endif
-
 # include <rpc/types.h>
 # include <rpc/xdr.h>
 # include "remote_protocol.h"
@@ -90,31 +86,5 @@ extern virNetSASLContextPtr saslCtxt;
 # endif
 extern virNetServerProgramPtr remoteProgram;
 extern virNetServerProgramPtr qemuProgram;
-
-/* Main server state */
-struct qemud_server {
-    int privileged;
-
-    int sigread;
-    int sigwrite;
-    char *logDir;
-    pthread_t eventThread;
-    unsigned int hasEventThread :1;
-    unsigned int quitEventThread :1;
-# ifdef HAVE_AVAHI
-    struct libvirtd_mdns *mdns;
-# endif
-# if HAVE_SASL
-    char **saslUsernameWhitelist;
-# endif
-# if HAVE_POLKIT0
-    DBusConnection *sysbus;
-# endif
-};
-
-
-# if HAVE_POLKIT
-int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid);
-# endif
 
 #endif
