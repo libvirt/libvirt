@@ -29,7 +29,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <sys/time.h>
-#include <math.h>
+#include <strings.h>
 
 #include "virterror_internal.h"
 #include "datatypes.h"
@@ -5865,7 +5865,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("unexpected domain type %s, expecting %s"),
                                  virDomainVirtTypeToString(def->virtType),
-                                 virDomainVirtTypeToString(log2(expectedVirtTypes)));
+                                 virDomainVirtTypeToString(ffs(expectedVirtTypes) - 1));
         } else {
             virBuffer buffer = VIR_BUFFER_INITIALIZER;
             char *string;
