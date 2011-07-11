@@ -1042,8 +1042,8 @@ int virNetSocketAccept(virNetSocketPtr sock, virNetSocketPtr *clientsock)
 }
 
 
-static void virNetSocketEventHandle(int fd ATTRIBUTE_UNUSED,
-                                    int watch ATTRIBUTE_UNUSED,
+static void virNetSocketEventHandle(int watch ATTRIBUTE_UNUSED,
+                                    int fd ATTRIBUTE_UNUSED,
                                     int events,
                                     void *opaque)
 {
