@@ -2525,10 +2525,11 @@ cleanup:
     return ret;
 }
 
-static int doCoreDump(struct qemud_driver *driver,
-                      virDomainObjPtr vm,
-                      const char *path,
-                      enum qemud_save_formats compress)
+static int
+doCoreDump(struct qemud_driver *driver,
+           virDomainObjPtr vm,
+           const char *path,
+           enum qemud_save_formats compress)
 {
     int fd = -1;
     int ret = -1;
@@ -2554,6 +2555,7 @@ static int doCoreDump(struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
+    VIR_FORCE_CLOSE(fd);
     if (ret != 0)
         unlink(path);
     return ret;
