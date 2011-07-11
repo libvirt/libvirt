@@ -1031,7 +1031,9 @@ fi
 %if %{with_sanlock}
 %files lock-sanlock
 %defattr(-, root, root)
+%if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-sanlock.conf
+%endif
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
 %{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
