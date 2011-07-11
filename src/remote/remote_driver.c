@@ -1587,13 +1587,16 @@ remoteDomainGetSecurityLabel (virDomainPtr domain, virSecurityLabelPtr seclabel)
         if (strlen (ret.label.label_val) >= sizeof seclabel->label) {
             remoteError(VIR_ERR_RPC, _("security label exceeds maximum: %zd"),
                         sizeof seclabel->label - 1);
-            goto done;
+            goto cleanup;
         }
         strcpy (seclabel->label, ret.label.label_val);
         seclabel->enforcing = ret.enforcing;
     }
 
     rv = 0;
+
+cleanup:
+    xdr_free((xdrproc_t) xdr_remote_domain_get_security_label_ret, (char *)&ret);
 
 done:
     remoteDriverUnlock(priv);
@@ -1655,7 +1658,7 @@ remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
         if (strlen (ret.model.model_val) >= sizeof secmodel->model) {
             remoteError(VIR_ERR_RPC, _("security model exceeds maximum: %zd"),
                         sizeof secmodel->model - 1);
-            goto done;
+            goto cleanup;
         }
         strcpy (secmodel->model, ret.model.model_val);
     }
@@ -1664,12 +1667,15 @@ remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
         if (strlen (ret.doi.doi_val) >= sizeof secmodel->doi) {
             remoteError(VIR_ERR_RPC, _("security doi exceeds maximum: %zd"),
                         sizeof secmodel->doi - 1);
-            goto done;
+            goto cleanup;
         }
         strcpy (secmodel->doi, ret.doi.doi_val);
     }
 
     rv = 0;
+
+cleanup:
+    xdr_free((xdrproc_t) xdr_remote_node_get_security_model_ret, (char *)&ret);
 
 done:
     remoteDriverUnlock(priv);
