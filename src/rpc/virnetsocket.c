@@ -652,18 +652,7 @@ void virNetSocketFree(virNetSocketPtr sock)
     VIR_FORCE_CLOSE(sock->fd);
     VIR_FORCE_CLOSE(sock->errfd);
 
-#ifndef WIN32
-    if (sock->pid > 0) {
-        pid_t reap;
-        kill(sock->pid, SIGTERM);
-        do {
-retry:
-            reap = waitpid(sock->pid, NULL, 0);
-            if (reap == -1 && errno == EINTR)
-                goto retry;
-        } while (reap != -1 && reap != sock->pid);
-    }
-#endif
+    virPidAbort(sock->pid);
 
     VIR_FREE(sock->localAddrStr);
     VIR_FREE(sock->remoteAddrStr);
