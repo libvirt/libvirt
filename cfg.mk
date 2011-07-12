@@ -606,11 +606,15 @@ _autogen:
 syntax-check: $(top_srcdir)/HACKING
 
 # sc_po_check can fail if generated files are not built first
-sc_po_check: $(srcdir)/daemon/remote_dispatch.h \
+sc_po_check: \
+		$(srcdir)/daemon/remote_dispatch.h \
+		$(srcdir)/daemon/qemu_dispatch.h \
 		$(srcdir)/src/remote/remote_client_bodies.h
-$(srcdir)/daemon/remote_dispatch.h:
+$(srcdir)/daemon/remote_dispatch.h: $(srcdir)/src/remote/remote_protocol.x
 	$(MAKE) -C daemon remote_dispatch.h
-$(srcdir)/src/remote/remote_client_bodies.h:
+$(srcdir)/daemon/qemu_dispatch.h: $(srcdir)/src/remote/qemu_protocol.x
+	$(MAKE) -C daemon qemu_dispatch.h
+$(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protocol.x
 	$(MAKE) -C src remote/remote_client_bodies.h
 
 # List all syntax-check exemptions:
