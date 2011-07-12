@@ -74,17 +74,32 @@ cleanup:
 static int
 runIO(const char *path, int fd, int oflags, unsigned long long length)
 {
-    char *buf = NULL;
+    void *base = NULL; /* Location to be freed */
+    char *buf = NULL; /* Aligned location within base */
     size_t buflen = 1024*1024;
+    intptr_t alignMask = 64*1024 - 1;
     int ret = -1;
     int fdin, fdout;
     const char *fdinname, *fdoutname;
     unsigned long long total = 0;
+    bool direct = O_DIRECT && ((oflags & O_DIRECT) != 0);
+    bool shortRead = false; /* true if we hit a short read */
+    off_t end = 0;
 
-    if (VIR_ALLOC_N(buf, buflen) < 0) {
+#if HAVE_POSIX_MEMALIGN
+    if (posix_memalign(&base, alignMask + 1, buflen)) {
         virReportOOMError();
         goto cleanup;
     }
+    buf = base;
+#else
+    if (VIR_ALLOC_N(buf, buflen + alignMask) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    base = buf;
+    buf = (char *) (((intptr_t) base + alignMask) & alignMask);
+#endif
 
     switch (oflags & O_ACCMODE) {
     case O_RDONLY:
@@ -92,12 +107,26 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
         fdinname = path;
         fdout = STDOUT_FILENO;
         fdoutname = "stdout";
+        /* To make the implementation simpler, we give up on any
+         * attempt to use O_DIRECT in a non-trivial manner.  */
+        if (direct && ((end = lseek(fd, 0, SEEK_CUR)) != 0 || length)) {
+            virReportSystemError(end < 0 ? errno : EINVAL, "%s",
+                                 _("O_DIRECT read needs entire seekable file"));
+            goto cleanup;
+        }
         break;
     case O_WRONLY:
         fdin = STDIN_FILENO;
         fdinname = "stdin";
         fdout = fd;
         fdoutname = path;
+        /* To make the implementation simpler, we give up on any
+         * attempt to use O_DIRECT in a non-trivial manner.  */
+        if (direct && (end = lseek(fd, 0, SEEK_END)) != 0) {
+            virReportSystemError(end < 0 ? errno : EINVAL, "%s",
+                                 _("O_DIRECT write needs empty seekable file"));
+            goto cleanup;
+        }
         break;
 
     case O_RDWR:
@@ -124,10 +153,27 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
         }
         if (got == 0)
             break; /* End of file before end of requested data */
+        if (got < buflen || (buflen & alignMask)) {
+            /* O_DIRECT can handle at most one short read, at end of file */
+            if (direct && shortRead) {
+                virReportSystemError(EINVAL, "%s",
+                                     _("Too many short reads for O_DIRECT"));
+            }
+            shortRead = true;
+        }
 
         total += got;
+        if (fdout == fd && direct && shortRead) {
+            end = total;
+            memset(buf + got, 0, buflen - got);
+            got = (got + alignMask) & ~alignMask;
+        }
         if (safewrite(fdout, buf, got) < 0) {
             virReportSystemError(errno, _("Unable to write %s"), fdoutname);
+            goto cleanup;
+        }
+        if (end && ftruncate(fd, end) < 0) {
+            virReportSystemError(errno, _("Unable to truncate %s"), fdoutname);
             goto cleanup;
         }
     }
@@ -141,7 +187,7 @@ cleanup:
         ret = -1;
     }
 
-    VIR_FREE(buf);
+    VIR_FREE(base);
     return ret;
 }
 
