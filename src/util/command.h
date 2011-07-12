@@ -292,9 +292,29 @@ int virCommandRun(virCommandPtr cmd,
  * Run the command asynchronously
  * Returns -1 on any error executing the
  * command. Returns 0 if the command executed.
+ *
+ * There are two approaches to child process cleanup.
+ * 1. Use auto-cleanup, by passing NULL for pid.  The child will be
+ * auto-reaped by virCommandFree, unless you reap it earlier via
+ * virCommandWait or virCommandAbort.  Good for where cmd is in
+ * scope for the duration of the child process.
+ * 2. Use manual cleanup, by passing the address of a pid_t variable
+ * for pid.  While cmd is still in scope, you may reap the child via
+ * virCommandWait or virCommandAbort.  But after virCommandFree, if
+ * you have not yet reaped the child, then it continues to run until
+ * you call virPidWait or virPidAbort.
  */
 int virCommandRunAsync(virCommandPtr cmd,
                        pid_t *pid) ATTRIBUTE_RETURN_CHECK;
+
+/*
+ * Wait for a child process to complete.
+ * Return -1 on any error waiting for
+ * completion. Returns 0 if the command
+ * finished with the exit status set.
+ */
+int virPidWait(pid_t pid,
+               int *exitstatus) ATTRIBUTE_RETURN_CHECK;
 
 /*
  * Wait for the async command to complete.
@@ -328,6 +348,14 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
     ATTRIBUTE_RETURN_CHECK;
 
 /*
+ * Abort a child process if PID is positive and that child is still
+ * running, without issuing any errors or affecting errno.  Designed
+ * for error paths where some but not all paths to the cleanup code
+ * might have started the child process.
+ */
+void virPidAbort(pid_t pid);
+
+/*
  * Abort an async command if it is running, without issuing
  * any errors or affecting errno.  Designed for error paths
  * where some but not all paths to the cleanup code might
@@ -338,7 +366,7 @@ void virCommandAbort(virCommandPtr cmd);
 /*
  * Release all resources.  The only exception is that if you called
  * virCommandRunAsync with a non-null pid, then the asynchronous child
- * is not reaped, and you must call waitpid() yourself.
+ * is not reaped, and you must call virPidWait() yourself.
  */
 void virCommandFree(virCommandPtr cmd);
 

@@ -41,14 +41,16 @@
 #include "files.h"
 #include "buf.h"
 #include "ignore-value.h"
-
-#include <stdlib.h>
+#include "verify.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define virCommandError(code, ...)                                      \
     virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                 \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
+
+/* We have quite a bit of changes to make if this doesn't hold.  */
+verify(sizeof(pid_t) <= sizeof(int));
 
 /* Flags for virExecWithHook */
 enum {
@@ -1382,8 +1384,8 @@ virCommandToString(virCommandPtr cmd)
 
 /*
  * Translate an exit status into a malloc'd string.  Generic helper
- * for virCommandRun and virCommandWait status argument, as well as
- * raw waitpid and older virRun status.
+ * for virCommandRun, virCommandWait, and virPidWait status argument,
+ * as well as raw waitpid and older virRun status.
  */
 char *
 virCommandTranslateStatus(int status)
@@ -1805,6 +1807,17 @@ virCommandHook(void *data)
  * Run the command asynchronously
  * Returns -1 on any error executing the
  * command. Returns 0 if the command executed.
+ *
+ * There are two approaches to child process cleanup.
+ * 1. Use auto-cleanup, by passing NULL for pid.  The child will be
+ * auto-reaped by virCommandFree, unless you reap it earlier via
+ * virCommandWait or virCommandAbort.  Good for where cmd is in
+ * scope for the duration of the child process.
+ * 2. Use manual cleanup, by passing the address of a pid_t variable
+ * for pid.  While cmd is still in scope, you may reap the child via
+ * virCommandWait or virCommandAbort.  But after virCommandFree, if
+ * you have not yet reaped the child, then it continues to run until
+ * you call virPidWait or virPidAbort.
  */
 int
 virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
@@ -1897,6 +1910,48 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 
 
 /*
+ * Wait for a child process to complete.
+ * Return -1 on any error waiting for
+ * completion. Returns 0 if the command
+ * finished with the exit status set
+ */
+int
+virPidWait(pid_t pid, int *exitstatus)
+{
+    int ret;
+    int status;
+
+    if (pid <= 0) {
+        virReportSystemError(EINVAL, _("unable to wait for process %d"), pid);
+        return -1;
+    }
+
+    /* Wait for intermediate process to exit */
+    while ((ret = waitpid(pid, &status, 0)) == -1 &&
+           errno == EINTR);
+
+    if (ret == -1) {
+        virReportSystemError(errno, _("unable to wait for process %d"), pid);
+        return -1;
+    }
+
+    if (exitstatus == NULL) {
+        if (status != 0) {
+            char *st = virCommandTranslateStatus(status);
+            virCommandError(VIR_ERR_INTERNAL_ERROR,
+                            _("Child process (%d) status unexpected: %s"),
+                            pid, NULLSTR(st));
+            VIR_FREE(st);
+            return -1;
+        }
+    } else {
+        *exitstatus = status;
+    }
+
+    return 0;
+}
+
+/*
  * Wait for the async command to complete.
  * Return -1 on any error waiting for
  * completion. Returns 0 if the command
@@ -1906,7 +1961,7 @@ int
 virCommandWait(virCommandPtr cmd, int *exitstatus)
 {
     int ret;
-    int status;
+    int status = 0;
 
     if (!cmd ||cmd->has_error == ENOMEM) {
         virReportOOMError();
@@ -1924,22 +1979,17 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
         return -1;
     }
 
-
-    /* Wait for intermediate process to exit */
-    while ((ret = waitpid(cmd->pid, &status, 0)) == -1 &&
-           errno == EINTR);
-
-    if (ret == -1) {
-        virReportSystemError(errno, _("unable to wait for process %d"),
-                             cmd->pid);
-        return -1;
-    }
-
-    cmd->pid = -1;
-    cmd->reap = false;
-
-    if (exitstatus == NULL) {
-        if (status != 0) {
+    /* If virPidWait reaps pid but then returns failure because
+     * exitstatus was NULL, then a second virCommandWait would risk
+     * calling waitpid on an unrelated process.  Besides, that error
+     * message is not as detailed as what we can provide.  So, we
+     * guarantee that virPidWait only fails due to failure to wait,
+     * and repeat the exitstatus check code ourselves.  */
+    ret = virPidWait(cmd->pid, exitstatus ? exitstatus : &status);
+    if (ret == 0) {
+        cmd->pid = -1;
+        cmd->reap = false;
+        if (status) {
             char *str = virCommandToString(cmd);
             char *st = virCommandTranslateStatus(status);
             virCommandError(VIR_ERR_INTERNAL_ERROR,
@@ -1949,15 +1999,70 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
             VIR_FREE(st);
             return -1;
         }
-    } else {
-        *exitstatus = status;
     }
 
-    return 0;
+    return ret;
 }
 
 
 #ifndef WIN32
+/*
+ * Abort a child process if PID is positive and that child is still
+ * running, without issuing any errors or affecting errno.  Designed
+ * for error paths where some but not all paths to the cleanup code
+ * might have started the child process.
+ */
+void
+virPidAbort(pid_t pid)
+{
+    int saved_errno;
+    int ret;
+    int status;
+    char *tmp = NULL;
+
+    if (pid <= 0)
+        return;
+
+    /* See if intermediate process has exited; if not, try a nice
+     * SIGTERM followed by a more severe SIGKILL.
+     */
+    saved_errno = errno;
+    VIR_DEBUG("aborting child process %d", pid);
+    while ((ret = waitpid(pid, &status, WNOHANG)) == -1 &&
+           errno == EINTR);
+    if (ret == pid) {
+        tmp = virCommandTranslateStatus(status);
+        VIR_DEBUG("process has ended: %s", tmp);
+        goto cleanup;
+    } else if (ret == 0) {
+        VIR_DEBUG("trying SIGTERM to child process %d", pid);
+        kill(pid, SIGTERM);
+        usleep(10 * 1000);
+        while ((ret = waitpid(pid, &status, WNOHANG)) == -1 &&
+               errno == EINTR);
+        if (ret == pid) {
+            tmp = virCommandTranslateStatus(status);
+            VIR_DEBUG("process has ended: %s", tmp);
+            goto cleanup;
+        } else if (ret == 0) {
+            VIR_DEBUG("trying SIGKILL to child process %d", pid);
+            kill(pid, SIGKILL);
+            while ((ret = waitpid(pid, &status, 0)) == -1 &&
+                   errno == EINTR);
+            if (ret == pid) {
+                tmp = virCommandTranslateStatus(status);
+                VIR_DEBUG("process has ended: %s", tmp);
+                goto cleanup;
+            }
+        }
+    }
+    VIR_DEBUG("failed to reap child %d, abandoning it", pid);
+
+cleanup:
+    VIR_FREE(tmp);
+    errno = saved_errno;
+}
+
 /*
  * Abort an async command if it is running, without issuing
  * any errors or affecting errno.  Designed for error paths
@@ -1967,56 +2072,20 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
 void
 virCommandAbort(virCommandPtr cmd)
 {
-    int saved_errno;
-    int ret;
-    int status;
-    char *tmp = NULL;
-
     if (!cmd || cmd->pid == -1)
         return;
-
-    /* See if intermediate process has exited; if not, try a nice
-     * SIGTERM followed by a more severe SIGKILL.
-     */
-    saved_errno = errno;
-    VIR_DEBUG("aborting child process %d", cmd->pid);
-    while ((ret = waitpid(cmd->pid, &status, WNOHANG)) == -1 &&
-           errno == EINTR);
-    if (ret == cmd->pid) {
-        tmp = virCommandTranslateStatus(status);
-        VIR_DEBUG("process has ended: %s", tmp);
-        goto cleanup;
-    } else if (ret == 0) {
-        VIR_DEBUG("trying SIGTERM to child process %d", cmd->pid);
-        kill(cmd->pid, SIGTERM);
-        usleep(10 * 1000);
-        while ((ret = waitpid(cmd->pid, &status, WNOHANG)) == -1 &&
-               errno == EINTR);
-        if (ret == cmd->pid) {
-            tmp = virCommandTranslateStatus(status);
-            VIR_DEBUG("process has ended: %s", tmp);
-            goto cleanup;
-        } else if (ret == 0) {
-            VIR_DEBUG("trying SIGKILL to child process %d", cmd->pid);
-            kill(cmd->pid, SIGKILL);
-            while ((ret = waitpid(cmd->pid, &status, 0)) == -1 &&
-                   errno == EINTR);
-            if (ret == cmd->pid) {
-                tmp = virCommandTranslateStatus(status);
-                VIR_DEBUG("process has ended: %s", tmp);
-                goto cleanup;
-            }
-        }
-    }
-    VIR_DEBUG("failed to reap child %d, abandoning it", cmd->pid);
-
-cleanup:
-    VIR_FREE(tmp);
+    virPidAbort(cmd->pid);
     cmd->pid = -1;
     cmd->reap = false;
-    errno = saved_errno;
 }
 #else /* WIN32 */
+void
+virPidAbort(pid_t pid)
+{
+    /* Not yet ported to mingw.  Any volunteers?  */
+    VIR_DEBUG("failed to reap child %d, abandoning it", pid);
+}
+
 void
 virCommandAbort(virCommandPtr cmd ATTRIBUTE_UNUSED)
 {
@@ -2140,7 +2209,9 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
 
 
 /*
- * Release all resources
+ * Release all resources.  The only exception is that if you called
+ * virCommandRunAsync with a non-null pid, then the asynchronous child
+ * is not reaped, and you must call virPidWait() yourself.
  */
 void
 virCommandFree(virCommandPtr cmd)
