@@ -2698,6 +2698,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     char *vmx = NULL;
     virVMXContext ctx;
     esxVMX_Data data;
+    data.datastorePathWithoutFileName = NULL;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
