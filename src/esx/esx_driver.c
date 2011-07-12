@@ -2698,9 +2698,10 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     char *vmx = NULL;
     virVMXContext ctx;
     esxVMX_Data data;
-    data.datastorePathWithoutFileName = NULL;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
+
+    memset(&data, 0, sizeof (data));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
@@ -2805,6 +2806,8 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
+    memset(&data, 0, sizeof (data));
+
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
                   _("Unsupported config format '%s'"), nativeFormat);
@@ -2843,6 +2846,8 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     esxVMX_Data data;
     virDomainDefPtr def = NULL;
     char *vmx = NULL;
+
+    memset(&data, 0, sizeof (data));
 
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
@@ -3065,6 +3070,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
     virDomainPtr domain = NULL;
+
+    memset(&data, 0, sizeof (data));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
