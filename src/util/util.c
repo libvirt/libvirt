@@ -578,7 +578,7 @@ int virFileResolveLink(const char *linkpath,
  */
 char *virFindFileInPath(const char *file)
 {
-    char *path;
+    char *path = NULL;
     char *pathiter;
     char *pathseg;
     char *fullpath = NULL;
@@ -594,6 +594,15 @@ char *virFindFileInPath(const char *file)
             return strdup(file);
         else
             return NULL;
+    }
+
+    /* If we are passed an anchored path (containing a /), then there
+     * is no path search - it must exist in the current directory
+     */
+    if (strchr(file, '/')) {
+        if (virFileIsExecutable(file))
+            ignore_value(virFileAbsPath(file, &path));
+        return path;
     }
 
     /* copy PATH env so we can tweak it */
