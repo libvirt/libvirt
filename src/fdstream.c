@@ -31,7 +31,6 @@
 # include <sys/un.h>
 #endif
 #include <netinet/in.h>
-#include <signal.h>
 
 #include "fdstream.h"
 #include "virterror_internal.h"
@@ -514,7 +513,6 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     struct stat sb;
     virCommandPtr cmd = NULL;
     int errfd = -1;
-    pid_t pid = 0;
 
     VIR_DEBUG("st=%p path=%s flags=%x offset=%llu length=%llu mode=%o delete=%d",
               st, path, flags, offset, length, mode, delete);
@@ -588,7 +586,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         }
         virCommandSetErrorFD(cmd, &errfd);
 
-        if (virCommandRunAsync(cmd, &pid) < 0)
+        if (virCommandRunAsync(cmd, NULL) < 0)
             goto error;
 
         VIR_FORCE_CLOSE(childfd);
@@ -611,10 +609,6 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     return 0;
 
 error:
-#ifndef WIN32
-    if (pid)
-        kill(SIGTERM, pid);
-#endif
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(fds[0]);
     VIR_FORCE_CLOSE(fds[1]);
