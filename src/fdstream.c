@@ -535,9 +535,17 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         goto error;
     }
 
+    if (offset &&
+        lseek(fd, offset, SEEK_SET) != offset) {
+        virReportSystemError(errno,
+                             _("Unable to seek %s to %llu"),
+                             path, offset);
+        goto error;
+    }
+
     /* Thanks to the POSIX i/o model, we can't reliably get
      * non-blocking I/O on block devs/regular files. To
-     * support those we need to fork a helper process todo
+     * support those we need to fork a helper process to do
      * the I/O so we just have a fifo. Or use AIO :-(
      */
     if ((st->flags & VIR_STREAM_NONBLOCK) &&
@@ -545,14 +553,13 @@ virFDStreamOpenFileInternal(virStreamPtr st,
          !S_ISFIFO(sb.st_mode))) {
         int childfd;
 
-        if ((oflags & O_RDWR) == O_RDWR) {
+        if ((oflags & O_ACCMODE) == O_RDWR) {
             streamsReportError(VIR_ERR_INTERNAL_ERROR,
                                _("%s: Cannot request read and write flags together"),
                                path);
             goto error;
         }
 
-        VIR_FORCE_CLOSE(fd);
         if (pipe(fds) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to create pipe"));
@@ -562,18 +569,9 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         cmd = virCommandNewArgList(LIBEXECDIR "/libvirt_iohelper",
                                    path,
                                    NULL);
-        virCommandAddArgFormat(cmd, "%d", oflags);
-        virCommandAddArgFormat(cmd, "%d", mode);
-        virCommandAddArgFormat(cmd, "%llu", offset);
         virCommandAddArgFormat(cmd, "%llu", length);
-        virCommandAddArgFormat(cmd, "%u", delete);
-
-        /* when running iohelper we don't want to delete file now,
-         * because a race condition may occur in which we delete it
-         * before iohelper even opens it. We want iohelper to remove
-         * the file instead.
-         */
-        delete = false;
+        virCommandTransferFD(cmd, fd);
+        virCommandAddArgFormat(cmd, "%d", fd);
 
         if (oflags == O_RDONLY) {
             childfd = fds[1];
@@ -590,14 +588,6 @@ virFDStreamOpenFileInternal(virStreamPtr st,
             goto error;
 
         VIR_FORCE_CLOSE(childfd);
-    } else {
-        if (offset &&
-            lseek(fd, offset, SEEK_SET) != offset) {
-                virReportSystemError(errno,
-                                     _("Unable to seek %s to %llu"),
-                                     path, offset);
-                goto error;
-        }
     }
 
     if (virFDStreamOpenInternal(st, fd, cmd, errfd, length) < 0)

@@ -42,19 +42,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-static int runIO(const char *path,
-                 int oflags,
-                 int mode,
-                 unsigned long long offset,
-                 unsigned long long length)
+static int
+prepare(const char *path, int oflags, int mode,
+        unsigned long long offset)
 {
-    char *buf = NULL;
-    size_t buflen = 1024*1024;
-    int fd;
-    int ret = -1;
-    int fdin, fdout;
-    const char *fdinname, *fdoutname;
-    unsigned long long total = 0;
+    int fd = -1;
 
     if (oflags & O_CREAT) {
         fd = open(path, oflags, mode);
@@ -70,9 +62,24 @@ static int runIO(const char *path,
         if (lseek(fd, offset, SEEK_SET) < 0) {
             virReportSystemError(errno, _("Unable to seek %s to %llu"),
                                  path, offset);
+            VIR_FORCE_CLOSE(fd);
             goto cleanup;
         }
     }
+
+cleanup:
+    return fd;
+}
+
+static int
+runIO(const char *path, int fd, int oflags, unsigned long long length)
+{
+    char *buf = NULL;
+    size_t buflen = 1024*1024;
+    int ret = -1;
+    int fdin, fdout;
+    const char *fdinname, *fdoutname;
+    unsigned long long total = 0;
 
     if (VIR_ALLOC_N(buf, buflen) < 0) {
         virReportOOMError();
@@ -138,61 +145,109 @@ cleanup:
     return ret;
 }
 
-int main(int argc, char **argv)
+static const char *program_name;
+
+ATTRIBUTE_NORETURN static void
+usage(int status)
+{
+    if (status) {
+        fprintf(stderr, _("%s: try --help for more details"), program_name);
+    } else {
+        printf(_("Usage: %s FILENAME OFLAGS MODE OFFSET LENGTH DELETE\n"
+                 "   or: %s FILENAME LENGTH FD\n"),
+               program_name, program_name);
+    }
+    exit(status);
+}
+
+int
+main(int argc, char **argv)
 {
     const char *path;
     virErrorPtr err;
     unsigned long long offset;
     unsigned long long length;
-    int oflags;
+    int oflags = -1;
     int mode;
-    unsigned int delete;
+    unsigned int delete = 0;
+    int fd = -1;
+    int lengthIndex = 0;
+
+    program_name = argv[0];
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
         textdomain(PACKAGE) == NULL) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+        fprintf(stderr, _("%s: initialization failed\n"), program_name);
         exit(EXIT_FAILURE);
     }
 
     if (virThreadInitialize() < 0 ||
         virErrorInitialize() < 0 ||
         virRandomInitialize(time(NULL) ^ getpid())) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    if (argc != 7) {
-        fprintf(stderr, _("%s: syntax FILENAME FLAGS MODE OFFSET LENGTH DELETE\n"), argv[0]);
+        fprintf(stderr, _("%s: initialization failed\n"), program_name);
         exit(EXIT_FAILURE);
     }
 
     path = argv[1];
 
-    if (virStrToLong_i(argv[2], NULL, 10, &oflags) < 0) {
-        fprintf(stderr, _("%s: malformed file flags %s"), argv[0], argv[2]);
+    if (argc > 1 && STREQ(argv[1], "--help"))
+        usage(EXIT_SUCCESS);
+    if (argc == 7) { /* FILENAME OFLAGS MODE OFFSET LENGTH DELETE */
+        lengthIndex = 5;
+        if (virStrToLong_i(argv[2], NULL, 10, &oflags) < 0) {
+            fprintf(stderr, _("%s: malformed file flags %s"),
+                    program_name, argv[2]);
+            exit(EXIT_FAILURE);
+        }
+        if (virStrToLong_i(argv[3], NULL, 10, &mode) < 0) {
+            fprintf(stderr, _("%s: malformed file mode %s"),
+                    program_name, argv[3]);
+            exit(EXIT_FAILURE);
+        }
+        if (virStrToLong_ull(argv[4], NULL, 10, &offset) < 0) {
+            fprintf(stderr, _("%s: malformed file offset %s"),
+                    program_name, argv[4]);
+            exit(EXIT_FAILURE);
+        }
+        if (argc == 7 && virStrToLong_ui(argv[6], NULL, 10, &delete) < 0) {
+            fprintf(stderr, _("%s: malformed delete flag %s"),
+                    program_name, argv[6]);
+            exit(EXIT_FAILURE);
+        }
+        fd = prepare(path, oflags, mode, offset);
+    } else if (argc == 4) { /* FILENAME LENGTH FD */
+        lengthIndex = 2;
+        if (virStrToLong_i(argv[3], NULL, 10, &fd) < 0) {
+            fprintf(stderr, _("%s: malformed fd %s"),
+                    program_name, argv[3]);
+            exit(EXIT_FAILURE);
+        }
+#ifdef F_GETFL
+        oflags = fcntl(fd, F_GETFL);
+#else
+        /* Stupid mingw.  */
+        if (fd == STDIN_FILENO)
+            oflags = O_RDONLY;
+        else if (fd == STDOUT_FILENO)
+            oflags = O_WRONLY;
+#endif
+        if (oflags < 0) {
+            fprintf(stderr, _("%s: unable to determine access mode of fd %d"),
+                    program_name, fd);
+            exit(EXIT_FAILURE);
+        }
+    } else { /* unknown argc pattern */
+        usage(EXIT_FAILURE);
+    }
+
+    if (virStrToLong_ull(argv[lengthIndex], NULL, 10, &length) < 0) {
+        fprintf(stderr, _("%s: malformed file length %s"),
+                program_name, argv[lengthIndex]);
         exit(EXIT_FAILURE);
     }
 
-    if (virStrToLong_i(argv[3], NULL, 10, &mode) < 0) {
-        fprintf(stderr, _("%s: malformed file mode %s"), argv[0], argv[3]);
-        exit(EXIT_FAILURE);
-    }
-
-    if (virStrToLong_ull(argv[4], NULL, 10, &offset) < 0) {
-        fprintf(stderr, _("%s: malformed file offset %s"), argv[0], argv[4]);
-        exit(EXIT_FAILURE);
-    }
-    if (virStrToLong_ull(argv[5], NULL, 10, &length) < 0) {
-        fprintf(stderr, _("%s: malformed file length %s"), argv[0], argv[5]);
-        exit(EXIT_FAILURE);
-    }
-    if (virStrToLong_ui(argv[6], NULL, 10, &delete) < 0) {
-        fprintf(stderr, _("%s: malformed delete flag %s"), argv[0],argv[6]);
-        exit(EXIT_FAILURE);
-    }
-
-    if (runIO(path, oflags, mode, offset, length) < 0)
+    if (fd < 0 || runIO(path, fd, oflags, length) < 0)
         goto error;
 
     if (delete)
@@ -203,9 +258,10 @@ int main(int argc, char **argv)
 error:
     err = virGetLastError();
     if (err) {
-        fprintf(stderr, "%s: %s\n", argv[0], err->message);
+        fprintf(stderr, "%s: %s\n", program_name, err->message);
     } else {
-        fprintf(stderr, _("%s: unknown failure with %s\n"), argv[0], path);
+        fprintf(stderr, _("%s: unknown failure with %s\n"),
+                program_name, path);
     }
     exit(EXIT_FAILURE);
 }
