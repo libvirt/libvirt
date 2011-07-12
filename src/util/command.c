@@ -730,23 +730,26 @@ virCommandNewArgList(const char *binary, ...)
  * closing it.  FD must not be one of the three standard streams.  If
  * transfer is true, then fd will be closed in the parent after a call
  * to Run/RunAsync/Free, otherwise caller is still responsible for fd.
+ * Returns true if a transferring caller should close FD now, and
+ * false if the transfer is successfully recorded.
  */
-static void
+static bool
 virCommandKeepFD(virCommandPtr cmd, int fd, bool transfer)
 {
     if (!cmd)
-        return;
+        return fd > STDERR_FILENO;
 
     if (fd <= STDERR_FILENO || FD_SETSIZE <= fd) {
         if (!cmd->has_error)
             cmd->has_error = -1;
         VIR_DEBUG("cannot preserve %d", fd);
-        return;
+        return fd > STDERR_FILENO;
     }
 
     FD_SET(fd, &cmd->preserve);
     if (transfer)
         FD_SET(fd, &cmd->transfer);
+    return false;
 }
 
 /**
@@ -761,7 +764,7 @@ virCommandKeepFD(virCommandPtr cmd, int fd, bool transfer)
 void
 virCommandPreserveFD(virCommandPtr cmd, int fd)
 {
-    return virCommandKeepFD(cmd, fd, false);
+    virCommandKeepFD(cmd, fd, false);
 }
 
 /**
@@ -771,12 +774,14 @@ virCommandPreserveFD(virCommandPtr cmd, int fd)
  *
  * Transfer the specified file descriptor
  * to the child, instead of closing it on exec.
- * Close the fd in the parent during Run/RunAsync/Free.
+ * The parent should no longer use fd, and the parent's copy will
+ * be automatically closed no later than during Run/RunAsync/Free.
  */
 void
 virCommandTransferFD(virCommandPtr cmd, int fd)
 {
-    return virCommandKeepFD(cmd, fd, true);
+    if (virCommandKeepFD(cmd, fd, true))
+        VIR_FORCE_CLOSE(fd);
 }
 
 
