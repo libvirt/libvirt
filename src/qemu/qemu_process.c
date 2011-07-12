@@ -2226,6 +2226,10 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
         VIR_DEBUG("Domain %s was paused while its monitor was disconnected;"
                   " changing state to paused", vm->def->name);
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
+    } else if (state == VIR_DOMAIN_SHUTOFF && running) {
+        VIR_DEBUG("Domain %s finished booting; changing state to running",
+                  vm->def->name);
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
     }
 
     return 0;
@@ -2349,6 +2353,12 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
     if (qemuProcessUpdateState(driver, obj) < 0)
         goto error;
 
+    if (virDomainObjGetState(obj, NULL) == VIR_DOMAIN_SHUTOFF) {
+        VIR_DEBUG("Domain '%s' wasn't fully started yet, killing it",
+                  obj->def->name);
+        goto error;
+    }
+
     /* If upgrading from old libvirtd we won't have found any
      * caps in the domain status, so re-query them
      */
@@ -2463,6 +2473,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     vm->def->id = driver->nextvmid++;
     priv->fakeReboot = false;
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_UNKNOWN);
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -2717,6 +2728,12 @@ int qemuProcessStart(virConnectPtr conn,
         vm->pid = child;
         ret = 0;
 #endif
+    }
+
+    VIR_DEBUG("Writing early domain status to disk");
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+        ret = -1;
+        goto cleanup;
     }
 
     VIR_DEBUG("Waiting for handshake from child");
