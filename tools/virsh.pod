@@ -261,6 +261,10 @@ description see:
   L<http://libvirt.org/formatcaps.html>
 The XML also show the NUMA topology information if available.
 
+=item B<inject-nmi> I<domain-id>
+
+Inject NMI to the guest.
+
 =item B<list> optional I<--inactive> I<--all>
 
 Prints information about one or more domains.  If no domains are
@@ -303,10 +307,6 @@ The domain has been paused, usually occurring through the administrator
 running B<virsh suspend>.  When in a paused state the domain will still
 consume allocated resources like memory, but will not be eligible for
 scheduling by the hypervisor.
-
-=item B<inject-nmi> I<domain-id>
-
-Inject NMI to the guest
 
 =item B<shutdown>
 
