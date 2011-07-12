@@ -259,12 +259,24 @@ cleanup:
 static int
 getDevNull(int *null)
 {
-    if (*null == -1 && (*null = open("/dev/null", O_RDWR)) < 0) {
+    if (*null == -1 && (*null = open("/dev/null", O_RDWR|O_CLOEXEC)) < 0) {
         virReportSystemError(errno,
                              _("cannot open %s"),
                              "/dev/null");
         return -1;
     }
+    return 0;
+}
+
+/* Ensure that STD is an inheritable copy of FD.  Return 0 on success,
+ * -1 on failure.  */
+static int
+prepareStdFd(int fd, int std)
+{
+    if (fd == std)
+        return virSetInherit(fd, true);
+    if (dup2(fd, std) != std)
+        return -1;
     return 0;
 }
 
@@ -327,7 +339,7 @@ virExecWithHook(const char *const*argv,
 
     if (outfd != NULL) {
         if (*outfd == -1) {
-            if (pipe(pipeout) < 0) {
+            if (pipe2(pipeout, O_CLOEXEC) < 0) {
                 virReportSystemError(errno,
                                      "%s", _("cannot create pipe"));
                 goto cleanup;
@@ -337,12 +349,6 @@ virExecWithHook(const char *const*argv,
                 virSetNonBlock(pipeout[0]) == -1) {
                 virReportSystemError(errno,
                                      "%s", _("Failed to set non-blocking file descriptor flag"));
-                goto cleanup;
-            }
-
-            if (virSetCloseExec(pipeout[0]) == -1) {
-                virReportSystemError(errno,
-                                     "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
 
@@ -358,7 +364,7 @@ virExecWithHook(const char *const*argv,
 
     if (errfd != NULL) {
         if (*errfd == -1) {
-            if (pipe(pipeerr) < 0) {
+            if (pipe2(pipeerr, O_CLOEXEC) < 0) {
                 virReportSystemError(errno,
                                      "%s", _("Failed to create pipe"));
                 goto cleanup;
@@ -368,12 +374,6 @@ virExecWithHook(const char *const*argv,
                 virSetNonBlock(pipeerr[0]) == -1) {
                 virReportSystemError(errno,
                                      "%s", _("Failed to set non-blocking file descriptor flag"));
-                goto cleanup;
-            }
-
-            if (virSetCloseExec(pipeerr[0]) == -1) {
-                virReportSystemError(errno,
-                                     "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
 
@@ -426,28 +426,29 @@ virExecWithHook(const char *const*argv,
     }
 
     openmax = sysconf(_SC_OPEN_MAX);
-    for (i = 3; i < openmax; i++)
-        if (i != infd &&
-            i != childout &&
-            i != childerr &&
-            (!keepfd || i >= FD_SETSIZE || !FD_ISSET(i, keepfd))) {
+    for (i = 3; i < openmax; i++) {
+        if (i == infd || i == childout || i == childerr)
+            continue;
+        if (!keepfd || i >= FD_SETSIZE || !FD_ISSET(i, keepfd)) {
             tmpfd = i;
             VIR_FORCE_CLOSE(tmpfd);
+        } else if (virSetInherit(i, true) < 0) {
+            virReportSystemError(errno, _("failed to preserve fd %d"), i);
+            goto fork_error;
         }
+    }
 
-    if (dup2(infd, STDIN_FILENO) < 0) {
+    if (prepareStdFd(infd, STDIN_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stdin file handle"));
         goto fork_error;
     }
-    if (childout > 0 &&
-        dup2(childout, STDOUT_FILENO) < 0) {
+    if (childout > 0 && prepareStdFd(childout, STDOUT_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stdout file handle"));
         goto fork_error;
     }
-    if (childerr > 0 &&
-        dup2(childerr, STDERR_FILENO) < 0) {
+    if (childerr > 0 && prepareStdFd(childerr, STDERR_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stderr file handle"));
         goto fork_error;
@@ -1805,7 +1806,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     /* If we have an input buffer, we need
      * a pipe to feed the data to the child */
     if (cmd->inbuf) {
-        if (pipe(infd) < 0) {
+        if (pipe2(infd, O_CLOEXEC) < 0) {
             virReportSystemError(errno, "%s",
                                  _("unable to open pipe"));
             cmd->has_error = -1;
@@ -2295,11 +2296,11 @@ void virCommandRequireHandshake(virCommandPtr cmd)
         return;
     }
 
-    if (pipe(cmd->handshakeWait) < 0) {
+    if (pipe2(cmd->handshakeWait, O_CLOEXEC) < 0) {
         cmd->has_error = errno;
         return;
     }
-    if (pipe(cmd->handshakeNotify) < 0) {
+    if (pipe2(cmd->handshakeNotify, O_CLOEXEC) < 0) {
         VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
         VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
         cmd->has_error = errno;
