@@ -56,6 +56,11 @@ struct __lxc_driver {
     int have_netns;
 
     virDomainEventStatePtr domainEventState;
+
+    /* Mapping of 'char *uuidstr' -> virConnectPtr
+     * of guests which will be automatically killed
+     * when the virConnectPtr is closed*/
+    virHashTablePtr autodestroy;
 };
 
 int lxcLoadDriverConfig(lxc_driver_t *driver);

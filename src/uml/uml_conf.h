@@ -33,6 +33,7 @@
 # include "virterror_internal.h"
 # include "threads.h"
 # include "command.h"
+# include "hash.h"
 
 # define umlDebug(fmt, ...) do {} while(0)
 
@@ -64,6 +65,11 @@ struct uml_driver {
 
     /* Event handling */
     virDomainEventStatePtr domainEventState;
+
+    /* Mapping of 'char *uuidstr' -> virConnectPtr
+     * of guests which will be automatically killed
+     * when the virConnectPtr is closed*/
+    virHashTablePtr autodestroy;
 };
 
 

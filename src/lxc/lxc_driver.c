@@ -110,6 +110,19 @@ static void lxcDomainEventFlush(int timer, void *opaque);
 static void lxcDomainEventQueue(lxc_driver_t *driver,
                                 virDomainEventPtr event);
 
+static int lxcVmTerminate(lxc_driver_t *driver,
+                          virDomainObjPtr vm,
+                          virDomainShutoffReason reason);
+static int lxcProcessAutoDestroyInit(lxc_driver_t *driver);
+static void lxcProcessAutoDestroyRun(lxc_driver_t *driver,
+                                     virConnectPtr conn);
+static void lxcProcessAutoDestroyShutdown(lxc_driver_t *driver);
+static int lxcProcessAutoDestroyAdd(lxc_driver_t *driver,
+                                    virDomainObjPtr vm,
+                                    virConnectPtr conn);
+static int lxcProcessAutoDestroyRemove(lxc_driver_t *driver,
+                                       virDomainObjPtr vm);
+
 
 static virDrvOpenStatus lxcOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -165,6 +178,7 @@ static int lxcClose(virConnectPtr conn)
     lxcDriverLock(driver);
     virDomainEventCallbackListRemoveConn(conn,
                                          driver->domainEventState->callbacks);
+    lxcProcessAutoDestroyRun(driver, conn);
     lxcDriverUnlock(driver);
 
     conn->privateData = NULL;
@@ -1001,6 +1015,104 @@ cleanup:
 }
 
 
+static int lxcProcessAutoDestroyInit(lxc_driver_t *driver)
+{
+    if (!(driver->autodestroy = virHashCreate(5, NULL)))
+        return -1;
+
+    return 0;
+}
+
+struct lxcProcessAutoDestroyData {
+    lxc_driver_t *driver;
+    virConnectPtr conn;
+};
+
+static void lxcProcessAutoDestroyDom(void *payload,
+                                     const void *name,
+                                     void *opaque)
+{
+    struct lxcProcessAutoDestroyData *data = opaque;
+    virConnectPtr conn = payload;
+    const char *uuidstr = name;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    virDomainObjPtr dom;
+    virDomainEventPtr event = NULL;
+
+    VIR_DEBUG("conn=%p uuidstr=%s thisconn=%p", conn, uuidstr, data->conn);
+
+    if (data->conn != conn)
+        return;
+
+    if (virUUIDParse(uuidstr, uuid) < 0) {
+        VIR_WARN("Failed to parse %s", uuidstr);
+        return;
+    }
+
+    if (!(dom = virDomainFindByUUID(&data->driver->domains,
+                                    uuid))) {
+        VIR_DEBUG("No domain object to kill");
+        return;
+    }
+
+    VIR_DEBUG("Killing domain");
+    lxcVmTerminate(data->driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    virDomainAuditStop(dom, "destroyed");
+    event = virDomainEventNewFromObj(dom,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+
+    if (dom && !dom->persistent)
+        virDomainRemoveInactive(&data->driver->domains, dom);
+
+    if (dom)
+        virDomainObjUnlock(dom);
+    if (event)
+        lxcDomainEventQueue(data->driver, event);
+    virHashRemoveEntry(data->driver->autodestroy, uuidstr);
+}
+
+/*
+ * Precondition: driver is locked
+ */
+static void lxcProcessAutoDestroyRun(lxc_driver_t *driver, virConnectPtr conn)
+{
+    struct lxcProcessAutoDestroyData data = {
+        driver, conn
+    };
+    VIR_DEBUG("conn=%p", conn);
+    virHashForEach(driver->autodestroy, lxcProcessAutoDestroyDom, &data);
+}
+
+static void lxcProcessAutoDestroyShutdown(lxc_driver_t *driver)
+{
+    virHashFree(driver->autodestroy);
+}
+
+static int lxcProcessAutoDestroyAdd(lxc_driver_t *driver,
+                                    virDomainObjPtr vm,
+                                    virConnectPtr conn)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s uuid=%s conn=%p", vm->def->name, uuidstr, conn);
+    if (virHashAddEntry(driver->autodestroy, uuidstr, conn) < 0)
+        return -1;
+    return 0;
+}
+
+static int lxcProcessAutoDestroyRemove(lxc_driver_t *driver,
+                                       virDomainObjPtr vm)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s uuid=%s", vm->def->name, uuidstr);
+    if (virHashRemoveEntry(driver->autodestroy, uuidstr) < 0)
+        return -1;
+    return 0;
+}
+
+
 /**
  * lxcVmCleanup:
  * @driver: pointer to driver structure
@@ -1027,6 +1139,9 @@ static void lxcVmCleanup(lxc_driver_t *driver,
                     VIR_HOOK_LXC_OP_STOPPED, VIR_HOOK_SUBOP_END, NULL, xml);
         VIR_FREE(xml);
     }
+
+    /* Stop autodestroy in case guest is restarted */
+    lxcProcessAutoDestroyRemove(driver, vm);
 
     virEventRemoveHandle(priv->monitorWatch);
     VIR_FORCE_CLOSE(priv->monitor);
@@ -1496,6 +1611,7 @@ cleanup:
  * @conn: pointer to connection
  * @driver: pointer to driver structure
  * @vm: pointer to virtual machine structure
+ * @autoDestroy: mark the domain for auto destruction
  * @reason: reason for switching vm to running state
  *
  * Starts a vm
@@ -1505,6 +1621,7 @@ cleanup:
 static int lxcVmStart(virConnectPtr conn,
                       lxc_driver_t * driver,
                       virDomainObjPtr vm,
+                      bool autoDestroy,
                       virDomainRunningReason reason)
 {
     int rc = -1, r;
@@ -1665,6 +1782,10 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (autoDestroy &&
+        lxcProcessAutoDestroyAdd(driver, vm, conn) < 0)
+        goto cleanup;
+
     /*
      * Again, need to save the live configuration, because the function
      * requires vm->def->id != -1 to save tty info surely.
@@ -1719,7 +1840,7 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
     virDomainEventPtr event = NULL;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1743,7 +1864,9 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    ret = lxcVmStart(dom->conn, driver, vm, VIR_DOMAIN_RUNNING_BOOTED);
+    ret = lxcVmStart(dom->conn, driver, vm,
+                     (flags & VIR_DOMAIN_START_AUTODESTROY),
+                     VIR_DOMAIN_RUNNING_BOOTED);
 
     if (ret == 0) {
         event = virDomainEventNewFromObj(vm,
@@ -1796,7 +1919,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
     lxcDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
@@ -1819,7 +1942,9 @@ lxcDomainCreateAndStart(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (lxcVmStart(conn, driver, vm, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+    if (lxcVmStart(conn, driver, vm,
+                   (flags & VIR_DOMAIN_START_AUTODESTROY),
+                   VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
@@ -2054,7 +2179,7 @@ lxcAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaqu
     virDomainObjLock(vm);
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
-        int ret = lxcVmStart(data->conn, data->driver, vm,
+        int ret = lxcVmStart(data->conn, data->driver, vm, false,
                              VIR_DOMAIN_RUNNING_BOOTED);
         virDomainAuditStart(vm, "booted", ret >= 0);
         if (ret < 0) {
@@ -2205,6 +2330,9 @@ static int lxcStartup(int privileged)
     lxc_driver->caps->privateDataAllocFunc = lxcDomainObjPrivateAlloc;
     lxc_driver->caps->privateDataFreeFunc = lxcDomainObjPrivateFree;
 
+    if (lxcProcessAutoDestroyInit(lxc_driver) < 0)
+        goto cleanup;
+
     /* Get all the running persistent or transient configs first */
     if (virDomainLoadAllConfigs(lxc_driver->caps,
                                 &lxc_driver->domains,
@@ -2284,6 +2412,8 @@ static int lxcShutdown(void)
     lxcDriverLock(lxc_driver);
     virDomainObjListDeinit(&lxc_driver->domains);
     virDomainEventStateFree(lxc_driver->domainEventState);
+
+    lxcProcessAutoDestroyShutdown(lxc_driver);
 
     virCapabilitiesFree(lxc_driver->caps);
     VIR_FREE(lxc_driver->configDir);
