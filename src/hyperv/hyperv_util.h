@@ -1,9 +1,8 @@
 
 /*
- * hyperv_private.h: private driver struct for the Microsoft Hyper-V driver
+ * hyperv_util.h: utility functions for the Microsoft Hyper-V driver
  *
  * Copyright (C) 2011 Matthias Bolte <matthias.bolte@googlemail.com>
- * Copyright (C) 2009 Michael Sievers <msievers83@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,23 +20,21 @@
  *
  */
 
-#ifndef __HYPERV_PRIVATE_H__
-# define __HYPERV_PRIVATE_H__
+#ifndef __HYPERV_UTIL_H__
+# define __HYPERV_UTIL_H__
+
+# include <libxml/uri.h>
 
 # include "internal.h"
-# include "virterror_internal.h"
-# include "hyperv_util.h"
-# include "openwsman.h"
 
-# define HYPERV_ERROR(code, ...)                                              \
-    virReportErrorHelper(VIR_FROM_HYPERV, code, __FILE__, __FUNCTION__,       \
-                         __LINE__, __VA_ARGS__)
+typedef struct _hypervParsedUri hypervParsedUri;
 
-typedef struct _hypervPrivate hypervPrivate;
-
-struct _hypervPrivate {
-    hypervParsedUri *parsedUri;
-    WsManClient *client;
+struct _hypervParsedUri {
+    char *transport;
 };
 
-#endif /* __HYPERV_PRIVATE_H__ */
+int hypervParseUri(hypervParsedUri **parsedUri, xmlURIPtr uri);
+
+void hypervFreeParsedUri(hypervParsedUri **parsedUri);
+
+#endif /* __HYPERV_UTIL_H__ */

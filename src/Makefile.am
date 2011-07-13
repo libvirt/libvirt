@@ -412,6 +412,7 @@ HYPERV_DRIVER_SOURCES =								\
 		hyperv/hyperv_device_monitor.c hyperv/hyperv_device_monitor.h		\
 		hyperv/hyperv_secret_driver.c hyperv/hyperv_secret_driver.h		\
 		hyperv/hyperv_nwfilter_driver.c hyperv/hyperv_nwfilter_driver.h		\
+		hyperv/hyperv_util.c hyperv/hyperv_util.h				\
 		hyperv/hyperv_wmi.c hyperv/hyperv_wmi.h					\
 		hyperv/hyperv_wmi_classes.c hyperv/hyperv_wmi_classes.h			\
 		hyperv/openwsman.h
