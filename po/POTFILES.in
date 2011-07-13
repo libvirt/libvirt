@@ -29,6 +29,7 @@ src/esx/esx_vi_methods.c
 src/esx/esx_vi_types.c
 src/fdstream.c
 src/hyperv/hyperv_driver.c
+src/hyperv/hyperv_wmi.c
 src/interface/netcf_driver.c
 src/internal.h
 src/libvirt.c

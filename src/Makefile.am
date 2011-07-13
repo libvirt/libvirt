@@ -411,7 +411,23 @@ HYPERV_DRIVER_SOURCES =								\
 		hyperv/hyperv_storage_driver.c hyperv/hyperv_storage_driver.h		\
 		hyperv/hyperv_device_monitor.c hyperv/hyperv_device_monitor.h		\
 		hyperv/hyperv_secret_driver.c hyperv/hyperv_secret_driver.h		\
-		hyperv/hyperv_nwfilter_driver.c hyperv/hyperv_nwfilter_driver.h
+		hyperv/hyperv_nwfilter_driver.c hyperv/hyperv_nwfilter_driver.h		\
+		hyperv/hyperv_wmi.c hyperv/hyperv_wmi.h					\
+		hyperv/hyperv_wmi_classes.c hyperv/hyperv_wmi_classes.h			\
+		hyperv/openwsman.h
+
+HYPERV_DRIVER_GENERATED =							\
+		hyperv/hyperv_wmi.generated.c					\
+		hyperv/hyperv_wmi.generated.h					\
+		hyperv/hyperv_wmi_classes.generated.c				\
+		hyperv/hyperv_wmi_classes.generated.h				\
+		hyperv/hyperv_wmi_classes.generated.typedef
+
+HYPERV_DRIVER_EXTRA_DIST =							\
+		hyperv/hyperv_wmi_generator.input				\
+		hyperv/hyperv_wmi_generator.py					\
+		$(HYPERV_DRIVER_GENERATED)
+
 NETWORK_DRIVER_SOURCES =					\
 		network/bridge_driver.h network/bridge_driver.c
 
@@ -845,6 +861,12 @@ libvirt_driver_esx_la_DEPENDENCIES = $(ESX_DRIVER_GENERATED)
 endif
 
 
+BUILT_SOURCES += $(HYPERV_DRIVER_GENERATED)
+
+$(HYPERV_DRIVER_GENERATED): $(srcdir)/hyperv/hyperv_wmi_generator.input \
+                            $(srcdir)/hyperv/hyperv_wmi_generator.py
+	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/hyperv/hyperv_wmi_generator.py
+
 if WITH_HYPERV
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_hyperv.la
@@ -1058,6 +1080,7 @@ EXTRA_DIST +=							\
 		$(ESX_DRIVER_SOURCES)				\
 		$(ESX_DRIVER_EXTRA_DIST)			\
 		$(HYPERV_DRIVER_SOURCES)			\
+		$(HYPERV_DRIVER_EXTRA_DIST)			\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\

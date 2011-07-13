@@ -1,0 +1,298 @@
+#
+# Definitions of WMI classes used as input for the hyperv_wmi_generator.py
+# script.
+#
+# This format is line-based, so end-of-line is important.
+#
+#
+# Class definition:
+#
+# class <name>
+#     <type> <name>
+#     ...
+# end
+#
+# Allowed values for <type> are: boolean, string, datetime, int8, int16,
+# int32, int64, uint8, uint16, uint32 and uint64
+#
+# The property <name> can be followed by [] to define a dynamic array.
+#
+#
+# Based on MSDN Hyper-V WMI Classes:
+# http://msdn.microsoft.com/en-us/library/cc136986%28v=vs.85%29.aspx
+#
+
+
+class Msvm_ComputerSystem
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    string   CreationClassName
+    string   Name
+    string   PrimaryOwnerName
+    string   PrimaryOwnerContact
+    string   Roles[]
+    string   NameFormat
+    string   OtherIdentifyingInfo[]
+    string   IdentifyingDescriptions[]
+    uint16   Dedicated[]
+    string   OtherDedicatedDescriptions[]
+    uint16   ResetCapability
+    uint16   PowerManagementCapabilities[]
+    uint64   OnTimeInMilliseconds
+    datetime TimeOfLastConfigurationChange
+    uint32   ProcessID
+    uint16   AssignedNumaNodeList[]
+end
+
+
+class Msvm_ConcreteJob
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    string   JobStatus
+    datetime TimeSubmitted
+    datetime ScheduledStartTime
+    datetime StartTime
+    datetime ElapsedTime
+    uint32   JobRunTimes
+    uint8    RunMonth
+    int8     RunDay
+    int8     RunDayOfWeek
+    datetime RunStartInterval
+    uint16   LocalOrUtcTime
+    datetime UntilTime
+    string   Notify
+    string   Owner
+    uint32   Priority
+    uint16   PercentComplete
+    boolean  DeleteOnCompletion
+    uint16   ErrorCode
+    string   ErrorDescription
+    string   ErrorSummaryDescription
+    uint16   RecoveryAction
+    string   OtherRecoveryAction
+    string   InstanceID
+    string   Name
+    uint16   JobState
+    datetime TimeOfLastStateChange
+    datetime TimeBeforeRemoval
+    boolean  Cancellable
+end
+
+
+class Msvm_MemorySettingData
+    string   Caption
+    string   Description
+    string   InstanceID
+    string   ElementName
+    uint16   ResourceType
+    string   OtherResourceType
+    string   ResourceSubType
+    string   PoolID
+    uint16   ConsumerVisibility
+    string   HostResource[]
+    string   AllocationUnits
+    uint64   VirtualQuantity
+    uint64   Reservation
+    uint64   Limit
+    uint32   Weight
+    boolean  AutomaticAllocation
+    boolean  AutomaticDeallocation
+    string   Parent
+    string   Connection[]
+    string   Address
+    uint16   MappingBehavior
+    boolean  IsVirtualized
+    string   DeviceID
+    string   DeviceIDFormat
+    boolean  DynamicMemoryEnabled
+#    uint32   TargetMemoryBuffer # Available only on Windows Server 2008 R2 SP1
+end
+
+
+class Msvm_ProcessorSettingData
+    string   Caption
+    string   Description
+    string   InstanceID
+    string   ElementName
+    uint16   ResourceType
+    string   OtherResourceType
+    string   ResourceSubType
+    string   PoolID
+    uint16   ConsumerVisibility
+    string   HostResource[]
+    string   AllocationUnits
+    uint64   VirtualQuantity
+    uint64   Reservation
+    uint64   Limit
+    uint32   Weight
+    boolean  AutomaticAllocation
+    boolean  AutomaticDeallocation
+    string   Parent
+    string   Connection[]
+    string   Address
+    uint16   MappingBehavior
+    boolean  IsVirtualized
+    string   DeviceID
+    string   DeviceIDFormat
+    uint16   ProcessorsPerSocket
+    uint16   SocketCount
+    boolean  ThreadsEnabled
+    boolean  LimitCPUID
+    boolean  LimitProcessorFeatures
+end
+
+
+class Msvm_VirtualSystemSettingData
+    string   Caption
+    string   Description
+    string   ElementName
+    string   InstanceID
+    string   SystemName
+    uint16   SettingType
+    uint16   VirtualSystemType
+    string   OtherVirtualSystemType
+    boolean  AutoActivate
+    datetime CreationTime
+    string   Notes
+    string   BIOSGUID
+    string   BIOSSerialNumber
+    string   BaseBoardSerialNumber
+    string   ChassisSerialNumber
+    string   ChassisAssetTag
+    boolean  BIOSNumLock
+    uint16   BootOrder[]
+    string   Parent
+    uint16   NumaNodeList[]
+    boolean  NumaNodesAreRequired
+end
+
+
+class Win32_ComputerSystem
+    uint16   AdminPasswordStatus
+    boolean  AutomaticManagedPagefile
+    boolean  AutomaticResetBootOption
+    boolean  AutomaticResetCapability
+    uint16   BootOptionOnLimit
+    uint16   BootOptionOnWatchDog
+    boolean  BootROMSupported
+    string   BootupState
+    string   Caption
+    uint16   ChassisBootupState
+    string   CreationClassName
+    int16    CurrentTimeZone
+    boolean  DaylightInEffect
+    string   Description
+    string   DNSHostName
+    string   Domain
+    uint16   DomainRole
+    boolean  EnableDaylightSavingsTime
+    uint16   FrontPanelResetStatus
+    boolean  InfraredSupported
+#    string   InitialLoadInfo # MSDN documents it, but it's not there
+    datetime InstallDate
+    uint16   KeyboardPasswordStatus
+    string   LastLoadInfo
+    string   Manufacturer
+    string   Model
+    string   Name
+    string   NameFormat
+    boolean  NetworkServerModeEnabled
+    uint32   NumberOfLogicalProcessors
+    uint32   NumberOfProcessors
+    uint8    OEMLogoBitmap[]
+    string   OEMStringArray[]
+    boolean  PartOfDomain
+    int64    PauseAfterReset
+    uint16   PCSystemType
+    uint16   PowerManagementCapabilities[]
+    boolean  PowerManagementSupported
+    uint16   PowerOnPasswordStatus
+    uint16   PowerState
+    uint16   PowerSupplyState
+    string   PrimaryOwnerContact
+    string   PrimaryOwnerName
+    uint16   ResetCapability
+    int16    ResetCount
+    int16    ResetLimit
+    string   Roles[]
+    string   Status
+    string   SupportContactDescription[]
+    uint16   SystemStartupDelay
+    string   SystemStartupOptions[]
+    uint8    SystemStartupSetting
+    string   SystemType
+    uint16   ThermalState
+    uint64   TotalPhysicalMemory
+    string   UserName
+    uint16   WakeUpType
+    string   Workgroup
+end
+
+
+class Win32_Processor
+    uint16   AddressWidth
+    uint16   Architecture
+    uint16   Availability
+    string   Caption
+    uint32   ConfigManagerErrorCode
+    boolean  ConfigManagerUserConfig
+    uint16   CpuStatus
+    string   CreationClassName
+    uint32   CurrentClockSpeed
+    uint16   CurrentVoltage
+    uint16   DataWidth
+    string   Description
+    string   DeviceID
+    boolean  ErrorCleared
+    string   ErrorDescription
+    uint32   ExtClock
+    uint16   Family
+    datetime InstallDate
+    uint32   L2CacheSize
+    uint32   L2CacheSpeed
+    uint32   L3CacheSize
+    uint32   L3CacheSpeed
+    uint32   LastErrorCode
+    uint16   Level
+    uint16   LoadPercentage
+    string   Manufacturer
+    uint32   MaxClockSpeed
+    string   Name
+    uint32   NumberOfCores
+    uint32   NumberOfLogicalProcessors
+    string   OtherFamilyDescription
+    string   PNPDeviceID
+    uint16   PowerManagementCapabilities[]
+    boolean  PowerManagementSupported
+    string   ProcessorId
+    uint16   ProcessorType
+    uint16   Revision
+    string   Role
+    string   SocketDesignation
+    string   Status
+    uint16   StatusInfo
+    string   Stepping
+    string   SystemCreationClassName
+    string   SystemName
+    string   UniqueId
+    uint16   UpgradeMethod
+    string   Version
+    uint32   VoltageCaps
+end

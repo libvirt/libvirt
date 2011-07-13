@@ -1,6 +1,6 @@
 
 /*
- * hyperv_private.h: private driver struct for the Microsoft Hyper-V driver
+ * hyperv_wmi_classes.c: WMI classes for managing Microsoft Hyper-V hosts
  *
  * Copyright (C) 2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Michael Sievers <msievers83@googlemail.com>
@@ -21,21 +21,17 @@
  *
  */
 
-#ifndef __HYPERV_PRIVATE_H__
-# define __HYPERV_PRIVATE_H__
+#include <config.h>
 
-# include "internal.h"
-# include "virterror_internal.h"
-# include "openwsman.h"
+#include "hyperv_wmi_classes.h"
 
-# define HYPERV_ERROR(code, ...)                                              \
-    virReportErrorHelper(VIR_FROM_HYPERV, code, __FILE__, __FUNCTION__,       \
-                         __LINE__, __VA_ARGS__)
+SER_TYPEINFO_BOOL;
+SER_TYPEINFO_STRING;
+SER_TYPEINFO_INT8;
+SER_TYPEINFO_INT16;
+SER_TYPEINFO_INT32;
+SER_TYPEINFO_UINT8;
+SER_TYPEINFO_UINT16;
+SER_TYPEINFO_UINT32;
 
-typedef struct _hypervPrivate hypervPrivate;
-
-struct _hypervPrivate {
-    WsManClient *client;
-};
-
-#endif /* __HYPERV_PRIVATE_H__ */
+#include "hyperv_wmi_classes.generated.c"

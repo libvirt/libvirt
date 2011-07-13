@@ -54,6 +54,7 @@
 /proxy/
 /python/generator.py.stamp
 /sc_*
+/src/hyperv/*.generated.*
 /src/libvirt_iohelper
 /src/locking/qemu-sanlock.conf
 /src/remote/*_client_bodies.h
