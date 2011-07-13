@@ -28,6 +28,7 @@
       <li><strong><a href="drvesx.html">VMware ESX</a></strong></li>
       <li><strong><a href="drvvmware.html">VMware Workstation/Player</a></strong></li>
       <li><strong><a href="drvxen.html">Xen</a></strong></li>
+      <li><strong><a href="drvhyperv.html">Microsoft Hyper-V</a></strong></li>
     </ul>
 
     <h2><a name="stroage">Storage drivers</a></h2>

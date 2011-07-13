@@ -1,0 +1,112 @@
+<html><body>
+    <h1>Microsoft Hyper-V hypervisor driver</h1>
+    <ul id="toc"></ul>
+    <p>
+        The libvirt Microsoft Hyper-V driver can manage Hyper-V 2008 R2.
+    </p>
+
+
+    <h2><a name="project">Project Links</a></h2>
+    <ul>
+      <li>
+        The <a href="http://www.microsoft.com/hyper-v-server/">Microsoft Hyper-V</a>
+        hypervisor
+      </li>
+    </ul>
+
+
+    <h2><a name="uri">Connections to the Microsoft Hyper-V driver</a></h2>
+    <p>
+        Some example remote connection URIs for the driver are:
+    </p>
+<pre>
+hyperv://example-hyperv.com                  (over HTTPS)
+hyperv://example-hyperv.com/?transport=http  (over HTTP)
+</pre>
+    <p>
+        <strong>Note</strong>: In contrast to other drivers, the Hyper-V driver
+        is a client-side-only driver. It connects to the Hyper-V server using
+        WS-Management over HTTP(S). Therefore, the
+        <a href="remote.html">remote transport mechanism</a> provided by the
+        remote driver and libvirtd will not work, and you cannot use URIs like
+        <code>hyperv+ssh://example.com</code>.
+    </p>
+
+
+    <h3><a name="uriformat">URI Format</a></h3>
+    <p>
+        URIs have this general form (<code>[...]</code> marks an optional part).
+    </p>
+<pre>
+hyperv://[username@]hostname[:port]/[?extraparameters]
+</pre>
+    <p>
+        The default HTTPS ports is 5986. If the port parameter is given, it
+        overrides the default port.
+    </p>
+
+
+    <h4><a name="extraparams">Extra parameters</a></h4>
+    <p>
+        Extra parameters can be added to a URI as part of the query string
+        (the part following <code>?</code>). A single parameter is formed by a
+        <code>name=value</code> pair. Multiple parameters are separated by
+        <code>&amp;</code>.
+    </p>
+<pre>
+?transport=http
+</pre>
+    <p>
+        The driver understands the extra parameters shown below.
+    </p>
+    <table class="top_table">
+        <tr>
+            <th>Name</th>
+            <th>Values</th>
+            <th>Meaning</th>
+        </tr>
+        <tr>
+            <td>
+                <code>transport</code>
+            </td>
+            <td>
+                <code>http</code> or <code>https</code>
+            </td>
+            <td>
+                Overrides the default HTTPS transport. The default HTTP port
+                is 5985.
+            </td>
+        </tr>
+    </table>
+
+
+    <h3><a name="auth">Authentication</a></h3>
+    <p>
+        In order to perform any useful operation the driver needs to log into
+        the Hyper-V server. Therefore, only <code>virConnectOpenAuth</code> can
+        be used to connect to an Hyper-V server, <code>virConnectOpen</code> and
+        <code>virConnectOpenReadOnly</code> don't work.
+        To log into an Hyper-V server the driver will request credentials using
+        the callback passed to the <code>virConnectOpenAuth</code> function.
+        The driver passes the hostname as challenge parameter to the callback.
+    </p>
+    <p>
+        <strong>Note</strong>: Currently only <code>Basic</code> authentication
+        is supported by libvirt. This method is disabled by default on the
+        Hyper-V server and can be enabled via the WinRM commandline tool.
+    </p>
+<pre>
+winrm set winrm/config/service/auth @{Basic="true"}
+</pre>
+    <p>
+        To allow <code>Basic</code> authentication with HTTP transport WinRM
+        needs to allow unencrypted communication. This can be enabled via the
+        WinRM commandline tool. However, this is not the recommended
+        communication mode.
+    </p>
+<pre>
+winrm set winrm/config/service @{AllowUnencrypted="true"}
+</pre>
+
+
+</body></html>

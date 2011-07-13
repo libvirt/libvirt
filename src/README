@@ -26,6 +26,7 @@ There are two core shared modules to be aware of:
 Then there are the hypervisor implementations:
 
  * esx/          - VMware ESX and GSX support using vSphere API over SOAP
+ * hyperv/       - Microsoft Hyper-V support using WinRM
  * lxc/          - Linux Native Containers
  * openvz/       - OpenVZ containers using cli tools
  * phyp/         - IBM Power Hypervisor using CLI tools over SSH
@@ -41,7 +42,7 @@ Then there are the hypervisor implementations:
 
 Finally some secondary drivers that are shared for several HVs.
 Currently these are used by LXC, OpenVZ, QEMU, UML and Xen drivers.
-The ESX, Power Hypervisor, Remote, Test & VirtualBox drivers all
+The ESX, Hyper-V, Power Hypervisor, Remote, Test & VirtualBox drivers all
 implement the secondary drivers directly
 
  * cpu/          - CPU feature management

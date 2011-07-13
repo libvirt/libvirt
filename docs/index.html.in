@@ -60,6 +60,9 @@
         The <a href="http://libvirt.org/drvvmware.html">VMware Workstation and Player</a> hypervisors
       </li>
       <li>
+        The <a href="http://libvirt.org/drvhyperv.html">Microsoft Hyper-V</a> hypervisor
+      </li>
+      <li>
         Virtual networks using bridging, NAT, VEPA and VN-LINK.
       </li>
       <li>

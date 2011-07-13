@@ -202,6 +202,10 @@
                 <a href="drvvmware.html">VMware Workstation / Player</a>
                 <span>Driver for VMware Workstation / Player</span>
               </li>
+              <li>
+                <a href="drvhyperv.html">Microsoft Hyper-V</a>
+                <span>Driver for Microsoft Hyper-V</span>
+              </li>
             </ul>
           </li>
           <li>
