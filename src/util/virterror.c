@@ -172,6 +172,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_LOCKING:
             dom = "Locking ";
             break;
+        case VIR_FROM_HYPERV:
+            dom = "Hyper-V ";
+            break;
     }
     return(dom);
 }

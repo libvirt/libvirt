@@ -457,6 +457,7 @@ sc_avoid_attribute_unused_in_header:
 msg_gen_function =
 msg_gen_function += ESX_ERROR
 msg_gen_function += ESX_VI_ERROR
+msg_gen_function += HYPERV_ERROR
 msg_gen_function += PHYP_ERROR
 msg_gen_function += VIR_ERROR
 msg_gen_function += VMX_ERROR

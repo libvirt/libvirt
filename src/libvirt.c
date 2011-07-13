@@ -67,6 +67,9 @@
 # ifdef WITH_ESX
 #  include "esx/esx_driver.h"
 # endif
+# ifdef WITH_HYPERV
+#  include "hyperv/hyperv_driver.h"
+# endif
 # ifdef WITH_XENAPI
 #  include "xenapi/xenapi_driver.h"
 # endif
@@ -453,6 +456,9 @@ virInitialize(void)
 # ifdef WITH_ESX
     virDriverLoadModule("esx");
 # endif
+# ifdef WITH_HYPERV
+    virDriverLoadModule("hyperv");
+# endif
 # ifdef WITH_XENAPI
     virDriverLoadModule("xenapi");
 # endif
@@ -480,6 +486,9 @@ virInitialize(void)
 # endif
 # ifdef WITH_ESX
     if (esxRegister() == -1) return -1;
+# endif
+# ifdef WITH_HYPERV
+    if (hypervRegister() == -1) return -1;
 # endif
 # ifdef WITH_XENAPI
     if (xenapiRegister() == -1) return -1;
@@ -1044,6 +1053,9 @@ do_open (const char *name,
              STRCASEEQ(ret->uri->scheme, "vpx") ||
              STRCASEEQ(ret->uri->scheme, "esx") ||
              STRCASEEQ(ret->uri->scheme, "gsx") ||
+#endif
+#ifndef WITH_HYPERV
+             STRCASEEQ(ret->uri->scheme, "hyperv") ||
 #endif
 #ifndef WITH_XENAPI
              STRCASEEQ(ret->uri->scheme, "xenapi") ||
