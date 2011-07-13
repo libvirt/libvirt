@@ -362,6 +362,9 @@ int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
                               const char *fdname,
                               int fd);
 
+/* The function preserves previous error and only sets it's own error if no
+ * error was set before.
+ */
 int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
                                const char *fdname);
 

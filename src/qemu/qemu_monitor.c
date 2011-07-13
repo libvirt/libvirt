@@ -1964,20 +1964,30 @@ int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
 int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
                                const char *fdname)
 {
-    int ret;
+    int ret = -1;
+    virErrorPtr error;
+
     VIR_DEBUG("mon=%p fdname=%s",
           mon, fdname);
+
+    error = virSaveLastError();
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                         _("monitor must not be NULL"));
-        return -1;
+        goto cleanup;
     }
 
     if (mon->json)
         ret = qemuMonitorJSONCloseFileHandle(mon, fdname);
     else
         ret = qemuMonitorTextCloseFileHandle(mon, fdname);
+
+cleanup:
+    if (error) {
+        virSetError(error);
+        virFreeError(error);
+    }
     return ret;
 }
 
