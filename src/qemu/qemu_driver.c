@@ -1498,7 +1498,9 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+#if HAVE_YAJL
     qemuDomainObjPrivatePtr priv;
+#endif
 
     virCheckFlags(0, -1);
 
@@ -1513,9 +1515,10 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
-    priv = vm->privateData;
 
 #if HAVE_YAJL
+    priv = vm->privateData;
+
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
             goto cleanup;
@@ -2598,7 +2601,6 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     int resume = 0, paused = 0;
     int ret = -1;
     virDomainEventPtr event = NULL;
-    qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH, -1);
 
@@ -2612,7 +2614,6 @@ static int qemudDomainCoreDump(virDomainPtr dom,
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
-    priv = vm->privateData;
 
     if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
                                              QEMU_ASYNC_JOB_DUMP) < 0)
