@@ -212,18 +212,12 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 r1 = (?:/\* \d+ \*/\n)?
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
 
-PROTOCOL_STRUCTS = \
-	$(srcdir)/remote_protocol-structs \
-	$(srcdir)/qemu_protocol-structs
-if WITH_REMOTE
-# The .o file that pdwtags parses is created as a side effect of running
-# libtool; but from make's perspective we depend on the .lo file.
-%_protocol-structs: libvirt_driver_remote_la-%_protocol.lo
+PDWTAGS = \
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
 	  pdwtags --verbose $(<:.lo=.$(OBJEXT))				\
 	    | perl -0777 -n						\
 		-e 'foreach my $$p (split m!\n\n$(r1)$(r2)\n!) {'	\
-		-e '  if ($$p =~ /^struct (remote|qemu)_/) {'		\
+		-e '  if ($$p =~ /^struct (remote_|qemu_|virNet)/) {'	\
 		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
 		-e '    $$p =~ s!\s+\n!\n!sg;'				\
 		-e '    $$p =~ s!\s+$$!!;'				\
@@ -250,10 +244,22 @@ if WITH_REMOTE
 	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
 	fi
+
+PROTOCOL_STRUCTS = \
+	$(srcdir)/remote_protocol-structs \
+	$(srcdir)/qemu_protocol-structs \
+	$(srcdir)/virnetprotocol-structs
+if WITH_REMOTE
+# The .o file that pdwtags parses is created as a side effect of running
+# libtool; but from make's perspective we depend on the .lo file.
+$(srcdir)/%_protocol-structs: libvirt_driver_remote_la-%_protocol.lo
+	$(PDWTAGS)
+$(srcdir)/virnetprotocol-structs: libvirt_net_rpc_la-virnetprotocol.lo
+	$(PDWTAGS)
 else !WITH_REMOTE
 # These generated files must live in git, because they cannot be re-generated
 # when configured --without-remote.
-$(srcdir)/%_protocol-structs:
+$(PROTOCOL_STRUCTS):
 endif
 EXTRA_DIST += $(PROTOCOL_STRUCTS)
 check-local: $(PROTOCOL_STRUCTS)

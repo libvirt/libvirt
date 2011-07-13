@@ -1,0 +1,31 @@
+/* -*- c -*- */
+struct virNetMessageHeader {
+        u_int                      prog;
+        u_int                      vers;
+        int                        proc;
+        virNetMessageType          type;
+        u_int                      serial;
+        virNetMessageStatus        status;
+};
+struct virNetMessageNonnullDomain {
+        virNetMessageNonnullString name;
+        virNetMessageUUID          uuid;
+        int                        id;
+};
+struct virNetMessageNonnullNetwork {
+        virNetMessageNonnullString name;
+        virNetMessageUUID          uuid;
+};
+struct virNetMessageError {
+        int                        code;
+        int                        domain;
+        virNetMessageString        message;
+        int                        level;
+        virNetMessageDomain        dom;
+        virNetMessageString        str1;
+        virNetMessageString        str2;
+        virNetMessageString        str3;
+        int                        int1;
+        int                        int2;
+        virNetMessageNetwork       net;
+};
