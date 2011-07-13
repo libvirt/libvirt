@@ -50,6 +50,7 @@
 # Then the hypervisor drivers that talk a native remote protocol
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
+%define with_hyperv        0%{!?_without_hyperv:1}
 %define with_xenapi        0%{!?_without_xenapi:1}
 
 # Then the secondary host drivers
@@ -447,6 +448,9 @@ BuildRequires: libcurl-devel
 BuildRequires: curl-devel
 %endif
 %endif
+%if %{with_hyperv}
+BuildRequires: libwsman-devel >= 2.2.3
+%endif
 %if %{with_audit}
 BuildRequires: audit-libs-devel
 %endif
@@ -579,6 +583,10 @@ of recent versions of Linux (and other OSes).
 %define _without_esx --without-esx
 %endif
 
+%if ! %{with_hyperv}
+%define _without_hyperv --without-hyperv
+%endif
+
 %if ! %{with_vmware}
 %define _without_vmware --without-vmware
 %endif
@@ -697,6 +705,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_one} \
            %{?_without_phyp} \
            %{?_without_esx} \
+           %{?_without_hyperv} \
            %{?_without_vmware} \
            %{?_without_network} \
            %{?_with_rhel5_api} \

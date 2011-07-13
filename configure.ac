@@ -69,6 +69,7 @@ XMLRPC_REQUIRED=1.14.0
 HAL_REQUIRED=0.5.0
 DEVMAPPER_REQUIRED=1.0.0
 LIBCURL_REQUIRED="7.18.0"
+OPENWSMAN_REQUIRED="2.2.3"
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
@@ -287,6 +288,8 @@ AC_ARG_WITH([lxc],
   AC_HELP_STRING([--with-lxc], [add Linux Container support @<:@default=check@:>@]),[],[with_lxc=check])
 AC_ARG_WITH([esx],
   AC_HELP_STRING([--with-esx], [add ESX support @<:@default=check@:>@]),[],[with_esx=check])
+AC_ARG_WITH([hyperv],
+  AC_HELP_STRING([--with-hyperv], [add Hyper-V support @<:@default=check@:>@]),[],[with_hyperv=check])
 AC_ARG_WITH([test],
   AC_HELP_STRING([--with-test], [add test driver support @<:@default=yes@:>@]),[],[with_test=yes])
 AC_ARG_WITH([remote],
@@ -1910,6 +1913,35 @@ LIBCURL_CFLAGS="-DCURL_DISABLE_TYPECHECK $LIBCURL_CFLAGS"
 AC_SUBST([LIBCURL_CFLAGS])
 AC_SUBST([LIBCURL_LIBS])
 
+
+dnl
+dnl check for openwsman (Hyper-V)
+dnl
+
+OPENWSMAN_CFLAGS=""
+OPENWSMAN_LIBS=""
+
+if test "$with_hyperv" = "yes" || test "$with_hyperv" = "check"; then
+    PKG_CHECK_MODULES([OPENWSMAN], [openwsman >= $OPENWSMAN_REQUIRED], [
+        if test "$with_hyperv" = "check"; then
+            with_hyperv=yes
+        fi
+    ], [
+        if test "$with_hyperv" = "check"; then
+            with_hyperv=no
+            AC_MSG_NOTICE([openwsman is required for the Hyper-V driver, disabling it])
+        elif test "$with_hyperv" = "yes"; then
+            AC_MSG_ERROR([openwsman >= $OPENWSMAN_REQUIRED is required for the Hyper-V driver])
+        fi
+    ])
+fi
+
+if test "$with_hyperv" = "yes" ; then
+    AC_DEFINE_UNQUOTED([WITH_HYPERV], 1, [whether Hyper-V driver is enabled])
+fi
+AM_CONDITIONAL([WITH_HYPERV], [test "$with_hyperv" = "yes"])
+
+
 dnl
 dnl check for python
 dnl
@@ -2441,6 +2473,7 @@ AC_MSG_NOTICE([xenlight: $with_libxl])
 AC_MSG_NOTICE([     LXC: $with_lxc])
 AC_MSG_NOTICE([    PHYP: $with_phyp])
 AC_MSG_NOTICE([     ESX: $with_esx])
+AC_MSG_NOTICE([ Hyper-V: $with_hyperv])
 AC_MSG_NOTICE([    Test: $with_test])
 AC_MSG_NOTICE([  Remote: $with_remote])
 AC_MSG_NOTICE([ Network: $with_network])
@@ -2481,6 +2514,11 @@ if test "$with_esx" = "yes" ; then
 AC_MSG_NOTICE([ libcurl: $LIBCURL_CFLAGS $LIBCURL_LIBS])
 else
 AC_MSG_NOTICE([ libcurl: no])
+fi
+if test "$with_hyperv" = "yes" ; then
+AC_MSG_NOTICE([openwsman: $OPENWSMAN_CFLAGS $OPENWSMAN_LIBS])
+else
+AC_MSG_NOTICE([openwsman: no])
 fi
 if test "$with_libssh2" != "no" ; then
 AC_MSG_NOTICE([ libssh2: $LIBSSH2_CFLAGS $LIBSSH2_LIBS])
