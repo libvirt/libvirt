@@ -2494,6 +2494,8 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     char *ret = NULL;
 
+    /* Flags checked by virDomainDefFormat */
+
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     libxlDriverUnlock(driver);

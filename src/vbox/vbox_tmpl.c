@@ -2145,6 +2145,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
     nsresult rc;
     char *tmp;
 
+    /* Flags checked by virDomainDefFormat */
+
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         goto cleanup;
@@ -5296,8 +5298,12 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
     return vboxDomainAttachDeviceImpl(dom, xml, 0);
 }
 
-static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
-                                       unsigned int flags) {
+static int
+vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                            unsigned int flags)
+{
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         vboxError(VIR_ERR_OPERATION_INVALID, "%s",
                   _("cannot modify the persistent configuration of a domain"));
@@ -5446,8 +5452,12 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
-                                       unsigned int flags) {
+static int
+vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
+                            unsigned int flags)
+{
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         vboxError(VIR_ERR_OPERATION_INVALID, "%s",
                   _("cannot modify the persistent configuration of a domain"));

@@ -2366,6 +2366,8 @@ static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virDomainObjPtr privdom;
     char *ret = NULL;
 
+    /* Flags checked by virDomainDefFormat */
+
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);

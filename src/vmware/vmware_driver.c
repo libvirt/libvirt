@@ -807,6 +807,8 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     char *ret = NULL;
 
+    /* Flags checked by virDomainDefFormat */
+
     vmwareDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     vmwareDriverUnlock(driver);

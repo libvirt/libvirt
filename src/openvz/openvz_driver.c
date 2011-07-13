@@ -461,6 +461,8 @@ static char *openvzDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
     virDomainObjPtr vm;
     char *ret = NULL;
 
+    /* Flags checked by virDomainDefFormat */
+
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     openvzDriverUnlock(driver);

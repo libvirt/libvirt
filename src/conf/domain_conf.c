@@ -9624,6 +9624,10 @@ char *virDomainDefFormat(virDomainDefPtr def,
     const char *type = NULL;
     int n, allones = 1;
 
+    virCheckFlags(VIR_DOMAIN_XML_SECURE |
+                  VIR_DOMAIN_XML_INACTIVE |
+                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
+
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                          _("unexpected domain type %d"), def->virtType);

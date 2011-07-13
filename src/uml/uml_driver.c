@@ -1653,9 +1653,7 @@ static char *umlDomainGetXMLDesc(virDomainPtr dom,
     virDomainObjPtr vm;
     char *ret = NULL;
 
-    virCheckFlags(VIR_DOMAIN_XML_SECURE |
-                  VIR_DOMAIN_XML_INACTIVE |
-                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
+    /* Flags checked by virDomainDefFormat */
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1929,9 +1927,13 @@ cleanup:
 }
 
 
-static int umlDomainAttachDeviceFlags(virDomainPtr dom,
-                                      const char *xml,
-                                      unsigned int flags) {
+static int
+umlDomainAttachDeviceFlags(virDomainPtr dom,
+                           const char *xml,
+                           unsigned int flags)
+{
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         umlReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot modify the persistent configuration of a domain"));
@@ -2037,9 +2039,13 @@ cleanup:
 }
 
 
-static int umlDomainDetachDeviceFlags(virDomainPtr dom,
-                                      const char *xml,
-                                      unsigned int flags) {
+static int
+umlDomainDetachDeviceFlags(virDomainPtr dom,
+                           const char *xml,
+                           unsigned int flags)
+{
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         umlReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot modify the persistent configuration of a domain"));

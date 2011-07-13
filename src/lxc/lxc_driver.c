@@ -967,6 +967,8 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
     virDomainObjPtr vm;
     char *ret = NULL;
 
+    /* Flags checked by virDomainDefFormat */
+
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     lxcDriverUnlock(driver);

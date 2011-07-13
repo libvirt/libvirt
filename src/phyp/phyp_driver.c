@@ -3317,6 +3317,8 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDef def;
     char *managed_system = phyp_driver->managed_system;
 
+    /* Flags checked by virDomainDefFormat */
+
     memset(&def, 0, sizeof(virDomainDef));
 
     def.virtType = VIR_DOMAIN_VIRT_PHYP;

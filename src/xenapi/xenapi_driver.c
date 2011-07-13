@@ -1318,9 +1318,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     struct xen_vif_set *vif_set = NULL;
     char *xml;
 
-    virCheckFlags(VIR_DOMAIN_XML_SECURE |
-                  VIR_DOMAIN_XML_INACTIVE |
-                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
+    /* Flags checked by virDomainDefFormat */
 
     if (!xen_vm_get_by_name_label(session, &vms, dom->name)) return NULL;
     if (vms->size != 1) {
