@@ -6166,11 +6166,14 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 static int
 qemudDomainMemoryStats (virDomainPtr dom,
                         struct _virDomainMemoryStat *stats,
-                        unsigned int nr_stats)
+                        unsigned int nr_stats,
+                        unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     unsigned int ret = -1;
+
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);

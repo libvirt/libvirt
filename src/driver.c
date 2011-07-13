@@ -32,10 +32,6 @@
 
 #define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
-/* Make sure ... INTERNAL_CALL cannot be set by the caller */
-verify((VIR_SECRET_GET_VALUE_INTERNAL_CALL &
-        VIR_SECRET_GET_VALUE_FLAGS_MASK) == 0);
-
 #ifdef WITH_DRIVER_MODULES
 
 /* XXX re-implment this for other OS, or use libtools helper lib ? */

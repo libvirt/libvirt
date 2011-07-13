@@ -41,11 +41,6 @@
 # include "macvtap.h"
 # include "sysinfo.h"
 
-/* Private component of virDomainXMLFlags */
-typedef enum {
-   VIR_DOMAIN_XML_INTERNAL_STATUS = (1<<16), /* dump internal domain status information */
-} virDomainXMLInternalFlags;
-
 /* Different types of hypervisor */
 /* NB: Keep in sync with virDomainVirtTypeToString impl */
 enum virDomainVirtType {
@@ -1414,11 +1409,6 @@ virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
 virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
                                       xmlDocPtr doc,
                                       xmlNodePtr root,
-                                      unsigned int expectedVirtTypes,
-                                      unsigned int flags);
-
-virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
-                                      const char *filename,
                                       unsigned int expectedVirtTypes,
                                       unsigned int flags);
 

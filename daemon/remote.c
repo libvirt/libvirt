@@ -810,7 +810,7 @@ remoteDispatchDomainMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    nr_stats = virDomainMemoryStats(dom, stats, args->maxStats, 0);
+    nr_stats = virDomainMemoryStats(dom, stats, args->maxStats, args->flags);
     if (nr_stats < 0)
         goto cleanup;
 

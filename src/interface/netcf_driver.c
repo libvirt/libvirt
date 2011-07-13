@@ -344,6 +344,8 @@ static char *interfaceGetXMLDesc(virInterfacePtr ifinfo,
     virInterfaceDefPtr ifacedef = NULL;
     char *ret = NULL;
 
+    virCheckFlags(VIR_INTERFACE_XML_INACTIVE, NULL);
+
     interfaceDriverLock(driver);
 
     iface = interfaceDriverGetNetcfIF(driver->netcf, ifinfo);

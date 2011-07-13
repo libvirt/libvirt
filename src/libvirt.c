@@ -3381,8 +3381,6 @@ virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         goto error;
     }
 
-    flags &= VIR_DOMAIN_XML_FLAGS_MASK;
-
     if (conn->driver->domainGetXMLDesc) {
         char *ret;
         ret = conn->driver->domainGetXMLDesc(domain, flags);
@@ -6040,11 +6038,6 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
         virDispatchError(NULL);
         return -1;
     }
-    if (flags != 0) {
-        virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("flags must be zero"));
-        goto error;
-    }
 
     if (!stats || nr_stats == 0)
         return 0;
@@ -6054,7 +6047,8 @@ int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
 
     conn = dom->conn;
     if (conn->driver->domainMemoryStats) {
-        nr_stats_ret = conn->driver->domainMemoryStats (dom, stats, nr_stats);
+        nr_stats_ret = conn->driver->domainMemoryStats (dom, stats, nr_stats,
+                                                        flags);
         if (nr_stats_ret == -1)
             goto error;
         return nr_stats_ret;
@@ -6136,12 +6130,6 @@ virDomainBlockPeek (virDomainPtr dom,
     if (!path) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
                            _("path is NULL"));
-        goto error;
-    }
-
-    if (flags != 0) {
-        virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("flags must be zero"));
         goto error;
     }
 
@@ -6248,9 +6236,10 @@ virDomainMemoryPeek (virDomainPtr dom,
      * because of incompatible licensing.
      */
 
-    if (flags != VIR_MEMORY_VIRTUAL && flags != VIR_MEMORY_PHYSICAL) {
+    /* Exactly one of these two flags must be set.  */
+    if (!(flags & VIR_MEMORY_VIRTUAL) == !(flags & VIR_MEMORY_PHYSICAL)) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
-                     _("flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"));
+                     _("flags parameter must include VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"));
         goto error;
     }
 
@@ -8474,10 +8463,6 @@ virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
         virDispatchError(NULL);
         return NULL;
     }
-    if (flags != 0) {
-        virLibNetworkError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
 
     conn = network->conn;
 
@@ -8986,10 +8971,6 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
         virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
-    }
-    if ((flags & ~VIR_INTERFACE_XML_INACTIVE) != 0) {
-        virLibInterfaceError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
     }
 
     conn = iface->conn;
@@ -10460,10 +10441,6 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
         virDispatchError(NULL);
         return NULL;
     }
-    if (flags != 0) {
-        virLibStoragePoolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
 
     conn = pool->conn;
 
@@ -11358,10 +11335,6 @@ virStorageVolGetXMLDesc(virStorageVolPtr vol,
         virDispatchError(NULL);
         return NULL;
     }
-    if (flags != 0) {
-        virLibStorageVolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
 
     conn = vol->conn;
 
@@ -11450,10 +11423,6 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
         virDispatchError(NULL);
         return -1;
     }
-    if (flags != 0) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
 
     if (conn->deviceMonitor && conn->deviceMonitor->numOfDevices) {
         int ret;
@@ -11502,7 +11471,7 @@ virNodeListDevices(virConnectPtr conn,
         virDispatchError(NULL);
         return -1;
     }
-    if ((flags != 0) || (names == NULL) || (maxnames < 0)) {
+    if ((names == NULL) || (maxnames < 0)) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -12708,12 +12677,10 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
         goto error;
     }
 
-    flags &= VIR_SECRET_GET_VALUE_FLAGS_MASK;
-
     if (conn->secretDriver != NULL && conn->secretDriver->getValue != NULL) {
         unsigned char *ret;
 
-        ret = conn->secretDriver->getValue(secret, value_size, flags);
+        ret = conn->secretDriver->getValue(secret, value_size, flags, 0);
         if (ret == NULL)
             goto error;
         return ret;
@@ -14241,10 +14208,6 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
         virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return NULL;
-    }
-    if (flags != 0) {
-        virLibNWFilterError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
     }
 
     conn = nwfilter->conn;

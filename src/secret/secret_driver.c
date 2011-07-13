@@ -873,11 +873,14 @@ cleanup:
 }
 
 static unsigned char *
-secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags)
+secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags,
+               unsigned int internalFlags)
 {
     virSecretDriverStatePtr driver = obj->conn->secretPrivateData;
     unsigned char *ret = NULL;
     virSecretEntryPtr secret;
+
+    virCheckFlags(0, NULL);
 
     secretDriverLock(driver);
 
@@ -898,7 +901,7 @@ secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags)
         goto cleanup;
     }
 
-    if ((flags & VIR_SECRET_GET_VALUE_INTERNAL_CALL) == 0 &&
+    if ((internalFlags & VIR_SECRET_GET_VALUE_INTERNAL_CALL) == 0 &&
         secret->def->private) {
         virSecretReportError(VIR_ERR_OPERATION_DENIED, "%s",
                              _("secret is private"));

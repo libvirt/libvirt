@@ -48,7 +48,6 @@
 #include "storage_file.h"
 #include "files.h"
 #include "bitmap.h"
-#include "verify.h"
 #include "count-one-bits.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
@@ -56,6 +55,12 @@
 /* virDomainVirtType is used to set bits in the expectedVirtTypes bitmask,
  * verify that it doesn't overflow an unsigned int when shifting */
 verify(VIR_DOMAIN_VIRT_LAST <= 32);
+
+/* Private flag used internally by virDomainSaveStatus and
+ * virDomainObjParseFile.  */
+typedef enum {
+   VIR_DOMAIN_XML_INTERNAL_STATUS = (1<<16), /* dump internal domain status information */
+} virDomainXMLInternalFlags;
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "custom-argv",
@@ -6995,10 +7000,11 @@ cleanup:
 }
 
 
-virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
-                                      const char *filename,
-                                      unsigned int expectedVirtTypes,
-                                      unsigned int flags)
+static virDomainObjPtr
+virDomainObjParseFile(virCapsPtr caps,
+                      const char *filename,
+                      unsigned int expectedVirtTypes,
+                      unsigned int flags)
 {
     xmlDocPtr xml;
     virDomainObjPtr obj = NULL;

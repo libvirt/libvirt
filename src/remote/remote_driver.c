@@ -1850,7 +1850,8 @@ done:
 static int
 remoteDomainMemoryStats (virDomainPtr domain,
                          struct _virDomainMemoryStat *stats,
-                         unsigned int nr_stats)
+                         unsigned int nr_stats,
+                         unsigned int flags)
 {
     int rv = -1;
     remote_domain_memory_stats_args args;
@@ -1868,7 +1869,7 @@ remoteDomainMemoryStats (virDomainPtr domain,
         goto done;
     }
     args.maxStats = nr_stats;
-    args.flags = 0;
+    args.flags = flags;
     memset (&ret, 0, sizeof ret);
 
     if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MEMORY_STATS,
@@ -3173,7 +3174,7 @@ remoteSecretClose (virConnectPtr conn)
 
 static unsigned char *
 remoteSecretGetValue (virSecretPtr secret, size_t *value_size,
-                      unsigned int flags)
+                      unsigned int flags, unsigned int internalFlags)
 {
     unsigned char *rv = NULL;
     remote_secret_get_value_args args;
@@ -3181,6 +3182,12 @@ remoteSecretGetValue (virSecretPtr secret, size_t *value_size,
     struct private_data *priv = secret->conn->secretPrivateData;
 
     remoteDriverLock (priv);
+
+    /* internalFlags intentionally do not go over the wire */
+    if (internalFlags) {
+        remoteError(VIR_ERR_NO_SUPPORT, "%s", _("no internalFlags support"));
+        goto done;
+    }
 
     make_nonnull_secret (&args.secret, secret);
     args.flags = flags;
