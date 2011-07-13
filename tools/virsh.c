@@ -11534,8 +11534,12 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
     if (snapshot == NULL)
         goto cleanup;
 
-    if (virDomainSnapshotDelete(snapshot, flags) < 0)
+    if (virDomainSnapshotDelete(snapshot, flags) == 0) {
+        vshPrint(ctl, _("Domain snapshot %s deleted\n"), name);
+    } else {
+        vshError(ctl, _("Failed to delete snapshot %s"), name);
         goto cleanup;
+    }
 
     ret = true;
 
