@@ -168,6 +168,22 @@
 %define with_sanlock  0%{!?_without_sanlock:%{server_drivers}}
 %endif
 
+# Disable some drivers when building without libvirt daemon.
+# The logic is the same as in configure.ac
+%if ! %{with_libvirtd}
+%define with_network 0
+%define with_qemu 0
+%define with_lxc 0
+%define with_uml 0
+%define with_hal 0
+%define with_udev 0
+%define with_storage_fs 0
+%define with_storage_lvm 0
+%define with_storage_iscsi 0
+%define with_storage_mpath 0
+%define with_storage_disk 0
+%endif
+
 # Enable libpcap library
 %if %{with_qemu}
 %define with_nwfilter 0%{!?_without_nwfilter:%{server_drivers}}
@@ -210,13 +226,6 @@
 %define with_rhel5  1
 %else
 %define with_rhel5  0
-%endif
-
-
-# there's no use compiling the network driver without
-# the libvirt daemon
-%if ! %{with_libvirtd}
-%define with_network 0
 %endif
 
 Summary: Library providing a simple virtualization API
