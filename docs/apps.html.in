@@ -202,6 +202,16 @@
     <h2><a name="iaas">Infrastructure as a Service (IaaS)</a></h2>
 
     <dl>
+      <dt><a href="http://www.emotivecloud.net">EMOTIVE Cloud</a></dt>
+      <dd>The EMOTIVE (Elastic Management Of Tasks In Virtualized
+        Environments) middleware allows executing tasks and providing
+        virtualized environments to the users with Xen, KVM or
+        VirtualBox hypervisor. EMOTIVE's main feature is VM management
+        with different scheduling policies. It can be also used as a
+        cloud provider and is very easy to extend thanks to its
+        modular Web Services architecture.
+      </dd>
+
       <dt><a href="http://www.nimbusproject.org">Nimbus</a></dt>
       <dd>
         Nimbus is an open-source toolkit focused on providing
