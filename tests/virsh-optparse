@@ -64,7 +64,7 @@ for args in \
     '--count 2 test' \
     '--count=2 test' \
 ; do
-  virsh -d5 -c $test_url setvcpus $args >out 2>>err || fail=1
+  virsh -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
   LC_ALL=C sort out | compare - exp-out || fail=1
 done
 test -s err && fail=1

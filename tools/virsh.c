@@ -98,6 +98,8 @@ typedef enum {
     VSH_ERR_ERROR
 } vshErrorLevel;
 
+#define VSH_DEBUG_DEFAULT VSH_ERR_ERROR
+
 /*
  * virsh command line grammar:
  *
@@ -13410,15 +13412,17 @@ vshInit(vshControl *ctl)
     if (ctl->conn)
         return false;
 
-    if (ctl->debug == -1) {
+    if (ctl->debug == VSH_DEBUG_DEFAULT) {
         /* log level not set from commandline, check env variable */
         debugEnv = getenv("VIRSH_DEBUG");
         if (debugEnv) {
-            if (virStrToLong_i(debugEnv, NULL, 10, &ctl->debug) < 0 ||
-                ctl->debug < VSH_ERR_DEBUG || ctl->debug > VSH_ERR_ERROR) {
+            int debug;
+            if (virStrToLong_i(debugEnv, NULL, 10, &debug) < 0 ||
+                debug < VSH_ERR_DEBUG || debug > VSH_ERR_ERROR) {
                 vshError(ctl, "%s",
                          _("VIRSH_DEBUG not set with a valid numeric value"));
-                ctl->debug = VSH_ERR_DEBUG;
+            } else {
+                ctl->debug = debug;
             }
         }
     }
@@ -14106,7 +14110,7 @@ main(int argc, char **argv)
     memset(ctl, 0, sizeof(vshControl));
     ctl->imode = true;          /* default is interactive mode */
     ctl->log_fd = -1;           /* Initialize log file descriptor */
-    ctl->debug = -1;            /* Initialize log level */
+    ctl->debug = VSH_DEBUG_DEFAULT;
 
     if (!setlocale(LC_ALL, "")) {
         perror("setlocale");
