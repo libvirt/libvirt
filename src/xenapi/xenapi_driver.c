@@ -106,7 +106,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     if (conn->uri->server == NULL) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
+        xenapiSessionErrorHandler(conn, VIR_ERR_INVALID_ARG,
                                   _("Server name not in URI"));
         goto error;
     }
@@ -194,7 +194,9 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                              *privP->session->error_description);
+                              *privP->session->error_description != NULL ?
+                              *privP->session->error_description :
+                              _("unknown error"));
 
   error:
     VIR_FREE(username);
