@@ -2575,7 +2575,7 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
               driver, conn, vm, NULLSTR(cookiein), cookieinlen,
               flags, retcode);
 
-    virCheckFlags(0, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
         return -1;

@@ -6635,14 +6635,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     struct qemud_driver *driver = dconn->privateData;
     int ret = -1;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     qemuDriverLock(driver);
 
@@ -6696,14 +6689,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     struct qemud_driver *driver = dconn->privateData;
     int ret = -1;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     *uri_out = NULL;
 
@@ -6761,14 +6747,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     int ret = -1;
     const char *dconnuri = NULL;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     qemuDriverLock(driver);
     if (virLockManagerPluginUsesState(driver->lockManager)) {
@@ -6823,14 +6802,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, NULL);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -6871,14 +6843,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
     virDomainObjPtr vm;
     char *xml = NULL;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, NULL);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -6914,14 +6879,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
     struct qemud_driver *driver = dconn->privateData;
     int ret = -1;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     *uri_out = NULL;
 
@@ -6968,14 +6926,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     struct qemud_driver *driver = dconn->privateData;
     int ret = -1;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     if (!dom_xml) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7022,14 +6973,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -7068,14 +7012,7 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, NULL);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -7106,14 +7043,7 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
     virDomainObjPtr vm;
     int ret = -1;
 
-    virCheckFlags(VIR_MIGRATE_LIVE |
-                  VIR_MIGRATE_PEER2PEER |
-                  VIR_MIGRATE_TUNNELLED |
-                  VIR_MIGRATE_PERSIST_DEST |
-                  VIR_MIGRATE_UNDEFINE_SOURCE |
-                  VIR_MIGRATE_PAUSED |
-                  VIR_MIGRATE_NON_SHARED_DISK |
-                  VIR_MIGRATE_NON_SHARED_INC, -1);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);

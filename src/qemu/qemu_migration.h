@@ -24,6 +24,16 @@
 
 # include "qemu_conf.h"
 
+/* All supported qemu migration flags.  */
+# define QEMU_MIGRATION_FLAGS                   \
+    (VIR_MIGRATE_LIVE |                         \
+     VIR_MIGRATE_PEER2PEER |                    \
+     VIR_MIGRATE_TUNNELLED |                    \
+     VIR_MIGRATE_PERSIST_DEST |                 \
+     VIR_MIGRATE_UNDEFINE_SOURCE |              \
+     VIR_MIGRATE_PAUSED |                       \
+     VIR_MIGRATE_NON_SHARED_DISK |              \
+     VIR_MIGRATE_NON_SHARED_INC)
 
 bool qemuMigrationIsAllowed(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
