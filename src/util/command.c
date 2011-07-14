@@ -130,23 +130,25 @@ static int virClearCapabilities(void)
 # endif
 
 
-/* virFork() - fork a new process while avoiding various race/deadlock
-               conditions
-
-   @pid - a pointer to a pid_t that will receive the return value from
-          fork()
-
-   on return from virFork(), if *pid < 0, the fork failed and there is
-   no new process. Otherwise, just like fork(), if *pid == 0, it is the
-   child process returning, and if *pid > 0, it is the parent.
-
-   Even if *pid >= 0, if the return value from virFork() is < 0, it
-   indicates a failure that occurred in the parent or child process
-   after the fork. In this case, the child process should call
-   _exit(EXIT_FAILURE) after doing any additional error reporting.
-
+/**
+ * virFork:
+ * @pid - a pointer to a pid_t that will receive the return value from
+ *        fork()
+ *
+ * fork a new process while avoiding various race/deadlock conditions
+ *
+ * on return from virFork(), if *pid < 0, the fork failed and there is
+ * no new process. Otherwise, just like fork(), if *pid == 0, it is the
+ * child process returning, and if *pid > 0, it is the parent.
+ *
+ * Even if *pid >= 0, if the return value from virFork() is < 0, it
+ * indicates a failure that occurred in the parent or child process
+ * after the fork. In this case, the child process should call
+ * _exit(EXIT_FAILURE) after doing any additional error reporting.
  */
-int virFork(pid_t *pid) {
+int
+virFork(pid_t *pid)
+{
     sigset_t oldmask, newmask;
     struct sigaction sig_action;
     int saved_errno, ret = -1;
@@ -573,6 +575,7 @@ virExecWithHook(const char *const*argv,
 }
 
 /**
+ * virRun:
  * @argv NULL terminated argv to run
  * @status optional variable to return exit status in
  *
@@ -645,8 +648,13 @@ virFork(pid_t *pid)
 #endif /* WIN32 */
 
 
-/*
- * Create a new command for named binary
+/**
+ * virCommandNew:
+ * @binary: program to run
+ *
+ * Create a new command for named binary.  If @binary is relative,
+ * it will be found via a PATH search of the parent's PATH (and not
+ * any altered PATH set by virCommandAddEnv* commands).
  */
 virCommandPtr
 virCommandNew(const char *binary)
@@ -656,9 +664,13 @@ virCommandNew(const char *binary)
     return virCommandNewArgs(args);
 }
 
-/*
+/**
+ * virCommandNewArgs:
+ * @args: array of arguments
+ *
  * Create a new command with a NULL terminated
- * set of args, taking binary from args[0]
+ * set of args, taking binary from args[0].  More arguments can
+ * be added later.  @args[0] is handled like @binary of virCommandNew.
  */
 virCommandPtr
 virCommandNewArgs(const char *const*args)
@@ -684,9 +696,14 @@ virCommandNewArgs(const char *const*args)
     return cmd;
 }
 
-/*
+/**
+ * virCommandNewArgList:
+ * @binary: program to run
+ * @...: additional arguments
+ *
  * Create a new command with a NULL terminated
- * list of args, starting with the binary to run
+ * list of args, starting with the binary to run.  More arguments can
+ * be added later.  @binary is handled as in virCommandNew.
  */
 virCommandPtr
 virCommandNewArgList(const char *binary, ...)
@@ -730,9 +747,13 @@ virCommandKeepFD(virCommandPtr cmd, int fd, bool transfer)
         FD_SET(fd, &cmd->transfer);
 }
 
-/*
+/**
+ * virCommandPreserveFD:
+ * @cmd: the command to modify
+ * @fd: fd to mark for inheritance into child
+ *
  * Preserve the specified file descriptor
- * in the child, instead of closing it.
+ * in the child, instead of closing it on exec.
  * The parent is still responsible for managing fd.
  */
 void
@@ -741,9 +762,13 @@ virCommandPreserveFD(virCommandPtr cmd, int fd)
     return virCommandKeepFD(cmd, fd, false);
 }
 
-/*
+/**
+ * virCommandTransferFD:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ *
  * Transfer the specified file descriptor
- * to the child, instead of closing it.
+ * to the child, instead of closing it on exec.
  * Close the fd in the parent during Run/RunAsync/Free.
  */
 void
@@ -753,8 +778,13 @@ virCommandTransferFD(virCommandPtr cmd, int fd)
 }
 
 
-/*
- * Save the child PID in a pidfile
+/**
+ * virCommandSetPidFile:
+ * @cmd: the command to modify
+ * @pidfile: filename to use
+ *
+ * Save the child PID in a pidfile.  The pidfile will be populated
+ * before the exec of the child.
  */
 void
 virCommandSetPidFile(virCommandPtr cmd, const char *pidfile)
@@ -769,8 +799,11 @@ virCommandSetPidFile(virCommandPtr cmd, const char *pidfile)
 }
 
 
-/*
- * Remove all capabilities from the child
+/**
+ * virCommandClearCaps:
+ * @cmd: the command to modify
+ *
+ * Remove all capabilities from the child, after any hooks have been run.
  */
 void
 virCommandClearCaps(virCommandPtr cmd)
@@ -783,7 +816,11 @@ virCommandClearCaps(virCommandPtr cmd)
 
 #if 0 /* XXX Enable if we have a need for capability management.  */
 
-/*
+/**
+ * virCommandAllowCap:
+ * @cmd: the command to modify
+ * @capability: what to allow
+ *
  * Re-allow a specific capability
  */
 void
@@ -799,8 +836,13 @@ virCommandAllowCap(virCommandPtr cmd,
 #endif /* 0 */
 
 
-/*
- * Daemonize the child process
+/**
+ * virCommandDaemonize:
+ * @cmd: the command to modify
+ *
+ * Daemonize the child process.  The child will have a current working
+ * directory of /, and must be started with virCommandRun, which will
+ * complete as soon as the daemon grandchild has started.
  */
 void
 virCommandDaemonize(virCommandPtr cmd)
@@ -811,7 +853,10 @@ virCommandDaemonize(virCommandPtr cmd)
     cmd->flags |= VIR_EXEC_DAEMON;
 }
 
-/*
+/**
+ * virCommandNonblockingFDs:
+ * @cmd: the command to modify
+ *
  * Set FDs created by virCommandSetOutputFD and virCommandSetErrorFD
  * as non-blocking in the parent.
  */
@@ -824,8 +869,13 @@ virCommandNonblockingFDs(virCommandPtr cmd)
     cmd->flags |= VIR_EXEC_NONBLOCK;
 }
 
-/*
- * Add an environment variable to the child created by a printf-style format
+/**
+ * virCommandAddEnvFormat:
+ * @cmd: the command to modify
+ * @format: format of arguments, end result must be in name=value format
+ * @...: arguments to be formatted
+ *
+ * Add an environment variable to the child created by a printf-style format.
  */
 void
 virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
@@ -854,7 +904,12 @@ virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
     cmd->env[cmd->nenv++] = env;
 }
 
-/*
+/**
+ * virCommandAddEnvPair:
+ * @cmd: the command to modify
+ * @name: variable name, must not contain =
+ * @value: value to assign to name
+ *
  * Add an environment variable to the child
  * using separate name & value strings
  */
@@ -865,7 +920,11 @@ virCommandAddEnvPair(virCommandPtr cmd, const char *name, const char *value)
 }
 
 
-/*
+/**
+ * virCommandAddEnvString:
+ * @cmd: the command to modify
+ * @str: name=value format
+ *
  * Add an environment variable to the child
  * using a preformatted env string FOO=BAR
  */
@@ -893,7 +952,11 @@ virCommandAddEnvString(virCommandPtr cmd, const char *str)
 }
 
 
-/*
+/**
+ * virCommandAddEnvBuffer:
+ * @cmd: the command to modify
+ * @buf: buffer that contains name=value string, which will be reset on return
+ *
  * Convert a buffer containing preformatted name=value into an
  * environment variable of the child.
  * Correctly transfers memory errors or contents from buf to cmd.
@@ -918,7 +981,11 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
 }
 
 
-/*
+/**
+ * virCommandAddEnvPass:
+ * @cmd: the command to modify
+ * @name: the name to look up in current environment
+ *
  * Pass an environment variable to the child
  * using current process' value
  */
@@ -935,9 +1002,12 @@ virCommandAddEnvPass(virCommandPtr cmd, const char *name)
 }
 
 
-/*
+/**
+ * virCommandAddEnvPassCommon:
+ * @cmd: the command to modify
+ *
  * Set LC_ALL to C, and propagate other essential environment
- * variables from the parent process.
+ * variables (such as PATH) from the parent process.
  */
 void
 virCommandAddEnvPassCommon(virCommandPtr cmd)
@@ -960,7 +1030,11 @@ virCommandAddEnvPassCommon(virCommandPtr cmd)
     virCommandAddEnvPass(cmd, "TMPDIR");
 }
 
-/*
+/**
+ * virCommandAddArg:
+ * @cmd: the command to modify
+ * @val: the argument to add
+ *
  * Add a command line argument to the child
  */
 void
@@ -987,7 +1061,11 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
 }
 
 
-/*
+/**
+ * virCommandAddArgBuffer:
+ * @cmd: the command to modify
+ * @buf: buffer that contains argument string, which will be reset on return
+ *
  * Convert a buffer into a command line argument to the child.
  * Correctly transfers memory errors or contents from buf to cmd.
  */
@@ -1011,8 +1089,13 @@ virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
 }
 
 
-/*
- * Add a command line argument created by a printf-style format
+/**
+ * virCommandAddArgFormat:
+ * @cmd: the command to modify
+ * @format: format of arguments, end result must be in name=value format
+ * @...: arguments to be formatted
+ *
+ * Add a command line argument created by a printf-style format.
  */
 void
 virCommandAddArgFormat(virCommandPtr cmd, const char *format, ...)
@@ -1041,7 +1124,12 @@ virCommandAddArgFormat(virCommandPtr cmd, const char *format, ...)
     cmd->args[cmd->nargs++] = arg;
 }
 
-/*
+/**
+ * virCommandAddArgPair:
+ * @cmd: the command to modify
+ * @name: left half of argument
+ * @value: right half of argument
+ *
  * Add "NAME=VAL" as a single command line argument to the child
  */
 void
@@ -1050,7 +1138,11 @@ virCommandAddArgPair(virCommandPtr cmd, const char *name, const char *val)
     virCommandAddArgFormat(cmd, "%s=%s", name, val);
 }
 
-/*
+/**
+ * virCommandAddArgSet:
+ * @cmd: the command to modify
+ * @vals: array of arguments to add
+ *
  * Add a NULL terminated list of args
  */
 void
@@ -1086,8 +1178,12 @@ virCommandAddArgSet(virCommandPtr cmd, const char *const*vals)
     }
 }
 
-/*
- * Add a NULL terminated list of args
+/**
+ * virCommandAddArgList:
+ * @cmd: the command to modify
+ * @...: list of arguments to add
+ *
+ * Add a NULL terminated list of args.
  */
 void
 virCommandAddArgList(virCommandPtr cmd, ...)
@@ -1125,7 +1221,11 @@ virCommandAddArgList(virCommandPtr cmd, ...)
     va_end(list);
 }
 
-/*
+/**
+ * virCommandSetWorkingDirectory:
+ * @cmd: the command to modify
+ * @pwd: directory to use
+ *
  * Set the working directory of a non-daemon child process, rather
  * than the parent's working directory.  Daemons automatically get /
  * without using this call.
@@ -1147,8 +1247,13 @@ virCommandSetWorkingDirectory(virCommandPtr cmd, const char *pwd)
 }
 
 
-/*
- * Feed the child's stdin from a string buffer
+/**
+ * virCommandSetInputBuffer:
+ * @cmd: the command to modify
+ * @inbuf: string to feed to stdin
+ *
+ * Feed the child's stdin from a string buffer.  This requires the use
+ * of virCommandRun().
  */
 void
 virCommandSetInputBuffer(virCommandPtr cmd, const char *inbuf)
@@ -1168,11 +1273,16 @@ virCommandSetInputBuffer(virCommandPtr cmd, const char *inbuf)
 }
 
 
-/*
+/**
+ * virCommandSetOutputBuffer:
+ * @cmd: the command to modify
+ * @outbuf: address of variable to store malloced result buffer
+ *
  * Capture the child's stdout to a string buffer.  *outbuf is
  * guaranteed to be allocated after successful virCommandRun or
  * virCommandWait, and is best-effort allocated after failed
  * virCommandRun; caller is responsible for freeing *outbuf.
+ * This requires the use of virCommandRun.
  */
 void
 virCommandSetOutputBuffer(virCommandPtr cmd, char **outbuf)
@@ -1192,11 +1302,16 @@ virCommandSetOutputBuffer(virCommandPtr cmd, char **outbuf)
 }
 
 
-/*
+/**
+ * virCommandSetErrorBuffer:
+ * @cmd: the command to modify
+ * @errbuf: address of variable to store malloced result buffer
+ *
  * Capture the child's stderr to a string buffer.  *errbuf is
  * guaranteed to be allocated after successful virCommandRun or
  * virCommandWait, and is best-effort allocated after failed
  * virCommandRun; caller is responsible for freeing *errbuf.
+ * This requires the use of virCommandRun.
  */
 void
 virCommandSetErrorBuffer(virCommandPtr cmd, char **errbuf)
@@ -1216,7 +1331,11 @@ virCommandSetErrorBuffer(virCommandPtr cmd, char **errbuf)
 }
 
 
-/*
+/**
+ * virCommandSetInputFD:
+ * @cmd: the command to modify
+ * @infd: the descriptor to use
+ *
  * Attach a file descriptor to the child's stdin
  */
 void
@@ -1240,8 +1359,14 @@ virCommandSetInputFD(virCommandPtr cmd, int infd)
 }
 
 
-/*
- * Attach a file descriptor to the child's stdout
+/**
+ * virCommandSetOutputFD:
+ * @cmd: the command to modify
+ * @outfd: location of output fd
+ *
+ * Attach a file descriptor to the child's stdout.  If *@outfd is -1 on
+ * entry, then a pipe will be created and returned in this variable when
+ * the child is run.  Otherwise, *@outfd is used as the output.
  */
 void
 virCommandSetOutputFD(virCommandPtr cmd, int *outfd)
@@ -1259,8 +1384,15 @@ virCommandSetOutputFD(virCommandPtr cmd, int *outfd)
 }
 
 
-/*
- * Attach a file descriptor to the child's stderr
+/**
+ * virCommandSetErrorFD:
+ * @cmd: the command to modify
+ * @errfd: location of error fd
+ *
+ * Attach a file descriptor to the child's stderr.  If *@errfd is -1 on
+ * entry, then a pipe will be created and returned in this variable when
+ * the child is run.  Otherwise, *@errfd is used for error collection,
+ * and may be the same as outfd given to virCommandSetOutputFD().
  */
 void
 virCommandSetErrorFD(virCommandPtr cmd, int *errfd)
@@ -1278,10 +1410,18 @@ virCommandSetErrorFD(virCommandPtr cmd, int *errfd)
 }
 
 
-/*
+/**
+ * virCommandSetPreExecHook:
+ * @cmd: the command to modify
+ * @hook: the hook to run
+ * @opaque: argument to pass to the hook
+ *
  * Run HOOK(OPAQUE) in the child as the last thing before changing
  * directories, dropping capabilities, and executing the new process.
  * Force the child to fail if HOOK does not return zero.
+ *
+ * Since @hook runs in the child, it should be careful to avoid
+ * any functions that are not async-signal-safe.
  */
 void
 virCommandSetPreExecHook(virCommandPtr cmd, virExecHook hook, void *opaque)
@@ -1299,7 +1439,11 @@ virCommandSetPreExecHook(virCommandPtr cmd, virExecHook hook, void *opaque)
 }
 
 
-/*
+/**
+ * virCommandWriteArgLog:
+ * @cmd: the command to log
+ * @logfd: where to log the results
+ *
  * Call after adding all arguments and environment settings, but before
  * Run/RunAsync, to immediately output the environment and arguments of
  * cmd to logfd.  If virCommandRun cannot succeed (because of an
@@ -1337,7 +1481,10 @@ virCommandWriteArgLog(virCommandPtr cmd, int logfd)
 }
 
 
-/*
+/**
+ * virCommandToString:
+ * @cmd: the command to convert
+ *
  * Call after adding all arguments and environment settings, but before
  * Run/RunAsync, to return a string representation of the environment and
  * arguments of cmd.  If virCommandRun cannot succeed (because of an
@@ -1382,10 +1529,13 @@ virCommandToString(virCommandPtr cmd)
 }
 
 
-/*
+/**
+ * virCommandTranslateStatus:
+ * @status: child exit status to translate
+ *
  * Translate an exit status into a malloc'd string.  Generic helper
- * for virCommandRun, virCommandWait, and virPidWait status argument,
- * as well as raw waitpid and older virRun status.
+ * for virCommandRun(), virCommandWait(), virRun(), and virPidWait()
+ * status argument, as well as raw waitpid().
  */
 char *
 virCommandTranslateStatus(int status)
@@ -1551,10 +1701,13 @@ cleanup:
     return ret;
 }
 
-/*
+/**
+ * virCommandExec:
+ * @cmd: command to run
+ *
  * Exec the command, replacing the current process. Meant to be called
- * after already forking / cloning, so does not attempt to daemonize or
- * preserve any FDs.
+ * in the hook after already forking / cloning, so does not attempt to
+ * daemonize or preserve any FDs.
  *
  * Returns -1 on any error executing the command.
  * Will not return on success.
@@ -1587,11 +1740,16 @@ int virCommandExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
 }
 #endif
 
-/*
+/**
+ * virCommandRun:
+ * @cmd: command to run
+ * @exitstatus: optional status collection
+ *
  * Run the command and wait for completion.
  * Returns -1 on any error executing the
  * command. Returns 0 if the command executed,
- * with the exit status set
+ * with the exit status set.  If @exitstatus is NULL, then the
+ * child must exit with status 0 for this to succeed.
  */
 int
 virCommandRun(virCommandPtr cmd, int *exitstatus)
@@ -1803,7 +1961,11 @@ virCommandHook(void *data)
 }
 
 
-/*
+/**
+ * virCommandRunAsync:
+ * @cmd: command to start
+ * @pid: optional variable to track child pid
+ *
  * Run the command asynchronously
  * Returns -1 on any error executing the
  * command. Returns 0 if the command executed.
@@ -1909,11 +2071,16 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 }
 
 
-/*
+/**
+ * virPidWait:
+ * @pid: child to wait on
+ * @exitstatus: optional status collection
+ *
  * Wait for a child process to complete.
  * Return -1 on any error waiting for
  * completion. Returns 0 if the command
- * finished with the exit status set
+ * finished with the exit status set.  If @exitstatus is NULL, then the
+ * child must exit with status 0 for this to succeed.
  */
 int
 virPidWait(pid_t pid, int *exitstatus)
@@ -1951,11 +2118,16 @@ virPidWait(pid_t pid, int *exitstatus)
     return 0;
 }
 
-/*
- * Wait for the async command to complete.
- * Return -1 on any error waiting for
+/**
+ * virCommandWait:
+ * @cmd: command to wait on
+ * @exitstatus: optional status collection
+ *
+ * Wait for the command previously started with virCommandRunAsync()
+ * to complete. Return -1 on any error waiting for
  * completion. Returns 0 if the command
- * finished with the exit status set
+ * finished with the exit status set.  If @exitstatus is NULL, then the
+ * child must exit with status 0 for this to succeed.
  */
 int
 virCommandWait(virCommandPtr cmd, int *exitstatus)
@@ -2006,11 +2178,15 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
 
 
 #ifndef WIN32
-/*
+/**
+ * virPidAbort:
+ * @pid: child process to kill
+ *
  * Abort a child process if PID is positive and that child is still
  * running, without issuing any errors or affecting errno.  Designed
  * for error paths where some but not all paths to the cleanup code
- * might have started the child process.
+ * might have started the child process.  If @pid is 0 or negative,
+ * this does nothing.
  */
 void
 virPidAbort(pid_t pid)
@@ -2063,7 +2239,10 @@ cleanup:
     errno = saved_errno;
 }
 
-/*
+/**
+ * virCommandAbort:
+ * @cmd: command to abort
+ *
  * Abort an async command if it is running, without issuing
  * any errors or affecting errno.  Designed for error paths
  * where some but not all paths to the cleanup code might
@@ -2096,6 +2275,15 @@ virCommandAbort(virCommandPtr cmd ATTRIBUTE_UNUSED)
 #endif
 
 
+/**
+ * virCommandRequireHandshake:
+ * @cmd: command to modify
+ *
+ * Request that the child perform a handshake with
+ * the parent when the hook function has completed
+ * execution. The child will not exec() until the
+ * parent has notified
+ */
 void virCommandRequireHandshake(virCommandPtr cmd)
 {
     if (!cmd || cmd->has_error)
@@ -2125,6 +2313,13 @@ void virCommandRequireHandshake(virCommandPtr cmd)
     cmd->handshake = true;
 }
 
+/**
+ * virCommandHandshakeWait:
+ * @cmd: command to wait on
+ *
+ * Wait for the child to complete execution of its
+ * hook function.  To be called in the parent.
+ */
 int virCommandHandshakeWait(virCommandPtr cmd)
 {
     char c;
@@ -2178,6 +2373,13 @@ int virCommandHandshakeWait(virCommandPtr cmd)
     return 0;
 }
 
+/**
+ * virCommandHandshakeNotify:
+ * @cmd: command to resume
+ *
+ * Notify the child that it is OK to exec() the
+ * real binary now.  To be called in the parent.
+ */
 int virCommandHandshakeNotify(virCommandPtr cmd)
 {
     char c = '1';
@@ -2208,10 +2410,13 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
 }
 
 
-/*
+/**
+ * virCommandFree:
+ * @cmd: optional command to free
+ *
  * Release all resources.  The only exception is that if you called
  * virCommandRunAsync with a non-null pid, then the asynchronous child
- * is not reaped, and you must call virPidWait() yourself.
+ * is not reaped, and you must call virPidWait() or virPidAbort() yourself.
  */
 void
 virCommandFree(virCommandPtr cmd)
