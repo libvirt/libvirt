@@ -27,9 +27,9 @@
   # but may constitute a security risk. If your environment does not require
   # the use of sound in your VMs, feel free to comment out or prepend 'deny' to
   # the rules for files in /dev.
-  /dev/shm/ r,
-  /dev/shm/pulse-shm* r,
-  /dev/shm/pulse-shm* rwk,
+  /{dev,run}/shm r,
+  /{dev,run}/shmpulse-shm* r,
+  /{dev,run}/shmpulse-shm* rwk,
   /dev/snd/* rw,
   capability ipc_lock,
   # 'kill' is not required for sound and is a security risk. Do not enable

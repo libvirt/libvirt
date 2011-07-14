@@ -1166,6 +1166,8 @@ main(int argc, char **argv)
                               LOCALSTATEDIR, ctl->def->name);
             virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
                               LOCALSTATEDIR, ctl->def->name);
+            virBufferAsprintf(&buf, "  \"/run/libvirt/**/%s.pid\" rwk,\n",
+                              ctl->def->name);
             if (ctl->files)
                 virBufferAdd(&buf, ctl->files, -1);
         }
