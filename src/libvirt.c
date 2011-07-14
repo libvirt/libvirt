@@ -4293,6 +4293,15 @@ error:
  * different processors even with the same architecture, or between
  * different types of hypervisor.
  *
+ * If the hypervisor supports it, @dxml can be used to alter
+ * host-specific portions of the domain XML that will be used on
+ * the destination.  For example, it is possible to alter the
+ * backing filename that is associated with a disk device, in order
+ * to account for naming differences between source and destination
+ * in accessing the underlying storage.  The migration will fail
+ * if @dxml would cause any guest-visible changes.  Pass NULL
+ * if no changes are needed to the XML between source and destination.
+ *
  * Returns the new domain object if the migration was successful,
  *   or NULL in case of error.  Note that the new domain object
  *   exists in the scope of the destination connection (dconn).
