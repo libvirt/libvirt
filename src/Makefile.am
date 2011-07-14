@@ -206,18 +206,20 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 # With pdwtags 1.8, --verbose output includes separators like these:
 # /* 93 */
 # /* <0> (null):0 */
-# whereas with pdwtags 1.3, they look like this:
+# with the second line omitted for intrinsic types.
+# Whereas with pdwtags 1.3, they look like this:
 # /* <2d2> /usr/include/libio.h:180 */
-# The concatenation of the following regexps matches both cases.
-r1 = (?:/\* \d+ \*/\n)?
+# The alternation of the following regexps matches both cases.
+r1 = /\* \d+ \*/
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
 
 PDWTAGS = \
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
 	  pdwtags --verbose $(<:.lo=.$(OBJEXT))				\
 	    | perl -0777 -n						\
-		-e 'foreach my $$p (split m!\n\n$(r1)$(r2)\n!) {'	\
-		-e '  if ($$p =~ /^struct (remote_|qemu_|virNet)/) {'	\
+		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {'	\
+		-e '  if ($$p =~ /^(struct|enum) (remote_|qemu_|virNet)/ ||' \
+		-e '      $$p =~ /^enum {/) {' \
 		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
 		-e '    $$p =~ s!\s+\n!\n!sg;'				\
 		-e '    $$p =~ s!\s+$$!!;'				\
