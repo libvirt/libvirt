@@ -104,7 +104,7 @@ web: $(dot_html) html/index.html devhelp/index.html
 todo.html.in: todo.pl
 	if [ -f  todo.cfg ]; then \
 		echo "Generating $@"; \
-		$(PERL) $(srcdir)/$< > $@ \
+		$(PERL) $< > $@ \
 		|| { rm $@ && exit 1; }; \
 	else \
 		echo "Stubbing $@"; \
