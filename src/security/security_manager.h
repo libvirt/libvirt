@@ -51,50 +51,52 @@ const char *virSecurityManagerGetModel(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr);
 
 int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
-                                        virDomainObjPtr vm,
+                                        virDomainDefPtr def,
                                         virDomainDiskDefPtr disk);
 int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
-                                           virDomainObjPtr vm);
+                                           virDomainDefPtr vm);
 int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
-                                     virDomainObjPtr vm);
+                                     virDomainDefPtr def);
 int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
-                                       virDomainObjPtr vm);
+                                       virDomainDefPtr def);
 int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
-                                    virDomainObjPtr vm,
+                                    virDomainDefPtr def,
                                     virDomainDiskDefPtr disk);
 int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
-                                          virDomainObjPtr vm,
+                                          virDomainDefPtr def,
                                           virDomainHostdevDefPtr dev);
 int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
-                                      virDomainObjPtr vm,
+                                      virDomainDefPtr def,
                                       virDomainHostdevDefPtr dev);
 int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
-                                         virDomainObjPtr vm,
+                                         virDomainDefPtr def,
                                          const char *savefile);
 int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                             virDomainObjPtr vm,
+                                             virDomainDefPtr def,
                                              const char *savefile);
 int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
-                               virDomainObjPtr sec);
+                               virDomainDefPtr sec);
 int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
-                                   virDomainObjPtr sec);
+                                   virDomainDefPtr sec,
+                                   pid_t pid);
 int virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
-                                   virDomainObjPtr sec);
+                                   virDomainDefPtr sec);
 int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
-                                  virDomainObjPtr sec,
+                                  virDomainDefPtr sec,
                                   const char *stdin_path);
 int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
-                                      virDomainObjPtr vm,
+                                      virDomainDefPtr def,
                                       int migrated);
 int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
-                                      virDomainObjPtr vm,
+                                      virDomainDefPtr def,
+                                      pid_t pid,
                                       virSecurityLabelPtr sec);
 int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
-                                      virDomainObjPtr vm);
+                                      virDomainDefPtr def);
 int virSecurityManagerVerify(virSecurityManagerPtr mgr,
                              virDomainDefPtr def);
 int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
-                                      virDomainObjPtr vm,
+                                      virDomainDefPtr def,
                                       int fd);
 
 #endif /* VIR_SECURITY_MANAGER_H__ */

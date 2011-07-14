@@ -3087,7 +3087,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     }
     unlink_tmp = true;
 
-    virSecurityManagerSetSavedStateLabel(qemu_driver->securityManager, vm, tmp);
+    virSecurityManagerSetSavedStateLabel(qemu_driver->securityManager, vm->def, tmp);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorScreendump(priv->mon, tmp) < 0) {
@@ -3766,7 +3766,7 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
      */
     if (virDomainObjIsActive(vm)) {
         if (virSecurityManagerGetProcessLabel(driver->securityManager,
-                                              vm, seclabel) < 0) {
+                                              vm->def, vm->pid, seclabel) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             "%s", _("Failed to get security label"));
             goto cleanup;
@@ -4074,7 +4074,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 out:
     virCommandFree(cmd);
     if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
-                                                 vm, path) < 0)
+                                                 vm->def, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
 
     return ret;
@@ -8352,7 +8352,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto endjob;
     }
 
-    virSecurityManagerSetSavedStateLabel(qemu_driver->securityManager, vm, tmp);
+    virSecurityManagerSetSavedStateLabel(qemu_driver->securityManager, vm->def, tmp);
 
     priv = vm->privateData;
     qemuDomainObjEnterMonitor(driver, vm);
@@ -9834,7 +9834,7 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
 
     if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
         goto cleanup;
-    if (virSecurityManagerSetImageLabel(driver->securityManager, vm,
+    if (virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
                                         disk) < 0) {
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
             VIR_WARN("Unable to release lock on %s", source);
