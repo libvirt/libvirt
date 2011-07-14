@@ -67,6 +67,7 @@ struct _virNetTLSSession {
 
     bool handshakeComplete;
 
+    bool isServer;
     char *hostname;
     gnutls_session_t session;
     virNetTLSSessionWriteFunc writeFunc;
@@ -94,6 +95,134 @@ virNetTLSContextCheckCertFile(const char *type, const char *file, bool allowMiss
 static void virNetTLSLog(int level, const char *str) {
     VIR_DEBUG("%d %s", level, str);
 }
+
+
+static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
+                                                         const char *certFile)
+{
+    gnutls_datum_t data;
+    gnutls_x509_crt_t cert = NULL;
+    char *buf = NULL;
+    int ret = -1;
+    time_t now;
+
+    if ((now = time(NULL)) == ((time_t)-1)) {
+        virReportSystemError(errno, "%s",
+                             _("cannot get current time"));
+        goto cleanup;
+    }
+
+    if (gnutls_x509_crt_init(&cert) < 0) {
+        virNetError(VIR_ERR_SYSTEM_ERROR, "%s",
+                    _("Unable to initialize certificate"));
+        goto cleanup;
+    }
+
+    if (virFileReadAll(certFile, (1<<16), &buf) < 0)
+        goto cleanup;
+
+    data.data = (unsigned char *)buf;
+    data.size = strlen(buf);
+
+    if (gnutls_x509_crt_import(cert, &data, GNUTLS_X509_FMT_PEM) < 0) {
+        virNetError(VIR_ERR_SYSTEM_ERROR, isServer ?
+                    _("Unable to import server certificate %s") :
+                    _("Unable to import client certificate %s"),
+                    certFile);
+        goto cleanup;
+    }
+
+    if (gnutls_x509_crt_get_expiration_time(cert) < now) {
+        virNetError(VIR_ERR_SYSTEM_ERROR, isServer ?
+                    _("The server certificate %s has expired") :
+                    _("The client certificate %s has expired"),
+                    certFile);
+        goto cleanup;
+    }
+
+    if (gnutls_x509_crt_get_activation_time(cert) > now) {
+        virNetError(VIR_ERR_SYSTEM_ERROR, isServer ?
+                    _("The server certificate %s is not yet active") :
+                    _("The client certificate %s is not yet active"),
+                    certFile);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (ret != 0) {
+        gnutls_x509_crt_deinit(cert);
+        cert = NULL;
+    }
+    VIR_FREE(buf);
+    return cert;
+}
+
+
+static int virNetTLSContextSanityCheckCredentials(bool isServer,
+                                                  const char *cacertFile,
+                                                  const char *certFile)
+{
+    gnutls_x509_crt_t cert = NULL;
+    gnutls_x509_crt_t cacert = NULL;
+    int ret = -1;
+    unsigned int status;
+
+    if (access(certFile, R_OK) == 0) {
+        if (!(cert = virNetTLSContextSanityCheckCert(isServer, certFile)))
+            goto cleanup;
+    }
+    if (access(cacertFile, R_OK) == 0) {
+        if (!(cacert = virNetTLSContextSanityCheckCert(isServer, cacertFile)))
+            goto cleanup;
+    }
+
+    if (cert && cacert) {
+        if (gnutls_x509_crt_list_verify(&cert, 1,
+                                        &cacert, 1,
+                                        NULL, 0,
+                                        0, &status) < 0) {
+            virNetError(VIR_ERR_SYSTEM_ERROR, "%s", isServer ?
+                        _("Unable to verify server certificate against CA certificate") :
+                        _("Unable to verify client certificate against CA certificate"));
+            goto cleanup;
+        }
+
+        if (status != 0) {
+            const char *reason = _("Invalid certificate");
+
+            if (status & GNUTLS_CERT_INVALID)
+                reason = _("The certificate is not trusted.");
+
+            if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
+                reason = _("The certificate hasn't got a known issuer.");
+
+            if (status & GNUTLS_CERT_REVOKED)
+                reason = _("The certificate has been revoked.");
+
+#ifndef GNUTLS_1_0_COMPAT
+            if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
+                reason = _("The certificate uses an insecure algorithm");
+#endif
+
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Our own certificate %s failed validation against %s: %s"),
+                        certFile, cacertFile, reason);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    if (cert)
+        gnutls_x509_crt_deinit(cert);
+    if (cacert)
+        gnutls_x509_crt_deinit(cacert);
+    return ret;
+}
+
 
 static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
                                            bool isServer,
@@ -216,6 +345,10 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
                     gnutls_strerror(err));
         goto error;
     }
+
+    if (requireValidCert &&
+        virNetTLSContextSanityCheckCredentials(isServer, cacert, cert) < 0)
+        goto error;
 
     if (virNetTLSContextLoadCredentials(ctxt, isServer, cacert, cacrl, cert, key) < 0)
         goto error;
@@ -574,15 +707,21 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
         }
 
         if (gnutls_x509_crt_get_expiration_time(cert) < now) {
-            virNetError(VIR_ERR_SYSTEM_ERROR, "%s",
-                        _("The client certificate has expired"));
+            /* Warning is reversed from what you expect, since with
+             * this code it is the Server checking the client and
+             * vica-versa */
+            virNetError(VIR_ERR_SYSTEM_ERROR, "%s", sess->isServer ?
+                        _("The client certificate has expired") :
+                        _("The server certificate has expired"));
             gnutls_x509_crt_deinit(cert);
             goto authdeny;
         }
 
         if (gnutls_x509_crt_get_activation_time(cert) > now) {
-            virNetError(VIR_ERR_SYSTEM_ERROR, "%s",
-                        _("The client certificate is not yet active"));
+            /* client/server order reversed. see above */
+            virNetError(VIR_ERR_SYSTEM_ERROR, "%s", sess->isServer ?
+                        _("The client certificate is not yet active") :
+                        _("The server certificate is not yet active"));
             gnutls_x509_crt_deinit(cert);
             goto authdeny;
         }
@@ -755,6 +894,8 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
                                        virNetTLSSessionPush);
     gnutls_transport_set_pull_function(sess->session,
                                        virNetTLSSessionPull);
+
+    sess->isServer = ctxt->isServer;
 
     return sess;
 
