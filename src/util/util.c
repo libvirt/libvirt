@@ -763,7 +763,6 @@ int
 virFileOpenAs(const char *path, int openflags, mode_t mode,
               uid_t uid, gid_t gid, unsigned int flags)
 {
-    struct stat st;
     pid_t pid;
     int waitret, status, ret = 0;
     int fd = -1;
@@ -830,6 +829,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
             /* fall back to the simpler method, which works better in
              * some cases */
             VIR_FORCE_CLOSE(fd);
+            flags &= ~VIR_FILE_OPEN_AS_UID;
             return virFileOpenAsNoFork(path, openflags, mode, uid, gid, flags);
         }
         if (!ret)
@@ -854,36 +854,11 @@ parenterror:
         ret = -errno;
         goto childerror;
     }
-    if ((fd = open(path, openflags, mode)) < 0) {
-        ret = -errno;
-        if (ret != -EACCES) {
-            /* in case of EACCES, the parent will retry */
-            virReportSystemError(errno,
-                                 _("child failed to create file '%s'"),
-                                 path);
-        }
+
+    ret = virFileOpenAsNoFork(path, openflags, mode, uid, gid, flags);
+    if (ret < 0)
         goto childerror;
-    }
-    if (fstat(fd, &st) == -1) {
-        ret = -errno;
-        virReportSystemError(errno, _("stat of '%s' failed"), path);
-        goto childerror;
-    }
-    if ((st.st_gid != gid)
-        && (fchown(fd, -1, gid) < 0)) {
-        ret = -errno;
-        virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
-                             path, (unsigned int) uid, (unsigned int) gid);
-        goto childerror;
-    }
-    if ((flags & VIR_FILE_OPEN_FORCE_PERMS)
-        && (fchmod(fd, mode) < 0)) {
-        ret = -errno;
-        virReportSystemError(errno,
-                             _("cannot set mode of '%s' to %04o"),
-                             path, mode);
-        goto childerror;
-    }
+    fd = ret;
 
     do {
         ret = sendfd(pair[1], fd);
