@@ -156,6 +156,7 @@ useless_free_options =				\
   --name=virSecretDefFree			\
   --name=virStorageEncryptionFree		\
   --name=virStorageEncryptionSecretFree		\
+  --name=virStorageFileFreeMetadata		\
   --name=virStoragePoolDefFree			\
   --name=virStoragePoolObjFree			\
   --name=virStoragePoolSourceFree		\

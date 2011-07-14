@@ -61,8 +61,14 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
                              unsigned long long *capacity,
                              virStorageEncryptionPtr *encryption)
 {
-    int fd, ret;
-    virStorageFileMetadata meta;
+    int fd = -1;
+    int ret = -1;
+    virStorageFileMetadata *meta;
+
+    if (VIR_ALLOC(meta) < 0) {
+        virReportOOMError();
+        return ret;
+    }
 
     *backingStore = NULL;
     *backingStoreFormat = VIR_STORAGE_FILE_AUTO;
@@ -71,36 +77,33 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
 
     if ((ret = virStorageBackendVolOpenCheckMode(target->path,
                                         VIR_STORAGE_VOL_FS_REFRESH_FLAGS)) < 0)
-        return ret; /* Take care to propagate ret, it is not always -1 */
+        goto error; /* Take care to propagate ret, it is not always -1 */
     fd = ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd,
                                                       allocation,
                                                       capacity)) < 0) {
-        VIR_FORCE_CLOSE(fd);
-        return ret;
+        goto error;
     }
 
-    memset(&meta, 0, sizeof(meta));
-
     if ((target->format = virStorageFileProbeFormatFromFD(target->path, fd)) < 0) {
-        VIR_FORCE_CLOSE(fd);
-        return -1;
+        ret = -1;
+        goto error;
     }
 
     if (virStorageFileGetMetadataFromFD(target->path, fd,
                                         target->format,
-                                        &meta) < 0) {
-        VIR_FORCE_CLOSE(fd);
-        return -1;
+                                        meta) < 0) {
+        ret = -1;
+        goto error;
     }
 
     VIR_FORCE_CLOSE(fd);
 
-    if (meta.backingStore) {
-        *backingStore = meta.backingStore;
-        meta.backingStore = NULL;
-        if (meta.backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
+    if (meta->backingStore) {
+        *backingStore = meta->backingStore;
+        meta->backingStore = NULL;
+        if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
             if ((ret = virStorageFileProbeFormat(*backingStore)) < 0) {
                 /* If the backing file is currently unavailable, only log an error,
                  * but continue. Returning -1 here would disable the whole storage
@@ -114,18 +117,17 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
                 ret = 0;
             }
         } else {
-            *backingStoreFormat = meta.backingStoreFormat;
+            *backingStoreFormat = meta->backingStoreFormat;
             ret = 0;
         }
     } else {
-        VIR_FREE(meta.backingStore);
         ret = 0;
     }
 
-    if (capacity && meta.capacity)
-        *capacity = meta.capacity;
+    if (capacity && meta->capacity)
+        *capacity = meta->capacity;
 
-    if (encryption != NULL && meta.encrypted) {
+    if (encryption != NULL && meta->encrypted) {
         if (VIR_ALLOC(*encryption) < 0) {
             virReportOOMError();
             goto cleanup;
@@ -147,11 +149,17 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
          */
     }
 
+    virStorageFileFreeMetadata(meta);
+
     return ret;
 
+error:
+    VIR_FORCE_CLOSE(fd);
+
 cleanup:
-    VIR_FREE(*backingStore);
-    return -1;
+    virStorageFileFreeMetadata(meta);
+    return ret;
+
 }
 
 #if WITH_STORAGE_FS

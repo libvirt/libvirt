@@ -11049,9 +11049,15 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     int ret = -1;
     size_t depth = 0;
     char *nextpath = NULL;
+    virStorageFileMetadata *meta;
 
     if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
+
+    if (VIR_ALLOC(meta) < 0) {
+        virReportOOMError();
+        return ret;
+    }
 
     if (disk->driverType) {
         const char *formatStr = disk->driverType;
@@ -11078,7 +11084,6 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     paths = virHashCreate(5, NULL);
 
     do {
-        virStorageFileMetadata meta;
         const char *path = nextpath ? nextpath : disk->src;
         int fd;
 
@@ -11106,7 +11111,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
             }
         }
 
-        if (virStorageFileGetMetadataFromFD(path, fd, format, &meta) < 0) {
+        if (virStorageFileGetMetadataFromFD(path, fd, format, meta) < 0) {
             VIR_FORCE_CLOSE(fd);
             goto cleanup;
         }
@@ -11120,16 +11125,18 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
             goto cleanup;
 
         depth++;
-        nextpath = meta.backingStore;
+        VIR_FREE(nextpath);
+        nextpath = meta->backingStore;
+        meta->backingStore = NULL;
 
         /* Stop iterating if we reach a non-file backing store */
-        if (nextpath && !meta.backingStoreIsFile) {
+        if (nextpath && !meta->backingStoreIsFile) {
             VIR_DEBUG("Stopping iteration on non-file backing store: %s",
                       nextpath);
             break;
         }
 
-        format = meta.backingStoreFormat;
+        format = meta->backingStoreFormat;
 
         if (format == VIR_STORAGE_FILE_AUTO &&
             !allowProbing)
@@ -11145,6 +11152,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
 cleanup:
     virHashFree(paths);
     VIR_FREE(nextpath);
+    virStorageFileFreeMetadata(meta);
 
     return ret;
 }

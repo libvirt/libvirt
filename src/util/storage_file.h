@@ -70,6 +70,8 @@ int virStorageFileGetMetadataFromFD(const char *path,
                                     int format,
                                     virStorageFileMetadata *meta);
 
+void virStorageFileFreeMetadata(virStorageFileMetadata *meta);
+
 enum {
     VIR_STORAGE_FILE_SHFS_NFS = (1 << 0),
     VIR_STORAGE_FILE_SHFS_GFS2 = (1 << 1),
