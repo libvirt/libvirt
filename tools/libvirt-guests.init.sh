@@ -43,6 +43,7 @@ ON_BOOT=start
 ON_SHUTDOWN=suspend
 SHUTDOWN_TIMEOUT=0
 START_DELAY=0
+BYPASS_CACHE=0
 
 test -f "$sysconfdir"/sysconfig/libvirt-guests &&
     . "$sysconfdir"/sysconfig/libvirt-guests
@@ -143,6 +144,8 @@ start() {
     fi
 
     isfirst=true
+    bypass=
+    test "x$BYPASS_CACHE" = x0 || bypass=--bypass-cache
     while read uri list; do
         configured=false
         set -f
@@ -172,7 +175,8 @@ start() {
                     else
                         sleep $START_DELAY
                     fi
-                    retval run_virsh "$uri" start "$name" >/dev/null && \
+                    retval run_virsh "$uri" start $bypass "$name" \
+                        >/dev/null && \
                     gettext "done"; echo
                 fi
             fi
@@ -190,8 +194,10 @@ suspend_guest()
 
     name=$(guest_name "$uri" "$guest")
     label=$(eval_gettext "Suspending \$name: ")
+    bypass=
+    test "x$BYPASS_CACHE" = x0 || bypass=--bypass-cache
     printf %s "$label"
-    run_virsh "$uri" managedsave "$guest" >/dev/null &
+    run_virsh "$uri" managedsave $bypass "$guest" >/dev/null &
     virsh_pid=$!
     while true; do
         sleep 1
