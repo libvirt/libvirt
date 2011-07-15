@@ -9615,8 +9615,18 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 }
 
 
-char *virDomainDefFormat(virDomainDefPtr def,
-                         unsigned int flags)
+#define DUMPXML_FLAGS                           \
+    (VIR_DOMAIN_XML_SECURE |                    \
+     VIR_DOMAIN_XML_INACTIVE |                  \
+     VIR_DOMAIN_XML_UPDATE_CPU)
+
+verify((VIR_DOMAIN_XML_INTERNAL_STATUS & DUMPXML_FLAGS) == 0);
+
+/* This internal version can accept VIR_DOMAIN_XML_INTERNAL_STATUS,
+ * whereas the public version cannot.  */
+static char *
+virDomainDefFormatInternal(virDomainDefPtr def,
+                           unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
@@ -9624,9 +9634,7 @@ char *virDomainDefFormat(virDomainDefPtr def,
     const char *type = NULL;
     int n, allones = 1;
 
-    virCheckFlags(VIR_DOMAIN_XML_SECURE |
-                  VIR_DOMAIN_XML_INACTIVE |
-                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
+    virCheckFlags(DUMPXML_FLAGS | VIR_DOMAIN_XML_INTERNAL_STATUS, NULL);
 
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10055,6 +10063,13 @@ char *virDomainDefFormat(virDomainDefPtr def,
     return NULL;
 }
 
+char *
+virDomainDefFormat(virDomainDefPtr def, unsigned int flags)
+{
+    virCheckFlags(DUMPXML_FLAGS, NULL);
+    return virDomainDefFormatInternal(def, flags);
+}
+
 
 static char *virDomainObjFormat(virCapsPtr caps,
                                 virDomainObjPtr obj,
@@ -10082,8 +10097,7 @@ static char *virDomainObjFormat(virCapsPtr caps,
         ((caps->privateDataXMLFormat)(&buf, obj->privateData)) < 0)
         goto error;
 
-    if (!(config_xml = virDomainDefFormat(obj->def,
-                                          flags)))
+    if (!(config_xml = virDomainDefFormatInternal(obj->def, flags)))
         goto error;
 
     virBufferAdd(&buf, config_xml, strlen(config_xml));
