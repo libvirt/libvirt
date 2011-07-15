@@ -634,7 +634,7 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
     }
     if (flags & VIR_LOCK_MANAGER_RESOURCE_SHARED) {
         virLockError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                     _("Sharable leases are not supported"));
+                     _("Shareable leases are not supported"));
         return -1;
     }
 
