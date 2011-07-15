@@ -8,6 +8,14 @@
         connect to a VMware vCenter 2.5/4.x (VPX).
     </p>
 
+    <h2><a name="project">Project Links</a></h2>
+
+    <ul>
+      <li>
+        The <a href="http://www.vmware.com/">VMware ESX and GSX</a>
+        hypervisors
+      </li>
+    </ul>
 
     <h2><a name="prereq">Deployment pre-requisites</a></h2>
     <p>

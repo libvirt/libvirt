@@ -1,14 +1,26 @@
 <html>
   <body>
-    <h1>QEMU/KVM hypervisor driver</h1>
+    <h1>KVM/QEMU hypervisor driver</h1>
 
     <ul id="toc"></ul>
 
     <p>
-      The libvirt QEMU driver can manage any QEMU emulator from version 0.8.1
-      or later. It can also manage anything that provides the same QEMU command
-      line syntax and monitor interaction. This includes KVM, and Xenner.
+      The libvirt KVM/QEMU driver can manage any QEMU emulator from
+      version 0.8.1 or later. It can also manage Xenner, which
+      provides the same QEMU command line syntax and monitor
+      interaction.
     </p>
+
+    <h2><a name="project">Project Links</a></h2>
+
+    <ul>
+      <li>
+        The <a href="http://www.linux-kvm.org/">KVM</a> Linux
+        hypervisor
+      <li>
+        The <a href="http://wiki.qemu.org/Index.html">QEMU</a> emulator
+      </li>
+    </ul>
 
     <h2><a name="prereq">Deployment pre-requisites</a></h2>
 

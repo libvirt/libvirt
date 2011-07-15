@@ -6,6 +6,15 @@
         from version 2.2 onwards.
     </p>
 
+    <h2><a name="project">Project Links</a></h2>
+
+    <ul>
+      <li>
+        The <a href="http://www.virtualbox.org/">VirtualBox</a>
+        hypervisor
+      </li>
+    </ul>
+
     <h2>Connections to VirtualBox driver</h2>
 
     <p>

@@ -9,6 +9,15 @@
       on any Xen release from 3.0.1 onwards.
     </p>
 
+    <h2><a name="project">Project Links</a></h2>
+
+    <ul>
+      <li>
+        The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a>
+        hypervisor on Linux and Solaris hosts
+      </li>
+    </ul>
+
     <h2><a name="prereq">Deployment pre-requisites</a></h2>
 
     <p>

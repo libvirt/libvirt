@@ -35,32 +35,32 @@
 
     <ul>
       <li>
-        The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a> hypervisor
+        The <a href="http://libvirt.org/drvqemu.html">KVM/QEMU</a> Linux hypervisor
+      </li>
+      <li>
+        The <a href="http://libvirt.org/drvxen.html">Xen</a> hypervisor
         on Linux and Solaris hosts.
       </li>
       <li>
-        The <a href="http://wiki.qemu.org/Index.html">QEMU</a> emulator
+        The <a href="http://libvirt.org/drvlxc.html">LXC</a> Linux container system
       </li>
       <li>
-        The <a href="http://www.linux-kvm.org/">KVM</a> Linux hypervisor
+        The <a href="http://libvirt.org/drvopenvz.html">OpenVZ</a> Linux container system
       </li>
       <li>
-        The <a href="http://lxc.sourceforge.net/">LXC</a> Linux container system
+        The <a href="http://libvirt.org/drvuml.html">User Mode Linux</a> paravirtualized kernel
       </li>
       <li>
-        The <a href="http://openvz.org/">OpenVZ</a> Linux container system
+        The <a href="http://libvirt.org/drvvbox.html">VirtualBox</a> hypervisor
       </li>
       <li>
-        The <a href="http://user-mode-linux.sourceforge.net/">User Mode Linux</a> paravirtualized kernel
+        The <a href="http://libvirt.org/drvesx.html">VMware ESX and GSX</a> hypervisors
       </li>
       <li>
-        The <a href="http://www.virtualbox.org/">VirtualBox</a> hypervisor
+        The <a href="http://libvirt.org/drvvmware.html">VMware Workstation and Player</a> hypervisors
       </li>
       <li>
-        The <a href="http://www.vmware.com/">VMware ESX and GSX</a> hypervisors
-      </li>
-      <li>
-        The <a href="http://www.vmware.com/">VMware Workstation and Player</a> hypervisors
+        Virtual networks using bridging, NAT, VEPA and VN-LINK.
       </li>
       <li>
         Storage on IDE/SCSI/USB disks, FibreChannel, LVM, iSCSI, NFS and filesystems

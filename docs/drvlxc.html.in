@@ -5,9 +5,17 @@
 The libvirt LXC driver manages "Linux Containers".  Containers are sets of processes
 with private namespaces which can (but don't always) look like separate machines, but
 do not have their own OS.  Here are two example configurations.  The first is a very
-light-weight "application container" which does not have it's own root image.  You would
-start it using
+light-weight "application container" which does not have its own root image.
 </p>
+
+    <h2><a name="project">Project Links</a></h2>
+
+    <ul>
+      <li>
+        The <a href="http://lxc.sourceforge.net/">LXC</a> Linux
+        container system
+      </li>
+    </ul>
 
 <h2>Cgroups Requirements</h2>
 
