@@ -98,6 +98,7 @@ static void virNetTLSLog(int level, const char *str) {
 
 
 static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
+                                                         bool isCA,
                                                          const char *certFile)
 {
     gnutls_datum_t data;
@@ -105,6 +106,14 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
     char *buf = NULL;
     int ret = -1;
     time_t now;
+    int status;
+    int i;
+    char *buffer = NULL;
+    size_t size;
+    unsigned int usage;
+
+    VIR_DEBUG("isServer %d isCA %d certFile %s",
+              isServer, isCA, certFile);
 
     if ((now = time(NULL)) == ((time_t)-1)) {
         virReportSystemError(errno, "%s",
@@ -148,6 +157,124 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
         goto cleanup;
     }
 
+    status = gnutls_x509_crt_get_basic_constraints(cert, NULL, NULL, NULL);
+    VIR_DEBUG("Cert %s basic constraints %d", certFile, status);
+
+    if (status > 0) { /* It is a CA cert */
+        if (!isCA) {
+            virNetError(VIR_ERR_SYSTEM_ERROR, isServer ?
+                        _("The certificate %s basic constraints show a CA, but we need one for a server") :
+                        _("The certificate %s basic constraints show a CA, but we need one for a client"),
+                        certFile);
+            goto cleanup;
+        }
+    } else if (status == 0) { /* It is not a CA cert */
+        if (isCA) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("The certificate %s basic constraints do not show a CA"),
+                        certFile);
+            goto cleanup;
+        }
+    } else if (status == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) { /* Missing basicConstraints */
+        if (isCA) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("The certificate %s is missing basic constraints for a CA"),
+                        certFile);
+            goto cleanup;
+        }
+    } else { /* General error */
+        virNetError(VIR_ERR_SYSTEM_ERROR,
+                    _("Unable to query certificate %s basic constraints %s"),
+                    certFile, gnutls_strerror(status));
+        goto cleanup;
+    }
+
+    status = gnutls_x509_crt_get_key_usage(cert, &usage, NULL);
+
+    VIR_DEBUG("Cert %s key usage status %d usage %d", certFile, status, usage);
+    if (status < 0) {
+        virNetError(VIR_ERR_SYSTEM_ERROR,
+                    _("Unable to query certificate %s basic constraints %s"),
+                    certFile, gnutls_strerror(status));
+        goto cleanup;
+    }
+
+    if (usage & GNUTLS_KEY_KEY_CERT_SIGN) {
+        if (!isCA) {
+            virNetError(VIR_ERR_SYSTEM_ERROR, isServer ?
+                        _("Certificate server usage is for certificate signing, but wanted a %s certificate") :
+                        _("Certificate client usage is for certificate signing, but wanted a %s certificate"),
+                        certFile);
+            goto cleanup;
+        }
+    } else {
+        if (isCA) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Certificate %s usage is for not certificate signing"),
+                        certFile);
+            goto cleanup;
+        }
+    }
+
+    for (i = 0 ; ; i++) {
+        size = 0;
+        status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, NULL);
+
+        if (status == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
+            VIR_DEBUG("No key purpose data available, skipping checks");
+            break;
+        }
+        if (status != GNUTLS_E_SHORT_MEMORY_BUFFER) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Unable to query certificate %s key purpose %s"),
+                        certFile, gnutls_strerror(status));
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(buffer, size) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, NULL);
+        if (status < 0) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Unable to query certificate %s key purpose %s"),
+                        certFile, gnutls_strerror(status));
+            goto cleanup;
+        }
+
+        VIR_DEBUG("Key purpose %d %s", status, buffer);
+        if (STREQ(buffer, GNUTLS_KP_TLS_WWW_SERVER)) {
+            if (isCA || !isServer) {
+                virNetError(VIR_ERR_SYSTEM_ERROR, isCA ?
+                            _("Certificate CA purpose is TLS server, but wanted a %s certificate") :
+                            _("Certificate TLS client purpose is TLS server, but wanted a %s certificate"),
+                            certFile);
+                goto cleanup;
+            }
+        } else if (STREQ(buffer, GNUTLS_KP_TLS_WWW_CLIENT)) {
+            if (isCA || isServer) {
+                virNetError(VIR_ERR_SYSTEM_ERROR, isCA ?
+                            _("Certificate CA purpose is TLS client, but wanted a %s certificate") :
+                            _("Certificate TLS server purpose is TLS client, but wanted a %s certificate"),
+                            certFile);
+                goto cleanup;
+            }
+        } else if (STRNEQ(buffer, GNUTLS_KP_ANY)) {
+            virNetError(VIR_ERR_SYSTEM_ERROR, (isCA ?
+                        _("Certificate CA purpose is wrong, wanted a %s certificate") :
+                        (isServer ?
+                         _("Certificate TLS server purpose is wrong, wanted a %s certificate") :
+                         _("Certificate TLS client purpose is wrong, wanted a %s certificate"))),
+                        certFile);
+            goto cleanup;
+        }
+
+        VIR_FREE(buffer);
+    }
+
+
     ret = 0;
 
 cleanup:
@@ -155,6 +282,7 @@ cleanup:
         gnutls_x509_crt_deinit(cert);
         cert = NULL;
     }
+    VIR_FREE(buffer);
     VIR_FREE(buf);
     return cert;
 }
@@ -170,11 +298,11 @@ static int virNetTLSContextSanityCheckCredentials(bool isServer,
     unsigned int status;
 
     if (access(certFile, R_OK) == 0) {
-        if (!(cert = virNetTLSContextSanityCheckCert(isServer, certFile)))
+        if (!(cert = virNetTLSContextSanityCheckCert(isServer, false, certFile)))
             goto cleanup;
     }
     if (access(cacertFile, R_OK) == 0) {
-        if (!(cacert = virNetTLSContextSanityCheckCert(isServer, cacertFile)))
+        if (!(cacert = virNetTLSContextSanityCheckCert(isServer, true, cacertFile)))
             goto cleanup;
     }
 
