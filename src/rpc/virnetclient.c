@@ -1117,8 +1117,10 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
         goto done;
     }
 
-    if (virNetClientIOHandleInput(client) < 0)
-        VIR_DEBUG("Something went wrong during async message processing");
+    if (virNetClientIOHandleInput(client) < 0) {
+        VIR_WARN("Something went wrong during async message processing");
+        virNetSocketRemoveIOCallback(sock);
+    }
 
 done:
     virNetClientUnlock(client);
