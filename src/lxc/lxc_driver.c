@@ -1227,22 +1227,26 @@ static int lxcVmTerminate(lxc_driver_t *driver,
         return -1;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0)
-        return -1;
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) == 0) {
+        rc = virCgroupKillPainfully(group);
+        if (rc < 0) {
+            virReportSystemError(-rc, "%s",
+                                 _("Failed to kill container PIDs"));
+            rc = -1;
+            goto cleanup;
+        }
+        if (rc == 1) {
+            lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Some container PIDs refused to die"));
+            rc = -1;
+            goto cleanup;
+        }
+    } else {
+        /* If cgroup doesn't exist, the VM pids must have already
+         * died and so we're just cleaning up stale state
+         */
+    }
 
-    rc = virCgroupKillPainfully(group);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("Failed to kill container PIDs"));
-        rc = -1;
-        goto cleanup;
-    }
-    if (rc == 1) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Some container PIDs refused to die"));
-        rc = -1;
-        goto cleanup;
-    }
     lxcVmCleanup(driver, vm, reason);
 
     rc = 0;
@@ -2049,32 +2053,24 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
     lxcDomainObjPrivatePtr priv;
 
     virDomainObjLock(vm);
+    VIR_DEBUG("Reconnect %d %d %d\n", vm->def->id, vm->pid, vm->state.state);
 
     priv = vm->privateData;
-    if ((priv->monitor = lxcMonitorClient(driver, vm)) < 0) {
-        goto cleanup;
-    }
-
-    /* Read pid from controller */
-    if ((virFileReadPid(lxc_driver->stateDir, vm->def->name, &vm->pid)) != 0) {
-        VIR_FORCE_CLOSE(priv->monitor);
-        goto cleanup;
-    }
 
     if (vm->pid != 0) {
         vm->def->id = vm->pid;
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNKNOWN);
 
+        if ((priv->monitor = lxcMonitorClient(driver, vm)) < 0)
+            goto error;
+
         if ((priv->monitorWatch = virEventAddHandle(
                  priv->monitor,
                  VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
                  lxcMonitorEvent,
-                 vm, NULL)) < 0) {
-            lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
-            virDomainAuditStop(vm, "failed");
-            goto cleanup;
-        }
+                 vm, NULL)) < 0)
+            goto error;
     } else {
         vm->def->id = -1;
         VIR_FORCE_CLOSE(priv->monitor);
@@ -2082,6 +2078,12 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 
 cleanup:
     virDomainObjUnlock(vm);
+    return;
+
+error:
+    lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+    virDomainAuditStop(vm, "failed");
+    goto cleanup;
 }
 
 
