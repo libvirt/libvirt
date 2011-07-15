@@ -10204,19 +10204,172 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {"target",  VSH_OT_DATA, VSH_OFLAG_REQ, N_("target of disk device")},
     {"driver",    VSH_OT_STRING, 0, N_("driver of disk device")},
     {"subdriver", VSH_OT_STRING, 0, N_("subdriver of disk device")},
+    {"cache",     VSH_OT_STRING, 0, N_("cache mode of disk device")},
     {"type",    VSH_OT_STRING, 0, N_("target device type")},
     {"mode",    VSH_OT_STRING, 0, N_("mode of device reading and writing")},
     {"persistent", VSH_OT_BOOL, 0, N_("persist disk attachment")},
     {"sourcetype", VSH_OT_STRING, 0, N_("type of source (block|file)")},
+    {"serial", VSH_OT_STRING, 0, N_("serial of disk device")},
+    {"shareable", VSH_OT_BOOL, 0, N_("shareable between domains")},
+    {"address", VSH_OT_STRING, 0, N_("address of disk device")},
     {NULL, 0, 0, NULL}
 };
+
+enum {
+    DISK_ADDR_TYPE_INVALID,
+    DISK_ADDR_TYPE_PCI,
+    DISK_ADDR_TYPE_SCSI,
+    DISK_ADDR_TYPE_IDE,
+};
+
+struct PCIAddress {
+    unsigned int domain;
+    unsigned int bus;
+    unsigned int slot;
+    unsigned int function;
+};
+
+struct SCSIAddress {
+    unsigned int controller;
+    unsigned int bus;
+    unsigned int unit;
+};
+
+struct IDEAddress {
+    unsigned int controller;
+    unsigned int bus;
+    unsigned int unit;
+};
+
+struct DiskAddress {
+    int type;
+    union {
+        struct PCIAddress pci;
+        struct SCSIAddress scsi;
+        struct IDEAddress ide;
+    } addr;
+};
+
+static int str2PCIAddress(const char *str, struct PCIAddress *pciAddr)
+{
+    char *domain, *bus, *slot, *function;
+
+    if (!pciAddr)
+        return -1;
+    if (!str)
+        return -1;
+
+    domain = (char *)str;
+
+    if (virStrToLong_ui(domain, &bus, 0, &pciAddr->domain) != 0)
+        return -1;
+
+    bus++;
+    if (virStrToLong_ui(bus, &slot, 0, &pciAddr->bus) != 0)
+        return -1;
+
+    slot++;
+    if (virStrToLong_ui(slot, &function, 0, &pciAddr->slot) != 0)
+        return -1;
+
+    function++;
+    if (virStrToLong_ui(function, NULL, 0, &pciAddr->function) != 0)
+        return -1;
+
+    return 0;
+}
+
+static int str2SCSIAddress(const char *str, struct SCSIAddress *scsiAddr)
+{
+    char *controller, *bus, *unit;
+
+    if (!scsiAddr)
+        return -1;
+    if (!str)
+        return -1;
+
+    controller = (char *)str;
+
+    if (virStrToLong_ui(controller, &bus, 0, &scsiAddr->controller) != 0)
+        return -1;
+
+    bus++;
+    if (virStrToLong_ui(bus, &unit, 0, &scsiAddr->bus) != 0)
+        return -1;
+
+    unit++;
+    if (virStrToLong_ui(unit, NULL, 0, &scsiAddr->unit) != 0)
+        return -1;
+
+    return 0;
+}
+
+static int str2IDEAddress(const char *str, struct IDEAddress *ideAddr)
+{
+    char *controller, *bus, *unit;
+
+    if (!ideAddr)
+        return -1;
+    if (!str)
+        return -1;
+
+    controller = (char *)str;
+
+    if (virStrToLong_ui(controller, &bus, 0, &ideAddr->controller) != 0)
+        return -1;
+
+    bus++;
+    if (virStrToLong_ui(bus, &unit, 0, &ideAddr->bus) != 0)
+        return -1;
+
+    unit++;
+    if (virStrToLong_ui(unit, NULL, 0, &ideAddr->unit) != 0)
+        return -1;
+
+    return 0;
+}
+
+/* pci address pci:0000.00.0x0a.0 (domain:bus:slot:function)
+ * ide disk address: ide:00.00.0 (controller:bus:unit)
+ * scsi disk address: scsi:00.00.0 (controller:bus:unit)
+ */
+
+static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
+{
+    char *type, *addr;
+
+    if (!diskAddr)
+        return -1;
+    if (!str)
+        return -1;
+
+    type = (char *)str;
+    addr = strchr(type, ':');
+    if (!addr)
+        return -1;
+
+    if (STREQLEN(type, "pci", addr - type)) {
+        diskAddr->type = DISK_ADDR_TYPE_PCI;
+        return str2PCIAddress(addr + 1, &diskAddr->addr.pci);
+    } else if (STREQLEN(type, "scsi", addr - type)) {
+        diskAddr->type = DISK_ADDR_TYPE_SCSI;
+        return str2SCSIAddress(addr + 1, &diskAddr->addr.scsi);
+    } else if (STREQLEN(type, "ide", addr - type)) {
+        diskAddr->type = DISK_ADDR_TYPE_IDE;
+        return str2IDEAddress(addr + 1, &diskAddr->addr.ide);
+    }
+
+    return -1;
+}
 
 static bool
 cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     const char *source = NULL, *target = NULL, *driver = NULL,
-                *subdriver = NULL, *type = NULL, *mode = NULL;
+                *subdriver = NULL, *type = NULL, *mode = NULL,
+                *cache = NULL, *serial = NULL, *straddr = NULL;
+    struct DiskAddress diskAddr;
     bool isFile = false, functionReturn = false;
     int ret;
     unsigned int flags;
@@ -10240,6 +10393,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptString(cmd, "subdriver", &subdriver) < 0 ||
         vshCommandOptString(cmd, "type", &type) < 0 ||
         vshCommandOptString(cmd, "mode", &mode) < 0 ||
+        vshCommandOptString(cmd, "cache", &cache) < 0 ||
+        vshCommandOptString(cmd, "serial", &serial) < 0 ||
+        vshCommandOptString(cmd, "address", &straddr) < 0 ||
         vshCommandOptString(cmd, "sourcetype", &stype) < 0) {
         vshError(ctl, "%s", _("missing option"));
         goto cleanup;
@@ -10277,8 +10433,10 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         virBufferAsprintf(&buf, " name='%s'", driver);
     if (subdriver)
         virBufferAsprintf(&buf, " type='%s'", subdriver);
+    if (cache)
+        virBufferAsprintf(&buf, " cache='%s'", cache);
 
-    if (driver || subdriver)
+    if (driver || subdriver || cache)
         virBufferAddLit(&buf, "/>\n");
 
     virBufferAsprintf(&buf, "  <source %s='%s'/>\n",
@@ -10287,6 +10445,54 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virBufferAsprintf(&buf, "  <target dev='%s'/>\n", target);
     if (mode)
         virBufferAsprintf(&buf, "  <%s/>\n", mode);
+
+    if (serial)
+        virBufferAsprintf(&buf, "  <serial>%s</serial>\n", serial);
+
+    if (vshCommandOptBool(cmd, "shareable"))
+        virBufferAsprintf(&buf, "  <shareable/>\n");
+
+    if (straddr) {
+        if (str2DiskAddress(straddr, &diskAddr) != 0) {
+            vshError(ctl, _("Invalid address."));
+            goto cleanup;
+        }
+
+        if (STRPREFIX((const char *)target, "vd")) {
+            if (diskAddr.type == DISK_ADDR_TYPE_PCI) {
+                virBufferAsprintf(&buf,
+                                  "  <address type='pci' domain='0x%04x'"
+                                  " bus ='0x%02x' slot='0x%02x' function='0x%0x' />\n",
+                                  diskAddr.addr.pci.domain, diskAddr.addr.pci.bus,
+                                  diskAddr.addr.pci.slot, diskAddr.addr.pci.function);
+            } else {
+                vshError(ctl, "%s", _("expecting a pci:0000.00.00.00 address."));
+                goto cleanup;
+            }
+        } else if (STRPREFIX((const char *)target, "sd")) {
+            if (diskAddr.type == DISK_ADDR_TYPE_SCSI) {
+                virBufferAsprintf(&buf,
+                                  "  <address type='drive' controller='%d'"
+                                  " bus='%d' unit='%d' />\n",
+                                  diskAddr.addr.scsi.controller, diskAddr.addr.scsi.bus,
+                                  diskAddr.addr.scsi.unit);
+            } else {
+                vshError(ctl, "%s", _("expecting a scsi:00.00.00 address."));
+                goto cleanup;
+            }
+        } else if (STRPREFIX((const char *)target, "hd")) {
+            if (diskAddr.type == DISK_ADDR_TYPE_IDE) {
+                virBufferAsprintf(&buf,
+                                  "  <address type='drive' controller='%d'"
+                                  " bus='%d' unit='%d' />\n",
+                                  diskAddr.addr.ide.controller, diskAddr.addr.ide.bus,
+                                  diskAddr.addr.ide.unit);
+            } else {
+                vshError(ctl, "%s", _("expecting an ide:00.00.00 address."));
+                goto cleanup;
+            }
+        }
+    }
 
     virBufferAddLit(&buf, "</disk>\n");
 
