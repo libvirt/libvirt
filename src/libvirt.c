@@ -6863,10 +6863,14 @@ error:
  * does not support it or if growing the number is arbitrary limited.
  * This function requires privileged access to the hypervisor.
  *
- * @flags must include VIR_DOMAIN_AFFECT_LIVE to affect a running
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE to affect a running
  * domain (which may fail if domain is not active), or
  * VIR_DOMAIN_AFFECT_CONFIG to affect the next boot via the XML
  * description of the domain.  Both flags may be set.
+ * If neither flag is specified (that is, @flags is VIR_DOMAIN_AFFECT_CURRENT),
+ * then an inactive domain modifies persistent setup, while an active domain
+ * is hypervisor-dependent on whether just live or both live and persistent
+ * state is changed.
  *
  * If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then
  * VIR_DOMAIN_AFFECT_LIVE must be clear, and only the maximum virtual
@@ -6874,6 +6878,7 @@ error:
  * equal to virConnectGetMaxVcpus().  Otherwise, this call affects the
  * current virtual CPU limit, which must be less than or equal to the
  * maximum limit.
+ * Not all hypervisors can support all flag combinations.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -6899,8 +6904,7 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     }
 
     /* Perform some argument validation common to all implementations.  */
-    if (nvcpus < 1 || (unsigned short) nvcpus != nvcpus ||
-        (flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) == 0) {
+    if (nvcpus < 1 || (unsigned short) nvcpus != nvcpus) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }

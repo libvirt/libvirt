@@ -1234,8 +1234,8 @@ typedef virVcpuInfo *virVcpuInfoPtr;
 
 /* Flags for controlling virtual CPU hot-plugging.  */
 typedef enum {
-    /* Must choose at least one of these two bits; SetVcpus can choose both;
-       see virDomainModificationImpact for details.  */
+    /* See virDomainModificationImpact for these flags.  */
+    VIR_DOMAIN_VCPU_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
     VIR_DOMAIN_VCPU_LIVE    = VIR_DOMAIN_AFFECT_LIVE,
     VIR_DOMAIN_VCPU_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG,
 
