@@ -32,6 +32,7 @@
 #include <inttypes.h>
 #include <signal.h>
 #include <poll.h>
+#include <strings.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -57,7 +58,6 @@
 #include "configmake.h"
 #include "threads.h"
 #include "command.h"
-#include "count-one-bits.h"
 #include "virkeycode.h"
 
 static char *progname;
@@ -12852,7 +12852,7 @@ vshCmddefGetData(const vshCmdDef *cmd, uint32_t *opts_need_arg,
         return NULL;
 
     /* Grab least-significant set bit */
-    i = count_one_bits(*opts_need_arg ^ (*opts_need_arg - 1)) - 1;
+    i = ffs(*opts_need_arg) - 1;
     opt = &cmd->opts[i];
     if (opt->type != VSH_OT_ARGV)
         *opts_need_arg &= ~(1 << i);
