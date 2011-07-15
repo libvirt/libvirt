@@ -162,29 +162,36 @@ typedef struct __vshControl vshControl;
 typedef struct __vshCmd vshCmd;
 
 /*
- * vshCmdInfo -- information about command
+ * vshCmdInfo -- name/value pair for information about command
+ *
+ * Commands should have at least the following names:
+ * "name" - command name
+ * "desc" - description of command, or empty string
  */
 typedef struct {
-    const char *name;           /* name of information */
-    const char *data;           /* information */
+    const char *name;           /* name of information, or NULL for list end */
+    const char *data;           /* non-NULL information */
 } vshCmdInfo;
 
 /*
  * vshCmdOptDef - command option definition
  */
 typedef struct {
-    const char *name;           /* the name of option */
+    const char *name;           /* the name of option, or NULL for list end */
     vshCmdOptType type;         /* option type */
     int flag;                   /* flags */
-    const char *help;           /* help string */
+    const char *help;           /* non-NULL help string */
 } vshCmdOptDef;
 
 /*
  * vshCmdOpt - command options
+ *
+ * After parsing a command, all arguments to the command have been
+ * collected into a list of these objects.
  */
 typedef struct vshCmdOpt {
-    const vshCmdOptDef *def;    /* pointer to relevant option */
-    char *data;                 /* allocated data */
+    const vshCmdOptDef *def;    /* non-NULL pointer to option definition */
+    char *data;                 /* allocated data, or NULL for bool option */
     struct vshCmdOpt *next;
 } vshCmdOpt;
 
@@ -199,7 +206,7 @@ enum {
  * vshCmdDef - command definition
  */
 typedef struct {
-    const char *name;
+    const char *name;           /* name of command, or NULL for list end */
     bool (*handler) (vshControl *, const vshCmd *);    /* command handler */
     const vshCmdOptDef *opts;   /* definition of command options */
     const vshCmdInfo *info;     /* details about command */
@@ -239,7 +246,7 @@ typedef struct __vshControl {
 } __vshControl;
 
 typedef struct vshCmdGrp {
-    const char *name;
+    const char *name;    /* name of group, or NULL for list end */
     const char *keyword; /* help keyword */
     const vshCmdDef *commands;
 } vshCmdGrp;
@@ -264,7 +271,9 @@ static bool vshCmddefHelp(vshControl *ctl, const char *name);
 static const vshCmdGrp *vshCmdGrpSearch(const char *grpname);
 static bool vshCmdGrpHelp(vshControl *ctl, const char *name);
 
-static vshCmdOpt *vshCommandOpt(const vshCmd *cmd, const char *name);
+static int vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
 static int vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 static int vshCommandOptUInt(const vshCmd *cmd, const char *name,
@@ -12506,23 +12515,48 @@ vshCommandFree(vshCmd *cmd)
     }
 }
 
-/*
- * Returns option by name
+/**
+ * vshCommandOpt:
+ * @cmd: parsed command line to search
+ * @name: option name to search for
+ * @opt: result of the search
+ *
+ * Look up an option passed to CMD by NAME.  Returns 1 with *OPT set
+ * to the option if found, 0 with *OPT set to NULL if the name is
+ * valid and the option is not required, -1 with *OPT set to NULL if
+ * the option is required but not present, and -2 if NAME is not valid
+ * (-2 indicates a programming error).  No error messages are issued.
  */
-static vshCmdOpt *
-vshCommandOpt(const vshCmd *cmd, const char *name)
+static int
+vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt)
 {
-    vshCmdOpt *opt = cmd->opts;
+    vshCmdOpt *candidate = cmd->opts;
+    const vshCmdOptDef *valid = cmd->def->opts;
 
-    while (opt) {
-        if (opt->def && STREQ(opt->def->name, name))
-            return opt;
-        opt = opt->next;
+    /* See if option is present on command line.  */
+    while (candidate) {
+        if (STREQ(candidate->def->name, name)) {
+            *opt = candidate;
+            return 1;
+        }
+        candidate = candidate->next;
     }
-    return NULL;
+
+    /* Option not present, see if command requires it.  */
+    *opt = NULL;
+    while (valid) {
+        if (!valid->name)
+            break;
+        if (STREQ(name, valid->name))
+            return (valid->flag & VSH_OFLAG_REQ) == 0 ? 0 : -1;
+        valid++;
+    }
+    /* If we got here, the name is unknown.  */
+    return -2;
 }
 
-/*
+/**
+ * vshCommandOptInt:
  * @cmd command reference
  * @name option name
  * @value result
@@ -12530,102 +12564,144 @@ vshCommandOpt(const vshCmd *cmd, const char *name)
  * Convert option to int
  * Return value:
  * >0 if option found and valid (@value updated)
- * 0 in case option not found (@value untouched)
+ * 0 if option not found and not required (@value untouched)
  * <0 in all other cases (@value untouched)
  */
 static int
 vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
 {
-    vshCmdOpt *arg = vshCommandOpt(cmd, name);
-    int ret = 0, num;
+    vshCmdOpt *arg;
+    int ret;
+    int num;
     char *end_p = NULL;
 
-    if ((arg != NULL) && (arg->data != NULL)) {
-        num = strtol(arg->data, &end_p, 10);
-        ret = -1;
-        if ((arg->data != end_p) && (*end_p == 0)) {
-            *value = num;
-            ret = 1;
-        }
+    ret = vshCommandOpt(cmd, name, &arg);
+    if (ret <= 0)
+        return ret;
+    if (!arg->data) {
+        /* only possible on bool, but if name is bool, this is a
+         * programming bug */
+        return -2;
     }
-    return ret;
+
+    num = strtol(arg->data, &end_p, 10);
+    if ((arg->data != end_p) && (*end_p == 0)) {
+        *value = num;
+        return 1;
+    }
+    return -1;
 }
 
 
-/*
+/**
+ * vshCommandOptUInt:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ *
  * Convert option to unsigned int
  * See vshCommandOptInt()
  */
 static int
 vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
 {
-    vshCmdOpt *arg = vshCommandOpt(cmd, name);
-    unsigned int ret = 0, num;
+    vshCmdOpt *arg;
+    int ret;
+    unsigned int num;
     char *end_p = NULL;
 
-    if ((arg != NULL) && (arg->data != NULL)) {
-        num = strtoul(arg->data, &end_p, 10);
-        ret = -1;
-        if ((arg->data != end_p) && (*end_p == 0)) {
-            *value = num;
-            ret = 1;
-        }
+    ret = vshCommandOpt(cmd, name, &arg);
+    if (ret <= 0)
+        return ret;
+    if (!arg->data) {
+        /* only possible on bool, but if name is bool, this is a
+         * programming bug */
+        return -2;
     }
-    return ret;
+
+    num = strtoul(arg->data, &end_p, 10);
+    if ((arg->data != end_p) && (*end_p == 0)) {
+        *value = num;
+        return 1;
+    }
+    return -1;
 }
 
 
 /*
+ * vshCommandOptUL:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ *
  * Convert option to unsigned long
  * See vshCommandOptInt()
  */
 static int
 vshCommandOptUL(const vshCmd *cmd, const char *name, unsigned long *value)
 {
-    vshCmdOpt *arg = vshCommandOpt(cmd, name);
-    int ret = 0;
+    vshCmdOpt *arg;
+    int ret;
     unsigned long num;
     char *end_p = NULL;
 
-    if ((arg != NULL) && (arg->data != NULL)) {
-        num = strtoul(arg->data, &end_p, 10);
-        ret = -1;
-        if ((arg->data != end_p) && (*end_p == 0)) {
-            *value = num;
-            ret = 1;
-        }
+    ret = vshCommandOpt(cmd, name, &arg);
+    if (ret <= 0)
+        return ret;
+    if (!arg->data) {
+        /* only possible on bool, but if name is bool, this is a
+         * programming bug */
+        return -2;
     }
-    return ret;
+
+    num = strtoul(arg->data, &end_p, 10);
+    if ((arg->data != end_p) && (*end_p == 0)) {
+        *value = num;
+        return 1;
+    }
+    return -1;
 }
 
-/*
+/**
+ * vshCommandOptString:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ *
  * Returns option as STRING
- * See vshCommandOptInt()
+ * Return value:
+ * >0 if option found and valid (@value updated)
+ * 0 if option not found and not required (@value untouched)
+ * <0 in all other cases (@value untouched)
  */
 static int
 vshCommandOptString(const vshCmd *cmd, const char *name, const char **value)
 {
-    vshCmdOpt *arg = vshCommandOpt(cmd, name);
-    int ret = 0;
+    vshCmdOpt *arg;
+    int ret;
 
-    if (arg && arg->data) {
-        if (*arg->data
-            || (arg->def && (arg->def->flag & VSH_OFLAG_EMPTY_OK))) {
-            *value = arg->data;
-            ret = 1;
-        } else if (arg->def && ((arg->def->flag) & VSH_OFLAG_REQ)) {
-            vshError(NULL, _("Missing required option '%s'"), name);
-            ret = -1;
-        } else {
-            /* Treat "--option ''" as if option had not been specified. */
-            ret = 0;
-        }
+    ret = vshCommandOpt(cmd, name, &arg);
+    if (ret <= 0)
+        return ret;
+    if (!arg->data) {
+        /* only possible on bool, but if name is bool, this is a
+         * programming bug */
+        return -2;
     }
 
-    return ret;
+    if (!*arg->data && !(arg->def->flag & VSH_OFLAG_EMPTY_OK)) {
+        return -1;
+    }
+    *value = arg->data;
+    return 1;
 }
 
-/*
+/**
+ * vshCommandOptLongLong:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ *
  * Returns option as long long
  * See vshCommandOptInt()
  */
@@ -12633,53 +12709,87 @@ static int
 vshCommandOptLongLong(const vshCmd *cmd, const char *name,
                       long long *value)
 {
-    vshCmdOpt *arg = vshCommandOpt(cmd, name);
-    int ret = 0;
+    vshCmdOpt *arg;
+    int ret;
     long long num;
     char *end_p = NULL;
 
-    if ((arg != NULL) && (arg->data != NULL)) {
-        num = strtoll(arg->data, &end_p, 10);
-        ret = -1;
-        if ((arg->data != end_p) && (*end_p == 0)) {
-            *value = num;
-            ret = 1;
-        }
+    ret = vshCommandOpt(cmd, name, &arg);
+    if (ret <= 0)
+        return ret;
+    if (!arg->data) {
+        /* only possible on bool, but if name is bool, this is a
+         * programming bug */
+        return -2;
     }
-    return ret;
+
+    num = strtoll(arg->data, &end_p, 10);
+    if ((arg->data != end_p) && (*end_p == 0)) {
+        *value = num;
+        return 1;
+    }
+    return -1;
 }
 
+/**
+ * vshCommandOptULongLong:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ *
+ * Returns option as long long
+ * See vshCommandOptInt()
+ */
 static int
 vshCommandOptULongLong(const vshCmd *cmd, const char *name,
                        unsigned long long *value)
 {
-    vshCmdOpt *arg = vshCommandOpt(cmd, name);
-    int ret = 0;
+    vshCmdOpt *arg;
+    int ret;
     unsigned long long num;
     char *end_p = NULL;
 
-    if ((arg != NULL) && (arg->data != NULL)) {
-        num = strtoull(arg->data, &end_p, 10);
-        ret = -1;
-        if ((arg->data != end_p) && (*end_p == 0)) {
-            *value = num;
-            ret = 1;
-        }
+    ret = vshCommandOpt(cmd, name, &arg);
+    if (ret <= 0)
+        return ret;
+    if (!arg->data) {
+        /* only possible on bool, but if name is bool, this is a
+         * programming bug */
+        return -2;
     }
-    return ret;
+
+    num = strtoull(arg->data, &end_p, 10);
+    if ((arg->data != end_p) && (*end_p == 0)) {
+        *value = num;
+        return 1;
+    }
+    return -1;
 }
 
 
-/*
- * Returns true/false if the option exists
+/**
+ * vshCommandOptBool:
+ * @cmd command reference
+ * @name option name
+ *
+ * Returns true/false if the option exists.  Note that this does NOT
+ * validate whether the option is actually boolean, or even whether
+ * name is legal; so that this can be used to probe whether a data
+ * option is present without actually using that data.
  */
 static bool
 vshCommandOptBool(const vshCmd *cmd, const char *name)
 {
-    return vshCommandOpt(cmd, name) != NULL;
+    vshCmdOpt *dummy;
+
+    return vshCommandOpt(cmd, name, &dummy) == 1;
 }
 
-/*
+/**
+ * vshCommandOptArgv:
+ * @cmd command reference
+ * @opt starting point for the search
+ *
  * Returns the next argv argument after OPT (or the first one if OPT
  * is NULL), or NULL if no more are present.
  *
@@ -12692,7 +12802,7 @@ vshCommandOptArgv(const vshCmd *cmd, const vshCmdOpt *opt)
     opt = opt ? opt->next : cmd->opts;
 
     while (opt) {
-        if (opt->def && opt->def->type == VSH_OT_ARGV) {
+        if (opt->def->type == VSH_OT_ARGV) {
             return opt;
         }
         opt = opt->next;
