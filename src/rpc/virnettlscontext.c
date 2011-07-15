@@ -796,6 +796,9 @@ ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
     case GNUTLS_E_INTERRUPTED:
         errno = EINTR;
         break;
+    case GNUTLS_E_UNEXPECTED_PACKET_LENGTH:
+        errno = ENOMSG;
+        break;
     default:
         errno = EIO;
         break;

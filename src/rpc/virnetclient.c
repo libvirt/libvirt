@@ -348,7 +348,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     ignore_value(pthread_sigmask(SIG_BLOCK, &oldmask, NULL));
 
     len = virNetTLSSessionRead(client->tls, buf, 1);
-    if (len < 0) {
+    if (len < 0 && errno != ENOMSG) {
         virReportSystemError(errno, "%s",
                              _("Unable to read TLS confirmation"));
         goto error;
