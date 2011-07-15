@@ -1486,7 +1486,7 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
     }
 
     if (origvol->building) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               _("volume '%s' is still being allocated."),
                               origvol->name);
         goto cleanup;
@@ -1667,7 +1667,7 @@ storageVolumeUpload(virStorageVolPtr obj,
     }
 
     if (vol->building) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               _("volume '%s' is still being allocated."),
                               vol->name);
         goto out;
@@ -1876,7 +1876,7 @@ storageVolumeWipe(virStorageVolPtr obj,
     }
 
     if (vol->building) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               _("volume '%s' is still being allocated."),
                               vol->name);
         goto out;
@@ -1936,7 +1936,7 @@ storageVolumeDelete(virStorageVolPtr obj,
     }
 
     if (vol->building) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
                               _("volume '%s' is still being allocated."),
                               vol->name);
         goto cleanup;
