@@ -3257,6 +3257,7 @@ static const vshCmdOptDef opts_setvcpus[] = {
     {"maximum", VSH_OT_BOOL, 0, N_("set maximum limit on next boot")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3269,9 +3270,24 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     int maximum = vshCommandOptBool(cmd, "maximum");
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
-    int flags = ((maximum ? VIR_DOMAIN_VCPU_MAXIMUM : 0) |
-                 (config ? VIR_DOMAIN_AFFECT_CONFIG : 0) |
-                 (live ? VIR_DOMAIN_AFFECT_LIVE : 0));
+    int current = vshCommandOptBool(cmd, "current");
+    int flags = 0;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+        /* neither option is specified */
+        if (!live && !config && !maximum)
+            flags = -1;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -3284,7 +3300,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (!flags) {
+    if (flags == -1) {
         if (virDomainSetVcpus(dom, count) != 0) {
             ret = false;
         }
@@ -3293,6 +3309,8 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
            --config flag is in effect as well */
         if (maximum) {
             vshDebug(ctl, VSH_ERR_DEBUG, "--maximum flag was given\n");
+
+            flags |= VIR_DOMAIN_VCPU_MAXIMUM;
 
             /* If neither the --config nor --live flags were given, OR
                if just the --live flag was given, we need to error out

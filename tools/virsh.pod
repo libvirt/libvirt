@@ -740,7 +740,7 @@ exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
 =item B<setvcpus> I<domain-id> I<count> optional I<--maximum> I<--config>
-I<--live>
+I<--live> I<--current>
 
 Change the number of virtual CPUs active in a guest domain.  By default,
 this command works on active guest domains.  To change the settings for an
@@ -758,7 +758,9 @@ If I<--live> is specified, the guest domain must be active, and the change
 takes place immediately.  Both the I<--config> and I<--live> flags may be
 specified together if supported by the hypervisor.
 
-When neither the I<--config> nor I<--live> flags are given, the I<--live>
+If I<--current> is specified, affect the current guest state.
+
+When no flags are given, the I<--live>
 flag is assumed and the guest domain must be active.  In this situation it
 is up to the hypervisor whether the I<--config> flag is also assumed, and
 therefore whether the XML configuration is adjusted to make the change
