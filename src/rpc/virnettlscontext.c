@@ -669,7 +669,7 @@ virNetTLSSessionPush(void *opaque, const void *buf, size_t len)
 {
     virNetTLSSessionPtr sess = opaque;
     if (!sess->writeFunc) {
-        VIR_WARN("TLS session push with missing read function");
+        VIR_WARN("TLS session push with missing write function");
         errno = EIO;
         return -1;
     };
