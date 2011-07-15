@@ -2906,8 +2906,8 @@ unsupported:
 
 
 static int
-qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
-                         unsigned int flags)
+qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                        unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -2915,20 +2915,13 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     const char * type;
     int max;
     int ret = -1;
+    bool isActive;
+    bool maximum;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
-     * mixed with LIVE.  */
-    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) == 0 ||
-        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) ==
-         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("invalid flag combination: (0x%x)"), flags);
-        return -1;
-    }
     if (!nvcpus || (unsigned short) nvcpus != nvcpus) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("argument out of range: %d"), nvcpus);
@@ -2950,7 +2943,25 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
+    isActive = virDomainObjIsActive(vm);
+    maximum = (flags & VIR_DOMAIN_VCPU_MAXIMUM) != 0;
+    flags &= ~VIR_DOMAIN_VCPU_MAXIMUM;
+
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    /* MAXIMUM cannot be mixed with LIVE.  */
+    if (maximum && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("cannot adjust maximum on running domain"));
+        goto endjob;
+    }
+
+    if (!isActive && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto endjob;
@@ -2975,7 +2986,7 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && vm->def->maxvcpus < max) {
+    if (!maximum && vm->def->maxvcpus < max) {
         max = vm->def->maxvcpus;
     }
 
@@ -2990,15 +3001,14 @@ qemudDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
 
     switch (flags) {
-    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_CONFIG:
-        persistentDef->maxvcpus = nvcpus;
-        if (nvcpus < persistentDef->vcpus)
-            persistentDef->vcpus = nvcpus;
-        ret = 0;
-        break;
-
     case VIR_DOMAIN_AFFECT_CONFIG:
-        persistentDef->vcpus = nvcpus;
+        if (maximum) {
+            persistentDef->maxvcpus = nvcpus;
+            if (nvcpus < persistentDef->vcpus)
+                persistentDef->vcpus = nvcpus;
+        } else {
+            persistentDef->vcpus = nvcpus;
+        }
         ret = 0;
         break;
 
@@ -3029,9 +3039,9 @@ cleanup:
 }
 
 static int
-qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+qemuDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
-    return qemudDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
+    return qemuDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 
@@ -8580,8 +8590,8 @@ static virDriver qemuDriver = {
     .domainRestore = qemuDomainRestore, /* 0.2.0 */
     .domainCoreDump = qemudDomainCoreDump, /* 0.7.0 */
     .domainScreenshot = qemuDomainScreenshot, /* 0.9.2 */
-    .domainSetVcpus = qemudDomainSetVcpus, /* 0.4.4 */
-    .domainSetVcpusFlags = qemudDomainSetVcpusFlags, /* 0.8.5 */
+    .domainSetVcpus = qemuDomainSetVcpus, /* 0.4.4 */
+    .domainSetVcpusFlags = qemuDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = qemudDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = qemudDomainPinVcpu, /* 0.4.4 */
     .domainPinVcpuFlags = qemudDomainPinVcpuFlags, /* 0.9.3 */
