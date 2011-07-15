@@ -1239,13 +1239,6 @@ xenUnifiedDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    /* Exactly one of LIVE or CONFIG must be set.  */
-    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
-        xenUnifiedError(VIR_ERR_INVALID_ARG,
-                        _("invalid flag combination: (0x%x)"), flags);
-        return -1;
-    }
-
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
         ret = xenDaemonDomainGetVcpusFlags(dom, flags);
         if (ret != -2)

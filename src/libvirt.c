@@ -7373,10 +7373,13 @@ error:
  * not support it.  This function requires privileged access to the
  * hypervisor.
  *
- * @flags must include either VIR_DOMAIN_AFFECT_LIVE to query a
- * running domain (which will fail if domain is not active), or
- * VIR_DOMAIN_AFFECT_CONFIG to query the XML description of the
- * domain.  It is an error to set both flags.
+ * If @flags includes VIR_DOMAIN_AFFECT_LIVE, this will query a
+ * running domain (which will fail if domain is not active); if
+ * it includes VIR_DOMAIN_AFFECT_CONFIG, this will query the XML
+ * description of the domain.  It is an error to set both flags.
+ * If neither flag is set (that is, VIR_DOMAIN_AFFECT_CURRENT),
+ * then the configuration queried depends on whether the domain
+ * is currently running.
  *
  * If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then the maximum
  * virtual CPU limit is queried.  Otherwise, this call queries the
@@ -7400,8 +7403,8 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         return -1;
     }
 
-    /* Exactly one of these two flags should be set.  */
-    if (!(flags & VIR_DOMAIN_AFFECT_LIVE) == !(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) && (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }

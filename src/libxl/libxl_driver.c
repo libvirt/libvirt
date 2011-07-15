@@ -2364,17 +2364,11 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     virDomainDefPtr def;
     int ret = -1;
+    bool active;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
-
-    /* Exactly one of LIVE or CONFIG must be set.  */
-    if (!(flags & VIR_DOMAIN_VCPU_LIVE) == !(flags & VIR_DOMAIN_VCPU_CONFIG)) {
-        libxlError(VIR_ERR_INVALID_ARG,
-                   _("invalid flag combination: (0x%x)"), flags);
-        return -1;
-    }
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2385,14 +2379,33 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
+    active = virDomainObjIsActive(vm);
+
+    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0) {
+        if (active)
+            flags |= VIR_DOMAIN_VCPU_LIVE;
+        else
+            flags |= VIR_DOMAIN_VCPU_CONFIG;
+    }
+    if ((flags & VIR_DOMAIN_VCPU_LIVE) && (flags & VIR_DOMAIN_VCPU_CONFIG)) {
+        libxlError(VIR_ERR_INVALID_ARG,
+                   _("invalid flag combination: (0x%x)"), flags);
+        return -1;
+    }
+
     if (flags & VIR_DOMAIN_VCPU_LIVE) {
-        if (!virDomainObjIsActive(vm)) {
+        if (!active) {
             libxlError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
             goto cleanup;
         }
         def = vm->def;
     } else {
+        if (!vm->persistent) {
+            libxlError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is transient"));
+            goto cleanup;
+        }
         def = vm->newDef ? vm->newDef : vm->def;
     }
 
