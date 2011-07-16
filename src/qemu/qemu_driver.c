@@ -4911,16 +4911,20 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                             _("unknown domain modify action %d"), action);
             break;
         }
-    } else
-        ret = 0;
 
-    if (!ret && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        if (ret == -1)
+            goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         /* If dev exists it was created to modify the domain config. Free it. */
         virDomainDeviceDefFree(dev);
         dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
                                       VIR_DOMAIN_XML_INACTIVE);
-        if (dev == NULL)
+        if (dev == NULL) {
+            ret = -1;
             goto endjob;
+        }
 
         switch (action) {
         case QEMU_DEVICE_ATTACH:
@@ -4935,18 +4939,25 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
         default:
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("unknown domain modify action %d"), action);
+            ret = -1;
             break;
         }
+
+        if (ret == -1)
+            goto endjob;
         /*
          * update domain status forcibly because the domain status may be
-         * changed even if we attach the device failed. For example, a
-         * For example, a new controller may be created.
+         * changed even if we failed to attach the device. For example,
+         * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
             ret = -1;
+            goto endjob;
+        }
     }
+
     /* Finally, if no error until here, we can save config. */
-    if (!ret && (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainSaveConfig(driver->configDir, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false);
