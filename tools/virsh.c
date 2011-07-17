@@ -3610,7 +3610,6 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     if (weight) {
         nparams++;
         if (weight < 0) {
-            virDomainFree(dom);
             vshError(ctl, _("Invalid value of %d for I/O weight"), weight);
             goto cleanup;
         }
