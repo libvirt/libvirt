@@ -339,7 +339,7 @@ struct remote_node_get_memory_stats {
  * connection).  Errors are returned implicitly in the RPC protocol.
  *
  * Please follow the naming convention carefully - this file is
- * parsed by 'remote_generator.pl'.
+ * parsed by 'gendispatch.pl'.
  *
  * 'remote_CALL_ret' members that are filled via call-by-reference must be
  * annotated with a insert@<offset> comment to indicate the offset in the
@@ -2123,7 +2123,7 @@ const REMOTE_PROTOCOL_VERSION = 1;
 
 enum remote_procedure {
     /* Each function must have a two-word comment.  The first word is
-     * whether remote_generator.pl handles daemon, the second whether
+     * whether gendispatch.pl handles daemon, the second whether
      * it handles src/remote.  Additional flags can be specified after a
      * pipe.
      *
@@ -2390,7 +2390,7 @@ enum remote_procedure {
      * Nice isn't it. Please keep it this way when adding more.
      *
      * Each function must have a two-word comment.  The first word is
-     * whether remote_generator.pl handles daemon, the second whether
+     * whether gendispatch.pl handles daemon, the second whether
      * it handles src/remote.  Additional flags can be specified after a
      * pipe.
      *

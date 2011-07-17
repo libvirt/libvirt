@@ -53,7 +53,7 @@ const QEMU_PROTOCOL_VERSION = 1;
 
 enum qemu_procedure {
     /* Each function must have a two-word comment.  The first word is
-     * whether remote_generator.pl handles daemon, the second whether
+     * whether gendispatch.pl handles daemon, the second whether
      * it handles src/remote.  */
     QEMU_PROC_MONITOR_COMMAND = 1, /* skipgen skipgen */
     QEMU_PROC_DOMAIN_ATTACH = 2 /* autogen autogen */
