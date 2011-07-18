@@ -2347,7 +2347,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
             if (vpAssociatePortProfileId(net->ifname,
                                          net->mac,
                                          net->data.direct.linkdev,
-                                         &net->data.direct.virtPortProfile,
+                                         net->data.direct.virtPortProfile,
                                          def->uuid,
                                          VIR_VM_OP_MIGRATE_IN_FINISH) != 0)
                 goto err_exit;
@@ -2364,7 +2364,7 @@ err_exit:
             vpDisassociatePortProfileId(net->ifname,
                                         net->mac,
                                         net->data.direct.linkdev,
-                                        &net->data.direct.virtPortProfile,
+                                        net->data.direct.virtPortProfile,
                                         VIR_VM_OP_MIGRATE_IN_FINISH);
         }
     }

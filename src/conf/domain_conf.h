@@ -381,7 +381,7 @@ struct _virDomainNetDef {
         struct {
             char *linkdev;
             int mode; /* enum virMacvtapMode from util/macvtap.h */
-            virVirtualPortProfileParams virtPortProfile;
+            virVirtualPortProfileParamsPtr virtPortProfile;
         } direct;
     } data;
     struct {

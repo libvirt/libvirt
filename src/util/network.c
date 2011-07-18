@@ -685,7 +685,7 @@ VIR_ENUM_IMPL(virVirtualPort, VIR_VIRTUALPORT_TYPE_LAST,
 
 int
 virVirtualPortProfileParseXML(xmlNodePtr node,
-                              virVirtualPortProfileParamsPtr virtPort)
+                              virVirtualPortProfileParamsPtr *def)
 {
     int ret = -1;
     char *virtPortType;
@@ -694,7 +694,13 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
     char *virtPortTypeIDVersion = NULL;
     char *virtPortInstanceID = NULL;
     char *virtPortProfileID = NULL;
+    virVirtualPortProfileParamsPtr virtPort = NULL;
     xmlNodePtr cur = node->children;
+
+    if (VIR_ALLOC(virtPort) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
     virtPortType = virXMLPropString(node, "type");
     if (!virtPortType) {
@@ -785,7 +791,7 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
             }
 
             virtPort->virtPortType = VIR_VIRTUALPORT_8021QBG;
-            ret = 0;
+
         } else {
                     virSocketError(VIR_ERR_XML_ERROR, "%s",
                                          _("a parameter is missing for 802.1Qbg description"));
@@ -798,7 +804,6 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
             if (virStrcpyStatic(virtPort->u.virtPort8021Qbh.profileID,
                                 virtPortProfileID) != NULL) {
                 virtPort->virtPortType = VIR_VIRTUALPORT_8021QBH;
-                ret = 0;
             } else {
                 virSocketError(VIR_ERR_XML_ERROR, "%s",
                                      _("profileid parameter too long"));
@@ -821,7 +826,11 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
     break;
     }
 
+    ret = 0;
+    *def = virtPort;
+    virtPort = NULL;
 error:
+    VIR_FREE(virtPort);
     VIR_FREE(virtPortManagerID);
     VIR_FREE(virtPortTypeID);
     VIR_FREE(virtPortTypeIDVersion);

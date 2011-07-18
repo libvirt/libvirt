@@ -130,7 +130,7 @@ struct _virVirtualPortProfileParams {
 
 int
 virVirtualPortProfileParseXML(xmlNodePtr node,
-                              virVirtualPortProfileParamsPtr virtPort);
+                              virVirtualPortProfileParamsPtr *virtPort);
 void
 virVirtualPortProfileFormat(virBufferPtr buf,
                             virVirtualPortProfileParamsPtr virtPort,

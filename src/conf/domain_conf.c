@@ -770,6 +770,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         VIR_FREE(def->data.direct.linkdev);
+        VIR_FREE(def->data.direct.virtPortProfile);
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -2617,8 +2618,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *devaddr = NULL;
     char *mode = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
-    virVirtualPortProfileParams virtPort;
-    bool virtPortParsed = false;
+    virVirtualPortProfileParamsPtr virtPort = NULL;
     xmlNodePtr oldnode = ctxt->node;
     int ret;
 
@@ -2664,12 +2664,11 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 dev  = virXMLPropString(cur, "dev");
                 mode = virXMLPropString(cur, "mode");
-            } else if (!virtPortParsed &&
+            } else if ((virtPort == NULL) &&
                        (def->type == VIR_DOMAIN_NET_TYPE_DIRECT) &&
                        xmlStrEqual(cur->name, BAD_CAST "virtualport")) {
-                if (virVirtualPortProfileParseXML(cur, &virtPort))
+                if (virVirtualPortProfileParseXML(cur, &virtPort) < 0)
                     goto error;
-                virtPortParsed = true;
             } else if ((network == NULL) &&
                        ((def->type == VIR_DOMAIN_NET_TYPE_SERVER) ||
                         (def->type == VIR_DOMAIN_NET_TYPE_CLIENT) ||
@@ -2853,9 +2852,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
         } else
             def->data.direct.mode = VIR_MACVTAP_MODE_VEPA;
 
-        if (virtPortParsed)
-            def->data.direct.virtPortProfile = virtPort;
-
+        def->data.direct.virtPortProfile = virtPort;
+        virtPort = NULL;
         def->data.direct.linkdev = dev;
         dev = NULL;
 
@@ -2962,6 +2960,7 @@ cleanup:
     VIR_FREE(port);
     VIR_FREE(ifname);
     VIR_FREE(dev);
+    VIR_FREE(virtPort);
     VIR_FREE(script);
     VIR_FREE(bridge);
     VIR_FREE(model);
@@ -8609,7 +8608,7 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " mode='%s'",
                    virMacvtapModeTypeToString(def->data.direct.mode));
         virBufferAddLit(buf, "/>\n");
-        virVirtualPortProfileFormat(buf, &def->data.direct.virtPortProfile,
+        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile,
                                     "      ");
         break;
 
