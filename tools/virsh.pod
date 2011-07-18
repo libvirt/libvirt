@@ -894,20 +894,25 @@ to undefine a domain with a managed save image will fail.
 NOTE: For an inactive domain, the domain name or UUID must be used as the
 I<domain-id>.
 
-=item B<vcpucount> I<domain-id>  [{I<--maximum> | I<--current>}
-{I<--config> | I<--live>}]
+=item B<vcpucount> I<domain-id>  [{I<--maximum> | I<--active>}
+{I<--config> | I<--live> | I<--current>}]
 
 Print information about the virtual cpu counts of the given
 I<domain-id>.  If no flags are specified, all possible counts are
 listed in a table; otherwise, the output is limited to just the
-numeric value requested.
+numeric value requested.  For historical reasons, the table
+lists the label "current" on the rows that can be queried in isolation
+via the I<--active> flag, rather than relating to the I<--current> flag.
 
 I<--maximum> requests information on the maximum cap of vcpus that a
-domain can add via B<setvcpus>, while I<--current> shows the current
+domain can add via B<setvcpus>, while I<--active> shows the current
 usage; these two flags cannot both be specified.  I<--config>
-requests information regarding the next time the domain will be
-booted, while I<--live> requires a running domain and lists current
-values; these two flags cannot both be specified.
+requires a persistent domain and requests information regarding the next
+time the domain will be booted, I<--live> requires a running domain and
+lists current values, and I<--current> queries according to the current
+state of the domain (corresponding to I<--live> if running, or
+I<--config> if inactive); these three flags are mutually exclusive.
+Thus, this command always takes exactly zero or two flags.
 
 =item B<vcpuinfo> I<domain-id>
 

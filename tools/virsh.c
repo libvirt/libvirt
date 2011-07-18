@@ -3043,9 +3043,11 @@ static const vshCmdInfo info_vcpucount[] = {
 static const vshCmdOptDef opts_vcpucount[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"maximum", VSH_OT_BOOL, 0, N_("get maximum cap on vcpus")},
-    {"current", VSH_OT_BOOL, 0, N_("get current vcpu usage")},
-    {"config", VSH_OT_BOOL, 0, N_("get value to be used on next boot")},
+    {"active", VSH_OT_BOOL, 0, N_("get number of currently active vcpus")},
     {"live", VSH_OT_BOOL, 0, N_("get value from running domain")},
+    {"config", VSH_OT_BOOL, 0, N_("get value to be used on next boot")},
+    {"current", VSH_OT_BOOL, 0,
+     N_("get value according to current domain state")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3055,31 +3057,50 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = true;
     int maximum = vshCommandOptBool(cmd, "maximum");
-    int current = vshCommandOptBool(cmd, "current");
+    int active = vshCommandOptBool(cmd, "active");
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
-    bool all = maximum + current + config + live == 0;
+    int current = vshCommandOptBool(cmd, "current");
+    bool all = maximum + active + current + config + live == 0;
     int count;
 
-    if (maximum && current) {
-        vshError(ctl, "%s",
-                 _("--maximum and --current cannot both be specified"));
-        return false;
-    }
-    if (config && live) {
-        vshError(ctl, "%s",
-                 _("--config and --live cannot both be specified"));
-        return false;
-    }
     /* We want one of each pair of mutually exclusive options; that
-     * is, use of flags requires exactly two options.  */
-    if (maximum + current + config + live == 1) {
-        vshError(ctl,
-                 _("when using --%s, either --%s or --%s must be specified"),
-                 (maximum ? "maximum" : current ? "current"
-                  : config ? "config" : "live"),
-                 maximum + current ? "config" : "maximum",
-                 maximum + current ? "live" : "current");
+     * is, use of flags requires exactly two options.  We reject the
+     * use of more than 2 flags later on.  */
+    if (maximum + active + current + config + live == 1) {
+        if (maximum || active) {
+            vshError(ctl,
+                     _("when using --%s, one of --config, --live, or --current "
+                       "must be specified"),
+                     maximum ? "maximum" : "active");
+        } else {
+            vshError(ctl,
+                     _("when using --%s, either --maximum or --active must be "
+                       "specified"),
+                     (current ? "current" : config ? "config" : "live"));
+        }
+        return false;
+    }
+
+    /* Backwards compatibility: prior to 0.9.4,
+     * VIR_DOMAIN_AFFECT_CURRENT was unsupported, and --current meant
+     * the opposite of --maximum.  Translate the old '--current
+     * --live' into the new '--active --live', while treating the new
+     * '--maximum --current' correctly rather than rejecting it as
+     * '--maximum --active'.  */
+    if (!maximum && !active && current) {
+        current = false;
+        active = true;
+    }
+
+    if (maximum && active) {
+        vshError(ctl, "%s",
+                 _("--maximum and --active cannot both be specified"));
+        return false;
+    }
+    if (current + config + live > 1) {
+        vshError(ctl, "%s",
+                 _("--config, --live, and --current are mutually exclusive"));
         return false;
     }
 
@@ -3090,8 +3111,20 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     /* In all cases, try the new API first; if it fails because we are
-     * talking to an older client, try a fallback API before giving
-     * up.  */
+     * talking to an older client, generally we try a fallback API
+     * before giving up.  --current requires the new API, since we
+     * don't know whether the domain is running or inactive.  */
+    if (current) {
+        count = virDomainGetVcpusFlags(dom,
+                                       maximum ? VIR_DOMAIN_VCPU_MAXIMUM : 0);
+        if (count < 0) {
+            virshReportError(ctl);
+            ret = false;
+        } else {
+            vshPrint(ctl, "%d\n", count);
+        }
+    }
+
     if (all || (maximum && config)) {
         count = virDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_MAXIMUM |
                                              VIR_DOMAIN_AFFECT_CONFIG));
@@ -3143,7 +3176,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         last_error = NULL;
     }
 
-    if (all || (current && config)) {
+    if (all || (active && config)) {
         count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_AFFECT_CONFIG);
         if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
                           || last_error->code == VIR_ERR_INVALID_ARG)) {
@@ -3180,7 +3213,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         last_error = NULL;
     }
 
-    if (all || (current && live)) {
+    if (all || (active && live)) {
         count = virDomainGetVcpusFlags(dom, VIR_DOMAIN_AFFECT_LIVE);
         if (count < 0 && (last_error->code == VIR_ERR_NO_SUPPORT
                           || last_error->code == VIR_ERR_INVALID_ARG)) {
