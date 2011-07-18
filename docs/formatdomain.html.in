@@ -1989,7 +1989,7 @@ qemu-kvm -net nic,model=? /dev/null
               the <code>copypaste</code> property
               to <code>no</code>, <span class="since">since
               0.9.3</span>.
-            </>
+            </p>
           </dd>
           <dt><code>"rdp"</code></dt>
           <dd>
