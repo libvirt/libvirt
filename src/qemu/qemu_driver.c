@@ -2194,7 +2194,7 @@ qemuCompressProgramName(int compress)
 static int
 qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                        virDomainObjPtr vm, const char *path,
-                       int compressed, bool bypass_cache)
+                       int compressed, bool bypass_cache, const char *xmlin)
 {
     char *xml = NULL;
     struct qemud_save_header header;
@@ -2205,7 +2205,9 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     struct stat sb;
     bool is_reg = false;
+    size_t len;
     unsigned long long offset;
+    unsigned long long pad;
     int fd = -1;
     uid_t uid = getuid();
     gid_t gid = getgid();
@@ -2240,15 +2242,55 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
         }
     }
 
-    /* Get XML for the domain */
-    xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
+    /* Get XML for the domain.  Restore needs only the inactive xml,
+     * including secure.  We should get the same result whether xmlin
+     * is NULL or whether it was the live xml of the domain moments
+     * before.  */
+    if (xmlin) {
+        virDomainDefPtr def = NULL;
+
+        if (!(def = virDomainDefParseString(driver->caps, xmlin,
+                                            QEMU_EXPECTED_VIRT_TYPES,
+                                            VIR_DOMAIN_XML_INACTIVE))) {
+            goto endjob;
+        }
+        if (!virDomainDefCheckABIStability(vm->def, def)) {
+            virDomainDefFree(def);
+            goto endjob;
+        }
+        xml = virDomainDefFormat(def, (VIR_DOMAIN_XML_INACTIVE |
+                                       VIR_DOMAIN_XML_SECURE));
+    } else {
+        xml = virDomainDefFormat(vm->def, (VIR_DOMAIN_XML_INACTIVE |
+                                           VIR_DOMAIN_XML_SECURE));
+    }
     if (!xml) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to get domain xml"));
         goto endjob;
     }
-    header.xml_len = strlen(xml) + 1;
+    len = strlen(xml) + 1;
+    offset = sizeof(header) + len;
 
+    /* Due to way we append QEMU state on our header with dd,
+     * we need to ensure there's a 512 byte boundary. Unfortunately
+     * we don't have an explicit offset in the header, so we fake
+     * it by padding the XML string with NUL bytes.  Additionally,
+     * we want to ensure that virDomainSaveImageDefineXML can supply
+     * slightly larger XML, so we add a miminum padding prior to
+     * rounding out to page boundaries.
+     */
+    pad = 1024;
+    pad += (QEMU_MONITOR_MIGRATE_TO_FILE_BS -
+            ((offset + pad) % QEMU_MONITOR_MIGRATE_TO_FILE_BS));
+    if (VIR_EXPAND_N(xml, len, pad) < 0) {
+        virReportOOMError();
+        goto endjob;
+    }
+    offset += pad;
+    header.xml_len = len;
+
+    /* Obtain the file handle.  */
     /* path might be a pre-existing block dev, in which case
      * we need to skip the create step, and also avoid unlink
      * in the failure case */
@@ -2268,29 +2310,6 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
             gid=sb.st_gid;
         }
     }
-
-    offset = sizeof(header) + header.xml_len;
-
-    /* Due to way we append QEMU state on our header with dd,
-     * we need to ensure there's a 512 byte boundary. Unfortunately
-     * we don't have an explicit offset in the header, so we fake
-     * it by padding the XML string with NULLs.
-     */
-    if (offset % QEMU_MONITOR_MIGRATE_TO_FILE_BS) {
-        unsigned long long pad =
-            QEMU_MONITOR_MIGRATE_TO_FILE_BS -
-            (offset % QEMU_MONITOR_MIGRATE_TO_FILE_BS);
-
-        if (VIR_REALLOC_N(xml, header.xml_len + pad) < 0) {
-            virReportOOMError();
-            goto endjob;
-        }
-        memset(xml + header.xml_len, 0, pad);
-        offset += pad;
-        header.xml_len += pad;
-    }
-
-    /* Obtain the file handle.  */
 
     /* First try creating the file as root */
     if (bypass_cache) {
@@ -2462,11 +2481,6 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
     virDomainObjPtr vm = NULL;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
-    if (dxml) {
-        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                        _("xml modification unsupported"));
-        return -1;
-    }
 
     qemuDriverLock(driver);
 
@@ -2504,7 +2518,8 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
     }
 
     ret = qemuDomainSaveInternal(driver, dom, vm, path, compressed,
-                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0);
+                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
+                                 dxml);
     vm = NULL;
 
 cleanup:
@@ -2568,7 +2583,8 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     compressed = QEMUD_SAVE_FORMAT_RAW;
     ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
-                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0);
+                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
+                                 NULL);
     vm = NULL;
 
 cleanup:
@@ -3711,7 +3727,8 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         struct qemud_save_header *ret_header,
-                        bool bypass_cache, virFileDirectFdPtr *directFd)
+                        bool bypass_cache, virFileDirectFdPtr *directFd,
+                        const char *xmlin)
 {
     int fd;
     struct qemud_save_header header;
@@ -3795,6 +3812,20 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto error;
+    if (xmlin) {
+        virDomainDefPtr def2 = NULL;
+
+        if (!(def2 = virDomainDefParseString(driver->caps, xmlin,
+                                             QEMU_EXPECTED_VIRT_TYPES,
+                                             VIR_DOMAIN_XML_INACTIVE)))
+            goto error;
+        if (!virDomainDefCheckABIStability(def, def2)) {
+            virDomainDefFree(def2);
+            goto error;
+        }
+        virDomainDefFree(def);
+        def = def2;
+    }
 
     VIR_FREE(xml);
 
@@ -3929,17 +3960,12 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     virFileDirectFdPtr directFd = NULL;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
-    if (dxml) {
-        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                        _("xml modification unsupported"));
-        return -1;
-    }
 
     qemuDriverLock(driver);
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                                 &directFd);
+                                 &directFd, dxml);
     if (fd < 0)
         goto cleanup;
 
@@ -3999,7 +4025,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     virFileDirectFdPtr directFd = NULL;
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
-                                 bypass_cache, &directFd);
+                                 bypass_cache, &directFd, NULL);
     if (fd < 0)
         goto cleanup;
 
