@@ -241,7 +241,7 @@ PDWTAGS = \
 		-e '}'							\
 		> $@-t;							\
 	  case $$? in 8) exit 0;; 0) ;; *) exit 1;; esac;		\
-	  diff -u $@-t $(srcdir)/$@; st=$$?; rm -f $@-t; exit $$st;	\
+	  diff -u $@-t $@; st=$$?; rm -f $@-t; exit $$st;	\
 	else								\
 	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
