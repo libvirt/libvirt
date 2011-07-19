@@ -9,7 +9,7 @@
 # for both remote_protocol.x and qemu_protocol.x, you would run the
 # following:
 #
-# gendispatch.pl -c -t remote ../src/remote/remote_protocol.x
+# gendispatch.pl -t remote ../src/remote/remote_protocol.x
 # gendispatch.pl -t qemu ../src/remote/qemu_protocol.x
 #
 # By Richard Jones <rjones@redhat.com>
@@ -20,8 +20,8 @@ use strict;
 use Getopt::Std;
 
 # Command line options.
-our ($opt_p, $opt_t, $opt_a, $opt_r, $opt_d, $opt_c, $opt_b, $opt_k);
-getopts ('ptardcbk');
+our ($opt_p, $opt_t, $opt_a, $opt_r, $opt_d, $opt_b, $opt_k);
+getopts ('ptardbk');
 
 my $structprefix = shift or die "missing prefix argument";
 my $protocol = shift or die "missing protocol argument";
@@ -44,18 +44,6 @@ sub name_to_ProcName {
 # Read the input file (usually remote_protocol.x) and form an
 # opinion about the name, args and return type of each RPC.
 my ($name, $ProcName, $id, $flags, %calls, @calls);
-
-# only generate a close method if -c was passed
-if ($opt_c) {
-    # REMOTE_PROC_CLOSE has no args or ret.
-    $calls{close} = {
-        name => "close",
-        ProcName => "Close",
-        UC_NAME => "CLOSE",
-        args => "void",
-        ret => "void",
-    };
-}
 
 my $collect_args_members = 0;
 my $collect_ret_members = 0;
@@ -142,6 +130,20 @@ while (<PROTOCOL>) {
         $id = $2;
         $flags = $3;
         $ProcName = name_to_ProcName ($name);
+
+        if (!exists $calls{$name}) {
+            # that the argument and return value cases have not yet added
+            # this procedure to the calls hash means that it has no arguments
+            # and no return value. add it to the calls hash now because all
+            # procedures have to be listed in the calls hash
+            $calls{$name} = {
+                name => $name,
+                ProcName => $ProcName,
+                UC_NAME => uc $name,
+                args => "void",
+                ret => "void"
+            }
+        }
 
         if ($opt_b or $opt_k) {
             if (!($flags =~ m/^\s*\/\*\s*(\S+)\s+(\S+)\s*(.*)\*\/\s*$/)) {
