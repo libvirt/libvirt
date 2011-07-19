@@ -50,6 +50,7 @@
 /mkinstalldirs
 /po/*
 /proxy/
+/python/generator.py.stamp
 /src/libvirt_iohelper
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
