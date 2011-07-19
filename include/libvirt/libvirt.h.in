@@ -676,6 +676,9 @@ typedef enum {
     VIR_MIGRATE_NON_SHARED_DISK   = (1 << 6), /* migration with non-shared storage with full disk copy */
     VIR_MIGRATE_NON_SHARED_INC    = (1 << 7), /* migration with non-shared storage with incremental copy */
                                               /* (same base image shared between source and destination) */
+    VIR_MIGRATE_CHANGE_PROTECTION = (1 << 8), /* protect for changing domain configuration through the
+                                               * whole migration process; this will be used automatically
+                                               * when supported */
 
 } virDomainMigrateFlags;
 

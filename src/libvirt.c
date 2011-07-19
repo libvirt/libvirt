@@ -4139,7 +4139,9 @@ virDomainMigrateVersion3(virDomainPtr domain,
     int ret;
     virDomainInfo info;
     virErrorPtr orig_err = NULL;
-    int cancelled;
+    int cancelled = 1;
+    unsigned long protection = 0;
+
     VIR_DOMAIN_DEBUG(domain, "dconn=%p xmlin=%s, flags=%lx, "
                      "dname=%s, uri=%s, bandwidth=%lu",
                      dconn, NULLSTR(xmlin), flags,
@@ -4155,10 +4157,14 @@ virDomainMigrateVersion3(virDomainPtr domain,
         return NULL;
     }
 
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION))
+        protection = VIR_MIGRATE_CHANGE_PROTECTION;
+
     VIR_DEBUG("Begin3 %p", domain->conn);
     dom_xml = domain->conn->driver->domainMigrateBegin3
         (domain, xmlin, &cookieout, &cookieoutlen,
-         flags, dname, bandwidth);
+         flags | protection, dname, bandwidth);
     if (!dom_xml)
         goto done;
 
@@ -4176,14 +4182,22 @@ virDomainMigrateVersion3(virDomainPtr domain,
         (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
          uri, &uri_out, flags, dname, bandwidth, dom_xml);
     VIR_FREE (dom_xml);
-    if (ret == -1)
-        goto done;
+    if (ret == -1) {
+        if (protection) {
+            /* Begin already started a migration job so we need to cancel it by
+             * calling Confirm while making sure it doesn't overwrite the error
+             */
+            orig_err = virSaveLastError();
+            goto confirm;
+        } else {
+            goto done;
+        }
+    }
 
     if (uri == NULL && uri_out == NULL) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR,
                         _("domainMigratePrepare3 did not set uri"));
         virDispatchError(domain->conn);
-        cancelled = 1;
         goto finish;
     }
     if (uri_out)
@@ -4204,7 +4218,7 @@ virDomainMigrateVersion3(virDomainPtr domain,
     ret = domain->conn->driver->domainMigratePerform3
         (domain, NULL, cookiein, cookieinlen,
          &cookieout, &cookieoutlen, NULL,
-         uri, flags, dname, bandwidth);
+         uri, flags | protection, dname, bandwidth);
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0)
@@ -4249,6 +4263,7 @@ finish:
     if (!orig_err)
         orig_err = virSaveLastError();
 
+confirm:
     /*
      * If cancelled, then src VM will be restarted, else
      * it will be killed
@@ -4261,7 +4276,7 @@ finish:
     cookieoutlen = 0;
     ret = domain->conn->driver->domainMigrateConfirm3
         (domain, cookiein, cookieinlen,
-         flags, cancelled);
+         flags | protection, cancelled);
     /* If Confirm3 returns -1, there's nothing more we can
      * do, but fortunately worst case is that there is a
      * domain left in 'paused' state on source.
@@ -4280,7 +4295,7 @@ finish:
 
 
  /*
-  * In normal migration, the libvirt client co-ordinates communcation
+  * In normal migration, the libvirt client co-ordinates communication
   * between the 2 libvirtd instances on source & dest hosts.
   *
   * In this peer-2-peer migration alternative, the libvirt client
@@ -4365,7 +4380,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
 
 
 /*
- * In normal migration, the libvirt client co-ordinates communcation
+ * In normal migration, the libvirt client co-ordinates communication
  * between the 2 libvirtd instances on source & dest hosts.
  *
  * Some hypervisors support an alternative, direct migration where
@@ -4452,6 +4467,9 @@ virDomainMigrateDirect (virDomainPtr domain,
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
  *   VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+ *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+ *                                 changes during the migration process (set
+ *                                 automatically when supported).
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
@@ -4559,6 +4577,19 @@ virDomainMigrate (virDomainPtr domain,
             goto error;
         }
     } else {
+        /* Change protection requires support only on source side, and
+         * is only needed in v3 migration, which automatically re-adds
+         * the flag for just the source side.  We mask it out for
+         * non-peer2peer to allow migration from newer source to an
+         * older destination that rejects the flag.  */
+        if (flags & VIR_MIGRATE_CHANGE_PROTECTION &&
+            !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("cannot enforce change protection"));
+            goto error;
+        }
+        flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
         if (flags & VIR_MIGRATE_TUNNELLED) {
             virLibConnError(VIR_ERR_OPERATION_INVALID,
                             _("cannot perform tunnelled migration without using peer2peer flag"));
@@ -4627,6 +4658,9 @@ error:
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
  *   VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+ *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+ *                                 changes during the migration process (set
+ *                                 automatically when supported).
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
@@ -4741,6 +4775,19 @@ virDomainMigrate2(virDomainPtr domain,
             goto error;
         }
     } else {
+        /* Change protection requires support only on source side, and
+         * is only needed in v3 migration, which automatically re-adds
+         * the flag for just the source side.  We mask it out for
+         * non-peer2peer to allow migration from newer source to an
+         * older destination that rejects the flag.  */
+        if (flags & VIR_MIGRATE_CHANGE_PROTECTION &&
+            !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("cannot enforce change protection"));
+            goto error;
+        }
+        flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
         if (flags & VIR_MIGRATE_TUNNELLED) {
             virLibConnError(VIR_ERR_OPERATION_INVALID,
                             _("cannot perform tunnelled migration without using peer2peer flag"));
@@ -4816,6 +4863,9 @@ error:
  *                            on the destination host.
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
+ *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+ *                                 changes during the migration process (set
+ *                                 automatically when supported).
  *
  * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
  * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
@@ -4937,6 +4987,9 @@ error:
  *                            on the destination host.
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
+ *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+ *                                 changes during the migration process (set
+ *                                 automatically when supported).
  *
  * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
  *

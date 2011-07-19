@@ -893,6 +893,7 @@ qemudSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
     case VIR_DRV_FEATURE_MIGRATION_V2:
     case VIR_DRV_FEATURE_MIGRATION_V3:
     case VIR_DRV_FEATURE_MIGRATION_P2P:
+    case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
         return 1;
     default:
         return 0;
@@ -7447,12 +7448,56 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
         goto cleanup;
     }
 
-    xml = qemuMigrationBegin(driver, vm, xmlin,
-                             cookieout, cookieoutlen);
+    if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
+        if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+            goto cleanup;
+    } else {
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+            goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if (!(xml = qemuMigrationBegin(driver, vm, xmlin,
+                                   cookieout, cookieoutlen)))
+        goto endjob;
+
+    if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
+        /* We keep the job active across API calls until the confirm() call.
+         * This prevents any other APIs being invoked while migration is taking
+         * place.
+         */
+        if (qemuMigrationJobContinue(vm) == 0) {
+            vm = NULL;
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("domain disappeared"));
+            VIR_FREE(xml);
+            if (cookieout)
+                VIR_FREE(*cookieout);
+        }
+    } else {
+        goto endjob;
+    }
 
 cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
     return xml;
+
+endjob:
+    if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
+        if (qemuMigrationJobFinish(driver, vm) == 0)
+            vm = NULL;
+    } else {
+        if (qemuDomainObjEndJob(driver, vm) == 0)
+            vm = NULL;
+    }
+    goto cleanup;
 }
 
 static int
@@ -7634,6 +7679,7 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+    enum qemuMigrationJobPhase phase;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
@@ -7647,14 +7693,21 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
+    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT))
         goto cleanup;
+
+    if (cancelled)
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
+    else
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3;
+
+    qemuMigrationJobStartPhase(driver, vm, phase);
 
     ret = qemuMigrationConfirm(driver, domain->conn, vm,
                                cookiein, cookieinlen,
                                flags, cancelled);
 
-    if (qemuDomainObjEndJob(driver, vm) == 0) {
+    if (qemuMigrationJobFinish(driver, vm) == 0) {
         vm = NULL;
     } else if (!virDomainObjIsActive(vm) &&
                (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {

@@ -34,7 +34,8 @@
      VIR_MIGRATE_UNDEFINE_SOURCE |              \
      VIR_MIGRATE_PAUSED |                       \
      VIR_MIGRATE_NON_SHARED_DISK |              \
-     VIR_MIGRATE_NON_SHARED_INC)
+     VIR_MIGRATE_NON_SHARED_INC |               \
+     VIR_MIGRATE_CHANGE_PROTECTION)
 
 enum qemuMigrationJobPhase {
     QEMU_MIGRATION_PHASE_NONE = 0,

@@ -1009,6 +1009,7 @@ qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
 }
 
 
+/* The caller is supposed to lock the vm and start a migration job. */
 char *qemuMigrationBegin(struct qemud_driver *driver,
                          virDomainObjPtr vm,
                          const char *xmlin,
@@ -1018,14 +1019,17 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
     char *rv = NULL;
     qemuMigrationCookiePtr mig = NULL;
     virDomainDefPtr def = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, cookieout=%p, cookieoutlen=%p",
               driver, vm, NULLSTR(xmlin), cookieout, cookieoutlen);
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
-    }
+    /* Only set the phase if we are inside QEMU_ASYNC_JOB_MIGRATION_OUT.
+     * Otherwise we will start the async job later in the perform phase losing
+     * change protection.
+     */
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
+        qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
     if (qemuProcessAutoDestroyActive(driver, vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -1063,7 +1067,6 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
     }
 
 cleanup:
-    virDomainObjUnlock(vm);
     qemuMigrationCookieFree(mig);
     virDomainDefFree(def);
     return rv;
@@ -1904,6 +1907,7 @@ static int doPeer2PeerMigrate2(struct qemud_driver *driver,
      * until the migration is complete.
      */
     VIR_DEBUG("Perform %p", sconn);
+    qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM2);
     if (flags & VIR_MIGRATE_TUNNELLED)
         ret = doTunnelMigrate(driver, vm, st,
                               NULL, 0, NULL, NULL,
@@ -1990,6 +1994,11 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
               NULLSTR(dconnuri), NULLSTR(uri), flags,
               NULLSTR(dname), resource);
 
+    /* Unlike the virDomainMigrateVersion3 counterpart, we don't need
+     * to worry about auto-setting the VIR_MIGRATE_CHANGE_PROTECTION
+     * bit here, because we are already running inside the context of
+     * a single job.  */
+
     dom_xml = qemuMigrationBegin(driver, vm, xmlin,
                                  &cookieout, &cookieoutlen);
     if (!dom_xml)
@@ -2038,6 +2047,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
      * confirm migration completion.
      */
     VIR_DEBUG("Perform3 %p uri=%s uri_out=%s", sconn, uri, uri_out);
+    qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
     VIR_FREE(cookiein);
     cookiein = cookieout;
     cookieinlen = cookieoutlen;
@@ -2055,8 +2065,12 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
                               flags, dname, resource);
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
-    if (ret < 0)
+    if (ret < 0) {
         orig_err = virSaveLastError();
+    } else {
+        qemuMigrationJobSetPhase(driver, vm,
+                                 QEMU_MIGRATION_PHASE_PERFORM3_DONE);
+    }
 
     /* If Perform returns < 0, then we need to cancel the VM
      * startup on the destination
@@ -2178,7 +2192,7 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
     p2p = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                    VIR_DRV_FEATURE_MIGRATION_P2P);
         /* v3proto reflects whether the caller used Perform3, but with
-         * p2p migrate, regardless of whether Perform3 or Perform3
+         * p2p migrate, regardless of whether Perform2 or Perform3
          * were used, we decide protocol based on what target supports
          */
     *v3proto = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
@@ -2197,6 +2211,13 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
                         _("guest unexpectedly quit"));
         goto cleanup;
     }
+
+    /* Change protection is only required on the source side (us), and
+     * only for v3 migration when begin and perform are separate jobs.
+     * But peer-2-peer is already a single job, and we still want to
+     * talk to older destinations that would reject the flag.
+     * Therefore it is safe to clear the bit here.  */
+    flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
 
     if (*v3proto)
         ret = doPeer2PeerMigrate3(driver, sconn, dconn, vm, xmlin,
@@ -2219,35 +2240,32 @@ cleanup:
 }
 
 
-int qemuMigrationPerform(struct qemud_driver *driver,
-                         virConnectPtr conn,
-                         virDomainObjPtr vm,
-                         const char *xmlin,
-                         const char *dconnuri,
-                         const char *uri,
-                         const char *cookiein,
-                         int cookieinlen,
-                         char **cookieout,
-                         int *cookieoutlen,
-                         unsigned long flags,
-                         const char *dname,
-                         unsigned long resource,
-                         bool v3proto)
+/*
+ * This implements perform part of the migration protocol when migration job
+ * does not need to be active across several APIs, i.e., peer2peer migration or
+ * perform phase of v2 non-peer2peer migration.
+ */
+static int
+qemuMigrationPerformJob(struct qemud_driver *driver,
+                        virConnectPtr conn,
+                        virDomainObjPtr vm,
+                        const char *xmlin,
+                        const char *dconnuri,
+                        const char *uri,
+                        const char *cookiein,
+                        int cookieinlen,
+                        char **cookieout,
+                        int *cookieoutlen,
+                        unsigned long flags,
+                        const char *dname,
+                        unsigned long resource,
+                        bool v3proto)
 {
     virDomainEventPtr event = NULL;
     int ret = -1;
     int resume = 0;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_DEBUG("driver=%p, conn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
-              "uri=%s, cookiein=%s, cookieinlen=%d, cookieout=%p, "
-              "cookieoutlen=%p, flags=%lx, dname=%s, resource=%lu, v3proto=%d",
-              driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
-              NULLSTR(uri), NULLSTR(cookiein), cookieinlen,
-              cookieout, cookieoutlen, flags, NULLSTR(dname),
-              resource, v3proto);
 
-    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
-                                             QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -2262,52 +2280,33 @@ int qemuMigrationPerform(struct qemud_driver *driver,
         goto endjob;
     }
 
-    memset(&priv->job.info, 0, sizeof(priv->job.info));
-    priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
-
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
-        if (cookieinlen) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            "%s", _("received unexpected cookie with P2P migration"));
-            goto endjob;
-        }
-
-        if (doPeer2PeerMigrate(driver, conn, vm, xmlin,
-                               dconnuri, uri, flags, dname,
-                               resource, &v3proto) < 0)
-            /* doPeer2PeerMigrate already set the error, so just get out */
-            goto endjob;
+        ret = doPeer2PeerMigrate(driver, conn, vm, xmlin,
+                                 dconnuri, uri, flags, dname,
+                                 resource, &v3proto);
     } else {
-        if (dconnuri) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Unexpected dconnuri parameter with non-peer2peer migration"));
-            goto endjob;
-        }
-        if (doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
-                            cookieout, cookieoutlen,
-                            flags, dname, resource) < 0)
-            goto endjob;
+        qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM2);
+        ret = doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
+                              cookieout, cookieoutlen,
+                              flags, dname, resource);
     }
+    if (ret < 0)
+        goto endjob;
 
     /*
      * In v3 protocol, the source VM is not killed off until the
      * confirm step.
      */
-    if (v3proto) {
-        resume = 0;
-    } else {
+    if (!v3proto) {
         qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_MIGRATED);
         virDomainAuditStop(vm, "migrated");
-        resume = 0;
-
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
     }
-
-    ret = 0;
+    resume = 0;
 
 endjob:
     if (resume && virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
@@ -2326,16 +2325,16 @@ endjob:
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
-    if (vm) {
-        if (qemuDomainObjEndAsyncJob(driver, vm) == 0) {
-            vm = NULL;
-        } else if (!virDomainObjIsActive(vm) &&
-                   (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
-            if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
-                virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
-            virDomainRemoveInactive(&driver->domains, vm);
-            vm = NULL;
-        }
+
+    if (qemuMigrationJobFinish(driver, vm) == 0) {
+        vm = NULL;
+    } else if (!virDomainObjIsActive(vm) &&
+               (!vm->persistent ||
+                (ret == 0 && (flags & VIR_MIGRATE_UNDEFINE_SOURCE)))) {
+        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
+            virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
     }
 
 cleanup:
@@ -2346,6 +2345,140 @@ cleanup:
     return ret;
 }
 
+/*
+ * This implements perform phase of v3 migration protocol.
+ */
+static int
+qemuMigrationPerformPhase(struct qemud_driver *driver,
+                          virConnectPtr conn,
+                          virDomainObjPtr vm,
+                          const char *uri,
+                          const char *cookiein,
+                          int cookieinlen,
+                          char **cookieout,
+                          int *cookieoutlen,
+                          unsigned long flags,
+                          const char *dname,
+                          unsigned long resource)
+{
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+    bool resume;
+    int refs;
+
+    /* If we didn't start the job in the begin phase, start it now. */
+    if (!(flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
+        if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+            goto cleanup;
+    } else if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT)) {
+        goto cleanup;
+    }
+
+    qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
+
+    resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
+    ret = doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
+                          cookieout, cookieoutlen,
+                          flags, dname, resource);
+
+    if (ret < 0 && resume &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+        /* we got here through some sort of failure; start the domain again */
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED) < 0) {
+            /* Hm, we already know we are in error here.  We don't want to
+             * overwrite the previous error, though, so we just throw something
+             * to the logs and hope for the best
+             */
+            VIR_ERROR(_("Failed to resume guest %s after failure"),
+                      vm->def->name);
+        }
+
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_RESUMED,
+                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+    }
+
+    if (ret < 0)
+        goto endjob;
+
+    qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE);
+
+endjob:
+    if (ret < 0)
+        refs = qemuMigrationJobFinish(driver, vm);
+    else
+        refs = qemuMigrationJobContinue(vm);
+    if (refs == 0) {
+        vm = NULL;
+    } else if (!virDomainObjIsActive(vm) && !vm->persistent) {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+    return ret;
+}
+
+int
+qemuMigrationPerform(struct qemud_driver *driver,
+                     virConnectPtr conn,
+                     virDomainObjPtr vm,
+                     const char *xmlin,
+                     const char *dconnuri,
+                     const char *uri,
+                     const char *cookiein,
+                     int cookieinlen,
+                     char **cookieout,
+                     int *cookieoutlen,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource,
+                     bool v3proto)
+{
+    VIR_DEBUG("driver=%p, conn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
+              "uri=%s, cookiein=%s, cookieinlen=%d, cookieout=%p, "
+              "cookieoutlen=%p, flags=%lx, dname=%s, resource=%lu, v3proto=%d",
+              driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
+              NULLSTR(uri), NULLSTR(cookiein), cookieinlen,
+              cookieout, cookieoutlen, flags, NULLSTR(dname),
+              resource, v3proto);
+
+    if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
+        if (cookieinlen) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("received unexpected cookie with P2P migration"));
+            return -1;
+        }
+
+        return qemuMigrationPerformJob(driver, conn, vm, xmlin, dconnuri, uri,
+                                       cookiein, cookieinlen, cookieout,
+                                       cookieoutlen, flags, dname, resource,
+                                       v3proto);
+    } else {
+        if (dconnuri) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("Unexpected dconnuri parameter with non-peer2peer migration"));
+            return -1;
+        }
+
+        if (v3proto) {
+            return qemuMigrationPerformPhase(driver, conn, vm, uri,
+                                             cookiein, cookieinlen,
+                                             cookieout, cookieoutlen,
+                                             flags, dname, resource);
+        } else {
+            return qemuMigrationPerformJob(driver, conn, vm, xmlin, dconnuri,
+                                           uri, cookiein, cookieinlen,
+                                           cookieout, cookieoutlen, flags,
+                                           dname, resource, v3proto);
+        }
+    }
+}
 
 #if WITH_MACVTAP
 static void
@@ -2579,14 +2712,13 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
+    qemuMigrationJobSetPhase(driver, vm,
+                             retcode == 0
+                             ? QEMU_MIGRATION_PHASE_CONFIRM3
+                             : QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED);
+
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
         return -1;
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("guest unexpectedly quit"));
-        goto cleanup;
-    }
 
     /* Did the migration go as planned?  If yes, kill off the
      * domain object, but if no, resume CPUs

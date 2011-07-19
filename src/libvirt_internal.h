@@ -73,6 +73,12 @@ enum {
      * domainMigrateConfirm3.
      */
     VIR_DRV_FEATURE_MIGRATION_V3 = 6,
+
+    /*
+     * Driver supports protecting the whole V3-style migration against changes
+     * to domain configuration, i.e., starting from Begin3 and not Perform3.
+     */
+    VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION = 7,
 };
 
 
