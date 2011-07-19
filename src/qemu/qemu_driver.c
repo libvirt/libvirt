@@ -7989,18 +7989,21 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
     if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not being migrated"));
-        goto cleanup;
+        goto endjob;
     }
 
-    VIR_DEBUG("Requesting migration downtime change to %llums", downtime);
-    priv->job.signalsData.migrateDowntime = downtime;
-    priv->job.signals |= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
-    ret = 0;
+    VIR_DEBUG("Setting migration downtime to %llums", downtime);
+    ignore_value(qemuDomainObjEnterMonitor(driver, vm));
+    ret = qemuMonitorSetMigrationDowntime(priv->mon, downtime);
+    qemuDomainObjExitMonitor(driver, vm);
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
 
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
-    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -8018,19 +8021,23 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
+        return -1;
     }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;

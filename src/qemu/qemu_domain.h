@@ -75,11 +75,6 @@ enum qemuDomainAsyncJob {
 enum qemuDomainJobSignals {
     QEMU_JOB_SIGNAL_CANCEL  = 1 << 0, /* Request job cancellation */
     QEMU_JOB_SIGNAL_SUSPEND = 1 << 1, /* Request VM suspend to finish live migration offline */
-    QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME = 1 << 2, /* Request migration downtime change */
-};
-
-struct qemuDomainJobSignalsData {
-    unsigned long long migrateDowntime; /* Data for QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME */
 };
 
 struct qemuDomainJobObj {
@@ -95,7 +90,6 @@ struct qemuDomainJobObj {
 
     virCond signalCond; /* Use to coordinate the safe queries during migration */
     unsigned int signals;       /* Signals for running job */
-    struct qemuDomainJobSignalsData signalsData;    /* Signal specific data */
 };
 
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;

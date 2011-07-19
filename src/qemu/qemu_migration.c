@@ -775,19 +775,6 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
         VIR_DEBUG("Pausing domain for non-live migration");
         if (qemuMigrationSetOffline(driver, vm) < 0)
             VIR_WARN("Unable to pause domain");
-    } else if (priv->job.signals & QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME) {
-        unsigned long long ms = priv->job.signalsData.migrateDowntime;
-
-        priv->job.signals ^= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
-        priv->job.signalsData.migrateDowntime = 0;
-        VIR_DEBUG("Setting migration downtime to %llums", ms);
-        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (ret == 0) {
-            ret = qemuMonitorSetMigrationDowntime(priv->mon, ms);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-        }
-        if (ret < 0)
-            VIR_WARN("Unable to set migration downtime");
     } else {
         ret = 0;
     }
