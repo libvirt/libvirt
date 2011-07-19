@@ -4468,7 +4468,7 @@ doMigrate (void *opaque)
     if (vshCommandOptBool (cmd, "p2p"))
         flags |= VIR_MIGRATE_PEER2PEER;
     if (vshCommandOptBool (cmd, "tunnelled"))
-        flags |= VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER;
+        flags |= VIR_MIGRATE_TUNNELLED;
 
     if (vshCommandOptBool (cmd, "persistent"))
         flags |= VIR_MIGRATE_PERSIST_DEST;
