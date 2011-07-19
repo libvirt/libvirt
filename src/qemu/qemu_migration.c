@@ -2141,6 +2141,8 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
     int ret = -1;
     virConnectPtr dconn = NULL;
     bool p2p;
+    virErrorPtr orig_err = NULL;
+
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
               "uri=%s, flags=%lx, dname=%s, resource=%lu",
               driver, sconn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
@@ -2191,10 +2193,14 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
                                   dconnuri, flags, dname, resource);
 
 cleanup:
-    /* don't call virConnectClose(), because that resets any pending errors */
+    orig_err = virSaveLastError();
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
-    virUnrefConnect(dconn);
+    virConnectClose(dconn);
     qemuDomainObjExitRemoteWithDriver(driver, vm);
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
 
     return ret;
 }
