@@ -1331,6 +1331,8 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     int ret = -1;
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
+    virDomainPausedReason reason;
+    int eventDetail;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1357,34 +1359,32 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     priv = vm->privateData;
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
-        if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
-            VIR_DEBUG("Requesting domain pause on %s",
-                      vm->def->name);
-            priv->job.signals |= QEMU_JOB_SIGNAL_SUSPEND;
-        }
-        ret = 0;
-        goto cleanup;
+        reason = VIR_DOMAIN_PAUSED_MIGRATION;
+        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
     } else {
-        if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_SUSPEND) < 0)
-            goto cleanup;
-
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            "%s", _("domain is not running"));
-            goto endjob;
-        }
-        if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
-            if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_USER) < 0) {
-                goto endjob;
-            }
-            event = virDomainEventNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_SUSPENDED,
-                                             VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
-        }
-        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
-            goto endjob;
-        ret = 0;
+        reason = VIR_DOMAIN_PAUSED_USER;
+        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
     }
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_SUSPEND) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
+        if (qemuProcessStopCPUs(driver, vm, reason) < 0) {
+            goto endjob;
+        }
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_SUSPENDED,
+                                         eventDetail);
+    }
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto endjob;
+    ret = 0;
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)

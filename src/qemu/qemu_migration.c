@@ -770,11 +770,6 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
         if (ret < 0) {
             VIR_WARN("Unable to cancel job");
         }
-    } else if (priv->job.signals & QEMU_JOB_SIGNAL_SUSPEND) {
-        priv->job.signals ^= QEMU_JOB_SIGNAL_SUSPEND;
-        VIR_DEBUG("Pausing domain for non-live migration");
-        if (qemuMigrationSetOffline(driver, vm) < 0)
-            VIR_WARN("Unable to pause domain");
     } else {
         ret = 0;
     }
@@ -2861,6 +2856,7 @@ qemuMigrationJobStart(struct qemud_driver *driver,
         qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
     } else {
         qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK |
+                                     JOB_MASK(QEMU_JOB_SUSPEND) |
                                      JOB_MASK(QEMU_JOB_MIGRATION_OP));
     }
 

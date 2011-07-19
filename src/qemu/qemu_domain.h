@@ -74,7 +74,6 @@ enum qemuDomainAsyncJob {
 
 enum qemuDomainJobSignals {
     QEMU_JOB_SIGNAL_CANCEL  = 1 << 0, /* Request job cancellation */
-    QEMU_JOB_SIGNAL_SUSPEND = 1 << 1, /* Request VM suspend to finish live migration offline */
 };
 
 struct qemuDomainJobObj {
