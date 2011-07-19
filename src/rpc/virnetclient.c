@@ -146,6 +146,7 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
                                   client) < 0)
         VIR_DEBUG("Failed to add event watch, disabling events");
 
+    VIR_DEBUG("client=%p refs=%d", client, client->refs);
     return client;
 
 no_memory:
@@ -214,6 +215,7 @@ void virNetClientRef(virNetClientPtr client)
 {
     virNetClientLock(client);
     client->refs++;
+    VIR_DEBUG("client=%p refs=%d", client, client->refs);
     virNetClientUnlock(client);
 }
 
@@ -226,6 +228,7 @@ void virNetClientFree(virNetClientPtr client)
         return;
 
     virNetClientLock(client);
+    VIR_DEBUG("client=%p refs=%d", client, client->refs);
     client->refs--;
     if (client->refs > 0) {
         virNetClientUnlock(client);
