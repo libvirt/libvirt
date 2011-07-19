@@ -801,24 +801,6 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
         }
         if (ret < 0)
             VIR_WARN("Unable to set migration speed");
-    } else if (priv->job.signals & QEMU_JOB_SIGNAL_BLKSTAT) {
-        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (ret == 0) {
-            ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                  priv->job.signalsData.statDevName,
-                                  &priv->job.signalsData.blockStat->rd_req,
-                                  &priv->job.signalsData.blockStat->rd_bytes,
-                                  &priv->job.signalsData.blockStat->wr_req,
-                                  &priv->job.signalsData.blockStat->wr_bytes,
-                                  &priv->job.signalsData.blockStat->errs);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-        }
-
-        *priv->job.signalsData.statRetCode = ret;
-        priv->job.signals ^= QEMU_JOB_SIGNAL_BLKSTAT;
-
-        if (ret < 0)
-            VIR_WARN("Unable to get block statistics");
     } else {
         ret = 0;
     }

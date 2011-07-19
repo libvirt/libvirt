@@ -6634,46 +6634,28 @@ qemudDomainBlockStats (virDomainPtr dom,
     }
 
     priv = vm->privateData;
-    if ((priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
-        || (priv->job.asyncJob == QEMU_ASYNC_JOB_SAVE)) {
-        virDomainObjRef(vm);
-        while (priv->job.signals & QEMU_JOB_SIGNAL_BLKSTAT)
-            ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        goto cleanup;
 
-        priv->job.signalsData.statDevName = disk->info.alias;
-        priv->job.signalsData.blockStat = stats;
-        priv->job.signalsData.statRetCode = &ret;
-        priv->job.signals |= QEMU_JOB_SIGNAL_BLKSTAT;
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
 
-        while (priv->job.signals & QEMU_JOB_SIGNAL_BLKSTAT)
-            ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
-
-        if (virDomainObjUnref(vm) == 0)
-            vm = NULL;
-    } else {
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-            goto cleanup;
-
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            "%s", _("domain is not running"));
-            goto endjob;
-        }
-
-        ignore_value(qemuDomainObjEnterMonitor(driver, vm));
-        ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                           disk->info.alias,
-                                           &stats->rd_req,
-                                           &stats->rd_bytes,
-                                           &stats->wr_req,
-                                           &stats->wr_bytes,
-                                           &stats->errs);
-        qemuDomainObjExitMonitor(driver, vm);
+    ignore_value(qemuDomainObjEnterMonitor(driver, vm));
+    ret = qemuMonitorGetBlockStatsInfo(priv->mon,
+                                       disk->info.alias,
+                                       &stats->rd_req,
+                                       &stats->rd_bytes,
+                                       &stats->wr_req,
+                                       &stats->wr_bytes,
+                                       &stats->errs);
+    qemuDomainObjExitMonitor(driver, vm);
 
 endjob:
-        if (qemuDomainObjEndJob(driver, vm) == 0)
-            vm = NULL;
-    }
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
 
 cleanup:
     if (vm)

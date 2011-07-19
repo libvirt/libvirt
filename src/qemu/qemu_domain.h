@@ -76,15 +76,11 @@ enum qemuDomainJobSignals {
     QEMU_JOB_SIGNAL_SUSPEND = 1 << 1, /* Request VM suspend to finish live migration offline */
     QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME = 1 << 2, /* Request migration downtime change */
     QEMU_JOB_SIGNAL_MIGRATE_SPEED = 1 << 3, /* Request migration speed change */
-    QEMU_JOB_SIGNAL_BLKSTAT = 1 << 4, /* Request blkstat during migration */
 };
 
 struct qemuDomainJobSignalsData {
     unsigned long long migrateDowntime; /* Data for QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME */
     unsigned long migrateBandwidth; /* Data for QEMU_JOB_SIGNAL_MIGRATE_SPEED */
-    char *statDevName; /* Device name used by blkstat calls */
-    virDomainBlockStatsPtr blockStat; /* Block statistics for QEMU_JOB_SIGNAL_BLKSTAT */
-    int *statRetCode; /* Return code for the blkstat calls */
 };
 
 struct qemuDomainJobObj {
