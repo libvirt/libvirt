@@ -109,7 +109,8 @@ int virNetSocketAccept(virNetSocketPtr sock,
 int virNetSocketAddIOCallback(virNetSocketPtr sock,
                               int events,
                               virNetSocketIOFunc func,
-                              void *opaque);
+                              void *opaque,
+                              virFreeCallback ff);
 
 void virNetSocketUpdateIOCallback(virNetSocketPtr sock,
                                   int events);

@@ -160,6 +160,13 @@ virNetServerClientCalculateHandleMode(virNetServerClientPtr client) {
     return mode;
 }
 
+static void virNetServerClientEventFree(void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+
+    virNetServerClientFree(client);
+}
+
 /*
  * @server: a locked or unlocked server object
  * @client: a locked client object
@@ -168,12 +175,16 @@ static int virNetServerClientRegisterEvent(virNetServerClientPtr client)
 {
     int mode = virNetServerClientCalculateHandleMode(client);
 
+    client->refs++;
     VIR_DEBUG("Registering client event callback %d", mode);
     if (virNetSocketAddIOCallback(client->sock,
                                   mode,
                                   virNetServerClientDispatchEvent,
-                                  client) < 0)
+                                  client,
+                                  virNetServerClientEventFree) < 0) {
+        client->refs--;
         return -1;
+    }
 
     return 0;
 }

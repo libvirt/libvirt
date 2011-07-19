@@ -91,6 +91,14 @@ error:
 }
 
 
+static void virNetServerServiceEventFree(void *opaque)
+{
+    virNetServerServicePtr svc = opaque;
+
+    virNetServerServiceFree(svc);
+}
+
+
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int auth,
@@ -124,11 +132,15 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
 
         /* IO callback is initially disabled, until we're ready
          * to deal with incoming clients */
+        virNetServerServiceRef(svc);
         if (virNetSocketAddIOCallback(svc->socks[i],
                                       0,
                                       virNetServerServiceAccept,
-                                      svc) < 0)
+                                      svc,
+                                      virNetServerServiceEventFree) < 0) {
+            virNetServerServiceFree(svc);
             goto error;
+        }
     }
 
 
@@ -180,11 +192,15 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
 
         /* IO callback is initially disabled, until we're ready
          * to deal with incoming clients */
+        virNetServerServiceRef(svc);
         if (virNetSocketAddIOCallback(svc->socks[i],
                                       0,
                                       virNetServerServiceAccept,
-                                      svc) < 0)
+                                      svc,
+                                      virNetServerServiceEventFree) < 0) {
+            virNetServerServiceFree(svc);
             goto error;
+        }
     }
 
 

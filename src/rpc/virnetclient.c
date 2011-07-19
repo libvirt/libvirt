@@ -110,6 +110,13 @@ static void virNetClientIncomingEvent(virNetSocketPtr sock,
                                       int events,
                                       void *opaque);
 
+static void virNetClientEventFree(void *opaque)
+{
+    virNetClientPtr client = opaque;
+
+    virNetClientFree(client);
+}
+
 static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
                                        const char *hostname)
 {
@@ -140,11 +147,15 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
         goto no_memory;
 
     /* Set up a callback to listen on the socket data */
+    client->refs++;
     if (virNetSocketAddIOCallback(client->sock,
                                   VIR_EVENT_HANDLE_READABLE,
                                   virNetClientIncomingEvent,
-                                  client) < 0)
+                                  client,
+                                  virNetClientEventFree) < 0) {
+        client->refs--;
         VIR_DEBUG("Failed to add event watch, disabling events");
+    }
 
     VIR_DEBUG("client=%p refs=%d", client, client->refs);
     return client;

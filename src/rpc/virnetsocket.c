@@ -58,8 +58,12 @@ struct _virNetSocket {
     pid_t pid;
     int errfd;
     bool client;
+
+    /* Event callback fields */
     virNetSocketIOFunc func;
     void *opaque;
+    virFreeCallback ff;
+
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
     char *localAddrStr;
@@ -1121,10 +1125,31 @@ static void virNetSocketEventHandle(int watch ATTRIBUTE_UNUSED,
 }
 
 
+static void virNetSocketEventFree(void *opaque)
+{
+    virNetSocketPtr sock = opaque;
+    virFreeCallback ff;
+    void *eopaque;
+
+    virMutexLock(&sock->lock);
+    ff = sock->ff;
+    eopaque = sock->opaque;
+    sock->func = NULL;
+    sock->ff = NULL;
+    sock->opaque = NULL;
+    virMutexUnlock(&sock->lock);
+
+    if (ff)
+        ff(eopaque);
+
+    virNetSocketFree(sock);
+}
+
 int virNetSocketAddIOCallback(virNetSocketPtr sock,
                               int events,
                               virNetSocketIOFunc func,
-                              void *opaque)
+                              void *opaque,
+                              virFreeCallback ff)
 {
     int ret = -1;
 
@@ -1134,16 +1159,19 @@ int virNetSocketAddIOCallback(virNetSocketPtr sock,
         goto cleanup;
     }
 
+    sock->refs++;
     if ((sock->watch = virEventAddHandle(sock->fd,
                                          events,
                                          virNetSocketEventHandle,
                                          sock,
-                                         NULL)) < 0) {
+                                         virNetSocketEventFree)) < 0) {
         VIR_DEBUG("Failed to register watch on socket %p", sock);
+        sock->refs--;
         goto cleanup;
     }
     sock->func = func;
     sock->opaque = opaque;
+    sock->ff = ff;
 
     ret = 0;
 
