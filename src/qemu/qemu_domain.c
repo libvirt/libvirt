@@ -26,6 +26,7 @@
 #include "qemu_domain.h"
 #include "qemu_command.h"
 #include "qemu_capabilities.h"
+#include "qemu_migration.h"
 #include "memory.h"
 #include "logging.h"
 #include "virterror_internal.h"
@@ -72,6 +73,8 @@ qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
     switch (job) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
     case QEMU_ASYNC_JOB_MIGRATION_IN:
+        return qemuMigrationJobPhaseTypeToString(phase);
+
     case QEMU_ASYNC_JOB_SAVE:
     case QEMU_ASYNC_JOB_DUMP:
     case QEMU_ASYNC_JOB_NONE:
@@ -92,6 +95,8 @@ qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
     switch (job) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
     case QEMU_ASYNC_JOB_MIGRATION_IN:
+        return qemuMigrationJobPhaseTypeFromString(phase);
+
     case QEMU_ASYNC_JOB_SAVE:
     case QEMU_ASYNC_JOB_DUMP:
     case QEMU_ASYNC_JOB_NONE:

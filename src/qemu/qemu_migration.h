@@ -23,6 +23,7 @@
 # define __QEMU_MIGRATION_H__
 
 # include "qemu_conf.h"
+# include "qemu_domain.h"
 
 /* All supported qemu migration flags.  */
 # define QEMU_MIGRATION_FLAGS                   \
@@ -34,6 +35,42 @@
      VIR_MIGRATE_PAUSED |                       \
      VIR_MIGRATE_NON_SHARED_DISK |              \
      VIR_MIGRATE_NON_SHARED_INC)
+
+enum qemuMigrationJobPhase {
+    QEMU_MIGRATION_PHASE_NONE = 0,
+    QEMU_MIGRATION_PHASE_PERFORM2,
+    QEMU_MIGRATION_PHASE_BEGIN3,
+    QEMU_MIGRATION_PHASE_PERFORM3,
+    QEMU_MIGRATION_PHASE_PERFORM3_DONE,
+    QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED,
+    QEMU_MIGRATION_PHASE_CONFIRM3,
+    QEMU_MIGRATION_PHASE_PREPARE,
+    QEMU_MIGRATION_PHASE_FINISH2,
+    QEMU_MIGRATION_PHASE_FINISH3,
+
+    QEMU_MIGRATION_PHASE_LAST
+};
+VIR_ENUM_DECL(qemuMigrationJobPhase)
+
+int qemuMigrationJobStart(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          enum qemuDomainAsyncJob job)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+void qemuMigrationJobSetPhase(struct qemud_driver *driver,
+                              virDomainObjPtr vm,
+                              enum qemuMigrationJobPhase phase)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuMigrationJobStartPhase(struct qemud_driver *driver,
+                                virDomainObjPtr vm,
+                                enum qemuMigrationJobPhase phase)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int qemuMigrationJobContinue(virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+bool qemuMigrationJobIsActive(virDomainObjPtr vm,
+                              enum qemuDomainAsyncJob job)
+    ATTRIBUTE_NONNULL(1);
+int qemuMigrationJobFinish(struct qemud_driver *driver, virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 bool qemuMigrationIsAllowed(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);

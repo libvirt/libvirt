@@ -46,6 +46,19 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_ENUM_IMPL(qemuMigrationJobPhase, QEMU_MIGRATION_PHASE_LAST,
+              "none",
+              "perform2",
+              "begin3",
+              "perform3",
+              "perform3_done",
+              "confirm3_cancelled",
+              "confirm3",
+              "prepare",
+              "finish2",
+              "finish3",
+);
+
 enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
     QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
@@ -2775,4 +2788,82 @@ cleanup:
         virCgroupFree(&cgroup);
     }
     return ret;
+}
+
+int
+qemuMigrationJobStart(struct qemud_driver *driver,
+                      virDomainObjPtr vm,
+                      enum qemuDomainAsyncJob job)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm, job) < 0)
+        return -1;
+
+    if (job == QEMU_ASYNC_JOB_MIGRATION_IN)
+        qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
+    else
+        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK);
+
+    priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
+
+    return 0;
+}
+
+void
+qemuMigrationJobSetPhase(struct qemud_driver *driver,
+                         virDomainObjPtr vm,
+                         enum qemuMigrationJobPhase phase)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (phase < priv->job.phase) {
+        VIR_ERROR(_("migration protocol going backwards %s => %s"),
+                  qemuMigrationJobPhaseTypeToString(priv->job.phase),
+                  qemuMigrationJobPhaseTypeToString(phase));
+        return;
+    }
+
+    qemuDomainObjSetJobPhase(driver, vm, phase);
+}
+
+void
+qemuMigrationJobStartPhase(struct qemud_driver *driver,
+                           virDomainObjPtr vm,
+                           enum qemuMigrationJobPhase phase)
+{
+    virDomainObjRef(vm);
+    qemuMigrationJobSetPhase(driver, vm, phase);
+}
+
+int
+qemuMigrationJobContinue(virDomainObjPtr vm)
+{
+    return virDomainObjUnref(vm);
+}
+
+bool
+qemuMigrationJobIsActive(virDomainObjPtr vm,
+                         enum qemuDomainAsyncJob job)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (priv->job.asyncJob != job) {
+        const char *msg;
+
+        if (job == QEMU_ASYNC_JOB_MIGRATION_IN)
+            msg = _("domain '%s' is not processing incoming migration");
+        else
+            msg = _("domain '%s' is not being migrated");
+
+        qemuReportError(VIR_ERR_OPERATION_INVALID, msg, vm->def->name);
+        return false;
+    }
+    return true;
+}
+
+int
+qemuMigrationJobFinish(struct qemud_driver *driver, virDomainObjPtr vm)
+{
+    return qemuDomainObjEndAsyncJob(driver, vm);
 }
