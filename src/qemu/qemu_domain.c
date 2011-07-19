@@ -645,7 +645,7 @@ void qemuDomainSetNamespaceHooks(virCapsPtr caps)
     caps->ns.href = qemuDomainDefNamespaceHref;
 }
 
-void
+static void
 qemuDomainObjSaveJob(struct qemud_driver *driver, virDomainObjPtr obj)
 {
     if (!virDomainObjIsActive(obj)) {

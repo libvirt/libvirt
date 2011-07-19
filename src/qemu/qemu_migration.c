@@ -1130,9 +1130,9 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
                                        QEMU_MIGRATION_COOKIE_LOCKSTATE)))
         goto cleanup;
 
-    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
-                                             QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+    if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto cleanup;
+    qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PREPARE);
 
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
@@ -1190,28 +1190,19 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_MIGRATED);
-    ret = 0;
 
-endjob:
-    if (qemuDomainObjEndAsyncJob(driver, vm) == 0) {
-        vm = NULL;
-    } else if (!vm->persistent && !virDomainObjIsActive(vm)) {
-        virDomainRemoveInactive(&driver->domains, vm);
-        vm = NULL;
-    }
-
-    /* We set a fake job active which is held across
-     * API calls until the finish() call. This prevents
-     * any other APIs being invoked while incoming
-     * migration is taking place
+    /* We keep the job active across API calls until the finish() call.
+     * This prevents any other APIs being invoked while incoming
+     * migration is taking place.
      */
-    if (vm &&
-        virDomainObjIsActive(vm)) {
-        priv->job.asyncJob = QEMU_ASYNC_JOB_MIGRATION_IN;
-        qemuDomainObjSaveJob(driver, vm);
-        priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
-        priv->job.start = now;
+    if (qemuMigrationJobContinue(vm) == 0) {
+        vm = NULL;
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("domain disappeared"));
+        goto cleanup;
     }
+
+    ret = 0;
 
 cleanup:
     virDomainDefFree(def);
@@ -1223,6 +1214,15 @@ cleanup:
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);
     return ret;
+
+endjob:
+    if (qemuMigrationJobFinish(driver, vm) == 0) {
+        vm = NULL;
+    } else if (!vm->persistent) {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+    goto cleanup;
 }
 
 
@@ -2403,27 +2403,23 @@ qemuMigrationFinish(struct qemud_driver *driver,
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
     int newVM = 1;
-    qemuDomainObjPrivatePtr priv = NULL;
     qemuMigrationCookiePtr mig = NULL;
+    virErrorPtr orig_err = NULL;
+
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
               driver, dconn, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, retcode);
-    virErrorPtr orig_err = NULL;
 
-    priv = vm->privateData;
-    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_IN) {
-        qemuReportError(VIR_ERR_NO_DOMAIN,
-                        _("domain '%s' is not processing incoming migration"), vm->def->name);
+    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_IN))
         goto cleanup;
-    }
-    qemuDomainObjDiscardAsyncJob(driver, vm);
+
+    qemuMigrationJobStartPhase(driver, vm,
+                               v3proto ? QEMU_MIGRATION_PHASE_FINISH3
+                                       : QEMU_MIGRATION_PHASE_FINISH2);
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
-        goto cleanup;
-
-    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+        goto endjob;
 
     /* Did the migration go as planned?  If yes, return the domain
      * object, but if no, clean up the empty qemu process.
@@ -2454,21 +2450,14 @@ qemuMigrationFinish(struct qemud_driver *driver,
                  */
 
                 /*
-                 * In v3 protocol, the source VM is still available to
-                 * restart during confirm() step, so we kill it off
-                 * now.
-                 * In v2 protocol, the source is dead, so we leave
-                 * target in paused state, in case admin can fix
-                 * things up
+                 * However, in v3 protocol, the source VM is still available
+                 * to restart during confirm() step, so we kill it off now.
                  */
                 if (v3proto) {
                     qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
                     virDomainAuditStop(vm, "failed");
-                    if (newVM) {
-                        if (qemuDomainObjEndJob(driver, vm) > 0)
-                            virDomainRemoveInactive(&driver->domains, vm);
-                        vm = NULL;
-                    }
+                    if (newVM)
+                        vm->persistent = 0;
                 }
                 goto endjob;
             }
@@ -2481,7 +2470,6 @@ qemuMigrationFinish(struct qemud_driver *driver,
             if (event)
                 qemuDomainEventQueue(driver, event);
             event = NULL;
-
         }
 
         if (!(flags & VIR_MIGRATE_PAUSED)) {
@@ -2513,11 +2501,6 @@ qemuMigrationFinish(struct qemud_driver *driver,
                     event = virDomainEventNewFromObj(vm,
                                                      VIR_DOMAIN_EVENT_STOPPED,
                                                      VIR_DOMAIN_EVENT_STOPPED_FAILED);
-                    if (!vm->persistent) {
-                        if (qemuDomainObjEndJob(driver, vm) > 0)
-                            virDomainRemoveInactive(&driver->domains, vm);
-                        vm = NULL;
-                    }
                 }
                 goto endjob;
             }
@@ -2549,20 +2532,20 @@ qemuMigrationFinish(struct qemud_driver *driver,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
-        if (!vm->persistent) {
-            if (qemuDomainObjEndJob(driver, vm) > 0)
-                virDomainRemoveInactive(&driver->domains, vm);
-            vm = NULL;
-        }
     }
 
     if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0)
         VIR_WARN("Unable to encode migration cookie");
 
 endjob:
-    if (vm &&
-        qemuDomainObjEndJob(driver, vm) == 0)
-        vm = NULL;
+    if (vm) {
+        if (qemuMigrationJobFinish(driver, vm) == 0) {
+            vm = NULL;
+        } else if (!vm->persistent && !virDomainObjIsActive(vm)) {
+            virDomainRemoveInactive(&driver->domains, vm);
+            vm = NULL;
+        }
+    }
 
 cleanup:
     if (vm)
