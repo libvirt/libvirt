@@ -544,7 +544,7 @@ type attribute for the <domain> element of XML.
 =item B<migrate> [I<--live>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--verbose>] I<domain-id> I<desturi> [I<migrateuri>]
-[I<dname>] [I<--timeout> B<seconds>]
+[I<dname>] [I<--timeout> B<seconds>] [I<--xml> B<file>]
 
 Migrate domain to another host.  Add I<--live> for live migration; I<--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -559,7 +559,11 @@ I<--verbose> displays the progress of migration.
 The I<desturi> is the connection URI of the destination host, and
 I<migrateuri> is the migration URI, which usually can be omitted.
 I<dname> is used for renaming the domain to new name during migration, which
-also usually can be omitted.
+also usually can be omitted.  Likewise, I<--xml> B<file> is usually
+omitted, but can be used to supply an alternative XML file for use on
+the destination to supply a larger set of changes to any host-specific
+portions of the domain XML, such as accounting for naming differences
+between source and destination in accessing underlying storage.
 
 I<--timeout> B<seconds> forces guest to suspend when live migration exceeds
 that many seconds, and
@@ -599,19 +603,25 @@ domain actually reboots.
 The exact behavior of a domain when it reboots is set by the
 I<on_reboot> parameter in the domain's XML definition.
 
-=item B<restore> I<state-file> [I<--bypass-cache>]
+=item B<restore> I<state-file> [I<--bypass-cache>] [I<--xml> B<file>]
 
 Restores a domain from a B<virsh save> state file. See I<save> for more info.
 
 If I<--bypass-cache> is specified, the restore will avoid the file system
 cache, although this may slow down the operation.
 
+I<--xml> B<file> is usually omitted, but can be used to supply an
+alternative XML file for use on the restored guest with changes only
+in the host-specific portions of the domain XML.  For example, it can
+be used to account for file naming differences in underlying storage
+due to disk snapshots taken after the guest was saved.
+
 B<Note>: To avoid corrupting file system contents within the domain, you
 should not reuse the saved state file for a second B<restore> unless you
 have also reverted all storage volumes back to the same contents as when
 the state file was created.
 
-=item B<save> I<domain-id> I<state-file> [I<--bypass-cache>]
+=item B<save> I<domain-id> I<state-file> [I<--bypass-cache>] [I<--xml> B<file>]
 
 Saves a running domain (RAM, but not disk state) to a state file so that
 it can be restored
@@ -624,6 +634,12 @@ cache, although this may slow down the operation.
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
 severed upon restore, as TCP timeouts may have expired.
+
+I<--xml> B<file> is usually omitted, but can be used to supply an
+alternative XML file for use on the restored guest with changes only
+in the host-specific portions of the domain XML.  For example, it can
+be used to account for file naming differences that are planned to
+be made via disk snapshots of underlying storage after the guest is saved.
 
 Domain saved state files assume that disk images will be unchanged
 between the creation and restore point.  For a more complete system

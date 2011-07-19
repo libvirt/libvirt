@@ -1606,6 +1606,8 @@ static const vshCmdOptDef opts_save[] = {
     {"bypass-cache", VSH_OT_BOOL, 0, N_("avoid file system cache when saving")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("where to save the data")},
+    {"xml", VSH_OT_STRING, 0,
+     N_("filename containing updated XML for the target")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1617,6 +1619,8 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     const char *to = NULL;
     bool ret = false;
     int flags = 0;
+    const char *xmlfile = NULL;
+    char *xml = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1627,10 +1631,20 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
 
+    if (vshCommandOptString(cmd, "xml", &xmlfile) < 0) {
+        vshError(ctl, "%s", _("malformed xml argument"));
+        return false;
+    }
+
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if ((flags ? virDomainSaveFlags(dom, to, NULL, flags)
+    if (xmlfile &&
+        virFileReadAll(xmlfile, 8192, &xml) < 0)
+        goto cleanup;
+
+    if (((flags || xml)
+         ? virDomainSaveFlags(dom, to, xml, flags)
          : virDomainSave(dom, to)) < 0) {
         vshError(ctl, _("Failed to save domain %s to %s"), name, to);
         goto cleanup;
@@ -1640,6 +1654,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    VIR_FREE(xml);
     virDomainFree(dom);
     return ret;
 }
@@ -2016,6 +2031,8 @@ static const vshCmdOptDef opts_restore[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("the state to restore")},
     {"bypass-cache", VSH_OT_BOOL, 0,
      N_("avoid file system cache when restoring")},
+    {"xml", VSH_OT_STRING, 0,
+     N_("filename containing updated XML for the target")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2025,6 +2042,8 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = false;
     int flags = 0;
+    const char *xmlfile = NULL;
+    char *xml = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -2035,7 +2054,17 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
 
-    if ((flags ? virDomainRestoreFlags(ctl->conn, from, NULL, flags)
+    if (vshCommandOptString(cmd, "xml", &xmlfile) < 0) {
+        vshError(ctl, "%s", _("malformed xml argument"));
+        return false;
+    }
+
+    if (xmlfile &&
+        virFileReadAll(xmlfile, 8192, &xml) < 0)
+        goto cleanup;
+
+    if (((flags || xml)
+         ? virDomainRestoreFlags(ctl->conn, from, xml, flags)
          : virDomainRestore(ctl->conn, from)) < 0) {
         vshError(ctl, _("Failed to restore domain from %s"), from);
         goto cleanup;
@@ -2045,6 +2074,7 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    VIR_FREE(xml);
     return ret;
 }
 
