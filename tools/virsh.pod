@@ -1077,20 +1077,24 @@ Returns the list of active host interfaces.  If I<--all> is specified
 this will also include defined but inactive interfaces.  If
 I<--inactive> is specified only the inactive ones will be listed.
 
-=item B<iface-name> I<iface-MAC>
+=item B<iface-name> I<interface>
 
-Convert a host interface MAC to interface name, if the I<iface-MAC> is
-unique among the host's interfaces.
+Convert a host interface MAC to interface name, if the MAC address is unique
+among the host's interfaces.
 
-=item B<iface-name> I<iface-MAC>
+I<interface> specifies the interface MAC address.
+
+=item B<iface-mac> I<interface>
 
 Convert a host interface name to MAC address.
 
-=item B<iface-start> I<iface>
+I<interface> specifies the interface name.
+
+=item B<iface-start> I<interface>
 
 Start a (previously defined) host interface, such as by running "if-up".
 
-=item B<iface-undefine> I<iface>
+=item B<iface-undefine> I<interface>
 
 Undefine the configuration for an inactive host interface.
 
