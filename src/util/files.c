@@ -1,9 +1,9 @@
 /*
- * memory.c: safer file handling
+ * files.c: safer file handling
  *
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
- * Copyright (C) 2010 RedHat, Inc.
  * Copyright (C) 2010 Eric Blake
  *
  * This library is free software; you can redistribute it and/or

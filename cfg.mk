@@ -584,6 +584,9 @@ sc_copyright_format:
 	@prohibit='Copyright [^(].*Red 'Hat				\
 	halt='consistently use (C) in Red Hat copyright'		\
 	  $(_sc_search_regexp)
+	@prohibit='\<Red''Hat\>'					\
+	halt='spell Red Hat as two words'				\
+	  $(_sc_search_regexp)
 
 # Some functions/macros produce messages intended solely for developers
 # and maintainers.  Do not mark them for translation.
