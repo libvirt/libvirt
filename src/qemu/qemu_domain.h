@@ -38,7 +38,9 @@
 
 # define JOB_MASK(job)                  (1 << (job - 1))
 # define DEFAULT_JOB_MASK               \
-    (JOB_MASK(QEMU_JOB_QUERY) | JOB_MASK(QEMU_JOB_DESTROY))
+    (JOB_MASK(QEMU_JOB_QUERY) |         \
+     JOB_MASK(QEMU_JOB_DESTROY) |       \
+     JOB_MASK(QEMU_JOB_ABORT))
 
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
@@ -49,6 +51,7 @@ enum qemuDomainJob {
     QEMU_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
     QEMU_JOB_SUSPEND,       /* Suspends (stops vCPUs) the domain */
     QEMU_JOB_MODIFY,        /* May change state */
+    QEMU_JOB_ABORT,         /* Abort current async job */
     QEMU_JOB_MIGRATION_OP,  /* Operation influencing outgoing migration */
 
     /* The following two items must always be the last items before JOB_LAST */
@@ -72,10 +75,6 @@ enum qemuDomainAsyncJob {
     QEMU_ASYNC_JOB_LAST
 };
 
-enum qemuDomainJobSignals {
-    QEMU_JOB_SIGNAL_CANCEL  = 1 << 0, /* Request job cancellation */
-};
-
 struct qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
     enum qemuDomainJob active;          /* Currently running job */
@@ -86,9 +85,6 @@ struct qemuDomainJobObj {
     unsigned long long mask;            /* Jobs allowed during async job */
     unsigned long long start;           /* When the async job started */
     virDomainJobInfo info;              /* Async job progress data */
-
-    virCond signalCond; /* Use to coordinate the safe queries during migration */
-    unsigned int signals;       /* Signals for running job */
 };
 
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;

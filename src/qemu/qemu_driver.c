@@ -7925,24 +7925,36 @@ static int qemuDomainAbortJob(virDomainPtr dom) {
         goto cleanup;
     }
 
-    priv = vm->privateData;
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_ABORT) < 0)
+        goto cleanup;
 
     if (virDomainObjIsActive(vm)) {
-        if (priv->job.asyncJob) {
-            VIR_DEBUG("Requesting cancellation of job on vm %s", vm->def->name);
-            priv->job.signals |= QEMU_JOB_SIGNAL_CANCEL;
-        } else {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            "%s", _("no job is active on the domain"));
-            goto cleanup;
-        }
-    } else {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
-    ret = 0;
+    priv = vm->privateData;
+
+    if (!priv->job.asyncJob) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("no job is active on the domain"));
+        goto endjob;
+    } else if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("cannot abort incoming migration;"
+                          " use virDomainDestroy instead"));
+        goto endjob;
+    }
+
+    VIR_DEBUG("Cancelling job at client request");
+    ignore_value(qemuDomainObjEnterMonitor(driver, vm));
+    ret = qemuMonitorMigrateCancel(priv->mon);
+    qemuDomainObjExitMonitor(driver, vm);
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
 
 cleanup:
     if (vm)

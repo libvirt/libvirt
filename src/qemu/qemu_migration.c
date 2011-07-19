@@ -743,42 +743,6 @@ qemuMigrationSetOffline(struct qemud_driver *driver,
 
 
 static int
-qemuMigrationProcessJobSignals(struct qemud_driver *driver,
-                               virDomainObjPtr vm,
-                               const char *job,
-                               bool cleanup)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
-                        job, _("guest unexpectedly quit"));
-        if (cleanup)
-            priv->job.signals = 0;
-        return -1;
-    }
-
-    if (priv->job.signals & QEMU_JOB_SIGNAL_CANCEL) {
-        priv->job.signals ^= QEMU_JOB_SIGNAL_CANCEL;
-        VIR_DEBUG("Cancelling job at client request");
-        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (ret == 0) {
-            ret = qemuMonitorMigrateCancel(priv->mon);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-        }
-        if (ret < 0) {
-            VIR_WARN("Unable to cancel job");
-        }
-    } else {
-        ret = 0;
-    }
-
-    return ret;
-}
-
-
-static int
 qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
                              virDomainObjPtr vm,
                              const char *job)
@@ -878,16 +842,9 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
     while (priv->job.info.type == VIR_DOMAIN_JOB_UNBOUNDED) {
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
-        while (priv->job.signals) {
-            if (qemuMigrationProcessJobSignals(driver, vm, job, false) < 0)
-                goto cleanup;
-        }
-
-        virCondSignal(&priv->job.signalCond);
 
         if (qemuMigrationUpdateJobStatus(driver, vm, job) < 0)
             goto cleanup;
-
 
         virDomainObjUnlock(vm);
         qemuDriverUnlock(driver);
@@ -899,11 +856,6 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
     }
 
 cleanup:
-    while (priv->job.signals) {
-        qemuMigrationProcessJobSignals(driver, vm, job, true);
-    }
-    virCondBroadcast(&priv->job.signalCond);
-
     if (priv->job.info.type == VIR_DOMAIN_JOB_COMPLETED)
         return 0;
     else

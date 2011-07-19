@@ -2290,6 +2290,8 @@ qemuProcessRecoverMigration(struct qemud_driver *driver,
                             virDomainState state,
                             int reason)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
     if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
         switch (phase) {
         case QEMU_MIGRATION_PHASE_NONE:
@@ -2344,7 +2346,9 @@ qemuProcessRecoverMigration(struct qemud_driver *driver,
              * domain */
             VIR_DEBUG("Canceling unfinished outgoing migration of domain %s",
                       vm->def->name);
-            /* TODO cancel possibly running migrate operation */
+            ignore_value(qemuDomainObjEnterMonitor(driver, vm));
+            ignore_value(qemuMonitorMigrateCancel(priv->mon));
+            qemuDomainObjExitMonitor(driver, vm);
             /* resume the domain but only if it was paused as a result of
              * migration */
             if (state == VIR_DOMAIN_PAUSED &&
@@ -2392,6 +2396,7 @@ qemuProcessRecoverJob(struct qemud_driver *driver,
                       virConnectPtr conn,
                       const struct qemuDomainJobObj *job)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainState state;
     int reason;
 
@@ -2407,7 +2412,9 @@ qemuProcessRecoverJob(struct qemud_driver *driver,
 
     case QEMU_ASYNC_JOB_SAVE:
     case QEMU_ASYNC_JOB_DUMP:
-        /* TODO cancel possibly running migrate operation */
+        ignore_value(qemuDomainObjEnterMonitor(driver, vm));
+        ignore_value(qemuMonitorMigrateCancel(priv->mon));
+        qemuDomainObjExitMonitor(driver, vm);
         /* resume the domain but only if it was paused as a result of
          * running save/dump operation */
         if (state == VIR_DOMAIN_PAUSED &&
@@ -2452,6 +2459,7 @@ qemuProcessRecoverJob(struct qemud_driver *driver,
         break;
 
     case QEMU_JOB_MIGRATION_OP:
+    case QEMU_JOB_ABORT:
     case QEMU_JOB_ASYNC:
     case QEMU_JOB_ASYNC_NESTED:
         /* async job was already handled above */

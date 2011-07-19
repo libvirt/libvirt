@@ -52,6 +52,7 @@ VIR_ENUM_IMPL(qemuDomainJob, QEMU_JOB_LAST,
               "destroy",
               "suspend",
               "modify",
+              "abort",
               "migration operation",
               "none",   /* async job is never stored in job.active */
               "async nested",
@@ -158,12 +159,6 @@ qemuDomainObjInitJob(qemuDomainObjPrivatePtr priv)
         return -1;
     }
 
-    if (virCondInit(&priv->job.signalCond) < 0) {
-        ignore_value(virCondDestroy(&priv->job.cond));
-        ignore_value(virCondDestroy(&priv->job.asyncCond));
-        return -1;
-    }
-
     return 0;
 }
 
@@ -185,7 +180,6 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->mask = DEFAULT_JOB_MASK;
     job->start = 0;
     memset(&job->info, 0, sizeof(job->info));
-    job->signals = 0;
 }
 
 void
@@ -208,7 +202,6 @@ qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
     ignore_value(virCondDestroy(&priv->job.cond));
     ignore_value(virCondDestroy(&priv->job.asyncCond));
-    ignore_value(virCondDestroy(&priv->job.signalCond));
 }
 
 
