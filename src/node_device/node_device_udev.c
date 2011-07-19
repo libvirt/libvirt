@@ -1477,6 +1477,8 @@ out:
 }
 
 
+/* DMI is intel-compatible specific */
+#if defined(__x86_64__) || defined(__i386__) || defined(__amd64__)
 static void
 udevGetDMIData(union _virNodeDevCapData *data)
 {
@@ -1549,6 +1551,7 @@ out:
     }
     return;
 }
+#endif
 
 
 static int udevSetupSystemDev(void)
@@ -1573,7 +1576,9 @@ static int udevSetupSystemDev(void)
         goto out;
     }
 
+#if defined(__x86_64__) || defined(__i386__) || defined(__amd64__)
     udevGetDMIData(&def->caps->data);
+#endif
 
     dev = virNodeDeviceAssignDef(&driverState->devs, def);
     if (dev == NULL) {
