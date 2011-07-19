@@ -36,6 +36,7 @@
 #include "event_poll.h"
 #include "memory.h"
 #include "util.h"
+#include "files.h"
 #include "ignore-value.h"
 #include "virterror_internal.h"
 
@@ -657,6 +658,8 @@ int virEventPollInit(void)
         virEventError(VIR_ERR_INTERNAL_ERROR,
                       _("Unable to add handle %d to event loop"),
                       eventLoop.wakeupfd[0]);
+        VIR_FORCE_CLOSE(eventLoop.wakeupfd[0]);
+        VIR_FORCE_CLOSE(eventLoop.wakeupfd[1]);
         return -1;
     }
 
