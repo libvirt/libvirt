@@ -40,7 +40,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "virterror_internal.h"
-#include "files.h"
+#include "virfile.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET

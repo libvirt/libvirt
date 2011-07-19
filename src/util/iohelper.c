@@ -35,7 +35,7 @@
 
 #include "util.h"
 #include "threads.h"
-#include "files.h"
+#include "virfile.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "configmake.h"

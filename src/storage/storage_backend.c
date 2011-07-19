@@ -56,7 +56,7 @@
 #include "storage_file.h"
 #include "storage_backend.h"
 #include "logging.h"
-#include "files.h"
+#include "virfile.h"
 #include "command.h"
 
 #if WITH_STORAGE_LVM

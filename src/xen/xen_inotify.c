@@ -38,7 +38,7 @@
 #include "xend_internal.h"
 #include "logging.h"
 #include "uuid.h"
-#include "files.h"
+#include "virfile.h"
 
 #include "xm_internal.h" /* for xenXMDomainConfigParse */
 

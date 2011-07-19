@@ -38,7 +38,7 @@
 #include "nwfilter_conf.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
-#include "files.h"
+#include "virfile.h"
 #include "command.h"
 
 

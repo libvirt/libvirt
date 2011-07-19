@@ -57,7 +57,7 @@
 #include "domain_conf.h"
 #include "storage_conf.h"
 #include "nodeinfo.h"
-#include "files.h"
+#include "virfile.h"
 #include "interface_conf.h"
 
 #include "phyp_driver.h"

@@ -47,7 +47,7 @@
     ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
       ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
 
-#include "files.h"
+#include "virfile.h"
 
 static unsigned int testDebug = -1;
 static unsigned int testVerbose = -1;

@@ -9,7 +9,7 @@
 #include "xml.h"
 #include "testutils.h"
 #include "xen/xen_hypervisor.h"
-#include "files.h"
+#include "virfile.h"
 
 static int
 testCompareFiles(const char *hostmachine, const char *xml_rel,

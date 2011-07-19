@@ -45,7 +45,7 @@
 #include "virterror_internal.h"
 #include "count-one-bits.h"
 #include "intprops.h"
-#include "files.h"
+#include "virfile.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE

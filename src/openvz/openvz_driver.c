@@ -55,7 +55,7 @@
 #include "nodeinfo.h"
 #include "memory.h"
 #include "bridge.h"
-#include "files.h"
+#include "virfile.h"
 #include "logging.h"
 #include "command.h"
 

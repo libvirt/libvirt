@@ -33,7 +33,7 @@
 #include "cpu/cpu.h"
 #include "ignore-value.h"
 #include "uuid.h"
-#include "files.h"
+#include "virfile.h"
 
 #include <sys/time.h>
 #include <fcntl.h>

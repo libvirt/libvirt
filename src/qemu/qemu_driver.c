@@ -82,7 +82,7 @@
 #include "domain_nwfilter.h"
 #include "hooks.h"
 #include "storage_file.h"
-#include "files.h"
+#include "virfile.h"
 #include "fdstream.h"
 #include "configmake.h"
 #include "threadpool.h"

@@ -45,7 +45,7 @@
 #include "memory.h"
 #include "storage_backend.h"
 #include "logging.h"
-#include "files.h"
+#include "virfile.h"
 #include "fdstream.h"
 #include "configmake.h"
 

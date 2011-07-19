@@ -37,7 +37,7 @@
 #include "memory.h"
 #include "command.h"
 #include "virterror_internal.h"
-#include "files.h"
+#include "virfile.h"
 
 /* avoid compilation breakage on some systems */
 #ifndef MODPROBE

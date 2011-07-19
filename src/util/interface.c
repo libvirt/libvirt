@@ -41,7 +41,7 @@
 #include "util.h"
 #include "interface.h"
 #include "virterror_internal.h"
-#include "files.h"
+#include "virfile.h"
 #include "memory.h"
 #include "netlink.h"
 

@@ -49,7 +49,7 @@
 #include "xml.h"
 #include "threads.h"
 #include "logging.h"
-#include "files.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 

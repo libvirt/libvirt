@@ -45,7 +45,7 @@
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
 #include "memory.h"
 #include "count-one-bits.h"
-#include "files.h"
+#include "virfile.h"
 
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>

@@ -41,7 +41,7 @@
 #include "util.h"
 #include "buf.h"
 #include "c-ctype.h"
-#include "files.h"
+#include "virfile.h"
 
 #define MAX_BRIDGE_ID 256
 #define VIR_FROM_THIS VIR_FROM_NETWORK

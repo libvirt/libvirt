@@ -27,7 +27,7 @@
 # include "util.h"
 # include "block_stats.h"
 # include "memory.h"
-# include "files.h"
+# include "virfile.h"
 
 # define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 

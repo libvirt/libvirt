@@ -28,7 +28,7 @@
 #include "logging.h"
 #include "virterror_internal.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 #include "nodeinfo.h"
 #include "cpu/cpu.h"
 #include "domain_conf.h"

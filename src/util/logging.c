@@ -42,7 +42,7 @@
 #include "util.h"
 #include "buf.h"
 #include "threads.h"
-#include "files.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

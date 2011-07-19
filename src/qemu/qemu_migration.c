@@ -37,7 +37,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 #include "datatypes.h"
 #include "fdstream.h"
 #include "uuid.h"

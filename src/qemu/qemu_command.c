@@ -31,7 +31,7 @@
 #include "logging.h"
 #include "virterror_internal.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 #include "uuid.h"
 #include "c-ctype.h"
 #include "domain_nwfilter.h"

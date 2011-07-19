@@ -46,7 +46,7 @@
 #include "nwfilter_conf.h"
 #include "domain_conf.h"
 #include "c-ctype.h"
-#include "files.h"
+#include "virfile.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER

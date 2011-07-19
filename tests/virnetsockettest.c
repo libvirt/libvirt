@@ -31,7 +31,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
-#include "files.h"
+#include "virfile.h"
 
 #include "rpc/virnetsocket.h"
 

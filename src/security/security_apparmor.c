@@ -35,7 +35,7 @@
 #include "uuid.h"
 #include "pci.h"
 #include "hostusb.h"
-#include "files.h"
+#include "virfile.h"
 #include "configmake.h"
 #include "command.h"
 

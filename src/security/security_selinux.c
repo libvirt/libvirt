@@ -31,7 +31,7 @@
 #include "pci.h"
 #include "hostusb.h"
 #include "storage_file.h"
-#include "files.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 

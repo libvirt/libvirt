@@ -35,7 +35,7 @@
 #include "util.h"
 #include "logging.h"
 #include "memory.h"
-#include "files.h"
+#include "virfile.h"
 #include "configmake.h"
 #include "command.h"
 

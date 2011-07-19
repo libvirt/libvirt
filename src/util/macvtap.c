@@ -64,7 +64,7 @@ VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
 # include "interface.h"
 # include "virterror_internal.h"
 # include "uuid.h"
-# include "files.h"
+# include "virfile.h"
 # include "netlink.h"
 
 # define VIR_FROM_THIS VIR_FROM_NET

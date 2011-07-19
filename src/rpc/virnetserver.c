@@ -34,7 +34,7 @@
 #include "threads.h"
 #include "threadpool.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 #include "event.h"
 #if HAVE_AVAHI
 # include "virnetservermdns.h"

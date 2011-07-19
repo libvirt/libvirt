@@ -44,7 +44,7 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
-#include "files.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 #define DNSMASQ_HOSTSFILE_SUFFIX "hostsfile"

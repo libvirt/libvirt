@@ -493,12 +493,6 @@ virFDStreamOpenFile;
 virFDStreamCreateFile;
 
 
-# files.h
-virClose;
-virFclose;
-virFdopen;
-
-
 # hash.h
 virHashAddEntry;
 virHashCreate;
@@ -1089,6 +1083,12 @@ virAuditEncode;
 virAuditLog;
 virAuditOpen;
 virAuditSend;
+
+
+# virfile.h
+virFileClose;
+virFileFclose;
+virFileFdopen;
 
 
 # virterror_internal.h

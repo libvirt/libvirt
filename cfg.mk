@@ -689,7 +689,7 @@ exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(bootstrap.conf$$|src/util/util\.c$$|examples/domain-events/events-c/event-test\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
-  (\.p[yl]$$|^docs/|^(src/util/files\.c|src/libvirt\.c)$$)
+  (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^tests/qemuhelpdata/|\.(gif|ico|png)$$)

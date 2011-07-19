@@ -43,7 +43,7 @@
 #include "qemu_protocol.h"
 #include "memory.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 #include "command.h"
 #include "intprops.h"
 

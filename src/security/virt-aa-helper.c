@@ -40,7 +40,7 @@
 #include "uuid.h"
 #include "hostusb.h"
 #include "pci.h"
-#include "files.h"
+#include "virfile.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY

@@ -39,7 +39,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
-#include "files.h"
+#include "virfile.h"
 
 #ifndef ENODATA
 # define ENODATA EIO

@@ -44,7 +44,7 @@
 #include "command.h"
 #include "memory.h"
 #include "xml.h"
-#include "files.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

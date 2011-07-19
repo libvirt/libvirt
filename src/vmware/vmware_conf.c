@@ -29,7 +29,7 @@
 #include "dirname.h"
 #include "memory.h"
 #include "nodeinfo.h"
-#include "files.h"
+#include "virfile.h"
 #include "uuid.h"
 #include "virterror_internal.h"
 #include "vmx.h"

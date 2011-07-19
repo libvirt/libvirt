@@ -49,7 +49,7 @@
 #include "uuid.h"
 #include "stats_linux.h"
 #include "hooks.h"
-#include "files.h"
+#include "virfile.h"
 #include "fdstream.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"

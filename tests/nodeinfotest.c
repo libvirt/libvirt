@@ -9,7 +9,7 @@
 #include "internal.h"
 #include "nodeinfo.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 
 #if ! (defined __linux__  &&  (defined(__x86_64__) || \
                                defined(__amd64__)  || \

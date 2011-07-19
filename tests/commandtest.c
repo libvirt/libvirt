@@ -34,7 +34,7 @@
 #include "util.h"
 #include "memory.h"
 #include "command.h"
-#include "files.h"
+#include "virfile.h"
 
 #ifdef WIN32
 

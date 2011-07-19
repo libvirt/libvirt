@@ -36,7 +36,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "pci.h"
-#include "files.h"
+#include "virfile.h"
 #include "qemu_cgroup.h"
 #include "locking/domain_lock.h"
 

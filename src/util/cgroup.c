@@ -31,7 +31,7 @@
 #include "memory.h"
 #include "cgroup.h"
 #include "logging.h"
-#include "files.h"
+#include "virfile.h"
 #include "hash.h"
 
 #define CGROUP_MAX_VAL 512

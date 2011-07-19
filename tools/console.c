@@ -39,7 +39,7 @@
 # include "console.h"
 # include "logging.h"
 # include "util.h"
-# include "files.h"
+# include "virfile.h"
 # include "memory.h"
 # include "virterror_internal.h"
 

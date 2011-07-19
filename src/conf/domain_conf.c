@@ -46,7 +46,7 @@
 #include "nwfilter_conf.h"
 #include "ignore-value.h"
 #include "storage_file.h"
-#include "files.h"
+#include "virfile.h"
 #include "bitmap.h"
 #include "count-one-bits.h"
 

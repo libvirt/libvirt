@@ -24,7 +24,7 @@
 #include "util.h"
 #include "c-ctype.h"
 #include "memory.h"
-#include "files.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 

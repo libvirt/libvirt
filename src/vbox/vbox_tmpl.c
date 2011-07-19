@@ -54,7 +54,7 @@
 #include "logging.h"
 #include "vbox_driver.h"
 #include "configmake.h"
-#include "files.h"
+#include "virfile.h"
 #include "fdstream.h"
 
 /* This one changes from version to version. */

@@ -49,7 +49,7 @@
 #include "pci.h"
 #include "uuid.h"
 #include "fdstream.h"
-#include "files.h"
+#include "virfile.h"
 #include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN

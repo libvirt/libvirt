@@ -38,7 +38,7 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "logging.h"
-#include "files.h"
+#include "virfile.h"
 #include "buf.h"
 #include "ignore-value.h"
 #include "verify.h"

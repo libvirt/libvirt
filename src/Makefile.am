@@ -52,7 +52,6 @@ UTIL_SOURCES =							\
 		util/cgroup.c util/cgroup.h			\
 		util/event.c util/event.h			\
 		util/event_poll.c util/event_poll.h		\
-		util/files.c util/files.h			\
 		util/hash.c util/hash.h				\
 		util/hooks.c util/hooks.h			\
 		util/iptables.c util/iptables.h			\
@@ -80,6 +79,7 @@ UTIL_SOURCES =							\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
 		util/viraudit.c util/viraudit.h			\
+		util/virfile.c util/virfile.h			\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\
 		util/virkeycode.c util/virkeycode.h		\

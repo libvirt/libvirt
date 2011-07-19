@@ -41,7 +41,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 #include "md5.h"
 #include "conf.h"
 

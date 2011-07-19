@@ -29,7 +29,7 @@
 #include "internal.h"
 #include "util.h"
 #include "memory.h"
-#include "files.h"
+#include "virfile.h"
 
 
 static int envsort(const void *a, const void *b) {

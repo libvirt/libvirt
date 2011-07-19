@@ -506,7 +506,7 @@
       Usage of the <code>fdopen()</code>, <code>close()</code>, <code>fclose()</code>
       APIs is deprecated in libvirt code base to help avoiding double-closing of files
       or file descriptors, which is particulary dangerous in a multi-threaded
-      applications. Instead of these APIs, use the macros from files.h
+      applications. Instead of these APIs, use the macros from virfile.h
     </p>
 
    <ul>

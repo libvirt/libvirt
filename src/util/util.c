@@ -73,7 +73,7 @@
 #include "memory.h"
 #include "threads.h"
 #include "verify.h"
-#include "files.h"
+#include "virfile.h"
 #include "command.h"
 #include "nonblocking.h"
 #include "passfd.h"

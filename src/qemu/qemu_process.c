@@ -48,7 +48,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "hooks.h"
-#include "files.h"
+#include "virfile.h"
 #include "util.h"
 #include "c-ctype.h"
 #include "nodeinfo.h"

@@ -55,7 +55,7 @@
 #include "macvtap.h"
 #include "cpu/cpu.h"
 #include "domain_nwfilter.h"
-#include "files.h"
+#include "virfile.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

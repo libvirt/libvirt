@@ -24,7 +24,7 @@
 #if defined(WITH_BRIDGE)
 
 # include "bridge.h"
-# include "files.h"
+# include "virfile.h"
 
 # include <stdlib.h>
 # include <stdio.h>

@@ -50,7 +50,7 @@
 #include "memory.h"
 #include "util.h"
 #include "nodeinfo.h"
-#include "files.h"
+#include "virfile.h"
 #include "command.h"
 #include "ignore-value.h"
 

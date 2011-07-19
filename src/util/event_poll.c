@@ -36,7 +36,7 @@
 #include "event_poll.h"
 #include "memory.h"
 #include "util.h"
-#include "files.h"
+#include "virfile.h"
 #include "ignore-value.h"
 #include "virterror_internal.h"
 

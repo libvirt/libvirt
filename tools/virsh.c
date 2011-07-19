@@ -52,7 +52,7 @@
 #include "memory.h"
 #include "xml.h"
 #include "libvirt/libvirt-qemu.h"
-#include "files.h"
+#include "virfile.h"
 #include "event_poll.h"
 #include "configmake.h"
 #include "threads.h"

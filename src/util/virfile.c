@@ -1,5 +1,5 @@
 /*
- * files.c: safer file handling
+ * virfile.c: safer file handling
  *
  * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
@@ -26,9 +26,9 @@
 
 #include <unistd.h>
 
-#include "files.h"
+#include "virfile.h"
 
-int virClose(int *fdptr, bool preserve_errno)
+int virFileClose(int *fdptr, bool preserve_errno)
 {
     int saved_errno;
     int rc = 0;
@@ -46,7 +46,7 @@ int virClose(int *fdptr, bool preserve_errno)
 }
 
 
-int virFclose(FILE **file, bool preserve_errno)
+int virFileFclose(FILE **file, bool preserve_errno)
 {
     int saved_errno;
     int rc = 0;
@@ -64,7 +64,7 @@ int virFclose(FILE **file, bool preserve_errno)
 }
 
 
-FILE *virFdopen(int *fdptr, const char *mode)
+FILE *virFileFdopen(int *fdptr, const char *mode)
 {
     FILE *file = NULL;
 
