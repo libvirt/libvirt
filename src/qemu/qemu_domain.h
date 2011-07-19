@@ -77,7 +77,6 @@ enum qemuDomainJobSignals {
     QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME = 1 << 2, /* Request migration downtime change */
     QEMU_JOB_SIGNAL_MIGRATE_SPEED = 1 << 3, /* Request migration speed change */
     QEMU_JOB_SIGNAL_BLKSTAT = 1 << 4, /* Request blkstat during migration */
-    QEMU_JOB_SIGNAL_BLKINFO = 1 << 5, /* Request blkinfo during migration */
 };
 
 struct qemuDomainJobSignalsData {
@@ -86,9 +85,6 @@ struct qemuDomainJobSignalsData {
     char *statDevName; /* Device name used by blkstat calls */
     virDomainBlockStatsPtr blockStat; /* Block statistics for QEMU_JOB_SIGNAL_BLKSTAT */
     int *statRetCode; /* Return code for the blkstat calls */
-    char *infoDevName; /* Device name used by blkinfo calls */
-    virDomainBlockInfoPtr blockInfo; /* Block information for QEMU_JOB_SIGNAL_BLKINFO */
-    int *infoRetCode; /* Return code for the blkinfo calls */
 };
 
 struct qemuDomainJobObj {

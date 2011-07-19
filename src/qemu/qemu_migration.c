@@ -819,20 +819,6 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
 
         if (ret < 0)
             VIR_WARN("Unable to get block statistics");
-    } else if (priv->job.signals & QEMU_JOB_SIGNAL_BLKINFO) {
-        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (ret == 0) {
-            ret = qemuMonitorGetBlockExtent(priv->mon,
-                               priv->job.signalsData.infoDevName,
-                               &priv->job.signalsData.blockInfo->allocation);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-        }
-
-        *priv->job.signalsData.infoRetCode = ret;
-        priv->job.signals ^= QEMU_JOB_SIGNAL_BLKINFO;
-
-        if (ret < 0)
-            VIR_WARN("Unable to get block information");
     } else {
         ret = 0;
     }

@@ -7088,39 +7088,21 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
-        if ((priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
-            || (priv->job.asyncJob == QEMU_ASYNC_JOB_SAVE)) {
-            virDomainObjRef(vm);
-            while (priv->job.signals & QEMU_JOB_SIGNAL_BLKINFO)
-                ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+            goto cleanup;
 
-            priv->job.signalsData.infoDevName = disk->info.alias;
-            priv->job.signalsData.blockInfo = info;
-            priv->job.signalsData.infoRetCode = &ret;
-            priv->job.signals |= QEMU_JOB_SIGNAL_BLKINFO;
-
-            while (priv->job.signals & QEMU_JOB_SIGNAL_BLKINFO)
-                ignore_value(virCondWait(&priv->job.signalCond, &vm->lock));
-
-            if (virDomainObjUnref(vm) == 0)
-                vm = NULL;
+        if (virDomainObjIsActive(vm)) {
+            ignore_value(qemuDomainObjEnterMonitor(driver, vm));
+            ret = qemuMonitorGetBlockExtent(priv->mon,
+                                            disk->info.alias,
+                                            &info->allocation);
+            qemuDomainObjExitMonitor(driver, vm);
         } else {
-            if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-                goto cleanup;
-
-            if (virDomainObjIsActive(vm)) {
-                ignore_value(qemuDomainObjEnterMonitor(driver, vm));
-                ret = qemuMonitorGetBlockExtent(priv->mon,
-                                                disk->info.alias,
-                                                &info->allocation);
-                qemuDomainObjExitMonitor(driver, vm);
-            } else {
-                ret = 0;
-            }
-
-            if (qemuDomainObjEndJob(driver, vm) == 0)
-                vm = NULL;
+            ret = 0;
         }
+
+        if (qemuDomainObjEndJob(driver, vm) == 0)
+            vm = NULL;
     } else {
         ret = 0;
     }
