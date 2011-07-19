@@ -41,6 +41,8 @@ module Libvirtd_qemu =
                  | str_entry "save_image_format"
                  | str_entry "dump_image_format"
                  | str_entry "auto_dump_path"
+                 | bool_entry "auto_dump_bypass_cache"
+                 | bool_entry "auto_start_bypass_cache"
                  | str_entry "hugetlbfs_mount"
                  | bool_entry "relaxed_acs_check"
                  | bool_entry "vnc_allow_host_audio"

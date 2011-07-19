@@ -1,7 +1,7 @@
 /*
  * qemu_conf.c: QEMU configuration management
  *
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -377,6 +377,14 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             return -1;
         }
     }
+
+    p = virConfGetValue (conf, "auto_dump_bypass_cache");
+    CHECK_TYPE ("auto_dump_bypass_cache", VIR_CONF_LONG);
+    if (p) driver->autoDumpBypassCache = true;
+
+    p = virConfGetValue (conf, "auto_start_bypass_cache");
+    CHECK_TYPE ("auto_start_bypass_cache", VIR_CONF_LONG);
+    if (p) driver->autoStartBypassCache = true;
 
     p = virConfGetValue (conf, "hugetlbfs_mount");
     CHECK_TYPE ("hugetlbfs_mount", VIR_CONF_STRING);

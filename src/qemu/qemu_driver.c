@@ -150,11 +150,11 @@ qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaq
                   vm->def->name,
                   err ? err->message : _("unknown error"));
     } else {
-        /* XXX need to wire bypass-cache autostart into qemu.conf */
         if (vm->autostart &&
             !virDomainObjIsActive(vm) &&
             qemuDomainObjStart(data->conn, data->driver, vm,
-                               false, false, false) < 0) {
+                               false, false,
+                               data->driver->autoStartBypassCache) < 0) {
             err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
@@ -2952,9 +2952,9 @@ static void processWatchdogEvent(void *data, void *opaque)
                 goto endjob;
             }
 
-            /* XXX wire up qemu.conf to support bypass-cache dumps */
             ret = doCoreDump(driver, wdEvent->vm, dumpfile,
-                             getCompressionType(driver), false);
+                             getCompressionType(driver),
+                             driver->autoDumpBypassCache);
             if (ret < 0)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("Dump failed"));
