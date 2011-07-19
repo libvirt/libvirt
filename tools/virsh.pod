@@ -514,6 +514,9 @@ Save and destroy (stop) a running domain, so it can be restarted from the same
 state at a later time.  When the virsh B<start> command is next run for
 the domain, it will automatically be started from this saved state.
 
+The B<dominfo> command can be used to query whether a domain currently
+has any managed save image.
+
 =item B<managedsave-remove> I<domain-id>
 
 Remove the B<managedsave> state file for a domain, if it exists.  This

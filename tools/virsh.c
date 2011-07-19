@@ -2336,6 +2336,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     int autostart;
     unsigned int id;
     char *str, uuid[VIR_UUID_STRING_BUFLEN];
+    int has_managed_save = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -2400,6 +2401,13 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-15s %s\n", _("Autostart:"),
                  autostart ? _("enable") : _("disable") );
     }
+
+    has_managed_save = virDomainHasManagedSaveImage(dom, 0);
+    if (has_managed_save < 0)
+        vshPrint(ctl, "%-15s %s\n", _("Managed save:"), _("unknown"));
+    else
+        vshPrint(ctl, "%-15s %s\n", _("Managed save:"),
+                 has_managed_save ? _("yes") : _("no"));
 
     /* Security model and label information */
     memset(&secmodel, 0, sizeof secmodel);
