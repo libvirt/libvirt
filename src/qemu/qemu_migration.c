@@ -788,19 +788,6 @@ qemuMigrationProcessJobSignals(struct qemud_driver *driver,
         }
         if (ret < 0)
             VIR_WARN("Unable to set migration downtime");
-    } else if (priv->job.signals & QEMU_JOB_SIGNAL_MIGRATE_SPEED) {
-        unsigned long bandwidth = priv->job.signalsData.migrateBandwidth;
-
-        priv->job.signals ^= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
-        priv->job.signalsData.migrateBandwidth = 0;
-        VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
-        ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (ret == 0) {
-            ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-        }
-        if (ret < 0)
-            VIR_WARN("Unable to set migration speed");
     } else {
         ret = 0;
     }
@@ -2883,10 +2870,12 @@ qemuMigrationJobStart(struct qemud_driver *driver,
     if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm, job) < 0)
         return -1;
 
-    if (job == QEMU_ASYNC_JOB_MIGRATION_IN)
+    if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
         qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
-    else
-        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK);
+    } else {
+        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK |
+                                     JOB_MASK(QEMU_JOB_MIGRATION_OP));
+    }
 
     priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
 

@@ -49,6 +49,7 @@ enum qemuDomainJob {
     QEMU_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
     QEMU_JOB_SUSPEND,       /* Suspends (stops vCPUs) the domain */
     QEMU_JOB_MODIFY,        /* May change state */
+    QEMU_JOB_MIGRATION_OP,  /* Operation influencing outgoing migration */
 
     /* The following two items must always be the last items before JOB_LAST */
     QEMU_JOB_ASYNC,         /* Asynchronous job */
@@ -75,12 +76,10 @@ enum qemuDomainJobSignals {
     QEMU_JOB_SIGNAL_CANCEL  = 1 << 0, /* Request job cancellation */
     QEMU_JOB_SIGNAL_SUSPEND = 1 << 1, /* Request VM suspend to finish live migration offline */
     QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME = 1 << 2, /* Request migration downtime change */
-    QEMU_JOB_SIGNAL_MIGRATE_SPEED = 1 << 3, /* Request migration speed change */
 };
 
 struct qemuDomainJobSignalsData {
     unsigned long long migrateDowntime; /* Data for QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME */
-    unsigned long migrateBandwidth; /* Data for QEMU_JOB_SIGNAL_MIGRATE_SPEED */
 };
 
 struct qemuDomainJobObj {

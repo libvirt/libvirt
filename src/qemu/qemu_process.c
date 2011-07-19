@@ -2451,6 +2451,7 @@ qemuProcessRecoverJob(struct qemud_driver *driver,
          */
         break;
 
+    case QEMU_JOB_MIGRATION_OP:
     case QEMU_JOB_ASYNC:
     case QEMU_JOB_ASYNC_NESTED:
         /* async job was already handled above */

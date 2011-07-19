@@ -52,6 +52,7 @@ VIR_ENUM_IMPL(qemuDomainJob, QEMU_JOB_LAST,
               "destroy",
               "suspend",
               "modify",
+              "migration operation",
               "none",   /* async job is never stored in job.active */
               "async nested",
 );

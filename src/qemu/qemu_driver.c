@@ -7965,19 +7965,23 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
+        return -1;
     }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;
@@ -8034,18 +8038,21 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not being migrated"));
-        goto cleanup;
+        goto endjob;
     }
 
-    VIR_DEBUG("Requesting migration speed change to %luMbs", bandwidth);
-    priv->job.signalsData.migrateBandwidth = bandwidth;
-    priv->job.signals |= QEMU_JOB_SIGNAL_MIGRATE_SPEED;
-    ret = 0;
+    VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
+    ignore_value(qemuDomainObjEnterMonitor(driver, vm));
+    ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
+    qemuDomainObjExitMonitor(driver, vm);
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
 
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
-    qemuDriverUnlock(driver);
     return ret;
 }
 
