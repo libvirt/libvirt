@@ -684,6 +684,7 @@ doRemoteOpen (virConnectPtr conn,
         free_qparam_set (vars);
 
  failed:
+    virNetClientClose(priv->client);
     virNetClientFree(priv->client);
     priv->client = NULL;
 
@@ -834,6 +835,7 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
 
     virNetTLSContextFree(priv->tls);
     priv->tls = NULL;
+    virNetClientClose(priv->client);
     virNetClientFree(priv->client);
     priv->client = NULL;
     virNetClientProgramFree(priv->remoteProgram);

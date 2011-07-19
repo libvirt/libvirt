@@ -255,7 +255,8 @@ void virNetClientFree(virNetClientPtr client)
 
     VIR_FREE(client->hostname);
 
-    virNetSocketRemoveIOCallback(client->sock);
+    if (client->sock)
+        virNetSocketRemoveIOCallback(client->sock);
     virNetSocketFree(client->sock);
     virNetTLSSessionFree(client->tls);
 #if HAVE_SASL
@@ -265,6 +266,22 @@ void virNetClientFree(virNetClientPtr client)
     virMutexDestroy(&client->lock);
 
     VIR_FREE(client);
+}
+
+
+void virNetClientClose(virNetClientPtr client)
+{
+    virNetClientLock(client);
+    virNetSocketRemoveIOCallback(client->sock);
+    virNetSocketFree(client->sock);
+    client->sock = NULL;
+    virNetTLSSessionFree(client->tls);
+    client->tls = NULL;
+#if HAVE_SASL
+    virNetSASLSessionFree(client->sasl);
+    client->sasl = NULL;
+#endif
+    virNetClientUnlock(client);
 }
 
 
@@ -1117,6 +1134,9 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
     virNetClientPtr client = opaque;
 
     virNetClientLock(client);
+
+    if (!client->sock)
+        goto done;
 
     /* This should be impossible, but it doesn't hurt to check */
     if (client->waitDispatch)

@@ -81,5 +81,6 @@ const char *virNetClientRemoteAddrString(virNetClientPtr client);
 int virNetClientGetTLSKeySize(virNetClientPtr client);
 
 void virNetClientFree(virNetClientPtr client);
+void virNetClientClose(virNetClientPtr client);
 
 #endif /* __VIR_NET_CLIENT_H__ */
