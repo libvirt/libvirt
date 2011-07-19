@@ -1037,7 +1037,7 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
-        if (!virDomainDefCheckABIStability(def, vm->def))
+        if (!virDomainDefCheckABIStability(vm->def, def))
             goto cleanup;
 
         rv = qemuDomainDefFormatXML(driver, def,
