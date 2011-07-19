@@ -352,7 +352,7 @@ doRemoteOpen (virConnectPtr conn,
     char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
     char *port = NULL, *authtype = NULL, *username = NULL;
     int no_verify = 0, no_tty = 0;
-    char *pkipath = NULL;
+    char *pkipath = NULL, *keyfile = NULL;
 
     /* Return code from this function, and the private data. */
     int retcode = VIR_DRV_OPEN_ERROR;
@@ -424,6 +424,11 @@ doRemoteOpen (virConnectPtr conn,
                 VIR_FREE(netcat);
                 netcat = strdup (var->value);
                 if (!netcat) goto out_of_memory;
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "keyfile")) {
+                VIR_FREE(keyfile);
+                keyfile = strdup (var->value);
+                if (!keyfile) goto out_of_memory;
                 var->ignore = 1;
             } else if (STRCASEEQ (var->name, "no_verify")) {
                 no_verify = atoi (var->value);
@@ -582,6 +587,7 @@ doRemoteOpen (virConnectPtr conn,
                                                 no_tty,
                                                 no_verify,
                                                 netcat ? netcat : "nc",
+                                                keyfile,
                                                 sockname)))
             goto failed;
 
@@ -681,6 +687,7 @@ doRemoteOpen (virConnectPtr conn,
     VIR_FREE(sockname);
     VIR_FREE(authtype);
     VIR_FREE(netcat);
+    VIR_FREE(keyfile);
     VIR_FREE(username);
     VIR_FREE(port);
     VIR_FREE(pkipath);

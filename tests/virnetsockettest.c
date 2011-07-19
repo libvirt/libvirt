@@ -379,6 +379,7 @@ struct testSSHData {
     bool noTTY;
     bool noVerify;
     const char *netcat;
+    const char *keyfile;
     const char *path;
 
     const char *expectOut;
@@ -400,6 +401,7 @@ static int testSocketSSH(const void *opaque)
                                   data->noTTY,
                                   data->noVerify,
                                   data->netcat,
+                                  data->keyfile,
                                   data->path,
                                   &csock) < 0)
         goto cleanup;
@@ -540,6 +542,16 @@ mymain(void)
         .dieEarly = true,
     };
     if (virtTestRun("SSH test 5", 1, testSocketSSH, &sshData5) < 0)
+        ret = -1;
+
+    struct testSSHData sshData6 = {
+        .nodename = "example.com",
+        .path = "/tmp/socket",
+        .keyfile = "/root/.ssh/example_key",
+        .noVerify = true,
+        .expectOut = "-i /root/.ssh/example_key -o StrictHostKeyChecking=no example.com nc -U /tmp/socket\n",
+    };
+    if (virtTestRun("SSH test 6", 1, testSocketSSH, &sshData6) < 0)
         ret = -1;
 
 #endif

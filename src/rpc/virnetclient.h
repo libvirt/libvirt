@@ -46,6 +46,7 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    bool noTTY,
                                    bool noVerify,
                                    const char *netcat,
+                                   const char *keyfile,
                                    const char *path);
 
 virNetClientPtr virNetClientNewExternal(const char **cmdargv);

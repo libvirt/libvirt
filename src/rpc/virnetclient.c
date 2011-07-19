@@ -201,11 +201,13 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    bool noTTY,
                                    bool noVerify,
                                    const char *netcat,
+                                   const char *keyfile,
                                    const char *path)
 {
     virNetSocketPtr sock;
 
-    if (virNetSocketNewConnectSSH(nodename, service, binary, username, noTTY, noVerify, netcat, path, &sock) < 0)
+    if (virNetSocketNewConnectSSH(nodename, service, binary, username, noTTY,
+                                  noVerify, netcat, keyfile, path, &sock) < 0)
         return NULL;
 
     return virNetClientNew(sock, NULL);
