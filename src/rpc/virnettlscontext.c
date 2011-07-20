@@ -111,6 +111,7 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
     char *buffer = NULL;
     size_t size;
     unsigned int usage;
+    unsigned int critical;
     bool allowClient = false, allowServer = false;
 
     VIR_DEBUG("isServer %d isCA %d certFile %s",
@@ -190,9 +191,9 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
         goto cleanup;
     }
 
-    status = gnutls_x509_crt_get_key_usage(cert, &usage, NULL);
+    status = gnutls_x509_crt_get_key_usage(cert, &usage, &critical);
 
-    VIR_DEBUG("Cert %s key usage status %d usage %d", certFile, status, usage);
+    VIR_DEBUG("Cert %s key usage status %d usage %d critical %u", certFile, status, usage, critical);
     if (status < 0) {
         if (status == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
             usage = isCA ? GNUTLS_KEY_KEY_CERT_SIGN :
@@ -207,28 +208,45 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
 
     if (isCA) {
         if (!(usage & GNUTLS_KEY_KEY_CERT_SIGN)) {
-            virNetError(VIR_ERR_SYSTEM_ERROR,
-                        _("Certificate %s usage does not permit certificate signing"),
-                        certFile);
-            goto cleanup;
+            if (critical) {
+                virNetError(VIR_ERR_SYSTEM_ERROR,
+                            _("Certificate %s usage does not permit certificate signing"),
+                            certFile);
+                goto cleanup;
+            } else {
+                VIR_WARN("Certificate %s usage does not permit certificate signing",
+                         certFile);
+            }
         }
     } else {
         if (!(usage & GNUTLS_KEY_DIGITAL_SIGNATURE)) {
-            virNetError(VIR_ERR_SYSTEM_ERROR,
-                        _("Certificate %s usage does not permit digital signature"),
-                        certFile);
-            goto cleanup;
+            if (critical) {
+                virNetError(VIR_ERR_SYSTEM_ERROR,
+                            _("Certificate %s usage does not permit digital signature"),
+                            certFile);
+                goto cleanup;
+            } else {
+                VIR_WARN("Certificate %s usage does not permit digital signature",
+                         certFile);
+            }
         }
         if (!(usage & GNUTLS_KEY_KEY_ENCIPHERMENT)) {
-            virNetError(VIR_ERR_SYSTEM_ERROR,
-                        _("Certificate %s usage does not permit key encipherment"),
-                        certFile);
-            goto cleanup;
+            if (critical) {
+                virNetError(VIR_ERR_SYSTEM_ERROR,
+                            _("Certificate %s usage does not permit key encipherment"),
+                            certFile);
+                goto cleanup;
+            } else {
+                VIR_WARN("Certificate %s usage does not permit key encipherment",
+                         certFile);
+            }
         }
     }
 
+    critical = 0;
     for (i = 0 ; ; i++) {
         size = 0;
+        unsigned int purposeCritical;
         status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, NULL);
 
         if (status == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
@@ -251,15 +269,17 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
             goto cleanup;
         }
 
-        status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, NULL);
+        status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, &purposeCritical);
         if (status < 0) {
             virNetError(VIR_ERR_SYSTEM_ERROR,
                         _("Unable to query certificate %s key purpose %s"),
                         certFile, gnutls_strerror(status));
             goto cleanup;
         }
+        if (purposeCritical)
+            critical = true;
 
-        VIR_DEBUG("Key purpose %d %s", status, buffer);
+        VIR_DEBUG("Key purpose %d %s critical %u", status, buffer, purposeCritical);
         if (STREQ(buffer, GNUTLS_KP_TLS_WWW_SERVER)) {
             allowServer = true;
         } else if (STREQ(buffer, GNUTLS_KP_TLS_WWW_CLIENT)) {
@@ -273,16 +293,26 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
 
     if (!isCA) { /* No purpose checks required for CA certs */
         if (isServer && !allowServer) {
-            virNetError(VIR_ERR_SYSTEM_ERROR,
-                        _("Certificate %s purpose does not allow use for with a TLS server"),
-                        certFile);
-            goto cleanup;
+            if (critical) {
+                virNetError(VIR_ERR_SYSTEM_ERROR,
+                            _("Certificate %s purpose does not allow use for with a TLS server"),
+                            certFile);
+                goto cleanup;
+            } else {
+                VIR_WARN("Certificate %s purpose does not allow use for with a TLS server",
+                         certFile);
+            }
         }
         if (!isServer && !allowClient) {
-            virNetError(VIR_ERR_SYSTEM_ERROR,
-                        _("Certificate %s purpose does not allow use for with a TLS client"),
-                        certFile);
-            goto cleanup;
+            if (critical) {
+                virNetError(VIR_ERR_SYSTEM_ERROR,
+                            _("Certificate %s purpose does not allow use for with a TLS client"),
+                            certFile);
+                goto cleanup;
+            } else {
+                VIR_WARN("Certificate %s purpose does not allow use for with a TLS client",
+                         certFile);
+            }
         }
     }
 
