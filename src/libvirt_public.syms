@@ -470,6 +470,8 @@ LIBVIRT_0.9.4 {
     global:
         virDomainRestoreFlags;
         virDomainSaveFlags;
+        virDomainSaveImageDefineXML;
+        virDomainSaveImageGetXMLDesc;
         virDomainUndefineFlags;
         virDomainDestroyFlags;
 } LIBVIRT_0.9.3;

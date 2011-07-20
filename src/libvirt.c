@@ -2294,7 +2294,9 @@ error:
  * listed as running anymore (this may be a problem).
  * Use virDomainRestore() to restore a domain after saving.
  *
- * See virDomainSaveFlags() for more control.
+ * See virDomainSaveFlags() for more control.  Also, a save file can
+ * be inspected or modified slightly with virDomainSaveImageGetXMLDesc()
+ * and virDomainSaveImageDefineXML().
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2372,6 +2374,9 @@ error:
  * attempt to bypass the file system cache while creating the file, or
  * fail if it cannot do so for the given system; this can allow less
  * pressure on file system cache, but also risks slowing saves to NFS.
+ *
+ * A save file can be inspected or modified slightly with
+ * virDomainSaveImageGetXMLDesc() and virDomainSaveImageDefineXML().
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2548,6 +2553,147 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
                                                flags);
 
         VIR_FREE(absolute_from);
+
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSaveImageGetXMLDesc:
+ * @conn: pointer to the hypervisor connection
+ * @file: path to saved state file
+ * @flags: bitwise-OR of subset of virDomainXMLFlags
+ *
+ * This method will extract the XML describing the domain at the time
+ * a saved state file was created.  @file must be a file created
+ * previously by virDomainSave() or virDomainSaveFlags().
+ *
+ * No security-sensitive data will be included unless @flags contains
+ * VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
+ * connections.  For this API, @flags should not contain either
+ * VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of
+ * error.  The caller must free() the returned value.
+ */
+char *
+virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
+                             unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, file=%s, flags=%x",
+              conn, file, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    if (file == NULL) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED,
+                        _("virDomainSaveImageGetXMLDesc with secure flag"));
+        goto error;
+    }
+
+    if (conn->driver->domainSaveImageGetXMLDesc) {
+        char *ret;
+        char *absolute_file;
+
+        /* We must absolutize the file path as the read is done out of process */
+        if (virFileAbsPath(file, &absolute_file) < 0) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                            _("could not build absolute input file path"));
+            goto error;
+        }
+
+        ret = conn->driver->domainSaveImageGetXMLDesc(conn, absolute_file,
+                                                      flags);
+
+        VIR_FREE(absolute_file);
+
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virDomainSaveImageDefineXML:
+ * @conn: pointer to the hypervisor connection
+ * @file: path to saved state file
+ * @dxml: XML config for adjusting guest xml used on restore
+ * @flags: 0 for now
+ *
+ * This updates the definition of a domain stored in a saved state
+ * file.  @file must be a file created previously by virDomainSave()
+ * or virDomainSaveFlags().
+ *
+ * @dxml can be used to alter host-specific portions of the domain XML
+ * that will be used when restoring an image.  For example, it is
+ * possible to alter the backing filename that is associated with a
+ * disk device, to match renaming done as part of backing up the disk
+ * device while the domain is stopped.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
+                            const char *dxml, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, file=%s, dxml=%s, flags=%x",
+              conn, file, dxml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if (!file || !dxml) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainSaveImageDefineXML) {
+        int ret;
+        char *absolute_file;
+
+        /* We must absolutize the file path as the read is done out of process */
+        if (virFileAbsPath(file, &absolute_file) < 0) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+                            _("could not build absolute input file path"));
+            goto error;
+        }
+
+        ret = conn->driver->domainSaveImageDefineXML(conn, absolute_file,
+                                                     dxml, flags);
+
+        VIR_FREE(absolute_file);
 
         if (ret < 0)
             goto error;
@@ -3574,6 +3720,16 @@ error:
  *
  * Provide an XML description of the domain. The description may be reused
  * later to relaunch the domain with virDomainCreateXML().
+ *
+ * No security-sensitive data will be included unless @flags contains
+ * VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
+ * connections.  If @flags includes VIR_DOMAIN_XML_INACTIVE, then the
+ * XML represents the configuration that will be used on the next boot
+ * of a persistent domain; otherwise, the configuration represents the
+ * currently running domain.  If @flags contains
+ * VIR_DOMAIN_XML_UPDATE_CPU, then the portion of the domain XML
+ * describing CPU capabilities is modified to match actual
+ * capabilities of the host.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.

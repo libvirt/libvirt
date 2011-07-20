@@ -193,6 +193,15 @@ typedef int
                                          const char *from,
                                          const char *dxml,
                                          unsigned int flags);
+typedef char *
+        (*virDrvDomainSaveImageGetXMLDesc)      (virConnectPtr conn,
+                                                 const char *file,
+                                                 unsigned int flags);
+typedef int
+        (*virDrvDomainSaveImageDefineXML)       (virConnectPtr conn,
+                                                 const char *file,
+                                                 const char *dxml,
+                                                 unsigned int flags);
 typedef int
         (*virDrvDomainCoreDump)		(virDomainPtr domain,
                                          const char *to,
@@ -731,6 +740,8 @@ struct _virDriver {
     virDrvDomainSaveFlags	domainSaveFlags;
     virDrvDomainRestore		domainRestore;
     virDrvDomainRestoreFlags	domainRestoreFlags;
+    virDrvDomainSaveImageGetXMLDesc domainSaveImageGetXMLDesc;
+    virDrvDomainSaveImageDefineXML domainSaveImageDefineXML;
     virDrvDomainCoreDump        domainCoreDump;
     virDrvDomainScreenshot      domainScreenshot;
     virDrvDomainSetVcpus		domainSetVcpus;
