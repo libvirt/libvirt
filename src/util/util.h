@@ -35,6 +35,9 @@
 # ifndef MIN
 #  define MIN(a, b) ((a) < (b) ? (a) : (b))
 # endif
+# ifndef MAX
+#  define MAX(a, b) ((a) > (b) ? (a) : (b))
+# endif
 
 ssize_t saferead(int fd, void *buf, size_t count) ATTRIBUTE_RETURN_CHECK;
 ssize_t safewrite(int fd, const void *buf, size_t count)
