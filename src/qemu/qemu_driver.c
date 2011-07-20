@@ -1556,12 +1556,17 @@ cleanup:
 }
 
 
-static int qemudDomainDestroy(virDomainPtr dom) {
+static int
+qemuDomainDestroyFlags(virDomainPtr dom,
+                       unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm  = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1620,6 +1625,11 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainDestroy(virDomainPtr dom)
+{
+    return qemuDomainDestroyFlags(dom, 0);
+}
 
 static char *qemudDomainGetOSType(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
@@ -8881,7 +8891,8 @@ static virDriver qemuDriver = {
     .domainResume = qemudDomainResume, /* 0.2.0 */
     .domainShutdown = qemuDomainShutdown, /* 0.2.0 */
     .domainReboot = qemuDomainReboot, /* 0.9.3 */
-    .domainDestroy = qemudDomainDestroy, /* 0.2.0 */
+    .domainDestroy = qemuDomainDestroy, /* 0.2.0 */
+    .domainDestroyFlags = qemuDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = qemudDomainGetOSType, /* 0.2.2 */
     .domainGetMaxMemory = qemudDomainGetMaxMemory, /* 0.4.2 */
     .domainSetMaxMemory = qemudDomainSetMaxMemory, /* 0.4.2 */
