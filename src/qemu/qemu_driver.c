@@ -4052,9 +4052,44 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     for (i = 0 ; i < def->nnets ; i++) {
         virDomainNetDefPtr net = def->nets[i];
         int bootIndex = net->bootIndex;
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
-            net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            int actualType = virDomainNetGetActualType(net);
+            const char *brname;
+
             VIR_FREE(net->data.network.name);
+            VIR_FREE(net->data.network.portgroup);
+            if ((actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
+                (brname = virDomainNetGetActualBridgeName(net))) {
+
+                char *brnamecopy = strdup(brname);
+                if (!brnamecopy) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+
+                virDomainActualNetDefFree(net->data.network.actual);
+
+                memset(net, 0, sizeof *net);
+
+                net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+                net->data.ethernet.dev = brnamecopy;
+                net->data.ethernet.script = NULL;
+                net->data.ethernet.ipaddr = NULL;
+            } else {
+                /* actualType is either NETWORK or DIRECT. In either
+                 * case, the best we can do is NULL everything out.
+                 */
+                virDomainActualNetDefFree(net->data.network.actual);
+                memset(net, 0, sizeof *net);
+
+                net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+                net->data.ethernet.dev = NULL;
+                net->data.ethernet.script = NULL;
+                net->data.ethernet.ipaddr = NULL;
+            }
+        } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            VIR_FREE(net->data.direct.linkdev);
+            VIR_FREE(net->data.direct.virtPortProfile);
 
             memset(net, 0, sizeof *net);
 
