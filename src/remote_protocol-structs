@@ -447,6 +447,18 @@ struct remote_domain_restore_flags_args {
         remote_string              dxml;
         u_int                      flags;
 };
+struct remote_domain_save_image_get_xml_desc_args {
+        remote_nonnull_string      file;
+        u_int                      flags;
+};
+struct remote_domain_save_image_get_xml_desc_ret {
+        remote_nonnull_string      xml;
+};
+struct remote_domain_save_image_define_xml_args {
+        remote_nonnull_string      file;
+        remote_nonnull_string      dxml;
+        u_int                      flags;
+};
 struct remote_domain_core_dump_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      to;
@@ -1882,4 +1894,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SAVE_FLAGS = 232,
         REMOTE_PROC_DOMAIN_RESTORE_FLAGS = 233,
         REMOTE_PROC_DOMAIN_DESTROY_FLAGS = 234,
+        REMOTE_PROC_DOMAIN_SAVE_IMAGE_GET_XML_DESC = 235,
+        REMOTE_PROC_DOMAIN_SAVE_IMAGE_DEFINE_XML = 236,
 };
