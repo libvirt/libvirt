@@ -194,7 +194,7 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
     VIR_DEBUG("Cert %s key usage status %d usage %d", certFile, status, usage);
     if (status < 0) {
         virNetError(VIR_ERR_SYSTEM_ERROR,
-                    _("Unable to query certificate %s basic constraints %s"),
+                    _("Unable to query certificate %s key usage %s"),
                     certFile, gnutls_strerror(status));
         goto cleanup;
     }
@@ -202,8 +202,8 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
     if (usage & GNUTLS_KEY_KEY_CERT_SIGN) {
         if (!isCA) {
             virNetError(VIR_ERR_SYSTEM_ERROR, isServer ?
-                        _("Certificate server usage is for certificate signing, but wanted a %s certificate") :
-                        _("Certificate client usage is for certificate signing, but wanted a %s certificate"),
+                        _("Certificate %s usage is for certificate signing, but wanted a server certificate") :
+                        _("Certificate %s usage is for certificate signing, but wanted a client certificate"),
                         certFile);
             goto cleanup;
         }
@@ -248,25 +248,25 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
         if (STREQ(buffer, GNUTLS_KP_TLS_WWW_SERVER)) {
             if (isCA || !isServer) {
                 virNetError(VIR_ERR_SYSTEM_ERROR, isCA ?
-                            _("Certificate CA purpose is TLS server, but wanted a %s certificate") :
-                            _("Certificate TLS client purpose is TLS server, but wanted a %s certificate"),
+                            _("Certificate %s purpose is TLS server, but wanted a CA certificate") :
+                            _("Certificate %s client purpose is TLS server, but wanted a TLS client certificate"),
                             certFile);
                 goto cleanup;
             }
         } else if (STREQ(buffer, GNUTLS_KP_TLS_WWW_CLIENT)) {
             if (isCA || isServer) {
                 virNetError(VIR_ERR_SYSTEM_ERROR, isCA ?
-                            _("Certificate CA purpose is TLS client, but wanted a %s certificate") :
-                            _("Certificate TLS server purpose is TLS client, but wanted a %s certificate"),
+                            _("Certificate %s purpose is TLS client, but wanted a CA certificate") :
+                            _("Certificate %s server purpose is TLS client, but wanted a TLS server certificate"),
                             certFile);
                 goto cleanup;
             }
         } else if (STRNEQ(buffer, GNUTLS_KP_ANY)) {
             virNetError(VIR_ERR_SYSTEM_ERROR, (isCA ?
-                        _("Certificate CA purpose is wrong, wanted a %s certificate") :
+                        _("Certificate %s purpose is wrong, wanted a CA certificate") :
                         (isServer ?
-                         _("Certificate TLS server purpose is wrong, wanted a %s certificate") :
-                         _("Certificate TLS client purpose is wrong, wanted a %s certificate"))),
+                         _("Certificate %s purpose is wrong, wanted a TLS server certificate") :
+                         _("Certificate %s purpose is wrong, wanted a TLS client certificate"))),
                         certFile);
             goto cleanup;
         }
