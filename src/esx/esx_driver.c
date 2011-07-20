@@ -1937,7 +1937,8 @@ esxDomainReboot(virDomainPtr domain, unsigned int flags)
 
 
 static int
-esxDomainDestroy(virDomainPtr domain)
+esxDomainDestroyFlags(virDomainPtr domain,
+                      unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -1948,6 +1949,8 @@ esxDomainDestroy(virDomainPtr domain)
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
+
+    virCheckFlags(0, -1);
 
     if (priv->vCenter != NULL) {
         ctx = priv->vCenter;
@@ -2000,6 +2003,12 @@ esxDomainDestroy(virDomainPtr domain)
     return result;
 }
 
+
+static int
+esxDomainDestroy(virDomainPtr dom)
+{
+    return esxDomainDestroyFlags(dom, 0);
+}
 
 
 static char *
@@ -4734,6 +4743,7 @@ static virDriver esxDriver = {
     .domainShutdown = esxDomainShutdown, /* 0.7.0 */
     .domainReboot = esxDomainReboot, /* 0.7.0 */
     .domainDestroy = esxDomainDestroy, /* 0.7.0 */
+    .domainDestroyFlags = esxDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = esxDomainGetOSType, /* 0.7.0 */
     .domainGetMaxMemory = esxDomainGetMaxMemory, /* 0.7.0 */
     .domainSetMaxMemory = esxDomainSetMaxMemory, /* 0.7.0 */
