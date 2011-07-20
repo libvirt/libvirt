@@ -34,6 +34,7 @@ utiltest
 virbuftest
 virnetmessagetest
 virnetsockettest
+virnettlscontexttest
 virshtest
 vmx2xmltest
 xencapstest

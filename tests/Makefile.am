@@ -85,7 +85,7 @@ check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
 	commandtest commandhelper seclabeltest \
 	hashtest virnetmessagetest virnetsockettest ssh \
-	utiltest
+	utiltest virnettlscontexttest
 
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
@@ -202,6 +202,7 @@ TESTS = virshtest \
 	hashtest \
 	virnetmessagetest \
 	virnetsockettest \
+	virnettlscontexttest \
 	utiltest \
 	$(test_scripts)
 
@@ -451,6 +452,11 @@ virnetsockettest_SOURCES = \
 	virnetsockettest.c testutils.h testutils.c
 virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virnetsockettest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+
+virnettlscontexttest_SOURCES = \
+	virnettlscontexttest.c testutils.h testutils.c pkix_asn1_tab.c
+virnettlscontexttest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virnettlscontexttest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS) -ltasn1
 
 
 seclabeltest_SOURCES = \
