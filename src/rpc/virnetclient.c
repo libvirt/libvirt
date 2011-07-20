@@ -271,6 +271,9 @@ void virNetClientFree(virNetClientPtr client)
 
 void virNetClientClose(virNetClientPtr client)
 {
+    if (!client)
+        return;
+
     virNetClientLock(client);
     virNetSocketRemoveIOCallback(client->sock);
     virNetSocketFree(client->sock);
