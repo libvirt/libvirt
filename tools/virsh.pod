@@ -646,6 +646,37 @@ between the creation and restore point.  For a more complete system
 restore point, where the disk state is saved alongside the memory
 state, see the B<snapshot> family of commands.
 
+=item B<save-image-define> I<file> I<xml>
+
+Update the domain XML that will be used when I<file> is later
+used in the B<restore> command.  The I<xml> argument must be a file
+name containing the alternative XML, with changes only in the
+host-specific portions of the domain XML.  For example, it can
+be used to account for file naming differences resulting from creating
+disk snapshots of underlying storage after the guest was saved.
+
+=item B<save-image-dumpxml> I<file> [I<--security-info>]
+
+Extract the domain XML that was in effect at the time the saved state
+file I<file> was created with the B<save> command.  Using
+I<--security-info> will also include security sensitive information.
+
+=item B<save-image-edit> I<file>
+
+Edit the XML configuration associated with a saved state file I<file>
+created by the B<save> command.
+
+This is equivalent to:
+
+ virsh save-image-dumpxml state-file > state-file.xml
+ vi state-file.xml (or make changes with your other text editor)
+ virsh save-image-define state-file state-file-xml
+
+except that it does some error checking.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
+
 =item B<schedinfo> [I<--set> B<parameter=value>] I<domain-id> [[I<--config>]
 [I<--live>] | [I<--current>]]
 

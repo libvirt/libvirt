@@ -1660,6 +1660,178 @@ cleanup:
 }
 
 /*
+ * "save-image-dumpxml" command
+ */
+static const vshCmdInfo info_save_image_dumpxml[] = {
+    {"help", N_("saved state domain information in XML")},
+    {"desc", N_("Output the domain information for a saved state file,\n"
+                "as an XML dump to stdout.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_save_image_dumpxml[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("saved state file to read")},
+    {"security-info", VSH_OT_BOOL, 0, N_("include security sensitive information in XML dump")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdSaveImageDumpxml(vshControl *ctl, const vshCmd *cmd)
+{
+    const char *file = NULL;
+    bool ret = false;
+    int flags = 0;
+    char *xml = NULL;
+
+    if (vshCommandOptBool(cmd, "security-info"))
+        flags |= VIR_DOMAIN_XML_SECURE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptString(cmd, "file", &file) <= 0)
+        return false;
+
+    xml = virDomainSaveImageGetXMLDesc(ctl->conn, file, flags);
+    if (!xml)
+        goto cleanup;
+
+    vshPrint(ctl, "%s", xml);
+    ret = true;
+
+cleanup:
+    VIR_FREE(xml);
+    return ret;
+}
+
+/*
+ * "save-image-define" command
+ */
+static const vshCmdInfo info_save_image_define[] = {
+    {"help", N_("redefine the XML for a domain's saved state file")},
+    {"desc", N_("Replace the domain XML associated with a saved state file")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_save_image_define[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("saved state file to modify")},
+    {"xml", VSH_OT_STRING, VSH_OFLAG_REQ,
+     N_("filename containing updated XML for the target")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdSaveImageDefine(vshControl *ctl, const vshCmd *cmd)
+{
+    const char *file = NULL;
+    bool ret = false;
+    const char *xmlfile = NULL;
+    char *xml = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptString(cmd, "file", &file) <= 0)
+        return false;
+
+    if (vshCommandOptString(cmd, "xml", &xmlfile) <= 0) {
+        vshError(ctl, "%s", _("malformed or missing xml argument"));
+        return false;
+    }
+
+    if (virFileReadAll(xmlfile, 8192, &xml) < 0)
+        goto cleanup;
+
+    if (virDomainSaveImageDefineXML(ctl->conn, file, xml, 0) < 0) {
+        vshError(ctl, _("Failed to update %s"), file);
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("State file %s updated.\n"), file);
+    ret = true;
+
+cleanup:
+    VIR_FREE(xml);
+    return ret;
+}
+
+/*
+ * "save-image-edit" command
+ */
+static const vshCmdInfo info_save_image_edit[] = {
+    {"help", N_("edit XML for a domain's saved state file")},
+    {"desc", N_("Edit the domain XML associated with a saved state file")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_save_image_edit[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("saved state file to edit")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
+{
+    const char *file = NULL;
+    bool ret = false;
+    char *tmp = NULL;
+    char *doc = NULL;
+    char *doc_edited = NULL;
+    int flags = VIR_DOMAIN_XML_SECURE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptString(cmd, "file", &file) <= 0)
+        return false;
+
+    /* Get the XML configuration of the saved image.  */
+    doc = virDomainSaveImageGetXMLDesc(ctl->conn, file, flags);
+    if (!doc)
+        goto cleanup;
+
+    /* Create and open the temporary file.  */
+    tmp = editWriteToTempFile(ctl, doc);
+    if (!tmp)
+        goto cleanup;
+
+    /* Start the editor.  */
+    if (editFile(ctl, tmp) == -1)
+        goto cleanup;
+
+    /* Read back the edited file.  */
+    doc_edited = editReadBackFile(ctl, tmp);
+    if (!doc_edited)
+        goto cleanup;
+
+    /* Compare original XML with edited.  Has it changed at all?  */
+    if (STREQ(doc, doc_edited)) {
+        vshPrint(ctl, _("Saved image %s XML configuration not changed.\n"),
+                 file);
+        ret = true;
+        goto cleanup;
+    }
+
+    /* Everything checks out, so redefine the xml.  */
+    if (virDomainSaveImageDefineXML(ctl->conn, file, doc_edited, 0) < 0) {
+        vshError(ctl, _("Failed to update %s"), file);
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("State file %s edited.\n"), file);
+    ret = true;
+
+cleanup:
+    VIR_FREE(doc);
+    VIR_FREE(doc_edited);
+    if (tmp) {
+        unlink(tmp);
+        VIR_FREE(tmp);
+    }
+    return ret;
+}
+
+/*
  * "managedsave" command
  */
 static const vshCmdInfo info_managedsave[] = {
@@ -12178,6 +12350,12 @@ static const vshCmdDef domManagementCmds[] = {
     {"restore", cmdRestore, opts_restore, info_restore, 0},
     {"resume", cmdResume, opts_resume, info_resume, 0},
     {"save", cmdSave, opts_save, info_save, 0},
+    {"save-image-define", cmdSaveImageDefine, opts_save_image_define,
+     info_save_image_define, 0},
+    {"save-image-dumpxml", cmdSaveImageDumpxml, opts_save_image_dumpxml,
+     info_save_image_dumpxml, 0},
+    {"save-image-edit", cmdSaveImageEdit, opts_save_image_edit,
+     info_save_image_edit, 0},
     {"schedinfo", cmdSchedinfo, opts_schedinfo, info_schedinfo, 0},
     {"screenshot", cmdScreenshot, opts_screenshot, info_screenshot, 0},
     {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem, 0},
