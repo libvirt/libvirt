@@ -295,18 +295,24 @@ virGetLastError(void)
  * Can be used to re-set an old error, which may have been squashed by
  * other functions (like cleanup routines).
  *
- * Returns 0 on success, 1 on failure
+ * Returns 0 on success, -1 on failure.  Leaves errno unchanged.
  */
 int
 virSetError(virErrorPtr newerr)
 {
     virErrorPtr err;
+    int saved_errno = errno;
+    int ret = -1;
+
     err = virLastErrorObject();
     if (!err)
-        return -1;
+        goto cleanup;
 
     virResetError(err);
-    return virCopyError(newerr, err);
+    ret = virCopyError(newerr, err);
+cleanup:
+    errno = saved_errno;
+    return ret;
 }
 
 /**
@@ -339,7 +345,8 @@ virCopyLastError(virErrorPtr to)
 /**
  * virSaveLastError:
  *
- * Save the last error into a new error object.
+ * Save the last error into a new error object.  On success, errno is
+ * unchanged; on failure, errno is ENOMEM.
  *
  * Returns a pointer to the copied error or NULL if allocation failed.
  * It is the caller's responsibility to free the error with
@@ -349,11 +356,13 @@ virErrorPtr
 virSaveLastError(void)
 {
     virErrorPtr to;
+    int saved_errno = errno;
 
     if (VIR_ALLOC(to) < 0)
         return NULL;
 
     virCopyLastError(to);
+    errno = saved_errno;
     return to;
 }
 
