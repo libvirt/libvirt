@@ -111,6 +111,7 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
     char *buffer = NULL;
     size_t size;
     unsigned int usage;
+    bool allowClient = false, allowServer = false;
 
     VIR_DEBUG("isServer %d isCA %d certFile %s",
               isServer, isCA, certFile);
@@ -193,24 +194,34 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
 
     VIR_DEBUG("Cert %s key usage status %d usage %d", certFile, status, usage);
     if (status < 0) {
-        virNetError(VIR_ERR_SYSTEM_ERROR,
-                    _("Unable to query certificate %s key usage %s"),
-                    certFile, gnutls_strerror(status));
-        goto cleanup;
+        if (status == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
+            usage = isCA ? GNUTLS_KEY_KEY_CERT_SIGN :
+                GNUTLS_KEY_DIGITAL_SIGNATURE|GNUTLS_KEY_KEY_ENCIPHERMENT;
+        } else {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Unable to query certificate %s key usage %s"),
+                        certFile, gnutls_strerror(status));
+            goto cleanup;
+        }
     }
 
-    if (usage & GNUTLS_KEY_KEY_CERT_SIGN) {
-        if (!isCA) {
-            virNetError(VIR_ERR_SYSTEM_ERROR, isServer ?
-                        _("Certificate %s usage is for certificate signing, but wanted a server certificate") :
-                        _("Certificate %s usage is for certificate signing, but wanted a client certificate"),
+    if (isCA) {
+        if (!(usage & GNUTLS_KEY_KEY_CERT_SIGN)) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Certificate %s usage does not permit certificate signing"),
                         certFile);
             goto cleanup;
         }
     } else {
-        if (isCA) {
+        if (!(usage & GNUTLS_KEY_DIGITAL_SIGNATURE)) {
             virNetError(VIR_ERR_SYSTEM_ERROR,
-                        _("Certificate %s usage is for not certificate signing"),
+                        _("Certificate %s usage does not permit digital signature"),
+                        certFile);
+            goto cleanup;
+        }
+        if (!(usage & GNUTLS_KEY_KEY_ENCIPHERMENT)) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Certificate %s usage does not permit key encipherment"),
                         certFile);
             goto cleanup;
         }
@@ -221,7 +232,11 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
         status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, NULL);
 
         if (status == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
-            VIR_DEBUG("No key purpose data available, skipping checks");
+            VIR_DEBUG("No key purpose data available at slot %d", i);
+
+            /* If there is no data at all, then we must allow client/server to pass */
+            if (i == 0)
+                allowServer = allowClient = true;
             break;
         }
         if (status != GNUTLS_E_SHORT_MEMORY_BUFFER) {
@@ -246,32 +261,29 @@ static gnutls_x509_crt_t virNetTLSContextSanityCheckCert(bool isServer,
 
         VIR_DEBUG("Key purpose %d %s", status, buffer);
         if (STREQ(buffer, GNUTLS_KP_TLS_WWW_SERVER)) {
-            if (isCA || !isServer) {
-                virNetError(VIR_ERR_SYSTEM_ERROR, isCA ?
-                            _("Certificate %s purpose is TLS server, but wanted a CA certificate") :
-                            _("Certificate %s client purpose is TLS server, but wanted a TLS client certificate"),
-                            certFile);
-                goto cleanup;
-            }
+            allowServer = true;
         } else if (STREQ(buffer, GNUTLS_KP_TLS_WWW_CLIENT)) {
-            if (isCA || isServer) {
-                virNetError(VIR_ERR_SYSTEM_ERROR, isCA ?
-                            _("Certificate %s purpose is TLS client, but wanted a CA certificate") :
-                            _("Certificate %s server purpose is TLS client, but wanted a TLS server certificate"),
-                            certFile);
-                goto cleanup;
-            }
+            allowClient = true;
         } else if (STRNEQ(buffer, GNUTLS_KP_ANY)) {
-            virNetError(VIR_ERR_SYSTEM_ERROR, (isCA ?
-                        _("Certificate %s purpose is wrong, wanted a CA certificate") :
-                        (isServer ?
-                         _("Certificate %s purpose is wrong, wanted a TLS server certificate") :
-                         _("Certificate %s purpose is wrong, wanted a TLS client certificate"))),
-                        certFile);
-            goto cleanup;
+            allowServer = allowClient = true;
         }
 
         VIR_FREE(buffer);
+    }
+
+    if (!isCA) { /* No purpose checks required for CA certs */
+        if (isServer && !allowServer) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Certificate %s purpose does not allow use for with a TLS server"),
+                        certFile);
+            goto cleanup;
+        }
+        if (!isServer && !allowClient) {
+            virNetError(VIR_ERR_SYSTEM_ERROR,
+                        _("Certificate %s purpose does not allow use for with a TLS client"),
+                        certFile);
+            goto cleanup;
+        }
     }
 
 
