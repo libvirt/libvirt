@@ -24,6 +24,7 @@
 #include <config.h>
 #include "storage_file.h"
 
+#include <command.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -38,6 +39,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "virfile.h"
+#include "c-ctype.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -1073,3 +1075,94 @@ int virStorageFileIsClusterFS(const char *path)
                                         VIR_STORAGE_FILE_SHFS_GFS2 |
                                         VIR_STORAGE_FILE_SHFS_OCFS);
 }
+
+#ifdef LVS
+const char *virStorageFileGetLVMKey(const char *path)
+{
+    /*
+     *  # lvs --noheadings --unbuffered --nosuffix --options "uuid" LVNAME
+     *    06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky
+     */
+    char *key = NULL;
+    virCommandPtr cmd = virCommandNewArgList(
+        LVS,
+        "--noheadings", "--unbuffered", "--nosuffix",
+        "--options", "uuid", path,
+        NULL
+        );
+
+    /* Run the program and capture its output */
+    virCommandSetOutputBuffer(cmd, &key);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (key) {
+        char *nl;
+        char *tmp = key;
+
+        /* Find first non-space character */
+        while (*tmp && c_isspace(*tmp)) {
+            tmp++;
+        }
+        /* Kill leading spaces */
+        if (tmp != key)
+            memmove(key, tmp, strlen(tmp)+1);
+
+        /* Kill trailing newline */
+        if ((nl = strchr(key, '\n')))
+            *nl = '\0';
+    }
+
+    if (key && STREQ(key, ""))
+        VIR_FREE(key);
+
+cleanup:
+    virCommandFree(cmd);
+
+    return key;
+}
+#else
+const char *virStorageFileGetLVMKey(const char *path)
+{
+    virReportSystemError(ENOSYS, _("Unable to get LVM key for %s"), path);
+    return NULL;
+}
+#endif
+
+#ifdef HAVE_UDEV
+const char *virStorageFileGetSCSIKey(const char *path)
+{
+    char *key = NULL;
+    virCommandPtr cmd = virCommandNewArgList(
+        "/lib/udev/scsi_id",
+        "--replace-whitespace",
+        "--whitelisted",
+        "--device", path,
+        NULL
+        );
+
+    /* Run the program and capture its output */
+    virCommandSetOutputBuffer(cmd, &key);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (key && STRNEQ(key, "")) {
+        char *nl = strchr(key, '\n');
+        if (nl)
+            *nl = '\0';
+    } else {
+        VIR_FREE(key);
+    }
+
+cleanup:
+    virCommandFree(cmd);
+
+    return key;
+}
+#else
+const char *virStorageFileGetSCSIKey(const char *path)
+{
+    virReportSystemError(ENOSYS, _("Unable to get SCSI key for %s"), path);
+    return NULL;
+}
+#endif
