@@ -2724,12 +2724,16 @@ cleanup:
 }
 
 static int
-libxlDomainUndefine(virDomainPtr dom)
+libxlDomainUndefineFlags(virDomainPtr dom,
+                         unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
+    char *name = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE, -1);
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2755,6 +2759,25 @@ libxlDomainUndefine(virDomainPtr dom)
         goto cleanup;
     }
 
+    name = libxlDomainManagedSavePath(driver, vm);
+    if (name == NULL)
+        goto cleanup;
+
+    if (virFileExists(name)) {
+        if (flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE) {
+            if (unlink(name) < 0) {
+                libxlError(VIR_ERR_INTERNAL_ERR,
+                           _("Failed to remove domain managed save image"));
+                goto cleanup;
+            }
+        } else {
+            libxlError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Refusing to undefine while domain managed "
+                         "save image exists"));
+            goto cleanup;
+        }
+    }
+
     if (virDomainDeleteConfig(driver->configDir,
                               driver->autostartDir,
                               vm) < 0)
@@ -2768,12 +2791,19 @@ libxlDomainUndefine(virDomainPtr dom)
     ret = 0;
 
   cleanup:
+    VIR_FREE(name);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
         libxlDomainEventQueue(driver, event);
     libxlDriverUnlock(driver);
     return ret;
+}
+
+static int
+libxlDomainUndefine(virDomainPtr dom)
+{
+    return libxlDomainUndefineFlags(dom, 0);
 }
 
 static int
@@ -3836,6 +3866,7 @@ static virDriver libxlDriver = {
     .domainCreateWithFlags = libxlDomainCreateWithFlags, /* 0.9.0 */
     .domainDefineXML = libxlDomainDefineXML, /* 0.9.0 */
     .domainUndefine = libxlDomainUndefine, /* 0.9.0 */
+    .domainUndefineFlags = libxlDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = libxlDomainAttachDevice, /* 0.9.2 */
     .domainAttachDeviceFlags = libxlDomainAttachDeviceFlags, /* 0.9.2 */
     .domainDetachDevice = libxlDomainDetachDevice,    /* 0.9.2 */
