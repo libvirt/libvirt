@@ -546,6 +546,10 @@ struct remote_domain_define_xml_ret {
 struct remote_domain_undefine_args {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_undefine_flags_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
 struct remote_domain_inject_nmi_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
@@ -1859,4 +1863,5 @@ enum remote_procedure {
         REMOTE_PROC_NODE_GET_MEMORY_STATS = 228,
         REMOTE_PROC_DOMAIN_GET_CONTROL_INFO = 229,
         REMOTE_PROC_DOMAIN_GET_VCPU_PIN_INFO = 230,
+        REMOTE_PROC_DOMAIN_GET_VCPU_PIN_INFO = 231,
 };

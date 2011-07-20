@@ -1,5 +1,5 @@
 /*
- * remote_internal.c: driver to provide access to libvirtd running
+ * remote_driver.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
  * Copyright (C) 2007-2011 Red Hat, Inc.
@@ -4187,6 +4187,7 @@ static virDriver remote_driver = {
     .domainCreateWithFlags = remoteDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = remoteDomainDefineXML, /* 0.3.0 */
     .domainUndefine = remoteDomainUndefine, /* 0.3.0 */
+    .domainUndefineFlags = remoteDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = remoteDomainAttachDevice, /* 0.3.0 */
     .domainAttachDeviceFlags = remoteDomainAttachDeviceFlags, /* 0.7.7 */
     .domainDetachDevice = remoteDomainDetachDevice, /* 0.3.0 */
